@@ -2,7 +2,7 @@
 **
 *W  blister.h                   GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: blister.h,v 4.16 2002/04/15 10:03:43 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -19,7 +19,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_blister_h =
-   "@(#)$Id$";
+   "@(#)$Id: blister.h,v 4.16 2002/04/15 10:03:43 sal Exp $";
 #endif
 
 

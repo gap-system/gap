@@ -1,0 +1,91 @@
+                 PqExample Index (Table of Contents)
+                 -----------------------------------
+This table of possible examples is displayed when calling `PqExample'
+with no arguments, or with the argument: "index" (meant in the  sense
+of ``list''), or with a non-existent example name.
+
+Examples that have a name ending in `-ni' are  non-interactive  only.
+Examples that have a  name  ending  in  `-i'  are  interactive  only.
+Examples with names ending in `.g' also have  only  one  form.  Other
+examples have both a non-interactive and an  interactive  form;  call
+`PqExample' with 2nd argument `PqStart' to get the  interactive  form
+of the example. The substring `PG' in an  example  name  indicates  a
+p-Group Generation example, `SP' indicates  a  Standard  Presentation
+example, `Rel' indicates it uses  the  `Relators'  option,  and  `Id'
+indicates it uses the `Identities' option.
+
+The following ANUPQ examples are available:
+
+ p-Quotient examples:
+  general:
+   "Pq"                   "Pq-ni"                "PqEpimorphism"        
+   "PqPCover"             "PqSupplementInnerAutomorphisms"
+  2-groups:
+   "2gp-Rel"              "2gp-Rel-i"            "2gp-a-Rel-i"
+   "B2-4"                 "B2-4-Id"              "B2-8-i"
+   "B4-4-i"               "B4-4-a-i"             "B5-4.g"
+  3-groups:
+   "3gp-Rel-i"            "3gp-a-Rel"            "3gp-a-Rel-i"
+   "3gp-a-x-Rel-i"        "3gp-maxoccur-Rel-i"
+  5-groups:
+   "5gp-Rel-i"            "5gp-a-Rel-i"          "5gp-b-Rel-i"
+   "5gp-c-Rel-i"          "5gp-metabelian-Rel-i" "5gp-maxoccur-Rel-i"
+   "F2-5-i"               "B2-5-i"               "R2-5-i"
+   "R2-5-x-i"             "B5-5-Engel3-Id"
+  7-groups:
+   "7gp-Rel-i"
+  11-groups:
+   "11gp-i"               "11gp-Rel-i"           "11gp-a-Rel-i"
+   "11gp-3-Engel-Id"      "11gp-3-Engel-Id-i"
+
+ p-Group Generation examples:
+  general:
+   "PqDescendants-1"      "PqDescendants-2"      "PqDescendants-3"
+   "PqDescendants-1-i"
+  2-groups:
+   "2gp-PG-i"             "2gp-PG-2-i"           "2gp-PG-3-i"
+   "2gp-PG-4-i"           "2gp-PG-e4-i"
+   "PqDescendantsTreeCoclassOne-16-i"
+  3-groups:
+   "3gp-PG-i"             "3gp-PG-4-i"           "3gp-PG-x-i"
+   "3gp-PG-x-1-i"         "PqDescendants-treetraverse-i"
+   "PqDescendantsTreeCoclassOne-9-i"
+  5-groups:
+   "5gp-PG-i"             "Nott-PG-Rel-i"        "Nott-APG-Rel-i"
+   "PqDescendantsTreeCoclassOne-25-i"
+  7,11-groups:
+   "7gp-PG-i"             "11gp-PG-i"
+
+ Standard Presentation examples:
+  general:
+   "StandardPresentation" "StandardPresentation-i"
+   "EpimorphismStandardPresentation"
+   "EpimorphismStandardPresentation-i"           "IsIsomorphicPGroup-ni"
+  2-groups:
+   "2gp-SP-Rel-i"         "2gp-SP-1-Rel-i"       "2gp-SP-2-Rel-i"
+   "2gp-SP-3-Rel-i"       "2gp-SP-4-Rel-i"       "2gp-SP-d-Rel-i"
+   "gp-256-SP-Rel-i"      "B2-4-SP-i"            "G2-SP-Rel-i"
+  3-groups:
+   "3gp-SP-Rel-i"         "3gp-SP-1-Rel-i"       "3gp-SP-2-Rel-i"
+   "3gp-SP-3-Rel-i"       "3gp-SP-4-Rel-i"       "G3-SP-Rel-i"
+  5-groups:
+   "5gp-SP-Rel-i"         "5gp-SP-a-Rel-i"       "5gp-SP-b-Rel-i"
+   "5gp-SP-big-Rel-i"     "5gp-SP-d-Rel-i"       "G5-SP-Rel-i"
+   "G5-SP-a-Rel-i"        "Nott-SP-Rel-i"
+  7-groups:
+   "7gp-SP-Rel-i"         "7gp-SP-a-Rel-i"       "7gp-SP-b-Rel-i"
+  11-groups:
+   "11gp-SP-a-i"          "11gp-SP-a-Rel-i"      "11gp-SP-a-Rel-1-i"
+   "11gp-SP-b-i"          "11gp-SP-b-Rel-i"      "11gp-SP-c-Rel-i"
+
+Notes
+-----
+1. The example (first) argument of  `PqExample'  is  a  string;  each
+   example above is in double quotes to remind you to include them.
+2. Some examples accept options. To find  out  whether  a  particular
+   example accepts options, display it first (by including  `Display'
+   as  last  argument)  which  will  also  indicate  how  `PqExample'
+   interprets the options, e.g. `PqExample("11gp-SP-a-i", Display);'.
+3. Try `SetInfoLevel(InfoANUPQ, <n>);' for  some  <n>  in  [2  ..  4]
+   before calling PqExample, to see what's going on behind the scenes.
+

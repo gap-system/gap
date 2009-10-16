@@ -4,7 +4,7 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id$
+*H  @(#)$Id: integer.c,v 4.72 2009/05/29 23:00:28 alexk Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,7 +17,7 @@
 **  represented as 'T_INT' is never  represented as 'T_INTPOS' or 'T_INTNEG'.
 **
 **  'T_INT' is the type of those integers small enough to fit into  29  bits.
-**  Therefor the value range of this small integers is: $-2^{28}...2^{28}-1$.
+**  Therefore the value range of this small integers is $-2^{28}...2^{28}-1$.
 **  This range contains about 99\% of all integers that usually occur in GAP.
 **  (I just made up this number, obviously it depends on the application  :-)
 **  Only these small integers can be used as index expression into sequences.
@@ -31,15 +31,15 @@
 **      +-------+-------+-------+-------+- - - -+-------+-------+-------+
 **
 **  Immediate integers handles carry the tag 'T_INT', i.e. the last bit is 1.
-**  This distuingishes immediate integers from other handles which  point  to
-**  structures aligned on 4 byte boundaries and therefor have last bit  zero.
+**  This distinguishes immediate integers from other handles which  point  to
+**  structures aligned on 4 byte boundaries and therefore have last bit zero.
 **  (The second bit is reserved as tag to allow extensions of  this  scheme.)
 **  Using immediates as pointers and dereferencing them gives address errors.
 **
 **  To aid overflow check the most significant two bits must always be equal,
 **  that is to say that the sign bit of immediate integers has a  guard  bit.
 **
-**  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert  between
+**  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between
 **  a small integer value and its representation as immediate integer handle.
 **
 **  'T_INTPOS' and 'T_INTPOS' are the types of positive  respective  negative
@@ -54,28 +54,28 @@
 **      +-------+-------+-------+-------+- - - -+-------+-------+-------+
 **
 **  The value of this  is:  $d0 + d1 65536 + d2 65536^2 + ... + d_n 65536^n$,
-**  respectivly the negative of this if the type of this object is T_INTNEG'.
+**  respectively the negative of this if the type of this object is 'T_INTNEG'.
 **
 **  Each digit is  of  course  stored  as  a  16  bit  wide  unsigned  short.
 **  Note that base 65536 allows us to multiply 2 digits and add a carry digit
 **  without overflow in 32 bit long arithmetic, available on most processors.
 **
 **  The number of digits in every  large  integer  is  a  multiple  of  four.
-**  Therefor the leading three digits of some values will actually  be  zero.
-**  Note that the uniqueness of representation implies that not four or  more
+**  Therefore the leading three digits of some values will actually be  zero.
+**  Note that the uniqueness of representation implies that not four or more
 **  leading digits may be zero, since |d0|d1|d2|d3| and |d0|d1|d2|d3|0|0|0|0|
 **  have the same value only one, the first, can be a  legal  representation.
 **
 **  Because of this it is possible to do a  little  bit  of  loop  unrolling.
 **  Thus instead of looping <n> times, handling one digit in each  iteration,
 **  we can loop <n>/4 times, handling  four  digits  during  each  iteration.
-**  This reduces the overhead of the loop by a factor of  approximatly  four.
+**  This reduces the overhead of the loop by a factor of  approximately four.
 **
 **  Using base 65536 representation has advantages over  using  other  bases.
-**  Integers in base 65536 representation can be packed  dense  and  therefor
+**  Integers in base 65536 representation can be packed  dense and therefore
 **  use roughly 20\% less space than integers in base  10000  representation.
 **  'SumInt' is 20\% and 'ProdInt' is 40\% faster for 65536 than  for  10000,
-**  as their runtime is linear respectivly quadratic in the number of digits.
+**  as their runtime is linear respectively quadratic in the number of digits.
 **  Dividing by 65536 and computing the remainder mod 65536 can be done  fast
 **  by shifting 16 bit to  the  right  and  by  taking  the  lower  16  bits.
 **  Larger bases are difficult because the product of two digits will not fit
@@ -83,10 +83,13 @@
 **  Base 10000 would have the advantage that printing is  very  much  easier,
 **  but 'PrInt' keeps a terminal at 9600 baud busy for almost  all  integers.
 */
+
+#ifndef USE_GMP /* use this file, otherwise ignore what follows */
+
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_integer_c =
-   "@(#)$Id$";
+   "@(#)$Id: integer.c,v 4.72 2009/05/29 23:00:28 alexk Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -115,6 +118,8 @@ const char * Revision_integer_c =
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "extern/include/jhash.h" /* Jenkins Hash function, from extern */
+
 #include <stdio.h>
 
 /****************************************************************************
@@ -135,12 +140,12 @@ typedef UInt2           TypDigit;
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
 #define INTBASE            (1L << NR_DIGIT_BITS)
 #define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
+#define SIZE_INT(op)    (SIZE_OBJ(op) / sizeof(TypDigit))
+#define ADDR_INT(op)    ((TypDigit*)ADDR_OBJ(op))
 */
 
 
 
-#define SIZE_INT(op)    (SIZE_OBJ(op) / sizeof(TypDigit))
-#define ADDR_INT(op)    ((TypDigit*)ADDR_OBJ(op))
 
 
 /****************************************************************************
@@ -183,6 +188,58 @@ Obj             TypeIntLargeNeg (
     return TYPE_INT_LARGE_NEG;
 }
 
+/**************************************************************************
+** The following two functions convert a C Int or UInt respectively into
+** a GAP integer, either an immediate, small integer if possible or
+** otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
+**
+*F ObjInt_Int(Int i)
+*F ObjInt_UInt(UInt i)
+**
+****************************************************************************/
+
+Obj ObjInt_Int(Int i)
+{
+    Obj n;
+    Int bound = 1L << NR_SMALL_INT_BITS;
+    if (i >= bound) {
+        /* We have to make a big integer */
+        n = NewBag(T_INTPOS,4*sizeof(TypDigit));
+        ADDR_INT(n)[0] = (TypDigit) (i & ((Int) INTBASE - 1L));
+        ADDR_INT(n)[1] = (TypDigit) (i >> NR_DIGIT_BITS);
+        ADDR_INT(n)[2] = 0;
+        ADDR_INT(n)[3] = 0;
+        return n;
+    } else if (-i > bound) {
+        n = NewBag(T_INTNEG,4*sizeof(TypDigit));
+        ADDR_INT(n)[0] = (TypDigit) ((-i) & ((Int) INTBASE - 1L));
+        ADDR_INT(n)[1] = (TypDigit) ((-i) >> NR_DIGIT_BITS);
+        ADDR_INT(n)[2] = 0;
+        ADDR_INT(n)[3] = 0;
+        return n;
+    } else {
+        return INTOBJ_INT(i);
+    }
+}
+
+Obj ObjInt_UInt(UInt i)
+{
+    Obj n;
+    UInt bound = 1UL << NR_SMALL_INT_BITS;
+    if (i >= bound) {
+        /* We have to make a big integer */
+        n = NewBag(T_INTPOS,4*sizeof(TypDigit));
+        ADDR_INT(n)[0] = (TypDigit) (i & ((UInt) INTBASE - 1L));
+        ADDR_INT(n)[1] = (TypDigit) (i >> NR_DIGIT_BITS);
+        ADDR_INT(n)[2] = 0;
+        ADDR_INT(n)[3] = 0;
+        return n;
+    } else {
+        return INTOBJ_INT(i);
+    }
+}
+
+
 
 /****************************************************************************
 **
@@ -206,7 +263,7 @@ Obj             TypeIntLargeNeg (
 **  If NR_DIGIT_BITS is 16, we get 1205.
 **  If NR_DIGIT_BITS is 32, we get 1071.
 **
-**  The subsidiary function IntToPrintBase converts an integer into base 
+**  The subsidiary function IntToPrintBase converts an integer into base
 **  PRINT_BASE, leaving the result in base PrIntD. It returns the index of the
 **  most significant digits. It assumes that the argument is a large
 **  integer small enough to fit.
@@ -235,14 +292,14 @@ TypDigit        PrIntD [1205];          /* integer converted to base 10000 */
 **
 *F  FuncHexStringInt( <self>, <int> ) . . . . . . . . hex string for integer
 *F  FuncIntHexString( <self>, <string> ) . . . . . .  integer from hex string
-**  
+**
 **  The  function  `FuncHexStringInt'  constructs from  an  integer  the
 **  corresponding string in  hexadecimal notation. It has  a leading '-'
 **  for negative numbers and the digits 10..15 are written as A..F.
-**  
+**
 **  The  function `FuncIntHexString'  does  the converse,  but here  the
 **  letters a..f are also allowed in <string> instead of A..F.
-**  
+**
 */
 Obj FuncHexStringInt( Obj self, Obj integer )
 {
@@ -271,7 +328,7 @@ Obj FuncHexStringInt( Obj self, Obj integer )
             n = -n;
             p++;
          }
-         else 
+         else
             SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
          /* collect digits, skipping leading zeros */
          j = 0;
@@ -320,13 +377,13 @@ Obj FuncHexStringInt( Obj self, Obj integer )
          p[j] = 0;
          return res;
      }
-     else 
+     else
          ErrorReturnObj("HexStringInt: argument must be integer, (not a %s)",
            (Int)TNAM_OBJ(integer), 0L,
            "");
      return (Obj) 0L; /* please picky cc */
 }
-     
+
 Obj  FuncIntHexString( Obj self,  Obj str )
 {
     Obj res;
@@ -334,7 +391,7 @@ Obj  FuncIntHexString( Obj self,  Obj str )
     UInt n;
     UInt1 *p, a;
     TypDigit d;
-    
+
     if (! IsStringConv(str))
         ErrorReturnObj("IntHexString: argument must be string (not a %s)",
           (Int)TNAM_OBJ(str), 0L,
@@ -361,11 +418,11 @@ Obj  FuncIntHexString( Obj self,  Obj str )
        p = CHARS_STRING(str);
        for (; i<len; i++) {
           a = p[i];
-          if (a>96) 
+          if (a>96)
              a -= 87;
-          else if (a>64) 
+          else if (a>64)
              a -= 55;
-          else 
+          else
              a -= 48;
           if (a > 15)
               ErrorReturnObj("IntHexString: non-valid character in hex-string",
@@ -388,20 +445,20 @@ Obj  FuncIntHexString( Obj self,  Obj str )
        p = CHARS_STRING(str);
        for (j=0; j < nd; j++) {
           d = 0;
-          for (s=0, ii=len-j*NR_HEX_DIGITS-1; 
-               ii>=i && ii>len-(j+1)*NR_HEX_DIGITS-1; 
+          for (s=0, ii=len-j*NR_HEX_DIGITS-1;
+               ii>=i && ii>len-(j+1)*NR_HEX_DIGITS-1;
                s+=4, ii--) {
              a = p[ii];
-             if (a>96) 
+             if (a>96)
                 a -= 87;
-             else if (a>64) 
+             else if (a>64)
                 a -= 55;
-             else 
+             else
                 a -= 48;
              if (a > 15)
                ErrorReturnObj("IntHexString: non-valid character in hex-string",
                    0L, 0L, "");
-            
+
              d += (a<<s);
           }
           ADDR_INT(res)[j] = d;
@@ -410,8 +467,8 @@ Obj  FuncIntHexString( Obj self,  Obj str )
     }
 }
 
-          
-        
+
+
 Int IntToPrintBase ( Obj op )
 {
     UInt                 i, k;           /* loop counter                    */
@@ -432,7 +489,7 @@ Int IntToPrintBase ( Obj op )
       while ( k > 0 && PrIntC[k-1] == 0 )  k--;
     }
     return i-1;
-  
+
 }
 
 void            PrintInt (
@@ -473,7 +530,7 @@ void            PrintInt (
 /****************************************************************************
 **
 *F  FuncLog2Int( <self>, <int> ) . . . . . . . . . nr of bits of integer - 1
-**  
+**
 **  Given to GAP-Level as "Log2Int".
 */
 Obj FuncLog2Int( Obj self, Obj integer)
@@ -482,7 +539,7 @@ Obj FuncLog2Int( Obj self, Obj integer)
   Int a, len;
   Int mask;
   TypDigit dmask;
-  
+
   /* case of small ints */
   if (IS_INTOBJ(integer)) {
     a = INT_INTOBJ(integer);
@@ -498,7 +555,7 @@ Obj FuncLog2Int( Obj self, Obj integer)
   if (TNUM_OBJ(integer) == T_INTNEG || TNUM_OBJ(integer) == T_INTPOS) {
     for (len = SIZE_INT(integer); ADDR_INT(integer)[len-1] == 0; len--);
     res = len * NR_DIGIT_BITS - 1;
-    a = (TypDigit)(ADDR_INT(integer)[len-1]); 
+    a = (TypDigit)(ADDR_INT(integer)[len-1]);
     for(dmask = (TypDigit)1 << (NR_DIGIT_BITS - 1);
         (dmask & a) == 0 && dmask != (TypDigit)0;
         dmask = dmask >> 1, res--);
@@ -531,7 +588,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   Int i;
   Char c;
   Int j,top, chunk, neg;
-  
+
   /* handle a small integer                                               */
   if ( IS_INTOBJ(integer) ) {
     x = INT_INTOBJ(integer);
@@ -545,7 +602,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 	CHARS_STRING(str)[1] = '\0';
 	ResizeBag(str, SIZEBAG_STRINGLEN(1));
 	SET_LEN_STRING(str, 1);
-	
+
 	return str;
       }
     /* Negative numbers */
@@ -565,7 +622,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 	x /= 10;
       }
     CHARS_STRING(str)[len] = '\0';
-    
+
     /* finally, reverse the digits in place */
     for (i = neg; i < (neg+len)/2; i++)
       {
@@ -573,12 +630,12 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 	CHARS_STRING(str)[neg+len-1-i] = CHARS_STRING(str)[i];
 	CHARS_STRING(str)[i] = c;
       }
-    
+
     ResizeBag(str, SIZEBAG_STRINGLEN(len));
     SET_LEN_STRING(str, len);
     return str;
   }
-  
+
   /* handle a large integer                                               */
   else if ( SIZE_INT(integer) < 1000 ) {
 
@@ -600,7 +657,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
     if ( TNUM_OBJ(integer) == T_INTNEG ) {
       CHARS_STRING(str)[i++] = '-';
     }
-    
+
     while (j > 1)
       {
 	j /= 10;
@@ -630,7 +687,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
       return CALL_1ARGS( String, integer);
   }
 }
-  
+
 
 
 /****************************************************************************
@@ -640,7 +697,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 **  'EqInt' returns 1  if  the two integer   arguments <intL> and  <intR> are
 **  equal and 0 otherwise.
 */
-Int             EqInt ( 
+Int             EqInt (
     Obj                 opL,
     Obj                 opR )
 {
@@ -774,9 +831,9 @@ Int             LtInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvSum' for a better  efficiency.
+**  This case is usually already handled in 'EvalSum' for a better  efficiency.
 **
-**  Is called from the 'EvSum'  binop so both operands are already evaluated.
+**  Is called from the 'EvalSum'  binop so both operands are already evaluated.
 **
 **  'SumInt' is a little bit difficult since there are 16  different cases to
 **  handle, each operand can be positive or negative, small or large integer.
@@ -914,10 +971,10 @@ Obj             SumInt (
         /* add the digits, convert to UInt to get maximum precision         */
         c = 0;
         for ( k = SIZE_INT(opR)/4; k != 0; k-- ) {
-            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c; 
-            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c; 
-            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c; 
-            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c; 
+            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c;
+            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c;
+            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c;
+            c = (UInt)*l++ + (UInt)*r++ + (c>>NR_DIGIT_BITS);  *s++ = (TypDigit)c;
         }
 
         /* propagate the carry, this loop is almost never executed         */
@@ -991,8 +1048,8 @@ Obj         AInvInt (
 
         /* special case (ugh)                                              */
         if ( TNUM_OBJ(op) == T_INTPOS && SIZE_INT(op) == 4
-          && ADDR_INT(op)[3] == 0 
-          && ADDR_INT(op)[2] == 0 
+          && ADDR_INT(op)[3] == 0
+          && ADDR_INT(op)[2] == 0
           && ADDR_INT(op)[1] == (1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS))
           && ADDR_INT(op)[0] == 0 ) {
             inv = INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) );
@@ -1028,9 +1085,9 @@ Obj         AInvInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvDiff' for a better efficiency.
+**  This case is usually already handled in 'EvalDiff' for a better efficiency.
 **
-**  Is called from the 'EvDiff' binop so both operands are already evaluated.
+**  Is called from the 'EvalDiff' binop so both operands are already evaluated.
 **
 **  'DiffInt' is a little bit difficult since there are 16 different cases to
 **  handle, each operand can be positive or negative, small or large integer.
@@ -1208,7 +1265,7 @@ Obj             DiffInt (
         }
 
         /* propagate the carry, this loop is almost never executed         */
-        for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4; 
+        for ( k=(SIZE_INT(opL)-SIZE_INT(opR))/4;
              k!=0 && c < 0; k-- ) {
             c = (Int)*l++ + (c < 0 ? -1 : 0);  *d++ = (TypDigit)c;
             c = (Int)*l++ + (c < 0 ? -1 : 0);  *d++ = (TypDigit)c;
@@ -1265,9 +1322,9 @@ Obj             DiffInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvProd' for a better efficiency.
+**  This case is usually already handled in 'EvalProd' for a better efficiency.
 **
-**  Is called from the 'EvProd' binop so both operands are already evaluated.
+**  Is called from the 'EvalProd' binop so both operands are already evaluated.
 **
 **  The only difficult about this function is the fact that is has two handle
 **  3 different situation, depending on how many arguments  are  small  ints.
@@ -1310,11 +1367,11 @@ Obj             ProdInt (
 
         /* multiply digitwise                                              */
         c = (UInt)(TypDigit)i * (TypDigit)k;            p[0] = (TypDigit)c;
-        c = (UInt)(TypDigit)i * (((UInt)k)>>NR_DIGIT_BITS) 
+        c = (UInt)(TypDigit)i * (((UInt)k)>>NR_DIGIT_BITS)
           + (c>>NR_DIGIT_BITS);                        p[1] = (TypDigit)c;
         p[2] = c>>NR_DIGIT_BITS;
 
-        c = (UInt)(TypDigit)(((UInt)i)>>NR_DIGIT_BITS) * (TypDigit)k 
+        c = (UInt)(TypDigit)(((UInt)i)>>NR_DIGIT_BITS) * (TypDigit)k
           + p[1];                                      p[1] = (TypDigit)c;
         c = (UInt)(TypDigit)(((UInt)i)>>NR_DIGIT_BITS) * (TypDigit)(((UInt)k)>>NR_DIGIT_BITS)
           + p[2] + (c>>NR_DIGIT_BITS);                 p[2] = (TypDigit)c;
@@ -1586,9 +1643,9 @@ Obj             OneInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvPow' for a better  efficiency.
+**  This case is usually already handled in 'EvalPow' for a better  efficiency.
 **
-**  Is called from the 'EvPow'  binop so both operands are already evaluated.
+**  Is called from the 'EvalPow'  binop so both operands are already evaluated.
 */
 Obj             PowInt (
     Obj                 opL,
@@ -1763,9 +1820,9 @@ Obj             FuncPOW_OBJ_INT (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvMod' for a better efficiency.
+**  This case is usually already handled in 'EvalMod' for a better efficiency.
 p**
-**  Is called from the 'EvMod'  binop so both operands are already evaluated.
+**  Is called from the 'EvalMod'  binop so both operands are already evaluated.
 */
 Obj             ModInt (
     Obj                 opL,
@@ -1818,7 +1875,7 @@ Obj             ModInt (
         /* the small int -(1<<28) mod the large int (1<<28) is 0           */
         if ( opL == INTOBJ_INT((UInt)-(Int)(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
-          && ADDR_INT(opR)[3] == 0 
+          && ADDR_INT(opR)[3] == 0
           && ADDR_INT(opR)[2] == 0
           && ADDR_INT(opR)[1] == (NR_SMALL_INT_BITS-NR_DIGIT_BITS)
           && ADDR_INT(opR)[0] == 0 )
@@ -1918,7 +1975,7 @@ Obj             ModInt (
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
         for ( e = 0;
-             ((Int)r[rs-1]<<e) + (e ?  r[rs-2]>>(NR_DIGIT_BITS-e) : 0) 
+             ((Int)r[rs-1]<<e) + (e ?  r[rs-2]>>(NR_DIGIT_BITS-e) : 0)
                                < INTBASE/2; e++ ) ;
 
         r1 = ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e) : 0);
@@ -1929,14 +1986,14 @@ Obj             ModInt (
 
             /* guess the factor                                            */
             m = ADDR_INT(mod) + rs + i;
-            m01 = ((INTBASE*m[0]+m[-1])<<e) 
+            m01 = ((INTBASE*m[0]+m[-1])<<e)
                            + (e ? m[-2]>>(NR_DIGIT_BITS-e) : 0);
             if ( m01 == 0 )  continue;
             m2  = ((Int)m[-2]<<e) + ((e && rs+i>=3) ? m[-3]>>(NR_DIGIT_BITS-e) : 0);
             if ( ((Int)m[0]<<e)+(e ? m[-1]>>(NR_DIGIT_BITS-e) : 0) < r1 )
                     qi = m01 / r1;
             else    qi = INTBASE - 1;
-            while ( m01-(Int)qi*r1 < (Int)INTBASE 
+            while ( m01-(Int)qi*r1 < (Int)INTBASE
                     && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
                     qi--;
 
@@ -1958,7 +2015,7 @@ Obj             ModInt (
                 r = ADDR_INT(opR);
                 for ( k = 0; k < (Int)rs; ++k, ++m, ++r ) {
                     c = (Int)*m + (Int)*r + (Int)d;
-                    *m = (TypDigit)c; 
+                    *m = (TypDigit)c;
                     d = (TypDigit)(c>>NR_DIGIT_BITS);
                 }
                 c = (Int)*m + d;  *m = (TypDigit)c;  d = (TypDigit)(c>>NR_DIGIT_BITS);
@@ -2049,7 +2106,7 @@ Obj FuncIS_INT (
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **
-**  Note that this routine is not called from 'EvQuo', the  division  of  two
+**  Note that this routine is not called from 'EvalQuo', the  division  of  two
 **  integers yields  a  rational  and  is  therefor  performed  in  'QuoRat'.
 **  This operation is however available through the internal function 'Quo'.
 */
@@ -2086,7 +2143,7 @@ Obj             QuoInt (
         }
 
         /* the small int -(1<<28) divided by -1 is the large int (1<<28)   */
-        if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS)) 
+        if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
             && opR == INTOBJ_INT(-1) ) {
             quo = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
             ADDR_INT(quo)[1] = 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS);
@@ -2114,7 +2171,7 @@ Obj             QuoInt (
 
         if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
-          && ADDR_INT(opR)[3] == 0 
+          && ADDR_INT(opR)[3] == 0
           && ADDR_INT(opR)[2] == 0
           && ADDR_INT(opR)[1] == 1L<<(NR_SMALL_INT_BITS-NR_DIGIT_BITS)
           && ADDR_INT(opR)[0] == 0 )
@@ -2128,7 +2185,7 @@ Obj             QuoInt (
 
     /* divide a large integer by a small integer                           */
     else if ( IS_INTOBJ(opR)
-           && INT_INTOBJ(opR) < INTBASE 
+           && INT_INTOBJ(opR) < INTBASE
            && -(Int)INTBASE  <= INT_INTOBJ(opR) ) {
 
         /* pathological case first                                         */
@@ -2171,7 +2228,7 @@ Obj             QuoInt (
         q = ADDR_INT(quo) + SIZE_INT(quo);
         if ( SIZE_INT(quo) == 4 && q[-2] == 0 && q[-1] == 0 ) {
             if ( TNUM_OBJ(quo) == T_INTPOS
-              &&(UInt)(INTBASE*q[-3]+q[-4]) 
+              &&(UInt)(INTBASE*q[-3]+q[-4])
                 < (1L<<NR_SMALL_INT_BITS))
                 quo = INTOBJ_INT( INTBASE*q[-3]+q[-4] );
             else if ( TNUM_OBJ(quo) == T_INTNEG
@@ -2218,7 +2275,7 @@ Obj             QuoInt (
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
         for ( e = 0;
-             ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e) : 0) 
+             ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e) : 0)
                                < INTBASE/2 ; e++ ) ;
 
         r1 = ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e) : 0);
@@ -2235,7 +2292,7 @@ Obj             QuoInt (
 
             /* guess the factor                                            */
             l = ADDR_INT(opL) + rs + i;
-            l01 = ((INTBASE*l[0]+l[-1])<<e) 
+            l01 = ((INTBASE*l[0]+l[-1])<<e)
               + (e ? l[-2]>>(NR_DIGIT_BITS-e):0);
 
             if ( l01 == 0 )  continue;
@@ -2243,7 +2300,7 @@ Obj             QuoInt (
             if ( ((Int)l[0]<<e)+(e ? l[-1]>>(NR_DIGIT_BITS-e):0) < r1 )
                      qi = l01 / r1;
             else     qi = INTBASE - 1;
-            while ( l01-(Int)qi*r1 < (Int)INTBASE 
+            while ( l01-(Int)qi*r1 < (Int)INTBASE
                     && INTBASE*(l01-(UInt)qi*r1)+l2 < (UInt)qi*r2 )
                 qi--;
 
@@ -2407,7 +2464,7 @@ Obj             RemInt (
         /* the small int -(1<<28) rem the large int (1<<28) is 0           */
         if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
           && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 4
-          && ADDR_INT(opR)[3] == 0 
+          && ADDR_INT(opR)[3] == 0
           && ADDR_INT(opR)[2] == 0
           && ADDR_INT(opR)[1] == 1L << (NR_SMALL_INT_BITS-NR_DIGIT_BITS)
           && ADDR_INT(opR)[0] == 0 )
@@ -2494,7 +2551,7 @@ Obj             RemInt (
         r  = ADDR_INT(opR);
         while ( r[rs-1] == 0 )  rs--;
         for ( e = 0;
-             ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e): 0) 
+             ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e): 0)
                                < INTBASE/2; e++ ) ;
 
         r1 = ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e):0);
@@ -2511,7 +2568,7 @@ Obj             RemInt (
             if ( ((Int)m[0]<<e)+(e ? m[-1]>>(NR_DIGIT_BITS-e): 0) < r1 )
                     qi = m01 / r1;
             else    qi = INTBASE - 1;
-            while ( m01-(Int)qi*r1 < (Int)INTBASE 
+            while ( m01-(Int)qi*r1 < (Int)INTBASE
                    && INTBASE*(m01-(Int)qi*r1)+m2 < (Int)qi*r2 )
                 qi--;
 
@@ -2689,7 +2746,7 @@ Obj             GcdInt (
                 gcd = NewBag( T_INTPOS, SIZE_OBJ(opL) );
                 l = ADDR_INT(opL); r = ADDR_INT(gcd);
                 for ( k = SIZE_INT(opL); k != 0; k-- ) *r++ = *l++;
-                
+
                 return gcd;
             }
             else return opL;
@@ -2791,8 +2848,8 @@ Obj             GcdInt (
         while ( rs >= 2 ) {
 
             /* get the leading two digits                                  */
-            for ( e = 0; 
-                 ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e) : 0) 
+            for ( e = 0;
+                 ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e) : 0)
                                    < INTBASE/2; e++ ) ;
             r1 = ((Int)r[rs-1]<<e) + (e ? r[rs-2]>>(NR_DIGIT_BITS-e): 0);
             r2 = ((Int)r[rs-2]<<e) + ((e && rs>=3) ? r[rs-3]>>(NR_DIGIT_BITS-e) : 0);
@@ -2808,7 +2865,7 @@ Obj             GcdInt (
                 if ( ((Int)l[0]<<e)+(e ? l[-1]>>(NR_DIGIT_BITS-e):0) < r1 )
                         qi = l01 / r1;
                 else    qi = INTBASE - 1;
-                while ( l01-(Int)qi*r1 < (Int)INTBASE 
+                while ( l01-(Int)qi*r1 < (Int)INTBASE
                         && (INTBASE*(l01-(Int)qi*r1)+l2) < ((Int)qi*r2) )
                     qi--;
 
@@ -2881,7 +2938,7 @@ Obj             GcdInt (
 
         /* otherwise handle one large and one small integer as above       */
         else {
-	  
+
             /* get the right operand value, make it positive               */
             i = r[0];
 
@@ -2960,6 +3017,8 @@ Obj             FuncGCD_INT (
     return GcdInt( opL, opR );
 }
 
+
+
 /****************************************************************************
 **
 *F  FuncHASHKEY_BAG(<self>,<obj>,<factor>,<offset>,<maxlen>)
@@ -2973,7 +3032,7 @@ Obj             FuncGCD_INT (
 **  usable in algorithms, we need that objects of this kind are stored uniquely
 **  internally.
 **  The offset and the maximum number of bytes to process both count in
-**  bytes. The values passed to these parameters might depend on the word 
+**  bytes. The values passed to these parameters might depend on the word
 **  length of the computer.
 **  A <maxlen> value of -1 indicates infinity.
 */
@@ -2984,8 +3043,8 @@ Obj             FuncHASHKEY_BAG (
     Obj                 opO,
     Obj			opM)
 {
-  Int sum;
-  Char* ptr;
+  UInt sum;
+  UChar* ptr;
   Int n;
   Int m;
   Int i;
@@ -3002,14 +3061,14 @@ Obj             FuncHASHKEY_BAG (
   }
 
   while ( TNUM_OBJ(opO) != T_INT ) {
-      opR = ErrorReturnObj(
+      opO = ErrorReturnObj(
 	  "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
 	  (Int)TNAM_OBJ(opO), 0L,
 	  "you can replace <offset> via 'return <offset>;'" );
   }
 
   while ( TNUM_OBJ(opM) != T_INT ) {
-      opR = ErrorReturnObj(
+      opM = ErrorReturnObj(
 	  "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
 	  (Int)TNAM_OBJ(opM), 0L,
 	  "you can replace <maxlen> via 'return <maxlen>;'" );
@@ -3018,23 +3077,63 @@ Obj             FuncHASHKEY_BAG (
   sum=0;
   /* start byte plus offset */
   offs=INT_INTOBJ(opO);
-  ptr=(Char*)ADDR_OBJ(opL)+offs;
+  ptr=(UChar*)ADDR_OBJ(opL)+offs;
   n=SIZE_OBJ(opL)-offs;
 
   /* maximal number of bytes to read */
   offs=INT_INTOBJ(opM);
-  if ((n>offs)&&(offs!=-1)) {n=offs;}; 
+  if ((n>offs)&&(offs!=-1)) {n=offs;};
 
   m=INT_INTOBJ(opR);
 
   for (i=0;i<n;i++) {
-    sum=((sum*m)+(Int)(*ptr++));
-/*    Pr("%d %d\n",(Int)*ptr,sum); */
+    sum=((sum*m)+(UInt)(*ptr++));
+    /*    if (i < 100)
+	  Pr("%d %d\n",(UInt)*(ptr-1),sum); */
   }
   sum=sum % modulus;
 
   return INTOBJ_INT(sum);
 }
+
+Obj FuncJenkinsHash(Obj self, Obj op, Obj size)
+{
+   void *input;
+   uint32_t len;
+   uint32_t key;
+   uint32_t init = 0;
+
+   len = (uint32_t)INT_INTOBJ(size);
+   input = (void *)ADDR_OBJ(op);
+   if (len == -1)
+     len = (uint32_t)SIZE_OBJ(op);
+
+// Take advantage of endianness if possible
+#ifdef WORDS_BIGENDIAN
+   key = hashbig(input, len, init);
+#else
+   key = hashlittle(input, len, init);
+#endif
+
+   return INTOBJ_INT((Int)(key % (1 << 28)));
+}
+
+
+/****************************************************************************
+**
+*F  FuncSIZE_OBJ(<self>,<obj>)
+**
+**  'SIZE_OBJ( <obj> )' returns the size of a nonimmediate object. It can be
+**  used to debug memory use.
+*/
+Obj             FuncSIZE_OBJ (
+    Obj                 self,
+    Obj                 a)
+{
+  return INTOBJ_INT(SIZE_OBJ(a));
+}
+
+
 
 /****************************************************************************
 **
@@ -3083,8 +3182,8 @@ void LoadInt( Obj bigint)
 **
 ** * * * * * * * "Mersenne twister" random numbers  * * * * * * * * * * * * *
 **
-**  Part of this code for fast generation of 32 bit pseudo random numbers with 
-**  a period of length 2^19937-1 and a 623-dimensional equidistribution is 
+**  Part of this code for fast generation of 32 bit pseudo random numbers with
+**  a period of length 2^19937-1 and a 623-dimensional equidistribution is
 **  taken from:
 **          http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
 **  (Also look in Wikipedia for "Mersenne twister".)
@@ -3092,9 +3191,9 @@ void LoadInt( Obj bigint)
 
 /****************************************************************************
 **
-*F  InitRandomMT( <initstr> ) 
+*F  InitRandomMT( <initstr> )
 **
-**  Returns a string that can be used as data structure of a new MT random 
+**  Returns a string that can be used as data structure of a new MT random
 **  number generator. <initstr> can be an arbitrary string as seed.
 */
 #define MATRIX_A 0x9908b0dfUL   /* constant vector a */
@@ -3106,8 +3205,8 @@ void initGRMT(UInt4 *mt, UInt4 s)
     UInt4 mti;
     mt[0]= s & 0xffffffffUL;
     for (mti=1; mti<624; mti++) {
-        mt[mti] = 
-	    (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti); 
+        mt[mti] =
+	    (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
         mt[mti] &= 0xffffffffUL;
     }
     /* store mti as last entry of mt[] */
@@ -3128,7 +3227,7 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
   }
   init_key = (UInt4*) CHARS_STRING(initstr);
   key_length = GET_LEN_STRING(initstr) / 4;
-   
+
    /* store array of 624 UInt4 and one UInt4 as counter "mti" */
    str = NEW_STRING(4*625);
    SET_LEN_STRING(str, 4*625);
@@ -3139,24 +3238,24 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
    k = (N>key_length ? N : key_length);
    for (; k; k--) {
        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
-         + init_key[j] + j; 
-       mt[i] &= 0xffffffffUL; 
+         + init_key[j] + j;
+       mt[i] &= 0xffffffffUL;
        i++; j++;
        if (i>=N) { mt[0] = mt[N-1]; i=1; }
        if (j>=key_length) j=0;
    }
    for (k=N-1; k; k--) {
-       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i; 
-       mt[i] &= 0xffffffffUL; 
+       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i;
+       mt[i] &= 0xffffffffUL;
        i++;
        if (i>=N) { mt[0] = mt[N-1]; i=1; }
    }
-   mt[0] = 0x80000000UL; 
-   return str; 
+   mt[0] = 0x80000000UL;
+   return str;
 }
 
 
-/*  internal, generates a random number on [0,0xffffffff]-interval 
+/*  internal, generates a random number on [0,0xffffffff]-interval
 **  argument <mt> is pointer to a string generated by InitRandomMT
 **  (the first 4*624 bytes are the random numbers, the last 4 bytes contain
 **  a counter)
@@ -3165,9 +3264,9 @@ UInt4 nextrandMT_int32(UInt4* mt)
 {
     UInt4 mti, y, N=624, M=397;
     static UInt4 mag01[2]={0x0UL, MATRIX_A};
-    
+
     mti = mt[624];
-    if (mti >= N) { 
+    if (mti >= N) {
         int kk;
 
         for (kk=0;kk<N-M;kk++) {
@@ -3183,7 +3282,7 @@ UInt4 nextrandMT_int32(UInt4* mt)
 
         mti = 0;
     }
-  
+
     y = mt[mti++];
     mt[624] = mti;
 
@@ -3200,15 +3299,15 @@ UInt4 nextrandMT_int32(UInt4* mt)
 /****************************************************************************
 **
 *F  RandomIntegerMT( <mtstr>, <nrbits> )
-**  
-**  Returns an integer with at most <nrbits> bits in uniform distribution. 
-**  <nrbits> must be a small integer. <mtstr> is a string as returned by 
+**
+**  Returns an integer with at most <nrbits> bits in uniform distribution.
+**  <nrbits> must be a small integer. <mtstr> is a string as returned by
 **  InitRandomMT.
-**  
-**  Implementation details are a bit tricky to obtain the same random 
+**
+**  Implementation details are a bit tricky to obtain the same random
 **  integers on 32 bit and 64 bit machines (which have different long
 **  integer digit lengths and different ranges of small integers).
-**  
+**
 */
 /* for comparison in case result is small int */
 Obj SMALLEST_INTPOS = NULL;
@@ -3249,10 +3348,10 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
      else {
        unsigned long  rd;
        rd = nextrandMT_int32(mt);
-       rd += (unsigned long) ((UInt4) nextrandMT_int32(mt) & 
+       rd += (unsigned long) ((UInt4) nextrandMT_int32(mt) &
                               ((UInt4) -1L >> (64-n))) << 32;
        res = INTOBJ_INT((Int)rd);
-     }  
+     }
 #else
      res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4) -1L >> (32-n))));
 #endif
@@ -3289,14 +3388,14 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
                                                       >> (NR_DIGIT_BITS-r));
      }
      /* shrink bag if necessary */
-     for (nlen = len, i=0; nlen >0 && ADDR_INT(res)[nlen-1] == 0L; 
+     for (nlen = len, i=0; nlen >0 && ADDR_INT(res)[nlen-1] == 0L;
                            nlen--, i++);
      if (i/4 != 0) {
         ResizeBag(res, 4*((nlen+3) / 4)*sizeof(TypDigit));
      }
      /* convert result if small int */
      if (LtInt(res, SMALLEST_INTPOS)) {
-       res = INTOBJ_INT((Int)(ADDR_INT(res)[0] + 
+       res = INTOBJ_INT((Int)(ADDR_INT(res)[0] +
                               ((UInt)ADDR_INT(res)[1] << NR_DIGIT_BITS)));
      }
   }
@@ -3324,8 +3423,8 @@ Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
   if (len == 0) return Fail;
   mt = (UInt4*) CHARS_STRING(mtstr);
   lg = 31 - INT_INTOBJ(FuncLog2Int((Obj)0, INTOBJ_INT(len)));
-  for (a = nextrandMT_int32(mt) >> lg; 
-       a >= len; 
+  for (a = nextrandMT_int32(mt) >> lg;
+       a >= len;
        a = nextrandMT_int32(mt) >> lg
     );
   return ELM_LIST(list, a+1);
@@ -3387,6 +3486,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "HASHKEY_BAG", 4, "obj, int,int,int",
       FuncHASHKEY_BAG, "src/integer.c:HASHKEY_BAG" },
+
+    { "JENKINS_HASH", 2, "obj, len",
+      FuncJenkinsHash, "src/integer.c:JENKINS_HASH" },
+
+    { "SIZE_OBJ", 1, "obj",
+      FuncSIZE_OBJ, "src/integer.c:SIZE_OBJ" },
 
     { "InitRandomMT", 1, "initstr",
       FuncInitRandomMT, "src/integer.c:InitRandomMT" },
@@ -3454,7 +3559,7 @@ static Int InitKernel (
         AInvMutFuncs[ t1 ] = AInvInt;
         OneFuncs [ t1 ] = OneInt;
         OneMutFuncs [ t1 ] = OneInt;
-    }    
+    }
 
     /* install the default product and power methods                       */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
@@ -3513,14 +3618,14 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    UInt gvar; 
+    UInt gvar;
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* hold smallest large integer */
     SMALLEST_INTPOS = NewBag( T_INTPOS, 4*sizeof(TypDigit) );
-    ADDR_INT(SMALLEST_INTPOS)[1] = 
+    ADDR_INT(SMALLEST_INTPOS)[1] =
                  (TypDigit) (1L << (NR_SMALL_INT_BITS - NR_DIGIT_BITS));
     gvar = GVarName("SMALLEST_INTPOS");
     MakeReadWriteGVar( gvar);
@@ -3559,6 +3664,8 @@ StructInitInfo * InitInfoInt ( void )
     return &module;
 }
 
+/* matches the USE_GMP test at the top of the file */
+#endif
 
 /****************************************************************************
 **

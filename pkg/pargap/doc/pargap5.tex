@@ -1,0 +1,396 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  pargap5.tex            ParGAP documentation            Gene Cooperman
+%%
+%H  $Id: pargap5.tex,v 1.5 2001/11/16 15:57:00 gap Exp $
+%%
+%Y  Copyright (C) 1999-2001  Gene Cooperman
+%Y    See included file, COPYING, for conditions for copying
+%%
+
+\Chapter{Advanced Concepts for TOP-C model (MasterSlave)}
+
+This chapter may be safely skipped on a first reading. If you still  want
+to read this chapter, it should mean  that  you  are  familiar  with  the
+basics of the TOP-C model, and are looking for advice on how to  use  the
+model more effectively. The first piece of advice is that the  choice  of
+*task* and *shared data* interact strongly with the  choice  of  parallel
+algorithm. We review those concepts more precisely here, in light of  the
+overall context of the TOP-C model.
+
+\beginitems
+
+\index{task}
+*task*:&
+    A task is a function that that takes a single argument,  <taskInput>,
+    reads certain globally shared data, the *shared data*, and computes a
+    result, the <taskOutput>. Hence, given the same task  input  and  the
+    same shared data, a task should always compute the same task  output.
+    The TOP-C model implements  this  concept  through  the  `<DoTask>()'
+    application routine. In  the  TOP-C  model,  this  rule  is  bent  to
+    accommodate  caching  of  private  data  to  efficiently   handle   a
+    `REDO_ACTION'    (see    Section~"Caching    slave    task    outputs
+    (ParSemiEchelonMat    revisited)"),    or    to     accommodate     a
+    `CONTINUATION_ACTION()' (see Section~"The GOTO statement of the TOP-C
+    model").
+
+\index{shared data}
+*shared data*:&
+    The *shared data* is globally shared data. It should  be  initialized
+    before entering `MasterSlave()'. The shared data is never  explicitly
+    declared. However, it is  best  for  the  application  programmer  to
+    include  a  comment  specifying  the  shared  data  for  his  or  her
+    application. The TOP-C  model  poses  certain  restrictions  on  what
+    legally constitutes shared data. The shared data must include  enough
+    of the global data (variables that occur *free* in  the  `<DoTask>()'
+    procedure) so that  the  task  output  of  `<DoTask>()'  is  uniquely
+    determined by the task input and the shared data. However, the shared
+    data must *not* include  any  variables  whose  values  are  modified
+    outside of the application routine `<UpdateSharedData>()'. Also,  the
+    shared data is updated *non-preemptively*, in the sense that a  slave
+    process will always complete its current task before reading a  newly
+    arrived message  that  invokes  `<UpdateSharedData>()'.  If  a  slave
+    privately  caches  data  for   purposes   of   a   `REDO_ACTION'   or
+    `CONTINUATION_ACTION()', such data is  explicitly  not  part  of  the
+    shared data.
+
+\enditems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Tracing and Debugging}\label{debug}
+
+In testing a program using `MasterSlave()', a  hierarchy  of  testing  is
+suggested. The principle is to test the simplest example first, and  then
+iterate to more complex examples. When a stable portion of the program is
+ready for testing, the following sequence of tests is suggested:
+
+\beginitems
+
+sequential& 
+    Replace `MasterSlave()' by `SeqMasterSlave()' (see definition  below)
+    and see if the program performs  correctly.  `SeqMasterSlave()'  will
+    run only on the master, without sending any messages, and so the full
+    range of sequential debugging tools is available.
+
+one slave&
+    Restore `MasterSlave()' and set up the `procgroup' file to have  only
+    one slave process (one line,  `local  0',  and  one  line  `localhost
+    ...').  Initially   test   with   no   `taskAgglom'   parameter   for
+    `MasterSlave()', and then test with the full set of parameters.
+
+two slaves&
+    Same advice as for one slave, but two lines: `localhost ...'
+
+many slaves&
+    Full scale test, both without and with `taskAgglom'.
+
+\enditems
+
+\>`ParTrace' V
+
+A second easy testing strategy is to set `ParTrace' to `true'.  (This  is
+the default value.) This  causes  all  <taskInput>s,  <taskOutput>s,  and
+non-trivial actions (actions other than `NO_ACTION') to be  displayed  at
+the terminal. The information is printed in the same sequence as seen  by
+the master process.
+
+Another ``cheap'' debugging trick is to  inspect  the  values  of  global
+variables  on  the  slave  after  it  has  been   thrown   out   of   the
+`MasterSlave()'   procedure.   The   following   code   demonstrates   by
+interrogating the sum of the variables `x' and `y' on slave number~2.
+
+\begintt
+gap> SendRecvMsg("x+y;\n", 2);
+\endtt
+
+This is useful to inspect cached data on a slave used for a `REDO_ACTION'
+or `CONTINUATION_ACTION()'. It may  also  be  useful  to  verify  if  the
+shared data on the slave is the same as  on  the  master.  If  the  slave
+process is still inside the procedure `MasterSlave()', then from within a
+break loop on the  master,  you  may  also  want  to  interactively  call
+`<DoTask>( <testInput> )' to determine if the  expected  <taskOutput>  is
+produced.
+
+If the master process is still within `MasterSlave()', then it is  useful
+to execute `<DoTask>()' locally on the master  process,  and  debug  this
+sequentially.
+
+There is also the time-honored practice of  inserting  print  statements.
+Print statements ``work'' both on  the  master  and  on  the  slaves.  If
+ParTrace produces too much output, or not the right kind of  information,
+one can add print statements exactly where one needs them.  As  with  any
+UNIX  debugging,  it  is  sometimes  useful  to   include   a   call   to
+`fflush(stdout)' to force any pending output. {\ParGAP} binds this to:
+
+\>UNIX_FflushStdout()!{definition} F
+
+This has the same effect as  the  UNIX  `fflush(stdout)'.  There  may  be
+pending output in a buffer, that UNIX  delays  printing  for  efficiency.
+Printing any remaining output in the buffer is forced by this command.  A
+common sequence is:  `Print("information");  UNIX_FflushStdout();'.  Note
+also that when the slave  prints,  there  are  ``two''  standard  outputs
+involved. You may also want to include a call to `UNIX_FflushStdout()' on
+the master to force any  pending  output  that  originated  on  a  slave.
+Finally, you should be conscious  of  network  delays,  and  so  a  print
+statement in a slave process will typically take longer to appear than  a
+print statement in the master process.
+
+\>SeqMasterSlave( <SubmitTaskInput>, <DoTask>[, <CheckTaskResult>[,%
+                  <UpdateSharedData>[, <taskAgglom> ]]] )!{definition} F
+
+If a bug is exhibited even in the context of a  single  slave,  then  the
+code is ``almost'' sequential. In this case,  one  can  test  further  by
+replacing the call to `MasterSlave()' by a  call  to  `SeqMasterSlave()',
+and debug in a context that involves zero  messages  and  no  interaction
+with any slave. It can also be helpful to carry out initial debugging  in
+this context. Note that in the case of a  single  slave,  which  is  what
+`SeqMasterSlave' emulates, `IsUpToDate()' will always return true, and so
+most applications will not call for a `REDO_ACTION'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Efficiency Considerations}
+
+\index{efficiency}
+There  are  two  common  reasons  for  loss  of  efficiency  in  parallel
+applications. One is a lack of enough tasks,  so  that  some  slaves  are
+starverd for work while waiting for the next task input. A  second  reson
+is that the ratio of communication time to compilation time is too large.
+The second case, poor communication efficiency, is the more common one.
+
+The communication efficiency can be formally defined as the ratio of  the
+time to execute a task by the time  taken  for  the  master  to  send  an
+initial task message to a slave plus the time for the slave to send  back
+a result message. A good way to diagnose your efficiency  is  to  execute
+`MasterSlaveStats()' after executing `MasterSlave()'.
+
+\>MasterSlaveStats() F
+
+This function currently returns statistics in the form of a list  of  two
+records. The first record provides the global information:
+
+\beginitems
+
+`MStime'&
+    total runtime (as measured by `Runtime()'),
+
+`MSnrTasks'&
+    total number of tasks (not including `REDO' or `UPDATE',
+
+`MSnrUpdates'&
+    total number of times action `UPDATE' was returned, and
+
+`MSnrRedos'&
+    total number of times action `REDO' was returned.
+
+\enditems
+
+The second record provides per-slave information:
+
+\beginitems
+
+`total'&
+    total time spent on tasks, not including `UpdateSharedData()',
+
+`num'&
+    number of initial tasks, `REDO' and `CONTINUATION()' actions,
+
+`ave_ms'& 
+    the value of `QuoInt(1000\*total,num)' in {\GAP}, and
+
+`max'&
+    maximum time spent on a task, in seconds.
+
+\enditems
+
+Note that  for  purposes  of  the  per-slave  statistics,  separate  time
+intervals  are  recorded  for  each  initial  task,  `REDO'  action,  and
+`CONTINUATION()'  action.  The  time  for  `UpdateSharedData()'  is  not
+included in these statistics. This is because after an  `UPDATE'  action,
+the slave does not reply to the master to acknowledge when the update was
+completed.
+
+*Notes:*
+
+Poor communication efficiency is typically caused either by too  small  a
+task execution time (which would be the case in the example of section or
+too large a message (in which case the communication time is  too  long).
+We first consider execution times that are too small.
+
+On many Ethernet installations, the  communication  time  is  about  0.01
+seconds to send and receive small messages (less than 1  Kb).  Hence  the
+task should be adjusted to consume at least this much CPU  time.  If  the
+naturally defined task requires less than  0.01  seconds,  the  user  can
+often group together several consecutive tasks, and send them as a single
+larger task. For example, in the factorization problem  of  section,  one
+might modify `<DoTask>()' to test the next 1000 numbers  as  factors  and
+modify `<SubmitTaskInput>()' to increment `counter' by~1000.
+
+There is another easy trick that often improves communication efficiency.
+This is to set up more than one slave process  on  each  processor.  This
+improves the communication efficiency because during much of the  typical
+0.01~seconds of communication time the CPU has off-loaded the job onto  a
+coprocessor. Hence, having a second slave process running its own task on
+the CPU while a first process is concerned with communication allows  one
+to *overlap communication with computation*.
+
+We next consider the case of messages that are too large. In  this  case,
+it  is  important  to  structure  the  problem  appropriately.  The  task
+architecture is intended to be especially adaptable  to  this  case.  The
+philosophy is to minimize communication time by duplicating much  of  the
+execution time on each processor.
+
+%Hence, rather than build a large initial global data structure
+%on the master and then send it to the slaves, it is often better to build the
+%initial data structure on each processor independently, since this requires
+%no communication.  This is why `InitDataStructure()' from
+%section was executed on the master and all slaves.  This requires
+%less communication overhead than executing `InitDataStruct()' once on the
+%master and sending the result to all slaves.
+
+After the initial data structure has  been  built,  it  will  usually  be
+modified as a result of the  computation.  In  order  to  again  minimize
+communication, the result  of  a  task,  which  is  typically  passed  to
+`<UpdateSharedData>()', should consist of the minimum information needed
+to update the global data structure. Each process can then  perform  this
+update in parallel.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Checkpointing in TOP-C}
+
+Any long-running computation *must* be concerned with checkpointing. The
+TOP-C model also provides a  simple  model  for  checkpointing.  The  key
+observation is that the master process always has the latest state of the
+computation, and the information in the master process is  sufficient  to
+reconstruct any ongoing computation. Any application may  take  advantage
+of  this  by  checkpointing  the  necessary  information  either  in  the
+application routine, `<SubmitTaskInput>()' or in `<CheckTaskResult>()'.
+
+A simple way to checkpoint is to record:
+
+\beginlist%unordered
+
+\item{$\bullet$}
+    the current data in the TOP-C shared data;
+
+\item{$\bullet$}
+    any private global data residing only in the master process; and
+
+\item{$\bullet$}
+    the inputs to any tasks that are still pending.
+
+\endlist
+
+This  model  for  checkpointing  assumes  that  your   program   has   no
+`CONTINUATION()' actions. If you use `CONTINUATION()' actions,  then  you
+may require a more complex model for checkpointing.
+
+\>MasterSlavePendingTaskInputs() F
+
+This function returns a {\GAP} list (with  holes)  of  all  pending  task
+inputs. If slave <i> is currently working on a task,  index  <i>  of  the
+list will record that task. If slave <i> is currently idle  or  executing
+`<UpdateSharedData>()', then there will be a hole  at  index  <i>.  This
+function is available for  use  within  either  the  application  routine
+`<SubmitTaskInput>()',  or  `<CheckTaskResult>()',   as   specified   in   the
+parameters of your call to `MasterSlave()'. (Of course, your  application
+may be using a name other than `<SubmitTaskInput>()' or  `<CheckTaskResult>()'
+in the parameters of `MasterSlave()'.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{When Should a Slave Process be Considered Dead?}
+
+An important question for long-running computations, is  when  to  decide
+that a slave  process  is  dead.  For  our  purposes,  *dead*  is  not  a
+well-defined concept. If a user on the remote machine decides to re-boot,
+it is clear that any slave processes residing on that machine  should  be
+declared dead. However, suppose there  is  temporary  congestion  on  the
+network making the slave unavailable. Suppose that another  user  on  the
+remote machine has started up many processes  consuming  many  resources,
+and the TOP-C slave process is being starved for CPU  time  or  for  RAM.
+Perhaps the most difficult case of all to decide  is  if  one  particular
+TOP-C task requires ten times as much time as all other tasks. This  last
+example is conceivable if, for example, each task consists of factoring a
+different large integer.
+
+Hence, our implementation of the TOP-C model will  employ  the  following
+*heuristic* in a future version, to decide if a task  is  dead.  You  may
+wish to employ this heuristic now, if you have a  demanding  application.
+We use the {\ParGAP} function, `UNIX_Realtime()', to keep  track  of  how
+much time has been spent on a task (based on ``wall clock time'', and not
+on CPU time). If a task has taken  `slaveTaskTimeFactor'  times  as  much
+time as the longest task so far, then it becomes a  candidate  for  being
+declared dead. The {\GAP} variable `slaveTaskTimeFactor' is initially set
+to the default value of 2.
+
+Once a slave  process  becomes  a  candidate  for  being  declared  dead,
+`MasterSlave()' will create a second version of the same task,  with  the
+same task input as the original task. `MasterSlave()'  will  then  record
+which task finishes first. If the original version finishes  first,  then
+the second version  of  the  task  is  ignored,  and  the  slave  process
+executing the original task is  no  longer  considered  a  candidate  for
+death.
+
+If, however, the second version of the task finishes before the  original
+version, then the time for the second  task  is  recorded.  Further,  the
+output from the second task will be used, and any output  resulting  from
+the original task will  be  ignored.  `MasterSlave()'  then  periodically
+checks until the ration of the time spent so far on the original  version
+of the task is at least `slaveTaskTimeFactor' times greater than the time
+spent on the second version of the task, then the process  executing  the
+original version of the task is then declared dead. No  further  messages
+from the process executing  original  task  will  be  recognized  and  no
+further messages will be sent to that slave process.
+
+A future version of this distribution will  include  direct  support  for
+this heuristic. A customized version of it may be  used  now,  by  taking
+advantage of the {\ParGAP} routine,  `UNIX_Realtime()'.  In  addition,  a
+future version of this distribution may include the ability to start  new
+slave processes in  an  ongoing  computation.  The  reference~\cite{CG98}
+describes how this was done in a C implementation, and why  this  concept
+fits naturally with the TOP-C model.
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \Section{Advanced Features}
+% 
+% {\it
+% 
+% Sometimes MasterSlave is asymmetric in that the master may have more
+% RAM and be able to hold more data.
+% 
+% Next, there are cases when the ``natural'' algorithm requires frequent
+% recursive calls.  This is the case with construction of strong generating sets
+% for permutation groups and with construction of an AG generating
+% sequence for AG groups (polycyclically presented groups).
+% With care, one can also include
+% a recursive call to `MasterSlave()' inside `CheckTaskResult()'
+% {\bf or maybe UpdateSharedData()}.  But there are issues, such as
+% being reentrant (save slaveArray and restore, worry about preivous
+% pending tasks and whether to kill them and start over, or save them).
+% It's also related to search, for which CILK work-stealing is also an
+% option.
+% 
+% If communication time is too much, then you should break up any very large
+% messages into elementary MPI datatypes.  So, consider breaking up messages of
+% over several thousand bytes into several messages, where each large messages
+% is of LISP type: (vector fixnum) or (vector float).
+% 
+% large space is a problem (e.g: large lookup table, cite condensation
+% paper);
+% 
+% save lookups, use CONTINUATION_ACTION(), IsMaster() for asymmetric
+% stuff inside UpdateSharedData
+% 
+% =========================
+% 
+% For really alrge space, generalized model under development
+% 
+% =========================
+% 
+% Also dynamic processes, better tolerance of dying slaves in works for
+% next version.
+% 
+% }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

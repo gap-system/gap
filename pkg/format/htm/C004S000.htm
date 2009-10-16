@@ -1,0 +1,55 @@
+<html><head><title>[format] 4 FNormalizers</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="C003S000.htm">Previous</a>] [<a href ="C005S000.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>4 FNormalizers</h1><p>
+<p>
+Let <var><font face="helvetica,arial">F</font></var> be an integrated locally defined formation, and let <var>G</var> be 
+a finite solvable group with Sylow complement basis <var>Sigma:= 
+{ S<sup>p</sup> midp</var> divides  <var> |G| }</var>.  Let <var>pi</var> be the set of prime
+divisors of the order of <var>G</var> that are in the support of <var><font face="helvetica,arial">F</font></var> and 
+<var>overlinepi</var> the remaining prime divisors of the order  of <var>G</var>. 
+Then the <strong><var><font face="helvetica,arial">F</font></var>-normalizer</strong> of <var>G</var> with respect to <var>Sigma</var> is defined 
+to be  
+<var>bigcap<sub>p inoverlinepi</sub> S<sup>p</sup> cap
+ bigcap<sub>p inpi</sub> N<sub>G</sub>( G<sup><font face="helvetica,arial">F</font>(p)</sup> capS<sup>p</sup> )</var>. 
+The special case <var><font face="helvetica,arial">F</font>(p) = { 1 }</var> for all <var>p</var> defines the formation 
+of nilpotent groups, whose <var><font face="helvetica,arial">F</font></var>-normalizers <var> bigcap<sub>p</sub> N<sub>G</sub>( S<sup>p</sup> )</var> 
+are the <strong>system normalizers</strong> of <var>G</var>. The <var><font face="helvetica,arial">F</font></var>-normalizers of a group 
+<var>G</var> for a given <var><font face="helvetica,arial">F</font></var> are all conjugate. They cover <var><font face="helvetica,arial">F</font></var>-central chief 
+factors and avoid <var><font face="helvetica,arial">F</font></var>-hypereccentric ones.
+<p>
+<a name = ""></a>
+<li><code>FNormalizerWrtFormation( </code><var>G</var><code>, </code><var>F</var><code> ) O</code>
+<a name = ""></a>
+<li><code>SystemNormalizer( </code><var>G</var><code> ) A</code>
+<p>
+If <var>F</var> is a locally defined integrated formation in <font face="Gill Sans,Helvetica,Arial">GAP</font> and 
+<var>G</var> is a finite solvable group, then the function <code>FNormalizerWrtFormation</code>
+returns an <var>F</var>-normalizer of <var>G</var>. The function <code>SystemNormalizer</code> yields a 
+system normalizer of <var>G</var>.
+<p>
+The underlying algorithm here requires <var>G</var> to have a special pcgs (see SpecialPcgs), so the algorithm's first step is
+ to compute such a pcgs for <var>G</var> if one is not known. The complement basis
+<var>Sigma</var> associated with this pcgs is then used to compute the
+<var>F</var>-normalizer of <var>G</var> with respect to <var>Sigma</var>. This process means that 
+in the case of a finite solvable group <var>G</var> that does not have a special pcgs, 
+the first call of <code>FNormalizerWrtFormation</code> (or similarly of <code>FormationCoveringGroup</code>) 
+will  take longer than subsequent calls, since it will include the
+computation  of a special pcgs.
+<p>
+The <code>FNormalizerWrtFormation</code> algorithm next computes an <var>F</var>-system for <var>G</var>, a
+complicated record that includes a pcgs corresponding to a normal series 
+of <var>G</var> whose factors are either <var>F</var>-central or <var>F</var>-hypereccentric. A subset 
+of this pcgs then exhibits the <var>F</var>-normalizer of <var>G</var> determined by
+<var>Sigma</var>. The list <code>ComputedFNormalizerWrtFormations( </code><var>G</var><code> )</code> stores the <var>F</var>-normalizers
+of <var>G</var> that have been found for various formations <var>F</var>.  
+<p>
+The <code>FNormalizerWrtFormation</code> function can be used to study the subgroups of a 
+single group <var>G</var>, as illustrated in an example in Section <a href="C007S000.htm">Other Applications</a>. In that case it is sufficient to have a function
+<code>ScreenOfFormation</code> that  returns a normal subgroup of <var>G</var> on each call.
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="C003S000.htm">Previous</a>] [<a href ="C005S000.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>format manual<br>February 2003
+</address></body></html>

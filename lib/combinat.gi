@@ -2,7 +2,7 @@
 ##
 #W  combinat.gi                 GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: combinat.gi,v 4.29 2009/04/19 20:06:28 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains method for combinatorics.
 ##
 Revision.combinat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: combinat.gi,v 4.29 2009/04/19 20:06:28 alexk Exp $";
 
 
 #############################################################################
@@ -570,6 +570,84 @@ end);
 
 #############################################################################
 ##
+#F  IteratorOfCartesianProduct( list1, list2, ... )
+#F  IteratorOfCartesianProduct( list )
+##
+##  All elements of the cartesian product of lists 
+##  <list1>, <list2>, ... are returned in the lexicographic order.
+##
+BindGlobal( "IsDoneIterator_Cartesian", iter -> ( iter!.next = false ) );
+
+BindGlobal( "NextIterator_Cartesian", 
+    function( iter )
+    local succ, n, sets, res, i, k;
+    succ := iter!.next;
+    n := iter!.n;
+    sets := iter!.sets;
+    res := [];
+    i := n;
+    while i > 0 do
+      res[i] := sets[i][succ[i]];
+      i := i-1;
+    od;
+
+    if succ = iter!.sizes then
+      iter!.next := false;
+    else
+      succ[n] := succ[n] + 1;
+      for k in [n,n-1..2] do
+        if succ[k] > iter!.sizes[k] then
+          succ[k] := 1;
+          succ[k-1] := succ[k-1] + 1;
+        else
+          break;
+        fi;
+      od;
+    fi;
+
+    return res;
+    end);
+
+BindGlobal( "ShallowCopy_Cartesian", 
+            iter -> rec( 
+                     sizes := iter!.sizes,
+                         n := iter!.n,
+                      next := ShallowCopy( iter!.next ) ) );
+
+BindGlobal( "IteratorOfCartesianProduct2",
+    function( listsets )
+    local s, n, x;
+    if not ForAll( listsets, IsCollection ) and ForAll( listsets, IsFinite ) then
+      Error( "Each arguments must be a finite collection" );
+    fi;
+    s := List( listsets, Set );
+    n := Length( s );
+    # from now s is a list of n finite sets
+    return IteratorByFunctions(
+      rec( IsDoneIterator := IsDoneIterator_Cartesian,
+           NextIterator   := NextIterator_Cartesian,
+           ShallowCopy    := ShallowCopy_Cartesian,
+           sets           := s,                      # list of sets
+           sizes          := List( s, Size ),        # sizes of sets
+           n              := n,                      # number of sets
+           nextelts       := List( s, x -> x[1] ),   # list of 1st elements
+           next           := 0 * [ 1 .. n ] + 1 ) ); # list of 1's
+    end);
+    
+InstallGlobalFunction( "IteratorOfCartesianProduct",
+    function( arg )
+    # this mimics usage of functions Cartesian and Cartesian2
+    if Length( arg ) = 1  then
+        return IteratorOfCartesianProduct2( arg[1] );
+    else
+        return IteratorOfCartesianProduct2( arg );
+    fi;
+    return;
+    end);
+    
+
+#############################################################################
+##
 #F  Tuples( <set>, <k> )  . . . . . . . . .  set of ordered tuples from a set
 ##
 ##  'TuplesK( <set>, <k>, <tup>, <i> )' returns the set  of all tuples of the
@@ -665,6 +743,80 @@ InstallGlobalFunction( EnumeratorOfTuples, function( set, k )
 
     # Return the result.
     return enum;
+    end );
+
+
+#############################################################################
+##
+#F  IteratorOfTuples( <set>, <n> )
+##
+##  All ordered tuples of length <n> of the set <set> 
+##  are returned in lexicographic order.
+##
+BindGlobal( "IsDoneIterator_Tuples", iter -> ( iter!.next = false ) );
+
+BindGlobal( "NextIterator_Tuples", function( iter )
+    local t, m, n, succ, k;
+
+    t := iter!.next;
+    m := iter!.m;
+    n := iter!.n;
+
+    if t = iter!.last then
+      succ := false;
+    else
+      succ := ShallowCopy( t );
+      succ[n] := succ[n] + 1;
+      for k in [n,n-1..2] do
+        if succ[k] > m then
+          succ[k] := succ[k] - m;
+          succ[k-1] := succ[k-1] + 1;
+        else
+          break;
+        fi;
+      od;
+    fi;
+
+    iter!.next:= succ;
+    return iter!.set{t};
+    end );
+
+BindGlobal( "ShallowCopy_Tuples", 
+    iter -> rec( m    := iter!.m,
+                 n    := iter!.n,
+                 last := iter!.last,
+                 set  := iter!.set,
+                 next := ShallowCopy( iter!.next ) ) );
+
+InstallGlobalFunction( "IteratorOfTuples", 
+    function( s, n )
+    
+    if not ( n=0 or IsPosInt( n ) ) then
+		Error( "The second argument <n> must be a positive integer" );
+	fi; 
+	   
+    if not ( IsCollection( s ) and IsFinite( s ) ) then
+    	if s = [] then
+    		return IteratorByFunctions(
+      		  rec( IsDoneIterator := ReturnTrue,
+                   NextIterator   := NextIterator_Tuples,
+                   ShallowCopy    := ShallowCopy_Tuples,
+                             next := false) );
+    	else
+			Error( "The first argument <s> must be a finite collection" );
+    	fi;
+    fi;
+    s := Set(s);
+    # from now on s is a finite set and n is its Cartesian power to be enumerated
+    return IteratorByFunctions(
+      rec( IsDoneIterator := IsDoneIterator_Tuples,
+           NextIterator   := NextIterator_Tuples,
+           ShallowCopy    := ShallowCopy_Tuples,
+           set            := s,
+           m              := Size(s),
+           last           := 0 * [1..n] + ~!.m,                  
+           n              := n,
+           next           := 0 * [ 1 .. n ] + 1 ) );
     end );
 
 
@@ -836,21 +988,29 @@ end);
 ##
 #F  Permanent( <mat> )  . . . . . . . . . . . . . . . . permanent of a matrix
 ##
-Permanent2 := function ( mat, n, i, sum )
+Permanent2 := function ( mat, m, n, r, v, i, sum )
     local   p,  k;
     if i = n+1  then
-        p := 1;
+        p := v;
         for k  in sum  do p := p * k;  od;
     else
-        p := Permanent2( mat, n, i+1, sum )
-           - Permanent2( mat, n, i+1, sum+mat[i] );
+        p := Permanent2( mat, m, n, r, v, i+1, sum )
+             + Permanent2( mat, m, n, r+1, v*(r-m)/(n-r), i+1, sum+mat[i] );
     fi;
     return p;
 end;
 MakeReadOnlyGlobal( "Permanent2" );
 
 InstallGlobalFunction(Permanent,function ( mat )
-    return (-1)^Length(mat) * Permanent2( mat, Length(mat), 1, 0*mat[1] );
+    local m, n;
+
+    m := Length(mat);
+    n := Length(mat[1]);
+    while n<m do
+        Error("Matrix may not have fewer columns than rows");
+    od;
+    mat := TransposedMat(mat);
+    return Permanent2( mat, m, n, 0, (-1)^m*Binomial(n,m), 1, 0*mat[1] );
 end);
 
 
@@ -1924,6 +2084,68 @@ end);
 
 #############################################################################
 ##
+#F  IteratorOfPartitions( <n> )
+##
+##  The partitions of <n> are returned in lexicographic order.
+##
+##  So the partition $\lambda = [ \lambda_1, \lambda_2, \ldots, \lambda_m ]$
+##  has a successor if and only if $m > 1$.
+##  If we set $k = \max\{ i; 1 \leq i \leq m-2, \lambda_k > \lambda_{m-1} \}$
+##  (or $k = 0$ if the set is empty)
+##  and $l = n - 1 - \sum_{i=1}^{k+1} \lambda_i$
+##  then the successor of $\lambda$ has the form
+##  $\mu = [ \lambda_1, \lambda_2, \ldots, \lambda_k, \lambda_{k+1}+1, 1^l ]$
+##  (where the last term is omitted if $l = 0$).
+##
+##  (Note that $\mu$ is lexicographically larger than $\lambda$,
+##  clearly $\mu_i = \lambda_i$ for $i \leq k$ is the minimal choice,
+##  $\mu_{k+1}$ must satisfy $\mu_{k+1} > \lambda_{k+1}$ since
+##  $\lambda_{k+1} = \lambda_{k+2} = \ldots = \lambda_{m-1} \geq \lambda_m$,
+##  and for $i > k+1$, $\mu_i = 1$ is the smallest choice.)
+##
+BindGlobal( "IsDoneIterator_Partitions", iter -> ( iter!.next = false ) );
+
+BindGlobal( "NextIterator_Partitions", function( iter)
+    local part, m, succ, k;
+
+    part:= iter!.next;
+    m:= Length( part );
+    if m = 1 then
+      succ:= false;
+    else
+      k:= m-2;
+      while 0 < k and part[ m-1 ] = part[k] do
+        k:= k-1;
+      od;
+      succ:= part{ [ 1 .. k ] }; 
+      k:= k+1;
+      succ[k]:= part[k] + 1;
+      Append( succ, 0 * [ 1 .. iter!.n - Sum( succ, 0 ) ] + 1 );
+    fi;
+
+    iter!.next:= succ;
+    return part;
+    end );
+
+BindGlobal( "ShallowCopy_Partitions", 
+    iter -> rec( n:= iter!.n, next:= ShallowCopy( iter!.next ) ) );
+
+InstallGlobalFunction( "IteratorOfPartitions", function( n )
+    if not IsPosInt( n ) then
+      Error( "<n> must be a positive integer" );
+    fi;
+    return IteratorByFunctions( rec(
+             IsDoneIterator := IsDoneIterator_Partitions,
+             NextIterator   := NextIterator_Partitions,
+             ShallowCopy    := ShallowCopy_Partitions,
+
+             n              := n,
+             next           := 0 * [ 1 .. n ] + 1 ) );
+    end );
+
+
+#############################################################################
+##
 #F  SignPartition( <pi> ) . . . . . . . . . . . . .  signum of partition <pi>
 ##
 InstallGlobalFunction(SignPartition,function(pi)
@@ -2091,6 +2313,41 @@ InstallGlobalFunction(Lucas,function ( P, Q, k )
         l := [ (P*l[1]+l[2])/2, ((P^2-4*Q)*l[1]+P*l[2])/2, Q*l[3] ];
     fi;
     return l;
+end);
+
+##############################################################################
+##
+#F  LucasMod(P,Q,N,k) - return the reduction modulo N of the k'th terms of 
+##  the Lucas Sequences U,V associated to x^2+Px+Q.
+##
+##  Recursive version is a trivial modification of the above function, but
+##  the running time is dramatically decreased. The running time of the
+##  the function is dominated by the cost of basic arithmetic operations.
+##  If reductions mod N are enforced regularly, then these operations are
+##  constant cost. If not, then they grow quickly as the Lucas sequence
+##  itself grows exponentially.
+##
+##  See lib/primality.gi for a faster implementation.
+##
+InstallMethod(LucasMod, 
+"recursive version, reduce mod N regularly",
+[IsInt,IsInt,IsInt,IsInt],
+function(P,Q,N,k)
+    local   l;
+    if k = 0  then
+        l := [ 0, 2, 1 ];
+    elif k < 0  then
+        l := LucasMod( P, Q, N, -k );
+        if GcdInt( l[3], N ) <> 1 then return fail; fi;
+        l := [ -l[1]/l[3], l[2]/l[3], 1/l[3] ];
+    elif k mod 2 = 0  then
+        l := LucasMod( P, Q, N, k/2 );
+        l := [ l[1]*l[2], l[2]^2-2*l[3], l[3]^2 ];
+    else
+        l := LucasMod( P, Q, N, k-1 );
+        l := [ (P*l[1]+l[2])/2, ((P^2-4*Q)*l[1]+P*l[2])/2, Q*l[3] ];
+    fi;
+    return l mod N;
 end);
 
 

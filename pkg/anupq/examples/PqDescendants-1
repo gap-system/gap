@@ -1,0 +1,13 @@
+#Example: "PqDescendants-1" . . . based on manual example
+#(demonstrates `PqDescendants' usage)
+#vars: F, a, b, procId, G, des;
+#options: 
+F := FreeGroup( "a", "b" ); a := F.1; b := F.2;
+G := PcGroupFpGroup( F / [ a^2, b^2, Comm(b, a) ] );
+#alt: do
+#procId := PqStart( G );
+#alt: sub <procId> for <G>
+des := PqDescendants( G : OrderBound := 6, ClassBound := 5 );
+Length(des);
+List(des, Size);
+List(des, d -> Length( PCentralSeries( d, 2 ) ) - 1 );

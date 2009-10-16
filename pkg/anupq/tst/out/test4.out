@@ -1,0 +1,95 @@
+
+Standard Presentation Menu
+-----------------------------
+1. Supply start information
+2. Compute standard presentation to supplied class
+3. Save presentation to file
+4. Display presentation
+5. Set print level for construction
+6. Compare two presentations stored in files
+7. Call basic menu for p-Quotient program
+8. Compute the isomorphism
+9. Exit from program
+
+Select option: 1 
+
+Lower exponent-5 central series for G
+
+Group: G to lower exponent-5 central class 1 has order 5^2
+
+Select option: 2 
+Enter output file name for group information: SPRES
+Standardise presentation to what class? 5 
+Input the number of automorphisms: 2 
+Now enter the data for automorphism 1
+Input 2 exponents for image of pcp generator 1: 2 0 
+Input 2 exponents for image of pcp generator 2: 0 1 
+Now enter the data for automorphism 2
+Input 2 exponents for image of pcp generator 1: 4 1 
+Input 2 exponents for image of pcp generator 2: 4 0 
+PAG-generating sequence for automorphism group? 0 
+Starting group has order 5^2; its automorphism group order is 480 
+true
+#I  Order of GL subgroup is 480
+#I  No. of soluble autos is 0
+#I    dim U = 1  dim N = 3  dim M = 3
+#I    nice stabilizer with perm rep
+
+The standard presentation for the class 2 5-quotient is
+
+Group: G #1;2 to lower exponent-5 central class 2 has order 5^4
+
+Non-trivial powers:
+ .1^5 = .4
+
+Non-trivial commutators:
+[ .2, .1 ] = .3
+Subset of automorphism group to check has order bound 2000
+
+The standard presentation for the class 3 5-quotient is
+
+Group: G #1;1 to lower exponent-5 central class 3 has order 5^5
+
+Non-trivial powers:
+ .1^5 = .4
+
+Non-trivial commutators:
+[ .2, .1 ] = .3
+[ .3, .1 ] = .5
+[ .3, .2 ] = .5
+Subset of automorphism group to check has order bound 2000
+
+The standard presentation for the class 4 5-quotient is
+
+Group: G #1;1 to lower exponent-5 central class 4 has order 5^6
+
+Non-trivial powers:
+ .1^5 = .4
+
+Non-trivial commutators:
+[ .2, .1 ] = .3
+[ .3, .1 ] = .5
+[ .3, .2 ] = .5
+[ .5, .1 ] = .6
+[ .5, .2 ] = .6
+Subset of automorphism group to check has order bound 10000
+
+The standard presentation for the class 5 5-quotient is
+
+Group: G #1;1 to lower exponent-5 central class 5 has order 5^7
+
+Non-trivial powers:
+ .1^5 = .4
+
+Non-trivial commutators:
+[ .2, .1 ] = .3
+[ .3, .1 ] = .5
+[ .3, .2 ] = .5
+[ .5, .1 ] = .6
+[ .5, .2 ] = .6
+[ .6, .1 ] = .7
+[ .6, .2 ] = .7
+Subset of automorphism group to check has order bound 50000
+
+Select option: 0 
+Exiting from ANU p-Quotient Program

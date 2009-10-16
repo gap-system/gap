@@ -1,0 +1,11 @@
+Version 1.1:
+
+  Fixes for several problems with trivial groups.
+ 
+  Corrected the list of enantiomorphic pairs of space groups of dimension 4.
+
+Version 1.1.1:
+
+  Several manual examples fixed.
+
+  Support for new package loading mechanism in GAP 4.4

@@ -2,7 +2,7 @@
 **
 *W  range.c                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: range.c,v 4.44 2009/02/04 16:58:02 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -53,7 +53,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_range_c =
-   "@(#)$Id$";
+   "@(#)$Id: range.c,v 4.44 2009/02/04 16:58:02 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -958,6 +958,8 @@ void            PlainRange (
 **  otherwise.  As a  sideeffect 'IsRange' converts proper ranges represented
 **  the ordinary way to the compact representation.
 */
+Obj IsRangeFilt;
+
 Int             IsRange (
     Obj                 list )
 {
@@ -975,7 +977,8 @@ Int             IsRange (
 
     /* if <list> is not a list, it is not a range at the moment        */
     else if ( ! IS_SMALL_LIST( list ) ) {
-        isRange = 0;
+       /* isRange = 0; */
+       isRange = (DoFilter(IsRangeFilt, list) == True);
     }
 
     /* if <list> is the empty list, it is a range by definition          */
@@ -1052,8 +1055,6 @@ Int             IsRange (
 **  a range and 'false' otherwise.  A range is a list without holes such that
 **  the elements are  consecutive integers.
 */
-Obj IsRangeFilt;
-
 Obj FuncIS_RANGE (
     Obj                 self,
     Obj                 obj )
@@ -1307,7 +1308,8 @@ Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
 
  empty_range:
   RetypeBag(r1, T_PLIST_EMPTY);
-  ResizeBag(r1,0);
+  ResizeBag(r1,sizeof(Obj));
+  SET_LEN_PLIST(r1, 0L);
   return (Obj) 0;
 }
 /* torture:

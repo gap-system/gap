@@ -1,0 +1,36 @@
+# used by NormCosetsDescriptionKant
+# part of the code coincides with units.kt3
+#
+# INPUT:
+# - polynomial f with integer coefficients
+# - norm
+#
+# compute orders
+#
+om := MaximalOrder( f ); # was 'OrderMaximal'
+#
+os := OptimisedRepresentation( om ); # was 'OrderShort'
+if os then
+    os:=os.ext1;
+else
+    os:=om; 
+fi;
+os := Simplify(LLL(os)); # 'LLL' was 'Order LLL', 'Simplify' was 'OrderSimplify'
+#
+# compute units
+#
+un := UnitGroup( os );
+un1 := Apply( x->un.ext1(x), List( Generators(un) ) );
+un2 := List( un1, x -> ElementToSequence( Element( om, x ) ) );
+#
+# TODO BELOW
+#
+# compute elements with norm
+nr := OrderNormEquation( os, norm, "all", "abs" );
+# WOW! This is available in Magma, but not in KANT3 !!! :(
+# Ask Florian and Sebastian and Sylla to ask Pohst to talk to Cannon
+nr := List( nr, x -> EltToList( EltMove( x, oe ) ) );
+#
+# OUTPUT: the list consisting of two lists:
+# 1st list is 'un'
+# 2nd list is 'nr'

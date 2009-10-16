@@ -2,7 +2,7 @@
 ##
 #W  sparselistgen.gi             GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: sparselistgen.gi,v 4.4 2002/04/15 10:05:23 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##
 
 Revision.sparselistgen_gi :=
-  "@(#)$Id$";
+  "@(#)$Id: sparselistgen.gi,v 4.4 2002/04/15 10:05:23 sal Exp $";
 
 #############################################################################
 ##

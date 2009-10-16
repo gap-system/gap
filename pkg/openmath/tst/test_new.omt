@@ -1,0 +1,339 @@
+<!-- this is a comment -->
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="relation1" name="eq"/>
+    <OMA>
+      <OMS cd="linalg1" name="transpose"/>
+      <OMA>
+        <OMS cd="linalg2" name="matrix"/>
+        <OMA>
+          <OMS cd="linalg2" name="matrixrow"/>
+          <OMI> 0 </OMI>
+          <OMI> 1 </OMI>
+        </OMA>
+        <OMA>
+          <OMS cd="linalg2" name="matrixrow"/>
+          <OMI> 2 </OMI>
+          <OMI> 3 </OMI>
+        </OMA>
+      </OMA>
+    </OMA>
+    <OMA>
+      <OMS cd="linalg2" name="matrix"/>
+      <OMA>
+        <OMS cd="linalg2" name="matrixrow"/>
+        <OMI> 0 </OMI>
+        <OMI> 2 </OMI>
+      </OMA>
+      <OMA>
+        <OMS cd="linalg2" name="matrixrow"/>
+        <OMI> 1 </OMI>
+        <OMI> 3 </OMI>
+      </OMA>
+    </OMA>
+  </OMA>
+</OMOBJ>
+
+
+
+<OMOBJ>
+ <OMA>
+  <OMS cd="arith1" name="times"/>
+  <OMA>
+   <OMS cd="linalg2" name="matrix"/>
+   <OMA>
+    <OMS cd="linalg2" name="matrixrow"/>
+    <OMI> 1 </OMI>
+    <OMI> 2 </OMI>
+   </OMA>
+   <OMA>
+    <OMS cd="linalg2" name="matrixrow"/>
+    <OMI> 3 </OMI>
+    <OMI> 4 </OMI>
+   </OMA>
+  </OMA>
+  <OMA>
+   <OMS cd="linalg2" name="matrix"/>
+   <OMA>
+    <OMS cd="linalg2" name="matrixrow"/>
+    <OMI> 5 </OMI>
+    <OMI> 6 </OMI>
+   </OMA>
+   <OMA>
+    <OMS cd="linalg2" name="matrixrow"/>
+    <OMI> 7 </OMI>
+    <OMI> 8 </OMI>
+   </OMA>
+  </OMA>
+ </OMA>
+</OMOBJ>
+
+
+
+<OMOBJ>
+  <OMA>
+  <OMS cd="linalg1" name="vector_selector"/>
+    <OMI>2</OMI>
+    <OMA>
+    <OMS cd="linalg2" name="vector"/>
+      <OMI> 3 </OMI>
+      <OMI> 6 </OMI>
+      <OMI> 9 </OMI>
+    </OMA>
+  </OMA>
+</OMOBJ>
+
+
+
+<OMOBJ>
+ <OMA>
+  <OMS cd="minmax1" name="max"/>
+  <OMA>
+   <OMS cd="set1" name="set"/>
+   <OMI> 1 </OMI>
+   <OMI> 9 </OMI>
+   <OMI> 5 </OMI>
+  </OMA>
+ </OMA>
+</OMOBJ>
+
+
+
+<OMOBJ>
+ <OMA>
+  <OMS cd="minmax1" name="min"/>
+  <OMA>
+   <OMS cd="set1" name="set"/>
+   <OMI> 1 </OMI>
+   <OMI> 9 </OMI>
+   <OMI> 5 </OMI>
+  </OMA>
+ </OMA>
+</OMOBJ>
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<OMOBJ>
+ <OMS cd="nums1" name="i"/>
+</OMOBJ>
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<OMOBJ>
+ <OMS cd="nums1" name="infinity"/>
+</OMOBJ>
+
+
+
+<!-- the following is a set -->
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="set1" name="set"/>
+    <OMI> 3 </OMI>
+    <OMI> 6 </OMI>
+    <OMI> 9 </OMI>
+  </OMA>
+</OMOBJ>
+
+
+
+<!-- the following is the same set as before -->
+
+
+<OMOBJ xmlns="http://www.openmath.org/OpenMath" version="2.0" cdbase="http://www.openmath.org/cd">
+  <OMA>
+    <OMS cd="set1" name="set"/>
+    <OMI> 3 </OMI>
+    <OMI> 6 </OMI>
+    <OMI> 9 </OMI>
+  </OMA>
+</OMOBJ>
+
+
+
+<!-- this is an object inside a comment, and is supposed to be ignored
+
+<OMOBJ>
+  <OME>
+    <OMS cd="error" name="unhandled_symbol"/>
+    <OMS cd="setname1" name="C"/>
+  </OME>
+</OMOBJ>
+
+-->
+
+
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="set1" name="set"/>
+    <OMI> 3 </OMI>
+<!-- this is a comment inside an object -->
+    <OMI> 6 </OMI>
+    <OMI> 9 </OMI>
+  </OMA>
+</OMOBJ>
+
+
+
+
+<!-- OpenMath 2.0 OMA objects, in which the first element is not a
+symbol: it is an attribution, of the form
+<OMA><OMATTR><OMATP>[...]</OMATP><OMS [...]></OMATTR>[...]</OMA> -->
+
+<OMOBJ>
+  <OMA>
+    <OMATTR>
+      <OMATP>
+        <OMS cd="setname1" name="N"/>
+        <OMS cd="setname1" name="N"/>
+      </OMATP>
+      <OMS cd="arith1" name="plus"/>
+    </OMATTR>
+    <OMI>-10</OMI>
+    <OMI>10</OMI>
+  </OMA>
+</OMOBJ>
+
+
+
+
+<!-- binder -->
+
+<OMOBJ xmlns="http://www.openmath.org/OpenMath" version="2.0" cdbase="http://www.openmath.org/cd">
+  <OMA>
+    <OMS cd="relation1" name="eq"/>
+    <OMA>
+      <OMS cd="integer1" name="factorial"/>
+      <OMI> 10 </OMI>
+    </OMA>
+    <OMA>
+      <OMS cd="arith1" name="product"/>
+        <OMA>
+          <OMS cd="interval1" name="integer_interval"/>
+          <OMI> 1 </OMI>
+          <OMI> 10 </OMI>
+        </OMA>
+      <OMBIND>
+        <OMS cd="fns1" name="lambda"/>
+          <OMBVAR>
+            <OMV name="i"/>
+          </OMBVAR>
+          <OMV name="i"/>
+      </OMBIND>
+    </OMA>
+  </OMA>
+</OMOBJ>
+
+
+
+
+<OMOBJ xmlns="http://www.openmath.org/OpenMath" version="2.0" cdbase="http://www.openmath.org/cd">
+  <OMA>
+    <OMS cd="relation1" name="eq"/>
+    <OMA>
+      <OMS cd="integer1" name="factorial"/>
+      <OMI> 10 </OMI>
+    </OMA>
+    <OMA>
+      <OMS cd="arith1" name="product"/>
+        <OMA>
+          <OMS cd="interval1" name="integer_interval"/>
+          <OMI> 0 </OMI>
+          <OMI> 9 </OMI>
+        </OMA>
+      <OMBIND>
+        <OMS cd="fns1" name="lambda"/>
+          <OMBVAR>
+            <OMV name="i"/>
+          </OMBVAR>
+          <OMA>
+            <OMS cd="arith1" name="plus"/>
+            <OMV name="i"/>
+            <OMI> 1 </OMI>
+          </OMA>
+      </OMBIND>
+    </OMA>
+  </OMA>
+</OMOBJ>
+
+
+
+
+<!-- reference -->
+
+
+
+<OMOBJ xmlns="http://www.openmath.org/OpenMath" version="2.0">
+  <OMA>
+    <OMS cd="arith1" name="times"/>
+
+    <OMA id="foo">
+      <OMS cd="arith1" name="divide"/>
+      <OMI>2</OMI>
+      <OMI>3</OMI>
+    </OMA>
+
+    <OMA>
+       <OMS cd="arith1" name="plus"/>
+       <OMI>1</OMI>
+       <OMR href="#foo"/>
+    </OMA>
+  </OMA>
+</OMOBJ>
+
+
+
+
+<!-- the following examples are supposed to generate errors 
+
+<OMOBJ>
+  <OME>
+    <OMS cd="error" name="unhandled_symbol"/>
+    <OMS cd="setname1" name="C"/>
+  </OME>
+</OMOBJ>
+
+
+
+<OMOBJ>
+  <OME>
+    <OMS cd="error" name="unexpected_symbol"/>
+    <OMS cd="arith1" name="plurse"/>
+  </OME>
+</OMOBJ>
+
+
+
+<OMOBJ>
+  <OME>
+    <OMS cd="error" name="unsupported_CD"/>
+    <OMS cd="specfun1" name="BesselJ"/>
+  </OME>
+</OMOBJ>
+
+
+
+<OMOBJ>
+        <OMS cd="not_existing_cd" name="xyz"/>
+</OMOBJ>
+
+
+
+<OMOBJ>
+        <OMS cd="logic1" name="not_existing_symbol"/>
+</OMOBJ>
+
+-->
+
+
+<!-- end of file -->
+

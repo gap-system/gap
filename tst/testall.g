@@ -2,31 +2,34 @@
 ##
 #W  testall.g                   GAP library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: testall.g,v 4.54 2007/01/31 19:02:10 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file lists those files in the directory `tst' of the {\GAP}
-##  distribution that are recommended to be read after a {\GAP} installation.
+##  This file lists those files in the directory <F>tst</F> of the &GAP;
+##  distribution that are recommended to be read after a &GAP; installation.
 ##
-##  Each entry in the argument list of `RunStandardTests' is a pair that
-##  consists of the filename (relative to the `tst' directory) and the
-##  scaling factor that occurs in the `STOP_TEST' call at the end of the
+##  Each entry in the argument list of <C>RunStandardTests</C> is a pair that
+##  consists of the filename (relative to the <F>tst</F> directory) and the
+##  scaling factor that occurs in the <C>STOP_TEST</C> call at the end of the
 ##  test file.
-##
-##  The documentation (file `doc/build/install.msk') states the following:
-#1
+##  <P/>
+##  The documentation (file <F>doc/build/install.msk</F>) states the
+##  following:
+##  <P/>
+##  <#GAPDoc Label="[1]{testall.g}">
 ##  If you want to run a more thorough test (this is not required), you
-##  can read in a test script that exercises more of {\GAP}s capabilities.
-##
-##  \begintt
+##  can read in a test script that exercises more of &GAP;s capabilities.
+##  <P/>
+##  <Log><![CDATA[
 ##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testall.g" ) );
-##  \endtt
-##
+##  ]]></Log>
+##  <P/>
 ##  The test requires about 60-70MB of memory and runs about 2 minutes on a
 ##  Pentium III/1 GHz machine.
 ##  You will get a large number of lines with output about the progress
 ##  of the tests.
+##  <#/GAPDoc>
 ##
 
 Print( "You should start GAP4 using:  `gap -N -A -x 80 -r -m 100m'.\n",
@@ -39,40 +42,39 @@ Print( "You should start GAP4 using:  `gap -N -A -x 80 -r -m 100m'.\n",
 Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 
 RunStandardTests( [
-  [ "alghom.tst", 54400000 ],
-  [ "algmat.tst", 1469500000 ],
-  [ "algsc.tst", 265600000 ],
-  [ "combinat.tst", 24000000 ],
-  [ "ctblfuns.tst", 23200000 ],
-  [ "ctblmoli.tst", 512400000 ],
-  [ "ctblmono.tst", 259000000 ],
-  [ "ctblsolv.tst", 324300000 ],
-  [ "cyclotom.tst", 5700000 ],
-  [ "ffe.tst", 19500000 ],
-        [ "ffeconway.tst", 270000000 ],
-        [ "gaussian.tst", 600000 ],
-  [ "grpfree.tst", 4200000 ],
-  [ "grpmat.tst", 1952300000 ],
-  [ "grppc.tst", 206100000 ],
-  [ "grppcnrm.tst", 10376700000 ],
-  [ "listgen.tst", 7100000 ],
-  [ "mapping.tst", 23200000 ],
-  [ "mgmring.tst", 17400000 ],
-  [ "modfree.tst", 37100000 ],
-  [ "morpheus.tst", 557400000 ],
-  [ "onecohom.tst", 303400000 ],
-  [ "oprt.tst", 19600000 ],
-  [ "ratfun.tst", 5800000 ],
-  [ "relation.tst", 38100000 ],
-  [ "rwspcgrp.tst", 239900000 ],
-  [ "semicong.tst", 39500000 ],
-  [ "semigrp.tst", 86300000 ],
-  [ "semirel.tst", 120100000 ],
-  [ "vspchom.tst", 55100000 ],
-  [ "vspcmat.tst", 43400000 ],
-  [ "vspcrow.tst", 489900000 ],
-  [ "xgap.tst", 533900000 ],
-  [ "zlattice.tst", 800000 ],
+  [ "alghom.tst",63000568],
+  [ "algmat.tst",1441013704],
+  [ "algsc.tst",296002170],
+  [ "combinat.tst", 270000000 ],
+  [ "ctblfuns.tst", 31000000 ],
+  [ "ctblmoli.tst",416003661],
+  [ "ctblmono.tst",274001908],
+  [ "ctblsolv.tst",391002100],
+  [ "cyclotom.tst",5832500],
+  [ "ffe.tst", 18000000 ],
+  [ "ffeconway.tst", 270000000 ],
+  [ "gaussian.tst", 640000 ],
+  [ "grpfree.tst", 5000000 ],
+  [ "grpmat.tst",1560006131],
+#  [ "grppc.tst",116000670],
+  [ "grppcnrm.tst",1532002851],
+  [ "listgen.tst", 1440000 ],
+  [ "mapping.tst", 31000000 ],
+  [ "mgmring.tst", 19000000 ],
+  [ "modfree.tst",36000000 ],
+  [ "morpheus.tst",634003277],
+  [ "onecohom.tst",332001351],
+  [ "oprt.tst",23823519],
+  [ "ratfun.tst", 9000000 ],
+  [ "rwspcgrp.tst",252000906],
+  [ "semigrp.tst",135000574],
+  [ "semirel.tst",364004597],
+  [ "vspchom.tst",74000701],
+  [ "vspcmat.tst",52000692],
+  [ "vspcrow.tst",195001138],
+  [ "xgap.tst",562000888],
+  [ "zlattice.tst", 136000 ],
+  [ "zmodnz.tst", 2100000 ],
 ] );
 
 

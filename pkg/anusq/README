@@ -1,0 +1,10 @@
+This is a simple conversion of the ANUSQ interface to GAP4. the files
+`init.g' and `gap/sq.g' provide the same interface as it was in GAP 3.
+
+The documentation in doc gives rudimentary installation information.
+
+I cannot provide any help with compiling the SQ or the vector enumerator.
+
+  Alexander Hulpke  jun-12-02
+
+See README.orig for information about the original GAP3 version.

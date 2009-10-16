@@ -1,0 +1,296 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  FGA.tex            FGA documentation                Christian Sievers
+%%
+%H  $Id: FGA.tex,v 1.11 2005/05/09 11:11:27 gap Exp $
+%%
+%Y  2003 - 2005
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Functionality of the FGA package}
+
+\atindex{Functionality of the FGA package}{@Functionality %
+                                           of the {\FGA} package|indexit}
+
+This chapter describes methods available from the {\FGA} package.
+
+In the following, let <f> be a free group created by `FreeGroup(<n>)',
+and let <u>, <u1> and <u2> be finitely generated subgroups of <f>
+created by `Group' or `Subgroup', or computed from some other subgroup
+of <f>.  Let <elm> be an element of <f>.
+
+For example:
+
+\beginexample
+gap> f := FreeGroup( 2 );                                             
+<free group on the generators [ f1, f2 ]>
+gap> u := Group( f.1^2, f.2^2, f.1*f.2 );
+Group([ f1^2, f2^2 ])
+gap> u1 := Subgroup( u, [f.1^2, f.1^4*f.2^6] );
+Group([ f1^2, f1^4*f2^6 ])
+gap> elm := f.1;
+f1
+gap> u2 := Normalizer( u, elm );
+Group([ f1^2 ])
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{New operations for free groups}
+
+These new operations are available for finitely generated subgroups of
+free groups:
+
+\>FreeGeneratorsOfGroup( <u> ) A
+
+returns a list of free generators of the finitely generated subgroup
+<u> of a free group.
+
+The elements in this list form an N-reduced set.  In addition to
+being a free (and thus minimal) generating set for <u>, this means
+that whenever <v1>, <v2> and <v3> are elements or inverses of elements
+of this list, then
+
+\beginlist%unordered
+  \item{--}
+    $<v1><v2>\neq1$ implies $|<v1><v2>|\geq\max(|<v1>|, |<v2>|)$, and
+  \item{--}
+    $<v1><v2>\neq1$ and $<v2><v3>\neq1$ implies
+    $|<v1><v2><v3>| > |<v1>| - |<v2>| + |<v3>|$
+\endlist
+
+hold, where $|.|$ denotes the word length.
+
+\>RankOfFreeGroup( <u> ) A
+\>Rank( <u> ) O
+
+returns the rank of the finitely generated subgroup <u> of a free
+group.
+
+\>CyclicallyReducedWord( <elm> ) O
+
+returns the cyclically reduced form of <elm>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Method installations}
+
+This section lists operations that are already known to {\GAP}.
+{\FGA} installs new methods for them so that they can also be used
+with free groups.
+In cases where {\FGA} installs methods that are usually only used
+internally, user functions are shown instead.
+
+
+\>Normalizer( <u1>, <u2> ) O
+\>Normalizer( <u>, <elm> ) O
+
+The first variant returns the normalizer of the finitely generated
+subgroup <u2> in <u1>.
+
+The second variant returns the normalizer of $\langle <elm> \rangle$
+in the finitely generated subgroup <u> (see "ref:Normalizer" in the
+Reference Manual).
+
+\>RepresentativeAction( <u>, <d>, <e> ) O
+\>IsConjugate( <u>, <d>, <e> ) O
+
+`RepresentativeAction' returns an element $ <r> \in <u> $,
+where <u> is a finitely generated subgroup of a free group, such
+that $<d>^{<r>}=<e>$, or fail, if no such <r> exists.  <d> and <e> may
+be elements or subgroups of <u>.
+
+`IsConjugate' returns a boolean indicating whether such an element <r>
+exists.
+
+\>Centralizer( <u>, <u2> ) O
+\>Centralizer( <u>, <elm> ) O
+
+returns the centralizer of <u2> or <elm> in the finitely generated
+subgroup <u> of a free group.
+
+\>Index( <u1>, <u2> ) O
+\>IndexNC( <u1>, <u2> ) O
+
+return the index of <u2> in <u1>, where <u1> and <u2> are finitely
+generated subgroups of a free group.  The first variant returns
+fail if <u2> is not a subgroup of <u1>, the second may return
+anything in this case.
+
+\>Intersection( <u1>, <u2> \dots ) F
+
+returns the intersection of <u1> and <u2>, where <u1> and <u2> are
+finitely generated subgroups of a free group.
+
+\>`<elm> in <u>'{in} O
+
+tests whether <elm> is contained in the finitely generated subgroup
+<u> of a free group.
+
+\>IsSubgroup( <u1>, <u2> ) F
+
+tests whether <u2> is a subgroup of <u1>, where <u1> and <u2> are finitely
+generated subgroups of a free group.
+
+\>`<u1> = <u2>'{equality} O
+
+test whether the two finitely generated subgroups <u1> and <u2> of a
+free group are equal.
+
+\>MinimalGeneratingSet( <u> ) A
+\>SmallGeneratingSet( <u> ) A
+\>GeneratorsOfGroup( <u> ) A
+
+return generating sets for the finitely generated subgroup <u> of a
+free group.  `MinimalGeneratingSet' and `SmallGeneratingSet' return
+the same free generators as `FreeGeneratorsOfGroup', which are in
+fact a minimal generating set.  `GeneratorsOfGroup' also returns these
+generators, if no other generators were stored at creation time.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Constructive membership test}
+
+It is not only possible to test whether an element is in a finitely
+generated subgroup of free group, this can also be done
+constructively.  The idiomatic way to do so is by using a
+homomorphism.
+
+Here is an example that computes how to write `f.1^2' in the
+generators `a=f1^2*f2^2' and `b=f.1^2*f.2', checks the result, and
+then tries to write `f.1' in the same generators:
+
+\beginexample
+gap> f := FreeGroup( 2 );
+<free group on the generators [ f1, f2 ]>
+gap> ua := f.1^2*f.2^2;; ub := f.1^2*f.2;;
+gap> u := Group( ua, ub );;
+gap> g := FreeGroup( "a", "b" );;
+gap> hom := GroupHomomorphismByImages( g, u,
+              GeneratorsOfGroup(g),
+              GeneratorsOfGroup(u) );
+[ a, b ] -> [ f1^2*f2^2, f1^2*f2 ]
+gap> # how can f.1^2 be expressed?
+gap> PreImagesRepresentative( hom, f.1^2 );
+b*a^-1*b
+gap> last ^ hom; # check this
+f1^2
+gap> ub * ua^-1 * ub; # another check
+f1^2
+gap> PreImagesRepresentative( hom, f.1 ); # try f.1
+fail
+gap> f.1 in u;
+false
+\endexample
+
+There are also lower level operations to get the same results.
+In fact, they are faster when used repeatedly with the same group.
+
+\>AsWordLetterRepInGenerators( <elm>, <u> ) O
+\>AsWordLetterRepInFreeGenerators( <elm>, <u> ) O
+
+return a letter representation
+(see Section~"ref:Representations for Associative Words" in the {\GAP}
+Reference Manual)
+of the given <elm> relative to the generators the group was created
+with or the free generators as returned by `FreeGeneratorsOfGroup'.
+
+Continuing the above example:
+
+\beginexample
+gap> AsWordLetterRepInGenerators( f.1^2, u );    
+[ 2, -1, 2 ]
+gap> AsWordLetterRepInFreeGenerators( f.1^2, u );
+[ 2 ]
+\endexample
+
+This means: to get `f.1^2', multiply the second of the given generators
+with the inverse of the first and again with the second; or just take
+the second free generator.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Automorphism groups of free groups}
+
+The {\FGA} package knows presentations of the automorphism groups of free
+groups. It also allows to express an automorphism as word in the
+generators of these presentations.
+This sections repeats the {\GAP} standard methods to do so and shows
+functions to obtain the generating automorphisms.
+
+\>AutomorphismGroup( <u> ) A
+
+returns the automorphism group of the finitely generated subgroup <u>
+of a free group.
+
+Only a few methods will work with this group. But there is a way to
+obtain an isomorphic finitely presented group:
+
+\>IsomorphismFpGroup( <group> ) A
+
+returns an isomorphism of <group> to a finitely presented group.  
+For automorphism groups of free groups, the {\FGA} package implements
+the presentations of \cite{Neumann33}.
+The finitely presented group itself can then be obtained with the
+command `Range'.
+
+Here is an example:
+
+\beginexample
+gap> f := FreeGroup( 2 );;
+gap> a := AutomorphismGroup( f );;
+gap> iso := IsomorphismFpGroup( a );;
+gap> Range( iso );
+<fp group on the generators [ O, P, U ]>
+\endexample
+
+To express an automorphism as word in the generators of the
+presentation, just apply the isomorphism obtained from
+`IsomorphismFpGroup'.
+
+\beginexample
+gap> aut := GroupHomomorphismByImages( f, f,
+               GeneratorsOfGroup( f ), [ f.1^f.2, f.1*f.2 ] );
+[ f1, f2 ] -> [ f2^-1*f1*f2, f1*f2 ]
+gap> ImageElm( iso, aut );
+O^2*U*O*P^-1*U
+\endexample
+
+It is also possible to use `aut^iso'.
+Please note that using `Image' does not work.
+
+The {\FGA} package provides a simpler way to create endomorphisms:
+
+\>FreeGroupEndomorphismByImages( <g>, <imgs> ) F
+
+returns the endomorphism that maps the free generators of the finitely
+generated subgroup <g> of a free group to the elements listed in <imgs>.
+You may then apply `IsBijective' to check whether it is an
+automorphism.
+
+The follwowing functions return automorphisms that correspond to the
+generators in the presentation:
+
+\>FreeGroupAutomorphismsGeneratorO( <group> ) F
+\>FreeGroupAutomorphismsGeneratorP( <group> ) F
+\>FreeGroupAutomorphismsGeneratorU( <group> ) F
+\>FreeGroupAutomorphismsGeneratorS( <group> ) F
+\>FreeGroupAutomorphismsGeneratorT( <group> ) F
+\>FreeGroupAutomorphismsGeneratorQ( <group> ) F
+\>FreeGroupAutomorphismsGeneratorR( <group> ) F
+
+return the automorphism which maps the free generators 
+[$ x_1, x_2, \dots, x_n $] of <group> to
+\beginlist
+  \item{O:} [$ x_1^{-1}, x_2, \dots, x_n $]                      ($n\ge1$)
+  \item{P:} [$ x_2, x_1, x_3, \dots, x_n $]                      ($n\ge2$)
+  \item{U:} [$ x_1x_2, x_2, x_3, \dots, x_n $]                   ($n\ge2$)
+  \item{S:} [$ x_2^{-1}, x_3^{-1}, \dots, x_n^{-1}, x_1^{-1} $]  ($n\ge1$)
+  \item{T:} [$ x_2, x_1^{-1}, x_3, \dots, x_n $]                 ($n\ge2$)
+  \item{Q:} [$ x_2, x_3, \dots, x_n, x_1 $]                      ($n\ge2$)
+  \item{R:} [$ x_2^{-1}, x_1, x_3, x_4, \dots,
+             x_{n-2}, x_nx_{n-1}^{-1}, x_{n-1}^{-1} $]           ($n\ge4$)
+\endlist
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

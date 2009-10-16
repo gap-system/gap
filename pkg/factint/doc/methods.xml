@@ -1,0 +1,459 @@
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  methods.xml        FactInt documentation         Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: methods.xml,v 1.4 2007/09/20 08:32:11 stefan Exp $       ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Chapter Label="ch:Methods">
+<Heading>The Routines for Specific Factorization Methods</Heading>
+
+Descriptions of the factoring methods implemented in this package can
+be found in&nbsp;<Cite Key="Bressoud89"/> and <Cite Key="Cohen93"/>.
+Cohen's book contains also descriptions of the other methods mentioned
+in the preface.
+
+<!-- #################################################################### -->
+
+<Section Label="sec:TrialDivision">
+<Heading>Trial division</Heading>
+
+<Index Key="trial division">trial division</Index>
+
+<ManSection>
+  <Func Name="FactorsTD" Arg="n [, Divisors ]" Label="trial division"/>
+  <Returns>
+    A list of two lists: The first list contains the prime factors found,
+    and the second list contains remaining unfactored parts of <A>n</A>,
+    if there are any.
+  </Returns>
+  <Description>
+    This function tries to factor <A>n</A> by trial division.
+    The optional argument <A>Divisors</A> is the list of trial divisors.
+    If not given, it defaults to the list of primes <M>p &lt; 1000</M>.
+<Example>
+<![CDATA[
+gap> FactorsTD(12^25+25^12);
+[ [ 13, 19, 727 ], [ 5312510324723614735153 ] ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:PollardsPminus1">
+<Heading>Pollard's <M>p-1</M></Heading>
+
+<Index Key="Pollard's p-1">Pollard's <M>p-1</M></Index>
+
+<ManSection>
+  <Func Name="FactorsPminus1" Arg="n [, [ a, ] Limit1 [, Limit2 ] ]"
+        Label="Pollard's p-1"/>
+  <Returns>
+    A list of two lists: The first list contains the prime factors found,
+    and the second list contains remaining unfactored parts of <A>n</A>,
+    if there are any.
+  </Returns>
+  <Description>
+    This function tries to factor <A>n</A> using Pollard's&nbsp;<M>p-1</M>.
+    It uses <A>a</A> as base for exponentiation, <A>Limit1</A> as first
+    stage limit and <A>Limit2</A> as second stage limit.
+    If the function is called with three arguments, these arguments are
+    interpreted as <A>n</A>, <A>Limit1</A> and <A>Limit2</A>. Defaults are
+    chosen for all arguments which are omitted. <P/>
+
+    Pollard's <M>p-1</M> is based on the fact that exponentiation
+    (mod&nbsp;<M>n</M>) can be done efficiently enough to compute
+    <M>a^{k!}</M> mod&nbsp;<M>n</M> for sufficiently large&nbsp;<M>k</M>
+    in a reasonable amount of time. Assume that <M>p</M> is a prime factor
+    of <M>n</M> which does not divide&nbsp;<M>a</M>, and that <M>k!</M>
+    is a multiple of&nbsp;<M>p-1</M>. Then
+    <Index Key="Lagrange's Theorem">Lagrange's Theorem</Index>
+    Lagrange's Theorem states that <M>a^{k!} \equiv 1</M>
+    (mod&nbsp;<M>p</M>). If <M>k!</M> is not a multiple of <M>q-1</M> for
+    another prime factor <M>q</M> of&nbsp;<M>n</M>, it is likely that the
+    factor&nbsp;<M>p</M> can be determined by computing
+    <M>\gcd(a^{k!}-1,n)</M>. A prime factor <M>p</M> is usually found if
+    the largest prime factor of <M>p-1</M> is not larger than <A>Limit2</A>,
+    and the second-largest one is not larger than <A>Limit1</A>.
+    (Compare with <Ref Func="FactorsPplus1" Label="Williams' p+1"/>
+    and&nbsp;<Ref Func="FactorsECM" Label="Elliptic Curves Method, ECM"/>.)
+<Example>
+<![CDATA[
+gap> FactorsPminus1( Factorial(158) + 1, 100000, 1000000 );
+[ [ 2879, 5227, 1452486383317, 9561906969931, 18331561438319, 
+      4837142997094837608115811103417329505064932181226548534006749213\
+4508231090637045229565481657130504121732305287984292482612133314325471\
+3674832962773107806789945715570386038565256719614524924705165110048148\
+7161609649806290811760570095669 ], [  ] ]
+gap> List( last[ 1 ]{[ 3, 4, 5 ]}, p -> Factors( p - 1 ) );
+[ [ 2, 2, 3, 3, 81937, 492413 ], [ 2, 3, 3, 3, 5, 7, 7, 1481, 488011 ]
+    , [ 2, 3001, 7643, 399613 ] ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:WilliamsPplus1">
+<Heading>Williams' <M>p+1</M></Heading>
+
+<Index Key="Williams' p+1">Williams' <M>p+1</M></Index>
+
+<ManSection>
+  <Func Name="FactorsPplus1" Arg="n [, [ Residues, ] Limit1 [, Limit2 ] ]"
+        Label="Williams' p+1"/>
+  <Returns>
+    A list of two lists: The first list contains the prime factors found,
+    and the second list contains remaining unfactored parts of <A>n</A>,
+    if there are any.
+  </Returns>
+  <Description>
+    This function tries to factor <A>n</A> using Williams'&nbsp;<M>p+1</M>.
+    It tries <A>Residues</A> different residues, and uses <A>Limit1</A>
+    as first stage limit and <A>Limit2</A> as second stage limit.
+    If the function is called with three arguments, these arguments are
+    interpreted as <A>n</A>, <A>Limit1</A> and <A>Limit2</A>. Defaults are
+    chosen for all arguments which are omitted. <P/>
+
+    Williams' <M>p+1</M> is very similar to Pollard's&nbsp;<M>p-1</M>
+    (see <Ref Func="FactorsPminus1" Label="Pollard's p-1"/>).
+    The difference is that the underlying group here can either have order
+    <M>p+1</M> or <M>p-1</M>, and that the group operation takes more time.
+    A prime factor <M>p</M> is usually found if the largest prime factor
+    of the group order is at most <A>Limit2</A> and the second-largest one
+    is not larger than <A>Limit1</A>.
+    (Compare also with <Ref Func="FactorsECM"
+                            Label="Elliptic Curves Method, ECM"/>.)
+<Example>
+<![CDATA[
+gap> FactorsPplus1( Factorial(55) - 1, 10, 10000, 100000 );
+[ [ 73, 39619, 277914269, 148257413069 ], 
+  [ 106543529120049954955085076634537262459718863957 ] ]
+gap> List( last[ 1 ], p -> [ Factors( p - 1 ), Factors( p + 1 ) ] );
+[ [ [ 2, 2, 2, 3, 3 ], [ 2, 37 ] ], 
+  [ [ 2, 3, 3, 31, 71 ], [ 2, 2, 5, 7, 283 ] ], 
+  [ [ 2, 2, 2207, 31481 ], [ 2, 3, 5, 9263809 ] ], 
+  [ [ 2, 2, 47, 788603261 ], [ 2, 3, 5, 13, 37, 67, 89, 1723 ] ] ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:ECM">
+<Heading>The Elliptic Curves Method (ECM)</Heading>
+
+<Index Key="Elliptic Curves Method (ECM)">
+  Elliptic Curves Method (ECM)
+</Index>
+
+<ManSection>
+  <Func Name="FactorsECM"
+        Arg="n [, Curves [, Limit1 [, Limit2 [, Delta ] ] ] ]"
+        Label="Elliptic Curves Method, ECM"/>
+  <Func Name="ECM"
+        Arg="n [, Curves [, Limit1 [, Limit2 [, Delta ] ] ] ]"
+        Label="shorthand for FactorsECM"/>
+  <Returns>
+    A list of two lists: The first list contains the prime factors found,
+    and the second list contains remaining unfactored parts of <A>n</A>,
+    if there are any.
+  </Returns>
+  <Description>
+    This function tries to factor <A>n</A> using the Elliptic Curves
+    Method (ECM).
+    The argument <A>Curves</A> is the number of curves to be tried.
+    The argument <A>Limit1</A> is the initial
+    <Index Key="first stage limit">first stage limit</Index>
+    first stage limit, and <A>Limit2</A> is the initial
+    <Index Key="second stage limit">second stage limit</Index>
+    second stage limit.
+    The argument <A>Delta</A> is the increment per curve for the first stage
+    limit. The second stage limit is adjusted appropriately. Defaults are
+    chosen for all arguments which are omitted. <P/>
+
+    <C>FactorsECM</C> recognizes the option <A>ECMDeterministic</A>.
+    If set, the choice of the curves is deterministic.
+    This means that in repeated runs of <C>FactorsECM</C> the same
+    curves are used, and hence for the same&nbsp;<M>n</M> the same
+    factors are found after the same number of trials. <P/>
+
+    The Elliptic Curves Method is based on the fact that exponentiation
+    in the
+    <Index Key="elliptic curve groups">elliptic curve groups</Index>
+    elliptic curve groups <M>E(a,b)/n</M> can be performed fast enough
+    to compute for example <M>g^{k!}</M> for <M>k</M> large enough
+    (e.g. 100000 or so) in a reasonable amount of time and without
+    using much memory, and on Lagrange's Theorem.
+    Assume that <M>p</M> is a prime divisor of&nbsp;<M>n</M>.
+    Then Lagrange's Theorem states that if <M>k!</M> is a multiple of
+    <M>|E(a,b)/p|</M>, then for any
+    <Index Key="elliptic curve point">elliptic curve point</Index>
+    elliptic curve point&nbsp;<M>g</M>, the power <M>g^{k!}</M> is the
+    identity element of <M>E(a,b)/p</M>.
+    In this situation -- under reasonable circumstances --
+    the factor&nbsp;<M>p</M> can be determined by taking an appropriate gcd.
+    <P/>
+
+    In practice, the algorithm chooses in some sense <Q>better</Q>
+    products <M>P_k</M> of small primes rather than <M>k!</M> as exponents.
+    After reaching the first stage limit with <M>P_{Limit1}</M>, it
+    considers further products <M>P_{Limit1}q</M> for primes&nbsp;<M>q</M>
+    up to the second stage limit <A>Limit2</A>, which is usually set equal
+    to something like 100 times the first stage limit.
+    The prime&nbsp;<M>q</M> corresponds to the largest prime factor of the
+    order of the group <M>E(a,b)/p</M>. <P/>
+
+    A prime divisor <M>p</M> is usually found if the largest prime factor
+    of the order of one of the examined elliptic curve groups <M>E(a,b)/p</M>
+    is at most <A>Limit2</A> and the second-largest one is at most
+    <A>Limit1</A>. Thus trying a larger number of curves increases the chance
+    of factoring <A>n</A> as well as choosing a larger value
+    for <A>Limit1</A> and/or <A>Limit2</A>. It turns out to be not optimal
+    either to try a large number of curves with very small <A>Limit1</A>
+    and <A>Limit2</A> or to try only a few curves with very large limits.
+    (Compare with&nbsp;<Ref Func="FactorsPminus1"
+                            Label="Pollard's p-1"/>.)
+    <P/>
+
+    The elements of the group <M>E(a,b)/n</M> are the points <M>(x,y)</M>
+    given by the solutions of <M>y^2 = x^3 + ax + by</M> in the residue
+    class ring (mod&nbsp;<M>n</M>), and an additional point <M>\infty</M>
+    at infinity, which serves as identity element.
+    To turn this set into a group, define the product (although elliptic
+    curve groups are usually written additively, I prefer using the
+    multiplicative notation here to retain the analogy
+    to <Ref Func="FactorsPminus1" Label="Pollard's p-1"/> and
+    <Ref Func="FactorsPplus1" Label="Williams' p+1"/>)
+    of two points <M>p_1</M> and&nbsp;<M>p_2</M> as follows:
+    If <M>p_1 \neq p_2</M>, let <M>l</M> be the line through <M>p_1</M>
+    and&nbsp;<M>p_2</M>, otherwise let <M>l</M> be the tangent to the
+    curve&nbsp;<M>C</M> given by the above equation in the point
+    <M>p_1 = p_2</M>. The line <M>l</M> intersects <M>C</M> in a third
+    point, say&nbsp;<M>p_3</M>. If <M>l</M> does not intersect the curve in
+    a third affine point, then set <M>p_3 := \infty</M>.
+    Define <M>p_1 \cdot p_2</M> by the image of&nbsp;<M>p_3</M> under
+    the reflection across the <M>x</M>-axis.
+    Define the product of any curve point <M>p</M> and <M>\infty</M> by
+    <M>p</M> itself. This -- more or less obviously, checking associativity
+    requires some calculation -- turns the set of points on the given curve
+    into an abelian group <M>E(a,b)/n</M>. <P/>
+
+    However, the calculations are done in
+    <Index Key="projective coordinates">projective coordinates</Index>
+    projective coordinates to have an explicit representation of the
+    identity element and to avoid calculating inverses (mod&nbsp;<M>n</M>)
+    for the group operation. Otherwise this would require using an
+    <M>O((log \ n)^3)</M>-algorithm, while multiplication (mod&nbsp;<M>n</M>)
+    is only <M>O((log \ n)^2)</M>. The corresponding equation is given by
+    <M>bY^2Z = X^3 + aX^2Z + XZ^2</M>. This form allows even more efficient
+    computations than the
+    <Index Key="Weierstrass model">Weierstrass model</Index>
+    Weierstrass model <M>Y^2Z = X^3 + aXZ^2 + bZ^3</M>, which is the
+    projective equivalent of the affine representation
+    <M>y^2 = x^3 + ax + by</M> mentioned above. The algorithm only keeps
+    track of two of the three coordinates, namely <M>X</M> and&nbsp;<M>Z</M>.
+    The curves are chosen in a way that ensures the order of the
+    corresponding group to be divisible by&nbsp;12. This increases the chance
+    that it is smooth enough to find a factor of&nbsp;<M>n</M>.
+    The implementation follows the description of R. P. Brent given in
+    <Cite Key="Brent96"/>, pp. 5 -- 8. In terms of this paper,
+    for the second stage the <Q>improved standard continuation</Q> is used.
+<Example>
+<![CDATA[
+gap> FactorsECM(2^256+1,100,10000,1000000,100);
+[ [ 1238926361552897, 
+      93461639715357977769163558199606896584051237541638188580280321 ]
+    , [  ] ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:CFRAC">
+<Heading>The Continued Fraction Algorithm (CFRAC)</Heading>
+
+<Index Key="Continued Fraction Algorithm (CFRAC)">
+  Continued Fraction Algorithm (CFRAC)
+</Index>
+
+<ManSection>
+  <Func Name="FactorsCFRAC" Arg="n"
+        Label="Continued Fraction Algorithm, CFRAC"/>
+  <Func Name="CFRAC" Arg="n"
+        Label="shorthand for FactorsCFRAC"/>  
+  <Returns>
+    A list of the prime factors of&nbsp;<A>n</A>.
+  </Returns>
+  <Description>
+    This function tries to factor <A>n</A> using the Continued Fraction
+    Algorithm (CFRAC), also known as Brillhart-Morrison Algorithm.
+    In case of failure an error is signalled. <P/>
+
+    Caution: The runtime of this function depends only on the size
+    of&nbsp;<A>n</A>, and not on the size of the factors.
+    Thus if a small factor is not found during the preprocessing
+    which is done before invoking the sieving process, the runtime is
+    as long as if <A>n</A> would have two prime factors of roughly
+    equal size. <P/>
+
+    The Continued Fraction Algorithm tries to find integers <M>x</M>
+    and&nbsp;<M>y</M> such that <M>x^2 \equiv y^2</M> (mod&nbsp;<M>n</M>),
+    but not <M>\pm x \equiv \pm y</M> (mod&nbsp;<M>n</M>).
+    In this situation, taking <M>\gcd(x - y,n)</M> yields a nontrivial
+    divisor of&nbsp;<M>n</M>. For determining such a pair <M>(x,y)</M>,
+    the algorithm uses the continued fraction expansion of the square root
+    of&nbsp;<M>n</M>. If <M>x_i/y_i</M> is a
+    <Index Key="continued fraction approximation">
+      continued fraction approximation
+    </Index>
+    continued fraction approximation of the square root of&nbsp;<M>n</M>,
+    then <M>c_i := x_i^2 - ny_i^2</M> is bounded by a small constant times
+    the square root of&nbsp;<M>n</M>.
+    The algorithm tries to find as many <M>c_i</M> as possible which factor
+    completely over a chosen
+    <Index Key="factor base">factor base</Index>
+    factor base (a list of small primes) or with only one factor not in the
+    factor base. The latter ones can be used if and only if a second
+    <M>c_i</M> with the same <Q>large</Q> factor is found.
+    <Index Key="factor base" Subkey="large factors">factor base</Index>
+    Once enough values <M>c_i</M> have been factored, as a final stage
+    <Index Key="Gaussian Elimination">Gaussian Elimination</Index>
+    Gaussian Elimination over GF(2) is used to determine which of the
+    congruences <M>x_i^2 \equiv c_i</M> (mod&nbsp;<M>n</M>) have to be
+    multiplied together to obtain a congruence of the desired form
+    <M>x^2 \equiv y^2</M> (mod&nbsp;<M>n</M>).
+    Let <M>M</M> be the corresponding matrix. Then the entries
+    of&nbsp;<M>M</M> are given by <M>M_{ij} = 1</M> if an odd power of
+    the <M>j</M>-th element of the factor base divides the <M>i</M>-th
+    usable factored value, and <M>M_{ij} = 0</M> otherwise.
+    To obtain the desired congruence, it is necessary that the rows
+    of&nbsp;<M>M</M> are linearly dependent.
+    In other words, this means that the number of factored <M>c_i</M>
+    needs to be larger than the rank of&nbsp;<M>M</M>, which is
+    approximately given by the size of the factor base. (Compare
+    with&nbsp;<Ref Func="FactorsMPQS"
+                   Label="Multiple Polynomial Quadratic Sieve, MPQS"/>.)
+<Example>
+<![CDATA[
+gap> FactorsCFRAC( Factorial(34) - 1 );
+[ 10398560889846739639, 28391697867333973241 ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:MPQS">
+<Heading>The Multiple Polynomial Quadratic Sieve (MPQS)</Heading>
+
+<Index Key="Multiple Polynomial Quadratic Sieve (MPQS)">
+  Multiple Polynomial Quadratic Sieve (MPQS)
+</Index>
+
+<ManSection>
+  <Func Name="FactorsMPQS" Arg="n"
+        Label="Multiple Polynomial Quadratic Sieve, MPQS"/>
+  <Func Name="MPQS" Arg="n"
+        Label="shorthand for FactorsMPQS"/>  
+  <Returns>
+    A list of the prime factors of&nbsp;<A>n</A>.
+  </Returns>
+  <Description>
+    This function tries to factor <A>n</A> using the Single Large Prime
+    Variation of the Multiple Polynomial Quadratic Sieve (MPQS).
+    In case of failure an error is signalled. <P/>
+
+    Caution: The runtime of this function depends only on the size
+    of&nbsp;<A>n</A>, and not on the size of the factors.
+    Thus if a small factor is not found during the preprocessing
+    which is done before invoking the sieving process, the runtime is
+    as long as if <A>n</A> would have two prime factors of roughly
+    equal size. <P/>
+
+    The intermediate results of a computation can be saved by
+    interrupting it with <C>[Ctrl][C]</C> and calling <C>Pause();</C>
+    from the break loop. This causes all data needed for resuming
+    the computation again to be pushed as a record <A>MPQSTmp</A>
+    on the options stack.
+    When called again with the same argument <A>n</A>, <C>FactorsMPQS</C>
+    takes the record from the options stack and continues with the previously
+    computed factorization data. For continuing the factorization process
+    in another session, one needs to write this record to a file.
+    This can be done by the function <C>SaveMPQSTmp(<A>filename</A>)</C>.
+    The file written by this function can be read by the standard
+    <C>Read</C>-function of&nbsp;&GAP;. <P/>
+
+    The Multiple Polynomial Quadratic Sieve tries to find integers <M>x</M>
+    and&nbsp;<M>y</M> such that <M>x^2 \equiv y^2</M> (mod&nbsp;<M>n</M>),
+    but not <M>\pm x \equiv \pm y</M> (mod&nbsp;<M>n</M>).
+    In this situation, taking <M>\gcd(x - y,n)</M> yields a nontrivial
+    divisor of&nbsp;<M>n</M>. For determining such a pair <M>(x,y)</M>,
+    the algorithm chooses polynomials <M>f_a</M> of the form
+    <M>f_a(r) = ar^2 + 2br + c</M> with suitably chosen coefficients
+    <M>a</M>, <M>b</M> and&nbsp;<M>c</M> which satisfy <M>b^2 \equiv n</M>
+    (mod&nbsp;<M>a</M>) and <M>c = (b^2 - n)/a</M>.
+    The identity <M>a \cdot f_a(r) = (ar + b)^2 - n</M> yields
+    a congruence (mod&nbsp;<M>n</M>) with a perfect square on one side
+    and <M>a \cdot f_a(r)</M> on the other. The algorithm uses a sieving
+    technique similar to the Sieve of Eratosthenes over an appropriately
+    chosen
+    <Index Key="sieving interval">sieving interval</Index>
+    sieving interval to search for factorizations of values <M>f_a(r)</M>
+    over a chosen factor base. Any two factorizations with the same single
+    <Q>large</Q> factor which does not belong to the factor base can also be
+    used. Taking more polynomials and hence shorter sieving intervals has
+    the advantage of having to factor smaller values <M>f_a(r)</M> over the
+    factor base. <P/>
+
+    Once enough values <M>f_a(r)</M> have been factored, as a final stage
+    Gaussian Elimination over GF(2) is used to determine which congruences
+    have to be multiplied together to obtain a congruence of the desired
+    form <M>x^2 \equiv y^2</M> (mod&nbsp;<M>n</M>). Let <M>M</M> be the
+    corresponding matrix. Then the entries of&nbsp;<M>M</M> are given by
+    <M>M_{ij} = 1</M> if an odd power of the <M>j</M>-th element of the
+    factor base divides the <M>i</M>-th usable factored value, and
+    <M>M_{ij} = 0</M> otherwise.
+    To obtain the desired congruence, it is necessary that the rows
+    of&nbsp;<M>M</M> are linearly dependent.
+    In other words, this means that the number of usable factorizations of
+    values <M>f_a(r)</M> needs to be larger than the rank of&nbsp;<M>M</M>.
+    The latter is approximately equal to the size of the factor base.
+    (Compare with&nbsp;<Ref Func="FactorsCFRAC"
+                            Label="Continued Fraction Algorithm, CFRAC"/>.)
+<Example>
+<![CDATA[
+gap> FactorsMPQS( Factorial(38) + 1 );
+[ 14029308060317546154181, 37280713718589679646221 ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+<Alt Only="HTML">&nbsp;</Alt>
+
+</Section>
+
+<!-- #################################################################### -->
+
+</Chapter>
+
+<!-- #################################################################### -->

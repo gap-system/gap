@@ -1,0 +1,63 @@
+<OMOBJ>
+  <OMI>912873912381273891</OMI>
+</OMOBJ>
+
+<OMOBJ>
+	<OMS cd="nums1" name="i" />
+</OMOBJ>
+
+<OMOBJ>
+	<OMS cd="logic1" name="true" />
+</OMOBJ>
+
+<OMOBJ>
+	<OMS cd="logic1" name="false" />
+</OMOBJ>
+
+<OMOBJ>
+  <OMS cd="fns1" name="lambda" />
+</OMOBJ>
+
+<OMOBJ>
+  <OMV name="dummy1" />
+</OMOBJ>
+
+<OMOBJ>
+  <OMSTR>string1</OMSTR>
+</OMOBJ>
+
+<OMOBJ>
+	<OMA>
+		<OMS cd="permut1" name="permutation"/>
+		<OMI> 2 </OMI>
+		<OMI> 3 </OMI>
+		<OMI> 1 </OMI>
+	</OMA>
+</OMOBJ>
+
+<OMOBJ>
+	<OMA>
+		<OMS cd="group1" name="group_by_generators"/>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI> 2 </OMI>
+			<OMI> 3 </OMI>
+			<OMI> 1 </OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+
+<OMOBJ>
+	<OMATTR>
+		<OMATP>
+			<OMS cd="logic1" name="true" />
+			<OMI> 1 </OMI>
+		</OMATP>
+		<OMA>
+      <OMS cd="permut1" name="permutation"/>
+      <OMI> 2 </OMI>
+      <OMI> 3 </OMI>
+      <OMI> 1 </OMI>
+    </OMA>
+	</OMATTR>
+</OMOBJ>

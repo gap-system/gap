@@ -3,7 +3,7 @@
 " Author:  Frank Lübeck,  highlighting based on file by Alexander Hulpke
 " Maintainer:	Frank Lübeck
 " Last change:	June 2001 
-" CVS version:  $Id$
+" CVS version:  $Id: gap.vim,v 1.7 2001/10/31 08:40:19 gap Exp $
 " 
 " Comments: If you want to use this file, you may want to adjust colors to
 " your taste. There are some functions/macros for 

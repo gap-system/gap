@@ -2,7 +2,7 @@
 ##
 #W  files.gi                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: files.gi,v 4.31 2006/11/13 23:18:49 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the methods for files and directories.
 ##
 Revision.files_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: files.gi,v 4.31 2006/11/13 23:18:49 gap Exp $";
 
 
 #############################################################################
@@ -37,11 +37,11 @@ BindGlobal( "DirectoryType", NewType(
 #############################################################################
 ##
 #F  USER_HOME_EXPAND . . . . . . . . . . . .  expand leading ~ in file name
-##
-##  If `GAPInfo.UserHome' has positive length then a leading '~' character in
+##  
+##  If `GAPInfo.UserHome' has positive length then a leading '~' character in 
 ##  string `str' is substituted by the content of `GAPInfo.UserHome'.
 ##  Otherwise `str' itself is returned.
-##
+##  
 InstallGlobalFunction(USER_HOME_EXPAND, function(str)
   if Length(str) > 0 and str[1] = '~' and Length( GAPInfo.UserHome ) > 0 then
     return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
@@ -49,7 +49,7 @@ InstallGlobalFunction(USER_HOME_EXPAND, function(str)
     return str;
   fi;
 end);
-
+    
 
 #############################################################################
 ##
@@ -67,7 +67,7 @@ function( str )
     if '\\' in str or (':' in str and str[2] <> ':') then
         Error( "<str> must not contain '\\' or ':'" );
     fi;
-    if str[Length(str)] = '/'  then
+    if Length( str ) > 0 and str[Length(str)] = '/'  then
         str := Immutable(str);
     else
         str := Immutable( Concatenation( str, "/" ) );
@@ -79,7 +79,7 @@ end );
 #############################################################################
 ##
 #M  EQ( <dir1>, <dir2> ) . . . . . . . . . . . equality for directory objects
-##
+##  
 InstallMethod( EQ,
    "for two directories",
    [ IsDirectory, IsDirectory ],
@@ -150,7 +150,7 @@ end );
 #############################################################################
 ##
 #F  DirectoryContents(<name>)
-##
+## 
 InstallGlobalFunction(DirectoryContents, function(dirname)
   local str;
   # to make ~/mydir work
@@ -222,7 +222,7 @@ InstallMethod( ReadTest,
 
     oldvalue:= SizeScreen();
     SizeScreen( [ 80 ] );
-    result:= READ_TEST( USER_HOME_EXPAND( name ) );
+    result:= READ_TEST( USER_HOME_EXPAND( name ) );  
     SizeScreen( oldvalue );
     return result;
     end );
@@ -235,7 +235,7 @@ InstallMethod( ReadTest,
 InstallMethod( ReadAsFunction,
     "string",
     [ IsString ],
-    name -> READ_AS_FUNC( USER_HOME_EXPAND( name ) ) );
+    name -> READ_AS_FUNC( USER_HOME_EXPAND( name ) ) );  
 
 
 #############################################################################
@@ -248,9 +248,9 @@ InstallGlobalFunction( Edit, function( name )
     name := USER_HOME_EXPAND(name);
     editor := Filename( DirectoriesSystemPrograms(), EDITOR );
     if editor = fail  then
-        Error( "cannot locate editor `", EDITOR, "'" );
+        Error( "cannot locate editor `", EDITOR, "' (check variable EDITOR)" );
     fi;
-    ret := Process( DirectoryCurrent(), editor, InputTextUser(),
+    ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
                     OutputTextUser(), [ name ] );
     if ret <> 0  then
         Error( "editor returned ", ret );
@@ -262,29 +262,20 @@ end );
 #############################################################################
 ##
 #M  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
-#M  CreateCompletionFiles( <path>, <list> ) .  create "pkg/.../read.co" files
-##
-##  The undocumented two argument version is used for creating completion
-##  files of packages.
 ##
 InstallGlobalFunction( CreateCompletionFiles, function( arg )
-    local path, list, input, i, com, read, j, crc;
+    local path, input, i, com, read, j, crc;
 
     # get the path to the output
     if 0 = Length(arg)  then
         path := DirectoriesLibrary("")[1];
-        list := COMPLETABLE_FILES;
     elif 1 = Length(arg)  then
         path := Directory(arg[1]);
-        list := COMPLETABLE_FILES;
-    elif 2 = Length(arg)  then
-        path := Directory(arg[1]);
-        list := arg[2];
     fi;
     input:= DirectoriesLibrary("");
 
     # loop over the list of completable files
-    for i in list do
+    for i in COMPLETABLE_FILES do
 
         # convert "read" into "comp"
         com := Filename( path, ReplacedString( i[1], ".g", ".co" ) );
@@ -294,7 +285,7 @@ InstallGlobalFunction( CreateCompletionFiles, function( arg )
         Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
 
         # now find the input file
-        read := List( [1 .. Length(i[2]) ], x
+        read := List( [1 .. Length(i[2]) ], x 
            -> [ i[2][x], Filename( input, i[2][x] ), i[3][x] ] );
         if ForAny( read, x -> x[2] = fail )  then
             Error( "cannot locate input files" );
@@ -315,7 +306,7 @@ InstallGlobalFunction( CreateCompletionFiles, function( arg )
 
             # create `COM_FILE' header and `if' start
             APPEND_TO( com, "#C  load module, file, or complete\n" );
-            APPEND_TO( com,
+            APPEND_TO( com, 
               "COM_RESULT := COM_FILE( \"", j[1], "\", ", crc, " );\n",
               "if COM_RESULT = fail  then\n",
               "Error(\"cannot locate file \\\"", j[1], "\\\"\");\n",
@@ -350,7 +341,7 @@ end );
 #M  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
 ##
 InstallGlobalFunction( CheckCompletionFiles, function()
-    local   dirs,  file,  com,  stream,  next,  pos,  fname,  crc,
+    local   dirs,  file,  com,  stream,  next,  pos,  fname,  crc,  
             lfile,  new,  nook;
 
     dirs := DirectoriesLibrary("");

@@ -2,7 +2,7 @@
 ##
 #W  ctblfuns.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblfuns.gi,v 4.84 2009/09/25 12:30:26 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -25,7 +25,7 @@
 ##  14. Auxiliary operations
 ##
 Revision.ctblfuns_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblfuns.gi,v 4.84 2009/09/25 12:30:26 gap Exp $";
 
 
 #############################################################################
@@ -543,7 +543,7 @@ InstallMethod( \^,
 ##
 InstallOtherMethod( \^,
     "for class function and Galois automorphism",
-    [ IsClassFunction, IsGeneralMapping and IsANFAutomorphismRep ],
+    [ IsClassFunction, IsGeneralMapping ],
     function( chi, galaut )
     if IsANFAutomorphismRep( galaut ) then
       galaut:= galaut!.galois;
@@ -1026,6 +1026,9 @@ InstallOtherMethod( CorrespondingPermutations,
 #############################################################################
 ##
 #M  ComplexConjugate( <chi> )
+##
+##  We use `InstallOtherMethod' because class functions are both scalars and
+##  lists, so the method matches two declarations of the operation.
 ##
 InstallOtherMethod( ComplexConjugate,
     "for a class function",
@@ -1616,7 +1619,7 @@ InstallMethod( ScalarProduct,
 #M  ScalarProduct( <tbl>, <chi>, <psi> ) .  scalar product of class functions
 ##
 InstallMethod( ScalarProduct,
-    "for ordinary table and two homogeneous lists",
+    "for character table and two homogeneous lists",
     [ IsCharacterTable, IsRowVector, IsRowVector ],
     function( tbl, x1, x2 )
     local i,       # loop variable
@@ -2552,7 +2555,7 @@ InstallMethod( RestrictedClassFunctions,
     end );
 
 InstallMethod( RestrictedClassFunctions,
-    "for a character table, a list,  and a character table",
+    "for a character table, a list, and a character table",
     [ IsCharacterTable, IsList, IsCharacterTable ],
     function( tbl, chars, subtbl )
     local fus;

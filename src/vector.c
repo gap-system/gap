@@ -2,7 +2,7 @@
 **
 *W  vector.c                    GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: vector.c,v 4.33 2002/04/15 10:04:03 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -20,7 +20,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_vector_c =
-   "@(#)$Id$";
+   "@(#)$Id: vector.c,v 4.33 2002/04/15 10:04:03 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

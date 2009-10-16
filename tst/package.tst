@@ -2,14 +2,14 @@
 ##
 #W  package.tst               GAP Library                       Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: package.tst,v 1.2 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  2005,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: package.tst,v 1.2 2005/05/05 15:04:16 gap Exp $");
 
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -50,7 +50,7 @@ gap> for entry in Set( Concatenation( Concatenation( [ sml, equ ] ) ) ) do
 > od;
 
 
-gap> STOP_TEST( "package.tst", 400000 );
+gap> STOP_TEST( "package.tst", 4711 );
 
 
 #############################################################################

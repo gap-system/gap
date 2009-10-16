@@ -1,0 +1,240 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Interface to CARAT}
+
+The {GAP} interface to {\CARAT} consists of two parts, low level 
+interface routines to {\CARAT} functions on the one hand, and 
+comfortable high level {\GAP} functions on the other hand. 
+The high level functions, implemented in terms of the low level 
+functions, provide actually methods for functions and operations 
+declared in the {GAP} library.
+
+Note that while (almost) all {\CARAT} functions should be accessible
+from within {\GAP} by the low level interface routines, high level
+interface routines are provided only for a small subset of the
+{\CARAT} functions. Priority has been given to routines providing
+functionality that has previously not been available in {\GAP}.
+Further high level interface routines may be added in the future.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Action from the left and from the right}
+
+In crystallography, the convention usually is that matrix groups
+act from the left on column vectors. This convention is adopted
+also in {\CARAT}. The low level interface routines described below
+must respect this convention and provide {\CARAT} with data in the 
+expected format.
+
+On the other hand, in {\GAP} the convention is that all groups 
+act from the right, in the case of matrix groups on row vectors. 
+However, in order to make {\GAP} accessible to crystallographers,
+functions that are important in crystallography and for which it
+matters which action is assumed, are provided in two variants, 
+one for each convention. The high level routines currently provided
+by this package do not depend on which convention is assumed.
+This may change, however, when further high level routines are 
+added in the future.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CARAT input and output files}
+
+{\CARAT} routines read their input from one or several input files,
+and write the result to standard output. In order to use {\CARAT}
+routines from within {\GAP}, the input must be prepared in suitably
+formatted input files. A {\CARAT} command is then executed with these
+input files, with standard output redirected to an output file, 
+which is read back into {\GAP} afterwards. This section describes
+routines interfacing with {\CARAT} input and output files.
+
+Working with {\CARAT} requires many temporary files. When the {\CARAT}
+package is loaded, a temporary directory is created, where one can
+put such files. The routine
+
+\>CaratTmpFile( <filename> ) F
+
+returns a file name <filename> in the {\CARAT} temporary directory, which
+can be used to store temporary data. Of course, it is also possible
+to use any other file name, for instance files in the current directory.
+
+\>CaratShowFile( <filename> ) F
+
+displays the contents of any text file on the terminal. This can be
+used to inspect the contents of {\CARAT} input and output files.
+
+Most {\CARAT} data files are in either of two formats. The first {\CARAT}
+file type is the Matrix File, containing one or several matrices.
+The following routines serve as interface to {\CARAT} Matrix Files.
+
+\>CaratWriteMatrixFile( <filename>, <data> ) F
+
+takes a file name and a matrix or a list of matrices, and writes the
+matrix or matrices to the file.
+
+\>CaratReadMatrixFile( <filename> ) F
+
+reads a {\CARAT} matrix file, and returns a matrix or a list of matrices
+read from the file.
+
+The second {\CARAT} file type is the Bravais File, containing information
+on a finite unimodular group. In { \GAP}, the contents of a Bravais File 
+is represented by a Bravais record, having the following components:
+\beginitems
+`generators'   & generators of the finite unimodular group
+
+`formspace'    & basis of the space of invariant forms (optional)
+
+`centerings'   & list of centering matrices (optional)
+
+`normalizer'   & additional generators of the normalizer in GL(n,Z) (optional)
+
+`centralizer'  & additional generators of the centralizer in GL(n,Z) (optional)
+
+`size'         & size of the unimodular group (optional)
+\enditems
+
+The following routines serve as interface to {\CARAT} Bravais Files.
+
+\>CaratWriteBravaisFile( <filename>, <data> ) F
+
+takes a file name and a Bravais record, and writes the data in the
+Bravais record to the file.
+
+\>CaratReadBravaisFile( <filename> ) F
+
+reads a Bravais File, and returns the resulting Bravais record.
+
+Certain {\CARAT} programs produce output files containing several Bravais 
+records, possibly preceeded by a varying number of header lines.
+
+\>CaratReadMultiBravaisFile( <filename> ) F
+
+reads such a multi-Bravais file, and returns a record with the components
+`info' and `groups'. `info' is the list of header lines before the first
+Bravais record starts, and `groups' is the list of Bravais records read from
+the file.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Executing CARAT commands}
+
+To execute a {\CARAT} program from within {\GAP}, some low level,
+general purpose routines are provided in this package. 
+Higher level routines for certain {\CARAT} functions may be available 
+in the {\GAP} library or in other packages. These higher
+level functions are expected to use the following low level routines,
+so that changes in the low level interface will be transparent. 
+
+An arbitrary {\CARAT} program can be executed with the routine
+
+\>CaratCommand( <command>, <args>, <outfile> ) F
+
+where <command> is the name of a {\CARAT} program, <args> is a string
+containing the command line arguments of the {\CARAT} program,
+and <outfile> is the name of the file to which the output is to be 
+written. Example:
+
+\begintt
+gap> CaratCommand( "Z_equiv", "file1 file2", "file.out" );
+\endtt
+
+A short description of the arguments and options of any {\CARAT} 
+program can be obtained from the {\CARAT} online help facility with
+
+\>CaratHelp( <command> ) F
+
+where <command> is the name of the {\CARAT} program. CaratHelp executes
+the program with the `-h' option, and writes the output to the 
+terminal. Example:
+
+\begintt
+gap> CaratHelp( "Z_equiv" );
+\endtt
+
+A list of all {\CARAT} programs, along with a description of their
+usage and functionality, can be found in the {\CARAT} documentation 
+(in HTML), in the file
+
+\begintt
+documentation/introduction.html
+\endtt
+
+in the {\CARAT} home directory.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Methods provided by CARAT}
+
+{\CARAT} implements methods for the following functions and operations
+declared in the {\GAP} library. For a detailed description of these
+functions, please consult the {\GAP} manual (section 
+"ref:Matrix Groups in Characteristic 0").
+
+\>BravaisGroup( <G> ) A
+
+\>IsBravaisGroup( <G> ) P
+
+\>BravaisSubgroups( <G> ) A
+
+\>BravaisSupergroups( <G> ) A
+
+\>NormalizerInGLnZBravaisGroup( <G> ) A
+
+\>`Normalizer( GL(<n>, Integers), <G> )'{Normalizer!in GLnZ}@{in GLnZ} O
+
+\>`Centralizer( GL(<n>, Integers), <G> )'{Centralizer!in GLnZ}@{in GLnZ} O
+
+\>ZClassRepsQClass( <G> ) A
+
+\>`RepresentativeAction( GL(<n>,Integers), <G1>, <G2> )'{RepresentativeAction!in GLnZ}@{in GLnZ} O
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CARAT Bravais Catalog}
+
+{\CARAT} contains a catalog with $\Z$-class representatives of all
+Bravais groups of dimension up to 6. These Bravais groups are
+accessed via a crystal family symbol.
+
+\>`CaratCrystalFamilies[d]'{CaratCrystalFamilies}@{`CaratCrystalFamilies'} V
+
+returns a list of inequivalent crystal family symbols in dimension <d>.
+
+\>BravaisGroupsCrystalFamily( <symb> ) F
+
+returns a list of $\Z$-class representatives of the Bravais groups
+in the crystal family with symbol <symb>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CARAT Q-Class Catalog}
+
+{\CARAT} contains a catalog with representatives of all $Q$-classes of
+finite unimodular groups up to dimension~6. This catalog can be accessd
+with the function
+
+\>CaratQClassCatalog( <grp>, <mode> ) F
+
+where <grp> is a finite unimodular group of dimension up to 6, and
+<mode> is an integer. This function returns a record with one or
+several of the following components, depending on the decomposition of
+$mode = n_{0} + n_{1} * 2 + n_{2} * 4$ into powers of 2:
+\beginitems
+`qclass'     & Q-class symbol; this component is always present
+
+`familysymb' & crystal family symbol (present if $n_{0} \<> 0$)
+
+`trans'      & transformation to standard representative of Q-class: 
+               <grp>\^{}<trans> = <std>
+               (present if $n_{1} \<> 0$)
+
+`group'      & standard representative of Q-class of <grp> 
+               (present if $n_{2} \<> 0$ )
+\enditems
+
+If <G1> and <G2> are two unimodular groups,
+
+\>ConjugatorQClass( <G1>, <G2> ) F
+
+returns a rational matrix <m> such that <G1>\^{}<m> = <G2>, or fail, if 
+the groups are not in the same Q-class. Since this function uses the 
+{\CARAT} Q-class catalog, only groups up to dimension 6 are supported. 
+If this dimension is exceeded, an error is reported.
+
+

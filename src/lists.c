@@ -2,7 +2,7 @@
 **
 *W  lists.c                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: lists.c,v 4.62 2007/02/14 16:52:40 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -23,7 +23,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_lists_c =
-   "@(#)$Id$";
+   "@(#)$Id: lists.c,v 4.62 2007/02/14 16:52:40 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -50,6 +50,7 @@ const char * Revision_lists_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
+#include        "integer.h"             /* integers                        */
 
 
 /****************************************************************************
@@ -191,7 +192,7 @@ Obj FuncLENGTH (
 {
     /* internal list types                                                 */
     if ( FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM) {
-        return INTOBJ_INT( LEN_LIST(list) );
+        return ObjInt_Int( LEN_LIST(list) );
     }
 
     /* external types                                                      */

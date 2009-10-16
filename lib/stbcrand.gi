@@ -2,7 +2,7 @@
 ##
 #W  stbcrand.gi                 GAP library                       Akos Seress
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: stbcrand.gi,v 4.33 2005/05/10 14:12:49 gap Exp $
 ##
 #Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  with verification.
 ##
 Revision.stbcrand_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: stbcrand.gi,v 4.33 2005/05/10 14:12:49 gap Exp $";
 
 #############################################################################
 ##

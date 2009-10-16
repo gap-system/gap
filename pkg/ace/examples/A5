@@ -1,0 +1,15 @@
+# ACEExample "A5" : enumeration of cosets of H in G,
+# where G = A_5, H = Id,  using default strategy.
+#
+local F, a, b, G;
+F := FreeGroup("a","b"); a := F.1;  b := F.2;
+G := F / [a^2, b^3, (a*b)^5 ];
+return ACEfunc(
+    # Arguments
+    FreeGeneratorsOfFpGroup(G), 
+    RelatorsOfFpGroup(G), 
+    [] # Generators of identity subgroup (empty list)
+    # Options
+    : echo, # Echo handled by GAP (not ACE)
+      enum := "A_5",  # Give the group G a meaningful name
+      subg := "Id");  # Give the subgroup a meaningful name

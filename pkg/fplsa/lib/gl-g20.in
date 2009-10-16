@@ -1,0 +1,16 @@
+Generators: x y z;
+Limiting weight: 22;
+Relations:
+
+[[x,y],x] - 2 x;
+[[x,y],y] + 2 y;
+
+[y,z];
+[[x,y],z] + 10 z;
+[x,[x,[x,[x,[x,[x,[x,[x,[x,[x,[x,z]]]]]]]]]]];
+
+[z,[x,z]];
+[[x,z],[x,[x,z]]];
+[[x,[x,z]],[x,[x,[x,z]]]] + 6 z;
+[[x,[x,[x,z]]],[x,[x,[x,[x,z]]]]] + 8 [x,[x,z]];
+[[x,[x,[x,[x,z]]]],[x,[x,[x,[x,[x,z]]]]]] + 8 [x,[x,[x,[x,z]]]] - 6 y;

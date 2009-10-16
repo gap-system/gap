@@ -2,7 +2,7 @@
 ##
 #A  oldmatint.gi                   GAP library                 Robert Wainwright
 ##
-#H  $Id$
+#H  $Id: oldmatint.gi,v 1.1 2003/06/02 19:55:08 gap Exp $
 ##
 #Y  Copyright (C)  1997,  St. Andrews
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -18,7 +18,7 @@
 
 ##
 Revision.oldmatint_gi :=
-    "$Id$";
+    "$Id: oldmatint.gi,v 1.1 2003/06/02 19:55:08 gap Exp $";
 
 
 ##############################################################################

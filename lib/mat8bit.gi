@@ -2,7 +2,7 @@
 ##
 #W  mat8bit.gi                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mat8bit.gi,v 4.34 2007/08/24 09:40:32 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  all rows must be the same length and written over the same field
 ##
 Revision.mat8bit_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: mat8bit.gi,v 4.34 2007/08/24 09:40:32 gap Exp $";
 
 #############################################################################
 ##
@@ -63,7 +63,7 @@ end);
 #M  Length( <mat> )
 ##
 
-InstallMethod( Length, "For a compressed MatFFE", 
+InstallOtherMethod( Length, "For a compressed MatFFE", 
         true, [IsList and Is8BitMatrixRep], 0, m->m![1]);
 
 #############################################################################
@@ -71,7 +71,7 @@ InstallMethod( Length, "For a compressed MatFFE",
 #M  <mat> [ <pos> ]
 ##
 
-InstallMethod( \[\],  "For a compressed MatFFE", 
+InstallOtherMethod( \[\],  "For a compressed MatFFE", 
         true, [IsList and Is8BitMatrixRep, IsPosInt], 0, function(m,i) 
     return m![i+1]; end);
 
@@ -83,7 +83,7 @@ InstallMethod( \[\],  "For a compressed MatFFE",
 ##  not lie in the appropriate field.
 ##
                
-InstallMethod( \[\]\:\=,  "For a compressed MatFE", 
+InstallOtherMethod( \[\]\:\=,  "For a compressed MatFE", 
         true, [IsMutable and IsList and Is8BitMatrixRep, IsPosInt, IsObject], 
         0,
         ASS_MAT8BIT
@@ -97,7 +97,7 @@ InstallMethod( \[\]\:\=,  "For a compressed MatFE",
 ##  turning into a plain list
 ##
 
-InstallMethod( Unbind\[\], "For a compressed MatFFE",
+InstallOtherMethod( Unbind\[\], "For a compressed MatFFE",
         true, [IsMutable and IsList and Is8BitMatrixRep, IsPosInt],
         0, function(m,p)
     if p = 1 or  p <> m![1] then
@@ -866,12 +866,12 @@ InstallMethod( \=, "for two compressed 8 bit matrices", IsIdenticalObj,
 #M  MutableTransposedMat( <mat> )
 ##
 
-InstallMethod( TransposedMat, "for a compressed 8 bit matrix",
+InstallOtherMethod( TransposedMat, "for a compressed 8 bit matrix",
         true, [IsMatrix and IsFFECollColl and
         Is8BitMatrixRep ], 0,
         TRANSPOSED_MAT8BIT);
 
-InstallMethod( MutableTransposedMat, "for a compressed 8 bit matrix",
+InstallOtherMethod( MutableTransposedMat, "for a compressed 8 bit matrix",
         true, [IsMatrix and IsFFECollColl and
         Is8BitMatrixRep ], 0,
         TRANSPOSED_MAT8BIT);

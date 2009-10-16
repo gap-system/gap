@@ -2,7 +2,7 @@
 **
 *W  listfunc.c                  GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: listfunc.c,v 4.65 2005/11/18 20:11:16 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_listfunc_c =
-   "@(#)$Id$";
+   "@(#)$Id: listfunc.c,v 4.65 2005/11/18 20:11:16 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */

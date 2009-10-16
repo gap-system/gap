@@ -3,14 +3,14 @@
 #W  stbc.gi                     GAP library                    Heiko Thei"sen
 #W                                                               'Akos Seress
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: stbc.gi,v 4.77 2005/06/24 14:54:21 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.stbc_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: stbc.gi,v 4.77 2005/06/24 14:54:21 sal Exp $";
 
 #############################################################################
 ##
@@ -187,6 +187,22 @@ end );
 
 #############################################################################
 ##
+#F  TrimStabChain( <C>,<n> )
+##
+##
+InstallGlobalFunction(TrimStabChain,function( C,n )
+local i;
+  # typically all permutations in a stabilizer chain are just links to the
+  # `labels' component. Thus reducing here will make them all small.
+  for i in C.labels do
+    if IsInternalRep(i) then
+      TRIM_PERM(i,n);
+    fi;
+  od;
+end);
+
+#############################################################################
+##
 #F  CopyStabChain( <C> )  . . . . . . . . . . . . . . . . . . . copy function
 ##
 ##  This function produces a memory-disjoint copy of a stabilizer chain, with
@@ -200,7 +216,7 @@ end );
 ##
 InstallGlobalFunction(CopyStabChain,function( C1 )
     local   C,Xlabels,  S,  len,  xlab,  need,  poss,  i;
-    
+
     # To begin with, make a deep copy.
     C := StructuralCopy( C1 );
     
@@ -359,12 +375,8 @@ local   base,sgs,one,S,  T,  pnt;
     sgs:=arg[2];
     if Length(arg)=3 then
       one:=arg[3];
-    elif Length(arg[2])>0 then
-      one:=One(arg[2][1]);
     else
-      # specific workaround for GRAPE in the 4.4 branch -- this will not be
-      # in 4.5
-      one:=();
+      one:= One(arg[2][1]);
     fi;
     S := EmptyStabChain( [  ], one );
     T := S;
@@ -798,40 +810,6 @@ InstallGlobalFunction( StabChainSwap, function( S )
     return true;
 end );
 
-#############################################################################
-##
-#F  InsertElmList( <list>, <pos>, <elm> ) . . . insert an element into a list
-##
-##  Perhaps this should be an internal function?
-##  OBSOLETE: only kept for compatibility.
-##
-#InstallGlobalFunction( InsertElmList, function( list, pos, elm )
-#    local   len;
-#    
-#    len := Length( list );
-#    list{ [ pos + 1 .. len + 1 ] } := list{ [ pos .. len ] };
-#    list[ pos ] := elm;
-#end );
-InstallGlobalFunction( InsertElmList, function( list, pos, elm )
-    Add(list, elm, pos);
-end );
-
-#############################################################################
-##
-#F  RemoveElmList( <list>, <pos> )  . . . . . . . .  remove element from list
-##
-##  OBSOLETE: only kept for compatibility
-##  
-#InstallGlobalFunction( RemoveElmList, function( list, pos )
-#    local   len;
-#    
-#    len := Length( list );
-#    list{ [ pos .. len - 1 ] } := list{ [ pos + 1 .. len ] };
-#    Unbind( list[ len ] );
-#end );
-InstallGlobalFunction( RemoveElmList, function( list, pos ) 
-    Remove(list, pos); 
-end );
 
 #############################################################################
 ##
@@ -845,9 +823,9 @@ InstallGlobalFunction( LabsLims, function( lab, hom, labs, lims )
         AddSet( labs, lab );
         pos := Position( labs, lab );
         if IsFunction( hom )  then
-            InsertElmList( lims, pos, hom( lab ) );
+            Add(lims, hom(lab), pos);
         else
-            InsertElmList( lims, pos, lab ^ hom );
+            Add(lims, lab ^ hom, pos);
         fi;
     fi;
     return lims[ pos ];
@@ -1133,7 +1111,7 @@ local   S;
            generators := [  ],
              identity := arg[ 2 ] );
     if Length( S.labels ) = 0  or  S.labels[ 1 ] <> S.identity  then
-        InsertElmList( S.labels, 1, S.identity );
+        Add( S.labels, S.identity, 1);
     fi;
     if Length( arg ) >= 4  then
         S.labelimages := arg[ 3 ];
@@ -1711,18 +1689,13 @@ end);
 InstallMethod( ViewObj,"stabilizer chain records", true,
   [ IsRecord ], 0,
 function(r)
-local s,sz;
+local sz;
   if not (IsBound(r.stabilizer) and IsBound(r.generators) and 
           IsBound(r.orbit) and IsBound(r.identity) and
           IsBound(r.transversal)) then
     TryNextMethod();
   fi;
-  s:=r;
-  sz:=1;
-  while IsBound(s.stabilizer) and Length(s.orbit)>1 do
-    sz:=sz*Length(s.orbit);
-    s:=s.stabilizer;
-  od;
+  sz:= SizeStabChain(r);
 
   Print("<stabilizer chain record, Base ",BaseStabChain(r),
         ", Orbit length ",Length(r.orbit),", Size: ",sz,">");

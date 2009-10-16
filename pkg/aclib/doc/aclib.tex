@@ -1,0 +1,304 @@
+\Chapter{The catalog of almost crystallographic groups}
+
+This chapter introduces the access functions to the catalog of
+3- and 4-dimensional crystallographic groups. This catalog is an
+electronic version of the classification obtained in \cite{KD}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rational matrix groups}
+
+The following three main functions are available to access the library 
+of almost crystallographic groups as rational matrix groups.
+
+\> AlmostCrystallographicGroup( <dim>, <type>, <parameters> )
+\> AlmostCrystallographicDim3( <type>, <parameters> )
+\> AlmostCrystallographicDim4( <type>, <parameters> )
+
+<dim> is the dimension of the required group. Thus <dim> must be 
+either 3 or 4. The inputs <type> and <parameters> are used to define
+the desired group as described in \cite{KD}. We outline the possible
+choices for <type> and <parameters> here briefly. A more extended 
+description is given later in Section "More about almost crystallographic 
+groups" or can be obtained from \cite{KD}.
+
+<type> specifies the type of the required group. There are 17 types
+in dimension 3 and 95 types in dimension 4. The input <type> can either
+be an integer  defining the position of the desired type among all types;
+that is, in this case <type> is a number in [1..17] in dimension 3 or a
+number in [1..95] in dimension 4. Alternatively, <type> can be a string
+defining the desired type. In dimension 3 the possible strings are 
+`"01"', `"02"', $\ldots$, `"17"'. In dimension 4 the possible strings 
+are listed in the list `ACDim4Types' and thus can be accessed from \GAP.
+
+<parameters> is a list of integers. Its length depends on the type of 
+the chosen group. The lists `ACDim3Param' and `ACDim4Param' contain
+at position $i$ the length of the parameter list for the type number $i$.
+Every list of integers of this length is a valid <parameter> input.
+Alternatively, one can input `false' instead of a parameter list. Then 
+\GAP\ will chose a random parameter list of suitable length.
+
+\beginexample
+gap> G := AlmostCrystallographicGroup( 4, 50, [ 1, -4, 1, 2 ] );
+<matrix group of size infinity with 5 generators>
+gap> DimensionOfMatrixGroup( G );
+5
+gap> FieldOfMatrixGroup( G );
+Rationals
+gap> GeneratorsOfGroup( G );
+[ [ [ 1, 0, -1/2, 0, 0 ], [ 0, 1, 0, 0, 1 ], [ 0, 0, 1, 0, 0 ], 
+      [ 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 1 ] ], 
+  [ [ 1, 1/2, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 1 ], 
+      [ 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 1 ] ], 
+  [ [ 1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], 
+      [ 0, 0, 0, 1, 1 ], [ 0, 0, 0, 0, 1 ] ], 
+  [ [ 1, 0, 0, 0, 1 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], 
+      [ 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 1 ] ], 
+  [ [ 1, -4, 1, 0, 1/2 ], [ 0, 0, -1, 0, 0 ], [ 0, 1, 0, 0, 0 ], 
+      [ 0, 0, 0, 1, 1/4 ], [ 0, 0, 0, 0, 1 ] ] ]
+gap> G.1;
+[ [ 1, 0, -1/2, 0, 0 ], [ 0, 1, 0, 0, 1 ], [ 0, 0, 1, 0, 0 ], 
+  [ 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 1 ] ]
+gap> ACDim4Types[50];
+"076"
+gap> ACDim4Param[50];
+4
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Polycyclically presented groups}
+
+All the almost crystallographic groups considered in this package are
+polycyclic. Hence they have a polycyclic presentation and this can be
+used to facilitate efficient computations with the groups. To obtain the
+polycyclic presentation of an almost crystallographic group we supply the
+following functions. Note that the share package {\sf Polycyclic} must be 
+installed to use these functions.
+
+\> AlmostCrystallographicPcpGroup( <dim>, <type>, <parameters> )
+\> AlmostCrystallographicPcpDim3( <type>, <parameters> )
+\> AlmostCrystallographicPcpDim4( <type>, <parameters> )
+
+The input is the same as for the corresponding matrix group functions.
+The output is a pcp group isomorphic to the corresponding matrix group.
+An explicit isomorphism from an almost crystallographic matrix group
+to the corresponding pcp group can be obtained by the following function.
+
+\> IsomorphismPcpGroup( <G> )
+
+We can use the polycyclic presentations of almost crystallographic
+groups to exhibit structure information on these groups. For example,
+we can determine their Fitting subgroup and ask group-theoretic 
+questions about this nilpotent group. The factor $G / Fit(G)$ of an
+almost crystallographic group $G$ is called *holonomy group*. We 
+provide access to this factor of a pcp group via the following 
+functions. Let $G$ be an almost crystallographic pcp group.
+
+\> HolonomyGroup( <G> )
+\> NaturalHomomorphismOnHolonomyGroup( <G> )
+
+The following example shows applications of these functions.
+
+\beginexample
+gap> G := AlmostCrystallographicPcpGroup( 4, 50, [ 1, -4, 1, 2 ] );
+Pcp-group with orders [ 4, 0, 0, 0, 0 ]
+gap> Cgs(G);
+[ g1, g2, g3, g4, g5 ]
+
+gap> F := FittingSubgroup( G );
+Pcp-group with orders [ 0, 0, 0, 0 ]
+gap> Centre(F);
+Pcp-group with orders [ 0, 0 ]
+gap> LowerCentralSeries(F);
+[ Pcp-group with orders [ 0, 0, 0, 0 ], Pcp-group with orders [ 0 ], 
+  Pcp-group with orders [  ] ]
+gap> UpperCentralSeries(F);
+[ Pcp-group with orders [ 0, 0, 0, 0 ], Pcp-group with orders [ 0, 0 ], 
+  Pcp-group with orders [  ] ]
+gap> MinimalGeneratingSet(F);
+[ g2, g3, g4 ]
+
+gap> H := HolonomyGroup( G );
+Pcp-group with orders [ 4 ]
+gap> hom := NaturalHomomorphismOnHolonomyGroup( G );
+[ g1, g2, g3, g4, g5 ] -> [ g1, identity, identity, identity, identity ]
+gap> U := Subgroup( H, [Pcp(H)[1]^2] );
+Pcp-group with orders [ 2 ]
+gap> PreImage( hom, U );
+Pcp-group with orders [ 2, 0, 0, 0, 0 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{More about the type and the defining parameters}
+
+Each group from this library knows that it is almost crystallographic and,
+additionally, it knows its type and defining parameters.
+
+\> AlmostCrystallographicInfo( <G> ) 
+
+This attribute is set for groups from the library only. It is not possible
+at current to determine the type and the defining parameters for an arbitrary 
+almost crystallographic groups which is not defined by the library access 
+functions. 
+
+\beginexample
+gap> G := AlmostCrystallographicGroup( 4, 70, false );   
+<matrix group of size infinity with 5 generators>
+gap> IsAlmostCrystallographic(G);
+true
+gap> AlmostCrystallographicInfo(G);
+rec( dim := 4, type := 70, param := [ 1, -4, 1, 2, -3 ] )
+\endexample
+
+\beginexample
+gap> G := AlmostCrystallographicPcpGroup( 4, 70, false );
+Pcp-group with orders [ 6, 0, 0, 0, 0 ]
+gap> IsAlmostCrystallographic(G);
+true
+gap> AlmostCrystallographicInfo(G);
+rec( dim := 4, type := 70, param := [ -3, 2, 5, 1, 0 ] )
+\endexample
+
+We consider the types of almost crystallographic groups in more detail. The 
+almost crystallographic groups in dimensions 3 and 4 fall into three families
+
+\beginlist
+\item{(1)} 3-dimensional almost crystallographic groups.
+\item{(2)} 4-dimensional almost crystallographic groups with a
+           Fitting subgroup of class 2.
+\item{(3)} 4-dimensional almost crystallographic groups with a
+           Fitting subgroup of class 3.
+\endlist
+
+These families are split up further into subfamilies in \cite{KD} and to 
+each subfamily is assigned a type; that is, a string which is used to 
+identify the subfamily. As mentioned above, for the 3-dimensional almost 
+crystallographic groups the type is a string representing the numbers from 
+1 to 17, i.e. the available types are `"01"', `"02"', $\ldots$, `"17"'. 
+
+For the 4-dimensional almost crystallographic groups with a Fitting subgroup 
+of class 2 the type is a string of 3 or 4 characters. In general, a string of 
+3 characters representing
+the number of the table entry in \cite{KD} is used. So possible types are 
+`"001"', `"002"', $\ldots$. The reader is warned however that not all 
+possible numbers are used, e.g.\ there are no groups of type `"016"'. Also, 
+the types do not appear in their natural order in \cite{KD}. Moreover, for 
+certain numbers there is more than one family of groups listed in \cite{KD}. 
+For example, the 3 families of groups corresponding to number 19 on pages 
+179-180 of \cite{KD} have types `"019"', `"019b"' and `"019c"' (the order is 
+the one given in \cite{KD}).
+
+For the last category of groups, the 4-dimensional almost crystallographic
+groups with a Fitting subgroup of class 3, the type is a string of 2 or 3
+characters, where the first character is always the letter `"B"'. This `"B"'
+is followed by the number of the table entry as found in \cite{KD},
+eventually followed by a `"b"' or `"c"' as in the previous case.
+
+For each type of almost crystallographic group contained in the library
+there exists a function taking a parameter list as input and returning
+the desired matrix or pcp group. These functions can be accessed
+from \GAP\ using the lists `ACDim3Funcs', `ACDim4Funcs', `ACPcpDim3Funcs'
+and `ACPcpDim4Funcs' which consist of the corresponding functions.
+
+Although we include these direct access functions here for completeness,
+we note that the user should in general use the higher-level functions
+introduced above to obtain almost crystallographic groups from the
+library. In particular, these low-level access functions return matrix
+or pcp groups, but the almost crystallographic info flags will not be
+attached to them.
+
+\beginexample
+gap> ACDim3Funcs[15];
+function( k1, k2, k3, k4 ) ... end
+gap> ACDim3Funcs[15](1,1,1,1);
+<matrix group with 5 generators>
+gap> ACPcpDim3Funcs[1](1);
+Pcp-group with orders [ 0, 0, 0 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The electronic versus the printed library}
+
+The package `aclib' can be considered as the electronic version of 
+Chapter 7 of \cite{KD}. In this section we outline the relationship 
+between the library presented in this manual and the printed version 
+in \cite{KD}. First we consider an example. At page 175 of \cite{KD}, 
+we find the following groups in the table starting with entry ``13''.
+
+\medskip
+13. $Q=P2/c$
+$$
+\matrix{ E:\;\langle a,b,c,d,\alpha,\beta\;\|\; &  {\,[b,a]=1}\hskip 1.61cm 
+       {[d,a]=1}
+\hfill  & \rangle \cr
+               &    \matrix{ {[c,a]=d^{2 k_1}}\hfill  & {[d,b]=1}\hfill \cr
+                    {[c,b]=1}\hfill  & {[d,c]=1}\hfill \cr
+\alpha a=a^{-1}\alpha d^{k_{2}}\hfill   & \alpha^2=d^{k_3}\hfill \cr
+\alpha b=b\alpha \hfill  & \alpha d= d \alpha\hfill \cr
+\alpha c=c^{-1}\alpha d^{-2 k_6}\hfill   & \cr
+\beta a=a^{-1}\beta d^{k_1+k_2} \hfill  & \beta^2=d^{k_5}\hfill \cr
+\beta b=b^{-1}\beta d^{k_4}\hfill  & \beta d= d \beta\hfill \cr
+\beta c=c^{-1}\beta d^{-2 k_6}\hfill  & \alpha \beta=c\beta\alpha d^{k_6}
+\hfill } & } 
+$$
+
+$$\lambda(\alpha)=\left(\matrix{
+1& \frac{k_1}{2}+k_2 & 0 & -2 k_6 & \frac{k_3}{2}+\frac{k_6}{2} \cr
+0& -1 & 0 & 0 & 0 \cr
+0 & 0& 1  &  0 & 0 \cr
+0 & 0 & 0 & -1 & \frac12\cr
+0 & 0 & 0 & 0 & 1
+}\right)
+\;\;\lambda(\beta)=\left(\matrix{
+1& k_1+k_2 & k_4 & -2 k_6 & \frac{k_5}{2} \cr
+0& -1 & 0 & 0 & 0 \cr
+0 & 0& -1  &  0 & 0 \cr
+0 & 0 & 0 & -1 & 0\cr
+0 & 0 & 0 & 0 & 1
+    }\right)
+$$
+
+$$H^2(Q,\Z{})=\Z{}\oplus(\Z{}_2)^4=\Z^{6}/A,$$
+$$A=\{(k_1,\ldots,k_6)\|
+k_1=0,\;k_2,\ldots, k_5\in 2\Z{},\;k_6\in\Z\}$$
+AB-groups:
+
+$\forall k>0,\;k\equiv 0\bmod 2,\;<(k,0,1,0,1,0)>$
+
+\medskip
+
+The number ``13'' at the beginning of this entry is the type of the 
+almost crystallographic group in this library. This family of groups 
+with type 13 depends on 6 parameters $k_1, k_2, \ldots, k_6$ and these 
+are the <parameters> list in this library. The rational matrix 
+representation in \GAP\ corresponds exactly to the printed version in 
+\cite{KD} where it is named $\lambda$.  In the example below, we consider 
+the group with parameters $(k_1,k_2,k_3,k_4,k_5,k_6)=(8,0,1,0,1,0)$.
+
+\beginexample
+gap> G:=AlmostCrystallographicDim4("013",[8,0,1,0,1,0]);
+<matrix group with 6 generators>
+gap> G.5;
+[ [ 1, 4, 0, 0, 1/2 ], [ 0, -1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], 
+  [ 0, 0, 0, -1, 1/2 ], [ 0, 0, 0, 0, 1 ] ]
+gap> G.6;
+[ [ 1, 8, 0, 0, 1/2 ], [ 0, -1, 0, 0, 0 ], [ 0, 0, -1, 0, 0 ], 
+  [ 0, 0, 0, -1, 0 ], [ 0, 0, 0, 0, 1 ] ]
+\endexample
+
+For a 4-dimensional almost crystallographic group the matrix group is 
+built up such that $\{ a, b, c, d, \alpha, \beta, \gamma \}$ as described 
+in \cite{KD} forms the defining generating set of $G$. For certain types 
+the elements $\alpha$, $\beta$ or $\gamma$ may not be present.
+Similarly, for a 3-dimensional group we have the generating set $\{ a, b, 
+c, \alpha, \beta \}$ and $\alpha$ and $\beta$ may be absent.
+
+\bigskip
+
+To obtain a polycyclic generating sequence from the defining generators
+of the matrix group we have to order the elements in the generating set
+suitably. For this purpose we take the subsequence of $(\gamma, \beta, 
+\alpha, a, b, c, d)$ of those generators which are present in the 
+defining generating set of the matrix group.  This new ordering of the 
+generators is then used to define a polycyclic presentation of the given 
+almost crystallographic group. 
+

@@ -2,7 +2,7 @@
 ##
 #W  rwspccoc.gi                 GAP Library                     Werner Nickel
 ##
-#H  $Id$
+#H  $Id: rwspccoc.gi,v 4.5 2005/03/07 09:16:23 werner Exp $
 ##
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -11,7 +11,7 @@
 ##  representation of a single collector as defined in rwspcsng.gi.
 ##
 Revision.rwspccoc_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rwspccoc.gi,v 4.5 2005/03/07 09:16:23 werner Exp $";
 
 
 #############################################################################

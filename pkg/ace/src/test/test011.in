@@ -1,0 +1,85 @@
+
+# This is the 2 generator Engel-4 group of exponent 5 from Tom Litt's
+# thesis.  Note that there are free reductions in, eg, [a,ab,ab,ab,ab].
+
+Gr: a,b;
+Rel:
+  (a)^5, (b)^5, (ab)^5, (aab)^5, (abb)^5, (aabb)^5, (Abb)^5, (aB)^5,
+  (aaB)^5, (aaBB)^5, (aabaabb)^5, (aabaaB)^5, (aabaB)^5, (aabbaBB)^5,
+  (aabbAAB)^5, (aabAAb)^5, (aabAAbb)^5, (aabAB)^5, (aaBaaBB)^5,
+  (abaab)^5, (abaaB)^5, (ababb)^5, (abaB)^5, (abbaaBB)^5, (abbaBB)^5,
+  (abbAbb)^5, (abbAB)^5, (abbABB)^5, (abAb)^5, (abAbb)^5, (abAB)^5,
+  (AbaaB)^5, (Ababb)^5, (AbbaaBB)^5, (AbbaB)^5, (AbbAAbb)^5, (AbAbb)^5,
+  (AAbaabb)^5, (AAbbaaB)^5, 
+
+  [a,b,b,b,b], [A,b,b,b,b], [a,B,B,B,B], [A,B,B,B,B],
+  [b,a,a,a,a], [B,a,a,a,a], [b,A,A,A,A], [B,A,A,A,A],
+
+  [a,ab,ab,ab,ab], [a,AB,AB,AB,AB],
+  [b,ab,ab,ab,ab], [b,AB,AB,AB,AB]
+  ;
+Gen: a,a^b;
+
+Wo:10M;
+Mess:25000;
+Hard;
+# On ozone, yields: INDEX = 15625 (a=15625 r=781 h=1163639 n=1163639; 
+#                                  l=1510 c=149.99; m=1132447 t=1163638)
+
+Pure C;
+# INDEX = 15625 (a=15625 r=1 h=2185271 n=2185271; 
+#                l=2189 c=260.94; m=2005874 t=2185270)
+
+Sims:3;
+# INDEX = 15625 (a=15625 r=2908 h=1824088 n=1824088; 
+#                l=5 c=215.02; m=1790527 t=1824087)
+
+Wo:100M;
+Mess:100000;
+Pure R;
+# INDEX = 15625 (a=15625 r=19711329 h=19711329 n=19711329; 
+#                l=34 c=89.46; m=18857618 t=19711328)
+
+# So, some variant of hard seems best ...
+
+Hard; No:0;
+# INDEX = 15625 (a=15625 r=611 h=899214 n=899214; 
+#                l=1222 c=119.47; m=867767 t=899213)
+
+# Try all 5th powers up to length 3 (incl.)
+
+Hard; No:8;
+# INDEX = 15625 (a=15625 r=425 h=625261 n=625261;
+#                l=850 c=84.01; m=598641 t=625260)
+
+# Now let's try some greedy relator deletions ...
+
+Group Relators:
+  (a)^5, (b)^5,
+  (ab)^5, (aB)^5,
+  (aab)^5, (abb)^5, (Abb)^5, (aaB)^5,
+  (aabb)^5, (aaBB)^5, (abaB)^5, (abAb)^5, (abAB)^5,
+  (aabaB)^5, (aabAB)^5, (abaab)^5, (abaaB)^5, (ababb)^5, (abbAB)^5,
+  (abAbb)^5, (AbaaB)^5, (Ababb)^5, (AbbaB)^5, (AbAbb)^5,
+# (aabaaB)^5, (aabAAb)^5, (abbaBB)^5, (abbAbb)^5, (abbABB)^5,
+  AbabABabAbaBABaBAbabABaBAbaBABab, 
+  abAbaBAbabABaBABabAbaBABabABaBAb,
+  ABaBAbaBABabAbabABaBAbabABabAbaB, 
+  aBABabABaBAbabAbaBABabAbaBAbabAB,
+  BabaBAbaBabABAbABabaBAbABabABAba, 
+  baBabABabaBAbABAbaBabABAbaBAbABa,
+  BAbABabABAbaBabaBAbABabaBAbaBabA, 
+  bABAbaBAbABabaBabABAbaBabABabaBA,
+  baabABabbaBAABBAbaabABBAbaBAABab, 
+  ABBAbaBAABabbaabABBAbaabABabbaBA,
+  abbaBAbaabABBAABabbaBAABabABBAba,
+  BAABabABBAbaabbaBAABabbaBAbaabAB;
+# (aabaabb)^5, (aabbaBB)^5, (aabbAAB)^5, (aabAAbb)^5, (aaBaaBB)^5,
+# (abbaaBB)^5, (AbbaaBB)^5, (AbbAAbb)^5, (AAbaabb)^5, (AAbbaaB)^5;
+
+Wo:4M;
+Mess:50000;
+Hard; No:8; DMod:0;
+% INDEX = 15625 (a=15625 r=520354 h=520354 n=520354; 
+%                l=848 c=53.56; m=498065 t=520353)
+

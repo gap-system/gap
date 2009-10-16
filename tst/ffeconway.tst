@@ -2,7 +2,7 @@
 ##
 #W  ffeconway.tst                GAP tests                   Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ffeconway.tst,v 1.4 2008/08/13 08:32:47 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -11,7 +11,7 @@
 ##  To be listed in testall.g
 ## 
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: ffeconway.tst,v 1.4 2008/08/13 08:32:47 sal Exp $");
 #
 # Disable various warnings which depend on state of prime number and 
 # Conway Polynomial databases and on whether FactInt is loaded 

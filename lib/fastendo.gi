@@ -2,7 +2,7 @@
 ##
 #W  fastendo.gi           GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: fastendo.gi,v 4.4 2006/04/07 09:02:44 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##
 
 Revision.fastendo_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: fastendo.gi,v 4.4 2006/04/07 09:02:44 gap Exp $";
 
 
 ############################################################################

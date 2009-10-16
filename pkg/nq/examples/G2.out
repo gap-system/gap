@@ -1,0 +1,179 @@
+#
+#    The ANU Nilpotent Quotient Program (Version 2.0 July 2002)
+#    Calculating a nilpotent quotient
+#    Nilpotency class: 11
+#    Size of exponents: 8 bytes
+#
+#    Calculating the abelian quotient ...
+#    The abelian quotient has 2 generators
+#        with the following exponents: 0 0
+#
+#    Calculating the class 2 quotient ...
+##  Sizes:  2  3
+#    Layer 2 of the lower central series has 1 generators
+#          with the following exponents: 0
+#
+#    Calculating the class 3 quotient ...
+##  Sizes:  2  3  5
+#    Maximal entry: 0
+#    Layer 3 of the lower central series has 1 generators
+#          with the following exponents: 0
+#
+#    Calculating the class 4 quotient ...
+##  Sizes:  2  3  4  7
+#    Maximal entry: 0
+#    Layer 4 of the lower central series has 1 generators
+#          with the following exponents: 0
+#
+#    Calculating the class 5 quotient ...
+##  Sizes:  2  3  4  5  9
+#    Maximal entry: 0
+#    Layer 5 of the lower central series has 1 generators
+#          with the following exponents: 0
+#
+#    Calculating the class 6 quotient ...
+##  Sizes:  2  3  4  5  6  11
+#    Maximal entry: 0
+#    Layer 6 of the lower central series has 1 generators
+#          with the following exponents: 2
+#
+#    Calculating the class 7 quotient ...
+##  Sizes:  2  3  4  5  6  7  14
+#    Maximal entry: 0
+#    Layer 7 of the lower central series has 2 generators
+#          with the following exponents: 2 2
+#
+#    Calculating the class 8 quotient ...
+##  Sizes:  2  3  4  5  6  7  9  20
+#    Maximal entry: 2
+#    Layer 8 of the lower central series has 2 generators
+#          with the following exponents: 2 2
+#
+#    Calculating the class 9 quotient ...
+##  Sizes:  2  3  4  5  6  7  9  11  26
+#    Maximal entry: 4
+#    Layer 9 of the lower central series has 2 generators
+#          with the following exponents: 2 2
+#
+#    Calculating the class 10 quotient ...
+##  Sizes:  2  3  4  5  6  7  9  11  13  32
+#    Maximal entry: 4
+#    Layer 10 of the lower central series has 1 generators
+#          with the following exponents: 2
+#
+#    Calculating the class 11 quotient ...
+##  Sizes:  2  3  4  5  6  7  9  11  13  14  35
+#    Integer matrix is the identity.
+#    Maximal entry: 5
+
+
+#    The epimorphism :
+#    e1 |---> A
+#    e2 |---> B
+
+
+#    The nilpotent quotient :
+    <A,B,C,D,E,F,G,H,I,J,K,L,M,N
+      |
+        G^2 = H*I*J*K*L*M,
+        H^2 = K,
+        I^2 = J*M*N,
+        J^2 = M,
+        K^2 = L,
+        L^2,
+        M^2 = N,
+        N^2,
+        B^A           =: B*C,
+        B^(A^-1)      =  B*C^-1,
+        C^A           =  C,
+        C^(A^-1)      =  C,
+        C^B           =: C*D,
+        C^(B^-1)      =  C*D^-1*E*J,
+        D^A           =  D*F*K*L,
+        D^(A^-1)      =  D*F^-1*H*L,
+        D^B           =: D*E,
+        D^(B^-1)      =  D*E^-1*I,
+        D^C           =  D*F*K*L,
+        D^(C^-1)      =  D*F^-1*H*L,
+        E^A           =: E*F,
+        E^(A^-1)      =  E*F^-1*H*K,
+        E^B           =  E*I,
+        E^(B^-1)      =  E*I*J,
+        E^C           =  E*G*I*J*K*L*M,
+        E^(C^-1)      =  E*G*H*M*N,
+        E^D           =  E*I,
+        E^(D^-1)      =  E*I*J,
+        F^A           =  F*H*K*L,
+        F^(A^-1)      =  F*H*L,
+        F^B           =: F*G,
+        F^(B^-1)      =  F*G*H*J*N,
+        F^C           =  F*H*K*L,
+        F^(C^-1)      =  F*H*L,
+        F^D           =  F*K*M,
+        F^(D^-1)      =  F*K*L*M*N,
+        F^E           =  F*M,
+        F^(E^-1)      =  F*M*N,
+        G^A           =: G*H,
+        G^(A^-1)      =  G*H*K,
+        G^B           =: G*I,
+        G^(B^-1)      =  G*I*J,
+        G^C           =  G*J*K*L*N,
+        G^(C^-1)      =  G*J*K*M*N,
+        G^D           =  G,
+        G^(D^-1)      =  G,
+        G^E           =  G,
+        G^(E^-1)      =  G,
+        H^A           =  H*L,
+        H^(A^-1)      =  H*L,
+        H^B           =: H*J,
+        H^(B^-1)      =  H*J*M*N,
+        H^C           =  H*L,
+        H^(C^-1)      =  H*L,
+        H^D           =  H,
+        H^(D^-1)      =  H,
+        I^A           =: I*K,
+        I^(A^-1)      =  I*K*L,
+        I^B           =  I,
+        I^(B^-1)      =  I,
+        I^C           =  I*M*N,
+        I^(C^-1)      =  I*M,
+        I^D           =  I,
+        I^(D^-1)      =  I,
+        J^A           =: J*L,
+        J^(A^-1)      =  J*L,
+        J^B           =  J,
+        J^(B^-1)      =  J,
+        J^C           =  J*N,
+        J^(C^-1)      =  J*N,
+        K^A           =  K,
+        K^(A^-1)      =  K,
+        K^B           =: K*M,
+        K^(B^-1)      =  K*M*N,
+        K^C           =  K,
+        K^(C^-1)      =  K,
+        L^A           =  L,
+        L^(A^-1)      =  L,
+        L^B           =: L*N,
+        L^(B^-1)      =  L*N,
+        M^A           =  M,
+        M^(A^-1)      =  M,
+        M^B           =  M,
+        M^(B^-1)      =  M >
+
+#    Class : 10
+#    Nr of generators of each class : 2 1 1 1 1 1 2 2 2 1
+
+
+#    The definitions:
+#    C := [ B, A ]
+#    D := [ B, A, B ]
+#    E := [ B, A, B, B ]
+#    F := [ B, A, B, B, A ]
+#    G := [ B, A, B, B, A, B ]
+#    H := [ B, A, B, B, A, B, A ]
+#    I := [ B, A, B, B, A, B, B ]
+#    J := [ B, A, B, B, A, B, A, B ]
+#    K := [ B, A, B, B, A, B, B, A ]
+#    L := [ B, A, B, B, A, B, A, B, A ]
+#    M := [ B, A, B, B, A, B, B, A, B ]
+#    N := [ B, A, B, B, A, B, A, B, A, B ]

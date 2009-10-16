@@ -1,7 +1,7 @@
 
                   Wishlist for GAP 4.4
 
-      $Id$
+      $Id: wishlist4r4.txt,v 1.5 2002/12/19 08:53:05 gap Exp $
 ---------------------------------------------------------------------------
 
 - Clean up the documentation and install methods for Smith normal forms 

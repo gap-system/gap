@@ -1,0 +1,16 @@
+#Example: "PqDescendants-3" . . . based on manual example
+#(demonstrates `PqDescendants' usage)
+#We compute all capable descendants of order 25 which have
+#exponent-5 class at most 3, exponent 5 and are metabelian.
+#vars: F, procId, G, des;
+#options: 
+F := FreeGroup( 2, "g" );
+G := PcGroupFpGroup( F / [ F.1^5, F.2^5, Comm(F.2, F.1) ] );
+#alt: do
+#procId := PqStart( G );
+#alt: sub <procId> for <G>
+des := PqDescendants( G : Metabelian, ClassBound := 3,
+                          Exponent := 5, CapableDescendants );
+List(des, d -> Length( PCentralSeries( d, 5 ) ) - 1 );
+List(des, d -> Length( DerivedSeries( d ) ) );
+List(des, d -> Maximum( List( Elements(d), Order ) ) );

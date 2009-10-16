@@ -1,7 +1,7 @@
          Setting up the Package/Distribution/Web Page Update Mechanism
          =============================================================
 
-##  $Id$   Frank Lübeck
+##  $Id: README,v 1.4 2004/04/06 19:46:57 gap Exp $   Frank Lübeck
 
 (1) Choose a directory for the setup and copy this whole directory there.
     (To be able to keep archives for some time, there should be space for a
@@ -58,7 +58,7 @@
         the mixer to resolve links from the web pages to manual sections.)
     (e) Copy the 'doc' directory of the GAP in (c) to 'web/Manuals/docs/doc' 
         (this becomes the online version of the manuals). Also, create a link
-        in web/Manuals/docs/doc:     ln -s ../../Packages pkg
+        in web/Manuals/docs:     ln -s ../../Packages pkg
     (f) To produce the .html files install the MIXER (needs Python), see
            http://www.math.rwth-aachen.de/~Max.Neunhoeffer/mixer/
     (g) Call 'mixer.py' inside 'web'.

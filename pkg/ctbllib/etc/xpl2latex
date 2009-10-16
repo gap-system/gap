@@ -1,0 +1,192 @@
+#!/bin/sh
+#############################################################################
+##
+#W  xpl2latex                  GAP utilities                    Thomas Breuer
+##
+#H  @(#)$Id: xpl2latex,v 1.7 2006/05/03 12:07:46 gap Exp $
+##
+#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This script produces a LaTeX version from an example file.
+##
+##  It must be called in the form xpl2latex <infile> <outfile>.
+##
+##  Each block of lines between \beginexample and \endexample is put
+##  into verbatim style, and these lines are indented by 4 characters.
+##  The same holds for lines between \begintt and \endtt.
+##  For lines between \begingap and \endgap, the same holds except that
+##  comment lines are omitted.
+##  (In these cases, the \begin and \end must occur in the beginning of the
+##  lines.)
+##
+##  Text not contained in examples and enclosed in backquote/singlequote
+##  pairs is set in verbatim, a backquote can be escaped with a backslash.
+##  (This part of the conversion is done by the script xpl2latex.awk
+##  because when it appears here it must be included in singlequotes,
+##  and then the shell regards the singlequotes in the script as separators.)
+##
+##  Text not contained in examples and enclosed in stars is set
+##  in boldface, a star can be escaped with a backslash.
+##
+##  Apparently gawk and mawk behave differently w.r.t. processing the script
+##  xpl2latex.awk;
+##  as far as I understand, the result produced by gawk is wrong.
+##  So if one really wants to use gawk then the option --traditional must
+##  be used in the call at the end of this file.
+##
+##  (Using the erroneous function gawk because it allows one to force the
+##  option --traditional that is not accepted by mawk is of course perverse;
+##  but this seems to be the only way to make the script work also for
+##  people who have chosen gawk as their standard awk.)
+##
+gawk --traditional \
+    -v "INFILE=$1" \
+    'BEGIN {
+        printf( "%% This file was created from %s, do not edit!\n", INFILE );
+        bf = 0
+    }
+
+    # Simply copy everything if a line does not match.
+    ! /\\beginexample/ && ! /^\\begintt/ && ! /^\\begingap/ && ! /\*/ {
+        print( $0 )
+    }
+
+    # Each block of lines between \begintt and \endtt is put
+    # into verbatim style, the lines are indented by 4 characters.
+    /^\\begintt/ {
+        print( "% not executed example!\n\\begin{verbatim}" );
+        getline
+        if ( $0 ~ /begintt/ ) {
+            printf( "Error, already in example!\n" )
+        }
+        while ( substr( $0, 1, 6 ) != "\\endtt" ) {
+            printf( "    %s\n", $0 )
+            getline
+        }
+        print( "\\end{verbatim} % not executed example" )
+    }
+
+    # Each block of lines between \beginexample and \endexample is put
+    # into verbatim style, the lines are indented by 4 characters.
+    # (Examples that are commented out are ignored.)
+    /\\beginexample/ {
+        if ( substr( $0, 1, 1 ) == "%" ) {
+            print( $0 )
+            getline
+            while ( $0 !~ "\\endexample" ) {
+                print( $0 )
+                getline
+            }
+            print( $0 )
+        }
+        else {
+            print( "\\begin{verbatim}" )
+            getline
+            if ( $0 ~ /beginexample/ ) {
+                printf( "Error, already in example!\n" )
+            }
+            while ( $0 !~ "\\endexample" ) {
+                printf( "    %s\n", $0 )
+                getline
+            }
+            print( "\\end{verbatim}" )
+        }
+    }
+
+    # Each block of lines between \begingap and \endgap is put
+    # into verbatim style, the lines are indented by 4 characters,
+    # and comment lines are omitted.
+    /^\\begingap/ {
+        print( "\\begin{verbatim}" )
+        getline
+        if ( $0 ~ /begingap/ ) {
+            printf( "Error, already in example!\n" )
+        }
+        while ( substr( $0, 1, 7 ) != "\\endgap" ) {
+            if ( substr( $0, 1, 1 ) != "#" ) {
+                printf( "    %s\n", $0 )
+            }
+            getline
+        }
+        print( "\\end{verbatim}" )
+    }
+
+    # Text not contained in examples and enclosed in stars is set
+    # in boldface.
+    /\*/ && /\circle\*/ {
+        print( $0 )
+    }
+
+    /\*/ && /eqnarray\*/ {
+        print( $0 )
+    }
+
+    /\*/ && ! /\circle\*/ && ! /eqnarray\*/ {
+        s = split( $0, sline, "\\" );
+        k = 0;
+        while ( k < s ) {
+            k = k+1;
+            if ( k > 1 && substr( sline[k], 1, 1 ) == "*" ) {
+                printf( "*" );
+                part = substr( sline[k], 2 )
+            }
+            else {
+                part = sline[k]
+                if ( k > 1 ) {
+                    printf( "\\" )
+                }
+            }
+            r = split( part, line, "\*" );
+            if ( r > 1 ) {
+                if ( bf == 1 ) {
+                    printf( "%s}", line[1] );
+                    j = 3;
+                    bf = 0
+                }
+                else {
+                    j = 2
+                }
+                while ( j < r ) {
+                    printf( "%s{\\bf %s}", line[ j-1 ], line[j] );
+                    j = j+2
+                }
+                if ( j == r ) {
+                    printf( "%s{\\bf %s", line[ j-1 ], line[j] );
+                    bf = 1
+                }
+                else {
+                    printf( "%s", line[r] )
+                }
+            }
+            else {
+                printf( "%s", part )
+            }
+        }
+        printf( "\n" )
+    }
+
+    END {
+        # Check that no brackets are open.
+        if ( bf == 1 ) {
+            print( "still in boldface at end of file" ) > "/dev/stderr"
+        }
+    }' < $1 > xpltmp
+
+
+#############################################################################
+##
+##  Change singlequotes to verbatim,
+##  but note that escaped singlequotes and doublequotes are ignored.
+##
+##  (I was not able to put the awk script here, since it must be included
+##  in singlequotes, and then the shell regards the singlequotes in the
+##  script as separators.)
+##
+gawk --traditional -f $0.awk < xpltmp > $2
+rm xpltmp
+
+
+#############################################################################
+##
+#E
+

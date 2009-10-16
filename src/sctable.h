@@ -2,7 +2,7 @@
 **
 *W  sctable.h                   GAP source                     Marcel Roelofs
 **
-*H  @(#)$Id$
+*H  @(#)$Id: sctable.h,v 4.7 2002/04/15 10:03:57 sal Exp $
 **
 *Y  Copyright (C)  1996,        CWI,        Amsterdam,        The Netherlands
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_sctable_h =
-   "@(#)$Id$";
+   "@(#)$Id: sctable.h,v 4.7 2002/04/15 10:03:57 sal Exp $";
 #endif
 
 

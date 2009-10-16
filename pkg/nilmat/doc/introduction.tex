@@ -1,0 +1,48 @@
+\Chapter{Introduction}
+
+This package is for computing with nilpotent matrix groups over a
+field $\F$, where $\F$ is a finite field $GF(q)$ or the rational
+number field $\Q$.
+
+\package{Nilmat} contains an implementation of algorithms
+developed over the past few years, available in theoretical form
+in the papers \cite{DF04,DF05b,DF06,DF07}. The theory of nilpotent
+matrix groups is an essential part of linear group theory. Many
+structural and classification results for nilpotent linear groups
+are known (see e.g. \cite{Sup76,Weh73}), and specialized methods
+for handling these groups have been developed. The computational
+advantages of nilpotent linear groups have been addressed in
+\cite{DF05a}. For a full description of most of the algorithms of
+this package, further general information, and historical remarks,
+see \cite{DF06,DF07}.
+
+One purpose of \package{Nilmat} is testing nilpotency of a
+subgroup $G$ of $GL(n,\F)$. If $G\< GL(n,\Q)$ is found to be
+nilpotent then the package provides a function for deciding
+whether $G$ is finite. If $G\< GL(n,q)$ is found to be nilpotent
+then the package provides a function that returns the Sylow
+subgroups of $G$. Additional functions allow one to test whether a
+nilpotent subgroup $G$ of $GL(n,\F)$ is completely reducible or
+unipotent, and to compute the order of $G$ if it is finite.
+
+Another feature of \package{Nilmat} is a library of nilpotent
+primitive matrix groups. Specifically, for each integer $n>1$ and
+prime power $q$, this library returns a complete and irredundant
+list of $GL(n,q)$-conjugacy class representatives of the
+nilpotent primitive subgroups of $GL(n,q)$.
+
+The problem of constructing nilpotent matrix groups is interesting
+in its own right. We have included in the package functions
+concerned with this problem. For example, one such function
+constructs maximal absolutely irreducible nilpotent subgroups of
+$GL(n,q)$.
+
+Related research on solvable and polycyclic matrix groups was
+carried out by Bj\accent127orn Assmann and Bettina Eick in
+\cite{AE05,AE07}. Most of the algorithms in \cite{AE05} were
+implemented in the {\GAP} package \package{Polenta}, on which
+\package{Nilmat} partially relies.
+
+This work has emanated from research conducted with the financial
+support of Science Foundation Ireland and the German Academic
+Exchange Service (DAAD).

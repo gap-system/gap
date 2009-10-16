@@ -1,0 +1,119 @@
+Example 1:
+
+Inspect the file tst/test3.omt and check the validity of 
+reading OpenMath objects from the test file, with repeated
+calls to OMGetObject. 
+
+LoadPackage("openmath");
+stream := InputTextFile(Filename(
+	DirectoriesPackageLibrary("openmath","tst"),"test3.omt"));
+OMGetObject(stream);
+# ...
+
+CloseStream( stream );
+
+The same with tst/test5.omt, tst/test6.omt, tst/test_new.omt.
+
+###############################
+
+Example 2:
+Verify that writing an OpenMath object to a stream then reading
+it back in doesn't change its value.
+
+LoadPackage("openmath");
+
+g := SymmetricGroup(5);
+t := "";
+s := OutputTextString(t, true);
+OMPutObject(s, g);
+CloseStream(s);
+
+s := InputTextString(t);
+h := OMGetObject(s);
+CloseStream(s);
+h = g;
+
+###############################
+Example 3:
+
+To test:
+
+OMTest(<object>);
+
+returns true iff Encoding and Decoding in OpenMath is the identity on
+<object>.
+
+###########################
+
+Example 4: Printing OM objects
+
+g := SymmetricGroup(5);
+OMPrint(g);
+
+###########################
+
+Example 5: Pasting OM objects
+
+stream := InputTextUser(); g := OMGetObject(stream); CloseStream(stream);
+
+#now paste in the following.
+#Note: the encoding line is optional.
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<OMOBJ>
+        <OMA>
+                <OMS cd="group1" name="group_by_generators"/>
+                <OMA>
+                        <OMS cd="permut1" name="permutation"/>
+                        <OMI> 2 </OMI>
+                        <OMI> 3 </OMI>
+                        <OMI> 1 </OMI>
+                </OMA>
+                <OMA>
+                        <OMS cd="permut1" name="permutation"/>
+                        <OMI> 2 </OMI>
+                        <OMI> 1 </OMI>
+                </OMA>
+
+        </OMA>
+</OMOBJ>
+
+# Get more examples in dir tst, files test3.omt, test5.omt,
+# test6.omt, test_new.omt.
+
+
+####################################################################
+
+Example 6: Pasting a list of permutations
+
+
+stream := InputTextUser(); g := OMGetObject(stream); CloseStream(stream);
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<OMOBJ>
+	<OMA>
+		<OMS cd="list1" name="list"/>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI>2</OMI>
+			<OMI>3</OMI>
+			<OMI>1</OMI>
+		</OMA>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI>2</OMI>
+			<OMI>1</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+
+####################################################################
+
+Andrew Solomon
+St. Andrews
+9 March 2000.
+
+(OpenMath code updated by Alexander Konovalov in April 2009)
+

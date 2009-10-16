@@ -1,0 +1,9 @@
+#Example: "PqDescendantsTreeCoclassOne-25-i" . based on manual example
+#(demonstrates usage of `PqDescendantsTreeCoclassOne', by generating
+# all descendants of the elementary abelian group of order 25 of
+# 5-coclass 1 up to 5-class 15. Most effective in XGAP.)
+#vars: G, procId;
+#options:
+G := ElementaryAbelianGroup( 25 );
+procId := PqStart( G );
+PqDescendantsTreeCoclassOne( procId : TreeDepth := 15 );;

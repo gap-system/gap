@@ -1,0 +1,6 @@
+/* AUTOMATICALLY GENERATED ON Tue Mar 10 08:25:06 GMT 2009*/
+/* DO NOT EDIT */
+
+grant {
+  permission java.lang.RuntimePermission "exitVM";
+};

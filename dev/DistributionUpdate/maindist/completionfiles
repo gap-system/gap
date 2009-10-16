@@ -1,7 +1,7 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
+##  $Id: completionfiles,v 1.1 2003/11/25 16:41:11 gap Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'

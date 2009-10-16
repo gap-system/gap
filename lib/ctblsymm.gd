@@ -3,7 +3,7 @@
 #W  ctblsymm.gd                 GAP library                    Goetz Pfeiffer
 #W                                                               Felix Noeske
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblsymm.gd,v 4.17 2008/08/18 16:05:45 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -70,12 +70,19 @@
 ##  symbol.
 ##
 Revision.ctblsymm_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblsymm.gd,v 4.17 2008/08/18 16:05:45 gap Exp $";
 
 
 #############################################################################
 ##
 #F  BetaSet( <alpha> )  . . . . . . . . . . . . . . . . . . . . . . beta set.
+##
+##  <ManSection>
+##  <Func Name="BetaSet" Arg='alpha'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "BetaSet" );
 
@@ -84,12 +91,26 @@ DeclareGlobalFunction( "BetaSet" );
 ##
 #F  CentralizerWreath( <sub_cen>, <ptuple> )  . . . . centralizer in G wr Sn.
 ##
+##  <ManSection>
+##  <Func Name="CentralizerWreath" Arg='sub_cen, ptuple'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "CentralizerWreath" );
 
 
 #############################################################################
 ##
 #F  PowerWreath( <sub_pm>, <ptuple>, <p> )  . . . . . . power map in G wr Sn.
+##
+##  <ManSection>
+##  <Func Name="PowerWreath" Arg='sub_pm, ptuple, p'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "PowerWreath" );
 
@@ -98,12 +119,26 @@ DeclareGlobalFunction( "PowerWreath" );
 ##
 #F  InductionScheme( <n> )  . . . . . . . . . . . . . . . . removal of hooks.
 ##
+##  <ManSection>
+##  <Func Name="InductionScheme" Arg='n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "InductionScheme" );
 
 
 #############################################################################
 ##
 #F  MatCharsWreathSymmetric( <tbl>, <n> ) . . .  character matrix of G wr Sn.
+##
+##  <ManSection>
+##  <Func Name="MatCharsWreathSymmetric" Arg='tbl, n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "MatCharsWreathSymmetric" );
 
@@ -112,12 +147,26 @@ DeclareGlobalFunction( "MatCharsWreathSymmetric" );
 ##
 #F  CharValueSymmetric( <n>, <beta>, <pi> ) . . . . . character value in S_n.
 ##
+##  <ManSection>
+##  <Func Name="CharValueSymmetric" Arg='n, beta, pi'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "CharValueSymmetric" );
 
 
 #############################################################################
 ##
 #V  CharTableSymmetric  . . . .  generic character table of symmetric groups.
+##
+##  <ManSection>
+##  <Var Name="CharTableSymmetric"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalVariable( "CharTableSymmetric",
     "generic character table of symmetric groups" );
@@ -127,6 +176,13 @@ DeclareGlobalVariable( "CharTableSymmetric",
 ##
 #V  CharTableAlternating  . .  generic character table of alternating groups.
 ##
+##  <ManSection>
+##  <Var Name="CharTableAlternating"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalVariable( "CharTableAlternating",
     "generic character table of alternating groups" );
 
@@ -135,12 +191,26 @@ DeclareGlobalVariable( "CharTableAlternating",
 ##
 #F  CharValueWeylB( <n>, <beta>, <pi> ) . . . . . character value in 2 wr Sn.
 ##
+##  <ManSection>
+##  <Func Name="CharValueWeylB" Arg='n, beta, pi'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "CharValueWeylB" );
 
 
 #############################################################################
 ##
 #V  CharTableWeylB  . . . . generic character table of Weyl groups of type B.
+##
+##  <ManSection>
+##  <Var Name="CharTableWeylB"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalVariable( "CharTableWeylB",
     "generic character table of Weyl groups of type B" );
@@ -150,6 +220,13 @@ DeclareGlobalVariable( "CharTableWeylB",
 ##
 #V  CharTableWeylD  . . . . generic character table of Weyl groups of type D.
 ##
+##  <ManSection>
+##  <Var Name="CharTableWeylD"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalVariable( "CharTableWeylD",
     "generic character table of Weyl groups of type D" );
 
@@ -158,6 +235,13 @@ DeclareGlobalVariable( "CharTableWeylD",
 ##
 #F  CharValueWreathSymmetric(<sub>,<n>,<beta>,<pi>) . char. value in G wr Sn.
 ##
+##  <ManSection>
+##  <Func Name="CharValueWreathSymmetric" Arg='sub,n,beta,pi'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "CharValueWreathSymmetric" );
 
 
@@ -165,16 +249,54 @@ DeclareGlobalFunction( "CharValueWreathSymmetric" );
 ##
 #F  CharacterTableWreathSymmetric( <tbl>, <n> )  . .  char. table of G wr Sn.
 ##
-##  returns the character table of the wreath product of a group $G$ with
-##  the full symmetric group on $n$ points,
-##  where <tbl> is the character table of $G$.
+##  <#GAPDoc Label="CharacterTableWreathSymmetric">
+##  <ManSection>
+##  <Func Name="CharacterTableWreathSymmetric" Arg='tbl, n'/>
 ##
-##  The result has values for `ClassParameters' and `CharacterParameters'
-##  (see~"ctbllib:ClassParameters"
-##  in the manual for the {\GAP} Character Table Library) stored,
+##  <Description>
+##  returns the character table of the wreath product of a group <M>G</M>
+##  with the full symmetric group on <M>n</M> points,
+##  where <A>tbl</A> is the character table of <M>G</M>.
+##  <P/>
+##  The result has values for <Ref Attr="ClassParameters"/> and
+##  <Ref Attr="CharacterParameters"/> stored,
 ##  the entries in these lists are sequences of partitions.
 ##  Note that this parametrization prevents the principal character from
 ##  being the first one in the list of irreducibles.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> c3:= CharacterTable( "Cyclic", 3 );;
+##  gap> wr:= CharacterTableWreathSymmetric( c3, 2 );;
+##  gap> Display( wr );
+##  C3wrS2
+##  
+##       2  1   .   .   1  .   1  1   1   1
+##       3  2   2   2   2  2   2  1   1   1
+##  
+##         1a  3a  3b  3c 3d  3e 2a  6a  6b
+##      2P 1a  3b  3a  3e 3d  3c 1a  3c  3e
+##      3P 1a  1a  1a  1a 1a  1a 2a  2a  2a
+##  
+##  X.1     1   1   1   1  1   1 -1  -1  -1
+##  X.2     2   A  /A   B -1  /B  .   .   .
+##  X.3     2  /A   A  /B -1   B  .   .   .
+##  X.4     1 -/A  -A  -A  1 -/A -1  /A   A
+##  X.5     2  -1  -1   2 -1   2  .   .   .
+##  X.6     1  -A -/A -/A  1  -A -1   A  /A
+##  X.7     1   1   1   1  1   1  1   1   1
+##  X.8     1 -/A  -A  -A  1 -/A  1 -/A  -A
+##  X.9     1  -A -/A -/A  1  -A  1  -A -/A
+##  
+##  A = -E(3)^2
+##    = (1+ER(-3))/2 = 1+b3
+##  B = 2*E(3)
+##    = -1+ER(-3) = 2b3
+##  gap> CharacterParameters( wr )[1];
+##  [ [ 1, 1 ], [  ], [  ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CharacterTableWreathSymmetric" );
 
@@ -183,6 +305,13 @@ DeclareGlobalFunction( "CharacterTableWreathSymmetric" );
 ##
 #V  CharTableDoubleCoverSymmetric
 ##
+##  <ManSection>
+##  <Var Name="CharTableDoubleCoverSymmetric"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalVariable( "CharTableDoubleCoverSymmetric",
     "gen. char. table of the standard Schur double cover of symm. groups" );
 
@@ -190,6 +319,13 @@ DeclareGlobalVariable( "CharTableDoubleCoverSymmetric",
 #############################################################################
 ##
 #V  CharTableDoubleCoverAlternating
+##
+##  <ManSection>
+##  <Var Name="CharTableDoubleCoverAlternating"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalVariable( "CharTableDoubleCoverAlternating",
     "generic char. table of the Schur double cover of alternating groups" );

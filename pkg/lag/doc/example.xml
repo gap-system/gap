@@ -1,0 +1,230 @@
+<Chapter Label="Example"><Heading>A sample calculation with &LAGUNA;</Heading>
+
+Before explaining the theory behind the &LAGUNA; package we present a simple
+calculation to show the reader what &LAGUNA; is capable of computing. We will carry out some
+calculations in the group algebra of the dihedral group of order 16 over the
+field of two elements. First we create this modular group algebra.
+
+<Listing>
+gap> K := GF( 2 );
+GF(2)
+gap> G := DihedralGroup( 16 );
+&lt;pc group of size 16 with 4 generators&gt;
+gap> KG := GroupRing( K, G );
+&lt;algebra-with-one over GF(2), with 4 generators&gt;
+</Listing>
+
+<P/>
+
+The group algebra <Code>KG</Code> has some properties and attributes 
+that are direct
+consequences of its definition. These can be checked very quickly.
+
+<Listing>
+gap> IsGroupAlgebra( KG ); 
+true
+gap> IsPModularGroupAlgebra( KG );
+true
+gap> IsFModularGroupAlgebra( KG );
+true
+gap> UnderlyingGroup( KG );
+&lt;pc group of size 16 with 4 generators&gt;
+gap> LeftActingDomain( KG );
+GF(2)
+</Listing>
+
+Since <Code>KG</Code> is naturally a group ring, the information provided by
+<Code>LeftActingDomain</Code> can also be obtained using two other functions 
+as follows.
+
+<Listing>
+gap> UnderlyingRing( KG );
+GF(2)
+gap> UnderlyingField( KG );
+GF(2)
+</Listing>
+<P/>
+Now we take an arbitrary element from the group algebra and investigate
+its properties.
+
+<Listing>
+gap> x := Random( KG );
+(Z(2)^0)*f3+(Z(2)^0)*f4+(Z(2)^0)*f1*f2+(Z(2)^0)*f2*f4+(Z(2)^0)*f3*f4+(Z(2)^
+0)*f1*f2*f3+(Z(2)^0)*f1*f2*f4+(Z(2)^0)*f1*f3*f4
+gap> Support( x );
+[ f3, f4, f1*f2, f2*f4, f3*f4, f1*f2*f3, f1*f2*f4, f1*f3*f4 ]
+gap> CoefficientsBySupport( x );
+[ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]
+gap> Length( x );
+8
+gap> TraceOfMagmaRingElement( x );
+0*Z(2)
+</Listing>
+
+<P/>
+We may also want to  check whether <Code>x</Code> is symmetric, that is whether
+it
+coincides with its involution.
+
+<Listing>
+gap> Involution( x );
+(Z(2)^0)*f3+(Z(2)^0)*f4+(Z(2)^0)*f1*f2+(Z(2)^0)*f2*f3+(Z(2)^0)*f3*f4+(Z(2)^
+0)*f1*f2*f3+(Z(2)^0)*f1*f2*f4+(Z(2)^0)*f1*f3*f4
+gap> x*Involution( x );
+(Z(2)^0)*f2+(Z(2)^0)*f2*f3+(Z(2)^0)*f2*f4+(Z(2)^0)*f2*f3*f4
+gap> x=Involution( x );
+false
+</Listing>
+
+<P/>
+We can also calculate the augmentation of <Code>x</Code>, which is defined as
+the sum of its coefficients.
+
+
+<Listing>
+gap> Augmentation( x );
+0*Z(2)
+gap> IsUnit( KG, x );
+false
+</Listing>
+
+Since the  augmentation of <Code>x</Code> 
+is zero, <Code>x</Code> is not invertible, but
+<Code>1+x</Code> is. This is again very easy to check.
+
+<Listing>
+gap> y := One( KG ) + x;
+(Z(2)^0)*&lt;identity&gt; of ...+(Z(2)^0)*f3+(Z(2)^0)*f4+(Z(2)^0)*f1*f2+(Z(2)^
+0)*f2*f4+(Z(2)^0)*f3*f4+(Z(2)^0)*f1*f2*f3+(Z(2)^0)*f1*f2*f4+(Z(2)^0)*f1*f3*f4
+gap> IsUnit( KG, y );
+true
+</Listing>
+
+&LAGUNA; can calculate the inverse of <Code>1+x</Code> very quickly.
+
+<Listing>
+gap> y^-1;
+(Z(2)^0)*f1+(Z(2)^0)*f2+(Z(2)^0)*f3+(Z(2)^0)*f4+(Z(2)^0)*f1*f2+(Z(2)^
+0)*f1*f3+(Z(2)^0)*f2*f3+(Z(2)^0)*f2*f4+(Z(2)^0)*f1*f3*f4
+gap> y*y^-1;
+(Z(2)^0)*&lt;identity&gt; of ...
+</Listing>
+
+<P/>
+Now we calculate some 
+important ideals of <Code>KG</Code>. First we will obtain the augmentation
+ideal which is the set of elements with augmentation zero. The augmentation
+ideal of <Code>KG</Code> coincides with the radical of <Code>KG</Code>. Let's
+check this.
+
+
+<Listing>
+gap> AugmentationIdeal( KG );
+&lt;two-sided ideal in &lt;algebra-with-one of dimension 16 over GF(2)&gt;, 
+  (dimension 15)&gt;
+gap> AugmentationIdeal( KG ) = RadicalOfAlgebra( KG );
+true
+</Listing>
+
+<P/>
+It is well-known that the augmentation ideal of <Code>KG</Code> is a nilpotent
+ring. Using Jennings' theory on dimension subgroups, we can obtain its 
+nilpotency index without immediate calculation of its powers. This is
+implemented in &LAGUNA;.
+
+<Listing>
+gap> AugmentationIdealNilpotencyIndex( KG );
+9
+</Listing>
+
+On the other hand, we can also  calculate the powers of the augmentation ideal.
+
+<Listing>
+gap> AugmentationIdealPowerSeries( KG );
+[ &lt;algebra of dimension 15 over GF(2)&gt;, &lt;algebra of dimension 13 over GF(2)&gt;, 
+  &lt;algebra of dimension 11 over GF(2)&gt;, &lt;algebra of dimension 9 over GF(2)&gt;, 
+  &lt;algebra of dimension 7 over GF(2)&gt;, &lt;algebra of dimension 5 over GF(2)&gt;, 
+  &lt;algebra of dimension 3 over GF(2)&gt;, &lt;algebra of dimension 1 over GF(2)&gt;, 
+  &lt;algebra over GF(2)&gt; ]
+gap> Length( last );
+9
+</Listing>
+
+<P/>
+Now let's work with the unit group of <Code>KG</Code>.
+First we calculate the normalized unit group, which is the set of elements with
+augmentation one. The generators of the unit group
+are obtained as explained in Chapter~<Ref Sect="Third"/>. This can be computed very
+quickly, but computation inside this group is very inefficient.
+
+<Listing>
+gap> V := NormalizedUnitGroup( KG );
+&lt;group with 15 generators&gt;
+</Listing>
+
+In order to make our computation in the normalised unit group efficient,  
+we calculate a power-commutator presentation for this group. 
+
+<Listing>
+gap> W := PcNormalizedUnitGroup( KG );
+&lt;pc group of size 32768 with 15 generators&gt;
+</Listing>
+
+&GAP; has many efficient and practical algorithms for groups given by a
+power-commutator presentation. In order to use these
+algorithms to carry out computation in the normalised unit group, we need to
+set up an isomorphism between the outputs of <Code>NormalizedUnitGroup</Code>
+and <Code>PcNormalizedUnitGroup</Code>.
+
+<Listing>
+gap> f := NaturalBijectionToNormalizedUnitGroup( KG );
+[ f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15 ] -&gt; 
+[ (Z(2)^0)*f2, (Z(2)^0)*f1, (Z(2)^0)*f3, ... ]
+</Listing>
+
+<P/>
+Let's now compute, for  instance, the fourth term of the lower
+central series in the normalised unit group. First we carry out the computation
+in the group which is determined by the power-commutator presentation, then we
+map the result into our group algebra.
+
+<Listing>
+gap> l := LowerCentralSeries( W );
+[ &lt;pc group of size 32768 with 15 generators>, 
+  Group([ f3, f5*f8*f10*f12*f13*f14*f15, f6*f8*f12*f14*f15, f7, f9*f12, 
+      f10*f14, f11*f13, f13*f14, f14*f15 ]), 
+  Group([ f7, f9*f12, f10*f15, f11*f15, f13*f15, f14*f15 ]), 
+  Group([ f11*f15, f13*f15, f14*f15 ]), Group([ &lt;identity&gt; of ... ]) ]
+gap> S := l[4];
+Group([ f11*f15, f13*f15, f14*f15 ])
+gap> List( GeneratorsOfGroup( S ), x -> x^f );
+[ (Z(2)^0)*&lt;identity&gt; of ...+... ]
+</Listing> 
+
+<P/>
+We will finish our example by calculating some properties of the  
+Lie algebra associated with <Code>KG</Code>. 
+This example needs no further explanation.
+
+<Listing>
+gap> L := LieAlgebra( KG );
+&lt;Lie algebra of dimension 16 over GF(2)&gt;
+gap&gt; D := LieDerivedSubalgebra( L );
+&lt;Lie algebra of dimension 9 over GF(2)&gt;
+gap> C := LieCentre( L );
+&lt;Lie algebra of dimension 7 over GF(2)&gt;
+gap> LieLowerNilpotencyIndex( KG );
+5
+gap> LieUpperNilpotencyIndex( KG );
+5
+gap> IsLieAbelian( L );
+false
+gap> IsLieSolvable( L );
+true
+gap> IsLieMetabelian( L );
+false
+gap> IsLieCentreByMetabelian( L );
+true
+</Listing>
+</Chapter>
+

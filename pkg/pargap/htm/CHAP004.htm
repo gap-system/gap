@@ -1,0 +1,456 @@
+<html><head><title>[ParGAP] 4 Tutorial</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP003.htm">Previous</a>] [<a href ="CHAP005.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>4 Tutorial</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP004.htm#SECT001">Trivial Parallelism</a>
+<li> <A HREF="CHAP004.htm#SECT002">Using ParGAP interactively</a>
+<li> <A HREF="CHAP004.htm#SECT003">Streaming</a>
+<li> <A HREF="CHAP004.htm#SECT004">TOP-C model for non-trivial parallelism</a>
+</ol><p>
+<p>
+Section&nbsp;<a href="CHAP004.htm#SECT001">Trivial Parallelism</a> covers trivial  parallelism  (the  simplest
+and most common form  of  parallel  application).  This  is  followed  in
+Section&nbsp;<a href="CHAP004.htm#SECT002">Using ParGAP interactively</a> by  a  description  of  how  to  use
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>  interactively,  and  Section&nbsp;<a href="CHAP004.htm#SECT003">Streaming</a>   illustrates   these
+principles with a short implementation of parallel  streaming.  Streaming
+refers to  simultaneously  running  different  algorithms  for  the  same
+problem in different ``streams'' or processes, and  accepting  the  first
+answer that returns. The remaining processes for the other algorithms are
+then terminated. <font face="Gill Sans,Helvetica,Arial">ParGAP</font> allows those processes to reside on  a  single
+CPU or on different CPUs. Hence, in the case of streaming,  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  is
+potentially useful even if one has  only  a  single  computer  available,
+since multiple streams can still reside locally in separate processes.
+<p>
+For more sophisticated (non-trivial)  parallel  applications,  the  TOP-C
+model  of  parallelism  is  recommended,   and   it   is   described   in
+Section&nbsp;<a href="CHAP004.htm#SECT004">TOP-C model for non-trivial parallelism</a>.
+<p>
+<p>
+<a name="SECT001"><h2>4.1 Trivial Parallelism</h2></a>
+<p><p>
+In parallel computation, perhaps 80% of the applications fall under  the
+heading of ``trivial parallelism''. These are  situations  in  which  one
+must compute many unrelated cases. For  example,  perhaps  200  different
+cases must be computed and results returned for each case and  each  case
+has no interaction with any other one. In the absence of shared data,  it
+would be common to start 20 <font face="Gill Sans,Helvetica,Arial">GAP</font> jobs on 20 distinct workstations in  a
+student computer laboratory. If there are 200 cases, then one  writes  20
+different ``batch jobs'', each batch job handling 10 distinct cases.
+<p>
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>  provides   strong   support   for   this   common   situation.
+Conceptually, one is always talking to <font face="Gill Sans,Helvetica,Arial">ParGAP</font> on a master process (the
+local workstation), and the master process talks to each of various slave
+processes. In its simplest form, one merely generates a  list  of  inputs
+for the cases, and  writes  a  suitable  function  to  provide  the  case
+information. Effectively, trivial  parallelism  can  be  expressed  by  a
+parallel version of <font face="Gill Sans,Helvetica,Arial">GAP</font>'s <code>List()</code>  function  (see&nbsp;<a href="../../../doc/htm/ref/CHAP021.htm#SSEC016.16">List</a>  in  the
+Reference  Manual),  which  is  called  <code>ParList()</code>  (see&nbsp;<a href="CHAP002.htm#SSEC001.13">ParList</a>)   in
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>.
+<p>
+The following is  an  example  of  a  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  session  that  uses  the
+<code>ParList()</code>   function.   Observe    the    use    of    <code>BroadcastMsg()</code>
+(see&nbsp;<a href="CHAP002.htm#SSEC001.6">BroadcastMsg</a>)      to      ensure      that      the      function
+<code>AnalyzePrimitivePermGroupsOfOrder()</code> is known to the slaves.
+<p>
+<pre>
+gap&gt; AnalyzePrimitivePermGroupsOfOrder := function(ord)
+&gt;      #returns a list of data records of all primitive 
+&gt;      #permutation groups of order ord that are represented 
+&gt;      #as permutation groups in GAP's primitive group database
+&gt;      
+&gt;      local PrimitiveGroupsOfOrder, AnalyzePrimitivePermGroup;
+&gt;    
+&gt;      PrimitiveGroupsOfOrder :=
+&gt;        ord -&gt; List( [1..NrPrimitiveGroups(ord)],
+&gt;                     i -&gt; PrimitiveGroup(ord,i) );
+&gt;    
+&gt;      AnalyzePrimitivePermGroup :=
+&gt;        grp -&gt; rec( order := Size(grp),
+&gt;                    degree := NrMovedPoints(grp),
+&gt;                    baseSize := Size(BaseOfGroup(grp)) );
+&gt;    
+&gt;      return List( Filtered( PrimitiveGroupsOfOrder(ord),
+&gt;                             IsPermGroup ),
+&gt;                   AnalyzePrimitivePermGroup );
+&gt;    end;;
+gap&gt; #Define AnalyzePrimitivePermGroupsOfOrder on slaves
+gap&gt; BroadcastMsg( 
+&gt;      PrintToString("AnalyzePrimitivePermGroupsOfOrder := ",
+&gt;                    AnalyzePrimitivePermGroupsOfOrder ) );
+gap&gt; ParList( [2..256], AnalyzePrimitivePermGroupsOfOrder );
+[ [ rec( order := 2, degree := 2, baseSize := 1 ) ], 
+  [ rec( order := 3, degree := 3, baseSize := 1 ), 
+  &lt;...many lines of output omitted...&gt;
+</pre>
+<p>
+As one expects, the answer  is  computed  in  parallel  in  a  time  that
+decreases linearly with the number of processors. Hence a Beowulf cluster
+of 16 processors (1 <font face="Gill Sans,Helvetica,Arial">ParGAP</font> master and 15 <font face="Gill Sans,Helvetica,Arial">ParGAP</font> slaves) will return
+this information approximately 15 times as fast as  a  single  processor,
+greatly facilitating interactive exploration of the properties of various
+groups.
+<p>
+If each single case can be executed quickly, then the execution time  for
+<code>ParList()</code> can be dominated by the network overhead imposed  by  message
+passing between the master and slaves. In this case,  an  optional  third
+parameter to <code>ParList()</code> specifies the number of cases to be submitted to
+a slave in a single message (modulo how many cases are left, of  course).
+As an example, suppose we are interested in finding those  of  the  first
+100,000 integers that have many distinct prime factors, but to reduce the
+network overhead we wish to batch 1000 cases at a  time  to  the  slaves.
+Then one is able to execute the following.
+<p>
+<pre>
+gap&gt; ParList([1..100000],
+&gt;            i -&gt; Length(PrimePowersInt(i))/2, 1000);
+</pre>
+<p>
+<p>
+<a name="SECT002"><h2>4.2 Using ParGAP interactively</h2></a>
+<p><p>
+Having seen an example where <font face="Gill Sans,Helvetica,Arial">ParGAP</font> can be useful, one next  needs  to
+know what is involved in setting up and using <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  runs
+only on UNIX, due to its dependence on an MPI  subset  (included  in  the
+distribution) that calls UNIX sockets. It  should  be  possible  to  port
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> to Windows, either through the use of Cygwin (UNIX emulation on
+Windows) or through a native Windows MPI implementation.  Similarly,  the
+code has been written in a ``vanilla'' manner, so that in  principle,  it
+should be easy to port to another interactive language, such as MAGMA  or
+LISP. An older version was in fact written in LISP&nbsp;<a href="biblio.htm#Coo95"><cite>Coo95</cite></a>, although
+the current version is not implemented in LISP. In the following,  recall
+that <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  employs  a  master-slave  architecture,  with  the  local
+process being the ``master'' process, and all others being ``slaves''.
+<p>
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> is installed in the same way as other  <font face="Gill Sans,Helvetica,Arial">GAP</font>  packages.  After
+extracting the <font face="Gill Sans,Helvetica,Arial">ParGAP</font> files, one invokes <code>configure</code> and <code>make</code>.  (See
+Section&nbsp;<a href="CHAP001.htm#SECT002">Installing ParGAP</a> for the details.) One next writes a file with
+a list of  slave  processors  to  attach,  and  an  indication  of  where
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> is located on that processor; the usual way  is  to  name  this
+file <code>procgroup</code> and have it in the directory  one  starts  up  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+(see Section&nbsp;<a href="CHAP001.htm#SECT003">Running ParGAP</a> for details). An example  <code>procgroup</code>  file
+is:
+<p>
+<pre>
+# This is a sample ParGAP procgroup file.
+# Lines starting with a # are comments.
+# Blank lines are also treated as comments.
+
+# The following line generates the MASTER process
+local 0
+
+# Each of the following `localhost' lines generates 
+# a SLAVE process on the same machine as the MASTER
+localhost 1 /proj/sparc/gap4r3/pkg/pargap/bin/pargap.sh
+localhost 1 /proj/sparc/gap4r3/pkg/pargap/bin/pargap.sh
+
+# The following line generates a SLAVE process on a remote
+# machine: `iron.ccs.neu.edu' (called via rsh or ssh or ...)
+iron.ccs.neu.edu 1 /proj/alpha/gap4r3/pkg/pargap/bin/pargap.sh
+</pre>
+<p>
+Next, instead of invoking <code>gap</code>, one  then  invokes  the  supplied  shell
+script,  <code>pargap.sh</code>,  (possibly  modified  and/or  renamed;  again   see
+Section&nbsp;<a href="CHAP001.htm#SECT003">Running ParGAP</a> for the details). Observe that unlike most other
+<font face="Gill Sans,Helvetica,Arial">GAP</font> packages, one should not  call  <code>RequirePackage()</code>  function  from
+within a <font face="Gill Sans,Helvetica,Arial">GAP</font> session to start <font face="Gill Sans,Helvetica,Arial">ParGAP</font>. As usual,  master  and  slave
+processes read a  <code>.gaprc</code>  file  in  the  home  directory,  if  present.
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> looks  for  a  file  named  <code>procgroup</code>  file  in  the  current
+directory, but can be directed  to  use  a  different  file  through  the
+<code>-p4pg</code> switch.
+<p>
+The following example assumes that <code>pargap</code> is a symbolic link  or  alias
+for the full pathname of <code>pargap.sh</code>. Hence, if one always uses <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+with the slave processes specified in <code>myprocgroup.big</code>, one may wish  to
+set up an alias or else a  symbolic  link  to  a  script  containing  the
+equivalent of:
+<p>
+<code>pargap.sh -p4pg </code><var>PATH</var><code>/myprocgroup.big</code>
+<p>
+Observe also that heterogeneous computing  is  supported,  in  that  each
+slave machine may be a different dialect of UNIX running under  different
+hardware.
+<p>
+Within <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, the standard message-passing commands  (send,  receive,
+probe,  etc.)  are  available.  The  slaves  are  numbered  consecutively
+starting at&nbsp;1. If no slave  parameter  is  supplied  for  <code>SendMsg()</code>  or
+<code>SendRecvMsg()</code>, then the default slave is&nbsp;1. Most other commands take  a
+default  slave  parameter,  <code>MPI_ANY_SOURCE</code>  (meaning  ``<code>ANY_SLAVE</code>'').
+<code>PingSlave()</code> sends a ``null message'', and waits for an  acknowledgement
+that the slave is alive.
+<p>
+The command <code>SendMsg(</code><var>string</var><code>, </code><var>i</var><code>);</code> sends the (string) message <var>string</var>
+to slave <var>i</var>. Slave&nbsp;<var>i</var> then evaluates <var>string</var> as a <font face="Gill Sans,Helvetica,Arial">GAP</font> command,  and
+returns an answer. If a command has no answer, (such as <code>"x:=3;"</code>),  then
+the string <code>"</code><var>no_return_val</var><code>"</code> is  returned.  If  multiple  commands  are
+sent, such as <code>"x:=3; y:=4; x+y;"</code>, then only the last  return  value  is
+returned. Note that the final semicolon, normally required by <font face="Gill Sans,Helvetica,Arial">GAP</font>,  is
+optional in a command string for a message.
+<p>
+Most of the other commands are clear from context. Every <code>SendMsg()</code> to a
+slave must be balanced  by  a  <code>RecvMsg()</code>,  except  where  the  commands
+<code>FlushAllMsgs()</code> and <code>ParReset()</code> are used to flush any pending  messages
+from a slave. A <code>SendRecvMsg(</code><var>string</var><code>, </code><var>i</var><code>)</code> command is equivalent to the
+consecutive commands <code>SendMsg(</code><var>string</var><code>,  </code><var>i</var><code>)</code>  and  <code>RecvMsg(</code><var>i</var><code>)</code>.  The
+command <code>BroadcastMsg()</code> sends its string argument  to  each  slave,  and
+there is no reply message. <code>ParEval()</code> is like <code>BroadcastMsg()</code>,  but  it
+also evaluates on the master process. If one is unsure whether there is a
+pending message, one can invoke <code>ProbeMsgNonBlocking()</code> or  <code>ProbeMsg()</code>;
+if no slave parameter is provided, the default is  <code>MPI_ANY_SOURCE</code>.  The
+command <code>ParRead()</code> is a parallel version of <font face="Gill Sans,Helvetica,Arial">GAP</font>'s  <code>Read()</code>  command;
+it is useful for ensuring that the slaves  and  master  share  a  similar
+environment. Other examples of commands that are  analogous  to  <font face="Gill Sans,Helvetica,Arial">GAP</font>'s
+built-in      commands       include:       <code>ParReread</code>,       <code>ParEval</code>,
+<code>ParInstallGlobalFunction</code>    and     <code>ParInstallGlobalFunction</code>.     See
+Section&nbsp;<a href="CHAP002.htm#SECT001">Slave Listener Commands</a> for more complete descriptions  of  the
+above commands.
+<p>
+An illustration of the usage of  the  commands  mentioned  above  with  a
+sample <font face="Gill Sans,Helvetica,Arial">ParGAP</font> session, for which a <code>procgroup</code> file  has  defined  two
+slaves is the first example given  in  Section&nbsp;<a href="CHAP001.htm#SECT004">Extended  Example</a>.  It's
+recommended that you review that example at this point.
+<p>
+<p>
+<a name="SECT003"><h2>4.3 Streaming</h2></a>
+<p><p>
+Next, we demonstrate a  simple  implementation  of  ``streaming''  as  an
+example of how easy it is to use  the  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  tools  to  provide  new
+functionality.  To  the  best  of  this  author's  knowledge,  the   term
+``streaming'' originated with Charles Leedham-Green at the conference  on
+which this proceedings is based, where he  made  a  general  request  for
+streaming functionality to be implemented in some software system.
+<p>
+The idea of streaming is that one may have two algorithms for  solving  a
+problem. One would like to to solve the  problem  simultaneously  on  two
+processors, each using a distinct algorithm.  Whichever  processor  finds
+the solution first should report back to the master process.  The  master
+process should then interrupt the other slave, so as to make it available
+for further  computation.  This  is  useful  when  one  has  a  heuristic
+available that may finish early with the correct answer, or may  continue
+for a very long time. The heuristic can then  be  ``streamed''  alongside
+the standard algorithm, in full confidence that  the  standard  algorithm
+will provide a reasonable upper bound on the time to compute an answer.
+<p>
+One way to provide ``streaming'' functionality is by  the  implementation
+of a function we describe below that is inspired  by  <font face="Gill Sans,Helvetica,Arial">GAP</font>'s  <code>First()</code>
+function (see&nbsp;<a href="../../../doc/htm/ref/CHAP021.htm#SSEC016.19">First</a> in the <font face="Gill Sans,Helvetica,Arial">GAP</font> Reference Manual).  The  function
+<code>First()</code> takes a list and boolean function as arguments, and returns the
+first element of the list for which the boolean function returns  <code>true</code>.
+In   contrast,   we   define   a   corresponding   <font face="Gill Sans,Helvetica,Arial">ParGAP</font>    function,
+<code>ParFirstResult()</code>, which takes  a  list  and  a  (general)  function  as
+arguments. Messages are sent to the slaves causing  the  <i>i</i>th  slave  to
+evaluate the function on the <i>i</i>th list element. The  value  returned  is
+the value obtained from whichever slave  finishes  first.  Note  that  in
+consistency with the goal of streaming, the function signals an error  if
+asked to evaluate a list with more entries than the number of slaves.
+<p>
+<pre>
+gap&gt; ParFirstResult := function( list, fnc )
+&gt;   local i, result;
+&gt;   if Length(list) &gt; TOPCnumSlaves then
+&gt;     Error("too few slaves");
+&gt;   fi;
+&gt;   for i in [1..Length(list)] do
+&gt;     SendMsg( PrintToString(
+&gt;                   "fnc :=", fnc, "; fnc(", list[i], ");"),
+&gt;              i );
+&gt;   od;
+&gt;   result := RecvMsg(); # default is MPI_ANY_SOURCE
+&gt;   ParReset(); # Interrupt all other slaves
+&gt;   return result;
+&gt; end;;
+</pre>
+<p>
+We now demonstrate the use of <code>ParFirstResult()</code>  in  ``streaming''.  For
+our example we need the <font face="Gill Sans,Helvetica,Arial">FactInt</font> package by Stefan Kohl. To  get
+this package if you don't have it, visit
+<a href="http://www-gap.dcs.st-and.ac.uk/gap/Share/factint.html">http://www-gap.dcs.st-and.ac.uk/gap/Share/factint.html</a>
+<p>
+or the equivalent at one of <font face="Gill Sans,Helvetica,Arial">GAP</font>'s mirror sites, and  follow  the  easy
+installation instructions.
+<p>
+If one hasn't already included a  <code>RequirePackage("factint");</code>  statement
+in one's <code>.gaprc</code> file then it is necessary to do:
+<p>
+<pre>
+gap&gt; ParEval("RequirePackage(\"factint\")");
+
+Loading FactInt 1.1 (Routines for Integer Factorization),
+by Stefan.Kohl@cip.mathematik.uni-stuttgart.de
+
+true
+</pre>
+<p>
+so  that  each  slave  (not  just   the   master)   is   aware   of   the
+<font face="Gill Sans,Helvetica,Arial">FactInt</font> functions.
+<p>
+Above we defined <code>ParFirstResult()</code> on the master process. We will assume
+that we have two slaves.
+<p>
+<pre>
+gap&gt; StreamingFactInt := function(i, x)
+&gt;   local alg;
+&gt;   alg :=
+&gt;    [ x -&gt; [ "MPQS ALGORITHM",  FactorsMPQS(Factorial(x)+1) ],
+&gt;      x -&gt; [ "CFRAC ALGORITHM", FactorsCFRAC(Factorial(x)+1) ]
+&gt;    ];
+&gt;   return alg[i](x);
+&gt; end;;
+</pre>
+<p>
+Both <code>StreamingFactInt(1, x);</code> and <code>StreamingFactInt(2,  x);</code>  factor  an
+integer, but one uses the multiple polynomial quadratic  sieve  algorithm
+(MPQS), and the other uses the continued fraction algorithm (CFRAC);  the
+functions <code>FactorsMPQS</code> and <code>FactorsCFRAC</code> that perform these  algorithms
+are  defined  by  the  <font face="Gill Sans,Helvetica,Arial">FactInt</font>  package.  We  demonstrate   the
+``streaming'' of these algorithms in  determining  the  factorization  of
+35!+1.
+<p>
+<pre>
+gap&gt; # Now, define StreamingFactInt() on each of the slaves.
+gap&gt; BroadcastMsg( PrintToString( "StreamingFactInt :=",
+&gt;                                 StreamingFactInt ) );
+gap&gt; ParFirstResult([1,2], i-&gt;StreamingFactInt(i, 35) );
+... resetting ...
+[ "MPQS ALGORITHM", [ 137, 379, 17839, 340825649, 32731815563800396289317 ] ]
+</pre>
+<p>
+<p>
+<a name="SECT004"><h2>4.4 TOP-C model for non-trivial parallelism</h2></a>
+<p><p>
+There are many examples  where  trivial  parallelism  does  not  suffice.
+Typically, this happens either when there are global variables that  must
+be ``read'' by each slave process, and possibly updated, or else when the
+input for the next slave process depends on the result that arrived  from
+the last slave process. Here we provide only the basics of  the  parallel
+model. The parallel model was described in more  detail  in&nbsp;<a href="biblio.htm#Coo97"><cite>Coo97</cite></a>,
+and a still more detailed  description  is  contained  in  Chapter&nbsp;<a href="CHAP003.htm">Basic Concepts for the TOP-C model (MasterSlave)</a>.
+<p>
+For non-trivial parallelism, <font face="Gill Sans,Helvetica,Arial">ParGAP</font> uses the TOP-C model&nbsp;<a href="biblio.htm#Coo96"><cite>Coo96</cite></a>.
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> typically invokes the TOP-C model via a command such as
+<p>
+<code>MasterSlave( </code><var>GenerateTaskInput</var><code>, </code><var>DoTask</var><code>, </code><var>CheckTaskResult</var><code>,</code>
+<br><code>             </code><var>UpdateSharedData</var><code> );</code>
+<p>
+The four arguments, <var>GenerateTaskInput</var>, <var>DoTask</var>, <var>CheckTaskResult</var>, and
+<var>UpdateSharedData</var> are ``callback'' functions written by the  application
+programmer, and the names of those callback functions are arbitrary. (The
+manual for <font face="Gill Sans,Helvetica,Arial">ParGAP/MPI</font>, the  earlier  incarnation  of  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+used slightly different names for its examples, but the  purpose  of  the
+arguments  of  <code>MasterSlave()</code>  has  not  changed  --  only  the   naming
+convention has.)
+<p>
+The only <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  command  above  is  <code>MasterSlave()</code>.  A  task  is  an
+arbitrary  function  (here  called  <code></code><var>DoTask</var><code>()</code>)  executed  on  a  slave
+process, that takes input from the master process and returns its  output
+to the master process. The  diagram  in  Section&nbsp;<a href="CHAP003.htm#SECT002">Other  TOP-C  Commands</a>
+gives some idea of the flow of  control  as  a  task  is  processed.  The
+diagram there is meant to represent the three main  abstractions  of  the
+TOP-C model: (1)&nbsp;the task, (2)&nbsp;the shared data, and (3)&nbsp;the  action.  The
+<strong>shared data</strong> consists of any  globally  shared  data  (which  should  be
+readable by all processes). The <strong>task</strong> is a procedure executed on a slave
+process that takes a <strong>task input</strong>, and the shared data,  and  produces  a
+<strong>task output</strong>, which depends only on the  task  input  and  shared  data.
+Finally, the task input and task output are sent to the  master  process,
+which must then decide upon an <strong>action</strong>.
+<p>
+Typical actions are <code>NO_ACTION</code> (and the master process  might  save  the
+task output in a private list of results), <code>UPDATE_SHARED_DATA</code>  (send  a
+message to all slaves to update the local copy  of  the  globally  shared
+data), and <code>REDO</code> (re-do the computation in  case  the  shared  data  was
+changed by another slave process).  (Earlier  incarnations  of  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+used <code>UPDATE</code>. Now the alternative <code>UPDATE_SHARED_DATA</code> is offered and we
+standardize on this here.)
+<p>
+An example invocation of <code>MasterSlave()</code> is shown below,  where  we  pass
+the four application functions as direct  arguments  of  <code>MasterSlave()</code>.
+The routine below implements a  simplified  version  of  the  <code>ParList()</code>
+function described in Section&nbsp;<a href="CHAP004.htm#SECT001">Trivial Parallelism</a>.
+<p>
+<pre>
+ParInstallTOPCGlobalFunction( "MyParList",
+function( list, fnc )
+  local result, iter;
+  result := [];
+  # Each invocation of GAP's iterator
+  # returns next element of list.
+  iter := Iterator(list);
+  MasterSlave(
+      # GenerateTaskInput():
+      function() if IsDoneIterator(iter) then return NOTASK;
+                 else return NextIterator(iter); fi; end,
+      # DoTask():
+      fnc,
+      # CheckTaskResult():
+      function(input,output) result[input] := output; 
+                             return NO_ACTION; end,
+      # UpdateSharedData():
+      Error # We never see action:  UPDATE_SHARED_DATA
+      );
+  return result;
+end );
+</pre>
+<p>
+The function <code>ParInstallTOPCGlobalFunction()</code> installs <code>MyParList</code> on all
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> processes. It also defines the version of <code>MyParList()</code> on  the
+master differently from on a slave, so that a call,  <code>MyParList([1..100],
+x-&gt;x^2);</code>,  on  the  master  automatically  causes   <code>MyParList([1..100],
+x-&gt;x^2);</code> to be invoked on the slave with the  same  arguments.  This  is
+required  for  the  TOP-C  model.  Note  that  the   distinct   function,
+<code>ParInstallGlobalFunction()</code>, exists for the equivalent of <code>BroadcastMsg(
+"InstallGlobalFunction( MyParList, function ... end)");</code>. Both  functions
+should be called only from the master (possibly from  inside  a  <code>Read()</code>
+command).
+<p>
+The shared data consists only of the variable&nbsp;<code>fnc</code>, which is read by all
+processes, but in this case is never ``updated''. Note that one need  not
+explicitly declare variables that are in the shared data. A TOP-C  shared
+data variable is defined as a variable whose value is read by  more  than
+one process, and which is modified only through a call to the application
+routine <code></code><var>UpdateSharedData</var><code>()</code>. If we would like to see the messages,  as
+they are  passed  back  and  forth  between  master  and  slave,  we  can
+optionally set the variable  <code>ParTrace</code>  (see&nbsp;<a href="CHAP006.htm#SSEC001.1">ParTrace</a>).  We  are  then
+ready to execute our new parallel function.
+<p>
+<pre>
+gap&gt;  ParTrace := true;;
+gap&gt;  MyParList([2..256], AnalyzePrimitivePermGroupsOfOrder);
+</pre>
+<p>
+The example above in fact requires only trivial  parallelism.  Hence  the
+<code></code><var>CheckTaskResult</var><code>()</code> parameter to <code>MasterSlave()</code> is especially  simple.
+Since the action is never <code>REDO</code>,  we  achieve  the  maximum  concurrency
+among slave processes, resulting in a  speedup  that  is  linear  in  the
+number of slaves.
+<p>
+In  general,  the  parallel  efficiency  of  an  application,  with   its
+concommitant decisions about concurrency of  slave  tasks  are  typically
+determined by the actions chosen  by  <code></code><var>CheckTaskResult</var><code>()</code>.  The  sample
+below is a standard <font face="Gill Sans,Helvetica,Arial">ParGAP</font> ``idiom'' that allows one to easily set  up
+reasonable concurrency in a parallel application.
+<p>
+<pre>
+CheckTaskResult := function( taskInput, taskOutput )
+  if taskOutput = fail then return NO_ACTION;
+  elif not IsUpToDate() then return REDO_ACTION;
+  else return UPDATE_ACTION;
+  fi;
+end;
+</pre>
+<p>
+The function <code>IsUpToDate()</code> is a boolean function provided  by  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+that returns <code>true</code> if there  has  been  no  <code>UPDATE_SHARED_DATA</code>  action
+since the time that the ``corresponding'' task input was generated  by  a
+call to the user-provided  function  <code></code><var>GenerateTaskInput</var><code>()</code>.  Otherwise,
+<code>IsUpToDate()</code> returns <code>false</code>. The ``corresponding'' task input  is  the
+task input associated with that task output which was most recently  seen
+on the master process. In  the  context  of  the  user-provided  function
+<code></code><var>CheckTaskResult</var><code>()</code>, it is the first argument to that function.
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP003.htm">Previous</a>] [<a href ="CHAP005.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>ParGAP manual<br>November 2001
+</address></body></html>

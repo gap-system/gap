@@ -2,13 +2,13 @@
 ##
 #W  demo.g                      GAP library                     Werner Nickel
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: demo.g,v 4.6 2002/09/27 14:33:21 sal Exp $
 ##
 ##  This files contains functions that support running demonstrations with
 ##  Gap.
 ##
 Revision.demo_g :=
-    "@(#)$Id$";
+    "@(#)$Id: demo.g,v 4.6 2002/09/27 14:33:21 sal Exp $";
 
 
 #############################################################################

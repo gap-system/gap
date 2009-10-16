@@ -78,8 +78,8 @@ Name: Primitive groups library
 Proposer: Alexander, 9-Apr-01
 Seconder: Frank, 24-Apr-01
 Files: prim/*
-Author: Heiko Theissen
-Maintainer: Alexander Hulpke
+Author: Heiko Theissen, Colva Roney-Dougal
+Maintainer: Colva Roney-Dougal
 Description: Access to the library of primitive permutation groups of small
 degree.
 
@@ -132,7 +132,7 @@ Proposer: Alexander, 20-Apr-01
 Seconder: Steve, 23-May-01
 Files: grpfp
 Author: Volkmar Felsch, Alexander Hulpke, Martin Schoenert
-Maintainer: Volkmar Felsch, Alexander Hulpke
+Maintainer: Alexander Hulpke
 Description: Methods for subgroups and elements of finitely presented
 groups (excludes subgroup presentations and Tietze transformations).
 
@@ -141,6 +141,7 @@ Proposer: Alexander (after discussion with author), 20-Apr-01
 Seconder: Steve, 23-May-01
 Files: sgpres
 Author: Volkmar Felsch
+Maintainer: Werner Nickel
 Description: Subgroup presentations by rewriting.
 
 Name: Tietze transformations
@@ -148,6 +149,7 @@ Proposer: Alexander (after discussion with author), 20-Apr-01
 Seconder: Steve, 23-May-01
 Files: tietze
 Author: Volkmar Felsch
+Maintainer: Werner Nickel
 Description: Tietze transformations
 
 Name: Stabilizer Chains
@@ -234,7 +236,7 @@ Name:        Automorphism groups of finite pc groups
 Proposer:    Bettina Eick
 Files:       grppcaut
 Authors:     Bettina Eick
-Maintainers: Bettina Eick
+Maintainers: Werner Nickel
 Description: This module contains an algorithm to determine the automorphism
              group of a finite pc group. The implementation follows the ideas
              of Micheal Smith.
@@ -268,7 +270,7 @@ Name:        Properties and attributes of finite pc groups
 Proposer:    Bettina Eick
 Files:       grppcprp, grppcatr
 Authors:     Frank Celler, Bettina Eick
-Maintainers: Bettina Eick
+Maintainers: Werner Nickel
 Description: This module contains algorithm to test certain properties
              and compute certain attributes of finite pc groups.
 
@@ -276,7 +278,7 @@ Name:        Intersection of subgroups of finite pc groups
 Proposer:    Bettina Eick
 Files:       grppcint
 Authors:     Frank Celler, Bettina Eick
-Maintainers: Bettina Eick
+Maintainers: Werner Nickel
 Description: This module contains an algorithm to compute the intersection
              of subgroups of finite pc groups.
 
@@ -286,7 +288,7 @@ Seconder:    Robert Morse, 22-Jun-01
 Files:       kbsemi, orders,  fpmon, fpsemi, rwssmg, tcsemi
 Authors:     Isabel Araujo, Derek Holt, Alexander Hulpke, 
              Goetz Pfeiffer, Andrew Solomon 
-Maintainers: Isabel Araujo and Andrew Solomon 
+Maintainers: James Mitchell
 Description: Code for dealing with finitely presented semigroups and
              monoids, including the implementation of Knuth-Bendix 
              and Todd-Coxeter.
@@ -423,4 +425,12 @@ Authors:     Thomas Breuer
 Maintainer:  Thomas Breuer
 Description: Computation of possible class fusions and possible power maps,
              based on [Bre91], [Bre99]
+
+Name:        Structure Descriptions for Finite Groups
+Proposer:    Stefan Kohl
+Seconder:    Robert F. Morse (April 12, 2005), Alexander Hulpke (April 13, 2005)
+Files:       lib/grpnames.*
+Author:      Stefan Kohl, Markus Püschel, Sebastian Egner
+Maintainer:  Stefan Kohl
+Description: Routines for determining structure descriptions for finite groups
 

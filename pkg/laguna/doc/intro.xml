@@ -1,0 +1,149 @@
+<!-- $Id: intro.xml,v 1.22 2009/05/30 21:13:40 alexk Exp $ --> <Chapter
+Label="Intro"> <Heading>Introduction</Heading>    
+
+<Section Label="IntroFirst">
+<Heading>General aims</Heading>
+
+&LAGUNA; -- <B>L</B>ie <B>A</B>l<B>G</B>ebras and <B>UN</B>its of group
+<B>A</B>lgebras -- is the new name of the &GAP;4 package &LAG;. The 
+&LAG; package arose as a byproduct of the third author's PhD thesis
+<!--[Richard Rossmanith, Centre-by-metabelian group algebras,
+Friedrich-Schiller-Universitaet Jena, 1997]--> <Cite Key="Ros97"/>.  Its
+first version was ported to &GAP;4 and was brought into the standard
+&GAP;4 package format during his visit to St Andrews in September 1998. 
+<P/>
+
+The main objective of &LAG; is to deal with Lie algebras associated with
+some associative algebras, and, in particular, Lie algebras of group
+algebras. Using &LAG; it is possible to verify some properties or
+calculate certain Lie ideals of such Lie algebras very efficiently, due
+to their special structure. In the current version of &LAGUNA; the main
+part of the Lie  algebra functionality is heavily built on the previous
+&LAG; releases. 
+<P/>
+
+The &GAP;4 package &LAGUNA; also extends the &GAP; functionality for
+calculations with units of modular group algebras. In particular, using
+this package, one can check whether an element of such  a group algebra
+is invertible.  &LAGUNA; also contains an implementation of an efficient
+algorithm to calculate the (normalized) unit group of the group  algebra
+of a finite <M>p</M>-group over the field of <M>p</M> elements.  
+<Index Key="SISYPHOS package">&SISYPHOS; package</Index> 
+Thus, the present version of &LAGUNA;  provides a part of the
+functionality of the &SISYPHOS; program, which was developed by Martin
+Wursthorn to study  the modular isomorphism problem; see 
+<Cite Key="Wursthorn" />.  
+<P/>
+
+The corresponding functions of &LAGUNA; use the same algorithmic and 
+theoretical approach as those in &SISYPHOS;. The reason why we reimplemented 
+the normalised unit group algorithms in the &LAGUNA; package is that 
+&SISYPHOS; has no interface to &GAP;4, and, even in &GAP;3, it is 
+cumbersome to use the &SISYPHOS; output for further computation with the 
+normalised unit group. For instance, using &SISYPHOS; with its &GAP;3
+interface, it is difficult to embed a finite <M>p</M>-group into the normalized
+unit group of its group algebra over the field of <M>p</M> 
+elements, but this can easily be done with &LAGUNA;.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="IntroFirstAndaHalf">
+<Heading>General computations in group rings</Heading>
+
+The &LAGUNA; package provides a set of functions to carry out some 
+basic computations with a group ring and its elements. Among other things, 
+&LAGUNA; provides elementary functions to compute such basic notions 
+as support, length, trace and augmentation of an 
+element. For modular group algebras of finite <M>p</M>-groups &LAGUNA;
+is able to calculate the power-structure of the augmentation ideal, which is 
+useful for the construction of the normalised unit group; see Sections 
+<Ref Sect="GenSec"/>--<Ref Sect="Ideals"/> for more details.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="IntroSecond">
+<Heading>Computations in the normalized unit group</Heading>
+
+One of the aims of the &LAGUNA; package is to carry out efficient 
+computations in the normalised unit group of the group algebra <M>FG</M>
+of a finite <M>p</M>-group <M>G</M> over the field <M>F</M> of <M>p</M>
+elements. If <M>U</M> is the unit group of <M>FG</M> then it is easy to
+see that  <M>U</M> is the direct product of <M>F^*</M> and <M>V(FG)</M>,
+where  <M>F^*</M> is the multiplicative group of <M>F</M>, and
+<M>V(FG)</M> is the  group of normalised units. A unit of <M>FG</M> of
+the form  
+<M>\alpha_1 \cdot g_1 + \alpha_2 \cdot g_2 + \cdots + \alpha_k \cdot g_k</M> 
+with <M>\alpha_i \in F</M> and <M>g_i \in G</M> is said
+to be normalised if the  sum 
+<M>\alpha_1 + \alpha_2 + \cdots + \alpha_k</M> is equal to <M>1</M>.  
+<P/>
+
+It is well-known that the normalised unit group <M>V</M> has order
+<M>|F|^{|G|-1}</M>, and so <M>V</M> is a finite <M>p</M>-group. Thus
+computing <M>V</M> efficiently means to compute a polycyclic
+presentation for <M>V</M>. For the theory of polycyclic presentations
+refer to  <Cite Key="Sims" Where="Chapter 9"/>.  For this computation we
+use an algorithm that was also used in the &SISYPHOS; package.  For a
+brief description see Chapter <Ref Chap="Theory"/>.  The functions that
+compute the structure of the normalised unit group are described in
+Section <Ref Sect="UnitGroup"/>.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="IntroThird">
+<Heading>Computing Lie properties of the group algebra </Heading>
+
+The functions that are used to compute Lie properties of 
+<M>p</M>-modular group algebras were already included in the previous
+versions of &LAG;.  The bracket operation <M>[\cdot,\cdot]</M> on a
+<M>p</M>-modular  group algebra <M>FG</M> is defined by
+<M>[a,b]=ab-ba</M>. It is  well-known and very easy to check that 
+<M>(FG, +, [\cdot,\cdot])</M> is a Lie algebra. Then we may ask what 
+kind of Lie algebra  properties are satisfied by <M>FG</M>. The results 
+in <Cite Key="LR86"/>, <Cite Key="PPS73"/>, and <Cite Key="Ros00"/>  give
+fast, practical algorithms to check whether the Lie algebra <M>FG</M> is
+abelian, nilpotent, soluble, centre-by-metabelian, etc.  The functions
+that implement these algorithms are described in  Section 
+<Ref Sect="LieAlgebra"/>.
+
+</Section>
+
+<Section Label="IntroFourth">
+<Heading>Installation and system requirements</Heading>
+
+&LAGUNA; does not use external binaries and, therefore, works without
+restrictions on the type of the operating system. It is designed for 
+&GAP;4.4 and no compatibility with previous releases of &GAP;4 is 
+guaranteed. 
+<P/>
+
+To use the &LAGUNA; online help it is necessary to install the &GAP;4 
+package &GAPDoc; by Frank L\"ubeck and Max Neunh\"offer, which is 
+available from the &GAP; site or from 
+<URL>http://www.math.rwth-aachen.de/&tilde;Frank.Luebeck/GAPDoc/</URL>.
+<P/> 
+
+&LAGUNA; is distributed in standard formats 
+(<File>zoo</File>, <File>tar.gz</File>, <File>tar.bz2</File>, 
+<File>-win.zip</File>) and can be obtained from 
+<URL>http://www.cs.st-andrews.ac.uk/&tilde;alexk/laguna.htm</URL>.
+To unpack the archive <File>laguna-X.X.X.zoo</File> you need the 
+program <File>unzoo</File>, which can be obtained from the &GAP; 
+homepage <URL>http://www.gap-system.org/</URL> (see section 
+`Distribution'). To install &LAGUNA;, copy this archive into 
+the <File>pkg</File> subdirectory of your &GAP;4.4 installation. 
+The subdirectory <File>laguna</File> will be created in the 
+<File>pkg</File> directory after the following command:
+<P/>
+  <C>unzoo -x laguna-X.X.X.zoo</C>
+<P/>
+
+</Section>
+
+</Chapter>

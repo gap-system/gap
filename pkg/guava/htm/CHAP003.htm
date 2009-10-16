@@ -1,0 +1,1188 @@
+<html><head><title>[GUAVA] 3 Codes</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Previous</a>] [<a href ="CHAP004.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>3 Codes</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP003.htm#SECT001">Comparisons of Codes</a>
+<li> <A HREF="CHAP003.htm#SECT002">Operations for Codes</a>
+<li> <A HREF="CHAP003.htm#SECT003">Boolean Functions for Codes</a>
+<li> <A HREF="CHAP003.htm#SECT004">Equivalence and Isomorphism of Codes</a>
+<li> <A HREF="CHAP003.htm#SECT005">Domain Functions for Codes</a>
+<li> <A HREF="CHAP003.htm#SECT006">Printing and Displaying Codes</a>
+<li> <A HREF="CHAP003.htm#SECT007">Generating (Check) Matrices and Polynomials</a>
+<li> <A HREF="CHAP003.htm#SECT008">Parameters of Codes</a>
+<li> <A HREF="CHAP003.htm#SECT009">Distributions</a>
+<li> <A HREF="CHAP003.htm#SECT010">Decoding Functions</a>
+</ol><p>
+<p>
+<a name = "I0"></a>
+
+<a name = "I0"></a>
+<a name = "I1"></a>
+
+<a name = "I0"></a>
+<a name = "I1"></a>
+<a name = "I2"></a>
+
+<a name = "I0"></a>
+<a name = "I1"></a>
+<a name = "I2"></a>
+<a name = "I3"></a>
+
+<a name = "I4"></a>
+
+<a name = "I4"></a>
+<a name = "I5"></a>
+
+<a name = "I4"></a>
+<a name = "I5"></a>
+<a name = "I6"></a>
+
+A <strong>code</strong> basically is nothing  more than a   set of <strong>codewords</strong>. We  call
+these the <strong>elements</strong> of the code. A codeword is a sequence of elements of
+a finite field  <code>GF(<i>q</i>)</code> where <i>q</i> is  a  prime power. Depending  on the
+type of code,  a   codeword can be interpreted  as   a  vector or  as   a
+polynomial. This is explained in more detail in Chapter&nbsp;<a href="CHAP002.htm">Codewords</a>.
+<p>
+In <font face="Gill Sans,Helvetica,Arial">GUAVA</font>, codes can be defined by their  elements (this will be called
+an <strong>unrestricted code</strong>), by a generator matrix  (a <strong>linear code</strong>) or by a
+generator polynomial (a <strong>cyclic code</strong>).
+<p>
+Any code can  be defined by  its elements. If  you like, you can give the
+code a name.
+<p>
+<pre>
+gap&gt; C := ElementsCode(["1100", "1010", "0001"], "example code",
+&gt;                      GF(2) );
+a (4,3,1..4)2..4 example code over GF(2) 
+</pre>
+<p>
+An (<i>n</i>,<i>M</i>,<i>d</i>) code   is a code  with   <strong>word length</strong> <i>n</i>,  <strong>size</strong>  <i>M</i> and
+<strong>minimum   distance</strong> <i>d</i>.  If  the   minimum distance  has not  yet  been
+calculated, the lower bound and upper bound are printed. So
+<p>
+<pre>
+a (4,3,1..4)2..4 code over GF(2)
+</pre>
+<p>
+means a binary unrestricted code of length 4, with 3 elements and the
+minimum distance is greater than or equal to  1  and less than or equal
+to 4 and the <strong>covering radius</strong> is greater than or equal to 2 and less
+than or equal to 4.
+<p>
+<pre>
+gap&gt; MinimumDistance(C);
+2
+gap&gt; C;
+a (4,3,2)2..4 example code over GF(2) 
+</pre>
+<p>
+If the set  of elements is a linear   subspace of <i>GF</i>(<i>q</i>)<sup><i>n</i></sup>, the code  is
+called <strong>linear</strong>. If a code is linear, it can be defined by its <strong>generator
+matrix</strong> or <strong>parity  check matrix</strong>.  The generator  matrix is  a basis for
+the elements   of a code,   the parity check  matrix is  a  basis for the
+nullspace of the code.
+<p>
+<pre>
+gap&gt; G := GeneratorMatCode([[1,0,1],[0,1,2]], "demo code", GF(3) );
+a linear [3,2,1..2]1 demo code over GF(3) 
+</pre>
+<p>
+So   a  linear [<i>n</i>, <i>k</i>, <i>d</i>]<i>r</i>  code is  a   code  with  <strong>word length</strong> <i>n</i>,
+<strong>dimension</strong> <i>k</i>, <strong>minimum distance</strong> <i>d</i> and <strong>covering radius</strong> <i>r</i>.
+<p>
+If the code is linear  and all cyclic shifts   of its elements are  again
+codewords, the code is called <strong>cyclic</strong>.  A cyclic code  is defined by its
+<strong>generator polynomial</strong> or  <strong>check polynomial</strong>. All elements are multiples
+of the generator polynomial modulo a polynomial <i>x</i><sup><i>n</i></sup> <font face="symbol">-</font>1 where <i>n</i> is the
+word  length of  the  code. Multiplying  a   code element with  the check
+polynomial yields zero (modulo the polynomial <i>x</i><sup><i>n</i></sup> <font face="symbol">-</font>1).
+<p>
+<pre>
+gap&gt; G := GeneratorPolCode(Indeterminate(GF(2))+Z(2)^0, 7, GF(2) );
+a cyclic [7,6,1..2]1 code defined by generator polynomial over GF(2)
+</pre>
+<p>
+It is possible that <font face="Gill Sans,Helvetica,Arial">GUAVA</font> does not know that an unrestricted  code  is
+linear. This situation occurs for example when a code is generated from a
+list of elements with the function  <code>ElementsCode</code>  (see&nbsp;<a href="CHAP004.htm#SSEC001.1">ElementsCode</a>).
+By calling the  function  <code>IsLinearCode</code>  (see&nbsp;<a href="CHAP003.htm#SSEC003.2">IsLinearCode</a>),  <font face="Gill Sans,Helvetica,Arial">GUAVA</font>
+tests if the code can be represented by a generator matrix.  If  so,  the
+code record and the operations are converted accordingly.
+<p>
+<pre>
+gap&gt; L := Z(2)*[ [0,0,0], [1,0,0], [0,1,1], [1,1,1] ];;
+gap&gt; C := ElementsCode( L, GF(2) );
+a (3,4,1..3)1 user defined unrestricted code over GF(2)
+# so far, {\GUAVA} does not know what kind of code this is
+gap&gt; IsLinearCode( C );
+true                      # it is linear
+gap&gt; C;
+a linear [3,2,1]1 user defined unrestricted code over GF(2) 
+</pre>
+<p>
+Of course the same holds for unrestricted codes that  in fact are cyclic,
+or codes, defined by a generator matrix, that in fact are cyclic.
+<p>
+Codes   are  printed simply  by  giving  a   small  description of  their
+parameters,  the word  length, size  or  dimension and minimum  distance,
+followed by a short description  and  the base field  of  the code.   The
+function <code>Display</code>  gives a    more  detailed description,   showing  the
+construction history of the code.
+<p>
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font> doesn't place much emphasis on the actual encoding and  decoding
+processes; some algorithms have  been  included  though.  Encoding  works
+simply by multiplying an information vector with a code, decoding is done
+by the  function  <code>Decode</code>.  For  more  information  about  encoding  and
+decoding, see sections <a href="CHAP003.htm#SECT002">Operations for Codes</a> and <a href="CHAP003.htm#SSEC010.1">Decode</a>.
+<p>
+<pre>
+gap&gt; R := ReedMullerCode( 1, 3 );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2)
+gap&gt; w := [ 1, 0, 1, 1 ] * R;
+[ 1 0 0 1 1 0 0 1 ]
+gap&gt; Decode( R, w );
+[ 1 0 1 1 ]
+gap&gt; Decode( R, w + "10000000" ); # One error at the first position
+[ 1 0 1 1 ]                       # Corrected by Guava 
+</pre>
+<p>
+Sections&nbsp;<a href="CHAP003.htm#SECT001">Comparisons of Codes</a> and&nbsp;<a href="CHAP003.htm#SECT002">Operations for Codes</a>  describe  the
+operations that are available for codes.
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT003">Boolean Functions for Codes</a> describe the functions  that  tests
+whether an object is a code and what kind of code it  is  (see  <a href="CHAP003.htm#SSEC003.1">IsCode</a>,
+<a href="CHAP003.htm#SSEC003.2">IsLinearCode</a> and <a href="CHAP003.htm#SSEC003.3">IsCyclicCode</a>) and various  other  boolean  functions
+for codes.
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT004">Equivalence and Isomorphism of Codes</a> describe  functions  about
+equivalence   and   isomorphism    of    codes    (see    <a href="CHAP003.htm#SSEC004.1">IsEquivalent</a>,
+<a href="CHAP003.htm#SSEC004.2">CodeIsomorphism</a> and <a href="CHAP003.htm#SSEC004.3">AutomorphismGroup</a>).
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT005">Domain Functions for Codes</a> describes  functions  that  work  on
+<strong>domains</strong> (see Chapter&nbsp;<a href="../../../doc/htm/ref/CHAP030.htm">Domains and their  Elements</a>  in  the  <font face="Gill Sans,Helvetica,Arial">GAP</font>
+Reference Manual).
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT006">Printing and Displaying Codes</a> describes functions for  printing
+and displaying codes.
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT007">Generating (Check) Matrices and Polynomials</a> describes functions
+that return  the  matrices  and  polynomials  that  define  a  code  (see
+<a href="CHAP003.htm#SSEC007.1">GeneratorMat</a>, <a href="CHAP003.htm#SSEC007.2">CheckMat</a>, <a href="CHAP003.htm#SSEC007.3">GeneratorPol</a>, <a href="CHAP003.htm#SSEC007.4">CheckPol</a>, <a href="CHAP003.htm#SSEC007.5">RootsOfCode</a>).
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT008">Parameters of Codes</a> describes functions that return  the  basic
+parameters    of    codes    (see    <a href="CHAP003.htm#SSEC008.1">WordLength</a>,    <a href="CHAP003.htm#SSEC008.2">Redundancy</a>    and
+<a href="CHAP003.htm#SSEC008.4">MinimumDistance</a>).
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT009">Distributions</a> describes  functions  that  return  distance  and
+weight  distributions  (see  <a href="CHAP003.htm#SSEC009.1">WeightDistribution</a>,   <a href="CHAP003.htm#SSEC009.2">InnerDistribution</a>,
+<a href="CHAP003.htm#SSEC009.3">OuterDistribution</a> and <a href="CHAP003.htm#SSEC009.4">DistancesDistribution</a>).
+<p>
+Section&nbsp;<a href="CHAP003.htm#SECT010">Decoding Functions</a> describes  functions  that  are  related  to
+decoding (see <a href="CHAP003.htm#SSEC010.1">Decode</a>, <a href="CHAP003.htm#SSEC010.2">Syndrome</a>, <a href="CHAP003.htm#SSEC010.3">SyndromeTable</a> and <a href="CHAP003.htm#SSEC010.4">StandardArray</a>).
+<p>
+In Chapters&nbsp;<a href="CHAP004.htm">Generating Codes</a> and&nbsp;<a href="CHAP005.htm">Manipulating  Codes</a>  we  follow  on,
+describing functions that generate and manipulate codes.
+<p>
+<p>
+<h2><a name="SECT001">3.1 Comparisons of Codes</a></h2>
+<p><p>
+<a name = "SSEC001.1"></a>
+<li><code></code><var><i>C</i><sub>1</sub></var><code> = </code><var><i>C</i><sub>2</sub></var><code></code>
+<a name = "SSEC001.1"></a>
+<li><code></code><var><i>C</i><sub>1</sub></var><code> &lt;&gt; </code><var><i>C</i><sub>2</sub></var><code></code>
+<p>
+The equality operator  <code>=</code> evaluates to <code>true</code>  if the codes  <var><i>C</i><sub>1</sub></var> and
+<var><i>C</i><sub>2</sub></var>  are equal,  and to  <code>false</code>  otherwise. The  inequality operator
+<code>&lt;&gt;</code> evaluates to <code>true</code> if the codes <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var> are not equal,
+and to <code>false</code> otherwise.
+<p>
+Note that codes are equal if and only  if their elements are equal. Codes
+can also  be compared  with  objects of other  types.  Of course they are
+never equal.
+<p>
+<pre>
+gap&gt; M := [ [0, 0], [1, 0], [0, 1], [1, 1] ];;
+gap&gt; C1 := ElementsCode( M, GF(2) );
+a (2,4,1..2)0 user defined unrestricted code over GF(2)
+gap&gt; M = C1;
+false
+gap&gt; C2 := GeneratorMatCode( [ [1, 0], [0, 1] ], GF(2) );
+a linear [2,2,1]0 code defined by generator matrix over GF(2)
+gap&gt; C1 = C2;
+true
+gap&gt; ReedMullerCode( 1, 3 ) = HadamardCode( 8 );
+true
+gap&gt; WholeSpaceCode( 5, GF(4) ) = WholeSpaceCode( 5, GF(2) );
+false
+</pre>
+<p>
+Another way  of comparing codes  is <code>IsEquivalent</code>,  which  checks if two
+codes are equivalent (see <a href="CHAP003.htm#SSEC004.1">IsEquivalent</a>).
+<p>
+<p>
+<h2><a name="SECT002">3.2 Operations for Codes</a></h2>
+<p><p>
+<a name = "SSEC002.1"></a>
+<li><code></code><var><i>C</i><sub>1</sub></var><code> + </code><var><i>C</i><sub>2</sub></var><code></code>
+<p>
+The  operator <code>+</code> evaluates to  the direct sum  of the  codes <var><i>C</i><sub>1</sub></var> and
+<var><i>C</i><sub>2</sub></var>.  See <a href="CHAP005.htm#SSEC002.1">DirectSumCode</a>.
+<p>
+<a name = "SSEC002.2"></a>
+<li><code></code><var>C</var><code> + </code><var>c</var><code></code>
+<li><code></code><var>c</var><code> + </code><var>C</var><code></code>
+<p>
+The operator <code>+</code> evaluates to the coset code of code <var>C</var> after adding <var>c</var>
+to all elements of <var>C</var>. See <a href="CHAP005.htm#SSEC001.18">CosetCode</a>.
+<p>
+<a name = "SSEC002.3"></a>
+<li><code></code><var><i>C</i><sub>1</sub></var><code> * </code><var><i>C</i><sub>2</sub></var><code></code>
+<p>
+The operator <code>*</code>  evaluates to the direct  product of  the codes <var><i>C</i><sub>1</sub></var>
+and <var><i>C</i><sub>2</sub></var>. See <a href="CHAP005.htm#SSEC002.3">DirectProductCode</a>.
+<p>
+<a name = "SSEC002.4"></a>
+<li><code></code><var>x</var><code> * </code><var>C</var><code></code>
+<p>
+The operator <code>*</code> evaluates to the element of <var>C</var> belonging to information
+word <var>x</var>. <var>x</var> may be a vector, polynomial, string or codeword or  a  list
+of those. This is the way to do encoding in <font face="Gill Sans,Helvetica,Arial">GUAVA</font>. <var>C</var> must be linear,
+because in <font face="Gill Sans,Helvetica,Arial">GUAVA</font>, encoding  by  multiplication  is  only  defined  for
+linear codes. If <var>C</var> is a cyclic code, this multiplication is the same as
+multiplying an information polynomial <var>x</var> by the generator polynomial  of
+<var>C</var> (except for the result not being a codeword type). If <var>C</var> is a linear
+code, it is equal to the multiplication of an information vector  <var>x</var>  by
+the generator matrix of <var>C</var> (again, the result then  is  not  a  codeword
+type).
+<p>
+To decode, use the function <code>Decode</code> (see <a href="CHAP003.htm#SSEC010.1">Decode</a>).
+<p>
+<a name = "SSEC002.5"></a>
+<li><code></code><var>c</var><code> in </code><var>C</var><code></code>
+<p>
+The <code>in</code> operator evaluates  to <code>true</code>  if  <var>C</var> contains the  codeword or
+list of codewords specified by <var>c</var>. Of course,  <var>c</var> and <var>C</var> must have the
+same word lengths and base fields.
+<p>
+<pre>
+gap&gt; C:= HammingCode( 2 );; eC:= AsSSortedList( C );
+[ [ 0 0 0 ], [ 1 1 1 ] ]
+gap&gt; eC[2] in C;
+true
+gap&gt; [ 0 ] in C;
+false 
+</pre>
+<p>
+<a name = "SSEC002.6"></a>
+<li><code>IsSubset(</code><var><i>C</i><sub>1</sub></var><code>,</code><var><i>C</i><sub>2</sub></var><code>)</code>
+<p>
+returns <code>true</code> if <var><i>C</i><sub>2</sub></var> is a subcode of <var><i>C</i><sub>1</sub></var>,
+i.e.  if <var><i>C</i><sub>1</sub></var> contains at least all the elements of <var><i>C</i><sub>2</sub></var>.
+<p>
+<pre>
+gap&gt; IsSubset( HammingCode(3), RepetitionCode( 7 ) );
+true
+gap&gt; IsSubset( RepetitionCode( 7 ), HammingCode( 3 ) );
+false
+gap&gt; IsSubset( WholeSpaceCode( 7 ), HammingCode( 3 ) );
+true
+</pre>
+<p>
+<p>
+<h2><a name="SECT003">3.3 Boolean Functions for Codes</a></h2>
+<p><p>
+<a name = "SSEC003.1"></a>
+<li><code>IsCode( </code><var>obj</var><code> )</code>
+<p>
+<code>IsCode</code> returns <code>true</code>  if <var>obj</var>, which  can  be an object  of arbitrary
+type, is a code and <code>false</code> otherwise. Will cause an error if <var>obj</var> is an
+unbound variable.
+<p>
+<pre>
+gap&gt; IsCode( 1 );
+false
+gap&gt; IsCode( ReedMullerCode( 2,3 ) );
+true
+</pre>
+<p>
+<a name = "SSEC003.2"></a>
+<li><code>IsLinearCode( </code><var>obj</var><code> )</code>
+<p>
+<code>IsLinearCode</code> checks  if object <var>obj</var>   (not  necessarily a code) is   a
+linear code. If a code  has already been marked  as linear or cyclic, the
+function automatically returns <code>true</code>.  Otherwise, the function checks if
+a basis <i>G</i>  of the elements of <var>obj</var>  exists that generates the elements
+of <var>obj</var>. If   so, <i>G</i> is  a generator  matrix of <var>obj</var>  and the function
+returns <code>true</code>. If not, the function returns <code>false</code>.
+<p>
+<pre>
+gap&gt; C := ElementsCode( [ [0,0,0],[1,1,1] ], GF(2) );
+a (3,2,1..3)1 user defined unrestricted code over GF(2)
+gap&gt; IsLinearCode( C );
+true
+gap&gt; IsLinearCode( ElementsCode( [ [1,1,1] ], GF(2) ) );
+false
+gap&gt; IsLinearCode( 1 );
+false 
+</pre>
+<p>
+<a name = "SSEC003.3"></a>
+<li><code>IsCyclicCode( </code><var>obj</var><code> )</code>
+<p>
+<code>IsCyclicCode</code> checks if the object <var>obj</var> is a cyclic code. If a code has
+already been marked as cyclic, the function automatically returns <code>true</code>.
+Otherwise, the function checks if  a polynomial <i>g</i> exists that generates
+the elements of <var>obj</var>. If so, <i>g</i> is a generator  polynomial of <var>obj</var> and
+the function returns <code>true</code>. If not, the function returns <code>false</code>.
+<p>
+<pre>
+gap&gt; C := ElementsCode( [ [0,0,0], [1,1,1] ], GF(2) );
+a (3,2,1..3)1 user defined unrestricted code over GF(2)
+gap&gt; # GUAVA does not know the code is cyclic
+gap&gt; IsCyclicCode( C );      # this command tells GUAVA to find out
+true
+gap&gt; IsCyclicCode( HammingCode( 4, GF(2) ) );
+false
+gap&gt; IsCyclicCode( 1 );
+false 
+</pre>
+<p>
+<a name = "SSEC003.4"></a>
+<li><code>IsPerfectCode( </code><var>C</var><code> )</code>
+<p>
+<code>IsPerfectCode</code> returns <code>true</code> if <var>C</var> is a perfect  code. For a code with
+odd minimum distance <i>d</i> = 2<i>t</i>+1, this is the case  when every word of the
+vector space of  <var>C</var> is at distance at  most <i>t</i> from exactly one element
+of <var>C</var>. Codes with even minimum distance are never perfect.
+<p>
+In  fact, a code  that is  not  <strong>trivial perfect</strong> (the binary  repetition
+codes  of odd length, the  codes  consisting of  one  word, and the codes
+consisting of the  whole vector space), and  does not have the parameters
+of a Hamming- or Golay-code, cannot be perfect.
+<p>
+<pre>
+gap&gt; H := HammingCode(2);
+a linear [3,1,3]1 Hamming (2,2) code over GF(2)
+gap&gt; IsPerfectCode( H );
+true
+gap&gt; IsPerfectCode( ElementsCode( [ [1,1,0], [0,0,1] ], GF(2) ) );
+true
+gap&gt; IsPerfectCode( ReedSolomonCode( 6, 3 ) );
+false
+gap&gt; IsPerfectCode(BinaryGolayCode());
+true 
+</pre>
+<p>
+<a name = "SSEC003.5"></a>
+<li><code>IsMDSCode( </code><var>C</var><code> )</code>
+<p>
+<code>IsMDSCode</code> returns  true if <var>C</var>  is a <strong>Maximum Distance Separable code</strong>,
+or MDS code for short. A linear [<i>n</i>, <i>k</i>, <i>d</i>]-code of length <i>n</i>, dimension
+<i>k</i> and minimum distance <i>d</i> is an MDS code  if <i>k</i>=<i>n</i><font face="symbol">-</font><i>d</i>+1, in other words
+if <var>C</var> meets  the   Singleton  bound (see  <a href="CHAP006.htm#SSEC001.1">UpperBoundSingleton</a>).     An
+unrestricted (<i>n</i>, <i>M</i>, <i>d</i>) code is called MDS if  <i>k</i>=<i>n</i><font face="symbol">-</font><i>d</i>+1, with <i>k</i> equal
+to the largest integer less than or equal to the logarithm of M with base
+<i>q</i>, the size of the base field of <var>C</var>.
+<p>
+Well known MDS codes include the repetition codes, the whole space codes,
+the even weight codes (these are the only <strong>binary</strong> MDS Codes) and the
+Reed-Solomon codes.
+<p>
+<pre>
+gap&gt; C1 := ReedSolomonCode( 6, 3 );
+a cyclic [6,4,3]2 Reed-Solomon code over GF(7)
+gap&gt; IsMDSCode( C1 );
+true    # 6-3+1 = 4
+gap&gt; IsMDSCode( QRCode( 23, GF(2) ) );
+false 
+</pre>
+<p>
+<a name = "SSEC003.6"></a>
+<li><code>IsSelfDualCode( </code><var>C</var><code> )</code>
+<p>
+<code>IsSelfDualCode</code>  returns <code>true</code> if <var>C</var>  is  self-dual, i.e.  when <var>C</var> is
+equal to its dual code (see also <a href="CHAP005.htm#SSEC001.16">DualCode</a>). If  a code is self-dual, it
+automatically is self-orthogonal (see <a href="CHAP003.htm#SSEC003.7">IsSelfOrthogonalCode</a>).
+<p>
+If  <var>C</var> is a   non-linear code,  it cannot be   self-dual, so  <code>false</code> is
+returned.  A linear code can only be self-dual  when its dimension <i>k</i> is
+equal to the redundancy <i>r</i>.
+<p>
+<pre>
+gap&gt; IsSelfDualCode( ExtendedBinaryGolayCode() );
+true
+gap&gt; C := ReedMullerCode( 1, 3 );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2)
+gap&gt; DualCode( C ) = C;
+true 
+</pre>
+<p>
+<a name = "SSEC003.7"></a>
+<li><code>IsSelfOrthogonalCode( </code><var>C</var><code> )</code>
+<p>
+<code>IsSelfOrthogonalCode</code>   returns <code>true</code> if   <var>C</var> is <strong>self-orthogonal</strong>.  A
+code  is self-orthogonal  if  every element of  <var>C</var>  is orthogonal to all
+elements of <var>C</var>, including itself. In  the linear case, this simply means
+that the  generator matrix of <var>C</var>  multiplied with its transpose yields a
+null matrix.
+<p>
+In addition, a  code is <strong>self-dual</strong> if it  contains all vectors that  its
+elements are orthogonal to (see <a href="CHAP003.htm#SSEC003.6">IsSelfDualCode</a>).
+<p>
+<pre>
+gap&gt; R := ReedMullerCode(1,4);
+a linear [16,5,8]6 Reed-Muller (1,4) code over GF(2)
+gap&gt; IsSelfOrthogonalCode(R);
+true
+gap&gt; IsSelfDualCode(R);
+false 
+</pre>
+<p>
+<p>
+<h2><a name="SECT004">3.4 Equivalence and Isomorphism of Codes</a></h2>
+<p><p>
+<a name = "SSEC004.1"></a>
+<li><code>IsEquivalent( </code><var><i>C</i><sub>1</sub></var><code>, </code><var><i>C</i><sub>2</sub></var><code> )</code>
+<p>
+<code>IsEquivalent</code> returns   true  if <var><i>C</i><sub>1</sub></var> and   <var><i>C</i><sub>2</sub></var>  are equivalent
+codes.  This is the  case  if <var><i>C</i><sub>1</sub></var> can  be  obtained from <var><i>C</i><sub>2</sub></var>   by
+carrying out column permutations. <font face="Gill Sans,Helvetica,Arial">GUAVA</font> only handles binary codes. The
+external  program  <code>desauto</code> from  <strong>J.S.  Leon</strong> is   used  to compute the
+isomorphism between  the codes.  If  <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var>  are equal, they
+are also equivalent.
+<p>
+Note that the algorithm is <strong>very</strong> slow for non-linear codes.
+<p>
+<pre>
+gap&gt; x:= Indeterminate( GF(2) );; pol:= x^3+x+1; 
+Z(2)^0+x_1+x_1^3
+gap&gt; H := GeneratorPolCode( pol, 7, GF(2));          
+a cyclic [7,4,1..3]1 code defined by generator polynomial over GF(2)
+gap&gt; H = HammingCode(3, GF(2));
+false
+gap&gt; IsEquivalent(H, HammingCode(3, GF(2)));
+true                        # H is equivalent to a Hamming code
+gap&gt; CodeIsomorphism(H, HammingCode(3, GF(2)));
+(3,4)(5,6,7) 
+</pre>
+<p>
+<a name = "SSEC004.2"></a>
+<li><code>CodeIsomorphism( </code><var><i>C</i><sub>1</sub></var><code>, </code><var><i>C</i><sub>2</sub></var><code> )</code>
+<p>
+If the  two   codes <var><i>C</i><sub>1</sub></var>   and <var><i>C</i><sub>2</sub></var>   are  equivalent  codes   (see
+<a href="CHAP003.htm#SSEC004.1">IsEquivalent</a>), <code>CodeIsomorphism</code>    returns   the permutation      that
+transforms  <var><i>C</i><sub>1</sub></var> into <var><i>C</i><sub>2</sub></var>.  If the  codes  are not equivalent,  it
+returns <code>false</code>.
+<p>
+<pre>
+gap&gt; x:= Indeterminate( GF(2) );; pol:= x^3+x+1; 
+Z(2)^0+x_1+x_1^3
+gap&gt; H := GeneratorPolCode( pol, 7, GF(2));          
+a cyclic [7,4,1..3]1 code defined by generator polynomial over GF(2)
+gap&gt; CodeIsomorphism(H, HammingCode(3, GF(2)));
+(3,4)(5,6,7) 
+gap&gt; PermutedCode(H, (3,4)(5,6,7)) = HammingCode(3, GF(2));
+true 
+</pre>
+<p>
+<a name = "SSEC004.3"></a>
+<li><code>AutomorphismGroup( </code><var>C</var><code> )</code>
+<p>
+<code>AutomorphismGroup</code> returns the  <strong>automorphism group</strong>  of a binary   code
+<var>C</var>. This is the largest  permutation group of degree  <i>n</i> such that each
+permutation applied to the columns of <var>C</var> again yields <var>C</var>. <font face="Gill Sans,Helvetica,Arial">GUAVA</font> uses
+the   external   program <code>desauto</code>   from <strong>J.S.   Leon</strong>  <a href="biblio.htm#Leon91"><cite>Leon91</cite></a>
+to   compute the automorphism group. The function <code>PermutedCode</code> 
+permutes the columns of a
+code (see <a href="CHAP005.htm#SSEC001.5">PermutedCode</a>).
+<p>
+<pre>
+gap&gt; R := RepetitionCode(7,GF(2));
+a cyclic [7,1,7]3 repetition code over GF(2)
+gap&gt; AutomorphismGroup(R);
+Sym( [ 1 .. 7 ] )
+                        # every permutation keeps R identical
+gap&gt; C := CordaroWagnerCode(7);
+a linear [7,2,4]3 Cordaro-Wagner code over GF(2)
+gap&gt; AsSSortedList(C);
+[ [ 0 0 0 0 0 0 0 ], [ 0 0 1 1 1 1 1 ], [ 1 1 0 0 0 1 1 ], [ 1 1 1 1 1 0 0 ] ]
+gap&gt; AutomorphismGroup(C);
+Group([ (3,4), (4,5), (1,6)(2,7), (1,2), (6,7) ])
+gap&gt; C2 :=  PermutedCode(C, (1,6)(2,7));
+a linear [7,2,4]3 permuted code
+gap&gt; AsSSortedList(C2);
+[ [ 0 0 0 0 0 0 0 ], [ 0 0 1 1 1 1 1 ], [ 1 1 0 0 0 1 1 ], [ 1 1 1 1 1 0 0 ] ]
+gap&gt; C2 = C;
+true 
+</pre>
+<p>
+<a name = "SSEC004.4"></a>
+<li><code>PermutationGroup( </code><var>C</var><code> )</code>
+<p>
+<code>PermutationGroup</code> returns the  <strong>permutation automorphism group</strong>  
+of a linear code <var>C</var>. This is the largest permutation group of 
+degree  <i>n</i> such that each
+permutation applied to the columns of <var>C</var> again yields <var>C</var>.
+It is written in GAP.
+<p>
+<p>
+<h2><a name="SECT005">3.5 Domain Functions for Codes</a></h2>
+<p><p>
+These are some <font face="Gill Sans,Helvetica,Arial">GAP</font> functions that work on  <code>Domains</code> in general. Their
+specific effect on <code>Codes</code> is explained here.
+<p>
+<a name = "SSEC005.1"></a>
+<li><code>IsFinite( </code><var>C</var><code> )</code>
+<p>
+<code>IsFinite</code>  is an    implementation  of   the   <font face="Gill Sans,Helvetica,Arial">GAP</font> domain    function
+<code>IsFinite</code>. It returns true for a code <var>C</var>.
+<p>
+<pre>
+gap&gt; IsFinite( RepetitionCode( 1000, GF(11) ) );
+true 
+</pre>
+<p>
+<a name = "SSEC005.2"></a>
+<li><code>Size( </code><var>C</var><code> )</code>
+<p>
+<code>Size</code>  returns the size of  <var>C</var>, the number of elements  of the code. If
+the code is linear, the size of the code is equal  to <i>q</i><sup><i>k</i></sup>, where <i>q</i> is
+the size of the base field of <var>C</var> and <i>k</i> is the dimension.
+<p>
+<pre>
+gap&gt; Size( RepetitionCode( 1000, GF(11) ) );
+11
+gap&gt; Size( NordstromRobinsonCode() );
+256 
+</pre>
+<p>
+<a name = "SSEC005.3"></a>
+<li><code>LeftActingDomain( </code><var>C</var><code> )</code>
+<p>
+<code>LeftActingDomain</code> returns  the  base field  of   a code <var>C</var>.  Each   element of <var>C</var>
+consists  of elements of this base  field. If the base  field is <i>F</i>, and
+the word  length of the code  is <i>n</i>, then the  codewords are elements of
+<i>F</i><sup><i>n</i></sup>.  If <var>C</var>   is a  cyclic  code,  its  elements are   interpreted  as
+polynomials with coefficients over <i>F</i>.
+<p>
+<pre>
+gap&gt; C1 := ElementsCode([[0,0,0], [1,0,1], [0,1,0]], GF(4));
+a (3,3,1..3)2..3 user defined unrestricted code over GF(4)
+gap&gt; LeftActingDomain( C1 );
+GF(2^2)
+gap&gt; LeftActingDomain( HammingCode( 3, GF(9) ) );
+GF(3^2) 
+</pre>
+<p>
+<a name = "SSEC005.4"></a>
+<li><code>Dimension( </code><var>C</var><code> )</code>
+<p>
+<code>Dimension</code> returns the parameter <i>k</i> of <var>C</var>,  the dimension of the code,
+or the number  of information symbols in  each codeword. The dimension is
+not defined for non-linear codes; <code>Dimension</code> then returns an error.
+<p>
+<pre>
+gap&gt; Dimension( NullCode( 5, GF(5) ) );
+0
+gap&gt; C := BCHCode( 15, 4, GF(4) );
+a cyclic [15,9,5]3..4 BCH code, delta=5, b=1 over GF(4)
+gap&gt; Dimension( C );
+9
+gap&gt; Size( C ) = Size( LeftActingDomain( C ) ) ^ Dimension( C );
+true 
+</pre>
+<p>
+<a name = "SSEC005.5"></a>
+<li><code>AsSSortedList( </code><var>C</var><code> )</code>
+<p>
+<code>AsSSortedList</code> returns a  list of the elements of  <var>C</var>. These elements are of
+the  codeword type   (see   <a href="CHAP002.htm">Codewords</a>). Note   that for  large   codes,
+generating  the   elements may  be very  time-  and memory-consuming. For
+generating   a  specific  element  or  a   subset  of  the elements,  use
+<code>CodewordNr</code> (see <a href="CHAP003.htm#SSEC005.6">CodewordNr</a>).
+<p>
+<pre>
+gap&gt; C := ConferenceCode( 5 );
+a (5,12,2)1..4 conference code over GF(2)
+gap&gt; AsSSortedList( C );
+[ [ 0 0 0 0 0 ], [ 0 0 1 1 1 ], [ 0 1 0 1 1 ], [ 0 1 1 0 1 ], [ 0 1 1 1 0 ], 
+  [ 1 0 0 1 1 ], [ 1 0 1 0 1 ], [ 1 0 1 1 0 ], [ 1 1 0 0 1 ], [ 1 1 0 1 0 ], 
+  [ 1 1 1 0 0 ], [ 1 1 1 1 1 ] ]
+gap&gt; CodewordNr( C, [ 1, 2 ] );
+[ [ 0 0 0 0 0 ], [ 0 0 1 1 1 ] ]
+</pre>
+<p>
+<a name = "SSEC005.6"></a>
+<li><code>CodewordNr( </code><var>C</var><code>, </code><var>list</var><code> )</code>
+<p>
+<code>CodewordNr</code> returns a list of codewords of <var>C</var>. <var>list</var> may  be a list of
+integers    or a single   integer.   For   each  integer  of  <var>list</var>, the
+corresponding codeword of <var>C</var> is returned. The correspondence of a number
+<i>i</i> with a codeword is determined as follows: if  a list of elements of
+<var>C</var>  is  available,  the <i>i</i><sup><i>th</i></sup> element   is  taken.  Otherwise,  it is
+calculated by multiplication of   the <i>i</i><sup><i>th</i></sup> information vector  by the
+generator matrix or generator  polynomial, where the  information vectors
+are ordered lexicographically.
+<p>
+So <code>CodewordNr(</code><var>C</var><code>, </code><var>i</var><code>)</code> is  equal to <code>AsSSortedList(</code><var>C</var><code>)[</code><var>i</var><code>]</code>.   The latter
+function first   calculates the set  of all  the elements  of  C and then
+returns the  <i>i</i><sup><i>th</i></sup> element  of    that set, whereas the  former   only
+calculates the <i>i</i><sup><i>th</i></sup> codeword.
+<p>
+<pre>
+gap&gt; R := ReedSolomonCode(2,2);
+a cyclic [2,1,2]1 Reed-Solomon code over GF(3)
+gap&gt; AsSSortedList(R);
+[ [ 0 0 ], [ 1 1 ], [ 2 2 ] ]
+gap&gt; CodewordNr(R, [1,3]);
+[ [ 0 0 ], [ 2 2 ] ]
+gap&gt; C := HadamardCode( 16 );
+a (16,32,8)5..6 Hadamard code of order 16 over GF(2)
+gap&gt; AsSSortedList(C)[17] = CodewordNr( C, 17 );
+true 
+</pre>
+<p>
+<p>
+<h2><a name="SECT006">3.6 Printing and Displaying Codes</a></h2>
+<p><p>
+<a name = "SSEC006.1"></a>
+<li><code>Print( </code><var>C</var><code> )</code>
+<p>
+<code>Print</code> prints information  about <var>C</var>.  This is the   same as typing  the
+identifier <var>C</var> at the <font face="Gill Sans,Helvetica,Arial">GAP</font>-prompt.
+<p>
+If the argument is an unrestricted code, information in the form
+<p>
+<pre>
+a (&lt;n&gt;,&lt;M&gt;,&lt;d&gt;)&lt;r&gt; ... code over GF(q)
+</pre>
+<p>
+is printed, where <var>n</var> is the word length, <var>M</var> the number of elements of
+the code, <var>d</var> the minimum distance and <var>r</var> the covering radius.
+<p>
+If the argument is a linear code, information in the form
+<p>
+<pre>
+a linear [&lt;n&gt;,&lt;k&gt;,&lt;d&gt;]&lt;r&gt; ... code over GF(q)
+</pre>
+<p>
+is printed, where <var>n</var> is the word length, <var>k</var> the dimension of the code,
+<var>d</var> the minimum distance and <var>r</var> the covering radius.
+<p>
+In all cases, if <var>d</var> is not yet known, it is displayed in the form
+<p>
+<pre>
+&lt;lowerbound&gt;,..,&lt;upperbound&gt;
+</pre>
+<p>
+and if <var>r</var> is not yet known, it is displayed in the same way.
+<p>
+The function <code>Display</code> gives more information. See <a href="CHAP003.htm#SSEC006.3">Display</a>.
+<p>
+<pre>
+gap&gt; C1 := ExtendedCode( HammingCode( 3, GF(2) ) );
+a linear [8,4,4]2 extended code
+gap&gt; Print( "This is ", NordstromRobinsonCode(), ". \n");
+This is a (16,256,6)4 Nordstrom-Robinson code over GF(2). 
+</pre>
+<p>
+<a name = "SSEC006.2"></a>
+<li><code>String( </code><var>C</var><code> )</code>
+<p>
+<code>String</code> returns information about <var>C</var> in a string. This function is used
+by <code>Print</code> (see <code>Print</code>).
+<p>
+<a name = "SSEC006.3"></a>
+<li><code>Display( </code><var>C</var><code> )</code>
+<p>
+<code>Display</code> prints  the  method of  construction  of  code <var>C</var>.  With  this
+history,    in    most cases  an   equal    or equivalent   code   can be
+reconstructed. If  <var>C</var> is an  unmanipulated code, the  result is equal to
+output of the function <code>Print</code> (see <a href="CHAP003.htm#SSEC006.1">Print</a>).
+<p>
+<pre>
+gap&gt; Display( RepetitionCode( 6, GF(3) ) );
+a cyclic [6,1,6]4 repetition code over GF(3)
+gap&gt; C1 := ExtendedCode( HammingCode(2) );;
+gap&gt; C2 := PuncturedCode( ReedMullerCode( 2, 3 ) );;
+gap&gt; Display( LengthenedCode( UUVCode( C1, C2 ) ) );
+a linear [12,8,2]2..4 code, lengthened with 1 column(s) of
+a linear [11,8,1]1..2 U U+V construction code of
+U: a linear [4,1,4]2 extended code of
+   a linear [3,1,3]1 Hamming (2,2) code over GF(2)
+V: a linear [7,7,1]0 punctured code of
+   a cyclic [8,7,2]1 Reed-Muller (2,3) code over GF(2)
+</pre>
+<p>
+<p>
+<h2><a name="SECT007">3.7 Generating (Check) Matrices and Polynomials</a></h2>
+<p><p>
+<a name = "SSEC007.1"></a>
+<li><code>GeneratorMat( </code><var>C</var><code> )</code>
+<p>
+<code>GeneratorMat</code>  returns a generator matrix  of <var>C</var>.  The code consists of
+all linear combinations of the rows of this matrix.
+<p>
+If until now  no generator matrix of <var>C</var>  was determined,  it is computed
+from either the parity check matrix, the  generator polynomial, the check
+polynomial or the elements (if possible), whichever is available.
+<p>
+If <var>C</var> is a non-linear code, the function returns an error.
+<p>
+<pre>
+gap&gt; GeneratorMat( HammingCode( 3, GF(2) ) );
+[ &lt;an immutable GF2 vector of length 7&gt;, &lt;an immutable GF2 vector of length 7&gt;
+    , &lt;an immutable GF2 vector of length 7&gt;, 
+  &lt;an immutable GF2 vector of length 7&gt; ]
+gap&gt; GeneratorMat( RepetitionCode( 5, GF(25) ) );
+[ [ Z(5)^0, Z(5)^0, Z(5)^0, Z(5)^0, Z(5)^0 ] ]
+gap&gt; GeneratorMat( NullCode( 14, GF(4) ) );
+[  ]
+</pre>
+<p>
+<a name = "SSEC007.2"></a>
+<li><code>CheckMat( </code><var>C</var><code> )</code>
+<p>
+<code>CheckMat</code> returns a parity check matrix of <var>C</var>. The code consists of all
+words orthogonal to each of the rows of this matrix. The transpose of the
+matrix is  a right  inverse of the   generator  matrix. The parity  check
+matrix is  computed  from either   the generator  matrix, the   generator
+polynomial, the  check polynomial or the  elements  of <var>C</var> (if possible),
+whichever is available.
+<p>
+If <var>C</var> is a non-linear code, the function returns an error.
+<p>
+<pre>
+gap&gt; CheckMat( HammingCode(3, GF(2) ) );
+[ &lt;an immutable GF2 vector of length 7&gt;, &lt;an immutable GF2 vector of length 7&gt;
+    , &lt;an immutable GF2 vector of length 7&gt; ]
+gap&gt; CheckMat( RepetitionCode( 5, GF(25) ) );
+[ [ Z(5)^0, Z(5)^2, 0*Z(5), 0*Z(5), 0*Z(5) ],
+  [ 0*Z(5), Z(5)^0, Z(5)^2, 0*Z(5), 0*Z(5) ],
+  [ 0*Z(5), 0*Z(5), Z(5)^0, Z(5)^2, 0*Z(5) ],
+  [ 0*Z(5), 0*Z(5), 0*Z(5), Z(5)^0, Z(5)^2 ] ]
+gap&gt; CheckMat( WholeSpaceCode( 12, GF(4) ) );
+[  ] 
+</pre>
+<p>
+<a name = "SSEC007.3"></a>
+<li><code>GeneratorPol( </code><var>C</var><code> )</code>
+<p>
+<code>GeneratorPol</code> returns the generator polynomial of <var>C</var>. The code consists
+of all  multiples of the generator polynomial  modulo <i>x</i><sup><i>n</i></sup><font face="symbol">-</font>1 where <i>n</i>
+is the word  length of <var>C</var>.  The generator polynomial is determined  from
+either  the check  polynomial, the   generator   or check  matrix or  the
+elements of <var>C</var> (if possible), whichever is available.
+<p>
+If <var>C</var> is not a cyclic code, the function returns <code>false</code>.
+<p>
+<pre>
+gap&gt; GeneratorPol(GeneratorMatCode([[1, 1, 0], [0, 1, 1]], GF(2)));
+Z(2)^0+x_1
+gap&gt; GeneratorPol( WholeSpaceCode( 4, GF(2) ) );
+Z(2)^0
+gap&gt; GeneratorPol( NullCode( 7, GF(3) ) );
+-Z(3)^0+x_1^7
+</pre>
+<p>
+<a name = "SSEC007.4"></a>
+<li><code>CheckPol( </code><var>C</var><code> )</code>
+<p>
+<code>CheckPol</code> returns the check polynomial of  <var>C</var>. The code consists of all
+polynomials <i>f</i> with  <i>f</i>*<i>h</i> = 0 (mod  <i>x</i><sup><i>n</i></sup><font face="symbol">-</font>1), where <i>h</i>  is the check
+polynomial, and <i>n</i> is the  word length of  <var>C</var>. The check polynomial  is
+computed  from  the generator polynomial, the   generator or parity check
+matrix or the elements of <var>C</var> (if possible), whichever is available.
+<p>
+If <var>C</var> if not a cyclic code, the function returns an error.
+<p>
+<pre>
+gap&gt; CheckPol(GeneratorMatCode([[1, 1, 0], [0, 1, 1]], GF(2)));
+Z(2)^0+x_1+x_1^2
+gap&gt; CheckPol(WholeSpaceCode(4, GF(2)));
+Z(2)^0+x_1^4
+gap&gt; CheckPol(NullCode(7,GF(3)));
+Z(3)^0
+</pre>
+<p>
+<a name = "SSEC007.5"></a>
+<li><code>RootsOfCode( </code><var>C</var><code> )</code>
+<p>
+<code>RootsOfCode</code> returns a list of all zeros of  the generator polynomial of
+a cyclic code <var>C</var>. These are finite field elements in the splitting field
+of the generator  polynomial, <i>GF</i>(<i>q</i><sup><i>m</i></sup>), <i>m</i>  is the multiplicative order
+of the size of the base field of the code, modulo the word length.
+<p>
+The reverse  process, constructing  a code from  a set  of roots,  can  be
+carried out by the function <code>RootsCode</code> (see <a href="CHAP004.htm#SSEC004.3">RootsCode</a>).
+<p>
+<pre>
+gap&gt; C1 := ReedSolomonCode( 16, 5 );
+a cyclic [16,12,5]3..4 Reed-Solomon code over GF(17)
+gap&gt; RootsOfCode( C1 );
+[ Z(17), Z(17)^2, Z(17)^3, Z(17)^4 ]
+gap&gt; C2 := RootsCode( 16, last );
+a cyclic [16,12,5]3..4 code defined by roots over GF(17)
+gap&gt; C1 = C2;
+true 
+</pre>
+<p>
+<p>
+<h2><a name="SECT008">3.8 Parameters of Codes</a></h2>
+<p><p>
+<a name = "SSEC008.1"></a>
+<li><code>WordLength( </code><var>C</var><code> )</code>
+<p>
+<code>WordLength</code> returns the  parameter <i>n</i> of  <var>C</var>,  the word length of  the
+elements. Elements of  cyclic   codes are polynomials of   maximum degree
+<i>n</i><font face="symbol">-</font>1, as calculations are carried out modulo <i>x</i><sup><i>n</i></sup><font face="symbol">-</font>1.
+<p>
+<pre>
+gap&gt; WordLength( NordstromRobinsonCode() );
+16
+gap&gt; WordLength( PuncturedCode( WholeSpaceCode(7) ) );
+6
+gap&gt; WordLength( UUVCode( WholeSpaceCode(7), RepetitionCode(7) ) );
+14 
+</pre>
+<p>
+<a name = "SSEC008.2"></a>
+<li><code>Redundancy( </code><var>C</var><code> )</code>
+<p>
+<code>Redundancy</code> returns the redundancy  <i>r</i> of <var>C</var>, which   is equal to  the
+number of check symbols in each element. If <var>C</var> is not  a linear code the
+redundancy is not defined and <code>Redundancy</code> returns an error.
+<p>
+If   a linear code   <var>C</var> has dimension <i>k</i>  and  word length  <i>n</i>, it has
+redundancy <i>r</i>=<i>n</i><font face="symbol">-</font><i>k</i>.
+<p>
+<pre>
+gap&gt; C := TernaryGolayCode();
+a cyclic [11,6,5]2 ternary Golay code over GF(3)
+gap&gt; Redundancy(C);
+5
+gap&gt; Redundancy( DualCode(C) );
+6 
+</pre>
+<p>
+<a name = "SSEC008.4"></a>
+<li><code>MinimumDistance( </code><var>C</var><code> )</code>
+<p>
+<code>MinimumDistance</code>  returns  the  minimum distance   of  <var>C</var>, the  largest
+integer <i>d</i> with the  property that every element of  <var>C</var> has at least  a
+Hamming  distance  <i>d</i> (see <a href="CHAP002.htm#SSEC006.2">DistanceCodeword</a>)  to  any other element of
+<var>C</var>.  For linear  codes, the  minimum distance is   equal to  the minimum
+weight. This  means that  <i>d</i> is also  the  smallest positive value  with
+<i>w</i>[<i>d</i>+1]  <font face="symbol">¹</font> 0,   where <i>w</i> is   the  weight distribution  of  <var>C</var> (see
+<a href="CHAP003.htm#SSEC009.1">WeightDistribution</a>).  For unrestricted    codes,  <i>d</i> is  the  smallest
+positive value with <i>w</i>[<i>d</i>+1]  <font face="symbol">¹</font> 0, where <i>w</i>  is the inner distribution
+of <var>C</var> (see <a href="CHAP003.htm#SSEC009.2">InnerDistribution</a>).
+<p>
+For  codes with only  one element, the  minimum distance is defined to be
+equal to the word length.
+<p>
+For linear codes <var>C</var>, the algorithm used is the following:
+After replacing <var>C</var> by a permutation equivalent <var>C'</var>, 
+one may assume the generator matrix has the following form
+<i>G</i>=(<i>I</i><sub><i>k</i></sub> &nbsp;<font face="symbol">|</font> &nbsp;<i>A</i>), for some <i>k</i>&times;(<i>n</i><font face="symbol">-</font><i>k</i>) matrix <i>A</i>.
+First, find the minimum distance of the code spanned by the 
+rows of <i>A</i>. Call this
+distance <i>d</i>(<i>A</i>). Note that <i>d</i>(<i>A</i>) is equal to the 
+<i>d</i>(<b>v</b>,<b>0</b>) where <b>v</b> 
+is some proper linear combination of <i>i</i> distinct rows of <i>A</i>.
+Return <i>d</i>(<i>C</i>)=<i>d</i>(<i>A</i>)+<i>i</i>, where <i>i</i> is as in the previous step.
+<p>
+<pre>
+gap&gt; C := MOLSCode(7);; MinimumDistance(C);
+3
+gap&gt; WeightDistribution(C);
+[ 1, 0, 0, 24, 24 ]
+gap&gt; MinimumDistance( WholeSpaceCode( 5, GF(3) ) );
+1
+gap&gt; MinimumDistance( NullCode( 4, GF(2) ) );
+4
+gap&gt; C := ConferenceCode(9);; MinimumDistance(C);
+4
+gap&gt; InnerDistribution(C);
+[ 1, 0, 0, 0, 63/5, 9/5, 18/5, 0, 9/10, 1/10 ] 
+</pre>
+<p>
+<li><code>MinimumDistance( </code><var>C</var><code>, </code><var>w</var><code> )</code>
+<p>
+In  this  form, <code>MinimumDistance</code>  returns   the  minimum  distance of  a
+codeword <var>w</var> to the code <var>C</var>, also called the <strong>distance  to <var>C</var></strong>. This is
+the smallest value <i>d</i> for which there is an element <var>c</var>  of the code <var>C</var>
+which is at distance <i>d</i> from <var>w</var>.  So <i>d</i> is also  the minimum value for
+which <i>D</i>[<i>d</i>+1]  <font face="symbol">¹</font> 0, where <i>D</i> is  the distance distribution of <var>w</var> to
+<var>C</var> (see <a href="CHAP003.htm#SSEC009.4">DistancesDistribution</a>).
+<p>
+Note that <var>w</var> must be an element of the same vector space as the elements
+of <var>C</var>.  <var>w</var> does not necessarily belong  to  the code  (if it  does, the
+minimum distance is zero).
+<p>
+<pre>
+gap&gt; C := MOLSCode(7);; w := CodewordNr( C, 17 );
+[ 3 3 6 2 ]
+gap&gt; MinimumDistance( C, w );
+0
+gap&gt; C := RemovedElementsCode( C, w );; MinimumDistance( C, w );
+3                           # so w no longer belongs to C 
+</pre>
+<p>
+<a name = "SSEC008.5"></a>
+<li><code>MinimumDistanceLeon( </code><var>C</var><code> )</code>
+<p>
+<code>MinimumDistanceLeon</code>  returns  the  minimum distance   of a linear
+binary code <var>C</var>, using an implementation of Leon's probabilistic
+polynomial time algorithm (see J. S. Leon, <a href="biblio.htm#Leon88"><cite>Leon88</cite></a>).
+<p>
+<p>
+<h2><a name="SECT009">3.9 Distributions</a></h2>
+<p><p>
+<a name = "SSEC009.1"></a>
+<li><code>WeightDistribution( </code><var>C</var><code> )</code>
+<p>
+<code>WeightDistribution</code>  returns   the weight distribution    of  <var>C</var>, as  a
+vector. The    <i>i</i><sup><i>th</i></sup> element of  this  vector  contains the  number of
+elements of  <var>C</var>   with  weight <i>i</i><font face="symbol">-</font>1.  For   linear  codes, the   weight
+distribution  is     equal    to     the    inner    distribution    (see
+<a href="CHAP003.htm#SSEC009.2">InnerDistribution</a>).
+<p>
+Suppose <i>w</i> is the weight distribution of <var>C</var>. If <var>C</var>  is linear, it must
+have the zero codeword, so <i>w</i>[1] = 1 (one word of weight 0).
+<p>
+<pre>
+gap&gt; WeightDistribution( ConferenceCode(9) );
+[ 1, 0, 0, 0, 0, 18, 0, 0, 0, 1 ]
+gap&gt; WeightDistribution( RepetitionCode( 7, GF(4) ) );
+[ 1, 0, 0, 0, 0, 0, 0, 3 ]
+gap&gt; WeightDistribution( WholeSpaceCode( 5, GF(2) ) );
+[ 1, 5, 10, 10, 5, 1 ] 
+</pre>
+<p>
+<a name = "SSEC009.2"></a>
+<li><code>InnerDistribution( </code><var>C</var><code> )</code>
+<p>
+<code>InnerDistribution</code>  returns the inner distribution  of <var>C</var>. The <i>i</i><sup><i>th</i></sup>
+element of the vector contains the  average number of  elements of <var>C</var> at
+distance   <i>i</i><font face="symbol">-</font>1 to  an element   of <var>C</var>.  For  linear  codes, the  inner
+distribution    is   equal    to     the  weight    distribution     (see
+<a href="CHAP003.htm#SSEC009.1">WeightDistribution</a>).
+<p>
+Suppose  <i>w</i> is the inner distribution  of <var>C</var>. Then  <i>w</i>[1] = 1, because
+each element of <var>C</var> has exactly one element at distance zero (the element
+itself). The minimum distance of  <var>C</var> is the smallest  value <i>d</i>  &gt;  0 with
+<i>w</i>[<i>d</i>+1]  <font face="symbol">¹</font> 0, because  a    distance between  zero  and  <i>d</i>   never
+occurs. See <a href="CHAP003.htm#SSEC008.4">MinimumDistance</a>.
+<p>
+<pre>
+gap&gt; InnerDistribution( ConferenceCode(9) );
+[ 1, 0, 0, 0, 63/5, 9/5, 18/5, 0, 9/10, 1/10 ]
+gap&gt; InnerDistribution( RepetitionCode( 7, GF(4) ) );
+[ 1, 0, 0, 0, 0, 0, 0, 3 ] 
+</pre>
+<p>
+<a name = "SSEC009.3"></a>
+<li><code>OuterDistribution( </code><var>C</var><code> )</code>
+<p>
+The function  <code>OuterDistribution</code> returns a  list of  length <i>q</i><sup><i>n</i></sup>, where
+<i>q</i> is the size of the base field of <var>C</var> and <i>n</i>  is the word length. The
+elements of  the list  consist of  an element of  (<i>GF</i>(<i>q</i>))<sup><i>n</i></sup> (this  is a
+codeword type)  and the distribution of distances  to the code (a list of
+integers).  This table is <strong>very</strong> large, and for <i>n</i>  &gt;  20 it will not fit
+in the memory   of most computers.  The function  <code>DistancesDistribution</code>
+(see <a href="CHAP003.htm#SSEC009.4">DistancesDistribution</a>) can be used  to calculate one entry of  the
+list.
+<p>
+<pre>
+gap&gt; C := RepetitionCode( 3, GF(2) );
+a cyclic [3,1,3]1 repetition code over GF(2)
+gap&gt; OD := OuterDistribution(C);
+[ [ [ 0 0 0 ], [ 1, 0, 0, 1 ] ], [ [ 1 1 1 ], [ 1, 0, 0, 1 ] ],
+  [ [ 0 0 1 ], [ 0, 1, 1, 0 ] ], [ [ 1 1 0 ], [ 0, 1, 1, 0 ] ],
+  [ [ 1 0 0 ], [ 0, 1, 1, 0 ] ], [ [ 0 1 1 ], [ 0, 1, 1, 0 ] ],
+  [ [ 0 1 0 ], [ 0, 1, 1, 0 ] ], [ [ 1 0 1 ], [ 0, 1, 1, 0 ] ] ]
+gap&gt; WeightDistribution(C) = OD[1][2];
+true
+gap&gt; DistancesDistribution( C, Codeword("110") ) = OD[4][2];
+true 
+</pre>
+<p>
+<a name = "SSEC009.4"></a>
+<li><code>DistancesDistribution( </code><var>C</var><code>, </code><var>w</var><code> )</code>
+<p>
+<code>DistancesDistribution</code> returns a  distribution  of the distances of  all
+elements of <var>C</var> to a codeword <var>w</var> in the same  vector space. The <i>i</i><sup><i>th</i></sup>
+element of the  distance distribution is the  number of codewords of  <var>C</var>
+that have distance <i>i</i><font face="symbol">-</font>1 to <var>w</var>. The smallest value <i>d</i> with <i>w</i>[<i>d</i>+1]  <font face="symbol">¹</font> 0 is defined as the <strong>distance to <var>C</var></strong> (see <a href="CHAP003.htm#SSEC008.4">MinimumDistance</a>).
+<p>
+<pre>
+gap&gt; H := HadamardCode(20);
+a (20,40,10)6..8 Hadamard code of order 20 over GF(2)
+gap&gt; c := Codeword("10110101101010010101", H);
+[ 1 0 1 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 1 ]
+gap&gt; DistancesDistribution(H, c);
+[ 0, 0, 0, 0, 0, 1, 0, 7, 0, 12, 0, 12, 0, 7, 0, 1, 0, 0, 0, 0, 0 ]
+gap&gt; MinimumDistance(H, c);
+5                           # distance to H 
+</pre>
+<p>
+<p>
+<h2><a name="SECT010">3.10 Decoding Functions</a></h2>
+<p><p>
+<a name = "SSEC010.1"></a>
+<li><code>Decode( </code><var>C</var><code>, </code><var>c</var><code> )</code>
+<p>
+<code>Decode</code> decodes <var>c</var> with respect  to code <var>C</var>. <var>c</var>  is  a codeword or  a
+list of codewords. First, possible errors  in <var>c</var> are corrected, then the
+codeword is decoded to  an information codeword <i>x</i>.  If the code  record
+has a  field <code>specialDecoder</code>, this special  algorithm  is used to decode
+the vector.  Hamming  codes and BCH  codes have such a special algorithm.
+Otherwise, syndrome decoding is used. Encoding is done by multiplying the
+information vector with the code (see <a href="CHAP003.htm#SECT002">Operations for Codes</a>).
+<p>
+A special decoder can be created by defining a function
+<p>
+<pre>
+C!.SpecialDecoder := function(C, c) ... end;
+</pre>
+<p>
+The function uses  the arguments <var>C</var>, the code  record itself, and <var>c</var>, a
+vector of  the  codeword type, to decode   <var>c</var> to an information word.  A
+normal decoder  would take a codeword  <var>c</var>  of the  same  word length and
+field as <var>C</var>, and  would  return a information  word  of length  <i>k</i>, the
+dimension of   <var>C</var>. The user  is not  restricted  to these normal demands
+though, and can for instance define a decoder for non-linear codes.
+<p>
+<pre>
+gap&gt; C := HammingCode(3);
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap&gt; c := "1010"*C;                    # encoding
+[ 1 0 1 1 0 1 0 ]
+gap&gt; Decode(C, c);                     # decoding
+[ 1 0 1 0 ]
+gap&gt; Decode(C, Codeword("0010101"));
+[ 1 1 0 1 ]                            # one error corrected
+gap&gt; C!.SpecialDecoder := function(C, c)
+&gt; return NullWord(Dimension(C));
+&gt; end;
+function ( C, c ) ... end
+gap&gt; Decode(C, c);
+[ 0 0 0 0 ]           # new decoder always returns null word 
+</pre>
+<p>
+<a name = "SSEC010.2"></a>
+<li><code>Syndrome( </code><var>C</var><code>, </code><var>c</var><code> )</code>
+<p>
+<code>Syndrome</code> returns  the   syndrome of word <var>c</var>   with  respect to  a code
+<var>C</var>. <var>c</var>  is a word of  the vector space of <var>C</var>.  If <var>c</var> is an element of
+<var>C</var>, the syndrome is a zero vector. The  syndrome can be used for looking
+up  an error vector in the  syndrome table (see  <a href="CHAP003.htm#SSEC010.3">SyndromeTable</a>) that is
+needed to correct an error in <var>c</var>.
+<p>
+A syndrome is not defined  for non-linear codes. <code>Syndrome</code> then  returns
+an error.
+<p>
+<pre>
+gap&gt; C := HammingCode(4);
+a linear [15,11,3]1 Hamming (4,2) code over GF(2)
+gap&gt; v := CodewordNr( C, 7 );
+[ 1 1 0 0 0 0 0 0 0 0 0 0 1 1 0 ]
+gap&gt; Syndrome( C, v );
+[ 0 0 0 0 ]
+gap&gt; Syndrome( C, Codeword( "000000001100111" ) );
+[ 1 1 1 1 ]
+gap&gt; Syndrome( C, Codeword( "000000000000001" ) );
+[ 1 1 1 1 ]    # the same syndrome: both codewords are in the same
+               # coset of C 
+</pre>
+<p>
+<a name = "SSEC010.3"></a>
+<li><code>SyndromeTable( </code><var>C</var><code> )</code>
+<p>
+<code>SyndromeTable</code>  returns   a  <strong>syndrome table</strong> of   a    linear code <var>C</var>,
+consisting of two columns. The first column consists of the error vectors
+that correspond  to the  syndrome  vectors  in the  second column.  These
+vectors both are of the codeword  type. After calculating the syndrome of
+a word <var>c</var>  with <code>Syndrome</code> (see <a href="CHAP003.htm#SSEC010.2">Syndrome</a>), the  error vector needed to
+correct  <var>c</var> can be found in  the syndrome table. Subtracting this vector
+from <var>c</var> yields an element of <var>C</var>. To make the search for the syndrome as
+fast as possible, the syndrome table  is sorted according to the syndrome
+vectors.
+<p>
+<pre>
+gap&gt; H := HammingCode(2);
+a linear [3,1,3]1 Hamming (2,2) code over GF(2)
+gap&gt; SyndromeTable(H);
+[ [ [ 0 0 0 ], [ 0 0 ] ], [ [ 1 0 0 ], [ 0 1 ] ],
+  [ [ 0 1 0 ], [ 1 0 ] ], [ [ 0 0 1 ], [ 1 1 ] ] ]
+gap&gt; c := Codeword("101");
+[ 1 0 1 ]
+gap&gt; c in H;
+false          # c is not an element of H
+gap&gt; Syndrome(H,c);
+[ 1 0 ]        # according to the syndrome table,
+               # the error vector [ 0 1 0 ] belongs to this syndrome
+gap&gt; c - Codeword("010") in H;
+true           # so the corrected codeword is
+               # [ 1 0 1 ] - [ 0 1 0 ] = [ 1 1 1 ],
+               # this is an element of H 
+</pre>
+<p>
+<a name = "SSEC010.4"></a>
+<li><code>StandardArray( </code><var>C</var><code> )</code>
+<p>
+<code>StandardArray</code>  returns the standard  array of   a  code <var>C</var>. This  is a
+matrix  with elements of  the codeword type. It has  <i>q</i><sup><i>r</i></sup> rows and <i>q</i><sup><i>k</i></sup>
+columns,  where <i>q</i> is  the size  of the base  field  of <var>C</var>, <i>r</i>  is the
+redundancy   of <var>C</var>, and <i>k</i>    is the dimension   of <var>C</var>.  The first row
+contains all the elements of <var>C</var>.  Each other row  contains words that do
+not belong to  the code, with  in the first  column their syndrome vector
+(see <a href="CHAP003.htm#SSEC010.2">Syndrome</a>).
+<p>
+A non-linear code does  not have a  standard array.  <code>StandardArray</code> then
+returns an error.
+<p>
+Note   that calculating a standard  array  can be  very time- and memory-
+consuming.
+<p>
+<pre>
+gap&gt; StandardArray(RepetitionCode(3)); 
+[ [ [ 0 0 0 ], [ 1 1 1 ] ], [ [ 0 0 1 ], [ 1 1 0 ] ], 
+  [ [ 0 1 0 ], [ 1 0 1 ] ], [ [ 1 0 0 ], [ 0 1 1 ] ] ]
+</pre>
+<p>
+<a name = "SSEC010.5"></a>
+<li><code>PermutationDecode( </code><var>C</var><code> , </code><var>v</var><code> )</code>
+<p>
+<code>PermutationDecode` performs permutation decoding when possible
+and returns original vector and prints "fail" when not possible.
+This uses Leon</code>s AutomorphismGroup in the binary case and
+PermutationAutomorphism otherwise. 
+<p>
+<pre>
+C0:=HammingCode(3,GF(2));
+#a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+G0:=GeneratorMat(C0);;
+G := List(G0, ShallowCopy);;
+PutStandardForm(G);
+Display(G);
+H0:=CheckMat(C0);;
+Display(H0);
+c0:=Random(C0);
+v01:=c0[1]+Z(2)^2;;
+v1:=List(c0, ShallowCopy);;
+v1[1]:=v01;;
+v1:=Codeword(v1);
+c1:=PermutationDecode(C0,v1);
+c1=c0;
+</pre>
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Previous</a>] [<a href ="CHAP004.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>GUAVA manual<br>April 2004
+</address></body></html>

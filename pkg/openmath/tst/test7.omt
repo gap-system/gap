@@ -1,0 +1,63 @@
+<!-- Example came from interfacing Macaulay2: evaluates to Z(5)*a*x_1^3 -->
+<OMOBJ>
+	<OMA>
+		<OMS cd="polyd1" name="DMP"/>
+		<OMA id="polyringPVqOdEpUtDXHg1A6">
+			<OMS cd="polyd1" name="poly_ring_d"/>
+			<OMA id="fbp1">
+				<OMS cd="field3" name="field_by_poly"/>
+				<OMA id="r1">
+					<OMS cd="setname2" name="GFp"/>
+					<OMI>5</OMI>
+				</OMA>
+				<OMA>
+					<OMS cd="polyd1" name="DMP"/>
+					<OMA id="r2">
+						<OMS cd="polyd1" name="poly_ring_d_named"/>
+						<OMA id="r1">
+							<OMS cd="setname2" name="GFp"/>
+							<OMI>5</OMI>
+						</OMA>
+						<OMV name="a"/>
+					</OMA>
+					<OMA>
+						<OMS cd="polyd1" name="SDMP"/>
+						<OMA>
+							<OMS cd="polyd1" name="term"/>
+							<OMI>1</OMI>
+							<OMI>2</OMI>
+						</OMA>
+						<OMA>
+							<OMS cd="polyd1" name="term"/>
+							<OMI>1</OMI>
+							<OMI>1</OMI>
+						</OMA>
+						<OMA>
+							<OMS cd="polyd1" name="term"/>
+							<OMI>2</OMI>
+							<OMI>0</OMI>
+						</OMA>
+					</OMA>
+				</OMA>
+			</OMA>
+			<OMI>2</OMI>
+		</OMA>
+		<OMA>
+			<OMS cd="polyd1" name="SDMP"/>
+			<OMA>
+				<OMS cd="polyd1" name="term"/>
+				<OMA>
+					<OMS cd="field4" name="field_by_poly_vector"/>
+					<OMR href="#fbp1"/>
+					<OMA>
+						<OMS cd="list1" name="list"/>
+						<OMI>0</OMI>
+						<OMI>2</OMI>
+					</OMA>
+				</OMA>
+				<OMI>3</OMI>
+				<OMI>0</OMI>
+			</OMA>
+		</OMA>
+	</OMA>
+</OMOBJ>

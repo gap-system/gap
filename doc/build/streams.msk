@@ -4,7 +4,7 @@
 %W                                                       Martin Schoenert
 %W                                                         & Steve Linton
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: streams.msk,v 1.18 2006/07/02 12:01:48 gap Exp $
 %%
 %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %Y  Copyright 2000,  St Andrews
@@ -289,6 +289,9 @@ display.
 
 \Declaration{OutputTextUser}
 
+The next function allows an interactive input from the user.
+
+\Declaration{InputFromUser}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{String Streams}
@@ -353,7 +356,7 @@ gap> WriteByte(s,INT_CHAR('\n'));
 true
 gap> y := ReadAll(s);;
 gap> Length(y);
-4096
+4095
 gap> CloseStream(s);
 gap> s;
 < closed input/output stream to rev >
@@ -400,6 +403,29 @@ argument, which refers to an index in one of the following arrays
 exceptions on the stream). Handler functions usually should not output
 anything on the standard output because this ruins the command line
 during command line editing.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comma separated files}
+\index{Spreadsheet}
+\index{Excel}
+
+In some situations it can be desirable to process data given in the form of
+a spreadsheet (such as Excel). {\GAP} can do this using the CSV (comma
+separated values) format, which spreadsheet programs can usually read in or
+write out.
+
+The first line of the spreadsheet is used as labels of record components,
+each subsequent line then corresponds to a record. Entries enclosed in
+double quotes are considered as strings and are permitted to contain the
+separation character (usually a comma).
+
+\Declaration{ReadCSV}
+
+\Declaration{PrintCSV}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

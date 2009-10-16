@@ -1,0 +1,49 @@
+                 ACEExample Index (Table of Contents)
+                 ------------------------------------
+This table of possible examples is displayed when calling ACEExample 
+with no arguments, or with the argument: "index" (meant in the sense
+of `list'), or with a non-existent example name.
+
+The following ACE examples are available (in each case, for a subgroup
+H of a group G, the cosets of H in G are enumerated):
+
+  Example          G                      H              strategy
+  -------          -                      -              --------
+  "A5"             A_5                    Id             default
+  "A5-C5"          A_5                    C_5            default
+  "C5-fel0"        C_5                    Id             felsch := 0
+  "F27-purec"      F(2,7) = C_29          Id             purec
+  "F27-fel0"       F(2,7) = C_29          Id             felsch := 0
+  "F27-fel1"       F(2,7) = C_29          Id             felsch := 1
+  "M12-hlt"        M_12 (Matthieu group)  Id             hlt
+  "M12-fel1"       M_12 (Matthieu group)  Id             felsch := 1
+  "SL219-hard"     SL(2,19)               |G : H| = 180  hard
+  "perf602p5"      PerfectGroup(60*2^5,2) |G : H| = 480  default
+* "2p17-fel1"      |G| = 2^17             Id             felsch := 1
+  "2p17-fel1a"     |G| = 2^17             |G : H| = 1    felsch := 1
+  "2p17-2p3-fel1"  |G| = 2^17             |G : H| = 2^3  felsch := 1
+  "2p17-2p14-fel1" |G| = 2^17             |G : H| = 2^14 felsch := 1
+  "2p17-id-fel1"   |G| = 2^17             Id             felsch := 1
+* "2p18-fel1"      |G| = 2^18             |G : H| = 2    felsch := 1
+* "big-fel1"       |G| = 2^18.3           |G : H| = 6    felsch := 1
+* "big-hard"       |G| = 2^18.3           |G : H| = 6    hard
+
+Notes
+-----
+1. The example (first) argument of ACEExample() is a string; each
+   example above is in double quotes to remind you to include them.
+2. By default, ACEExample applies ACEStats to the chosen example. You 
+   may alter the ACE function used, by calling ACEExample with a 2nd 
+   argument; choose from: ACECosetTableFromGensAndRels (or, equival-
+   ently ACECosetTable), or ACEStart, e.g. `ACEExample("A5", ACEStart);'
+3. You may call ACEExample with additional ACE options (entered after a
+   colon in the usual way for options), e.g. `ACEExample("A5" : hlt);' 
+4. Try the *-ed examples to explore how to modify options when an
+   enumeration fails (just follow the instructions you get within the
+   break-loop, or see Notes 2. and 3.).
+5. Try `SetInfoACELevel(3);' before calling ACEExample, to see the
+   effect of setting the "mess" (= "messages") option.
+6. To suppress a long output, use a double semicolon (`;;') after the
+   ACEExample command. (However, this does not suppress Info-ed output.)
+7. Also, try `SetInfoACELevel(2);' or `SetInfoACELevel(4);' before 
+   calling ACEExample.

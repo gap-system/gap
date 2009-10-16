@@ -1,0 +1,39 @@
+Copyright notice:
+
+The Parallel GAP/MPI system (also known as ParGAP and ParGAP/MPI) and
+the source included with this distribution
+copyright (C) Gene Cooperman (1998-2001), with all rights reserved.
+This COPYING notice, itself, is based on the notice, COPYING,
+of the GRAPE system, a GAP share package, for which this
+author extends his thanks.  The rights to this file, COPYING,
+are retained by Leonard Soicher.
+
+You are permitted to copy and use Parallel GAP/MPI (ParGAP) free of charge
+for any non-commercial purpose, and to distribute ParGAP free of
+charge provided that you include a copy of this notice with any such
+distribution.  You are permitted to modify and redistribute ParGAP, but
+you are not allowed to restrict further redistribution. That is to say,
+proprietary modifications are not allowed.  You may not charge for
+ParGAP or any part of it.
+
+You may modify the programs in any way, provided that if you distribute
+a modified program, you make clear what parts of the program are your
+modifications and which are the original code. You must additionally
+supply the original unmodified code on request.
+
+ParGAP is provided "as is", with no warranty whatsoever.  The entire
+risk as to the quality and performance of the program is with you.
+Should ParGAP prove defective, you assume the cost of all necessary
+servicing, repair or correction.  In no case will we be liable to you
+for damages, including lost profits, lost monies or other special,
+incidental or consequential damages arising out of the use or inability
+to use ParGAP.
+
+
+Gene Cooperman
+College of Computer Science, 161 CN
+Northeastern University
+Boston, MA 02115
+U.S.A.
+
+June 28, 1999

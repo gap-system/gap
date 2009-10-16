@@ -1,0 +1,440 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  lag.msk                  GAP documentation             Richard Rossmanith
+%%
+\Chapter{The LAG Package}
+
+\FileHeader[1]{lag}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Attributes, Properties and Operations}
+
+\>LieAlgebraByDomain( <A> ) M
+
+
+This method takes an associative algebra as argument, and constructs 
+its associated Lie algebra. 
+The user, however, will *never use* this command, but will rather use 
+`LieAlgebra( <A> )', which either returns the Lie algebra in case 
+it is already constructed, or refers to `LieAlgebraByDomain' in case 
+it is not. 
+
+
+\beginexample 
+gap> M:=MatrixAlgebra(GF(3),3);
+( GF(3)^[ 3, 3 ] )
+gap> L:=LieAlgebra(M);
+<Lie algebra over GF(3)>
+\endexample
+
+
+\Declaration{IsLieAlgebraByAssociativeAlgebra}
+
+\beginexample 
+gap> M:=MatrixAlgebra(GF(3),3);
+( GF(3)^[ 3, 3 ] )
+gap> L:=LieAlgebra(M);
+<Lie algebra over GF(3)>
+gap> IsLieAlgebraByAssociativeAlgebra(L);
+true
+\endexample
+
+
+\Declaration{UnderlyingAssociativeAlgebra}
+
+\beginexample 
+gap> M:=MatrixAlgebra(GF(3),3);
+<algebra-with-one over GF(3), with 2 generators>
+gap> L:=LieAlgebra(M);
+<Lie algebra over GF(3)>
+gap> UnderlyingAssociativeAlgebra(L);
+( GF(3)^[ 3, 3 ] )
+gap> last=M;
+true
+\endexample
+
+
+\Declaration{NaturalBijectionToLieAlgebra}
+
+\beginexample 
+gap> F:=GF(2); G:=SymmetricGroup(3); FG:=GroupRing(F,G);
+GF(2)
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+gap> t:=NaturalBijectionToLieAlgebra(FG); 
+MappingByFunction( <algebra-with-one over GF(2), with 
+2 generators>, <Lie algebra over GF(
+2)>, <Operation "LieObject">, function( y ) ... end )
+gap> a:=Random(FG);
+(Z(2)^0)*(1,2,3)+(Z(2)^0)*(1,3,2)+(Z(2)^0)*(1,3)
+gap> a*a;                       # product in the associative algebra
+(Z(2)^0)*()+(Z(2)^0)*(1,2,3)+(Z(2)^0)*(1,3,2)
+gap> b:=a^t;
+LieObject( (Z(2)^0)*(1,2,3)+(Z(2)^0)*(1,3,2)+(Z(2)^0)*(1,3) )
+gap> b*b;                       # product in the Lie algebra (commutator) ...
+LieObject( <zero> of ... )      # ... must be zero!
+\endexample
+
+
+\Declaration{NaturalBijectionToAssociativeAlgebra}
+
+\beginexample 
+gap> G:=SymmetricGroup(3); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+<Lie algebra over GF(2)>
+gap> s:=NaturalBijectionToAssociativeAlgebra(L);
+MappingByFunction( <Lie algebra over GF(2)>, <algebra-with-one over GF(
+2), with 2 generators>, function( y ) ... end, <Operation "LieObject"> )
+gap> InverseGeneralMapping(s)=NaturalBijectionToLieAlgebra(FG);
+true
+\endexample
+
+
+\Declaration{IsLieAlgebraOfGroupRing}
+
+\beginexample 
+gap> F:=GF(2); G:=SymmetricGroup(3); FG:=GroupRing(F,G);
+GF(2)
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+gap> L:=LieAlgebra(FG);
+<Lie algebra over GF(2)>
+gap> IsLieAlgebraOfGroupRing(L);
+true
+\endexample
+
+
+\Declaration{UnderlyingGroup}
+
+\beginexample 
+gap> F:=GF(2); G:=SymmetricGroup(3); FG:=GroupRing(F,G);
+GF(2)
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+gap> L:=LieAlgebra(FG);
+<Lie algebra over GF(2)>
+gap> UnderlyingGroup(L);
+Sym( [ 1 .. 3 ] )
+gap> LeftActingDomain(L);
+GF(2)
+\endexample
+
+\Declaration{NaturalMapping}
+
+\beginexample 
+gap> F:=GF(2); G:=SymmetricGroup(3); FG:=GroupRing(F,G);
+GF(2)
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+gap> L:=LieAlgebra(FG);
+<Lie algebra over GF(2)>
+gap> f:=NaturalMapping(G,L);
+CompositionMapping( MappingByFunction( <algebra-with-one over GF(2), with 
+2 generators>, <Lie algebra over GF(
+2)>, <Operation "LieObject">, function( y ) ... end ), <mapping: SymmetricGrou\
+p( [ 1 .. 3 ] ) -> AlgebraWithOne( GF(2), ... ) > )
+gap> (1,2)^f + (1,3)^f;
+LieObject( (Z(2)^0)*(1,2)+(Z(2)^0)*(1,3) )
+\endexample
+
+
+\Declaration{AugmentationHomomorphism}
+
+\beginexample 
+gap> F:=GF(2); G:=SymmetricGroup(3); FG:=GroupRing(F,G);
+GF(2)
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+gap> e:=Embedding(G,FG);
+<mapping: SymmetricGroup( [ 1 .. 3 ] ) -> AlgebraWithOne( GF(2), ... ) >
+gap> x:=(1,2)^e; y:=(1,3)^e;
+Z(2)^0*(1,2)
+Z(2)^0*(1,3)
+gap> a:=AugmentationHomomorphism(FG);
+[ Z(2)^0*(1,2,3), Z(2)^0*(1,2) ] -> [ Z(2)^0, Z(2)^0 ]
+gap> x^a; y^a; (x+y)^a;
+Z(2)^0
+Z(2)^0
+0*Z(2)
+\endexample
+
+
+\>LieCentre( <L> ) M
+
+The (Lie) centre of a Lie algebra of a group ring corresponds to the 
+centre of the underlying group ring, and it can 
+be calculated very fast by considering the conjugacy classes 
+of the group. 
+Since the corresponding method for the centre of the group ring 
+does just that, it is being referred to by the method at hand. 
+
+Note that the prefix `Lie' is consistently used to 
+distinguish properties of Lie algebras from the analogous properties 
+of groups (or of general algebras). Not using this prefix may 
+result in error messages, or even in wrong results without warning. 
+This is particularly important for the command `LieCentre'. 
+
+\beginexample 
+gap> G:=SmallGroup(256,400); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+<pc group of size 256 with 8 generators>
+<algebra-with-one over GF(2), with 8 generators>
+<Lie algebra over GF(2)>
+gap> C:=LieCentre(L);
+<Lie algebra of dimension 28 over GF(2)>
+gap> D:=LieDerivedSubalgebra(L);
+<Lie algebra of dimension 228 over GF(2)>
+gap> c:=Dimension(C); d:=Dimension(D); l:=Dimension(L);
+28
+228
+256
+gap> c+d=l;
+true          # This is always the case for Lie algebras of group algebras!
+\endexample
+
+
+\>LieDerivedSubalgebra( <L> ) M
+
+
+The (Lie) derived subalgebra of a Lie algebra of a group ring can 
+be calculated very fast by considering the conjugacy classes of the group. 
+
+Note that he prefix `Lie' is consistently used to 
+distinguish properties of Lie algebras from the analogous properties 
+of groups (or of general algebras). Not using this prefix may 
+result in error messages, or even in wrong results without warning. 
+
+
+\beginexample 
+gap> G:=SmallGroup(256,400); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+<pc group of size 256 with 8 generators>
+<algebra-with-one over GF(2), with 8 generators>
+<Lie algebra over GF(2)>
+gap> C:=LieCentre(L);
+<Lie algebra of dimension 28 over GF(2)>
+gap> D:=LieDerivedSubalgebra(L);    
+<Lie algebra of dimension 228 over GF(2)>
+gap> l:=Dimension(L); c:=Dimension(C); d:=Dimension(D);
+256
+28
+228
+gap> c+d=l;
+true          # This is always the case for Lie algebras of group algebras!
+\endexample
+
+
+\>IsLieAbelian( <L> ) M
+
+
+The Lie algebra $L$ of an associative algebra $A$ is Lie abelian, 
+if and only if $A$ is abelian, so this method refers 
+to `IsAbelian( <A> )'. 
+
+Note that he prefix `Lie' is consistently used to 
+distinguish properties of Lie algebras from the analogous properties 
+of groups (or of general algebras). Not using this prefix may 
+result in error messages, or even in wrong results without warning. 
+This is particularly important for the command `IsLieAbelian'. 
+
+
+\beginexample 
+gap> G:=SymmetricGroup(3); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);          
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+<Lie algebra over GF(2)>
+gap> IsAbelian(G);
+false
+gap> IsAbelian(L);     # This command should never be used for Lie algebras!
+true                   # It gives a result, but (probably) not the desired one.
+gap> IsLieAbelian(L);  # Instead, IsLieAbelian is the correct command.
+false
+\endexample
+
+
+\>IsLieSolvable( <L> ) M
+
+
+Passi, Passman and Sehgal \cite{PPS73}
+%`Lie solvable group rings', Canad. J. Math. 25, No. 4 (1973), 748-757, 
+%Passi-Passman-Sehgal
+have classified all groups $G$ such that the associated 
+Lie algebra $L$ of the group ring is (Lie) solvable. This method uses 
+their classification, making it considerably faster than 
+the more elementary method which just calculates Lie commutators. 
+
+Note that he prefix `Lie' is consistently used to 
+distinguish properties of Lie algebras from the analogous properties 
+of groups (or of general algebras). Not using this prefix may 
+result in error messages, or even in wrong results without warning. 
+
+
+\beginexample 
+gap> G:=SmallGroup(256,400); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+<pc group of size 256 with 8 generators>
+<algebra-with-one over GF(2), with 8 generators>
+<Lie algebra over GF(2)>
+gap> IsLieSolvable(L);                     # This is very fast.
+true
+gap> List(LieDerivedSeries(L), Dimension); # This is very slow.
+[ 256, 228, 189, 71, 0 ]
+\endexample
+
+
+\>IsLieNilpotent( <L> ) M
+
+
+Passi, Passman and Sehgal \cite{PPS73}
+%`Lie solvable group rings', Canad. J. Math. 25, No. 4 (1973), 748-757, 
+%Passi-Passman-Sehgal
+have classified all groups $G$ such that the associated 
+Lie algebra $L$ of the group ring is (Lie) nilpotent. This method uses 
+their classification, making it considerably faster than 
+the more elementary method which just calculates Lie commutators. 
+
+Note that he prefix `Lie' is consistently used to 
+distinguish properties of Lie algebras from the analogous properties 
+of groups (or of general algebras). Not using this prefix may 
+result in error messages, or even in wrong results without warning. 
+
+
+\beginexample 
+gap> G:=SmallGroup(256,400); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+<pc group of size 256 with 8 generators>
+<algebra-with-one over GF(2), with 8 generators>
+<Lie algebra over GF(2)>
+gap> IsLieNilpotent(L);                         # This is very fast.
+true
+gap> List(LieLowerCentralSeries(L), Dimension); # This is very slow.
+[ 256, 228, 222, 210, 191, 167, 138, 107, 76, 54, 29, 15, 6, 0 ]
+\endexample
+
+
+\Declaration{IsLieMetabelian}
+
+%`Lie metabelian group rings', Group and semigroup rings, North-Holland, 
+%1986, 153-161, Levin and Rosenberger 
+Levin and Rosenberger \cite{LR86} have classified all groups $G$ 
+such that the associated 
+Lie algebra $L$ of the group ring is (Lie) metabelian. This method uses 
+their classification, making it considerably faster than 
+the more elementary method which just calculates Lie commutators. 
+
+Note that he prefix `Lie' is consistently used to 
+distinguish properties of Lie algebras from the analogous properties 
+of groups (or of general algebras). Not using this prefix may 
+result in error messages, or even in wrong results without warning. 
+
+
+\beginexample 
+gap> G:=SmallGroup(256,400); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+<pc group of size 256 with 8 generators>
+<algebra-with-one over GF(2), with 8 generators>
+<Lie algebra over GF(2)>
+gap> IsLieMetabelian(L);
+false
+\endexample
+
+
+\Declaration{IsLieCentreByMetabelian}
+
+In various papers, 
+K{\accent127u}lshammer, Sahai, Sharma, Srivastava and the author of 
+the {\LAG} package have classified all groups $G$ 
+such that the associated 
+Lie algebra $L$ of the group ring is (Lie) centre-by-metabelian. 
+The most general result to date may be found in \cite{Ros00}.
+%the preprint 
+%`Lie centre-by-metabelian group algebras over commutative rings', 
+%available on the author's WWW pages under 
+%\URL{http://www.mathematik.uni-jena.de/algebra/skripten/\#rossmanith}
+This method uses 
+the classification, making it considerably faster than 
+the more elementary method which just calculates Lie commutators. 
+
+Note that he prefix `Lie' is consistently used to 
+distinguish properties of Lie algebras from the analogous properties 
+of groups (or of general algebras). Not using this prefix may 
+result in error messages, or even in wrong results without warning. 
+
+
+\beginexample 
+gap> G:=SymmetricGroup(3); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);       
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+<Lie algebra over GF(2)>
+gap> IsLieMetabelian(L);                                             
+false
+gap> IsLieCentreByMetabelian(L);
+true
+\endexample
+
+
+\Declaration{SubgroupsOfIndexTwo}
+
+\>CanonicalBasis( <L> ) M
+
+This method directly computes the canonical basis of the Lie algebra 
+of a group algebra without referring to the group algebra, i.e.\ by 
+sending the group elements directly to the Lie algebra. 
+
+
+\beginexample 
+gap> G:=SymmetricGroup(3); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+<Lie algebra over GF(2)>
+gap> L:=LieAlgebra(FG);    
+<Lie algebra over GF(2)>
+gap> B:=CanonicalBasis(L);
+CanonicalBasis( <Lie algebra of dimension 6 over GF(2)> )
+gap> Elements(B);
+[ LieObject( Z(2)^0*() ), LieObject( Z(2)^0*(2,3) ), 
+  LieObject( Z(2)^0*(1,2) ), LieObject( Z(2)^0*(1,2,3) ), 
+  LieObject( Z(2)^0*(1,3,2) ), LieObject( Z(2)^0*(1,3) ) ]
+\endexample
+
+
+\Declaration{IsBasisOfLieAlgebraOfGroupRing}
+
+\beginexample 
+gap> G:=SymmetricGroup(3); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);
+Sym( [ 1 .. 3 ] )
+<algebra-with-one over GF(2), with 2 generators>
+<Lie algebra over GF(2)>
+gap> L:=LieAlgebra(FG);    
+<Lie algebra over GF(2)>
+gap> B:=CanonicalBasis(L);
+CanonicalBasis( <Lie algebra of dimension 6 over GF(2)> )
+gap> IsBasisOfLieAlgebraOfGroupRing(B);
+true
+\endexample
+
+
+\>StructureConstantsTable( <B> ) M
+
+
+A very fast implementation for calculating the structure constants 
+of a Lie algebra of a group ring w.r.t. its canonical basis $B$ by 
+using the special structure of $B$. 
+
+
+\beginexample 
+gap> G:=CyclicGroup(2); FG:=GroupRing(GF(2),G); L:=LieAlgebra(FG);   
+<pc group of size 2 with 1 generators>
+<algebra-with-one over GF(2), with 1 generators>
+<Lie algebra over GF(2)>
+gap> L:=LieAlgebra(FG);
+<Lie algebra over GF(2)>
+gap> B:=CanonicalBasis(L);
+CanonicalBasis( <Lie algebra of dimension 2 over GF(2)> )
+gap> StructureConstantsTable(B);       
+[ [ [ [  ], [  ] ], [ [  ], [  ] ] ], [ [ [  ], [  ] ], [ [  ], [  ] ] ], -1, 
+  0*Z(2) ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

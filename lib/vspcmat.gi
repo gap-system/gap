@@ -2,7 +2,7 @@
 ##
 #W  vspcmat.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: vspcmat.gi,v 4.37 2002/08/23 14:35:10 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -33,7 +33,7 @@
 ##  7. Methods for mutable bases of Gaussian matrix spaces
 ##
 Revision.vspcmat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: vspcmat.gi,v 4.37 2002/08/23 14:35:10 gap Exp $";
 
 
 #############################################################################

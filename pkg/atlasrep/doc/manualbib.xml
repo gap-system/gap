@@ -1,0 +1,160 @@
+<?xmlversion="1.0" encoding="UTF-8"?>
+<!DOCTYPE file SYSTEM "bibxmlext.dtd">
+
+<file>
+
+<entry id="CP96"><misc>
+  <author>
+    <name><first>J. J.</first><last>Cannon</last></name>
+    <name><first>C.</first><last>Playoust</last></name>
+  </author>  
+  <title>An introduction to algebraic programming in <C>Magma</C></title>
+  <howpublished><URL>http://www.math.usyd.edu.au:8000/u/magma</URL></howpublished>
+  <year>1996</year>
+  <other type="address">Sydney, Australia</other>
+  <other type="organization">School of Mathematics and Statistics,
+                University of Sydney</other>
+</misc></entry>
+
+<entry id="HL89"><book>
+  <author>
+    <name><first>G.</first><last>Hiss</last></name>
+    <name><first>K.</first><last>Lux</last></name>
+  </author>  
+  <title>Brauer trees of sporadic groups</title>
+  <publisher>The Clarendon Press Oxford University Press</publisher>
+  <year>1989</year>
+  <series>Oxford Science Publications</series>
+  <address>New York</address>
+  <isbn>0-19-853381-0</isbn>
+  <mrnumber>MR1033265 (91k:20018)</mrnumber>
+  <mrclass>20C20 (20-02 20D08)</mrclass>
+  <mrreviewer>Harvey Blau</mrreviewer>
+  <other type="pages">x+526</other>
+</book></entry>
+
+<entry id="Jan05"><article>
+  <author>
+    <name><first>Christoph</first><last>Jansen</last></name>
+  </author>  
+  <title>The minimal degrees of faithful representations of the
+              sporadic simple groups and their covering groups</title>
+  <journal>LMS J. Comput. Math.</journal>
+  <year>2005</year>
+  <volume>8</volume>
+  <pages>122&ndash;144 (electronic)</pages>
+  <issn>1461-1570</issn>
+  <mrnumber>MR2153793 (2006e:20026)</mrnumber>
+  <mrclass>20C34</mrclass>
+  <mrreviewer>Robert A. Wilson</mrreviewer>
+  <other type="fjournal">LMS Journal of Computation and Mathematics</other>
+</article></entry>
+
+<entry id="SWW00"><article>
+  <author>
+    <name><first>Ibrahim A. I.</first><last>Suleiman</last></name>
+    <name><first>Peter G.</first><last>Walsh</last></name>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Conjugacy classes in sporadic simple groups</title>
+  <journal>Comm. Algebra</journal>
+  <year>2000</year>
+  <volume>28</volume>
+  <number>7</number>
+  <pages>3209&ndash;3222</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1765312 (2001c:20031)</mrnumber>
+  <mrclass>20D08 (20E45)</mrclass>
+  <mrreviewer>Wujie Shi</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="NW05"><article>
+  <author>
+    <name><first>S. J.</first><last>Nickerson</last></name>
+    <name><first>R. A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Semi-presentations for the sporadic simple groups</title>
+  <journal>Experiment. Math.</journal>
+  <year>2005</year>
+  <volume>14</volume>
+  <number>3</number>
+  <pages>359&ndash;371</pages>
+  <issn>1058-6458</issn>
+  <mrnumber>MR2172713 (2006h:20019)</mrnumber>
+  <mrclass>20D08 (20F05)</mrclass>
+  <mrreviewer>Andrea Previtali</mrreviewer>
+  <other type="fjournal">Experimental Mathematics</other>
+</article></entry>
+
+<entry id="Nic06"><phdthesis>
+  <author>
+    <name><first>S. J.</first><last>Nickerson</last></name>
+  </author>  
+  <title>An <C>A</C>tlas of <C>C</C>haracteristic <C>Z</C>ero
+      <C>R</C>epresentations</title>
+  <school>School of Mathematics, University of Birmingham</school>
+  <year>2006</year>
+  <type>Phd thesis</type>
+</phdthesis></entry>
+
+<entry id="AtlasRep1.4"><misc>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+    <name><first>Richard A.</first><last>Parker</last></name>
+    <name><first>Simon</first><last>Nickerson</last></name>
+    <name><first>John N.</first><last>Bray</last></name>
+    <name><first>Thomas</first><last>Breuer</last></name>
+  </author>
+  <title><C>AtlasRep</C>, A <Wrap Name="Package">GAP</Wrap> <C>I</C>nterface
+         to the <C>A</C>tlas of <C>G</C>roup <C>R</C>epresentations,
+         <C>V</C>ersion 1.4</title>
+  <howpublished><URL>http://www.gap-system.org/Packages/atlasrep.html</URL></howpublished>
+  <month>Jun</month>
+  <year>2008</year>
+  <note>Refereed <Wrap Name="Package">GAP</Wrap> package</note>
+</misc></entry>
+
+<entry id="Browse1.2"><misc>
+  <author>
+    <name><first>T.</first><last>Breuer</last></name>
+    <name><first>F.</first><last>Lübeck</last></name>
+  </author>  
+  <title><C>Browse</C>, ncurses interface and browsing applications,
+         <C>V</C>ersion 1.2</title>
+  <howpublished><URL>http://www.gap-system.org/Packages/browse.html</URL></howpublished>
+  <month>Jun</month>
+  <year>2008</year>
+  <note><Wrap Name="Package">GAP</Wrap> package</note>
+</misc></entry>
+
+<entry id="GAPDoc"><misc>
+  <author>
+    <name><first>F.</first><last>Lübeck</last></name>
+    <name><first>M.</first><last>Neunhöffer</last></name>
+  </author>  
+  <title><Wrap Name="Package">GAP</Wrap>,
+         A <C>M</C>eta <C>P</C>ackage for <Wrap Name="Package">GAP</Wrap>
+         <C>D</C>ocumentation,
+         <C>V</C>ersion 1.2</title>
+  <howpublished><URL>http://www.gap-system.org/Packages/gapdoc.html</URL></howpublished>
+  <month>Jun</month>
+  <year>2008</year>
+  <note><Wrap Name="Package">GAP</Wrap> package</note>
+</misc></entry>
+
+<entry id="IO"><misc>
+  <author>
+    <name><first>M.</first><last>Neunhöffer</last></name>
+  </author>  
+  <title><C>IO</C>, Bindings for low level <C>C</C> library <C>IO</C>
+         <C>V</C>ersion 2.2</title>
+  <howpublished><URL>http://www.gap-system.org/Packages/io.html</URL></howpublished>
+  <month>Feb</month>
+  <year>2007</year>
+  <note><Wrap Name="Package">GAP</Wrap> package</note>
+</misc></entry>
+
+</file>
+

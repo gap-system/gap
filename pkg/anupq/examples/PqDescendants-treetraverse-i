@@ -1,0 +1,102 @@
+#Example: "PqDescendants-treetraverse-i" . . . based on manual example
+#(demonstrates how one may use the p-group generation machinery to
+# traverse a descendants tree, by exploring the 3-groups of rank 2
+# and 3-coclass 1 up to 3-class 5.)
+#vars: G, procId;
+#options:
+G := ElementaryAbelianGroup( 9 );
+procId := PqStart( G );
+##
+##  Below, we use the option StepSize in order to construct descendants
+##  of coclass 1. This is equivalent to setting the StepSize to 1 in
+##  each descendant calculation.
+##
+##  The elementary abelian group of order 9 has 3 descendants of
+##  3-class 2 and 3-coclass 1, as the result of the next command
+##  shows. 
+##
+PqDescendants( procId : StepSize := 1 );
+##
+##  Now we will compute the descendants of coclass 1 for each of the
+##  groups above. Then we will compute the descendants  of coclass 1
+##  of each descendant and so  on.  Note  that the  pq program keeps
+##  one file for each class at a time.  For example, the descendants
+##  calculation for  the  second  group  of class  2  overwrites the
+##  descendant file  obtained  from  the  first  group  of  class 2.
+##  Hence,  we have to traverse the descendants tree  in depth first
+##  order.
+##
+PqPGSetDescendantToPcp( procId, 2, 1 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+PqPGSetDescendantToPcp( procId, 3, 1 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+PqPGSetDescendantToPcp( procId, 4, 1 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+##
+##  At this point we stop traversing the ``left most'' branch of the
+##  descendants tree and move upwards.
+##
+PqPGSetDescendantToPcp( procId, 4, 2 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+PqPGSetDescendantToPcp( procId, 3, 2 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+##  
+##  The computations above indicate that the descendants subtree under
+##  the first descendant of the elementary abelian group of order 9
+##  will have only one path of infinite length.
+##
+PqPGSetDescendantToPcp( procId, 2, 2 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+##
+##  We get four descendants here, three of which will turn out to be
+##  incapable, i.e., they have no descendants and are terminal nodes
+##  in the descendants tree.
+##
+PqPGSetDescendantToPcp( procId, 2, 3 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+##
+##  The third descendant of class three is incapable.  Let us return
+##  to the second descendant of class 2.
+##
+PqPGSetDescendantToPcp( procId, 2, 2 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+PqPGSetDescendantToPcp( procId, 3, 1 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+PqPGSetDescendantToPcp( procId, 3, 2 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+##
+##  We skip the third descendant for the moment ... 
+##
+PqPGSetDescendantToPcp( procId, 3, 4 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+##
+##  ... and look at it now.
+##
+PqPGSetDescendantToPcp( procId, 3, 3 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+##
+##  In this branch of the descendant tree we get 6 descendants of class
+##  three.  Of those 5 will turn out to be incapable and one will have
+##  7 descendants.
+##
+PqPGSetDescendantToPcp( procId, 4, 1 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+PqPGSetDescendantToPcp( procId, 4, 2 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );
+PqPGSetDescendantToPcp( procId, 4, 3 );;
+PqPGExtendAutomorphisms( procId );;
+PqPGConstructDescendants( procId : StepSize := 1 );

@@ -15,5 +15,5 @@ ReadLib( "helpt2t.gi"   );
 ReadLib( "helpdef.gi"   );
 
 ReadLib( "reread.g"    );
-ReadLib( "package.g"   );
+ReadLib( "package.gi"   );
 

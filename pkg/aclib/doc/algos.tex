@@ -1,0 +1,88 @@
+
+\Chapter{Algorithms for almost crystallographic groups}
+
+This chapter presents a variety of algorithms for almost crystallographic
+groups. In most cases, they assume a polycyclically presented group as 
+input; in particular, the input groups must be polycyclic in this case.
+The methods described here supplement the methods of the {\sf Polycyclic} 
+package for polycyclically presented groups. Many of the functions in this 
+chapter are based on methods of the {\sf Polycyclic} package and thus this 
+package must be installed to use the functions introduced here. We refer to
+the {\sf Polycyclic} package for further information on polycyclic 
+presentations.
+
+\Section{Properties of almost crystallographic groups}
+
+\> IsAlmostCrystallographic( <G> ) P
+
+This function checks if a polycyclically presented group <G> is almost
+crystallographic; that is, it checks if <G> is nilpotent-by-finite and
+has no non-trivial finite normal subgroup.  
+
+\> IsAlmostBieberbachGroup( <G> ) P
+
+This function checks if a polycyclically presented group <G> is almost
+Bieberbach; that is, it checks if <G> is nilpotent-by-finite and torsion
+free.
+
+\Section{Betti numbers}
+
+Let $G$ be a polycyclically presented and torsion free group of Hirsch 
+length $n$. Then we can compute the Betti numbers $\beta_i(G)$ for $i \in 
+\{0, 1, 2, n-2, n-1, n\}$. If $n \leq 6$, then we can compute all Betti
+numbers $\beta_i(G)$ for $0 \leq i \leq 6$ of $G$. We introduce the following
+functions for this purpose and we refer to \cite{BRO} for the details on 
+the orientation module and the Betti numbers.
+
+\> OrientationModule( <G> ) F
+
+This function determines the orientation module of the polycyclically
+presented group <G>; that is, it returns a list of matrices $m_1, \ldots,
+m_n \leq GL( 1, \Z )$ which are the images of the 'Igs(G)' in their action
+on the orientation module.  
+
+\> BettiNumber( <G>, <m> ) F
+
+This function returns the <m>th Betti number of the polycyclically presented
+torsion free group <G> if $m \in \{0, 1, 2, n-2, n-1, n\}$, where $n$ is the 
+Hirsch length of <G>. 
+
+\> BettiNumbers( <G> ) A
+
+This function returns the Betti number of the polycyclically presented
+torsion free group <G> if the Hirsch length of <G> is smaller than 7.
+
+\Section{Determination of certain extensions}
+
+Let $G$ be a polycyclically presented almost crystallographic group. We want 
+to check the existence of certain extensions of $G$. 
+
+First, it is well-known that the equivalence classes of extensions of $G$
+correspond to the second cohomology group of $G$. This cohomology group can
+be computed using the methods of the {\sf Polycyclic} package for any 
+explicitly given module of $G$. Further, we can construct a polycyclic
+presentation for each cocycle of the second cohomology group. We give an 
+example for such a computation below. 
+
+However, we may be interested in certain extensions only; for example, 
+the torsion free extensions are often of particular interest. If the 
+second cohomology group is finite, then we can compute a polycyclic 
+presentation for each element of this group and check the resulting group
+for torsion freeness. But if the second cohomology group is infinite, then
+this approach is not available. Hence we introduce the following special 
+method to cover this and related applications.
+
+\> HasExtensionOfType( <G>, <torsionfree>, <minimalcentre> ) F
+
+Suppose that <G> is a polycyclically presented almost crystallographic group
+with Fitting subgroup $N$. This function checks if there is a $G$-module 
+$M \cong \Z$ which is centralized by $N$ such that there exists a torsion
+free extension of $M$ by <G> (if the flag <torsionfree> is true) or an 
+extension $E$ with $Z(Fitt(E)) = M$ (if the flag <minimalcentre> is true)
+or an extension which satisfies both conditions (if both flags are true).
+
+We note that the existence of such extensions is of interest in the 
+determination of extensions which are almost Bieberbach groups. We refer 
+to \cite{DE1} for a more detailed account of this application and for
+further results of a similar nature.
+

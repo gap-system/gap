@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>The GAP Character Table Library</title>
+<link rel="stylesheet" type="text/css" href="atlasrep.css" />
+</head>
+<body>
+<h1 class="pcenter"><span class="Heading">The GAP Character Table Library</span></h1>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Description</span></h3>
+
+<p>
+This is Version 1.1 of
+the <span class="pkg">GAP</span> Character Table Library,
+which is an add-on package for both <span class="pkg">GAP</span> 3.4
+and <span class="pkg">GAP</span> 4.
+Up to <span class="pkg">GAP</span> 4.2, the library of character tables
+had been distributed as an inseparable part of the
+<span class="pkg">GAP</span> distribution.
+The aims of the restructuring are the following.
+</p>
+
+<ul>
+<li>
+  Upgrades of the <span class="pkg">GAP</span> Character Table Library
+  are possible, independent of <span class="pkg">GAP</span> releases,
+  via the mechanism that has been used already for installing or upgrading
+  <span class="pkg">GAP</span> packages;
+  each such upgrade will get a version number.
+</li>
+<li>
+  The new directory structure provides an environment that is more suitable
+  for the further development of the
+  <span class="pkg">GAP</span> library of character tables.
+</li>
+<li>
+  It is easy to omit the character table library from
+  the <span class="pkg">GAP</span> 4 installation
+  if one is not interested in it.
+</li>
+</ul>
+
+<p>
+There is a manual (available here in <a href="htm/chapters.htm">HTML</a>
+and <a href="doc/manual.pdf">PDF</a> format)
+that describes the available functions in detail.
+</p>
+
+<p>
+The manual of the <span class="pkg">GAP</span> Character Table Library
+is intended for <span class="pkg">GAP</span> 4.4,
+in particular the cross-references refer to
+the <span class="pkg">GAP</span> 4.4 Reference Manual.
+So when using the new character table library with
+<span class="pkg">GAP</span> 3.4,
+one should still consult the documentation of the character table library
+contained in the Reference Manual of <span class="pkg">GAP</span> 3.4.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Authors</span></h3>
+
+<p>
+The data contained in the <span class="pkg">GAP</span> Character Table Library
+have been contributed by various people.
+Important sources of the ordinary character tables are
+</p>
+
+<ul>
+<li>
+  the famous Atlas of Finite Groups
+  (see Chapter 8, paragraph 5 of this book for a list of contributors),
+</li>
+<li>
+  the character table library of the CAS system, see the article
+  <p class="pcenter">
+    Joachim Neub&uuml;ser, Herbert Pahlings, and Wilhelm Plesken,<br/>
+    CAS; Design and use of a system for the handling of characters
+    of finite groups,<br/>
+    pages 195-247 in
+    Computational Group Theory,<br/>
+    Proceedings LMS Symposium on Computational Group Theory,
+    Durham 1982,<br/>
+    ed. by Michael D. Atkinson,<br/>
+    Academic Press, 1984.
+  </p>
+</li>
+<li>
+  and the character tables published in the book
+  <p class="pcenter">
+    Derek F. Holt and Wilhelm Plesken,<br/>
+    Perfect Groups,<br/>
+    Oxford Math. Monographs,<br/>
+    Oxford University Press, 1989.
+  </p>
+</li>
+</ul>
+
+<p>
+Individual contributions are often listed in the ``InfoText´´s
+of the <span class="pkg">GAP</span> library tables.
+</p>
+
+<p>
+For the origin of the Brauer tables in
+the <span class="pkg">GAP</span> Character Table Library,
+see the 
+<a href="http://www.math.rwth-aachen.de/~MOC/">homepage
+of the Atlas of Brauer Characters</a>.
+</p>
+
+<p>
+The <span class="pkg">GAP</span> interface and the data format used
+were developed by
+<a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/">Thomas Breuer</a>.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Contents</span></h3>
+
+<p>
+The differences w.r.t. the Character Table Library in earlier releases
+of <span class="pkg">GAP</span> are listed here
+in <a href="htm/ctbldiff.htm">HTML</a>
+and <a href="doc/ctbldiff.pdf">PDF</a> format.
+</p>
+
+<p>
+A preliminary version of a ``WWW table of contents´´ of
+the <span class="pkg">GAP</span> Character Table Library can be found
+<a href="ctbltoc/index.html">here</a>.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Known Bugs</span></h3>
+
+<p>
+The following bugs have been found in the current version of the
+<span class="pkg">GAP</span> Character Table Library.
+</p>
+
+<ul>
+<li>
+   The character table with the name
+   <span class="tt">P12/G1/L2/V1/ext2</span> is not correct,
+   some of its class multiplication coefficients are not integral.
+   (This problem occurs already in the microfiches that are contained
+   in the book ``Perfect Groups´´.)
+</li>
+<li>
+   The second power map in the character table with the name
+   <span class="tt">13^1+2.2A4</span> is not correct.
+</li>
+<li>
+   The character table with the name
+   <span class="tt">P41/G1/L1/V4/ext2</span> is not correct,
+   this table is not the character table of a finite group.
+   (This problem occurs already in the microfiches that are contained
+   in the book ``Perfect Groups´´.)
+</li>
+<li>
+   The name <span class="tt">2G2(3)</span> is erroneously associated with
+   the character table of <span class="tt">L2(8)</span>;
+   the correct table would be that of <span class="tt">L2(3).3</span>.
+   (This error has been communicated by Felix Noeske.)
+</li>
+<li>
+   The 21th and 22th maximal subgroup of the table with the name
+   <span class="tt">Co1</span> must be swapped,
+   that is, the names <span class="tt">Co1M21</span> and
+   <span class="tt">Co1M22</span> are not correct,
+   according to the ordering w.r.t. increasing index.
+</li>
+<li>
+   The 19th and 20th maximal subgroup of the table with the name
+   <span class="tt">F3+</span> must be swapped,
+   that is, the names <span class="tt">F3+M19</span> and
+   <span class="tt">F3+M20</span> are not correct,
+   according to the ordering w.r.t. increasing index.
+</li>
+</ul>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading"><a name="Applications">Applications</a></span></h3>
+
+<p>
+The following files show a few applications of
+the <span class="pkg">GAP</span> Character Table
+Library.
+</p>
+
+<ul>
+<li>
+   Ambiguous class fusions
+   (in <a href="doc/ambigfus.pdf">PDF</a>
+   and <a href="htm/ambigfus.htm">HTML</a> format),
+</li>
+<li>
+   Ordinary character tables, Brauer tables, and decomposition matrices
+   (in <a href="doc/ctbldeco.pdf">PDF</a>
+   and <a href="htm/ctbldeco.htm">HTML</a> format),
+</li>
+<li>
+   Computations of possible permutation characters
+   (in <a href="doc/ctblpope.pdf">PDF</a>
+   and <a href="htm/ctblpope.htm">HTML</a> format),
+</li>
+<li>
+   Construction of character tables using table automorphisms
+   (in <a href="doc/ctblcons.pdf">PDF</a>
+   and <a href="htm/ctblcons.htm">HTML</a> format),
+</li>
+<li>
+   Computations of common central extensions 
+   (in <a href="doc/ctocenex.pdf">PDF</a>
+   and <a href="htm/ctocenex.htm">HTML</a> format),
+</li>
+<li>
+   Multiplicity-free permutation characters of the sporadic simple groups
+   and their automorphism groups
+   (in <a href="doc/multfree.pdf">PDF</a>
+   and <a href="htm/multfree.htm">HTML</a> format),
+</li>
+<li>
+   Multiplicity-free permutation characters of central extensions of
+   the sporadic simple groups, and their automorphic extensions
+   (in <a href="doc/multfre2.pdf">PDF</a>
+   and <a href="htm/multfre2.htm">HTML</a> format).
+<!-- mention also multfree.g, multfree.dat, multfre2.dat!! -->
+</li>
+<li>
+   Probabilistic generation of finite simple groups
+   (in <a href="doc/probgen.pdf">PDF</a>
+   and <a href="htm/probgen.htm">HTML</a> format).
+</li>
+<li>
+   A question about the group PSO<sup>+</sup>(8,5).S<sub>3</sub>
+   (in <a href="doc/o8p2s3_o8p5s3.pdf">PDF</a>
+   and <a href="htm/o8p2s3_o8p5s3.htm">HTML</a> format).
+</li>
+<li>
+   Maintenance issues for
+   the <span class="pkg">GAP</span> Character Table Library
+   (in <a href="doc/maintain.pdf">PDF</a>
+   and <a href="htm/maintain.htm">HTML</a> format).
+</li>
+<!-- what about ctblj4.xpl? -->
+</ul>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Feedback</span></h3>
+
+<p>
+Any comments are very welcome.
+If you have found important features missing or if there is a bug,
+let us know and we will try to address it in the next version of the
+<span class="pkg">GAP</span> Character Table Library.
+Please send a short email to
+<a href="mailto:sam@math.rwth-aachen.de">Thomas Breuer</a>
+about it.
+This holds in particular if you have used the
+<span class="pkg">GAP</span> Character Table Library
+to solve a problem.
+</p>
+
+<p>
+You can also reach the <span class="pkg">GAP</span> support group
+by sending an email to
+<a href="mailto:support@gap-system.org">the general email address
+for problems with <span class="pkg">GAP</span></a>.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Download</span></h3>
+
+<p>
+If you want to get Version 1.1 of
+the <span class="pkg">GAP</span> Character Table Library
+then download the most appropriate of a
+<a href="ctbllib1r1p3.tar.gz">gzipped tar archive</a> (ca. 4.6 MB) or
+<a href="ctbllib1r1p3.zoo">zoo archive</a> (ca. 4.9 MB).
+Further information is contained in the
+<a href="README">README</a> file.
+</p>
+
+<p>
+(The README file and the zoo archive are available also on the
+<span class="pkg">GAP</span> servers.)
+</p>
+<!-- add a link to ftp://ftp.math.rwth-aachen.de/pub/gap/gap4/util/unzoo.c -->
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Related Links</span></h3>
+
+<p class="pcenter">
+<a href="http://www.gap-system.org">[GAP Home]</a>
+<a href="http://www.math.rwth-aachen.de/~MOC/">[The Modular Atlas Homepage]</a>
+</p>
+
+<!-- more links: -->
+<!-- ATLAS homepage, Rob's pages, ... -->
+
+<p>
+The material presented on the following pages has been computed mainly from
+the data of the <span class="pkg">GAP</span> Character Table Library
+and a few small <span class="pkg">GAP</span> functions.
+</p>
+
+<p class="pcenter">
+<a href="irrats/htm/irrats.htm">[Common Irrationalities]</a>
+<a href="dec/index.html">[Decomposition Matrices]</a>
+</p>
+
+
+<!-- =================================================================== -->
+<hr/>
+<p class="foot">File created on 19th May 2001 by Thomas Breuer.<br/>
+Last modified on 10-Oct-2007 by Thomas Breuer.</p>
+
+</body>
+</html>
+<!-- end -->
+

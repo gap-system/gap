@@ -1,0 +1,250 @@
+<html><head><title>[format] 6 Formation Examples</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="C005S000.htm">Previous</a>] [<a href ="C007S000.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>6 Formation Examples</h1><p>
+<p>
+The following is a <font face="Gill Sans,Helvetica,Arial">GAP</font> session that illustrates the various functions
+in the package.  We have chosen to work with the symmetric group <var>S<sub>4</sub></var>
+and the special linear group <var>SL(2,3)</var> as examples, because it is easy
+to print and read the results of computations for these groups, and the
+answers can be checked by inspection. However, both
+<var>S<sub>4</sub></var> and <var>SL(2,3)</var> are extremely small examples for the algorithms in
+FORMAT. In
+<a href="biblio.htm#EW"><cite>EW</cite></a> we describe effective application of the algorithms  to groups
+of  composition length as much as 61, for which the computations take
+a few seconds to complete. The file <code>grp</code> contains some of these groups and other groups readable as GAP4 input.
+<p>
+<pre>
+gap&gt; RequirePackage("format");;
+</pre>
+A primitive banner appears.
+<p>
+First we define <var>S<sub>4</sub></var> as a permutation group and compute some 
+subgroups of it.
+<pre>
+gap&gt; G := SymmetricGroup(4);
+Sym( [ 1 .. 4 ] )
+gap&gt; SystemNormalizer(G);  CarterSubgroup(G);
+Group([ (3,4) ])
+Group([ (3,4), (1,3)(2,4), (1,2)(3,4) ])
+</pre>
+Now we take the formation of supersolvable groups from the examples
+and look at it.
+<pre>
+gap&gt; sup := Formation("Supersolvable");
+formation of Supersolvable groups 
+gap&gt; KnownAttributesOfObject(sup); KnownPropertiesOfObject(sup);
+[ "NameOfFormation", "ScreenOfFormation" ]
+[ "IsIntegrated" ]
+</pre>
+<p>
+We can look at the screen for <code>sup</code>.
+<pre>
+gap&gt; ScreenOfFormation(sup);
+&lt;Operation "AbelianExponentResidual"&gt;
+gap&gt; ScreenOfFormation(sup)(G,2); ScreenOfFormation(sup)(G,3);
+Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
+Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
+</pre>
+We get the residuals for <code>G</code> of the formations of abelian groups of exponent 1 (<var>= 2-1</var>) and of exponent 2 (=<var>3-1</var>).
+<p>
+Notice that <code>sup</code> does not yet have a residual function.
+ Let's compute some subgroups of <code>G</code> corresponding to <code>sup</code>.
+<pre>
+gap&gt; ResidualWrtFormation(G, sup);
+Group([ (1,2)(3,4), (1,4)(2,3) ])
+gap&gt; KnownAttributesOfObject(sup);
+[ "NameOfFormation", "ScreenOfFormation", "ResidualFunctionOfFormation" ]
+</pre>
+ The residual function for <code>sup</code> was required and created.
+<pre>
+gap&gt; FNormalizerWrtFormation(G, sup);
+Group([ (3,4), (2,4,3) ])
+gap&gt; CoveringSubgroupWrtFormation(G, sup);
+Group([ (3,4), (2,4,3) ])
+gap&gt; KnownAttributesOfObject(G);
+[ "Size", "One", "SmallestMovedPoint", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses", "TrivialSubmagmaWithOne", 
+  "MultiplicativeNeutralElement", "DerivedSubgroup", "IsomorphismPcGroup", 
+  "IsomorphismSpecialPcGroup", "Pcgs", "PcgsElementaryAbelianSeries", 
+  "StabChainOptions", "ComputedResidualWrtFormations", 
+  "ComputedAbelianExponentResiduals", "ComputedFNormalizerWrtFormations", 
+  "ComputedCoveringSubgroup1s", "ComputedCoveringSubgroup2s", 
+  "SystemNormalizer", "CarterSubgroup" ]
+</pre>
+ The <code>AbelianExponentResidual</code>s were computed in connection with the
+local definition of <code>sup</code>. (<code>AbelianExponentResidual(G, n)</code> returns
+the smallest normal subgroup of <code>G</code> whose factor group is abelian of
+exponent dividing <code>n-1</code>.) Here are some of the other records.
+<pre>
+gap&gt; ComputedResidualWrtFormations(G);
+[ formation of Supersolvable groups , Group([ (1,2)(3,4), (1,4)(2,3) ]) ]
+gap&gt; ComputedFNormalizerWrtFormations(G);
+[ formation of Nilpotent groups , Group([ (3,4) ]), 
+  formation of Supersolvable groups , Group([ (3,4), (2,4,3) ]) ]
+gap&gt; ComputedCoveringSubgroup2s(G);
+[  ]
+gap&gt; ComputedCoveringSubgroup1s(G);
+[ formation of Nilpotent groups , Group([ (3,4), (1,3)(2,4), (1,2)(3,4) ]), 
+  formation of Supersolvable groups , Group([ (3,4), (2,4,3) ]) ]
+</pre>
+The call by <code>CoveringSubgroupWrtFormation</code> was to <code>CoveringSubgroup1</code>, not
+<code>CoveringSubgroup2</code>.
+<p>
+We could also have started with a pc group or a nice enough matrix group.
+<pre>
+gap&gt; s4 := SmallGroup(IdGroup(G));
+&lt;pc group of size 24 with 4 generators&gt;
+</pre>
+This is <var>S<sub>4</sub></var> again. The answers just look different now.
+<pre>
+gap&gt; SystemNormalizer(s4); CarterSubgroup(s4);
+Group([ f1 ])
+Group([ f1, f4, f3*f4 ])
+</pre>
+Similarly, we have <var>SL(2,3)</var> and an isomorphic pc group.
+<pre>
+gap&gt; sl := SpecialLinearGroup(2,3);
+SL(2,3)
+gap&gt; h := SmallGroup(IdGroup(sl));
+&lt;pc group of size 24 with 4 generators&gt;
+</pre>
+We get the following subgroups.
+<pre>
+gap&gt; CarterSubgroup(sl); Size(last);
+&lt;group of 2x2 matrices in characteristic 3&gt;
+6
+gap&gt; SystemNormalizer(h); CarterSubgroup(h);
+Group([ f1, f4 ])
+Group([ f1, f4 ])
+</pre>
+<p>
+Now let's make new formations from old.
+<pre>
+gap&gt; ab := Formation("Abelian");
+formation of Abelian groups 
+gap&gt; KnownPropertiesOfObject(ab); KnownAttributesOfObject(ab);
+[  ]
+[ "NameOfFormation", "ResidualFunctionOfFormation" ]
+gap&gt; nil2 := Formation("PNilpotent",2);
+formation of 2Nilpotent groups 
+gap&gt; KnownPropertiesOfObject(nil2); KnownAttributesOfObject(nil2);
+[ "IsIntegrated" ]
+[ "NameOfFormation", "ScreenOfFormation", "ResidualFunctionOfFormation" ]
+</pre>
+Compute the product and check some attributes.
+<pre>
+gap&gt; form := ProductOfFormations(ab, nil2);
+formation of (AbelianBy2Nilpotent) groups 
+gap&gt; KnownAttributesOfObject(form);
+[ "NameOfFormation", "ResidualFunctionOfFormation" ]
+</pre>
+Now the product in the other order, which <strong>is</strong> locally defined.
+<pre>
+gap&gt; form2 := ProductOfFormations(nil2, ab);
+formation of (2NilpotentByAbelian) groups 
+gap&gt; KnownAttributesOfObject(form2);
+[ "NameOfFormation", "ScreenOfFormation", "ResidualFunctionOfFormation" ]
+</pre>
+We check the results on <code>G</code>, which is still <var>S<sub>4</sub></var>.
+<pre>
+gap&gt; ResidualWrtFormation(G, form);  ResidualWrtFormation(G, form2);
+Group(())
+Group([ (1,3)(2,4), (1,2)(3,4) ])
+gap&gt; KnownPropertiesOfObject(form2);
+[  ]
+</pre>
+Although <code>form2</code> is not integrated, we can make an integrated formation
+that differs from <code>form2</code> only in its local definition, i.e., whose
+residual subgroups are the same as those for <code>form2</code>.
+<pre>
+gap&gt; Integrated(form2);
+formation of (2NilpotentByAbelian)Int groups 
+</pre>
+<code>FNormalizerWrtFormation</code> and
+<code>CoveringSubgroupWrtFormation</code> both require integrated formations, so they
+silently replace <code>form2</code> by this last formation without, however,
+changing <code>form2</code>. 
+<pre>
+gap&gt; FNormalizerWrtFormation(G, form2); CoveringSubgroupWrtFormation(G, form2);
+Group([ (3,4), (2,4,3) ])
+Group([ (3,4), (2,4,3) ])
+gap&gt; KnownPropertiesOfObject(form2);
+[  ]
+gap&gt; ComputedCoveringSubgroup1s(G);
+[ formation of (2NilpotentByAbelian)Int groups , Group([ (3,4), (2,4,3) ]), 
+  formation of Nilpotent groups , Group([ (3,4), (1,3)(2,4), (1,2)(3,4) ]), 
+  formation of Supersolvable groups , Group([ (3,4), (2,4,3) ]) ]
+gap&gt; ComputedResidualWrtFormations(G);
+[ formation of (2NilpotentByAbelian) groups , 
+  Group([ (1,3)(2,4), (1,2)(3,4) ]), 
+  formation of (AbelianBy2Nilpotent) groups , Group(()), 
+  formation of 2Nilpotent groups , Group([ (1,2)(3,4), (1,3)(2,4) ]), 
+  formation of Abelian groups , Group([ (1,3,2), (2,4,3) ]), 
+  formation of Supersolvable groups , Group([ (1,2)(3,4), (1,4)(2,3) ]) ]
+</pre>
+Lots of work has been going on behind the scenes.
+<p>
+Before we compute an intersection, we construct yet another formation.
+<pre>
+gap&gt; pig := Formation("PiGroups", [2,5]);
+formation of (2,5)-Group groups with support [ 2, 5 ]
+gap&gt; form := Intersection(pig, nil2);
+formation of ((2,5)-GroupAnd2Nilpotent) groups with support [ 2, 5 ]
+gap&gt; KnownAttributesOfObject(form);
+[ "NameOfFormation", "ScreenOfFormation", "SupportOfFormation", 
+  "ResidualFunctionOfFormation" ]
+</pre>
+ Let's cut down the support of <code>nil2</code> to <var>{2,5}</var>.
+<pre>
+gap&gt; form3 := ChangedSupport(nil2, [2,5]);
+formation of Changed2Nilpotent[ 2, 5 ] groups 
+gap&gt; SupportOfFormation(form3);
+[ 2, 5 ]
+gap&gt; form = form3;
+false
+</pre>
+Although the formations defined by <code>form</code> and <code>form3</code> are abstractly
+identical, <font face="Gill Sans,Helvetica,Arial">GAP</font> has no way to know this fact, and so distinguishes
+them.
+<p>
+We can mix the various operations, too.
+<pre>
+gap&gt; ProductOfFormations(Intersection(pig, nil2), sup);
+formation of (((2,5)-GroupAnd2Nilpotent)BySupersolvable) groups 
+gap&gt; Intersection(pig, ProductOfFormations(nil2, sup));
+formation of ((2,5)-GroupAnd(2NilpotentBySupersolvable)) groups with support 
+[ 2, 5 ]
+</pre>
+<p>
+  Now let's define our own formation.
+<pre>
+gap&gt; preform := rec( name := "MyOwn", 
+&gt;  fScreen := function( G, p)
+&gt;  return DerivedSubgroup( G );
+&gt;  end);
+rec( name := "MyOwn", fScreen := function( G, p ) ... end )
+gap&gt; form := Formation(preform);
+formation of MyOwn groups 
+gap&gt; KnownAttributesOfObject(form); KnownPropertiesOfObject(form);
+[ "NameOfFormation", "ScreenOfFormation" ]
+[  ]
+</pre>
+In fact, the definition is integrated. Let's tell <font face="Gill Sans,Helvetica,Arial">GAP</font> so and compute
+some related subgroups.
+<pre>
+gap&gt; SetIsIntegrated(form, true);
+gap&gt; ResidualWrtFormation(G, form);
+Group([ (1,3)(2,4), (1,2)(3,4) ])
+gap&gt; FNormalizerWrtFormation(G, form);
+Group([ (3,4), (2,4,3) ])
+gap&gt; CoveringSubgroup1(G, form);
+Group([ (3,4), (2,4,3) ])
+</pre>
+These answers are consistent with the fact that MyOwn is really just the
+formation of abelian by nilpotent groups.
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="C005S000.htm">Previous</a>] [<a href ="C007S000.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>format manual<br>February 2003
+</address></body></html>

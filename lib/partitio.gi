@@ -2,7 +2,7 @@
 ##
 #W  partitio.gi                 GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: partitio.gi,v 4.19 2003/06/03 21:07:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -31,7 +31,7 @@
 ##  \enditems                             
 ##
 Revision.partitio_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: partitio.gi,v 4.19 2003/06/03 21:07:16 gap Exp $";
 
 
 #############################################################################

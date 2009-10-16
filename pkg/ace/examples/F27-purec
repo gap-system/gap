@@ -1,0 +1,18 @@
+# ACEExample "F27-purec" : enumeration of cosets of H in G,
+# where G = F(2,7) = C_29, H = Id, using purec strategy.
+#
+local F, G, a, b, c, d, e, x, y;
+# We define F(2,7) on 7 generators
+F := FreeGroup("a","b","c","d","e", "x", "y"); 
+     a := F.1;  b := F.2;  c := F.3;  d := F.4; 
+     e := F.5;  x := F.6;  y := F.7;
+G := F / [a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, 
+          e*x*y^-1, x*y*a^-1, y*a*b^-1];
+return ACEfunc(
+    FreeGeneratorsOfFpGroup(G), 
+    RelatorsOfFpGroup(G), 
+    [] # Generators of identity subgroup (empty list)
+    # Options that don't affect the enumeration
+    : echo, enum := "F(2,7), aka C_29", subg := "Id", 
+    # Other options
+    wo := "2M", mess := 25000, purec);

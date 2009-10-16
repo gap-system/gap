@@ -1,0 +1,14 @@
+<OMOBJ>
+	<OMA>
+		<OMS cd="group1" name="character_table_of_group"/>
+		<OMA>
+			<OMS cd="group1" name="group_by_generators"/>
+			<OMA>
+				<OMS cd="permut1" name="permutation"/>
+				<OMI> 2 </OMI>
+				<OMI> 3 </OMI>
+				<OMI> 1 </OMI>
+			</OMA>
+		</OMA>
+	</OMA>
+</OMOBJ>

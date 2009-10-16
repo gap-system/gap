@@ -3,7 +3,7 @@
 #W  methsel.g                   GAP library                      Frank Celler
 #W                                                           Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: methsel.g,v 4.20 2002/04/15 10:05:02 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  is compiled in the default setup
 ##
 Revision.methsel_g :=
-    "@(#)$Id$";
+    "@(#)$Id: methsel.g,v 4.20 2002/04/15 10:05:02 sal Exp $";
 
 
 #############################################################################

@@ -3,7 +3,7 @@
 #W  algmat.gi                   GAP library                     Thomas Breuer
 #W                                                            Willem de Graaf
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: algmat.gi,v 4.35 2009/05/04 09:33:27 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  that is, associative matrix algebras and matrix Lie algebras.
 ##
 Revision.algmat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: algmat.gi,v 4.35 2009/05/04 09:33:27 gap Exp $";
 
 
 #############################################################################
@@ -932,7 +932,7 @@ InstallMethod( RadicalOfAlgebra,
       dim := Length( bas[1] );
       pexp := 1;
       invFrob := InverseGeneralMapping(FrobeniusAutomorphism(F));
-      invFrobexp := invFrob;
+      invFrobexp := IdentityMapping(F);
       minusOne := -One(F);
       ident := IdentityMat( dim, F );
       changed := true;
@@ -972,9 +972,7 @@ InstallMethod( RadicalOfAlgebra,
           elif Length( G ) <> r then
               # $I_i <> I_{i-1}$, so compute the basis for $I_i$
               changed := true;
-              if 1 < pexp and pexp < q then
-                  G := List( G, x -> List( x, y -> y^invFrobexp ) );
-              fi;
+              G := List( G, x -> List( x, y -> y^invFrobexp ) );
               I := List( G, x -> LinearCombination( I, x ) );
           fi;
 

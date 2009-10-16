@@ -2,7 +2,7 @@
 ##
 #W  object.gi                   GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: object.gi,v 4.43 2009/04/06 13:48:53 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,12 +11,11 @@
 ##  This file contains some methods applicable to objects in general.
 ##
 Revision.object_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: object.gi,v 4.43 2009/04/06 13:48:53 gap Exp $";
 
 
 #############################################################################
 ##
-
 #M  '<obj1> = <obj2>' . . . . . . . . . . . for objects in different families
 ##
 InstallMethod( \=,
@@ -43,40 +42,41 @@ InstallMethod( \=,
 ##
 #M  \<( <obj1>, <obj2> )  . . . . . . . for two objects in different families
 ##
-#1
-##  Only for the following kinds of objects, an ordering via `\<' of objects
-##  in *different* families (see~"Families") is supported.
-##  Rationals (see~"IsRat") are smallest,
-##  next are cyclotomics (see~"IsCyclotomic"),
-##  followed by finite field elements (see~"IsFFE");
+##  <#GAPDoc Label="[1]{object.gi}">
+##  Only for the following kinds of objects, an ordering via <C>&lt;</C> of objects
+##  in <E>different</E> families (see&nbsp;<Ref Sect="Families"/>) is supported.
+##  Rationals (see&nbsp;<Ref Func="IsRat"/>) are smallest,
+##  next are cyclotomics (see&nbsp;<Ref Func="IsCyclotomic"/>),
+##  followed by finite field elements (see&nbsp;<Ref Func="IsFFE"/>);
 ##  finite field elements in different characteristics are compared
 ##  via their characteristics,
-##  next are permutations (see~"IsPerm"),
-##  followed by the boolean values `true', `false', and `fail'
-##  (see~"IsBool"),
-##  characters (such as `{'}a{'}', see~"IsChar"),
-##  and lists (see~"IsList") are largest;
-##  note that two lists can be compared with `\<' if and only if their
-##  elements are again objects that can be compared with `\<'.
-##
-##  For other objects, {\GAP} does *not* provide an ordering via `\<'.
-##  The reason for this is that a total ordering of all {\GAP} objects
+##  next are permutations (see&nbsp;<Ref Func="IsPerm"/>),
+##  followed by the boolean values <K>true</K>, <K>false</K>, and <K>fail</K>
+##  (see&nbsp;<Ref Func="IsBool"/>),
+##  characters (such as <C>{</C>}a{'}', see&nbsp;<Ref Func="IsChar"/>),
+##  and lists (see&nbsp;<Ref Func="IsList"/>) are largest;
+##  note that two lists can be compared with <C>&lt;</C> if and only if their
+##  elements are again objects that can be compared with <C>&lt;</C>.
+##  <P/>
+##  For other objects, &GAP; does <E>not</E> provide an ordering via <C>&lt;</C>.
+##  The reason for this is that a total ordering of all &GAP; objects
 ##  would be hard to maintain when new kinds of objects are introduced,
 ##  and such a total ordering is hardly used in its full generality.
-##
-##  However, for objects in the filters listed above, the ordering via `\<'
+##  <P/>
+##  However, for objects in the filters listed above, the ordering via <C>&lt;</C>
 ##  has turned out to be useful.
-##  For example, one can form *sorted lists* containing integers and nested
-##  lists of integers, and then search in them using `PositionSorted'
-##  (see~"Finding Positions in Lists").
-##
+##  For example, one can form <E>sorted lists</E> containing integers and nested
+##  lists of integers, and then search in them using <C>PositionSorted</C>
+##  (see&nbsp;<Ref Sect="Finding Positions in Lists"/>).
+##  <P/>
 ##  Of course it would in principle be possible to define an ordering
-##  via `\<' also for certain other objects,
-##  by installing appropriate methods for the operation `\\\<'.
-##  But this may lead to problems at least as soon as one loads {\GAP} code
+##  via <C>&lt;</C> also for certain other objects,
+##  by installing appropriate methods for the operation <C>\&lt;</C>.
+##  But this may lead to problems at least as soon as one loads &GAP; code
 ##  in which the same is done, under the assumption that one is completely
-##  free to define an ordering via `\<' for other objects than the ones
-##  for which the ``official'' {\GAP} provides already an ordering via `\<'.
+##  free to define an ordering via <C>&lt;</C> for other objects than the ones
+##  for which the <Q>official</Q> &GAP; provides already an ordering via <C>&lt;</C>.
+##  <#/GAPDoc>
 ##
 TO_COMPARE := [
     [ IsCyclotomic, "cyclotomic" ],
@@ -150,12 +150,25 @@ InstallMethod( \<,
     [ IsList, IsList ], 0,
     LT_LIST_LIST_FINITE );
 
+#############################################################################
+##
+#M  String( <obj> ) . . . . . . . . . . . . default String method for objects
+##  
+##      
+InstallMethod(String, [IsObject], o-> "<object>");
 
 #############################################################################
 ##
-#M  FormattedString( <obj>, <width> )  . . . . . convert object into a string
+#M  PrintObj( <obj> ) . . . . . . . . . . . . default View method for objects
+##  
+##      
+InstallMethod(PrintObj, [IsObject], function(o) Print(String(o)); end );
+
+#############################################################################
 ##
-InstallMethod( FormattedString,
+#M  String( <obj>, <width> )  . . . . . convert object into a string
+##
+InstallMethod( String,
     "for an object, and a positive integer",
     true,
     [ IsObject,
@@ -188,7 +201,7 @@ function( str, n )
 end );
 
 
-InstallMethod( FormattedString,
+InstallMethod( String,
     "for an object, and a negative integer",
     true,
     [ IsObject,
@@ -221,7 +234,7 @@ function( str, n )
 end );
 
 
-InstallMethod( FormattedString,
+InstallMethod( String,
     "for an object, and zero",
     true,
     [ IsObject,
@@ -231,6 +244,7 @@ InstallMethod( FormattedString,
 function( str, zero ) 
     return ShallowCopy(String( str )); 
 end );
+
 
 #############################################################################
 ##
@@ -477,46 +491,87 @@ end );
 #M  PostMakeImmutable( <obj> ) . . . . . . . . . . . . .do nothing in general
 ##  
 
+
+
 #############################################################################
 ##
-#M  MemoryUsage( <obj> ) . . . . . . . . . . . . . various methods
+#F  NewObjectMarker( )
+#F  MarkObject( <marks>, <obj> )
+#F  UnmarkObject( <marks>, <obj> )
+#F  ClearObjectMarker( <marks> )
+##  
+##  Utilities to detect identical objects. Used in MemoryUsage below,
+##  but probably of independent interest.
 ##  
 
-InstallGlobalFunction( MU_ClearCache,
-  function( )
-    MEMUSAGECACHE.ids := [];
-    MEMUSAGECACHE.depth := 0;
-  end );
+InstallGlobalFunction( NewObjectMarker, function()
+  local marks, len;
+  marks := rec();
+  len := 2 * MASTER_POINTER_NUMBER(2^100);
+  marks.marks := BlistList([1..len], []);
+  marks.ids := [];
+  # If this is set to some higher values the clearing of the entries
+  # takes more time than creating .marks from scratch.
+  marks.maxids := QuoInt(Length(marks.marks), 30);
+  return marks;
+end);
 
-InstallGlobalFunction( MU_AddToCache,
-  function( ob )
-    local id,pos,len;
-    id := MASTER_POINTER_NUMBER(ob);
-    pos := PositionSorted( MEMUSAGECACHE.ids, id );
-    len := Length(MEMUSAGECACHE.ids);
-    if pos <= len and MEMUSAGECACHE.ids[pos] = id then
-        return true;
-    else
-        if pos <= len then
-            COPY_LIST_ENTRIES(MEMUSAGECACHE.ids,pos,1,
-                              MEMUSAGECACHE.ids,pos+1,1,
-                              len-pos+1);
-        fi;
-        MEMUSAGECACHE.ids[pos] := id;
-        return false;
-    fi;
-  end );
+InstallGlobalFunction( MarkObject, function(marks, obj)
+  local id, res;
+  id := MASTER_POINTER_NUMBER(obj);
+  if id > Length(marks.marks) then
+    marks.marks :=  BlistList( [ 1 .. 2 * id ],
+                                    PositionsTrueBlist(marks.marks));
+  fi;
+  if marks.maxids > Length(marks.ids) then
+    Add(marks.ids, id);
+  fi;
+  res := marks.marks[id];
+  marks.marks[id] := true;
+  return res;
+end);
 
-InstallGlobalFunction( MU_Finalize,
-  function( )
-    if MEMUSAGECACHE.depth <= 0 then
-        Error( "MemoryUsage depth has gone below zero!" );
-    fi;
-    MEMUSAGECACHE.depth := MEMUSAGECACHE.depth - 1;
-    if MEMUSAGECACHE.depth = 0 then
-        MEMUSAGECACHE.ids := [];
-    fi;
-  end );
+InstallGlobalFunction(UnmarkObject, function(marks, obj)
+  local id;
+  id := MASTER_POINTER_NUMBER(obj);
+  if id > Length(marks.marks) or not marks.marks[id] then
+    return false;
+  else
+    marks.marks[id] := false;
+    return true;
+  fi;
+end);
+
+InstallGlobalFunction(ClearObjectMarker, function(marks)
+  if Length(marks.ids) < marks.maxids then
+    marks.marks{marks.ids} := BlistList([1..Length(marks.ids)], []);
+  else
+    marks.marks := BlistList([1..Length(marks.marks)], []);
+  fi;
+  marks.ids := [];
+end);
+
+#############################################################################
+##
+#M  MemoryUsage( <obj> ) . . . . . . . . . . . . .return fail in general
+##  
+BIND_GLOBAL( "MEMUSAGECACHE", NewObjectMarker( ) );
+MEMUSAGECACHE.depth := 0;
+
+InstallGlobalFunction( MU_AddToCache, function ( obj )
+  return MarkObject(MEMUSAGECACHE, obj);
+end );
+
+InstallGlobalFunction( MU_Finalize, function (  )
+  local mks, i;
+  if MEMUSAGECACHE.depth <= 0  then
+      Error( "MemoryUsage depth has gone below zero!" );
+  fi;
+  MEMUSAGECACHE.depth := MEMUSAGECACHE.depth - 1;
+  if MEMUSAGECACHE.depth = 0  then
+    ClearObjectMarker(MEMUSAGECACHE);
+  fi;
+end );
 
 InstallMethod( MemoryUsage, "fallback method for objs without subobjs",
   [ IsObject ],

@@ -1,0 +1,342 @@
+                           The ParGAP package
+
+The ParGAP (Parallel GAP) package provides  a  way  of  writing  parallel
+programs using the  GAP  language.  Former  names  of  the  package  were
+ParGAP/MPI and GAP/MPI; the word MPI refers to Message Passing Interface,
+a well-known standard  for  parallelism.  ParGAP  is  based  on  the  MPI
+standard, and this distribution includes a subset implementation of  MPI,
+to provide a portable layer with a high level interface to  BSD  sockets.
+Since knowledge of MPI is not required for use of this software,  we  now
+refer to the package as simply ParGAP. For  more  information  visit  the
+author's ParGAP home page at:
+
+  http://www.ccs.neu.edu/home/gene/pargap.html
+
+ParGAP works only under UNIX. (Cygwin is a possible  option  on  Windows,
+but you will have to port it yourself.)
+
+ParGAP may be obtained as `pargap-XXX.zoo' (for some version number  XXX)
+from the same places as GAP. The main FTP servers are:
+
+  ftp://ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4/share/
+  ftp://ftp.math.rwth-aachen.de/pub/gap4/share/
+  ftp://ftp.ccs.neu.edu/pub/mirrors/ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4/share/
+  ftp://pell.anu.edu.au/pub/algebra/gap4/share/
+
+`pargap-XXX.zoo' is also available via the GAP www page at
+
+  http://www-gap.dcs.st-and.ac.uk/~gap/Info4/share.html
+  http://aldebaran.math.rwth-aachen.de/~GAP/Info4/share.html
+  http://mirrors.ccs.neu.edu/GAP/NEU/Info4/share.html
+  http://wwwmaths.anu.edu.au/research.groups/algebra/GAP/www/Info4/share.html
+
+or, alternatively, `pargap-XXX.tar.gz' (which is  assured  to  be  the
+most recent version) can be obtained from the author's ftp site:
+
+  ftp://ftp.ccs.neu.edu/pub/people/gene/pargapmpi/
+
+ParGAP has been tested on Linux (ELF), Solaris 2.6 and OSF 1 (alpha).
+
+
+                      Installing the ParGAP package
+
+To  install  the  ParGAP  package,  move  the  file  `pargap-XXX.zoo'  or
+`pargap-XXX.tar.gz' into the `pkg' directory in which you plan to install
+ParGAP. Usually, this will be the directory `pkg'  in  the  hierarchy  of
+your version of GAP 4. If your version of GAP 4 is earlier than  GAP  4.3
+then there are  a  couple  of  adjustments  to  GAP's  `lib/init.g'  file
+required (see item 0. of the next section). Also note that  currently  it
+is not possible to have the `pkg' directory  separate  from  GAP's  `pkg'
+directory; we hope to remedy this in future versions of ParGAP  (so  that
+it will also possible to keep  an  additional  `pkg'  directory  in  your
+private directories; section "ref:Installing GAP Packages" of  the  GAP 4
+reference manual gives details on how to do this,  when  it's  possible.)
+(If you are not a system  administrator  and  your  system  administrator
+won't install ParGAP for you on the system and you don't have enough disk
+space in your own directory to create a whole new GAP, what you can do is
+create the illusion of having a complete  version  of  GAP  in  your  own
+directory using symbolic  links  (sorry!  currently  that's  all  we  can
+offer.)
+
+Now change into the `pkg' directory in which you plan to install  ParGAP.
+If you got a `.zoo' file, unpack it with:
+
+  unzoo -x pargap-XXX
+
+If you got a `.tar.gz' file and  your  `tar'  command  supports  the  `z'
+option, unpack it with:
+
+  tar zxf pargap-XXX.tar.gz
+
+or otherwise unpack in two steps with:
+
+  gunzip pargap-XXX.tar
+  tar xvf pargap-XXX.tar
+
+Whether you got the `.zoo' or `.tar.gz' archive you should now have a new
+directory `pargap'. As for a generic GAP package, do:
+
+  cd pargap
+  ./configure ../..
+  make
+
+Your ParGAP should now be ready to use. In the `bin'  subdirectory  there
+will be a script
+
+  pargap.sh
+
+which you should use to start ParGAP. Edit the script if necessary,  copy
+it to a standard path and rename it according to how you intend  to  call
+ParGAP (e.g. rename it: `pargap'). Also, in the `bin' subdirectory  is  a
+sample `procgroup' file which defines the master and slave processes that
+will be used by ParGAP. When ParGAP is started it looks for a file called
+`procgroup' in the current directory, unless the `-p4pg' option is  used.
+Thus if you renamed your shell script `pargap', the following  are  valid
+ways of starting ParGAP:
+
+  pargap
+
+(if current directory contains the file: `procgroup'), or
+
+  pargap -p4pg myprocgroupfile
+
+(where `myprocgroupfile' is the complete path of your  procgroup  file  -
+there is no restriction on how you name it).
+
+If you had trouble installing ParGAP, please see the next section of this
+file. Otherwise, try it out:
+
+gap> # This assumes your procgroup file includes two slave processes.
+gap> PingSlave(1); #a `true' response indicates Slave 1 is alive
+true
+gap> # Print() on slave appears on standard output 
+gap> # i.e. after the master's prompt.
+gap> SendMsg( "Print(3+4)" );
+gap> 7
+gap> # A <return> was input above to get a fresh prompt.
+gap> #
+gap> # To get special characters (including newline: `\n')
+gap> # into a string, escape them with a `\'.
+gap> SendMsg( "Print(3+4,\"\\n\")" );
+gap> 7
+
+gap> # Again, a <return> was input above after the 7 and new-line
+gap> # were printed to get a fresh prompt.
+gap> #
+gap> # Each SendMsg() is normally balanced by a RecvMsg().
+gap> SendMsg( "3+4", 2);
+gap> RecvMsg( 2 );
+7
+gap> # The following is equivalent to the two previous commands.
+gap> SendRecvMsg( "3+4", 2);
+7
+gap> # Flush any messages that are pending. The response is
+gap> # the number of messages flushed. (Above, the two
+gap> # SendMsg("Print...") (to the default slave: 1) did not
+gap> # have a corresponding RecvMsg() command.)
+gap> FlushAllMsgs();
+2
+gap> # As with Print() the result of Exec() appears on standard
+gap> # output. Print() and Exec() are each `no-value' functions,
+gap> # and so the result of a RecvMsg() in these cases
+gap> # is "<no_return_val>".
+gap> SendRecvMsg( "Exec(\"pwd\")" ); # Your pwd will differ :-)
+/home/gene
+"<no_return_val>"
+gap> # Put default slave into an infinite loop.
+gap> SendMsg("while true do od");
+gap> # Default slave can't execute the next command until it's 
+gap> # finished with the previous command.
+gap> SendMsg("Print(\"WAKE UP\\n\")");
+gap> # Check to see if a message is waiting to be collected but
+gap> # return immediately (i.e. don't get blocked by waiting for
+gap> # a message to appear). A `false' response indicates the
+gap> # infinite loop hasn't terminated and produced a value yet!
+gap> ProbeMsgNonBlocking();
+false
+gap> # Send an interrupt to each slave, slave 1 will see the
+gap> # following command and print `WAKE UP', and then all
+gap> # pending messages are flushed.
+gap> ParReset();
+... resetting ...
+WAKE UP
+0
+gap> # The return value, 0, from ParReset() indicates there
+gap> # were 0 pending messages flushed, confirming correctness
+gap> # of ProbeMsgNonBlocking() when it returned "false"
+gap> SendRecvMsg( "a:=45; 3+4", 1 );
+7
+gap> # Note "a" is defined on slave 1, not slave 2.
+gap> SendMsg( "a", 2 ); # Slave prints error, output on master
+gap>  Variable: 'a' must have a value
+gap> # <return> entered to get fresh prompt.
+gap> RecvMsg( 2 ); # No value for last SendMsg() command
+"<no_return_val>"
+gap> RecvMsg( 1 );
+45
+gap> myfnc := function() return 42; end;;
+gap> # Use PrintToString() to define myfnc on all slave processes
+gap> BroadcastMsg( PrintToString( "myfnc := ", myfnc ) );
+gap> SendRecvMsg( "myfnc()", 1 );
+42
+gap> FlushAllMsgs(); # There are no messages pending.
+0
+gap> # Execute analogue of GAP's List() in parallel on slaves.
+gap> squares := ParList( [1..100], x->x^2 );
+[ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 
+  289, 324, 361, 400, 441, 484, 529, 576, 625, 676, 729, 784, 841, 
+  900, 961, 1024, 1089, 1156, 1225, 1296, 1369, 1444, 1521, 1600, 
+  1681, 1764, 1849, 1936, 2025, 2116, 2209, 2304, 2401, 2500, 2601, 
+  2704, 2809, 2916, 3025, 3136, 3249, 3364, 3481, 3600, 3721, 3844, 
+  3969, 4096, 4225, 4356, 4489, 4624, 4761, 4900, 5041, 5184, 5329, 
+  5476, 5625, 5776, 5929, 6084, 6241, 6400, 6561, 6724, 6889, 7056, 
+  7225, 7396, 7569, 7744, 7921, 8100, 8281, 8464, 8649, 8836, 9025, 
+  9216, 9409, 9604, 9801, 10000 ]
+gap> # Ensure problem environment is read into master and slaves.
+gap> # Try one of your GAP program files instead.
+gap> ParRead( "/home/gene/myprogram.g");
+
+
+The ParGAP package was designed and written by:
+
+  Gene Cooperman
+  College of Computer Science
+  Northeastern University, Boston, MA, U.S.A.
+
+If you use ParGAP to solve a problem then please send a  short  email  to
+`gene@ccs.neu.edu' about it, and reference the ParGAP package as follows:
+
+\bibitem[Coo99]{Coo99}
+      Cooperman, Gene,
+      {\sl Parallel GAP/MPI (ParGAP/MPI)}, Version 1,
+      College of Computer Science, Northeastern University, 1999,
+      \verb|http://www.ccs.neu.edu/home/gene/pargapmpi.html|.
+
+=========================================================================
+
+                             Troubleshooting
+
+0.  In versions of GAP earlier than GAP 4.3 some ParGAP ``hooks'' need to
+    be added to GAP's `lib/init.g' file. Please add:
+
+       PAR_GAP_SLAVE_START := fail;
+
+    before the line:
+
+       READ(GAP_RC_FILE);
+
+    and add:
+
+       if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
+
+    at the end of the file.
+
+1.  Do you have enough swap space to support multiple  GAP  processes?  A
+    simple way to check this is with the UNIX command, `top'.  The  Linux
+    version of `top' sorts by memory usage if you type `M'.
+
+2.  `make' tries to automatically create:
+
+       pkg/pargap/bin/pargap.sh
+       
+    and copy the parameters from `<GAP_ROOT>/bin/gap.sh'. <GAP_ROOT>  was
+    specified when  you  executed  `./configure  <GAP_ROOT>'  to  install
+    ParGAP. This can be error-prone if your site has an unusual setup. If
+    you execute `<GAP_ROOT>/bin/gap.sh', does gap come up? If so, compare
+    it   with   `pargap.sh'   and   check   for   correct   settings   in
+    `.../pkg/pargap/bin/pargap.sh'?
+
+3.  Did ParGAP find your `procgroup' file?
+    [It looks in the current directory for `procgroup', or for:
+
+          ... -p4pg PATH/procgroup
+
+     on the command line.]
+
+4.  Were the remote slave processes able to start up? If so,  could  they
+    connect back to  the  master?  To  test  connectivity  problems,  try
+    manually starting a remote slave by executing a line in  the  script.
+    Try a simple `rsh remote_hostname'  to  see  if  the  issue  is  with
+    security.
+
+5.  If  the  previous  step  failed  due  to  security  issues,  such  as
+    requesting a password, you have several options. `man rshd' tells you
+    the security model at your site (or possibly `man  ssh'  if  you  use
+    that). Then read "Problems with Passwords (Getting Around  Security)"
+    in the ParGAP manual in the `doc' directory.
+
+6.  Is the `procgroup' file in your current directory set correctly?
+    Test it.  If you are calling it on a remote host, manually type:
+
+       rsh <HOSTNAME> <ParGAP>
+
+    where <HOSTNAME> and <ParGAP> appear exactly as in `procgroup', e.g.
+    
+       rsh denali.ccs.neu.edu /usr/local/gap4r3/bin/pargap.sh
+
+    In some cases, `exec' is used to save process overhead. Also try:
+
+       rsh <HOSTNAME> exec <ParGAP>
+
+    If you plan to call it on localhost, try just:   <ParGAP>
+
+    Note that if not all the slave processes succeed in connecting
+    to the master, then ParGAP writes out a file:
+
+       /tmp/pargapmpi--rsh.$$
+       
+    where $$ is replaced by the the process id of the ParGAP process.
+
+7.  Is `pargap' listed in `.../pkg/ALLPKG'?
+    [It's needed to autostart slaves.]
+
+8.  Inside ParGAP, has MPI been successfully initialized?
+    Try:  
+    
+    gap> MPI_Initialized();
+
+9.  A remote (slave) ParGAP process starts in  your  home  directory  and
+    tries to cd to a directory of the same name as your local  directory.
+    Check your assumptions about the remote machine. Try:
+
+    gap> SendRecvMsg("Exec(pwd)"); SendRecvMsg("UNIX_Hostname()");
+    gap> SendRecvMsg("UNIX_Getpid()");
+
+10. If the connection dies at random, after some period of time:
+    You can experiment with SO_KEEPALIVE and variants.  (man  setsockopt)
+    This periodically sends *null messages* so the  remote  machine  does
+    not think that the originating  machine  is  dead.  However,  if  the
+    remote machine fails to reply, the  local  process  sends  a  SIGPIPE
+    signal to notify current processes of a broken  socket,  even  though
+    there might have been only a temporary lapse in connectivity.
+    `ssh' specifies `KeepAlive yes' by default, but setting `KeepAlive no'
+    might get you through some transient lapses in  connectivity  due  to
+    high congestion. 
+    You may also want to experiment with: `setenv RSH "rsh -n"'
+
+11. Read the documentation for further possible problems.
+
+=========================================================================
+
+                               Final Notes
+
+Note that this package modifies  the  GAP  `src'  and  `bin'  files,  and
+creates a  new  GAP  kernel.  This  new  GAP  kernel  can  be  shared  by
+traditional users of the old, sequential GAP kernel, and by  those  doing
+parallel processing.
+
+The GAP kernel will have identical behavior to the old  GAP  kernel  when
+invoked through the gap.sh script or the `bin/@GAParch@/gap' binary.  The
+new ParGAP variables will appear to the end user _ONLY_ if the GAP binary
+was invoked as `pargapmpi': a symbolic link to the actual GAP binary. The
+script, `pargap.sh', does this.
+
+So, in a multi-user environment, traditional users can  continue  to  use
+`gap.sh'  without  noticing  any  difference.  Only  an   invocation   as
+`pargap.sh' will add the new features.
+
+Comments and contributions to a ParGAP user library, or any other type of
+assistance, are gratefully accepted.
+
+							Gene Cooperman
+							gene@ccs.neu.edu

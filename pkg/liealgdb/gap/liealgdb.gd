@@ -1,0 +1,4 @@
+DeclareCategory( "IsLieAlgDBCollection", CategoryCollections( IsLieAlgebra ));
+
+
+

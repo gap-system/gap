@@ -1,0 +1,52 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intro.tex             FORMAT documentation    B. Eick and C.R.B. Wright
+%%
+%% 10-30-00
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\FORMAT{{\sf FORMAT}}
+\def\F{{\cal{F}}}
+\Chapter{Introduction to FORMAT}
+
+\index{Format}
+
+The GAP 4 package {\FORMAT} provides functions to compute with formations 
+of finite solvable groups.  In addition to tools for constructing and 
+combining formations, the package contains functions to compute 
+$\F$-residual subgroups and to construct $\F$-normalizers and 
+$\F$-covering subgroups determined by locally defined formations. 
+System normalizers and Carter subgroups are available as special cases, 
+and the $\F$-normalizer functions also apply to the computation of 
+complements. The corresponding algorithms, together with applications 
+and a complexity analysis, are described in~\cite{EW}. 
+
+The package permits the computation of formation-theoretic subgroups 
+not only for a number of classical formations, such as nilpotent,
+supersolvable or $p$-length 1 groups, but for other formations that the
+user may define. It also allows computation with classes of
+finite solvable groups defined by normal subgroup functions (see
+\cite{DH}, pages 395~ff). Attention may be restricted to the
+subgroups of a single group, a feature that has applications
+in the computation of complements to elementary abelian normal subgroups
+in finite solvable groups (see \cite{EW}). An example of such an 
+application is given in Section~"Other Applications".
+
+This documentation contains only a brief account of the main 
+formation-theoretic ideas. For a much more complete treatment we
+refer the reader to \cite{DH}. Fundamental ideas of formation theory are
+described in \cite{G} and \cite{CH}.
+
+In the following sections we first describe the {\GAP} definition of a
+formation and the examples of standard formations that are included in 
+the package. We also present some functions that obtain new formations 
+from ones already defined or that modify defined formations slightly.
+(See Section~"Formations in GAP".) 
+
+Then we describe functions that compute formation-theoretic subgroups 
+of finite solvable groups (see Sections "Residual Functions", 
+"FNormalizers" and~"Covering Subgroups"). 
+
+Finally we provide examples from a {\GAP} session (see Sections~"Formation
+Examples" and "Other Applications") to illustrate the functions in the package.
+

@@ -1,6 +1,6 @@
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_dt_h =
-   "@(#)$Id$";
+   "@(#)$Id: dt.h,v 4.12 2001/12/20 13:02:42 gap Exp $";
 #endif
 
 extern void  UnmarkTree(

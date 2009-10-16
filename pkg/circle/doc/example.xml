@@ -1,0 +1,160 @@
+<!-- $Id: example.xml,v 1.2 2007/02/28 10:58:53 alexk Exp $ -->
+<Chapter Label="Example">
+<Heading>A sample computation with &Circle;</Heading>
+
+Here we give an example to give the reader an idea
+what &Circle; is able to compute.
+<P/>
+
+It was proved in <Cite Key="Kazarin-Soules-2004" /> that 
+if <M>R</M> is a finite nilpotent two-generated algebra over a 
+field of characteristic <M>p>3</M> whose adjoint group has at 
+most three generators, then the dimension of <M>R</M>
+is not greater than 9. Also, an example 
+of the 6-dimensional such algebra with the 3-generated adjoint 
+group was given there. We will construct the algebra from this 
+example and investigate it using &Circle;. First we create two 
+matrices that determine its generators:
+
+<Example>                                                                                          
+<![CDATA[                                                                                          
+gap> x:=[ [ 0, 1, 0, 0, 0, 0, 0 ],
+>         [ 0, 0, 0, 1, 0, 0, 0 ],
+>         [ 0, 0, 0, 0, 1, 0, 0 ],
+>         [ 0, 0, 0, 0, 0, 0, 1 ],
+>         [ 0, 0, 0, 0, 0, 1, 0 ],
+>         [ 0, 0, 0, 0, 0, 0, 0 ],
+>         [ 0, 0, 0, 0, 0, 0, 0 ] ];;
+gap> y:=[ [ 0, 0, 1, 0, 0, 0, 0 ],
+>         [ 0, 0, 0, 0,-1, 0, 0 ],
+>         [ 0, 0, 0, 1, 0, 1, 0 ],
+>         [ 0, 0, 0, 0, 0, 1, 0 ],
+>         [ 0, 0, 0, 0, 0, 0,-1 ],
+>         [ 0, 0, 0, 0, 0, 0, 0 ],
+>         [ 0, 0, 0, 0, 0, 0, 0 ] ];;
+]]>                                                                                                
+</Example> 
+
+Now we construct this algebra in characteristic five and 
+check its basic properties:
+
+<Example>                                                                                          
+<![CDATA[                                                                                          
+gap> R := Algebra( GF(5), One(GF(5))*[x,y] );
+<algebra over GF(5), with 2 generators>
+gap> Dimension( R );
+6
+gap> Size( R );
+15625
+gap> RadicalOfAlgebra( R ) = R;
+true
+]]>                                                                                                
+</Example>
+
+Then we compute the adjoint group of <C>R</C>. During the
+computation a warning will be displayed. It is caused by the method 
+for <C>IsGeneratorsOfMagmaWithInverses</C> defined in the file
+<File>gap4r4/lib/grp.gi</File> from the &GAP; library, and may
+be safely ignored.
+ 
+<Example>                                                                                          
+<![CDATA[ 
+gap> G := AdjointGroup( R );
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
+[ CircleObject( [ [ 0*Z(5), Z(5), Z(5), Z(5)^3, Z(5), 0*Z(5), Z(5)^2 ],
+      [ 0*Z(5), 0*Z(5), 0*Z(5), Z(5), Z(5)^3, Z(5)^3, Z(5)^3 ],
+      [ 0*Z(5), 0*Z(5), 0*Z(5), Z(5), Z(5), 0*Z(5), Z(5) ],
+      [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), Z(5), Z(5) ],
+      [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), Z(5), Z(5)^3 ],
+      [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5) ],
+      [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5) ] ] ) ]
+<group of size 15625 with 3 generators>
+]]>                                                                                                
+</Example>
+
+Now we can find the generating set of minimal possible order for 
+the group <C>G</C>, and check that <C>G</C> it is 3-generated. 
+To do this, first we need to convert it to the isomorphic PcGroup:
+
+<Example>                                                                                          
+<![CDATA[ 
+gap> f := IsomorphismPcGroup( G );;
+gap> H := Image( f );
+Group([ f1, f2, f3, f4, f5, f6 ])
+gap> gens := MinimalGeneratingSet( H );
+[ f1, f2, f5 ]
+gap> gens:=List( gens, x -> UnderlyingRingElement(PreImage(f,x)));;
+gap> Perform(gens,Display);                                        
+ . 3 3 4 4 . 1
+ . . . 3 2 1 4
+ . . . 3 3 2 4
+ . . . . . 3 3
+ . . . . . 3 2
+ . . . . . . .
+ . . . . . . .
+ . 3 1 1 . . .
+ . . . 3 4 . 1
+ . . . 1 3 2 .
+ . . . . . 1 3
+ . . . . . 3 4
+ . . . . . . .
+ . . . . . . .
+ . 2 2 3 2 . 4
+ . . . 2 3 3 3
+ . . . 2 2 . 2
+ . . . . . 2 2
+ . . . . . 2 3
+ . . . . . . .
+ . . . . . . .
+]]>                                                                                                
+</Example> 
+
+It appears that the adjoint group of the algebra from example 
+will be 3-generated in characteristic three as well:
+
+<Example>                                                                                          
+<![CDATA[
+gap> R := Algebra( GF(3), One(GF(3))*[x,y] );
+<algebra over GF(3), with 2 generators>
+gap> G := AdjointGroup( R );
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
+[ CircleObject( [ [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, Z(3), Z(3), 0*Z(3) ],
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3), Z(3)^0, Z(3)^0 ],
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3) ],
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ],
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3) ],
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ],
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ] ] ) ]
+<group of size 729 with 3 generators>
+gap> H := Image( IsomorphismPcGroup( G ) );
+Group([ f1, f2, f3, f4, f5, f6 ])
+gap> MinimalGeneratingSet( H );
+[ f1, f2, f4 ]
+]]>                                                                                                
+</Example> 
+
+But this is not the case in characteristic two, where 
+the adjoint group is 4-generated:
+
+<Example>                                                                                          
+<![CDATA[
+gap> R := Algebra( GF(2), One(GF(2))*[x,y] );
+<algebra over GF(2), with 2 generators>
+gap> G := AdjointGroup( R );                   
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
+[ CircleObject( [ [ 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ],
+      [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ],
+      [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ],
+      [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0 ],
+      [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0 ],
+      [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ],
+      [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ] ] ) ]
+<group of size 64 with 4 generators>
+gap> H := Image( IsomorphismPcGroup( G ) );
+Group([ f1, f2, f3, f4, f5, f6 ])
+gap> MinimalGeneratingSet( H );
+[ f1, f2, f4, f5 ]
+]]>                                                                                                
+</Example> 
+ 
+</Chapter>

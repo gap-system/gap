@@ -1,0 +1,851 @@
+## do not edit these definitions ############################################
+SHELL=/bin/sh
+
+GNUINC=/usr/local/include
+GNULIB=/usr/local/lib
+
+EFILE=pq
+EXT=
+PQFLAGS=-DGAP_LINK_VIA_FILE -DGAP -I../include -DSTANDARD_PCP -DGROUP
+
+## Command used to start up GAP4
+GAP=gap
+
+## location of Makefile relative to the src directory
+MAKEFILE=../Makefile
+
+SRC=./src
+PKGNAME=anupq
+
+
+linux-iX86-gcc2-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O2 $(PQFLAGS) \
+                -DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+linux-iX86-gcc2: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -O2 $(PQFLAGS) -DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+linux-iX86-cc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O $(PQFLAGS) \
+                -DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+linux-iX86-cc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -O $(PQFLAGS) -DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+iX86-pc-cygwin-gcc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O2 $(PQFLAGS) \
+		-DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=".exe" \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+iX86-pc-cygwin-gcc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -O2 $(PQFLAGS) -DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=".exe" \
+	LDLIBS="-lm" )
+
+unix-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) $(PQFLAGS) \
+		-DNO_GETRUSAGE -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+unix: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) $(PQFLAGS) -DUNIX -DNO_GETRUSAGE" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+sunos-gcc2-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O2 $(PQFLAGS) \
+                -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+sunos-gcc2: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -O2 $(PQFLAGS) -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+sunos-cc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O $(PQFLAGS) \
+                -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp -lgnu" )
+
+sunos-cc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -O $(PQFLAGS) -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+mips-mips-bsd-cc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -DNEEDS_TYPES_H \
+		-DHAS_NO_STRFTIME -systype bsd43 -O2 $(PQFLAGS) -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-systype bsd43 -lm -L$(GNULIB) -lgmp" )
+
+mips-mips-bsd-cc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DNEEDS_TYPES_H -DHAS_NO_STRFTIME -systype bsd43 \
+		-O2 $(PQFLAGS) -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-systype bsd43 -lm" )
+
+dec-mips-ultrix-gcc2-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O2 $(PQFLAGS) \
+                -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+dec-mips-ultrix-gcc2: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -O2 $(PQFLAGS) -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+dec-mips-ultrix-cc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O $(PQFLAGS) \
+                -DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+dec-mips-ultrix-cc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -O $(PQFLAGS) -DUNIX -DUSE_BIT_OPS" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+hp-hppa1.1-hpux-cc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O $(PQFLAGS) \
+                -DUNIX -DNO_GETRUSAGE" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+hp-hppa1.1-hpux-cc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -O $(PQFLAGS) -DUNIX -DNO_GETRUSAGE" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+hp-hppa1.1-hpux-gcc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) -O $(PQFLAGS) -DUNIX -DNO_GETRUSAGE" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+hp-hppa1.0-hpux-cc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) $(PQFLAGS) \
+		-DNO_GETRUSAGE -DUNIX" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm -L$(GNULIB) -lgmp" )
+
+hp-hppa1.0-hpux-cc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+	CFLAGS="$(COPTS) $(PQFLAGS) -DUNIX -DNO_GETRUSAGE" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+hp-hppa1.0-hpux-gcc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+	CFLAGS="$(COPTS) $(PQFLAGS) -DUNIX -DNO_GETRUSAGE" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lm" )
+
+next-m68k-mach-gcc2-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+        CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O2 $(PQFLAGS) \
+                -DUNIX -DNEXT -DHAS_NO_TEMPNAM" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lgmp" )
+
+next-m68k-mach-gcc2: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=gcc \
+        CFLAGS="$(COPTS)-O2 $(PQFLAGS) -DUNIX -DNEXT -DHAS_NO_TEMPNAM" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="" )
+
+next-m68k-mach-cc-gmp: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+        CFLAGS="$(COPTS) -DLARGE_INT -DGNUINC -I$(GNUINC) -O2 $(PQFLAGS) \
+                -DUNIX -DNEXT -DHAS_NO_TEMPNAM" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="-lgmp" )
+
+next-m68k-mach-cc: bindir
+	@( cd $(SRC) ; $(MAKE) -f $(MAKEFILE) $(EFILE) CC=cc \
+        CFLAGS="$(COPTS) -O2 $(PQFLAGS) -DUNIX -DNEXT -DHAS_NO_TEMPNAM" \
+	GAP=$(GAP) \
+	EXT=$(EXT) \
+	LDLIBS="" )
+
+## show makefile options ####################################################
+unknown:
+	@echo "Now call 'make <target>'  where <target> is one of"
+	@echo ""
+	@echo "'linux-iX86-gcc2-gmp'      for IBM x86 PCs under linux/BSD with GNU cc 2 and mp"
+	@echo "'linux-iX86-cc-gmp'        for IBM x86 PCs under linux/BSD with cc and GNU mp"
+	@echo "'linux-iX86-gcc2'          for IBM x86 PCs under linux/BSD with GNU cc 2"
+	@echo "'linux-iX86-cc'            for IBM x86 PCs under linux/BSD with cc (GNU)"
+	@echo "'iX86-pc-cygwin-gcc-gmp'   for IBM x86 PCs under CYGWIN with GNU cc and GNU mp"
+	@echo "'iX86-pc-cygwin-gcc'       for IBM x86 PCs under CYGWIN with GNU cc"
+	@echo "'dec-mips-ultrix-gcc2-gmp' for DECstations under Ultrix with GNU cc 2 and GNU mp"
+	@echo "'dec-mips-ultrix-cc-gmp'   for DECstations under Ultrix with cc and GNU mp"
+	@echo "'dec-mips-ultrix-gcc2'     for DECstations under Ultrix with GNU cc 2"
+	@echo "'dec-mips-ultrix-cc'       for DECstations under Ultrix with cc"
+	@echo "'hp-hppa1.1-hpux-cc-gmp'   for HP 9000/700 under HP-UX with cc and GNU mp"
+	@echo "'hp-hppa1.1-hpux-cc'       for HP 9000/700 under HP-UX with cc"
+	@echo "'hp-hppa1.1-hpux-gcc'      for HP 9000/700 under HP-UX with gcc"
+	@echo "'hp-hppa1.0-hpux-cc-gmp'   for HP 9000/800 under HP-UX with cc and GNU mp"
+	@echo "'hp-hppa1.0-hpux-cc'       for HP 9000/800 under HP-UX with cc"
+	@echo "'hp-hppa1.0-hpux-gcc'      for HP 9000/800 under HP-UX with gcc"
+	@echo "'mips-mips-bsd-cc-gmp'     for MIPS under RISC/os Berkeley with cc and GNU mp"
+	@echo "'mips-mips-bsd-cc'         for MIPS under RISC/os Berkeley with cc"
+	@echo "'next-m68k-mach-gcc2-gmp'  for NeXT under Mach with GNU cc 2 and GNU mp"
+	@echo "'next-m68k-mach-cc-gmp'    for NeXT under Mach with cc and GNU mp"
+	@echo "'next-m68k-mach-gcc2'      for NeXT under Mach with GNU cc 2"
+	@echo "'next-m68k-mach-cc'        for NeXT under Mach with cc (GNU)"
+	@echo "'sunos-gcc2-gmp'           for SunOS with GNU cc 2 and gmp"
+	@echo "'sunos-cc-gmp'             for SunOS with cc and GNU mp"
+	@echo "'sunos-gcc2'               for SunOS with GNU cc 2"
+	@echo "'sunos-cc'                 for SunOS with cc"
+	@echo "'unix-gmp'                 for a generic unix system with cc and GNU mp"
+	@echo "'unix'                     for a generic unix system with cc"
+	@echo "'clean'                    remove all created files"
+	@echo ""
+	@echo "   targets are listed according to preference,"
+	@echo "   i.e., 'sunos-gcc2' is better than 'sunos-cc'"
+	@echo "   choosing no target is the same as choosing 'linux-iX86-gcc2-gmp'"
+	@echo "   additional C compiler and linker flags can be passed with"
+	@echo "   'make <target> COPTS=<compiler-opts> LOPTS=<linker-opts>',"
+	@echo "   e.g., 'make sunos-cc COPTS=-g LOPTS=-g'."
+	@echo ""
+	@echo "   set GAP if GAP4 is not started with the command 'gap',"
+	@echo "   e.g., 'make sunos-cc GAP=/usr/local/bin/gap4'."
+	@echo ""
+	@echo "   in order to use the GNU multiple precision (gmp) choose a target"
+	@echo "   ending in '-gmp' and if you need to override the defaults set:"
+	@echo "   'GNUINC' (default '/usr/local/include') and "
+	@echo "   'GNULIB' (default '/usr/local/lib')"
+	@echo "   e.g., 'make sunos-gcc2-gmp GNUINC=/opt/local/include GNULIB=/opt/local/lib'."
+	@echo ""
+	@echo "   do 'make unknown | more' to see these targets again via more"
+
+## special rules,  we need to set ANUPQ_GAP_EXEC ############################
+GAP.o: GAP.c
+	$(CC) $(CFLAGS) -DANUPQ_GAP_EXEC='"$(GAP)"' -c GAP.c
+
+GAP_link_via_file.o: GAP_link_via_file.c
+	$(CC) $(CFLAGS) -DANUPQ_GAP_EXEC='"$(GAP)"' -c GAP_link_via_file.c
+
+## NEVER DELETE/ALTER THESE LINES BELOW - see "objectlist" and "depend" #####
+
+#@OBJ@
+OBJECTS=\
+	AllocateSpace.o                	CAYLEY.o                      \
+	CAYLEY_present.o               	CloseFile.o                   \
+	Extend_Auts.o                  	FreeSpace.o                   \
+	GAP.o                          	GAP_link_via_file.o           \
+	GAP_present.o                  	Magma.o                       \
+	Magma_present.o                	OpenFile.o                    \
+	TemporaryFile.o                	action.o                      \
+	assemble_matrix.o              	autgp_order.o                 \
+	bit_print.o                    	calculate_jacobi.o            \
+	central_auts.o                 	check_exponent.o              \
+	class1_eliminate.o             	close_relations.o             \
+	close_subgroup.o               	collect.o                     \
+	collect_comm.o                 	collect_gen_word.o            \
+	collect_relations.o            	collect_word.o                \
+	collectp2.o                    	combined.o                    \
+	commutator.o                   	commute_dgen.o                \
+	compact.o                      	compact_description.o         \
+	consistency.o                  	consistency_filter.o          \
+	consistency_info.o             	construct.o                   \
+	convert.o                      	defaults_pga.o                \
+	degree.o                       	delete_tables.o               \
+	down_class.o                   	echelon.o                     \
+	echelonise_matrix.o            	eliminate.o                   \
+	expand_commutator.o            	exponent_auts.o               \
+	exponent_info.o                	extend_automorphisms.o        \
+	extend_matrix.o                	extend_representation.o       \
+	extra_relations.o              	find_allowable_subgroup.o     \
+	find_image.o                   	find_permutation.o            \
+	formula.o                      	generator_definition.o        \
+	get_definition_sets.o          	identity.o                    \
+	immediate_descendant.o         	initialise_pcp.o              \
+	initialise_pga.o               	insoluble_orbits.o            \
+	int_power.o                    	interactive_pga.o             \
+	interactive_pq.o               	invert.o                      \
+	invert_auts.o                  	invert_modp.o                 \
+	is_genlim_exceeded.o           	is_space_exhausted.o          \
+	isom_options.o                 	iteration.o                   \
+	jacobi.o                       	label_to_subgroup.o           \
+	last_class.o                   	list_commutators.o            \
+	main.o                         	map_relations.o               \
+	matrix.o                       	maxoccur.o                    \
+	meataxe.o                      	multiply_word.o               \
+	next_class.o                   	options.o                     \
+	orbit_summary.o                	permute_elements.o            \
+	permute_subgroups.o            	pgroup.o                      \
+	power.o                        	pquotient.o                   \
+	pretty_filter.o                	pretty_filterfns.o            \
+	print_arrays.o                 	print_auts.o                  \
+	print_level.o                  	print_multiweight.o           \
+	print_presentation.o           	print_structure.o             \
+	print_word.o                   	quotpic.o                     \
+	read.o                         	read_auts.o                   \
+	read_parameters.o              	read_relations.o              \
+	read_relator_file.o            	read_value.o                  \
+	read_word.o                    	reduce_matrix.o               \
+	reduced_covers.o               	report_error.o                \
+	restore_group.o                	setup.o                       \
+	setup_reps.o                   	soluble_orbits.o              \
+	solve_equation.o               	stabiliser.o                  \
+	stages.o                       	standard.o                    \
+	start_group.o                  	start_iteration.o             \
+	step_range.o                   	store_definition_sets.o       \
+	strip_identities.o             	subgroup_to_label.o           \
+	system.o                       	tail_info.o                   \
+	tails.o                        	tails_filter.o                \
+	text.o                         	update.o                      \
+	update_generators.o            	update_name.o                 \
+	vsystem.o                      	write.o                       
+
+
+#@ENDOBJ@
+
+## this target creates a bin-directory ######################################
+## ... and also writes the value of $(GAP) to: tst/GAP ######################
+bindir:
+	if test ! -d bin;  then mkdir bin;  fi
+	if test ! -d bin/@GAPARCH@;  then mkdir bin/@GAPARCH@;  fi
+	echo $(GAP) > tst/GAP
+
+## do the linking and put the executable in the right place #################
+$(EFILE):  $(OBJECTS)
+	@( $(CC) -o $(EFILE) $(OBJECTS) $(LOPTS) $(LDLIBS); \
+	   echo ""; echo "moving pq to ../bin/@GAPARCH@"; echo ""; \
+	   mv $(EFILE) ../bin/@GAPARCH@; rm -f ../standalone/bin/pq; \
+	   mkdir -p -m 755 ../standalone/bin; \
+	   ln -s ../../bin/@GAPARCH@/$(EFILE) ../standalone/bin/pq )
+
+## clean me up ##############################################################
+clean:
+	(cd $(SRC) ; rm -f $(OBJECTS) core* $(EFILE); rm -rf ../bin)
+
+distclean: clean
+	rm -f Makefile testPq tst/GAP standalone/bin/$(EFILE)
+
+## create distribution .zoo file of package #################################
+src_dist:
+	@echo "use make_zoo"
+
+## move directories around to how GAP4 likes them ###########################
+GAP4remapdirs:
+	if test -d standalone-doc; then \
+	echo "directories already remapped for GAP4?!?"; fi
+	if test ! -d standalone-doc; then \
+	mv README doc; mv doc standalone-doc; \
+	mkdir -p -m 755 standalone/bin; mv TEST examples isom standalone; \
+	(cd gap; mv README configure replace Makefile.in init.g read.g doc ..;\
+	 mv examples tst lib ..;)\
+	fi
+
+## move directories from how GAP4 likes them to the generic layout ##########
+restoredirs:
+	if test -d gap/doc; then echo "directories already restored?!?"; fi
+	if test ! -d gap/doc; then \
+	$(MAKE) -f Makefile clean; \
+	mkdir -p -m 755 gap; \
+	mv examples tst lib gap; \
+	mv README configure replace Makefile.in init.g read.g doc gap; \
+	(cd standalone; mv examples isom TEST ..) \
+	mv standalone-doc doc; mv doc/README .; \
+	fi
+
+## create object list for the Makefile ######################################
+objectlist:
+	@( cd $(SRC) ; ls -1 *.c ) | \
+	sed s/\\.c$$/\\.o/ | \
+	( echo "OBJECTS=\\"; \
+	  awk '{printf( "\t%-30s%s", $$0, (i++ % 2)?"\\\n":" ")}'; \
+	  echo ""; echo "" ) > /tmp/object.tmp
+	@perl replace OBJ /tmp/object.tmp
+	@rm /tmp/object.tmp
+
+## create dependency list for the Makefile ##################################
+depend:
+	@(cd $(SRC) ; gcc -MM -I$(GNUINC) $(PQFLAGS) -DNO_GETRUSAGE -DUNIX *.c \
+	    > /tmp/depend.tmp )
+	@perl replace DEP /tmp/depend.tmp
+	@rm /tmp/depend.tmp
+
+#@DEP@
+AllocateSpace.o: AllocateSpace.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h
+CAYLEY.o: CAYLEY.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pga_vars.h ../include/pcp_vars.h ../include/pq_functions.h \
+ ../include/constants.h
+CAYLEY_present.o: CAYLEY_present.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h ../include/access.h
+CloseFile.o: CloseFile.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h
+Extend_Auts.o: Extend_Auts.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h ../include/access.h
+FreeSpace.o: FreeSpace.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h \
+ ../include/pcp_vars.h
+GAP.o: GAP.c
+GAP_link_via_file.o: GAP_link_via_file.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h ../include/global.h \
+ ../include/pq_functions.h ../include/menus.h
+GAP_present.o: GAP_present.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h ../include/menus.h ../include/define_y.h \
+ ../include/access.h
+Magma.o: Magma.c
+Magma_present.o: Magma_present.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h ../include/access.h
+OpenFile.o: OpenFile.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/constants.h
+TemporaryFile.o: TemporaryFile.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pq_functions.h \
+ ../include/constants.h
+action.o: action.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/constants.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/standard.h \
+ ../include/word_types.h ../include/define_y.h
+assemble_matrix.o: assemble_matrix.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+autgp_order.o: autgp_order.c
+bit_print.o: bit_print.c
+calculate_jacobi.o: calculate_jacobi.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/define_y.h ../include/access.h
+central_auts.o: central_auts.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h ../include/define_y.h \
+ ../include/access.h
+check_exponent.o: check_exponent.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/exp_vars.h
+class1_eliminate.o: class1_eliminate.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h
+close_relations.o: close_relations.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h ../include/define_y.h \
+ ../include/access.h
+close_subgroup.o: close_subgroup.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/define_y.h
+collect.o: collect.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/constants.h ../include/define_y.h \
+ ../include/access.h
+collect_comm.o: collect_comm.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/pretty_filterfns.h ../include/word_types.h \
+ ../include/define_y.h
+collect_gen_word.o: collect_gen_word.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+collect_relations.o: collect_relations.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h
+collect_word.o: collect_word.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/constants.h \
+ ../include/word_types.h ../include/define_y.h
+collectp2.o: collectp2.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/define_y.h ../include/access.h
+combined.o: combined.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h
+commutator.o: commutator.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pretty_filterfns.h ../include/word_types.h \
+ ../include/constants.h ../include/define_y.h ../include/access.h
+commute_dgen.o: commute_dgen.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/pretty_filterfns.h ../include/word_types.h \
+ ../include/define_y.h
+compact.o: compact.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/define_y.h
+compact_description.o: compact_description.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/constants.h \
+ ../include/define_y.h ../include/access.h
+consistency.o: consistency.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h ../include/access.h
+consistency_filter.o: consistency_filter.c
+consistency_info.o: consistency_info.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h \
+ ../include/pcp_vars.h ../include/exp_vars.h ../include/pq_functions.h
+construct.o: construct.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/exp_vars.h ../include/constants.h \
+ ../include/pq_functions.h ../include/define_y.h
+convert.o: convert.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/define_y.h ../include/access.h
+defaults_pga.o: defaults_pga.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h ../include/define_y.h
+degree.o: degree.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pga_vars.h ../include/pq_functions.h \
+ ../include/constants.h
+delete_tables.o: delete_tables.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+down_class.o: down_class.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h ../include/access.h
+echelon.o: echelon.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/define_y.h \
+ ../include/access.h
+echelonise_matrix.o: echelonise_matrix.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h
+eliminate.o: eliminate.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h ../include/access.h
+expand_commutator.o: expand_commutator.c ../include/constants.h
+exponent_auts.o: exponent_auts.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h
+exponent_info.o: exponent_info.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h \
+ ../include/pcp_vars.h ../include/exp_vars.h ../include/pq_functions.h
+extend_automorphisms.o: extend_automorphisms.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h ../include/access.h
+extend_matrix.o: extend_matrix.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/define_y.h
+extend_representation.o: extend_representation.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/define_y.h
+extra_relations.o: extra_relations.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/exp_vars.h ../include/define_y.h ../include/access.h
+find_allowable_subgroup.o: find_allowable_subgroup.c \
+ ../include/pq_defs.h ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h ../include/standard.h ../include/define_y.h \
+ ../include/access.h
+find_image.o: find_image.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h
+find_permutation.o: find_permutation.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h \
+ ../include/pq_functions.h
+formula.o: formula.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/constants.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h
+generator_definition.o: generator_definition.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h ../include/access.h
+get_definition_sets.o: get_definition_sets.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h \
+ ../include/pq_functions.h
+identity.o: identity.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pga_vars.h
+immediate_descendant.o: immediate_descendant.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/exp_vars.h ../include/constants.h \
+ ../include/pq_functions.h ../include/define_y.h
+initialise_pcp.o: initialise_pcp.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h
+initialise_pga.o: initialise_pga.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/define_y.h
+insoluble_orbits.o: insoluble_orbits.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h ../include/standard.h
+int_power.o: int_power.c
+interactive_pga.o: interactive_pga.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h ../include/menus.h \
+ ../include/standard.h ../include/pq_functions.h ../include/global.h
+interactive_pq.o: interactive_pq.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/exp_vars.h ../include/constants.h \
+ ../include/menus.h ../include/pq_functions.h \
+ ../include/pretty_filterfns.h ../include/word_types.h \
+ ../include/global.h ../include/define_y.h
+invert.o: invert.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/constants.h ../include/word_types.h \
+ ../include/define_y.h ../include/access.h
+invert_auts.o: invert_auts.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h ../include/define_y.h \
+ ../include/access.h
+invert_modp.o: invert_modp.c
+is_genlim_exceeded.o: is_genlim_exceeded.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+is_space_exhausted.o: is_space_exhausted.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+isom_options.o: isom_options.c ../include/constants.h \
+ ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pretty_filterfns.h ../include/standard.h \
+ ../include/menus.h ../include/pcp_vars.h ../include/pga_vars.h \
+ ../include/pq_functions.h ../include/word_types.h \
+ ../include/define_y.h
+iteration.o: iteration.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h
+jacobi.o: jacobi.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/define_y.h \
+ ../include/access.h
+label_to_subgroup.o: label_to_subgroup.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/define_y.h
+last_class.o: last_class.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+list_commutators.o: list_commutators.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/define_y.h
+main.o: main.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pq_functions.h \
+ ../include/constants.h ../include/pq_author.h ../include/menus.h \
+ ../include/global.h ../include/standard.h ../include/define_y.h \
+ ../include/access.h
+map_relations.o: map_relations.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/menus.h ../include/constants.h \
+ ../include/pq_functions.h ../include/define_y.h ../include/access.h
+matrix.o: matrix.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pq_functions.h
+maxoccur.o: maxoccur.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/constants.h ../include/define_y.h
+meataxe.o: meataxe.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/constants.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h
+multiply_word.o: multiply_word.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+next_class.o: next_class.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/exp_vars.h \
+ ../include/define_y.h
+options.o: options.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pga_vars.h ../include/menus.h \
+ ../include/constants.h ../include/pq_functions.h
+orbit_summary.o: orbit_summary.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h
+permute_elements.o: permute_elements.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h \
+ ../include/pq_functions.h
+permute_subgroups.o: permute_subgroups.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h \
+ ../include/constants.h
+pgroup.o: pgroup.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pga_vars.h ../include/constants.h \
+ ../include/menus.h ../include/pq_functions.h ../include/standard.h \
+ ../include/define_y.h
+power.o: power.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/define_y.h
+pquotient.o: pquotient.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h
+pretty_filter.o: pretty_filter.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pq_functions.h \
+ ../include/constants.h ../include/pcp_vars.h \
+ ../include/pretty_filterfns.h ../include/define_y.h
+pretty_filterfns.o: pretty_filterfns.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pretty_filterfns.h \
+ ../include/constants.h
+print_arrays.o: print_arrays.c
+print_auts.o: print_auts.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h \
+ ../include/constants.h
+print_level.o: print_level.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h
+print_multiweight.o: print_multiweight.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/define_y.h ../include/access.h
+print_presentation.o: print_presentation.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h ../include/access.h
+print_structure.o: print_structure.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/define_y.h ../include/access.h
+print_word.o: print_word.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h ../include/access.h
+quotpic.o: quotpic.c
+read.o: read.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pga_vars.h ../include/pq_functions.h \
+ ../include/constants.h ../include/define_y.h ../include/access.h
+read_auts.o: read_auts.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/standard.h \
+ ../include/define_y.h
+read_parameters.o: read_parameters.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h
+read_relations.o: read_relations.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/define_y.h
+read_relator_file.o: read_relator_file.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h \
+ ../include/pcp_vars.h ../include/pq_functions.h \
+ ../include/word_types.h ../include/define_y.h
+read_value.o: read_value.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h \
+ ../include/pcp_vars.h
+read_word.o: read_word.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/constants.h ../include/pq_functions.h \
+ ../include/pretty_filterfns.h ../include/word_types.h \
+ ../include/define_y.h
+reduce_matrix.o: reduce_matrix.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h
+reduced_covers.o: reduced_covers.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h
+report_error.o: report_error.c ../include/constants.h
+restore_group.o: restore_group.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h
+setup.o: setup.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/constants.h \
+ ../include/pq_functions.h ../include/setup.h ../include/define_y.h \
+ ../include/access.h
+setup_reps.o: setup_reps.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h ../include/global.h ../include/standard.h \
+ ../include/define_y.h
+soluble_orbits.o: soluble_orbits.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h
+solve_equation.o: solve_equation.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/word_types.h ../include/define_y.h ../include/access.h
+stabiliser.o: stabiliser.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h \
+ ../include/constants.h ../include/define_y.h
+stages.o: stages.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h
+standard.o: standard.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/constants.h ../include/pcp_vars.h ../include/pga_vars.h \
+ ../include/exp_vars.h ../include/pq_functions.h ../include/menus.h \
+ ../include/standard.h ../include/define_y.h
+start_group.o: start_group.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h ../include/define_y.h
+start_iteration.o: start_iteration.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/constants.h \
+ ../include/pq_functions.h
+step_range.o: step_range.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h
+store_definition_sets.o: store_definition_sets.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h \
+ ../include/pq_functions.h
+strip_identities.o: strip_identities.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pga_vars.h ../include/pq_functions.h
+subgroup_to_label.o: subgroup_to_label.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pga_vars.h
+system.o: system.c ../include/pq_author.h ../include/pq_defs.h \
+ ../include/storage_fixed.h
+tail_info.o: tail_info.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/constants.h
+tails.o: tails.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/define_y.h \
+ ../include/access.h
+tails_filter.o: tails_filter.c
+text.o: text.c ../include/pq_defs.h ../include/storage_fixed.h
+update.o: update.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pq_functions.h ../include/define_y.h \
+ ../include/access.h
+update_generators.o: update_generators.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h \
+ ../include/pq_functions.h ../include/define_y.h ../include/access.h
+update_name.o: update_name.c ../include/pq_defs.h \
+ ../include/storage_fixed.h ../include/pcp_vars.h
+vsystem.o: vsystem.c
+write.o: write.c ../include/pq_defs.h ../include/storage_fixed.h \
+ ../include/pcp_vars.h ../include/pga_vars.h ../include/constants.h \
+ ../include/define_y.h
+#@ENDDEP@

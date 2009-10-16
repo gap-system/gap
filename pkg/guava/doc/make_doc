@@ -1,0 +1,35 @@
+#!/bin/sh
+#########################################################################
+##
+#W  make_doc        make GUAVA Package documentation     Alexander Hulpke
+##
+#H  $Id: make_doc,v 1.5 2004/12/20 21:26:05 gap Exp $
+##
+##  This shell script uses TeX, BibTeX and MakeIndex to  build  the  .dvi
+##  PostScript (commented  out) and HTML (provided  you  have   tth   and
+##  etc/convert.pl) documentation for the GUAVA Package.
+##
+
+echo "TeXing documentation"
+# TeX the manual and build its bibliography
+tex manual;bibtex manual
+# TeX the manual again to incorporate the ToC ... and build the index
+tex manual; ../../../doc/manualindex manual
+# Finally TeX the manual again to get cross-references right
+tex manual
+
+# Generate pdf version
+pdftex manual
+pdftex manual
+
+# Create the PostScript version (uncomment next line, if needed)
+#dvips -D300 manual -o
+
+# The HTML version of the manual
+mkdir -p ../htm
+echo "Creating HTML documentation"
+/usr/local/gap4r4/etc/convert.pl -t -c -n GUAVA . ../htm
+
+#########################################################################
+##
+#E

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- $Id: float.xml,v 1.2 2008/04/22 09:15:27 gap Exp $ -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+ [ <!ENTITY see '<Alt Only="LaTeX">$\to$</Alt><Alt Not="LaTeX">--&tgt;</Alt>'>]>
+<Book Name="FR">
+
+<TitlePage>
+  <Title>Floating-point numbers</Title>
+  <Version>Version <#Include Label="Version"></Version>
+  <TitleComment>
+    MPFR-based library
+  </TitleComment>
+  <Author>Laurent Bartholdi
+          <Email><Alt Only="HTML">laurent dot bartholdi at gmail dot com</Alt>
+		 <Alt Not="HTML">laurent.bartholdi@gmail.com</Alt></Email> 
+	  <Homepage>http://mad.epfl.ch/&tilde;laurent/</Homepage>
+  </Author>
+  <Date>$Date: 2008/04/22 09:15:27 $</Date>
+  <Address>
+  EPFL SB SMA MAD, Station 8<Br/>1015 Lausanne<Br/> Switzerland
+  </Address>
+  <Abstract>
+    This document describes the package <Package>Float</Package>, which
+    implements in &GAP; arbitrary-precision floating-point numbers.
+  <Alt Only="HTML">
+  <P/>
+  The computer algebra system &GAP; is available at
+  <URL>http://gap-system.org</URL>.
+  <P/>
+  This documentation for <Package>Float</Package> is available at
+  <URL>http://mad.epfl.ch/~laurent/Float/floatdoc.tar.gz</URL> and
+  <URL>http://mad.epfl.ch/~laurent/Float/floatdoc.zoo</URL>; the manual is available at
+  <URL>http://mad.epfl.ch/~laurent/Float/manual.pdf</URL> in PDF format, and may be
+  accessed online at <URL>http://mad.epfl.ch/~laurent/Float/</URL>.
+  <P/>
+  The latest source of the package may be downloaded as
+  <URL>http://mad.epfl.ch/~laurent/Float/float.tar.gz</URL> (tar, gzipped) and
+  <URL>http://mad.epfl.ch/~laurent/Float/float.zoo</URL> (zoo).
+  </Alt>
+  <P/>
+    For comments or questions on <Package>Float</Package> please contact
+    the author; this package is still under development.
+  </Abstract>
+  <Copyright>&copyright; 2008 by Laurent Bartholdi
+  </Copyright>
+  <Acknowledgements>Part of this work is supported by the "Swiss
+  National Fund for Scientific Research"
+  </Acknowledgements>
+
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<Chapter><Heading>Licensing</Heading>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or any
+later version.
+
+<P/> This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+<P/> You should have received a copy of the GNU General Public
+License along with this program, in the file COPYING.  If not, see
+<URL>http://www.gnu.org/licenses/</URL>.
+
+</Chapter>
+
+<Chapter Label="floatpackage"><Heading>Float package</Heading>
+
+<Section Label="sample"><Heading>A sample run</Heading>
+
+<Example><![CDATA[
+gap> LoadPackage("float");
+--------------------------------------------------------------------------------
+Loading  Float 0.0 (Floating-point numbers)
+by Laurent Bartholdi (http://mad.epfl.ch/~laurent).
+--------------------------------------------------------------------------------
+true
+2gap> x := Float("3.14");
+.31400000000000000001e1
+gap> Sin(x);
+.159265291648695244511e-2
+gap> x := Float("3.14":FloatPrecision:=1000);
+.3139999999999999999999999999999999999999999999999999999999999999999999999999999\
+99999999999999999999999999999999999999999999999999999999999999999999999999999999\
+99999999999999999999999999999999999999999999999999999999999999999999999999999999\
+9999999999999999999999999999999999999999999999999999999999999994e1
+gap> Sin(x);
+.1592652916486952540541436324443261443240527819026874184880508367128341969726816\
+55366511928190163665945901073651890807742330828497286734711916055033342226936635\
+37205786167504254621242902021404954155694167616195852672332644016900283367996858\
+0146111244433080452248969293081686143670824488614957815833878097e-2
+gap> FLOAT_EULER(200);
+.57721566490153286060651209008240243104215933593992359880576723e0
+gap> FLOAT_PI(100);
+.31415926535897932384626433832793e1
+gap> last+last2;
+.37188083184913260990691554733617357466861213573221502457513241e1
+gap> Int(last);
+3
+gap> last-last2;
+-.71880831849132609906915547336173574668612135732215024575132408e0
+gap>                        
+]]></Example>
+
+</Section>
+
+<Section><Heading>Float commands and constants</Heading>
+<#Include Label="Float">
+<#Include Label="AINV">
+<#Include Label="Atan2">
+<#Include Label="FLOAT_PI">
+<#Include Label="IsFloat">
+</Section>
+
+</Chapter>
+
+</Body>
+
+<TheIndex/>
+
+</Book>

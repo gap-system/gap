@@ -1,0 +1,73 @@
+
+# test001.in - Colin Ramsay - 16 Mar 99
+#
+# A nice series of presentations for the trivial group.
+
+Wo:8M;
+Mess:250000;
+
+Gr: r,s;
+
+Rel: r=sr,s=rs;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;
+
+Rel: rs=s^2r, sr=r^2s;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;
+
+Rel: rs^2=s^3r, sr^2=r^3s;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;
+
+Rel: rs^3=s^4r, sr^3=r^4s;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;
+
+Rel: rs^4=s^5r, sr^4=r^5s;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;
+
+Rel: rs^5=s^6r, sr^5=r^6s;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;
+
+Rel: rs^6=s^7r, sr^6=r^7s;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;
+
+Rel: rs^7=s^8r, sr^7=r^8s;
+Sims:1; End;
+Sims:3; End;
+Sims:5; End;
+Sims:7; End;
+Sims:9; End;
+Fel:1;  End;

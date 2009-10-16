@@ -3,7 +3,7 @@
 #W  id960.bi               GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id960_bi :=
-    "@(#)$Id$";
+    "@(#)$Id: id960.bi,v 1.1 2000/01/23 13:48:25 gap Exp $";
 
 ID_GROUP_TREE.next[960].next[61]:=
 rec(

@@ -1,0 +1,23 @@
+C autpgrp.tex 1. Introduction
+C method.tex 2. The automorphism group method
+F 2.0. AutomorphismGroup
+I 2.0. SetInfoLevel
+F 2.0. InfoAutGrp
+C underl.tex 3. The underlying function
+F 3.0. AutomorphismGroupPGroup
+F 3.0. ConvertHybridAutGroup
+F 3.0. PcGroupAutPGroup
+C influen.tex 4. Influencing the algorithm
+S 4.1. Outline of the algorithm
+S 4.2. The initialisation step
+S 4.3. Stabilisers in matrix groups
+F 4.3. CHOP_MULT
+S 4.4. Searching for a small generating set
+F 4.4. NICE_STAB
+S 4.5. An interactive version of the algorithm
+S 4.6. Acknowledgements
+C additional.tex 5. Additional Features of the Package
+F 5.0. NumberOfPClass2PGroups
+F 5.0. NumberOfPClass2PGroups
+F 5.0. NumberOfClass2LieAlgebras
+F 5.0. NumberOfClass2LieAlgbras

@@ -1,0 +1,7 @@
+LoadPackage("recog");
+ReadPackage("recog","examples/tensor.g");
+ri := RecogniseGroup(tsl2sl2);
+x := PseudoRandom(tsl2sl2);
+s := SLPforElement(ri,x);
+y := ResultOfStraightLineProgram(s,nicegens(ri));
+x=y;

@@ -3,7 +3,7 @@
 #W  smgrpfre.gi                 GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: smgrpfre.gi,v 4.43 2008/11/25 09:25:01 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  For the external representation see the file 'wordrep.gi'.
 ##
 Revision.smgrpfre_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: smgrpfre.gi,v 4.43 2008/11/25 09:25:01 gap Exp $";
 
 
 #############################################################################
@@ -351,11 +351,12 @@ InstallMethod( MagmaGeneratorsOfFamily,
                  i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
 
 # GeneratorsOfSemigroup returns the generators in ascending order
-
+    
 InstallMethod( GeneratorsSmallest,
         "for a free semigroup",
         [ IsFreeSemigroup ],
         GeneratorsOfSemigroup);
+
 
 #############################################################################
 ##

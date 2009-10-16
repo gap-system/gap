@@ -2,7 +2,7 @@
 ##
 #W  basis.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: basis.gi,v 4.71 2009/09/30 15:07:19 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for bases.
 ##
 Revision.basis_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: basis.gi,v 4.71 2009/09/30 15:07:19 gap Exp $";
 
 
 #############################################################################
@@ -730,11 +730,14 @@ end );
 #F  UglyVector( <V>, <r> )
 ##
 ##  A finite vector space can be handled via the mechanism of nice bases.
+##  We exclude the situation that all given generators are zero (and thus the
+##  vector space is trivial) because such a space should be handled be the
+##  mechanism that deals with nontrivial spaces caontaining it,
+##  for example in order to admit a consistent ordering of spaces via `\<'.
 ##
 InstallHandlingByNiceBasis( "IsGenericFiniteSpace", rec(
     detect:= function( R, gens, V, zero )
-      return    ( not IsMagma( V ) and IsFinite( R ) and IsFinite( gens ) )
-             or ForAll( gens, IsZero );
+      return not IsMagma( V ) and IsFinite( R ) and IsFinite( gens );
       end,
 
     NiceFreeLeftModuleInfo:= function( V )

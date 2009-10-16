@@ -1,0 +1,799 @@
+<html><head><title>[ACE] D Other ACE Options</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP00C.htm">Previous</a>] [<a href = "theindex.htm">Index</a>]
+<h1>D Other ACE Options</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP00D.htm#SECT001">Experimentation Options</a>
+<li> <A HREF="CHAP00D.htm#SECT002">Options that Modify a Presentation</a>
+<li> <A HREF="CHAP00D.htm#SECT003">Mode Options</a>
+<li> <A HREF="CHAP00D.htm#SECT004">Options that Interact with the Operating System</a>
+<li> <A HREF="CHAP00D.htm#SECT005">Query Options</a>
+<li> <A HREF="CHAP00D.htm#SECT006">Options that Modify the Coset Table</a>
+<li> <A HREF="CHAP00D.htm#SECT007">Options for Comments</a>
+</ol><p>
+<p>
+Here we list all the known <font face="Gill Sans,Helvetica,Arial">ACE</font> options not provided  earlier.  Most
+of the options provided here have  interactive  function  alternatives
+(each such alternative is noted at the end of the  section  describing
+the corresponding option  and  introduced  by  ``<strong>INTERACTIVELY</strong>,  use
+...''). A few options have only limited usefulness from <font face="Gill Sans,Helvetica,Arial">GAP</font>; many
+options, users will normally only wish to use if generating  an  input
+file,  by  using  the  option  <code>aceinfile</code>  (see&nbsp;<a href="CHAP004.htm#SSEC011.7">option  aceinfile</a>).
+However all  options  here  are  functional,  both  interactively  and
+non-interactively.
+<p>
+<p>
+<h2><a name="SECT001">D.1 Experimentation Options</a></h2>
+<p><p>
+<p>
+<dl compact>
+<p>
+<dt><a name = "SSEC001.1"></a>
+<dt><li><code>aep:=</code><var>val</var><code> <dd></code>
+Runs the enumeration for <code>a</code>ll <code>e</code>quivalent <code>p</code>resentations;
+<var>val</var> is in the integer range 1 to 7.
+<p>
+The <code>aep</code> option runs  an  enumeration  for  combinations  of  relator
+ordering, relator rotations, and relator inversions.
+<p>
+The argument <var>val</var> is considered as a binary number.  Its  three  bits
+are treated as flags, and control relator rotations (the  2<sup>0</sup>  bit),
+relator inversions (the 2<sup>1</sup> bit) and relator  orderings  (the  2<sup>2</sup>
+bit),  respectively;  where  1  means  ``active''  and   0   means
+``inactive''. (See below for an example).
+<p>
+The <code>aep</code> option first performs a ``priming run'' using the options as
+they stand. In particular,  the  <code>asis</code>  and  <code>messages</code>  options  are
+honoured.
+<p>
+It then turns <code>asis</code> on and <code>messages</code> off  (i.e.&nbsp;sets  <code>messages</code>  to
+0), and generates and tests the  requested  equivalent  presentations.
+The maximum and minimum values attained by <code>m</code> (the maximum number  of
+coset numbers defined at any stage) and <code>t</code> (the total number of coset
+numbers defined) are tracked, and each time a new ``record'' is found,
+the relators  used  and  the  summary  result  line  is  printed.  See
+Appendix&nbsp;<a href="CHAP00A.htm">The Meanings of ACE's output messages</a> for a  discussion  of
+the statistics <code>m</code> and <code>t</code>. To observe these messages either  set  the
+<code>InfoLevel</code> of <code>InfoACE</code> to 3 or non-interactively you can peruse  the
+<font face="Gill Sans,Helvetica,Arial">ACE</font> output file (see&nbsp;<a href="CHAP004.htm#SSEC011.8">option aceoutfile</a>).
+<p>
+Normally when a non-interactive <font face="Gill Sans,Helvetica,Arial">ACE</font> interface function  is  called,
+the option <code>start</code> (see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option start</a>), is quietly inserted after all
+the options provided by the user, to  initiate  a  coset  enumeration.
+Since the <code>aep</code> option invokes an enumeration, the quiet insertion  of
+the <code>start</code> option is neither needed nor done, when a  non-interactive
+<font face="Gill Sans,Helvetica,Arial">ACE</font> interface function is called with the <code>aep</code> option.
+<p>
+The order in which the  equivalent  presentations  are  generated  and
+tested has no particular significance, but note that the  presentation
+as given <strong>after</strong> the initial priming run) is the  <strong>last</strong>  presentation
+to be generated and tested, so that  the  group's  relators  are  left
+<code>unchanged</code> by running the <code>aep</code> option, (not that  a  non-interactive
+user cares).
+<p>
+As discussed by Cannon, Dimino, Havas  and  Watson  <a href="biblio.htm#CDHW73"><cite>CDHW73</cite></a>  and
+Havas and Ramsay <a href="biblio.htm#HR01"><cite>HR01</cite></a> such equivalent presentations  can  yield
+large variations in  the  number  of  coset  numbers  required  in  an
+enumeration. For this command, we are interested in this variation.
+<p>
+After  the  final  presentation  is  run,   some   additional   status
+information messages are printed to the <font face="Gill Sans,Helvetica,Arial">ACE</font> output file:
+<p>
+<ul>
+<p>
+<li>  the number of runs which yielded a finite index; 
+<p>
+<li>  the total number of runs (excluding the priming run); and 
+<p>
+<li>  the range of values observed for <code>m</code> and <code>t</code>.
+<p>
+</ul>
+<p>
+As an example (drawn from the discussion in <a href="biblio.htm#HR99a"><cite>HR99a</cite></a>) consider the
+enumeration   of   the   448   coset   numbers   of   the   subgroup
+<font face="symbol">á</font><i>a</i><sup>2</sup>,<i>a</i><sup><font face="symbol">-</font>1</sup><i>b</i> <font face="symbol">ñ</font> of the group
+<br clear="all" /><table border="0" width="100%"><tr><td><table align="center"><tr><td nowrap="nowrap" align="center"> (8,7  | 2,3) = <font face="symbol">á</font><i>a</i>,<i>b</i>  | <i>a</i><sup>8</sup> = <i>b</i><sup>7</sup> = (<i>ab</i>)<sup>2</sup> = (<i>a</i><sup><font face="symbol">-</font>1</sup><i>b</i>)<sup>3</sup> = 1 <font face="symbol">ñ</font>&#183;</td></tr></table></td></tr></table>
+There are 4!=24  relator  orderings  and  2<sup>4</sup>=16  combinations  of
+relator or inverted relator. Exponents are  taken  into  account  when
+rotating relators, so the relators given give rise to 1, 1,  2  and  2
+rotations respectively, for a total of 1&#183;1&#183;2&#183;2=4  combinations.  So,
+for  <code>aep</code>  =  7   (resp.&nbsp;3),   24&#183;16&#183;4=1536   (resp.&nbsp;16&#183;4=64)
+equivalent presentations are tested.
+<p>
+<strong>Notes:</strong>
+There is no way to stop the <code>aep</code>  option  before  it  has  completed,
+other than killing the task. So do a reality check beforehand  on  the
+size of the search space and the time for each enumeration. If you are
+interested in finding a ``good'' enumeration, it can be very  helpful,
+in terms of running time, to put a tight limit on the number of  coset
+numbers via the <code>max</code> option. You may also have to set <code>compaction</code>  =
+100  to  prevent  time-wasting  attempts  to   recover   space   via
+compaction.  This  maximises  throughput  by   causing   the   ``bad''
+enumerations, which are in  the  majority,  to  overflow  quickly  and
+abort. If you wish to explore  a  very  large  search-space,  consider
+firing up many copies of <font face="Gill Sans,Helvetica,Arial">ACE</font>, and starting each with  a  ``random''
+equivalent  presentation.  Alternatively,  you  could  use  the  <code>rep</code>
+command.
+<p>
+<strong>INTERACTIVELY</strong>,            use             <code>ACEAllEquivPresentations</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC004.1">ACEAllEquivPresentations</a>).
+<p>
+<a name = "SSEC001.2"></a>
+<dt><li><code>rep:=</code><var>val</var><code></code>
+<dt><dt><li><code>rep:= [</code><var>val</var><code>, </code><var>Npresentations</var><code>] <dd></code>
+Run the enumeration for <code>r</code>andom <code>e</code>quivalent <code>p</code>resentations;
+<var>val</var> is in the integer range 1 to 7;
+<var>Npresentations</var> must be a positive integer.
+<p>
+The <code>rep</code> (random equivalent  presentations)  option  complements  the
+<code>aep</code>  option.  It  generates  and  tests   some   random   equivalent
+presentations. The argument <var>val</var>  acts  as  for  <code>aep</code>.  It  is  also
+possible to set the number <var>Npresentations</var>  of  random  presentations
+used (by default, eight  are  used),  by  using  the  extended  syntax
+<code>rep:=[</code><var>val</var><code>,</code><var>Npresentations</var><code>]</code>.
+<p>
+The routine first  turns  <code>asis</code>  on  and  <code>messages</code>  off  (i.e.&nbsp;sets
+<code>messages</code> to 0), and then generates and tests the requested number of
+random equivalent presentations. For each presentation,  the  relators
+used and the  summary  result  line  are  printed.  To  observe  these
+messages either set the <code>InfoLevel</code> of <code>InfoACE</code>  to  at  least  3  or
+non-interactively you can peruse the <font face="Gill Sans,Helvetica,Arial">ACE</font> output  file  (see&nbsp;<a href="CHAP004.htm#SSEC011.8">option aceoutfile</a>).
+<p>
+Normally when a non-interactive <font face="Gill Sans,Helvetica,Arial">ACE</font> interface function  is  called,
+the option <code>start</code> (see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option start</a>), is quietly inserted after all
+the options provided by the user, to  initiate  a  coset  enumeration.
+Since the <code>rep</code> option invokes an enumeration, the quiet insertion  of
+the <code>start</code> option is neither needed nor done, when a  non-interactive
+<font face="Gill Sans,Helvetica,Arial">ACE</font> interface function is called with the <code>rep</code> option.
+<p>
+<strong>Notes:</strong>
+The relator inversions and rotations  are  ``genuinely''  random.  The
+relator permuting is a little bit of a kludge, with the ``quality'' of
+the permutations tending to  improve  with  successive  presentations.
+When the <code>rep</code> command  completes,  the  presentation  active  is  the
+<strong>last</strong> one generated, (not that the non-interactive user cares).
+<p>
+<strong>Guru Notes:</strong>
+It might appear that neglecting to restore the  original  presentation
+is an error. In fact, it is a useful feature! Suppose that  the  space
+of equivalent presentations is too  large  to  exhaustively  test.  As
+noted in the entry for <code>aep</code>, we can start up multiple copies of <code>aep</code>
+at random points in the  search-space.  Manually  generating  <code>random</code>
+equivalent presentations to serve as starting-points  is  tedious  and
+error-prone. The <code>rep</code> option provides a simple solution;  simply  run
+<code>rep := 7</code> before <code>aep := 7</code>.
+<p>
+<strong>INTERACTIVELY</strong>,           use           <code>ACERandomEquivPresentations</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC004.2">ACERandomEquivPresentations</a>).
+<p>
+</dl>
+<p>
+<p>
+<h2><a name="SECT002">D.2 Options that Modify a Presentation</a></h2>
+<p><p>
+<p>
+<dl compact>
+<p>
+<dt><a name = "SSEC002.1"></a>
+<dt><li><code>group:=</code><var>grpgens</var><code> <dd></code>
+Defines the <code>group</code> generators; <var>grpgens</var> should be an  integer  (that
+is the number of generators) or a string that is the concatenation of,
+or a list of, single-lowercase-letter group generator  names,  i.e.&nbsp;it
+should be in a form suitable  for  the  <font face="Gill Sans,Helvetica,Arial">ACE</font>  binary  to  interpret.
+(Shortest abbreviation: <code>gr</code>.)
+<p>
+The group generators should normally be input as one of the  arguments
+of an <font face="Gill Sans,Helvetica,Arial">ACE</font> interface function, though this option may be useful when
+<code>ACEStart</code> (see&nbsp;<a href="CHAP006.htm#SSEC001.1">ACEStart</a>) is called with the single argument 0. This
+option may also be useful for re-using an interactive  process  for  a
+new enumeration, rather than using <code>ACEQuit</code> to kill the  process  and
+<code>ACEStart</code> to initiate a new process.  If  the  generators  each  have
+names that as strings are single lowercase letters, those same strings
+are used to represent the same generators by <font face="Gill Sans,Helvetica,Arial">ACE</font>; otherwise, <font face="Gill Sans,Helvetica,Arial">ACE</font>
+will represent each generator by  an  integer,  numbered  sequentially
+from 1.
+<p>
+To convert a <font face="Gill Sans,Helvetica,Arial">GAP</font> list <var>fgens</var> of free group generators into a  form
+suitable   for   the   <code>group</code>   option,   use    the    construction:
+<code>ToACEGroupGenerators(</code><var>fgens</var><code>)</code>  (see&nbsp;<a href="CHAP006.htm#SSEC003.5">ToACEGroupGenerators</a>).  It  is
+<strong>strongly recommended</strong> that users  of  the  <code>group</code>  option  use  this
+construction.
+<p>
+<strong>Notes:</strong>
+Any use of the  <code>group</code>  command  which  actually  defines  generators
+invalidates any previous enumeration, and stays in  effect  until  the
+next <code>group</code> command. Any words for the  group  or  subgroup  must  be
+entered using the nominated generator format, and  all  printout  will
+use this format. A valid set of generators is the minimum  information
+necessary before <font face="Gill Sans,Helvetica,Arial">ACE</font> will attempt an enumeration.
+<p>
+<strong>Guru Notes:</strong>
+The columns of the coset table are allocated in the same order as  the
+generators are listed, insofar as this is  possible,  given  that  the
+first two columns must be  a  generator/inverse  pair  or  a  pair  of
+involutions. The ordering of the columns can, in  some  cases,  affect
+the definition sequence of cosets and  impact  the  statistics  of  an
+enumeration.
+<p>
+<dt><a name = "SSEC002.2"></a>
+<dt><li><code>relators:=</code><var>relators</var><code> <dd></code>
+Defines the group <code>relators</code>; <var>relators</var> must be a string or  list  of
+strings that the <font face="Gill Sans,Helvetica,Arial">ACE</font> binary can interpret as  words  in  the  group
+generators. (Shortest abbreviation: <code>rel</code>.)
+<p>
+The group relators should normally be input as one of the arguments of
+an <font face="Gill Sans,Helvetica,Arial">ACE</font> interface function, but  this  option  may  occasionally  be
+useful with interactive processes (see&nbsp;<a href="CHAP00D.htm#SSEC002.1">option group</a>). If  <var>wordList</var>
+is an empty list, the group is free.
+<p>
+To convert a  <font face="Gill Sans,Helvetica,Arial">GAP</font>  list  <var>rels</var>  of  relators  in  the  free  group
+generators <var>fgens</var> into a form suitable for the <code>relators</code> option, use
+the construction: <code>ToACEWords(</code><var>fgens</var><code>, </code><var>rels</var><code>)</code> (see&nbsp;<a href="CHAP006.htm#SSEC003.6">ToACEWords</a>).
+<p>
+<dt><a name = "SSEC002.3"></a>
+<dt><li><code>generators:=</code><var>subgens</var><code> <dd></code>
+Defines the subgroup <code>generators</code>; <var>subgens</var> must be a string or  list
+of strings that the <font face="Gill Sans,Helvetica,Arial">ACE</font> binary can interpret as words in the  group
+generators. (Shortest abbreviation: <code>gen</code>.)
+<p>
+The subgroup generators  should  normally  be  input  as  one  of  the
+arguments of  an  <font face="Gill Sans,Helvetica,Arial">ACE</font>  interface  function,  but  this  option  may
+occasionally  be  useful  with  interactive   processes   (see&nbsp;<a href="CHAP00D.htm#SSEC002.1">option group</a>). By default, there are no subgroup generators and the subgroup
+is trivial. This command allows a list of subgroup generating words to
+be entered.
+<p>
+To convert a <font face="Gill Sans,Helvetica,Arial">GAP</font> list <var>sgens</var> of subgroup generators  in  the  free
+group generators <var>fgens</var> into a form  suitable  for  the  <code>generators</code>
+option,   use   the   construction:   <code>ToACEWords(</code><var>fgens</var><code>,   </code><var>sgens</var><code>)</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC003.6">ToACEWords</a>).
+<p>
+<dt><a name = "SSEC002.4"></a>
+<dt><li><code>sg:=</code><var>subgens</var><code> <dd></code>
+Adds the words in <var>subgens</var> to  any  <code>s</code>ubgroup  <code>g</code>enerators  already
+present; <var>subgens</var> must be a string or list of strings that the <font face="Gill Sans,Helvetica,Arial">ACE</font>
+binary can interpret as words in the group generators.
+<p>
+The enumeration must  be  (re)<code>start</code>ed  or  <code>redo</code>ne,  it  cannot  be
+<code>continu</code>ed.
+<p>
+To convert a <font face="Gill Sans,Helvetica,Arial">GAP</font> list <var>sgens</var> of subgroup generators  in  the  free
+group generators <var>fgens</var> into a form  suitable  for  the  <code>generators</code>
+option,   use   the   construction:   <code>ToACEWords(</code><var>fgens</var><code>,   </code><var>sgens</var><code>)</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC003.6">ToACEWords</a>).
+<p>
+<strong>INTERACTIVELY</strong>,            use             <code>ACEAddSubgroupGenerators</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC007.4">ACEAddSubgroupGenerators</a>).
+<p>
+<dt><a name = "SSEC002.5"></a>
+<dt><li><code>rl:=</code><var>relators</var><code> <dd></code>
+Appends the <code>r</code>elator  <code>l</code>ist  <var>relators</var>  to  the  existing  list  of
+relators present; <var>relators</var> must be a string or list of strings  that
+the <font face="Gill Sans,Helvetica,Arial">ACE</font> binary can interpret as words in the group generators.
+<p>
+The enumeration must  be  (re)<code>start</code>ed  or  <code>redo</code>ne,  it  cannot  be
+<code>continu</code>ed.
+<p>
+To convert a  <font face="Gill Sans,Helvetica,Arial">GAP</font>  list  <var>rels</var>  of  relators  in  the  free  group
+generators <var>fgens</var> into a form suitable for the <code>rl</code> option,  use  the
+construction: <code>ToACEWords(</code><var>fgens</var><code>, </code><var>rels</var><code>)</code> (see&nbsp;<a href="CHAP006.htm#SSEC003.6">ToACEWords</a>).
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEAddRelators</code> (see&nbsp;<a href="CHAP006.htm#SSEC007.3">ACEAddRelators</a>).
+<p>
+<dt><a name = "SSEC002.6"></a>
+<dt><li><code>ds:=</code><var>list</var><code> <dd></code>
+<code>D</code>eletes <code>s</code>ubgroup generators; <var>list</var> must be  a  list  of  positive
+integers.
+<p>
+This command  allows  subgroup  generators  to  be  deleted  from  the
+presentation. If the generators are numbered from 1 in the output  of,
+say, the <code>sr</code> command (see&nbsp;<a href="CHAP00D.htm#SSEC005.7">option sr</a>), then the generators listed in
+<code></code><var>list</var><code></code> are deleted; <code></code><var>list</var><code></code> must be a strictly increasing sequence.
+<p>
+<strong>INTERACTIVELY</strong>,           use           <code>ACEDeleteSubgroupGenerators</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC007.6">ACEDeleteSubgroupGenerators</a>).
+<p>
+<dt><a name = "SSEC002.7"></a>
+<dt><li><code>dr:=</code><var>list</var><code> <dd></code>
+<code>D</code>eletes relators; <var>list</var> must be a list of positive integers.
+<p>
+This  command  allows  group  relators  to   be   deleted   from   the
+presentation. If the relators are numbered from 1 in  the  output  of,
+say, the <code>sr</code> command (see&nbsp;<a href="CHAP00D.htm#SSEC005.7">option sr</a>), then the relators  listed  in
+<code></code><var>list</var><code></code> are deleted; <code></code><var>list</var><code></code> must be a strictly increasing sequence.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEDeleteRelators</code> (see&nbsp;<a href="CHAP006.htm#SSEC007.5">ACEDeleteRelators</a>).
+<p>
+<dt><a name = "SSEC002.8"></a>
+<dt><li><code>cc:=</code><var>val</var><code> <dd></code>
+Makes <code>c</code>oset <var>val</var>  <code>c</code>oincide  with  coset  1;  <var>val</var>  should  be  a
+positive integer.
+<p>
+Prints out the representative of coset <code></code><var>val</var><code></code>, and  adds  it  to  the
+subgroup generators; i.e., forces coset <code></code><var>val</var><code></code> to coincide with coset
+1, the subgroup.
+<p>
+<strong>INTERACTIVELY</strong>,               use               <code>ACECosetCoincidence</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC007.7">ACECosetCoincidence</a>).
+<p>
+<a name = "SSEC002.9"></a>
+<dt><li><code>rc:=</code><var>val</var><code></code>
+<dt><li><code>rc:= [</code><var>val</var><code>]</code>
+<dt><dt><li><code>rc:= [</code><var>val</var><code>, </code><var>attempts</var><code>] <dd></code>
+Enforce <code>r</code>andom <code>c</code>oincidences; <var>val</var> and <var>attempts</var> must be positive
+integers.
+<p>
+This option attempts upto <var>attempts</var> (or,  in  the  first  and  second
+forms, 8) times to find nontrivial subgroups with index a multiple  of
+<var>val</var> by repeatedly making random coset numbers coincident with  coset
+1 and seeing what happens. The starting coset table must be non-empty,
+but should not be complete. For each attempt, we repeatedly add random
+coset representatives to the subgroup and <code>redo</code> the  enumeration.  If
+the table becomes too small, the  attempt  is  aborted,  the  original
+subgroup generators restored, and another attempt made. If an  attempt
+succeeds, then the new set of subgroup generators is retained.
+<p>
+<strong>Guru Notes:</strong>
+A coset number can have many different coset representatives. Consider
+running <code>standard</code> before <code>rc</code>, to canonicise the table and hence  the
+coset representatives.
+<p>
+<strong>INTERACTIVELY</strong>,              use              <code>ACERandomCoincidences</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC007.8">ACERandomCoincidences</a>).
+<p>
+</dl>
+<p>
+<p>
+<h2><a name="SECT003">D.3 Mode Options</a></h2>
+<p><p>
+<p>
+<dl compact>
+<p>
+<dt><a name = "SSEC003.1"></a>
+<dt><li><code>mode <dd></code>
+Prints the possible enumeration <code>mode</code>s.
+(Shortest abbreviation: <code>mo</code>.)
+<p>
+Prints the possible  enumeration  <code>mode</code>s  (i.e.&nbsp;which  of  <code>continu</code>,
+<code>redo</code> or <code>start</code> are possible (see&nbsp;<a href="CHAP00D.htm#SSEC003.4">option  continu</a>,  <a href="CHAP00D.htm#SSEC003.3">option  redo</a>
+and <a href="CHAP00D.htm#SSEC003.2">option start</a>).
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEModes</code> (see&nbsp;<a href="CHAP006.htm#SSEC002.1">ACEModes</a>).
+<p>
+<a name = "SSEC003.2"></a>
+<dt><li><code>begin</code>
+<dt><a name = "SSEC003.2"></a>
+<dt><li><code>start <dd></code>
+Start an enumeration. (Shortest abbreviation of <code>begin</code> is <code>beg</code>.)
+<p>
+Any existing information in the table is cleared, and the  enumeration
+starts from coset 1 (i.e., the subgroup).
+<p>
+Normally when a non-interactive <font face="Gill Sans,Helvetica,Arial">ACE</font> interface function  is  called,
+the option <code>start</code> (see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option start</a>), is quietly inserted after all
+the options provided by the user, to  initiate  a  coset  enumeration;
+however, this is not done, if the user  herself  supplies  either  the
+<code>begin</code> or <code>start</code> option.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEStart</code> (see&nbsp;<a href="CHAP006.htm#SSEC001.1">ACEStart</a>).
+<p>
+<a name = "SSEC003.3"></a>
+<dt><li><code>check</code>
+<dt><a name = "SSEC003.3"></a>
+<dt><li><code>redo <dd></code>
+<code>Redo</code> an extant enumeration, using the current parameters.
+<p>
+As opposed to <code>start</code> (see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option start</a>), which clears  an  existing
+coset table, any existing information in the table  is  retained,  and
+the enumeration is restarted from coset 1 (i.e., the subgroup).
+<p>
+<strong>Notes:</strong>
+This option is really intended for the case where additional  relators
+(option <code>rl</code>; see&nbsp;<a href="CHAP00D.htm#SSEC002.5">option  rl</a>)  and/or  subgroup  generators  (option
+<code>sg</code>; see&nbsp;<a href="CHAP00D.htm#SSEC002.4">option sg</a>) have been introduced. The current table,  which
+may be incomplete  or  exhibit  a  finite  index,  is  still  <strong>valid</strong>.
+However, the additional data may allow the enumeration to complete, or
+cause a collapse to a smaller index.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACERedo</code> (see&nbsp;<a href="CHAP006.htm#SSEC002.3">ACERedo</a>).
+<p>
+<a name = "I0"></a>
+
+<dt><a name = "SSEC003.4"></a>
+<dt><li><code>continu <dd></code>
+<code>Continu</code>es the current enumeration, building upon the existing table.
+(Shortest abbreviation: <code>cont</code>.)
+<p>
+If a previous run stopped without producing a finite index you can, in
+principle, change any of the parameters and <code>continu</code>e on. Of  course,
+if you make any changes which invalidate the current table, you  won't
+be allowed to <code>continue</code>,  although  you  may  be  allowed  to  <code>redo</code>
+(see&nbsp;<a href="CHAP00D.htm#SSEC003.3">option redo</a>). If <code>redo</code> is not  allowed,  you  must  re-<code>start</code>
+(see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option start</a>).
+<p>
+<strong>Note:</strong> The <font face="Gill Sans,Helvetica,Arial">ACE</font> standalone allows the option <code>continue</code>,  but  this
+is (as of <font face="Gill Sans,Helvetica,Arial">GAP</font> 4.3) a <font face="Gill Sans,Helvetica,Arial">GAP</font> keyword, and so <font face="Gill Sans,Helvetica,Arial">GAP</font> users  must  use
+(mixed-case abbreviations of) <code>continu</code>.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEContinue</code> (see&nbsp;<a href="CHAP006.htm#SSEC002.2">ACEContinue</a>).
+<p>
+</dl>
+<p>
+<p>
+<h2><a name="SECT004">D.4 Options that Interact with the Operating System</a></h2>
+<p><p>
+<p>
+<dl compact>
+<p>
+<a name = "SSEC004.1"></a>
+<dt><li><code>ai</code>
+<dt><dt><li><code>ai:=</code><var>filename</var><code> <dd></code>
+<code>A</code>lter <code>i</code>nput to standard input or <var>filename</var>; <var>filename</var> must be  a
+string.
+<p>
+By default, commands to <font face="Gill Sans,Helvetica,Arial">ACE</font> are read from standard input (i.e., the
+keyboard). With no value <code>ai</code> causes <font face="Gill Sans,Helvetica,Arial">ACE</font> to revert to reading  from
+standard input; otherwise, the <code>ai</code> command closes the  current  input
+file,  and  opens  <code></code><var>filename</var><code></code>  as  the  source   of   commands.   If
+<code></code><var>filename</var><code></code> can't be opened, input reverts to standard input.
+<p>
+<strong>Notes:</strong>
+If you switch to taking input from (another) file, remember to  switch
+back before the end of that file; otherwise the <code>EOF</code> there will cause
+<font face="Gill Sans,Helvetica,Arial">ACE</font> to terminate.
+<p>
+<a name = "SSEC004.2"></a>
+<dt><li><code>bye</code>
+<a name = "SSEC004.2"></a>
+<dt><li><code>exit</code>
+<dt><a name = "SSEC004.2"></a>
+<dt><li><code>qui <dd></code>
+Quit <font face="Gill Sans,Helvetica,Arial">ACE</font>. (Shortest abbreviation of <code>qui</code> is <code>q</code>.)
+<p>
+This quits <font face="Gill Sans,Helvetica,Arial">ACE</font> nicely, printing the date and  the  time.  An  <code>EOF</code>
+(end-of-file;  i.e.,  <code>^d</code>)  has  the  same   effect,   so   proper
+termination occurs if <font face="Gill Sans,Helvetica,Arial">ACE</font> is taking its input from a script file.
+<p>
+Note  that  <code>qui</code>  actually  abbreviates  the   corresponding   <font face="Gill Sans,Helvetica,Arial">ACE</font>
+directive <code>quit</code>, but since <code>quit</code> is  a  <font face="Gill Sans,Helvetica,Arial">GAP</font>  keyword  it  is  not
+available via the <font face="Gill Sans,Helvetica,Arial">GAP</font> interface to <font face="Gill Sans,Helvetica,Arial">ACE</font>.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEQuit</code> (see&nbsp;<a href="CHAP006.htm#SSEC001.2">ACEQuit</a>).
+<p>
+<dt><a name = "SSEC004.3"></a>
+<dt><li><code>system:=</code><var>string</var><code> <dd></code>
+Does a shell escape, to execute <var>string</var>; <var>string</var> must be a string.
+(Shortest abbreviation: <code>sys</code>.)
+<p>
+Since <font face="Gill Sans,Helvetica,Arial">GAP</font> already provides <code>Exec()</code> for this purpose,  this  option
+is unlikely to have a use.
+<p>
+</dl>
+<p>
+<p>
+<h2><a name="SECT005">D.5 Query Options</a></h2>
+<p><p>
+<p>
+<dl compact>
+<p>
+<dt><a name = "SSEC005.1"></a>
+<dt><li><code>cycles <dd></code>
+Prints out the table in <code>cycles</code>. (Shortest abbreviation: <code>cy</code>.)
+<p>
+This option prints out the permutation representation.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACECycles</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.16">ACECycles</a>).
+<p>
+<a name = "SSEC005.2"></a>
+<dt><li><code>dump</code>
+<dt><li><code>dump:=</code><var>level</var><code></code>
+<dt><li><code>dump:= [</code><var>level</var><code>]</code>
+<dt><dt><li><code>dump:= [</code><var>level</var><code>, </code><var>detail</var><code>] <dd></code>
+<code>Dump</code> the internal variables of <font face="Gill Sans,Helvetica,Arial">ACE</font>; <var>level</var> must be an integer in
+the range 0 to 2, and <var>detail</var> must be 0 or 1.
+(Shortest abbreviation: <code>d</code>.)
+<p>
+The value of <var>level</var> determines which of the three levels of <font face="Gill Sans,Helvetica,Arial">ACE</font> to
+dump. (You will need to read the standalone manual  <code>acce3001.dvi</code>  in
+the <code>standalone-doc</code> directory to understand what Levels 0,  1  and  2
+are all about.) The value of <var>detail</var> determines the amount of  detail
+(<code></code><var>detail</var><code> = 0</code> means less detail). The first form (with no arguments)
+selects <code></code><var>level</var><code> = 0, </code><var>detail</var><code> = 0</code>. The second form of  this  command
+makes <code></code><var>detail</var><code> = 0</code>. This option is intended for  gurus;  the  source
+code should be consulted to see what the output means.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEDumpVariables</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.23">ACEDumpVariables</a>).
+<p>
+<dt><a name = "SSEC005.3"></a>
+<dt><li><code>help <dd></code>
+Prints the <font face="Gill Sans,Helvetica,Arial">ACE</font> help screen. (Shortest abbreviation: <code>h</code>.)
+<p>
+This option prints the list of options of the <font face="Gill Sans,Helvetica,Arial">ACE</font> binary. Note that
+this list is longer than a standard screenful.
+<p>
+<a name = "SSEC005.4"></a>
+<dt><li><code>nc</code>
+<dt><li><code>nc:=</code><var>val</var><code></code>
+<a name = "SSEC005.4"></a>
+<dt><li><code>normal</code>
+<dt><dt><li><code>normal:=</code><var>val</var><code> <dd></code>
+Check or attempt to enforce normal closure; <var>val</var> must be 0 or 1.
+<p>
+This option tests the subgroup for normal closure within the group. If
+a conjugate of a subgroup generator by a generator, is  determined  to
+belong to a coset other than coset 1, it is printed out, and if <code></code><var>val</var><code>
+=  1</code>,  then  any  such  conjugate  is  also  added  to  the  subgroup
+generators. With no argument or if <code></code><var>val</var><code> = 0</code>, <font face="Gill Sans,Helvetica,Arial">ACE</font>  does  not  add
+any new subgroup generators.
+<p>
+<strong>Notes:</strong>
+The method of determination of  whether  a  conjugate  of  a  subgroup
+generator is in the subgroup, is by testing whether it can  be  traced
+from coset 1 to coset 1  (see  <code>trace</code>:&nbsp;<a href="CHAP00D.htm#SSEC005.12">option trace</a>).
+<p>
+The resultant subgroup need not be  normally  closed  after  executing
+option <code>nc</code>  with  the  value  1.  It  is  still  possible  that  some
+conjugates of the newly added subgroup generators will not be elements
+of the subgroup.
+<p>
+<strong>INTERACTIVELY</strong>,      use      <code>ACEConjugatesForSubgroupNormalClosure</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC007.10">ACEConjugatesForSubgroupNormalClosure</a>).
+<p>
+<dt><a name = "SSEC005.5"></a>
+<dt><li><code>options <dd></code>
+Dumps version information of the <font face="Gill Sans,Helvetica,Arial">ACE</font> binary.
+(Shortest abbreviation: <code>opt</code>.)
+<p>
+A rather unfortunate name for an option; this command dumps details of
+the ``options'' included in the version  of  <font face="Gill Sans,Helvetica,Arial">ACE</font>  when  the  <font face="Gill Sans,Helvetica,Arial">ACE</font>
+binary was compiled.
+<p>
+A typical output, is as follows:
+<p>
+<pre>
+Executable built:
+  Sat Feb 27 15:57:59 EST 1999
+Level 0 options:
+  statistics package = on
+  coinc processing messages = on
+  dedn processing messages = on
+Level 1 options:
+  workspace multipliers = decimal
+Level 2 options:
+  host info = on
+</pre>
+<p>
+<strong>INTERACTIVELY</strong>    and    non-interactively,    use    the     command
+<code>ACEBinaryVersion();</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.25">ACEBinaryVersion</a>) for  this  information,
+instead, unless you want it in an <font face="Gill Sans,Helvetica,Arial">ACE</font> standalone input file.
+<p>
+<a name = "SSEC005.6"></a>
+<dt><li><code>oo:=</code><var>val</var><code></code>
+<dt><a name = "SSEC005.6"></a>
+<dt><li><code>order:=</code><var>val</var><code> <dd></code>
+Print a coset representative of a coset number with order  a  multiple
+of <var>val</var> modulo the subgroup; <var>val</var> must be an integer.
+<p>
+This option finds a coset with order a multiple  of  <code>|</code><var>val</var><code>|</code>  modulo
+the subgroup, and prints out its coset representative.  If  <code></code><var>val</var><code>  &lt;
+0</code>, then all coset numbers meeting the  requirement  are  printed.  If
+<code></code><var>val</var><code> &gt; 0</code>, then just the first coset number meeting the  requirement
+is printed. Also, <code></code><var>val</var><code> = 0</code> is permitted; this special value effects
+the printing of the orders (modulo the subgroup) of all coset numbers.
+<p>
+<strong>INTERACTIVELY</strong>,  use  <code>ACEOrders</code>  (see&nbsp;<a href="CHAP006.htm#SSEC005.18">ACEOrders</a>),  for  the  case
+<code></code><var>val</var><code> = 0</code>, or <code>ACEOrder</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.19">ACEOrder</a>), otherwise.
+<p>
+<a name = "SSEC005.7"></a>
+<dt><li><code>sr</code>
+<dt><dt><li><code>sr:=</code><var>val</var><code> <dd></code>
+Print out parameters of the current presentation;  <var>val</var>  must  be  an
+integer in the range 0 to 5.
+<p>
+No argument, or <code></code><var>val</var><code> = 0</code>, prints out the <code>Group Name</code>, the  group's
+<code>relators</code>, <code>Subgroup Name</code> and the subgroup's <code>generators</code>. If <code></code><var>val</var><code>
+= 1</code>, then the <code>Group Generators</code> and the current setting of the ``run
+parameters'' is also  printed.  The  printout  is  the  same  as  that
+produced at the start of a run  when  option  <code>messages</code>  (see&nbsp;<a href="CHAP004.htm#SSEC018.1">option messages</a>) is non-zero. Also, <var>val</var> equal to 2, 3, 4, or 5  print  out
+just the <code>Group Name</code>, just the group's <code>relators</code>, just the <code>Subgroup
+Name</code>, or just the subgroup's <code>generators</code>, respectively.
+<p>
+<strong>Notes:</strong>
+The <code>sr</code> option should  only  be  used  <strong>after</strong>  an  enumeration  run;
+otherwise, the value 0 for some options will be unreliable. To  ensure
+this occurs non-interactively, ensure one of the options that  invokes
+an enumeration: <code>start</code> (see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option  start</a>)  or  <code>aep</code>  (see&nbsp;<a href="CHAP00D.htm#SSEC001.1">option aep</a>) or <code>rep</code> (see&nbsp;<a href="CHAP00D.htm#SSEC001.2">option rep</a>), precedes the <code>sr</code> option. (When  an
+enumeration-invoking option is included  non-interactively  the  quiet
+inclusion step of the <code>start</code> option is omitted.)
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEGroupGenerators</code>  (see&nbsp;<a href="CHAP006.htm#SSEC005.1">ACEGroupGenerators</a>),
+<code>ACERelators</code>   (see&nbsp;<a href="CHAP006.htm#SSEC005.2">ACERelators</a>),   <code>ACESubgroupGenerators</code>    (see
+<a href="CHAP006.htm#SSEC005.3">ACESubgroupGenerators</a>), and <code>ACEParameters</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.10">ACEParameters</a>).
+<p>
+<a name = "SSEC005.8"></a>
+<dt><li><code>print</code>
+<dt><li><code>print:=</code><var>val</var><code></code>
+<dt><li><code>print:= [</code><var>val</var><code>]</code>
+<dt><li><code>print:= [</code><var>val</var><code>, </code><var>last</var><code>]</code>
+<dt><dt><li><code>print:= [</code><var>val</var><code>, </code><var>last</var><code>, </code><var>by</var><code>] <dd></code>
+Compact and print the coset table;  <var>val</var>  must  be  an  integer,  and
+<var>last</var> and <var>by</var> must be positive integers.
+(Shortest abbreviation: <code>pr</code>.)
+<p>
+In the first (no value) form, <code>print</code> prints the entire  coset  table,
+without orders or coset  representatives.  In  the  second  and  third
+forms, the absolute value of <var>val</var> is taken to be the last line of the
+table to be printed (and 1 is taken to be the first);  in  the  fourth
+and fifth forms, <code>|</code><var>val</var><code>|</code> is taken to be the first line of the  table
+to be printed, and <var>last</var> is taken to be the number of the  last  line
+to be printed. In the last  form,  the  table  is  printed  from  line
+<code>|</code><var>val</var><code>|</code> to line <var>last</var> in steps of <var>by</var>. If <var>val</var> is negative,  then
+the  orders   modulo   the   subgroup   (if   available)   and   coset
+representatives are printed also.
+<p>
+<strong>INTERACTIVELY</strong>,              use               <code>ACEDisplayCosetTable</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC005.12">ACEDisplayCosetTable</a>).
+<p>
+<a name = "SSEC005.9"></a>
+<dt><li><code>sc:=</code><var>val</var><code></code>
+<dt><a name = "SSEC005.9"></a>
+<dt><li><code>stabilising:=</code><var>val</var><code> <dd></code>
+Print out the coset numbers whose elements normalise the subgroup; 
+<var>val</var> must be an integer.
+(Shortest abbreviation of <code>stabilising</code> is <code>stabil</code>.)
+<p>
+If <code></code><var>val</var><code> &gt; 0</code>, the first <code></code><var>val</var><code></code> non-trivial (i.e.&nbsp;other  than  coset
+1) coset numbers whose elements normalise the subgroup are printed. If
+<code></code><var>val</var><code> = 0</code>, all non-trivial coset numbers  whose  elements  normalise
+the subgroup, plus their representatives, are printed.  If  <code></code><var>val</var><code>  &lt;
+0</code>, the first  <code>|</code><var>val</var><code>|</code>  non-trivial  coset  numbers  whose  elements
+normalise the subgroup, plus their representatives, are printed.
+<p>
+<strong>Note:</strong>
+The name of this option is an historical hangover. It is named for the
+property that elements that ``normalise'' a subgroup, may be  said  to
+``stabilise'' that subgroup when they act  ``by  conjugation''.  Also,
+the option <code>normal</code> (see&nbsp;<a href="CHAP00D.htm#SSEC005.4">option normal</a>) already performs a different
+function.
+<p>
+<strong>INTERACTIVELY</strong>,         use          <code>ACECosetsThatNormaliseSubgroup</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC005.21">ACECosetsThatNormaliseSubgroup</a>).
+<p>
+<a name = "SSEC005.10"></a>
+<dt><li><code>statistics</code>
+<dt><a name = "SSEC005.10"></a>
+<dt><li><code>stats <dd></code>
+Dump enumeration statistics.
+(Shortest abbreviation of <code>statistics</code> is <code>stat</code>.)
+<p>
+If the statistics package is compiled into the <font face="Gill Sans,Helvetica,Arial">ACE</font> code,  which  it
+is by default (see the <code>options</code>&nbsp;<a href="CHAP00D.htm#SSEC005.5">option options</a> option),  then  this
+option  dumps  the  statistics  accumulated  during  the  most  recent
+enumeration. See the <code>enum.c</code> source  file  for  the  meaning  of  the
+variables.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEDumpStatistics</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.24">ACEDumpStatistics</a>).
+<p>
+<dt><a name = "SSEC005.11"></a>
+<dt><li><code>style <dd></code>
+Prints the current enumeration style.
+<p>
+This option prints the current enumeration style, as deduced from  the
+current <code>ct</code> and <code>rt</code> parameters (see&nbsp;<a href="CHAP003.htm#SECT001">Enumeration Style</a>).
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACEStyle</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.22">ACEStyle</a>).
+<p>
+<a name = "SSEC005.12"></a>
+<dt><li><code>tw:= [</code><var>val</var><code>, </code><var>word</var><code>]</code>
+<dt><a name = "SSEC005.12"></a>
+<dt><li><code>trace:= [</code><var>val</var><code>, </code><var>word</var><code>] <dd></code>
+Trace <code></code><var>word</var><code></code> through the coset table,  starting  at  coset  <code></code><var>val</var><code></code>;
+<var>val</var> must be a positive integer, and <var>word</var> must be  a  word  in  the
+group generators.
+<p>
+This option prints the final coset number of the trace, if  the  trace
+completes.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACETraceWord</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.17">ACETraceWord</a>).
+<p>
+</dl>
+<p>
+<p>
+<h2><a name="SECT006">D.6 Options that Modify the Coset Table</a></h2>
+<p><p>
+<p>
+<dl compact>
+<p>
+<a name = "I1"></a>
+
+<a name = "SSEC006.1"></a>
+<dt><li><code>recover</code>
+<dt><a name = "SSEC006.1"></a>
+<dt><li><code>contiguous <dd></code>
+<code>Recover</code> space used by dead coset numbers.
+(Shortest  abbreviation  of  <code>recover</code>   is   <code>reco</code>,   and   shortest
+abbreviation of <code>contiguous</code> is <code>contig</code>.)
+<p>
+This option invokes the compaction routine on the table to recover the
+space used by any dead coset numbers. A <code>CO</code> message line  is  printed
+if any cosets were recovered, and a  <code>co</code>  line  if  none  were.  This
+routine is called automatically if  the  <code>cycles</code>,  <code>nc</code>,  <code>print</code>  or
+<code>standard</code> options (see&nbsp;<a href="CHAP00D.htm#SSEC005.1">option cycles</a>, <a href="CHAP00D.htm#SSEC005.4">option nc</a>,  <a href="CHAP00D.htm#SSEC005.8">option  print</a>
+and <a href="CHAP00D.htm#SSEC006.2">option standard</a>) are invoked.
+<p>
+<strong>INTERACTIVELY</strong>, use <code>ACERecover</code> (see&nbsp;<a href="CHAP006.htm#SSEC007.1">ACERecover</a>).
+<p>
+<dt><a name = "SSEC006.2"></a>
+<dt><li><code>standard <dd></code>
+Compacts <font face="Gill Sans,Helvetica,Arial">ACE</font>'s  coset  table  and  standardises  the  numbering  of
+cosets, according to the <code>lenlex</code>  scheme  (see  Section&nbsp;<a href="CHAP003.htm#SECT004">Coset  Table Standardisation Schemes</a>). (Shortest abbreviation: <code>st</code>.)
+<p>
+For a given ordering of the generators in the columns of the table, it
+produces a canonical numbering of the cosets. This function  does  not
+display the new table; use the <code>print</code> (see&nbsp;<a href="CHAP00D.htm#SSEC005.8">option print</a>) for  that.
+Such a table has the property that a scan of the  successive  rows  of
+the <strong>body</strong> of the table row by row, from  left  to  right,  encounters
+previously unseen cosets in numeric order.
+<p>
+<strong>Notes:</strong>
+In a <code>lenlex</code> standard table, the coset  representatives  are  ordered
+first according to length and then the lexicographic order defined  by
+the order the generators and their inverses  head  the  columns.  Note
+that, since <font face="Gill Sans,Helvetica,Arial">ACE</font> avoids having an involutory generator in the  first
+column when it can, this  lexicographic  order  does  not  necessarily
+correspond with the order in which the generators were  first  put  to
+<font face="Gill Sans,Helvetica,Arial">ACE</font>. Two tables are equivalent only if their canonic forms are  the
+same. Invoking this option directly does <strong>not</strong> affect the <font face="Gill Sans,Helvetica,Arial">GAP</font> coset
+table obtained via  <code>ACECosetTable</code>;  use  the  <code>lenlex</code>  (see&nbsp;<a href="CHAP004.htm#SSEC011.4">option lenlex</a>) option, if you want your table  <code>lenlex</code>  standardised.  (The
+<code>lenlex</code> option restarts the enumeration, if it is necessary to ensure
+the generators have not been rearranged.)
+<p>
+<strong>Guru Notes:</strong>
+In  five  of  the  ten  standard  enumeration   strategies   of   Sims
+<a href="biblio.htm#Sim94"><cite>Sim94</cite></a> (i.e.&nbsp;the five Sims strategies not provided  by  <font face="Gill Sans,Helvetica,Arial">ACE</font>),
+the   table   is   standardised   repeatedly.   This   is    expensive
+computationally, but can result in fewer cosets being  necessary.  The
+effect of doing this can be investigated  in  <font face="Gill Sans,Helvetica,Arial">ACE</font>  by  (repeatedly)
+halting the enumeration (via restrictive options),  standardising  the
+coset numbering, and continuing (see Section&nbsp;<a href="CHAP00C.htm#SECT002">Emulating Sims</a>  for  an
+interactive example).
+<p>
+<strong>INTERACTIVELY</strong>,            use            <code>ACEStandardCosetNumbering</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC007.2">ACEStandardCosetNumbering</a>).
+<p>
+</dl>
+<p>
+<p>
+<h2><a name="SECT007">D.7 Options for Comments</a></h2>
+<p><p>
+<p>
+<dl compact>
+<p>
+<dt><a name = "SSEC007.1"></a>
+<dt><li><code>text:=</code><var>string</var><code> <dd></code>
+Prints <var>string</var> in the output; <var>string</var> must be a string.
+<p>
+This allows the user to add comments to the output from <font face="Gill Sans,Helvetica,Arial">ACE</font>.
+<p>
+<strong>Note:</strong>
+Please avoid using this option to insert comments starting with  three
+asterisks: <code>***</code>, since this string is used as a  sentinel  internally
+in flushing output from <font face="Gill Sans,Helvetica,Arial">ACE</font>.
+<p>
+<dt><a name = "SSEC007.2"></a>
+<dt><li><code>aceincomment:=</code><var>string</var><code> <dd></code>
+Prints comment <var>string</var> in the <font face="Gill Sans,Helvetica,Arial">ACE</font> input; <var>string</var> must be a string.
+(Shortest abbreviation: <code>aceinc</code>.)
+<p>
+This option prints the comment <var>string</var> behind a sharp sign (<code>#</code>)  in
+the input to <font face="Gill Sans,Helvetica,Arial">ACE</font>. Only useful  for  adding  comments  (that  <font face="Gill Sans,Helvetica,Arial">ACE</font>
+ignores) to standalone input files.
+<p>
+</dl>
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP00C.htm">Previous</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>ACE manual<br>Januar 2006
+</address></body></html>

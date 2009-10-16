@@ -1,0 +1,12 @@
+
+gap/exam:
+
+Some example lists of pcp groups:
+
+allexam.gi     --   PcpExamples
+eddie.gi       --   EddiesExamples
+nqexam.gi      --   NqExamples
+matexam.gi     --   MatExamples
+metagrp.gi     --   construct metabelian group
+metacyc.gi     --   construct infinite metacyclic groups
+

@@ -3,7 +3,7 @@
 #W  id22932.ad             GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id22932_ad :=
-    "@(#)$Id$";
+    "@(#)$Id: id22932.ad,v 1.1 2005/04/02 09:34:37 gap Exp $";
 
 ID_GROUP_TREE.next[22932].next[30]:=
 rec(

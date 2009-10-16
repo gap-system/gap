@@ -1,0 +1,16 @@
+
+gap/cohom:
+
+compute with cohomology of pcp groups.
+
+general.gi      --    general stuff
+cohom.gi/gd     --    basic setup 
+solcohom.gi     --    solve integer equations
+twocohom.gi     --    2-cohomology
+grpext.gi       --    group extensions
+onecohom.gi     --    1-cohomology
+orbstab.gi      --    orbit stabilizer for pcp groups
+grpcom.gi       --    group complements
+norcom.gi       --    normal complements
+addgrp.gi       --    additive abelian groups (needed for cohomgrps)
+

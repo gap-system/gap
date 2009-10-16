@@ -3,7 +3,7 @@
 *W  permutat.c                  GAP source                   Martin Schoenert
 **                                                           & Alice Niemeyer
 **
-*H  @(#)$Id$
+*H  @(#)$Id: permutat.c,v 4.62 2008/09/16 17:52:29 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -41,7 +41,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_permutat_c =
-   "@(#)$Id$";
+   "@(#)$Id: permutat.c,v 4.62 2008/09/16 17:52:29 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -823,6 +823,94 @@ Obj             ProdPerm44 (
     return prd;
 }
 
+Obj ProdPerm44Cooperman(
+    Obj                 opL,
+    Obj                 opR,
+    UInt                logBucketSize)
+{
+    Obj                 prd;            /* handle of the product (result)  */
+    UInt                degP;           /* degree of the product           */
+    UInt4 *             ptP;            /* pointer to the product          */
+    UInt                degL;           /* degree of the left operand      */
+    UInt4 *             ptL;            /* pointer to the left operand     */
+    UInt                degR;           /* degree of the right operand     */
+    UInt4 *             ptR;            /* pointer to the right operand    */
+    UInt                p;              /* loop variable                   */
+    UInt4 *             ptB;
+    UInt4 **             ptBP;
+    UInt                nBuckets;
+    Obj                 bucketPointers;
+    UInt4               im;
+    UInt                bucketSize;
+
+    /* compute the size of the result and allocate a bag                   */
+    degL = DEG_PERM4(opL);
+    degR = DEG_PERM4(opR);
+    degP = degL < degR ? degR : degL;
+    prd  = NEW_PERM4( degP );
+    bucketSize = 1 << logBucketSize;
+    nBuckets = (degP+(bucketSize-1))>>logBucketSize;
+    if (SIZE_BAG(TmpPerm) < sizeof(Obj)+4*degP)
+      ResizeBag(TmpPerm, sizeof(Obj)+4*degP);
+    bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
+    
+    
+
+    /* set up the pointers no GC now                                        */
+    ptL = ADDR_PERM4(opL);
+    ptR = ADDR_PERM4(opR);
+    ptP = ADDR_PERM4(prd);
+    ptB = ADDR_PERM4(TmpPerm);
+    ptBP = (UInt4 **)(ADDR_OBJ(bucketPointers)+1);
+    for (p = 0; p < nBuckets; p++)
+      ptBP[p] = ptB+ (p << logBucketSize);
+    
+    /* Pass 1 */
+    for (p = 0; p < degL; p++)
+      {
+	im = ptL[p];
+	*(ptBP[im>>logBucketSize]++) = im;
+      }
+    for (; p < degP; p++)
+	*(ptBP[p>>logBucketSize]++) = p;
+    
+    /* Pass 2 */
+
+    if (degR < degP)
+      for (p = 0; p < degP; p++)
+	{
+	  im = ptB[p];
+	  if (im < degR)
+	    ptB[p] = ptR[im];	
+	}
+    else
+      for (p = 0; p < degP; p++)
+	{
+	  im = ptB[p];
+	  ptB[p] = ptR[im];	
+	}
+      
+    /* Pass 3 */
+    for (p = 0; p < nBuckets; p++)
+      ptBP[p] = ptB+ (p << logBucketSize);
+    for (p = 0; p < degL; p++)
+      {
+	im = ptL[p];
+	ptP[p] = *(ptBP[im>>logBucketSize]++);
+      }
+    for (;p < degP; p++)
+      {
+	ptP[p] = *(ptBP[p>>logBucketSize]++);
+      }
+
+    /* return the result                                                   */
+    return prd;
+}
+
+Obj FuncMUL_PERMS_COOPERMAN( Obj self, Obj permL, Obj permR, Obj logbucketSize) {
+  return ProdPerm44Cooperman(permL, permR, INT_INTOBJ(logbucketSize));
+}
+
 
 /****************************************************************************
 **
@@ -1232,6 +1320,138 @@ Obj             LQuoPerm44 (
 **  This repeatedly applies the permutation <opR> to all points  which  seems
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
+
+Obj InvPerm4Cooperman ( Obj perm, UInt logBucketSize )
+{
+  UInt deg = DEG_PERM4(perm);
+  UInt bucketSize = 1 << logBucketSize;
+  UInt nBuckets;
+  Obj bucketPointers;
+  Obj inv;
+  UInt4* ptP;
+  UInt4* ptI;
+  UInt4** ptBP;
+  UInt4* ptB;
+  UInt4 p;
+
+  if (SIZE_BAG(TmpPerm) < sizeof(Obj)+4*2*deg)
+    ResizeBag(TmpPerm, sizeof(Obj)+4*2*deg);
+  nBuckets = (deg+(bucketSize-1))>>logBucketSize;
+  bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
+  inv = NEW_PERM4(deg);
+  
+  ptP = ADDR_PERM4(perm);
+  ptI = ADDR_PERM4(inv);
+  ptB = ADDR_PERM4(TmpPerm);
+  ptBP = (UInt4 **)(ADDR_OBJ(bucketPointers)+1);
+  for (p = 0; p < nBuckets; p++)
+    ptBP[p] = ptB+ 2*(p << logBucketSize);
+  
+  for (p = 0;p<deg; p++)
+    {
+      UInt4 im = ptP[p];
+      UInt b = im >>logBucketSize;
+      UInt4 * pt = ptBP[b];
+      *(pt++) = p;
+      *(pt++) = im;
+      ptBP[b] = pt;
+    }
+  for (p = 0;p<deg; p++)
+    {
+      UInt4 im =*(ptB++);
+      ptI[*(ptB++)] = im;
+    }
+  return inv;
+
+}
+
+Obj FuncINV_PERM_COOPERMAN( Obj self, Obj perm, Obj logBucketSize)
+{
+  return InvPerm4Cooperman(perm, INT_INTOBJ(logBucketSize));
+}
+
+Obj FuncINV_PERM_SIMPLE( Obj self, Obj perm)
+{
+  UInt deg = DEG_PERM4(perm);
+  Obj inv = NEW_PERM4(deg);
+  UInt4 *ptP = ADDR_PERM4(perm);
+  UInt4 *ptI = ADDR_PERM4(inv);
+  UInt p;
+  for (p = 0; p < deg; p++)
+    ptI[ptP[p]] = p;
+  return inv;
+}
+
+Obj LQuoPerm4Cooperman ( Obj perm1, Obj perm2, UInt logBucketSize )
+{
+  UInt deg1 = DEG_PERM4(perm1);
+  UInt deg2 = DEG_PERM4(perm2);
+  UInt degQ = (deg1 > deg2) ? deg1 : deg2;
+  UInt degmin = deg1+deg2 - degQ;
+  UInt bucketSize = 1 << logBucketSize;
+  UInt nBuckets;
+  Obj bucketPointers;
+  Obj quo;
+  UInt4* ptP1;
+  UInt4* ptP2;
+  UInt4* ptQ;
+  UInt4** ptBP;
+  UInt4* ptB;
+  UInt4 p;
+
+  if (SIZE_BAG(TmpPerm) < sizeof(Obj)+4*2*degQ)
+    ResizeBag(TmpPerm, sizeof(Obj)+4*2*degQ);
+  nBuckets = (degQ+(bucketSize-1))>>logBucketSize;
+  bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
+  quo = NEW_PERM4(degQ);
+  
+  ptP1 = ADDR_PERM4(perm1);
+  ptP2 = ADDR_PERM4(perm2);
+  ptQ = ADDR_PERM4(quo);
+  ptB = ADDR_PERM4(TmpPerm);
+  ptBP = (UInt4 **)(ADDR_OBJ(bucketPointers)+1);
+  for (p = 0; p < nBuckets; p++)
+    ptBP[p] = ptB+ 2*(p << logBucketSize);
+  
+  for (p = 0;p<degmin; p++)
+    {
+      UInt4 im = ptP2[p];
+      UInt b = im >>logBucketSize;
+      UInt4 *pt = ptBP[b];
+      *(pt++) = ptP1[p];
+      *(pt++) = im;
+      ptBP[b] = pt;
+    }
+  for (; p < deg1; p++)
+    {
+      UInt4 im = p;
+      UInt b = im >>logBucketSize;
+      *(ptBP[b]++) = ptP1[p];
+      *(ptBP[b]++) = im;
+
+    }
+  for (; p < deg2; p++)
+    {
+      UInt4 im = ptP2[p];
+      UInt b = im >>logBucketSize;
+      *(ptBP[b]++) = p;
+      *(ptBP[b]++) = im;
+
+    }
+  for (p = 0;p<degQ; p++)
+    {
+      UInt4 im =*(ptB++);
+      ptQ[*(ptB++)] = im;
+    }
+  return quo;
+
+}
+
+Obj FuncLQUO_PERMS_COOPERMAN( Obj self, Obj perm1, Obj perm2, Obj logBucketSize)
+{
+  return LQuoPerm4Cooperman(perm1, perm2, INT_INTOBJ(logBucketSize));
+}
+
 Obj             PowPerm2Int (
     Obj                 opL,
     Obj                 opR )
@@ -4241,7 +4461,7 @@ Obj Array2Perm (
         cycle = ELM_LIST( array, i );
         while ( ! IS_SMALL_LIST(cycle) ) {
             cycle = ErrorReturnObj(
-                "Arra2Perm: <cycle> must be a small list (not a %s)",
+                "Array2Perm: <cycle> must be a small list (not a %s)",
                 (Int)TNAM_OBJ(cycle), 0L,
                 "you can replace <cycle> via 'return <cycle>;'" );
         }
@@ -4383,6 +4603,19 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SMALLEST_IMG_TUP_PERM", 2, "tuple, perm",
       FunSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },
+
+    { "MUL_PERMS_COOPERMAN", 3, "perm, perm, logBucketsize",
+      FuncMUL_PERMS_COOPERMAN, "src/permutat.c:MUL_PERMS_COOPERMAN" },
+    
+    { "INV_PERM_COOPERMAN", 2, "perm, logBucketsize",
+      FuncINV_PERM_COOPERMAN, "src/permutat.c:INV_PERM_COOPERMAN" },
+
+    /*    { "INV_PERM_SIMPLE", 1, "perm",
+	  FuncINV_PERM_SIMPLE, "src/permutat.cINV_PERM_SIMPLE" }, */
+    
+    { "LQUO_PERMS_COOPERMAN", 3, "perm1, perm2, logBucketsize",
+      FuncLQUO_PERMS_COOPERMAN, "src/permutat.c:LQUO_PERMS_COOPERMAN" },
+    
 
     { 0 }
 

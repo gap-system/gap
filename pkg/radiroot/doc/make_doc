@@ -1,0 +1,34 @@
+#!/bin/sh
+#############################################################################
+##
+#W  make_doc         make Radiroot Package documentation      Andreas Distler
+##
+#H  $Id: make_doc,v 1.1 2006/10/13 17:27:21 gap Exp $
+##
+##  This shell script uses TeX, BibTeX and MakeIndex to build the .dvi, Adobe
+##  PDF, PostScript (commented out) and  HTML  (provided  you  have  tth  and
+##  etc/convert.pl) documentation for the Radiroot Package.
+##
+
+echo "TeXing documentation"
+# TeX the manual
+tex manual
+# ... and build its bibliography (uncomment if there is no `manual.bib')
+bibtex manual
+# TeX the manual again to incorporate the ToC ... and build the index
+tex manual; ../../../doc/manualindex manual
+# Finally TeX the manual again to get cross-references right
+tex manual
+# Create the PostScript version (uncomment next line, if needed)
+#dvips -D300 manual -o
+# Create PDF version
+pdftex manual; pdftex manual 
+
+# The HTML version of the manual
+mkdir -p ../htm
+echo "Creating HTML documentation"
+../../../etc/convert.pl -t -c -u -n Radiroot . ../htm
+
+#############################################################################
+##
+#E

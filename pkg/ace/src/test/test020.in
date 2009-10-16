@@ -1,0 +1,24 @@
+
+# These are the examples from $3.1 of GH's paper on Reidemeister-Schreier
+# in LNIM #372.  They are for the MacDonald group G(-2,-2), which has
+# order 3^10.  a has order 3^4, and the commutator subgroup order 3^8.
+
+Enum: G(-2,-2);
+Gr: a,b;
+Rel: [b,a] a^b a2, [a,b] b^a b2;
+
+Wo: 500K;  Mess: 20000;  Hard;
+
+Gen: ;  Beg;
+
+Gen: a;  Beg;
+
+Gen: [a,b], [A,b], [b,a], [B,a];  Beg;
+#Gen: [a,b], [A,b], [a,B];  Beg;
+
+# ?? should give order 6561 !!
+Enum: commutator;
+Gr: x,y,z;
+Rel: x2YxY2, y2z2yz, xz2yxZxz2Y, xyZ2x(yZ2)2, xz2Yxz3Yxz4Y;
+
+Gen: ;  Beg;

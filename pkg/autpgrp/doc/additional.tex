@@ -1,0 +1,35 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  additional.tex     AutPGrp documentation                 Bettina Eick
+%A                                                         Eamonn O'Brien
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Additional Features of the Package}
+
+As an additional feature of this package we provide some functions to
+count extensions of $p$-groups and Lie algebras over $GF(p)$. These
+functions have been used in counting the $2$-groups of size $2^{10}$.
+
+\> NumberOfPClass2PGroups( n, p, k )
+
+determines the number of $n$-generator $p$-groups of $p$-class 2 with
+Frattini subgroup of order $2^k$. 
+
+\> NumberOfPClass2PGroups( n, p )
+
+returns a list of of numbers of $n$-generator $p$-groups of $p$-class 2
+with Frattini subgroup of order $2^k$ for $k$ in $1, \ldots, n(n+1)/2$.
+
+\> NumberOfClass2LieAlgebras( n, p, k )
+
+determines the number of $n$-generator Lie algebras of class 2 over 
+$GF(p)$ with derived Lie subalgebra of dimension $k$.
+
+\> NumberOfClass2LieAlgbras( n, p )
+
+returns a list of of numbers of $n$-generator Lie algebras of class 2
+over $GF(p)$ with derived Lie subalgebra of dimension $k$ for $k$ in
+$1, \ldots, n(n-1)/2$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

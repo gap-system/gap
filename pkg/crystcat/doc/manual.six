@@ -1,0 +1,69 @@
+C crystcat.tex 1. The Crystallographic Groups Catalog
+I 1.0. crystallographic groups
+I 1.0. crystcat
+S 1.1. How to access the data of the book
+S 1.2. Representation of space groups
+S 1.3. Crystal Families
+F 1.3. NrCrystalFamilies
+F 1.3. DisplayCrystalFamily
+S 1.4. Crystal Systems
+F 1.4. NrCrystalSystems
+F 1.4. DisplayCrystalSystem
+S 1.5. Q-Classes
+F 1.5. NrQClassesCrystalSystem
+I 1.5. Hermann-Mauguin symbol
+F 1.5. DisplayQClass
+F 1.5. DisplayQClass
+F 1.5. DisplayQClass
+F 1.5. FpGroupQClass
+F 1.5. FpGroupQClass
+F 1.5. FpGroupQClass
+F 1.5. PcGroupQClass
+F 1.5. PcGroupQClass
+F 1.5. PcGroupQClass
+F 1.5. CharTableQClass
+F 1.5. CharTableQClass
+F 1.5. CharTableQClass
+S 1.6. Z-Classes
+F 1.6. NrZClassesQClass
+F 1.6. NrZClassesQClass
+F 1.6. NrZClassesQClass
+F 1.6. DisplayZClass
+F 1.6. DisplayZClass
+F 1.6. DisplayZClass
+F 1.6. MatGroupZClass
+F 1.6. MatGroupZClass
+F 1.6. MatGroupZClass
+F 1.6. NormalizerZClass
+F 1.6. NormalizerZClass
+F 1.6. NormalizerZClass
+S 1.7. Dade groups
+F 1.7. NrDadeGroups
+F 1.7. DadeGroup
+F 1.7. DadeGroupNumbersZClass
+F 1.7. DadeGroupNumbersZClass
+F 1.7. DadeGroupNumbersZClass
+F 1.7. ZClassRepsDadeGroup
+F 1.7. ZClassRepsDadeGroup
+F 1.7. ZClassRepsDadeGroup
+S 1.8. Space groups and space group types
+F 1.8. NrSpaceGroupTypesZClass
+F 1.8. NrSpaceGroupTypesZClass
+F 1.8. NrSpaceGroupTypesZClass
+F 1.8. DisplaySpaceGroupType
+F 1.8. DisplaySpaceGroupType
+F 1.8. DisplaySpaceGroupType
+F 1.8. DisplaySpaceGroupGenerators
+F 1.8. DisplaySpaceGroupGenerators
+F 1.8. DisplaySpaceGroupGenerators
+F 1.8. SpaceGroupOnLeftBBNWZ
+F 1.8. SpaceGroupOnLeftBBNWZ
+F 1.8. SpaceGroupOnLeftBBNWZ
+F 1.8. SpaceGroupOnRightBBNWZ
+F 1.8. SpaceGroupOnRightBBNWZ
+F 1.8. SpaceGroupOnRightBBNWZ
+F 1.8. SpaceGroupOnRightBBNWZ
+F 1.8. SpaceGroupBBNWZ
+F 1.8. SpaceGroupBBNWZ
+F 1.8. SpaceGroupBBNWZ
+F 1.8. FpGroupSpaceGroupBBNWZ

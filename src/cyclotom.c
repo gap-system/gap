@@ -2,7 +2,7 @@
 **
 *W  cyclotom.c                  GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: cyclotom.c,v 4.42 2005/04/12 21:30:46 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -90,7 +90,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_cyclotom_c =
-   "@(#)$Id$";
+   "@(#)$Id: cyclotom.c,v 4.42 2005/04/12 21:30:46 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -2074,6 +2074,9 @@ static StructGVarOper GVarOpers [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  LastECyc = (Obj)0;
+  LastNCyc = 0;
+  
     /* install the marking function                                        */
     InfoBags[ T_CYC ].name = "cyclotomic";
     InitMarkFuncBags( T_CYC, MarkCycSubBags );

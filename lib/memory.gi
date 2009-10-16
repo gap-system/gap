@@ -10,7 +10,7 @@
 #############################################################################
 
 Revision.memory_gi :=
-  "@(#)$Id$";
+  "@(#)$Id: memory.gi,v 1.2 2006/08/19 13:06:26 gap Exp $";
 
 InstallMethod(TypeOfObjWithMemory,"generic",true,[IsFamily],0,
 function(fam)

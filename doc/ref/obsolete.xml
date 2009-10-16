@@ -1,0 +1,184 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  obsolete.tex             GAP documentation               Frank Lübeck -->
+<!-- %%   -->
+<!-- %H  @(#)<M>Id: obsolete.tex,v 4.3 2005/08/24 14:31:34 gap Exp </M> -->
+<!-- %%   -->
+<P/>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Replaced and Removed Command Names">
+<Heading>Replaced and Removed Command Names</Heading>
+
+<Index>obsolete</Index>
+<Index>deprecated</Index>
+<Index>legacy</Index>
+
+In general we try to keep &GAP;&nbsp;4 compatible with former releases
+as much as possible.
+Nevertheless, from time to time it seems appropriate to remove some commands
+or to change the names of some commands or variables.
+There are various reasons for that:
+Some functionality was improved and got another (hopefully better) interface,
+names turned out to be too special or too general for the underlying
+functionality,
+or names are found to be unintuitive or inconsistent with other names.
+<P/>
+In this chapter we collect such old names while pointing to the sections
+which explain how to substitute them.
+Usually, old names will be available for several releases;
+they may be removed when they don't seem to be used any more.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Group Actions - Name Changes">
+<Heading>Group Actions &ndash; Name Changes</Heading>
+
+<Index>group operations</Index>
+
+The concept of a group action is sometimes referred to as a
+<Q>group operation</Q>.
+In &GAP;&nbsp;3 as well as in older versions of &GAP;&nbsp;4 the term
+<C>Operation</C> was used instead of <C>Action</C>.
+We decided to change the names to avoid confusion with the term
+<Q>operation</Q> as in <Ref Func="DeclareOperation"/> and
+<Q>operations for Xyz</Q>.
+<P/>
+Here are some examples of such name changes.
+<P/>
+<Index Key="Operation"><C>Operation</C></Index>
+<Index Key="RepresentativeOperation"><C>RepresentativeOperation</C></Index>
+<Index Key="OperationHomomorphism"><C>OperationHomomorphism</C></Index>
+<Index Key="FunctionOperation"><C>FunctionOperation</C></Index>
+<Table Align="l|l">
+<Row>
+  <Item><E>OLD</E></Item>
+  <Item><E>NOW USE</E></Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item><C>Operation</C></Item>
+  <Item><Ref Func="Action" Label="for a group, an action domain, etc."/></Item>
+</Row>
+<Row>
+  <Item><C>RepresentativeOperation</C></Item>
+  <Item><Ref Func="RepresentativeAction"/></Item>
+</Row>
+<Row>
+  <Item><C>OperationHomomorphism</C></Item>
+  <Item><Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/></Item>
+</Row>
+<Row>
+  <Item><C>FunctionOperation</C></Item>
+  <Item><Ref Func="FunctionAction"/></Item>
+</Row>
+</Table>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Package Interface - Obsolete Functions and Name Changes">
+<Heading>Package Interface &ndash; Obsolete Functions and Name Changes</Heading>
+
+With &GAP;&nbsp;4.4 the package interface was changed. Thereby some functions
+became obsolete and the names of some others were made more consistent.
+<P/>
+<Index Key="DeclarePackage"><C>DeclarePackage</C></Index>
+<Index Key="DeclareAutoPackage"><C>DeclareAutoPackage</C></Index>
+<Index Key="DeclarePackageDocumentation">
+<C>DeclarePackageDocumentation</C></Index>
+<Index Key="DeclarePackageAutoDocumentation">
+<C>DeclarePackageAutoDocumentation</C></Index>
+The following functions are no longer needed:
+<C>DeclarePackage</C>,
+<C>DeclareAutoPackage</C>,
+<C>DeclarePackageDocumentation</C> and 
+<C>DeclarePackageAutoDocumentation</C>.
+They are substituted by entries in the packages' <F>PackageInfo.g</F> files,
+see <Ref Sect="The PackageInfo.g File"/>. 
+<P/>
+The following function names were changed.
+<P/>
+<Index Key="RequirePackage"><C>RequirePackage</C></Index>
+<Index Key="ReadPkg"><C>ReadPkg</C></Index>
+<Index Key="RereadPkg"><C>RereadPkg</C></Index>
+<Table Align="l|l">
+<Row>
+  <Item><E>OLD</E></Item>
+  <Item><E>NOW USE</E></Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item><C>RequirePackage</C></Item>
+  <Item><Ref Func="LoadPackage"/></Item>
+</Row>
+<Row>
+  <Item><C>ReadPkg</C></Item>
+  <Item><Ref Func="ReadPackage"/></Item>
+</Row>
+<Row>
+  <Item><C>RereadPkg</C></Item>
+  <Item><Ref Func="RereadPackage"/></Item>
+</Row>
+</Table>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Normal Forms of Integer Matrices - Name Changes">
+<Heading>Normal Forms of Integer Matrices &ndash; Name Changes</Heading>
+
+<Index>Smith normal form</Index>
+<Index>Hermite normal form</Index>
+
+Former versions of &GAP;&nbsp;4 documented several functions for computing
+the Smith or Hermite normal form of integer matrices.
+Some of them were never implemented and it was unclear which commands to use.
+The functionality of all of these commands is now available with
+<Ref Func="NormalFormIntMat"/> and a few interface functions.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Miscellaneous Name Changes or Removed Names">
+<Heading>Miscellaneous Name Changes or Removed Names</Heading>
+
+<Index Key="QUIET"><C>QUIET</C></Index>
+<Index Key="BANNER"><C>BANNER</C></Index>
+<Index Key="GAPInfo"><C>GAPInfo</C></Index>
+
+In former releases of &GAP;&nbsp;4 there were some global variable names
+bound to general information about the running &GAP;,
+such as path names or command line options.
+Although they were not officially documented they were used by several users
+and in some packages.
+We mention here <C>BANNER</C> and <C>QUIET</C>.
+This type of information is now collected in a record with name
+<C>GAPInfo</C> and will become documented after a test phase.
+<P/>
+Here are some further name changes.
+<P/>
+<Index Key="MonomialTotalDegreeLess"><C>MonomialTotalDegreeLess</C></Index>
+<Index Key="NormedVectors"><C>NormedVectors</C></Index>
+<Table Align="l|l">
+<Row>
+  <Item><E>OLD</E></Item>
+  <Item><E>NOW USE</E></Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item><C>MonomialTotalDegreeLess</C></Item>
+  <Item><Ref Func="MonomialExtGrlexLess"/></Item>
+</Row>
+<Row>
+  <Item><C>NormedVectors</C></Item>
+  <Item><Ref Func="NormedRowVectors"/></Item>
+</Row>
+</Table>
+
+</Section>
+</Chapter>
+
+

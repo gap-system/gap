@@ -1,0 +1,33 @@
+\begin{thebibliography}{Wri73b}
+
+\bibitem[CH67]{CH}
+R.~W. Carter and T.~O. Hawkes.
+\newblock The {$\F$}-normalizers of a finite soluble group.
+\newblock {\em J. Alg.}, 5:175 -- 201, 1967.
+
+\bibitem[DH92]{DH}
+K.~Doerk and T.~O. Hawkes.
+\newblock {\em Finite soluble groups}.
+\newblock Walter de Gruyter, 1992.
+
+\bibitem[EW]{EW}
+B.~Eick and C.~R.~B. Wright.
+\newblock Computing subgroups by exhibition in finite solvable groups.
+\newblock To appear in J. Symbolic Comp.
+
+\bibitem[Gas63]{G}
+W.~Gasch\"utz.
+\newblock Zur theorie der endlichen aufl\"osbaren gruppen.
+\newblock {\em Math. Z.}, 80:300 -- 305, 1963.
+
+\bibitem[Wri73a]{WA}
+C.~R.~B. Wright.
+\newblock An internal approach to covering groups.
+\newblock {\em J. Alg.}, 25:128 -- 145, 1973.
+
+\bibitem[Wri73b]{WB}
+C.~R.~B. Wright.
+\newblock On internal formation theory.
+\newblock {\em Math. Z.}, 134:1 -- 9, 1973.
+
+\end{thebibliography}

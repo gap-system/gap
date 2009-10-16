@@ -1,0 +1,13 @@
+# the loop used to distinguish the primitive groups. ahulpke 12-jan-00
+for deg in [2..999] do
+  for n in [1..NrPrimitiveGroups(deg)] do
+    g:=PrimitiveGroup(deg,n);
+    s:=Size(g);
+    g:=Group(GeneratorsOfGroup(g));
+    SetSize(g,s);
+    Print(deg,",",n,"\n");
+    if n<>PrimitiveIdentification(g) then
+      Error("wrong id");
+    fi;
+  od;
+od;

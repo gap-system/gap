@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99c (Web2C 7.3.1)
+The top-level auxiliary file: manual.aux
+The style file: alpha.bst
+Database file #1: ../../../../doc/mrabbrev.bib
+Reallocated str_pool (elt_size=1) to 130000 items from 65000.
+Reallocated str_pool (elt_size=1) to 195000 items from 130000.
+Database file #2: ../../../../doc/manual.bib
+Warning--I didn't find a database entry for "NOBr96"
+You've used 8 entries,
+            2543 wiz_defined-function locations,
+            9346 strings with 161113 characters,
+and the built_in function-call counts, 3448 in all, are:
+= -- 354
+> -- 102
+< -- 14
++ -- 31
+- -- 27
+* -- 232
+:= -- 531
+add.period$ -- 28
+call.type$ -- 8
+change.case$ -- 40
+chr.to.int$ -- 7
+cite$ -- 8
+duplicate$ -- 165
+empty$ -- 287
+format.name$ -- 39
+if$ -- 743
+int.to.chr$ -- 2
+int.to.str$ -- 0
+missing$ -- 9
+newline$ -- 43
+num.names$ -- 32
+pop$ -- 40
+preamble$ -- 1
+purify$ -- 49
+quote$ -- 0
+skip$ -- 130
+stack$ -- 0
+substring$ -- 238
+swap$ -- 48
+text.length$ -- 14
+text.prefix$ -- 4
+top$ -- 0
+type$ -- 60
+warning$ -- 0
+while$ -- 39
+width$ -- 10
+write$ -- 113
+(There was 1 warning)

@@ -1,0 +1,316 @@
+\indexentry{linear code|hyperpage}{11}
+\indexentry{Codeword@\texttt  {Codeword}|hyperpage}{12}
+\indexentry{CodewordNr@\texttt  {CodewordNr}|hyperpage}{13}
+\indexentry{IsCodeword@\texttt  {IsCodeword}|hyperpage}{14}
+\indexentry{=@\texttt  {=}|hyperpage}{14}
+\indexentry{not =|hyperpage}{14}
+\indexentry{{\textless} {\textgreater}|hyperpage}{14}
+\indexentry{+@\texttt  {+}|hyperpage}{15}
+\indexentry{codewords, addition|hyperpage}{15}
+\indexentry{-@\texttt  {-}|hyperpage}{15}
+\indexentry{codewords, subtraction|hyperpage}{15}
+\indexentry{+@\texttt  {+}|hyperpage}{15}
+\indexentry{codewords, cosets|hyperpage}{15}
+\indexentry{coset|hyperpage}{15}
+\indexentry{VectorCodeword@\texttt  {VectorCodeword}|hyperpage}{16}
+\indexentry{PolyCodeword@\texttt  {PolyCodeword}|hyperpage}{16}
+\indexentry{TreatAsVector@\texttt  {TreatAsVector}|hyperpage}{17}
+\indexentry{TreatAsPoly@\texttt  {TreatAsPoly}|hyperpage}{17}
+\indexentry{NullWord@\texttt  {NullWord}|hyperpage}{18}
+\indexentry{DistanceCodeword@\texttt  {DistanceCodeword}|hyperpage}{18}
+\indexentry{Support@\texttt  {Support}|hyperpage}{18}
+\indexentry{WeightCodeword@\texttt  {WeightCodeword}|hyperpage}{19}
+\indexentry{code|hyperpage}{20}
+\indexentry{code, elements of|hyperpage}{20}
+\indexentry{code, unrestricted|hyperpage}{20}
+\indexentry{code, $(n,M,d)$|hyperpage}{20}
+\indexentry{minimum distance|hyperpage}{20}
+\indexentry{length|hyperpage}{20}
+\indexentry{size|hyperpage}{20}
+\indexentry{code, linear|hyperpage}{20}
+\indexentry{parity check matrix|hyperpage}{20}
+\indexentry{code, $[n, k, d]r$|hyperpage}{21}
+\indexentry{code, cyclic|hyperpage}{21}
+\indexentry{generator polynomial|hyperpage}{21}
+\indexentry{check polynomial|hyperpage}{21}
+\indexentry{=@\texttt  {=}|hyperpage}{22}
+\indexentry{not =|hyperpage}{22}
+\indexentry{{\textless} {\textgreater}|hyperpage}{22}
+\indexentry{+@\texttt  {+}|hyperpage}{23}
+\indexentry{codes, addition|hyperpage}{23}
+\indexentry{codes, direct sum|hyperpage}{23}
+\indexentry{*@\texttt  {*}|hyperpage}{23}
+\indexentry{codes, product|hyperpage}{23}
+\indexentry{*@\texttt  {*}|hyperpage}{23}
+\indexentry{codes, encoding|hyperpage}{23}
+\indexentry{encoder map|hyperpage}{23}
+\indexentry{InformationWord@\texttt  {InformationWord}|hyperpage}{24}
+\indexentry{codes, decoding|hyperpage}{24}
+\indexentry{information bits|hyperpage}{24}
+\indexentry{in@\texttt  {in}|hyperpage}{24}
+\indexentry{code, element test|hyperpage}{24}
+\indexentry{IsSubset@\texttt  {IsSubset}|hyperpage}{25}
+\indexentry{code, subcode|hyperpage}{25}
+\indexentry{IsCode@\texttt  {IsCode}|hyperpage}{25}
+\indexentry{IsLinearCode@\texttt  {IsLinearCode}|hyperpage}{25}
+\indexentry{IsCyclicCode@\texttt  {IsCyclicCode}|hyperpage}{25}
+\indexentry{IsPerfectCode@\texttt  {IsPerfectCode}|hyperpage}{26}
+\indexentry{code, perfect|hyperpage}{26}
+\indexentry{IsMDSCode@\texttt  {IsMDSCode}|hyperpage}{26}
+\indexentry{code, maximum distance separable|hyperpage}{27}
+\indexentry{MDS|hyperpage}{27}
+\indexentry{IsSelfDualCode@\texttt  {IsSelfDualCode}|hyperpage}{27}
+\indexentry{code, self-dual|hyperpage}{27}
+\indexentry{self-orthogonal|hyperpage}{27}
+\indexentry{IsSelfOrthogonalCode@\texttt  {IsSelfOrthogonalCode}|hyperpage}{27}
+\indexentry{code, self-orthogonal|hyperpage}{27}
+\indexentry{permutation equivalent codes|hyperpage}{27}
+\indexentry{equivalent codes|hyperpage}{27}
+\indexentry{IsEquivalent@\texttt  {IsEquivalent}|hyperpage}{27}
+\indexentry{CodeIsomorphism@\texttt  {CodeIsomorphism}|hyperpage}{28}
+\indexentry{AutomorphismGroup@\texttt  {AutomorphismGroup}|hyperpage}{28}
+\indexentry{PermutationGroup|hyperpage}{29}
+\indexentry{PermutationAutomorphismGroup@\texttt  {PermutationAutomorphismGroup}|hyperpage}{29}
+\indexentry{IsFinite@\texttt  {IsFinite}|hyperpage}{30}
+\indexentry{Size@\texttt  {Size}|hyperpage}{30}
+\indexentry{LeftActingDomain@\texttt  {LeftActingDomain}|hyperpage}{30}
+\indexentry{Dimension@\texttt  {Dimension}|hyperpage}{30}
+\indexentry{AsSSortedList@\texttt  {AsSSortedList}|hyperpage}{31}
+\indexentry{Print@\texttt  {Print}|hyperpage}{31}
+\indexentry{String@\texttt  {String}|hyperpage}{32}
+\indexentry{Display@\texttt  {Display}|hyperpage}{32}
+\indexentry{GeneratorMat@\texttt  {GeneratorMat}|hyperpage}{33}
+\indexentry{CheckMat@\texttt  {CheckMat}|hyperpage}{33}
+\indexentry{GeneratorPol@\texttt  {GeneratorPol}|hyperpage}{34}
+\indexentry{CheckPol@\texttt  {CheckPol}|hyperpage}{34}
+\indexentry{RootsOfCode@\texttt  {RootsOfCode}|hyperpage}{34}
+\indexentry{WordLength@\texttt  {WordLength}|hyperpage}{35}
+\indexentry{Redundancy@\texttt  {Redundancy}|hyperpage}{35}
+\indexentry{MinimumDistance@\texttt  {MinimumDistance}|hyperpage}{35}
+\indexentry{MinimumDistanceLeon@\texttt  {MinimumDistanceLeon}|hyperpage}{36}
+\indexentry{DecreaseMinimumDistanceUpperBound@\texttt  {DecreaseMinimumDistanceUpperBound}|hyperpage}{37}
+\indexentry{MinimumDistanceRandom@\texttt  {MinimumDistanceRandom}|hyperpage}{38}
+\indexentry{$t(n,k)$|hyperpage}{39}
+\indexentry{covering code|hyperpage}{39}
+\indexentry{CoveringRadius@\texttt  {CoveringRadius}|hyperpage}{39}
+\indexentry{SetCoveringRadius@\texttt  {SetCoveringRadius}|hyperpage}{40}
+\indexentry{WeightDistribution@\texttt  {WeightDistribution}|hyperpage}{41}
+\indexentry{InnerDistribution@\texttt  {InnerDistribution}|hyperpage}{41}
+\indexentry{distance|hyperpage}{41}
+\indexentry{DistancesDistribution@\texttt  {DistancesDistribution}|hyperpage}{42}
+\indexentry{OuterDistribution@\texttt  {OuterDistribution}|hyperpage}{42}
+\indexentry{Decode@\texttt  {Decode}|hyperpage}{42}
+\indexentry{Decodeword@\texttt  {Decodeword}|hyperpage}{43}
+\indexentry{GeneralizedReedSolomonDecoderGao@\texttt  {GeneralizedReedSolomonDecoderGao}|hyperpage}{44}
+\indexentry{GeneralizedReedSolomonListDecoder@\texttt  {GeneralizedReedSolomonListDecoder}|hyperpage}{45}
+\indexentry{NearestNeighborGRSDecodewords@\texttt  {NearestNeighborGRSDecodewords}|hyperpage}{46}
+\indexentry{NearestNeighborDecodewords@\texttt  {NearestNeighborDecodewords}|hyperpage}{46}
+\indexentry{Syndrome@\texttt  {Syndrome}|hyperpage}{47}
+\indexentry{SyndromeTable@\texttt  {SyndromeTable}|hyperpage}{47}
+\indexentry{syndrome table|hyperpage}{48}
+\indexentry{StandardArray@\texttt  {StandardArray}|hyperpage}{48}
+\indexentry{PermutationDecode@\texttt  {PermutationDecode}|hyperpage}{48}
+\indexentry{AClosestVectorCombinationsMatFFEVecFFE@\texttt  {AClosestVectorCombinationsMatFFEVecFFE}|hyperpage}{50}
+\indexentry{AClosestVectorComb..MatFFEVecFFECoords@\texttt  {AClosestVectorComb..MatFFEVecFFECoords}|hyperpage}{51}
+\indexentry{DistancesDistributionMatFFEVecFFE@\texttt  {DistancesDistributionMatFFEVecFFE}|hyperpage}{51}
+\indexentry{DistancesDistributionVecFFEsVecFFE@\texttt  {DistancesDistributionVecFFEsVecFFE}|hyperpage}{51}
+\indexentry{WeightVecFFE@\texttt  {WeightVecFFE}|hyperpage}{52}
+\indexentry{Hamming metric|hyperpage}{52}
+\indexentry{DistanceVecFFE@\texttt  {DistanceVecFFE}|hyperpage}{52}
+\indexentry{ElementsCode@\texttt  {ElementsCode}|hyperpage}{53}
+\indexentry{code, Hadamard|hyperpage}{54}
+\indexentry{HadamardCode@\texttt  {HadamardCode}|hyperpage}{54}
+\indexentry{Hadamard matrix|hyperpage}{54}
+\indexentry{code, conference|hyperpage}{54}
+\indexentry{ConferenceCode@\texttt  {ConferenceCode}|hyperpage}{54}
+\indexentry{conference matrix|hyperpage}{55}
+\indexentry{MOLSCode@\texttt  {MOLSCode}|hyperpage}{55}
+\indexentry{RandomCode@\texttt  {RandomCode}|hyperpage}{56}
+\indexentry{code, Nordstrom-Robinson|hyperpage}{56}
+\indexentry{NordstromRobinsonCode@\texttt  {NordstromRobinsonCode}|hyperpage}{56}
+\indexentry{code, greedy|hyperpage}{56}
+\indexentry{GreedyCode@\texttt  {GreedyCode}|hyperpage}{56}
+\indexentry{LexiCode@\texttt  {LexiCode}|hyperpage}{57}
+\indexentry{GeneratorMatCode@\texttt  {GeneratorMatCode}|hyperpage}{57}
+\indexentry{CheckMatCode@\texttt  {CheckMatCode}|hyperpage}{58}
+\indexentry{code, Hamming|hyperpage}{58}
+\indexentry{HammingCode@\texttt  {HammingCode}|hyperpage}{58}
+\indexentry{code, Reed-Muller|hyperpage}{59}
+\indexentry{ReedMullerCode@\texttt  {ReedMullerCode}|hyperpage}{59}
+\indexentry{code, alternant|hyperpage}{59}
+\indexentry{AlternantCode@\texttt  {AlternantCode}|hyperpage}{59}
+\indexentry{code, Goppa (classical)|hyperpage}{59}
+\indexentry{GoppaCode@\texttt  {GoppaCode}|hyperpage}{59}
+\indexentry{code, Srivastava|hyperpage}{60}
+\indexentry{GeneralizedSrivastavaCode@\texttt  {GeneralizedSrivastavaCode}|hyperpage}{60}
+\indexentry{SrivastavaCode@\texttt  {SrivastavaCode}|hyperpage}{61}
+\indexentry{code, Cordaro-Wagner|hyperpage}{61}
+\indexentry{CordaroWagnerCode@\texttt  {CordaroWagnerCode}|hyperpage}{61}
+\indexentry{RandomLinearCode@\texttt  {RandomLinearCode}|hyperpage}{61}
+\indexentry{OptimalityCode@\texttt  {OptimalityCode}|hyperpage}{62}
+\indexentry{BestKnownLinearCode@\texttt  {BestKnownLinearCode}|hyperpage}{62}
+\indexentry{code, Gabidulin|hyperpage}{63}
+\indexentry{GabidulinCode@\texttt  {GabidulinCode}|hyperpage}{63}
+\indexentry{EnlargedGabidulinCode@\texttt  {EnlargedGabidulinCode}|hyperpage}{63}
+\indexentry{code, Davydov|hyperpage}{63}
+\indexentry{DavydovCode@\texttt  {DavydovCode}|hyperpage}{63}
+\indexentry{code, Tombak|hyperpage}{63}
+\indexentry{TombakCode@\texttt  {TombakCode}|hyperpage}{63}
+\indexentry{EnlargedTombakCode@\texttt  {EnlargedTombakCode}|hyperpage}{64}
+\indexentry{code, Golay (binary)|hyperpage}{64}
+\indexentry{BinaryGolayCode@\texttt  {BinaryGolayCode}|hyperpage}{64}
+\indexentry{ExtendedBinaryGolayCode@\texttt  {ExtendedBinaryGolayCode}|hyperpage}{64}
+\indexentry{code, Golay (ternary)|hyperpage}{65}
+\indexentry{TernaryGolayCode@\texttt  {TernaryGolayCode}|hyperpage}{65}
+\indexentry{ExtendedTernaryGolayCode@\texttt  {ExtendedTernaryGolayCode}|hyperpage}{65}
+\indexentry{generator polynomial|hyperpage}{66}
+\indexentry{check polynomial|hyperpage}{66}
+\indexentry{GeneratorPolCode@\texttt  {GeneratorPolCode}|hyperpage}{66}
+\indexentry{CheckPolCode@\texttt  {CheckPolCode}|hyperpage}{67}
+\indexentry{RootsCode@\texttt  {RootsCode}|hyperpage}{67}
+\indexentry{code, Bose-Chaudhuri-Hockenghem|hyperpage}{68}
+\indexentry{BCHCode@\texttt  {BCHCode}|hyperpage}{68}
+\indexentry{Bose distance|hyperpage}{68}
+\indexentry{code, Reed-Solomon|hyperpage}{68}
+\indexentry{ReedSolomonCode@\texttt  {ReedSolomonCode}|hyperpage}{69}
+\indexentry{QRCode@\texttt  {QRCode}|hyperpage}{69}
+\indexentry{code, Fire|hyperpage}{69}
+\indexentry{FireCode@\texttt  {FireCode}|hyperpage}{69}
+\indexentry{order of polynomial|hyperpage}{70}
+\indexentry{WholeSpaceCode@\texttt  {WholeSpaceCode}|hyperpage}{70}
+\indexentry{NullCode@\texttt  {NullCode}|hyperpage}{70}
+\indexentry{RepetitionCode@\texttt  {RepetitionCode}|hyperpage}{70}
+\indexentry{CyclicCodes@\texttt  {CyclicCodes}|hyperpage}{71}
+\indexentry{NrCyclicCodes@\texttt  {NrCyclicCodes}|hyperpage}{71}
+\indexentry{code, evaluation|hyperpage}{72}
+\indexentry{EvaluationCode@\texttt  {EvaluationCode}|hyperpage}{72}
+\indexentry{GeneralizedReedSolomonCode@\texttt  {GeneralizedReedSolomonCode}|hyperpage}{72}
+\indexentry{GeneralizedReedMullerCode@\texttt  {GeneralizedReedMullerCode}|hyperpage}{73}
+\indexentry{AffinePointsOnCurve@\texttt  {AffinePointsOnCurve}|hyperpage}{74}
+\indexentry{OnePointAGCode@\texttt  {OnePointAGCode}|hyperpage}{74}
+\indexentry{ToricPoints@\texttt  {ToricPoints}|hyperpage}{75}
+\indexentry{code, toric|hyperpage}{75}
+\indexentry{ToricCode@\texttt  {ToricCode}|hyperpage}{75}
+\indexentry{Parity check|hyperpage}{76}
+\indexentry{ExtendedCode@\texttt  {ExtendedCode}|hyperpage}{76}
+\indexentry{PuncturedCode@\texttt  {PuncturedCode}|hyperpage}{77}
+\indexentry{EvenWeightSubcode@\texttt  {EvenWeightSubcode}|hyperpage}{77}
+\indexentry{PermutedCode@\texttt  {PermutedCode}|hyperpage}{78}
+\indexentry{ExpurgatedCode@\texttt  {ExpurgatedCode}|hyperpage}{78}
+\indexentry{AugmentedCode@\texttt  {AugmentedCode}|hyperpage}{79}
+\indexentry{RemovedElementsCode@\texttt  {RemovedElementsCode}|hyperpage}{79}
+\indexentry{AddedElementsCode@\texttt  {AddedElementsCode}|hyperpage}{80}
+\indexentry{ShortenedCode@\texttt  {ShortenedCode}|hyperpage}{80}
+\indexentry{LengthenedCode@\texttt  {LengthenedCode}|hyperpage}{81}
+\indexentry{ResidueCode@\texttt  {ResidueCode}|hyperpage}{82}
+\indexentry{ConstructionBCode@\texttt  {ConstructionBCode}|hyperpage}{82}
+\indexentry{DualCode@\texttt  {DualCode}|hyperpage}{82}
+\indexentry{self-dual|hyperpage}{83}
+\indexentry{ConversionFieldCode@\texttt  {ConversionFieldCode}|hyperpage}{83}
+\indexentry{CosetCode@\texttt  {CosetCode}|hyperpage}{83}
+\indexentry{ConstantWeightSubcode@\texttt  {ConstantWeightSubcode}|hyperpage}{84}
+\indexentry{StandardFormCode@\texttt  {StandardFormCode}|hyperpage}{84}
+\indexentry{PiecewiseConstantCode@\texttt  {PiecewiseConstantCode}|hyperpage}{85}
+\indexentry{DirectSumCode@\texttt  {DirectSumCode}|hyperpage}{85}
+\indexentry{UUVCode@\texttt  {UUVCode}|hyperpage}{86}
+\indexentry{DirectProductCode@\texttt  {DirectProductCode}|hyperpage}{86}
+\indexentry{IntersectionCode@\texttt  {IntersectionCode}|hyperpage}{87}
+\indexentry{hull|hyperpage}{87}
+\indexentry{UnionCode@\texttt  {UnionCode}|hyperpage}{87}
+\indexentry{ExtendedDirectSumCode@\texttt  {ExtendedDirectSumCode}|hyperpage}{87}
+\indexentry{AmalgamatedDirectSumCode@\texttt  {AmalgamatedDirectSumCode}|hyperpage}{88}
+\indexentry{BlockwiseDirectSumCode@\texttt  {BlockwiseDirectSumCode}|hyperpage}{89}
+\indexentry{bounds, Singleton|hyperpage}{90}
+\indexentry{UpperBoundSingleton@\texttt  {UpperBoundSingleton}|hyperpage}{90}
+\indexentry{maximum distance separable|hyperpage}{91}
+\indexentry{bounds, Hamming|hyperpage}{91}
+\indexentry{bounds, sphere packing bound|hyperpage}{91}
+\indexentry{perfect|hyperpage}{91}
+\indexentry{UpperBoundHamming@\texttt  {UpperBoundHamming}|hyperpage}{91}
+\indexentry{bounds, Johnson|hyperpage}{91}
+\indexentry{UpperBoundJohnson@\texttt  {UpperBoundJohnson}|hyperpage}{91}
+\indexentry{bounds, Plotkin|hyperpage}{91}
+\indexentry{UpperBoundPlotkin@\texttt  {UpperBoundPlotkin}|hyperpage}{92}
+\indexentry{bounds, Elias|hyperpage}{92}
+\indexentry{UpperBoundElias@\texttt  {UpperBoundElias}|hyperpage}{92}
+\indexentry{bounds, Griesmer|hyperpage}{92}
+\indexentry{UpperBoundGriesmer@\texttt  {UpperBoundGriesmer}|hyperpage}{92}
+\indexentry{$A(n,d)$|hyperpage}{93}
+\indexentry{UpperBound@\texttt  {UpperBound}|hyperpage}{93}
+\indexentry{LowerBoundMinimumDistance@\texttt  {LowerBoundMinimumDistance}|hyperpage}{93}
+\indexentry{bound, Gilbert-Varshamov lower|hyperpage}{93}
+\indexentry{LowerBoundGilbertVarshamov@\texttt  {LowerBoundGilbertVarshamov}|hyperpage}{94}
+\indexentry{bound, sphere packing lower|hyperpage}{94}
+\indexentry{LowerBoundSpherePacking@\texttt  {LowerBoundSpherePacking}|hyperpage}{94}
+\indexentry{UpperBoundMinimumDistance@\texttt  {UpperBoundMinimumDistance}|hyperpage}{94}
+\indexentry{BoundsMinimumDistance@\texttt  {BoundsMinimumDistance}|hyperpage}{95}
+\indexentry{BoundsCoveringRadius@\texttt  {BoundsCoveringRadius}|hyperpage}{95}
+\indexentry{IncreaseCoveringRadiusLowerBound@\texttt  {IncreaseCoveringRadiusLowerBound}|hyperpage}{96}
+\indexentry{ExhaustiveSearchCoveringRadius@\texttt  {ExhaustiveSearchCoveringRadius}|hyperpage}{97}
+\indexentry{GeneralLowerBoundCoveringRadius@\texttt  {GeneralLowerBoundCoveringRadius}|hyperpage}{97}
+\indexentry{GeneralUpperBoundCoveringRadius@\texttt  {GeneralUpperBoundCoveringRadius}|hyperpage}{98}
+\indexentry{LowerBoundCoveringRadiusSphereCovering@\texttt  {LowerBoundCoveringRadiusSphereCovering}|hyperpage}{98}
+\indexentry{LowerBoundCoveringRadiusVanWee1@\texttt  {LowerBoundCoveringRadiusVanWee1}|hyperpage}{99}
+\indexentry{LowerBoundCoveringRadiusVanWee2@\texttt  {LowerBoundCoveringRadiusVanWee2}|hyperpage}{99}
+\indexentry{LowerBoundCoveringRadiusCountingExcess@\texttt  {LowerBoundCoveringRadiusCountingExcess}|hyperpage}{100}
+\indexentry{LowerBoundCoveringRadiusEmbedded1@\texttt  {LowerBoundCoveringRadiusEmbedded1}|hyperpage}{100}
+\indexentry{LowerBoundCoveringRadiusEmbedded2@\texttt  {LowerBoundCoveringRadiusEmbedded2}|hyperpage}{101}
+\indexentry{LowerBoundCoveringRadiusInduction@\texttt  {LowerBoundCoveringRadiusInduction}|hyperpage}{102}
+\indexentry{UpperBoundCoveringRadiusRedundancy@\texttt  {UpperBoundCoveringRadiusRedundancy}|hyperpage}{102}
+\indexentry{external distance|hyperpage}{102}
+\indexentry{UpperBoundCoveringRadiusDelsarte@\texttt  {UpperBoundCoveringRadiusDelsarte}|hyperpage}{102}
+\indexentry{UpperBoundCoveringRadiusStrength@\texttt  {UpperBoundCoveringRadiusStrength}|hyperpage}{103}
+\indexentry{strength|hyperpage}{103}
+\indexentry{UpperBoundCoveringRadiusGriesmerLike@\texttt  {UpperBoundCoveringRadiusGriesmerLike}|hyperpage}{103}
+\indexentry{UpperBoundCoveringRadiusCyclicCode@\texttt  {UpperBoundCoveringRadiusCyclicCode}|hyperpage}{103}
+\indexentry{KrawtchoukMat@\texttt  {KrawtchoukMat}|hyperpage}{104}
+\indexentry{Gary code|hyperpage}{104}
+\indexentry{GrayMat@\texttt  {GrayMat}|hyperpage}{104}
+\indexentry{SylvesterMat@\texttt  {SylvesterMat}|hyperpage}{105}
+\indexentry{Hadamard matrix|hyperpage}{105}
+\indexentry{HadamardMat@\texttt  {HadamardMat}|hyperpage}{105}
+\indexentry{VandermondeMat@\texttt  {VandermondeMat}|hyperpage}{106}
+\indexentry{standard form|hyperpage}{106}
+\indexentry{PutStandardForm@\texttt  {PutStandardForm}|hyperpage}{106}
+\indexentry{IsInStandardForm@\texttt  {IsInStandardForm}|hyperpage}{107}
+\indexentry{PermutedCols@\texttt  {PermutedCols}|hyperpage}{107}
+\indexentry{VerticalConversionFieldMat@\texttt  {VerticalConversionFieldMat}|hyperpage}{107}
+\indexentry{HorizontalConversionFieldMat@\texttt  {HorizontalConversionFieldMat}|hyperpage}{108}
+\indexentry{mutually orthogonal Latin squares|hyperpage}{108}
+\indexentry{Latin square|hyperpage}{108}
+\indexentry{MOLS@\texttt  {MOLS}|hyperpage}{108}
+\indexentry{IsLatinSquare@\texttt  {IsLatinSquare}|hyperpage}{109}
+\indexentry{AreMOLS@\texttt  {AreMOLS}|hyperpage}{109}
+\indexentry{CoordinateNorm@\texttt  {CoordinateNorm}|hyperpage}{110}
+\indexentry{norm of a code|hyperpage}{110}
+\indexentry{CodeNorm@\texttt  {CodeNorm}|hyperpage}{110}
+\indexentry{acceptable coordinate|hyperpage}{110}
+\indexentry{IsCoordinateAcceptable@\texttt  {IsCoordinateAcceptable}|hyperpage}{110}
+\indexentry{acceptable coordinate|hyperpage}{111}
+\indexentry{GeneralizedCodeNorm@\texttt  {GeneralizedCodeNorm}|hyperpage}{111}
+\indexentry{normal code|hyperpage}{111}
+\indexentry{IsNormalCode@\texttt  {IsNormalCode}|hyperpage}{111}
+\indexentry{weight enumerator polynomial|hyperpage}{111}
+\indexentry{CodeWeightEnumerator@\texttt  {CodeWeightEnumerator}|hyperpage}{111}
+\indexentry{CodeDistanceEnumerator@\texttt  {CodeDistanceEnumerator}|hyperpage}{112}
+\indexentry{MacWilliams transform|hyperpage}{112}
+\indexentry{CodeMacWilliamsTransform@\texttt  {CodeMacWilliamsTransform}|hyperpage}{112}
+\indexentry{IsSelfComplementaryCode@\texttt  {IsSelfComplementaryCode}|hyperpage}{112}
+\indexentry{affine code|hyperpage}{113}
+\indexentry{IsAffineCode@\texttt  {IsAffineCode}|hyperpage}{113}
+\indexentry{IsAlmostAffineCode@\texttt  {IsAlmostAffineCode}|hyperpage}{113}
+\indexentry{Griesmer code|hyperpage}{113}
+\indexentry{IsGriesmerCode@\texttt  {IsGriesmerCode}|hyperpage}{113}
+\indexentry{density of a code|hyperpage}{114}
+\indexentry{CodeDensity@\texttt  {CodeDensity}|hyperpage}{114}
+\indexentry{perfect|hyperpage}{114}
+\indexentry{SphereContent@\texttt  {SphereContent}|hyperpage}{114}
+\indexentry{Krawtchouk@\texttt  {Krawtchouk}|hyperpage}{115}
+\indexentry{PrimitiveUnityRoot@\texttt  {PrimitiveUnityRoot}|hyperpage}{115}
+\indexentry{reciprocal polynomial|hyperpage}{115}
+\indexentry{ReciprocalPolynomial@\texttt  {ReciprocalPolynomial}|hyperpage}{115}
+\indexentry{CyclotomicCosets@\texttt  {CyclotomicCosets}|hyperpage}{116}
+\indexentry{WeightHistogram@\texttt  {WeightHistogram}|hyperpage}{116}
+\indexentry{CoefficientToPolynomial@\texttt  {CoefficientToPolynomial}|hyperpage}{117}
+\indexentry{DegreesMonomialTerm@\texttt  {DegreesMonomialTerm}|hyperpage}{117}
+\indexentry{DivisorsMultivariatePolynomial@\texttt  {DivisorsMultivariatePolynomial}|hyperpage}{117}

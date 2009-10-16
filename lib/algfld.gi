@@ -2,7 +2,7 @@
 ##
 #W  algfld.gi                   GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: algfld.gi,v 4.64 2009/09/28 16:01:17 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the methods for algebraic elements and their families
 ##
 Revision.algfld_gi:=
-  "@(#)$Id$";
+  "@(#)$Id: algfld.gi,v 4.64 2009/09/28 16:01:17 gap Exp $";
 
 #############################################################################
 ##
@@ -111,7 +111,8 @@ local fam,i,cof,red,rchar,impattr,deg;
   fam!.indeterminateName:="a";
 
   # reductions
-  red:=IdentityMat(deg,fam!.oneCoefficient);
+  #red:=IdentityMat(deg,fam!.oneCoefficient);
+  red:=[];
   for i in [deg..2*deg-2] do
     cof:=ListWithIdenticalEntries(i,fam!.zeroCoefficient);
     Add(cof,fam!.oneCoefficient);
@@ -122,11 +123,18 @@ local fam,i,cof,red,rchar,impattr,deg;
     while Length(cof)<deg do
       Add(cof,fam!.zeroCoefficient);
     od;
-    Add(red,cof);
+    Add(red,cof{[1..deg]});
   od;
   red:=ImmutableMatrix(fam!.baseField,red);
   fam!.reductionMat:=red;
   fam!.prodlen:=Length(red);
+  fam!.entryrange:=[1..deg];
+
+  red:=[];
+  for i in [deg..2*deg-1] do
+    red[i]:=[deg+1..i];
+  od;
+  fam!.mulrange:=red;
 
   SetIsUFDFamily(fam,true);
   SetCoefficientsFamily(fam,FamilyObj(One(f)));
@@ -351,26 +359,47 @@ end);
 ##
 InstallMethod(\+,"AlgElm+AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
 function(a,b)
-  return AlgExtElm(FamilyObj(a),a![1]+b![1]);
+  local e,i,fam;
+  fam:=FamilyObj(a);
+  e:=a![1]+b![1];
+  i:=2;
+  while i<=fam!.deg do
+    if e[i]<>fam!.zeroCoefficient then
+      # still extension
+      return Objectify(fam!.extType,[e]);
+    fi;
+    i:=i+1;
+  od;
+  return Objectify(fam!.baseType,[e[1]]);
+  #return AlgExtElm(FamilyObj(a),a![1]+b![1]);
 end);
 
 InstallMethod(\+,"AlgElm+BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
 function(a,b)
+local fam;
+  fam:=FamilyObj(a);
   a:=ShallowCopy(a![1]);
   a[1]:=a[1]+b![1];
-  return ObjByExtRep(FamilyObj(b),a);
+  return Objectify(fam!.extType,[a]);
 end);
 
 InstallMethod(\+,"BFElm+AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
 function(a,b)
+local fam;
+  fam:=FamilyObj(a);
   b:=ShallowCopy(b![1]);
   b[1]:=b[1]+a![1];
-  return ObjByExtRep(FamilyObj(a),b);
+  return Objectify(fam!.extType,[b]);
+  #return ObjByExtRep(FamilyObj(a),b);
 end);
 
 InstallMethod(\+,"BFElm+BFElm",IsIdenticalObj,[IsAlgBFRep,IsAlgBFRep],0,
 function(a,b)
-  return ObjByExtRep(FamilyObj(a),a![1]+b![1]);
+local e,fam;
+  fam:=FamilyObj(a);
+  e:=a![1]+b![1];
+  return Objectify(fam!.baseType,[e]);
+  #return ObjByExtRep(FamilyObj(a),a![1]+b![1]);
 end);
 
 InstallMethod(\+,"AlgElm+FElm",IsElmsCoeffs,[IsAlgExtRep,IsRingElement],0,
@@ -379,7 +408,8 @@ local fam;
   fam:=FamilyObj(a);
   a:=ShallowCopy(a![1]);
   a[1]:=a[1]+(b*fam!.oneCoefficient);
-  return ObjByExtRep(fam,a);
+  return Objectify(fam!.baseType,[a]);
+  #return ObjByExtRep(fam,a);
 end);
 
 InstallMethod(\+,"FElm+AlgElm",IsCoeffsElms,[IsRingElement,IsAlgExtRep],0,
@@ -388,19 +418,26 @@ local fam;
   fam:=FamilyObj(b);
   b:=ShallowCopy(b![1]);
   b[1]:=b[1]+(a*fam!.oneCoefficient);
-  return ObjByExtRep(fam,b);
+  return Objectify(fam!.baseType,[b]);
+  #return ObjByExtRep(fam,b);
 end);
 
 InstallMethod(\+,"BFElm+FElm",IsElmsCoeffs,[IsAlgBFRep,IsRingElement],0,
 function(a,b)
+local fam;
+  fam:=FamilyObj(a);
   b:=a![1]+b;
-  return AlgExtElm(FamilyObj(a),b);
+  return Objectify(fam!.baseType,[b]);
+  #return AlgExtElm(FamilyObj(a),b);
 end);
 
 InstallMethod(\+,"FElm+BFElm",IsCoeffsElms,[IsRingElement,IsAlgBFRep],0,
 function(a,b)
+local fam;
+  fam:=FamilyObj(b);
   a:=b![1]+a;
-  return AlgExtElm(FamilyObj(b),a);
+  return Objectify(fam!.baseType,[a]);
+  #return AlgExtElm(FamilyObj(b),a);
 end);
 
 #############################################################################
@@ -409,12 +446,12 @@ end);
 ##
 InstallMethod( AdditiveInverseOp, "AlgElm",true,[IsAlgExtRep],0,
 function(a)
-  return ObjByExtRep(FamilyObj(a),-a![1]);
+  return Objectify(FamilyObj(a)!.extType,[-a![1]]);
 end);
 
 InstallMethod( AdditiveInverseOp, "BFElm",true,[IsAlgBFRep],0,
 function(a)
-  return ObjByExtRep(FamilyObj(a),-a![1]);
+  return Objectify(FamilyObj(a)!.baseType,[-a![1]]);
 end);
 
 #############################################################################
@@ -423,36 +460,58 @@ end);
 ##
 InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
 function(x,y)
-local fam,b,c,i;
+local fam,b,d,i;
   fam:=FamilyObj(x);
   b:=ProductCoeffs(x![1],y![1]);
+  while Length(b)<fam!.deg do
+    Add(b,fam!.zeroCoefficient);
+  od;
+  b:=b{fam!.entryrange}+b{fam!.mulrange[Length(b)]}*fam!.reductionMat;
+  #d:=ReduceCoeffs(b,fam!.polCoeffs);
 
-  ReduceCoeffs(b,fam!.polCoeffs);
-  return AlgExtElm(fam,b);
+  # check whether we are in the base field
+  i:=2;
+  while i<=fam!.deg do
+    if b[i]<>fam!.zeroCoefficient then
+      # and whether the vector is too short.
+      i:=Length(b)+1;
+      while i<=fam!.deg do
+	if not IsBound(b[i]) then
+	  b[i]:=fam!.zeroCoefficient;
+	fi;
+	i:=i+1;
+      od;
+      return Objectify(fam!.extType,[b]);
+    fi;
+    i:=i+1;
+  od;
+  return Objectify(fam!.baseType,[b[1]]);
 
-  #This alternative approach does not seem to be faster.
-  #c:=b*fam!.reductionMat;
-  #if fam!.rchar>0 then
-  #  ConvertToVectorRep(c,fam!.rchar);
-  #fi;
-  #return AlgExtElm(fam,c);
 end);
 
 InstallMethod(\*,"AlgElm*BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
 function(a,b)
-  a:=a![1]*b![1];
-  return AlgExtElm(FamilyObj(b),a);
+  if IsZero(b![1]) then
+    return b;
+  else
+    a:=a![1]*b![1];
+    return Objectify(FamilyObj(b)!.extType,[a]);
+  fi;
 end);
 
 InstallMethod(\*,"BFElm*AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
 function(a,b)
-  b:=b![1]*a![1];
-  return AlgExtElm(FamilyObj(a),b);
+  if IsZero(a![1]) then
+    return a;
+  else
+    b:=b![1]*a![1];
+    return Objectify(FamilyObj(a)!.extType,[b]);
+  fi;
 end);
 
 InstallMethod(\*,"BFElm*BFElm",IsIdenticalObj,[IsAlgBFRep,IsAlgBFRep],0,
 function(a,b)
-  return ObjByExtRep(FamilyObj(a),a![1]*b![1]);
+  return Objectify(FamilyObj(a)!.baseType,[a![1]*b![1]]);
 end);
 
 InstallMethod(\*,"Alg*FElm",IsElmsCoeffs,[IsAlgebraicElement,IsRingElement],0,

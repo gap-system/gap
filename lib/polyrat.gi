@@ -2,7 +2,7 @@
 ##
 #W  polyrat.gi                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: polyrat.gi,v 4.43 2004/09/14 02:21:25 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains functions for polynomials over the rationals
 ##
 Revision.polyrat_gi:=
-  "@(#)$Id$";
+  "@(#)$Id: polyrat.gi,v 4.43 2004/09/14 02:21:25 gap Exp $";
 
 #############################################################################
 ##
@@ -47,7 +47,7 @@ local ac,bc,i,j,pc,pv,ci,fam;
     od;
   od;
   pv:=pv+RemoveOuterCoeffs(pc,fam!.zeroCoefficient);
-  return LaurentPolynomialByExtRep(fam,pc,pv,ci);
+  return LaurentPolynomialByExtRepNC(fam,pc,pv,ci);
 end);
 
 #############################################################################
@@ -104,7 +104,7 @@ local ac,bc,mc,i,j,pc,ci,f,fam;
     ShrinkCoeffs(pc);
   od;
   p:=RemoveOuterCoeffs(pc,fam!.zeroCoefficient);
-  return LaurentPolynomialByExtRep(fam,pc,p,ci);
+  return LaurentPolynomialByExtRepNC(fam,pc,p,ci);
 end);
 
 
@@ -666,7 +666,7 @@ local G, P, l, m, i;
       l[i] := G[1][i];
     fi;
   od;
-  G := LaurentPolynomialByExtRep(CoefficientsFamily(FamilyObj(f)),
+  G := LaurentPolynomialByExtRepNC(CoefficientsFamily(FamilyObj(f)),
                                  l,G[2],t.brci);
   Info(InfoPoly,3,"gcd mod ",t.modulo," = ",G);
 
@@ -761,7 +761,7 @@ local brci,gcd,fam,fc,gc;
   fi;
   fc:=Minimum(fc[2],gc[2]);
   fc:=fc+RemoveOuterCoeffs(gcd,fam!.zeroCoefficient);
-  return StandardAssociate(R,LaurentPolynomialByExtRep(fam,gcd,fc,brci));
+  return StandardAssociate(R,LaurentPolynomialByExtRepNC(fam,gcd,fc,brci));
 end);
 
 InstallMethod(\mod,"reduction of univariate rational polynomial at a prime",
@@ -794,7 +794,7 @@ local c,d,i,m;
       Add(d,m);
     fi;
   od;
-  return PolynomialByExtRep(FamilyObj(f),d);
+  return PolynomialByExtRepNC(FamilyObj(f),d);
 end);
 
 #############################################################################
@@ -847,7 +847,7 @@ local   m, n, i, k, c, q, val, fc,gc,brci,fam;
     fi;
   od;
   val:=val+RemoveOuterCoeffs(q,fam!.zeroCoefficient);
-  return LaurentPolynomialByExtRep(fam,q,val,brci);
+  return LaurentPolynomialByExtRepNC(fam,q,val,brci);
 
 end);
 
@@ -1131,7 +1131,7 @@ local  fc,gc,a,m, n, i, k, c, q, val, brci,fam;
     fi;
   od;
   val:=val+RemoveOuterCoeffs(q,fam!.zeroCoefficient);
-  return LaurentPolynomialByExtRep(fam,q,val,brci);
+  return LaurentPolynomialByExtRepNC(fam,q,val,brci);
 end);
 
 

@@ -2,14 +2,14 @@
 ##
 #W  matblock.tst                GAP Library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: matblock.tst,v 1.8 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: matblock.tst,v 1.8 2005/05/05 15:04:16 gap Exp $");
 
 gap> m1 := BlockMatrix( [ [ 1, 1, [[1,1],[0,1]] ],
 >                         [ 1, 3, [[1,0],[0,1]] ],
@@ -114,7 +114,7 @@ gap> o2:= One( z );
 gap> o1 = o2;
 true
 
-gap> STOP_TEST( "matblock.tst", 3000000 );
+gap> STOP_TEST( "matblock.tst", 1200000 );
 
 
 #############################################################################

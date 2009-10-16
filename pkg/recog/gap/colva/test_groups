@@ -1,0 +1,56 @@
+for q in [2, 3, 4, 5, 7, 8, 9] do 
+  Print("q = ", q, "\n");
+  for d1 in [2,3,4,5,6] do
+    Print("d1 = ", d1, "\n");
+    for d2 in [2,3,4,5,6] do
+      Print("d2 = ", d2, "\n");
+      g:= DirectProductOfMatrixGroup(SL(d1, q), SL(d2, q));
+      ri:= ChiefTree(g);
+      Display(ri);
+      ori:= OrderTree(ri);
+      Display(ori);
+    od;
+  od;
+od;
+
+for q in [2, 3, 4, 5, 7, 8, 9] do 
+  Print("q = ", q, "\n");
+  for d1 in [2,3,4,5,6] do
+    Print("d1 = ", d1, "\n");
+    for d2 in [2,3,4,5,6] do
+      Print("d2 = ", d2, "\n");
+      g:= DirectProductOfMatrixGroup(GL(d1, q), GL(d2, q));
+      ri:= ChiefTree(g);
+      ori:= OrderTree(ri);
+      Display(ori);
+    od;
+  od;
+od;
+
+for q in [2, 3, 4, 5, 7, 8, 9] do 
+  Print("q = ", q, "\n");
+  for d1 in [2,4,6] do
+    Print("d1 = ", d1, "\n");
+    for d2 in [2,4,6] do
+      Print("d2 = ", d2, "\n");
+      g:= DirectProductOfMatrixGroup(Sp(d1, q), Sp(d2, q));
+      ri:= ChiefTree(g);
+      ori:= OrderTree(ri);
+      Display(ori);
+    od;
+  od;
+od;
+
+for q in [2, 3, 4, 5, 7,] do 
+  Print("q = ", q, "\n");
+  for d1 in [2,3,4,5,6] do
+    Print("d1 = ", d1, "\n");
+    for d2 in [2,3,4,5,6] do
+      Print("d2 = ", d2, "\n");
+      g:= DirectProductOfMatrixGroup(SU(d1, q), SU(d2, q));
+      ri:= ChiefTree(g);
+      ori:= OrderTree(ri);
+      Display(ori);
+    od;
+  od;
+od;

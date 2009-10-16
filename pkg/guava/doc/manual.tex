@@ -1,0 +1,51 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                GUAVA documentation
+%%
+%H  $Id: manual.tex,v 1.8 2004/12/20 21:26:06 gap Exp $
+%%
+%%
+
+\input gapmacro
+\Package{GUAVA}
+
+\BeginningOfBook{guava}
+
+\UseReferences{../../../doc/ext}
+\UseReferences{../../../doc/ref}
+
+\TitlePage{
+  \centerline{\titlefont GUAVA}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont A GAP4 Package}\bigskip\bigskip
+  \centerline{\secfont Version 1.99}\vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont Jasper Cramwinckel, Erik Roijackers, 
+              Reinald Baart,}\medskip
+  \centerline{\secfont Eric Minkes, David Joyner}\bigskip
+  \centerline{Translated from the {\GAP} 3 version by}\medskip
+  \centerline{\secfont Lea Ruscio}
+\bigskip\bigskip\bigskip\bigskip\bigskip\bigskip
+\bigskip\bigskip\bigskip\bigskip
+  \centerline{Currently maintained by}\medskip
+  \centerline{\secfont David Joyner}\medskip
+  \centerline{\Mailto{wdj@usna.edu}}\vfill
+  \centerline{\URL{http://cadigweb.ew.usna.edu/~wdj/gap/GUAVA/}}\vfill
+  \centerline{\secfont{\Month} \Year}
+}
+%
+%
+\TableOfContents
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{./manual,../../../doc/mrabbrev,../../../doc/manual}}
+\Chapters
+\Input{intro}
+\Input{codewds}
+\Input{codes}
+\Input{codegen}
+\Input{codeman}
+\Input{bounds}
+\Input{exten}
+\Bibliography
+\Index
+\EndOfBook

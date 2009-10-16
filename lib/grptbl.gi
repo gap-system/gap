@@ -2,7 +2,7 @@
 ##
 #W  grptbl.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grptbl.gi,v 4.24 2006/03/07 15:33:21 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  tables.
 ##
 Revision.grptbl_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grptbl.gi,v 4.24 2006/03/07 15:33:21 sal Exp $";
 
 
 #############################################################################

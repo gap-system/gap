@@ -4,7 +4,7 @@
 *W                                                           & Volkmar Felsch
 *W                                                         & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: costab.h,v 4.10 2002/04/15 10:03:45 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_costab_h =
-   "@(#)$Id$";
+   "@(#)$Id: costab.h,v 4.10 2002/04/15 10:03:45 sal Exp $";
 #endif
 
 

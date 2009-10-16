@@ -1,0 +1,5 @@
+Generators: x y;
+Limiting weight: 4;
+Relations:
+[x,[x,y]]+y;
+[y,[x,y]]-x.

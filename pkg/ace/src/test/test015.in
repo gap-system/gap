@@ -1,0 +1,12 @@
+
+Gr: a,b;
+Rel: aa, bbb, ababababab;
+Gen: ;
+
+Mess: 1;
+
+HLT;
+
+End;
+Defn;
+Defn:1;

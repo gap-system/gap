@@ -2,7 +2,7 @@
 ##
 #W  fastendo.gd           GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: fastendo.gd,v 4.2 2002/04/15 10:04:39 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  makes the arithmetic much faster.
 ##
 Revision.fastendo_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: fastendo.gd,v 4.2 2002/04/15 10:04:39 sal Exp $";
 
 
 ############################################################################

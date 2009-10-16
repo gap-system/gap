@@ -1,0 +1,16 @@
+Generators sl(lambda): x y z;
+Parameter, T = t^2, L = lambda^2: T L;
+Relations:
+
+[[x,y],x] - 2 x;
+[[x,y],y] + 2 y;
+
+[y,z];
+[[x,y],z] + 4 z;
+[x,[x,[x,[x,[x,z]]]]];
+
+3 [[x,z],[x,[x,z]]] - 2 [z,[x,[x,[x,z]]]] - (24 L T - 96 T) y;
+[z,[z,[x,z]]];
+4 [[x,[x,[x,z]]],[z,[x,z]]] - 3 [[x,[x,z]],[z,[x,[x,z]]]] -
+                                       (576 L T - 5184 T) z;
+

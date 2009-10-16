@@ -1,0 +1,52 @@
+#!/bin/bash
+#  $Id: pack,v 1.6 2007/05/31 14:04:54 gap Exp $
+
+echo "Did you adjust (yN)?: Version, Date, ArchiveURL in ./PackageInfo.g"
+echo "                ./version"
+echo "                Date. copyright date, Version in doc/gapdoc.xml"
+echo "                                                 example/example.xml"
+
+read -n 1 start
+echo
+if [ $start'X' != 'yX' ]; then
+  echo Ok, please adjust and try again.
+  exit 2
+fi
+
+dirnam=GAPDoc-`cat ./version`
+rm -rf ttttmp
+echo "Checking out current version into ttttmp/"$dirnam" . . ."
+mkdir -p ttttmp/$dirnam
+cd ttttmp/$dirnam
+cp -a ../../CVS .
+cvs update -d > /dev/null
+echo building documentation
+gap -l ~/gapmore\; < makedocrel.g > /dev/null
+rm -f doc/manual.css example/manual.css 3k+1/manual.css
+cp gapdoc.css doc/manual.css 
+cp gapdoc.css example/manual.css 
+cp gapdoc.css 3k+1/manual.css 
+
+echo "removing unwanted files . . ."
+rm -r pack TODO clean index.html pkgreadme.css
+rm -rf `find . -regex ".*/CVS"`
+rm -rf */*.{log,aux,blg,brf,bbl,idx,ilg,ind,pnr} */*.xml.bib
+rm -f ./makedoc.g ./maketxt ./doku toweb
+
+echo "creating archive . . ."
+cd ..
+tar cf $dirnam.tar $dirnam
+bzip2 -9 $dirnam.tar
+echo Cleaning up
+mv  $dirnam.tar.bz2 ..
+cd ..
+rm -rf ttttmp
+
+echo new archive in ./$dirnam.tar.bz2
+echo if ok then call
+echo "      ~/gap4/dev/DistributionUpdate/maindist/repack.py "$dirnam".tar.bz2"
+
+echo "if you are happy with this archive tag the current state before"
+echo "committing further changes, e.g.: "
+echo "       cvs tag REL"`sed -e "s/\./_/g" version`
+

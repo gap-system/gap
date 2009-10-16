@@ -1,0 +1,31 @@
+#example of maximal occurrences on defining generators 
+
+1
+3gp
+3
+1
+1
+{a, b}
+{a^3, b^3}
+0
+
+8     #interactive menu
+
+13    #set maxoccurrences bound for each of the generators
+6 4
+
+0     #exit from interactive menu
+
+6
+6
+6
+6
+6
+6
+6
+6
+
+2
+MO
+
+0

@@ -1,0 +1,272 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  introduc.tex              GAP applications              Thomas Breuer
+%%
+%H  @(#)$Id: introduc.tex,v 1.1 2002/06/27 16:17:38 gap Exp $
+%%
+%Y  Copyright 1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+\documentclass[a4paper]{article}
+
+\textwidth16cm
+\oddsidemargin0pt
+
+\parskip 1ex plus 0.5ex minus 0.5ex
+\parindent0pt
+
+% Miscellaneous macros.
+\def\GAP{{\sf GAP}}
+\def\ATLAS{{\sf ATLAS}}
+\def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
+\def\C{{\Bbb C}} \def\F{{\Bbb F}}
+
+\begin{document}
+
+\title{How to Read the Decomposition Matrices}
+
+\author{{\sc Thomas Breuer} \\[0.5cm]
+{\it Lehrstuhl D f\accent127ur Mathematik} \\
+{\it RWTH, 52056 Aachen, Germany}}
+
+\date{July 18th, 1999}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+
+For a fixed characteristic $p$ and a fixed simple group $G$,
+various bicyclic extensions $m.G.a$ may occur,
+where $G.a$ is a subgroup of the automorphism group of $G$
+and $m$ is a cyclic factor of the Schur multiplier of $G.a$.
+For each such group $G.a$, the information about all bicyclic extensions
+$m.G.a$ that occur in the {\ATLAS} of Finite Groups is shown together
+in one document.
+
+% Note that for cases such as $A_6.2_3$, no decomposition matrices
+% are shown for $4.A_6.2_3$.
+
+Each file starts with the {\bf name} of the group $G.a$ and the
+characteristic $p$,
+followed by an {\bf overview} of the blocks.
+Finally, the {\bf decomposition matrices} themselves are listed blockwise.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Blocks Overview}
+
+The blocks overview is a four-column table which is divided into several
+portions of rows.
+Each portion of rows describes the blocks containing faithful
+ordinary irreducible characters of a group of structure $m.G.a$,
+and this is denoted by the entry $m.G$ in the first column.
+The second column lists a number for each block,
+this number occurs in the upper left corner of the decomposition matrices
+shown further down.
+The third column lists the defects of the blocks.
+In the fourth column, for blocks of nonzero defect the dimensions of the
+decomposition matrices are listed;
+for each block of defect zero, the $1 \times 1$ decomposition matrix
+is omitted later on,
+instead the degree and the labels of the ordinary and the Brauer
+character in the block are listed in the overview part of the file.
+
+The blocks are ordered according to the appearance of ordinary
+irreducibles.
+That is, the first ordinary character in the $i$-th block appears later
+than the first in the $(i-1)$-th block and earlier than the first in the
+$(i+1)$-th block.
+Thus the principal block is always the first one.
+
+For central extensions $m.G.a$ with $m \geq 3$,
+the {\ATLAS} prints only those faithful characters for which
+the restriction to the centre of $m.G$ is a multiple of a particular
+irreducible character.
+In these cases, the decomposition matrix of a faithful block is shown
+only if its ordinary characters are printed in the {\ATLAS}.
+The conjugate blocks consisting of not printed characters are then the
+following blocks, their entries in columns three and four of the table
+are omitted, and their block numbers in the second column are extended
+by a description which decomposition matrix is taken instead.
+The following descriptions occur.
+$j = i\ast$ means that block $j$ is the unique block consisting of
+characters for which the printed ones lie in the $i$-th block,
+$j = i\ast k$ means that block $j$ consists of the images of the
+characters in the $i$-th block under the algebraic conjugacy $\ast k$,
+and $j = \overline{i}$ means that block $j$ is the complex conjugate of
+the $i$-th block.
+
+The blocks of a specific group $m.G.a$ are read off as follows.
+Let $M$ be the order of a maximal cyclic factor of the Schur multiplier
+of the simple group $G$ that is contained in the {\ATLAS} of Finite
+Groups,
+and $m.G.a$ a bicyclic extension where $m$ divides $M$.
+
+If $M$ is coprime to the characteristic $p$ then the set of blocks of
+$m.G.a$ is the union of blocks corresponding to the row portions
+of the factor groups of $m.G.a$,
+in the same way as the set of irreducible characters of $m.G.a$ is given
+in the {\ATLAS} of Finite Groups and the {\ATLAS} of Brauer Characters.
+For example, the $5$-blocks of $2.A_6$ are the blocks for $G$ and $2.G$,
+the $5$-blocks of $3.A_6$ are the blocks for $G$ and $3.G$,
+and the $5$-blocks of $6.A_6$ are the blocks for $G$, $2.G$, $3.G$, and
+$6.G$.
+
+If $p$ divides $M$ then either $p = 2$ or $p = 3$,
+since $M$ divides $12$ for all {\ATLAS} groups.
+In such a case, the first column of the overview table contains values
+$m.G$ only for $m$ divisible by the $p$-part of $M$.
+For groups $m.G.a$ where $m$ has this property the set of blocks is again
+the union of blocks of the appropriate factor groups.
+In the general case, let $m^{\prime}$ be the least common multiple of $m$
+and the $p$-part of $M$.
+Then the blocks of $m.G.a$ are in bijection with the blocks of
+$m^{\prime}.G.a$, the sets of Brauer characters of the two groups
+coincide,
+and the set of ordinary characters in each block of $m.G.a$ is a subset
+of the ordinary characters in the corresponding block of
+$m^{\prime}.G.a$;
+in the decomposition matrices shown later, the portions of ordinary
+irreducibles in the block for the factor groups of $m^{\prime}.G.a$ by
+$p$-groups are separated by horizontal lines.
+For example, the $2$-blocks of $6.A_6$ are the blocks in the portions
+for $2.G$ and $6.G$, the $2$-blocks of $A_6$ are the restrictions of the
+blocks of $2.A_6$ to the simple group.
+
+Note that due to this notation, the defects of blocks of factor groups
+may be smaller than the defects listed in the third column of the
+overview table.
+For example, in characteristic $3$ the group $A_6$ has a character
+$\chi_6$ of degree $9$ which hence is of defect zero.
+But viewed as a character of $3.G$, it occurs in a block of defect one,
+together with the character $\chi_{17}$ and its complex conjugate.
+
+In the case $m \not= m^{\prime}$, one more phenomenon may occur.
+Namely, if the centres of $m.G.a$ and $m.G$ differ then additionally
+the characters in a block of $m^{\prime}.G.a$ may lie in different blocks
+of $m.G.a$.
+For {\ATLAS} groups, this actually happens only for the case that an
+outer automorphism of $G$ acts on $m.G$ by inverting the elements in the
+centre,
+and the restriction of the shown block of $m^{\prime}.G.a$ to $m.G.a$
+splits into two blocks of this group.
+This phenomenon is indicated by a vertical and horizontal line in the
+decomposition matrix of the block of $m^{\prime}.G.a$.
+
+For example, consider the group $6.A_7.2$ in characteristic $3$.
+The unique defect $2$ block of $3.A_7.2$ contains three faithful ordinary
+irreducible characters, six odinary irreducibles of the actor group
+$A_7.2$, and four Brauer characters of $A_7.2$.
+The restriction to $A_7.2$ consists of six ordinary and four Brauer
+characters, lying in two blocks of $A_7.2$.
+The same happens also for the unique defect $1$ block of $6.A_7.2$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Format of the Decomposition Matrices}
+
+In the upper left corner of each decomposition matrix,
+the number of the block is shown.
+
+The rows of a decomposition matrix correspond to ordinary characters,
+the columns to Brauer characters.
+These characters are denoted by labels
+that refer to the labels used for the ordinary irreducibles and
+irreducible Brauer characters in the {\ATLAS} of Finite Groups
+and the {\ATLAS} of Brauer Characters, respectively.
+Additionally, for each ordinary character its degree is given,
+followed by the number $i$ such that the character is the $i$-th
+irreducible character of this degree.
+The degrees of the irreducible Brauer characters of each block are
+listed in a table that follows the decomposition matrix of this block.
+
+If a decomposition matrix does not fit on one page then the labels are
+repeated for all parts of the matrix.
+The block number in the second etc.~part of the matrix is written in
+brackets.
+
+Each zero entry of the matrix is represented by a dot.
+
+The labels of the characters have the following form.
+We state the rules only for ordinary characters,
+the rules for Brauer characters are obtained by replacing $\chi$
+by $\varphi$.
+
+First consider only downward extensions $m.G$ of a simple group $G$.
+If $m \leq 2$ then only labels of the form $\chi_i$ and $\varphi_j$
+occur,
+which denote the $i$-th ordinary and the $j$-th Brauer character shown in
+the {\ATLAS}.
+The labels of faithful ordinary characters of groups $m.G$ with $m\geq 3$
+are of the form $\chi_i$, $\chi_i^{\ast}$, or $\chi_i^{\ast k}$,
+which means the $i$-th character printed in the {\ATLAS},
+the unique character that is not printed and for which $\chi_i$ acts as
+proxy
+(see~Sections~8 and~19 of Chapter~7 in the {\ATLAS} of Finite Groups),
+and the image of the printed character $\chi_i$ under the algebraic
+conjugacy operator $\ast k$, respectively.
+
+For groups $m.G.a$ with $a > 1$, the labels of the irreducible characters
+are derived from the labels of the irreducible constituents of their
+restrictions to $m.G$, as follows.
+\begin{enumerate}
+\item
+    If the ordinary irreducible character $\chi_i$ of $m.G$ extends to
+    $m.G.a$ then the $a^{\prime}$ extensions are denoted by
+    $\chi_{i,0}$, $\chi_{i,1}$, \ldots, $\chi_{i,a^{\prime}}$,
+    where $\chi_{i,0}$ is the character whose values are printed in the
+    {\ATLAS}.
+\item
+    The label $\chi_{i_1+}$ means that $a$ different characters
+    $\chi_{i_1}$, $\chi_{i_2}$, \ldots, $\chi_{i_a}$ of $m.G$ induce to
+    an irreducible character of $m.G.a$ with this label.
+    Note that $i_2$, $i_3$, \ldots, $i_a$ can be read off from the
+    fusion signs in the {\ATLAS}.
+\item
+    Finally, the label $\chi_{i,j+}$ means that the character $\chi_i$
+    of $m.G$ extends to a group that lies properly between $m.G$ and
+    $m.G.a$, and the extension $\chi_{i,j}$ induces to $\chi_{i,j+}$.
+\end{enumerate}
+
+Horizontal lines in a block of a maximal cyclic downward extension
+$m.G.a$ of $G.a$ are used to separate portions of ordinary characters
+whose restrictions to the centre of $m.G$ are multiples of different
+irreducible characters.
+This happens only if the characteristic $p$ is either $2$ or $3$ and
+$p$ divides $m$.
+In this situation, a vertical line signals that the restriction of the
+block to a factor group by a $p$-group splits into two blocks.
+Examples are provided by the $3$-blocks of $6.A_7$ and $6.A_7.2$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Special Cases $L_3(4)$ and $U_4(3)$}
+
+The groups $L_3(4)$ and $U_4(3)$ need further explanations because each
+of them has two nonisomorphic downward extensions by a cyclic group of
+order $12$.
+
+In the case of $G = L_3(4)$ in characteristic $2$,
+the restrictions of the ordinary characters of the two nonisomorphic
+groups $4_1.G.a$ and $4_1.G.a$ to $2$-regular classes are Brauer
+characters of the group $G.a$,
+and the ordinary characters of both
+$12_1.G.a$ and $12_1.G.a$ restrict to Brauer characters of $3.G.a$.
+We decided to print and count the blocks of $12_1.G.a$ and $12_2.G.a$
+in characteristic $2$ separately since it makes no sense to list ordinary
+characters in one block which do not occur in a common group.
+Note that this means that the part of $6.G.a$ is listed twice.
+
+Analogously, in the case of $G = U_4(3)$ and characteristic $3$,
+the decomposition matrices of $12_1.G.a$ and $12_2.G.a$ are shown
+separately,
+thus listing the part of $4.G.a$ twice.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

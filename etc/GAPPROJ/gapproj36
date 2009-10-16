@@ -1,0 +1,33 @@
+@Name
+Better polynomial arithmetic
+@Contact
+AH
+@Date
+2004/1/17
+@Time
+4
+@Public
+Yes
+@Need
+3
+@NeedA
+3
+@Math
+2
+@Prog
+4
+@Component
+Kernel and Library
+@Descr
+The implemented polynomial arithmetic was intended to be sufficiently good
+for occasional calculations but is probably not good enough for serious
+commutative algebra (such as Gr"obner basis calculations).
+
+The easiest first step is to simply precompile `ratfun1.gi', but for better
+improvements it could be desirable to recode more routines genuinely in the
+kernel and probably even to change the internal data structure.
+@Manual
+@Ref
+@Rem
+Care needs to be taken to keep the old interface functions to avoid having
+to rewrite all code that uses polynomials.

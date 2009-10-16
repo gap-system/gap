@@ -3,7 +3,7 @@
 *W  ariths.h                    GAP source                       Frank Celler
 *W                                                         & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: ariths.h,v 4.19 2002/04/15 10:03:42 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_ariths_h =
-   "@(#)$Id$";
+   "@(#)$Id: ariths.h,v 4.19 2002/04/15 10:03:42 sal Exp $";
 #endif
 
 

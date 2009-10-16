@@ -1,0 +1,15 @@
+
+gap/action:
+
+Functions to compute with polycyclic groups acting on a set.
+
+extend.gi     -- extending a base pcgs for finite actions
+basepcgs.gi   -- computing a base pcgs for finite actions
+
+freegens.gi   -- multiplicatively independent generating sets
+dixon.gi      -- verify linear independence of abelian matrix gens
+kernels.gi    -- kernel of finite/congruence actions
+
+orbstab.gi    -- orbit stabilizer method for polycyclic groups
+                 acting on elements of Z^d
+

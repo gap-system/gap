@@ -1,0 +1,18 @@
+\letter C
+  Computing Descendants of a p-Group, \indexit{5}
+  Computing p-Quotients, \indexit{4}
+  Computing Standard Presentations, \indexit{8}
+\letter E
+  `EpimorphismStandardPresentation', 10
+\letter I
+  `IsIsomorphicPGroup', 10
+\letter P
+  `Pq', 4
+  `PqDescendants', 5
+  `PqEpimorphism', 5
+  `PqList', 8
+\letter S
+  `SavePqList', 8
+  `StandardPresentation', 8
+\letter T
+  Testing p-Groups upon Isomorphism, \indexit{10}

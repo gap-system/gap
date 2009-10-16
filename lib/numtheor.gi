@@ -2,7 +2,7 @@
 ##
 #W  numtheor.gi                 GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: numtheor.gi,v 4.22 2007/11/14 12:47:24 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains methods mainly for integer primes.
 ##
 Revision.numtheor_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: numtheor.gi,v 4.22 2007/11/14 12:47:24 gap Exp $";
 
 
 #############################################################################
@@ -335,7 +335,6 @@ end );
 ##
 #F  Jacobi( <n>, <m> ) . . . . . . . . . . . . . . . . . . . .  Jacobi symbol
 ##
-#N  29-Apr-91 martin remember to change the description of 'Jacobi'
 ##
 InstallGlobalFunction( Jacobi, function ( n, m )
     local  jac, t;

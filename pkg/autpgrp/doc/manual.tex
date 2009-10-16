@@ -1,0 +1,87 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%H  $Id: manual.tex,v 1.3 2004/10/01 10:20:06 gap Exp $
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapmacro . . . . . . . . . . . . . . . . . read the GAP macro package
+%%
+\input ../../../doc/gapmacro
+\Package{AutPGrp}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{autpgrp}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../doc/ext}
+\UseReferences{../../../doc/ref}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont AutPGrp}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont A GAP4 Package}\vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont Bettina Eick and Eamonn O'Brien}\vfill
+  \centerline{\secfont{\Month} \Year}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\OneColumnTableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter 
+%%
+\FrontMatter
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters 
+%%
+\Chapters
+\Input{autpgrp}
+\Input{method}
+\Input{underl}
+\Input{influen}
+\Input{additional}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices 
+%%
+\Appendices
+%\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex	. . . . . . . . . . . . . . . . . . . . . . . . ends here

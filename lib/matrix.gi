@@ -6,7 +6,7 @@
 #W                                                           & Heiko Theissen
 #W                                                         & Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: matrix.gi,v 4.180 2008/02/05 14:41:51 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  This file contains methods for matrices.
 ##
 Revision.matrix_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: matrix.gi,v 4.180 2008/02/05 14:41:51 sal Exp $";
 
 
 #
@@ -44,9 +44,9 @@ elif array = [[]]  then
 elif not ForAll( array, IsList )  then
     arr := List( array, String );
 	max := Maximum( List( arr, Length ) );
-	Print( "[ ", FormattedString( arr[ 1 ], max + 1 ) );
+	Print( "[ ", String( arr[ 1 ], max + 1 ) );
 	for l  in [ 2 .. Length( arr ) ]  do
-	    Print( ", ", FormattedString( arr[ l ], max + 1 ) );
+	    Print( ", ", String( arr[ l ], max + 1 ) );
 	od;
 	Print( " ]\n" );
     else
@@ -70,7 +70,7 @@ elif not ForAll( array, IsList )  then
          else
              
              for k  in [ 1 .. Length( arr[ l ] ) ]  do
-                 Print( FormattedString( arr[ l ][ k ], max + 1 ) );
+                 Print( String( arr[ l ][ k ], max + 1 ) );
                  if k = Length( arr[ l ] )  then
                      Print( " ]" );
                  else
@@ -238,6 +238,39 @@ InstallMethod( Length,
     "for null map matrix",
     [ IsNullMapMatrix ],
     null -> 0 );
+
+InstallMethod( ZERO,
+    "for null map matrix",
+    [ IsNullMapMatrix ],
+    null -> null );
+
+InstallMethod( \+,
+    "for two null map matrices",
+    [ IsNullMapMatrix, IsNullMapMatrix ],
+    function(null,null2)
+    return null;
+end );
+
+InstallMethod( \*,
+    "for two null map matrices",
+    [ IsNullMapMatrix, IsNullMapMatrix ],
+    function(null,null2)
+    return null;
+end );
+
+InstallMethod( \*,
+    "for a scalar and a null map matrix",
+    [ IsScalar, IsNullMapMatrix ],
+    function(s,null)
+    return null;
+end );
+
+InstallMethod( \*,
+    "for a null map matrix and a scalar",
+    [ IsNullMapMatrix, IsScalar ],
+    function(null,s)
+    return null;
+end );
 
 InstallMethod( \*,
     "for vector and null map matrix",
@@ -525,10 +558,10 @@ function( m )
         # create strings
         t := [];
         for x  in [ 2 .. chr ]  do
-            t[x] := FormattedString( x-1, w );
+            t[x] := String( x-1, w );
         od;
 #T useful only for (very) small characteristic, or?
-        t[1] := FormattedString( ".", w );
+        t[1] := String( ".", w );
 
         # print matrix
         for v  in m  do
@@ -554,13 +587,13 @@ function( m )
         for x  in [ 0 .. Size(f)-2 ]  do
             y := z^x;
             if DegreeFFE(y) = 1  then
-                t[x+2] := FormattedString( IntFFE(y), w );
+                t[x+2] := String( IntFFE(y), w );
 #T !
             else
-                t[x+2] := FormattedString(Concatenation("z^",String(x)),w);
+                t[x+2] := String(Concatenation("z^",String(x)),w);
             fi;
         od;
-        t[1] := FormattedString( ".", w );
+        t[1] := String( ".", w );
 
         # print matrix
         for v  in m  do
@@ -586,20 +619,8 @@ end );
 InstallMethod( CharacteristicPolynomial,
     "supply field and indeterminate 1",
     [ IsMatrix ],
-    mat -> CharacteristicPolynomialMatrixNC(  
+    mat -> CharacteristicPolynomialMatrixNC( 
             DefaultFieldOfMatrix( mat ), mat, 1 ) );
-
-
-#############################################################################
-##
-#M  CharacteristicPolynomial( <F>, <mat> )
-##
-InstallOtherMethod( CharacteristicPolynomial,
-     "supply indeterminate 1",
-    [ IsField, IsMatrix ],
-    function( F, mat )
-        return CharacteristicPolynomial (F, mat, 1);
-    end );
 
 
 #############################################################################
@@ -634,23 +655,6 @@ InstallMethod( CharacteristicPolynomial,
         F := DefaultFieldOfMatrix( mat );
         return CharacteristicPolynomial( F, F, mat, indnum );
     end );
-
-
-#############################################################################
-##
-#M  CharacteristicPolynomial( <field>, <matrix>, <indnum> )
-##
-InstallOtherMethod( CharacteristicPolynomial, 
-    "check default field, print error if ambiguous",
-    IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
-function( F, mat, inum )
-        if IsSubset (F, DefaultFieldOfMatrix (mat)) then
-            return CharacteristicPolynomial (F, F, mat, inum);
-        else
-            Error ("ambiguous usage of `CharacteristicPolynomial' - please specify two fields instead");
-        fi;
-end );
 
 
 #############################################################################
@@ -1354,6 +1358,10 @@ InstallMethod( DeterminantMat,
     return DeterminantMatDestructive( MutableCopyMat( mat ) );
     end );
 
+InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
+    [ IsOrdinaryMatrix and
+    CategoryCollections(CategoryCollections(IsZmodnZObjNonprime)) and IsMutable],
+  DeterminantMatDivFree);
 
 #############################################################################
 ##
@@ -2141,17 +2149,19 @@ InstallMethod( SemiEchelonMatTransformationDestructive,
           T,         # transformation matrix
           coeffs,    # list of coefficient vectors for 'vectors'
           relations, # basis vectors of the null space of 'mat'
-          row, head, x, row2;
+          row, head, x, row2,f;
 
     nrows := Length( mat );
     ncols := Length( mat[1] );
+    
+    f := DefaultFieldOfMatrix(mat);
 
-    zero  := Zero( mat[1][1] );
+    zero  := Zero(f );
 
     heads   := ListWithIdenticalEntries( ncols, 0 );
     vectors := [];
 
-    T         := IdentityMat( nrows, zero );
+    T         := IdentityMat( nrows, f );
     coeffs    := [];
     relations := [];
 
@@ -2981,6 +2991,11 @@ InstallGlobalFunction( IdentityMat, function ( arg )
             ConvertToVectorRepNC( id[i] );
         fi;
     od;
+    if f <> false then
+        ConvertToMatrixRepNC(id,f);
+    else
+        ConvertToMatrixRepNC(id);
+    fi;
 
     # return the identity matrix
     return id;
@@ -3021,6 +3036,7 @@ InstallGlobalFunction( NullMat, function ( arg )
     for i  in [1..m]  do
         null[i] := ShallowCopy( row );
     od;
+    ConvertToMatrixRepNC(null,f);
 
     # return the null matrix
     return null;
@@ -3182,6 +3198,11 @@ InstallGlobalFunction( PermutationMat, function( arg )
            ConvertToVectorRepNC( mat[i], Field(F));
        fi;
     od;
+    if IsFFECollection(F) and IsField(F) then
+        ConvertToMatrixRepNC( mat, F );
+    elif IsFFE(F) or IsFFECollection(F) then
+        ConvertToMatrixRepNC( mat, Field(F));
+    fi;
 
     return mat;
 end );
@@ -3199,11 +3220,13 @@ InstallGlobalFunction( DiagonalMat, function( vector )
     M:= [];
     zerovec:= Zero( vector[1] );
     zerovec:= List( vector, x -> zerovec );
+
     for i in [ 1 .. Length( vector ) ] do
       M[i]:= ShallowCopy( zerovec );
       M[i][i]:= vector[i];
+      ConvertToVectorRepNC(M[i]);
     od;
-    ConvertToVectorRepNC( M[i] );
+    ConvertToMatrixRepNC( M );
     return M;
 end );
 
@@ -3272,6 +3295,7 @@ InstallGlobalFunction( ReflectionMat, function( arg )
       ConvertToVectorRepNC( row );
       M[i]:= row;
     od;
+    ConvertToMatrixRepNC( M );
 
     # Return the result.
     return M;
@@ -3312,7 +3336,7 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
             mat[i] := row;
         until NullspaceMat( mat ) = [];
     od;
-
+    ConvertToMatrixRepNC( mat, R );
     return mat;
 end );
 
@@ -3565,7 +3589,8 @@ end );
 ##
 #F  TraceMat( <mat> ) . . . . . . . . . . . . . . . . . . . trace of a matrix
 ##
-InstallGlobalFunction( TraceMat, function ( mat )
+InstallMethod( TraceMat, "method for lists", [ IsList ],
+    function ( mat )
     local   trc, m, i;
 
     # check that the element is a square matrix
@@ -3830,115 +3855,6 @@ InstallMethod( BaseOrthogonalSpaceMat,
     [ IsMatrix ],
     mat -> NullspaceMat( TransposedMat( mat ) ) );
 
-
-#############################################################################
-##
-#M  BaseField( <matrixorvector> )
-##
-
-InstallMethod( BaseField, "for a compressed gf2 matrix",
-  [IsGF2MatrixRep], function(m) return GF(2); end );
-InstallMethod( BaseField, "for a compressed 8bit matrix",
-  [Is8BitMatrixRep], function(m) return DefaultFieldOfMatrix(m); end );
-InstallMethod( BaseField, "for a compressed gf2 vector",
-  [IsGF2VectorRep], function(v) return GF(2); end );
-InstallMethod( BaseField, "for a compressed 8bit vector",
-  [Is8BitVectorRep], function(v) return GF(Q_VEC8BIT(v)); end );
-
-
-#############################################################################
-##
-#M  ZeroVector( <vector>, <len> )
-##
-InstallMethod( ZeroVector, "for a length and a nonempty vector",
-  [IsInt, IsList],
-  function(len,v)
-    if Length(v) > 0 then
-        return ListWithIdenticalEntries(len,Zero(v[1]));
-    else
-        Error("vector must not be empty");
-    fi;
-  end );
-    
-#############################################################################
-##
-#M  ZeroMatrix( <matrix>, <rows>, <cols> )
-##
-InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",
-  [IsInt, IsInt, IsGF2MatrixRep],
-  function( rows, cols, m )
-    local l,i;
-    l := [];
-    for i in [1..rows] do
-        Add(l,ZeroVector(cols,m[1]));
-    od;
-    ConvertToMatrixRep(l);
-    return l;
-  end );
-InstallMethod( ZeroMatrix, "for a compressed 8bit matrix",
-  [IsInt, IsInt, Is8BitMatrixRep],
-  function( rows, cols, m )
-    local l,i;
-    l := [];
-    for i in [1..rows] do
-        Add(l,ZeroVector(cols,m[1]));
-    od;
-    ConvertToMatrixRep(l);
-    return l;
-  end );
-
-#############################################################################
-##
-#M  IdentityMatrix( <matrix>, <rows> )
-##
-InstallMethod( IdentityMatrix, "for a compressed gf2 matrix",
-  [IsInt, IsGF2MatrixRep],
-  function(rows,m)
-    local n;
-    n := IdentityMat(rows,GF(2));
-    ConvertToMatrixRep(n,2);
-    return n;
-  end );
-InstallMethod( IdentityMatrix, "for a compressed 8bit matrix",
-  [IsInt, Is8BitMatrixRep],
-  function(rows,m)
-    local f,n;
-    f := BaseField(m);
-    n := IdentityMat(rows,f);
-    ConvertToMatrixRep(n,Size(f));
-    return n;
-  end );
-
-#############################################################################
-##
-#M  CopySubVector( <src>, <dst>, <scols>, <dcols> )
-##
-InstallMethod( CopySubVector, "generic method",
-  [IsList, IsList, IsList, IsList],
-  function(src,dst,scols,dcols)
-    dst{dcols} := src{scols};
-  end );
-
-#############################################################################
-##
-#M  CopySubMatrix( <src>, <dst>, <srows>, <drows>, <scols>, <dcols> )
-##
-InstallMethod( CopySubMatrix, "generic method",
-  [IsList, IsList, IsList, IsList, IsList, IsList],
-  function(src,dst,srows,drows,scols,dcols)
-    dst{drows}{dcols} := src{srows}{scols};
-  end );
-
-
-#############################################################################
-##
-#M  ExtractSubMatrix( <matrix>, <rows>, <cols> )
-##
-InstallMethod( ExtractSubMatrix, "generic method",
-  [IsList, IsList, IsList],
-  function(m,rows,cols)
-    return m{rows}{cols};
-  end );
 
 
 #############################################################################

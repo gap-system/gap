@@ -1,0 +1,81 @@
+\documentclass{article}
+\usepackage{times}
+\title{Abhstract objects and Knowledge in GAP -- Design study}
+\author{Steve Linton}
+\def\GAP{\textsf{GAP}}
+\parskip \medskipamount
+\parindent 0pt
+\begin{document}
+\maketitle
+
+\section{Overview}
+
+A design study for a \GAP\ representation of abstract groups,
+characters, generated groups, and concrete groups, layered above the
+actual \GAP\ group objects. The goal is to implement the ideas in the
+Warwick talk.
+
+\section{Principal New Kinds of Objects and  their main attributes}
+
+\subsection{The five layers}
+
+\begin{description}
+\item{Abstract groups} name, size, shape, favourite representation, std
+generators, is simple, is abelian, is nilpotent, etc char table, table 
+of marks
+
+\item{Character} abs group, type (perm or mx) degree, character, symbol, 
+is irreducible, composition series, kernel (as abstract subgroup), etc. std basis
+
+\item{Representation} character, transformation to from std basis?,
+stabilized forms, etc.
+
+\item{Generated group} words to/from std generators, words for subgroups,
+words for conj class reps, presentations, .....
+
+\item{Concrete group} actual GAP group, generated group, representation
+
+\end{description}
+
+\subsection{Other things}
+\begin{description}
+\item{Shapes} this is a tough one, follow the ATLAS constructions, I
+suppose
+\item{Shapes of Representations} that is abstract decompositions
+\item{Mappings} between generated groups -- by lists of words
+\item{Mappings} between abstract groups?? -- recording conjugacy class
+embeddings, perhaps?
+\item{Elements} fully abstract, or in generated groups or concrete
+\item{Conjugacy classes}
+\end{description}
+
+\section{Algorithms}
+
+\begin{itemize}
+\item Populate the abstract data from a concrete permutation or matrix 
+group, propagate it into multiple representations, etc.
+\item Populate it from the Atlas rep databases and the char table and
+table of marks and likewise propagate
+\item Work with shapes and abstract subgroups/mappings
+\item Associate (subgroups of) concrete groups with abstract ones
+using std gens etc.
+\item Merge data between abstract groups on discovering a concrete
+isomorphism
+\item compute in concrete groups, tracking SLPs (or use chains)
+\end{itemize}
+
+\section{Existing Technology}
+
+There is highly relevant technology in the character table library,
+the tables of marks library and the AtlasRep share
+package. Eventually, one would want to integrate smoothly with all
+this, but, time being pressing, for a prototype, we will layer over
+all of thise, using the functionality associated with these libraries
+where it is helpful.
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,193 @@
+
+This file documents the changes made to ACE 3.000 as part of the upgrade to
+  ACE 3.001.
+This includes changes made to development versions of ACE which came after
+  3.000 but before the official 3.001 release & code freeze, and temporary
+  code introduced for one reason or another and then deleted.
+Some minor bugs have been fixed, some internal reorganisation to make the
+  code `cleaner' was done, some changes in response to feedback from
+  users/installers of ACE were made, and some new/enhanced options are
+  available.
+In addition, the development of PACE 1.000 & PEACE 1.000 -- which were
+  `based' on ACE 3.000, and preceded ACE 3.001 -- suggested several
+  `improvements' to ACE.
+
+There are no substantive changes, and ACE 3.001 is back-compatable with 
+  ACE 3.000.
+The behaviour of ACE, as far as the user at any of the three interface
+  levels is concerned, remains the same.
+(As far as I am aware, these statements are not false, but check the list
+  of changes carefully if you have any problems.)
+
+Some general changes were :-
+
+i)  The removal/tidying-up of the various DTT (Debug/Test/Trace) code which
+    was added at one time or another to assist in development.
+The addition of various new bits of DTT code.
+
+ii) The (extensive) comments in the source were `edited to enhance
+    clarity'.
+
+To some extent, ACE 3.001, PACE 1.000 & PEACE 1.000 were developed in
+  parallel from ACE 3.000.
+Each of the changes to ACE listed below is flagged to indicate whether or
+  not is has been carried over to the current versions of PACE/PEACE as
+  well.
+The first symbol(s) is/are for PACE & the second for PEACE; "?" means don't
+  know/care, "y" means yes, "n" means no, and "x" not applicable.
+
+The changes/corrections consisted of :- 
+
+undated (code reorganisation) :- y,x
+When a coinc is queued (& cols 1/2 processed), the correct representative
+  is picked up (the CREP macro).
+When we come to process the remaining columns, the rep've may have become
+  invalid.
+So we could (it's not mandatory) calculate the new rep've, in an attempt
+  to prevent moving data multiple times.
+Some tests showed that this is not beneficial, so the calculation of
+  rep'ves at the top of the processing loop in _coinc() was removed.
+Ditto for the ability to path compress there.
+(See the comments in coinc.c in the 3.000 & 3.001 source code.)
+Of course, we *must* retain the use of rep`ves in _cols12(), and the 
+  ability to path compress there (if requested).
+
+7 Mar 99 (minor bug) :- y,y
+At several places in enum.c, we did "msgnext = msgctrl" instead of 
+  "msgnext = msgincr".
+This could cause spurious additional progress messages, if msgctrl was 1
+  (ie, messaging was active).
+
+5 Jul 99 (name change) :- y,x
+Pre-ACE3, ACE stood for "adaptive coset enumerator", now it stands for
+  "advanced coset enumerator".
+The "adaptive" was because ACE could modify its behaviour in the presence 
+  of a big collapse, which could be *very* slow.
+During the development of ACE3, a better (more advanced!) understanding of
+  deduction handling was gained.
+This led to the introduction of the `pmod' & `psiz' parameters, and removed
+  the need for the adaptive flag.
+Of course, there are many situations where ACE could profitably change its
+  enumeration strategy on the fly based on recent events, and we reserve 
+  the right to implement some of these in future versions and change ACE's
+  name back to its original meaning.
+
+12 Aug 99 (sloppyness) :- x/y,y
+The entry for `loop' on the help screen included a spurious initial "/" in
+  the argument part.
+The argument of `no' was changed from "-1/0/.." to "-1/0/1.." to more
+  accurately reflect the trichotomy of meaning.
+
+3 Sep 99 (optimisation problem) :- y,y
+Some compilers complained when trying to optimise the main control loop for
+  the despatcher in `al2_cmdloop()', since it's very long.
+Of course, optimising this is not relevant, since it only has to run at
+  human speed; but still ...
+The original single "if (.) {.} else if (.) {.} ... else {.}" has been 
+  split into separate "if (.) {.}" statements, and "continue" statements 
+  used to skip to the end of the enclosing "while" statement from the end 
+  of each "if".
+This stops some, but *not* all, compilers from complaining.
+
+8 Sep 99 (minor bug) :- y,y
+At various places where we want neatly aligned output, I'd swallowed the
+  separating space(s) into the field width; eg, I'd used "%5d%5d" instead
+  of " %4d %4d" for the `fprintf' format strings.
+This could be a problem if our numbers become big, since we'd lose the
+  spacing between them.
+The main concern here is packages such as GAP which use the output of ACE
+  as input.
+All such usages have been removed; so that the numbers are guaranteed to be
+  separated, although perhaps not vertically aligned.
+(In C, the field width is a *minimum*, and will be adjusted up if the 
+  number is too big.)
+
+21 Sep 99 (sloppyness) :- y,y
+All the various "#-- xxx --" messages have been tuned so that they're all
+  the same width & the text in them is central.
+
+22 Sep 99 (stupid bug) :- x,x
+The `rc' command did not correctly restore the original list of subgroup
+  generators if this list was non-empty; it left in the first of the
+  added generators.
+This was due to bad loop limits, and has been fixed.
+
+18 Oct 00 (tidy up) :- y,x
+At various times, test code has been added to ACE to allow the printing of
+  the definition sequence used in an enumeration.
+This has many uses:
+  prune the sequence to try to find a `smallest' possible one;
+  extract a formal proof of (sub)group membership;
+  generate Schreier generators for the subgroup.
+With the development of PEACE, it was decided not to formally incorporate
+  any of this work in ACE (contrary to earlier intentions).
+So, all traces of this feature have been removed from ACE 3.001.
+
+6 Dec 00 (enhanced functionality) :- n,n
+The `sr' command only allowed brief (arg 0) or full (arg 1) printout of the
+  enumeration details.
+Now, some commands accept as a valid value an empty argument, and so the 
+  `echo data' mode cannot be used to print their current value.
+In particular, this applied to the `enum', `rel', `gen', `subgrp' commands.
+The `sr' command has been enhanced, with arguments 2-5, to allow these 
+  items to be printed individually.
+
+11 Dec 00 (redo/sgdone bug) :- x,x
+In those redo modes where a CL is done, this is done *before* the SG phase.
+If the CL phase causes a finite index (ie, a collapse to 1), then the
+  redo returns before the SG, leaving the sgdone flag (incorrectly) clear.
+The problem was solved by setting the sgdone flag in the _chk1() routine
+  in coinc.c.
+See the "test019*" test files in the distribution.
+(Philosophical aside: the whole question of how to handle `redo', `cc', etc
+  needs rethinking, since the CL phase can be *slow*!)
+
+20 Dec 00 (code tidyup) :- y,x
+i) The SAVED00 macro in the SAVED macro, which keeps statistics on the max
+  dedn stack size, was incorrectly placed in that it wasn't always called;
+  it's been moved.
+(Philosophical aside: a call to SAVED which causes a stack overflow and a
+  call to al0_dedn() can produce an intermediate sized stack bigger than
+  the one recorded by SAVED00, due to the stack pruning in al0_dedn().
+Since the miscount at a DS can be at most 1, we don't worry about it.)
+ii) An experimental dedn mode #5, which stacked dedns non-deterministically
+  based on a nominated percentage, was tested (see `snippets.c').
+It's `interesting', but it's not part of ACE 3.001, so all traces of it
+  have been removed.
+(Philosophical aside: such code more properly should be in PACE, which is
+  the preferred vehicle for experiments regarding dedn handling.)
+
+22 Dec 00 (Linux/gcc bug & coset rep've bug) :- y,x
+i) On some Linux/gcc combinations, ACE died with a segmentation fault when
+  trying to construct coset representatives (eg, `pr', `oo' commands).
+At the time, extensive rummaging failed to find the cause of the fault.
+Since its presence/absence seemed to depend on which version of gcc was
+  used, it was concluded that there were bugs in various versions of gcc.
+(The `new' versions of gcc which accompany each `new' distribution of
+  Linux are notoriously buggy.)
+ii) It turns out that the al1_bldrep() routine uses a variable scol which
+  could be used uninitialised.
+The particular set of circumstances which could cause this weren't
+  considered (ie, thought of) when the routine was tested.
+The problem is easily solved by setting & testing scol appropriately.
+See the "test021*" test files in the distribution.
+ 
+2 Mar 01 (max bug) :- y,y
+After a `begin' which overflows, we can reset `max' before running a
+  `cont'.
+If maxrow1<nextdf the new value of `max' is rounded up in al2_start() (in 
+  control.c) so that no coset table data is lost.
+In an attempt to be clever, it is rounded up to nextdf, to allow one more
+  coset (there will be nextdf-1 cosets currently).
+Sadly, if the overflow happened with nextdf = maxrow+1 = tabsiz+1, this
+  allows cosets past the end of the table.
+On some machine/OS/compiler combinations, this could cause a crash.
+It's easily fixed by abandoning attempts to be clever, and simply
+  (re)setting maxrow to nextdf-1.
+See the "test023*" test files in the distribution.
+
+2 Mar 01 (enhanced rc functionality) :- x,x
+i) The printout during a run was altered to include the current iteration
+  number.
+ii) A 0 argument, meaning any non-trivial index, was added.
+

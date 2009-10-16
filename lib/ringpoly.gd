@@ -2,41 +2,91 @@
 ##
 #W  ringpoly.gd                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ringpoly.gd,v 4.41 2009/02/11 13:50:24 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains  the categories, attributes, properties and operations
-##  for polynomial rings.
+##  for polynomial rings and function fields.
 ##
 Revision.ringpoly_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: ringpoly.gd,v 4.41 2009/02/11 13:50:24 gap Exp $";
 
 
 #############################################################################
 ##
 #C  IsPolynomialRing( <pring> )
 ##
+##  <#GAPDoc Label="IsPolynomialRing">
+##  <ManSection>
+##  <Filt Name="IsPolynomialRing" Arg='pring' Type='Category'/>
+##
+##  <Description>
 ##  is the category of polynomial rings
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsPolynomialRing", IsRing );
 
+#############################################################################
+##
+#C  IsFunctionField( <ffield> )
+##
+##  <#GAPDoc Label="IsFunctionField">
+##  <ManSection>
+##  <Filt Name="IsFunctionField" Arg='ffield' Type='Category'/>
+##
+##  <Description>
+##  is the category of function fields
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory("IsFunctionField",IsRing);
 
 #############################################################################
 ##
 #C  IsUnivariatePolynomialRing( <pring> )
 ##
-## is the category of polynomial rings with one indeterminate.
+##  <#GAPDoc Label="IsUnivariatePolynomialRing">
+##  <ManSection>
+##  <Filt Name="IsUnivariatePolynomialRing" Arg='pring' Type='Category'/>
+##
+##  <Description>
+##  is the category of polynomial rings with one indeterminate.
+##  <Example><![CDATA[
+##  gap> r:=UnivariatePolynomialRing(Rationals,"p");
+##  Rationals[p]
+##  gap> r2:=PolynomialRing(Rationals,["q"]);
+##  Rationals[q]
+##  gap> IsUnivariatePolynomialRing(r);
+##  true
+##  gap> IsUnivariatePolynomialRing(r2);
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareCategory( "IsUnivariatePolynomialRing", IsPolynomialRing );
 
 #############################################################################
 ##
 #C  IsFiniteFieldPolynomialRing( <pring> )
 ##
+##  <#GAPDoc Label="IsFiniteFieldPolynomialRing">
+##  <ManSection>
+##  <Filt Name="IsFiniteFieldPolynomialRing" Arg='pring' Type='Category'/>
+##
+##  <Description>
 ##  is the category of polynomial rings over a finite field
-##  (see Chapter~"Finite Fields").
+##  (see Chapter&nbsp;<Ref Chap="Finite Fields"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsFiniteFieldPolynomialRing", IsPolynomialRing );
 
@@ -45,8 +95,16 @@ DeclareCategory( "IsFiniteFieldPolynomialRing", IsPolynomialRing );
 ##
 #C  IsAbelianNumberFieldPolynomialRing( <pring> )
 ##
+##  <#GAPDoc Label="IsAbelianNumberFieldPolynomialRing">
+##  <ManSection>
+##  <Filt Name="IsAbelianNumberFieldPolynomialRing" Arg='pring' Type='Category'/>
+##
+##  <Description>
 ##  is the category of polynomial rings over a field of cyclotomics
-##  (see the chapters~"Cyclotomic Numbers" and "Abelian Number Fields").
+##  (see the chapters&nbsp;<Ref Chap="Cyclotomic Numbers"/> and <Ref Chap="Abelian Number Fields"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsAbelianNumberFieldPolynomialRing", IsPolynomialRing );
 
@@ -54,9 +112,15 @@ DeclareCategory( "IsAbelianNumberFieldPolynomialRing", IsPolynomialRing );
 ##
 #C  IsAlgebraicExtensionPolynomialRing( <pring> )
 ##
+##  <ManSection>
+##  <Filt Name="IsAlgebraicExtensionPolynomialRing" Arg='pring' Type='Category'/>
+##
+##  <Description>
 ##  is the category of polynomial rings over a field that has been formed as
-##  an `AlgebraicExtension' of a base field.
-##  (see chapter~"Algebraic extensions of fields").
+##  an <C>AlgebraicExtension</C> of a base field.
+##  (see chapter&nbsp;<Ref Chap="Algebraic extensions of fields"/>).
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategory( "IsAlgebraicExtensionPolynomialRing", IsPolynomialRing );
 
@@ -65,8 +129,24 @@ DeclareCategory( "IsAlgebraicExtensionPolynomialRing", IsPolynomialRing );
 ##
 #C  IsRationalsPolynomialRing( <pring> )
 ##
+##  <#GAPDoc Label="IsRationalsPolynomialRing">
+##  <ManSection>
+##  <Filt Name="IsRationalsPolynomialRing" Arg='pring' Type='Category'/>
+##
+##  <Description>
 ##  is the category of polynomial rings over the rationals
-##  (see Chapter~"Rational Numbers").
+##  (see Chapter&nbsp;<Ref Chap="Rational Numbers"/>).
+##  <Example><![CDATA[
+##  gap> IsPolynomialRing(r);
+##  true
+##  gap> IsFiniteFieldPolynomialRing(r);
+##  false
+##  gap> IsRationalsPolynomialRing(r);
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsRationalsPolynomialRing",
     IsAbelianNumberFieldPolynomialRing );
@@ -76,106 +156,304 @@ DeclareCategory( "IsRationalsPolynomialRing",
 ##
 #A  CoefficientsRing( <pring> )
 ##
-##  returns the ring of coefficients of the polynomial ring <pring>, that is
-##  the ring over which <pring> was defined.
+##  <#GAPDoc Label="CoefficientsRing">
+##  <ManSection>
+##  <Attr Name="CoefficientsRing" Arg='pring'/>
+##
+##  <Description>
+##  returns the ring of coefficients of the polynomial ring <A>pring</A>,
+##  that is the ring over which <A>pring</A> was defined.
+##  <Example><![CDATA[
+##  gap> r:=PolynomialRing(GF(7));
+##  GF(7)[x_1]
+##  gap> r:=PolynomialRing(GF(7),3);
+##  GF(7)[x_1,x_2,x_3]
+##  gap> IndeterminatesOfPolynomialRing(r);
+##  [ x_1, x_2, x_3 ]
+##  gap> r2:=PolynomialRing(GF(7),[5,7,12]);
+##  GF(7)[x_5,x_7,x_12]
+##  gap> CoefficientsRing(r);
+##  GF(7)
+##  gap> r:=PolynomialRing(GF(7),3);
+##  GF(7)[x_1,x_2,x_3]
+##  gap> r2:=PolynomialRing(GF(7),3,IndeterminatesOfPolynomialRing(r));
+##  GF(7)[x_4,x_5,x_6]
+##  gap> r:=PolynomialRing(GF(7),["x","y","z","z2"]);
+##  GF(7)[x,y,z,z2]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 
-#2
-##  {\GAP} implements a polynomial ring with countably many indeterminates.
-##  These indeterminates can be referred to by positive integers. If only a
-##  number <num> of indeterminates is required they default to `[1..<num>]'.
+##  <#GAPDoc Label="[1]{ringpoly}">
+##  &GAP; implements a polynomial ring with countably many indeterminates.
+##  These indeterminates can be referred to by positive integers.
+##  If only a number <A>num</A> of indeterminates is required they default to
+##  <C>[1..<A>num</A>]</C>.
+##  <P/>
+##  Indeterminates are created per <E>family</E>. Thus the <Q>x</Q> over the
+##  rationals is the same as the <Q>x</Q> over the integers,
+##  while <Q>x</Q> over <C>GF(3)</C> is different.
+##  <P/>
+##  It is possible to assign names to indeterminates; these names are
+##  strings and only provide a means for printing the indeterminates in a
+##  nice way. Indeterminates that have not been assigned a name will be
+##  printed as <Q><C>x_<A>nr</A></C></Q>.
+##  <P/>
+##  (Because of this printing convention, the name <C>x_<A>nr</A></C> is interpreted
+##  specially to always denote the variable with internal number <A>nr</A>.)
+##  <P/>
+##  The indeterminate names have not necessarily any relations to variable
+##  names: this means that an indeterminate whose name is, say,  <Q><C>x</C></Q>
+##  cannot be accessed using the variable <C>x</C>, unless <C>x</C> was defined to
+##  be that indeterminate.
+##  <#/GAPDoc>
 ##
-##  It is possible to assign names to indeterminates. These names only
-##  provide a means for printing the indeterminates in a nice way, but have
-##  not necessary any relations to variable names. Indeterminates that have
-##  not been assigned a name will be printed as ``{`x_<nr>'}''.
-##
-##  It is possible to assign
-##  the *same* name to *different* indeterminates (though it is probably not
-##  a good idea to do so). Asking *twice* for an indeterminate with the name
-##  <nam> will produce *two different* indeterminates!
-##
+##  <#GAPDoc Label="[2]{ringpoly}">
 ##  When asking for indeterminates with certain
-##  names, {\GAP} usually will take the first indeterminates that are not
+##  names, &GAP; usually will take the first indeterminates that are not
 ##  yet named, name these accordingly and return them. Thus when asking for
 ##  named indeterminates, no relation between names and indeterminate
 ##  numbers can be guaranteed. The attribute
-##  `IndeterminateNumberOfLaurentPolynomial(<indet>)' will return
-##  the number of the indeterminate <indet>.
+##  <C>IndeterminateNumberOfLaurentPolynomial(<A>indet</A>)</C> will return
+##  the number of the indeterminate <A>indet</A>.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> R:=PolynomialRing(GF(3),["x","y","z"]);
+##  Error, Indeterminate ``x'' is already used.
+##  Use the `old' option; e.g. X(Rationals,"x":old);
+##    to re-use the variable already defined with this name and the
+##  `new' option; e.g. X(Rationals,"x":new);
+##    to create a new variable with the duplicate name.
+##   called from GiveNumbersNIndeterminates(  [...]
+##  brk> quit;
+##  gap> R:=PolynomialRing(GF(3),["x","y","z"]:old);
+##  GF(3)[x,y,z]
+##  gap> List(IndeterminatesOfPolynomialRing(R),
+##  >   IndeterminateNumberOfLaurentPolynomial);
+##  [ 1, 2, 3 ]
+##  gap> R:=PolynomialRing(GF(3),["x","y","z"]:new);
+##  GF(3)[x,y,z]
+##  gap> List(IndeterminatesOfPolynomialRing(R),
+##  >   IndeterminateNumberOfLaurentPolynomial);
+##  [ 4, 5, 6 ]
+##  ]]></Log>
+##  <#/GAPDoc>
+##
+##  When trying to create an indeterminate with a name that exists already
+##  for the family, &GAP; will stop with an error message. You can specify
+##  to create the same variable that already has been given this name by
+##  adding the <C>old</C> option to the function call.
+##  Similarly it is possible to create a <E>new</E> variable with the <E>same</E> name
+##  by using the <C>new</C> option. (This is in most cases not a good idea.)
+##
+
+##
+#V  INDETERMINATENAMEREUSE
+##
+##  <#GAPDoc Label="INDETERMINATENAMEREUSE">
+##  <ManSection>
+##  <Var Name="INDETERMINATENAMEREUSE"/>
+##
+##  <Description>
+##  Users who prefer a certain behaviour as a default can set the global
+##  variable <Ref Var="INDETERMINATENAMEREUSE"/> to <C>1</C> to set
+##  (as long as no option is given) the behaviour of the
+##  <C>old</C> option as default and to <C>2</C> to have the <C>new</C>
+##  option as default.
+##  This can be done for example in the user's <F>.gaprc</F> file
+##  (see Section <Ref Sect="The .gaprc file"/>).
+##  <P/>
+##  <Log><![CDATA[
+##  gap> x:=X(GF(3),"x");
+##  Error, Indeterminate ``x'' is already used. [...]
+##  gap> INDETERMINATENAMEREUSE:=2;;
+##  gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+##  x
+##  7
+##  gap> INDETERMINATENAMEREUSE:=1;;
+##  gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+##  x
+##  1
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+INDETERMINATENAMEREUSE:=0;
 
 
 #############################################################################
 ##
-#O  Indeterminate( <R>,[<nr>] )
-#O  Indeterminate( <R>,[<avoid>] )
-#O  Indeterminate( <R>,<name>[,<avoid>] )
-#O  Indeterminate( <fam>,<nr> )
+#O  Indeterminate( <R>[, <nr>] )
+#O  Indeterminate( <R>[, <name>][, <avoid>] )
+#O  Indeterminate( <fam>, <nr> )
+#O  X( <R>,[<nr>] )
+#O  X( <R>,[<avoid>] )
+#O  X( <R>,<name>[,<avoid>] )
+#O  X( <fam>,<nr> )
 ##
-##  returns indeterminate number <nr> over the ring <R>. If <nr> is not
-##  given it defaults to 1. If the number is not specified a list <avoid> of
-##  indeterminates may be given. The function will return an indeterminate
-##  that is guaranteed to be different from all the indeterminates in
-##  <avoid>. The third usage returns an indeterminate called <name> (also
-##  avoiding the indeterminates in <avoid> if given).
+##  <#GAPDoc Label="Indeterminate">
+##  <ManSection>
+##  <Heading>Indeterminate</Heading>
+##  <Oper Name="Indeterminate" Arg='R[, nr]'
+##   Label="for a ring (and a number)"/>
+##  <Oper Name="Indeterminate" Arg='R[, name][, avoid]'
+##   Label="for a ring (and a name, and an exclusion list)"/>
+##  <Oper Name="Indeterminate" Arg='fam, nr'
+##   Label="for a family and a number"/>
+##  <Oper Name="X" Arg='R[, nr]'
+##   Label="for a ring (and a number)"/>
+##  <Oper Name="X" Arg='R[, name][, avoid]'
+##   Label="for a ring (and a name, and an exclusion list)"/>
+##  <Oper Name="X" Arg='fam, nr'
+##   Label="for a family and a number"/>
+##
+##  <Description>
+##  returns the indeterminate number <A>nr</A> over the ring <A>R</A>.
+##  If <A>nr</A> is not given it defaults to 1.
+##  If the number is not specified a list <A>avoid</A> of indeterminates
+##  may be given.
+##  The function will return an indeterminate that is guaranteed to be
+##  different from all the indeterminates in the list <A>avoid</A>.
+##  The third usage returns an indeterminate called <A>name</A>
+##  (also avoiding the indeterminates in <A>avoid</A> if given).
+##  <P/>
+##  <Ref Oper="X" Label="for a ring (and a number)"/> is simply a synonym for
+##  <Ref Oper="Indeterminate" Label="for a ring (and a number)"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> x:=Indeterminate(GF(3),"x");
+##  x
+##  gap> y:=X(GF(3),"y");z:=X(GF(3),"X");
+##  y
+##  X
+##  gap> X(GF(3),2);
+##  y
+##  gap> X(GF(3),"x_3");
+##  X
+##  gap> X(GF(3),[y,z]);
+##  x
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "Indeterminate", [IsRing,IsPosInt] );
-
-
-#############################################################################
-##
-#F  X( <R> )
-##
 DeclareSynonym( "X", Indeterminate );
 
 
 #############################################################################
 ##
-#O  UnivariatePolynomialRing( <R> [,<nr>] )
-#O  UnivariatePolynomialRing( <R> [,<avoid>] )
-#O  UnivariatePolynomialRing( <R>,<name> [,<avoid>] )
 ##
-##  returns a univariate polynomial ring in the indeterminate <nr> over the
-##  base ring <R>. if <nr> is not given it defaults to 1.  If the number is
-##  not specified a list <avoid> of indeterminates may be given. The
-##  function will return a ring in an indeterminate that is guaranteed to be
-##  different from all the indeterminates in <avoid>. The third usage
-##  returns a ring in an indeterminate called <name> (also avoiding the
-##  indeterminates in <avoid> if given).
+
+
+#############################################################################
+##
+#O  UnivariatePolynomialRing( <R>[, <nr>] )
+#O  UnivariatePolynomialRing( <R>[, <name>][, <avoid>] )
+##
+##  <#GAPDoc Label="UnivariatePolynomialRing">
+##  <ManSection>
+##  <Heading>UnivariatePolynomialRing</Heading>
+##  <Oper Name="UnivariatePolynomialRing" Arg='R[, nr]'
+##   Label="for a ring (and an indeterminate number)"/>
+##  <Oper Name="UnivariatePolynomialRing" Arg='R[, name][, avoid]'
+##   Label="for a ring (and a name and an exclusion list)"/>
+##
+##  <Description>
+##  returns a univariate polynomial ring in the indeterminate <A>nr</A> over
+##  the base ring <A>R</A>.
+##  If <A>nr</A> is not given it defaults to 1.
+##  <P/>
+##  If the number is not specified a list <A>avoid</A> of indeterminates may
+##  be given.
+##  Then the function will return a ring in an indeterminate that is
+##  guaranteed to be different from all the indeterminates in <A>avoid</A>.
+##  <P/>
+##  Also a string <A>name</A> can be prescribed as the name of the
+##  indeterminate chosen
+##  (also avoiding the indeterminates in the list <A>avoid</A> if given).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "UnivariatePolynomialRing", [IsRing] );
 
 #############################################################################
 ##
 #A  IndeterminatesOfPolynomialRing( <pring> )
+#A  IndeterminatesOfFunctionField( <ffield> )
 ##
-##  returns a list of the indeterminates of the polynomial ring <pring>
+##  <#GAPDoc Label="IndeterminatesOfPolynomialRing">
+##  <ManSection>
+##  <Attr Name="IndeterminatesOfPolynomialRing" Arg='pring'/>
+##  <Attr Name="IndeterminatesOfFunctionField" Arg='ffield'/>
+##
+##  <Description>
+##  returns a list of the indeterminates of the polynomial ring <A>pring</A>,
+##  respectively the function field <A>ffield</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "IndeterminatesOfPolynomialRing", IsPolynomialRing );
-
+DeclareSynonym("IndeterminatesOfFunctionField",IndeterminatesOfPolynomialRing);
+DeclareSynonym("SetIndeterminatesOfFunctionField",
+  SetIndeterminatesOfPolynomialRing);
+DeclareSynonym("HasIndeterminatesOfFunctionField",
+  HasIndeterminatesOfPolynomialRing);
 
 
 #############################################################################
 ##
-#O  PolynomialRing( <ring>, <rank>, [<avoid>] ) 
-#O  PolynomialRing( <ring>, <names>, [<avoid>] ) 
-#O  PolynomialRing( <ring>, <indets> ) 
-#O PolynomialRing( <ring>, <indetnums> )
+#O  PolynomialRing( <R>, <rank>[, <avoid>] )
+#O  PolynomialRing( <R>, <names>[, <avoid>] )
+#O  PolynomialRing( <R>, <indets> )
+#O  PolynomialRing( <R>, <indetnums> )
 ##
-##  creates a polynomial ring over <ring>. If a positive integer <rank> is
-##  given, this creates the polynomial ring in <rank> indeterminates.  These
-##  indeterminates will have the internal index numbers 1 to <rank>.  The
-##  second usage takes a list <names> of strings and returns a polynomial
-##  ring in indeterminates labelled by <names>.  These indeterminates have
-##  ``new'' internal index numbers as if they had been created by calls to
-##  `Indeterminate'.  (If the argument <avoid> is given it contains
-##  indeterminates that should be avoided, in this case internal index
-##  numbers are incremented to skip these variables).
-##  In the third version, a
-##  list of indeterminates <indets> is given. This creates the polynomial
-##  ring in the indeterminates <indets>. Finally, the fourth version
-##  specifies indeterminates by their index number.
+##  <#GAPDoc Label="PolynomialRing">
+##  <ManSection>
+##  <Heading>PolynomialRing</Heading>
+##  <Oper Name="PolynomialRing" Arg='R, rank[, avoid]'
+##   Label="for a ring and a rank (and an exclusion list)"/>
+##  <Oper Name="PolynomialRing" Arg='R, names[, avoid]'
+##   Label="for a ring and a list of names (and an exclusion list)"/>
+##  <Oper Name="PolynomialRing" Arg='R, indets'
+##   Label="for a ring and a list of indeterminates"/>
+##  <Oper Name="PolynomialRing" Arg='R, indetnums'
+##   Label="for a ring and a list of indeterminate numbers"/>
 ##
+##  <Description>
+##  creates a polynomial ring over the ring <A>R</A>.
+##  If a positive integer <A>rank</A> is given,
+##  this creates the polynomial ring in <A>rank</A> indeterminates.
+##  These indeterminates will have the internal index numbers 1 to
+##  <A>rank</A>.
+##  The second usage takes a list <A>names</A> of strings and returns a
+##  polynomial ring in indeterminates labelled by <A>names</A>.
+##  These indeterminates have <Q>new</Q> internal index numbers as if they
+##  had been created by calls to
+##  <Ref Func="Indeterminate" Label="for a ring (and a number)"/>.
+##  (If the argument <A>avoid</A> is given it contains indeterminates that
+##  should be avoided, in this case internal index numbers are incremented
+##  to skip these variables.)
+##  In the third version, a list of indeterminates <A>indets</A> is given.
+##  This creates the polynomial ring in the indeterminates <A>indets</A>.
+##  Finally, the fourth version specifies indeterminates by their index
+##  numbers.
+##  <P/>
 ##  To get the indeterminates of a polynomial ring use
-##  `IndeterminatesOfPolynomialRing'. (Indeterminates created independently
-##  with `Indeterminate' will usually differ, though they might be given the
-##  same name and display identically -- see section~"Indeterminates"). 
+##  <Ref Func="IndeterminatesOfPolynomialRing"/>.
+##  (Indeterminates created independently with
+##  <Ref Func="Indeterminate" Label="for a ring (and a number)"/>
+##  will usually differ, though they might be given the same name and display
+##  identically, see Section&nbsp;<Ref Sect="Indeterminates"/>.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "PolynomialRing",
     [ IsRing, IsObject ] );
@@ -183,18 +461,79 @@ DeclareOperation( "PolynomialRing",
 
 #############################################################################
 ##
-#O  MinimalPolynomial( <R>, <elm>[ ,<ind>] )
+#O  MinimalPolynomial( <R>, <elm>[, <ind>] )
 ##
-##  returns the *minimal polynomial* of <elm> over the ring <R>,
-##  expressed in the indeterminate number <ind>.
-##  If <ind> is not given, it defaults to 1.
+##  <#GAPDoc Label="MinimalPolynomial">
+##  <ManSection>
+##  <Oper Name="MinimalPolynomial" Arg='R, elm[, ind]'/>
 ##
+##  <Description>
+##  returns the <E>minimal polynomial</E> of <A>elm</A> over the ring <A>R</A>,
+##  expressed in the indeterminate number <A>ind</A>.
+##  If <A>ind</A> is not given, it defaults to 1.
+##  <P/>
 ##  The minimal polynomial is the monic polynomial of smallest degree with
-##  coefficients in <R> that has value zero at <elm>.
+##  coefficients in <A>R</A> that has value zero at <A>elm</A>.
+##  <Example><![CDATA[
+##  gap> MinimalPolynomial(Rationals,[[2,0],[0,2]]);
+##  x-2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "MinimalPolynomial",
-    [ IsRing, IsMultiplicativeElement and IsAdditiveElement,
-    IsPosInt] );
+    [ IsRing, IsMultiplicativeElement and IsAdditiveElement, IsPosInt] );
+
+#############################################################################
+##
+#O  FunctionField( <R>, <rank>[, <avoid>] )
+#O  FunctionField( <R>, <names>[, <avoid>] )
+#O  FunctionField( <R>, <indets> )
+#O  FunctionField( <R>, <indetnums> )
+##
+##  <#GAPDoc Label="FunctionField">
+##  <ManSection>
+##  <Heading>FunctionField</Heading>
+##  <Oper Name="FunctionField" Arg='R, rank[, avoid]'
+##   Label="for an integral ring and a rank (and an exclusion list)"/>
+##  <Oper Name="FunctionField" Arg='R, names[, avoid]'
+##   Label="for an integral ring and a list of names (and an exclusion list)"/>
+##  <Oper Name="FunctionField" Arg='R, indets'
+##   Label="for an integral ring and a list of indeterminates"/>
+##  <Oper Name="FunctionField" Arg='R, indetnums'
+##   Label="for an integral ring and a list of indeterminate numbers"/>
+##
+##  <Description>
+##  creates a function field over the integral ring <A>R</A>.
+##  If a positive integer <A>rank</A> is given,
+##  this creates the function field in <A>rank</A> indeterminates.
+##  These indeterminates will have the internal index numbers 1 to
+##  <A>rank</A>.
+##  The second usage takes a list <A>names</A> of strings and returns a
+##  function field in indeterminates labelled by <A>names</A>.
+##  These indeterminates have <Q>new</Q> internal index numbers as if they
+##  had been created by calls to
+##  <Ref Func="Indeterminate" Label="for a ring (and a number)"/>.
+##  (If the argument <A>avoid</A> is given it contains indeterminates that
+##  should be avoided, in this case internal index numbers are incremented
+##  to skip these variables.)
+##  In the third version, a list of indeterminates <A>indets</A> is given.
+##  This creates the function field in the indeterminates <A>indets</A>.
+##  Finally, the fourth version specifies indeterminates by their index
+##  number.
+##  <P/>
+##  To get the indeterminates of a function field use
+##  <Ref Func="IndeterminatesOfFunctionField"/>.
+##  (Indeterminates created independently with
+##  <Ref Func="Indeterminate" Label="for a ring (and a number)"/>
+##  will usually differ, though they might be given the same name and display
+##  identically, see Section&nbsp;<Ref Sect="Indeterminates"/>.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("FunctionField",[IsRing,IsObject]);
 
 
 #############################################################################

@@ -2,7 +2,7 @@
 ##
 #W  vspcrow.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: vspcrow.tst,v 4.28 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,7 +12,7 @@
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: vspcrow.tst,v 4.28 2005/05/05 15:04:16 gap Exp $");
 
 
 #############################################################################
@@ -375,7 +375,7 @@ x_1^6+Z(2^2)*x_1^5+x_1^4+Z(2^2)^2*x_1^3+x_1^2+Z(2^2)*x_1+Z(2)^0
 gap> MinimalPolynomial(F, A);
 x_1^6+Z(2^2)*x_1^5+x_1^4+Z(2^2)^2*x_1^3+x_1^2+Z(2^2)*x_1+Z(2)^0
 
-gap> STOP_TEST( "vspcrow.tst", 489900000 );
+gap> STOP_TEST( "vspcrow.tst",195001138);
 
 
 #############################################################################

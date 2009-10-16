@@ -6,7 +6,7 @@
 %A                                                         Alexander Hulpke
 %A                                                         Hans Ulrich Besche
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: grplib.msk,v 1.83 2008/05/29 06:11:29 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -428,26 +428,29 @@ Currently, the library contains the following groups:
                    \qquad ($423\;164\;062$ groups);
   \item{$\bullet$} those of cubefree order at most 50 000
                    \qquad ($395 \; 703$ groups);
-  \item{$\bullet$} those of order $p^n$ for $n \leq 6$ and all primes $p$ 
+  \item{$\bullet$} those of order $p^7$ for the primes $p = 3,5,7,11$
+                   \qquad ($907 \; 489$ groups); 
+  \item{$\bullet$} those of order $p^n$ for $n \leq 6$ and all primes $p$; 
   \item{$\bullet$} those of order $q^n \cdot p$ for $q^n$ dividing $2^8$, 
                    $3^6$, $5^5$ or $7^4$ and all primes $p$ with $p \neq q$;
   \item{$\bullet$} those of squarefree order;
   \item{$\bullet$} those whose order factorises into at most 3 primes.
 \endlist
-The first two items in this list cover an explicit range of orders; the 
+The first three items in this list cover an explicit range of orders; the 
 last four provide access to infinite families of groups having orders of 
 certain types.
 
 The library also has an identification function: it returns the library 
 number of a given group. This function determines library numbers using
 invariants of groups. The function is available for all orders in the 
-library except 512, 1536, $p^6$ for $p > 3$ and $p^5$ for $p > 5$.
+library except for the orders 512 and 1536 and except for the orders $p^5$, 
+$p^6$ and $p^7$ above 2000.
 
-The library is organised in 10 layers. Each layer contains the groups of
+The library is organised in 11 layers. Each layer contains the groups of
 certain orders and their corresponding group identification routines. It
 is possible to install the first $n$ layers of the group library and the
 first $m$ layers of the group identification for each $1 \leq m \leq n
-\leq 10$. This might be useful to save disk space. There is an extensive
+\leq 11$. This might be useful to save disk space. There is an extensive
 `README' file for the Small Groups library available in the `small' directory
 of the {\GAP} distribution containing detailed information on the layers.
 A brief description of the layers is given here:
@@ -467,6 +470,7 @@ A brief description of the layers is given here:
    \item{(9)} the remaining groups of order $p^n$ for $4 \leq n \leq 6$.
    \item{(10)} the remaining groups of cubefree order at most 50 000 and
                of squarefree order.
+   \item{(11)} the remaining groups of order $p^7$ for $p = 3,5,7,11$.
 \endlist
 
 The data in this library has been carefully checked and cross-checked.
@@ -485,7 +489,7 @@ group constructions can be found in \cite{BEO01}. Further detailed
 information on the construction of this library is available in \cite{New77}, 
 \cite{OBr90}, \cite{OBr91}, \cite{BescheEick98}, \cite{BescheEick1000}, 
 \cite{BescheEick768}, \cite{BEO00}, \cite{EOB99}, \cite{EOB98}, \cite{NOV04}, 
-\cite{Gir03}, \cite{DEi05}.
+\cite{Gir03}, \cite{DEi05}, \cite{OV05}.
  
 \atindex{TwoGroup library}{@\noexpand`TwoGroup' library}
 \atindex{ThreeGroup library}{@\noexpand`ThreeGroup' library}
@@ -1408,8 +1412,8 @@ gap> phi := IsomorphismPermGroup( G );;
 gap> P := Image( phi );
 Group([ (1,7,6)(2,9)(4,5,10), (2,3,4,5)(6,9,8,7) ])
 gap> D := DerivedSubgroup( P );
-Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,3,10,8)(2,5)(4,7)(6,9),
-  (1,2,8,7,5)(3,4,6,10,9) ])
+Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,9)(2,10)(3,6,8,5)(4,7), 
+  (1,7,10,4)(2,9)(3,6)(5,8) ])
 gap> Size( D );
 960
 gap> IsPerfectGroup( D );
@@ -1424,15 +1428,15 @@ gap> for m in GeneratorsOfGroup( R ) do PrintArray( m ); od;
   [   0,   0,   0,   1,   0 ],
   [   0,   0,   1,   0,   0 ],
   [  -1,  -1,   0,   0,   1 ] ]
-[ [   0,   0,   0,   1,   0 ],
-  [  -1,  -1,  -1,  -1,   2 ],
+[ [  -1,  -1,  -1,  -1,   2 ],
+  [   0,   0,   0,  -1,   0 ],
   [   0,   0,  -1,   0,   0 ],
-  [   1,   0,   0,   0,   0 ],
-  [   0,  -1,  -1,   0,   1 ] ]
-[ [   0,  -1,   0,   0,   0 ],
-  [   0,   0,   1,   0,   0 ],
+  [   0,   1,   0,   0,   0 ],
+  [   0,   0,  -1,  -1,   1 ] ]
+[ [  -1,   0,   0,   0,   0 ],
   [   0,   0,   0,  -1,   0 ],
   [   1,   1,   1,   1,  -2 ],
+  [   0,  -1,   0,   0,   0 ],
   [   0,   0,   1,   0,  -1 ] ]
 \endexample
 

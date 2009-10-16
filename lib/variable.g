@@ -2,7 +2,7 @@
 ##
 #W  variable.g                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: variable.g,v 4.23 2008/09/18 07:58:05 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  For the global functions in the {\GAP} libraray, see `oper.g'.
 ##
 Revision.variable_g :=
-    "@(#)$Id$";
+    "@(#)$Id: variable.g,v 4.23 2008/09/18 07:58:05 gap Exp $";
 
 
 #############################################################################
@@ -67,15 +67,25 @@ end );
 ##
 #O  FlushCaches( ) . . . . . . . . . . . . . . . . . . . . . Clear all caches
 ##
-##  `FlushCaches()' will clear all clearable internal caches defined by
-##  `InstallFlushableValue'.
-##  These caches hold objects like finite fields once created and are used
-##  to speed up computations as well as to avoid creating unique objects
-##  several times, so `FlushCaches' is thought for debugging purposes.
+##  <#GAPDoc Label="FlushCaches">
+##  <ManSection>
+##  <Oper Name="FlushCaches" Arg=""/>
 ##
-##  All methods for `FlushCaches' must be installed that they clear the
-##  cache and then return on `TryNextMethod', thus one call to `FlushCaches'
-##  allows one to run all methods.
+##  <Description>
+##  <Ref Func="FlushCaches"/> resets the value of each global variable that
+##  has been declared with <Ref Func="DeclareGlobalVariable"/> and for which
+##  the initial value has been set with <Ref Func="InstallFlushableValue"/>
+##  to this initial value.
+##  <P/>
+##  <Ref Func="FlushCaches"/> should be used only for debugging purposes,
+##  since the involved global variables include for example lists that store
+##  finite fields and cyclotomic fields used in the current &GAP; session,
+##  in order to avoid that these fields are constructed anew in each call
+##  to <Ref Func="GF" Label="for field size"/> and
+##  <Ref Func="CF" Label="for (subfield and) conductor"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "FlushCaches", [] );
 # This method is just that one method is callable. It is installed first, so
@@ -87,12 +97,27 @@ InstallMethod( FlushCaches, "return method", [], function() end );
 ##
 #F  DeclareGlobalVariable( <name>[, <description>] )
 ##
-##  `DeclareGlobalVariable' creates a new global variable named by the
-##  string <name>.
-##  If the second argument <description> is entered then this must be
+##  <#GAPDoc Label="DeclareGlobalVariable">
+##  <ManSection>
+##  <Func Name="DeclareGlobalVariable" Arg="name[, description]"/>
+##
+##  <Description>
+##  For global variables that are <E>not</E> functions,
+##  instead of using <Ref Func="BindGlobal"/> one can also declare the
+##  variable with <Ref Func="DeclareGlobalVariable"/>
+##  which creates a new global variable named by the string <A>name</A>.
+##  If the second argument <A>description</A> is entered then this must be
 ##  a string that describes the meaning of the global variable.
-##  Values can be assigned to the new variable with `InstallValue' or
-##  `InstallFlushableValue'.
+##  <Ref Func="DeclareGlobalVariable"/> shall be used in the declaration part
+##  of the respective package
+##  (see&nbsp;<Ref Sect="Declaration and Implementation Part"/>),
+##  values can then be assigned to the new variable with
+##  <Ref Func="InstallValue"/> or <Ref Func="InstallFlushableValue"/>,
+##  in the implementation part
+##  (again, see&nbsp;<Ref Sect="Declaration and Implementation Part"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareGlobalVariable", function( arg )
     BIND_GLOBAL( arg[1], NewToBeDefinedObj(arg[1]) );
@@ -104,15 +129,28 @@ end );
 #F  InstallValue( <gvar>, <value> )
 #F  InstallFlushableValue( <gvar>, <value> )
 ##
-##  `InstallValue' assigns the value <value> to the global variable <gvar>.
-##  `InstallFlushableValue' does the same but additionally provides that
-##  each call of `FlushCaches' will assign a structural copy of <value>
-##  to <gvar>.
+##  <#GAPDoc Label="InstallValue">
+##  <ManSection>
+##  <Func Name="InstallValue" Arg="gvar, value"/>
+##  <Func Name="InstallFlushableValue" Arg="gvar, value"/>
 ##
-##  `InstallValue' does *not* work if <value> is an ``immediate object''
-##  (i.e., an internally represented small integer or finite field element).
-##  Furthermore, `InstallFlushableValue' works only if <value> is a list
-##  or a record.
+##  <Description>
+##  <Ref Func="InstallValue"/> assigns the value <A>value</A> to the global
+##  variable <A>gvar</A>.
+##  <Ref Func="InstallFlushableValue"/> does the same but additionally
+##  provides that each call of <Ref Func="FlushCaches"/>
+##  will assign a structural copy of <A>value</A> to <A>gvar</A>.
+##  <P/>
+##  <Ref Func="InstallValue"/> does <E>not</E> work if <A>value</A> is an
+##  <Q>immediate object</Q>, i.e., an internally represented small integer or
+##  finite field element.
+##  Furthermore, <Ref Func="InstallFlushableValue"/> works only if
+##  <A>value</A> is a list or a record.
+##  (Note that <Ref Func="InstallFlushableValue"/> makes sense only for
+##  <E>mutable</E> global variables.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 ##  Using `DeclareGlobalVariable' and `InstallFlushableValue' has several
 ##  advantages, compared to simple assignments.
@@ -124,22 +162,17 @@ end );
 ##     perhaps separately for each package.
 ##     Note that the assignments of other global variables via
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
-#T     (This would raise the question whether also immutable `#V' variables
-#T     shall be defined via a function call.)
-##
-##  (Note that `InstallFlushableValue' makes sense only for *mutable*
-##  global lists.)
 ##
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
     if (not IsBound(REREADING) or REREADING = false) and not
        IsToBeDefinedObj( gvar ) then
         Error("InstallValue: a value has been installed already");
     fi;
-#   if IsFamily( value ) then
-#     INFO_INSTALL( 1,
-#         "please use `BindGlobal' for the family object ",
-#         value!.NAME, ", not `InstallValue'" );
-#   fi;
+    if IsFamily( value ) then
+      INFO_DEBUG( 1,
+          "please use `BindGlobal' for the family object ",
+          value!.NAME, ", not `InstallValue'" );
+    fi;
     CLONE_OBJ (gvar, value);
 end);
 
@@ -173,7 +206,7 @@ BIND_GLOBAL( "false", 0 );
 BIND_GLOBAL( "while", 0 );
 BIND_GLOBAL( "repeat", 0 );
 BIND_GLOBAL( "until", 0 );
-BIND_GLOBAL( "SaveWorkspace", 0 );
+#BIND_GLOBAL( "SaveWorkspace", 0 );
 BIND_GLOBAL( "else", 0 );
 BIND_GLOBAL( "elif", 0 );
 BIND_GLOBAL( "function", 0 );
@@ -187,6 +220,63 @@ BIND_GLOBAL( "IsBound", 0 );
 BIND_GLOBAL( "TryNextMethod", 0 );
 BIND_GLOBAL( "Info", 0 );
 BIND_GLOBAL( "Assert", 0 );
+
+#
+# Type for lvars bags
+#
+
+DeclareCategory("IsLVarsBag", IsObject);
+BIND_GLOBAL( "LVARS_FAMILY", NewFamily(IsLVarsBag, IsLVarsBag));
+BIND_GLOBAL( "TYPE_LVARS", NewType(LVARS_FAMILY, IsLVarsBag));
+
+#############################################################################
+#
+# Namespaces:
+#
+BIND_GLOBAL( "NAMESPACES_STACK", [] );
+
+BIND_GLOBAL( "ENTER_NAMESPACE",
+  function( namesp )
+    if not(IS_STRING_REP(namesp)) then
+        Error( "<namesp> must be a string" );
+        return;
+    fi;
+    NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)+1] := namesp;
+    SET_NAMESPACE(namesp);
+  end );
+
+BIND_GLOBAL( "LEAVE_NAMESPACE",
+  function( )
+    if LEN_LIST(NAMESPACES_STACK) = 0 then
+        SET_NAMESPACE("");
+        Error( "was not in any namespace" );
+    else
+        UNB_LIST(NAMESPACES_STACK,LEN_LIST(NAMESPACES_STACK));
+        if LEN_LIST(NAMESPACES_STACK) = 0 then
+            SET_NAMESPACE("");
+        else
+            SET_NAMESPACE(NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)]);
+        fi;
+    fi;
+  end );
+
+BIND_GLOBAL( "LEAVE_ALL_NAMESPACES",
+  function( )
+    local i;
+    SET_NAMESPACE("");
+    for i in [1..LEN_LIST(NAMESPACES_STACK)] do
+         UNB_LIST(NAMESPACES_STACK,i);
+    od;
+  end );
+    
+BIND_GLOBAL( "CURRENT_NAMESPACE",
+  function()
+    if LEN_LIST(NAMESPACES_STACK) > 0 then
+        return NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)];
+    else
+        return "";
+    fi;
+  end );
 
 #############################################################################
 ##

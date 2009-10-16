@@ -1,5 +1,0 @@
-addpackage.py AtlasRep http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/PackageInfo.g
-addpackage.py EDIM http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM/PackageInfo.g
-addpackage.py Example http://www.math.rwth-aachen.de/~Greg.Gamble/Example/PackageInfo.g
-addpackage.py FactInt http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/factint/PackageInfo.g
-addpackage.py GAPDoc http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/PackageInfo.g

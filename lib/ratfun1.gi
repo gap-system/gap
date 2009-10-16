@@ -5,7 +5,7 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ratfun1.gi,v 4.20 2009/03/11 03:07:15 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  and will benefit from compilation.
 ##
 Revision.ratfun1_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ratfun1.gi,v 4.20 2009/03/11 03:07:15 gap Exp $";
 
 # Functions to create objects 
 
@@ -292,9 +292,13 @@ end;
 UNIV_FUNC_BY_EXTREP:=function(rfam,ncof,dcof,val,inum)
 local f;
 
-  # constand denominator -> ratfun
+  # constant denominator -> ratfun
   if Length(dcof)=1 then
-    return LAUR_POL_BY_EXTREP(rfam,ncof/dcof[1],val,inum);
+    if not IsOne(dcof[1]) then
+      return LAUR_POL_BY_EXTREP(rfam,1/dcof[1]*ncof,val,inum);
+    else
+      return LAUR_POL_BY_EXTREP(rfam,ncof,val,inum);
+    fi;
   fi;
 
   # slightly better to do this after the Length id determined 

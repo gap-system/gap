@@ -2,7 +2,7 @@
 ##
 #W  grppc.gd                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grppc.gd,v 4.63 2009/06/15 15:20:21 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -26,12 +26,19 @@
 ##    a group that knows a pcgs of a super group
 ##
 Revision.grppc_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: grppc.gd,v 4.63 2009/06/15 15:20:21 gap Exp $";
 
 
 #############################################################################
 ##
 #V  InfoPcGroup
+##
+##  <ManSection>
+##  <InfoClass Name="InfoPcGroup"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareInfoClass("InfoPcGroup");
 
@@ -61,6 +68,13 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##
 #A  CanonicalPcgsWrtFamilyPcgs( <grp> )	. . . . . . .  with respect to family
 ##
+##  <ManSection>
+##  <Attr Name="CanonicalPcgsWrtFamilyPcgs" Arg='grp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "CanonicalPcgsWrtFamilyPcgs", IsGroup );
 
 
@@ -69,6 +83,13 @@ DeclareAttribute( "CanonicalPcgsWrtFamilyPcgs", IsGroup );
 ##
 #A  CanonicalPcgsWrtHomePcgs( <grp> ) . . . . . . . . .  with respect to home
 ##
+##  <ManSection>
+##  <Attr Name="CanonicalPcgsWrtHomePcgs" Arg='grp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "CanonicalPcgsWrtHomePcgs", IsGroup );
 
 
@@ -76,6 +97,15 @@ DeclareAttribute( "CanonicalPcgsWrtHomePcgs", IsGroup );
 #############################################################################
 ##
 #A  FamilyPcgs( <grp> ) . . . . . . . . . . . . . . . . .  pcgs of the family
+##
+##  <#GAPDoc Label="FamilyPcgs">
+##  <ManSection>
+##  <Attr Name="FamilyPcgs" Arg='grp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "FamilyPcgs", IsGroup );
 
@@ -87,6 +117,13 @@ InstallSubsetMaintenance( FamilyPcgs, IsGroup, IsGroup );
 ##
 #A  HomePcgs( <grp> ) . . . . . . . . . . . . . . . . . . .  pcgs of the home
 ##
+##  <ManSection>
+##  <Attr Name="HomePcgs" Arg='grp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "HomePcgs", IsGroup );
 
 
@@ -97,6 +134,15 @@ InstallSubsetMaintenance( HomePcgs, IsGroup, IsGroup );
 ##
 #A  InducedPcgsWrtFamilyPcgs( <grp> ) . . . . . . . .  with respect to family
 ##
+##  <#GAPDoc Label="InducedPcgsWrtFamilyPcgs">
+##  <ManSection>
+##  <Attr Name="InducedPcgsWrtFamilyPcgs" Arg='grp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 
 
@@ -104,13 +150,21 @@ DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 ##
 #O  InducedPcgs( <pcgs>, <grp> )
 ##
-##  computes a pcgs for <grp> which is induced by <pcgs>. If <pcgs> has
-##  a parent pcgs, then the result is induced with respect to this parent
-##  pcgs.
+##  <#GAPDoc Label="InducedPcgs">
+##  <ManSection>
+##  <Oper Name="InducedPcgs" Arg='pcgs, grp'/>
 ##
-##  `InducedPcgs' is a wrapper function only. Therefore, methods for computing 
-##  computing an induced pcgs should be installed for the
-##  operation `InducedPcgsOp'.
+##  <Description>
+##  computes a pcgs for <A>grp</A> which is induced by <A>pcgs</A>.
+##  If <A>pcgs</A> has a parent pcgs,
+##  then the result is induced with respect to this parent pcgs.
+##  <P/>
+##  <Ref Func="InducedPcgs"/> is a wrapper function only.
+##  Therefore, methods for computing computing an induced pcgs
+##  should be installed for the operation <C>InducedPcgsOp</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "InducedPcgs", [IsPcgs,IsGroup] );
 
@@ -118,42 +172,71 @@ DeclareOperation( "InducedPcgs", [IsPcgs,IsGroup] );
 ##
 #O  InducedPcgsOp( <pcgs>, <grp> )
 ##
-##  computes a pcgs for <grp> which is induced by <pcgs>. <pcgs> must not
+##  <ManSection>
+##  <Oper Name="InducedPcgsOp" Arg='pcgs, grp'/>
+##
+##  <Description>
+##  computes a pcgs for <A>grp</A> which is induced by <A>pcgs</A>. <A>pcgs</A> must not
 ##  be an induced pcgs. This operation should not be called directly. 
-##  Instead, please use `InducedPcgs' which caches its results.
-##  
+##  Instead, please use <C>InducedPcgs</C> which caches its results.
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation( "InducedPcgsOp", [IsPcgs,IsGroup] );
+
+#############################################################################
+##
+#F  SetInducedPcgs( <home>, <grp>, <pcgs> )
+##
+##  <ManSection>
+##  <Func Name="SetInducedPcgs" Arg='home, grp, pcgs'/>
+##
+##  <Description>
+##  This function sets <A>pcgs</A> to be a <A>home</A>-induced pcgs for
+##  <A>grp</A> if the <Ref Func="HomePcgs"/> value of <A>grp</A> equals
+##  <A>home</A> and the <Ref Func="ParentPcgs"/> value of <A>pcgs</A> equals
+##  <A>home</A>.
+##  (This means <A>pcgs</A> is induced by <A>home</A>.)
+##  If <A>grp</A> has no <Ref Func="HomePcgs"/> value yet,
+##  it is assigned to <A>home</A> before this.
+##  This function should be used in algorithms if a pcgs for a new subgroup
+##  is computed that by this calculation is known to be compatible with the
+##  home pcgs of the calculation.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "SetInducedPcgs" );
 
 #############################################################################
 ##
 #A  ComputedInducedPcgses( <grp> )
 ##
+##  <ManSection>
+##  <Attr Name="ComputedInducedPcgses" Arg='grp'/>
+##
+##  <Description>
 ##  This attribute stores previously computed induced generating systems
-##  of the group <grp>. It is a list of the form
-##  [<ppcgs_1>, <ipcgs_1>, <ppcgs_2>, <ipcgs_2>, ...],
-##  where <ppcgs_n> is a parent pcgs and <igs_n> is the corresponding
-##  induced generating system.
-##  
+##  of the group <A>grp</A>. It is a list of the form
+##  <M>[ ppcgs_1, ipcgs_1, ppcgs_2, ipcgs_2, \ldots ]</M>,
+##  where <M>ppcgs_n</M> is a parent pcgs and <M>igs_n</M> is the
+##  corresponding induced generating system.
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute ("ComputedInducedPcgses", IsGroup, "mutable");
-
-#############################################################################
-##
-#F  SetInducedPcgs( <home>,<grp>,<pcgs> )
-##
-##  This function sets <pcgs> to be an <home>-induced pcgs for <grp> if the
-##  `HomePcgs' of <grp> equals <home> and the `ParentPcgs' of <pcgs> equals
-##  <home>. (This means <pcgs> is induced by <home>.) If <grp> has no
-##  `HomePcgs' yet, it is assigned to <home> before this.
-##  This function should be used in algorithms if a pcgs for a new subgroup
-##  is computed that by this calculation is known to be compatible with the
-##  home pcgs of the calculation.
-DeclareGlobalFunction( "SetInducedPcgs" );
 
 #############################################################################
 ##
 #A  InducedPcgsWrtHomePcgs( <grp> ) . . . . . . . . . .  with respect to home
 ##
-##  returns an induced pcgs for <grp> with respect to the home pcgs.
+##  <ManSection>
+##  <Attr Name="InducedPcgsWrtHomePcgs" Arg='grp'/>
+##
+##  <Description>
+##  returns an induced pcgs for <A>grp</A> with respect to the home pcgs.
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute(
     "InducedPcgsWrtHomePcgs",
     IsGroup );
@@ -164,28 +247,67 @@ DeclareAttribute(
 ##
 #A  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . . . pcgs of a group
 ##
-##  returns a pcgs for the group <G>. 
-##  If <grp> is not polycyclic it returns `fail' *and this result is not 
-##  stored as attribute value*, in particular in this case the filter
-##  `HasPcgs' is *not* set for <G>!
+##  <#GAPDoc Label="Pcgs">
+##  <ManSection>
+##  <Attr Name="Pcgs" Arg='G'/>
+##
+##  <Description>
+##  returns a pcgs for the group <A>G</A>. 
+##  If <A>grp</A> is not polycyclic it returns <K>fail</K> <E>and this result
+##  is not  stored as attribute value</E>,
+##  in particular in this case the filter <C>HasPcgs</C> is <E>not</E> set
+##  for <A>G</A>!
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "Pcgs", IsGroup );
 
 #############################################################################
 ##
 #A  GeneralizedPcgs( <G> )  . . . . . . . . . . . . . . . . . pcgs of a group
 ##
-##  returns a generalized pcgs for the group <G>.
+##  <ManSection>
+##  <Attr Name="GeneralizedPcgs" Arg='G'/>
+##
+##  <Description>
+##  returns a generalized pcgs for the group <A>G</A>.
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "GeneralizedPcgs", IsGroup );
 
 #############################################################################
 ##
 #F  CanEasilyComputePcgs( <grp> ) . . . . .  group is willing to compute pcgs
 ##
-##  This filter indicates whether it is possible to compute a pcgs for <grp>
-##  cheaply. Clearly, <grp> must be polycyclic in this case. However, not
-##  for every polycyclic group there is a method to compute a pcgs at low
-##  costs. This filter is used in the method selection mainly.
-##  Note that this filter may change its value from false to true. 
+##  <#GAPDoc Label="CanEasilyComputePcgs">
+##  <ManSection>
+##  <Func Name="CanEasilyComputePcgs" Arg='grp'/>
+##
+##  <Description>
+##  This filter indicates whether it is possible to compute a pcgs for
+##  <A>grp</A> cheaply.
+##  Clearly, <A>grp</A> must be polycyclic in this case.
+##  However, not for every polycyclic group there is a method to compute a
+##  pcgs at low costs.
+##  This filter is used in the method selection mainly.
+##  Note that this filter may change its value from <K>false</K> to
+##  <K>true</K>. 
+##
+##  <Example><![CDATA[
+##  gap> G := Group( (1,2,3,4),(1,2) );
+##  Group([ (1,2,3,4), (1,2) ])
+##  gap> CanEasilyComputePcgs(G);
+##  false
+##  gap> Pcgs(G);
+##  Pcgs([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
+##  gap> CanEasilyComputePcgs(G);
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareFilter( "CanEasilyComputePcgs" );
 
@@ -197,17 +319,37 @@ InstallTrueMethod(IsGroup,CanEasilyComputePcgs);
 ##
 #O  SubgroupByPcgs( <G>, <pcgs> )
 ##
+##  <#GAPDoc Label="SubgroupByPcgs">
+##  <ManSection>
+##  <Oper Name="SubgroupByPcgs" Arg='G, pcgs'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 
 
 #############################################################################
 ##
-#O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 #O  AffineAction( <gens>, <basisvectors>, <linear>, <transl> )
+#O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 ##
-##  return a list of matrices, one for each element of <gens>, which
-##  corresponds to the affine action of the elements in <gens> on the
-##  basis <basisvectors> via <linear> with translation <transl>.
+##  <#GAPDoc Label="AffineOperation">
+##  <ManSection>
+##  <Oper Name="AffineAction" Arg='gens, basisvectors, linear, transl'/>
+##  <Oper Name="AffineOperation" Arg='gens, basisvectors, linear, transl'/>
+##
+##  <Description>
+##  return a list of matrices, one for each element of <A>gens</A>, which
+##  corresponds to the affine action of the elements in <A>gens</A> on the
+##  basis <A>basisvectors</A> via <A>linear</A> with translation
+##  <A>transl</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "AffineAction", 
     [ IsList, IsMatrix, IsFunction, IsFunction ] );
 DeclareSynonym( "AffineOperation", AffineAction );
@@ -215,12 +357,22 @@ DeclareSynonym( "AffineOperation", AffineAction );
 
 #############################################################################
 ##
-#O  LinearOperation( <gens>, <basisvectors>, <linear> )
 #O  LinearAction( <gens>, <basisvectors>, <linear> )
+#O  LinearOperation( <gens>, <basisvectors>, <linear> )
 ##
-##  returns a list of matrices, one for each element of <gens>, which
-##  corresponds to the matrix action of the elements in <gens> on the
-##  basis <basisvectors> via <linear>.
+##  <#GAPDoc Label="LinearOperation">
+##  <ManSection>
+##  <Oper Name="LinearAction" Arg='gens, basisvectors, linear'/>
+##  <Oper Name="LinearOperation" Arg='gens, basisvectors, linear'/>
+##
+##  <Description>
+##  returns a list of matrices, one for each element of <A>gens</A>, which
+##  corresponds to the matrix action of the elements in <A>gens</A> on the
+##  basis <A>basisvectors</A> via <A>linear</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "LinearAction", [ IsList, IsMatrix, IsFunction ] );
 DeclareSynonym( "LinearOperation",LinearAction);
 
@@ -236,12 +388,45 @@ InstallTrueMethod(
 
 #############################################################################
 ##
-#F  AffineOperationLayer( <G>, <gens>, <pcgs>, <transl> )
 #F  AffineActionLayer( <G>, <gens>, <pcgs>, <transl> )
+#F  AffineOperationLayer( <G>, <gens>, <pcgs>, <transl> )
 ##
-##  returns a list of matrices, one for each element of <gens>, which
-##  corresponds to the affine action of <G> on the vector space corresponding
-##  to the modulo pcgs <pcgs> with translation <transl>.
+##  <#GAPDoc Label="AffineOperationLayer">
+##  <ManSection>
+##  <Func Name="AffineActionLayer" Arg='G, gens, pcgs, transl'/>
+##  <Func Name="AffineOperationLayer" Arg='G, gens, pcgs, transl'/>
+##
+##  <Description>
+##  returns a list of matrices, one for each element of <A>gens</A>,
+##  which corresponds to the affine action of <A>G</A> on the vector space
+##  corresponding to the modulo pcgs <A>pcgs</A> with translation
+##  <A>transl</A>.
+##  <Example><![CDATA[
+##  gap> G := SmallGroup( 96, 51 );
+##  <pc group of size 96 with 6 generators>
+##  gap> spec := SpecialPcgs( G );
+##  Pcgs([ f1, f2, f3, f4, f5, f6 ])
+##  gap> LGWeights( spec );
+##  [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 3 ], [ 1, 2, 2 ], [ 1, 2, 2 ], 
+##    [ 1, 3, 2 ] ]
+##  gap> mpcgs := InducedPcgsByPcSequence( spec, spec{[4,5,6]} );
+##  Pcgs([ f4, f5, f6 ])
+##  gap> npcgs := InducedPcgsByPcSequence( spec, spec{[6]} );
+##  Pcgs([ f6 ])
+##  gap> modu := mpcgs mod npcgs;
+##  [ f4, f5 ]
+##  gap> mat:=LinearActionLayer( G, spec{[1,2,3]}, modu );
+##  [ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2>, 
+##    <an immutable 2x2 matrix over GF2> ]
+##  gap> Print( mat, "\n" );
+##  [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
+##    [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
+##    [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "AffineActionLayer" );
 DeclareSynonym( "AffineOperationLayer",AffineActionLayer );
 
@@ -251,6 +436,14 @@ DeclareSynonym( "AffineOperationLayer",AffineActionLayer );
 #F  GeneratorsCentrePGroup( <G> )
 #F  GeneratorsCenterPGroup( <G> )
 ##
+##  <ManSection>
+##  <Func Name="GeneratorsCentrePGroup" Arg='G'/>
+##  <Func Name="GeneratorsCenterPGroup" Arg='G'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "GeneratorsCentrePGroup" );
 
 DeclareSynonym( "GeneratorsCenterPGroup", GeneratorsCentrePGroup );
@@ -258,12 +451,22 @@ DeclareSynonym( "GeneratorsCenterPGroup", GeneratorsCentrePGroup );
 
 #############################################################################
 ##
-#F  LinearOperationLayer( <G>, <gens>, <pcgs> )
 #F  LinearActionLayer( <G>, <gens>, <pcgs> )
+#F  LinearOperationLayer( <G>, <gens>, <pcgs> )
 ##
-##  returns a list of matrices, one for each element of <gens>, which
-##  corresponds to the matrix action of <G> on the vector space corresponding
-##  to the modulo pcgs <pcgs>.
+##  <#GAPDoc Label="LinearOperationLayer">
+##  <ManSection>
+##  <Func Name="LinearActionLayer" Arg='G, gens, pcgs'/>
+##  <Func Name="LinearOperationLayer" Arg='G, gens, pcgs'/>
+##
+##  <Description>
+##  returns a list of matrices, one for each element of <A>gens</A>,
+##  which corresponds to the matrix action of <A>G</A> on the vector space
+##  corresponding to the modulo pcgs <A>pcgs</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "LinearActionLayer" );
 DeclareSynonym( "LinearOperationLayer",LinearActionLayer );
 
@@ -272,9 +475,19 @@ DeclareSynonym( "LinearOperationLayer",LinearActionLayer );
 ##
 #F  VectorSpaceByPcgsOfElementaryAbelianGroup( <mpcgs>, <fld> )
 ##
-##  returns the vector space over <fld> corresponding to the modulo pcgs
-##  <mpcgs>. Note that <mpcgs> has to define an elementary abelian $p$-group
-##  where $p$ is the characteristic of <fld>.
+##  <#GAPDoc Label="VectorSpaceByPcgsOfElementaryAbelianGroup">
+##  <ManSection>
+##  <Func Name="VectorSpaceByPcgsOfElementaryAbelianGroup" Arg='mpcgs, fld'/>
+##
+##  <Description>
+##  returns the vector space over <A>fld</A> corresponding to the modulo pcgs
+##  <A>mpcgs</A>.
+##  Note that <A>mpcgs</A> has to define an elementary abelian <M>p</M>-group
+##  where <M>p</M> is the characteristic of <A>fld</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction(
     "VectorSpaceByPcgsOfElementaryAbelianGroup" );
 
@@ -282,11 +495,39 @@ DeclareGlobalFunction(
 ##
 #F  GapInputPcGroup( <grp>, <string> )
 ##
+##  <#GAPDoc Label="GapInputPcGroup">
+##  <ManSection>
+##  <Func Name="GapInputPcGroup" Arg='grp, string'/>
+##
+##  <Description>
+##  <Example><![CDATA[
+##  gap> G := SmallGroup( 24, 12 );
+##  <pc group of size 24 with 4 generators>
+##  gap> PrintTo( "save", GapInputPcGroup( G, "H" ) );
+##  gap> Read( "save" );
+##  #I A group of order 24 has been defined.
+##  #I It is called H
+##  gap> H = G;
+##  false
+##  gap> IdSmallGroup( H ) = IdSmallGroup( G );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "GapInputPcGroup" );
 
 #############################################################################
 ##
 #O  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
+##
+##  <ManSection>
+##  <Oper Name="CanonicalSubgroupRepresentativePcGroup" Arg='G, U'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "CanonicalSubgroupRepresentativePcGroup" );
 
@@ -294,15 +535,30 @@ DeclareGlobalFunction( "CanonicalSubgroupRepresentativePcGroup" );
 ##
 #F  CentrePcGroup( <grp> )
 ##
+##  <ManSection>
+##  <Func Name="CentrePcGroup" Arg='grp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "CentrePcGroup" );
 
 #############################################################################
 ##
 #A  OmegaSeries( G )
 ##
+##  <ManSection>
+##  <Attr Name="OmegaSeries" Arg='G'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "OmegaSeries", IsGroup );
+
 
 #############################################################################
 ##
-#E  grppc.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

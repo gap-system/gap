@@ -1,0 +1,29 @@
+
+# U/<yu,v> from Edeson's thesis (p. 46)
+
+Gr: y,u,v;
+Rel: y^2, (yu)^2, u^3, (yv)^2, v^3, (uv)^6, (uV)^6, (yuv)^6, (y(uv)^3)^6;
+Gen: yu,v;
+
+Mess:10000;
+
+Sims:3;  End;			# m=86 t=101
+
+Sims:9;  End;			# m=40 t=43
+
+Fel:1;  End;			# m=78 t=80
+No:7;   End;			# m=36 t=37
+
+# Duplicate table at top of p.48
+
+AsIs:1;
+Gr:u,v,y;
+Rel: y^2, (yu)^2, u^3, (yv)^2, v^3, (uv)^6, (uV)^6, (yuv)^6, (y(uv)^3)^6;
+Gen: yY, uU, yu, v;
+
+Fel;
+Loop:1;  Begin;
+Loop:2;  Redo;
+Pr:-3;
+
+# Use Aep with this to give `best' enumeration ...

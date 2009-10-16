@@ -2,7 +2,7 @@
 ##
 #W  pcgsmodu.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: pcgsmodu.gi,v 4.48 2004/06/17 21:19:56 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  another such system.
 ##
 Revision.pcgsmodu_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: pcgsmodu.gi,v 4.48 2004/06/17 21:19:56 gap Exp $";
 
 
 #############################################################################
@@ -927,6 +927,7 @@ InstallMethod(ModuloPcgs,"for groups",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,H)
 local home;
   home:=HomePcgs(G);
+  RelativeOrders(home);
   G:=InducedPcgs(home,G);
   return G mod InducedPcgs(home,H);
 end);

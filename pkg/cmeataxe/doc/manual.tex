@@ -1,0 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                GAP documentation             Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  $Id: manual.tex,v 1.1 2000/04/19 09:09:34 gap Exp $
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapmacro  . . . . . . . . . . . . . . . .  read the GAP macro package
+%%
+\input ../../../doc/gapmacro
+\def\MeatAxe{{\sf MeatAxe}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{cmeataxe}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../doc/ext}
+\UseReferences{../../../doc/ref}
+\UseReferences{../../../doc/tut}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont Share Package}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont C-{\MeatAxe}}\vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont Michael Ringe}\vfill
+  \centerline{{\GAP} interface by Thomas Breuer,}\medskip
+  \centerline{Lehrstuhl D f{\accent127 u}r Mathematik,}\medskip
+  \centerline{RWTH Aachen, Germany}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter
+%%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{../../../doc/mrabbrev,./manual,../../../doc/manual}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters
+%%
+\Chapters
+\Input{cmeataxe}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices
+%%
+\Appendices
+\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

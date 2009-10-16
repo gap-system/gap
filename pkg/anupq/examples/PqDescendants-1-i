@@ -1,0 +1,12 @@
+#Example: "PqDescendants-1-i" . . . based on manual example
+#(demonstrates `PqSetPQuotientToGroup' usage)
+#vars: F, procId, G, des;
+#options: 
+F := FreeGroup( "a", "b" );
+procId := PqStart( F : Prime := 2 );
+Pq( procId : ClassBound := 1 );
+PqSetPQuotientToGroup( procId );;
+des := PqDescendants( procId : OrderBound := 6, ClassBound := 5 );
+Length(des);
+List(des, Size);
+List(des, d -> Length( PCentralSeries( d, 2 ) ) - 1 );

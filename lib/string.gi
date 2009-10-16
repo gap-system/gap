@@ -2,7 +2,7 @@
 ##
 #W  string.gi                   GAP library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: string.gi,v 4.39 2009/07/10 14:28:11 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,14 +11,13 @@
 ##  This file contains functions for strings.
 ##
 Revision.string_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: string.gi,v 4.39 2009/07/10 14:28:11 gap Exp $";
 
 
 #############################################################################
 ##
 #F  IsDigitChar(<c>)
 ##
-BIND_GLOBAL("CHARS_DIGITS",Immutable(SSortedList("0123456789")));
 
 InstallGlobalFunction(IsDigitChar,x->x in CHARS_DIGITS);
 
@@ -27,8 +26,6 @@ InstallGlobalFunction(IsDigitChar,x->x in CHARS_DIGITS);
 ##
 #F  IsUpperAlphaChar(<c>)
 ##
-BIND_GLOBAL("CHARS_UALPHA",
-  Immutable(SSortedList("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
 
 InstallGlobalFunction(IsUpperAlphaChar,x->x in CHARS_UALPHA);
 
@@ -37,8 +34,6 @@ InstallGlobalFunction(IsUpperAlphaChar,x->x in CHARS_UALPHA);
 ##
 #F  IsLowerAlphaChar(<c>)
 ##
-BIND_GLOBAL("CHARS_LALPHA",
-  Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz")));
 
 InstallGlobalFunction(IsLowerAlphaChar,x->x in CHARS_LALPHA);
 
@@ -183,9 +178,9 @@ end);
 InstallGlobalFunction(StringDate , function ( date )
     if IsInt( date )  then date := DMYDay( date );  fi;
     return Concatenation(
-        FormattedString(date[1],2), "-",
+        String(date[1],2), "-",
         NameMonth[date[2]], "-",
-        FormattedString(date[3],4) );
+        String(date[3],4) );
 end);
 
 
@@ -320,6 +315,8 @@ InstallGlobalFunction(LowercaseString , function( str )
   if LOWERCASETRANSTABLE = 0 then
     LOWERCASETRANSTABLE := List([0..255], CHAR_INT);
     LOWERCASETRANSTABLE{1+[65..90]} := LOWERCASETRANSTABLE{1+[97..122]};
+    LOWERCASETRANSTABLE{1+[192..214]} := LOWERCASETRANSTABLE{33+[192..214]};
+    LOWERCASETRANSTABLE{1+[216..221]} := LOWERCASETRANSTABLE{33+[216..221]};
   fi;
   # now delegate to kernels TranslateString
   res := ShallowCopy(str);
@@ -329,19 +326,39 @@ end);
 
 #############################################################################
 ##
+#F  UppercaseString( <string> ) . . . string consisting of upper case letters
+##
+UPPERCASETRANSTABLE := 0;
+InstallGlobalFunction(UppercaseString , function( str )
+  local res;
+  # initialize translation table before first use
+  if UPPERCASETRANSTABLE = 0 then
+    UPPERCASETRANSTABLE := List([0..255], CHAR_INT);
+    UPPERCASETRANSTABLE{1+[97..122]} := UPPERCASETRANSTABLE{1+[65..90]};
+    UPPERCASETRANSTABLE{33+[192..214]} := UPPERCASETRANSTABLE{1+[192..214]};
+    UPPERCASETRANSTABLE{33+[216..221]} := UPPERCASETRANSTABLE{1+[216..221]};
+  fi;
+  # now delegate to kernels TranslateString
+  res := ShallowCopy(str);
+  TranslateString(res, UPPERCASETRANSTABLE);
+  return res;
+end);
+
+#############################################################################
+##
 #M  Int( <str> )  . . . . . . . . . . . . . . . .  integer described by <str>
 ##
-InstallOtherMethod( Int,
+InstallMethod( Int,
     "for strings",
     true,
     [ IsString ],
     0,
 
 function( str )
-    local   m,  z,  d,  i,  s;
+    local   z,  d,  i,  s;
  
     # use kernel parser for longer strings:
-    if Length(str) > 24 then
+    if Length(str) > 30 then
       z := EvalString(str);
       if IsInt(z) then
         return z;
@@ -350,24 +367,20 @@ function( str )
       fi;
     fi;
 
-    m := 1;
-    z := 0;
     d := 1;
-    for i  in [ 1 .. Length(str) ]  do
-        if i = d and str[i] = '-'  then
-            m := m * -1;
-            d := i+1;
-        else
-            # this is quite fast since it is done in a kernel loop
-            s := Position( CHARS_DIGITS, str[i] );
-            if s <> fail  then
-                z := 10 * z + (s-1);
-            else
-                return fail;
-            fi;
-        fi;
+    while IsBound( str[d] ) and str[d] = '-'  do
+        d := d + 1;
     od;
-    return z * m;
+    z := 0;
+    for i  in [ d .. Length( str ) ]  do
+        # this is quite fast since it is done in a kernel loop
+        s := Position( CHARS_DIGITS, str[i] );
+        if s = fail  then
+            return fail;
+        fi;
+        z := 10 * z + (s - 1);
+    od;
+    return z * (-1) ^ (d - 1);
 end );
 
 
@@ -738,6 +751,229 @@ InstallGlobalFunction(FileString, function(arg)
   WRITE_STRING_FILE_NC(out![1], str);
   CloseStream(out);
   return Length(str);
+end);
+
+
+BindGlobal("RCSVSplitString",function(s,sep)
+local l, i, start,nodob,str;
+  l:=[];
+  i:=1;
+  while i<=Length(s) do
+    if s[i]=sep then
+      Add(l,"");
+      i:=i+1;
+    elif s[i]='"' then
+      # find next ", treating "" special
+      str:="";
+      i:=i+1;
+      start:=i;
+      repeat
+	while (i+1<=Length(s) and s[i+1]<>'"') or
+	      (i+2=Length(s) and s[i+2]<>sep) do
+	  i:=i+1;
+	od;
+	if Length(s)>=i+2 and s[i+2]='"' then
+	  str:=Concatenation(str,s{[start..i+1]});
+	  i:=i+2;
+	  start:=i+1;
+	  nodob:=false;
+	else
+	  nodob:=true;
+	fi;
+      until nodob;
+      if Length(str)>0 then
+	Add(l,Concatenation(str,s{[start..i]}));
+      else
+	Add(l,s{[start..i]});
+      fi;
+      i:=i+3; # skip ",
+    else
+      start:=i;
+      while i<Length(s) and s[i+1]<>sep do
+	i:=i+1;
+      od;
+      Add(l,s{[start..i]});
+      i:=i+2; # skip comma
+    fi;
+  od;
+  return l;
+end);
+
+BindGlobal("RCSVReadLine",function(f)
+local l, b;
+  l:="";
+  while not IsEndOfStream(f) do
+    b:=ReadByte(f);
+    if b<>fail then
+      if b<0 then 
+	b:=b+256;
+      fi;
+      if b=10 or b=13 then
+	return l;
+      fi;
+      Add(l,CHAR_INT(b));
+    fi;
+  od;
+  return l;
+end);
+
+InstallGlobalFunction(ReadCSV,function(arg)
+local nohead,file,sep,f, line, fields, l, r, i,s,add;
+  file:=arg[1];
+  nohead:=false;
+  if Length(arg)>1 then
+    if IsBool(arg[2]) then
+      nohead:=arg[2];
+    fi;
+    sep:=arg[Length(arg)];
+    if IsString(sep) then
+      sep:=sep[1];
+    elif not IsChar(sep) then
+      sep:=',';
+    fi;
+  else
+    sep:=',';
+  fi;
+  f:=InputTextFile(file);
+  if nohead<>true then
+    line:=RCSVReadLine(f);
+    line:=Chomp(line);
+    if '"' in line and sep=',' then
+      fields:=RCSVSplitString(line,sep);
+    else
+      fields:=SplitString(line,sep);
+    fi;
+    # field names with blank or empty are awkward
+    for i in [1..Length(fields)] do
+      if ' ' in fields[i] then
+	fields[i]:=ReplacedString(fields[i]," ","_");
+      elif Length(fields[i])=0 then
+	fields[i]:=Concatenation("field",String(i));
+      fi;
+    od;
+  else
+    fields:=List([1..10000],i->Concatenation("field",String(i)));
+  fi;
+  l:=[];
+  while not IsEndOfStream(f) do
+    line:=RCSVReadLine(f);
+    if line<>fail then
+      line:=Chomp(line);
+      if '"' in line and sep=',' then
+	line:=RCSVSplitString(line,sep);
+      else
+	line:=SplitString(line,sep);
+      fi;
+      r:=rec();
+      add:=false;
+      for i in [1..Length(fields)] do
+	if IsBound(line[i]) and Length(line[i])>0 then
+	  s:=line[i];
+	  # openoffice and Word translate booleans differently. 
+	  if s="TRUE" then s:="1";
+	  elif s="FALSE" then s:="0";
+	  fi;
+	  r.(fields[i]):=s;
+	  add:=true;
+	fi;
+      od;
+      if add then
+	Add(l,r);
+      fi;
+    fi;
+  od;
+  CloseStream(f);
+  return l;
+end);
+
+InstallGlobalFunction(PrintCSV,function(arg)
+  local file,l,printEntry, rf, r, i, j,sz;
+
+  file:=arg[1];
+  l:=arg[2];
+  printEntry:=function(s)
+  local p;
+    if not IsString(s) then
+      s:=String(s);
+    fi;
+
+    p:=Position(s,'\n');
+    while p<>fail do
+      s:=Concatenation(s{[1..p-1]},s{[p+1..Length(s)]});
+      p:=Position(s,'\n');
+    od;
+    p:=PositionSublist(s,"  ");
+    while p<>fail do
+      s:=Concatenation(s{[1..p-1]},s{[p+1..Length(s)]});
+      p:=PositionSublist(s,"  ");
+    od;
+
+    if '"' in s then
+      p:=1;
+      while p<=Length(s) do
+	if s[p]='"' then
+	  s:=Concatenation(s{[1..p]},s{[p..Length(s)]});
+	  p:=p+1;
+	fi;
+	p:=p+1;
+      od;
+    fi;
+
+    if ',' in s or '"' in s then
+      s:=Concatenation("\"",s,"\"");
+    fi;
+    AppendTo(file,s,"\c");
+  end;
+
+  sz:=SizeScreen();
+  SizeScreen([255,sz[2]]);
+  if Length(arg)>2 then
+    rf:=arg[3];
+  else
+    rf:=[];
+    for i in l do
+      r:=RecFields(i);
+      for j in r do
+	if not j in rf then
+	  Add(rf,j);
+	fi;
+      od;
+    od;
+    # sort record fields
+    Sort(rf,function(a,b)
+      local ap;
+      # check trailing numbers
+      ap:=Length(a);
+      while ap>0 and a[ap] in CHARS_DIGITS do
+	ap:=ap-1;
+      od;
+      if Length(b)>=ap and ForAll([ap+1..Length(b)],j->b[j] in CHARS_DIGITS) then
+	return Int(a{[ap+1..Length(a)]})<Int(b{[ap+1..Length(b)]});
+      fi;
+      return a<b;
+    end);
+  fi;
+
+  PrintTo(file);
+  printEntry(rf[1]);
+  for j in [2..Length(rf)] do
+    AppendTo(file,",");
+    printEntry(ReplacedString(rf[j],"_"," "));
+  od;
+  AppendTo(file,"\n");
+
+  for  i in l do
+    for j in [1..Length(rf)] do
+      if j>1 then
+	AppendTo(file,",");
+      fi;
+      if IsBound(i.(rf[j])) then
+        printEntry(i.(rf[j]));
+      fi;
+    od;
+    AppendTo(file,"\n");
+  od;
+  SizeScreen(sz);
 end);
 
 #############################################################################

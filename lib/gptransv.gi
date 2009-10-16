@@ -3,7 +3,7 @@
 #W  gptransv.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gptransv.gi,v 4.7 2002/04/15 10:04:43 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -23,7 +23,7 @@
 ##  currently work.
 ##
 Revision.gptransv_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: gptransv.gi,v 4.7 2002/04/15 10:04:43 sal Exp $";
 
 
 #############################################################################

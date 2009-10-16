@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>
+Decomposition Matrices
+</title>
+<link rel="stylesheet" type="text/css" href="decmats.css" />
+</head>
+<body>
+<h1 class="pcenter"><span class="Heading">Decomposition Matrices</span></h1>
+
+
+<!-- =================================================================== -->
+<p>
+This is a database of decomposition matrices
+of "bicyclic" extensions of those finite simple groups
+for which the Atlas of Finite Groups contains the ordinary character tables.
+The data files are in PDF format.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Contents of this Database</span></h3>
+
+<p>
+For each simple group G of order less than 10<sup>9</sup> in the
+Atlas of Finite Groups,
+the <a href="http://www.math.rwth-aachen.de/~MOC/ABC.html">
+Atlas of Brauer Characters</a>
+shows the Brauer character tables for all primes dividing the order of G.
+</p>
+
+<p>
+(The Atlas of Finite Groups was published by
+<a href="http://www.oup.co.uk">Oxford University Press</a>.
+Currently the book is sold out,
+perhaps the publishers will produce a second edition
+if sufficiently many orders are sent to them.)
+</p>
+
+<p>
+Also, for larger simple groups in the Atlas of Finite Groups,
+Brauer character tables (or equivalently, decomposition matrices)
+at least for some "bicyclic" extensions and some prime divisors
+of the group order are known.
+More precisely,
+the Brauer character tables for the groups listed on pages 102-155
+of the Atlas of Finite Groups (including Co<sub>2</sub>) are known,
+except the few cases mentioned in the list of
+<a href="http://www.math.rwth-aachen.de/~MOC/work.html">ongoing work</a>.
+Note that so-called "generality problems" may occur for these groups.
+</p>
+
+<p>
+For a list of people involved in the computations of Brauer character
+tables and decomposition matrices, see Section 17 in the Introduction to
+the <a href="http://www.math.rwth-aachen.de/~MOC/ABC.html">
+Atlas of Brauer Characters</a>.
+A list of references can be found
+<a href="http://www.math.rwth-aachen.de/~MOC/refs.html">
+here</a>.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter">
+<span class="Heading">Decomposition Matrices in <span class="pkg">GAP</span>
+</span></h3>
+
+<p>
+All tables contained in the Atlas of Brauer Characters and many others
+are available in the computer algebra system
+<a href="http://www.gap-system.org"><span class="pkg">GAP</span></a>,
+which provides many functions for computations with characters
+and character tables.
+This database has been created automatically
+from the character table library of
+<a href="http://www.gap-system.org"><span class="pkg">GAP</span></a>.
+</p>
+
+<p>
+For dealing with decomposition matrices,
+<a href="http://www.gap-system.org"><span class="pkg">GAP</span></a>
+may be more suitable than the collection
+of files shown here in a quite restricted way.
+The decomposition matrices can be easily derived from the ordinary and
+Brauer character table,
+a sample
+<a href="http://www.gap-system.org"><span class="pkg">GAP</span></a>
+session is available in <a href="../htm/ctbldeco.htm">HTML</a>
+and <a href="../doc/ctbldeco.pdf">PDF</a>
+format.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Status of this Database</span></h3>
+
+<p>
+If you have suggestions how this database can be improved then
+feel free to send an e-mail message to
+<a href="mailto:sam@math.rwth-aachen.de?subject=Decomposition Matrices">
+sam@math.rwth-aachen.de
+</a>.
+</p>
+
+<p>
+This may concern for example
+known decomposition matrices that are missing here,
+possible errors in character tables and decomposition matrices,
+the layout of the pages,
+or additional related information (such as Brauer trees) that may be
+added to the database.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Structure of this Database</span></h3>
+
+<p>
+Suppose you are interested in the p-modular decomposition matrices of
+a bicyclic extension m.G.a of the group G.
+Then you first choose the group G in the table shown below,
+according to the name used for G in the Atlas of Finite Groups.
+From the documents available for G, you then choose the one you need
+according to its filename, which is composed from the name for G.a and
+the suffix modp.pdf.
+</p>
+
+<p>
+The decomposition matrices are shown blockwise.
+For symmetric groups, alternatively,
+the full p-modular decomposition matrix is also available
+as a lower triangular matrix whose rows are labelled by partitions.
+The files containing this format have suffixes partmodp.pdf.
+</p>
+
+<p>
+Here are a few examples.
+<br/>
+The 2-modular decomposition matrices of the Mathieu group
+M<sub>24</sub> are in the directory M24, in the file M24mod2.pdf.
+<br/>
+The PDF file containing the 5-modular decomposition matrices of the
+McLaughlin group M<sup>c</sup>L and its triple cover 3.M<sup>c</sup>L
+is McLmod5.pdf in the directory McL.
+<br/>
+The PDF file containing the 3-modular decomposition matrices of the
+symmetric group S<sub>5</sub> and its double cover 2.S<sub>5</sub>
+is A5.2mod3.pdf in the directory A5.
+(Note that the decomposition matrices are independent of the choice of
+the double cover.)
+<br/>
+The PDF file containing the full 2-modular decomposition matrix of the
+symmetric group S<sub>7</sub>, with rows labelled by partitions,
+is A7.2partmod2.pdf in the directory A7.
+</p>
+
+<p>
+A description of the format of the document files is available
+<a href="introduc.pdf">as a PDF file</a>.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">The Groups</span></h3>
+
+<table class="datatable">
+<tr>
+<td class="pleft"><a href="tex/2E6(2)"><sup>2</sup>E<sub>6</sub>(2)</a></td>
+<td class="pleft"><a href="tex/2F4(2)'"><sup>2</sup>F<sub>4</sub>(2)'</a></td>
+<td class="pleft"><a href="tex/3D4(2)"><sup>3</sup>D<sub>4</sub>(2)</a></td>
+<td class="pleft"><a href="tex/A5">A<sub>5</sub></a></td>
+<td class="pleft"><a href="tex/A6">A<sub>6</sub></a></td>
+<td class="pleft"><a href="tex/A7">A<sub>7</sub></a></td>
+<td class="pleft"><a href="tex/A8">A<sub>8</sub></a></td>
+<td class="pleft"><a href="tex/A9">A<sub>9</sub></a></td>
+<td class="pleft"><a href="tex/A10">A<sub>10</sub></a></td>
+<td class="pleft"><a href="tex/A11">A<sub>11</sub></a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/A12">A<sub>12</sub></a></td>
+<td class="pleft"><a href="tex/A13">A<sub>13</sub></a></td>
+<td class="pleft"><a href="tex/A14">A<sub>14</sub></a></td>
+<td class="pleft"><a href="tex/A15">A<sub>15</sub></a></td>
+<td class="pleft"><a href="tex/A16">A<sub>16</sub></a></td>
+<td class="pleft"><a href="tex/A17">A<sub>17</sub></a></td>
+<td class="pleft"><a href="tex/B">B</a></td>
+<td class="pleft"><a href="tex/Co1">Co<sub>1</sub></a></td>
+<td class="pleft"><a href="tex/Co2">Co<sub>2</sub></a></td>
+<td class="pleft"><a href="tex/Co3">Co<sub>3</sub></a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/F3+">F<sub>3+</sub></a></td>
+<td class="pleft"><a href="tex/F4(2)">F<sub>4</sub>(2)</a></td>
+<td class="pleft"><a href="tex/Fi22">Fi<sub>22</sub></a></td>
+<td class="pleft"><a href="tex/Fi23">Fi<sub>23</sub></a></td>
+<td class="pleft"><a href="tex/G2(3)">G<sub>2</sub>(3)</a></td>
+<td class="pleft"><a href="tex/G2(4)">G<sub>2</sub>(4)</a></td>
+<td class="pleft"><a href="tex/G2(5)">G<sub>2</sub>(5)</a></td>
+<td class="pleft"><a href="tex/HN">HN</a></td>
+<td class="pleft"><a href="tex/HS">HS</a></td>
+<td class="pleft"><a href="tex/He">He</a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/J1">J<sub>1</sub></a></td>
+<td class="pleft"><a href="tex/J2">J<sub>2</sub></a></td>
+<td class="pleft"><a href="tex/J3">J<sub>3</sub></a></td>
+<td class="pleft"><a href="tex/J4">J<sub>4</sub></a></td>
+<td class="pleft"><a href="tex/L2(8)">L<sub>2</sub>(8)</a></td>
+<td class="pleft"><a href="tex/L2(11)">L<sub>2</sub>(11)</a></td>
+<td class="pleft"><a href="tex/L2(13)">L<sub>2</sub>(13)</a></td>
+<td class="pleft"><a href="tex/L2(16)">L<sub>2</sub>(16)</a></td>
+<td class="pleft"><a href="tex/L2(17)">L<sub>2</sub>(17)</a></td>
+<td class="pleft"><a href="tex/L2(19)">L<sub>2</sub>(19)</a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/L2(23)">L<sub>2</sub>(23)</a></td>
+<td class="pleft"><a href="tex/L2(25)">L<sub>2</sub>(25)</a></td>
+<td class="pleft"><a href="tex/L2(27)">L<sub>2</sub>(27)</a></td>
+<td class="pleft"><a href="tex/L2(29)">L<sub>2</sub>(29)</a></td>
+<td class="pleft"><a href="tex/L2(31)">L<sub>2</sub>(31)</a></td>
+<td class="pleft"><a href="tex/L2(32)">L<sub>2</sub>(32)</a></td>
+<td class="pleft"><a href="tex/L2(49)">L<sub>2</sub>(49)</a></td>
+<td class="pleft"><a href="tex/L2(81)">L<sub>2</sub>(81)</a></td>
+<td class="pleft"><a href="tex/L3(2)">L<sub>3</sub>(2)</a></td>
+<td class="pleft"><a href="tex/L3(3)">L<sub>3</sub>(3)</a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/L3(4)">L<sub>3</sub>(4)</a></td>
+<td class="pleft"><a href="tex/L3(5)">L<sub>3</sub>(5)</a></td>
+<td class="pleft"><a href="tex/L3(7)">L<sub>3</sub>(7)</a></td>
+<td class="pleft"><a href="tex/L3(8)">L<sub>3</sub>(8)</a></td>
+<td class="pleft"><a href="tex/L3(9)">L<sub>3</sub>(9)</a></td>
+<td class="pleft"><a href="tex/L4(3)">L<sub>4</sub>(3)</a></td>
+<td class="pleft"><a href="tex/L4(4)">L<sub>4</sub>(4)</a></td>
+<td class="pleft"><a href="tex/L5(2)">L<sub>5</sub>(2)</a></td>
+<td class="pleft"><a href="tex/L6(2)">L<sub>6</sub>(2)</a></td>
+<td class="pleft"><a href="tex/Ly">Ly</a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/M">M</a></td>
+<td class="pleft"><a href="tex/M11">M<sub>11</sub></a></td>
+<td class="pleft"><a href="tex/M12">M<sub>12</sub></a></td>
+<td class="pleft"><a href="tex/M22">M<sub>22</sub></a></td>
+<td class="pleft"><a href="tex/M23">M<sub>23</sub></a></td>
+<td class="pleft"><a href="tex/M24">M<sub>24</sub></a></td>
+<td class="pleft"><a href="tex/McL">M<sup>c</sup>L</a></td>
+<td class="pleft"><a href="tex/O7(3)">O<sub>7</sub>(3)</a></td>
+<td class="pleft"><a href="tex/O8+(2)">O<sub>8</sub><sup>+</sup>(2)</a></td>
+<td class="pleft"><a href="tex/O8+(3)">O<sub>8</sub><sup>+</sup>(3)</a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/O8-(2)">O<sub>8</sub><sup>-</sup>(2)</a></td>
+<td class="pleft"><a href="tex/O8-(3)">O<sub>8</sub><sup>-</sup>(3)</a></td>
+<td class="pleft"><a href="tex/O10+(2)">O<sub>10</sub><sup>+</sup>(2)</a></td>
+<td class="pleft"><a href="tex/O10-(2)">O<sub>10</sub><sup>-</sup>(2)</a></td>
+<td class="pleft"><a href="tex/ON">ON</a></td>
+<td class="pleft"><a href="tex/R(27)">R(27)</a></td>
+<td class="pleft"><a href="tex/Ru">Ru</a></td>
+<td class="pleft"><a href="tex/S4(4)">S<sub>4</sub>(4)</a></td>
+<td class="pleft"><a href="tex/S4(5)">S<sub>4</sub>(5)</a></td>
+<td class="pleft"><a href="tex/S6(2)">S<sub>6</sub>(2)</a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/S6(3)">S<sub>6</sub>(3)</a></td>
+<td class="pleft"><a href="tex/S8(2)">S<sub>8</sub>(2)</a></td>
+<td class="pleft"><a href="tex/S10(2)">S<sub>10</sub>(2)</a></td>
+<td class="pleft"><a href="tex/Suz">Suz</a></td>
+<td class="pleft"><a href="tex/Sz(8)">Sz(8)</a></td>
+<td class="pleft"><a href="tex/Sz(32)">Sz(32)</a></td>
+<td class="pleft"><a href="tex/Th">Th</a></td>
+<td class="pleft"><a href="tex/U3(3)">U<sub>3</sub>(3)</a></td>
+<td class="pleft"><a href="tex/U3(4)">U<sub>3</sub>(4)</a></td>
+<td class="pleft"><a href="tex/U3(5)">U<sub>3</sub>(5)</a></td>
+</tr>
+<tr>
+<td class="pleft"><a href="tex/U3(7)">U<sub>3</sub>(7)</a></td>
+<td class="pleft"><a href="tex/U3(8)">U<sub>3</sub>(8)</a></td>
+<td class="pleft"><a href="tex/U3(9)">U<sub>3</sub>(9)</a></td>
+<td class="pleft"><a href="tex/U3(11)">U<sub>3</sub>(11)</a></td>
+<td class="pleft"><a href="tex/U4(2)">U<sub>4</sub>(2)</a></td>
+<td class="pleft"><a href="tex/U4(3)">U<sub>4</sub>(3)</a></td>
+<td class="pleft"><a href="tex/U5(2)">U<sub>5</sub>(2)</a></td>
+<td class="pleft"><a href="tex/U6(2)">U<sub>6</sub>(2)</a></td>
+</tr>
+</table>
+
+
+<!-- =================================================================== -->
+<hr/>
+<p class="foot">File created on 27-May-1999 by Thomas Breuer.
+<br/>
+Last modified on 31-July-2007 by Thomas Breuer.</p>
+
+<!-- added paragraph about symmetric groups & partitions -->
+<!-- fixed a typo, reordered the table such that, e.g., A5 precedes A10 -->
+<!-- added L4(4) and O8-(3); now pdf is stored instead of ps -->
+<!-- changed some links -->
+<!-- replaced .ps by .pdf in the text -->
+<!-- use a css file -->
+
+</body>
+</html>
+<!-- end -->
+

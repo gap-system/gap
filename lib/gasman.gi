@@ -2,7 +2,7 @@
 ##
 #W  gasman.gi                   GAP Library                       Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gasman.gi,v 4.3 2007/08/28 11:53:37 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  GASMAN garbage collector
 ##
 Revision.gasman_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: gasman.gi,v 4.3 2007/08/28 11:53:37 alexk Exp $";
 #############################################################################
 ##
 #F  GasmanStatistics( )
@@ -29,13 +29,17 @@ InstallGlobalFunction(GasmanStatistics,
                        deadbags := row[3],
                        deadkb := row[4],
                        freekb := row[5],
-                       totalkb := row[6] );
+                       totalkb := row[6],
+                       time := row[7],
+                       cumulative := row[8]);                       
     if raw[1][1] <> 0 then
         cooked.partial := convertrow(raw[1]);
     fi;
     if raw[2][1] <> 0 then
         cooked.full := convertrow(raw[2]);
     fi;
+    cooked.npartial := raw[1][9];
+    cooked.nfull := raw[2][9];    
     return cooked;
 end );
 

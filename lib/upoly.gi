@@ -3,7 +3,7 @@
 ##
 #W  upoly.gi                     GAP Library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: upoly.gi,v 4.50 2005/04/06 15:06:00 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains methods for univariate polynomials
 ##
 Revision.upoly_gi:=
-  "@(#)$Id$";
+  "@(#)$Id: upoly.gi,v 4.50 2005/04/06 15:06:00 gap Exp $";
 
 #############################################################################
 ##

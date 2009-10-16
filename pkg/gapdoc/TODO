@@ -1,0 +1,18 @@
+
+           Some reminders for the authors
+
+         $Id: TODO,v 1.17 2008/04/30 15:35:55 gap Exp $
+
+
+- should the bibliography and the index appear in the table of contents?
+  (if yes, in all output versions) 
+  [use: \addcontentsline{toc}{section}{References}   ?]
+
+- allow the distribution of different output documents (html, text, pdf,...)
+  into different directories (needs to change the handler for GAPDoc books).
+
+- think about combining index entries, when they point to the same section
+  (e.g., a function with several types of arguments, where the entries are
+  only distinguished by the 'Label' attribute and are explained in the same
+  man section).
+

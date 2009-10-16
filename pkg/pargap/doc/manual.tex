@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex             ParGAP documentation            Gene Cooperman
+%%
+%H  $Id: manual.tex,v 1.9 2001/11/16 15:57:00 gap Exp $
+%%
+%Y  Copyright (C) 1999-2001  Gene Cooperman
+%Y    See included file, COPYING, for conditions for copying
+%%
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapmacro . . . . . . . . . . . . . . . .  read the GAP macro package
+%%
+\input ../../../doc/gapmacro
+\Package{ParGAP}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{pargap}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../doc/ext}
+\UseReferences{../../../doc/ref}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont ParGAP}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont (Parallel GAP)}\medskip
+  \centerline{\titlefont A GAP4 Package}\bigskip\bigskip
+  \centerline{\secfont Version \input ../VERSION}
+  \vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont Gene Cooperman}\medskip
+  \centerline{College of Computer Science}\medskip
+  \centerline{Northeastern University}\medskip
+  \centerline{Boston, MA, U.S.A.}\medskip
+  \centerline{\secfont email: gene@ccs.neu.edu}
+  \vfill
+  \centerline{\secfont {\Month} 2001}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  
+%%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{./manual,../../../doc/mrabbrev}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  . . . . . . . . . . . . . . . . . . . . . .  
+%%
+\Chapters
+\Input{pargap1}
+\Input{pargap2}
+\Input{pargap3}
+\Input{tutorial}
+\Input{pargap4}
+\Input{pargap5}
+\Input{pargap6}
+\Input{pargap7}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  . . . . . . . . . . . .  
+%%
+%\Appendices
+\EndMatter
+\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex	. . . . . . . . . . . . . . . . . . . . . . . . ends here

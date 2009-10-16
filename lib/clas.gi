@@ -2,14 +2,14 @@
 ##
 #W  clas.gi                     GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: clas.gi,v 4.75 2006/05/18 19:40:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.clas_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: clas.gi,v 4.75 2006/05/18 19:40:16 gap Exp $";
 
 
 #############################################################################
@@ -489,21 +489,22 @@ InstallMethod( Size,
 ##
 #F  DecomposedRationalClass( <cl> ) . . . . . decompose into ordinary classes
 ##
-InstallGlobalFunction( DecomposedRationalClass, function( cl )
-    local   G,  C,  rep,  gal,  T,  cls,  e,  c;
+InstallOtherMethod(DecomposedRationalClass,
+  "generic",true,[IsRationalClassGroupRep],0,function( cl )
+local   G,  C,  rep,  gal,  T,  cls,  e,  c;
 
-    G := ActingDomain( cl );
-    C := StabilizerOfExternalSet( cl );
-    rep := Representative( cl );
-    gal := GaloisGroup( cl );
-    T := RightTransversalInParent( gal );
-    cls := [  ];
-    for e  in T  do
-	# if e=0 then the element is the identity anyhow, no need to worry.
-        c := ConjugacyClass( G, rep ^ Int( e ),C );
-        Add( cls, c );
-    od;
-    return cls;
+  G := ActingDomain( cl );
+  C := StabilizerOfExternalSet( cl );
+  rep := Representative( cl );
+  gal := GaloisGroup( cl );
+  T := RightTransversalInParent( gal );
+  cls := [  ];
+  for e  in T  do
+    # if e=0 then the element is the identity anyhow, no need to worry.
+    c := ConjugacyClass( G, rep ^ Int( e ),C );
+    Add( cls, c );
+  od;
+  return cls;
 end );
 
 
@@ -666,37 +667,128 @@ InstallGlobalFunction( RationalClassesTry, function(  G, classes, elm  )
 
 end );
 
-InstallMethod( RationalClasses,"solvable",[ CanEasilyComputePcgs ], 20,
-    function( G )
-    local   rcls,  cls,  cl,  c,  sum, size;
-    
-    size := Size(G);
-    rcls := [  ];
-    if IsPrimePowerInt( size )  then
-        for cl  in RationalClassesSolvableGroup( G, 1 )  do
-            c := RationalClass( G, cl.representative );
-            SetStabilizerOfExternalSet( c, cl.centralizer );
-            SetGaloisGroup( c, cl.galoisGroup );
-            Add( rcls, c );
-        od;
-    else
-        sum := 0;
-        for cl in ConjugacyClasses(G)  do
-            c := RationalClass( G, Representative(cl) );
-            SetStabilizerOfExternalSet( c, Centralizer(cl) );
-            if sum < size and not c in rcls  then
-                Add( rcls, c );
-                sum := sum + Size( c );
-                if sum = size and not IsBound(cls)  then
-                    break;
-                fi;
-            fi;
-        od;
+InstallMethod( RationalClasses,"use classes",[ IsGroup ], 0,
+function( G )
+local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
+      dec,ggg;
 
+  closure:=function(sub,gens,m)
+  local test, t, i, Error;
+    # dimino algorithm for normal subgroup
+    test:=[1];
+    while Length(test)>0 do
+      t:=test[1];
+      for i in gens do
+	if i<>1 then
+	  AddSet(ggg,i);
+	fi;
+	if not (sub[t]*i mod m) in sub then
+	  AddSet(test,Length(sub)+1); # next element to test
+	  Append(sub,Filtered(List(sub,x->x*i mod m),x-> not x in sub));
+	fi;
+      od;
+      RemoveSet(test,t);
+    od;
+    #Print(m," ",gens," ",sub,"\n");
+  end;
+
+  rcls:=[];
+  cl:=ConjugacyClasses(G);
+  mark:=BlistList([1..Length(cl)],[]);
+  for i in [1..Length(cl)] do
+    if mark[i]=false then
+      sub:=fail;
+      mark[i]:=true;
+      rep:=Representative(cl[i]);
+      c := RationalClass( G, rep);
+      SetStabilizerOfExternalSet( c, Centralizer(cl[i]) );
+      Add(rcls,c);
+      o:=Order(rep);
+      dec:=[cl[i]];
+      if o>2 then
+        cop:=Set(Flat(GeneratorsPrimeResidues(o).generators));
+	# get orders that give the same class
+	same:=Filtered(cop,i->RepresentativeAction(G,rep,rep^i)<>fail);
+	if Length(same)<Length(cop) then
+	  # there are other classes:
+	  sub:=[1];
+	  ggg:=[];
+	  closure(sub,same,o);
+	  cop:=Difference(cop,same);
+	  for j in cop do
+	    # we know these are different
+	    pow:=rep^j;
+	    p:=First([i+1..Length(cl)],x->pow in cl[x]);
+	    if p=fail then
+	      Error("not found");
+	    else
+	      if mark[p]=false then
+		Add(dec,cl[p]);
+	      fi;
+	      mark[p]:=true;
+	    fi;
+	  od;
+
+	  cop:=Difference(PrimeResidues(o),cop); # we've tested these
+	  for j in cop do
+	    if not j in sub then
+	      pow:=rep^j;
+	      p:=First([i..Length(cl)],x->pow in cl[x]);
+	      if p=fail then
+		Error("not found");
+	      elif p=i then
+	        closure(sub,[j],o);
+	      else
+		if mark[p]=false then
+		  Add(dec,cl[p]);
+		fi;
+		mark[p]:=true;
+	      fi;
+	    fi;
+	  od;
+	fi;
+      fi;
+      SetDecomposedRationalClass(c,dec);
+      SetSize(c,Length(dec)*Size(dec[1]));
+      if sub<>fail then
+	SetGaloisGroup(c,GroupByPrimeResidues(ggg,o));
+      fi;
     fi;
+  od;
+  return rcls;
+end);
 
-    return rcls;
-end );
+#InstallMethod( RationalClasses,"solvable",[ CanEasilyComputePcgs ], 20,
+#    function( G )
+#    local   rcls,  cls,  cl,  c,  sum, size;
+#    
+#    size := Size(G);
+#    rcls := [  ];
+#    if IsPrimePowerInt( size )  then
+#        for cl  in RationalClassesSolvableGroup( G, 1 )  do
+#            c := RationalClass( G, cl.representative );
+#            SetStabilizerOfExternalSet( c, cl.centralizer );
+#            SetGaloisGroup( c, cl.galoisGroup );
+#            Add( rcls, c );
+#        od;
+#    else
+#        sum := 0;
+#        for cl in ConjugacyClasses(G)  do
+#            c := RationalClass( G, Representative(cl) );
+#            SetStabilizerOfExternalSet( c, Centralizer(cl) );
+#            if sum < size and not c in rcls  then
+#                Add( rcls, c );
+#                sum := sum + Size( c );
+#                if sum = size and not IsBound(cls)  then
+#                    break;
+#                fi;
+#            fi;
+#        od;
+#
+#    fi;
+#
+#    return rcls;
+#end );
 
 #############################################################################
 ##

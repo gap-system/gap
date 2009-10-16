@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.sml512_cy :=
-    "@(#)$Id$";
+    "@(#)$Id: sml512.cy,v 1.1 1999/12/08 18:56:59 gap Exp $";
 
 SMALL_GROUP_LIB[ 512 ][ 103 ] := [
 "%%%%%%%%(D9-->e1)<,,8c%n%D2&%%!{PHD=]!}uHD80!}xHD=>!}t3D80!}w3D80!}u3D80!}x\

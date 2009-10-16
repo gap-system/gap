@@ -2,7 +2,7 @@
 **
 *A  unzoo.c                     Tools                        Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: unzoo.c,v 4.9 2006/01/02 10:08:53 gap Exp $
 **
 *Y  This file is in the Public Domain.
 **
@@ -220,7 +220,16 @@
 **  Dave Bayer ported 'unzoo' to the Macintosh,  including Macbinary support.
 **
 **  HISTORY
-*H  $Log$
+*H  $Log: unzoo.c,v $
+*H  Revision 4.9  2006/01/02 10:08:53  gap
+*H  added more efficient BlockWriteText for Mac version. BH
+*H
+*H  Revision 4.8  2005/10/03 08:07:28  alexk
+*H  Added fseek support in Windows version. AK
+*H
+*H  Revision 4.7  2005/09/26 14:10:32  gap
+*H  enabled forward seeks, fixed a potential bug. BH.
+*H
 *H  Revision 4.6  2003/08/27 11:15:38  gap
 *H  Added drag and drop support. Replaced some functions in the Mac part by versons supported by recent Mac OS.
 *H
@@ -300,6 +309,7 @@ FILE *          ReadArch;
 #define CLOS_READ_ARCH()        (fclose( ReadArch ) == 0)
 #define BLCK_READ_ARCH(blk,len) fread( (blk), 1L, (len), ReadArch )
 #define RWND_READ_ARCH()        (fseek( ReadArch, 0, 0 ) == 0)
+#define SEEK_READ_ARCH(pos)		(fseek( ReadArch, pos, SEEK_SET) == 0)
 #endif
 #ifdef  SYS_IS_OS2_EMX
 FILE *          ReadArch;
@@ -1056,7 +1066,7 @@ int             MacClosWritText ()
     return (fclose( WritText ) == 0);
 }
 
-unsigned long   MacBlckWritText ( blk, len )
+unsigned long   MacBlckWritTextOld ( blk, len )
     unsigned char *     blk;
     unsigned long       len;
 {
@@ -1068,6 +1078,37 @@ unsigned long   MacBlckWritText ( blk, len )
     }
     return len;
 }
+
+unsigned char MacWriteBuf[4096];
+
+unsigned long   MacBlckWritText ( blk, len )
+    unsigned char *     blk;
+    unsigned long       len;
+{
+    unsigned long       i;              /* loop variable                   */
+	unsigned char *     src;
+	unsigned char *     dst;
+	unsigned long       count;	
+	src = blk;
+	dst = MacWriteBuf;
+	count = 0;
+    for ( i = 0; i < len; i++ ) {
+        if (count == sizeof (MacWriteBuf)) {
+        	count = fwrite (&MacWriteBuf, 1L, sizeof (MacWriteBuf), WritText );
+        	if (count < sizeof (MacWriteBuf))
+        		return i - sizeof(MacWriteBuf) + count;
+        	count = 0;
+			dst = MacWriteBuf;
+        }
+        if ((*dst = *src) == '\n') 
+			*dst = '\r';
+		src++;
+		dst++;
+		count++;        
+    }
+    return len;
+}
+
 
 char            WritName [256];         /* name of the file                */
 FSSpec          WritFSSpec;             /* fsspec of the file              */
@@ -1465,12 +1506,14 @@ unsigned char * PtrArch;                /* pointer to the next byte        */
 
 unsigned char * EndArch;                /* pointer to the last byte        */
 
+unsigned char * BegArch;                /* pointer to the first valid byte        */
+
 unsigned long   PosArch;                /* position of 'BufArch[0]'        */
 
 int             OpenReadArch ( patl )
     char *              patl;
 {
-    PtrArch = EndArch = (BufArch+64);
+    PtrArch = BegArch = EndArch = (BufArch+64);
     PosArch = 0;
     return OPEN_READ_ARCH( patl );
 }
@@ -1491,6 +1534,11 @@ int             FillReadArch ()
         *d++ = *s;
     PosArch += EndArch - (BufArch+64);
 
+	if (EndArch - BegArch < 64L)
+		BegArch = BufArch + 64 - (EndArch - BegArch);
+	else
+		BegArch = BufArch;
+		
     /* read a block                                                        */
     PtrArch = BufArch+64;
     EndArch = PtrArch + BLCK_READ_ARCH( PtrArch, 4096 );
@@ -1503,19 +1551,28 @@ int             GotoReadArch ( pos )
     unsigned long       pos;
 {
     /* for long backward seeks goto the beginning of the file              */
-    if ( pos+64 < PosArch ) {
+    if ( pos+64 - (BegArch - BufArch) < PosArch ) {
 #ifdef SEEK_READ_ARCH
 		if (!SEEK_READ_ARCH(pos))
 			return 0;
-        PtrArch = EndArch = BufArch+64;
+        PtrArch = BegArch = EndArch = BufArch+64;
         PosArch = pos;
 #else
         if ( ! RWND_READ_ARCH() )
             return 0;
-        PtrArch = EndArch = BufArch+64;
+        PtrArch = BegArch = EndArch = BufArch+64;
         PosArch = 0;
 #endif
     }
+
+#ifdef SEEK_READ_ARCH
+    if ( PosArch + (EndArch - (BufArch+64)) +4096 <= pos ) {
+		if (!SEEK_READ_ARCH(pos))
+			return 0;
+        PtrArch = BegArch = EndArch = BufArch+64;
+        PosArch = pos;
+    }
+#endif
 
     /* jump forward bufferwise                                             */
     while ( PosArch + (EndArch - (BufArch+64)) <= pos ) {
@@ -2864,7 +2921,7 @@ int			Banner ()
 {
     printf("unzoo -- a zoo archive extractor by Martin Schoenert\n");
 #ifndef SYS_IS_MAC_MWC
-    printf("  ($Id$)\n");
+    printf("  ($Id: unzoo.c,v 4.9 2006/01/02 10:08:53 gap Exp $)\n");
 #endif
     printf("  based on 'booz' version 2.0 by Rahul Dhesi\n");
 #ifdef SYS_IS_MAC_MWC

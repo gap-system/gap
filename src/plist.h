@@ -2,7 +2,7 @@
 **
 *W  plist.h                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: plist.h,v 4.19 2007/07/12 15:13:20 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -25,7 +25,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_plist_h =
-   "@(#)$Id$";
+   "@(#)$Id: plist.h,v 4.19 2007/07/12 15:13:20 gap Exp $";
 #endif
 
 
@@ -65,10 +65,10 @@ extern  Int             GrowPlist (
 **
 *F  SHRINK_PLIST(<list>,<plen>) . . . . . . . . . . . . . shrink a plain list
 **
-**  'SHINK_PLIST' shrinks  the plain list <list>  if possible  so that it has
+**  'SHRINK_PLIST' shrinks  the plain list <list>  if possible  so that it has
 **  still room for at least <plen> elements.
 **
-**  Note that 'SHINK_PLIST' is a macro, so do not call it with arguments that
+**  Note that 'SHRINK_PLIST' is a macro, so do not call it with arguments that
 **  have sideeffects.
 */
 #define SHRINK_PLIST(list,plen)         ResizeBag(list,((plen)+1)*sizeof(Obj))

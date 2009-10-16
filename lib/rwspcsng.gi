@@ -15,7 +15,7 @@
 ##  object are defined in the kernel and are exported as "SCP_something".
 ##
 Revision.rwspcsng_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rwspcsng.gi,v 4.50 2002/05/04 13:45:53 gap Exp $";
 
 
 #############################################################################

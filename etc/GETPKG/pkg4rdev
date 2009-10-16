@@ -19,10 +19,10 @@
 PKG: ace
 DESC: Advanced Coset Enumerator
 STATUS: A
-VERSION: 3.003
+VERSION: 4.1
 HTMDOC: htm/chapters.htm
 README: http://www.math.rwth-aachen.de/~Greg.Gamble/ACE/README
-URL: http://www.math.rwth-aachen.de/~Greg.Gamble/ACE/ace-4.0.zoo
+URL: http://www.math.rwth-aachen.de/~Greg.Gamble/ACE/ace-4.1.zoo
 
 PKG: aclib
 DESC: Almost Crystallographic Groups library

@@ -3,23 +3,23 @@ Code for Large Base Permutation groups
 @Contact
 SL
 @Date
-August 13, 2003
+August 14, 2006
 @Time
 3
 @Public
-No
+Yes
 @Need
 3
 @NeedA
-2
+4
 @Math
-3
+4
 @Prog
 3
 @Descr
 Much of the existing permutation group code assumes a small-base group. Add
 methods (similar to the special S<sub>n</sub>/A<sub>n</sub> methods) for
-large base groups.
+large base groups. 
 @Manual
 @Ref
 @Rem

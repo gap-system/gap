@@ -1,0 +1,28 @@
+Generators: N Y Z K X T;
+Limiting weight: 20;
+Relations:
+[N,Y];
+[N,Z];
+[N,K];
+[Y,K];
+[Z,K];
+[X,K];
+[X,T];
+[N,[N,T]];
+[N,[N,X]];
+[N,[Y,X]];
+[N,[Z,X]];
+[K,[N,T]];
+[Y,[N,T]];
+[Z,[N,T]];
+[Y,[Y,Z]];
+[Z,[Z,Y]];
+[X,[X,N]] - [T,[T,N]];
+[Y,[Z,X]] + [Z,[Y,X]];
+[Y,[Y,X]] - [Z,[Z,X]];
+2 [K,T] + [X,[Y,Z]] + 4 [X,[N,X]];
+2 [Z,T] + [X,[Y,X]];
+2 [Y,T] + [X,[X,Z]];
+[[N,T],[N,X]];
+[[N,T],[Y,X]] + 2 Y;
+[[N,T],[Z,X]] + 2 Z.

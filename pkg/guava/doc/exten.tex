@@ -1,0 +1,952 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%A  exten.tex                GUAVA documentation                Reinald Baart
+%A                                                       & Jasper Cramwinckel
+%A                                                          & Erik Roijackers
+%
+%H  $Id: exten.tex,v 1.4 2004/12/20 21:26:05 gap Exp $
+%
+%Y  Copyright (C)  1995,  Vakgroep Algemene Wiskunde,  T.U. Delft,  Nederland
+%
+\Chapter{Extensions to GUAVA}
+
+In this chapter some extensions added in Version 1.3 to {\GUAVA} will  be
+discussed. The most important extensions are new code  constructions  and
+new algorithms and bounds for  the  covering  radius.  Another  important
+function is the implementation of the algorithm of Leon for  finding  the
+minimum distance.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Some functions for the covering radius}
+
+Together with the new code constructions, the new functions for computing
+(the bounds of) the covering radius are the most important  additions  to
+{\GUAVA}.
+These additions required a change in the fields  of  a  code  record.  In
+previous versions of {\GUAVA}, the covering radius field was  an  integer
+field, called `coveringRadius'. To allow the code-record to contain  more
+information about the covering radius, this field has been replaced by  a
+field called `boundsCoveringRadius'. This  field  contains  a  vector  of
+possible values of the covering radius of the code. If the value  of  the
+covering radius is known, then the length of this vector is one.
+
+This means that every instance of `coveringRadius'  in  the  version  1.2
+were changed to `boundsCoveringRadius'. There is  also  an  advantage  to
+this: if bounds for a specific type  of  code  are  known,  they  can  be
+implemented (and they have been). This has been especially useful for the
+Reed-Muller codes.
+
+Of   course,   the   main   covering    radius    function    dispatcher,
+`CoveringRadius',  had  to  be  changed  to  incorporate  these  changes.
+Previously, this dispatcher called `code.operations.CoveringRadius'.  The
+problem these functions had was that they only worked if  the  redundancy
+was not too large. Another problem was that the algorithm for linear  and
+cyclic codes was written in `C' (in the kernel of {\GAP}). This  did  not
+allow the user to interrupt the function,  except  by  pressing  `ctrl-C'
+twice, which exits {\GAP} altogether. For  more  information,  check  the
+section on the (new) `CoveringRadius' ("CoveringRadius") function.
+
+Perhaps  the  most  interesting   new   covering   radius   function   is
+`IncreaseCoveringRadiusLowerBound'  ("IncreaseCoveringRadiusLowerBound").
+It uses a probabilistic algorithm that tries to find better lower  bounds
+of the covering radius of a code. It works best  when  the  dimension  is
+low, thereby giving a sort of complement  function  to  `CoveringRadius'.
+When the dimension is about half the length of a code, neither  algorithm
+will work, although  `IncreaseCoveringRadiusLowerBound'  is  specifically
+designed to avoid memory problems, unlike `CoveringRadius'.
+
+The               function               `ExhaustiveSearchCoveringRadius'
+("ExhaustiveSearchCoveringRadius") tries to find the covering radius of a
+code by exhaustively searching the space in which the code lies for coset
+leaders.
+
+A number of bounds for the covering radius in general have been implemented,
+including some well known bounds like the sphere-covering bound,
+the redundancy bound and the Delsarte bound.
+These function all start with `LowerBoundCoveringRadius'
+(see "LowerBoundCoveringRadiusSphereCovering",
+"LowerBoundCoveringRadiusVanWee1",
+"LowerBoundCoveringRadiusVanWee2",
+"LowerBoundCoveringRadiusCountingExcess",
+"LowerBoundCoveringRadiusEmbedded1",
+"LowerBoundCoveringRadiusEmbedded2",
+"LowerBoundCoveringRadiusInduction",
+"LowerBoundCoveringRadiusSphereCovering")
+or `UpperBoundCoveringRadius'
+(sections "UpperBoundCoveringRadiusRedundancy",
+"UpperBoundCoveringRadiusDelsarte",
+"UpperBoundCoveringRadiusStrength",
+"UpperBoundCoveringRadiusGriesmerLike",
+"UpperBoundCoveringRadiusCyclicCode").
+
+The              functions              `GeneralLowerBoundCoveringRadius'
+("GeneralLowerBoundCoveringRadius") and `GeneralUpperBoundCoveringRadius'
+("GeneralUpperBoundCoveringRadius") try to find the best known bounds for
+a given code. `BoundsCoveringRadius' ("BoundsCoveringRadius") uses  these
+functions to return a vector of possible values for the covering radius.
+
+To allow the user to enter values in the  `.boundsCoveringRadius'  record
+herself, the function `SetCoveringRadius' is provided.
+
+\>CoveringRadius( <code> )
+
+`CoveringRadius' is a function that already appeared in earlier
+versions of {\GUAVA}, but it is changed to reflect the implementation
+of new functions for the covering radius.
+
+If there exists a function called `SpecialCoveringRadius' in the
+`operations' field of the code, then this function will be called to
+compute the covering radius of the code.
+At the moment, no code-specific functions are implemented.
+
+If the length of `BoundsCoveringRadius' (see "BoundsCoveringRadius"),
+is 1, then the value in
+
+\begintt
+code.boundsCoveringRadius
+\endtt
+
+is returned.
+Otherwise, the function
+
+\begintt
+code.operations.CoveringRadius
+\endtt
+
+is executed, unless the redundancy of <code> is too large.  In  the  last
+case, a warning is issued.
+
+If you want to overrule this restriction, you might want to execute
+
+\begintt
+code.operations.CoveringRadius
+\endtt
+
+yourself. However, this algorithm might also  issue  a  warning  that  it
+cannot be executed, but  this  warning  is  sometimes  issued  too  late,
+resulting in {\GAP} exiting with an memory error. If it does run, it  can
+only be stopped by pressing `ctrl-C' twice, thereby quitting  {\GAP}.  It
+will not enter the usual break-loop. Therefore it is recommended to  save
+your work before trying `code.operations.CoveringRadius'.
+
+\beginexample
+gap> CoveringRadius( BCHCode( 17, 3, GF(2) ) );
+3
+gap> CoveringRadius( HammingCode( 5, GF(2) ) );
+1
+gap> code := ReedMullerCode( 1, 9 );;
+gap> CoveringRadius( code );
+CoveringRadius: warning, the covering radius of
+this code cannot be computed straightforward.
+Try to use IncreaseCoveringRadiusLowerBound( <code> ).
+(see the manual for more details).
+The covering radius of <code> lies in the interval:
+[ 240 .. 248 ]
+\endexample
+
+\>BoundsCoveringRadius( <code> )
+
+`BoundsCoveringRadius' returns a list of integers.
+The first entry of this list is the maximum of some lower bounds
+for the covering radius of <code>,
+the last entry the minimum of some upper bounds of <code>.
+
+If the covering radius of <code> is known, a list of length 1 is
+returned.
+
+`BoundsCoveringRadius' makes use of the functions
+`GeneralLowerBoundCoveringRadius' and
+`GeneralUpperBoundCoveringRadius'.
+
+\beginexample
+gap> BoundsCoveringRadius( BCHCode( 17, 3, GF(2) ) );
+[ 3 .. 4 ]
+gap> BoundsCoveringRadius( HammingCode( 5, GF(2) ) );
+[ 1 ] 
+\endexample
+
+\>SetCoveringRadius( <code>, <intlist> )
+
+`SetCoveringRadius' enables the user to set the covering radius
+herself, instead of letting {\GUAVA} compute it.
+If <intlist> is an integer, {\GUAVA} will simply put it in
+the \ `boundsCoveringRadius' field.
+If it is a list of integers, however, it will intersect this list
+with the `boundsCoveringRadius' field, thus taking the best of both
+lists.
+If this would leave an empty list, the field is set to <intlist>.
+
+Because some other computations use the covering radius of the code,
+it is important that the entered value is not wrong, otherwise
+new results may be invalid.
+
+\beginexample
+gap> code := BCHCode( 17, 3, GF(2) );;
+gap> BoundsCoveringRadius( code );
+[ 3 .. 4 ]
+gap> SetCoveringRadius( code, [ 2 .. 3 ] );
+gap> BoundsCoveringRadius( code );
+[ [ 2 .. 3 ] ]
+\endexample
+
+\>IncreaseCoveringRadiusLowerBound( <code> [, <stopdistance> ] [, <startword> ] )
+
+`IncreaseCoveringRadiusLowerBound' tries to increase the lower  bound  of
+the covering radius of <code>. It does this by means of  a  probabilistic
+algorithm.  This  algorithm  takes  a  random  word  in   $GF(q)^n$   (or
+<startword> if it is specified), and,  by  changing  random  coordinates,
+tries to get as far from <code> as possible.  If  changing  a  coordinate
+finds a word that has a larger distance to the  code  than  the  previous
+one, the change is made permanent, and  the  algorithm  starts  all  over
+again. If changing a coordinate does not find  a  coset  leader  that  is
+further away from the code, then the change  is  made  permanent  with  a
+chance of 1 in 100, if it gets the word closer to the  code,  or  with  a
+chance of 1 in 10, if the word stays at the same distance. Otherwise, the
+algorithm starts again with the same word as before.
+
+If the algorithm did not allow changes that decrease the distance to  the
+code, it might get stuck in a sub-optimal  situation  (the  coset  leader
+corresponding to such a situation  (i.e.  no  coordinate  of  this  coset
+leader can be changed in such a way that we get at a larger distance from
+the code) is called an orphan).
+
+If the algorithm finds a word that has  distance  <stopdistance>  to  the
+code, it ends and returns that  word,  which  can  be  used  for  further
+investigations.
+
+The variable `InfoCoveringRadius' can be set  to  `Print'  to  print  the
+maximum distance reached so far every 1000 runs.  The  algorithm  can  be
+interrupted with `ctrl-C', allowing the user to look at the word that  is
+currently being examined (called `current'), or  to  change  the  chances
+that the new word is made permanent (these are  called  `staychance'  and
+`downchance'). If one of these variables is $i$, then it corresponds with
+a $i$ in 100 chance.
+
+At the moment,  the  algorithm  is  only  useful  for  codes  with  small
+dimension, where small means that the elements of the  code  fit  in  the
+memory. It works with larger codes, however, but  when  you  use  it  for
+codes with large dimension, you should be *very* patient. If running  the
+algorithm quits {\GAP} (due to  memory  problems),  you  can  change  the
+global variable `CRMemSize' to  a  lower  value.  This  might  cause  the
+algorithm to run slower, but without quitting {\GAP}.  The  only  way  to
+find out the best value of `CRMemSize' is by experimenting.
+
+\>ExhaustiveSearchCoveringRadius( <code> )
+
+`ExhaustiveSearchCoveringRadius' does an exhaustive search  to  find  the
+covering radius of <code>. Every time a coset  leader  of  a  coset  with
+weight $w$ is found, the function tries to find a coset leader of a coset
+with weight $w+1$. It does this by enumerating all words of weight $w+1$,
+and checking whether a word is a coset leader. The start  weight  is  the
+current known lower bound on the covering radius.
+
+\>GeneralLowerBoundCoveringRadius( <code> )
+
+`GeneralLowerBoundCoveringRadius' returns a lower bound on  the  covering
+radius of <code>. It uses  as  many  functions  which  names  start  with
+`LowerBoundCoveringRadius' as possible to find the best known lower bound
+(at least that {{\GUAVA}} knows of) together with tables for the covering
+radius of binary linear codes with length not greater than $64$.
+
+\>GeneralUpperBoundCoveringRadius( <code> )
+
+`GeneralUpperBoundCoveringRadius' returns an upper bound on the  covering
+radius of <code>. It uses  as  many  functions  which  names  start  with
+`UpperBoundCoveringRadius' as possible to find the best known upper bound
+(at least that {\GUAVA} knows of).
+
+\>LowerBoundCoveringRadiusSphereCovering( <n>, <M> [, <F> ], false )
+\>LowerBoundCoveringRadiusSphereCovering( <n>, <r> [, <F> ] [, true ] )
+
+If the last argument of `LowerBoundCoveringRadiusSphereCovering' is
+`false', then it returns a lower bound for the covering radius of a
+code of size <M> and length <n>.
+Otherwise, it returns a lower bound for the size of a code of length
+<n> and covering radius <r>.
+
+<F> is the field over which the code is defined. If <F> is omitted, it is
+assumed that the code is over `GF(2)'.
+
+The bound is computed according to the sphere covering bound:
+
+$$
+M V_q(n,r) \geq q^n
+$$
+
+where $V_q(n,r)$ is the size of a sphere of radius $r$ in `GF$(q)^n$'.
+
+\>LowerBoundCoveringRadiusVanWee1( <n>, <M> [, <F> ], false )
+\>LowerBoundCoveringRadiusVanWee1( <n>, <r> [, <F> ] [, true ] )
+
+If the last argument of `LowerBoundCoveringRadiusVanWee1' is
+`false', then it returns a lower bound for the covering radius of a
+code of size <M> and length <n>.
+Otherwise, it returns a lower bound for the size of a code of length
+<n> and covering radius <r>.
+
+<F> is the field over which the code is defined. If <F> is omitted, it is
+assumed that the code is over `GF(2)'.
+
+The Van Wee bound is an improvement of the sphere covering bound:
+
+$$
+M \left\{ V_q(n,r) -
+\frac{{n \choose r}}{\lceil\frac{n-r}{r+1}\rceil}
+\left(\left\lceil\frac{n+1}{r+1}\right\rceil - \frac{n+1}{r+1}\right)
+\right\} \geq q^n
+$$
+
+\>LowerBoundCoveringRadiusVanWee2( <n>, <M>, false )
+\>LowerBoundCoveringRadiusVanWee2( <n>, <r> [, true ] )
+
+If the last argument  of  `LowerBoundCoveringRadiusVanWee2'  is  `false',
+then it returns a lower bound for the covering radius of a code  of  size
+<M> and length <n>. Otherwise, it returns a lower bound for the size of a
+code of length <n> and covering radius <r>.
+
+This bound only works for binary codes. It  is  based  on  the  following
+inequality:
+
+$$
+M \frac{\left( \left( V_2(n,2) - \frac{1}{2}(r+2)(r-1) \right)
+V_2(n,r) + \varepsilon
+V_2(n,r-2) \right)}
+{(V_2(n,2) - \frac{1}{2}(r+2)(r-1) + \varepsilon)}
+\geq 2^n,
+$$
+
+where
+
+$$
+\varepsilon = {r+2 \choose 2} \left\lceil
+{n-r+1 \choose 2} / {r+2 \choose 2} \right\rceil
+- {n-r+1 \choose 2}.
+$$
+
+\>LowerBoundCoveringRadiusCountingExcess( <n>, <M>, false )
+\>LowerBoundCoveringRadiusCountingExcess( <n>, <r> [, true ] )
+
+If  the  last  argument  of  `LowerBoundCoveringRadiusCountingExcess'  is
+`false', then it returns a lower bound for the covering radius of a  code
+of size <M> and length <n>. Otherwise, it returns a lower bound  for  the
+size of a code of length <n> and covering radius <r>.
+
+This bound only works for binary codes. It  is  based  on  the  following
+inequality:
+
+$$
+M \left( \rho V_2(n,r) + \varepsilon V_2(n,r-1) \right) \geq
+(\rho + \varepsilon) 2^n,
+$$
+
+where
+
+$$
+\varepsilon = (r+1) \left\lceil\frac{n+1}{r+1}\right\rceil - (n+1)
+$$
+
+and
+
+$$
+\rho = \left\{
+\matrix{
+n-3+\frac{2}{n} &{\rm if} &r = 2\cr
+n-r-1           &{\rm if} &r \geq 3\cr
+}
+\right.
+$$
+
+\>LowerBoundCoveringRadiusEmbedded1( <n>, <M>, false )
+\>LowerBoundCoveringRadiusEmbedded1( <n>, <r> [, true ] )
+
+If the last argument of `LowerBoundCoveringRadiusEmbedded1'  is  `false',
+then it returns a lower bound for the covering radius of a code  of  size
+<M> and length <n>. Otherwise, it returns a lower bound for the size of a
+code of length <n> and covering radius <r>.
+
+This bound only works for binary codes. It  is  based  on  the  following
+inequality:
+
+$$
+M \left( V_2(n,r) - {2r \choose r} \right) \geq
+2^n - A( n, 2r+1 ) {2r \choose r},
+$$
+
+where $A(n,d)$ denotes the maximal cardinality  of  a  (binary)  code  of
+length $n$ and minimum distance $d$. The function `UpperBound' is used to
+compute this value.
+
+Sometimes    `LowerBoundCoveringRadiusEmbedded1'    is    better     than
+`LowerBoundCoveringRadiusEmbedded2',  sometimes  it  is  the  other   way
+around.
+
+\>LowerBoundCoveringRadiusEmbedded2( <n>, <M>, false )
+\>LowerBoundCoveringRadiusEmbedded2( <n>, <r> [, true ] )
+
+If the last argument of `LowerBoundCoveringRadiusEmbedded2'  is  `false',
+then it returns a lower bound for the covering radius of a code  of  size
+<M> and length <n>. Otherwise, it returns a lower bound for the size of a
+code of length <n> and covering radius <r>.
+
+This bound only works for binary codes. It  is  based  on  the  following
+inequality:
+
+$$
+M \left( V_2(n,r) - \frac{3}{2} {2r \choose r} \right) \geq
+2^n - 2A( n, 2r+1 ) {2r \choose r},
+$$
+
+where $A(n,d)$ denotes the maximal cardinality  of  a  (binary)  code  of
+length $n$ and minimum distance $d$. The function `UpperBound' is used to
+compute this value.
+
+Sometimes    `LowerBoundCoveringRadiusEmbedded1'    is    better     than
+`LowerBoundCoveringRadiusEmbedded2',  sometimes  it  is  the  other   way
+around.
+
+\>LowerBoundCoveringRadiusInduction( <n>, <r> )
+
+`LowerBoundCoveringRadiusInduction' returns a lower bound for the size of
+a code with length <n> and covering radius <r>.
+
+If $n = 2r+2$ and $r \geq 1$, the returned value is $4$.
+
+If $n = 2r+3$ and $r \geq 1$, the returned value is $7$.
+
+If $n = 2r+4$ and $r \geq 4$, the returned value is $8$.
+
+Otherwise, $0$ is returned.
+
+\>UpperBoundCoveringRadiusRedundancy( <code> )
+
+`UpperBoundCoveringRadiusRedundancy' returns the redundancy of <code>  as
+an upper bound for the covering radius of <code>. <code> must be a linear
+code.
+
+\index{external distance}
+\>UpperBoundCoveringRadiusDelsarte( <code> )
+
+`UpperBoundCoveringRadiusDelsarte'  returns  an  upper  bound   for   the
+covering radius of <code>. This upper bound  is  equal  to  the  *external
+distance* of <code>, this is the minimum distance of the  dual  code,  if
+<code> is a linear code.
+
+\>UpperBoundCoveringRadiusStrength( <code> )
+
+`UpperBoundCoveringRadiusStrength'  returns  an  upper  bound   for   the
+covering radius of <code>.
+
+First the code is punctured at the zero coordinates (i.e. the coordinates
+where all codewords have a zero). If the remaining code  has  strength  1
+(i.e. each coordinate contains each element of the field an equal  number
+of times), then it returns $\frac{q-1}{q}m + (n-m)$  (where  $q$  is  the
+size of the field and $m$ is the length of punctured code), otherwise  it
+returns $n$. This bound works for all codes.
+
+\>UpperBoundCoveringRadiusGriesmerLike( <code> )
+
+This function returns an upper bound for the covering radius  of  <code>,
+which must be linear, in a Griesmer-like fashion. It returns
+
+$$
+n - \sum_{i=1}^k \left\lceil \frac{d}{q^i} \right\rceil
+$$
+
+\>UpperBoundCoveringRadiusCyclicCode( <code> )
+
+This function returns an upper bound for the covering radius  of  <code>,
+which must be a cyclic code. It returns
+
+$$
+n - k + 1 - \left\lceil \frac{w(g(x))}{2} \right\rceil,
+$$
+
+where $g(x)$ is the generator polynomial of <code>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{New code constructions}
+
+In this section we describe some new constructions for codes.  The  first
+constructions are variations on the direct sum construction, most of  the
+time resulting in better codes than the direct sum.
+
+The piecewise constant code construction stands on its  own.  Using  this
+construction, some good codes have been obtained.
+
+The last five constructions yield linear binary codes with fixed  minimum
+distances and covering radii. These codes can be arbitrary long.
+
+\>ExtendedDirectSumCode( <L>, <B>, <m> )
+
+The extended direct sum construction is described in an article by Graham
+and Sloane. The resulting code consists of <m> copies of <L>, extended by
+repeating the codewords of <B> <m> times.
+
+Suppose <L> is an $[n_L, k_L]r_L$ code, and <B>  is  an  $[n_L,  k_B]r_B$
+code (non-linear codes are also permitted). The length  of  <B>  must  be
+equal to the length of <L>. The length of the new code is $n  =  m  n_L$,
+the dimension (in the case of linear codes) is $k \leq m k_L + k_B$,  and
+the covering radius is $r \leq \lfloor m \Psi( L, B ) \rfloor$, with
+
+$$
+\Psi( L, B ) = \max_{u \in F_2^{n_L}} \frac{1}{2^{k_B}}
+               \sum_{v \in B} {\rm d}( L, v + u ).
+$$
+
+However, this computation will not be executed, because  it  may  be  too
+time consuming for large codes.
+
+If $ L \subseteq B $, and $L$ and $B$ are linear codes, the last copy  of
+<L> is omitted. In this case the dimension is $k = m k_L + (k_B  -  k_L)$.
+
+\beginexample
+gap> c := HammingCode( 3, GF(2) );
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap> d := WholeSpaceCode( 7, GF(2) );
+a cyclic [7,7,1]0 whole space code over GF(2)
+gap> e := ExtendedDirectSumCode( c, d, 3 );
+a linear [21,15,1..3]2 3-fold extended direct sum code
+\endexample
+
+\>AmalgamatedDirectSumCode( <$c_1$>, <$c_2$> [, <check> ] )
+
+`AmalgamatedDirectSumCode' returns the amalgamated direct sum  of  the  codes
+<$c_1$> and <$c_2$>. The  amalgamated  direct  sum  code  consists  of  all
+codewords of the form
+$(u \, \| \,0 \, \| \, v)$
+if
+$(u \, \| \, 0) \in c_1$
+and
+$(0 \, \| \, v) \in c_2$
+and all codewords of the form
+$(u \, \| \, 1 \, \| \, v)$
+if
+$(u \, \| \, 1) \in c_1$
+and
+$(1 \, \| \, v) \in c_2$.
+The result is a code with length
+$ n = n_1 + n_2 - 1 $
+and size
+$ M \<= M_1 \cdot M_2 / 2 $.
+
+If  both  codes  are  linear,  they  will  first  be  standardized,  with
+information symbols in the last and first coordinates of  the  first  and
+second code, respectively.
+
+If $c_1$ is a normal code with the last coordinate acceptable, and  $c_2$
+is a normal code with the first coordinate acceptable, then the  covering
+radius of the new code is $ r \<= r_1 + r_2 $. However, checking  whether
+a code is normal or not is a lot of work, and almost all codes seem to be
+normal. Therefore, an option <check> can be supplied. If <check> is true,
+then the codes will be checked for normality.  If  <check>  is  false  or
+omitted, then the codes will not be checked. In this case it  is  assumed
+that they are normal. Acceptability of the last and first  coordinate  of
+the first and second code, respectively, is in the last case also assumed
+to be done by the user.
+
+\beginexample
+gap> c := HammingCode( 3, GF(2) );
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap> d := ReedMullerCode( 1, 4 );
+a linear [16,5,8]6 Reed-Muller (1,4) code over GF(2)
+gap> e := DirectSumCode( c, d );
+a linear [23,9,3]7 direct sum code
+gap> f := AmalgamatedDirectSumCode( c, d );;
+gap> MinimumDistance( f );;
+gap> CoveringRadius( f );; # takes some time
+gap> f;
+a linear [22,8,3]7 amalgamated direct sum code
+\endexample
+
+\>BlockwiseDirectSumCode( <$c_1$>, <$l_1$>, <$c_2$>, <$l_2$> )
+
+`BlockwiseDirectSumCode' returns a subcode of the direct sum  of  <$c_1$>
+and <$c_2$>. The fields of <$c_1$> and <$c_2$> should  be  same.  <$l_1$>
+and <$l_2$> are two equally long lists  with  elements  from  the  spaces
+where <$c_1$> and <$c_2$> are in,  respectively,  {\it  or}  <$l_1$>  and
+<$l_2$> are two equally long lists containing codes.  The  union  of  the
+codes in <$l_1$> and <$l_2$> must be <$c_1$> and <$c_2$>, respectively.
+
+In the first case, the blockwise direct sum code is defined as
+
+$$
+bds = \bigcup_{1 \leq i \leq l} ( c_1 + (l_1)_i ) \oplus ( c_2 + (l_2)_i ),
+$$
+
+where $l$ is the length of <$l_1$>  and  <$l_2$>,  and  $\oplus$  is  the
+direct sum.
+
+In the second case, it is defined as
+
+$$
+bds = \bigcup_{1 \leq i \leq l} ( (l_1)_i \oplus (l_2)_i ).
+$$
+
+The length of the new code is $ n = n_1 + n_2 $.
+
+\beginexample
+gap> c := HammingCode( 3, GF(2) );;
+gap> d := EvenWeightSubcode( WholeSpaceCode( 6, GF(2) ) );;
+gap> BlockwiseDirectSumCode( c, [[ 0,0,0,0,0,0,0 ],[ 1,0,1,0,1,0,0 ]],
+> d, [[ 0,0,0,0,0,0 ],[ 1,0,1,0,1,0 ]] );
+a (13,1024,1..13)1..2 blockwise direct sum code
+\endexample
+
+\>PiecewiseConstantCode( <part>, <weights> [, <field> ] )
+
+`PiecewiseConstantCode' returns a code with length $n = \sum n_i$,  where
+$<part>=[ n_1, \dots, n_k ]$. <weights> is a list of constraints, each of
+length $k$. The default field is `GF(2)'.
+
+A constraint is a list of integers, and
+a word $c = ( c_1, \dots, c_k )$ (according to <part>)
+is in the resulting code if and only if
+$\|c_i\| = w_i^{(l)}$ for all $1 \leq i \leq k$
+for some constraint $w^{(l)} \in <constraints>$.
+
+An example might make things clearer:
+
+\beginexample
+gap> PiecewiseConstantCode( [ 2, 3 ],
+> [ [ 0, 0 ], [ 0, 3 ], [ 1, 0 ], [ 2, 2 ] ],
+> GF(2) );
+a (5,7,1..5)1..5 piecewise constant code over GF(2)
+gap> AsSSortedList(last);
+[ [ 0 0 0 0 0 ], [ 0 0 1 1 1 ], [ 0 1 0 0 0 ], [ 1 0 0 0 0 ], [ 1 1 0 1 1 ], 
+  [ 1 1 1 0 1 ], [ 1 1 1 1 0 ] ]
+\endexample
+
+The first constraint is satisfied by codeword 1,
+the second by codeword 2,
+the third by codewords 3 and 4,
+and the fourth by codewords 5, 6 and 7.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Section   GabidulinCode, EnlargedGabidulinCode, DavydovCode,
+%          TombakCode, EnlargedTombakCode
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Gabidulin codes}
+
+These five codes are derived from an article by  Gabidulin,  Davydov  and
+Tombak \cite{GDT91}. These five codes  are  defined  by  check  matrices.
+Exact definitions can be found in the article.
+
+The Gabidulin code, the enlarged Gabidulin code, the  Davydov  code,  the
+Tombak code, and the enlarged Tombak code, correspond with theorem 1,  2,
+3, 4, and 5, respectively in the article.
+
+These codes have fixed minimum distance and covering radius, but  can  be
+arbitrarily long. They are defined through check matrices.
+
+\>GabidulinCode( <m>, <w1>, <w2> )
+
+`GabidulinCode' yields a code of length $5 . 2^{m-2}-1$,
+redundancy $2m-1$, minimum distance $3$ and covering radius $2$.
+<w1> and <w2> should be elements of `GF($2^{m-2}$)'.
+
+\>EnlargedGabidulinCode( <m>, <w1>, <w2>, <e> )
+
+`EnlargedGabidulinCode' yields a code of length $7 . 2^{m-2}-2$,
+redundancy $2m$, minimum distance $3$ and covering radius $2$.
+<w1> and <w2> are elements of `GF($2^{m-2}$)'.
+<e> is an element of `GF($2^m$)'.
+The core of an enlarged Gabidulin code consists of a Gabidulin code.
+
+\>DavydovCode( <r>, <v>, <ei>, <ej> )
+
+`DavydovCode' yields a code of length $2^v + 2^{r-v} - 3$,
+redundancy <r>, minimum distance $4$ and covering radius $2$.
+<v> is an integer between $2$ and $r-2$.
+<ei> and <ej> are elements of `GF($2^v$)' and `GF($2^{r-v}$)',
+respectively.
+
+\>TombakCode( <m>, <e>, <beta>, <gamma>, <w1>, <w2> )
+
+`TombakCode' yields a code of length $15 \cdot 2^{m-3} - 3$,
+redundancy $2m$, minimum distance $4$ and covering radius $2$.
+<e> is an element of `GF($2^m$)'.
+<beta> and <gamma> are elements of `GF($2^{m-1}$)'.
+<w1> and <w2> are elements of `GF($2^{m-3}$)'.
+
+\>EnlargedTombakCode( <m>, <e>, <beta>, <gamma>, <w1>, <w2>, <u> )
+
+`EnlargedTombakCode' yields a code of length $23 \cdot 2^{m-4} - 3$,
+redundancy $2m-1$, minimum distance $4$ and covering radius $2$.
+The parameters <m>, <e>, <beta>, <gamma>, <w1> and <w2> are defined
+as in `TombakCode'.
+<u> is an element of `GF($2^{m-1}$)'.
+The code of an enlarged Tombak code consists of a Tombak code.
+
+\beginexample
+gap> GabidulinCode( 4, Z(4)^0, Z(4)^1 );
+a linear [19,12,3]2 Gabidulin code (m=4) over GF(2)
+gap> EnlargedGabidulinCode( 4, Z(4)^0, Z(4)^1, Z(16)^11 );
+a linear [26,18,3]2 enlarged Gabidulin code (m=4) over GF(2)
+gap> DavydovCode( 6, 3, Z(8)^1, Z(8)^5 );
+a linear [13,7,4]2 Davydov code (r=6, v=3) over GF(2)
+gap> TombakCode( 5, Z(32)^6, Z(16)^14, Z(16)^10, Z(4)^0, Z(4)^1 );
+a linear [57,47,4]2 Tombak code (m=5) over GF(2)
+gap> EnlargedTombakCode( 6, Z(32)^6, Z(16)^14, Z(16)^10,
+> Z(4)^0, Z(4)^0, Z(32)^23 );
+a linear [89,78,4]2 enlarged Tombak code (m=6) over GF(2)
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Section   Some functions related to the norm of a code
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Some functions related to the norm of a code}
+
+In this section, some functions that can be used to compute the norm of a
+code and to decide upon its normality are discussed.
+
+\>CoordinateNorm( <code>, <coord> )
+
+`CoordinateNorm' returns the norm of <code> with respect to
+coordinate <coord>. If $C_a = \{ c \in code \| c_{coord} = a \}$,
+then the norm of <code> with respect to <coord> is
+defined as
+
+$$
+\max_{v \in GF(q)^n} \sum_{a=1}^q d(x,C_a),
+$$
+
+with the convention that $d(x,C_a) = n$ if $C_a$ is empty.
+
+\beginexample
+gap> CoordinateNorm( HammingCode( 3, GF(2) ), 3 );
+3 
+\endexample
+
+\>CodeNorm( <code> )
+
+`CodeNorm' returns the norm of <code>. The norm of a code is  defined  as
+the minimum of the norms for the respective coordinates of the  code.  In
+effect, for each coordinate `CoordinateNorm' is called, and  the  minimum
+of the calculated numbers is returned.
+
+\beginexample
+gap> CodeNorm( HammingCode( 3, GF(2) ) );
+3 
+\endexample
+
+\>IsCoordinateAcceptable( <code>, <coord> )
+
+`IsCoordinateAcceptable' returns `true' if
+coordinate <coord> of <code> is acceptable.
+A coordinate is called acceptable if the norm of
+the code with respect to that coordinate is
+not more than two times the covering radius of
+the code plus one.
+
+\beginexample
+gap> IsCoordinateAcceptable( HammingCode( 3, GF(2) ), 3 );
+true 
+\endexample
+
+\>GeneralizedCodeNorm( <code>, <subcode1>, <subcode2>, ..., <subcodek> )
+
+`GeneralizedCodeNorm' returns the <k>-norm of <code> with
+respect to <k> subcodes.
+
+\beginexample
+gap> c := RepetitionCode( 7, GF(2) );;
+gap> ham := HammingCode( 3, GF(2) );;
+gap> d := EvenWeightSubcode( ham );;
+gap> e := ConstantWeightSubcode( ham, 3 );;
+gap> GeneralizedCodeNorm( ham, c, d, e );
+4 
+\endexample
+
+\>IsNormalCode( <code> )
+
+`IsNormalCode' returns `true' if <code>  is  normal.  A  code  is  called
+normal if the norm of the code is not more than two  times  the  covering
+radius of the code plus one. Almost all codes are  normal,  however  some
+(non-linear) abnormal codes have been found.
+
+Often, it is difficult to find out whether a code is normal,  because  it
+involves computing the covering radius. However, `IsNormalCode' uses much
+information  from  the  literature  about  normality  for  certain   code
+parameters.
+
+\beginexample
+gap> IsNormalCode( HammingCode( 3, GF(2) ) );
+true 
+\endexample
+
+\>DecreaseMinimumDistanceLowerBound( <code>, <s>, <iterations> )
+
+`DecreaseMinimumDistanceLowerBound' is an implementation of the algorithm
+for the minimum distance by Leon \cite{Leon88}. This algorithm  tries  to
+find codewords with small minimum weights. The parameter $s$ is described
+in the article, the best results are obtained  if  it  is  close  to  the
+dimension of the code. The parameter <iterations>  gives  the  number  of
+runs that the algorithm will perform.
+
+The result returned is a record with two fields;  the  first,  `mindist',
+gives the  lowest  weight  found,  and  `word'  gives  the  corresponding
+codeword.
+
+(This appears not to have been implemented before Foster's work.
+See MinimumDistanceLeon.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Section   New miscellaneous functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{New miscellaneous functions}
+
+In  this  section,  some  new  miscellaneous  functions  are   described,
+including weight enumerators, the MacWilliams-transform and affinity  and
+almost affinity of codes.
+
+\>CodeWeightEnumerator( <code> )
+
+`CodeWeightEnumerator' returns a polynomial of the following form:
+
+$$
+f(x) = \sum_{i=0}^{n} A_i x^i,
+$$
+
+where $A_i$ is the number of codewords in <code> with weight $i$.
+
+\beginexample
+gap> CodeWeightEnumerator( ElementsCode( [ [ 0,0,0 ], [ 0,0,1 ],
+> [ 0,1,1 ], [ 1,1,1 ] ], GF(2) ) );
+x^3 + x^2 + x + 1
+gap> CodeWeightEnumerator( HammingCode( 3, GF(2) ) );
+x^7 + 7*x^4 + 7*x^3 + 1 
+\endexample
+
+\>CodeDistanceEnumerator( <code>, <word> )
+
+`CodeDistanceEnumerator' returns a polynomial of the following form:
+
+$$
+f(x) = \sum_{i=0}^{n} B_i x^i,
+$$
+
+where $B_i$ is the number of codewords with distance $i$ to <word>.
+
+If <word> is a codeword, then `CodeDistanceEnumerator' returns the
+same polynomial as `CodeWeightEnumerator'.
+
+\beginexample
+gap> CodeDistanceEnumerator( HammingCode( 3, GF(2) ),[0,0,0,0,0,0,1] );
+x^6 + 3*x^5 + 4*x^4 + 4*x^3 + 3*x^2 + x
+gap> CodeDistanceEnumerator( HammingCode( 3, GF(2) ),[1,1,1,1,1,1,1] );
+x^7 + 7*x^4 + 7*x^3 + 1 # `[1,1,1,1,1,1,1]' $\in$ `HammingCode( 3, GF(2 ) )'
+\endexample
+
+\>CodeMacWilliamsTransform( <code> )
+
+`CodeMacWilliamsTransform' returns a polynomial of the following form:
+
+$$
+f(x) = \sum_{i=0}^{n} C_i x^i,
+$$
+
+where $C_i$ is the number of codewords with weight $i$ in the dual code
+of <code>.
+
+\beginexample
+gap> CodeMacWilliamsTransform( HammingCode( 3, GF(2) ) );
+7*x^4 + 1 
+\endexample
+
+\>IsSelfComplementaryCode( <code> )
+
+`IsSelfComplementaryCode' returns `true' if
+
+$$
+v \in code \Rightarrow 1 - v \in code,
+$$
+
+where $1$ is the all-one word of length $n$.
+
+\beginexample
+gap> IsSelfComplementaryCode( HammingCode( 3, GF(2) ) );
+true
+gap> IsSelfComplementaryCode( EvenWeightSubcode(
+> HammingCode( 3, GF(2) ) ) );
+false 
+\endexample
+
+\>IsAffineCode( <code> )
+
+`IsAffineCode' returns `true' if <code> is an affine code.
+A code is called {\it affine} if it is an affine space.
+In other words, a code is affine if it is a coset of a linear code.
+
+\beginexample
+gap> IsAffineCode( HammingCode( 3, GF(2) ) );
+true
+gap> IsAffineCode( CosetCode( HammingCode( 3, GF(2) ),
+> [ 1, 0, 0, 0, 0, 0, 0 ] ) );
+true
+gap> IsAffineCode( NordstromRobinsonCode() );
+false 
+\endexample
+
+\>IsAlmostAffineCode( <code> )
+
+`IsAlmostAffineCode' returns `true' if <code> is an almost affine code.
+A code is called {\it almost affine} if the size of any punctured code
+of <code> is $q^r$ for some $r$, where $q$ is the size of the alphabet
+of the code.
+Every affine code is also almost affine, and every code over `GF(2)'
+and `GF(3)' that is almost affine is also affine.
+
+\beginexample
+gap> code := ElementsCode( [ [0,0,0], [0,1,1], [0,2,2], [0,3,3],
+>                             [1,0,1], [1,1,0], [1,2,3], [1,3,2],
+>                             [2,0,2], [2,1,3], [2,2,0], [2,3,1],
+>                             [3,0,3], [3,1,2], [3,2,1], [3,3,0] ],
+>                             GF(4) );;
+gap> IsAlmostAffineCode( code );
+true
+gap> IsAlmostAffineCode( NordstromRobinsonCode() );
+false 
+\endexample
+
+\>IsGriesmerCode( <code> )
+
+`IsGriesmerCode' returns `true' if <code>, which must be a linear code,
+is Griesmer code, and `false' otherwise.
+
+A code is called Griesmer if its length satisfies
+
+$$
+n = g[k,d] = \sum_{i=0}^{k-1} \lceil \frac{d}{q^i} \rceil.
+$$
+
+\beginexample
+gap> IsGriesmerCode( HammingCode( 3, GF(2) ) );
+true
+gap> IsGriesmerCode( BCHCode( 17, 2, GF(2) ) );
+false 
+\endexample
+
+\>CodeDensity( <code> )
+
+`CodeDensity' returns the {\it density} of <code>.
+The density of a code is defined as
+
+$$
+\frac{M \cdot V_q(n,t)}{q^n},
+$$
+
+where $M$ is the size of the code, $V_q(n,t)$ is the size of a sphere  of
+radius $t$ in $q^n$, $t$ is the covering radius of the code  and  $n$  is
+the length of the code.
+
+\beginexample
+gap> CodeDensity( HammingCode( 3, GF(2) ) );
+1
+gap> CodeDensity( ReedMullerCode( 1, 4 ) );
+14893/2048 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%E

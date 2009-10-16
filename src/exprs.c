@@ -2,7 +2,7 @@
 **
 *W  exprs.c                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: exprs.c,v 4.47 2009/04/06 11:28:12 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_exprs_c =
-   "@(#)$Id$";
+   "@(#)$Id: exprs.c,v 4.47 2009/04/06 11:28:12 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1455,7 +1455,6 @@ void            RecExpr2 (
         else {
             rnam = RNamObj( EVAL_EXPR(tmp) );
         }
-        SET_RNAM_PREC( rec, i, rnam );
 
         /* if the subexpression is empty (cannot happen for records)       */
         tmp = ADDR_EXPR(expr)[2*i-1];
@@ -1466,27 +1465,24 @@ void            RecExpr2 (
         /* special case if subexpression is a list expression             */
         else if ( TNUM_EXPR( tmp ) == T_LIST_EXPR ) {
             sub = ListExpr1( tmp );
-            SET_ELM_PREC( rec, i, sub );
-            CHANGED_BAG( rec );
+            AssPRec(rec,rnam,sub);
             ListExpr2( sub, tmp );
         }
 
         /* special case if subexpression is a record expression            */
         else if ( TNUM_EXPR( tmp ) == T_REC_EXPR ) {
             sub = RecExpr1( tmp );
-            SET_ELM_PREC( rec, i, sub );
-            CHANGED_BAG( rec );
+            AssPRec(rec,rnam,sub);
             RecExpr2( sub, tmp );
         }
 
         /* general case                                                    */
         else {
             sub = EVAL_EXPR( tmp );
-            SET_ELM_PREC( rec, i, sub );
-            CHANGED_BAG( rec );
+            AssPRec(rec,rnam,sub);
         }
-
     }
+    SortPRecRNam(rec,0);
 
 }
 

@@ -1,0 +1,1469 @@
+#############################################################################
+##
+#W  ctgeneri.tbl                GAP table library               Oliver Bonten
+#W                                                             Goetz Pfeiffer
+#W                                                              Thomas Breuer
+##
+#H  @(#)$Id: ctgeneri.tbl,v 4.11 2003/11/19 09:09:06 gap Exp $
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains generic character tables
+##  Cyclic, Dihedral, Symmetric, Alternating, WeylB, WeylD, GL2, SL2odd,
+##  SL2even, PSL2odd, PSL2even, Suzuki, GU3, SU3, P:Q.
+##
+#H  ctbllib history
+#H  ---------------
+#H  $Log: ctgeneri.tbl,v $
+#H  Revision 4.11  2003/11/19 09:09:06  gap
+#H  added links to the generic tables of double covers of altern./symm. groups
+#H      TB
+#H
+#H  Revision 4.10  2003/05/12 14:23:50  gap
+#H  fixed the recent generalization of `P:Q'
+#H      TB
+#H
+#H  Revision 4.9  2003/05/05 14:12:37  gap
+#H  generalized the table of type P:Q
+#H  (in order to cover some tables from the tables of marks library)
+#H      TB
+#H
+#H  Revision 4.8  2002/10/14 15:18:12  gap
+#H  added power maps for SL2, PSL2 tables (needed because several such tables
+#H  are used in the table library, and the power maps had been missing up to
+#H  now),
+#H  added new generic table `ExtraspecialPlusOdd'
+#H      TB
+#H
+#H  Revision 4.7  2002/09/23 15:12:19  gap
+#H  changed the `Identifier' value of dihedral groups from `D<n>' to
+#H  `Dihedral(<n>)'
+#H      TB
+#H
+#H  Revision 4.6  2001/10/23 16:13:27  gap
+#H  changes to give GAP 3 easier access to some tables
+#H      TB
+#H
+#H  Revision 4.5  2001/05/04 16:46:56  gap
+#H  first revision for ctbllib
+#H
+#H
+#H  tbl history (GAP 4)
+#H  -------------------
+#H  (Rev. 4.5 of ctbllib coincides with Rev. 4.4 of tbl in GAP 4)
+#H  
+#H  RCS file: /gap/CVS/GAP/4.0/tbl/ctgeneri.tbl,v
+#H  Working file: ctgeneri.tbl
+#H  head: 4.4
+#H  branch:
+#H  locks: strict
+#H  access list:
+#H  symbolic names:
+#H  	GAP4R2: 4.3.0.8
+#H  	GAP4R2PRE2: 4.3.0.6
+#H  	GAP4R2PRE1: 4.3.0.4
+#H  	GAP4R1: 4.3.0.2
+#H  keyword substitution: kv
+#H  total revisions: 7;	selected revisions: 7
+#H  description:
+#H  ----------------------------
+#H  revision 4.4
+#H  date: 2000/06/16 17:56:21;  author: gap;  state: Exp;  lines: +10 -2
+#H  added element orders for the generic table of Suzuki groups
+#H  (contributed by Frank Luebeck)
+#H  
+#H      TB
+#H  ----------------------------
+#H  revision 4.3
+#H  date: 1999/05/14 08:05:56;  author: gap;  state: Exp;  lines: +8 -5
+#H  added the tables of some maxes of O8+(3)
+#H  (yes, these tables are not relevant for the release of GAP 4,
+#H  but Bob Guralnick had asked for them ...)
+#H  
+#H      TB
+#H  ----------------------------
+#H  revision 4.2
+#H  date: 1998/08/20 12:10:16;  author: gap;  state: Exp;  lines: +6 -6
+#H  Now a shallow copy of the global variables `CharTableSymmetric',
+#H  `CharTableAlternating' etc. is stored in the table library,
+#H  in order to avoid that the globals are objectified.
+#H  (This strange ``metamorphosis'' had been observed by Frank L"ubeck.)
+#H  
+#H      TB
+#H  ----------------------------
+#H  revision 4.1
+#H  date: 1997/07/17 15:37:24;  author: fceller;  state: Exp;  lines: +2 -2
+#H  for version 4
+#H  ----------------------------
+#H  revision 1.3
+#H  date: 1997/05/22 13:46:08;  author: sam;  state: Exp;  lines: +5 -7
+#H  some changes to be able to construct all library tables
+#H  ----------------------------
+#H  revision 1.2
+#H  date: 1997/05/16 10:47:07;  author: sam;  state: Exp;  lines: +6 -14
+#H  renamed 'NewKind' to 'NewType',
+#H  fixed a lot in order to construct library tables
+#H  ----------------------------
+#H  revision 1.1
+#H  date: 1996/10/21 15:58:59;  author: sam;  state: Exp;
+#H  first proposal of the table library
+#H  ==========================================================================
+##
+Revision.ctgeneri_tbl :=
+    "@(#)$Id: ctgeneri.tbl,v 4.11 2003/11/19 09:09:06 gap Exp $";
+
+SET_TABLEFILENAME("ctgeneri");
+
+
+#############################################################################
+##
+#V  Generic character table of cyclic groups
+##
+LIBTABLE.ctgeneri.("Cyclic"):=
+rec(
+identifier:="Cyclic",
+specializedname:=(q->Concatenation("C",String(q))),
+size:=(n->n),
+text:="generic character table for cyclic groups",
+centralizers:=[function(n,k) return n;end],
+classparam:=[(n->[0..n-1])],
+charparam:=[(n->[0..n-1])],
+powermap:=[function(n,k,pow) return [1,k*pow mod n];end],
+orders:=[function(n,k) return n/Gcd(n,k);end],
+irreducibles:=[[function(n,k,l) return E(n)^(k*l);end]],
+domain:=IsPosInt,
+libinfo:=rec(firstname:="Cyclic",othernames:=[]),
+isGenericTable:=true
+);
+
+
+#############################################################################
+##
+#V  Generic character table of dihedral groups
+##
+LIBTABLE.ctgeneri.("Dihedral"):=
+rec(
+identifier:="Dihedral",
+specializedname:=(n->Concatenation("Dihedral(",String(n),")")),
+text:="generic character table for dihedral groups",
+size:=(n->n),
+
+# two types of classes:
+# first inner classes ( n/4+1 for n/2 even, (n/2+1)/2 for n/2 odd ),
+# then outer classes ( 2 for n/2 even, 1 for n/2 odd )
+classparam:=[(n->[0..Int(n/4)]),(n->[0..1-(n/2 mod 2)])],
+
+# two types of characters:
+# linear characters ( 4 for n/2 even, 2 for n/2 odd ),
+# induced characters ( n/4-1 for n/2 even, (n/2-1)/2 for n/2 odd )
+charparam:=[(n->[0..1+2*(1-(n/2 mod 2))]),
+            (n->[1..Int((n-2)/4)])],
+
+# centralizer orders:
+# n for first class, n/2 for other inner classes --except the last which
+# is central if 4 divides n;
+# 4 for outer classes in the case n/2 even, 2 for outer class for n/2 odd
+centralizers:=[function(n,k) if k=0 or k=n/4 then return n;
+                             else return n/2;
+                             fi;end,
+               function(n,k) return 2*(2-(n/2 mod 2));end],
+
+# powermaps:
+# inner classes behave similar to the classes of cyclic groups;
+# outer classes power to the identity if 2 divides <pow>, else they are
+# fixed
+powermap:=[function(n,k,pow) return
+                               [1,Minimum(k*pow mod (n/2),
+                                          n/2-(k*pow mod (n/2)))];end,
+           function(n,k,pow) if pow mod 2 = 0 then return [1,0];
+                             else return [2,k];fi;end],
+
+# element orders:
+# elements of the inner class <class> have order
+# '(n/2) / Gcd( n/2, classparam[<class>] )',
+# elements of outer classes have order 2
+orders:=[function(n,k) return n/(2*Gcd(n/2,k));end,function(n,k) return 2;end],
+
+# irreducibles:
+# linear characters: ...
+# induced characters: 'E(n/2)^(classparam[<class>]*charparam[<class>])' plus
+#                     complex conjugate value in inner classes, zero outside
+irreducibles:=[[function(n,k,l) if k<2 then return 1;
+                                else return (-1)^l;fi;end,
+                function(n,k,l) if   k=0 then return 1;
+                                elif k=1 then return -1;
+                                else return (-1)^(k+l);
+                                fi;end],
+               [function(n,k,l) return E(n/2)^(l*k)+E(n/2)^(-l*k);end,
+                function(n,k,l) return 0;end]],
+libinfo:=rec(firstname:="Dihedral",othernames:=[]),
+domain:=(n->IsPosInt(n) and n mod 2=0),
+isGenericTable:=true
+);
+
+
+#############################################################################
+##
+#V  Generic character tables of Weyl groups.
+##
+LIBTABLE.ctgeneri.("Symmetric"):= ShallowCopy( CharTableSymmetric );
+
+LIBTABLE.ctgeneri.("Alternating"):= ShallowCopy( CharTableAlternating );
+
+LIBTABLE.ctgeneri.("WeylB"):= ShallowCopy( CharTableWeylB );
+
+LIBTABLE.ctgeneri.("WeylD"):= ShallowCopy( CharTableWeylD );
+
+LIBTABLE.ctgeneri.("DoubleCoverSymmetric"):=
+    ShallowCopy( CharTableDoubleCoverSymmetric );
+LIBTABLE.ctgeneri.("DoubleCoverAlternating"):=
+    ShallowCopy( CharTableDoubleCoverAlternating );
+
+
+#############################################################################
+##
+#V  Generic character table of GL(2,q).
+##
+LIBTABLE.ctgeneri.("GL2"):=
+rec(
+size:= ( q -> (q^2-1)*(q^2-q) ),
+identifier:="GL2",
+specializedname:=(q->Concatenation("GL(2,",String(q),")")),
+classparam := [
+        q -> [0..q-2],
+        q -> [0..q-2],
+        q -> Filtered( Cartesian( [0..q-2],[0..q-2] ), x->x[1]<x[2] ),
+        q -> Filtered( [1..q^2-2], x-> not (x mod (q+1) = 0) and (x mod
+(q^2-1)) <(x*q mod (q^2-1)) )],
+charparam := [
+        q -> [0..q-2],
+        q -> [0..q-2],
+        q -> Filtered( Cartesian( [1..q-1],[1..q-1] ), x->x[1]<x[2] ),
+        q -> Filtered( [1..q^2-2], x-> not (x mod (q+1) = 0) and (x mod
+(q^2-1)) <(x*q mod (q^2-1)) )],
+centralizers := [
+        function(q,k) return (q^2-1) * (q^2-q); end,
+        function(q,k) return q^2-q; end,
+        function(q,k) return (q-1)^2; end,
+        function(q,k) return q^2-1; end],
+orders := [ function(q,k) return (q-1)/GcdInt( q-1, k ); end,
+        function(q,k) return Lcm(PrimeBase(q),(q-1)/GcdInt(q-1,k)); end,
+        function(q,k) return (q-1)/GcdInt(GcdInt(q-1,k[1]),k[2]); end,
+        function(q,k) return (q^2-1)/GcdInt(q^2-1,k); end],
+classtext := [
+        function(q,k) return [[Z(q)^k,0*Z(q)],[0*Z(q),Z(q)^k]]; end,
+        function(q,k) return [[Z(q)^k,0*Z(q)],[Z(q)^0,Z(q)^k]]; end,
+        function(q,k) return [[Z(q)^k[1],0*Z(q)],[0*Z(q),Z(q)^k[2]]]; end,
+        function(q,k) return [[Z(q^2)^k,0*Z(q^2)],[0*Z(q^2),Z(q^2)^(q*k)]]; end],
+powermap := [
+        function(q,k,pow) return [1, (k*pow) mod (q-1)]; end,
+        function(q,k,pow)
+                if pow mod PrimeBase( q ) = 0  then
+                        return [1, (k*pow) mod (q-1)];
+                else return [2, (k*pow) mod (q-1)]; fi; end,
+        function(q,k,pow) local rt;
+                if (k[1]-k[2])*pow mod (q-1) = 0 then
+                        return [1, (k[1] * pow) mod (q-1)];
+                else rt := [(k[1]*pow) mod (q-1), (k[2]*pow) mod (q-1)];
+                        if rt[1] >= rt[2] then rt := [ rt[2], rt[1] ]; fi;
+                        return [3,rt];
+                fi; end,
+        function(q,k,pow) local rt;
+                if k*pow mod (q+1) = 0 then
+                        return [1, (k*pow mod (q^2-1))/(q+1)];
+                else rt := k*pow mod (q^2-1);
+                        return [4, Minimum( rt, q*rt mod (q^2-1))]; fi; end],
+irreducibles := [
+      [ function(q,k,l) return E(q-1)^(2*k*l); end,
+        function(q,k,l) return E(q-1)^(2*k*l); end,
+        function(q,k,l) return E(q-1)^((l[1]+l[2])*k); end,
+        function(q,k,l) return E(q-1)^(k*l); end  ],
+      [ function(q,k,l) return q*E(q-1)^(2*k*l); end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return E(q-1)^((l[1]+l[2])*k); end,
+        function(q,k,l) return -E(q-1)^(k*l); end  ],
+      [ function(q,k,l) return (q+1)*E(q-1)^(l*(k[1]+k[2])); end,
+        function(q,k,l) return E(q-1)^(l*(k[1]+k[2])); end,
+        function(q,k,l) return E(q-1)^(l[1]*k[1]+l[2]*k[2])
+                                   + E(q-1)^(k[1]*l[2]+k[2]*l[1]); end,
+        function(q,k,l) return 0; end  ],
+      [ function(q,k,l) return (q-1)*E(q^2-1)^(k*l*(q+1)); end,
+#T simplify!
+        function(q,k,l) return -E(q^2-1)^(k*l*(q+1)); end,
+#T simplify!
+        function(q,k,l) return 0; end,
+        function(q,k,l) return -E(q^2-1)^(k*l)-E(q^2-1)^(k*l*q); end]],
+text:=Concatenation(
+"generic character table of Gl(2,q),\n",
+"see Robert Steinberg: The Representations of Gl(3,q), Gl(4,q), PGL(3,q)\n",
+"and PGL(4,q), Canad. J. Math. 3 (1951)."),
+isGenericTable:=true,
+domain:= IsPrimePowerInt
+);
+
+
+#############################################################################
+##
+#V  Generic character table of Sl(2, q) for odd q.
+##
+LIBTABLE.ctgeneri.("SL2odd"):=
+rec(
+size:= ( q ->  (q^2-1)*q ),
+identifier:="SL2odd",
+specializedname:=(q->Concatenation("SL(2,",String(q),")")),
+centralizers := [
+        function(q,k) return (q^2-1)*q; end,
+        function(q,k) return (q^2-1)*q; end,
+        function(q,k) return 2*q; end,
+        function(q,k) return 2*q; end,
+        function(q,k) return 2*q; end,
+        function(q,k) return 2*q; end,
+        function(q,k) return q-1; end,
+        function(q,k) return q+1; end ],
+classparam := [
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1..(q-3)/2],
+        q -> [1..(q-1)/2] ],
+classtext := [
+        function(q,k) return [[Z(q)^0,0],[0,Z(q)^0]]; end,          # 1
+        function(q,k) return [[-Z(q)^0,0],[0,-Z(q)^0]]; end,        # z
+        function(q,k) return [[Z(q)^0,0],[Z(q)^0,Z(q)^0]]; end,     # c
+        function(q,k) return [[Z(q)^0,0],[Z(q),Z(q)^0]]; end,       # d
+        function(q,k) return [[-Z(q)^0,0],[-Z(q)^0,-Z(q)^0]]; end,  # cz
+        function(q,k) return [[-Z(q)^0,0],[-Z(q),-Z(q)^0]]; end,    # dz
+        function(q,k) return [[Z(q)^k,0],[0,Z(q)^-k]]; end,         # a^k
+        function(q,k) return [[Z(q^2)^((q-1)*k),0],[0,Z(q^2)^(-(q-1)*k)]]; end],
+charparam := [
+        q -> [1],
+        q -> [1..(q-1)/2],
+        q -> [1],
+        q -> [1..(q-3)/2],
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1] ],
+orders := [ function(q,k) return 1; end,
+        function(q,k) return 2; end,
+        function(q,k) return PrimeBase(q); end,
+        function(q,k) return PrimeBase(q); end,
+        function(q,k) return 2*PrimeBase(q); end,
+        function(q,k) return 2*PrimeBase(q); end,
+        function(q,k) return (q-1)/GcdInt(q-1,k); end,
+        function(q,k) return (q+1)/GcdInt(q+1,k); end],
+powermap := [ function(q,k,pow) return [1,1]; end,
+        function(q,k,pow) return [1+(pow mod 2),1]; end,
+        function(q,k,pow) local p;
+                          p:= PrimeBase(q);
+                          if pow = p then return [1,1];
+                          elif IsInt(EB(q)) or
+                               ((p-1)/2) mod OrderMod(pow,p) = 0 then
+                            return [3,1];
+                          else return [4,1]; fi; end,
+        function(q,k,pow) local p;
+                          p:= PrimeBase(q);
+                          if pow = p then return [1,1];
+                          elif IsInt(EB(q)) or
+                               ((p-1)/2) mod OrderMod(pow,p) = 0 then
+                            return [4,1];
+                          else return [3,1]; fi; end,
+        function(q,k,pow) local p;
+                          p:= PrimeBase(q);
+                          if pow = 2 and ( IsInt(EB(q)) or
+                                  ((p-1)/2) mod OrderMod(pow,p) = 0 )
+                            then return [3,1];
+                          elif pow = 2 then return [4,1];
+                          elif pow = p then return [2,1];
+                          elif IsInt(EB(q)) or
+                               ((p-1)/2) mod OrderMod(pow,p) = 0 then
+                            return [5,1];
+                          else return [6,1]; fi; end,
+        function(q,k,pow) local p;
+                          p:= PrimeBase(q);
+                          if pow = 2 and ( IsInt(EB(q)) or
+                                  ((p-1)/2) mod OrderMod(pow,p) = 0 )
+                            then return [4,1];
+                          elif pow = 2 then return [3,1];
+                          elif pow = p then return [2,1];
+                          elif IsInt(EB(q)) or
+                               ((p-1)/2) mod OrderMod(pow,p) = 0 then
+                            return [6,1];
+                          else return [5,1]; fi; end,
+        function(q,k,pow) local kpow;
+                          kpow:= k*pow mod (q-1);
+                          if kpow = 0 then return [1,1];
+                          elif kpow = (q-1)/2 then return [2,1];
+                          elif kpow <= (q-3)/2 then return [7,kpow];
+                          else return [7,q-1-kpow]; fi; end,
+        function(q,k,pow) local kpow;
+                          kpow:= k*pow mod (q+1);
+                          if kpow = 0 then return [1,1];
+                          elif kpow = (q+1)/2 then return [2,1];
+                          elif -2*kpow mod (q+1) = 0 then
+                            kpow:= kpow*(q-1)/(q+1);
+                            if kpow <= (q-3)/2 then return [7,kpow];
+                            else return [7,q-1-kpow]; fi;
+                          elif kpow <= (q-1)/2 then return [8,kpow];
+                          else return [8,q+1-kpow]; fi; end],
+irreducibles := [ [
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end ], [
+        function(q,i,k) return q-1; end,
+        function(q,i,k) return (-1)^i*(q-1); end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return (-1)^(i+1); end,
+        function(q,i,k) return (-1)^(i+1); end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return -E(q+1)^(k*i)-E(q+1)^(-k*i); end], [
+        function(q,i,k) return q; end,
+        function(q,i,k) return q; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return -1; end],[
+        function(q,i,k) return q+1; end,
+        function(q,i,k) return (-1)^i*(q+1); end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return (-1)^i; end,
+        function(q,i,k) return (-1)^i; end,
+        function(q,i,k) return E(q-1)^(k*i)+E(q-1)^(-k*i); end,
+        function(q,i,k) return 0; end],[
+        function(q,i,k) return (q-1)/2; end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*(q-1)/2; end,
+        function(q,i,k) return EB(q); end,
+        function(q,i,k) return -1-EB(q); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*EB(q); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*(-1-EB(q)); end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return (-1)^(k+1); end], [
+        function(q,i,k) return (q-1)/2; end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*(q-1)/2; end,
+        function(q,i,k) return -1-EB(q); end,
+        function(q,i,k) return EB(q); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*(-1-EB(q)); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*EB(q); end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return (-1)^(k+1); end], [
+        function(q,i,k) return (q+1)/2; end,
+        function(q,i,k) return (-1)^((q-1)/2)*(q+1)/2; end,
+        function(q,i,k) return 1+EB(q); end,
+        function(q,i,k) return -EB(q); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*(-1-EB(q)); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*EB(q); end,
+        function(q,i,k) return (-1)^k; end,
+        function(q,i,k) return 0; end], [
+        function(q,i,k) return (q+1)/2; end,
+        function(q,i,k) return (-1)^((q-1)/2)*(q+1)/2; end,
+        function(q,i,k) return -EB(q); end,
+        function(q,i,k) return 1+EB(q); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*EB(q); end,
+        function(q,i,k) return (-1)^((q-1)/2+1)*(-1-EB(q)); end,
+        function(q,i,k) return (-1)^k; end,
+        function(q,i,k) return 0; end] ],
+text := "generic character table",
+isGenericTable:=true,
+domain:= ( q -> IsPrimePowerInt(q) and q mod 2 = 1 )
+);
+
+
+##############################################################################
+##
+#V  The generic character table of Sl(2,q) (and Psl(2,q)) for even q.
+##
+LIBTABLE.ctgeneri.("SL2even"):=
+rec(
+size:= ( q -> (q^2-1)*q ),
+identifier:= "SL2even",
+specializedname:= ( q -> Concatenation( "SL(2,", String(q), ")" ) ),
+centralizers := [
+        function(q,k) return (q^2-1)*q; end,
+        function(q,k) return q; end,
+        function(q,k) return q-1; end,
+        function(q,k) return q+1; end ],
+classparam := [
+        q -> [1],
+        q -> [1],
+        q -> [1..(q-2)/2],
+        q -> [1..q/2] ],
+charparam := [
+        q -> [1],
+        q -> [1..q/2],
+        q -> [1],
+        q -> [1..(q-2)/2] ],
+powermap := [
+        function(q,k,pow) return [1,1]; end,
+        function(q,k,pow) return [1+(pow mod 2),1]; end,
+        function(q,k,pow)
+          k:= ( k * pow ) mod ( q-1 );
+          if k = 0 then
+            return [1,1];
+          elif 2*k < q-1 then
+            return [3, k];
+          else
+            return [3, q-1-k];
+          fi; end,
+        function(q,k,pow)
+          k:= ( k * pow ) mod ( q+1 );
+          if k = 0 then
+            return [1,1];
+          elif 2*k < q+1 then
+            return [4, k];
+          else
+            return [4, q+1-k];
+          fi; end ],
+orders := [
+        function(q,k) return 1; end,
+        function(q,k) return 2; end,
+        function(q,k) return (q-1)/GcdInt(q-1,k); end,
+        function(q,k) return (q+1)/GcdInt(q+1,k); end ],
+irreducibles := [
+      [ function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end ],
+      [ function(q,i,k) return q-1; end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return -E(q+1)^(k*i)-E(q+1)^(-k*i); end ],
+      [ function(q,i,k) return q; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return -1; end ],
+      [ function(q,i,k) return q+1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return E(q-1)^(k*i)+E(q-1)^(-k*i); end,
+        function(q,i,k) return 0; end ] ],
+isGenericTable:= true,
+domain:= ( q -> IsPrimePowerInt( q ) and q mod 2 = 0)
+);
+
+
+##############################################################################
+##
+#V  The character table of Psl(2,q) for odd (q-1)/2.
+##
+LIBTABLE.ctgeneri.("PSL2odd"):=
+rec(
+size:= ( q -> ( (q^2-1)*q/2 ) ),
+identifier:="PSL2odd",
+specializedname:=(q->Concatenation("PSL(2,",String(q),")")),
+centralizers := [
+        function(q,k) return (q^2-1)*q/2; end,
+        function(q,k) return q; end,
+        function(q,k) return q; end,
+        function(q,k) return (q-1)/2; end,
+        function(q,k) return (q+1)/2; end,
+        function(q,k) return q+1; end ],
+classparam := [
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1..(q-3)/4],
+        q -> [1..(q-3)/4],
+        q -> [(q+1)/4]],
+charparam := [
+        q -> [1],
+        q -> List([1..(q-3)/4],x->2*x),
+        q -> [1],
+        q -> List([1..(q-3)/4],x->2*x),
+        q -> [1],
+        q -> [1] ],
+powermap := [
+        function(q,k,pow) return [1,1]; end,
+        function(q,k,pow) local p;
+          p:= PrimeBase(q);
+          if pow mod p = 0 then
+            return [1,1];
+          elif IsInt(EB(q)) or ((p-1)/2) mod OrderMod(pow,p) = 0 then
+            return [2,1];
+          else
+            return [3,1];
+          fi; end,
+        function(q,k,pow) local p;
+          p:= PrimeBase(q);
+          if pow mod p = 0 then
+            return [1,1];
+          elif IsInt(EB(q)) or ((p-1)/2) mod OrderMod(pow,p) = 0 then
+            return [3,1];
+          else
+            return [2,1];
+          fi; end,
+        function(q,k,pow)
+          k:= ( k * pow ) mod ( (q-1)/2 );
+          if k = 0 then
+            return [1,1];
+          elif 4*k < q-1 then
+            return [4,k];
+          else
+            return [4,(q-1)/2-k];
+          fi; end,
+        function(q,k,pow)
+          k:= ( k * pow ) mod ( (q+1)/2 );
+          if k = 0 then
+            return [1,1];
+          elif 4*k < q+1 then
+            return [5,k];
+          elif 4*k = q+1 then
+            return [6,(q+1)/4];
+          else
+            return [5,(q+1)/2-k];
+          fi; end,
+        function(q,k,pow)
+          if pow mod 2 = 0 then
+            return [1,1];
+          else
+            return [6,k];
+          fi; end ],
+orders := [
+        function(q,k) return 1; end,
+        function(q,k) return PrimeBase( q ); end,
+        function(q,k) return PrimeBase( q ); end,
+        function(q,k) return (q-1)/2/GcdInt((q-1)/2,k); end,
+        function(q,k) return (q+1)/2/GcdInt((q+1)/2,k); end,
+        function(q,k) return 2; end ],
+irreducibles := [
+      [ function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end ],
+      [ function(q,i,k) return q-1; end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return -E(q+1)^(k*i)-E(q+1)^(-k*i); end,
+        function(q,i,k) return -E(4)^(i)-E(4)^(-i); end ],
+      [ function(q,i,k) return q; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return -1; end ],
+      [ function(q,i,k) return q+1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return E(q-1)^(k*i)+E(q-1)^(-k*i); end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 0; end ],
+      [ function(q,i,k) return (q-1)/2; end,
+        function(q,i,k) return EB(q); end,
+        function(q,i,k) return -1-EB(q); end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return (-1)^(k+1); end,
+        function(q,i,k) return (-1)^(k+1); end ],
+      [ function(q,i,k) return (q-1)/2; end,
+        function(q,i,k) return -1-EB(q); end,
+        function(q,i,k) return EB(q); end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return (-1)^(k+1); end,
+        function(q,i,k) return (-1)^(k+1); end ] ],
+isGenericTable:= true,
+domain:= ( q -> IsPrimePowerInt( q ) and q mod 4 = 3 )
+);
+
+
+##############################################################################
+##
+#V  The character table of Psl(2,q) for even (q-1)/2.
+##
+LIBTABLE.ctgeneri.("PSL2even"):=
+rec(
+size:= (q -> (q^2-1)*q/2) ,
+identifier:="PSL2even",
+specializedname:=(q->Concatenation("PSL(2,",String(q),")")),
+centralizers := [
+        function(q,k) return (q^2-1)*q/2; end,
+        function(q,k) return q; end,
+        function(q,k) return q; end,
+        function(q,k) return (q-1)/2; end,
+        function(q,k) return q-1; end,
+        function(q,k) return (q+1)/2; end ],
+classparam := [
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1..(q-5)/4],
+        q -> [(q-1)/4],
+        q -> [1..(q-1)/4] ],
+charparam := [
+        q -> [1],
+        q -> List([1..(q-1)/4],x->2*x),
+        q -> [1],
+        q -> List([1..(q-5)/4],x->2*x),
+        q -> [1],
+        q -> [1] ],
+powermap := [
+        function(q,k,pow) return [1,1]; end,
+        function(q,k,pow) local p;
+          p:= PrimeBase(q);
+          if pow mod p = 0 then
+            return [1,1];
+          elif IsInt(EB(q)) or ((p-1)/2) mod OrderMod(pow,p) = 0 then
+            return [2,1];
+          else
+            return [3,1];
+          fi; end,
+        function(q,k,pow) local p;
+          p:= PrimeBase(q);
+          if pow mod p = 0 then
+            return [1,1];
+          elif IsInt(EB(q)) or ((p-1)/2) mod OrderMod(pow,p) = 0 then
+            return [3,1];
+          else
+            return [2,1];
+          fi; end,
+        function(q,k,pow)
+          k:= ( k * pow ) mod ( (q-1)/2 );
+          if k = 0 then
+            return [1,1];
+          elif 4*k < q-1 then
+            return [4,k];
+          elif 4*k = q-1 then
+            return [5,(q-1)/4];
+          else
+            return [4,(q-1)/2-k];
+          fi; end,
+        function(q,k,pow)
+          if pow mod 2 = 0 then
+            return [1,1];
+          else
+            return [5,k];
+          fi; end,
+        function(q,k,pow)
+          k:= ( k * pow ) mod ( (q+1)/2 );
+          if k = 0 then
+            return [1,1];
+          elif 4*k < q+1 then
+            return [6,k];
+          else
+            return [6,(q+1)/2-k];
+          fi; end ],
+orders := [
+        function(q,k) return 1; end,
+        function(q,k) return PrimeBase( q ); end,
+        function(q,k) return PrimeBase( q ); end,
+        function(q,k) return (q-1)/2/GcdInt((q-1)/2,k); end,
+        function(q,k) return 2; end,
+        function(q,k) return (q+1)/2/GcdInt((q+1)/2,k); end],
+irreducibles := [
+      [ function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end ],
+      [ function(q,i,k) return q-1; end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return -1; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return -E(q+1)^(k*i)-E(q+1)^(-k*i); end ],
+      [ function(q,i,k) return q; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 0; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return -1; end ],
+      [ function(q,i,k) return q+1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return 1; end,
+        function(q,i,k) return E(q-1)^(k*i)+E(q-1)^(-k*i); end,
+        function(q,i,k) return E(4)^(i)+E(4)^(-i); end,
+        function(q,i,k) return 0; end ],
+      [ function(q,i,k) return (q+1)/2; end,
+        function(q,i,k) return 1+EB(q); end,
+        function(q,i,k) return -EB(q); end,
+        function(q,i,k) return (-1)^k; end,
+        function(q,i,k) return (-1)^k; end,
+        function(q,i,k) return 0; end ],
+      [ function(q,i,k) return (q+1)/2; end,
+        function(q,i,k) return -EB(q); end,
+        function(q,i,k) return 1+EB(q); end,
+        function(q,i,k) return (-1)^k; end,
+        function(q,i,k) return (-1)^k; end,
+        function(q,i,k) return 0; end ] ],
+isGenericTable:= true,
+domain:= ( q -> IsPrimePowerInt(q) and q mod 4 = 1 )
+);
+
+
+#############################################################################
+##
+#V  generic character table of the Suzuki groups
+##
+LIBTABLE.ctgeneri.("Suzuki"):=
+rec(
+size:= ( q -> q[1]^2*(q[1]-1)*(q[1]^2+1) ),
+identifier:="Suzuki",
+specializedname:=(q->Concatenation("Suzuki(",String(q[1]),")")),
+centralizers := [
+        function(q,k) return q[1]^2*(q[1]-1)*(q[1]^2+1); end,
+        function(q,k) return q[1]-1; end,
+        function(q,k) return q[1]+q[2]+1; end,
+        function(q,k) return q[1]-q[2]+1; end,
+        function(q,k) return q[1]^2; end,
+        function(q,k) return 2*q[1]; end,
+        function(q,k) return 2*q[1]; end],
+orders := [
+        function(q,k) return 1; end,
+        function(q,k) return (q[1]-1) / GcdInt(q[1]-1, k); end,
+        function(q,k) return (q[1]+q[2]+1) / GcdInt(q[1]+q[2]+1, k); end,
+        function(q,k) return (q[1]-q[2]+1) / GcdInt(q[1]-q[2]+1, k); end,
+        function(q,k) return 2; end,
+        function(q,k) return 4; end,
+        function(q,k) return 4; end],
+classparam := [
+        q -> [1],
+        q -> [1..(q[1]-2)/2],
+        q -> Filtered([1..(q[1]+q[2])/2],
+                       x-> x < (( x*q[1]) mod (q[1]+q[2]+1)) and
+                           x < ((-x*q[1]) mod (q[1]+q[2]+1))),
+        q -> Filtered([1..(q[1]-q[2])/2],
+                       x-> x < (( x*q[1]) mod (q[1]-q[2]+1)) and
+                           x < ((-x*q[1]) mod (q[1]-q[2]+1))),
+        q -> [1],
+        q -> [1],
+        q -> [1] ],
+charparam := [
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1],
+        q -> [1..(q[1]-2)/2],
+        q -> Filtered([1..(q[1]+q[2])/2],
+                       x-> x < (( x*q[1]) mod (q[1]+q[2]+1)) and
+                           x < ((-x*q[1]) mod (q[1]+q[2]+1))),
+        q -> Filtered([1..(q[1]-q[2])/2],
+                       x-> x < (( x*q[1]) mod (q[1]-q[2]+1)) and
+                           x < ((-x*q[1]) mod (q[1]-q[2]+1))),
+ ],
+irreducibles := [ [
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end],[
+        function(q,k,l) return q[1]^2; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return -1; end,
+        function(q,k,l) return -1; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end],[
+        function(q,k,l) return q[2]*(q[1]-1)/2; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return -1; end,
+        function(q,k,l) return -q[2]/2; end,
+        function(q,k,l) return q[2]*E(4)/2; end,
+        function(q,k,l) return -q[2]*E(4)/2; end],[
+        function(q,k,l) return q[2]*(q[1]-1)/2; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return -1; end,
+        function(q,k,l) return -q[2]/2; end,
+        function(q,k,l) return -q[2]*E(4)/2; end,
+        function(q,k,l) return q[2]*E(4)/2; end],[
+        function(q,k,l) return q[1]^2+1; end,
+        function(q,k,l) return E(q[1]-1)^(k*l) + E(q[1]-1)^(-k*l); end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 1; end],[
+        function(q,k,l) return (q[1]-1)*(q[1]-q[2]+1); end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return -E(q[1]+q[2]+1)^(k*l)-E(q[1]+q[2]+1)^(-k*l)
+                -E(q[1]+q[2]+1)^(q[1]*k*l)-E(q[1]+q[2]+1)^(-q[1]*k*l); end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return q[2]-1; end,
+        function(q,k,l) return -1; end,
+        function(q,k,l) return -1; end],[
+        function(q,k,l) return (q[1]-1)*(q[1]+q[2]+1); end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return -E(q[1]-q[2]+1)^(k*l)-E(q[1]-q[2]+1)^(-k*l)
+                -E(q[1]-q[2]+1)^(q[1]*k*l)-E(q[1]-q[2]+1)^(-q[1]*k*l); end,
+        function(q,k,l) return -q[2]-1; end,
+        function(q,k,l) return -1; end,
+        function(q,k,l) return -1; end]],
+text :=Concatenation(
+"generic character table of Suz(q) = 2B2(q);\n",
+"see: R. Burkhardt, ueber die Zerlegungszahlen der Suzukigruppen Sz(q),\n",
+"Journal of Algebra 59, 1979."),
+libinfo:=rec(firstname:="Suzuki",othernames:=["2B2"]),
+isGenericTable:=true,
+domain:=(q->IsList(q) and Set(FactorsInt(q[2]))=[2] and q[1]=q[2]^2/2)
+);
+
+
+#############################################################################
+##
+#V  Generic character table of GU(3,q^2), as given in Meinolf Geck's
+#V  diploma thesis.
+##
+LIBTABLE.ctgeneri.("GU3"):=
+rec(
+identifier:="GU3",
+size:=(q->q^3*(q+1)^3*(q-1)*(q^2-q+1)),
+specializedname:=(q->Concatenation("GU(3,",String(q),")")),
+classparam := [
+        q -> [0..q],
+        q -> [0..q],
+        q -> [0..q],
+        q -> Filtered( Cartesian( [0..q],[0..q] ), x->x[1]<>x[2] ),
+        q -> Filtered( Cartesian( [0..q],[0..q] ), x->x[1]<>x[2] ),
+        q -> Combinations( [ 0 .. q ], 3 ),
+        q -> Cartesian( Filtered( [0..q^2-2],
+                             x -> x mod (q-1) <> 0 and
+                              ForAll([0..x-1],y->(y+q*x) mod (q^2-1) <>0
+                                             and (q*y+x) mod (q^2-1) <> 0)),
+                          [0..q] ),
+        q -> Filtered( [0..q^3], x -> x mod (q^2-q+1) <> 0 and
+                              ForAll( [0..x-1],y->(y-x*q^2) mod (q^3+1) <> 0
+                                           and (y-x*q^4) mod (q^3+1) <> 0
+                                           and (x-y*q^2) mod (q^3+1) <> 0
+                                           and (x-y*q^4) mod (q^3+1) <> 0 ))
+        ],
+charparam := [
+        q -> [0..q],
+        q -> [0..q],
+        q -> [0..q],
+        q -> Filtered( Cartesian( [0..q],[0..q] ), x->x[1]<>x[2]),
+        q -> Filtered( Cartesian( [0..q],[0..q] ), x->x[1]<>x[2]),
+        q -> Combinations( [ 0 .. q ], 3 ),
+        q -> Cartesian( Filtered( [0..q^2-2],
+                             x -> x mod (q-1) <> 0 and
+                              ForAll([0..x-1],y->(y+q*x) mod (q^2-1) <>0
+                                             and (q*y+x) mod (q^2-1) <> 0)),
+                          [0..q] ),
+        q -> Filtered( [0..q^3], x -> x mod (q^2-q+1) <> 0 and
+                              ForAll( [0..x-1],y->(y-x*q^2) mod (q^3+1) <> 0
+                                           and (y-x*q^4) mod (q^3+1) <> 0
+                                           and (x-y*q^2) mod (q^3+1) <> 0
+                                           and (x-y*q^4) mod (q^3+1) <> 0 ))
+        ],
+centralizers:=[
+        function(q,k) return q^3*(q+1)^3*(q-1)*(q^2-q+1); end,
+        function(q,k) return q^3*(q+1)^2;end,
+        function(q,k) return q^2*(q+1);end,
+        function(q,k) return q*(q+1)^3*(q-1);end,
+        function(q,k) return q*(q+1)^2;end,
+        function(q,k) return (q+1)^3;end,
+        function(q,k) return (q+1)^2*(q-1);end,
+        function(q,k) return q^3+1;end ],
+orders:=[
+        function(q,k) return (q+1)/GcdInt( q+1, k ); end,
+        function(q,k) return LcmInt(PrimeBase(q),
+                                     (q+1)/GcdInt(q+1,k)); end,
+        function(q,k) local exp;
+                    exp:= LcmInt(PrimeBase(q),(q+1)/GcdInt(q+1,k));
+                    if PrimeBase(q)=2 and exp*(exp-1)/2 mod 2 <> 0 then
+                      return 2 * exp;
+                    else return exp; fi;end,
+        function(q,k) return (q+1)/Gcd(q+1,k[1],k[2]);end,
+        function(q,k) return LcmInt(PrimeBase(q),
+                             (q+1)/Gcd(q+1,k[1],k[2]));end,
+        function(q,k) return (q+1)/Gcd(q+1,k[1],k[2],k[3]);end,
+        function(q,k) return (q^2-1)/
+                         Gcd(q^2-1,k[1],-q*k[1],(q-1)*k[2]);end,
+        function(q,k) return (q^3+1)/GcdInt(q^3+1,k);end ],
+classtext:=[
+        function(q,k) return Z(q^2)^(k*(q-1))*[[1,0,0],[0,1,0],[0,0,1]];end,
+        function(q,k) return Z(q^2)^(k*(q-1))*[[1,0,0],[0,1,0],[0,0,1]]
+                             +Z(q)*[[0,0,0],[1,0,0],[0,0,0]];end,
+        function(q,k) return Z(q^2)^(k*(q-1))*[[1,0,0],[0,1,0],[0,0,1]]
+                             +Z(q)*[[0,0,0],[1,0,0],[0,1,0]];end,
+        function(q,k) return [[Z(q^2)^(k[1]*(q-1)),0*Z(2),0*Z(2)],
+                              [0*Z(2),Z(q^2)^(k[1]*(q-1)),0*Z(2)],
+                              [0*Z(2),0*Z(2),Z(q^2)^(k[2]*(q-1))]];end,
+        function(q,k) return [[Z(q^2)^(k[1]*(q-1)),0*Z(2),0*Z(2)],
+                              [Z(q)^0,Z(q^2)^(k[1]*(q-1)),0*Z(2)],
+                              [0*Z(2),0*Z(2),Z(q^2)^(k[2]*(q-1))]];end,
+        function(q,k) return [[Z(q^2)^(k[1]*(q-1)),0*Z(2),0*Z(2)],
+                              [0*Z(2),Z(q^2)^(k[2]*(q-1)),0*Z(2)],
+                              [0*Z(2),0*Z(2),Z(q^2)^(k[3]*(q-1))]];end,
+        function(q,k) return [[Z(q^2)^(k[2]*(q-1)),0*Z(q),0*Z(q)],
+                              [0*Z(q),Z(q^2)^k[1],0*Z(q)],
+                              [0*Z(q),0*Z(q),Z(q^2)^(-k[1]*q)]];end,
+        function(q,k) if q^6 < 65536 then
+                        return [[Z(q^6)^((q^3-1)*k),0*Z(q),0*Z(q)],
+                                [0*Z(q),Z(q^6)^((q^3-1)*q^2*k),0*Z(q)],
+                                [0*Z(q),0*Z(q),Z(q^6)^((q^3-1)*q^4*k)]];
+                      else return "q^6 too large"; fi;end ],
+powermap:=[
+        function(q,k,pow) return [1,(k*pow) mod (q+1)]; end,
+        function(q,k,pow) if pow mod PrimeBase(q) = 0 then
+                            return [1,(k*pow) mod (q+1)];
+                          else return [2,(k*pow) mod (q+1)]; fi; end,
+        function(q,k,pow) if pow mod PrimeBase(q)=0
+                             and pow*(pow-1)/2 mod PrimeBase(q)=0 then
+                            return [1,(k*pow) mod (q+1)];
+                          elif pow mod PrimeBase(q)=0 then
+                            return [2,(k*pow) mod (q+1)];
+                          else return [3,(k*pow) mod (q+1)]; fi; end,
+        function(q,k,pow)
+             if pow*(k[1]-k[2]) mod (q+1)=0 then
+               return [1,(k[1]*pow) mod (q+1)];
+             else
+               return [4,[(k[1]*pow) mod (q+1),(k[2]*pow) mod (q+1)]];
+             fi; end,
+        function(q,k,pow)
+           if pow*(k[1]-k[2]) mod (q+1)=0 then
+             if pow mod PrimeBase(q)=0 then
+               return [1,(pow*k[1]) mod (q+1)];
+             else return [2,(pow*k[1]) mod (q+1)];fi;
+           elif pow mod PrimeBase(q)=0 then
+             return [4,[(pow*k[1]) mod (q+1),(pow*k[2]) mod (q+1)]];
+         else return [5,[(pow*k[1]) mod (q+1),(pow*k[2]) mod (q+1)]];fi;end,
+        function(q,k,pow) local res;
+         res:=[(k[1]*pow) mod (q+1),(k[2]*pow) mod (q+1),
+               (k[3]*pow) mod (q+1)]; Sort(res);
+         if   Length(Set(res))=1 then return [1,res[1]];
+         elif Length(Set(res))=2 then
+           if res[1]=res[2] then return [4,[res[1],res[3]]];
+           else return [4,[res[2],res[1]]]; fi;
+         else return [6,res]; fi; end,
+        function(q,k,pow)
+             local p;
+             if pow*k[1] mod (q-1)=0 then  # maps to 1 or 4
+               if pow*(k[2]-k[1]/(q-1)) mod (q+1)=0 then # maps to 1
+                 return [1,(pow*k[2]) mod (q+1)];
+               else  # maps to 4
+                 return [4,[(pow*k[1]/(q-1)) mod (q+1),(pow*k[2]) mod (q+1)]];
+               fi;
+             else  # maps to 7
+               p:= (k[1]*pow) mod (q^2-1);
+               return [7,[First([0..p],x->x mod (q-1)<>0 and
+                   (x=p or (x+q*p) mod (q^2-1)=0) or (x*q+p) mod (q^2-1)=0),
+                   (pow*k[2]) mod (q+1)]];
+             fi; end,
+        function(q,k,pow)
+           local p;
+           if (k*pow) mod (q^2-q+1) = 0 then  # maps to 1
+             return [1,(k*pow/(q^2-q+1)) mod (q+1)];
+           else  # maps to 8
+             p:= (k*pow) mod (q^3+1);
+             p:=First([0..p],x->x mod (q^2-q+1)<>0
+                  and ((x-p*q^2) mod (q^3+1)=0 or (x-p*q^4) mod (q^3+1)=0 or
+                       (p-x*q^2) mod (q^3+1)=0 or (p-x*q^4) mod (q^3+1)=0 or
+                       x=p));
+             return [8,p];
+           fi; end ],
+
+# ('k' is the character parameter, 'l' is the class parameter)
+irreducibles:=[
+      [ function(q,k,l) return E(q+1)^(3*k*l);end,
+        function(q,k,l) return E(q+1)^(3*k*l);end,
+        function(q,k,l) return E(q+1)^(3*k*l);end,
+        function(q,k,l) return E(q+1)^(k*(2*l[1]+l[2]));end,
+        function(q,k,l) return E(q+1)^(k*(2*l[1]+l[2]));end,
+        function(q,k,l) return E(q+1)^(k*(l[1]+l[2]+l[3]));end,
+        function(q,k,l) return E(q+1)^(k*(l[2]-l[1]));end,
+        function(q,k,l) return E(q+1)^(k*l);end ],
+      [ function(q,k,l) return (q^2-q)*E(q+1)^(3*k*l);end,
+        function(q,k,l) return -q*E(q+1)^(3*k*l);end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return (1-q)*E(q+1)^(k*(2*l[1]+l[2]));end,
+        function(q,k,l) return E(q+1)^(k*(2*l[1]+l[2]));end,
+        function(q,k,l) return 2*E(q+1)^(k*(l[1]+l[2]+l[3]));end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return -E(q+1)^(k*l);end ],
+      [ function(q,k,l) return q^3*E(q+1)^(3*k*l);end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return q*E(q+1)^(k*(2*l[1]+l[2]));end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return -E(q+1)^(k*(l[1]+l[2]+l[3]));end,
+        function(q,k,l) return E(q+1)^(k*(l[2]-l[1]));end,
+        function(q,k,l) return -E(q+1)^(k*l);end ],
+      [ function(q,k,l) return (q^2-q+1)*E(q+1)^((k[1]+2*k[2])*l);end,
+        function(q,k,l) return (1-q)*E(q+1)^((k[1]+2*k[2])*l);end,
+        function(q,k,l) return E(q+1)^((k[1]+2*k[2])*l);end,
+        function(q,k,l) return (1-q)*E(q+1)^((k[1]+k[2])*l[1]+k[2]*l[2])
+                                    +E(q+1)^(2*k[2]*l[1]+k[1]*l[2]);end,
+        function(q,k,l) return  E(q+1)^((k[1]+k[2])*l[1]+k[2]*l[2])
+                               +E(q+1)^(2*k[2]*l[1]+k[1]*l[2]);end,
+        function(q,k,l) return  E(q+1)^(k[1]*l[1]+k[2]*(l[2]+l[3]))
+                               +E(q+1)^(k[1]*l[3]+k[2]*(l[1]+l[2]))
+                               +E(q+1)^(k[1]*l[2]+k[2]*(l[3]+l[1]));end,
+        function(q,k,l) return E(q+1)^(k[1]*l[2]-k[2]*l[1]);end,
+        function(q,k,l) return 0;end ],
+      [ function(q,k,l) return (q^3-q^2+q)*E(q+1)^((k[1]+2*k[2])*l);end,
+        function(q,k,l) return q*E(q+1)^((k[1]+2*k[2])*l);end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return (q-1)*E(q+1)^((k[1]+k[2])*l[1]+k[2]*l[2])
+                                  +q*E(q+1)^(2*k[2]*l[1]+k[1]*l[2]);end,
+        function(q,k,l) return -E(q+1)^((k[1]+k[2])*l[1]+k[2]*l[2]);end,
+        function(q,k,l) return -E(q+1)^(k[1]*l[1]+k[2]*(l[2]+l[3]))
+                               -E(q+1)^(k[1]*l[3]+k[2]*(l[1]+l[2]))
+                               -E(q+1)^(k[1]*l[2]+k[2]*(l[3]+l[1]));end,
+        function(q,k,l) return E(q+1)^(k[1]*l[2]-k[2]*l[1]);end,
+        function(q,k,l) return 0;end ],
+      [ function(q,k,l) return (q-1)*(q^2-q+1)*E(q+1)^((k[1]+k[2]+k[3])*l);
+                            end,
+        function(q,k,l) return (2*q-1)*E(q+1)^((k[1]+k[2]+k[3])*l);end,
+        function(q,k,l) return -E(q+1)^((k[1]+k[2]+k[3])*l);end,
+        function(q,k,l) return (q-1)*(E(q+1)^((k[1]+k[2])*l[1]+k[3]*l[2])
+                                     +E(q+1)^((k[3]+k[1])*l[1]+k[2]*l[2])
+                                     +E(q+1)^((k[2]+k[3])*l[1]+k[1]*l[2]));
+                            end,
+        function(q,k,l) return -E(q+1)^((k[1]+k[2])*l[1]+k[3]*l[2])
+                               -E(q+1)^((k[3]+k[1])*l[1]+k[2]*l[2])
+                               -E(q+1)^((k[2]+k[3])*l[1]+k[1]*l[2]);end,
+        function(q,k,l) return -E(q+1)^(k[1]*l[1]+k[2]*l[2]+k[3]*l[3])
+                               -E(q+1)^(k[1]*l[3]+k[2]*l[1]+k[3]*l[2])
+                               -E(q+1)^(k[1]*l[2]+k[2]*l[3]+k[3]*l[1])
+                               -E(q+1)^(k[1]*l[1]+k[2]*l[3]+k[3]*l[2])
+                               -E(q+1)^(k[1]*l[2]+k[2]*l[1]+k[3]*l[3])
+                               -E(q+1)^(k[1]*l[3]+k[2]*l[2]+k[3]*l[1]);end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return 0;end ],
+      [ function(q,k,l) return (q^3+1)*E(q+1)^((k[1]+k[2])*l);end,
+        function(q,k,l) return E(q+1)^((k[1]+k[2])*l);end,
+        function(q,k,l) return E(q+1)^((k[1]+k[2])*l);end,
+        function(q,k,l) return (q+1)*E(q+1)^(k[1]*l[1]+k[2]*l[2]);end,
+        function(q,k,l) return E(q+1)^(k[1]*l[1]+k[2]*l[2]);end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return E(q+1)^(k[2]*l[2])
+                         *(E(q^2-1)^(k[1]*l[1])+E(q^2-1)^(-q*k[1]*l[1]));end,
+        function(q,k,l) return 0;end ],
+      [ function(q,k,l) return (q+1)^2*(q-1)*E(q+1)^(k*l);end,
+        function(q,k,l) return (-1-q)*E(q+1)^(k*l);end,
+        function(q,k,l) return -E(q+1)^(k*l);end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return 0;end,
+        function(q,k,l) return -E(q^3+1)^(k*l)-E(q^3+1)^(k*l*q^2)
+                                   -E(q^3+1)^(k*l*q^4);end ] ],
+text:="generic character table of GU(3,q^2)",
+isGenericTable:=true,
+domain:= IsPrimePowerInt
+);
+
+
+#############################################################################
+##
+#V  Generic character table of SU(3,q^2), as given in the diploma thesis of
+#V  Meinolf Geck.
+##
+LIBTABLE.ctgeneri.("SU3"):=
+rec(
+identifier:="SU3",
+size:= ( q -> q^3*(q+1)^2*(q-1)*(q^2-q+1) ),
+specializedname:=(q->Concatenation("SU(3,",String(q),")")),
+classparam := [
+        q -> [0..GcdInt(q+1,3)-1],
+        q -> [0..GcdInt(q+1,3)-1],
+        q -> Cartesian( [0..GcdInt(q+1,3)-1],[0..GcdInt(q+1,3)-1] ),
+        q -> Filtered( [0..q],
+                         x -> x*GcdInt(q+1,3) mod (q+1) <> 0 ),
+        q -> Filtered( [0..q],
+                       x -> x*GcdInt(q+1,3) mod (q+1) <> 0 ),
+        q -> Filtered( Combinations( [ 0 .. q ], 3 ),
+                       x -> Sum(x) mod (q+1) = 0 ),
+        q -> Filtered( [0..q^2-2],
+                       x -> x mod (q-1) <> 0 and
+                            ForAll([0..x-1],y->(y+q*x) mod (q^2-1) <>0
+                                           and (q*y+x) mod (q^2-1) <> 0)),
+        q -> Filtered( [0..q^2-q], x -> x mod (q^2-q+1) <> 0 and
+                            x*GcdInt(q+1,3) mod (q^2-q+1) <> 0 and
+                            ForAll( [0..x-1],y->(y+x*q) mod (q^2-q+1) <> 0
+                                         and (y-x*q^2) mod (q^2-q+1) <> 0
+                                         and (x+y*q) mod (q^2-q+1) <> 0
+                                         and (x-y*q^2) mod (q^2-q+1) <> 0 ))
+        ],
+charparam := [
+        q -> [0],
+        q -> [0],
+        q -> [0],
+        q -> [1..q],
+        q -> [1..q],
+        q -> Concatenation(List([1..Int((q+1)/3)],
+                       x -> List([x+1..Int((2*q+1)/3)], y -> [x,y]))),
+        q -> Filtered( [1..q^2-1], x -> x mod (q-1) <> 0 and
+                            ForAll( [0..x-1],y->(y+x*q) mod (q^2-1) <> 0
+                                         and (x+y*q) mod (q^2-1) <> 0 )),
+        q -> Filtered( [0..q^2-q], x -> x*GcdInt(q+1,3) mod (q^2-q+1) <> 0 and
+                            ForAll( [0..x-1],y->(y+x*q) mod (q^2-q+1) <> 0
+                                         and (y-x*q^2) mod (q^2-q+1) <> 0
+                                         and (x+y*q) mod (q^2-q+1) <> 0
+                                         and (x-y*q^2) mod (q^2-q+1) <> 0 )),
+        q -> [0..2*GcdInt(q+1,3)-4],
+        q -> Cartesian([0..2*GcdInt(q+1,3)-4],[1,2])
+        ],
+centralizers := [
+        function(q,k) return q^3*(q+1)^2*(q-1)*(q^2-q+1); end,
+        function(q,k) return q^3*(q+1); end,
+        function(q,k) return q^2*GcdInt(q+1,3); end,
+        function(q,k) return q*(q+1)^2*(q-1); end,
+        function(q,k) return q*(q+1); end,
+        function(q,k) return (q+1)^2; end,
+        function(q,k) return (q+1)*(q-1); end,
+        function(q,k) return (q^2-q+1); end ],
+orders := [
+        function(q,k) if k = 0 then return 1; else return 3; fi;end,
+        function(q,k) if k = 0 then return PrimeBase(q);
+                      else return LcmInt(PrimeBase(q),3); fi;end,
+        function(q,k) local exp;
+                    if k[1] = 0 then exp:= PrimeBase(q);
+                    else exp:= LcmInt(PrimeBase(q),3); fi;
+                    if PrimeBase(q)=2 and exp*(exp-1)/2 mod 2 <> 0 then
+                      return 2 * exp;
+                    else return exp; fi;end,
+        function(q,k) return (q+1)/GcdInt(q+1,k);end,
+        function(q,k) return LcmInt(PrimeBase(q),
+                             (q+1)/GcdInt(q+1,k));end,
+        function(q,k) return (q+1)/Gcd(q+1,k[1],k[2],k[3]);end,
+        function(q,k) return (q^2-1)/GcdInt(q^2-1,k);end,
+        function(q,k) return (q^2-q+1)/GcdInt(q^2-q+1,k);end ],
+classtext := [
+        function(q,k) return Z(q^2)^(k*(q^2-1)/GcdInt(q+1,3))
+                             *[[1,0,0],[0,1,0],[0,0,1]];end,
+        function(q,k) return Z(q^2)^(k*(q^2-1)/GcdInt(q+1,3))
+                             *[[1,0,0],[0,1,0],[0,0,1]]
+                             +Z(q)*[[0,0,0],[1,0,0],[0,0,0]];end,
+        function(q,k) return "cf. page 14 in M. Geck's Diploma Thesis"; end,
+        function(q,k) return [[Z(q^2)^(k*(q-1)),0*Z(2),0*Z(2)],
+                              [0*Z(2),Z(q^2)^(k*(q-1)),0*Z(2)],
+                              [0*Z(2),0*Z(2),Z(q^2)^(-2*k*(q-1))]];end,
+        function(q,k) return [[Z(q^2)^(k*(q-1)),0*Z(2),0*Z(2)],
+                              [Z(q)^0,Z(q^2)^(k*(q-1)),0*Z(2)],
+                              [0*Z(2),0*Z(2),Z(q^2)^(-2*k*(q-1))]];end,
+        function(q,k) return [[Z(q^2)^(k[1]*(q-1)),0*Z(2),0*Z(2)],
+                              [0*Z(2),Z(q^2)^(k[2]*(q-1)),0*Z(2)],
+                              [0*Z(2),0*Z(2),Z(q^2)^(k[3]*(q-1))]];end,
+        function(q,k) return [[Z(q^2)^(k*(q-1)),0*Z(q),0*Z(q)],
+                              [0*Z(q),Z(q^2)^k,0*Z(q)],
+                              [0*Z(q),0*Z(q),Z(q^2)^(-k*q)]];end,
+        function(q,k) if q^6 < 65536 then
+                        return [[Z(q^6)^((q^3-1)*(q+1)*k),0*Z(q),0*Z(q)],
+                                [0*Z(q),Z(q^6)^((q^3-1)*q^2*(q+1)*k),0*Z(q)],
+                                [0*Z(q),0*Z(q),Z(q^6)^((q^3-1)*q^4*(q+1)*k)]];
+                      else return "q^6 too large"; fi;end ],
+
+# ('k' is the character parameter, 'l' is the class parameter)
+irreducibles := [
+      List( [ 1..8], x -> function(q,k,l) return 1; end ),
+      [ function(q,k,l) return q^2-q; end,
+        function(q,k,l) return -q; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 1-q; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return 2; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return -1; end ],
+      [ function(q,k,l) return q^3; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return q; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return -1; end,
+        function(q,k,l) return 1; end,
+        function(q,k,l) return -1; end ],
+      [ function(q,k,l) return (q^2-q+1)*E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return     (1-q)*E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return           E(GcdInt(q+1,3))^(k*l[1]);end,
+        function(q,k,l) return (1-q)*E(q+1)^(k*l)+E(q+1)^(-2*k*l);end,
+        function(q,k,l) return       E(q+1)^(k*l)+E(q+1)^(-2*k*l);end,
+        function(q,k,l) return E(q+1)^(k*l[1])+E(q+1)^(k*l[2])
+                               +E(q+1)^(k*l[3]);end,
+        function(q,k,l) return E(q+1)^(k*l);end,
+        function(q,k,l) return 0; end ],
+      [ function(q,k,l) return q*(q^2-q+1)*E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return           q*E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return (q-1)*E(q+1)^(k*l)+q*E(q+1)^(-2*k*l);end,
+        function(q,k,l) return -E(q+1)^(k*l);end,
+        function(q,k,l) return -E(q+1)^(k*l[1])-E(q+1)^(k*l[2])
+                               -E(q+1)^(k*l[3]);end,
+        function(q,k,l) return  E(q+1)^(k*l);end,
+        function(q,k,l) return 0; end ],
+      [ function(q,k,l) return (q-1)*(q^2-q+1)*E(GcdInt(q+1,3))^(Sum(k)*l);end,
+        function(q,k,l) return (2*q-1)*E(GcdInt(q+1,3))^(Sum(k)*l);end,
+        function(q,k,l) return -E(GcdInt(q+1,3))^(Sum(k)*l[1]);end,
+        function(q,k,l) return (q-1)*(E(q+1)^(Sum(k)*l)
+                               +E(q+1)^((k[2]-2*k[1])*l)
+                               +E(q+1)^((k[1]-2*k[2])*l));end,
+        function(q,k,l) return -E(q+1)^(Sum(k)*l)
+                               -E(q+1)^((k[2]-2*k[1])*l)
+                               -E(q+1)^((k[1]-2*k[2])*l);end,
+        function(q,k,l) return -E(q+1)^(k[1]*l[1]+k[2]*l[2])
+                               -E(q+1)^(k[1]*l[1]+k[2]*l[3])
+                               -E(q+1)^(k[1]*l[2]+k[2]*l[3])
+                               -E(q+1)^(k[1]*l[2]+k[2]*l[1])
+                               -E(q+1)^(k[1]*l[3]+k[2]*l[1])
+                               -E(q+1)^(k[1]*l[3]+k[2]*l[2]); end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end ],
+      [ function(q,k,l) return (q^3+1)*E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return         E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return         E(GcdInt(q+1,3))^(k*l[1]);end,
+        function(q,k,l) return (q+1)*E(q+1)^(k*l);end,
+        function(q,k,l) return       E(q+1)^(k*l);end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return E(q^2-1)^(k*l)+E(q^2-1)^(-k*l*q);end,
+        function(q,k,l) return 0; end ],
+      [ function(q,k,l) return (q+1)^2*(q-1)*E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return        -(q+1)*E(GcdInt(q+1,3))^(k*l);end,
+        function(q,k,l) return              -E(GcdInt(q+1,3))^(k*l[1]);end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return 0; end,
+        function(q,k,l) return -E(q^2-q+1)^(k*l)-E(q^2-q+1)^(-k*l*q)
+                               -E(q^2-q+1)^(k*l*q^2);end ],
+      [ function(q,k,l) return (q-1)*(q^2-q+1)/3;end,
+        function(q,k,l) return (2*q-1)/3;end,
+        function(q,k,l) if k=l[2] then return q-(q+1)/3;
+                                  else return  -(q+1)/3; fi; end,
+        function(q,k,l) return q-1;end,
+        function(q,k,l) return  -1;end,
+        function(q,k,l) return -E(GcdInt(q+1,3))^(l[1]-l[2])
+                               -E(GcdInt(q+1,3))^(l[2]-l[1]); end,
+        function(q,k,l) return  0;end,
+        function(q,k,l) return  0;end ],
+      [ function(q,k,l) return (q+1)^2*(q-1)*E(GcdInt(q+1,3))^(k[2]*l)/3;end,
+        function(q,k,l) return        -(q+1)*E(GcdInt(q+1,3))^(k[2]*l)/3;end,
+        function(q,k,l) if k[1]=l[2] then
+                          return (q-(q+1)/3)*E(GcdInt(q+1,3))^(k[2]*l[1]);
+                        else
+                          return -(q+1)/3*E(GcdInt(q+1,3))^(k[2]*l[1]);
+                        fi; end,
+        function(q,k,l) return  0;end,
+        function(q,k,l) return  0;end,
+        function(q,k,l) return  0;end,
+        function(q,k,l) return  0;end,
+        function(q,k,l) return -E(GcdInt(q+1,3))^(k[2]*l);end ] ],
+text:="generic character table of SU(3,q^2)",
+isGenericTable:=true,
+domain:= IsPrimePowerInt
+);
+
+
+#############################################################################
+##
+#V  Generic character table of P:Q for cyclic P and Q
+##
+LIBTABLE.ctgeneri.("P:Q"):=
+rec(
+identifier:="P:Q",
+specializedname:=(pq->Concatenation(String(pq[1]),":",String(pq[2]))),
+size:=(pq->pq[1]*pq[2]),
+text:="generic character table of Frobenius groups P:Q",
+centralizers:= [ function(pq,l) return pq[1]*pq[2]/Length(l); end,
+                 function(pq,l) return pq[2]; end ],
+classparam:= [ pq -> List( OrbitsResidueClass( pq, [ 0 .. pq[1]-1 ] ),
+                           x -> Set( List( x, y -> E(pq[1])^y ) ) ),
+               pq -> List([1..pq[2]-1],x->E(pq[2])^x)],
+charparam:= [ pq -> [0..pq[2]-1],
+              pq -> OrbitsResidueClass( pq, [ 1 .. pq[1]-1 ] ) ],
+powermap:= [ function(pq,l,pow)
+             return [1,Set(List(l,x->GaloisCyc(x,pow)))]; end,
+             function(pq,l,pow)
+             local im;
+             im:= l^pow;
+             if im=1 then return [1,[1]];
+             else return [2,im]; fi; end ],
+orders:= [ function(pq,l) return Conductor(l); end,
+           function(pq,l) return OrderCyc(l); end ],
+irreducibles:= [ [ function(pq,k,l) return 1; end,
+                   function(pq,k,l) return l^k; end ],
+                 [ function(pq,k,l)
+                   if l=[1] then return pq[2];
+                   else return GaloisCyc(Sum(l),k[1]);fi;end,
+                   function(pq,k,l) return 0; end ] ],
+domain:= ( pq -> IsList( pq ) and
+       ( ( Length( pq ) = 2 and IsPrimeInt( pq[1] )
+           and IsPosInt( pq[2] ) and (pq[1]-1) mod pq[2] = 0 )
+     or ( Length( pq ) = 3 and IsPosInt( pq[1] )
+           and IsPosInt( pq[2] ) and (pq[1]-1) mod pq[2] = 0
+           and IsInt( pq[3] ) and OrderMod( pq[3], pq[1] ) = pq[2] ) ) ),
+libinfo:=rec(firstname:="P:Q",othernames:=[]),
+isGenericTable:=true);
+
+
+#############################################################################
+##
+#V  Generic character table of extraspecial groups $p^{1+2n}$, $p$ odd
+##
+LIBTABLE.ctgeneri.("ExtraspecialPlusOdd"):=
+rec(
+identifier:= "ExtraspecialPlusOdd",
+specializedname:= ( q -> Concatenation( String( PrimeBase( q ) ), "^(1+",
+                                        String( Length( Factors( q ) )-1 ),
+                                        ")_+" ) ),
+size:= ( q -> q ),
+text:= "generic character table of extraspecial groups of plus type",
+classparam:= [
+    q -> [ 0 .. PrimeBase( q )-1 ],
+    q -> [ 1 .. q / PrimeBase( q ) - 1 ] ],
+charparam:= [
+    q -> [ 0 .. q / PrimeBase( q ) - 1 ],
+    q -> [ 1 .. PrimeBase( q )-1 ] ],
+centralizers:= [
+    function( q, l ) return q; end,
+    function( q, l ) return q / PrimeBase( q ); end ],
+powermap:= [
+    function( q, l, pow )
+      if q mod pow <> 0 then
+        Error( "no such power map in the generic table" );
+      else
+        return [ 1, 0 ];
+      fi; end,
+    function( q, l, pow )
+      if q mod pow <> 0 then
+        Error( "no such power map in the generic table" );
+      else
+        return [ 1, 0 ];
+      fi; end ],
+orders:= [
+    function( q, l ) if l = 0 then return 1;
+                     else return PrimeBase( q ); fi; end,
+    function( q, l ) return PrimeBase( q ); end ],
+irreducibles:= [
+    [ function( q, k, l ) return 1; end,
+      function( q, k, l )
+        local p, a, b;
+        p:= PrimeBase( q );
+        a:= CoefficientsQadic( k, p );
+        if IsEmpty( a ) then
+          return 1;
+        else
+          return E(p)^( a * CoefficientsQadic( l, p ) );
+        fi; end ],
+    [ function( q, k, l )
+        local p;
+        p:= PrimeBase( q );
+        return RootInt( q / p ) * E(p)^( k*l ); end,
+      function( q, k, l ) return 0; end ] ],
+domain:= ( q ->     IsPrimePowerInt( q )
+                and q mod 2 = 1
+                and Length( Factors( q ) ) mod 2 = 1 ),
+isGenericTable:=true);
+
+
+LIBTABLE.LOADSTATUS.ctgeneri:="userloaded";
+
+#############################################################################
+##
+#E
+

@@ -2,7 +2,7 @@
 ##
 #W  ring.gd                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ring.gd,v 4.63 2009/01/12 17:26:17 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,18 +11,24 @@
 ##  This file declares the operations for rings.
 ##
 Revision.ring_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: ring.gd,v 4.63 2009/01/12 17:26:17 gap Exp $";
 
 
 #############################################################################
 ##
 #P  IsNearRing( <R> )
 ##
-##  A *near-ring* in {\GAP} is a near-additive group
-##  (see~"IsNearAdditiveGroup") that is also a semigroup (see~"IsSemigroup"),
-##  such that addition `+' and multiplication `\*' are right distributive
-##  (see~"IsRDistributive").
-##  Any associative ring (see~"IsRing") is also a near-ring.
+##  <ManSection>
+##  <Prop Name="IsNearRing" Arg='R'/>
+##
+##  <Description>
+##  A <E>near-ring</E> in &GAP; is a near-additive group
+##  (see&nbsp;<Ref Func="IsNearAdditiveGroup"/>) that is also a semigroup (see&nbsp;<Ref Func="IsSemigroup"/>),
+##  such that addition <C>+</C> and multiplication <C>*</C> are right distributive
+##  (see&nbsp;<Ref Func="IsRDistributive"/>).
+##  Any associative ring (see&nbsp;<Ref Func="IsRing"/>) is also a near-ring.
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonymAttr( "IsNearRing",
     IsNearAdditiveGroup and IsMagma and IsRDistributive and IsAssociative );
@@ -32,13 +38,19 @@ DeclareSynonymAttr( "IsNearRing",
 ##
 #P  IsNearRingWithOne( <R> )
 ##
-##  A *near-ring-with-one* in {\GAP} is a near-ring (see~"IsNearRing")
-##  that is also a magma-with-one (see~"IsMagmaWithOne").
+##  <ManSection>
+##  <Prop Name="IsNearRingWithOne" Arg='R'/>
 ##
-##  Note that the identity and the zero of a near-ring-with-one need *not* be
+##  <Description>
+##  A <E>near-ring-with-one</E> in &GAP; is a near-ring (see&nbsp;<Ref Prop="IsNearRing"/>)
+##  that is also a magma-with-one (see&nbsp;<Ref Func="IsMagmaWithOne"/>).
+##  <P/>
+##  Note that the identity and the zero of a near-ring-with-one need <E>not</E> be
 ##  distinct.
 ##  This means that a near-ring that consists only of its zero element can be
 ##  regarded as a near-ring-with-one.
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonymAttr( "IsNearRingWithOne", IsNearRing and IsMagmaWithOne );
 
@@ -47,8 +59,14 @@ DeclareSynonymAttr( "IsNearRingWithOne", IsNearRing and IsMagmaWithOne );
 ##
 #A  AsNearRing( <C> )
 ##
-##  If the elements in the collection <C> form a near-ring then `AsNearRing'
-##  returns this near-ring, otherwise `fail' is returned.
+##  <ManSection>
+##  <Attr Name="AsNearRing" Arg='C'/>
+##
+##  <Description>
+##  If the elements in the collection <A>C</A> form a near-ring then <C>AsNearRing</C>
+##  returns this near-ring, otherwise <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "AsNearRing", IsNearRingElementCollection );
 
@@ -57,13 +75,24 @@ DeclareAttribute( "AsNearRing", IsNearRingElementCollection );
 ##
 #P  IsRing( <R> )
 ##
-##  A *ring* in {\GAP} is an additive group (see~"IsAdditiveGroup")
-##  that is also a magma (see~"IsMagma"),
-##  such that addition `+' and multiplication `\*' are distributive.
+##  <#GAPDoc Label="IsRing">
+##  <ManSection>
+##  <Prop Name="IsRing" Arg='R'/>
 ##
-##  The multiplication need *not* be associative (see~"IsAssociative").
-##  For example, a Lie algebra (see~"Lie Algebras") is regarded as a
-##  ring in {\GAP}.
+##  <Description>
+##  A <E>ring</E> in &GAP; is an additive group
+##  (see&nbsp;<Ref Func="IsAdditiveGroup"/>)
+##  that is also a magma (see&nbsp;<Ref Func="IsMagma"/>),
+##  such that addition <C>+</C> and multiplication <C>*</C> are distributive,
+##  see <Ref Func="IsDistributive"/>.
+##  <P/>
+##  The multiplication need <E>not</E> be associative
+##  (see&nbsp;<Ref Func="IsAssociative"/>).
+##  For example, a Lie algebra (see&nbsp;<Ref Chap="Lie Algebras"/>)
+##  is regarded as a ring in &GAP;.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsRing",
     IsAdditiveGroup and IsMagma and IsDistributive );
@@ -73,19 +102,27 @@ DeclareSynonymAttr( "IsRing",
 ##
 #P  IsRingWithOne( <R> )
 ##
-##  A *ring-with-one* in {\GAP} is a ring (see~"IsRing")
-##  that is also a magma-with-one (see~"IsMagmaWithOne").
+##  <#GAPDoc Label="IsRingWithOne">
+##  <ManSection>
+##  <Prop Name="IsRingWithOne" Arg='R'/>
 ##
-##  Note that the identity and the zero of a ring-with-one need *not* be
+##  <Description>
+##  A <E>ring-with-one</E> in &GAP; is a ring (see&nbsp;<Ref Func="IsRing"/>)
+##  that is also a magma-with-one (see&nbsp;<Ref Func="IsMagmaWithOne"/>).
+##  <P/>
+##  Note that the identity and the zero of a ring-with-one need <E>not</E> be
 ##  distinct.
 ##  This means that a ring that consists only of its zero element can be
 ##  regarded as a ring-with-one.
-#T shall we force *every* trivial ring to be a ring-with-one
-#T by installing an implication?
-##
+##  <!-- shall we force <E>every</E> trivial ring to be a ring-with-one-->
+##  <!-- by installing an implication?-->
+##  <P/>
 ##  This is especially useful in the case of finitely presented rings,
 ##  in the sense that each factor of a ring-with-one is again a
 ##  ring-with-one.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsRingWithOne", IsRing and IsMagmaWithOne );
 
@@ -94,8 +131,17 @@ DeclareSynonymAttr( "IsRingWithOne", IsRing and IsMagmaWithOne );
 ##
 #A  AsRing( <C> )
 ##
-##  If the elements in the collection <C> form a ring then `AsRing' returns
-##  this ring, otherwise `fail' is returned.
+##  <#GAPDoc Label="AsRing">
+##  <ManSection>
+##  <Attr Name="AsRing" Arg='C'/>
+##
+##  <Description>
+##  If the elements in the collection <A>C</A> form a ring then
+##  <Ref Func="AsRing"/> returns this ring,
+##  otherwise <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "AsRing", IsRingElementCollection );
 
@@ -104,9 +150,23 @@ DeclareAttribute( "AsRing", IsRingElementCollection );
 ##
 #A  GeneratorsOfRing( <R> )
 ##
-##  `GeneratorsOfRing' returns a list of elements such that the ring <R> is
-##  the closure of these elements under addition, multiplication,
-##  and taking additive inverses.
+##  <#GAPDoc Label="GeneratorsOfRing">
+##  <ManSection>
+##  <Attr Name="GeneratorsOfRing" Arg='R'/>
+##
+##  <Description>
+##  <Ref Func="GeneratorsOfRing"/> returns a list of elements such that the
+##  ring <A>R</A> is the closure of these elements under addition,
+##  multiplication, and taking additive inverses.
+##  <Example><![CDATA[
+##  gap> R:=Ring( 2, 1/2 );
+##  <ring with 2 generators>
+##  gap> GeneratorsOfRing( R );
+##  [ 2, 1/2 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "GeneratorsOfRing", IsRing );
 
@@ -115,12 +175,27 @@ DeclareAttribute( "GeneratorsOfRing", IsRing );
 ##
 #A  GeneratorsOfRingWithOne( <R> )
 ##
-##  `GeneratorsOfRingWithOne' returns a list of elements
-##  such that the ring <R> is the closure of these elements
-##  under addition, multiplication, taking additive inverses, and taking
-##  the identity element `One( <R> )'.
+##  <#GAPDoc Label="GeneratorsOfRingWithOne">
+##  <ManSection>
+##  <Attr Name="GeneratorsOfRingWithOne" Arg='R'/>
 ##
-##  <R> itself need *not* be known to be a ring-with-one.
+##  <Description>
+##  <Ref Func="GeneratorsOfRingWithOne"/> returns a list of elements
+##  such that the ring <A>R</A> is the closure of these elements
+##  under addition, multiplication, taking additive inverses, and taking
+##  the identity element <C>One( <A>R</A> )</C>.
+##  <P/>
+##  <A>R</A> itself need <E>not</E> be known to be a ring-with-one.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> R:= RingWithOne( [ 4, 6 ] );
+##  <ring-with-one, with 2 generators>
+##  gap> GeneratorsOfRingWithOne( R );
+##  [ 4, 6 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "GeneratorsOfRingWithOne", IsRingWithOne );
 
@@ -129,10 +204,22 @@ DeclareAttribute( "GeneratorsOfRingWithOne", IsRingWithOne );
 ##
 #O  RingByGenerators( <C> ) . . . . . . .  ring gener. by elements in a coll.
 ##
-##  `RingByGenerators' returns the ring generated by the elements in the
-##  collection <C>,
-##  i.~e., the closure of <C> under addition, multiplication,
+##  <#GAPDoc Label="RingByGenerators">
+##  <ManSection>
+##  <Oper Name="RingByGenerators" Arg='C'/>
+##
+##  <Description>
+##  <Ref Func="RingByGenerators"/> returns the ring generated by the elements
+##  in the collection <A>C</A>,
+##  i.&nbsp;e., the closure of <A>C</A> under addition, multiplication,
 ##  and taking additive inverses.
+##  <Example><![CDATA[
+##  gap> RingByGenerators([ 2, E(4) ]);
+##  <ring with 2 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "RingByGenerators", [ IsCollection ] );
 
@@ -141,24 +228,55 @@ DeclareOperation( "RingByGenerators", [ IsCollection ] );
 ##
 #O  DefaultRingByGenerators( <coll> ) . . . . default ring containing a coll.
 ##
+##  <#GAPDoc Label="DefaultRingByGenerators">
+##  <ManSection>
+##  <Oper Name="DefaultRingByGenerators" Arg='coll'/>
+##
+##  <Description>
+##  <Example><![CDATA[
+##  gap> DefaultRingByGenerators([ 2, E(4) ]);
+##  GaussianIntegers
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "DefaultRingByGenerators", [ IsCollection ] );
 
 
 #############################################################################
 ##
-#F  Ring( <r> ,<s>, ... )  . . . . . . . . . . ring generated by a collection
+#F  Ring( <r>, <s>, ... )  . . . . . . . . . . ring generated by a collection
 #F  Ring( <coll> ) . . . . . . . . . . . . . . ring generated by a collection
 ##
-##  In the first form `Ring' returns the smallest ring that
-##  contains all the elements <r>, <s>... etc.
-##  In the second form `Ring' returns the smallest ring that
-##  contains all the elements in the collection <coll>.
+##  <#GAPDoc Label="Ring">
+##  <ManSection>
+##  <Heading>Ring</Heading>
+##  <Func Name="Ring" Arg='r, s, ...' Label="for ring elements"/>
+##  <Func Name="Ring" Arg='coll' Label="for a collection"/>
+##
+##  <Description>
+##  In the first form <Ref Func="Ring" Label="for ring elements"/>
+##  returns the smallest ring that contains all the elements
+##  <A>r</A>, <A>s</A>, <M>\ldots</M>
+##  In the second form <Ref Func="Ring" Label="for a collection"/> returns
+##  the smallest ring that contains all the elements in the collection
+##  <A>coll</A>.
 ##  If any element is not an element of a ring or if the elements lie in no
 ##  common ring an error is raised.
-##
-##  `Ring' differs from `DefaultRing' (see~"DefaultRing") in that it returns
-##  the smallest ring in which the elements lie, while `DefaultRing' may
-##  return a larger ring if that makes sense.
+##  <P/>
+##  <Ref Func="Ring" Label="for ring elements"/> differs from
+##  <Ref Func="DefaultRing" Label="for ring elements"/> in that it returns
+##  the smallest ring in which the elements lie,
+##  while <Ref Func="DefaultRing" Label="for ring elements"/>
+##  may return a larger ring if that makes sense.
+##  <Example><![CDATA[
+##  gap> Ring( 2, E(4) );
+##  <ring with 2 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Ring" );
 
@@ -167,10 +285,19 @@ DeclareGlobalFunction( "Ring" );
 ##
 #O  RingWithOneByGenerators( <coll> )
 ##
-##  `RingWithOneByGenerators' returns the ring-with-one generated by the
-##  elements in the collection <coll>, i.~e., the closure of <coll> under
+##  <#GAPDoc Label="RingWithOneByGenerators">
+##  <ManSection>
+##  <Oper Name="RingWithOneByGenerators" Arg='coll'/>
+##
+##  <Description>
+##  <Ref Oper="RingWithOneByGenerators"/> returns the ring-with-one
+##  generated by the elements in the collection <A>coll</A>,
+##  i.&nbsp;e., the closure of <A>coll</A> under
 ##  addition, multiplication, taking additive inverses,
 ##  and taking the identity of an element.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "RingWithOneByGenerators", [ IsCollection ] );
 
@@ -180,45 +307,84 @@ DeclareOperation( "RingWithOneByGenerators", [ IsCollection ] );
 #F  RingWithOne( <r>, <s>, ... )  . . ring-with-one generated by a collection
 #F  RingWithOne( <C> )  . . . . . . . ring-with-one generated by a collection
 ##
-##  In the first form `RingWithOne' returns the smallest ring with one that
-##  contains all the elements <r>, <s>... etc.
-##  In the second form `RingWithOne' returns the smallest ring with one that
-##  contains all the elements in the collection <C>.
+##  <#GAPDoc Label="RingWithOne">
+##  <ManSection>
+##  <Heading>RingWithOne</Heading>
+##  <Func Name="RingWithOne" Arg='r, s, ...' Label="for ring elements"/>
+##  <Func Name="RingWithOne" Arg='coll' Label="for a collection"/>
+##
+##  <Description>
+##  In the first form <Ref Func="RingWithOne" Label="for ring elements"/>
+##  returns the smallest ring with one that contains all the elements
+##  <A>r</A>, <A>s</A>, <M>\ldots</M>
+##  In the second form <Ref Func="RingWithOne" Label="for a collection"/>
+##  returns the smallest ring with one that contains all the elements
+##  in the collection <A>C</A>.
 ##  If any element is not an element of a ring or if the elements lie in no
 ##  common ring an error is raised.
+##  <Example><![CDATA[
+##  gap> RingWithOne( [ 4, 6 ] );
+##  <ring-with-one, with 2 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "RingWithOne" );
 
 
 #############################################################################
 ##
-#F  DefaultRing( <r> ,<s>, ... )  . . .  default ring containing a collection
+#F  DefaultRing( <r>, <s>, ... )  . . .  default ring containing a collection
 #F  DefaultRing( <coll> ) . . . . . . .  default ring containing a collection
 ##
-##  In the first form `DefaultRing' returns a ring that contains
-##  all the elements <r>, <s>, ... etc.
-##  In the second form `DefaultRing' returns a ring that contains
-##  all the elements in the collection <coll>.
+##  <#GAPDoc Label="DefaultRing">
+##  <ManSection>
+##  <Heading>DefaultRing</Heading>
+##  <Func Name="DefaultRing" Arg='r, s, ...' Label="for ring elements"/>
+##  <Func Name="DefaultRing" Arg='coll' Label="for a collection"/>
+##
+##  <Description>
+##  In the first form <Ref Func="DefaultRing" Label="for ring elements"/>
+##  returns a ring that contains all the elements <A>r</A>, <A>s</A>,
+##  <M>\ldots</M> etc.
+##  In the second form <Ref Func="DefaultRing" Label="for a collection"/>
+##  returns a ring that contains all the elements in the collection
+##  <A>coll</A>.
 ##  If any element is not an element of a ring or if the elements lie in no
 ##  common ring an error is raised.
-##
-##  The ring returned by `DefaultRing' need not be the smallest ring in which
-##  the elements lie.
+##  <P/>
+##  The ring returned by <Ref Func="DefaultRing" Label="for ring elements"/>
+##  need not be the smallest ring in which the elements lie.
 ##  For example for elements from cyclotomic fields,
-##  `DefaultRing' may return the ring of integers of the smallest cyclotomic
-##  field in which the elements lie, which need not be the smallest ring
-##  overall, because the elements may in fact lie in a smaller number field
+##  <Ref Func="DefaultRing" Label="for ring elements"/> may return the ring
+##  of integers of the smallest cyclotomic field in which the elements lie,
+##  which need not be the smallest ring overall,
+##  because the elements may in fact lie in a smaller number field
 ##  which is itself not a cyclotomic field.
-##
+##  <P/>
 ##  (For the exact definition of the default ring of a certain type of
 ##  elements, look at the corresponding method installation.)
-##
-##  `DefaultRing' is used by the ring functions like `Quotient', `IsPrime',
-##  `Factors', or `Gcd' if no explicit ring is given.
-##
-##  `Ring' (see~"Ring") differs from `DefaultRing' in that it returns the
-##  smallest ring in which the elements lie, while `DefaultRing' may return
+##  <P/>
+##  <Ref Func="DefaultRing" Label="for ring elements"/> is used
+##  by ring functions such as <Ref Func="Quotient"/>, <Ref Func="IsPrime"/>,
+##  <Ref Func="Factors"/>,
+##  or <Ref Func="Gcd" Label="for (a ring and) several elements"/>
+##  if no explicit ring is given.
+##  <P/>
+##  <Ref Func="Ring" Label="for ring elements"/> differs from
+##  <Ref Func="DefaultRing" Label="for ring elements"/> in that it returns
+##  the smallest ring in which the elements lie,
+##  while <Ref Func="DefaultRing" Label="for ring elements"/> may return
 ##  a larger ring if that makes sense.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> DefaultRing( 2, E(4) );
+##  GaussianIntegers
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "DefaultRing" );
 
@@ -228,9 +394,29 @@ DeclareGlobalFunction( "DefaultRing" );
 #F  Subring( <R>, <gens> ) . . . . . . . . subring of <R> generated by <gens>
 #F  SubringNC( <R>, <gens> ) . . . . . . . subring of <R> generated by <gens>
 ##
-##  returns the ring with parent <R> generated by the elements in
-##  <gens>. When the second form, `SubringNC' is used, it is *not* checked
-##  whether all elements in <gens> lie in <R>. 
+##  <#GAPDoc Label="Subring">
+##  <ManSection>
+##  <Func Name="Subring" Arg='R, gens'/>
+##  <Func Name="SubringNC" Arg='R, gens'/>
+##
+##  <Description>
+##  returns the ring with parent <A>R</A> generated by the elements in
+##  <A>gens</A>.
+##  When the second form, <Ref Func="SubringNC"/> is used,
+##  it is <E>not</E> checked whether all elements in <A>gens</A> lie in
+##  <A>R</A>. 
+##  <P/>
+##  <Example><![CDATA[
+##  gap> R:= Integers;
+##  Integers
+##  gap> S:= Subring( R, [ 4, 6 ] );
+##  <ring with 2 generators>
+##  gap> Parent( S );
+##  Integers
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Subring" );
 DeclareGlobalFunction( "SubringNC" );
@@ -241,9 +427,27 @@ DeclareGlobalFunction( "SubringNC" );
 #F  SubringWithOne( <R>, <gens> )   .  subring-with-one of <R> gen. by <gens>
 #F  SubringWithOneNC( <R>, <gens> ) .  subring-with-one of <R> gen. by <gens>
 ##
-##  returns the ring with one with parent <R> generated by the elements in
-##  <gens>. When the second form, `SubringNC' is used, it is *not* checked
-##  whether all elements in <gens> lie in <R>. 
+##  <#GAPDoc Label="SubringWithOne">
+##  <ManSection>
+##  <Func Name="SubringWithOne" Arg='R, gens'/>
+##  <Func Name="SubringWithOneNC" Arg='R, gens'/>
+##
+##  <Description>
+##  returns the ring with one with parent <A>R</A> generated by the elements
+##  in <A>gens</A>.
+##  When the second form, <Ref Func="SubringWithOneNC"/> is used,
+##  it is <E>not</E> checked whether all elements in <A>gens</A> lie in
+##  <A>R</A>. 
+##  <P/>
+##  <Example><![CDATA[
+##  gap> R:= SubringWithOne( Integers, [ 4, 6 ] );
+##  <ring-with-one, with 2 generators>
+##  gap> Parent( R );
+##  Integers
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SubringWithOne" );
 DeclareGlobalFunction( "SubringWithOneNC" );
@@ -254,8 +458,26 @@ DeclareGlobalFunction( "SubringWithOneNC" );
 #O  ClosureRing( <R>, <r> )
 #O  ClosureRing( <R>, <S> )
 ##
-##  For a ring <R> and either an element <r> of its elements family or a ring
-##  <S>, `ClosureRing' returns the ring generated by both arguments.
+##  <#GAPDoc Label="ClosureRing">
+##  <ManSection>
+##  <Heading>ClosureRing</Heading>
+##  <Oper Name="ClosureRing" Arg='R, r'
+##   Label="for a ring and a ring element"/>
+##  <Oper Name="ClosureRing" Arg='R, S' Label="for two rings"/>
+##
+##  <Description>
+##  For a ring <A>R</A> and either an element <A>r</A> of its elements family
+##  or a ring <A>S</A>,
+##  <Ref Func="ClosureRing" Label="for a ring and a ring element"/>
+##  returns the ring generated by both arguments.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ClosureRing( Integers, E(4) );
+##  <ring-with-one, with 2 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 
@@ -264,31 +486,52 @@ DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 ##
 #C  IsUniqueFactorizationRing( <R> )
 ##
-##  A ring <R> is called a *unique factorization ring* if it is an integral
-##  ring (see~"IsIntegralRing"),
-##  and every element has a unique factorization into irreducible elements,
-##  i.e., a  unique representation as product  of irreducibles (see
-##  "IsIrreducibleRingElement").
+##  <#GAPDoc Label="IsUniqueFactorizationRing">
+##  <ManSection>
+##  <Filt Name="IsUniqueFactorizationRing" Arg='R' Type='Category'/>
+##
+##  <Description>
+##  A ring <A>R</A> is called a <E>unique factorization ring</E> if it is an
+##  integral ring (see&nbsp;<Ref Func="IsIntegralRing"/>),
+##  and every nonzero element has a unique factorization into
+##  irreducible elements,
+##  i.e., a  unique representation as product of irreducibles
+##  (see <Ref Func="IsIrreducibleRingElement"/>).
 ##  Unique in this context means unique up to permutations of the factors and
-##  up to multiplication of the factors by units (see~"Units").
-##
-##  Mathematically, a field should therefore also be a  unique factorization
-##  ring, since every element is a unit. In {\GAP}, however, at least at present
-##  fields do not lie in the filter `IsUniqueFactorizationRing' 
-##  (see~"IsUniqueFactorizationRing"), since 
-##  Operations such as `Factors', `Gcd', `StandardAssociate' and so on do
+##  up to multiplication of the factors by units
+##  (see&nbsp;<Ref Func="Units"/>).
+##  <P/>
+##  Mathematically, a field should therefore also be a unique factorization
+##  ring, since every nonzero element is a unit.
+##  In &GAP;, however,
+##  at least at present fields do not lie in the filter
+##  <Ref Func="IsUniqueFactorizationRing"/>,
+##  since operations such as <Ref Func="Factors"/>,
+##  <Ref Func="Gcd" Label="for (a ring and) several elements"/>,
+##  <Ref Func="StandardAssociate"/> and so on do
 ##  not apply to fields (the results would be trivial, and not
-##  especially useful) and Methods which require their arguments to
-##  lie in `IsUniqueFactorizationRing' expect these Operations to work.
-##
-##  (Note that we cannot install a subset maintained method for this category
+##  especially useful) and methods which require their arguments to
+##  lie in <Ref Func="IsUniqueFactorizationRing"/> expect these operations
+##  to work.
+##  <P/>
+##  (Note that we cannot install a subset maintained method for this filter
 ##  since the factorization of an element needs not exist in a subring.
-##  As an example, consider the subring $4 \N + 1$ of the ring $4 \Z + 1$;
-##  in the subring, the element $3 \cdot 3 \cdot 11 \cdot 7$ has the two
-##  factorizations $33 \cdot 21 = 9 \cdot 77$, but in the large ring there
-##  is the unique factorization $(-3) \cdot (-3) \cdot (-11) \cdot (-7)$,
-##  and it is easy to see that every element in $4 \Z + 1$ has a unique
-##  factorization.)
+##  As an example, consider the subring <M>4 &NN; + 1</M> of the ring
+##  <M>4 &ZZ; + 1</M>;
+##  in the subring, the element <M>3 \cdot 3 \cdot 11 \cdot 7</M> has the two
+##  factorizations <M>33 \cdot 21 = 9 \cdot 77</M>,
+##  but in the large ring there is the unique factorization
+##  <M>(-3) \cdot (-3) \cdot (-11) \cdot (-7)</M>,
+##  and it is easy to see that every element in <M>4 &ZZ; + 1</M> has a
+##  unique factorization.)
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsUniqueFactorizationRing( PolynomialRing( Rationals, 1 ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsUniqueFactorizationRing", IsRing );
 
@@ -297,18 +540,32 @@ DeclareCategory( "IsUniqueFactorizationRing", IsRing );
 ##
 #C  IsEuclideanRing( <R> )
 ##
-##  A ring $R$ is called a Euclidean ring if it is an integral ring and
-##  there exists a function $\delta$, called the Euclidean degree, from
-##  $R-\{0_R\}$ to the nonnegative integers, such that for every pair $r \in
-##  R$ and $s \in  R-\{0_R\}$ there exists an element $q$ such that either
-##  $r - q s = 0_R$ or $\delta(r - q s) \< \delta( s )$. In {\GAP} the
-##  Euclidean degree $\delta$ is implicitly built into an ring and cannot be
-##  changed.  The existence of this division with remainder implies that the
-##  Euclidean algorithm can be applied to compute a greatest common divisor
-##  of two elements, which in turn implies that $R$ is a unique
-##  factorization ring.
+##  <#GAPDoc Label="IsEuclideanRing">
+##  <ManSection>
+##  <Filt Name="IsEuclideanRing" Arg='R' Type='Category'/>
 ##
-#T more general: new category ``valuated domain''?
+##  <Description>
+##  A ring <M>R</M> is called a Euclidean ring if it is an integral ring and
+##  there exists a function <M>\delta</M>, called the Euclidean degree, from
+##  <M>R-\{0_R\}</M> to the nonnegative integers,
+##  such that for every pair <M>r \in R</M> and <M>s \in  R-\{0_R\}</M> there
+##  exists an element <M>q</M> such that either
+##  <M>r - q s = 0_R</M> or <M>\delta(r - q s) &lt; \delta( s )</M>.
+##  In &GAP; the Euclidean degree <M>\delta</M> is implicitly built into a
+##  ring and cannot be changed.
+##  The existence of this division with remainder implies that the
+##  Euclidean algorithm can be applied to compute a greatest common divisor
+##  of two elements,
+##  which in turn implies that <M>R</M> is a unique factorization ring.
+##  <P/>
+##  <!-- more general: new category <Q>valuated domain</Q>?-->
+##  <Example><![CDATA[
+##  gap> IsEuclideanRing( GaussianIntegers );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsEuclideanRing",
     IsRingWithOne and IsUniqueFactorizationRing );
@@ -318,9 +575,17 @@ DeclareCategory( "IsEuclideanRing",
 ##
 #P  IsAnticommutative( <R> )
 ##
-##  is `true' if the relation $a * b = - b * a$
-##  holds for all elements $a$, $b$ in the ring <R>,
-##  and `false' otherwise.
+##  <#GAPDoc Label="IsAnticommutative">
+##  <ManSection>
+##  <Prop Name="IsAnticommutative" Arg='R'/>
+##
+##  <Description>
+##  is <K>true</K> if the relation <M>a * b = - b * a</M>
+##  holds for all elements <M>a</M>, <M>b</M> in the ring <A>R</A>,
+##  and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsAnticommutative", IsRing );
 
@@ -335,9 +600,21 @@ InstallFactorMaintenance( IsAnticommutative,
 ##
 #P  IsIntegralRing( <R> )
 ##
-##  A ring-with-one <R> is integral if it is commutative, contains no
-##  nontrivial zero divisors,
+##  <#GAPDoc Label="IsIntegralRing">
+##  <ManSection>
+##  <Prop Name="IsIntegralRing" Arg='R'/>
+##
+##  <Description>
+##  A ring-with-one <A>R</A> is integral if it is commutative,
+##  contains no nontrivial zero divisors,
 ##  and if its identity is distinct from its zero.
+##  <Example><![CDATA[
+##  gap> IsIntegralRing( Integers );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsIntegralRing", IsRing );
 
@@ -354,10 +631,26 @@ InstallTrueMethod( IsIntegralRing,
 ##
 #P  IsJacobianRing( <R> )
 ##
-##  is `true' if the Jacobi identity holds in <R>, and `false' otherwise.
-##  The Jacobi identity means that $x \* (y \* z) + z \* (x \* y) + 
-##  y \* (z \* x)$
-##  is the zero element of <R>, for all elements $x$, $y$, $z$ in <R>.
+##  <#GAPDoc Label="IsJacobianRing">
+##  <ManSection>
+##  <Prop Name="IsJacobianRing" Arg='R'/>
+##
+##  <Description>
+##  is <K>true</K> if the Jacobi identity holds in the ring <A>R</A>,
+##  and <K>false</K> otherwise.
+##  The Jacobi identity means that
+##  <M>x * (y * z) + z * (x * y) +  y * (z * x)</M>
+##  is the zero element of <A>R</A>,
+##  for all elements <M>x</M>, <M>y</M>, <M>z</M> in <A>R</A>.
+##  <Example><![CDATA[
+##  gap> L:= FullMatrixLieAlgebra( GF( 5 ), 7 );
+##  <Lie algebra over GF(5), with 13 generators>
+##  gap> IsJacobianRing( L );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsJacobianRing", IsRing );
 
@@ -375,8 +668,16 @@ InstallFactorMaintenance( IsJacobianRing,
 ##
 #P  IsZeroSquaredRing( <R> )
 ##
-##  is `true' if $a * a$ is the zero element of the ring <R>
-##  for all $a$ in <R>, and `false' otherwise.
+##  <#GAPDoc Label="IsZeroSquaredRing">
+##  <ManSection>
+##  <Prop Name="IsZeroSquaredRing" Arg='R'/>
+##
+##  <Description>
+##  is <K>true</K> if <M>a * a</M> is the zero element of the ring <A>R</A>
+##  for all <M>a</M> in <A>R</A>, and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsZeroSquaredRing", IsRing );
 
@@ -396,8 +697,14 @@ InstallFactorMaintenance( IsZeroSquaredRing,
 ##
 #P  IsZeroMultiplicationRing( <R> )
 ##
-##  is `true' if $a * b$ is the zero element of the ring <R>
-##  for all $a, b$ in <R>, and `false' otherwise.
+##  <ManSection>
+##  <Prop Name="IsZeroMultiplicationRing" Arg='R'/>
+##
+##  <Description>
+##  is <K>true</K> if <M>a * b</M> is the zero element of the ring <A>R</A>
+##  for all <M>a, b</M> in <A>R</A>, and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "IsZeroMultiplicationRing", IsRing );
 
@@ -417,87 +724,150 @@ InstallFactorMaintenance( IsZeroMultiplicationRing,
 ##
 #A  Units( <R> )
 ##
-##  `Units' returns the group of units of the ring <R>.
-##  This may either be returned as a list or as a group.
+##  <#GAPDoc Label="Units">
+##  <ManSection>
+##  <Attr Name="Units" Arg='R'/>
 ##
-##  An element $r$ is called a *unit* of a ring $R$, if $r$ has an inverse in
-##  $R$.
+##  <Description>
+##  <Ref Attr="Units"/> returns the group of units of the ring <A>R</A>.
+##  This may either be returned as a list or as a group.
+##  <P/>
+##  An element <M>r</M> is called a <E>unit</E> of a ring <M>R</M>
+##  if <M>r</M> has an inverse in <M>R</M>.
 ##  It is easy to see that the set of units forms a multiplicative group.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Units( GaussianIntegers );
+##  [ -1, 1, -E(4), E(4) ]
+##  gap> Units( GF( 16 ) );
+##  <group with 1 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "Units", IsRing );
 
 
 #############################################################################
 ##
-#O  Factors( <R>, <r> )
-#O  Factors( <r> )
+#O  Factors( [<R>, ]<r> )
 ##
-##  In the first form `Factors' returns the factorization of the ring
-##  element <r> in the ring <R>.
-##  In the second form `Factors' returns the factorization of the ring
-##  element <r> in its default ring (see "DefaultRing").
-##  The factorization is returned as a list of primes (see "IsPrime").
-##  Each element in the list is a standard associate (see
-##  "StandardAssociate") except the first one, which is multiplied by a unit
-##  as necessary to have `Product( Factors( <R>, <r> )  )  = <r>'.
+##  <#GAPDoc Label="Factors">
+##  <ManSection>
+##  <Oper Name="Factors" Arg='[R, ]r'/>
+##
+##  <Description>
+##  <Ref Oper="Factors"/> returns the factorization of the ring element
+##  <A>r</A> in the ring <A>R</A>, if given,
+##  and otherwise in in its default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  The factorization is returned as a list of primes
+##  (see <Ref Func="IsPrime"/>).
+##  Each element in the list is a standard associate
+##  (see <Ref Func="StandardAssociate"/>) except the first one,
+##  which is multiplied by a unit as necessary to have
+##  <C>Product( Factors( <A>R</A>, <A>r</A> )  )  = <A>r</A></C>.
 ##  This list is usually also sorted, thus smallest prime factors come first.
-##  If <r> is a unit or zero, `Factors( <R>, <r> ) = [ <r> ]'.
-##
-#T Who does really need the additive structure?
-#T We could define `Factors' for arbitrary commutative monoids.
+##  If <A>r</A> is a unit or zero,
+##  <C>Factors( <A>R</A>, <A>r</A> ) = [ <A>r</A> ]</C>.
+##  <P/>
+##  <!-- Who does really need the additive structure?
+##       We could define <C>Factors</C> for arbitrary commutative monoids.-->
+##  <Example><![CDATA[
+##  gap> x:= Indeterminate( GF(2), "x" );;
+##  gap> pol:= x^2+x+1;
+##  x^2+x+Z(2)^0
+##  gap> Factors( pol );
+##  [ x^2+x+Z(2)^0 ]
+##  gap> Factors( PolynomialRing( GF(4) ), pol );
+##  [ x+Z(2^2), x+Z(2^2)^2 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "Factors", [ IsRing, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  IsAssociated( <R>, <r>, <s> )
-#O  IsAssociated( <r>, <s> )
+#O  IsAssociated( [<R>, ]<r>, <s> )
 ##
-##  In the first form `IsAssociated' returns `true' if the two ring elements
-##  <r> and <s> are associated in the ring <R> and `false' otherwise.
-##  In the second form `IsAssociated' returns `true' if the two ring elements
-##  <r> and <s> are associated in their default ring (see "DefaultRing") and
-##  `false' otherwise.
+##  <#GAPDoc Label="IsAssociated">
+##  <ManSection>
+##  <Oper Name="IsAssociated" Arg='[R, ]r, s'/>
 ##
-##  Two elements $r$ and $s$ of a ring $R$ are called *associated* if there
-##  is a unit $u$ of $R$ such that $r u = s$.
+##  <Description>
+##  <Ref Oper="IsAssociated"/> returns <K>true</K> if the two ring elements
+##  <A>r</A> and <A>s</A> are associated in the ring <A>R</A>, if given,
+##  and otherwise in their default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  If the two elements are not associated then <K>false</K> is returned.
+##  <P/>
+##  Two elements <A>r</A> and <A>s</A> of a ring <A>R</A> are called
+##  <E>associated</E> if there is a unit <M>u</M> of <A>R</A> such that
+##  <A>r</A> <M>u = </M><A>s</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsAssociated", [ IsRing, IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  Associates( <R>, <r> )
-#O  Associates( <r> )
+#O  Associates( [<R>, ]<r> )
 ##
-##  In the first form `Associates' returns the set of associates of <r> in
-##  the ring <R>.
-##  In the second form `Associates' returns the set of associates of the
-##  ring element <r> in its default ring (see "DefaultRing").
+##  <#GAPDoc Label="Associates">
+##  <ManSection>
+##  <Oper Name="Associates" Arg='[R, ]r'/>
 ##
-##  Two elements $r$ and $s$ of a ring $R$ are called *associated* if there
-##  is a unit $u$ of $R$ such that $r u = s$.
+##  <Description>
+##  <Ref Oper="Associates"/> returns the set of associates of <A>r</A> in
+##  the ring <A>R</A>, if given,
+##  and otherwise in its default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <P/>
+##  Two elements <A>r</A> and <M>s</M> of a ring <M>R</M> are called
+##  <E>associated</E> if there is a unit <M>u</M> of <M>R</M> such that
+##  <M><A>r</A> u = s</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Associates( Integers, 2 );
+##  [ -2, 2 ]
+##  gap> Associates( GaussianIntegers, 2 );
+##  [ -2, 2, -2*E(4), 2*E(4) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareOperation( "Associates",
-    [ IsRing, IsRingElement ] );
+DeclareOperation( "Associates", [ IsRing, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  IsUnit( <R>, <r> )  . . . . . . . . .  check whether <r> is a unit in <R>
-#O  IsUnit( <r> ) . . . . . . check whether <r> is a unit in its default ring
+#O  IsUnit( [<R>, ]<r> ). . . . . . . . .  check whether <r> is a unit in <R>
 ##
-##  In the first form `IsUnit' returns `true' if <r> is a unit in the ring
-##  <R>.
-##  In the second form `IsUnit' returns `true' if the ring element <r> is a
-##  unit in its default ring (see "DefaultRing").
+##  <#GAPDoc Label="IsUnit">
+##  <ManSection>
+##  <Oper Name="IsUnit" Arg='[R, ]r'/>
 ##
-##  An element $r$ is called a *unit* in a ring $R$, if $r$ has an inverse in
-##  $R$.
-##
-##  `IsUnit' may call `Quotient'.
-#T really?
+##  <Description>
+##  <Ref Oper="IsUnit"/> returns <K>true</K> if <A>r</A> is a unit in the
+##  ring <A>R</A>, if given, and otherwise in its default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  If <A>r</A> is not a unit then <K>false</K> is returned.
+##  <P/>
+##  An element <A>r</A> is called a <E>unit</E> in a ring <A>R</A>,
+##  if <A>r</A> has an inverse in <A>R</A>.
+##  <P/>
+##  <Ref Oper="IsUnit"/> may call <Ref Oper="Quotient"/>.
+##  <!-- really?-->
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsUnit", [ IsRing, IsRingElement ] );
 
@@ -506,11 +876,24 @@ DeclareOperation( "IsUnit", [ IsRing, IsRingElement ] );
 ##
 #O  InterpolatedPolynomial( <R>, <x>, <y> ) . . . . . . . . . . interpolation
 ##
-##  `InterpolatedPolynomial' returns, for given lists <x>, <y> of elements in
-##  a ring <R> of the same length $n$, say, the unique  polynomial of  degree
-##  less than $n$ which has value <y>[$i$] at <x>[$i$], 
-##  for all $i\in\{1,\ldots,n\}$. 
-##  Note that the elements in <x> must be distinct.
+##  <#GAPDoc Label="InterpolatedPolynomial">
+##  <ManSection>
+##  <Oper Name="InterpolatedPolynomial" Arg='R, x, y'/>
+##
+##  <Description>
+##  <Ref Oper="InterpolatedPolynomial"/> returns, for given lists <A>x</A>,
+##  <A>y</A> of elements in a ring <A>R</A> of the same length <M>n</M>, say,
+##  the unique  polynomial of  degree less than <M>n</M> which has value
+##  <A>y</A>[<M>i</M>] at <A>x</A><M>[i]</M>,
+##  for all <M>i \in \{ 1, \ldots, n \}</M>. 
+##  Note that the elements in <A>x</A> must be distinct.
+##  <Example><![CDATA[
+##  gap> InterpolatedPolynomial( Integers, [ 1, 2, 3 ], [ 5, 7, 0 ] );
+##  -9/2*x^2+31/2*x-6
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "InterpolatedPolynomial",
     [ IsRing, IsHomogeneousList, IsHomogeneousList ] );
@@ -518,104 +901,178 @@ DeclareOperation( "InterpolatedPolynomial",
 
 #############################################################################
 ##
-#O  Quotient( <R>, <r>, <s> )
-#O  Quotient( <r>, <s> )
+#O  Quotient( [<R>, ]<r>, <s> )
 ##
-##  In the first form `Quotient' returns the quotient of the two ring
-##  elements <r> and <s> in the ring <R>.
-##  In the second form `Quotient' returns the quotient of the two ring
-##  elements <r> and <s> in their default ring.
-##  It returns `fail' if the quotient does not exist in the respective ring.
+##  <#GAPDoc Label="Quotient">
+##  <ManSection>
+##  <Oper Name="Quotient" Arg='[R, ]r, s'/>
 ##
+##  <Description>
+##  <Ref Oper="Quotient"/> returns the quotient of the two ring elements
+##  <A>r</A> and <A>s</A> in the ring <A>R</A>, if given,
+##  and otherwise in their default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  It returns <K>fail</K> if the quotient does not exist in the respective
+##  ring.
+##  <P/>
 ##  (To perform the division in the quotient field of a ring, use the
-##  quotient operator `/'.)
+##  quotient operator <C>/</C>.)
+##  <Example><![CDATA[
+##  gap> Quotient( 2, 3 );
+##  fail
+##  gap> Quotient( 6, 3 );
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "Quotient", [ IsRing, IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  StandardAssociate( <R>, <r> )
-#O  StandardAssociate( <r> )
+#O  StandardAssociate( [<R>, ]<r> )
 ##
-##  In the first form `StandardAssociate' returns the standard associate of
-##  the ring element <r> in the ring <R>.
-##  In the second form `StandardAssociate' returns the standard associate of
-##  the ring element <r> in its default ring (see "DefaultRing").
+##  <#GAPDoc Label="StandardAssociate">
+##  <ManSection>
+##  <Oper Name="StandardAssociate" Arg='[R, ]r'/>
 ##
-##  The *standard associate* of a ring element $r$ of $R$ is an associated
-##  element of $r$ which is, in a ring dependent way, distinguished among the
-##  set of associates of $r$.
+##  <Description>
+##  <Ref Oper="StandardAssociate"/> returns the standard associate of the
+##  ring element <A>r</A> in the ring <A>R</A>, if given,
+##  and otherwise in its default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <P/>
+##  The <E>standard associate</E> of a ring element <A>r</A> of <A>R</A> is
+##  an associated element of <A>r</A> which is, in a ring dependent way,
+##  distinguished among the set of associates of <A>r</A>.
 ##  For example, in the ring of integers the standard associate is the
 ##  absolute value.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> x:= Indeterminate( Rationals, "x" );;
+##  gap> StandardAssociate( -x^2-x+1 );
+##  x^2+x-1
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "StandardAssociate", [ IsRing, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  IsPrime( <R>, <r> )
-#O  IsPrime( <r> )
+#O  IsPrime( [<R>, ]<r> )
 ##
-##  In the first form `IsPrime' returns `true' if the ring element <r> is a
-##  prime in the ring <R> and `false' otherwise.
-##  In the second form `IsPrime' returns `true' if the ring element <r> is a
-##  prime in its default ring (see "DefaultRing") and `false' otherwise.
+##  <#GAPDoc Label="IsPrime">
+##  <ManSection>
+##  <Oper Name="IsPrime" Arg='[R, ]r'/>
 ##
-##  An element $r$ of a ring $R$ is called *prime* if for each pair $s$ and
-##  $t$ such that $r$ divides $s t$ the element $r$ divides either $s$ or
-##  $t$.
+##  <Description>
+##  <Ref Oper="IsPrime"/> returns <K>true</K> if the ring element <A>r</A> is
+##  a prime in the ring <A>R</A>, if given,
+##  and otherwise in its default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  If <A>r</A> is not a prime then <K>false</K> is returned.
+##  <P/>
+##  An element <A>r</A> of a ring <A>R</A> is called <E>prime</E> if for each
+##  pair <M>s</M> and <M>t</M> such that <A>r</A> divides <M>s t</M>
+##  the element <A>r</A> divides either <M>s</M> or <M>t</M>.
 ##  Note that there are rings where not every irreducible element
-##  (see "IsIrreducibleRingElement") is a prime.
+##  (see <Ref Oper="IsIrreducibleRingElement"/>) is a prime.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsPrime", [ IsRing, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  IsIrreducibleRingElement( <R>, <r> )
-#O  IsIrreducibleRingElement( <r> )
+#O  IsIrreducibleRingElement( [<R>, ]<r> )
 ##
-##  In the first form `IsIrreducibleRingElement' returns `true' if the ring
-##  element <r> is irreducible in the ring <R> and `false' otherwise.
-##  In the second form `IsIrreducibleRingElement' returns `true' if the ring
-##  element <r> is irreducible in its default ring (see "DefaultRing") and
-##  `false' otherwise.
+##  <#GAPDoc Label="IsIrreducibleRingElement">
+##  <ManSection>
+##  <Oper Name="IsIrreducibleRingElement" Arg='[R, ]r'/>
 ##
-##  An element $r$ of a ring $R$ is called *irreducible* if $r$ is not a
-##  unit in $R$ and if there is no nontrivial factorization of $r$ in $R$,
-##  i.e., if there is no representation of $r$ as product $s t$ such that
-##  neither $s$ nor $t$ is a unit (see "IsUnit").
-##  Each prime element (see "IsPrime") is irreducible.
+##  <Description>
+##  <Ref Oper="IsIrreducibleRingElement"/> returns <K>true</K> if the ring
+##  element <A>r</A> is irreducible in the ring <A>R</A>, if given,
+##  and otherwise in its default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  If <A>r</A> is not irreducible then <K>false</K> is returned.
+##  <P/>
+##  An element <A>r</A> of a ring <A>R</A> is called <E>irreducible</E>
+##  if <A>r</A> is not a unit in <A>R</A> and if there is no nontrivial
+##  factorization of <A>r</A> in <A>R</A>,
+##  i.e., if there is no representation of <A>r</A> as product <M>s t</M>
+##  such that neither <M>s</M> nor <M>t</M> is a unit
+##  (see <Ref Oper="IsUnit"/>).
+##  Each prime element (see <Ref Oper="IsPrime"/>) is irreducible.
+##  <Example><![CDATA[
+##  gap> IsIrreducibleRingElement( Integers, 2 );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsIrreducibleRingElement", [ IsRing, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  EuclideanDegree( <R>, <r> )
-#O  EuclideanDegree( <r> )
+#O  EuclideanDegree( [<R>, ]<r> )
 ##
-##  In the first form `EuclideanDegree' returns the Euclidean degree of the
-##  ring element in the ring <R>.
-##  In the second form `EuclideanDegree' returns the Euclidean degree of the
-##  ring element <r> in its default ring.
-##  <R> must of course be a Euclidean ring (see "IsEuclideanRing").
+##  <#GAPDoc Label="EuclideanDegree">
+##  <ManSection>
+##  <Oper Name="EuclideanDegree" Arg='[R, ]r'/>
+##
+##  <Description>
+##  <Ref Oper="EuclideanDegree"/> returns the Euclidean degree of the
+##  ring element <A>r</A> in the ring <A>R</A>, if given,
+##  and otherwise in its default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <P/>
+##  The ring <A>R</A> must be a Euclidean ring
+##  (see <Ref Func="IsEuclideanRing"/>).
+##  <Example><![CDATA[
+##  gap> EuclideanDegree( GaussianIntegers, 3 );
+##  9
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "EuclideanDegree", [ IsEuclideanRing, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  EuclideanRemainder( <R>, <r>, <m> )
-#O  EuclideanRemainder( <r>, <m> )
+#O  EuclideanRemainder( [<R>, ]<r>, <m> )
 ##
-##  In the first form `EuclideanRemainder' returns the remainder of the ring
-##  element <r> modulo the ring element <m> in the ring <R>.
-##  In the second form `EuclideanRemainder' returns the remainder of the ring
-##  element <r> modulo the ring element <m> in their default ring.
-##  The ring <R> must be a Euclidean ring (see "IsEuclideanRing") otherwise
-##  an error is signalled.
+##  <#GAPDoc Label="EuclideanRemainder">
+##  <ManSection>
+##  <Oper Name="EuclideanRemainder" Arg='[R, ]r, m'/>
+##
+##  <Description>
+##  <Ref Oper="EuclideanRemainder"/> returns the Euclidean remainder of the
+##  ring element <A>r</A> modulo the ring element <A>m</A>
+##  in the ring <A>R</A>, if given,
+##  and otherwise in their default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <P/>
+##  The ring <A>R</A> must be a Euclidean ring
+##  (see <Ref Func="IsEuclideanRing"/>), otherwise an error is signalled.
+##  <Example><![CDATA[
+##  gap> EuclideanRemainder( 8, 3 );
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "EuclideanRemainder",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
@@ -623,15 +1080,27 @@ DeclareOperation( "EuclideanRemainder",
 
 #############################################################################
 ##
-#O  EuclideanQuotient( <R>, <r>, <m> )
-#O  EuclideanQuotient( <r>, <m> )
+#O  EuclideanQuotient( [<R>, ]<r>, <m> )
 ##
-##  In the first form `EuclideanQuotient' returns the Euclidean quotient of
-##  the ring elements <r> and <m> in the ring <R>.
-##  In the second form `EuclideanQuotient' returns the Euclidean quotient of
-##  the ring elements <r> and <m> in their default ring.
-##  The ring <R> must be a Euclidean ring (see "IsEuclideanRing") otherwise
-##  an error is signalled.
+##  <#GAPDoc Label="EuclideanQuotient">
+##  <ManSection>
+##  <Oper Name="EuclideanQuotient" Arg='[R, ]r, m'/>
+##
+##  <Description>
+##  <Ref Oper="EuclideanQuotient"/> returns the Euclidean quotient of the
+##  ring elements <A>r</A> and <A>m</A> in the ring <A>R</A>, if given,
+##  and otherwise in their default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <P/>
+##  The ring <A>R</A> must be a Euclidean ring
+##  (see <Ref Func="IsEuclideanRing"/>), otherwise an error is signalled.
+##  <Example><![CDATA[
+##  gap> EuclideanQuotient( 8, 3 );
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "EuclideanQuotient",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
@@ -639,17 +1108,29 @@ DeclareOperation( "EuclideanQuotient",
 
 #############################################################################
 ##
-#O  QuotientRemainder( <R>, <r>, <m> )
-#O  QuotientRemainder( <r>, <m> )
+#O  QuotientRemainder( [<R>, ]<r>, <m> )
 ##
-##  In the first form `QuotientRemainder' returns the Euclidean quotient
-##  and the Euclidean remainder of the ring elements <r> and <m> in the ring
-##  <R>.
-##  In the second form `QuotientRemainder' returns the Euclidean quotient and
-##  the Euclidean remainder of the ring elements <r> and <m> in their default
-##  ring as pair of ring elements.
-##  The ring <R> must be a Euclidean ring (see "IsEuclideanRing") otherwise
-##  an error is signalled.
+##  <#GAPDoc Label="QuotientRemainder">
+##  <ManSection>
+##  <Oper Name="QuotientRemainder" Arg='[R, ]r, m'/>
+##
+##  <Description>
+##  <Ref Oper="QuotientRemainder"/> returns the Euclidean quotient
+##  and the Euclidean remainder of the ring elements <A>r</A> and <A>m</A>
+##  in the ring <A>R</A>, if given,
+##  and otherwise in their default ring
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  The result is a pair of ring elements.
+##  <P/>
+##  The ring <A>R</A> must be a Euclidean ring
+##  (see <Ref Func="IsEuclideanRing"/>), otherwise an error is signalled.
+##  <Example><![CDATA[
+##  gap> QuotientRemainder( GaussianIntegers, 8, 3 );
+##  [ 3, -1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "QuotientRemainder",
     [ IsRing, IsRingElement, IsRingElement ] );
@@ -657,23 +1138,37 @@ DeclareOperation( "QuotientRemainder",
 
 #############################################################################
 ##
-#O  QuotientMod( <R>, <r>, <s>, <m> )
-#O  QuotientMod( <r>, <s>, <m> )
+#O  QuotientMod( [<R>, ]<r>, <s>, <m> )
 ##
-##  In the first form `QuotientMod' returns the quotient of the ring
-##  elements <r> and <s> modulo the ring element <m> in the ring <R>.
-##  In the second form `QuotientMod' returns the quotient of the ring elements
-##  <r> and  <s> modulo the ring element <m> in their default ring (see
-##  "DefaultRing").
-##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that
-##  `EuclideanRemainder' (see "EuclideanRemainder") can be applied.
-##  If the modular quotient does not exist, `fail' is returned.
+##  <#GAPDoc Label="QuotientMod">
+##  <ManSection>
+##  <Oper Name="QuotientMod" Arg='[R, ]r, s, m'/>
 ##
-##  The quotient $q$ of $r$ and $s$ modulo $m$ is an element of $R$ such that
-##  $q s = r$ modulo $m$, i.e., such that $q s - r$ is divisible by $m$ in
-##  $R$ and that $q$ is either 0 (if $r$ is divisible by $m$) or the
-##  Euclidean degree of $q$ is strictly smaller than the Euclidean degree of
-##  $m$.
+##  <Description>
+##  <Ref Oper="QuotientMod"/> returns the quotient of the ring
+##  elements <A>r</A> and <A>s</A> modulo the ring element <A>m</A>
+##  in the ring <A>R</A>, if given,
+##  and otherwise in their default ring, see
+##  <Ref Func="DefaultRing" Label="for ring elements"/>.
+##  <P/>
+##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
+##  so that <Ref Func="EuclideanRemainder"/> can be applied.
+##  If the modular quotient does not exist, <K>fail</K> is returned.
+##  <P/>
+##  The quotient <M>q</M> of <A>r</A> and <A>s</A> modulo <A>m</A> is
+##  an element of <A>R</A>
+##  such that <M>q <A>s</A> = <A>r</A></M> modulo <M>m</M>, i.e.,
+##  such that <M>q <A>s</A> - <A>r</A></M> is divisible by <A>m</A> in
+##  <A>R</A> and that <M>q</M> is either zero (if <A>r</A> is divisible by
+##  <A>m</A>) or the Euclidean degree of <M>q</M> is strictly smaller than
+##  the Euclidean degree of <A>m</A>.
+##  <Example><![CDATA[
+##  gap> QuotientMod( 7, 2, 3 );
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "QuotientMod",
     [ IsRing, IsRingElement, IsRingElement, IsRingElement ] );
@@ -681,28 +1176,42 @@ DeclareOperation( "QuotientMod",
 
 #############################################################################
 ##
-#O  PowerMod( <R>, <r>, <e>, <m> )
-#O  PowerMod( <r>, <e>, <m> )
+#O  PowerMod( [<R>, ]<r>, <e>, <m> )
 ##
-##  In the first form `PowerMod' returns the <e>-th power of the ring
-##  element <r> modulo the ring element <m> in the ring <R>.
-##  In the second form `PowerMod' returns the <e>-th power of the ring
-##  element <r> modulo the ring element <m> in their default ring (see
-##  "DefaultRing").
-##  <e> must be an integer.
-##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that
-##  `EuclideanRemainder' (see "EuclideanRemainder") can be applied to its
-##  elements.
+##  <#GAPDoc Label="PowerMod">
+##  <ManSection>
+##  <Oper Name="PowerMod" Arg='[R, ]r, e, m'/>
 ##
-##  If $e$ is positive the result is $r^e$ modulo $m$.
-##  If $e$ is negative then `PowerMod' first tries to find the inverse of $r$
-##  modulo $m$, i.e., $i$ such that $i r = 1$ modulo $m$.
+##  <Description>
+##  <Ref Oper="PowerMod"/> returns the <A>e</A>-th power of the ring
+##  element <A>r</A> modulo the ring element <A>m</A>
+##  in the ring <A>R</A>, if given,
+##  and otherwise in their default ring, see
+##  <Ref Func="DefaultRing" Label="for ring elements"/>.
+##  <A>e</A> must be an integer.
+##  <P/>
+##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
+##  so that <Ref Func="EuclideanRemainder"/> can be applied to its elements.
+##  <P/>
+##  If <A>e</A> is positive the result is <C><A>r</A>^{<A>e</A>}</C> modulo
+##  <A>m</A>.
+##  If <A>e</A> is negative then <Ref Oper="PowerMod"/> first tries to find
+##  the inverse of <A>r</A> modulo <A>m</A>, i.e.,
+##  <M>i</M> such that <M>i <A>r</A> = 1</M> modulo <A>m</A>.
 ##  If the inverse does not exist an error is signalled.
-##  If the inverse does exist `PowerMod' returns
-##  `PowerMod( <R>, <i>, -<e>, <m> )'.
-##
-##  `PowerMod' reduces the intermediate values modulo $m$, improving
-##  performance drastically when <e> is large and <m> small.
+##  If the inverse does exist <Ref Oper="PowerMod"/> returns
+##  <C>PowerMod( <A>R</A>, <A>i</A>, -<A>e</A>, <A>m</A> )</C>.
+##  <P/>
+##  <Ref Oper="PowerMod"/> reduces the intermediate values modulo <A>m</A>,
+##  improving performance drastically when <A>e</A> is large and <A>m</A>
+##  small.
+##  <Example><![CDATA[
+##  gap> PowerMod( 12, 100000, 7 );
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "PowerMod",
     [ IsRing, IsRingElement, IsInt, IsRingElement ] );
@@ -710,81 +1219,130 @@ DeclareOperation( "PowerMod",
 
 #############################################################################
 ##
-#F  Gcd( <R>, <r1>, <r2>, ... )
-#F  Gcd( <R>, <list> )
-#F  Gcd( <r1>, <r2>, ... )
-#F  Gcd( <list> )
+#F  Gcd( [<R>, ]<r1>, <r2>, ... )
+#F  Gcd( [<R>, ]<list> )
 ##
-##  In the first two forms `Gcd' returns the greatest common divisor of the
-##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
-##  <list> in the ring <R>.
-##  In the second two forms `Gcd' returns the greatest common divisor of the
-##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
-##  <list> in their default ring (see "DefaultRing").
-##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that
-##  `QuotientRemainder' (see "QuotientRemainder") can be applied to its
-##  elements.
-##  `Gcd' returns the standard associate (see "StandardAssociate") of the
+##  <#GAPDoc Label="Gcd">
+##  <ManSection>
+##  <Heading>Gcd</Heading>
+##  <Func Name="Gcd" Arg='[R, ]r1, r2, ...'
+##   Label="for (a ring and) several elements"/>
+##  <Func Name="Gcd" Arg='[R, ]list'
+##   Label="for (a ring and) a list of elements"/>
+##
+##  <Description>
+##  <Ref Func="Gcd" Label="for (a ring and) several elements"/> returns
+##  the greatest common divisor of the ring elements <A>r1</A>, <A>r2</A>,
+##  <M>\ldots</M> resp. of the ring elements in the list <A>list</A>
+##  in the ring <A>R</A>, if given, and otherwise in their default ring,
+##  see <Ref Func="DefaultRing" Label="for ring elements"/>.
+##  <P/>
+##  <A>R</A> must be a Euclidean ring (see <Ref Oper="IsEuclideanRing"/>)
+##  so that <Ref Oper="QuotientRemainder"/> can be applied to its elements.
+##  <Ref Func="Gcd" Label="for (a ring and) several elements"/> returns
+##  the standard associate (see <Ref Oper="StandardAssociate"/>) of the
 ##  greatest common divisors.
-##
-##  A greatest common divisor of the elements $r_1, r_2, \ldots$ of the
-##  ring $R$ is an element of largest Euclidean degree (see
-##  "EuclideanDegree") that is a divisor of $r_1, r_2, \ldots$ .
-##
-##  We define 
-##  `Gcd( <r>, $0_{<R>}$ ) = Gcd( $0_{<R>}$, <r> ) = StandardAssociate( <r> )'
-##  and `Gcd( $0_{<R>}$, $0_{<R>}$ ) = $0_{<R>}$'.
+##  <P/>
+##  A greatest common divisor of the elements <M>r_1, r_2, \ldots</M> in the
+##  ring <M>R</M> is an element of largest Euclidean degree
+##  (see <Ref Func="EuclideanDegree"/>)
+##  that is a divisor of <M>r_1, r_2, \ldots</M> .
+##  <P/>
+##  For the zero element <M>z</M> of <A>R</A>, we define 
+##  <C>Gcd( <A>r</A>, </C><M>z</M><C> ) = Gcd( </C><M>z</M><C>, <A>r</A> )
+##  = StandardAssociate( <A>r</A> )</C>
+##  and <C>Gcd( </C><M>z</M><C>, </C><M>z</M><C> ) = </C><M>z</M>.
+##  <Example><![CDATA[
+##  gap> Gcd( Integers, [ 10, 15 ] );
+##  5
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Gcd" );
 
 
 #############################################################################
 ##
-#O  GcdOp( <R>, <r>, <s> )
-#O  GcdOp( <r>, <s> )
+#O  GcdOp( [<R>, ]<r>, <s> )
 ##
-##  `GcdOp' is the operation to compute the greatest common divisor of
-##  two ring elements <r>, <s> in the ring <R> or in their default ring.
+##  <#GAPDoc Label="GcdOp">
+##  <ManSection>
+##  <Oper Name="GcdOp" Arg='[R, ]r, s'/>
 ##
-
+##  <Description>
+##  <Ref Oper="GcdOp"/> is the operation to compute
+##  the greatest common divisor of two ring elements <A>r</A>, <A>s</A>
+##  in the ring <A>R</A> or in their default ring.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "GcdOp",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#F  GcdRepresentation( <R>, <r1>, <r2>, ... )
-#F  GcdRepresentation( <R>, <list> )
-#F  GcdRepresentation( <r1>, <r2>, ... )
-#F  GcdRepresentation( <list> )
+#F  GcdRepresentation( [<R>, ]<r1>, <r2>, ... )
+#F  GcdRepresentation( [<R>, ]<list> )
 ##
-##  In the first two forms `GcdRepresentation' returns the representation of
-##  the greatest common divisor of the ring elements `<r1>, <r2>, ...' resp.
-##  of the ring elements in the list <list> in the ring <R>.
-##  In the second two forms `GcdRepresentation' returns the representation of
-##  the greatest common divisor of the ring elements `<r1>, <r2>, ...' resp.
-##  of the ring elements in the list <list> in their default ring
-##  (see "DefaultRing").
-##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that
-##  `Gcd' (see "Gcd") can be applied to its elements.
+##  <#GAPDoc Label="GcdRepresentation">
+##  <ManSection>
+##  <Heading>GcdRepresentation</Heading>
+##  <Func Name="GcdRepresentation" Arg='[R, ]r1, r2, ...'
+##   Label="for (a ring and) several elements"/>
+##  <Func Name="GcdRepresentation" Arg='[R, ]list'
+##   Label="for (a ring and) a list of elements"/>
 ##
-##  The representation of the gcd  $g$ of  the elements $r_1, r_2, \ldots$
-##  of a ring $R$ is a list of ring elements $s_1, s_2, \ldots$ of $R$,
-##  such that $g = s_1 r_1 + s_2  r_2 + \cdots$.
+##  <Description>
+##  <Ref Func="GcdRepresentation" Label="for (a ring and) several elements"/>
+##  returns the representation of
+##  the greatest common divisor of the ring elements
+##  <A>r1</A>, <A>r2</A>, <M>\ldots</M> resp. of the ring elements
+##  in the list <A>list</A> in the ring <A>R</A>, if given,
+##  and otherwise in their default ring,
+##  see <Ref Func="DefaultRing" Label="for ring elements"/>.
+##  <P/>
+##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
+##  so that <Ref Func="Gcd" Label="for (a ring and) several elements"/>
+##  can be applied to its elements.
+##  <P/>
+##  The representation of the gcd <M>g</M> of the elements
+##  <M>r_1, r_2, \ldots</M> of a ring <M>R</M> is a list of ring elements
+##  <M>s_1, s_2, \ldots</M> of <M>R</M>,
+##  such that <M>g = s_1 r_1 + s_2  r_2 + \cdots</M>.
 ##  That this representation exists can be shown using the Euclidean
 ##  algorithm, which in fact can compute those coefficients.
+##  <Example><![CDATA[
+##  gap> x:= Indeterminate( Rationals, "x" );;
+##  gap> GcdRepresentation( x^2+1, x^3+1 );
+##  [ -1/2*x^2-1/2*x+1/2, 1/2*x+1/2 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "GcdRepresentation" );
 
 
 #############################################################################
 ##
-#O  GcdRepresentationOp( <R>, <r>, <s> )
-#O  GcdRepresentationOp( <r>, <s> )
+#O  GcdRepresentationOp( [<R>, ]<r>, <s> )
 ##
-##  `GcdRepresentationOp' is the operation to compute the representation of
-##  the greatest common divisor of two ring elements <r>, <s> in the ring
-##  <R> or in their default ring, respectively.
+##  <#GAPDoc Label="GcdRepresentationOp">
+##  <ManSection>
+##  <Oper Name="GcdRepresentationOp" Arg='[R, ]r, s'/>
+##
+##  <Description>
+##  <Ref Oper="GcdRepresentationOp"/> is the operation to compute
+##  the representation of the greatest common divisor of two ring elements
+##  <A>r</A>, <A>s</A> in the ring <A>R</A> or in their default ring,
+##  respectively.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "GcdRepresentationOp",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
@@ -792,45 +1350,68 @@ DeclareOperation( "GcdRepresentationOp",
 
 #############################################################################
 ##
-#F  Lcm( <R>, <r1>, <r2>, ... )
-#F  Lcm( <R>, <list> )
-#F  Lcm( <r1>, <r2>, ... )
-#F  Lcm( <list> )
-#T optional ``1'' in list version?
+#F  Lcm( [<R>, ]<r1>, <r2>, ... )
+#F  Lcm( [<R>, ]<list> )
 ##
-##  In the first two forms `Lcm' returns the least common multiple of the
-##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
-##  <list> in the ring <R>.
-##  In the second two forms `Lcm' returns the least common multiple of the
-##  ring elements `<r1>, <r2>, ...' resp. of the ring elements in the list
-##  <list> in their default ring (see~"DefaultRing").
+##  <#GAPDoc Label="Lcm">
+##  <ManSection>
+##  <Heading>Lcm</Heading>
+##  <Func Name="Lcm" Arg='[R, ]r1, r2, ...'
+##   Label="for (a ring and) several elements"/>
+##  <Func Name="Lcm" Arg='[R, ]list'
+##   Label="for (a ring and) a list of elements"/>
 ##
-##  <R> must be a Euclidean ring (see~"IsEuclideanRing") so that `Gcd'
-##  (see~"Gcd") can be applied to its elements.
-##  `Lcm' returns the standard associate (see~"StandardAssociate") of the
-##  least common multiples.
-##
-##  A least common multiple of the elements $r_1, r_2, \ldots$ of the
-##  ring $R$ is an element of smallest Euclidean degree
-##  (see~"EuclideanDegree") that is a multiple of $r_1, r_2, \ldots$ .
-##
-##  We define 
-##  `Lcm( <r>, $0_{<R>}$ ) = Lcm( $0_{<R>}$, <r> ) = StandardAssociate( <r> )'
-##  and `Lcm( $0_{<R>}$, $0_{<R>}$ ) = $0_{<R>}$'.
-##
-##  `Lcm' uses the equality $lcm(m,n) = m\*n / gcd(m,n)$ (see~"Gcd").
+##  <Description>
+##  <!-- optional <Q>1</Q> in list version?-->
+##  <Ref Func="Lcm" Label="for (a ring and) several elements"/> returns
+##  the least common multiple of the ring elements
+##  <A>r1</A>, <A>r2</A>, <M>\ldots</M> resp. of the ring elements
+##  in the list <A>list</A> in the ring <A>R</A>, if given,
+##  and otherwise in their default ring,
+##  see <Ref Func="DefaultRing" Label="for ring elements"/>.
+##  <P/>
+##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
+##  so that <Ref Func="Gcd" Label="for (a ring and) several elements"/>
+##  can be applied to its elements.
+##  <Ref Func="Lcm" Label="for (a ring and) several elements"/> returns
+##  the standard associate (see&nbsp;<Ref Func="StandardAssociate"/>)
+##  of the least common multiples.
+##  <P/>
+##  A least common multiple of the elements <M>r_1, r_2, \ldots</M> of the
+##  ring <M>R</M> is an element of smallest Euclidean degree
+##  (see&nbsp;<Ref Func="EuclideanDegree"/>)
+##  that is a multiple of <M>r_1, r_2, \ldots</M> .
+##  <P/>
+##  For the zero element <M>z</M> of <A>R</A>, we define 
+##  <C>Lcm( <A>r</A>, </C><M>z</M><C> ) = Lcm( </C><M>z</M><C>, <A>r</A> )
+##  = StandardAssociate( <A>r</A> )</C>
+##  and <C>Lcm( </C><M>z</M><C>, </C><M>z</M><C> ) = </C><M>z</M>.
+##  <P/>
+##  <Ref Func="Lcm" Label="for (a ring and) several elements"/>
+##  uses the equality <M>lcm( m, n ) = m*n / gcd( m, n )</M>
+##  (see&nbsp;<Ref Func="Gcd" Label="for (a ring and) several elements"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Lcm" );
 
 
 #############################################################################
 ##
-#O  LcmOp( <R>, <r>, <s> )
-#O  LcmOp( <r>, <s> )
+#O  LcmOp( [<R>, ]<r>, <s> )
 ##
-##  `LcmOp' is the operation to compute the least common multiple of
-##  two ring elements <r>, <s> in the ring <R> or in their default ring,
-##  respectively.
+##  <#GAPDoc Label="LcmOp">
+##  <ManSection>
+##  <Oper Name="LcmOp" Arg='[R, ]r, s'/>
+##
+##  <Description>
+##  <Ref Oper="LcmOp"/> is the operation to compute the least common multiple
+##  of two ring elements <A>r</A>, <A>s</A> in the ring <A>R</A>
+##  or in their default ring, respectively.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "LcmOp",
     [ IsEuclideanRing, IsRingElement, IsRingElement ] );
@@ -840,11 +1421,21 @@ DeclareOperation( "LcmOp",
 ##
 #O  PadicValuation( <r>, <p> )
 ##
-##  `PadicValuation' is the operation to compute the <p>-adic valuation of
-##  a ring element <r>.
+##  <#GAPDoc Label="PadicValuation">
+##  <ManSection>
+##  <Oper Name="PadicValuation" Arg='r, p'/>
+##
+##  <Description>
+##  <Ref Oper="PadicValuation"/> is the operation to compute
+##  the <A>p</A>-adic valuation of a ring element <A>r</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "PadicValuation", [ IsRingElement, IsPosInt ] );
 
+
 #############################################################################
-##
+##  
 #E
+

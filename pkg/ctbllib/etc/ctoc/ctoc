@@ -1,0 +1,14 @@
+#
+unline < $1 > tmp1.xx
+sed -f sf tmp1.xx > tmp2.xx
+scan < tmp2.xx > tmp4.xx
+sed -f sf2 tmp4.xx > tmp5.xx
+rm tmp1.xx
+sed 's/,$/;/' tmp3.xx > tmp1.xx
+rm tmp3.xx
+sed 's/$/;/' tmp1.xx > tmp3.xx
+rm tmp1.xx
+sed "s/^ */T./" tmp3.xx > tmp1.xx
+cat tmp5.xx tmp1.xx > $1.tbl
+rm tmp[1-5].xx
+

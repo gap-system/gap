@@ -1,0 +1,15 @@
+# ACEExample "C5-fel0" : enumeration of cosets of H in G,
+# where G = C_5, H = Id, using felsch := 0 strategy.
+#
+local F, G, a, b;
+# We define C_5 on 2 generators
+F := FreeGroup("a","b"); a := F.1;  b := F.2;
+G := F / [a^5, b];
+return ACEfunc(
+    FreeGeneratorsOfFpGroup(G), 
+    RelatorsOfFpGroup(G), 
+    [] # Generators of identity subgroup (empty list)
+    # Options that don't affect the enumeration
+    : echo, enum := "C_5", subg := "Id", 
+    # Other options
+    mess := -1, felsch); # mess negative turns hole-monitoring on

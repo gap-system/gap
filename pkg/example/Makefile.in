@@ -1,0 +1,16 @@
+# sample makefile
+CC=cc
+
+targets: default
+
+# this target creates a bin-directory
+bindir:
+	if test ! -d bin;  then mkdir bin;  fi
+	if test ! -d bin/@GAPARCH@;  then mkdir bin/@GAPARCH@;  fi
+
+
+default: bindir src/hello.c
+	$(CC) -o bin/@GAPARCH@/hello src/hello.c
+
+clean:
+	rm -rf bin Makefile

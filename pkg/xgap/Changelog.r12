@@ -1,0 +1,8 @@
+$Id: Changelog.r12,v 1.1 2000/02/25 00:19:10 gap Exp $
+
+This file describes the changes from xgap4r11 to xgap4r12:
+
+ * XGAP now reports "4.02" as version number instead of "4.00".
+   This was needed for the ITC share package to recognize the changes to
+   xgap4r11 (yes!). The reason why it is "4.02" and not "4.12" has a
+   complicated reason.

@@ -2,7 +2,7 @@
 **
 *W  code.h                      GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: code.h,v 4.25 2009/03/07 12:28:51 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_code_h =
-   "@(#)$Id$";
+   "@(#)$Id: code.h,v 4.25 2009/03/07 12:28:51 sal Exp $";
 #endif
 
 
@@ -56,8 +56,14 @@ extern  Stat *          PtrBody;
 **
 **  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
 */
-#define FIRST_STAT_CURR_FUNC    sizeof(Stat)
 
+
+#define FILENAME_BODY(body) (ADDR_OBJ(body)[0])
+#define STARTLINE_BODY(body) (ADDR_OBJ(body)[1])
+#define ENDLINE_BODY(body) (ADDR_OBJ(body)[2])
+#define NUMBER_HEADER_ITEMS_BODY 3
+
+#define FIRST_STAT_CURR_FUNC    (sizeof(Stat)+NUMBER_HEADER_ITEMS_BODY*sizeof(Bag))
 
 /****************************************************************************
 **

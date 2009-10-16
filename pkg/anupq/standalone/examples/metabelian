@@ -1,0 +1,33 @@
+#example of metabelian computation
+
+1 
+meta
+5
+1  
+1
+{a, b}
+{a^625, b^625, [b, a, b], [b, a, a, a, a] = [b, a]^5}
+0
+
+8    
+14 #set metabelian flag 
+0
+
+6  #next class 
+6
+6
+6
+6
+6
+6
+6
+6
+6
+6
+6
+6
+
+2
+META
+
+0

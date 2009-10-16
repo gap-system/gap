@@ -2,7 +2,7 @@
 ##
 #W  ctblauto.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblauto.gi,v 4.9 2003/01/27 08:18:03 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -16,7 +16,7 @@
 ##  It would be desirable to translate them.
 ##
 Revision.ctblauto_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblauto.gi,v 4.9 2003/01/27 08:18:03 gap Exp $";
 
 
 #############################################################################

@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.col14_z :=
-    "@(#)$Id$";
+    "@(#)$Id: col14.z,v 1.2 1998/07/25 13:54:47 gap Exp $";
 
 SMALL_GROUP_LIB[ 612 ] :=
 [ 3970169310802931729, 96698869524467743, 2587597558969522979313,

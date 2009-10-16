@@ -2,7 +2,7 @@
 **
 *W  objects.c                   GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: objects.c,v 4.59 2009/03/11 12:18:42 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
 const char * Revision_objects_c =
-   "@(#)$Id$";
+   "@(#)$Id: objects.c,v 4.59 2009/03/11 12:18:42 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -501,10 +501,12 @@ Obj CopyObjComObj (
     if ( mut ) {
         copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
         ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+        SET_LEN_PREC(copy,LEN_PREC(obj));
     }
     else {
         copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
         ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+        SET_LEN_PREC(copy,LEN_PREC(obj));
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
@@ -520,11 +522,10 @@ Obj CopyObjComObj (
     RetypeBag( obj, TNUM_OBJ(obj) + COPYING );
 
     /* copy the subvalues                                                  */
-    for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
-        tmp = ADDR_OBJ(obj)[i];
-        ADDR_OBJ(copy)[i] = tmp;
-        tmp = COPY_OBJ( ADDR_OBJ(obj)[i+1], mut );
-        ADDR_OBJ(copy)[i+1] = tmp;
+    for ( i = 1; i <= LEN_PREC(obj); i++) {
+        SET_RNAM_PREC(copy,i,GET_RNAM_PREC(obj,i));
+        tmp = COPY_OBJ( GET_ELM_PREC(obj,i), mut );
+        SET_ELM_PREC(copy,i,tmp);
         CHANGED_BAG( copy );
     }
 
@@ -572,8 +573,8 @@ void CleanObjComObjCopy (
     RetypeBag( obj, TNUM_OBJ(obj) - COPYING );
 
     /* clean the subvalues                                                 */
-    for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
-        CLEAN_OBJ( ADDR_OBJ(obj)[i+1] );
+    for ( i = 1; i <= LEN_PREC(obj); i++ ) {
+        CLEAN_OBJ( GET_ELM_PREC(obj,i) );
     }
 
 }
@@ -1279,6 +1280,7 @@ void SaveComObj( Obj comobj)
   UInt len,i;
   SaveSubObj(TYPE_COMOBJ( comobj ));
   len = LEN_PREC(comobj);
+  SaveUInt(len);
   for (i = 1; i <= len; i++)
     {
       SaveUInt(GET_RNAM_PREC(comobj, i));
@@ -1337,7 +1339,8 @@ void LoadComObj( Obj comobj)
 {
   UInt len,i;
   TYPE_COMOBJ( comobj) = LoadSubObj( );
-  len = LEN_PREC(comobj);
+  len = LoadUInt();
+  SET_LEN_PREC(comobj,len);
   for (i = 1; i <= len; i++)
     {
       SET_RNAM_PREC(comobj, i, LoadUInt());

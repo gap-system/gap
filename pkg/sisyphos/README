@@ -1,0 +1,253 @@
+#######################################################################
+#
+#      SISYPHOS - Computing in modular group algebras of p-groups
+#                                   
+#                             Version 0.8
+#                                   
+#                           Martin Wursthorn
+#                Mathematisches Institut B, 3.Lehrstuhl
+#                        Universitaet Stuttgart
+#
+#######################################################################
+
+1. Introduction
+
+SISYPHOS is a program package developped to compute with p-groups and 
+their modular group algebras. It originated in an implementation of an 
+algorithm by Roggenkamp, Scott and the author to test such group 
+algebras for isomorphisms. This algorithm has been modified and 
+improved to be applicable to p-groups as well. The following features 
+are incorporated in the current implementation:
+
+features dealing with modular group algebras of p-groups:
+     Symbolic computations with elements,
+     computation of centre, centralizers, lie ideals,
+     computing with subspaces and ideals,
+     isomorphism tests for such group algebras,
+     computation of the normalized automorphism group 
+     computing with automorphisms
+     computation of a polycyclic presentation of the normalized units 
+     group,
+     
+features dealing with p-groups:
+     (outer) automorphisms of polycyclically presented p-groups,
+     isomorphisms between two polycyclically presented groups or a 
+     freely presented and a polycyclically presented group,
+     tests for isomorphisms between two polycyclically presented groups 
+     or a freely presented and a polycyclically presented group,
+     several output formats are supported (generators, element lists, 
+     polycyclic presentations for normalized automorphism groups)
+     computing with G-modules
+     computation of cohomology groups and extensions
+     
+The package can be used either as a GAP shared library via a special 
+interface that allows the program to be called from within GAP by 
+special GAP functions (see GAP documentation) or as a standalone 
+program with its own user interface. The first possibility only allows 
+access to the routines dealing with p-groups, but has the advantage that 
+the results can be processed by GAP without any conversions. The second 
+possibility gives access to all features of SISYPHOS, but though it is 
+still possible to have some of the routines produce output in a GAP 
+compatible format, you will have to reformat the output in general to 
+resue it in some other computer algebra package. 
+
+Like GAP, the standalone version of SISYPHOS is an interactive system 
+controlled by a command language. this command language, called 'Lapidar' 
+is rather simple and does not yet support any structures that alter the 
+flow of control, like branching instructions and loops. This language 
+is described in the SISYPHOS manual. 
+
+The following instructions refer to the standalone version only. If you 
+want to install SISYPHOS as GAP shared library, follow the instructions 
+in the GAP manual.
+
+
+2. Implementation
+
+SISYPHOS is written in ANSI-C and should run on every UNIX system (and
+some non-UNIX systems) that provides an ANSI-C compiler (e.g. GNU cc).
+Compilers keeping to the old C standard will not be able to compile the
+sources. 
+
+Up to now SISYPHOS has been ported by myself to the following platforms:
+
+     IBM RS6000 under AIX 3.2, native compiler,
+     HP9000 73x under HP-UX 8.0/9.0, native compiler,
+     PC386/486 under Linux, GNU C,
+     PC386/486 under DOS or OS/2, emx,
+     ATARI ST/TT under TOS, GNU C,
+     ATARI ST/TT under TOS, PureC
+     
+There implementations on  several other platforms by other people.
+
+
+3. Getting the sources
+
+The sources for SISYPHOS, several group libraries and additional 
+programs are available via anonymous ftp from the machine
+
+     'darfnix.mathematik.uni-stuttgart.de'   (129.69.116.154)
+
+In the directory 'pub/sisyphos' on this machine there is a compressed 
+tar-file 
+
+     'sisyphos.x.y.z.tar.Z'
+
+which contains the complete package. 'x.y.z' denotes the version number,
+make sure you get the archive with the highest number, since the directory
+may  contain also older versions. If you have already installed a former
+version of SISYPHOS there may the possibility to upgrade this version using
+the files 'sis.x1.y1.z1-x2.y2.z2.patch', if there are such files (for major
+upgrades this will not be the case). These are input files for the 'patch'
+program that upgrade the sources from version 'x1.y1.z1' to 'x2.y2.z2'.
+You may have to apply several of these patch files to upgrade your system
+to the actual version level.
+
+
+4. Installation
+
+Before you extract the sources you should create a directory which will take
+up the complete package and move the SISYPHOS archive file into this
+directory. This applies also to the patch files you may need.  In the sequel I
+will refer to this directory as the SISYPHOS--directory and call it 'sis' in
+the examples though its name is arbitrary.  SISYPHOS must know about the
+location of this directory in order to find the libraries and to know where to
+put intermediate files. This can be accomplished in two ways:
+
+a) Define an environment variable called 'SISLIB' that points to the 
+     SISYPHOS-directory, e.g. by the commands
+     
+     'export SISLIB=$HOME/sis/' (sh,ksh,bash etc.) or 
+     'setenv SISLIB $HOME/sis/' (csh,tcsh).
+
+b) Create a shell script for the invocation of SISYPHOS that calls 
+     the program with the '-l' option specifying the correct path. This 
+     script could look like
+     
+     #!/bin/sh
+     exec /usr/local/sis/src/sis -l /usr/local/sis/ $*
+
+Note the trailing '/' in the specification of the path! 
+
+After this preparations you are ready to extract the archive by a command 
+like
+
+     'zcat sisyphos.0.8.0.tar.Z \| tar xpvf -'  (standard tar) or 
+     'tar zpxvf sisyphos.0.8.0.tar.Z'            (GNU tar).
+
+This will create the following subdirectories
+
+'src':
+     contains all the C source files of SISYPHOS along with the test 
+     script and a file with the correct output of the test script.
+     
+'doc':
+     the SISYPHOS manual as TeX '.dvi' file and as postscript file 
+     with exitension '.ps'. 
+     
+'bin':
+     after a successful compilation this directory will contain an executable
+     file under the name 'sis-<cpu>-<vendor>-<os>'. <cpu>, <vendor> and <os>
+     are determined during installation by the 'configure' program. 
+     
+'gap':
+     contains files for the SISYPHOS --  GAP interface. These files
+     are usually installed in the 'pkg/sisyphos/gap' subdirectory of the GAP
+     directory.
+
+'groups':
+     is the library directory containing files with presentations for 
+     $p$-groups. 
+
+Now cd to the 'src' directory and execute 'configure'. This command tries to
+identify your hardware, operating system and compiler and adapts the source
+files of SISYPHOS accordingly. Usually this should produce a working
+Makefile for almost all UNIX machines. If for some reason this should fail on
+your machine please send me a note.
+
+'configure' accepts two SISYPHOS specific options, '--with-readline' and
+'--with-gmp'. The first adds support for the GNU readline library to SISYPHOS
+whereas the second does this for the GNU multiple precision library. GNU
+readline provides command line editing and history features like the GNU bash
+shell and several other programs have. I strongly recommend to use the
+readline library for a standalone version of SISYPHOS if it is available on
+your system. Multiple precision arithmetic on the other hand is only used to
+compute the order of automorphism groups as (possibly) long integers. So do
+not bother if it is not installed on your machine. In any case, if you specify
+one of this options and 'configure' cannot find the corresponding libraries
+the option is silently ignored.
+
+NOTE: If you are building SISYPHOS as a GAP shared package you must not
+specify --with-readline. Otherwise all invocations of SISYPHOS functions
+within GAP will fail.
+
+After a successful configuration all you have to do is to execute 'make'. This
+should produce an executable program called 'sis' in the 'src' subdirectory
+incorporating the features requested with the above options.
+
+'make' should not produce any errors apart from (possibly) some warnings. On
+older SUN systems it can happen that a long list of warnings complaining about
+missing prototypes for 'printf' and other functions from the standard library
+is printed. This is due to the fact that on this machines the header files are
+not ANSI compatible. This is harmles and can be ignored.
+
+As mentioned above, SISYPHOS also runs on some non--UNIX machines (ATARI
+ST/TT, PC 386/486 under DOS or OS/2). For these machines the executable image
+will be distributed and can be obtained from our server in the directory
+'/pub/sisyphos/binaries' This directory may also contain precompiled binaries
+for some UNIX systems which can be used if the local compilation fails for
+some reason. Copy such precompiled binaries to the 'src' subdirectory.
+
+In any case an executable image named 'sis' ( or 'sis.exe' or 'sis.ttp' ) will
+have been created in the 'src'--directory. In addition a copy of this file
+will be installed in the 'bin'--directory under the name
+'sis-<cpu>-<vendor>-<os>'. This copy is used when SISYPHOS/ is installed as
+GAP shared library in the 'pkg/sisyphos' subdirectory of the GAP
+directory. If you did not compile the program yourself but got one of the
+precompiled binaries you have to create this copy by hand. Strictly speaking
+the '<cpu>-<vendor>-<os>' postfix is only needed if you have a common GAP
+directory for several machines with different architectures. Then the 'bin'
+directory should contain a shell script named 'sis' that selects the suitable
+executable for that machine, based on the hostname, and executes it. If you do
+not have such a multi platform installation, you should call the copy 'sis',
+since GAP expects to find the program under this name. See the GAP
+manual for further informations about this issue.
+
+At this point you should test the program. The distribution contains a test
+script 'testsis' in the 'src' directory that you should execute by simply
+typing its name. It will perform some calculations and compare the results to
+the correct ones in the file 'testsis.out'. Apart from differing informations
+about the memory used by SISYPHOS and possibly different output formats for
+the size of automorphism groups there should be no further output from
+'testsis'. If it passes this test you may want to make the system publicly
+accessible. The best way to do this is to create a shell script as described
+at the beginning of this section and install this script in a directory where
+executables on your machine are kept like '/usr/bin' or '/usr/local/bin'.
+Note that it is no good idea to simply copy the executable 'sis' to such a
+directory, since then you have to specify the '-l' option every time you
+invoke SISYPHOS, otherwise the program will complain that it is not able to
+find its libraries.
+
+5. Contact address
+
+In any case of difficulties whether with the installation or the usage of 
+SISYPHOS, especially if you encounter any bugs send an email to the following 
+address
+
+     'Martin.Wursthorn@mathematik.uni-stuttgart.de'
+
+It is very helpful if you include a copy of the input that produced the bug
+and the (incorrect) output of SISYPHOS. Moreover any form of constructive
+criticism is welcome. The program in its current state is by no means finished
+but is developped further permanently.
+
+
+Martin Wursthorn
+Mathematisches Institut B
+3. Lehrstuhl
+Universitaet Stuttgart
+70550 Stuttgart
+
+Tel.: +49 (0)711 685 5517
+Fax.: +49 (0)711 685 5322
+

@@ -4,7 +4,7 @@
 *W                                                         & Martin Schoenert
 *W                                                  & Burkhard Hoefling (MAC)
 **
-*H  @(#)$Id$
+*H  @(#)$Id: sysfiles.h,v 4.35 2008/03/19 19:19:34 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_sysfiles_h =
-   "@(#)$Id$";
+   "@(#)$Id: sysfiles.h,v 4.35 2008/03/19 19:19:34 sal Exp $";
 #endif
 
 

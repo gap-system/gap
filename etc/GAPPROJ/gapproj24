@@ -3,15 +3,15 @@ Gr&ouml;bner Bases
 @Contact
 WDJ
 @Date
-2001/9/28
+2004/5/29
 @Time
 4
 @Public
 Yes
 @Need
-2
+0
 @NeedA
-2
+0
 @Math
 3
 @Prog
@@ -23,5 +23,6 @@ Implement (commutative/noncommutative) G&ouml;bner Bases.
 @Manual
 @Ref
 @Rem
-There is some work on interfacing to Singular (de Graaf) and on
+There is a package for interfacing to Singular (Costantini,
+de Graaf) and on
 noncommutative Gr"obner Bases (Green, Struble, Cohen). AH

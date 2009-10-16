@@ -1,0 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapomacro . . . . . . . . . . . . . . . .  read the GAP macro package
+%%
+\input ../../../doc/gapmacro
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{aclib}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../doc/ext}
+\UseReferences{../../../doc/ref}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont Aclib} \vfill
+  \centerline{\titlefont ---}\vfill
+  \centerline{\titlefont A GAP4 Package} \vfill
+  \centerline{\secfont Computations with} \bigskip
+  \centerline{\secfont Almost Crystallographic Groups} \vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont Karel Dekimpe,}\medskip
+  \centerline{Katholieke Universiteit Leuven Campus Kortrijk, Universitaire
+  Campus,}\medskip
+  \centerline{B-8500 Kortrijk, Belgium}\vfill
+  \centerline{\secfont Bettina Eick,}\medskip
+  \centerline{Institut f{\accent127 u}r Geometrie,
+              Universit{\accent127 a}t Braunschweig,}\medskip
+  \centerline{38106 Braunschweig, Germany}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\OneColumnTableOfContents
+%\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  
+%%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{aclib}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  
+%%
+\Chapters
+\Input{intro}
+\Input{algos}
+\Input{aclib}
+\Input{examp}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  
+%%
+\Appendices
+\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex	. . . . . . . . . . . . . . . . . . . . . . . . ends here

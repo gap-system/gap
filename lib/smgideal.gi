@@ -2,7 +2,7 @@
 ##
 #W  smgideal.gi              GAP library                     Robert Arthur
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: smgideal.gi,v 4.15 2005/05/18 17:11:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for semigroup ideals.
 ##
 Revision.smgideal_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: smgideal.gi,v 4.15 2005/05/18 17:11:57 gap Exp $";
 
 
 #############################################################################

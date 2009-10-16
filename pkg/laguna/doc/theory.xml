@@ -1,0 +1,289 @@
+<!-- $Id: theory.xml,v 1.12 2007/02/21 20:05:44 alexk Exp $ -->
+<Chapter Label="Theory">
+<Heading>The basic theory behind &LAGUNA;</Heading>    
+
+In this chapter we describe the theory that is behind the algorithms used by
+&LAGUNA;. 
+
+<Section Label="TheoryFirst">
+<Heading>Notation and definitions</Heading>
+
+<Index>group algebra</Index>
+Let <M>G</M> be a group and <M>F</M> a field. Then the <E>group algebra</E> 
+<M>FG</M> consists of the set of formal linear combinations of the form 
+<Display> 
+\sum_{g \in G}\alpha_g g,\qquad \alpha_g \in F
+</Display>
+where all but finitely many of the <M>\alpha_g</M> are zero. The group algebra
+<M>FG</M> is an <M>F</M>-algebra with the obvious operations. 
+Clearly, <M>\dim FG=|G|</M>.<P/>
+
+<Index>augmentation homomorphism</Index>
+<Index>augmentation ideal</Index>
+The <E>augmentation homomorphism</E> <M> \chi : FG \rightarrow F</M> 
+is defined by
+<Display>
+\chi\left(\sum_{g \in G}\alpha_g g\right)=\sum_{g \in G}\alpha_g.
+</Display>
+It is easy to see that <M>\chi</M> is indeed a homomorphism onto <M>F</M>. The
+kernel of <M>\chi</M> is called the <E>augmentation ideal</E> of <M>FG</M>. The
+augmentation ideal is denoted <M>A(FG)</M>, or simply <M>A</M> when there is no
+danger of confusion. It
+follows from the isomorphism theorems that <M>\dim A(FG)=\dim
+FG-1=|G|-1</M>. Another way to write the augmentation ideal is
+<Display>
+A(FG)=\left\{\sum_{g \in G}\alpha_g g\ |\ \sum_{g \in G}\alpha_g=0\right\}.
+</Display><P/>
+
+<Index>unit</Index>
+<Index>unit group</Index>
+<Index>normalised unit</Index>
+<Index>normalised unit group</Index>
+An invertible
+element of <M>FG</M> is said to be a  <E>unit</E>. 
+Clearly the elements of <M>G</M>
+and the non-zero elements of <M>F</M> are units. The set of units in <M>FG</M>
+is a group with respect to the  multiplication of <M>FG</M>. The <E>unit group</E>
+of <M>FG</M> is denoted <M>U(FG)</M> or simply <M>U</M> when there is no risk
+of confusion. A unit <M>u</M> is said to be <E>normalised</E> if
+<M>\chi(u)=1</M>. The set of normalised units forms a subgroup of the unit
+group, and is referred to as the <E>normalised unit group</E>. The normalised unit
+group of <M>FG</M> is denoted <M>V(FG)</M>, or simply <M>V</M>. It is easy to
+prove that <M>U(FG) = F^* \times V(FG)</M> where <M>F^*</M> denotes the
+multiplicative group of <M>F</M>.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="TheorySecond">
+<Heading><M>p</M>-modular group algebras</Heading>
+
+<Index Key="p-modular group algebra"><M>p</M>-modular group algebra</Index>
+A group algebra <M>FG</M> is said to be <M>p</M>-modular if <M>F</M> is the
+field of characteristic <M>p</M>, and <M>G</M> is a finite
+<M>p</M>-group. A lot of information about the structure of <M>p</M>-modular
+group algebras can be found in <Cite Key="HB" Where="Chapter VIII"/>.
+In a  <M>p</M>-modular group algebra we have that an element
+<M>u</M> is a unit if and only if <M>\chi(u)\neq 0</M>. Hence the normalised
+unit group <M>V</M> consists of all elements of <M>FG</M> with augmentation
+<M>1</M>. In other words <M>V</M> is a coset of the augmentation ideal, namely
+<M>V=1+A</M>. This also implies that <M>|V|=|A|=|F|^{|G|-1}</M>, and so <M>V</M>
+is a finite <M>p</M>-group.
+<P/>
+
+<Index>power-commutator presentation</Index>
+One of the aims of the &LAGUNA; package is to compute a power-commutator
+presentation for the normalised unit group in the case when <M>G</M>
+is a finite <M>p</M>-group and <M>F</M> is
+a field of <M>p</M> elements. Such a presentation is given by
+generators <M>y_1, \ldots, y_{|G|-1} </M> and two types of relations: 
+<M>y_i^p=(y_{i+1})^{\alpha_{i,i+1}} \cdots (y_{|G|-1})^{\alpha_{i,|G|-1}}</M>
+for <M> 1 \leq i \leq |G|-1 </M>, and 
+<M> [y_j,y_i]=(y_{j+1})^{\alpha_{j,i,j+1}} \cdots
+              (y_{|G|-1})^{\alpha_{j,i,|G|-1}} </M>
+for <M> 1 \leq i &lt; j \leq |G|-1</M>,
+where the exponents <M>\alpha_{i,k}</M> and <M>\alpha_{i,j,k}</M> are
+elements of the set <M>\{0,\ldots,p-1\}</M>. Having such a presentation, it 
+is possible to carry out efficient computations in the finite <M>p</M>-group
+<M>V</M>; see <Cite Key="Sims" Where="Chapter 9"/>.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="TheoryThird">
+<Heading>Polycyclic generating set for <M>V</M></Heading>
+
+Let <M>G</M> be a finite <M>p</M>-group and <M>F</M> the field of
+<M>p</M> elements. Our aim is to construct a
+power-commutator presentation for <M>V=V(FG)</M>. We noted earlier that
+<M>V=1+A</M>, where <M>A</M> is the augmentation ideal. We use this piece of
+information and construct a polycyclic generating set for <M>V</M> using a
+suitable basis for <M>A</M>. Before constructing this generating set, we note
+that <M>A</M> is a nilpotent ideal in <M>FG</M>. In other words there is some
+<M>c</M> such that <M>A^c\neq 0</M> but <M>A^{c+1}=0</M>. 
+Hence we can consider the following series
+of ideals in <M>A</M>:
+<Display>
+A\rhd A^2\rhd\cdots\rhd A^{c}\rhd A^{c+1}=0.
+</Display>
+It is clear that a quotient <M>A^i/A^{i+1}</M>of this chain has trivial
+multiplication, that is, such a quotient is a nil-ring. The chain <M>A^i</M> 
+gives rise to a series of normal subgroups in <M>V</M>:
+<Display>
+V=1+A\rhd 1+A^2\rhd\cdots\rhd 1+A^c\rhd 1+A^{c+1}=1.
+</Display>
+It is easy to see that the chain <M>1+A^i</M> is central, that is,
+<M>(1+A^i)/(1+A^{i+1})\leq Z((1+A)/(1+A^{i+1}))</M>. 
+<P/>
+
+<Index>Jennings series</Index>
+<Index>dimension basis</Index>
+<Index>weight, of dimension basis element</Index>
+Now we show how to compute a basis for <M>A^i</M> that gives a polycyclic
+generating set for <M>1+A^i</M>.
+Let 
+<Display>
+G=G_1 \rhd G_2\rhd\cdots\rhd G_{k}\rhd G_{k+1}=1
+</Display>
+be the <E>Jennings series</E> of <M>G</M>. That is, <M>G_{i+1}=[G_i,G]G_{j^p}</M> where
+<M>j</M> is the smallest non-negative integer such that <M>j\geq i/p</M>. For
+all <M>i\leq k</M>  
+select elements <M>x_{i,1},\ldots,x_{i,l_i}</M> of <M>G_i</M>
+such that <M>\{x_{i,1}G_{i+1},\ldots,x_{i,l_i}G_{i+1}\}</M> is a minimal
+generating set for the elementary abelian group <M>G_i/G_{i+1}</M>. For the
+Jennings series it may happen that <M>G_i=G_{i+1}</M>  for some <M>i</M>. In
+this case we choose an empty generating set for the quotient <M>G_i/G_{i+1}</M>
+ and <M>l_i=0</M>.
+Then the
+set <M>x_{1,1},\ldots,x_{1,l_1},\ldots,x_{k,1},\ldots,x_{k,l_k}</M>  is said to
+be a <E>dimension basis</E> for <M>G</M>. The <E>weight</E> of a dimension basis
+element <M>x_{i,j}</M> is <M>i</M>.<P/>
+
+<Index>standard product</Index>
+A non-empty product 
+<Display>
+u=(x_{1,1}-1)^{\alpha_{1,1}}\cdots(x_{1,l_1}-1)^{\alpha_{1,l_1}}\cdots
+(x_{k,1}-1)^{\alpha_{k,1}}\cdots(x_{k,l_k}-1)^{\alpha_{k,l_k}}
+</Display>
+where <M>0\leq \alpha_{i,j}\leq p-1</M> is said to be <E>standard</E>.
+Clearly, a standard product is an element of the augmentation ideal
+<M>A</M>. The weight of the standard product <M>u</M> is
+<Display>
+\sum_{i=1}^k i(\alpha_{i,1}+\cdots+\alpha_{i,l_i}).
+</Display>
+The total number of standard products is <M>|G|-1</M>.
+
+
+<P/>
+
+<B>Lemma (</B><Cite Key="HB" Where="Theorem VIII.2.6"/><B>).</B> 
+For <M>i\leq c</M>, the set <M>S_i</M> 
+of standard products of weight at least <M>i</M>  forms a basis for
+<M>A^i</M>. Moreover, the set <M>1+S_i=\{1+s\ |\ s \in S_i\}</M>  is a
+polycyclic generating set for <M>1+A^i</M>. In particular <M>1+S_1</M> is a
+polycyclic generating set for <M>V</M>.
+<P/>
+
+A basis for <M>A</M> consisting of the standard products is referred to as a
+<E>weighted basis</E>. Note that a weighted basis is a basis for the
+augmentation ideal, and not for the whole group algebra.<P/>
+
+Let <M>x_1,\ldots,x_{{|G|}-1}</M> denote the standard products where we choose
+the indices so that the weight of <M>x_i</M> is not larger than the weight of
+<M>x_{i+1}</M>  for all <M>i</M>, and set <M>y_i=1+x_i</M>. Then every element
+<M>v</M> of <M>V</M>  can be uniquely written in the form
+<Display>
+v=y_1^{\alpha_1}\cdots (y_{|G|-1})^{\alpha_{|G|-1}}, \quad
+\alpha_1,\ldots,\alpha_{|G|-1} \in \{0,\ldots,p-1\}.
+</Display>
+This expression is called the <E>canonical form</E> of <M>v</M>.
+
+We note that by adding a generator of <M>F^*</M> to the set
+<M>y_1,\ldots,y_{|G|-1|}</M> we can obtain a polycyclic generating set for the unit group
+<M>U</M>.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="TheoryFourth">
+<Heading>Computing the canonical form</Heading>
+
+We show how to compute the canonical form of
+a normalised unit with respect to the polycyclic generating set
+<M>y_1,\ldots,y_{|G|-1}</M>. We use the following elementary lemma.
+<P/>
+
+<B>Lemma.</B> Let <M>i\leq c</M> and suppose that
+<M>w \in A^i</M>. Assume that <M>x_{s_i},x_{s_i+1}\ldots,x_{r_i}</M> are the
+standard products with weight <M>i</M> and  for <M>s_i\leq j\leq r_i</M> set
+<M>y_j=1+x_j</M>. Then for all
+<M>\alpha_{s_i},\ldots,\alpha_{r_i}\in\{0,\ldots,p-1\}</M> we have that
+<Display>
+w\equiv \alpha_{s_i}x_{s_i}+\cdots+\alpha_{r_i}x_{r_i}\quad \bmod \quad A^{i+1}
+</Display>
+if an only if
+<Display>
+1+w\equiv (y_{s_i})^{\alpha_{s_i}}\cdots (y_{r_i})^{\alpha_{r_i}}\quad \bmod
+\quad 1+A^{i+1}.
+</Display>
+
+<P/>
+
+Suppose that <M>w</M> is an element of the augmentation ideal <M>A</M> and
+<M>1+w</M> is a normalised unit. Let <M>x_1,\ldots,x_{r_1}</M> be the standard
+products of weight 1, and let <M>y_1,\ldots,y_{r_1}</M> be the corresponding
+elements in the polycyclic generating set. Then using the previous lemma, we find
+<M>\alpha_1,\ldots,\alpha_{r_1}</M> such that
+<Display>
+w\equiv \alpha_{1}x_{1}+\cdots+\alpha_{r_1}x_{r_1}\quad \bmod \quad A^{2},
+</Display>
+and so 
+<Display>
+1+w\equiv (y_{1})^{\alpha_{1}}\cdots (y_{r_1})^{\alpha_{r_1}}\quad \bmod
+\quad 1+A^{2}.
+</Display>
+Now we have that <M>1+w=(y_{1})^{\alpha_{1}}\cdots
+(y_{r_1})^{\alpha_{r_1}}(1+w_2)</M> for some <M>w_2 \in A^2</M>. Then suppose
+that  <M>x_{s_2},x_{s_2+1},\ldots,x_{r_2}</M> are the standard products of
+weight 2. We find
+<M>\alpha_{s_2},\ldots,\alpha_{r_2}</M> such that
+<Display>
+w_2\equiv \alpha_{s_2}x_{s_2}+\cdots+\alpha_{r_2}x_{r_2}\quad \bmod \quad A^{3}.
+</Display>
+Then the lemma above implies that
+<Display>
+1+w_2\equiv (y_{s_2})^{\alpha_{s_2}}\cdots (y_{r_2})^{\alpha_{r_2}}\quad \bmod
+\quad 1+A^{3}.
+</Display>
+Thus <M>1+w_2=(y_{s_2})^{\alpha_{s_2}}\cdots (y_{r_2})^{\alpha_{r_2}}(1+w_3)</M> for
+some <M>w_3 \in A^3</M>, and so <M>1+w=(y_{1})^{\alpha_{1}}\cdots
+(y_{r_1})^{\alpha_{r_1}}(y_{s_2})^{\alpha_{s_2}}\cdots
+(y_{r_2})^{\alpha_{r_2}}(1+w_3)</M>. We repeat this process, and after <M>c</M>
+steps we obtain the canonical form for the element <M>1+w</M>.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="TheoryFifth">
+<Heading>Computing a power commutator presentation for <M>V</M></Heading>
+
+Using the procedure in the previous section, it is easy to compute a power
+commutator presentation for the normalized unit group <M>V</M> of a
+<M>p</M>-modular group algebra over the field of <M>p</M> elements. 
+First we compute the polycyclic generating
+sequence <M>y_1,\ldots,y_{|G|-1}</M> as in Section 
+<Ref Sect="TheoryThird"/>. Then for
+each <M>y_i</M> and for each <M>y_j,\ y_i</M> such that <M>i&lt;j</M>
+we compute the canonical form for <M>y_i^p</M> and <M>[y_j,y_i]</M>
+as described in Section <Ref Sect="TheoryFourth"/>. <P/>
+
+Once a power-commutator 
+presentation for <M>V</M> is constructed, it is easy to
+obtain a polycyclic presentation for the unit group <M>U</M> by adding an extra
+central generator <M>y</M> 
+corresponding to a generator of the cyclic group <M>F^*</M> and enforcing that
+<M>y^{p-1}=1</M>.
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="TheorySixth">
+<Heading>Verifying Lie properties of <M>FG</M></Heading>
+
+If <M>FG</M> is a group algebra then  one can consider the Lie bracket
+operation defined by <M>[a,b]=ab-ba</M>. Then it is well-known that
+<M>FG</M> with respect to the scalar multiplication, the addition, and
+the bracket operation becomes a Lie algebra over <M>F</M>. This Lie
+algebra is also denoted <M>FG</M>. Some Lie properties of such Lie
+algebras can be computed very efficiently. In particular, it can be verified whether the Lie 
+algebra <M>FG</M> is nilpotent, soluble, metabelian,
+centre-by-metabelian.  Fast algorithms that achieve these goals are
+described in <Cite Key="LR86"/>,  <Cite Key="PPS73"/>, and <Cite
+Key="Ros00"/>.
+
+</Section>
+</Chapter>

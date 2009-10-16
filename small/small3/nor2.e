@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.nor2_e :=
-    "@(#)$Id$";
+    "@(#)$Id: nor2.e,v 1.1 1998/07/18 15:27:06 gap Exp $";
 
 SMALL_GROUP_LIB[ 5 ] := [
 [ 1,, 3,,,,,, 7,,, -3,,,,,, 5, -9, -18, -3, 11,, [ 1 .. 4 ], 55, 19, 25,

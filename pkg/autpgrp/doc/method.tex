@@ -1,0 +1,96 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  method.tex         AutPGrp documentation                 Bettina Eick
+%A                                                         Eamonn O'Brien
+%%
+%H  @(#)$Id: method.tex,v 1.2 2002/11/27 07:27:27 gap Exp $
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The automorphism group method}
+
+The {\AutPGrp} package installs a method for `AutomorphismGroup' for a 
+finite $p$-group (see also Section~"ref:Groups of Automorphisms" 
+in the {\GAP} Reference Manual).
+
+\> AutomorphismGroup( <G> )   M 
+
+The input is a finite $p$-group <G>. If the filters `IsPGroup', 
+`IsFinite' and `CanEasilyComputePcgs' are set and true for <G>, 
+the method selection of {\GAP}~4 invokes this algorithm. 
+
+The output of the method is an automorphism group, whose generators 
+are given in `GroupHomomorphismByImages' format in terms of their action 
+on the underlying group <G>. 
+
+\indextt{SetInfoLevel}
+\>`InfoAutGrp' V
+
+This is a {\GAP} InfoClass (these are described in Chapter~"ref:Info
+Functions" in the {\GAP} Reference Manual). By assigning an <info-level>
+in the range 1 to 4 via
+
+\){\kernttindent}SetInfoLevel(InfoAutGrp, <info-level>)
+
+varying levels of information on the progress of 
+the computation, will be obtained. 
+
+\beginexample 
+gap> RequirePackage("autpgrp");
+#I ------------ The AutPGrp package --------------
+#I -- Computing automorphism groups of p-groups -- 
+true
+
+gap> G := SmallGroup( 32, 15 );
+<pc group of size 32 with 5 generators>
+
+gap> SetInfoLevel( InfoAutGrp, 1 );
+
+gap> AutomorphismGroup(G);
+#I  step 1: 2^2 -- init automorphisms 
+#I  step 2: 2^2 -- aut grp has size 2
+#I  step 3: 2^1 -- aut grp has size 32
+#I  final step: convert
+<group of size 64 with 6 generators>
+\endexample
+
+The algorithm proceeds by induction down the lower $p$-central
+series of <G> and the information corresponds 
+to the steps of this induction. In the following example we observe
+that the method also accepts permutation groups as input, provided
+they satisfy the required filters.
+
+\beginexample 
+gap> G := DihedralGroup( IsPermGroup, 2^5 );
+Group([ ( 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16), 
+  ( 2,16)( 3,15)( 4,14)( 5,13)( 6,12)( 7,11)( 8,10) ])
+gap> IsPGroup(G);
+true
+gap> CanEasilyComputePcgs(G);
+true
+gap> IsFinite(G);
+true
+gap> AutomorphismGroup(G);
+#I  step 1: 2^2 -- init automorphisms 
+#I  step 2: 2^1 -- aut grp has size 2
+#I  step 3: 2^1 -- aut grp has size 8
+#I  step 4: 2^1 -- aut grp has size 32
+#I  final step: convert
+<group of size 128 with 7 generators>
+gap> A := last;;
+gap> A.1;
+Pcgs([ ( 2,16)( 3,15)( 4,14)( 5,13)( 6,12)( 7,11)( 8,10), 
+  ( 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16), 
+  ( 1, 3, 5, 7, 9,11,13,15)( 2, 4, 6, 8,10,12,14,16), 
+  ( 1, 5, 9,13)( 2, 6,10,14)( 3, 7,11,15)( 4, 8,12,16), 
+  ( 1, 9)( 2,10)( 3,11)( 4,12)( 5,13)( 6,14)( 7,15)( 8,16) ]) -> 
+[ ( 1, 2)( 3,16)( 4,15)( 5,14)( 6,13)( 7,12)( 8,11)( 9,10), 
+  ( 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16), 
+  ( 1, 3, 5, 7, 9,11,13,15)( 2, 4, 6, 8,10,12,14,16), 
+  ( 1, 5, 9,13)( 2, 6,10,14)( 3, 7,11,15)( 4, 8,12,16), 
+  ( 1, 9)( 2,10)( 3,11)( 4,12)( 5,13)( 6,14)( 7,15)( 8,16) ]
+gap> Order(A.1);
+16
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

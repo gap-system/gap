@@ -3,7 +3,7 @@
 %A  boolean.msk                 GAP documentation            Martin Schoenert
 %A                                                           Alexander Hulpke
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: boolean.msk,v 1.14 2002/04/15 10:02:27 sal Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group

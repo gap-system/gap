@@ -1,0 +1,34 @@
+CFLAGS=@CFLAGS@ $(COPTS)
+LDFLAGS=@LDFLAGS@ $(LOPTS)
+CC=@CC@
+GMPVER=4.2.2
+MPFRVER=2.3.1
+
+all: jenkins
+
+all_gmp: jenkins gmp
+
+all_gmp_mpfr: jenkins gmp mpfr
+
+jenkins: jenkins/jhash.o ../../../extern/include/jhash.h
+
+jenkins/jhash.o: ../../../extern/jenkins/jhash.o 
+	mkdir -p jenkins
+	ln -sf ../$^ $@
+
+../../../extern/include/jhash.h: ../../../extern/jenkins/jhash.h
+	( cd ../../../extern/include; ln -sf ../jenkins/jhash.h .; )
+
+../../../extern/jenkins/jhash.o:  ../../../extern/jenkins/jhash.h ../../../extern/jenkins/jhash.c
+	(cd ../../../extern/jenkins; $(MAKE) CC='$(CC)' CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)') 
+
+gmp:    
+	if ! test -d ../../../extern/gmp-$(GMPVER); then \
+		( cd ../../../extern; tar zxvf gmp-$(GMPVER).tar.gz ); fi
+	if ! test -r ../../../extern/gmp-$(GMPVER)/Makefile ; then \
+		( cd ../../../extern/gmp-$(GMPVER); \
+		  ./configure --prefix=`pwd`/.. ); fi
+	( cd ../../../extern/gmp-$(GMPVER); $(MAKE); )
+	( cd ../../../extern/include; ln -sf ../gmp-$(GMPVER)/gmp.h )
+	( cd ../../../extern/lib; for i in libgmp.a libgmp.la libgmp.so*; do \
+	  ln -sf ../gmp-$(GMPVER)/.libs/$$i .; done )

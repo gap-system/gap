@@ -1,0 +1,67 @@
+<!-- $Id: service.xml,v 1.2 2007/04/30 15:38:27 alexk Exp $ -->
+
+<Chapter Label="Service">
+<Heading>Service functions of the &Congruence; package</Heading>
+
+<Section Label="CongruenceInfoClass">
+<Heading>Additional information displayed by &Congruence; algorithms</Heading>
+
+<ManSection>
+  <InfoClass Name="InfoCongruence"
+             Comm="Info class for Congruence algorithms" />
+  <Description>
+    <C>InfoCongruence</C> is a special Info class for &Congruence; algorithms. 
+    It has 3 levels: 0, 1 (default) and 2. To change the info level to <C>k</C>, 
+    use the command <C>SetInfoLevel(InfoCongruence, k)</C>. <P/>
+          
+    In the example below we use this mechanism to see more details during 
+    the Farey symbol construction for a congruence subgroup.
+  </Description>
+</ManSection>
+
+<Example>
+<![CDATA[
+
+]]>
+</Example>
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="BuildingManual">
+<Heading>Building the documentation</Heading>
+
+<ManSection>
+  <Func Name="CONGRUENCEBuildManual" 
+         Arg=""  
+        Comm="requires GAPDoc, UNIX or Linux and TeX;" />
+  <Description>
+    This function is used to build the manual in the following formats:
+    DVI, PDF, PS, HTML and text for online help.
+    We recommend that the user should have a recent and fairly
+    complete &TeX; distribution.
+    Since &Congruence; is distributed together with its manual,
+    it is not necessary for the user to use this function. Normally
+    it is intended to be used by the developers only. This is the only 
+    function of &Congruence; which requires UNIX/Linux environment.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Func Name="CONGRUENCEBuildManualHTML" 
+         Arg=""
+        Comm="requires only GAPDoc" />
+  <Description>
+    This fuction is used to build the manual only in HTML format.
+    This does not depend on the availability of the &TeX; installation
+    and works under Windows and MacOS as well.
+    Since &Congruence; is distributed together with its manual,
+    it is not necessary for the user to use this function. Normally
+    it is intended to be used by the developers only.
+  </Description>
+</ManSection>
+
+</Section>
+
+</Chapter>

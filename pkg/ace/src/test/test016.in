@@ -1,0 +1,87 @@
+
+# T from the Cooperman & Havas paper (index is 5^5 = 3125).
+# This is designed to test/illustrate dedn handling methods ...
+
+enum: T;
+gr: a,b,c;
+rel: a^5, b^5, c^5,
+ 
+  (abc)^5,  (abC)^5 , (abcc)^5,  (abCC)^5,
+  (aBc)^5,  (aBC)^5,  (aBcc)^5,  (aBCC)^5,
+  (abbc)^5, (abbC)^5, (abbcc)^5, (abbCC)^5,
+  (aBBc)^5, (aBBC)^5, (aBBcc)^5, (aBBCC)^5,
+
+  (Abc)^5,  (AbC)^5,  (Abcc)^5,  (AbCC)^5,
+  (ABc)^5,  (ABC)^5,  (ABcc)^5,  (ABCC)^5,
+  (Abbc)^5, (AbbC)^5, (Abbcc)^5, (AbbCC)^5,
+  (ABBc)^5, (ABBC)^5, (ABBcc)^5, (ABBCC)^5,
+
+  (aabc)^5,  (aabC)^5,  (aabcc)^5,  (aabCC)^5,
+  (aaBc)^5,  (aaBC)^5,  (aaBcc)^5,  (aaBCC)^5,
+  (aabbc)^5, (aabbC)^5, (aabbcc)^5, (aabbCC)^5,
+  (aaBBc)^5, (aaBBC)^5, (aaBBcc)^5, (aaBBCC)^5,
+
+  (AAbc)^5,  (AAbC)^5,  (AAbcc)^5,  (AAbCC)^5,
+  (AABc)^5,  (AABC)^5,  (AABcc)^5,  (AABCC)^5,
+  (AAbbc)^5, (AAbbC)^5, (AAbbcc)^5, (AAbbCC)^5,
+  (AABBc)^5, (AABBC)^5, (AABBcc)^5, (AABBCC)^5,
+
+  [a,b,a], [a,b,b], [a,c,a], [a,c,c],
+
+  [b,c,c,c], [b,c,c,b], [b,c,b,c], [b,c,b,b],
+  [c,a,b,a], [c,a,b,b], [b,a,c,a], [b,a,c,c],
+
+  [b,a,c,[b,a]], [c,a,b,[c,a]]
+  ;
+subgr: index 3125;
+gen: ab, bc;
+
+Wo:2M;
+#Mess:5000;
+
+Text: Felsch variants ...;
+
+Fel;			Beg;  Beg;
+
+DMod:0;  DSiz:480;	Beg;
+DSiz:240;		Beg;
+DSiz:120;		Beg;
+DSiz:60;		Beg;
+DSiz:30;		Beg;
+DSiz:15;		Beg;
+
+Fel;  DMod:5,100;	Beg;
+Fel;  DMod:5,90;	Beg;
+Fel;  DMod:5,80;	Beg;
+Fel;  DMod:5,70;	Beg;
+Fel;  DMod:5,60;	Beg;
+Fel;  DMod:5,50;	Beg;
+Fel;  DMod:5,40;	Beg;
+Fel;  DMod:5,30;	Beg;
+Fel;  DMod:5,20;	Beg;
+#Fel;  DMod:5,10;	Beg;
+#Fel;  DMod:5,0;	Beg;
+
+Text: Hard variants ...;
+
+Hard;			Beg;
+No:0;			Beg;
+
+DMod:0;  DSiz:960;	Beg;
+DSiz:480;		Beg;
+DSiz:240;		Beg;
+DSiz:120;		Beg;
+DSiz:60;		Beg;
+
+DMod:5,100;	Beg;
+DMod:5,90;	Beg;
+DMod:5,80;	Beg;
+DMod:5,70;	Beg;
+DMod:5,60;	Beg;
+DMod:5,50;	Beg;
+DMod:5,40;	Beg;
+DMod:5,30;	Beg;
+DMod:5,20;	Beg;
+#DMod:5,10;	Beg;
+#DMod:5,0;	Beg;
+

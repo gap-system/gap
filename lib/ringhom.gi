@@ -2,7 +2,7 @@
 ##
 #W  ringhom.gi                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ringhom.gi,v 1.3 2008/09/16 15:36:13 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,7 +10,7 @@
 ##  It is based on alghom.gi
 ##
 Revision.ringhom_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ringhom.gi,v 1.3 2008/09/16 15:36:13 gap Exp $";
 
 
 #############################################################################

@@ -1,0 +1,28 @@
+
+<!-- 
+
+  lib.xml           GAP documentation    
+
+  Copyright (C) 2005,  The GAP Group
+
+Here we document how we distribute the maintenance of library and
+kernel among the developers.
+
+       $Id: lib.xml,v 1.1.1.1 2005/03/24 10:52:37 gap Exp $
+-->
+
+<Chapter Label="Chap-Lib">
+<Heading>Maintaining the &GAP; kernel and library</Heading>
+<Index >modules</Index>
+
+Modules, PROPOSALs, ...
+
+<Section Label="Sect-">
+<Heading>...</Heading>
+
+...
+
+</Section>
+
+</Chapter>
+

@@ -2,7 +2,7 @@
 ##
 #W  proto.gi                    GAP library                  Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: proto.gi,v 4.4 2002/04/15 10:05:13 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  Declarations of utilities for fast prototyping of new GAP objects.
 ##
 Revision.proto_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: proto.gi,v 4.4 2002/04/15 10:05:13 sal Exp $";
 
 
 ##########################################################################

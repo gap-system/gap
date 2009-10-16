@@ -1,0 +1,80 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  miniman.tex                GAP documentation            Isabel Araujo 
+%%
+%H  @(#)$Id: miniman.tex,v 1.4 1999/05/18 19:27:21 andrews Exp $
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%
+%
+\input ../../../doc/gapmacro.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{mini}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont Semigroups in GAP 4}\medskip
+%  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont Mini Manual}\vfill
+%  \centerline{\secfont by}\vfill
+  \centerline{\secfont The GAP Group}\bigskip
+  \centerline{\secfont Lehrstuhl D f\accent127ur Mathematik}\medskip
+  \centerline{\secfont RWTH, 52056 Aachen, Germany}\bigskip
+  \centerline{\secfont and}\bigskip
+  \centerline{\secfont School of Mathematical and Computational Sciences}
+    \medskip
+  \centerline{\secfont University of St~Andrews, North Haugh, St~Andrews,
+              Fife KY16 9SS, Scotland}
+
+}
+%
+%
+%
+\Colophon{
+\input ../../../doc/tut/authors
+}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{mrabbrev,../../../doc/manual}}
+\input ../../../doc/ref/copyrigh
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  
+%%
+\Chapters
+\Input{basic}
+\Input{prog}
+\Input{transf}
+\Input{mapping}
+\Input{semigrp}
+\Input{fpsmg}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+%\Index
+
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  miniman.tex	. . . . . . . . . . . . . . . . . . . . . . . . ends here

@@ -1,0 +1,47 @@
+
+This is a list of tasks which need to be done before nq is released as
+a GAP 4 package.
+
+17 Aug 2002:  None if the  following items are critical.  Therefore, I
+postpone all of this until after the package is released.
+
+-- The configure script should check if the package is installed as a
+   GAP package
+
+-- NilpotentQuotient() should return a quotient system.
+
+-- Update the test files and testNq.
+
+-- Add access to the Engel options.
+
+-- If configure cannot find certain components, then one should run
+   configure again and not make with the correct options.  This way,
+   configure can remember the correct values and it will suffice make.
+
+-- Update installation procedure
+
+-- It should be possible to define the nilpotency class as part of the 
+   input file. 
+
+-- Create an info class InfoANU_NQ and put Info() statements into the
+   code.
+-- Should I keep the last nq-record for what purpose?
+
+-- The exit codes of the standalone should be interpreted.  For this I
+   need to go through the code and make sure that each exit events has
+   its own exit code.
+
+nq todos:
+
+-- The evaluation of commutators should decrease the class by one
+   before computing the two entries of the commutators.  (I have done
+   this.  There is some cleaning up necessary as the class is
+   sometimes negative)
+
+-- More statistics for the integer routines, for example, the density
+   of the input.
+
+-- Make sure that the values returned when the nq exits are correct.
+   Then the calling GAP script knows why nq has terminated
+   prematurely.  Make sure that the resulting GAP file is consistent
+   so that the calling routine can read in partial results.

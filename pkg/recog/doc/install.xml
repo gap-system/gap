@@ -1,0 +1,31 @@
+<!-- 
+
+  install.xml            recog package documentation           Max Neunhoeffer
+                                                                   Ákos Seress
+
+         Copyright (C) 2005, Lehrstuhl D für Mathematik, RWTH-Aachen
+
+This is the chapter of the documentation describing the installation.
+
+-->
+
+<Chapter Label="install">
+<Heading>Installation of the <Package>recog</Package>-Package</Heading>
+<Index><Package>recog</Package></Index>
+
+To install this  package just extract the package's  archive file to
+the  GAP  <F>pkg</F>  directory.<P/>
+
+By default the <Package>recog</Package> package is not automatically
+loaded by &GAP; when it is installed. You must load the package with
+<C>LoadPackage("recog");</C> before its functions become available.<P/>
+
+Please, send us an e-mail if you have any questions, remarks,
+suggestions, etc. concerning this package. Also, I would like to hear
+about applications of this package.<P/>
+
+Max Neunhöffer and Ákos Seress<P/>
+
+<!-- ############################################################ -->
+
+</Chapter>

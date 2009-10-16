@@ -3,7 +3,7 @@
 *W  opers.c                     GAP source                       Frank Celler
 *W                                                         & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: opers.c,v 4.109 2009/04/06 12:07:22 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,7 +17,7 @@
 
 
 const char * Revision_opers_c =
-   "@(#)$Id$";
+   "@(#)$Id: opers.c,v 4.109 2009/04/06 12:07:22 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -1457,11 +1457,11 @@ Obj FuncSET_TESTER_FILTER (
 **
 */
 
-static UInt RNamOperation = 0;
-static UInt RNamArguments = 0;
-static UInt RNamIsVerbose = 0;
-static UInt RNamIsConstructor = 0;
-static UInt RNamPrecedence = 0;
+static UInt RNamOperation;
+static UInt RNamArguments;
+static UInt RNamIsVerbose;
+static UInt RNamIsConstructor;
+static UInt RNamPrecedence;
 static Obj HandleMethodNotFound;
 
 Obj CallHandleMethodNotFound( Obj oper,
@@ -1485,22 +1485,17 @@ Obj CallHandleMethodNotFound( Obj oper,
       RNamArguments = RNamName("Arguments");
       RNamPrecedence = RNamName("Precedence");
     }
-  SET_RNAM_PREC(r,1,RNamOperation);
-  SET_ELM_PREC(r,1,oper);
+  AssPRec(r,RNamOperation,oper);
   arglist = NEW_PLIST(nargs ? T_PLIST_DENSE+IMMUTABLE:
 		      T_PLIST_EMPTY+IMMUTABLE, nargs);
   SET_LEN_PLIST(arglist,nargs);
   for (i = 0; i < nargs; i++)
     SET_ELM_PLIST( arglist, i+1, args[i]);
-  SET_RNAM_PREC(r,2,RNamArguments);
-  SET_ELM_PREC(r,2,arglist);
-  SET_RNAM_PREC(r,3,RNamIsVerbose);
-  SET_ELM_PREC(r,3,verbose ? True : False);
-  SET_RNAM_PREC(r,4,RNamIsConstructor);
-  SET_ELM_PREC(r,4,constructor ? True : False);
-  SET_RNAM_PREC(r,5,RNamPrecedence);
-  SET_ELM_PREC(r,5,precedence);
-  CHANGED_BAG(r);		/* r is not the most recent bag, arglist is */
+  AssPRec(r,RNamArguments,arglist);
+  AssPRec(r,RNamIsVerbose,verbose ? True : False);
+  AssPRec(r,RNamIsConstructor,constructor ? True : False);
+  AssPRec(r,RNamPrecedence,precedence);
+  SortPRecRNam(r,0);
   return CALL_1ARGS(HandleMethodNotFound, r);
 }
 
@@ -1510,8 +1505,8 @@ Obj CallHandleMethodNotFound( Obj oper,
 **
 */
 
-static UInt NextTypeID = 0;
-Obj IsType = 0;
+static UInt NextTypeID;
+Obj IsType;
 
 static void FixTypeIDs( Bag b ) {
   if ( (TNUM_OBJ( b )  == T_POSOBJ) &&
@@ -6131,6 +6126,9 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+
+  NextTypeID = 0;
+  CountFlags = 0;
     InitGlobalBag( &StringAndFilter,    "src/opers.c:StringAndFilter"    );
     InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
     InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );

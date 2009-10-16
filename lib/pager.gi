@@ -2,7 +2,7 @@
 ##  
 #W  pager.gi                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id$
+#H  @(#)$Id: pager.gi,v 1.4 2002/05/10 12:56:28 gap Exp $
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St. Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  But this utility is certainly useful for other purposes as well.
 ##  
 Revision.pager_gi := 
-  "@(#)$Id$";
+  "@(#)$Id: pager.gi,v 1.4 2002/05/10 12:56:28 gap Exp $";
 ##  
 ##  There is a builtin pager `PAGER_BUILTIN', but  at least under UNIX one
 ##  should use an external one.  This can be  set via the variable `PAGER'

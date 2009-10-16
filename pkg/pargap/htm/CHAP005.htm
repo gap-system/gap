@@ -1,0 +1,772 @@
+<html><head><title>[ParGAP] 5 MasterSlave Tutorial</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP004.htm">Previous</a>] [<a href ="CHAP006.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>5 MasterSlave Tutorial</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP005.htm#SECT001">A simple example</a>
+<li> <A HREF="CHAP005.htm#SECT002">ParSquare</a>
+<li> <A HREF="CHAP005.htm#SECT003">ParInstallTOPCGlobalFunction() and TaskInputIterator() (ParSquare revisited)</a>
+<li> <A HREF="CHAP005.htm#SECT004">ParMultMat</a>
+<li> <A HREF="CHAP005.htm#SECT005">DefaultCheckTaskResult (as illustrated by ParSemiEchelonMatrix)</a>
+<li> <A HREF="CHAP005.htm#SECT006">Caching slave task outputs (ParSemiEchelonMat revisited)</a>
+<li> <A HREF="CHAP005.htm#SECT007">Agglomerating tasks for efficiency (ParSemiEchelonMat revisited again)</a>
+<li> <A HREF="CHAP005.htm#SECT008">Raw MasterSlave (ParMultMat revisited)</a>
+</ol><p>
+<p>
+<a name = "I0"></a>
+
+<a name = "I1"></a>
+
+This chapter assumes the background  knowledge  in  section&nbsp;<a href="CHAP003.htm#SECT001">Basic  TOP-C (Master-Slave) commands</a>. <font face="Gill Sans,Helvetica,Arial">ParGAP</font> must be invoked through a script like
+<code>pargap.sh</code>  generated  in  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>'s  <code>bin</code>  during  installation.  In
+addition, there must be a <code>procgroup</code> file in the current directory  when
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> is called, or alternatively, <code>-p4pg </code><var>FULL_PATH</var><code>/procgroup</code>  may
+be included on the <code>pargap.sh</code> command line. See Section&nbsp;<a href="CHAP001.htm#SECT003">Running ParGAP</a>
+for the details. You should find a sample <code>procgroup</code> file in <font face="Gill Sans,Helvetica,Arial">ParGAP</font>'s
+<code>bin</code>   directory   after   installation   of    <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.    See    the
+section&nbsp;<a href="CHAP001.htm#SECT006">Invoking ParGAP with Remote Slaves</a> for further details. Many of
+the examples of this section  can  be  found  in  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>'s  <code>examples</code>
+directory.
+<p>
+<p>
+<a name="SECT001"><h2>5.1 A simple example</h2></a>
+<p><p>
+A master-slave computation is invoked when a <font face="Gill Sans,Helvetica,Arial">ParGAP</font> program issues the
+command <code>MasterSlave()</code>. This command is an example  of  what  is  called
+``collective communication'' in MPI (although the command is not part  of
+MPI). It is also sometimes called SPMD (Single Program,  Multiple  Data),
+since all processes see the same code, although different  processes  may
+execute different parts of the code. The <code>MasterSlave()</code> command must  be
+invoked on all  processes  before  execution  can  begin.  The  following
+trivial example does this. (Note that the final <code>\</code> on a  line  that  is
+still inside a string allows continuation of a string to the next  line.)
+We illustrate these principles first in their simplest form,  making  all
+variables global variables.  Later,  we  introduce  additional  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+utilities that allow one to write in better style.
+<p>
+<pre>
+#Shared Data: none
+#TaskInput:   counter
+#TaskOutput:  counter^2 (square of counter)
+#Task:        compute counter^2 from counter
+ParEval( "result := []" );
+ParEval( "counter := 0; \
+          SubmitTaskInput := function() \
+            counter := counter + 1; \
+            if counter &lt;= 10 then return counter; else return NOTASK; fi; \
+          end;");
+ParEval( "DoTask := x-&gt;x^2" );
+ParEval( "CheckTaskResultVers1 := function( input, output ) \
+            result[input] := [input, output]; \
+            return NO_ACTION; \
+          end;" );
+ParEval( "MasterSlave( SubmitTaskInput, DoTask, CheckTaskResultVers1 )" );
+Print(result);
+</pre>
+<p>
+By default, <code>ParTrace = true</code> (see&nbsp;<a href="CHAP006.htm#SSEC001.1">ParTrace</a>), causing the execution  to
+display each input, <code>x</code>, as it is passed from the master to a slave,  and
+each output, <code>x^2</code>, as it is passed from the slave back  to  the  master.
+This behavior can be turned off by  setting:  <code>ParTrace  :=  false;</code>  The
+fourth argument of <code>MasterSlave()</code>, <code>Print</code>, is a dummy argument that  is
+never invoked in this example.
+<p>
+Note that the result list is filled in only on the local process, and was
+never defined  or  modified  on  the  slave  processes.  To  remedy  this
+situation, we introduce the concept of <strong>shared data</strong>, a globally  shared,
+application-defined data structure. A  central  principle  of  the  TOP-C
+model in <font face="Gill Sans,Helvetica,Arial">ParGAP</font> is that any routine may ``read'' the shared data,  but
+it  may  be   modified   only   by   the   application-defined   routine,
+<code></code><var>UpdateSharedData</var><code>()</code>. Hence,  if  we  wanted  the  result  list  to  be
+recorded on all processes (perhaps as  a  lookup  table),  we  would  now
+write:
+<p>
+<pre>
+ParBroadcast(PrintToString("result = ", result));
+</pre>
+<p>
+<p>
+<a name="SECT002"><h2>5.2 ParSquare</h2></a>
+<p><p>
+Until now, we have been using global variables.  It is better style to
+use local variables, where possible.  We rewrite the above routine in
+the improved style:
+<p>
+<pre>
+#Shared Data: result [ result is shared among all processes ]
+#TaskInput:   counter
+#TaskOutput:  counter^2 (square of counter)
+#Task:        compute counter^2 from counter
+#UpdateSharedData:  record [counter, counter^2] at index, counter, of result
+MSSquare := function( range ) # expects as input a range, like [1..10]
+  local counter, result,
+      SubmitTaskInput, DoTask, CheckTaskResultVers2, UpdateSharedData;
+  counter := range[1]; # Reset counter for use in SubmitTaskInput()
+  result := [];
+  SubmitTaskInput := function()
+    counter := counter + 1;
+    if counter &lt;= range[Length(range)] then return counter;
+    else return NOTASK;
+    fi;
+  end;
+  DoTask := x-&gt;x^2;
+  CheckTaskResultVers2 := function( input, output )
+    return UPDATE_ACTION;
+  end;
+  UpdateSharedData := function( input, output )
+    result[input] := [input, output];
+  end;
+  MasterSlave( SubmitTaskInput, DoTask, CheckTaskResultVers2, UpdateSharedData );
+  return result;
+end;
+
+#ParSquare() is the main calling function;  It must define MSSquare on
+#  all slaves before calling it in parallel.
+ParSquare := function( range ) # expects as input a range, like [1..10]
+  ParEval( PrintToString( "MSSquare := ", MSSquare ) );
+  return ParEval( PrintToString( "MSSquare( ", range, ")" ) );
+end;
+</pre>
+<p>
+<p>
+<a name="SECT003"><h2>5.3 ParInstallTOPCGlobalFunction() and TaskInputIterator() (ParSquare revisited)</h2></a>
+<p><p>
+This example can be written more compactly by using some of the
+convenience functions provided by <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.  Specifically, we would
+rewrite this as:
+<p>
+<a name = "I2"></a>
+
+<a name = "I3"></a>
+
+<a name = "I4"></a>
+
+<a name = "I5"></a>
+
+<pre>
+ParInstallTOPCGlobalFunction( "ParSquare", function( range )
+  local result;
+  result := [];
+  MasterSlave( TaskInputIterator( range ),
+               x-&gt;x^2,
+               function( input, output ) return UPDATE_ACTION; end, 
+               function( input, output ) result[input] := [input, output]; end
+             );
+  return result;
+end );
+</pre>
+<p>
+The usage above demonstrates the use of two utilities.
+<p>
+<a name = "SSEC003.1"></a>
+<li><code>ParInstallTOPCGlobalFunction( </code><var>string</var><code>, </code><var>function</var><code> ) F</code>
+<p>
+This defines <var>gvar</var> as a function on the master and on the slaves.
+On each slave, the definition of <var>gvar</var> is given by <var>function</var>.
+However, on the master, <var>gvar</var> is defined as a function that first
+calls <var>gvar</var> on all slaves with the arguments originally passed
+to <var>gvar</var>, and then on the master, <var>function</var> is called with the
+original arguments.  This is exactly the behavior that is wanted
+in order to compress an invocation of <code>MasterSlave()</code> so that the
+right things happen on both the master and on the slaves.  This
+is exactly what we saw in the previous definition of <code>ParSquare</code>,
+above.
+<p>
+<a name = "SSEC003.2"></a>
+<li><code>TaskInputIterator( </code><var>collection</var><code> ) F</code>
+<p>
+This function provides the functionality of a common case of
+<code>SubmitTaskInput()</code>, by turning it into a <font face="Gill Sans,Helvetica,Arial">GAP</font> iterator
+(see&nbsp;<a href="../../../doc/htm/ref/CHAP028.htm#SECT007">iterators</a> in the Reference Manual).  Its meaning is best 
+understood from its definition:
+<p>
+<pre>
+TaskInputIterator := function( collection )
+  local iter;
+  iter := Iterator( collection );
+  return function()
+           if IsDoneIterator(iter) then return NOTASK;
+           else return NextIterator(iter);
+           fi;
+         end;
+end;
+</pre>
+<p>
+<p>
+<a name="SECT004"><h2>5.4 ParMultMat</h2></a>
+<p><p>
+Let us now write a matrix-matrix
+multiplication routine in this style.  Since matrix multiplication for
+dimension <i>n</i> requires <i>n</i><sup>3</sup> operations, we can afford to spend <i>n</i><sup>2</sup> time
+doing any sequential work.  (A finer analysis would also consider the
+number of slaves, <i>k</i>, resulting in up to <i>k</i>*<i>n</i><sup>2</sup> time to send all
+messages, depending on the MPI broadcast algorithm.)  So, a sequential
+matrix multiplication program might be written as follows.  (The style
+emphasizes clarity over efficiency.)
+<p>
+<a name = "I6"></a>
+
+<pre>
+SeqMultMat := function(m1, m2)               # sequential code
+  local i, j, k, n, m2t, sum, result;
+  n := Length(m1);
+  result := [];
+  m2t := TransposedMat(m2);
+  for i in [1..n] do
+    result[i] := [];
+    for j in [1..n] do
+      sum := 0;
+      for k in [1..n] do
+        sum := sum + m1[i][k]*m2t[j][k];
+      od;
+      result[i][j] := sum;
+    od;
+  od;
+  return result;
+end;
+</pre>
+<p>
+We choose to define the task as the computation of a single row of the
+result matrix.  This corresponds to the body of the outermost loop.
+<p>
+<a name = "I7"></a>
+
+<pre>
+#Shared Data: m1, m2t, result (three matrices)
+#TaskInput:   i (row index of result matrix)
+#TaskOutput:  result[i] (row of result matrix)
+#Task:        Compute result[i] from i, m1, and m2
+#UpdateSharedData:  Given result[i] and i, modify result on all processes.
+
+ParInstallTOPCGlobalFunction( "ParMultMat", function(m1, m2)
+  local i, n, m2t, result, DoTask, CheckTaskResult, UpdateSharedData;
+  n := Length(m1);
+  result := [];
+  m2t := TransposedMat(m2);
+
+  DoTask := function(i) # i is task input
+    local j, k, sum;
+    result[i] := [];
+    for j in [1..n] do
+      sum := 0;
+      for k in [1..n] do
+        sum := sum + m1[i][k]*m2t[j][k];
+      od;
+      result[i][j] := sum;
+    od;
+    return result[i]; # return task output, row_i
+  end;
+  # CheckTaskResult executes only on the master
+  CheckTaskResult := function(i, row_i) # task output is row_i
+    return UPDATE_ACTION; # Pass on output and input to UpdateSharedData
+  end;
+  # UpdateSharedData executes on the master and on all slaves
+  UpdateSharedData := function(i, row_i) # task output is row_i
+    result[i] := row_i;
+  end;
+  # We're done defining the task.  Let's do it now.
+  MasterSlave( TaskInputIterator([1..n]), DoTask, CheckTaskResult,
+               UpdateSharedData );
+  # result is defined on all processes;  return local copy of result
+  return result;
+end );
+</pre>
+<p>
+<p>
+<a name="SECT005"><h2>5.5 DefaultCheckTaskResult (as illustrated by ParSemiEchelonMatrix)</h2></a>
+<p><p>
+Now that the basic principles of the TOP-C model are clear, we
+investigate an example that requires most of the basic features of
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>, including the use of <code>IsUpToDate()</code> and
+<code>REDO_ACTION</code>.  Recall the standard idiom for
+<code></code><var>CheckTaskResult</var><code>()</code>.  These issues were discussed in
+the section&nbsp;<a href="CHAP003.htm#SECT004">Efficient Parallelism in MasterSlave() using CheckTaskResult()</a>.
+<p>
+<pre>
+DefaultCheckTaskResult := function( taskOutput, taskInput )
+  if taskOutput = false then return NO_ACTION;
+  elif not IsUpToDate() then return REDO_ACTION;
+  else return UPDATE_ACTION;
+  fi;
+end;
+</pre>
+<p>
+The next example is a parallelization of the function
+<code>SemiEchelonMat()</code> (a form of Gaussian elimination) in the <font face="Gill Sans,Helvetica,Arial">GAP</font>
+library, <code>lib/matrix.gi</code>.  Unlike the previous examples, parallelizing
+Gaussian elimination efficiently is a non-trivial undertaking.  This
+is because a naive parallelization has poor load balancing.  A slave
+executing a task in the middle will have to <var>sift</var> a row vector
+through many previous row vectors, while a slave executing a task
+toward the beginning or end will have little work to do.  We will
+begin with a naive parallelization based on the sequential code, and
+then migrate the code in a natural manner toward a more efficient
+form, by analyzing the inefficiencies and applying the TOP-C model.
+<p>
+The reader may wish to stop and read the original code in
+<code>lib/matrix.gi</code> first.  The logic of <code>SemiEchelonMat()</code> is to examine
+each row vector of an input matrix, in order, reduce it by a list of
+basis vectors stored in <code>vectors</code>, and then add the row to <code>vectors</code>.
+Upon completion, the number of leading zeroes of the row vectors in
+<code>vectors</code> may not increase monotonically, but each element of
+<code>vectors</code> will have a unique number of leading zeroes.  Some rows of
+the input matrix may reduce to the zero matrix, in which case they are
+not added to <code>vectors</code>.
+<p>
+For the reader's convenience, the original sequential code is
+reproduced here.
+<p>
+<pre>
+SemiEchelonMat := function( mat )
+
+    local zero,      # zero of the field of &lt;mat&gt;
+          nrows,     # number of rows in &lt;mat&gt;
+          ncols,     # number of columns in &lt;mat&gt;
+          vectors,   # list of basis vectors
+          heads,     # list of pivot positions in 'vectors'
+          i,         # loop over rows
+          j,         # loop over columns
+          x,         # a current element
+          nzheads,   # list of non-zero heads
+          row;       # the row of current interest
+
+    mat:= List( mat, ShallowCopy );
+    nrows:= Length( mat );
+    ncols:= Length( mat[1] );
+
+    zero:= Zero( mat[1][1] );
+
+    heads:= ListWithIdenticalEntries( ncols, 0 );
+    nzheads := [];
+    vectors := [];
+
+    for i in [ 1 .. nrows ] do
+        row := mat[i];
+        # Reduce the row with the known basis vectors.
+        for j in [ 1 .. Length(nzheads) ] do
+            x := row[nzheads[j]];
+            if x &lt;&gt; zero then
+                AddRowVector( row, vectors[ j ], - x );
+            fi;
+        od;
+        j := PositionNot( row, zero );
+        if j &lt;= ncols then
+            # We found a new basis vector.
+            MultRowVector(row, Inverse(row[j]));
+            Add( vectors, row );
+            Add( nzheads, j);
+            heads[j]:= Length( vectors );
+        fi;
+    od;
+
+    return rec( heads   := heads,
+                vectors := vectors );
+    end;
+</pre>
+<p>
+<a name = "I8"></a>
+
+<a name = "I9"></a>
+
+<a name = "I10"></a>
+
+Although <font face="Gill Sans,Helvetica,Arial">GAP</font>'s Gaussian elimination algorithm appears to be
+awkward to parallelize (since the next row vector in <code>vectors</code> depends
+on row reduction by all previous vectors, we will see how the original
+code of <code>SemiEchelonMat()</code> can be modified in a natural manner to
+produce useful parallelism.  This illustrates the general TOP-C
+paradigm for ``naturally'' parallelizing a sequential algorithm.
+<p>
+<pre>
+#Shared Data: vectors (basis vectors), heads, nzheads, mat (matrix)
+#TaskInput:   i (row index of matrix)
+#TaskOutput:  List of (1) j and (2) row i of matrix, mat, reduced by vectors
+#               j is the first non-zero element of row i
+#Task:        Compute reduced row i from mat, vectors, heads
+#UpdateSharedData:  Given i, j, reduced row i, add new basis vector
+#               to vectors and update heads[j] to point to it
+
+ParInstallTOPCGlobalFunction( "ParSemiEchelonMat", function( mat )
+    local zero,      # zero of the field of &lt;mat&gt;
+          nrows,     # number of rows in &lt;mat&gt;
+          ncols,     # number of columns in &lt;mat&gt;
+          vectors,   # list of basis vectors
+          heads,     # list of pivot positions in 'vectors'
+          i,         # loop over rows
+          nzheads,   # list of non-zero heads
+          DoTask, UpdateSharedData;
+
+    mat:= List( mat, ShallowCopy );
+    nrows:= Length( mat );
+    ncols:= Length( mat[1] );
+
+    zero:= Zero( mat[1][1] );
+
+    heads:= ListWithIdenticalEntries( ncols, 0 );
+    nzheads := [];
+    vectors := [];
+
+    DoTask := function( i ) # taskInput = i
+      local j,         # loop over columns
+            x,         # a current element
+            row;       # the row of current interest
+      row := mat[i];
+      # Reduce the row with the known basis vectors.
+      for j in [ 1 .. Length(nzheads) ] do
+          x := row[nzheads[j]];
+          if x &lt;&gt; zero then
+              AddRowVector( row, vectors[ j ], - x );
+          fi;
+      od;
+      j := PositionNot( row, zero );
+      if j &lt;= ncols then return [j, row]; # return taskOutput
+      else return fail; fi;
+    end;
+    UpdateSharedData := function( i, taskOutput )
+      local j, row;
+      j := taskOutput[1];
+      row := taskOutput[2];
+      # We found a new basis vector.
+      MultRowVector(row, Inverse(row[j]));
+      Add( vectors, row );
+      Add( nzheads, j);
+      heads[j]:= Length( vectors );
+    end;
+    
+    MasterSlave( TaskInputIterator( [1..nrows] ), DoTask, DefaultCheckTaskResult,
+                  UpdateSharedData );
+
+    return rec( heads   := heads,
+                vectors := vectors );
+end );
+</pre>
+<p>
+The next section describes how to make this code more efficient.
+<p>
+<p>
+<a name="SECT006"><h2>5.6 Caching slave task outputs (ParSemiEchelonMat revisited)</h2></a>
+<p><p>
+The code above is inefficient unless <code>nrows &gt;&gt; ncols</code>.  This is
+because if <code>nrows</code> is comparable to <code>ncols</code>, it will be rare for
+<code>DoTask()</code> to return <code>fail</code>.  If most slaves return a result distinct
+from <code>fail</code>, then <code>DefaultCheckTaskResult()</code> will return an
+<code>UPDATE_ACTION</code> upon receiving the output from the first slave, and it
+will return a <code>REDO_ACTION</code> to all other slaves, until those slaves
+execute <code>UpdateSharedData()</code>.  The inefficiency arose because a
+<code>REDO_ACTION</code> caused the original slave process to re-compute
+<code>DoTask()</code> from the beginning.
+<p>
+<a name = "I11"></a>
+
+In the case of a <code>REDO_ACTION</code>, we can fix this by taking advantage of
+information that was already computed.  To accomplish this, a global
+variable should be defined on all slaves:
+<pre>
+ParEval("globalTaskOutput := [[-1]]");
+</pre>
+the routine <code>DoTask()</code> in the previous example should be modified to:
+<p>
+<pre>
+  DoTask := function( i )
+      local j,         # loop over columns
+            x,         # a current element
+            row;       # the row of current interest
+    if i = globalTaskOutput[1] then
+      # then this is a REDO_ACTION
+      row := globalTaskOutput[2]; # recover last row value
+    else row := mat[i];
+    fi;
+    # Reduce the row with the known basis vectors.
+    for j in [ 1 .. Length(nzheads) ] do
+      x := row[nzheads[j]];
+      if x &lt;&gt; zero then
+        AddRowVector( row, vectors[ j ], - x );
+      fi;
+    od;
+    j := PositionNot( row, zero );
+    # save row in case of new REDO_ACTION
+    globalTaskOutupt[1] := i;
+    globalTaskOutput[2] := row;
+    if j &lt;= ncols then return [j, row]; # return taskOutput
+    else return fail; fi;
+  end;
+</pre>
+<p>
+(A perceptive reader will have noticed that it was not necessary to
+also save and restore <code>row</code> from <code>globalTaskOutput</code>, since this can
+be found again based on the saved variable value <code>i</code>.  However, the
+additional cost is small, and it illustrates potentially greater
+generality of the method.)
+<p>
+The next section describes how to make this code more efficient.
+<p>
+<p>
+<a name="SECT007"><h2>5.7 Agglomerating tasks for efficiency (ParSemiEchelonMat revisited again)</h2></a>
+<p><p>
+<a name = "I12"></a>
+
+<a name = "I12"></a>
+<a name = "I13"></a>
+
+<a name = "I14"></a>
+
+<a name = "I15"></a>
+
+A more efficient parallelization would partition the matrix into sets
+of adjacent rows, and send an entire set as a single <code>taskInput</code>.
+This would minimize the communication overhead, since the network latency
+varies only slowly with message sizxe, but linearly with the number
+of messages.  To minimize network latency, one adds an extra parameter
+to <code>MasterSlave()</code> in order to bundle, perhaps, up to 5 tasks at a time.
+<p>
+<pre>
+MasterSlave( TaskInputIterator( [1..n] ), DoTask, DefaultCheckTaskResult,
+             UpdateSharedData, 5 );
+</pre>
+<p>
+Now the task input will be a list of the next 5 tasks returned by
+<code>GetTaskInput()</code>, or in this case by <code>TaskInputIterator( [1..nrows] )</code>.
+If fewer than 5 tasks are produced before <code>NOTASK</code> is returned, then
+the task input will be correspondingly shorter.  If the first input
+task is <code>NOTASK</code> (yielding a list of tasks of length 0), then this
+will be interpreted as a traditional <code>NOTASK</code>.  The task output
+corresponding to this task input is whatever the application routine,
+<code>DoTask()</code> produces as task output.  The routine <code>DoTask()</code> will be
+unchanged, and <code>MasterSlave()</code> will arrange to repeatedly call
+<code>DoTask()</code>, once for each input task and produce a list of task
+outputs.
+<p>
+Hence, this new variation requires us to rewrite
+<code>UpdateSharedData()</code> in the obvious manner, to handle a list of input
+and output tasks.  Here is one solution to patch the earlier code.
+<p>
+<a name = "SSEC007.1"></a>
+<li><code>TaskAgglomIndex V</code>
+<p>
+This global variable is provided for use inside <code>DoTask()</code>.  It allows
+the application code to inquire about the index of the input task in
+the full list of tasks created when agglomTask is used.  The variable
+is most useful in the case of a <code>REDO_ACTION</code> or
+<code>CONTINUATION_ACTION()</code>, as illustrated below.
+<p>
+<a name = "I16"></a>
+
+<pre>
+ParEval("globalTaskOutput := [[-1]]");
+ParEval("globalTaskOutputs := []");
+
+#Shared Data: vectors (basis vectors), heads, mat (matrix)
+#TaskInput:   i (row index of matrix)
+#TaskOutput:  List of (1) j and (2) row i of matrix, mat, reduced by vectors
+#               j is the first non-zero element of row i
+#Task:        Compute reduced row i from mat, vectors, heads
+#UpdateSharedData:  Given i, j, reduced row i, add new basis vector
+#               to vectors and update heads[j] to point to it
+
+ParInstallTOPCGlobalFunction( "ParSemiEchelonMat", function( mat )
+  local zero,      # zero of the field of &lt;mat&gt;
+        nrows,     # number of rows in &lt;mat&gt;
+        ncols,     # number of columns in &lt;mat&gt;
+        vectors,   # list of basis vectors
+        heads,     # list of pivot positions in 'vectors'
+        i,         # loop over rows
+        nzheads,   # list of non-zero heads
+        DoTask, UpdateSharedDataWithAgglom;
+
+  mat:= List( mat, ShallowCopy );
+  nrows:= Length( mat );
+  ncols:= Length( mat[1] );
+
+  zero:= Zero( mat[1][1] );
+
+  heads:= ListWithIdenticalEntries( ncols, 0 );
+  nzheads := [];
+  vectors := [];
+
+  DoTask := function( i )
+      local j,         # loop over columns
+            x,         # a current element
+            row;       # the row of current interest
+    if IsBound(globalTaskOutputs[TaskAgglomIndex])
+        and i = globalTaskOutputs[TaskAgglomIndex][1] then
+      # then this is a REDO_ACTION
+      row := globalTaskOutputs[TaskAgglomIndex][2][2]; # recover last row value
+    else row := mat[i];
+    fi;
+    # Reduce the row with the known basis vectors.
+    for j in [ 1 .. Length(nzheads) ] do
+      x := row[nzheads[j]];
+      if x &lt;&gt; zero then
+        AddRowVector( row, vectors[ j ], - x );
+      fi;
+    od;
+    j := PositionNot( row, zero );
+
+    # save [input, output] in case of new REDO_ACTION
+    globalTaskOutputs[TaskAgglomIndex] := [ i, [j, row] ];
+
+    if j &lt;= ncols then return [j, row]; # return taskOutput
+    else return fail; fi;
+  end;
+  
+  # This version of UpdateSharedData() expects a list of taskOutput's
+  UpdateSharedDataWithAgglom := function( listI, taskOutputs )
+    local j, row, idx, tmp;
+    for idx in [1..Length( taskOutputs )] do
+      j := taskOutputs[idx][1];
+      row := taskOutputs[idx][2];
+      
+      if idx &gt; 1 then
+        globalTaskOutputs[1] := [-1, [j, row] ];
+        tmp := DoTask( -1 ); # Trick DoTask() into a REDO_ACTION
+        if tmp &lt;&gt; fail then
+          j := tmp[1];
+          row := tmp[2];
+        fi;
+      fi;
+
+      # We found a new basis vector.
+      MultRowVector(row, Inverse(row[j]));
+      Add( vectors, row );
+      Add( nzheads, j);
+      heads[j]:= Length( vectors );
+    od;
+  end;
+    
+  MasterSlave( TaskInputIterator( [1..nrows] ), DoTask, DefaultCheckTaskResult,
+                UpdateSharedDataWithAgglom, 5 ); #taskAgglom set to 5 tasks
+
+  return rec( heads   := heads,
+              vectors := vectors );
+end );
+</pre>
+<p>
+Note that in this simple example, we were able to re-use most of the
+code from the previous version, at the cost of adding an additional
+global variable, <code>globalTaskOutputs</code>.  In fact, the last <code>DoTask()</code> is
+backward compatible to the first version of the code, for which
+<code>agglomTasks</code> is not used.  If we wanted to run the latest code
+without agglomeration of tasks, it would suffice either to set
+the <code>taskAgglom</code> parameter to 1, or else to remove it entirely and
+replace <code>UpdateSharedDataWithAgglom()</code> by <code>UpdateSharedData()</code>.
+<p>
+It is useful to experiment with the above code by substituting a
+variable, <code>taskAgglom</code>, for the number 5, and trying it out with
+remote slaves on your own network for different values of <code>taskAgglom</code>
+and for different size matrices.  You can call <code>MasterSlaveStats()</code>
+to see the effect of different parameters.  Suitable pseudo-random matrices
+can be quickly generated via <code>mat := PseudoRandom( GL( 30, 5 )</code> and similar
+commands.
+<p>
+The paper&nbsp;<a href="biblio.htm#Coo98"><cite>Coo98</cite></a> is suggested as further reading to see
+a still more efficient parallel implementation
+of <code>ParSemiEchelonMatrix</code> (also known as Gaussian elimination)
+using the TOP-C model.
+<p>
+<p>
+<a name="SECT008"><h2>5.8 Raw MasterSlave (ParMultMat revisited)</h2></a>
+<p><p>
+<a name = "I17"></a>
+
+<a name = "I18"></a>
+
+<a name = "I19"></a>
+
+Finally, we given an example of a variation of <code>MasterSlave()</code>, based
+on a ``raw'' <code>MasterSlave()</code>.  These versions are designed for the
+common case of legacy code that contains deeply nested parentheses.
+The <code>taskInput</code> may be generated inside several nested loops, making
+it awkward and error-prone to produce a function, <code>SubmitTaskInput()</code>,
+that will generate instances of <code>taskInput</code> in the appropriate
+sequence.
+<p>
+Effectively, when we wish to return successive values from several deeply
+nested loops, we are in the situation of programming the ``opposite of a
+<font face="Gill Sans,Helvetica,Arial">GAP</font> iterator'' (see&nbsp;<a href="../../../doc/htm/ref/CHAP028.htm#SECT007">iterators</a> in the Reference Manual).  
+We are already producing successive iterator values, and we wish to 
+``stuff them back into some iterator''.  Until <font face="Gill Sans,Helvetica,Arial">GAP</font> develops such a
+language construct <code>:-)</code> , the following example of a ``raws'' 
+<code>MasterSlave()</code> demonstrates a solution.
+Before studying this example, please review the sequential version,
+<code>SeqMultMat()</code> near the beginning of section&nbsp;<a href="CHAP005.htm#SECT004">ParMultMat</a>.
+<p>
+<a name = "I20"></a>
+
+<a name = "I21"></a>
+
+We make use of the following three new <font face="Gill Sans,Helvetica,Arial">ParGAP</font> functions.
+<p>
+<a name = "SSEC008.1"></a>
+<li><code>BeginRawMasterSlave( </code><var>DoTask</var><code>, </code><var>CheckTaskResult</var><code>, </code><var>UpdateSharedData</var><code> ) F</code>
+<a name = "SSEC008.1"></a>
+<li><code>RawSubmitTaskInput( </code><var>taskInput</var><code> ) F</code>
+<a name = "SSEC008.1"></a>
+<li><code>EndRawMasterSlave() F</code>
+<p>
+Their use will be obvious in the next example.  This time, we
+parallelize <code>SeqMultMat()</code> by defining the task as the computation of a
+single entry in the result matrix.  Hence, the task will be the
+computation of the appropriate inner product.  For dimension <i>n</i>,
+<i>n</i><sup>2</sup> tasks are now generated, and each task is generated inside a
+doubly nested loop.
+<p>
+<pre>
+#Shared Data: m1, m2t, result (three matrices)
+#TaskInput:   [i,j] (indices of entry in result matrix)
+#TaskOutput:  result[i][j] (value of entry in result matrix)
+#Task:        Compute inner produce of row i of m1 by colum j of m1
+              ( Note that column j of m1 is also row j of m2t, the transpose )
+#UpdateSharedData:  Given result[i][j] and [i,j], modify result everywhere
+
+ParInstallTOPCGlobalFunction( "ParRawMultMat", function(m1, m2)
+  local i, j, k, n, m2t, sum, result, DoTask, CheckTaskResult, UpdateSharedData;
+  n := Length(m1);
+  m2t := TransposedMat(m2);
+  result := ListWithIdenticalEntries( Length(m2t), [] );
+
+  DoTask := function( input )
+    local i,j,k,sum;
+    i:=input[1]; j:=input[2];
+    sum := 0;
+    for k in [1..n] do
+      sum := sum + m1[i][k]*m2t[j][k];
+    od;
+    return sum;
+  end;
+
+  CheckTaskResult := function( input, output )
+    return UPDATE_ACTION;
+  end;
+
+  UpdateSharedData := function( input, output )
+    local i, j;
+    i := input[1]; j := input[2];
+    result[i][j] := output;
+    # result[i,j] := sum;
+  end;
+
+  BeginRawMasterSlave( DoTask, CheckTaskResult, UpdateSharedData );
+  for i in [1..n] do
+    result[i] := [];
+    for j in [1..n] do
+      RawSubmitTaskInput( [i,j] );
+      # sum := 0;
+      # for k in [1..n] do
+      #   sum := sum + m1[i][k]*m2t[j][k];
+      # od;
+      # result[i][j] := sum;
+    od;
+  od;
+  EndRawMasterSlave();
+
+  return result;
+end );
+</pre>
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP004.htm">Previous</a>] [<a href ="CHAP006.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>ParGAP manual<br>November 2001
+</address></body></html>

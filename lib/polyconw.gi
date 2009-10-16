@@ -3,7 +3,7 @@
 #W  polyconw.gi                 GAP library                     Thomas Breuer
 #W                                                              Frank Lübeck
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: polyconw.gi,v 4.25 2005/12/28 16:49:22 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  Conway polynomials.
 ##
 Revision.polyconw_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: polyconw.gi,v 4.25 2005/12/28 16:49:22 gap Exp $";
 
 
 ###############################################################################

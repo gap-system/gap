@@ -2,16 +2,23 @@
 #
 #W  ree.gd                        GAP library                Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ree.gd,v 1.6 2008/10/27 08:56:55 gap Exp $
 ##
 #Y  (C) 2001 School Math. Sci., University of St.  Andrews, Scotland
 ##
 Revision.ree_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: ree.gd,v 1.6 2008/10/27 08:56:55 gap Exp $";
 
 #############################################################################
 ##
 #O  ReeGroupCons( <filter>, <q> )
+##
+##  <ManSection>
+##  <Oper Name="ReeGroupCons" Arg='filter, q'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareConstructor( "ReeGroupCons", [ IsGroup, IsInt ] );
 
@@ -20,13 +27,27 @@ DeclareConstructor( "ReeGroupCons", [ IsGroup, IsInt ] );
 #F  ReeGroup( [<filt>, ] <q> )  . . . . . . . . . . . . . . . Ree group
 #F  Ree( [<filt>, ] <q> )
 ##
-##  Constructs a group isomorphic to the Ree group $2G2(q)$ where
-##  $q=3^{1+2m}$ for $m$ a non-negative integer.
+##  <#GAPDoc Label="ReeGroup">
+##  <ManSection>
+##  <Func Name="ReeGroup" Arg='[filt, ] q'/>
+##  <Func Name="Ree" Arg='[filt, ] q'/>
 ##
-##  If <filt> is not given it defaults to `IsMatrixGroup' and
-##  the generating matrices are based on~\cite{KLM01}.
+##  <Description>
+##  Constructs a group isomorphic to the Ree group <M>^2G_2(q)</M> where
+##  <M>q = 3^{{1+2m}}</M> for <M>m</M> a non-negative integer.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>
+##  and the generating matrices are based on&nbsp;<Cite Key="KLM01"/>.
 ##  (No particular choice of a generating set is guaranteed.)
-#
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ReeGroup( 27 );
+##  Ree(27)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BindGlobal( "ReeGroup", function ( arg )
 
   if Length(arg) = 1 then
@@ -42,7 +63,8 @@ end );
 
 DeclareSynonym( "Ree", ReeGroup );
 
+
 #############################################################################
 ##
-#E  ree.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

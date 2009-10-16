@@ -1,0 +1,17 @@
+#
+#test program for p-group generation implementation in ANU p-Quotient Program 
+#EO'B  June 1993
+#
+../bin/pq < ../examples/pga_exp4 > pga_exp4.new
+diff pga_exp4.orig pga_exp4.new
+../bin/pq < ../examples/pga_3gp > pga_3gps.new
+diff pga_3gps.orig pga_3gps.new
+../bin/pq < ../examples/pga_nott > pga_nott.new
+diff pga_nott.orig pga_nott.new
+../bin/pq -i -k < ../isom/2gp.com > Standard2gp.new
+diff Standard2gp.orig Standard2gp.new
+../bin/pq -i -k < ../isom/3gp.ex1 > Standard3gp.new
+diff Standard3gp.orig Standard3gp.new
+\rm -f *.new
+\rm -f Nott* Class10 c*_class* Standard 
+

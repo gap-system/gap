@@ -3,7 +3,7 @@
 #W  testutil.g                  GAP Library                     Thomas Breuer
 #W                                                               Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: testutil.g,v 4.17 2009/10/02 22:36:10 alexk Exp $
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
@@ -11,7 +11,7 @@
 ##  It is not read with the library when {\GAP} is started.
 ##
 Revision.( "tst/testutil_g" ) :=
-    "@(#)$Id$";
+    "@(#)$Id: testutil.g,v 4.17 2009/10/02 22:36:10 alexk Exp $";
 
 
 #############################################################################
@@ -129,7 +129,7 @@ BindGlobal( "RunStandardTests", function( arg )
             pos:= PositionSublist( oldcontents, ";", pos );
             Append( newcontents,
                     oldcontents{ [ pos + 1 .. Length( oldcontents ) ] } );
-            
+
             # Save the old file, and print a new file.
             Exec( Concatenation( "mv ", name, " ", name, "~" ) );
             SizeScreen( [ 1000 ] );
@@ -157,6 +157,57 @@ BindGlobal( "RunStandardTests", function( arg )
     STOP_TEST := stop_TEST;
     GAPInfo.TestData:= rec();
     end );
+
+
+#############################################################################
+##
+#F  ExtractManualExamples( <bookname> )
+##
+##  <bookname> is either ref or tut. 
+##  The function should be called EXACTLY from the GAP root directory.
+## 
+LoadPackage("gapdoc");
+ExtractManualExamples:=function( bookname )
+local path, main, files, tst, i, s, name, output;
+if bookname="tut" then
+  files:=[];
+elif bookname="ref" then
+  Read( "doc/ref/makedocreldata.g" );
+  files:= GAPInfo.ManualDataRef.files;
+else
+  Error( "RunManualsTest : the argument bust be \"ref\" or \"tut\"" );
+fi;
+path:=Directory( Concatenation( GAPInfo.RootPaths[1], "doc/", bookname ) );
+main:="main.xml";
+Print("===============================================================\n");
+Print("Extracting manual examples from the book '", bookname, "'\n" );
+Print("===============================================================\n");
+tst:=ManualExamples( path, main, files, "Chapter" );
+for i in [ 1 .. Length(tst) ] do 
+  Print("Processing '", bookname, "' chapter number ", i, " of ", Length(tst), "\c" );
+  if Length( tst[i] ) > 0 then
+    s := String(i);
+    if Length(s)=1 then 
+      # works for <100 chapters
+      s:=Concatenation("0",s); 
+    fi;
+    name := Filename( Directory( Concatenation( "doc/test/", bookname ) ), Concatenation( bookname, s, ".tst" ) );
+    output := OutputTextFile( name, false ); # to empty the file first
+    SetPrintFormattingStatus( output, false ); # to avoid line breaks
+    PrintTo( output, tst[i] );
+    CloseStream(output);
+    # one superfluous check
+    if tst[i] <> StringFile( name ) then
+      Error("Saved file does not match original examples string!!!\n");  
+    else
+      Print(" - OK! \n" );
+    fi;
+  else
+    Print(" - no examples to save! \n" );    
+  fi;  
+od;
+Print("===============================================================\n");
+end;
 
 
 #############################################################################
@@ -272,8 +323,8 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfiles, gap )
             for pair in TransposedMat( [ outfiles, [ "false", "true" ] ] ) do
               Append( result, Concatenation(
                   "echo 'Testing ", name, " ", entry.Version, ", test=", 
-		          Filename( DirectoriesPackageLibrary( name, "" )[1], entry.TestFile ), 
-		          ", all packages=", pair[2], "'\n" ) );
+		  Filename( DirectoriesPackageLibrary( name, "" ), entry.TestFile ), 
+		  ", all packages=", pair[2], "'\n" ) );
               Append( result, Concatenation(
                   "echo 'RunPackageTests( \"", name,
                   "\", \"", entry.Version, "\", \"", entry.TestFile,
@@ -339,6 +390,55 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
     Print( "#I  RunPackageTests( ... ): runtime ", Runtime(), "\n" );
     end );
 
+
+#############################################################################
+##
+#F  CreatePackageLoadTestsInput( <scriptfile>, <outfile>, <gap>, <autoload> )
+##
+##  Writes the file <scriptfile> that tests loading each package
+##
+BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfile, gap, autoload )
+    local result, name, entry, packagenames;
+
+    SizeScreen( [ 1000 ] );
+    InitializePackagesInfoRecords( false );
+    result:= "";
+    
+    packagenames := ShallowCopy( RecNames( GAPInfo.PackagesInfo ) );
+    Sort( packagenames );
+    
+    for name in packagenames do
+        for entry in GAPInfo.PackagesInfo.( name ) do
+            Append( result, "echo '==========================================='\n" );
+            if autoload then
+            Append( result, 
+                Concatenation( "echo 'Testing autoload + ", name, " ", entry.Version, "'\n" ) );
+            else
+            Append( result, 
+                Concatenation( "echo 'Testing ", name, " ", entry.Version, "'\n" ) );
+            fi;    
+            Append( result, 
+                Concatenation( "echo 'LoadPackage( \"", name, "\" );' | ", gap, " > ",
+                  outfile, ".", name, "\n" ) );
+            Append( result, 
+                Concatenation( "cat ", outfile, ".", name, "\n" ) );
+         od;
+    od;
+    Append( result, "echo '==========================================='\n" );
+    if autoload then
+        Append( result, "echo 'Testing autoload + LoadAllPackages'\n" );
+    else
+        Append( result, "echo 'Testing LoadAllPackages'\n" );
+    fi;    
+    Append( result, 
+        Concatenation( "echo 'LoadAllPackages();' | ", gap, " > ", outfile, ".all\n" ) );
+    Append( result, 
+        Concatenation( "cat ", outfile, ".all\n" ) );
+    Append( result, "echo '==========================================='\n" );
+    Append( result, Concatenation( "rm ", outfile, "*\n" ) );
+    PrintTo( scriptfile, result );
+    end );
+    
 
 #############################################################################
 ##

@@ -1,0 +1,80 @@
+# sort groups into cohorts and do some tests on these. ahulpke 18-jan-00
+# assumes the groups in one cohort actually all have the same socle
+# (as this does not hold in deg 40, 63 and soem of the smaller prime power
+# degrees, the final list needed hand interaction)
+FindAndTestCohorts:=function(deg)
+local l,c,i,t,p,co,s,n,hom;
+  t:=Factorial(deg)/2;
+  l:=AllPrimitiveGroups(DegreeOperation,deg,Size,i->i<t);
+  c:=[];
+  for i in l do
+    t:=SocleTypePrimitiveGroup(i);
+    p:=PositionProperty(c,i->i[1].series=t.series and i[1].width=t.width
+                             and i[1].parameter=t.parameter);
+    if p=fail then
+      Add(c,[ShallowCopy(t),[i]]);
+    else
+      co:=c[p][2]; # groups so far
+
+      # test whether the socles are actually the same
+      if Socle(i)<>Socle(co[1]) then
+	if t.width=1 then
+	  # are there further classes?
+	  s:=Filtered(c,i->i[1].series=t.series and i[1].width=t.width
+			      and i[1].parameter=t.parameter);
+	  p:=PositionProperty(s,j->Socle(j[2][1])=Socle(i));
+	  if p=fail then
+	    Add(c,[ShallowCopy(t),[i]]);
+	  else
+	    Add(s[p][2],i);
+	  fi;
+	else
+	  # composite cases we want the same socles
+	  Error("seem to be same type but different socle");
+	fi;
+      else
+        Add(co,i);
+      fi;
+    fi;
+  od;
+
+  # Now check the cohorts
+  for l in c do
+    Unbind(l[1].name); # often too long
+    co:=l[2];
+    Print("Testing: ",PrimitiveIdentification(co[1]),":",Length(co),"\n");
+    s:=Socle(co[1]);
+    # get the closure of all (we should test that its the normalizer but
+    # that is too hard).
+    n:=s;
+    for i in co do
+      n:=ClosureGroup(n,i);
+    od;
+    if not IsNormal(n,s) then
+      Error("Normality!");
+    fi;
+    if not IsSolvable(s) then
+      # rebuild the cohort
+      hom:=NaturalHomomorphismByNormalSubgroupNC(n,s);
+      n:=List(ConjugacyClassesSubgroups(Image(hom)),
+	      j->PreImage(hom,Representative(j)));
+      n:=Filtered(n,j->IsPrimitive(j,[1..deg]));
+      if Length(n)<>Length(co) then
+	Error("wrong number of groups ?");
+      elif
+	Collected(List(co,PrimitiveIdentification))<>
+	Collected(List(n,PrimitiveIdentification)) then
+	Error("wrong types of groups");
+      fi;
+    fi;
+  od;
+  n:=List(c,i->[i[1],List(i[2],PrimitiveIdentification)]);
+
+  # Add the A_n cohort
+  t:=Factorial(deg)/2;
+  l:=AllPrimitiveGroups(DegreeOperation,deg,Size,i->i>=t);
+  Add(n,[rec(series:="A",parameter:=deg,width:=1),
+         List(l,PrimitiveIdentification)]);
+
+  return n;
+end;

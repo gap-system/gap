@@ -2,7 +2,7 @@
 **
 *W  stats.c                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: stats.c,v 4.44 2008/07/16 11:39:48 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_stats_c =
-   "@(#)$Id$";
+   "@(#)$Id: stats.c,v 4.44 2008/07/16 11:39:48 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -1565,7 +1565,7 @@ UInt            ExecReturnVoid (
 **  redispatches after a return from the break-loop.
 */
 UInt (* RealExecStatFuncs[256]) ( Stat stat );
-UInt RealExecStatCopied = 0;
+UInt RealExecStatCopied;
 
 UInt ExecIntrStat (
     Stat                stat )
@@ -1577,6 +1577,7 @@ UInt ExecIntrStat (
         for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
             ExecStatFuncs[i] = RealExecStatFuncs[i];
         }
+        RealExecStatCopied = 0;
     }
     SyIsIntr();
 
@@ -1652,6 +1653,18 @@ void ClearError ( void )
         for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
             ExecStatFuncs[i] = RealExecStatFuncs[i];
         }
+        RealExecStatCopied = 0;
+        /* check for user interrupt */
+        if ( SyIsIntr() ) {
+          Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
+              0L, 0L);
+        }
+        /* and check if maximal memory was overrun */
+        if ( SyStorOverrun != 0 ) {
+          SyStorOverrun = 0; /* reset */
+          Pr("GAP has exceeded the permitted memory (-o option),\n", 0L, 0L);
+          Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0L);
+        }
     }
 
 #ifdef SYS_IS_MAC_MWC
@@ -1661,7 +1674,6 @@ void ClearError ( void )
     /* reset <NrError>                                                     */
     NrError = 0;
 }
-
 
 
 /****************************************************************************
@@ -2020,6 +2032,8 @@ static Int InitKernel (
 {
     UInt                i;              /* loop variable                   */
 
+    RealExecStatCopied = 0;
+    
     /* make the global bags known to Gasman                                */
     /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */

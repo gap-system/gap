@@ -2,7 +2,7 @@
 ##
 #W  streams.gi                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: streams.gi,v 4.60 2009/03/27 10:08:00 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the methods for streams.
 ##
 Revision.streams_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: streams.gi,v 4.60 2009/03/27 10:08:00 gap Exp $";
 
 
 #############################################################################
@@ -405,13 +405,10 @@ InstallOtherMethod( OutputLogTo,
 InstallMethod( WriteAll,
     "output stream",
     [ IsOutputStream,
-      IsList ],
+      IsString ],
 function( stream, string )
     local   byte;
 
-    if not IsString(string)  then
-        Error( "<string> must be a string" );
-    fi;
     for byte  in string  do
         if WriteByte( stream, INT_CHAR(byte) ) <> true  then
             return fail;
@@ -428,7 +425,7 @@ end );
 InstallMethod( WriteLine,
     "output stream",
     [ IsOutputStream,
-      IsList ],
+      IsString ],
 function( stream, string )
     local   res;
 
@@ -682,7 +679,7 @@ InstallMethod( CloseStream,
 function( stream )
     CLOSE_FILE(stream![1]);
     RemoveSet( InputTextFileStillOpen, stream![1] );
-    SET_TYPE_COMOBJ( stream, ClosedStreamType );
+    SET_TYPE_POSOBJ( stream, ClosedStreamType );
 end );
 
 
@@ -746,7 +743,7 @@ end );
 
 #############################################################################
 ##
-#M  ReadLine( <input-text-file>> )  . . . . . . . . . . . . . . get next line
+#M  ReadLine( <input-text-file> )  . . . . . . . . . . . . . . get next line
 ##
 InstallMethod( ReadLine,
     "input text file",
@@ -757,7 +754,7 @@ end );
 
 #############################################################################
 ##
-#M  ReadAll( <input-text-file>> )  . . . . . . . . . . . . . . get next line
+#M  ReadAll( <input-text-file> )  . . . . . . . . . . . . . . get next line
 ##
 InstallMethod( ReadAll,
     "input text file",
@@ -968,15 +965,24 @@ InstallMethod( OutputTextString,
 function( str, append )
     local   i;
 
+    if not IsMutable(str)  then
+        Error( "<str> must be mutable" );
+    fi;
     if not append  then
         for i  in [ Length(str), Length(str)-1 .. 1 ]   do
             Unbind(str[i]);
         od;
     fi;
-    if not IsMutable(str)  then
-        Error( "<str> must be mutable" );
-    fi;
     return Objectify( OutputTextStringType, [ str, true ] );
+end );
+
+
+InstallOtherMethod( OutputTextString,
+        "error catching method, append not given",
+        [ IsString ],
+        -SUM_FLAGS, # as low as possible
+        function( str )
+    Error("Usage OutputTextString( <string>, <append> )");
 end );
 
 
@@ -999,11 +1005,8 @@ end );
 InstallMethod( WriteAll,
     "output text string",
     [ IsOutputTextStream and IsOutputTextStringRep,
-      IsList ],
+      IsString ],
 function( stream, string )
-    if not IsString(string)  then
-        Error( "<string> must be a string" );
-    fi;
     Append( stream![1], string );
     return true;
 end );
@@ -1089,7 +1092,7 @@ OutputTextFileStillOpen := [];
 ##
 InstallMethod( OutputTextFile,
     "output text stream from file",
-    [ IsList,
+    [ IsString,
       IsBool ],
 function( str, append )
     local   fid;
@@ -1106,10 +1109,10 @@ end );
 
 InstallOtherMethod( OutputTextFile,
         "error catching method, append not given",
-        [ IsList ],
+        [ IsString ],
         -SUM_FLAGS, # as low as possible
         function( str )
-    Error("Usage OutputTextFile( <fname>, <appending> )");
+    Error("Usage OutputTextFile( <fname>, <append> )");
 end );
 
 #############################################################################
@@ -1122,7 +1125,7 @@ InstallMethod( CloseStream,
 function( stream )
     CLOSE_FILE(stream![1]);
     RemoveSet( OutputTextFileStillOpen, stream![1] );
-    SET_TYPE_COMOBJ( stream, ClosedStreamType );
+    SET_TYPE_POSOBJ( stream, ClosedStreamType );
 end );
 
 InstallAtExit( function()
@@ -1249,16 +1252,13 @@ end );
 
 #############################################################################
 ##
-#M  WriteAll( <output-text-none>, <string> )  . . . . . . . . . .  ingore all
+#M  WriteAll( <output-text-none>, <string> )  . . . . . . . . . .  ignore all
 ##
 InstallMethod( WriteAll,
     "output text none",
     [ IsOutputTextNone and IsOutputTextNoneRep,
-      IsList ],
+      IsString ],
 function( stream, string )
-    if not IsString(string)  then
-        Error( "<string> must be a string" );
-    fi;
     return true;
 end );
 
@@ -1327,6 +1327,26 @@ end );
 
 #############################################################################
 ##
+#F  ( <arg> )
+##
+InstallGlobalFunction( InputFromUser,
+  function ( arg )
+    local  itu, string;
+
+    CallFuncList( Print, arg );
+    Print( "\c" );
+
+    itu := InputTextUser(  );
+    string := ReadLine( itu );
+    CloseStream( itu );
+
+    return EvalString( string );
+  end );
+
+
+
+#############################################################################
+##
 
 #F  # # # # # # # # # # # # # iostream-by-pty # # # # # # # # # # # # # # # #
 ##
@@ -1387,7 +1407,8 @@ end);
 #M  PrintObj( <iostream-by-pty> )
 ##
 
-InstallMethod(ViewObj, [IsInputOutputStreamByPtyRep and IsInputOutputStream,],
+InstallMethod(ViewObj, "iostream",
+[IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
     Print("< ");
     if IsClosedStream(stream) then
@@ -1396,7 +1417,8 @@ InstallMethod(ViewObj, [IsInputOutputStreamByPtyRep and IsInputOutputStream,],
     Print("input/output stream to ",stream![2]," >");
 end);
 
-InstallMethod(PrintObj, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
+InstallMethod(PrintObj,  "iostream",
+[IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
     local i;
     Print("< ");
@@ -1415,7 +1437,8 @@ end);
 #M  ReadByte( <iostream-by-pty> )
 ##
 
-InstallMethod(ReadByte, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
+InstallMethod(ReadByte, "iostream", 
+[IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
     local buf, ret;
     buf := READ_IOSTREAM(stream![1], 1);
@@ -1433,7 +1456,8 @@ end);
 #M  ReadLine( <iostream-by-pty> )
 ##
 
-InstallMethod( ReadLine, [IsInputOutputStreamByPtyRep and IsInputOutputStream],
+InstallMethod( ReadLine, "iostream",
+[IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
     local sofar, chunk;
     sofar := READ_IOSTREAM(stream![1], 1);
@@ -1490,11 +1514,11 @@ BindGlobal("ReadAllIoStreamByPty",
     return sofar;
 end);
 
-InstallMethod( ReadAll, [IsInputOutputStreamByPtyRep and
+InstallMethod( ReadAll, "iostream", [IsInputOutputStreamByPtyRep and
         IsInputOutputStream],
         stream ->  ReadAllIoStreamByPty(stream, -1));
 
-InstallMethod( ReadAll, [IsInputOutputStreamByPtyRep and
+InstallMethod( ReadAll, "iostream", [IsInputOutputStreamByPtyRep and
         IsInputOutputStream, IsInt],
         function( stream, limit )
     if limit < 0 then
@@ -1509,7 +1533,7 @@ end);
 #M  WriteByte( <iostream-by-pty> )
 ##
 
-InstallMethod(WriteByte, [IsInputOutputStreamByPtyRep and
+InstallMethod(WriteByte, "iostream", [IsInputOutputStreamByPtyRep and
         IsInputOutputStream, IsInt],
         function(stream, byte)
     local ret,s;
@@ -1531,7 +1555,7 @@ end);
 #M  WriteAll( <iostream-by-pty> )
 ##
 
-InstallMethod(WriteAll, [IsInputOutputStreamByPtyRep and
+InstallMethod(WriteAll, "iostream", [IsInputOutputStreamByPtyRep and
        IsInputOutputStream, IsString],
         function(stream, text)
     local ret,s;
@@ -1549,7 +1573,7 @@ end);
 #M IsEndOfStream( <iostream-by-pty> )
 ##
 
-InstallMethod(IsEndOfStream,
+InstallMethod(IsEndOfStream, "iostream",
         [IsInputOutputStreamByPtyRep and IsInputOutputStream],
         stream -> # stream![4] or
         IS_BLOCKED_IOSTREAM(stream![1]) );
@@ -1560,7 +1584,7 @@ InstallMethod(IsEndOfStream,
 #M  CloseStream( <iostream-by-pty> )
 ##
 
-InstallMethod(CloseStream,
+InstallMethod(CloseStream, "iostream",
         [IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
     CLOSE_PTY_IOSTREAM(stream![1]);
@@ -1768,6 +1792,7 @@ InstallGlobalFunction( "UnInstallCharReadHookFunc",
 
 # to be bound means active:
 Unbind(OnCharReadHookActive);
+
 
 #############################################################################
 ##

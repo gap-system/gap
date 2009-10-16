@@ -1,0 +1,5 @@
+@msfiles = ("lag");
+@gdfiles = ("lag");
+DIR = ".";
+LIB = "../lib";
+

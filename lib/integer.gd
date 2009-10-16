@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  integer.gd                  GAP library                     Werner Nickel
+#W  integer.gd                  GAP library                       Stefan Kohl
+#W                                                            & Werner Nickel
 #W                                                           & Alice Niemeyer
 #W                                                         & Martin Schoenert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: integer.gd,v 4.56 2009/01/06 11:19:50 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +15,7 @@
 ##  This file declares the operations for integers.
 ##
 Revision.integer_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: integer.gd,v 4.56 2009/01/06 11:19:50 gap Exp $";
 
 
 #############################################################################
@@ -23,8 +24,25 @@ Revision.integer_gd :=
 #C  IsPositiveIntegers( <obj> )
 #C  IsNonnegativeIntegers( <obj> )
 ##
-##  are the defining categories for the domains `Integers',
-##  `PositiveIntegers', and `NonnegativeIntegers'.
+##  <#GAPDoc Label="IsIntegers">
+##  <ManSection>
+##  <Filt Name="IsIntegers" Arg='obj' Type='Category'/>
+##  <Filt Name="IsPositiveIntegers" Arg='obj' Type='Category'/>
+##  <Filt Name="IsNonnegativeIntegers" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  are the defining categories for the domains
+##  <Ref Var="Integers" Label="global variable"/>,
+##  <Ref Var="PositiveIntegers"/>, and <Ref Var="NonnegativeIntegers"/>.
+##  <Example><![CDATA[
+##  gap> IsIntegers( Integers );  IsIntegers( Rationals );  IsIntegers( 7 );
+##  true
+##  false
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsIntegers", IsEuclideanRing and IsFLMLOR );
 
@@ -39,8 +57,28 @@ DeclareCategory( "IsNonnegativeIntegers", IsSemiringWithOneAndZero );
 #V  PositiveIntegers  . . . . . . . . . . . . . semiring of positive integers
 #V  NonnegativeIntegers . . . . . . . . . .  semiring of nonnegative integers
 ##
+##  <#GAPDoc Label="IntegersGlobalVars">
+##  <ManSection>
+##  <Var Name="Integers" Label="global variable"/>
+##  <Var Name="PositiveIntegers"/>
+##  <Var Name="NonnegativeIntegers"/>
+##
+##  <Description>
 ##  These global variables represent the ring of integers and the semirings
 ##  of positive and nonnegative integers, respectively.
+##  <Example><![CDATA[
+##  gap> Size( Integers ); 2 in Integers;
+##  infinity
+##  true
+##  ]]></Example>
+##  <P/>
+##  <Ref Var="Integers" Label="global variable"/> is a subset of
+##  <Ref Var="Rationals"/>, which is a subset of <Ref Var="Cyclotomics"/>.
+##  See Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/>
+##  for arithmetic operations and comparison of integers.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalVariable( "Integers", "ring of integers" );
 
@@ -54,7 +92,15 @@ DeclareGlobalVariable( "NonnegativeIntegers",
 ##
 #C  IsGaussianIntegers( <obj> )
 ##
-##  is the defining category for the domain `GaussianIntegers'.
+##  <#GAPDoc Label="IsGaussianIntegers">
+##  <ManSection>
+##  <Filt Name="IsGaussianIntegers" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  is the defining category for the domain <Ref Var="GaussianIntegers"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR 
   and IsFiniteDimensional );
@@ -64,9 +110,18 @@ DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR
 ##
 #V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
 ##
-##  `GaussianIntegers' is the ring $\Z[\sqrt{-1}]$ of Gaussian integers.
-##  This is a subring of the cyclotomic field `GaussianRationals',
-##  see~"GaussianRationals".
+##  <#GAPDoc Label="GaussianIntegers">
+##  <ManSection>
+##  <Var Name="GaussianIntegers"/>
+##
+##  <Description>
+##  <Ref Var="GaussianIntegers"/> is the ring <M>&ZZ;[\sqrt{{-1}}]</M>
+##  of Gaussian integers.
+##  This is a subring of the cyclotomic field
+##  <Ref Func="GaussianRationals"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalVariable( "GaussianIntegers", "ring of Gaussian integers" );
 
@@ -75,10 +130,25 @@ DeclareGlobalVariable( "GaussianIntegers", "ring of Gaussian integers" );
 ##
 #V  Primes  . . . . . . . . . . . . . . . . . . . . . .  list of small primes
 ##
-##  `Primes' is a strictly sorted list of the 168 primes less than 1000.
+##  <#GAPDoc Label="Primes">
+##  <ManSection>
+##  <Var Name="Primes"/>
 ##
-##  This is used in `IsPrimeInt' and `FactorsInt' to cast out small primes
-##  quickly.
+##  <Description>
+##  <Ref Var="Primes"/> is a strictly sorted list of the 168 primes less than
+##  1000.
+##  <P/>
+##  This is used in <Ref Func="IsPrimeInt"/> and <Ref Func="FactorsInt"/>
+##  to cast out small primes quickly.
+##  <Example><![CDATA[
+##  gap> Primes[1];
+##  2
+##  gap> Primes[100];
+##  541
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalVariable( "Primes", "list of the 168 primes less than 1000" );
 
@@ -89,27 +159,40 @@ DeclareGlobalVariable( "Primes", "list of the 168 primes less than 1000" );
 #V  ProbablePrimes2 . . . . . . . . . . .  additional list of probable primes
 #V  InfoPrimeInt  . . . . . info class for usage of probable primes as primes
 ##
-##  `Primes2' contains those primes found by `IsPrimeInt' that are not in
-##  `Primes'.  `Primes2' is kept sorted, but may contain holes.
+##  <ManSection>
+##  <Var Name="Primes2"/>
+##  <Var Name="ProbablePrimes2"/>
+##  <InfoClass Name="InfoPrimeInt"/>
 ##
-##  Similarly, `ProbablePrimes2' is used to store found probable primes,
+##  <Description>
+##  <Ref Var="Primes2"/> contains those primes found by
+##  <Ref Func="IsPrimeInt"/> that are not in <Ref Var="Primes"/>.
+##  <Ref Var="Primes2"/> is kept sorted, but may contain holes.
+##  <P/>
+##  Similarly, <Ref Var="ProbablePrimes2"/> is used to store found
+##  probable primes,
 ##  which are not strictly proven to be prime. When numbers from this list
 ##  are used (e.g., to factor numbers), a sensible warning should be printed
-##  with `InfoPrimeInt' in its standard level 1.
-##  
-##  `IsPrimeInt' and `FactorsInt' use this list to  cast out already found
-##  primes quickly.
-##  If `IsPrimeInt' is called only for random integers this list would be
-##  quite useless.
+##  with <Ref InfoClass="InfoPrimeInt"/> in its standard level 1.
+##  <P/>
+##  <Ref Func="IsPrimeInt"/> and <Ref Func="FactorsInt"/> use this list
+##  to cast out already found primes quickly.
+##  If <Ref Func="IsPrimeInt"/> is called only for random integers
+##  this list would be quite useless.
 ##  However, users do not behave randomly.
 ##  Instead, it is not uncommon to factor the same integer twice.
-##  Likewise, once we have tested that $2^{31}-1$ is prime, factoring
-##  $2^{62}-1$ is very cheap, because the former divides the latter.
-##
+##  Likewise, once we have tested that <M>2^{31}-1</M> is prime, factoring
+##  <M>2^{62}-1</M> is very cheap, because the former divides the latter.
+##  <P/>
 ##  This list is initialized to contain at least all those prime factors of
-##  the integers $2^n-1$ with $n \< 201$, $3^n-1$ with $n \< 101$,
-##  $5^n-1$ with $n \< 101$, $7^n-1$ with $n \< 91$, $11^n-1$ with $n \< 79$,
-##  and $13^n-1$ with $n \< 37$ that are larger than $10^7$.
+##  the integers <M>2^n-1</M> with <M>n &lt; 201</M>,
+##  <M>3^n-1</M> with <M>n &lt; 101</M>,
+##  <M>5^n-1</M> with <M>n &lt; 101</M>,
+##  <M>7^n-1</M> with <M>n &lt; 91</M>,
+##  <M>11^n-1</M> with <M>n &lt; 79</M>,
+##  and <M>13^n-1</M> with <M>n &lt; 37</M> that are larger than <M>10^7</M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalVariable( "Primes2", "sorted list of large primes" );
 DeclareGlobalVariable( "ProbablePrimes2", "sorted list of probable primes" );
@@ -121,11 +204,32 @@ SetInfoLevel( InfoPrimeInt, 1 );
 ##
 #F  AbsInt( <n> ) . . . . . . . . . . . . . . .  absolute value of an integer
 ##
-##  `AbsInt' returns the absolute value of the integer <n>, i.e., <n> if <n>
-##  is positive, -<n> if <n> is negative and 0 if <n> is 0.
+##  <#GAPDoc Label="AbsInt">
+##  <ManSection>
+##  <Func Name="AbsInt" Arg='n'/>
 ##
-##  `AbsInt' is a special case of the general operation `EuclideanDegree'
-##  see~"EuclideanDegree").
+##  <Description>
+##  <Index>absolute value of an integer</Index>
+##  <Ref Func="AbsInt"/> returns the absolute value of the integer <A>n</A>,
+##  i.e., <A>n</A> if <A>n</A> is positive,
+##  -<A>n</A> if <A>n</A> is negative and 0 if <A>n</A> is 0.
+##  <P/>
+##  <Ref Func="AbsInt"/> is a special case of the general operation
+##  <Ref Func="EuclideanDegree"/>.
+##  <P/>
+##  See also <Ref Func="AbsoluteValue"/>.
+##
+##  <Example><![CDATA[
+##  gap> AbsInt( 33 );
+##  33
+##  gap> AbsInt( -214378 );
+##  214378
+##  gap> AbsInt( 0 );
+##  0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "AbsInt" );
 
@@ -134,10 +238,25 @@ DeclareGlobalFunction( "AbsInt" );
 ##
 #F  BestQuoInt( <n>, <m> )
 ##
-##  `BestQuoInt' returns the best quotient <q> of the integers <n> and <m>.
-##  This is the quotient such that `<n>-<q>*<m>' has minimal absolute value.
+##  <#GAPDoc Label="BestQuoInt">
+##  <ManSection>
+##  <Func Name="BestQuoInt" Arg='n, m'/>
+##
+##  <Description>
+##  <Ref Func="BestQuoInt"/> returns the best quotient <M>q</M>
+##  of the integers <A>n</A> and <A>m</A>.
+##  This is the quotient such that <M><A>n</A>-q*<A>m</A></M>
+##  has minimal absolute value.
 ##  If there are two quotients whose remainders have the same absolute value,
 ##  then the quotient with the smaller absolute value is chosen.
+##  <Example><![CDATA[
+##  gap> BestQuoInt( 5, 3 );  BestQuoInt( -5, 3 );
+##  2
+##  -2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "BestQuoInt" );
 
@@ -146,16 +265,44 @@ DeclareGlobalFunction( "BestQuoInt" );
 ##
 #F  ChineseRem( <moduli>, <residues> )  . . . . . . . . . . chinese remainder
 ##
-##  `ChineseRem' returns the combination   of   the  <residues>  modulo   the
-##  <moduli>, i.e., the  unique integer <c>  from `[0..Lcm(<moduli>)-1]' such
-##  that  `<c>  = <residues>[i]' modulo `<moduli>[i]'   for  all  <i>, if  it
-##  exists.  If no such combination exists `ChineseRem' signals an error.
+##  <#GAPDoc Label="ChineseRem">
+##  <ManSection>
+##  <Func Name="ChineseRem" Arg='moduli, residues'/>
 ##
+##  <Description>
+##  <Index>Chinese remainder</Index>
+##  <Ref Func="ChineseRem"/> returns the combination of the <A>residues</A>
+##  modulo the <A>moduli</A>, i.e.,
+##  the unique integer <C>c</C>  from <C>[0..Lcm(<A>moduli</A>)-1]</C>
+##  such that
+##  <C>c = <A>residues</A>[i]</C> modulo <C><A>moduli</A>[i]</C>
+##  for all <C>i</C>, if it exists.
+##  If no such combination exists <Ref Func="ChineseRem"/> signals an error.
+##  <P/>
 ##  Such a combination does exist if and only if
-##  `<residues>[<i>]=<residues>[<k>]'  mod `Gcd(<moduli>[<i>],<moduli>[<k>])'
-##  for every pair <i>, <k>.  Note  that this implies that such a combination
-##  exists if the  moduli  are pairwise relatively prime.  This is called the
-##  Chinese remainder theorem.
+##  <C><A>residues</A>[i] = <A>residues</A>[k] mod Gcd( <A>moduli</A>[i], <A>moduli</A>[k] )</C>
+##  for every pair <C>i</C>, <C>k</C>.
+##  Note that this implies that such a combination exists
+##  if the moduli are pairwise relatively prime.
+##  This is called the Chinese remainder theorem.
+##  <Example><![CDATA[
+##  gap> ChineseRem( [ 2, 3, 5, 7 ], [ 1, 2, 3, 4 ] );
+##  53
+##  gap> ChineseRem( [ 6, 10, 14 ], [ 1, 3, 5 ] );
+##  103
+##  ]]></Example>
+##  <Log><![CDATA[
+##  gap> ChineseRem( [ 6, 10, 14 ], [ 1, 2, 3 ] );
+##  Error, the residues must be equal modulo 2 called from
+##  <function>( <arguments> ) called from read-eval-loop
+##  Entering break read-eval-print loop ...
+##  you can 'quit;' to quit to outer loop, or
+##  you can 'return;' to continue
+##  brk> gap> 
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ChineseRem" );
 
@@ -164,8 +311,17 @@ DeclareGlobalFunction( "ChineseRem" );
 ##
 #F  CoefficientsQadic( <i>, <q> ) . . . . . .  <q>-adic representation of <i>
 ##
-##  returns the <q>-adic representation of the integer <i> as a list <l> of
-##  coefficients where $i = \sum_{j=0} q^j \cdot l[j+1]$.
+##  <#GAPDoc Label="CoefficientsQadic">
+##  <ManSection>
+##  <Func Name="CoefficientsQadic" Arg='i, q'/>
+##
+##  <Description>
+##  returns the <A>q</A>-adic representation of the integer <A>i</A>
+##  as a list <M>l</M> of coefficients satisfying the equality
+##  <M><A>i</A> = \sum_{{j = 0}} <A>q</A>^j \cdot l[j+1]</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CoefficientsQadic" );
 
@@ -174,12 +330,21 @@ DeclareGlobalFunction( "CoefficientsQadic" );
 ##
 #F  CoefficientsMultiadic( <ints>, <int> )
 ##
-##  returns the multiadic expansion of the integer <int> modulo the integers
-##  given in <ints> (in ascending order).
-##  It returns a list of coefficients in the *reverse* order to that in <ints>.
+##  <#GAPDoc Label="CoefficientsMultiadic">
+##  <ManSection>
+##  <Func Name="CoefficientsMultiadic" Arg='ints, int'/>
 ##
-#T  The syntax is quite weird and should be adapted according to
-#T  `CoefficientsQadic'.
+##  <Description>
+##  returns the multiadic expansion of the integer <A>int</A>
+##  modulo the integers given in <A>ints</A> (in ascending order).
+##  It returns a list of coefficients in the <E>reverse</E> order
+##  to that in <A>ints</A>.
+##  <!-- The syntax is quite weird and should be adapted according to
+##  CoefficientsQadic. -->
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "CoefficientsMultiadic" );
 
 
@@ -187,16 +352,33 @@ DeclareGlobalFunction( "CoefficientsMultiadic" );
 ##
 #F  DivisorsInt( <n> )  . . . . . . . . . . . . . . .  divisors of an integer
 ##
-##  `DivisorsInt' returns a list of all divisors  of  the  integer  <n>.  The
-##  list is sorted, so that it starts with 1 and  ends  with <n>.  We  define
-##  that `Divisors( -<n> ) = Divisors( <n> )'.
+##  <#GAPDoc Label="DivisorsInt">
+##  <ManSection>
+##  <Func Name="DivisorsInt" Arg='n'/>
 ##
-##  Since the  set of divisors of 0 is infinite calling `DivisorsInt( 0 )'
-##  causes an error.
-##
-##  `DivisorsInt' may call `FactorsInt' to obtain the prime factors.
-##  `Sigma' and `Tau' (see~"Sigma" and "Tau") compute the sum and the
+##  <Description>
+##  <Index Subkey="of an integer">divisors</Index>
+##  <Ref Func="DivisorsInt"/> returns a list of all divisors of the integer
+##  <A>n</A>.
+##  The list is sorted, so that it starts with 1 and ends with <A>n</A>.
+##  We  define that <C>DivisorsInt( -<A>n</A> ) = DivisorsInt( <A>n</A> )</C>.
+##  <P/>
+##  Since the  set of divisors of 0 is infinite
+##  calling <C>DivisorsInt( 0 )</C> causes an error.
+##  <P/>
+##  <Ref Func="DivisorsInt"/> may call <Ref Func="FactorsInt"/>
+##  to obtain the prime factors.
+##  <Ref Func="Sigma"/> and <Ref Func="Tau"/> compute the sum and the
 ##  number of positive divisors, respectively.
+##  <Example><![CDATA[
+##  gap> DivisorsInt( 1 ); DivisorsInt( 20 ); DivisorsInt( 541 );
+##  [ 1 ]
+##  [ 1, 2, 4, 5, 10, 20 ]
+##  [ 1, 541 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "DivisorsInt");
 
@@ -206,31 +388,75 @@ DeclareGlobalFunction( "DivisorsInt");
 #F  FactorsInt( <n> ) . . . . . . . . . . . . . . prime factors of an integer
 #F  FactorsInt( <n> : RhoTrials := <trials>)
 ##
-##  `FactorsInt' returns a list of prime factors of the integer <n>.
+##  <#GAPDoc Label="FactorsInt">
+##  <ManSection>
+##  <Func Name="FactorsInt" Arg='n'/>
+##  <Func Name="FactorsInt" Arg='n[:RhoTrials:=trials]' Label="using Pollard's Rho"/>
 ##
-##  If the <i>th power of a prime divides <n> this prime appears <i> times.
+##  <Description>
+##  <Ref Func="FactorsInt"/> returns a list of prime factors of the integer
+##  <A>n</A>.
+##  <P/>
+##  If the <M>i</M>th power of a prime divides <A>n</A> this prime appears
+##  <M>i</M> times.
 ##  The list is sorted, that is the smallest prime factors come first.
-##  The first element has the same sign as <n>, the others are positive.
-##  For any integer <n> it holds that `Product( FactorsInt( <n> ) ) = <n>'.
-##
-##  Note that `FactorsInt' uses a probable-primality test (see~"IsPrimeInt").
-##  Thus `FactorsInt' might return a list which contains composite integers.
+##  The first element has the same sign as <A>n</A>, the others are positive.
+##  For any integer <A>n</A> it holds that
+##  <C>Product( FactorsInt( <A>n</A> ) ) = <A>n</A></C>.
+##  <P/>
+##  Note that <Ref Func="FactorsInt"/> uses a probable-primality test
+##  (see&nbsp;<Ref Func="IsPrimeInt"/>).
+##  Thus <Ref Func="FactorsInt"/> might return a list which contains
+##  composite integers.
 ##  In such a case you will get a warning about the use of a probable prime.
-##  You can switch off these warnings by `SetInfoLevel(InfoPrimeInt, 0);'.
-##
-##  The time taken by   `FactorsInt'  is approximately  proportional to   the
-##  square root of the second largest prime factor  of <n>, which is the last
-##  one that `FactorsInt'  has to find,   since the largest  factor is simply
+##  You can switch off these warnings by
+##  <C>SetInfoLevel( InfoPrimeInt, 0 );</C> 
+##  (also see <Ref Oper="SetInfoLevel"/>).
+##  <P/>
+##  The time taken by <Ref Func="FactorsInt"/> is approximately proportional
+##  to the square root of the second largest prime factor of <A>n</A>,
+##  which is the last one that <Ref Func="FactorsInt"/> has to find,
+##  since the largest factor is simply
 ##  what remains when all others have been removed.  Thus the time is roughly
-##  bounded by  the fourth  root of <n>.   `FactorsInt' is guaranteed to find
-##  all factors   less than  $10^6$  and will find  most    factors less than
-##  $10^{10}$.    If <n>    contains   multiple  factors   larger  than  that
-##  `FactorsInt' may not be able to factor <n> and will then signal an error.
-##
-##  `FactorsInt' is used in a method for the general operation `Factors'.
-##
-##  In the second form, FactorsInt calls FactorsRho with a limit of <trials>
-##  on the number of trials is performs. The  default is 8192.
+##  bounded by the fourth root of <A>n</A>.
+##  <Ref Func="FactorsInt"/> is guaranteed to find all factors less than
+##  <M>10^6</M> and will find most factors less than <M>10^{10}</M>.
+##  If <A>n</A> contains multiple factors larger than that
+##  <Ref Func="FactorsInt"/> may not be able to factor <A>n</A>
+##  and will then signal an error.
+##  <P/>
+##  <Ref Func="FactorsInt"/> is used in a method for the general operation
+##  <Ref Oper="Factors"/>.
+##  <P/>
+##  In the second form, <Ref Func="FactorsInt"/> calls
+##  <C>FactorsRho</C> with a limit of <A>trials</A>
+##  on the number of trials it performs. The default is 8192.
+##  Note that Pollard's Rho is the fastest method for finding prime
+##  factors with roughly 5-10 decimal digits, but becomes more and more
+##  inferior to other factorization techniques like e.g. the Elliptic
+##  Curves Method (ECM) the bigger the prime factors are. Therefore
+##  instead of performing a huge number of Rho <A>trials</A>, it is usually
+##  more advisable to install the <Package>FactInt</Package> package and
+##  then simply to use the operation <Ref Oper="Factors"/>. The factorization
+##  of the 8-th Fermat number by Pollard's Rho below takes already a while.
+##  
+##  <Example><![CDATA[
+##  gap> FactorsInt( -Factorial(6) );
+##  [ -2, 2, 2, 2, 3, 3, 5 ]
+##  gap> Set( FactorsInt( Factorial(13)/11 ) );
+##  [ 2, 3, 5, 7, 13 ]
+##  gap> FactorsInt( 2^63 - 1 );
+##  [ 7, 7, 73, 127, 337, 92737, 649657 ]
+##  gap> FactorsInt( 10^42 + 1 );
+##  #I  beyond the guaranteed bound of the probabilistic primality test
+##  [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
+##  gap> FactorsInt(2^256+1:RhoTrials:=100000000);
+##  [ 1238926361552897,
+##    93461639715357977769163558199606896584051237541638188580280321 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "FactorsInt" );
 
@@ -240,41 +466,85 @@ DeclareGlobalFunction( "FactorsInt" );
 #O  PartialFactorization( <n> ) . . . . . partial factorization of an integer
 #O  PartialFactorization( <n>, <effort> )
 ##
-##  `PartialFactorization' returns a partial factorization of the integer <n>.
-##  No assertions are made about the primality of the factors, except of
-##  those mentioned below.
+##  <#GAPDoc Label="PartialFactorization">
+##  <ManSection>
+##  <Oper Name="PartialFactorization" Arg='n[, effort]'/>
 ##
-##  The argument <effort>, if given, specifies how intensively the function
-##  should try to determine factors of <n>. The default is <effort>~=~5.
-##
-##  \beginlist
-##    \item{-} If <effort>~=~0, trial division by the primes below 100 is
-##             done. Returned factors below $10^4$ are guaranteed to be
-##             prime.
-##    \item{-} If <effort>~=~1, trial division by the primes below 1000 is
-##             done. Returned factors below $10^6$ are guaranteed to be
-##             prime.
-##    \item{-} If <effort>~=~2, additionally trial division by the numbers
-##             in the lists `Primes2' and `ProbablePrimes2' is done, and
-##             perfect powers are detected. Returned factors below $10^6$
-##             are guaranteed to be prime.
-##    \item{-} If <effort>~=~3, additionally `FactorsRho' (Pollard's Rho)
-##             with <RhoTrials> = 256 is used.
-##    \item{-} If <effort>~=~4, as above, but <RhoTrials> = 2048.
-##    \item{-} If <effort>~=~5, as above, but <RhoTrials> = 8192.
-##             Returned factors below $10^{12}$ are guaranteed to be prime,
-##             and all prime factors below $10^6$ are guaranteed to be found.
-##    \item{-} If <effort>~=~6 and {\sf FactInt} is loaded, in addition to
-##             the above quite a number of special cases are handled.
-##    \item{-} If <effort>~=~7 and {\sf FactInt} is loaded, the only thing
-##             which is not attempted to obtain a full factorization into
-##             Baillie-Pomerance-Selfridge-Wagstaff pseudoprimes is the
-##             application of the MPQS to a remaining composite with more
-##             than 50 decimal digits.
-##  \endlist
-##  Increasing the value of the argument <effort> by one usually results
+##  <Description>
+##  <Ref Oper="PartialFactorization"/> returns a partial factorization of the
+##  integer <A>n</A>.
+##  No assertions are made about the primality of the factors,
+##  except of those mentioned below.
+##  <P/>
+##  The argument <A>effort</A>, if given, specifies how intensively the
+##  function should try to determine factors of <A>n</A>.
+##  The default is <A>effort</A>&nbsp;=&nbsp;5.
+##  <P/>
+##  <List>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;0, trial division by the primes below 100
+##   is done.
+##   Returned factors below <M>10^4</M> are guaranteed to be prime.
+##  </Item>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;1, trial division by the primes below 1000
+##   is done.
+##   Returned factors below <M>10^6</M> are guaranteed to be prime.
+##  </Item>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;2, additionally trial division by the
+##   numbers in the lists <C>Primes2</C> and
+##   <C>ProbablePrimes2</C> is done, and perfect powers are detected.
+##   Returned factors below <M>10^6</M> are guaranteed to be prime.
+##  </Item>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;3, additionally <C>FactorsRho</C>
+##   (Pollard's Rho) with <C>RhoTrials</C> = 256 is used.
+##  </Item>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;4, as above, but <C>RhoTrials</C> = 2048.
+##  </Item>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;5, as above, but <C>RhoTrials</C> = 8192.
+##   Returned factors below <M>10^{12}</M> are guaranteed to be prime,
+##   and all prime factors below <M>10^6</M> are guaranteed to be found.
+##  </Item>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;6 and the package <Package>FactInt</Package>
+##   is loaded, in addition to the above quite a number of special cases are
+##   handled.
+##  </Item>
+##  <Item>
+##   If <A>effort</A>&nbsp;=&nbsp;7 and the package <Package>FactInt</Package>
+##   is loaded, the only thing which is not attempted to obtain a full
+##   factorization into Baillie-Pomerance-Selfridge-Wagstaff pseudoprimes
+##   is the application of the MPQS to a remaining composite with more
+##   than 50 decimal digits.
+##  </Item>
+##  </List>
+##  <P/>
+##  Increasing the value of the argument <A>effort</A> by one usually results
 ##  in an increase of the runtime requirements by a factor of (very roughly!)
-##  3 to~10.
+##  3 to&nbsp;10.
+##  (Also see <Ref Func="CheapFactorsInt" BookName="EDIM"/>).
+##  <Example><![CDATA[
+##  gap> List([0..5],i->PartialFactorization(7^64-1,i));
+##  [ [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17,
+##        1868505648951954197516197706132003401892793036353 ],
+##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353,
+##        5293217135841230021292344776577913319809612001 ],
+##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353,
+##        5293217135841230021292344776577913319809612001 ],
+##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553,
+##        25993886839444213788175959621751342817 ],
+##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553, 134818753,
+##        192806165767192742008049574689 ],
+##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553, 7699649,
+##        134818753, 25040903262888053988961 ] ]
+#]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "PartialFactorization",
                   [ IsMultiplicativeElement, IsInt ] );
@@ -284,26 +554,47 @@ DeclareOperation( "PartialFactorization",
 ##
 #F  Gcdex( <m>, <n> ) . . . . . . . . . . greatest common divisor of integers
 ##
-##  returns a record <g> describing the extended greatest common divisor of
-##  <m> and <n>.
-##  The component `gcd' is this gcd,
-##  the components `coeff1' and `coeff2' are integer cofactors such that
-##  `<g>.gcd =  <g>.coeff1 * <m> + <g>.coeff2 * <n>',
-##  and the components `coeff3' and `coeff4' are integer cofactors such that
-##  `0 = <g>.coeff3 * <m> + <g>.coeff4 * <n>'.
+##  <#GAPDoc Label="Gcdex">
+##  <ManSection>
+##  <Func Name="Gcdex" Arg='m, n'/>
 ##
-##  If <m> and <n> both are nonzero, `AbsInt( <g>.coeff1 )' is less than or
-##  equal to `AbsInt(<n>) / (2 * <g>.gcd)' and `AbsInt( <g>.coeff2 )' is less
-##  than or equal to `AbsInt(<m>) / (2 * <g>.gcd)'.
-##  
-##  If <m> or <n> or both are zero `coeff3' is `-<n> / <g>.gcd' and
-##  `coeff4' is `<m> / <g>.gcd'.
-##  
+##  <Description>
+##  returns a record <C>g</C> describing the extended greatest common divisor
+##  of <A>m</A> and <A>n</A>.
+##  The component <C>gcd</C> is this gcd,
+##  the components <C>coeff1</C> and <C>coeff2</C> are integer cofactors
+##  such that <C>g.gcd = g.coeff1 * <A>m</A> + g.coeff2 * <A>n</A></C>,
+##  and the components <C>coeff3</C> and <C>coeff4</C> are integer cofactors
+##  such that <C>0 = g.coeff3 * <A>m</A> + g.coeff4 * <A>n</A></C>.
+##  <P/>
+##  If <A>m</A> and <A>n</A> both are nonzero,
+##  <C>AbsInt( g.coeff1 )</C> is less than or
+##  equal to <C>AbsInt(<A>n</A>) / (2 * g.gcd)</C>,
+##  and <C>AbsInt( g.coeff2 )</C> is less
+##  than or equal to <C>AbsInt(<A>m</A>) / (2 * g.gcd)</C>.
+##  <P/>
+##  If <A>m</A> or <A>n</A> or both are zero
+##  <C>coeff3</C> is <C>-<A>n</A> / g.gcd</C> and
+##  <C>coeff4</C> is <C><A>m</A> / g.gcd</C>.
+##  <P/>
 ##  The coefficients always form a unimodular matrix, i.e.,
-##  the determinant `<g>.coeff1 * <g>.coeff4 - <g>.coeff3 * <g>.coeff2'
-##  is $1$ or $-1$.
-#T not documented in the GAP 3 manual,
-#T shall this be an official function in GAP 4?
+##  the determinant
+##  <C>g.coeff1 * g.coeff4 - g.coeff3 * g.coeff2</C>
+##  is <M>1</M> or <M>-1</M>.
+##  <Example><![CDATA[
+##  gap> Gcdex( 123, 66 );
+##  rec( gcd := 3, coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41 )
+##  ]]></Example>
+##  This means <M>3 = 7 * 123 - 13 * 66</M>, <M>0 = -22 * 123 + 41 * 66</M>.
+##  <Example><![CDATA[
+##  gap> Gcdex( 0, -3 );
+##  rec( gcd := 3, coeff1 := 0, coeff2 := -1, coeff3 := 1, coeff4 := 0 )
+##  gap> Gcdex( 0, 0 );
+##  rec( gcd := 0, coeff1 := 1, coeff2 := 0, coeff3 := 0, coeff4 := 1 )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Gcdex" );
 
@@ -312,7 +603,15 @@ DeclareGlobalFunction( "Gcdex" );
 ##
 #F  IsEvenInt( <n> )  . . . . . . . . . . . . . . . . . . test if <n> is even
 ##
-##  tests if the integer <n> is divisible by 2.
+##  <#GAPDoc Label="IsEvenInt">
+##  <ManSection>
+##  <Func Name="IsEvenInt" Arg='n'/>
+##
+##  <Description>
+##  tests if the integer <A>n</A> is divisible by 2.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IsEvenInt" );
 
@@ -321,77 +620,57 @@ DeclareGlobalFunction( "IsEvenInt" );
 ##
 #F  IsOddInt( <n> ) . . . . . . . . . . . . . . . . . . .  test if <n> is odd
 ##
-##  tests if the integer <n> is not divisible by 2.
+##  <#GAPDoc Label="IsOddInt">
+##  <ManSection>
+##  <Func Name="IsOddInt" Arg='n'/>
+##
+##  <Description>
+##  tests if the integer <A>n</A> is not divisible by 2.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IsOddInt" );
 
 
-#############################################################################
-##
-#F  IsPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . .  test for a prime
-#F  IsProbablyPrimeInt( <n> ) . . . . . . . . . . . . . . .  test for a prime
-##
-##  `IsPrimeInt' returns `false'  if it can  prove that <n>  is composite and
-##  `true' otherwise.
-##  By  convention `IsPrimeInt(0) = IsPrimeInt(1) = false'
-##  and we define `IsPrimeInt( -<n> ) = IsPrimeInt( <n> )'.
-##
-##  `IsPrimeInt' will return  `true' for every prime $n$.  `IsPrimeInt'  will
-##  return `false' for all composite $n \< 10^{13}$ and for all composite $n$
-##  that have   a factor  $p \<  1000$.   So for  integers $n    \< 10^{13}$,
-##  `IsPrimeInt' is  a    proper primality test.    It  is  conceivable  that
-##  `IsPrimeInt' may  return `true' for some  composite $n > 10^{13}$, but no
-##  such $n$ is currently known.  So for integers $n > 10^{13}$, `IsPrimeInt'
-##  is a  probable-primality test. `IsPrimeInt' will issue a
-##  warning when its argument is probably prime but not a proven prime.
-##  (The function `IsProbablyPrimeInt' will do the same calculations but not 
-##  issue a warning.) The warning can be switched off by 
-##  `SetInfoLevel( InfoPrimeInt, 0 );', the default level is $1$.
-##
-##  If composites that  fool `IsPrimeInt' do exist, they  would be extremely
-##  rare, and finding one by pure chance might be less likely than finding a
-##  bug in {\GAP}. We would appreciate being informed about any example of a
-##  composite number <n> for which `IsPrimeInt' returns `true'.
-##
-##  `IsPrimeInt' is a deterministic algorithm, i.e., the computations involve
-##  no random numbers, and repeated calls will always return the same result.
-##  `IsPrimeInt' first   does trial divisions  by the  primes less than 1000.
-##  Then it tests  that  $n$  is a   strong  pseudoprime w.r.t. the base   2.
-##  Finally it  tests whether $n$ is  a Lucas pseudoprime w.r.t. the smallest
-##  quadratic nonresidue of  $n$.  A better  description can be found in  the
-##  comment in the library file `integer.gi'.
-##
-##  The time taken by `IsPrimeInt' is approximately proportional to the third
-##  power  of  the number  of  digits of <n>.   Testing numbers  with several
-##  hundreds digits is quite feasible.
-##
-##  `IsPrimeInt' is a method for the general operation `IsPrime'.
-##
-##  Remark: In future versions of {\GAP} we hope to change the definition of 
-##  `IsPrimeInt' to return `true' only for proven primes (currently, we lack
-##  a sufficiently good primality proving function). In applications, use
-##  explicitly `IsPrimeInt' or `IsProbablePrimeInt' with this change in
-##  mind.
-##  
-UnbindGlobal( "IsPrimeInt" );
-DeclareGlobalFunction( "IsPrimeInt" );
-DeclareGlobalFunction( "IsProbablyPrimeInt" );
+DeclareGlobalFunction( "IsPrimeIntOld" ); # old method still available
 
 
 #############################################################################
 ##
 #F  IsPrimePowerInt( <n> )  . . . . . . . . . . . test for a power of a prime
 ##
-##  `IsPrimePowerInt' returns `true' if the integer <n>  is a prime power and
-##  `false' otherwise.
+##  <#GAPDoc Label="IsPrimePowerInt">
+##  <ManSection>
+##  <Func Name="IsPrimePowerInt" Arg='n'/>
 ##
-##  $n$ is a *prime power* if there exists a prime $p$ and a positive integer
-##  $i$ such that $p^i = n$.  If $n$ is negative the  condition is that there
-##  must exist a negative prime $p$ and an odd positive integer $i$ such that
-##  $p^i = n$.  1 and -1 are not prime powers.
-##
-##  Note    that `IsPrimePowerInt'      uses       `SmallestRootInt'     (see
-##  "SmallestRootInt") and a probable-primality test (see "IsPrimeInt").
+##  <Description>
+##  <Ref Func="IsPrimePowerInt"/> returns <K>true</K> if the integer <A>n</A>
+##  is a prime power and <K>false</K> otherwise.
+##  <P/>
+##  An integer <M>n</M> is a <E>prime power</E> if there exists a prime <M>p</M> and a
+##  positive integer <M>i</M> such that <M>p^i = n</M>.
+##  If <M>n</M> is negative the condition is that there
+##  must exist a negative prime <M>p</M> and an odd positive integer <M>i</M>
+##  such that <M>p^i = n</M>.
+##  The integers 1 and -1 are not prime powers.
+##  <P/>
+##  Note that <Ref Func="IsPrimePowerInt"/> uses
+##  <Ref Func="SmallestRootInt"/>
+##  and a probable-primality test (see <Ref Func="IsPrimeInt"/>).
+##  <Example><![CDATA[
+##  gap> IsPrimePowerInt( 31^5 );
+##  true
+##  gap> IsPrimePowerInt( 2^31-1 );  # 2^31-1 is actually a prime
+##  true
+##  gap> IsPrimePowerInt( 2^63-1 );
+##  false
+##  gap> Filtered( [-10..10], IsPrimePowerInt );
+##  [ -8, -7, -5, -3, -2, 2, 3, 4, 5, 7, 8, 9 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IsPrimePowerInt" );
 
@@ -400,9 +679,22 @@ DeclareGlobalFunction( "IsPrimePowerInt" );
 ##
 #F  LcmInt( <m>, <n> )  . . . . . . . . . . least common multiple of integers
 ##
-##  returns the least common multiple of the integers <m> and <n>.
+##  <#GAPDoc Label="LcmInt">
+##  <ManSection>
+##  <Func Name="LcmInt" Arg='m, n'/>
 ##
-##  `LcmInt' is a method used by the general function `Lcm'.
+##  <Description>
+##  returns the least common multiple of the integers <A>m</A> and <A>n</A>.
+##  <P/>
+##  <Ref Func="LcmInt"/> is a method used by the general operation
+##  <Ref Oper="Lcm" Label="for (a ring and) several elements"/>.
+##  <Example><![CDATA[
+##  gap> LcmInt( 123, 66 );
+##  2706
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LcmInt" );
 
@@ -411,14 +703,35 @@ DeclareGlobalFunction( "LcmInt" );
 ##
 #F  LogInt( <n>, <base> ) . . . . . . . . . . . . . . logarithm of an integer
 ##
-##  `LogInt'   returns  the  integer part  of  the logarithm of  the positive
-##  integer  <n> with  respect to   the positive integer   <base>, i.e.,  the
-##  largest positive integer <exp> such  that $base^{exp} \leq  n$.  `LogInt'
-##  will signal an error if either <n> or <base> is not positive.
-##  
-##  For <base> $2$ this is very efficient because the internal binary
-##  representation of the integer is used. 
-##  
+##  <#GAPDoc Label="LogInt">
+##  <ManSection>
+##  <Func Name="LogInt" Arg='n, base'/>
+##
+##  <Description>
+##  <Ref Func="LogInt"/> returns the integer part of the logarithm of the
+##  positive integer <A>n</A> with respect to the positive integer
+##  <A>base</A>, i.e.,
+##  the largest positive integer <M>e</M> such that
+##  <M><A>base</A>^e \leq <A>n</A></M>. 
+##  The function
+##  <Ref Func="LogInt"/>
+##  will signal an error if either <A>n</A> or <A>base</A> is not positive.
+##  <P/>
+##  For <A>base</A> <M>= 2</M> this is very efficient because the internal
+##  binary representation of the integer is used. 
+##  <P/>
+##  <Example><![CDATA[
+##  gap> LogInt( 1030, 2 );
+##  10
+##  gap> 2^10;
+##  1024
+##  gap> LogInt( 1, 10 );
+##  0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "LogInt" );
 
 
@@ -426,11 +739,24 @@ DeclareGlobalFunction( "LogInt" );
 ##
 #F  NextPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . next larger prime
 ##
-##  `NextPrimeInt' returns the smallest prime  which is strictly larger  than
-##  the integer <n>.
+##  <#GAPDoc Label="NextPrimeInt">
+##  <ManSection>
+##  <Func Name="NextPrimeInt" Arg='n'/>
 ##
-##  Note  that     `NextPrimeInt'  uses  a    probable-primality  test   (see
-##  "IsPrimeInt").
+##  <Description>
+##  <Ref Func="NextPrimeInt"/> returns the smallest prime which is strictly
+##  larger than the integer <A>n</A>.
+##  <P/>
+##  Note that <Ref Func="NextPrimeInt"/> uses a probable-primality test
+##  (see <Ref Func="IsPrimeInt"/>).
+##  <Example><![CDATA[
+##  gap> NextPrimeInt( 541 ); NextPrimeInt( -1 );
+##  547
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "NextPrimeInt" );
 
@@ -439,13 +765,24 @@ DeclareGlobalFunction( "NextPrimeInt" );
 ##
 #F  PowerModInt( <r>, <e>, <m> )  . . . . power of one integer modulo another
 ##
-##  returns $r^e\pmod{m}$ for integers <r>,<e> and <m> ($e\ge 0$).
-##  Note that using `<r> ^ <e> mod <m>' will generally  be slower,
-##  because it can not reduce intermediate results the way `PowerModInt'
-##  does but would compute `<r>^<e>' first and then reduce the result
-##  afterwards.
+##  <#GAPDoc Label="PowerModInt">
+##  <ManSection>
+##  <Func Name="PowerModInt" Arg='r, e, m'/>
 ##
-##  `PowerModInt' is a method for the general operation `PowerMod'.
+##  <Description>
+##  returns <M><A>r</A>^{<A>e</A>} \pmod{<A>m</A>}</M> for integers <A>r</A>,
+##  <A>e</A> and <A>m</A> (<M><A>e</A> \geq 0</M>).
+##  Note that using <C><A>r</A>^<A>e</A> mod <A>m</A></C> will generally be
+##  slower, because it cannot reduce intermediate results the way
+##  <Ref Func="PowerModInt"/>
+##  does but would compute <M><A>r</A>^{<A>e</A>}</M> first and then reduce
+##  the result afterwards.
+##  <P/>
+##  <Ref Func="PowerModInt"/> is a method for the general operation
+##  <Ref Oper="PowerMod"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PowerModInt" );
 
@@ -454,11 +791,24 @@ DeclareGlobalFunction( "PowerModInt" );
 ##
 #F  PrevPrimeInt( <n> ) . . . . . . . . . . . . . . .  previous smaller prime
 ##
-##  `PrevPrimeInt' returns the largest prime  which is  strictly smaller than
-##  the integer <n>.
+##  <#GAPDoc Label="PrevPrimeInt">
+##  <ManSection>
+##  <Func Name="PrevPrimeInt" Arg='n'/>
 ##
-##  Note  that    `PrevPrimeInt'   uses   a  probable-primality    test  (see
-##  "IsPrimeInt").
+##  <Description>
+##  <Ref Func="PrevPrimeInt"/> returns the largest prime which is strictly
+##  smaller than the integer <A>n</A>.
+##  <P/>
+##  Note that <Ref Func="PrevPrimeInt"/> uses a probable-primality test
+##  (see <Ref Func="IsPrimeInt"/>).
+##  <Example><![CDATA[
+##  gap> PrevPrimeInt( 541 ); PrevPrimeInt( 1 );
+##  523
+##  -2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PrevPrimeInt" );
 
@@ -467,8 +817,22 @@ DeclareGlobalFunction( "PrevPrimeInt" );
 ##
 #F  PrimePowersInt( <n> ) . . . . . . . . . . . . . . . . prime powers of <n>
 ##
-##  returns the prime factorization of the integer <n> as a list
-##  $[ p_1, e_1, \ldots, p_n, e_n ]$ with $n = \prod_{i=1}^n p_i^{e_i}$.
+##  <#GAPDoc Label="PrimePowersInt">
+##  <ManSection>
+##  <Func Name="PrimePowersInt" Arg='n'/>
+##
+##  <Description>
+##  returns the prime factorization of the integer <A>n</A> as a list
+##  <M>[ p_1, e_1, \ldots, p_k, e_k ]</M> with
+##  <A>n</A> = <M>p_1^{{e_1}} \cdot p_2^{{e_2}} \cdot ... \cdot p_k^{{e_k}}</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PrimePowersInt( Factorial( 7 ) );
+##  [ 2, 4, 3, 2, 5, 1, 7, 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PrimePowersInt" );
 
@@ -478,15 +842,40 @@ DeclareGlobalFunction( "PrimePowersInt" );
 #F  RootInt( <n> )  . . . . . . . . . . . . . . . . . . .  root of an integer
 #F  RootInt( <n>, <k> )
 ##
-##  `RootInt' returns the integer part of the <k>th root  of the integer <n>.
-##  If the optional integer argument <k> is not given it defaults to 2, i.e.,
-##  `RootInt' returns the integer part of the square root in this case.
+##  <#GAPDoc Label="RootInt">
+##  <ManSection>
+##  <Func Name="RootInt" Arg='n[, k]'/>
 ##
-##  If  <n> is positive, `RootInt' returns  the  largest positive integer $r$
-##  such that $r^k \leq n$.  If <n>  is negative and  <k>  is  odd  `RootInt'
-##  returns `-RootInt( -<n>,  <k> )'.  If  <n> is negative   and <k> is  even
-##  `RootInt' will cause an error.  `RootInt' will also cause an error if <k>
+##  <Description>
+##  <Index Subkey="of an integer">root</Index>
+##  <Index Subkey="of an integer">square root</Index>
+##  <Ref Func="RootInt"/> returns the integer part of the <A>k</A>th root of
+##  the integer <A>n</A>.
+##  If the optional integer argument <A>k</A> is not given it defaults to 2,
+##  i.e., <Ref Func="RootInt"/> returns the integer part of the square root
+##  in this case.
+##  <P/>
+##  If <A>n</A> is positive, <Ref Func="RootInt"/> returns the largest
+##  positive integer <M>r</M> such that <M>r^{<A>k</A>} \leq <A>n</A></M>.
+##  If <A>n</A> is negative and <A>k</A> is odd <Ref Func="RootInt"/>
+##  returns <C>-RootInt( -<A>n</A>,  <A>k</A> )</C>.
+##  If <A>n</A> is negative and <A>k</A> is even
+##  <Ref Func="RootInt"/> will cause an error.
+##  <Ref Func="RootInt"/> will also cause an error if <A>k</A>
 ##  is 0 or negative.
+##  <Example><![CDATA[
+##  gap> RootInt( 361 );
+##  19
+##  gap> RootInt( 2 * 10^12 );
+##  1414213
+##  gap> RootInt( 17000, 5 );
+##  7
+##  gap> 7^5;
+##  16807
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "RootInt" );
 
@@ -495,8 +884,26 @@ DeclareGlobalFunction( "RootInt" );
 ##
 #F  SignInt( <n> )  . . . . . . . . . . . . . . . . . . .  sign of an integer
 ##
-##  `SignInt' returns the sign of the integer <n>, i.e., 1 if <n> is
-##  positive, -1 if <n> is negative and 0 if <n> is 0.
+##  <#GAPDoc Label="SignInt">
+##  <ManSection>
+##  <Func Name="SignInt" Arg='n'/>
+##
+##  <Description>
+##  <Index Subkey="of an integer">sign</Index>
+##  <Ref Func="SignInt"/> returns the sign of the integer <A>n</A>,
+##  i.e., 1 if <A>n</A> is positive,
+##  -1 if <A>n</A> is negative and 0 if <A>n</A> is 0.
+##  <Example><![CDATA[
+##  gap> SignInt( 33 );
+##  1
+##  gap> SignInt( -214378 );
+##  -1
+##  gap> SignInt( 0 );
+##  0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SignInt" );
 #T attribute `Sign' (also for e.g. permutations)?
@@ -507,11 +914,38 @@ DeclareGlobalFunction( "SignInt" );
 ##
 #F  SmallestRootInt( <n> )  . . . . . . . . . . . smallest root of an integer
 ##
-##  `SmallestRootInt' returns the smallest root of the integer <n>.
+##  <#GAPDoc Label="SmallestRootInt">
+##  <ManSection>
+##  <Func Name="SmallestRootInt" Arg='n'/>
 ##
-##  The  smallest  root of an  integer $n$  is  the  integer $r$  of smallest
-##  absolute  value for which  a  positive integer $k$ exists such  that $n =
-##  r^k$.
+##  <Description>
+##  <Index Subkey="of an integer, smallest">root</Index>
+##  <Ref Func="SmallestRootInt"/> returns the smallest root of the integer
+##  <A>n</A>.
+##  <P/>
+##  The smallest root of an integer <A>n</A> is the integer <M>r</M> of
+##  smallest absolute value for which a positive integer <M>k</M> exists
+##  such that <M><A>n</A> = r^k</M>.
+##  <Example><![CDATA[
+##  gap> SmallestRootInt( 2^30 );
+##  2
+##  gap> SmallestRootInt( -(2^30) );
+##  -4
+##  ]]></Example>
+##  <P/>
+##  Note that <M>(-2)^{30} = +(2^{30})</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SmallestRootInt( 279936 );
+##  6
+##  gap> LogInt( 279936, 6 );
+##  7
+##  gap> SmallestRootInt( 1001 );
+##  1001
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SmallestRootInt" );
 
@@ -520,8 +954,20 @@ DeclareGlobalFunction( "SmallestRootInt" );
 ##
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
 ##
-##  prints the prime factorization of the integer <n> in human-readable
+##  <#GAPDoc Label="PrintFactorsInt">
+##  <ManSection>
+##  <Func Name="PrintFactorsInt" Arg='n'/>
+##
+##  <Description>
+##  prints the prime factorization of the integer <A>n</A> in human-readable
 ##  form.
+##  <Example><![CDATA[
+##  gap> PrintFactorsInt( Factorial( 7 ) ); Print( "\n" );
+##  2^4*3^2*5*7
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PrintFactorsInt" );
 
@@ -529,14 +975,20 @@ DeclareGlobalFunction( "PrintFactorsInt" );
 ##
 #F  PowerDecompositions( <n> )
 ##
-##  returns a list of all nontrivial decompositions of the integer <n> as a
-##  power of integers.
+##  <ManSection>
+##  <Func Name="PowerDecompositions" Arg='n'/>
+##
+##  <Description>
+##  returns a list of all nontrivial decompositions of the integer <A>n</A>
+##  as a power of integers.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "PowerDecompositions" );
+
+DeclareGlobalFunction( "TraceModQF" ); # forward declaration
 
 
 #############################################################################
 ##
-#E  integer.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
+#E

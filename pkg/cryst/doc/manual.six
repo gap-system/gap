@@ -1,0 +1,111 @@
+C introduction.tex 1. Introduction
+I 1.0. cryst
+C cryst.tex 2. Affine crystallographic groups
+F 2.0. SetCrystGroupDefaultAction
+S 2.1. Construction
+I 2.1. construction!of an AffineCrystGroup
+F 2.1. AffineCrystGroupOnRight
+F 2.1. AffineCrystGroupOnRight
+F 2.1. AffineCrystGroupOnRight
+F 2.1. AsAffineCrystGroupOnRight
+F 2.1. IsAffineCrystGroupOnRight
+F 2.1. AffineCrystGroupOnLeft
+F 2.1. AffineCrystGroupOnLeft
+F 2.1. AffineCrystGroupOnLeft
+F 2.1. AsAffineCrystGroupOnLeft
+F 2.1. IsAffineCrystGroupOnLeft
+F 2.1. AffineCrystGroup
+F 2.1. AffineCrystGroup
+F 2.1. AffineCrystGroup
+F 2.1. AsAffineCrystGroup
+F 2.1. IsAffineCrystGroup
+F 2.1. TransposedMatrixGroup
+S 2.2. Point group
+I 2.2. point group!of an AffineCrystGroup
+F 2.2. PointGroup
+F 2.2. IsPointGroup
+F 2.2. AffineCrystGroupOfPointGroup
+F 2.2. PointHomomorphism
+F 2.2. IsPointHomomorphism
+S 2.3. Translation lattice
+I 2.3. translation lattice!of an AffineCrystGroup
+F 2.3. TranslationBasis
+F 2.3. InternalBasis
+F 2.3. AddTranslationBasis
+F 2.3. CheckTranslationBasis
+F 2.3. IsSpaceGroup
+F 2.3. IsStandardAffineCrystGroup
+F 2.3. IsStandardSpaceGroup
+F 2.3. StandardAffineCrystGroup
+F 2.3. IsSymmorphicSpaceGroup
+S 2.4. Special methods
+I 2.4. methods!for an AffineCrystGroup
+I 2.4. \\{\accent 94 }!for an `AffineCrystGroup'
+F 2.4. power!for an `AffineCrystGroup'
+F 2.4. IsomorphismFpGroup!for a `PointGroup'
+F 2.4. IsomorphismFpGroup!for an `AffineCrystGroup'
+F 2.4. IsomorphismPcpGroup!for a `PointGroup'
+F 2.4. IsomorphismPcpGroup!for an `AffineCrystGroup'
+S 2.5. Maximal subgroups
+I 2.5. subgroups!maximal!for an AffineCrystGroup
+I 2.5. maximal subgroups!for an AffineCrystGroup
+F 2.5. MaximalSubgroupClassReps!for an `AffineCrystGroup'
+F 2.5. ConjugacyClassesMaximalSubgroups!for an `AffineCrystGroup'
+S 2.6. Space groups with a given point group
+I 2.6. space groups!for given point group
+F 2.6. SpaceGroupsByPointGroupOnRight
+F 2.6. SpaceGroupsByPointGroupOnRight
+F 2.6. SpaceGroupsByPointGroupOnRight
+F 2.6. SpaceGroupTypesByPointGroupOnRight
+F 2.6. SpaceGroupTypesByPointGroupOnRight
+F 2.6. SpaceGroupsByPointGroupOnLeft
+F 2.6. SpaceGroupsByPointGroupOnLeft
+F 2.6. SpaceGroupsByPointGroupOnLeft
+F 2.6. SpaceGroupTypesByPointGroupOnLeft
+F 2.6. SpaceGroupTypesByPointGroupOnLeft
+F 2.6. SpaceGroupsByPointGroup
+F 2.6. SpaceGroupsByPointGroup
+F 2.6. SpaceGroupsByPointGroup
+F 2.6. SpaceGroupTypesByPointGroupOnLeft
+F 2.6. SpaceGroupTypesByPointGroupOnLeft
+S 2.7. Wyckoff positions
+F 2.7. WyckoffPositions
+F 2.7. WyckoffPositionsByStabilizer
+F 2.7. IsWyckoffPosition
+F 2.7. WyckoffBasis
+F 2.7. WyckoffTranslation
+F 2.7. WyckoffSpaceGroup
+F 2.7. WyckoffStabilizer
+F 2.7. WyckoffOrbit
+F 2.7. WyckoffGraph
+F 2.7. WyckoffGraph
+S 2.8. Normalizers
+I 2.8. normalizer!of an AffineCrystGroup
+F 2.8. NormalizerPointGroupInGLnZ
+F 2.8. CentralizerPointGroupInGLnZ
+I 2.8. normalizer!in translation group
+F 2.8. TranslationNormalizer
+I 2.8. normalizer!in affine group
+F 2.8. AffineNormalizer
+F 2.8. AffineInequivalentSubgroups
+F 2.8. ConjugatorSpaceGroups
+S 2.9. Color groups
+F 2.9. ColorGroup
+F 2.9. IsColorGroup
+F 2.9. ColorSubgroup
+F 2.9. ColorCosetList
+F 2.9. ColorOfElement
+F 2.9. ColorPermGroup
+F 2.9. ColorHomomorphism
+F 2.9. Subgroup!for color groups
+S 2.10. Colored AffineCrystGroups
+F 2.10. PointGroup!for a colored `AffineCrystGroup'
+I 2.10. colorings!inequivalent!for space group
+S 2.11. International Tables
+F 2.11. SpaceGroupSettingsIT
+F 2.11. SpaceGroupOnRightIT
+F 2.11. SpaceGroupOnRightIT
+F 2.11. SpaceGroupOnLeftIT
+F 2.11. SpaceGroupOnLeftIT
+F 2.11. SpaceGroupIT
+F 2.11. SpaceGroupIT

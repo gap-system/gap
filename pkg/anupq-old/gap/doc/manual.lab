@@ -1,0 +1,28 @@
+\makelabel {anupq:introduction}{1}
+\makelabel {anupq:the anu pq in gap 4}{2}
+\makelabel {anupq:computing p-quotients}{2.1}
+\makelabel {anupq:pq}{2.1.1}
+\makelabel {anupq:pqepimorphism}{2.1.2}
+\makelabel {anupq:computing descendants of a p-group}{2.2}
+\makelabel {anupq:pqdescendants}{2.2.1}
+\makelabel {anupq:pqlist}{2.2.2}
+\makelabel {anupq:pqlist}{2.2.2}
+\makelabel {anupq:pqlist}{2.2.2}
+\makelabel {anupq:savepqlist}{2.2.3}
+\makelabel {anupq:computing standard presentations}{2.3}
+\makelabel {anupq:standardpresentation}{2.3.1}
+\makelabel {anupq:standardpresentation}{2.3.1}
+\makelabel {anupq:epimorphismstandardpresentation}{2.3.2}
+\makelabel {anupq:testing p-groups upon isomorphism}{2.4}
+\makelabel {anupq:isisomorphicpgroup}{2.4.1}
+\makelabel {anupq:installing the anu pq package}{3}
+\makelabel {anupq:bibliography}{1}
+\setcitlab {HN80}{HN80}
+\setcitlab {New77}{New77}
+\setcitlab {OBr90}{O{\accent 19{}B}r90}
+\setcitlab {OBr94}{O{\accent 19{}B}r94}
+\setcitlab {OBr95}{O{\accent 19{}B}r95}
+\setcitlab {Vau84}{VL84}
+\setcitlab {Vau90b}{VL90a}
+\setcitlab {Vau90a}{VL90b}
+\makelabel {anupq:index}{2}

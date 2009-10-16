@@ -2,7 +2,7 @@
 ##
 #W  ringsc.gd                   GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ringsc.gd,v 1.2 2008/07/12 04:10:34 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,7 +10,7 @@
 ##  with structure constants for multiplication. Is is based on algsc.gd
 ##
 Revision.ringsc_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: ringsc.gd,v 1.2 2008/07/12 04:10:34 gap Exp $";
 
 #############################################################################
 ##

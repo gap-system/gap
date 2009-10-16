@@ -2,7 +2,7 @@
 ##
 #W  modulmat.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: modulmat.gi,v 4.21 2009/10/01 15:26:24 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -19,7 +19,7 @@
 ##  suffices.)
 ##
 Revision.modulmat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: modulmat.gi,v 4.21 2009/10/01 15:26:24 gap Exp $";
 
 
 #############################################################################
@@ -95,8 +95,11 @@ InstallMethod( IsMatrixModule,
     function( M )
     local gens;
     gens:= GeneratorsOfLeftModule( M );
-    return    ( IsEmpty( gens ) and IsMatrix( Zero( M ) ) )
-           or ForAll( gens, IsMatrix );
+    if IsEmpty( gens ) then
+      return IsMatrix( Zero( M ) );
+    else
+      return ForAll( gens, IsMatrix );
+    fi;
     end );
 
 

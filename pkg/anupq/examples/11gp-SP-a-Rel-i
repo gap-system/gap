@@ -1,0 +1,40 @@
+#Example: "11gp-SP-a-Rel-i" . . . based on: isom/11gp_a.com
+#(equivalent to "11gp-SP-a-i" but uses the `Relators' option)
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, StandardPresentationFile
+F := FreeGroup("a", "b");
+rels := ["a^11", "b^11*[b, a, a]^-2", "[b, a, b, b, b, b]"];
+procId := PqStart(F : Prime := 11, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+#sub <OutputLevel> for <0> if set and ok
+PqSetOutputLevel(procId, 0);;
+PqSPComputePcpAndPCover(procId : ClassBound := 3);;
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also save the presentation to a file by supplying <StandardPresentationFile>
+PqSPStandardPresentation(procId, [ [[1,0,0,0,1],
+                                    [0,1,0,0,0]],
+
+                                   [[1,0,0,0,0],
+                                    [0,1,0,1,0]],
+
+                                   [[1,0,0,0,0],
+                                    [0,1,0,0,1]],
+
+                                   [[1,0,0,0,0],
+                                    [3,1,0,0,0]],
+
+                                   [[1,0,0,0,0],
+                                    [9,3,0,0,0]],
+
+                                   [[1,0,0,0,0],
+                                    [6,6,0,0,0]],
+
+                                   [[10,0,0,0,0],
+                                    [2,1,0,0,0]] ]
+
+                         : # options
+#add <StandardPresentationFile> for <value> if set and ok
+#                          StandardPresentationFile := value,
+#sub <ClassBound> for <19> if set
+                           ClassBound := 19,
+                           PcgsAutomorphisms);;

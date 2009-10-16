@@ -1,0 +1,22 @@
+#Example: "StandardPresentation-i" . . . based on manual example
+#(demonstrates `StandardPresentation' interactive usage)
+#vars: F4, a, b, c, d, G4, procId, lev;
+#options: 
+F4 := FreeGroup( "a", "b", "c", "d" );
+a := F4.1; b := F4.2; c := F4.3; d := F4.4;
+G4 := F4 / [ b^4, b^2 / Comm(Comm (b, a), a), d^16,
+             a^16 / (c * d), b^8 / (d * c^4) ];
+procId := PqStart( G4 );
+Pq( procId : Prime := 2, ClassBound := 1 );
+## the computed p-quotient is ``remembered'' and supplies the
+## `pQuotient' option to `StandardPresentation' ...
+StandardPresentation( procId : ClassBound := 14 );
+## `StandardPresentation' and `EpimorphismStandardPresentation'
+## behave like attributes, so no computation is done when
+## either is called again for the same process ...
+lev := InfoLevel(InfoANUPQ);
+SetInfoLevel(InfoANUPQ, 2);; # To see computation time
+EpimorphismStandardPresentation( procId : ClassBound := 14 );
+## No timing data was Info-ed since no computation was done
+SetInfoLevel(InfoANUPQ, lev);; # Restore previous InfoANUPQ level
+

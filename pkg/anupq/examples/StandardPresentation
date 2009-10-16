@@ -1,0 +1,32 @@
+#Example: "StandardPresentation" . . . based on manual example
+#(demonstrates `StandardPresentation' usage)
+#vars: F, a, b, procId1, procId2, procId3, G, S, Spc, H, F4, c, d, G4, K;
+#options: 
+F := FreeGroup( "a", "b" ); a := F.1; b := F.2;
+G := F / [a^25, Comm(Comm(b, a), a), b^5];
+#alt: do
+#procId1 := PqStart( G );
+#alt: sub <procId1> for <G>
+S := StandardPresentation( G : Prime := 5, ClassBound := 10 );
+IsPcGroup( S );
+## if we need to compute with S we should convert it to a pc group
+Spc := PcGroupFpGroup( S );
+
+H := F / [ a^625, Comm(Comm(Comm(Comm(b, a), a), a), a)/Comm(b, a)^5,
+           Comm(Comm(b, a), b), b^625 ];
+#alt: do
+#procId2 := PqStart( H );
+#alt: sub <procId2> for <H>
+StandardPresentation( H : Prime := 5, ClassBound := 15, 
+                          Metabelian );
+
+F4 := FreeGroup( "a", "b", "c", "d" );
+a := F4.1; b := F4.2; c := F4.3; d := F4.4;
+G4 := F4 / [ b^4, b^2 / Comm(Comm (b, a), a), d^16,
+             a^16 / (c * d), b^8 / (d * c^4) ];
+#alt: do
+#procId3 := PqStart( G4 );
+#alt: sub <procId3> for <G4>
+K := Pq( G4 : Prime := 2, ClassBound := 1 );
+#alt: sub <procId3> for <G4>
+StandardPresentation( G4 : pQuotient := K, ClassBound := 14 );

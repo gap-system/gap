@@ -1,0 +1,28 @@
+
+gap/basic:
+
+Basic functions to compute with infinite polycyclic groups.
+Incorporates everything related to collecting and elements
+of pcp groups. Further, includes computation with subgroups
+and factor groups of pcp groups as well as homomorphisms.
+
+collect.gd  -- declaration of all collector related things
+collect.gi  -- methods shared by all collector types
+colftl.gi   -- from the left collection
+colcom.gi   -- combinatorial collection           
+coldt.gi    -- deep thought collection
+colsave.gi  -- save functions for collectors
+colrec.gi   -- recursive collection (not yet available)
+
+pcpelms.gd/gi  --   pcp elements
+pcpgrps.gd/gi  --   groups of pcp elements
+pcppcps.gd/gi  --   induced and canonical pcp's of groups
+pcppara.gi     --   parallel pcp's
+pcpexpo.gd/gi  --   exponents wrt induced/mod pc
+pcpsers.gd/gi  --   various series' in pcp groups
+grphoms.gd/gi  --   group homomorphisms
+pcpfact.gd/gi  --   factor groups and modulo pcp 's
+pcplib.gd/gi   --   some generic pcp groups (AbelianPcpGroup etc)
+convert.gi     --   convert PcpGroup to PcGroup or FpGroup
+chngpcp.gi     --   change defining pcp (RefinedPcp etc)
+orbstab.gi     --   finite orbit-stabilizer method

@@ -1,0 +1,20 @@
+% Remember to use the lgrind style
+
+\File{checkStatus.c},{15:43},{Nov 25 1998}
+\L{\LB{\C{}\1\*_checkStatus}}
+\L{\LB{_\*___Checks_for_errors_reported_in_status.}}
+\L{\LB{_\*___If_status_is_not_OMsuccess_}}
+\L{\LB{_\*___then_prints_corresponding_error_message_and_exit;}}
+\L{\LB{_\*_status:_status_to_check}}
+\L{\LB{_\*\1\CE{}}}
+\L{\LB{\K{static}_\K{void}}}
+\L{\LB{\Proc{checkStatus}\V{checkStatus}(\V{OMstatus}_\V{status})}}
+\L{\LB{\{}}
+\L{\LB{__\K{char}_\V{tmp}[\N{1024}];}}
+\L{\LB{}}
+\L{\LB{__\K{if}_(\V{status}_!=_\V{OMsuccess})_\{}}
+\L{\LB{____\V{sprintf}(\V{tmp},_\S{}\3last_call_to_OMlib_returned_error_status_\%d_(\%s)\3\SE{},_\V{status},_\V{OMstatusToString}(\V{status}));}}
+\L{\LB{____\V{fatalError}(\V{status},_\V{tmp});}}
+\L{\LB{__\}}}
+\L{\LB{\}}}
+\L{\LB{}}

@@ -1,0 +1,25 @@
+syntax: regexp
+
+~$
+^CVS/
+/CVS$
+/CVS/
+/NONE$
+\.\#.*$
+^\.cvsignore$
+^\.DS_Store$
+/\.DS_Store$
+^\.DS_Store/
+\.orig$
+\.o$
+\.so$
+\.so\*$
+^extern/gmp-4.2.2/*
+^config\.log$
+^config\.status$
+^bin/gap\.sh$
+^sysinfo\.gap$
+^bin/i686-
+^Makefile$
+^extern/include/
+^extern/lib/

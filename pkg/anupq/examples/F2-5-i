@@ -1,0 +1,13 @@
+#Example: "F2-5-i" . . . based on: examples/F2-5
+#Construction of 5-quotient of a 2-generator free group
+#vars: F, procId;
+#options: OutputLevel
+F := FreeGroup("a", "b");
+procId := PqStart(F : Prime := 5);
+#comment: set a different print level by supplying <OutputLevel>
+PqPcPresentation(procId : ClassBound := 6, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqNextClass(procId);; #class 7
+PqNextClass(procId);; #class 8
+PqNextClass(procId);; #class 9

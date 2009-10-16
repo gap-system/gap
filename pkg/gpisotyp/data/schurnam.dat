@@ -1,0 +1,379 @@
+#############################################################################
+##
+#W  schurnam.dat         GAP 4 package `gpisotyp'               Thomas Breuer
+##
+#H  @(#)$Id: schurnam.dat,v 1.2 2002/07/10 16:32:46 gap Exp $
+##
+#Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the names of Schur multipliers of groups
+##  defined by the package.
+##  It is notified via an `AUTO' statement in `gap/stdnames.gd'.
+##
+##  Note that we define the translation to a description of the Schur
+##  multiplier is defined only for standard names;
+##  when one computes the Schur multiplier for a type via `...' then
+##  first the standard name is computed, and then the translation object is
+##  consulted.
+##
+Revision.( "gpisotyp/gap/schurnam_dat" ) :=
+    "@(#)$Id: schurnam.dat,v 1.2 2002/07/10 16:32:46 gap Exp $";
+
+
+#############################################################################
+##
+#V  TranslatorForNamesOfSchurMultipliersOfGroups
+##
+##  When this file is read automatically, we set the components `SortNames'
+##  and `TestNotificationsOfNames' initially to `false';
+##  after reading the file, the components are set to `true'.
+##  (The consistency checks are performed when the file is read from
+##  `tst/stdnames.tst'.)
+##
+BindGlobal( "TranslatorForNamesOfSchurMultipliersOfGroups",
+    EmptyNameTranslatorObject( rec(
+    NormalizedName           := LowercaseString,
+    ParseFunction            := ParseForwardsWithSuffix,
+    SortNames                := GpIsoTypGlobals.SortNames,
+    TestNotificationsOfNames := GpIsoTypGlobals.TestNotificationsOfNames ) )
+    );
+
+
+#############################################################################
+##
+##  Introduce shorthands that will be removed again in the end.
+##
+NIN:= function( name, translation )
+    NotifyIndividualTranslatedName(
+        TranslatorForNamesOfSchurMultipliersOfGroups, name, translation );
+end;
+
+NPN:= function( nameformat, translatedformat, conditions, map )
+    NotifyParametrizedTranslatedName(
+        TranslatorForNamesOfSchurMultipliersOfGroups, nameformat,
+        translatedformat, conditions, map );
+end;
+
+
+#############################################################################
+##
+##  cyclic groups `C<n>', $<n> \geq 1$:
+##  The Schur multiplier is trivial.
+##
+NPN( [ "C", IsDigitChar ],
+     [ "1" ],
+     [ 2, "IsPosInt" ],
+     [  ] );
+
+
+#############################################################################
+##
+##  alternating groups A<n>, $<n> \geq 4$:
+##  The Schur multiplier is $2$, except for $A6$ and $A7$, where it is $6$.
+##
+NPN( [ "A", IsDigitChar ],
+     [ "2" ],
+     [ 2, "n -> n >= 4",
+       2, "n -> not n in [ 6, 7 ]" ],
+     [  ] );
+NIN( "A6", "6" );
+NIN( "A7", "6" );
+
+
+#############################################################################
+##
+##  symmetric groups `S<n>', $<n> \geq 3$:
+##  The Schur multiplier is $2$, except for `S3', where it is trivial.
+##
+NPN( [ "S", IsDigitChar ],
+     [ "2" ],
+     [ 2, "n -> n >= 4" ],
+     [  ] );
+NIN( "S3", "1" );
+
+
+#############################################################################
+##
+##  sporadic simple groups
+##  (The information is stored in `data/stdnames.dat'.)
+##
+for entry in StandardizerForNamesOfGroups.SporadicSimpleGroupInfo do
+  NIN( entry[1], entry[4] );
+od;
+
+
+#############################################################################
+##
+##  projective special linear groups `L<n>(<q>)',
+##  $<n> \geq 2$, <q> a prime power:
+##  The Schur multiplier is cyclic of order $\gcd( <n>, <q>-1 )$,
+##  except for `L2(4)', `L2(9)', `L3(2)', `L3(4)', and `L4(2)',
+##  where it is $2$, $6$, $2$, $3 \times 4^4$, and $2$, respectively.
+##  (All these exceptions except `L3(4)' are covered by other cases.)
+##
+NPN( [ "L", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "n -> n >= 2",
+       4, "IsPrimePowerInt",
+       [ 2, 4 ], function( n, q )
+                     return not [ n, q ] in [ [ 2, 2 ], [ 2, 3 ], [ 2, 4 ], [ 2, 5 ], [ 2, 9 ], [ 3, 2 ], [ 3, 4 ], [ 4, 2 ] ];
+                 end ],
+       [ [ 2, 4 ], function( n, q ) return GcdInt( n, q-1 ); end, 1 ] );
+
+NIN( "L3(4)", "3x4^2" );
+
+
+#############################################################################
+##
+##  projective special unitary groups `U<n>(<q>)',
+##  $<n> \geq 3$, <q> a prime power:
+##  The Schur multiplier is of order $\gcd( <n>, <q>+1 )$,
+##  except for `U4(2)', `U4(3)', and `U6(2)',
+##  where it is $2$, $4 \times 3^2$, and $3 \times 2^2$, respectively.
+##
+NPN( [ "U", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "n -> n >= 3",
+       4, "IsPrimePowerInt",
+       [ 2, 4 ], "function( n, q ) return not [ n, q ] in [ [ 3, 2 ], [ 4, 2], [ 4, 3 ], [ 6, 2 ] ]; end" ],
+     [ [ 2, 4 ], "function( n, q ) return GcdInt( n, q+1 ); end", 1 ] );
+
+NIN( "U4(2)", "2" );
+NIN( "U4(3)", "4x3^2" );
+NIN( "U6(2)", "3x2^2" );
+
+
+#############################################################################
+##
+##  projective symplectic groups `S<n>(<q>)',
+##  $<n> \geq 4$ even, <q> a prime power:
+##  The Schur multiplier is of order $\gcd( 2, <q>-1 )$,
+##  except for $S6(2)$, where it is $2$.
+##
+NPN( [ "S", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "IsEvenInt",
+       2, "n -> n >= 4",
+       4, "IsPrimePowerInt",
+       [ 2, 4 ], "function( n, q ) return not [ n, q ] in [ [ 4, 2 ], [ 4, 3 ], [ 6, 2 ] ]; end" ],
+     [ 4, "q -> GcdInt( 2, q-1 )", 1 ] );
+
+NIN( "S6(2)", "2" );
+
+
+#############################################################################
+##
+##  orthogonal groups `O+<n>(<q>)', $<n> \geq 8$ even, <q> a prime power:
+##  The Schur multiplier is cyclic of order $\gcd( 4, <q>^(<n>/2)-1 )$ if <n>
+##  is not divisible by $4$, a Klein four group if <n> is divisible by $4$
+##  and <q> is odd, and trivial if <n> is divisible by $4$ and <q> is even,
+##  except for `O+8(2)', where it is a Klein four group.
+##
+NPN( [ "O+", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "IsEvenInt",
+       2, "n -> n >= 8",
+       2, "IsNotMultipleOf4",
+       4, "IsPrimePowerInt" ],
+     [ [ 2, 4 ], "function( n, q ) return GcdInt( 4, q^(n/2)-1 ); end", 1 ] );
+
+NPN( [ "O+", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ "2^2" ],
+     [ 2, "IsEvenInt",
+       2, "n -> n >= 8",
+       2, "IsMultipleOf4",
+       4, "IsPrimePowerInt",
+       4, "IsOddInt" ],
+     [  ] );
+
+NPN( [ "O+", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsEvenInt",
+       2, "n -> n >= 8",
+       2, "n -> n mod 4 = 0",
+       4, "IsPrimePowerInt",
+       4, "IsEvenInt",
+       [ 2, 4 ], "function( n, q ) return [ n, q ] <> [ 8, 2 ]; end" ],
+     [  ] );
+
+NIN( "O+8(2)", "2^2" );
+
+
+#############################################################################
+##
+##  orthogonal groups `O-<n>(<q>)', <n> even, <q> a prime power:
+##  The Schur multiplier is cyclic of order $\gcd( 4, <q>^(<n>/2)+1 )$.
+##
+NPN( [ "O-", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "IsEvenInt",
+       2, "n -> n >= 8",
+       4, "IsPrimePowerInt" ],
+     [ [ 2, 4 ], "function( n, q ) return GcdInt( 4, q^(n/2)+1 ); end", 1 ] );
+
+
+#############################################################################
+##
+##  orthogonal groups `O<n>(<q>)', $<n> \geq 7$ odd, <q> an odd prime power:
+##  The Schur multiplier is of order $\gcd( 2, <q>-1 ) = 2$,
+##  except for `O7(3)', where it is $6$.
+##
+NPN( [ "O", IsDigitChar, "(", IsDigitChar, ")" ],
+     [ "2" ],
+     [ 2, "IsOddInt",
+       2, "n -> n >= 7",
+       4, "IsPrimePowerInt",
+       4, "IsOddInt",
+       [ 2, 4 ], "function( n, q ) return [ n, q ] <> [ 7, 3 ]; end" ],
+     [ ] );
+
+NIN( "O7(3)", "6" );
+
+
+#############################################################################
+##
+##  exceptional groups `E6(<q>)', <q> a prime power:
+##  The Schur multiplier is $\gcd(3, <q>-1)$.
+##
+NPN( [ "E6(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "IsPrimePowerInt" ],
+     [ 2, "q -> GcdInt( 3, q-1 )", 1 ] );
+
+
+#############################################################################
+##
+##  exceptional groups `E7(<q>)', <q> a prime power:
+##  The Schur multiplier is $\gcd(2, <q>-1)$.
+##
+NPN( [ "E7(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "IsPrimePowerInt" ],
+     [ 2, "q -> GcdInt( 2, q-1 )", 1 ] );
+
+
+#############################################################################
+##
+##  exceptional groups `E8(<q>)', <q> a prime power:
+##  The Schur multiplier is trivial.
+##
+NPN( [ "E8(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsPrimePowerInt" ],
+     [  ] );
+
+
+#############################################################################
+##
+##  exceptional groups `F4(<q>)', <q> a prime power:
+##  The Schur multiplier is trivial except for `F4(2)',
+##  where it is of order $2$.
+##
+NPN( [ "F4(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsPrimePowerInt",
+       2, "q -> q <> 2" ],
+     [  ] );
+NIN( "F4(2)", "2" );
+
+
+#############################################################################
+##
+##  exceptional groups `G2(<q>)', <q> a prime power:
+##  The Schur multiplier is trivial except for `G2(3)' and `G2(4)',
+##  where it is of order $3$ and $2$, respectively.
+##
+NPN( [ "G2(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsPrimePowerInt",
+       2, "q -> q > 4" ],
+     [  ] );
+NIN( "G2(3)", "3" );
+NIN( "G2(4)", "2" );
+
+
+#############################################################################
+##
+##  exceptional groups `2E6(<q>)', <q> a prime power:
+##  The Schur multiplier is $\gcd(3, <q>+1)$,
+##  except for `2E6(2)', where it is $2^2 \times 3$.
+##
+NPN( [ "2E6(", IsDigitChar, ")" ],
+     [ IsDigitChar ],
+     [ 2, "IsPrimePowerInt",
+       2, "q -> q <> 2" ],
+     [ 2, "q -> GcdInt( 3, q+1 )", 1 ] );
+NIN( "2E6(2)", "2^2x3" );
+
+
+#############################################################################
+##
+##  exceptional groups `3D4(<q>)', <q> a prime power,
+##  The Schur multiplier is trivial.
+##
+NPN( [ "3D4(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsPrimePowerInt" ],
+     [  ] );
+
+
+#############################################################################
+##
+##  exceptional groups `2G2(<q>)', <q> an odd power of $3$:
+##  The Schur multiplier is trivial.
+##
+NPN( [ "2G2(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsPrimePowerInt",
+       2, "q -> q > 3",
+       2, "q -> q mod 3 = 0",
+       2, "q -> IsOddInt( Length( Factors( q ) ) )" ],
+     [  ] );
+
+
+#############################################################################
+##
+##  exceptional groups `2F4(<q>)', <q> an odd power of $2$:
+##  The Schur multiplier is trivial.
+##
+NPN( [ "2F4(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsPrimePowerInt",
+       2, "IsEvenInt",
+       2, "q -> q > 2",
+       2, "q -> IsOddInt( Length( Factors( q ) ) )" ],
+     [  ] );
+
+
+#############################################################################
+##
+##  exceptional Suzuki groups `Sz(<q>)',
+##  <q> an odd power of $2$, $<q> \geq 8$:
+##  The Schur multiplier is trivial except for `Sz(8)',
+##  where it is a Klein four group $2^2$.
+##
+NPN( [ "Sz(", IsDigitChar, ")" ],
+     [ "1" ],
+     [ 2, "IsPrimePowerInt",
+       2, "IsEvenInt",
+       2, "q -> q > 8",
+       2, "q -> IsOddInt( Length( Factors( q ) ) )" ],
+     [  ] );
+NIN( "Sz(8)", "2^2" );
+
+
+#############################################################################
+##
+##  Remove the shorthands,
+##  sort the lists, and reset the components of the name translator object.
+##
+Unbind( NIN );
+Unbind( NPN );
+FinishInitializationOfNameTranslatorObject(
+    TranslatorForNamesOfSchurMultipliersOfGroups );
+
+
+#############################################################################
+##
+#E
+

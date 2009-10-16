@@ -1,0 +1,87 @@
+=============================================================================
+               Steps of the update of GAP-package-websites for 
+                       the maintainer of the websites 
+=============================================================================
+
+
+1) Setup 
+-----------------------------------------------------------------------------
+
+The maintainer needs a working copy of the WWW2 directory 
+and Mixer directory in the St Andrews CVS repository. 
+For detailed instructions on this see yin:/gap/WWW/INSTALL.
+
+
+2) The update itself
+-----------------------------------------------------------------------------
+
+a) Preliminary work of the package admin (for more details see 
+   yin:/space/PackageAdmin/PackageAdmin/HOWTO): 
+
+   The package admin checks whether there are new version of Gap packages
+   and tests the new versions.
+
+   Once all problems with the new versions
+   are solved, he copies the new package archive and the new merged
+   package archive to the Ftp server (currently this is 
+   yin:/ftp/pub/gap/gap44).
+
+   He also updates its 
+   own copy of the online documentation of the new packages
+   (which is in the moment in yin:/space/PackageAdmin/webftp/Packages/pkg).
+  
+   Further he prepares the update of the information of the Gap website. 
+   In particular he checks in via cvs the new meta files 
+   for the packages which are  
+
+   WWW2/Packages/<pkgname>.mixer files 
+   WWW2/Packages/pkgconf.py 
+   WWW2/Packages/currentPackageInfoURLList file
+
+   Then the package admin contacts the maintainer to publish 
+   the changes.
+
+b) The maintainer goes to its own WWW2/Packages directory
+   (cd WWW2/Packages) and updates it (cvs update).
+
+   Then he runs the mixer with the command 
+                <mixerdir>/Mixer/mixer.py -f
+   If the directory Mixer and WWW2 are in the same directory then 
+                 ../Mixer/mixer.py -f 
+   will work.
+
+c) The maintainer double checks the new websites of the changed packages
+   (did the version numbers changed, did the release date change,
+    is the status correct, do the links to the home pages of the authors work,
+    are the links to online documentation correct).
+
+   If everything is fine, then he tags all new meta files as "PUB".
+   For this he uses the command 
+                       cvs tag -F PUB
+
+
+d) The maintainer updates the web pages on the server with the command 
+
+   ssh -x -i $HOME/.ssh/gap_yin_rsa gap@yin.dcs.st-and.ac.uk \
+                                                   /gap/WWW/makeupdate
+
+e) The maintainer updates the online documentation of the new packages.
+   For this he uses the command 
+   ssh -x -i $HOME/.ssh/gap_yin_rsa gap@yin.dcs.st-and.ac.uk \
+                                                /gap/WWW/fetchpkgmanuals
+
+   This step synchronises the contents of 
+   yin:/space/PackageAdmin/webftp/Packages/pkg, which is copy of the 
+   package online documentation of the package admin and 
+   /gap/WWW/Manuals/pkg, which is the official place of the 
+   online documentation.
+
+
+Done :-)
+
+If you have questions or remarks, then please contact me under
+bjoern@mcs.st-and.ac.uk.
+
+Cheers
+
+Bjoern

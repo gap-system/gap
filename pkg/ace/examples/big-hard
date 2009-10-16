@@ -1,0 +1,20 @@
+# ACEExample "big-hard" : enumeration of cosets of H in G,
+# where |G| = 2^18.3, |G : H| = 6, using hard strategy.
+#
+local F, G, a, b, c, x, y, A, B, C;
+# We define a group G of order 2^18.3 on 5 generators
+F := FreeGroup("a","b","c","x","y"); 
+     a := F.1;  b := F.2;  c := F.3;  x := F.4; y := F.5;
+     A := a^-1; B := b^-1; C := c^-1;
+G := F / [a*B*C*b*a*c, b*A*C*b*a*a*c*A, a*c*c*A*A*B*a*b,
+          x^2, Comm(a,x), Comm(b,x), Comm(c,x),
+          y^3, Comm(a,y), Comm(b,y), Comm(c,y), Comm(x,y)];
+return ACEfunc(
+    FreeGeneratorsOfFpGroup(G), 
+    RelatorsOfFpGroup(G), 
+    [a*B*C*b*a*c, b*A*C*b*a*a*c*A, a*c*c*A*A*B*a*b] # |G : H| = 6
+    # Options that don't affect the enumeration
+    : echo, enum := "G (order 2^18.3)", subg := "H (index 6)", 
+    # Other options
+    hard, mend, ct := 2000, no := 11, pmod := 2, fill := 2, 
+    dsiz := 15000, mess := 100000, wo := "2500k");

@@ -1,0 +1,14 @@
+#example of key word input format
+
+1                                  #select option to define group
+
+prime   5 
+class   2 
+output   1 
+generators   {a, b, c, d} 
+relations   { [a, b, b, c],   (a * b * c^d * a)^25, 
+              (a * b)^25  =  [a, c, c, d]^2 } ;                                  
+#the semicolon is used to tell pq that all of the 
+#necessary information for the presentation is supplied 
+
+0 #exit

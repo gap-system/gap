@@ -1,0 +1,9 @@
+\chapcontents {1}{Introduction}{3}
+\chapcontents {2}{The ANU pq in GAP 4}{4}
+\seccontents {2.1}{Computing p-Quotients} {4}
+\seccontents {2.2}{Computing Descendants of a p-Group} {5}
+\seccontents {2.3}{Computing Standard Presentations} {8}
+\seccontents {2.4}{Testing p-Groups upon Isomorphism} {10}
+\chapcontents {3}{Installing the ANU PQ Package}{11}
+\chapcontents {}{Bibliography}{17}
+\chapcontents {}{Index}{18}

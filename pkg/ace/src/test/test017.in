@@ -1,0 +1,34 @@
+
+# Men(n), from the Cannon et al. paper.
+# For testing non-deterministic deduction handling ...
+
+Enum: Men(5), order 551040;
+Gr: a,b,c,d,e;
+Rel: a^4, b^2, c^2, d^2, e^2, abcd, edEAda, eAbcbaEBACaB, ecacEABABa,
+      (bc)^5;
+Subgr: Dihed(10), index 55104;
+Gen: b,c;
+
+Wo:2M;
+#Mess:10000;
+
+Text: ** Hard ...;
+Hard;        Beg;
+Text: ** & 100% ...;
+DMod:5,100;  Beg;
+
+Text: ** 90% ... ;
+DMod:5,90;   Beg; Beg; Beg; Beg; Beg;
+Text: ** 80% ... ;
+DMod:5,80;   Beg; Beg; Beg; Beg; Beg;
+Text: ** 70% ... ;
+DMod:5,70;   Beg; Beg; Beg; Beg; Beg;
+Text: ** 60% ... ;
+DMod:5,60;   Beg; Beg; Beg; Beg; Beg;
+Text: ** 50% ... ;
+DMod:5,50;   Beg; Beg; Beg; Beg; Beg;
+Text: ** 40% ... ;
+DMod:5,40;   Beg; Beg; Beg; Beg; Beg;
+Text: ** 30% ... ;
+DMod:5,30;   Beg; Beg; Beg; Beg; Beg;
+

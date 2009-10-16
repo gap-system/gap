@@ -1,0 +1,24 @@
+#!/bin/sh
+# $Id: addPackage,v 1.1 2004/07/14 13:17:04 gap Exp $    (C) Frank Lübeck
+
+mypath=`dirname  $0`/
+
+source ${mypath}setup
+
+if [ "$#" != "2" ]; then
+  echo "Usage: addPackage <pkgname> <URL of PackageInfo.g> "
+  exit 1
+fi;
+
+$GAP -r -b -q  ${mypath}PackageInfoTools.g  << EOI
+ANSI_COLORS := false;;
+Unbind(PrintPromptHook);
+Print("\n");
+
+AddPackage("${PkgCacheDir}", "$1", "$2"); 
+
+Print("Added package $1 for redistribution. URL of PackageInfo.g:\n      ",
+      "$2 \n");
+quit;
+EOI
+

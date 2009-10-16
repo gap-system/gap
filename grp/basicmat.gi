@@ -2,7 +2,7 @@
 ##
 #W  basicmat.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: basicmat.gi,v 4.15 2009/03/24 13:47:25 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  group types.
 ##
 Revision.basicmat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: basicmat.gi,v 4.15 2009/03/24 13:47:25 gap Exp $";
 
 
 #############################################################################
@@ -26,7 +26,7 @@ InstallOtherMethod( CyclicGroupCons,
     0,
 
 function( filter, fld, n )
-    local   o,  m,  i;
+    local   o,  m,  i, g;
 
     o := One(fld);
     m := NullMat( n, n, fld );
@@ -34,9 +34,12 @@ function( filter, fld, n )
         m[i][i+1] := o;
     od;
     m[n][1] := o;
-    m := GroupByGenerators( [ ImmutableMatrix(fld,m) ] );
-    SetSize( m, n );
-    return m;
+    m :=  [ ImmutableMatrix(fld,m,true) ];
+    g := GroupByGenerators( m );
+    SetIsCyclic (g, true);
+    SetMinimalGeneratingSet (g, m);
+    SetSize( g, n );
+    return g;
     
 end );
 
@@ -60,7 +63,7 @@ function( filter, n )
         m[i][i+1] := 1;
     od;
     m[n][1] := 1;
-    m := GroupByGenerators( [ ImmutableMatrix(Rationals,m) ] );
+    m := GroupByGenerators( [ ImmutableMatrix(Rationals,m,true) ] );
     SetSize( m, n );
     return m;
     
@@ -90,15 +93,15 @@ function( filter, n, f )
     z := PrimitiveRoot( f );
     o := One( f );
 
-    mat1 := IdentityMat( n, o );
+    mat1 := IdentityMat( n, f );
     mat1[1][1] := z;
     mat2 := List( Zero(o) * mat1, ShallowCopy );
     mat2[1][1] := -o;
     mat2[1][n] := o;
     for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
 
-    mat1 := ImmutableMatrix( f, mat1 );
-    mat2 := ImmutableMatrix( f, mat2 );
+    mat1 := ImmutableMatrix( f, mat1,true );
+    mat2 := ImmutableMatrix( f, mat2,true );
 
     g := GroupByGenerators( [ mat1, mat2 ] );
     SetName( g, Concatenation("GL(",String(n),",",String(q),")") );
@@ -132,7 +135,7 @@ function( filter, n, f )
 
     # handle the trivial case first
     if n = 1 then
-        g := GroupByGenerators( [ ImmutableMatrix( f, [[One(f)]] ) ] );
+        g := GroupByGenerators( [ ImmutableMatrix( f, [[One(f)]],true ) ] );
 
     # now the general case
     else
@@ -140,7 +143,7 @@ function( filter, n, f )
         # construct the generators
         o := One(f);
         z := PrimitiveRoot(f);
-        mat1 := IdentityMat( n, o );
+        mat1 := IdentityMat( n, f );
         mat2 := List( Zero(o) * mat1, ShallowCopy );
         mat2[1][n] := o;
         for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
@@ -152,8 +155,8 @@ function( filter, n, f )
             mat1[2][2] := z^-1;
             mat2[1][1] := -o;
         fi;
-        mat1 := ImmutableMatrix(f,mat1);
-        mat2 := ImmutableMatrix(f,mat2);
+        mat1 := ImmutableMatrix(f,mat1,true);
+        mat2 := ImmutableMatrix(f,mat2,true);
 
         g := GroupByGenerators( [ mat1, mat2 ] );
     fi;
@@ -177,6 +180,102 @@ function( filter, n, f )
     # return the group
     return g;
 end );
+
+
+#############################################################################
+##
+#M  GeneralSemilinearGroupCons( IsMatrixGroup, <d>, <q> )
+##
+InstallMethod( GeneralSemilinearGroupCons,
+    "matrix group for dimension and finite field size",
+    [ IsMatrixGroup and IsFinite, IsInt and IsPosRat, IsInt and IsPosRat ],
+    function( filter, d, q )
+    local p, f, field, B, gl, gens, frobact, frobmat, i, g;
+
+    p:= Factors( Integers, q );
+    f:= Length( p );
+    if f = 1 then
+      return GL( d, q );
+    fi;
+    p:= p[1];
+
+    field:= GF(q);
+    B:= Basis( field );
+    gl:= GL( d, q );
+    gens:= List( GeneratorsOfGroup( gl ), x -> BlownUpMat( B, x ) );
+
+    frobact:= List( BasisVectors( B ), x -> Coefficients( B, x^p ) );
+    frobmat:= NullMat( d*f, d*f, GF(p) );
+    for i in [ 1 .. d ] do
+      frobmat{ [ (i-1)*f+1 .. i*f ] }{ [ (i-1)*f+1 .. i*f ] }:= frobact;
+    od;
+    Add( gens, frobmat );
+
+    g:= GroupWithGenerators( gens );
+    SetName( g, Concatenation( "GammaL(",String(d),",",String(q),")" ) );
+    SetDimensionOfMatrixGroup( g, d*f );
+    SetFieldOfMatrixGroup( g, GF(p) );
+    SetIsFinite( g, true );
+
+    SetSize( g, f * Size( gl ) );
+
+    return g;
+    end );
+
+
+#############################################################################
+##
+#M  SpecialSemilinearGroupCons( IsMatrixGroup, <d>, <q> )
+##
+InstallMethod( SpecialSemilinearGroupCons,
+    "matrix group for dimension and finite field size",
+    [ IsMatrixGroup and IsFinite, IsInt and IsPosRat, IsInt and IsPosRat ],
+    function( filter, d, q )
+    local p, f, field, B, sl, gens, frobact, frobmat, i, g;
+
+    p:= Factors( Integers, q );
+    f:= Length( p );
+    if f = 1 then
+      return SL( d, q );
+    fi;
+    p:= p[1];
+
+    field:= GF(q);
+    B:= Basis( field );
+    sl:= SL( d, q );
+    gens:= List( GeneratorsOfGroup( sl ), x -> BlownUpMat( B, x ) );
+
+    frobact:= List( BasisVectors( B ), x -> Coefficients( B, x^p ) );
+    frobmat:= NullMat( d*f, d*f, GF(p) );
+    for i in [ 1 .. d ] do
+      frobmat{ [ (i-1)*f+1 .. i*f ] }{ [ (i-1)*f+1 .. i*f ] }:= frobact;
+    od;
+    Add( gens, frobmat );
+
+    g:= GroupWithGenerators( gens );
+    SetName( g, Concatenation( "SigmaL(",String(d),",",String(q),")" ) );
+    SetDimensionOfMatrixGroup( g, d*f );
+    SetFieldOfMatrixGroup( g, GF(p) );
+    SetIsFinite( g, true );
+
+    SetSize( g, f * Size( sl ) );
+
+    return g;
+    end );
+
+
+#############################################################################
+##
+#M  GeneralSemilinearGroupCons( IsPermGroup, <d>, <q> )
+#M  SpecialSemilinearGroupCons( IsPermGroup, <d>, <q> )
+##
+PermConstructor( GeneralSemilinearGroupCons,
+    [ IsPermGroup, IsPosInt, IsPosInt ],
+    IsMatrixGroup and IsFinite );
+
+PermConstructor( SpecialSemilinearGroupCons,
+    [ IsPermGroup, IsPosInt, IsPosInt ],
+    IsMatrixGroup and IsFinite );
 
 
 #############################################################################

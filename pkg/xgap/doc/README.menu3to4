@@ -1,0 +1,305 @@
+This is a short text to describe the changes in the usage of the xgap low
+level graphic objects, menu and mouse functions from the XGAP3 to the XGAP4
+version. 
+
+By Max Neunhoeffer
+
+1) GraphicSheets in general:
+----------------------------
+
+A GraphicSheet is created like in XGAP3:
+  GraphicSheet( <name>, <width>, <height> );
+
+  returns a GraphicSheet, which appears on the screen.
+
+This is now not just a record but an object in the GraphicSheetFamily, with
+the filters IsGraphicSheet and IsGraphicSheetRep. You can no longer mess
+around in the structure and store new components into it.
+
+The following methods work on GraphicSheets like in XGAP3
+
+  Resize( <sheet>, <width>, <height> );
+  Delete( <sheet>, <object> );
+  FastUpdate( <sheet> [, <flag>] );        # flag is true if omitted
+  Print( <sheet> );
+  SetTitle( <sheet>, <title> );
+  PointerButtonDown( <sheet>, <x>, <y>, <button>, <state> );
+  Close( <sheet> );
+  
+NOT OPERATIONAL BUT PLANNED:
+  SavePSFile
+  Drag???
+  ShowObjectId???
+  ShowObjectPS???
+
+
+The following methods for GraphicSheets are new in XGAP4:
+
+  Callback( <sheet>, <name>, <args> );
+    call all callback stored under <name>
+  InstallCallback( <sheet>, <name>, <func> );
+    used to install callbacks, necessary instead of InstallGSMethod, 
+    the following names have special, predefined meaning:
+	Close
+	  <func> gets the sheet as one parameter
+        LeftPBDown
+        RightPBDown
+        ShiftLeftPBDown
+        ShiftRightPBDown
+        CtrlLeftPBDown
+        CtrlRightPBDown
+          <func> gets the sheet as first parameter and x and y coordinates as
+          second and third parameters.
+    replaces "InstallGSMethod"
+    ATTENTION: For each name all installed callback functions are called
+               unlike in XGAP3, where there was only one function possible!
+  RemoveCallback( <sheet>, <name>, <func> );
+    used to remove installed callbacks, necessary because for one name
+    there can be stored more than one callback
+  ViewObj ( <sheet> );
+    to view a sheet in the GAP window    
+  PointerButtonDown( <sheet>, <x>, <y>, <button> );
+    only with one parameter less
+
+The following methods from XGAP3 are no longer supported in XGAP4:
+
+  InstallGSMethod( <sheet>, <name>, <func> );
+    use InstallCallback instead
+
+
+2) GraphicObjects in GraphicSheets:
+-----------------------------------
+
+The following GraphicObjects exist in XGAP3 and XGAP4:
+
+  Box, Circle, Disc, Diamond, Rectangle, Line, Text, Vertex
+
+They are technically all in the GraphicObjectFamily and in the filters
+IsGraphicObject and IsGraphicObjectRep and allow a subset of the following
+operations: 
+
+  Delete, Destroy, Revive, Draw, Move, MoveDelta, PSString, Recolor,
+  Reshape, Change, Relabel, SetWidth, WindowId, ViewObj, \=, \in
+  
+
+Like in XGAP3 they are created with the following constructor methods:
+
+  Box( <sheet>, <x>, <y>, <w>, <h> );
+  Box( <sheet>, <x>, <y>, <w>, <h>, <defaults> );
+  Circle( <sheet>, <x>, <y>, <r> );
+  Circle( <sheet>, <x>, <y>, <r>, <defaults>);
+  Disc( <sheet>, <x>, <y>, <r> );
+  Disc( <sheet>, <x>, <y>, <r>, <defaults> );
+  Diamond( <sheet>, <x>, <y>, <w>, <h> );
+  Diamond( <sheet>, <x>, <y>, <w>, <h>, <defaults> );
+  Rectangle( <sheet>, <x>, <y>, <w>, <h> );
+  Rectangle( <sheet>, <x>, <y>, <w>, <h>, <defaults> );
+  Line( <sheet>, <x>, <y>, <w>, <h> );
+  Line( <sheet>, <x>, <y>, <w>, <h>, <defaults> );
+  Text( <sheet>, <font>, <x>, <y>, <str> );
+  Text( <sheet>, <font>, <x>, <y>, <str>, <defaults>);
+  Vertex( <sheet>, <x>, <y> );
+  Vertex( <sheet>, <x>, <y>, <defaults>);
+
+The VERTEX-Array is unchanged!
+
+
+Overview of available methods:
+N means: new in XGAP4 in comparison with XGAP3
+D means: disappeared in XGAP4 in comparison with XGAP3
+
+		Box	Circ	Disc	Diam	Rect	Line	Text	Vert
+Draw		 +	 +N	 +N	 +	 +	 +	 +N	 +
+Delete		 +	 +	 +	 +	 +	 +	 +	 +
+Destroy		 +	 +	 +	 +	 +	 +	 +	 +
+Revive		 +N	 +N	 +N	 +N	 +N	 +N	 +N	 +N
+Move		 +	 +	 +	 +	 +	 +	 +	 +
+MoveDelta	 +	 +	 +	 +	 +	 +	 +	 +
+PSString 	 +	 +	 +	 +	 +	 +	 +	 +
+PrintInfo	 +	 +	 +	 +	 +	 +	 +	 +
+ViewObj		 +N	 +N	 +N	 +N	 +N	 +N	 +N	 +N
+Recolor		 +	 +	 +	 +	 +	 +	 +	 +
+Reshape		 +	 +	 +	 +	 +	 +	 +	 +
+\in		 +	 +	 +	 +	 +	 +	 +	 +
+WindowId	 +N	 +N	 +N	 +N	 +N	 +N	 +N	 +N
+Change		 -	 -	 -	 -	 -	 +	 -	 -
+Relabel		 -	 -	 -	 -	 -	 +	 +	 +
+SetWidth	 -	 +	 -	 +	 +	 +	 -	 -
+Highlight        -	 -	 -	 -	 -	 -	 -	 +
+
+For vertices the following methods exist (in XGAP3 and XGAP4):
+
+  Connection( <vertex1>, <vertex2> );
+  Disconnect( <vertex1>, <vertex2> );
+  Highlight( <vertex> [, <flag>] );      # flag is true if omitted
+
+
+Revive can put a Destroyed object back on screen. This does not work, if
+the object is Deleted. Draw can be called to redraw an object. WindowId
+returns the WindowId of the sheet where the object lives.
+
+
+So: Nothing has changed actually!
+
+
+3) Menus, PopupMenus, TextSelectors, Dialogs and button events:
+---------------------------------------------------------------
+
+a) Menus:
+
+   A menu is created by a call of the Menu constructor method:
+
+     Menu( <sheet>, <title>, <ents>, <fncs> );
+
+   where <sheet> is a GraphicSheet, <title> is the menu title, <ents> is a
+   list of menu entries and <fncs> are the corresponding functions which are
+   called when the user selects the menu entry with the mouse. Those
+   functions are called with the following parameters:
+
+     <Function> (<sheet>, <menu>, <entry>);
+
+   where entry is the string of the entry. <ents> is a list of
+   strings. Strings starting with a "-" will become delimiters and are NOT
+   stored as seperate entries. The corresponding function is ignored. This
+   corrects a bug in XGAP3 because now "Enable" and "Check" change the
+   correct entry, if it is after a delimiter. Code that contains already a
+   workaround for this bug has to be changed!
+
+   For backward compatibility also the "old" XGAP3 functionality is
+   supported and will be supported in the future:
+
+     Menu( <sheet>, <title>, <zipped> );
+
+   where <zipped> is a list with an even number of entries. The ones at odd
+   indices are the menu entries and the ones at the even indices are the
+   corresponding functions.
+
+   Both constructor methods return a menu object which is no longer a
+   record (XGAP3) but a component object, so it is no longer possible to
+   put own record entries in it.
+
+   The new menu is placed in the GraphicSheet and displayed.
+
+   The following methods can be used on Menu objects:
+
+     PrintObj, Destroy, Delete, Enable, Check
+
+   PrintObj works as expected, Delete is the same as in XGAP3: the menu
+   disappears in the window but remains stored in the sheet. Destroy is
+   just an alias.
+
+   Each menu entry can be enabled or disabled and be checked and not checked.
+   This is controlled by the Methods Enable and Check:
+
+     Check( <menu>, <entry>, <flag> );
+     Enable( <menu>, <entry>, <flag> );
+
+   <entry> is the string of the menu entry, not the GAP-object, flag is a 
+   boolean value. This is like in XGAP3.
+
+   So the functionality has not changed for practical purposes.
+
+
+b) PopupMenus:
+
+   A popup menu is created by a call of the PopupMenu constructor method:
+   (like in XGAP3) 
+
+     PopupMenu( <name>, <labels> );
+
+   where <labels> is a list of strings. This returns a popup menu object,
+   which can be displayed via
+
+     Query( <pop> );
+
+   This returns false or the name of the entry, if the user clicks on one
+   item. This is like in XGAP3.
+
+   So the functionality has not changed for practical purposes.
+
+
+c) TextSelectors:
+
+   A textselector is created by a call of the TextSelector constructor
+   method (like in XGAP3):
+
+     TextSelector( <name>, <list>, <buttons> );
+
+   where <name> is a title, <list> is a list of text strings and <buttons>
+   is a list of strings for buttons. Both lists must have an even number of 
+   entries and after each string follows the function which is called, if
+   the user clicks on the text or the button respectively. The textselector
+   is displayed on the screen and clicks lead to function calls, until it
+   is closed. The functions for texts or buttons are called with the
+   following parameters:
+
+     <Function> ( <selector>, <label> );
+
+   where <label> is either the text or the string on the button
+   respectively. It is now (due to some changes in GAP itself) an error, if 
+   those functions do not return anything!
+
+   The following methods apply to textselectors:
+
+     Close, Destroy, PrintObj, Relabel, Reset, Enable
+
+   There is one minor change: The C part of XGAP delivers a
+   "ButtonSelected...", when the user selects a button. This was mapped to
+   the operation "ButtonPressed" for text selectors which called the
+   installed function. Now also the intermediate operation is called
+   ButtonSelected. The programmer should not notice this change at all.
+
+   The functionality is unchanged from XGAP3 to XGAP4. But think of the
+   return values of installed functions (see above)!
+
+
+d) Dialogs:
+-----------
+
+   A dialog object is created by a call of the Dialog constructor method
+   (like in XGAP3):
+
+     Dialog( <type>, <text> );
+
+   where <type> is one of the following: "OKcancel", "Filename". <text> is
+   a text which is displayed in the dialog box. The dialog box can be
+   executed by a call to
+
+     Query( <dialog> [, <default>] );
+
+   The first type ("OKcancel") asks for one input line and returns this
+   line if the user clicks the OK button or false if she clicks
+   "Cancel". The seconds ("Filename") leads to a file selector box, and
+   returns either a full pathname or false. A <default> can be supplied as
+   second parameter.
+
+   This functionality is unchanged from XGAP3 to XGAP4.
+
+
+e) ButtonEvents:
+----------------
+
+   There are a few standard callbacks for some events which can occur if
+   the user takes mouse actions:
+
+	Close
+        LeftPBDown
+        RightPBDown
+        ShiftLeftPBDown
+        ShiftRightPBDown
+        CtrlLeftPBDown
+        CtrlRightPBDown
+	CtrlShiftLeftPBDown  (new in XGAP4)
+	CtrlShiftRightPBDown (new in XGAP4)    
+
+   These are installed via InstallCallback for the sheet (see above). This
+   is deliberately different from XGAP3 (was InstallGSMethod) because there 
+   is an important difference:
+
+     For each callback it is now possible to install many functions. These
+     are called one after the other.
+
+   So normally XGAP3-Code can just be changed by replacing "InstallGSMethod"
+   by "InstallCallback" but the programmer has to think about this
+   difference! Especially in cases where the installed method changed
+   during program execution the old callback now has to be removed!

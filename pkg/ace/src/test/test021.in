@@ -1,0 +1,35 @@
+
+# On some machines, ACE 3.000 would die with a segmentation fault when trying
+# to construct coset representatives.  Since the code seemed OK, and the
+# problem only manifested itself on some Linux/gcc combinations, it was put
+# down to a compiler bug (emails to/from Greg Gamble, Aug 2000).  In fact, it
+# seems that this problem may have been due to an uninitialised variable
+# which only manifested itself in some circumstances (emails to/from Volker
+# Gebhardt, Dec 2000, and the Changes file entry for 22 Dec).
+
+# The examples below illustrate this fault, if it's present.  Note that they
+# all contain a CT row > 1 whose first entry <= row is row itself.  It is the
+# building of a coset rep for this row, either via a call to `pr' with -ve
+# argument or a call to `oo', which causes the problem.  The offending
+# entries are CT(3,b), CT(11,a) & CT(7,a) respectively.
+
+mess: 10000;
+default;
+
+Gr: abc;
+Rel: b, aab, (c)^4, ACac;
+Gen: ;
+text;  start;  pr:-8;
+
+Gr: ab;
+Rel: a^-2*b*a*b^-1*a*b,a^3*b^-1*a^-2*b^-1;
+Gen: a;
+text;  start;  print:-12;
+
+Gr: ab;
+Rel: a^3, a*b*a/(b*a*b);
+Gen: a;
+text;  start;  oo:0;
+
+text;
+

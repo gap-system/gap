@@ -4,6 +4,7 @@
 #W							         Scott Murray
 #W                                                           Alexander Hulpke
 ##
+#H  @(#)$Id: dict.gi,v 4.40 2009/02/09 23:48:23 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,51 +13,12 @@
 ##  This file contains the implementations for dictionaries.
 ##
 Revision.dict_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: dict.gi,v 4.40 2009/02/09 23:48:23 gap Exp $";
 
 ##
 ## List and Sort dictionaries
 ##
 
-InstallMethod( PositionFirstComponentDict,"for dense list", true,
-    [ IsDenseList, IsObject ], 0,
-function ( list, obj )
-local i;
-  i:=1;
-  while i<=Length(list) do
-    if list[i][1]=obj then
-      return i;
-    fi;
-    i:=i+1;
-  od;
-  return fail;
-end);
-
-InstallMethod( PositionFirstComponentDict,"for sorted list", true,
-    [ IsSSortedList, IsObject ], 0,
-function ( list, obj )
-local lo,up,s;
-  # simple binary search. The entry is in the range [lo..up]
-  lo:=1;
-  up:=Length(list);
-  if up = 0 then 
-    return fail; # empty list
-  fi;
-  while lo<up do
-    s:=Int((up+lo)/2);# middle entry
-    if list[s][1]<obj then
-      lo:=s+1; # it's not in [lo..s], so take the upper part.
-    else
-      up:=s; # So obj<=list[s][1], so the new range is [1..s].
-    fi;
-  od;
-  # now lo=up, unless lo=1, up=0 (fixed by Laurent Bartholdi)
-  if lo=up and list[lo][1]=obj then
-    return lo;
-  else
-    return fail;
-  fi;
-end );
 
 BindGlobal("DictionaryByList",function(look)
 local d,rep;
@@ -68,9 +30,10 @@ local d,rep;
     rep:=IsListDictionary;
     d.list:=[];
   fi;
-  Objectify(NewType(DictionariesFamily,rep),d);
+  Objectify(NewType(DictionariesFamily,rep and IsMutable and IsCopyable),d);
   return d;
 end);
+
 
 BindGlobal("DictionaryBySort",function(look)
 local d,rep;
@@ -82,16 +45,52 @@ local d,rep;
     rep:=IsSortDictionary;
     d.list:=[];
   fi;
-  Objectify(NewType(DictionariesFamily,rep),d);
+  Objectify(NewType(DictionariesFamily,rep and IsMutable and IsCopyable),d);
   return d;
 end);
+
+#############################################################################
+##
+#M  ShallowCopy (for list dictionaries)
+##
+
+
+InstallMethod(ShallowCopy, [IsListLookupDictionary and IsCopyable],
+        function(dict)
+    local   c;
+    c := rec( entries := ShallowCopy(dict!.entries) );
+    return Objectify( NewType(DictionariesFamily, IsListLookupDictionary and IsMutable), c);
+end);
+
+InstallMethod(ShallowCopy, [IsListDictionary and IsCopyable],
+        function(dict)
+    local   c;
+    c := rec( list := ShallowCopy(dict!.list) );
+    return Objectify( NewType(DictionariesFamily, IsListDictionary and IsMutable), c);
+end);
+
+InstallMethod(ShallowCopy, [IsSortLookupDictionary and IsCopyable],
+        function(dict)
+    local   c;
+    c := rec( entries := ShallowCopy(dict!.entries) );
+    return Objectify( NewType(DictionariesFamily, IsSortLookupDictionary and IsMutable), c);
+end);
+
+InstallMethod(ShallowCopy, [IsSortDictionary and IsCopyable],
+        function(dict)
+    local   c;
+    c := rec( list := ShallowCopy(dict!.list) );
+    return Objectify( NewType(DictionariesFamily, IsSortDictionary and IsMutable), c);
+end);
+
+
 
 #############################################################################
 ##
 #M  AddDictionary(<dict>,<obj>,<val>)
 ##
 InstallOtherMethod(AddDictionary,"for lookup list dictionaries",true,
-  [IsListLookupDictionary,IsObject,IsObject],0,
+  [IsListLookupDictionary and IsMutable,IsObject,IsObject],0,
 function(d, x, val)
   x:=[Immutable(x),val];
   MakeImmutable(x); # to be able to store sortedness
@@ -99,7 +98,7 @@ function(d, x, val)
 end);
 
 InstallMethod(AddDictionary,"for list dictionaries",true,
-  [IsListDictionary,IsObject],0,
+  [IsListDictionary and IsMutable,IsObject],0,
 function(d, x)
   x:=Immutable(x); # to be able to store sortedness
   Add(d!.list,x);
@@ -110,15 +109,21 @@ end);
 #M  AddDictionary(<dict>,<obj>,<val>)
 ##
 InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
-  [IsSortLookupDictionary,IsObject,IsObject],0,
-function(d, x, val)
-  x:=[Immutable(x),val];
-  MakeImmutable(x); # to be able to store sortedness
-  AddSet(d!.entries,x);
+        [IsSortLookupDictionary and IsMutable,IsObject,IsObject],0,
+        function(d, x, val)
+    local pair, p;
+    pair:=[Immutable(x),val];
+    MakeImmutable(pair); # to be able to store sortedness
+    p := PositionFirstComponent(d!.entries,x);
+    if p <= Length(d!.entries) and d!.entries[p][1] = x then
+        d!.entries[p] := pair;
+    else
+        AddSet(d!.entries, pair);
+    fi;
 end);
 
 InstallMethod(AddDictionary,"for sort dictionaries",true,
-  [IsSortDictionary,IsObject],0,
+  [IsSortDictionary and IsMutable,IsObject],0,
 function(d, x)
   x:=Immutable(x); # to be able to store sortedness
   AddSet(d!.list,x);
@@ -131,9 +136,9 @@ end);
 InstallMethod(KnowsDictionary,"for list lookup dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
-local p;
-  p:=PositionFirstComponentDict(d!.entries,x);
-  return p<>fail;
+    local p;
+    p:=PositionFirstComponent(d!.entries,x);
+    return p <= Length(d!.entries) and d!.entries[p][1] = x;
 end);
 
 InstallMethod(KnowsDictionary,"for list dictionaries",true,
@@ -151,9 +156,9 @@ InstallMethod(LookupDictionary,"for list dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
 local p;
-  p:=PositionFirstComponentDict(d!.entries,x);
-  if p=fail then
-    return p;
+  p:=PositionFirstComponent(d!.entries,x);
+  if p > Length(d!.entries) or d!.entries[p][1] <> x then
+    return fail;
   else
     return d!.entries[p][2];
   fi;
@@ -173,16 +178,36 @@ local d,rep;
   else
     rep:=IsPositionDictionary;
   fi;
-  Objectify(NewType(DictionariesFamily,rep),d);
+  Objectify(NewType(DictionariesFamily,rep and IsMutable and IsCopyable),d);
   return d;
 end);
+
+InstallMethod(ShallowCopy, [IsPositionDictionary and IsCopyable], 
+        function(d)
+    local   r;
+    r := rec( domain := d!.domain,
+              blist := ShallowCopy(d!.blist));
+    Objectify(NewType(DictionariesFamily,IsPositionDictionary and IsMutable and IsCopyable),r);
+    return r;
+end);
+        
+InstallMethod(ShallowCopy, [IsPositionLookupDictionary and IsCopyable], 
+        function(d)
+    local   r;
+    r := rec( domain := d!.domain,
+              blist := ShallowCopy(d!.blist),
+              vals := ShallowCopy(d!.vals));
+    Objectify(NewType(DictionariesFamily,IsPositionLookupDictionary and IsMutable and IsCopyable),r);
+    return r;
+end);
+        
 
 #############################################################################
 ##
 #M  AddDictionary(<dict>,<obj>,<val>)
 ##
 InstallOtherMethod(AddDictionary,"for lookup position dictionaries",true,
-  [IsPositionLookupDictionary,IsObject,IsObject],0,
+  [IsPositionLookupDictionary and IsMutable,IsObject,IsObject],0,
 function(d, x, val)
   x:=PositionCanonical(d!.domain,x);
   d!.blist[x]:=true;
@@ -190,7 +215,7 @@ function(d, x, val)
 end);
 
 InstallMethod(AddDictionary,"for position dictionaries",true,
-  [IsPositionDictionary,IsObject],0,
+  [IsPositionDictionary and IsMutable,IsObject],0,
 function(d, x)
   x:=PositionCanonical(d!.domain,x);
   d!.blist[x]:=true;
@@ -261,7 +286,7 @@ local hashfun,obj,dom,lookup;
   fi;
 
   if hashfun<>fail then
-    Info(InfoHash,1,obj," Hash dictionary");
+    Info(InfoHash,1," Hash dictionary");
     # uncomment the next line to get back the old version.
     #return NaiveHashDictionary(dom,lookup,hashfun);
     return SparseHashTable(hashfun);
@@ -320,7 +345,7 @@ InstallGlobalFunction( DenseHashTable,
     function( )
 	local Type, Rec;
 
-	Type := NewType( DictionariesFamily, IsDenseHashRep );
+	Type := NewType( DictionariesFamily, IsDenseHashRep and IsMutable );
 	Rec := rec( KeyArray := [], ValueArray := [] );
         return Objectify( Type, Rec );
     end );
@@ -395,60 +420,6 @@ InstallMethod( HashKeyEnumerator, "for dense hash tables", true,
 
 #############################################################################
 ##
-#M  GetHashEntry( <hash>, <key> ) for dense hash tables
-##
-InstallMethod( GetHashEntry, "for dense hash tables", true,
-    [ IsHash and IsDenseHashRep, IsObject and IsInt ], 0,
-    function( hash, key )
-	local valueArray;
-	valueArray := hash!.ValueArray;
-	if TableHasIntKeyFun(hash) then
-	    LastHashIndex := hash!.intKeyFun(key);
-        # For efficiency:  KeyInt(key) too costly when KeyInt := x->x;
-	# Note this makes it impossible to hash nonpositive integers.
-        elif IsInt(key) then LastHashIndex := key;
-        else
-	    Info( InfoHash, 5, "Keys: ", hash!.KeyArray,
-                  "\nValues: ", hash!.ValueArray );
-            LastHashIndex := DenseIntKey( false,key )(key);
-        fi;
-	if IsBound(valueArray[ LastHashIndex ]) then
-	    return valueArray[ LastHashIndex ];
-	else
-	    return fail;
-	fi;
-    end );
-
-#############################################################################
-##
-#M  AddHashEntry( <hash>, <key>, <value> ) for dense hash tables
-##
-InstallMethod( AddHashEntry, "for dense hash tables", true,
-    [ IsHash and IsDenseHashRep, IsObject and IsInt, IsObject ], 0,
-    function( hash, key, value )
-	local valueArray, keyArray;
-	valueArray := hash!.ValueArray;
-	keyArray := hash!.KeyArray;
-	if TableHasIntKeyFun(hash) then
-	  LastHashIndex := hash!.intKeyFun(key);
-	else
-	  LastHashIndex := DenseIntKey( false,key )(key);
-	fi;
-	if not IsBound( valueArray[ LastHashIndex ] ) then
-	    Add( keyArray, key );
-	    valueArray[  LastHashIndex ] := value; #list with holes
-# changing attributes is verboten.
-#            if HasSize(hash) then SetSize(hash, Size(hash)+1); fi;
-	    Info( InfoHash, 2, "key hashed to ", LastHashIndex );
-            return value;
-	else 
-	    Info( InfoHash, 2, "key already in hash table" );
-	    return fail;
-	fi;
-    end );
-    
-#############################################################################
-##
 #M  Random( <hash> ) for dense hash tables
 ##
 ##  Returns a random value.
@@ -505,10 +476,42 @@ function(arg)
   else
     T:=Objectify( DefaultSparseHashRepType, Rec );
   fi;
-  T!.LengthArrayHalf := Int(T!.LengthArray / 2);
+  T!.LengthArrayHalf := QuoInt(T!.LengthArray,2);
 
   return T;
 end );
+
+#############################################################################
+##
+#M  ShallowCopy( <hash> ) for sparse hash table
+##
+
+
+InstallMethod(ShallowCopy, [IsSparseHashRep and IsCopyable],
+        function(t)
+    local r;
+    r := rec( KeyArray := ShallowCopy(t!.KeyArray),
+              ValueArray := ShallowCopy(t!.ValueArray),
+              LengthArray := t!.LengthArray,
+              NumberKeys := t!.NumberKeys,
+              LengthArrayHalf := t!.LengthArrayHalf);
+    return Objectify( DefaultSparseHashRepType and IsMutable, r);
+end);
+
+InstallMethod(ShallowCopy, [IsSparseHashRep and TableHasIntKeyFun and IsCopyable],
+        function(t)
+    local r;
+    r := rec( KeyArray := ShallowCopy(t!.KeyArray),
+              ValueArray := ShallowCopy(t!.ValueArray),
+              LengthArray := t!.LengthArray,
+              NumberKeys := t!.NumberKeys,
+              intKeyFun := t!.intKeyFun,
+              LengthArrayHalf := t!.LengthArrayHalf);
+    return Objectify( DefaultSparseHashWithIKRepType and IsMutable, r);
+end);
+
+
+
 
 #############################################################################
 ##
@@ -574,105 +577,6 @@ InstallMethod( HashKeyEnumerator, "for sparse hash tables", true,
 
 #############################################################################
 ##
-#F  GetHashEntryIndex( <hash>, <key> ) for sparse hash table
-##
-# do not create this range anew again and again.
-BindGlobal("HASH_RANGE",[0..10000]);
-InstallGlobalFunction( GetHashEntryIndex,
-    function( hash, key )
-	local intkey, i, index;
-	if TableHasIntKeyFun(hash) then
-	  intkey := hash!.intKeyFun(key);
-	else
-	  intkey := SparseIntKey( false,key )(key);
-	fi;
-        for i in HASH_RANGE do
-	    Info( InfoHash, 3, "Getting hash entry index for ", key, ", i = ", i );
-            index := HashFunct( intkey, i, hash!.LengthArray );
-            #USED FOR DEBUGGING:
-            # if keyArray[index] = fail then INDEX := index; 
-            #   KEYARRAY := keyArray; fi;
-            if hash!.KeyArray[index] = fail or hash!.KeyArray[index] = key then 
-                LastHashIndex := index;
-		return index;
-            fi;
-	od;
-        Error("hash table in infinite loop");
-    end );
-
-#############################################################################
-##
-#M  GetHashEntry( <hash>, <key> ) for sparse hash table
-##
-InstallMethod( GetHashEntry, "for sparse hash tables", true,
-    [ IsHash and IsSparseHashRep, IsObject ], 0,
-    function( hash, key )
-        local index, keyArray, valueArray;
-	index := GetHashEntryIndex( hash, key );
-	if hash!.KeyArray[index] = fail then
-	    return fail;
-	fi;
-	Info( InfoHash, 5, "Keys: ", hash!.KeyArray, "\nValues: ", hash!.ValueArray );
-	return hash!.ValueArray[ index ]; 
-    end );
-
-#############################################################################
-##
-#F  DoubleHashArraySize( <hash> )
-##
-InstallGlobalFunction( DoubleHashArraySize,
-    function( hash )
-	local oldKeyArray, oldValueArray, i;
-	Info( InfoHash, 2, "Doubling hash array size" );
-       	oldKeyArray := hash!.KeyArray;
-        oldValueArray := hash!.ValueArray;
-        hash!.LengthArray := hash!.LengthArray * 2;
-	hash!.LengthArrayHalf := Int(hash!.LengthArray / 2);
-        hash!.KeyArray := ListWithIdenticalEntries( hash!.LengthArray, fail );
-        hash!.ValueArray := [];
-        hash!.NumberKeys := 0;
-        for i in [1..Length(oldKeyArray)] do
-            if oldKeyArray[i] <> fail then
-            	AddHashEntry( hash, oldKeyArray[i], oldValueArray[i] );
- 	    fi;
-        od;
-    end );
-
-#############################################################################
-##
-#M  AddHashEntry( <hash>, <key>, <value> ) for sparse hash tables
-##
-InstallMethod( AddHashEntry, "for sparse hash tables", true,
-    [ IsHash and IsSparseHashRep, IsObject, IsObject ], 0,
-    function( hash, key, value )
-	local index;
-	index := GetHashEntryIndex( hash, key );
-        if hash!.KeyArray[ index ] = fail then
-            hash!.KeyArray[ index ] := key;
-            hash!.ValueArray[ index ] := value;
-            hash!.NumberKeys := hash!.NumberKeys + 1;
-            if 2 * hash!.NumberKeys > Length( hash!.KeyArray ) then
-                DoubleHashArraySize( hash );
-            fi;
-
-# changing attributes is verboten.
-#            if HasSize( hash ) then 
-#		hash!.Size := hash!.NumberKeys;
-#		SetSize( hash, Size( hash ) + 1); 
-#		if Size(hash) <> hash!.NumberKeys then Error("size"); fi;
-#	    fi;
-
-	    Info( InfoHash, 2, "key hashed to ", index );
-	    
-            return value;
-        else 
-	    Info( InfoHash, 2, "key already in hash table" );
-	    return fail;
-	fi;
-    end );
-
-#############################################################################
-##
 #M  Random( <hash> ) for sparse hash tables
 ##
 ##  Returns a random key.
@@ -717,7 +621,9 @@ InstallMethod( RandomHashKey, "for sparse hash tables", true,
 InstallGlobalFunction( HashFunct,
     function( key, i, size )
         # return ( (1+key) + i*(1+2*(key mod size/2)) ) mod size;
-        return 1 + ( key + i * (1 + (key mod 2) + (key mod size)) ) mod size;	
+        return 1+( (1+key) + i*(1+2*(key mod QuoInt(size,2))) ) mod size;
+        #return 1 + ( key + i * (1 + (key mod 2) + (key mod size)) ) mod size;	
+	#return 1 + ( key + (i-1) * (QuoInt(size,17))) mod size;
     end );
 
 
@@ -748,34 +654,75 @@ InstallMethod( GetHashEntryAtLastIndex, "for hash table", true,
 #M  SetHashEntryAtLastIndex( <hash>, <newValue> )
 ##
 InstallMethod( SetHashEntryAtLastIndex, "for hash table", true,
-    [ IsHash, IsObject ], 0, 
+    [ IsHash and IsMutable, IsObject ], 0, 
     function( hash, newvalue )
 	hash!.ValueArray[ LastHashIndex ] := newvalue;
         return newvalue;
     end );
+
+# dictionary type interface for hash tables. As we want these to be really
+# fast, the code has been stripped down.
+BindGlobal("HASH_RANGE",[0..500]);
 
 #############################################################################
 ##
 #M  SetHashEntry( <hash>, <key>, <value> )
 ##
 InstallMethod( SetHashEntry, "for hash table", true,
-    [ IsHash, IsObject, IsObject ], 0,
-    function( hash, key, value )
-	GetHashEntry( hash, key ); #can be fail; sets LastHashIndex
-        SetHashEntryAtLastIndex( hash, value );
-        return value;
-    end );
-
-# dictionary type interface for hash tables. As we want to be these really
-# fast, we permit to duplicate code...
+    [ IsHash and IsMutable, IsObject, IsObject ], 0,
+function( hash, intkey, value )
+local index, i;
+  for i in HASH_RANGE do
+    index := HashFunct( intkey, i, hash!.LengthArray );
+    if hash!.KeyArray[index] = fail then
+      hash!.ValueArray[ LastHashIndex ] := value;
+      return value;
+    fi;
+  od;
+  Error("hash table in infinite loop");
+end );
 
 #############################################################################
 ##
 #M  AddDictionary(<dict>,<key>,<val>)
 ##
 BindGlobal("HashDictAddDictionary",function(hash,key,value)
-local index,intkey,i;
+local index,intkey,i,j,cnt;
   intkey := hash!.intKeyFun(key);
+  cnt:=1;
+  j:=0;
+  repeat
+    for i in HASH_RANGE do
+      index := HashFunct( intkey, j, hash!.LengthArray );
+      j:=j+1;
+      if hash!.KeyArray[index] = fail then
+	hash!.KeyArray[ index ] := key;
+	hash!.ValueArray[ index ] := value;
+	hash!.NumberKeys := hash!.NumberKeys + 1;
+	# was: if 2 * hash!.NumberKeys > Length( hash!.KeyArray ) then
+	# The length of the key array is just hash!.lengthArray. Thus
+	# this looks like an unnecessary multiplication.
+	if hash!.NumberKeys > hash!.LengthArrayHalf then
+	  DoubleHashDictSize( hash );
+	fi;
+	return;
+      fi;
+    od;
+    Info(InfoWarning,1,"hash table in ",cnt,"-infinite loop?");
+    cnt:=cnt+1;
+  until false;
+end );
+
+InstallOtherMethod(AddDictionary,"for hash tables",true,
+  [IsHash and IsSparseHashRep and TableHasIntKeyFun and IsMutable,
+   IsObject,IsObject],0,HashDictAddDictionary);
+
+InstallOtherMethod(AddDictionary,"for hash tables",true,
+  [IsHash and IsSparseHashRep and IsMutable,
+   IsObject,IsObject],0,
+function(hash,key,value)
+local index,intkey,i;
+  intkey := SparseIntKey( false,key )(key);
   for i in HASH_RANGE do
     index := HashFunct( intkey, i, hash!.LengthArray );
     if hash!.KeyArray[index] = fail then
@@ -794,12 +741,6 @@ local index,intkey,i;
   Error("hash table in infinite loop");
 end );
 
-InstallOtherMethod(AddDictionary,"for hash tables",true,
-  [IsHash and IsSparseHashRep and TableHasIntKeyFun,
-   IsObject,IsObject],0,HashDictAddDictionary);
-
-# this is almost a copy of `DoubleHashArraySize', however we call the
-# (faster) dictionary methods.
 InstallGlobalFunction(DoubleHashDictSize,
 function( hash )
   local oldKeyArray, oldValueArray, i,j,l;
@@ -824,19 +765,29 @@ function( hash )
     Unbind(oldValueArray[i]);
   od;
 
-  hash!.LengthArray := hash!.LengthArray * 2;
-  hash!.LengthArrayHalf := Int(hash!.LengthArray / 2);
+  hash!.LengthArray := NextPrimeInt(hash!.LengthArray * 2);
+  hash!.LengthArrayHalf := QuoInt(hash!.LengthArray,2);
   hash!.KeyArray := ListWithIdenticalEntries( hash!.LengthArray, fail );
   hash!.ValueArray := [];
   hash!.NumberKeys := 0;
   l:=Length(oldKeyArray);
-  for i in [l,l-1..1] do
-    if oldKeyArray[i] <> fail then
-      HashDictAddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
-      Unbind(oldKeyArray[i]);
-      Unbind(oldValueArray[i]);
-    fi;
-  od;
+  if IsBound(hash!.intKeyFun) then
+    for i in [l,l-1..1] do
+      if oldKeyArray[i] <> fail then
+	HashDictAddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
+	Unbind(oldKeyArray[i]);
+	Unbind(oldValueArray[i]);
+      fi;
+    od;
+  else
+    for i in [l,l-1..1] do
+      if oldKeyArray[i] <> fail then
+	AddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
+	Unbind(oldKeyArray[i]);
+	Unbind(oldValueArray[i]);
+      fi;
+    od;
+  fi;
 end );
 
 #############################################################################
@@ -844,7 +795,7 @@ end );
 #M  AddDictionary(<dict>,<key>)
 ##
 InstallOtherMethod(AddDictionary,"for hash tables, no value given",true,
-  [IsHash,IsObject],0,
+  [IsHash and IsMutable,IsObject],0,
 function(ht, x)
   AddDictionary(ht,x,true); 
 end);
@@ -863,15 +814,43 @@ end);
 ##
 #M  LookupDictionary(<dict>,<key>)
 ##
-InstallMethod(LookupDictionary,"for hash tables",true,
+InstallMethod(LookupDictionary,"for hash tables that know their int key",true,
   [IsHash and IsSparseHashRep and TableHasIntKeyFun,IsObject],0,
 function( hash, key )
-local index,intkey,i;
+local index,intkey,i,cnt,j;
   intkey := hash!.intKeyFun(key);
+  cnt:=1;
+  j:=0;
+  repeat
+    for i in HASH_RANGE do
+      index := HashFunct( intkey, j, hash!.LengthArray );
+      j:=j+1;
+      if hash!.KeyArray[index] = key then
+        LastHashIndex := index;
+	return hash!.ValueArray[ index ]; 
+      elif hash!.KeyArray[index] = fail then
+	return fail;
+      fi;
+    od;
+    Info(InfoWarning,1,"hash table in ",cnt,"-infinite loop?");
+    cnt:=cnt+1;
+  until false;
+end );
+
+############################################################################
+##
+#M  LookupDictionary(<dict>,<key>)
+##
+InstallMethod(LookupDictionary,"for hash tables",true,
+  [IsHash and IsSparseHashRep,IsObject],0,
+function( hash, key )
+local index,intkey,i;
+  intkey := SparseIntKey( false,key )(key);
   for i in HASH_RANGE do
     index := HashFunct( intkey, i, hash!.LengthArray );
     if hash!.KeyArray[index] = key then
-      return hash!.ValueArray[ index ]; 
+        LastHashIndex := index;
+        return hash!.ValueArray[ index ]; 
     elif hash!.KeyArray[index] = fail then
       return fail;
     fi;
@@ -923,7 +902,7 @@ InstallMethod(DenseIntKey,"for lists of vectors",true,
     [ IsFFECollColl,IsObject ], 0,
 function(m,v)
 local f,n;
-  if not IsList(m) and ForAll(m,i->IsRowVector(i)) then
+if not (IsList(m) and IS_PLIST_REP(m) and ForAll(m,i->IsRowVector(i))) then
     TryNextMethod();
   fi;
   f:=DefaultFieldOfMatrix(m);
@@ -1079,12 +1058,17 @@ InstallMethod(SparseIntKey,"kernel pc group elements",true,
   [IsObject,
     IsElementFinitePolycyclicGroup and IsDataObjectRep and IsNBitsPcWordRep],0,
 function(d,e)
-local l;
+local l,p;
   # we want to use an small shift to avoid cancellation due to similar bit
   # patterns in many bytes (the exponent values in most cases are very
   # small). The pcgs length is a reasonable small value-- otherwise we get
   # already overlap for the generators alone.
-  l:=Length(FamilyObj(e)!.DefiningPcgs)+1;
+  p:=FamilyObj(e)!.DefiningPcgs;
+  l:=NextPrimeInt(Length(p)+1);
+  p:=Product(RelativeOrders(p));
+  while Gcd(l,p)>1 do
+    l:=NextPrimeInt(l);
+  od;
   return e->HashKeyBag(e,l,DOUBLE_OBJLEN,-1);
 end);
 
@@ -1121,4 +1105,3 @@ local n,l;
   return x->x![1]*l;
 end);
 
-#E

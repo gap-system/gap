@@ -1,0 +1,72 @@
+Explanation of this file:
+=============================
+
+first column - semigroup name. The semigroup can be found in "examples"
+Rh= Y - uses Rhodes thm for minl congruences
+Pu= Y - uses pullback for all congruences
+J = Y - uses morse method for join
+
+tmin - total time for computing min congruences (ms)
+tmin (net) - time for minl congruences not including computation of Green's relations
+tAll - time to compute all congruences.
+tAll (net ) - tAll - time for Greens relations
+cl(min) - number of congruences computed for minimal congruences
+cl(all) - number of congruences computed for all congruences
+
+
+
+Semigroup	| Rh	| Pu 	| J | tMin	| tMin(net)	|tAll		|	tAll(net)	| cl(min)	| cl(all)
+======================================================================================
+c4				|	Y  	| Y		| Y	| 5460	| 1170			|427800	| 96100			| 20			| 1023
+c4				|	Y  	| N		| Y	| 5350	| 320				|319140	|						| 20			| 6519
+c4				|	Y  	| Y		| N	| 5370	| 330				|407160	| 94810
+c4				|	Y  	| N		| N	| 5340	| 310 			|292290	| 
+
+op3				|	Y  	| N		| N	| 8900 	| 8220 			|22170	| 					|	288			|	286
+op3				|	Y  	| Y		| N	| 6190 	| 5780 			|81230	| 76970 		| 288			| 633
+op3				|	N  	| Y		| Y	| 11890	| 		 			|160010	| 					| 276			| 595
+
+
+
+
+
+
+Comparisons for evaluating Pullback method:
+===========================================
+c4				|	N  	| Y		| Y	| 1450	| 					|188260	|						| 78			| 2299
+c4				|	N  	| N		| Y	| 1270	| 					|316970	|						| 78			|	6519
+
+c4				|	N  	| Y		| N	| 1270	| 					|188780	|
+c4				|	N  	| N		| N	| 1290	| 					|287790 |
+
+tim5			| N		| N		| N	| 3470	|						| 1510000 |					| 105			| 21841
+tim5			| N		| Y		| N	| 3210	|						| 993840 	|					| 105			| 6096
+tim5			| Y		| Y		| N	| 13930	| 1630			| 1623500	| 448520	| 21			| 2416
+
+Bad performers:
+op3				|	N  	| Y		| N	| 12310	|		  			|158820	| 					| 276			| 595
+op3				|	N  	| N		| N	| 12310	|		  			|25960 	| 					| 276			|	286
+
+t3				|	N  	| Y		| N	| 23940	|		  			|369390	| 					| 351			| 800
+t3				|	N  	| N		| N	| 23940	|		  			|42180 	| 					| 351			| 366
+On performs badly too.
+
+
+
+
+Comparisons for evaluating Rhodes method:
+c4				|	Y  	| N		| N	| 6690	| 940 
+c4				|	N  	| N		| N	| 1430	|
+t3				|	Y  	| N		| N	| 16720 | 15590			
+t3				|	N  	| N		| N	| 23390 | 
+op3				|	Y  	| N		| N	| 9170  | 8420			
+op3				|	N  	| N		| N	| 12030 | 
+t4				|	Y  	| N		| N	| 8.6h  | 8.6h (Gtime ~10sec)
+t4				|	N  	| N		| N	| 17h   | 
+
+
+
+
+
+
+

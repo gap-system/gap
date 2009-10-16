@@ -1,0 +1,69 @@
+This is TeX, Version 3.14159 (Web2C 7.3.1) (format=tex 2000.11.16)  7 APR 2001 22:20
+**manual
+(manual.tex (gapmacro.tex (/usr/share/texmf/tex/plain/amsfonts/amssym.tex
+(/usr/share/texmf/tex/plain/amsfonts/amssym.def
+\msafam=\fam8
+\msbfam=\fam9
+\eufmfam=\fam10
+))
+Running TeX
+\pagewidth=\dimen16
+\pageheight=\dimen17
+\colwidth=\dimen18
+\partialpage=\box16
+\origvsize=\dimen19
+\manindent=\dimen20
+\smallmanindent=\dimen21
+\msbfam=\fam11
+\labelout=\write0
+\indexout=\write1
+\secindout=\write2
+\tocout=\write3
+\citeout=\write4
+\ans=\write5
+\labelin=\read0
+\indexin=\read1
+\tocin=\read2
+\citein=\read3
+\secno=\count26
+\subsecno=\count27
+\exno=\count28
+\indentno=\count29
+) (../../../../doc/ext/manual.lab) (../../../../doc/ref/manual.lab) [1]
+\makelabel {anupq:contents}{1}
+Chapter `Contents' .
+(manual.toc) [2.1
+\chapcontents {\tocstrut }{Contents}{2}
+] (manual.lab)
+\openout3 = `manual.toc'.
+
+\openout0 = `manual.lab'.
+
+\openout1 = `manual.idx'.
+
+\openout2 = `manual.six'.
+
+\openout4 = `manual.aux'.
+
+ (intro.tex
+Chapter `Introduction' .
+Reference `NOBr96' undefined.
+) (anupq.tex [3.1]
+Chapter `The ANU pq in GAP 4' .
+[4.2] [5.2] [6.2] [7.2] [8.2] [9.2]) (install.tex [10.2]
+Chapter `Installing the ANU PQ Package' .
+[11.3] [12.3] [13.3] [14.3] [15.3]) [16.3]
+Chapter `Bibliography' .
+(manual.bbl) [17.1]
+Chapter `Index' .
+(manual.ind) [18.2]
+##
+## Citations for BibTeX written on manual.aux.
+## Index entries for makeindex written on manual.idx.
+## Section index entries written on manual.six.
+## Label definitions written on manual.lab.
+## Table of contents written on manual.toc.
+## There were undefined labels or references.
+##
+ )
+Output written on manual.dvi (18 pages, 43268 bytes).

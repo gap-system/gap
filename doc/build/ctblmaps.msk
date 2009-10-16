@@ -2,7 +2,7 @@
 %%
 %A  ctblmaps.msk                GAP documentation               Thomas Breuer
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: ctblmaps.msk,v 1.17 2004/01/19 09:52:53 gap Exp $
 %%
 %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -182,8 +182,8 @@ gap> NamesOfFusionSources( tbls5 );
 [ "2.A5.2", "Isoclinic(2.A5.2)", "A5", "S3x2", "(A5x3):2", "2^4:s5", 
   "2.M22M5", "4.M22M5", "M22.2M4", "2.M12M8", "2.2.2^4+6:S5", "2.2^4+6:S5", 
   "4.2^4.S5", "2.HSM10", "3^1+4:2^1+4.s5", "2^(1+4).S5", "(2^2xA5):2", 
-  "2^10:(2^5:s5)", "3^4:S5", "M24C2B", "gl25", "mo62", "s2wrs5", "s4", 
-  "twd5a", "w(d5)", "5:4", "CT1" ]
+  "2^10:(2^5:s5)", "M24C2B", "gl25", "mo62", "s2wrs5", "s4", "twd5a", 
+  "w(d5)", "5:4", "CT1" ]
 \endexample
 
 \Declaration{PossibleClassFusions}

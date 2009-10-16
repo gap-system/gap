@@ -3,7 +3,7 @@
 #W  gpprmsya.gd                   GAP Library                    Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gpprmsya.gd,v 4.16 2009/01/12 17:26:16 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,16 +13,43 @@
 ##  permutation groups
 ##
 Revision.gpprmsya_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: gpprmsya.gd,v 4.16 2009/01/12 17:26:16 gap Exp $";
 
 
 #############################################################################
 ##
+#P  IsNaturalSymmetricGroup( <group> )
 #P  IsNaturalAlternatingGroup( <group> )
 ##
-##  A   group is a  natural  alternating group if  it is  a permutation group
-##  acting as alternating group on its moved points.
+##  <#GAPDoc Label="IsNaturalSymmetricGroup">
+##  <ManSection>
+##  <Prop Name="IsNaturalSymmetricGroup" Arg='group'/>
+##  <Prop Name="IsNaturalAlternatingGroup" Arg='group'/>
 ##
+##  <Description>
+##  A group is a natural symmetric or alternating group if it is
+##  a permutation group acting as symmetric or alternating group,
+##  respectively, on its moved points.
+##  <P/>
+##  For groups that are known to be natural symmetric or natural alternating
+##  groups, very efficient methods for computing membership,
+##  conjugacy classes, Sylow subgroups etc.&nbsp;are used.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:=Group((1,5,7,8,99),(1,99,13,72));;
+##  gap> IsNaturalSymmetricGroup(g);
+##  true
+##  gap> g;
+##  Sym( [ 1, 5, 7, 8, 13, 72, 99 ] )
+##  gap> IsNaturalSymmetricGroup( Group( (1,2)(4,5), (1,2,3)(4,5,6) ) );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsNaturalSymmetricGroup", IsPermGroup );
+
 DeclareProperty( "IsNaturalAlternatingGroup", IsPermGroup );
 
 
@@ -30,7 +57,16 @@ DeclareProperty( "IsNaturalAlternatingGroup", IsPermGroup );
 ##
 #P  IsAlternatingGroup( <group> )
 ##
-##  Such a group is a group isomorphic to a natural alternating group.
+##  <#GAPDoc Label="IsAlternatingGroup">
+##  <ManSection>
+##  <Prop Name="IsAlternatingGroup" Arg='group'/>
+##
+##  <Description>
+##  is <K>true</K> if the group <A>group</A> is isomorphic to a
+##  alternating group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsAlternatingGroup", IsGroup );
 
@@ -44,18 +80,18 @@ InstallTrueMethod( IsAlternatingGroup, IsNaturalAlternatingGroup );
 
 #############################################################################
 ##
-#P  IsNaturalSymmetricGroup( <group> )
-##
-##  A group is a natural symmetric group if it is  a permutation group acting
-##  as symmetric group on its moved points.
-##
-DeclareProperty( "IsNaturalSymmetricGroup", IsPermGroup );
-
-#############################################################################
-##
 #P  IsSymmetricGroup( <group> )
 ##
-##  is `true' if the group <group> is isomorphic to a natural symmetric group.
+##  <#GAPDoc Label="IsSymmetricGroup">
+##  <ManSection>
+##  <Prop Name="IsSymmetricGroup" Arg='group'/>
+##
+##  <Description>
+##  is <K>true</K> if the group <A>group</A> is isomorphic to a
+##  symmetric group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSymmetricGroup", IsGroup );
 
@@ -71,8 +107,20 @@ InstallTrueMethod( IsSymmetricGroup, IsNaturalSymmetricGroup );
 ##
 #A  SymmetricParentGroup( <grp> )
 ##
-##  For a permutation group <grp> this function returns the symmetric group
-##  that moves the same points as <grp> does.
+##  <#GAPDoc Label="SymmetricParentGroup">
+##  <ManSection>
+##  <Attr Name="SymmetricParentGroup" Arg='grp'/>
+##
+##  <Description>
+##  For a permutation group <A>grp</A> this function returns the symmetric
+##  group that moves the same points as <A>grp</A> does.
+##  <Example><![CDATA[
+##  gap> SymmetricParentGroup( Group( (1,2), (4,5), (7,8,9) ) );
+##  Sym( [ 1, 2, 4, 5, 7, 8, 9 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("SymmetricParentGroup",IsPermGroup);
 
@@ -80,8 +128,14 @@ DeclareAttribute("SymmetricParentGroup",IsPermGroup);
 ##
 #A  AlternatingSubgroup( <grp> )
 ##
-##  returns the intersection of <grp> with the alternating group on the
-##  points moved by <grp>.
+##  <ManSection>
+##  <Attr Name="AlternatingSubgroup" Arg='grp'/>
+##
+##  <Description>
+##  returns the intersection of <A>grp</A> with the alternating group on the
+##  points moved by <A>grp</A>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute("AlternatingSubgroup",IsPermGroup);
 
@@ -89,10 +143,16 @@ DeclareAttribute("AlternatingSubgroup",IsPermGroup);
 ##
 #A  OrbitStabilizingParentGroup( <grp> )
 ##
-##  returns the subgroup of `SymmetricParentGroup(<grp>)' which stabilizes
-##  the orbits of <grp> setwise. (So it is a direct product of wreath
+##  <ManSection>
+##  <Attr Name="OrbitStabilizingParentGroup" Arg='grp'/>
+##
+##  <Description>
+##  returns the subgroup of <C>SymmetricParentGroup(<A>grp</A>)</C> which stabilizes
+##  the orbits of <A>grp</A> setwise. (So it is a direct product of wreath
 ##  products of symmetric groups.) It is a natural supergroup for the
 ##  normalizer.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute("OrbitStabilizingParentGroup",IsPermGroup);
 

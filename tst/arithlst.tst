@@ -2,14 +2,14 @@
 ##
 #W  arithlst.tst                GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: arithlst.tst,v 1.17 2006/02/28 16:35:23 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testall.g because it runs too long.
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: arithlst.tst,v 1.17 2006/02/28 16:35:23 gap Exp $");
 
 
 #############################################################################
@@ -824,7 +824,7 @@ gap> TestOfAdditiveListArithmetic( LieAlgebra( GF(3)^[2,2] ), 4 );
 # gap> TestOfMultiplicativeListArithmetic( blockmats, 4 );
 
 
-gap> STOP_TEST( "arithlst.tst", 400564100000 );
+gap> STOP_TEST( "arithlst.tst", 2000000 );
 
 
 #############################################################################

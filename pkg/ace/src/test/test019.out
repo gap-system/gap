@@ -1,0 +1,117 @@
+ACE 3.000        Mon Dec 11 12:41:10 2000
+=========================================
+Host information:
+  name = flute
+
+  #-- ACE 3.000: Run Parameters ---
+Group Name: G;
+Group Generators: xabcdefg;
+Group Relators: (x)^2, (a)^2, (b)^2, (c)^2, (d)^2, (e)^2, (f)^2, (g)^2, 
+  (xa)^2, (xg)^2, (bd)^2, (be)^2, (bf)^2, (bg)^2, (ce)^2, (cf)^2, (cg)^2, 
+  (df)^2, (dg)^2, (eg)^2, (bc)^3, (cd)^3, (de)^3, (ef)^3, (fg)^3, (bx)^4, 
+  abcdeaedcb, afafdcbdcd, (ag)^5, fedcxbxcdefxbx, bxfedcxbxcdefx, 
+  fedcxfedcxcdefxcdefx;
+Subgroup Name: H;
+Subgroup Generators: x, b, c, d, e, f, g;
+Wo:12M; Max:1499998; Mess:200000; Ti:-1; Ho:-1; Loop:0;
+As:0; Path:0; Row:0; Mend:0; No:0; Look:0; Com:10;
+C:1000; R:16; Fi:5; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+  #--------------------------------
+SG: a=1 r=1 h=1 n=2; l=1 c=+0.00; m=1 t=1
+DS: a=28843 r=1643 h=11027 n=36900; l=75 c=+3.99; s=2000 d=910 c=91
+DD: a=75105 r=3239 h=20786 n=90147; l=179 c=+5.56; d=2
+DS: a=76560 r=3326 h=21512 n=95124; l=189 c=+0.56; s=4000 d=1366 c=635
+DS: a=65867 r=3390 h=22963 n=99064; l=197 c=+1.23; s=8000 d=2462 c=1539
+DS: a=61919 r=3390 h=22963 n=99064; l=197 c=+0.08; s=16000 d=6737 c=1264
+DD: a=90574 r=4480 h=31059 n=140640; l=279 c=+8.18; d=1
+DD: a=135803 r=5345 h=59010 n=192245; l=383 c=+6.04; d=1
+CP: a=181573 r=6233 h=64994 n=244800; l=487 c=+5.44; m=181573 t=244799
+DS: a=153925 r=6265 h=65799 n=246692; l=491 c=+0.54; s=32000 d=13999 c=2002
+DS: a=128879 r=6265 h=65799 n=246692; l=491 c=+0.36; s=64000 d=27005 c=4996
+CC: a=128371 r=6697 h=69326 n=273682; l=545 c=+10.08; d=48
+DD: a=169223 r=7943 h=104333 n=321820; l=641 c=+7.13; d=1
+...
+DD: a=916225 r=28204 h=376571 n=1126054; l=2243 c=+8.58; d=1
+DD: a=950191 r=30229 h=388117 n=1160864; l=2313 c=+13.78; d=101
+CP: a=982628 r=30776 h=402432 n=1194706; l=2379 c=+14.43; m=982628 t=1194705
+DD: a=1015073 r=31618 h=462444 n=1230466; l=2451 c=+15.27; d=180
+DD: a=1040993 r=32763 h=516761 n=1261115; l=2513 c=+14.40; d=321
+DD: a=1060052 r=33623 h=530733 n=1282942; l=2557 c=+19.09; d=0
+DD: a=1082219 r=34125 h=601659 n=1306984; l=2605 c=+22.79; d=635
+DD: a=1110915 r=36219 h=939095 n=1339454; l=2669 c=+16.29; d=743
+DD: a=1139301 r=37324 h=1343747 n=1371819; l=2733 c=+14.43; d=13
+INDEX = 1140000 (a=1140000 r=37843 h=1374662 n=1374662; l=2740 c=395.92; m=1141516 t=1374661)
+  #--- ACE 3.000: Level 0 Dump ----
+...
+ncol=8 ndrel=32 nsgpg=7 sgdone=1
+...
+  #--------------------------------
+  #--- ACE 3.000: Level 2 Dump ----
+okstart=1 okcont=1 okredo=1
+tabinfo=1 tabindex=1 lresult=1140000
+...
+  #--------------------------------
+
+  #-- ACE 3.000: Run Parameters ---
+Group Name: G;
+Group Generators: xabcdefg;
+Group Relators: b, (x)^2, (a)^2, (b)^2, (c)^2, (d)^2, (e)^2, (f)^2, (g)^2, 
+  (xa)^2, (xg)^2, (bd)^2, (be)^2, (bf)^2, (bg)^2, (ce)^2, (cf)^2, (cg)^2, 
+  (df)^2, (dg)^2, (eg)^2, (bc)^3, (cd)^3, (de)^3, (ef)^3, (fg)^3, (bx)^4, 
+  abcdeaedcb, afafdcbdcd, (ag)^5, fedcxbxcdefxbx, bxfedcxbxcdefx, 
+  fedcxfedcxcdefxcdefx;
+Subgroup Name: H;
+Subgroup Generators: x, b, c, d, e, f, g;
+Wo:12M; Max:1499998; Mess:200000; Ti:-1; Ho:-1; Loop:0;
+As:0; Path:0; Row:0; Mend:0; No:0; Look:0; Com:10;
+C:1000; R:16; Fi:5; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+  #--------------------------------
+DS: a=1112845 r=1 h=1 n=1374662; l=1 c=+0.18; s=2000 d=30 c=971
+DS: a=928346 r=1 h=1 n=1374662; l=1 c=+1.52; s=4000 d=66 c=1935
+CC: a=728346 r=1 h=1 n=1374662; l=1 c=+1.88; d=3076
+DS: a=576064 r=1 h=1 n=1374662; l=1 c=+1.54; s=8000 d=122 c=3879
+CC: a=376064 r=1 h=1 n=1374662; l=1 c=+2.54; d=2519
+CC: a=176064 r=1 h=1 n=1374662; l=1 c=+3.38; d=2519
+CL: a=1 r=2 h=2 n=2; l=1 c=+9.38; m=1141516 t=1374661
+INDEX = 1 (a=1 r=2 h=2 n=2; l=2 c=20.42; m=1141516 t=1374661)
+  #--- ACE 3.000: Level 0 Dump ----
+...
+ncol=8 ndrel=33 nsgpg=7 sgdone=0
+...
+  #--------------------------------
+  #--- ACE 3.000: Level 2 Dump ----
+okstart=1 okcont=0 okredo=1
+tabinfo=0 tabindex=0 lresult=1
+...
+  #--------------------------------
+
+  #-- ACE 3.000: Run Parameters ---
+Group Name: G;
+Group Generators: xabcdefg;
+Group Relators: b, (x)^2, (a)^2, (b)^2, (c)^2, (d)^2, (e)^2, (f)^2, (g)^2, 
+  (xa)^2, (xg)^2, (bd)^2, (be)^2, (bf)^2, (bg)^2, (ce)^2, (cf)^2, (cg)^2, 
+  (df)^2, (dg)^2, (eg)^2, (bc)^3, (cd)^3, (de)^3, (ef)^3, (fg)^3, (bx)^4, 
+  abcdeaedcb, afafdcbdcd, (ag)^5, fedcxbxcdefxbx, bxfedcxbxcdefx, 
+  fedcxfedcxcdefxcdefx;
+Subgroup Name: H;
+Subgroup Generators: x, b, c, d, e, f, g;
+Wo:12M; Max:1499998; Mess:200000; Ti:-1; Ho:-1; Loop:0;
+As:0; Path:0; Row:0; Mend:0; No:0; Look:0; Com:10;
+C:1000; R:16; Fi:5; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+  #--------------------------------
+CL: a=1 r=1 h=1 n=2; l=1 c=+0.00; m=1141516 t=1374661
+SG: a=1 r=1 h=1 n=2; l=2 c=+0.00; m=1141516 t=1374661
+INDEX = 1 (a=1 r=1 h=2 n=2; l=5 c=0.00; m=1141516 t=1374661)
+  #--- ACE 3.000: Level 0 Dump ----
+...
+ncol=8 ndrel=33 nsgpg=7 sgdone=1
+...
+  #--------------------------------
+  #--- ACE 3.000: Level 2 Dump ----
+okstart=1 okcont=1 okredo=1
+tabinfo=1 tabindex=1 lresult=1
+...
+  #--------------------------------
+
+=========================================
+ACE 3.000        Mon Dec 11 12:48:13 2000

@@ -1,0 +1,3 @@
+chap*.html chap*.txt
+*.aux *.bbl *.blg *.brf *.ilg *.idx *.ind *.log *.pnr *.toc
+manual.pdf manual.six fr.tex frbib.xml.bib

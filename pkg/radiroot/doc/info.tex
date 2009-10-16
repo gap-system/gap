@@ -1,0 +1,43 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  info.tex          Radiroot documentation             Andreas Distler
+%%
+%H  $Id: info.tex,v 1.2 2006/10/30 14:44:55 gap Exp $
+%%
+%Y  2006
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The Info Class of the Package}
+
+The `info' mechanism in {\GAP} allows functions to print information
+during the computation (see Section ~"ref:Info Functions" in the
+{\GAP} reference manual for general information).
+
+\> InfoRadiroot
+
+is the info class of this package.
+
+\> SetInfoLevel( InfoRadiroot, <level> )
+
+sets the info level for `InfoRadiroot' to <level>, where <level> has
+to be an integer in the range 0-4.
+
+The default value for `InfoRadiroot' is 1. Information why a function
+returns `fail' will be given with this setting.
+\beginexample
+gap> InfoLevel(InfoRadiroot);
+1
+gap> RootsOfPolynomialAsRadicals(x^5-4*x+2);
+#I  Polynomial is not solvable.
+fail
+\endexample
+
+Setting the info level to a higher value will cause messages to show up during
+single steps of the computation. On level 2 one gets a rough
+overview. Those who want to go into the details of the algorithm
+described in \cite{Distler05} and of the implementation itself will
+find the information on level 3-4 helpful.
+
+To use the package in silent mode the info level can be given the
+value 0.

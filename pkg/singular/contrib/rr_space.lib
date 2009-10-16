@@ -1,0 +1,97 @@
+
+// proc below computes length, dimension, and generator matrix of 
+// AG code associated to divisots G, D on the curve
+// f(x,y)=0 over a field extension of degree d over
+// the ground field for f(x,y)
+///// may not work for all examples
+//
+// 8-9-2004,wdj
+// http://cadigweb.ew.usna.edu/~wdj/gap/singular/ag_code_rr_space.sing
+
+LIB "brnoeth.lib";  // need this
+LIB "linalg.lib";  // need this
+
+
+proc ag_code (poly f, int d, intvec G, intvec D)
+//["
+//Input: f over GF(p) in x,y, representing a curve f(x,y)=0 
+//over a field extension E of GF(p) degree d>0,
+//divisots G, D on the curve f(x,y)=0 over E,
+//Output: (generator matrix for AG code C_L(G,D),
+//n = length, k = dim, rank of matrix (should = k))
+//"]
+ {
+  list AD=Adj_div(f);
+  list nsp=NSplaces(1..d,AD);
+  list crv_info=extcurve(d,nsp);
+   def GAP_S=crv_info[1][2];
+   setring GAP_S;
+ keepring GAP_S;
+   matrix AGC=AGcode_L(G,D,crv_info);
+int n_length=ncols(AGC);
+int k_dim=nrows(AGC);
+list AGC2=gaussred(AGC,1);
+int ag_mat_rank=AGC2[4];
+matrix ag_mat=AGC2[3];  
+list ans=ag_mat,n_length,k_dim,ag_mat_rank;
+export(GAP_S);
+return(ans);
+ };
+
+/*
+
+////////////////[example
+//{
+int p=11;
+ring R=p,(x,y),lp;
+poly f=x3y+y3+x;
+int d=2;
+intvec G=1,0,0,0,0,0,0,0; 
+intvec D=4..8; 
+list agc=ag_code(f,d,G,D);
+//}]
+
+/////////////////[example
+//{
+int p=11;
+ring R=p,(x,y),lp;
+poly f=x3y+y3+x;
+int d=2;
+intvec G=6,0,0,0,0,0,0,1; 
+intvec D=5..7; 
+list agc=ag_code(f,d,G,D);
+//}]
+
+*/
+
+// works in Singular
+proc rr_basis (poly f, intvec G)
+//["
+//Input: f in GF(p)[x,y], representing a curve f(x,y)=0 
+//over GF(p), divisot G on the curve f(x,y)=0 over GF(p),
+//Output: string representing basis of Riemann-Roch space L(G)
+//"]
+ {
+ list C=Adj_div(f);
+ list curveinfo=NSplaces(1,C);
+ def R=curveinfo[1][2];
+ setring R;
+ list LG=BrillNoether(G,curveinfo);
+// export(GAP_curveinfo);
+ string s=string(LG);
+// print(LG);
+ return(s);
+ }; // return(LG);  doesn't work ...
+
+/*
+
+/////////////[example
+int p=11;
+ring R=p,(x,y),lp;
+poly f=x3y+y3+x;
+int d=2;
+intvec G=6,0,0,0,0,0,0,1; 
+rr_basis(f,G);
+//}]
+
+*/

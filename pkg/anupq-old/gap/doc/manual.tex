@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                GAP documentation             Werner Nickel
+%%                                                 based on manual.tex by
+%%
+%W                                                          Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  $Id: manual.tex,v 1.1.1.1 2001/04/15 13:39:19 werner Exp $
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapmacros . . . . . . . . . . . . . . . .  read the GAP macro package
+%%
+\input gapmacro
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{anupq}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../../doc/ext}
+\UseReferences{../../../../doc/ref}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont ANU PQ}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont A GAP 4 Share Package}\bigskip\bigskip
+  \centerline{\secfont Version 1.0}\medskip
+  \centerline{\secfont Based on ANU PQ Standalone Version April 2001}\bigskip
+  \centerline{\secfont by}\bigskip
+  \centerline{\secfont Eamonn O'Brien}\medskip
+  \centerline{Department of Mathematics}\medskip
+  \centerline{University of Auckland}\medskip
+  \centerline{Private Bag 92019, Auckland, New Zealand}\medskip
+  \centerline{e-mail: obrien@math.auckland.ac.nz}
+  \vfill
+  \centerline{{\GAP} interface code by}\bigskip
+  \centerline{Werner Nickel}\medskip
+  \centerline{AG 2, Fachbereich Mathematik, TU Darmstadt}\medskip
+  \centerline{Schlossgartenstr. 7, 64289 Darmstadt, Germany}\medskip
+  \centerline{email: nickel@mathematik.tu-darmstadt.de}
+  \vfill
+  \centerline{\secfont March 2001}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+%%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{../../../../doc/mrabbrev,../../../../doc/manual}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  . . . . . . . . . . . . . . . . . .  The different chapters
+%%
+\Chapters
+\Input{intro}
+\Input{anupq}
+\Input{install}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%%
+\Appendices
+\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex  . . . . . . . . . . . . . . . . . . . . . . . . ends here

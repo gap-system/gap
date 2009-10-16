@@ -1,0 +1,79 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                ACE documentation          Alexander Hulpke
+%W                                                      Joachim Neub"user
+%W                                                            Greg Gamble
+%%
+%H  $Id: manual.tex,v 1.24 2006/01/26 16:15:05 gap Exp $
+%%
+%Y  Copyright (C) 2000  Centre for Discrete Mathematics and Computing
+%Y                      Department of Information Tech. & Electrical Eng.
+%Y                      University of Queensland, Australia.
+%%
+\input ../../../doc/gapmacro
+\Package{ACE}
+
+\BeginningOfBook{ace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../doc/ext}
+\UseReferences{../../../doc/ref}
+%
+%
+\TitlePage{
+  \centerline{\titlefont ACE}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont A GAP4 Package}\bigskip\bigskip
+  \centerline{\secfont Version \input ../VERSION}\medskip
+  \centerline{\secfont Based on ACE Standalone Version 3.001}
+  \vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont George Havas and Colin Ramsay}\medskip
+  \centerline{Centre for Discrete Mathematics and Computing}\medskip
+  \centerline{Department of Information Technology and Electrical Engineering}
+  \medskip
+  \centerline{The University of Queensland, St.~Lucia 4072, Australia}
+  \bigskip
+  \centerline{{\GAP} interface code by}\medskip
+  \centerline{\secfont Alexander Hulpke}\medskip
+  \centerline{Department of Mathematics, Colorado State University}\medskip
+  \centerline{Weber Building, Fort Collins, CO 80523, USA}\medskip
+  \centerline{and}\medskip
+  \centerline{\secfont Greg Gamble}\medskip
+  \centerline{Centre for Discrete Mathematics and Computing} \medskip
+  \centerline{Department of Information Technology and Electrical Engineering}
+  \medskip
+  \centerline{The University of Queensland, St.~Lucia 4072, Australia}\medskip
+  \centerline{\secfont email: gregg@itee.uq.edu.au}
+  \vfill
+  \centerline{\secfont{\Month} \Year}
+}
+%
+%
+\TableOfContents
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{./manual,../../../doc/mrabbrev,../../../doc/manual}}
+\Chapters
+\Input{ace}
+\Input{install}
+\Input{basics}
+\Input{options}
+\Input{strategies}
+\Input{interact}
+\Appendices
+\Input{messages}
+\Input{examples}
+\Input{moreexamples}
+\Input{otheroptions}
+\EndMatter
+\Bibliography
+\Index
+\EndOfBook
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

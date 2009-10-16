@@ -2,7 +2,7 @@
 **
 *W  funcs.h                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: funcs.h,v 4.9 2009/09/25 15:17:05 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_funcs_h =
-   "@(#)$Id$";
+   "@(#)$Id: funcs.h,v 4.9 2009/09/25 15:17:05 gap Exp $";
 #endif
 
 
@@ -44,6 +44,7 @@ extern  void            ExecEnd (
             UInt                error );
 
 
+extern Int RecursionDepth;
 /****************************************************************************
 **
 

@@ -2,7 +2,7 @@
 ##
 #W  arith.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: arith.gi,v 4.39 2002/04/15 10:04:25 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  allow certain arithmetical operations.
 ##
 Revision.arith_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: arith.gi,v 4.39 2002/04/15 10:04:25 sal Exp $";
 
 
 #############################################################################

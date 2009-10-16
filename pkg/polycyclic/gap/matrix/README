@@ -1,0 +1,12 @@
+
+gap/matrix:
+
+Functions to compute with rational and integral matrices and modules.
+
+rowbases.gi   -- computing with rational spaces
+lattices.gi   -- computing with lattices
+modules.gi    -- radical and composition series of efa modules
+
+intmat.gi     -- integer matrices inversion
+triangle.gi   -- upper triangular matrices
+

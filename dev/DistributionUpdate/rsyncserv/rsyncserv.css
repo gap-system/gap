@@ -53,6 +53,18 @@ P.foot {
   font-size:80%; 
 }
 
+P.changes {
+  text-align:center;
+  font-size:80%;
+  color:#FF0000;
+}
+
+P.subtitle {
+  text-align:center;
+  font-size:130%;
+  color:#0000FF;
+}
+
 PRE {
   background-color:#DDDDDD;
   padding:3pt;

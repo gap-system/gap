@@ -3,7 +3,7 @@
 **
 *W  vecffe.c                    GAP source                      Werner Nickel
 **
-*H  @(#)$Id$
+*H  @(#)$Id: vecffe.c,v 4.22 2008/01/11 15:53:46 sal Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -12,7 +12,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_vecffe_c =
-   "@(#)$Id$";
+   "@(#)$Id: vecffe.c,v 4.22 2008/01/11 15:53:46 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

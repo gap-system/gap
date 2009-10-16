@@ -2,7 +2,7 @@
 ##
 #W  monoid.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: monoid.gi,v 4.29 2002/04/15 10:05:04 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for monoids.
 ##
 Revision.monoid_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: monoid.gi,v 4.29 2002/04/15 10:05:04 sal Exp $";
 
 
 #############################################################################

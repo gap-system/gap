@@ -1,0 +1,537 @@
+#############################################################################
+##
+#W  stdnames.dat         GAP 4 package `gpisotyp'               Thomas Breuer
+##
+#H  @(#)$Id: stdnames.dat,v 1.6 2002/07/10 16:32:46 gap Exp $
+##
+#Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the standard names of groups defined by the package.
+##  It is notified via an `AUTO' statement in `gap/stdnames.gd'.
+##
+Revision.( "gpisotyp/gap/stdnames_dat" ) :=
+    "@(#)$Id: stdnames.dat,v 1.6 2002/07/10 16:32:46 gap Exp $";
+
+
+#############################################################################
+##
+#V  StandardizerForNamesOfGroups
+##
+##  When this file is read automatically, we set the components `SortNames'
+##  and `TestNotificationsOfNames' initially to `false';
+##  after reading the file, the components are set to `true'.
+##  (The consistency checks are performed when the file is read from
+##  `tst/stdnames.tst'.)
+##
+BindGlobal( "StandardizerForNamesOfGroups",
+    EmptyNameStandardizerObject( rec(
+    NormalizedName           := LowercaseString,
+    ParseFunction            := ParseForwardsWithSuffix,
+    SortNames                := GpIsoTypGlobals.SortNames,
+    TestNotificationsOfNames := GpIsoTypGlobals.TestNotificationsOfNames ) )
+    );
+
+
+#############################################################################
+##
+##  Introduce shorthands that will be removed again in the end.
+##
+NISN:= function( name )
+    NotifyIndividualStandardName( StandardizerForNamesOfGroups, name );
+    end;
+
+NIAN:= function( stdname, admnames )
+    local name;
+    if IsString( admnames ) then
+      admnames:= [ admnames ];
+    fi;
+    for name in admnames do
+      NotifyIndividualAdmissibleName( StandardizerForNamesOfGroups,
+          stdname, name );
+    od;
+    end;
+
+NPSN:= function( format, conditions )
+    NotifyParametrizedStandardName( StandardizerForNamesOfGroups,
+        format, conditions );
+    end;
+
+NPAN:= function( stdformat, admformat, conditions, map )
+    NotifyParametrizedAdmissibleName( StandardizerForNamesOfGroups,
+        stdformat, admformat, conditions, map );
+    end;
+
+
+#############################################################################
+##
+##  cyclic groups C<n>, $<n> \geq 1$
+##
+NPSN( [ "C", IsDigitChar ],
+      [ 2, "IsPosInt" ] );
+NPAN( [ "C", IsDigitChar ],
+      [ "Z", IsDigitChar ],
+      [ 2, "IsPosInt" ],
+      [ 2, "IdFunc", 2 ] );
+
+
+#############################################################################
+##
+##  alternating groups `A<n>', $<n> \geq 1$
+##
+NPSN( [ "A", IsDigitChar ],
+      [ 2, "n -> n >= 4" ] );
+NIAN( "C1", "A1" );
+NIAN( "C1", "A2" );
+NIAN( "C3", "A3" );
+
+
+#############################################################################
+##
+##  symmetric groups `S<n>', $<n> \geq 1$
+##
+NPSN( [ "S", IsDigitChar ],
+      [ 2, "n -> n >= 3" ] );
+NPAN( [ "S", IsDigitChar ],
+      [ "A", IsDigitChar, ".2" ],
+      [ 2, "n -> n >= 4 and n <> 6" ],
+      [ 2, "IdFunc", 2 ] );
+NIAN( "C1", "S1" );
+NIAN( "C2", "S2" );
+NIAN( "S6", "A6.2_1" );
+
+
+#############################################################################
+##
+##  sporadic simple groups
+##
+##  1. standard names,
+##  2. names used by `IsomorphismTypeInfoFiniteSimpleGroup'
+##     (used by `StandardNameOfGroupFromSeriesInfo'),
+##  3. admissible names that are not standard,
+##  4. Schur multipliers (cf. Table 1 on p. viii of the ordinary Atlas),
+##  5. outer automorphisms (cf. Table 1 on p. viii of the ordinary Atlas)
+##
+StandardizerForNamesOfGroups.SporadicSimpleGroupInfo := [
+    [ "M11",  "M(11)",                  [],               "1", "1" ],
+    [ "M12",  "M(12)",                  [],               "2", "2" ],
+    [ "J1",   "J(1)",                   [],               "1", "1" ],
+    [ "M22",  "M(22)",                  [],              "12", "2" ],
+    [ "J2",   "HJ = J(2) = F(5-)",      [ "HJ", "F5-" ],  "2", "2" ],
+    [ "M23",  "M(23)",                  [],               "1", "1" ],
+    [ "HS",   "HS",                     [],               "2", "2" ],
+    [ "J3",   "J(3)",                   [],               "3", "2" ],
+    [ "M24",  "M(24)",                  [],               "1", "1" ],
+    [ "McL",  "Mc",                     [],               "3", "2" ],
+    [ "He",   "He = F(7)",              [ "F7" ],         "1", "2" ],
+    [ "Ru",   "Ru",                     [],               "2", "1" ],
+    [ "Suz",  "Suz",                    [],               "6", "2" ],
+    [ "ON",   "ON",                     [ "O'N" ],        "3", "2" ],
+    [ "Co3",  "Co(3)",                  [],               "1", "1" ],
+    [ "Co2",  "Co(2)",                  [],               "1", "1" ],
+    [ "Fi22", "Fi(22)",                 [],               "6", "2" ],
+    [ "HN",   "HN = F(5) = F = F(5+)",  [ "F5+" ],        "1", "2" ],
+    [ "Ly",   "Ly",                     [],               "1", "1" ],
+    [ "Th",   "Th = F(3) = E = F(3/3)", [ "E", "F3" ],    "1", "1" ],
+    [ "Fi23", "Fi23",                   [],               "1", "1" ],
+    [ "Co1",  "Co(1)",                  [ "F2-" ],        "2", "1" ],
+    [ "J4",   "J(4)",                   [],               "1", "1" ],
+    [ "F3+",  "Fi(24) = F(3+)",         [ "Fi24'" ],      "3", "2" ],
+    [ "B",    "B = F(2+)",              [ "F2+" ],        "2", "1" ],
+    [ "M",    "M = F(1)",               [ "FG", "F1" ],   "1", "1" ],
+  ];
+
+for entry in StandardizerForNamesOfGroups.SporadicSimpleGroupInfo do
+  NISN( entry[1] );
+  for name in entry[3] do
+    NIAN( entry[1], name );
+  od;
+od;
+
+
+#############################################################################
+##
+##  projective special linear groups `L<n>(<q>)',
+##  $<n> \geq 2$, <q> a prime power;
+##  the Chevalley name is A(<n>-1)(<q>).
+##
+NPSN( [ "L", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "n -> n >= 2",
+        4, "IsPrimePowerInt",
+        [ 2, 4 ], function( n, q )
+                      return not [ n, q ] in [ [ 2, 2 ], [ 2, 3 ], [ 2, 4 ], [ 2, 5 ], [ 2, 9 ], [ 3, 2 ], [ 4, 2 ] ];
+                  end ] );
+
+NPAN( [ "L", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "A", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "n -> n >= 2",
+        4, "IsPrimePowerInt",
+        [ 2, 4 ], function( n, q )
+                      return not [ n, q ] in [ [ 2, 2 ], [ 2, 3 ], [ 2, 4 ], [ 2, 5 ], [ 2, 9 ], [ 3, 2 ], [ 4, 2 ] ];
+                  end ],
+      [ 2, "n -> n-1", 2,
+        4, "IdFunc", 4 ] );
+
+NIAN( "S3", [ "L2(2)", "A1(2)" ] );
+NIAN( "A4", [ "L2(3)", "A1(3)" ] );
+NIAN( "A5", [ "L2(4)", "A1(4)" ] );
+NIAN( "A5", [ "L2(5)", "A1(5)" ] );
+NIAN( "A6", [ "L2(9)", "A1(9)" ] );
+NIAN( "L2(7)", [ "L3(2)", "A2(2)" ] );
+NIAN( "A8", [ "L4(2)", "A3(2)" ] );
+
+
+#############################################################################
+##
+##  projective special unitary groups `U<n>(<q>)',
+##  $<n> \geq 3$, <q> a prime power;
+##  the Chevalley name is 2A(<n>-1)(<q>).
+##
+NPSN( [ "U", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "n -> n >= 3",
+        4, "IsPrimePowerInt",
+        [ 2, 4 ], function( n, q )
+                      return not [ n, q ] in [ [ 3, 2 ] ];
+                  end ] );
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "U2(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3, 4, 5, 9 ]" ],
+      [ 2, "IdFunc", 2 ] );
+NIAN( "S3", [ "U2(2)", "2A1(2)" ] );
+NIAN( "A4", [ "U2(3)", "2A1(3)" ] );
+NIAN( "A5", [ "U2(4)", "2A1(4)" ] );
+NIAN( "A5", [ "U2(5)", "2A1(5)" ] );
+NIAN( "A6", [ "U2(9)", "2A1(9)" ] );
+
+#T  U3(2) = 3^2:Q8 is missing ...
+
+NPAN( [ "U", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "2A", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "n -> n >= 3",
+        4, "IsPrimePowerInt",
+        [ 2, 4 ], function( n, q )
+                      return not [ n, q ] in [ [ 3, 2 ] ];
+                  end ],
+      [ 2, "n -> n-1", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "2A1(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3, 4, 5, 9 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+
+#############################################################################
+##
+##  projective symplectic groups `S<n>(<q>)',
+##  $<n> \geq 4$ even, <q> a prime power;
+##  the Chevalley name is C(<n>/2)(<q>).
+##
+NPSN( [ "S", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n >= 4",
+        4, "IsPrimePowerInt",
+        [ 2, 4 ], function( n, q )
+                      return not [ n, q ] in [ [ 4, 2 ], [ 4, 3 ] ];
+                  end ] );
+
+NPAN( [ "S", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "C", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n >= 4",
+        4, "IsPrimePowerInt",
+        [ 2, 4 ], function( n, q )
+                      return not [ n, q ] in [ [ 4, 2 ], [ 4, 3 ] ];
+                  end ],
+      [ 2, "n -> n/2", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "S2(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3, 4, 5, 9 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "C1(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3, 4, 5, 9 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NIAN( "S3", [ "S2(2)", "C1(2)" ] );
+NIAN( "A4", [ "S2(3)", "C1(3)" ] );
+NIAN( "A5", [ "S2(4)", "C1(4)" ] );
+NIAN( "A5", [ "S2(5)", "C1(5)" ] );
+NIAN( "A6", [ "S2(9)", "C1(9)" ] );
+NIAN( "S6", [ "S4(2)", "C2(2)" ] );
+NIAN( "U4(2)", [ "S4(3)", "C2(3)" ] );
+
+
+#############################################################################
+##
+##  orthogonal groups `O+<n>(<q>)', $<n> \geq 8$ even, <q> a prime power;
+##  the Chevalley name is D(<n>/2)(<q>).
+##
+NPSN( [ "O+", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n >= 8",
+        4, "IsPrimePowerInt" ] );
+
+NPAN( [ "O+", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "D", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n >= 8",
+        4, "IsPrimePowerInt" ],
+      [ 2, "n -> n/2", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "L4(", IsDigitChar, ")" ],
+      [ "O+6(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NPAN( [ "L4(", IsDigitChar, ")" ],
+      [ "O6+(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NPAN( [ "L4(", IsDigitChar, ")" ],
+      [ "D3(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NIAN( "A8", [ "O+6(2)", "O6+(2)", "D3(2)" ] );
+
+
+#############################################################################
+##
+##  orthogonal groups `O-<n>(<q>)', $<n> \geq 8$ even, <q> a prime power;
+##  the Chevalley name is 2D(<n>/2)(<q>).
+##
+NPSN( [ "O-", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n >= 8",
+        4, "IsPrimePowerInt" ] );
+
+NPAN( [ "O-", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "O", IsDigitChar, "-(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n >= 8",
+        4, "IsPrimePowerInt" ],
+      [ 2, "IdFunc", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "O-", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "2D", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n >= 8",
+        4, "IsPrimePowerInt" ],
+      [ 2, "n -> n/2", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "O-4(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3 ]" ],
+      [ 2, "q -> q^2", 2 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "O4-(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3 ]" ],
+      [ 2, "q -> q^2", 2 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "2D2(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3 ]" ],
+      [ 2, "q -> q^2", 2 ] );
+
+NPAN( [ "U4(", IsDigitChar, ")" ],
+      [ "O-6(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt" ],
+      [ 2, "IdFunc", 2 ] );
+
+NPAN( [ "U4(", IsDigitChar, ")" ],
+      [ "O6-(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt" ],
+      [ 2, "IdFunc", 2 ] );
+
+NPAN( [ "U4(", IsDigitChar, ")" ],
+      [ "2D3(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt" ],
+      [ 2, "IdFunc", 2 ] );
+
+NIAN( "A5", [ "O-4(2)", "O4-(2)", "2D2(2)" ] );
+NIAN( "A6", [ "O-4(3)", "O4-(3)", "2D2(3)" ] );
+
+
+#############################################################################
+##
+##  orthogonal groups `O<n>(<q>)', $<n> \geq 7$ odd, <q> an odd prime power;
+##  the Chevalley name is B((<n>-1)/2)(<q>).
+##
+NPSN( [ "O", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsOddInt",
+        2, "n -> n >= 7",
+        4, "IsPrimePowerInt",
+        4, "IsOddInt" ] );
+
+NPAN( [ "O", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "B", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsOddInt",
+        2, "n -> n >= 7",
+        4, "IsPrimePowerInt",
+        4, "IsOddInt" ],
+      [ 2, "n -> (n-1)/2", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "O3(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3, 4, 5, 9 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NPAN( [ "L2(", IsDigitChar, ")" ],
+      [ "B1(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3, 4, 5, 9 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NPAN( [ "S", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "O", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n > 5",
+        4, "IsPrimePowerInt",
+        4, "IsEvenInt" ],
+      [ 2, "n -> n+1", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "S", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ "B", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "IsEvenInt",
+        2, "n -> n > 5",
+        4, "IsPrimePowerInt",
+        4, "IsEvenInt" ],
+      [ 2, "n -> n/2", 2,
+        4, "IdFunc", 4 ] );
+
+NPAN( [ "S4(", IsDigitChar, ")" ],
+      [ "O5(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> not q in [ 2, 3 ]" ],
+      [ 2, "IdFunc", 2 ] );
+
+NIAN( "S3", [ "O3(2)", "B1(2)" ] );
+NIAN( "A4", [ "O3(3)", "B1(3)" ] );
+NIAN( "A5", [ "O3(4)", "B1(4)" ] );
+NIAN( "A5", [ "O3(5)", "B1(5)" ] );
+NIAN( "A6", [ "O3(9)", "B1(9)" ] );
+NIAN( "S6", [ "O5(2)", "B2(2)" ] );
+NIAN( "U4(2)", [ "O5(3)", "B2(3)" ] );
+
+
+#############################################################################
+##
+##  exceptional groups E<n>(<q>), $<n> \in \{ 6, 7, 8 \}$, <q> a prime power
+##
+NPSN( [ "E", IsDigitChar, "(", IsDigitChar, ")" ],
+      [ 2, "n -> n in [ 6, 7, 8 ]",
+        4, "IsPrimePowerInt" ] );
+
+
+#############################################################################
+##
+##  exceptional groups `F4(<q>)', <q> a prime power
+##
+NPSN( [ "F4(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt" ] );
+
+
+#############################################################################
+##
+##  exceptional groups `G2(<q>)', <q> a prime power
+##
+NPSN( [ "G2(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> q > 2" ] );
+#T NIAN( "U3(3).2", "G2(2)" );
+NIAN( "U3(3)", "G2(2)'" );
+
+
+#############################################################################
+##
+##  exceptional groups `2E6(<q>)', <q> a prime power
+##
+NPSN( [ "2E6(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt" ] );
+
+
+#############################################################################
+##
+##  exceptional groups `3D4(<q>)', <q> a prime power
+##
+NPSN( [ "3D4(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt" ] );
+
+
+#############################################################################
+##
+##  exceptional groups `2G2(<q>)', <q> an odd power of $3$
+##
+NPSN( [ "2G2(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "q -> q > 3",
+        2, "q -> q mod 3 = 0",
+        2, "q -> IsOddInt( Length( Factors( q ) ) )" ] );
+#T NIAN( "L2(8).3", "2G2(3)" );
+NIAN( "L2(8)", "2G2(3)'" );
+
+
+#############################################################################
+##
+##  exceptional groups `2F4(<q>)', <q> an odd power of $2$
+##
+NPSN( [ "2F4(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "IsEvenInt",
+        2, "q -> q > 2",
+        2, "q -> IsOddInt( Length( Factors( q ) ) )" ] );
+NISN( "2F4(2)'" );
+NIAN( "2F4(2)'", "Tits" );
+NISN( "2F4(2)'.2" );
+NIAN( "2F4(2)'.2", "2F4(2)" );
+
+
+#############################################################################
+##
+##  exceptional Suzuki groups `Sz(<q>)',
+##  <q> an odd power of $2$, $<q> \geq 8$
+##
+NPSN( [ "Sz(", IsDigitChar, ")" ],
+      [ 2, "IsPrimePowerInt",
+        2, "IsEvenInt",
+        2, "q -> q > 2",
+        2, "q -> IsOddInt( Length( Factors( q ) ) )" ] );
+
+
+#############################################################################
+##
+##  Remove the shorthands,
+##  sort the lists, and reset the components of the name translator objects.
+##
+Unbind( NISN );
+Unbind( NIAN );
+Unbind( NPSN );
+Unbind( NPAN );
+FinishInitializationOfNameTranslatorObject( StandardizerForNamesOfGroups );
+
+
+#############################################################################
+##
+#E
+

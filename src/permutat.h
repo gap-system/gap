@@ -3,7 +3,7 @@
 *W  permutat.h                  GAP source                   Martin Schoenert
 **                                                           & Alice Niemeyer
 **
-*H  @(#)$Id$
+*H  @(#)$Id: permutat.h,v 4.8 2002/04/15 10:03:54 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_permutat_h =
-   "@(#)$Id$";
+   "@(#)$Id: permutat.h,v 4.8 2002/04/15 10:03:54 sal Exp $";
 #endif
 
 

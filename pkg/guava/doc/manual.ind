@@ -1,0 +1,280 @@
+\letter A
+  Acknowledgements, \indexit{3}
+  `AddedElementsCode', 44
+  `AlternantCode', 31
+  `AmalgamatedDirectSumCode', 68
+  `AreMOLS', 59
+  Arithmetic Operations for Codewords, \indexit{7}
+  `AsSSortedList', 18
+  `AugmentedCode', 43
+    \sub without a list of codewords, 43
+  `AutomorphismGroup', 16
+\letter B
+  `BCHCode', 37
+  `BestKnownLinearCode', 33
+    \sub of a record, 34
+  `BinaryGolayCode', 34
+  `BlockwiseDirectSumCode', 68
+  Boolean Functions for Codes, \indexit{14}
+  Bose distance, 37
+  Bounds, Sphere packing bound, 51
+    \sub Upper Bound, 53
+  bounds, Elias, 52
+    \sub Griesmer, 53
+    \sub Hamming, 51
+    \sub Johnson, 52
+    \sub Plotkin, 52
+    \sub Singleton, 51
+  Bounds on codes, \indexit{51}
+  `BoundsCoveringRadius', 63
+  `BoundsMinimumDistance', 54
+\letter C
+  check polynomial, 35
+  `CheckMat', 20
+  `CheckMatCode', 31
+  `CheckPol', 20
+  `CheckPolCode', 36
+  code, 11
+    \sub cosets, 7
+    \sub cyclic, 11
+    \sub element test, 13
+    \sub evaluation, 13
+    \sub linear, 11
+    \sub subcode, 14
+    \sub unrestricted, 11
+  `CodeDensity', 73
+  `CodeDistanceEnumerator', 72
+  `CodeIsomorphism', 16
+  `CodeMacWilliamsTransform', 72
+  `CodeNorm', 70
+  codes, adition, 13
+    \sub coset, 13
+    \sub equality, 12
+    \sub inequality, 12
+    \sub product, 13
+  `CodeWeightEnumerator', 71
+  `Codeword', 5, 6
+  codeword, 5
+  `CodewordNr', 18
+  codewords, addition, 7
+    \sub equality, 7
+    \sub inequality, 7
+    \sub subtraction, 7
+  Comparisons of Codes, \indexit{12}
+  Comparisons of Codewords, \indexit{7}
+  `ConferenceCode', from a matrix, 28
+    \sub from an integer, 28
+  `ConstantWeightSubcode', 47
+    \sub for all minimum weight codewords, 47
+  Construction of Codewords, \indexit{5}
+  `ConstructionBCode', 46
+  `ConversionFieldCode', 46
+  `CoordinateNorm', 70
+  `CordaroWagnerCode', 33
+  `CosetCode', 47
+  `CoveringRadius', 62
+  cyclic code, 11
+  `CyclicCodes', 39
+  `CyclotomicCosets', 60
+\letter D
+  `DavydovCode', 69
+  `Decode', 24
+  Decoding Functions, \indexit{24}
+  `DecreaseMinimumDistanceLowerBound', 71
+  `Dimension', 18
+  `DirectProductCode', 49
+  `DirectSumCode', 48
+  `Display', 19
+  `DistanceCodeword', 9
+  `DistancesDistribution', 23
+  Distributions, \indexit{22}
+  Domain Functions for Codes, \indexit{17}
+  `DualCode', 46
+\letter E
+  `ElementsCode', 27
+  `EnlargedGabidulinCode', 69
+  `EnlargedTombakCode', 70
+  Equivalence and Isomorphism of Codes, \indexit{16}
+  `EvenWeightSubcode', 42
+  `ExhaustiveSearchCoveringRadius', 64
+  `ExpurgatedCode', 43
+  `ExtendedBinaryGolayCode', 34
+  `ExtendedCode', 41
+  `ExtendedDirectSumCode', 67
+  `ExtendedTernaryGolayCode', 35
+  external distance, 66
+\letter F
+  `FireCode', 38
+  Functions that Change the Display Form of a Codeword, \indexit{8}
+  Functions that Convert Codewords to Vectors or Polynomials, \indexit{8}
+  Functions that Generate a New Code from a Given Code, \indexit{41}
+  Functions that Generate a New Code from Two Given Codes, \indexit{48}
+\letter G
+  Gabidulin codes, \indexit{69}
+  `GabidulinCode', 69
+  `GeneralizedCodeNorm', 71
+  `GeneralizedSrivastavaCode', 32
+  `GeneralLowerBoundCoveringRadius', 64
+  `GeneralUpperBoundCoveringRadius', 64
+  Generating (Check) Matrices and Polynomials, \indexit{19}
+  Generating Cyclic Codes, \indexit{35}
+  Generating Linear Codes, \indexit{30}
+  Generating Unrestricted Codes, \indexit{27}
+  `GeneratorMat', 19
+  `GeneratorMatCode', 30
+  `GeneratorPol', 20
+  `GeneratorPolCode', 35
+  Golay Codes, \indexit{34}
+  `GoppaCode', with integer parameter, 32
+    \sub with list of field elements parameter, 32
+  `GrayMat', 55
+  `GreedyCode', 29
+  guava, 3
+\letter H
+  `HadamardCode', 27, 28
+  `HadamardMat', 56
+  `HammingCode', 31
+  `HorizontalConversionFieldMat', 58
+\letter I
+  `IncreaseCoveringRadiusLowerBound', 64
+  `InnerDistribution', 23
+  Installing GUAVA, \indexit{3}
+  `IntersectionCode', 49
+  `IsAffineCode', 72
+  `IsAlmostAffineCode', 73
+  `IsCode', 14
+  `IsCodeword', 6
+  `IsCoordinateAcceptable', 70
+  `IsCyclicCode', 14
+  `IsEquivalent', 16
+  `IsFinite', 17
+  `IsGriesmerCode', 73
+  `IsInStandardForm', 57
+  `IsLatinSquare', 59
+  `IsLinearCode', 14
+  `IsMDSCode', 15
+  `IsNormalCode', 71
+  `IsPerfectCode', 15
+  `IsSelfComplementaryCode', 72
+  `IsSelfDualCode', 15
+  `IsSelfOrthogonalCode', 16
+\letter K
+  `Krawtchouk', 60
+  `KrawtchoukMat', 55
+\letter L
+  `LeftActingDomain', 17
+  `LengthenedCode', 45
+  `LexiCode', 30
+    \sub using a basis, 30
+  linear code, 11
+  Loading GUAVA, \indexit{4}
+  `LowerBoundCoveringRadiusCountingExcess', 65
+  `LowerBoundCoveringRadiusEmbedded1', 66
+  `LowerBoundCoveringRadiusEmbedded2', 66
+  `LowerBoundCoveringRadiusInduction', 66
+  `LowerBoundCoveringRadiusSphereCovering', 65
+  `LowerBoundCoveringRadiusVanWee1', 65
+  `LowerBoundCoveringRadiusVanWee2', 65
+  `LowerBoundMinimumDistance', 53
+    \sub of codes over a field, 53
+\letter M
+  maximum distance separable, 51
+  `MinimumDistance', 21, 22
+  `MinimumDistanceLeon', 22
+  Miscellaneous functions, \indexit{59}
+  `MOLS', 56
+  `MOLSCode', 28
+  mutually orthogonal Latin squares, 56
+\letter N
+  New code constructions, \indexit{67}
+  New miscellaneous functions, \indexit{71}
+  `NordstromRobinsonCode', 29
+  `NrCyclicCodes', 39
+  `NullCode', 38
+  `NullWord', 9
+\letter O
+  Operations for Codes, \indexit{13}
+  Other Codeword Functions, \indexit{9}
+  `OuterDistribution', 23
+\letter P
+  Parameters of Codes, \indexit{21}
+  Parity check, 41
+  `PermutationDecode', 25
+  `PermutationGroup', 17
+  `PermutedCode', 42
+  `PermutedCols', 58
+  `PiecewiseConstantCode', 69
+  `PolyCodeword', 8
+  `PrimitiveUnityRoot', 60
+  `Print', 18
+  Printing and Displaying Codes, \indexit{18}
+  `PuncturedCode', 41
+    \sub with list of punctures, 41
+  `PutStandardForm', 57
+\letter Q
+  `QRCode', 37
+\letter R
+  `RandomCode', 29
+  `RandomLinearCode', 33
+  `ReciprocalPolynomial', 60
+  `Redundancy', 21
+  `ReedMullerCode', 31
+  `ReedSolomonCode', 37
+  `RemovedElementsCode', 44
+  `RepetitionCode', 38
+  `ResidueCode', 45
+  `RootsCode', 36
+    \sub with field, 36
+  `RootsOfCode', 21
+\letter S
+  `SetCoveringRadius', 63
+  `ShortenedCode', 44
+    \sub with list of columns, 45
+  `Size', 17
+  Some functions for the covering radius, \indexit{62}
+  Some functions related to the norm of a code, \indexit{70}
+  Special matrices in GUAVA, \indexit{55}
+  `SphereContent', 59
+  `SrivastavaCode', 32
+  `StandardArray', 25
+  `StandardFormCode', 48
+  `String', 19
+  `Support', 9
+  `SylvesterMat', 55
+  `Syndrome', 24
+  `SyndromeTable', 25
+\letter T
+  `TernaryGolayCode', 35
+  `TombakCode', 69
+  Toric codes, \indexit{39}
+  `ToricCode', 39
+  `ToricPoints', 39
+  `TreatAsPoly', 8
+  `TreatAsVector', 8
+\letter U
+  `UnionCode', 49
+  unrestricted code, 11
+  `UpperBound', 53
+  `UpperBoundCoveringRadiusCyclicCode', 67
+  `UpperBoundCoveringRadiusDelsarte', 66
+  `UpperBoundCoveringRadiusGriesmerLike', 67
+  `UpperBoundCoveringRadiusRedundancy', 66
+  `UpperBoundCoveringRadiusStrength', 67
+  `UpperBoundElias', 52
+  `UpperBoundGriesmer', 53
+  `UpperBoundHamming', 51
+  `UpperBoundJohnson', 52
+  `UpperBoundMinimumDistance', 54
+    \sub of codes over a field, 54
+  `UpperBoundPlotkin', 52
+  `UpperBoundSingleton', 51
+  `UUVCode', 48
+\letter V
+  `VectorCodeword', 8
+  `VerticalConversionFieldMat', 58
+\letter W
+  `WeightCodeword', 10
+  `WeightDistribution', 22
+  `WeightHistogram', 61
+  `WholeSpaceCode', 38
+  `WordLength', 21

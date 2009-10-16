@@ -1,0 +1,8 @@
+                             The Vecenum package
+
+This is the README file for the GAP package ``Vecenum''.
+
+This package contains an alpha-test implementation of my vector
+enumeration algorithm in GAP 4. 
+
+	    Steve

@@ -2,7 +2,7 @@
 ##
 #W  grpfree.gd                  GAP library                     Werner Nickel
 ##
-#H  $Id$
+#H  $Id: grpfree.gd,v 4.14 2008/11/12 13:04:45 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,12 +14,19 @@
 ##  equalitity test.  
 ##
 Revision.grpfree_gd :=
-    "$Id$";
+    "$Id: grpfree.gd,v 4.14 2008/11/12 13:04:45 gap Exp $";
 
 
 #############################################################################
 ##
 #F  IsElementOfFreeGroup  . . . . . . . . . . . . .  elements in a free group
+##
+##  <ManSection>
+##  <Func Name="IsElementOfFreeGroup" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonym( "IsElementOfFreeGroup", IsAssocWordWithInverse );
 DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
@@ -33,35 +40,64 @@ DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
 #F  FreeGroup( [<wfilt>,]<names> )
 #F  FreeGroup( [<wfilt>,]infinity, <name>, <init> )
 ##
-##  Called in the first form, `FreeGroup' returns a free group on
-##  <rank> generators.
-##  Called in the second form, `FreeGroup' returns a free group on
-##  <rank> generators, printed as `<name>1', `<name>2' etc.
-##  Called in the third form, `FreeGroup' returns a free group on
-##  as many generators as arguments, printed as <name1>, <name2> etc.
-##  Called in the fourth form, `FreeGroup' returns a free group on
-##  as many generators as the length of the list <names>, the $i$-th
-##  generator being printed as `<names>[$i$]'.
-##  Called in the fifth form, `FreeGroup' returns a free group on
-##  infinitely many generators, where the first generators are printed
-##  by the names in the list <init>, and the other generators by <name>
-##  and an appended number.
+##  <#GAPDoc Label="FreeGroup">
+##  <ManSection>
+##  <Heading>FreeGroup</Heading>
+##  <Func Name="FreeGroup" Arg='[wfilt, ]rank[, name]'
+##   Label="for given rank"/>
+##  <Func Name="FreeGroup" Arg='[wfilt, ]name1, name2, ...'
+##   Label="for various names"/>
+##  <Func Name="FreeGroup" Arg='[wfilt, ]names'
+##   Label="for a list of names"/>
+##  <Func Name="FreeGroup" Arg='[wfilt, ]infinity, name, init'
+##   Label="for infinitely many generators"/>
 ##
-##  If the extra argument <wfilt> is given, it must be either
-##  `IsSyllableWordsFamily' or `IsLetterWordsFamily' or
-##  `IsWLetterWordsFamily' or `IsBLetterWordsFamily'. The filter then
-##  specifies the representation used for the elements of the free group
-##  (see~"Representations for Associative Words"). If no such filter is
-##  given, a letter representation is used.
-##
+##  <Description>
+##  Called with a positive integer <A>rank</A>,
+##  <Ref Func="FreeGroup" Label="for given rank"/> returns
+##  a free group on <A>rank</A> generators.
+##  If the optional argument <A>name</A> is given then the generators are
+##  printed as <A>name</A><C>1</C>, <A>name</A><C>2</C> etc.,
+##  that is, each name is the concatenation of the string <A>name</A> and an
+##  integer from <C>1</C> to <A>range</A>.
+##  The default for <A>name</A> is the string <C>"g"</C>.
+##  <P/>
+##  Called in the second form,
+##  <Ref Func="FreeGroup" Label="for various names"/> returns
+##  a free group on as many generators as arguments, printed as
+##  <A>name1</A>, <A>name2</A> etc.
+##  <P/>
+##  Called in the third form,
+##  <Ref Func="FreeGroup" Label="for a list of names"/> returns
+##  a free group on as many generators as the length of the list
+##  <A>names</A>, the <M>i</M>-th generator being printed as
+##  <A>names</A><C>[</C><M>i</M><C>]</C>.
+##  <P/>
+##  Called in the fourth form,
+##  <Ref Func="FreeGroup" Label="for infinitely many generators"/>
+##  returns a free group on infinitely many generators, where the first
+##  generators are printed by the names in the list <A>init</A>,
+##  and the other generators by <A>name</A> and an appended number.
+##  <P/>
+##  If the extra argument <A>wfilt</A> is given, it must be either
+##  <C>IsSyllableWordsFamily</C> or <C>IsLetterWordsFamily</C> or
+##  <C>IsWLetterWordsFamily</C> or <C>IsBLetterWordsFamily</C>.
+##  This filter then specifies the representation used for the elements of
+##  the free group
+##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).
+##  If no such filter is given, a letter representation is used.
+##  <P/>
 ##  (For interfacing to old code that omits the representation flag, use of
 ##  the syllable representation is also triggered by setting the option
-##  `FreeGroupFamilyType' to the string ``syllable''.)
+##  <C>FreeGroupFamilyType</C> to the string <C>"syllable"</C>.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "FreeGroup" );
 
 
 #############################################################################
 ##
-#E  grpfree.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

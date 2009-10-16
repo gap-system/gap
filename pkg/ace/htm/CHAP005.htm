@@ -1,0 +1,229 @@
+<html><head><title>[ACE] 5 Strategy Options for ACE</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP004.htm">Previous</a>] [<a href ="CHAP006.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>5 Strategy Options for ACE</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP005.htm#SECT001">The Strategies in Detail</a>
+</ol><p>
+<p>
+It can be difficult to select appropriate options when presented  with
+a new enumeration. The problem is  compounded  by  the  fact  that  no
+generally applicable rules exist to  predict,  given  a  presentation,
+which option settings are ``good''. To  help  overcome  this  problem,
+<font face="Gill Sans,Helvetica,Arial">ACE</font> contains various commands which select  particular  enumeration
+strategies. One or other of these strategies may work and, if not, the
+results may indicate how  the  options  can  be  varied  to  obtain  a
+successful enumeration.
+<p>
+If no strategy option is passed to <font face="Gill Sans,Helvetica,Arial">ACE</font>, the <code>default</code>  strategy  is
+assumed, which starts out presuming that the enumeration will be easy,
+and if it turns out not to  be  so,  <font face="Gill Sans,Helvetica,Arial">ACE</font>  switches  to  a  strategy
+designed for more difficult enumerations.  The  other  straightforward
+options for beginning users are <code>easy</code> and <code>hard</code>. Thus,  <code>easy</code>  will
+quickly succeed or fail (in  the  context  of  the  given  resources);
+<code>default</code> may succeed quickly, or if not will try the <code>hard</code> strategy;
+and <code>hard</code> will run more slowly, from the beginning trying to succeed.
+<p>
+Strategy options are merely options that set a number of  the  options
+seen in Chapter&nbsp;<a href="CHAP004.htm">Options for ACE</a>, all at once;  they  are  parsed  in
+<strong>exactly</strong> the same way as other options; order <strong>is</strong> important.  It  is
+usual to specify one strategy option and possibly  follow  it  with  a
+number of options defined in Chapter&nbsp;<a href="CHAP004.htm">Options for ACE</a>, some of  which
+may over-ride those options set by the strategy option.  Please  refer
+to the introductory sections  of  Chapter&nbsp;<a href="CHAP004.htm">Options  for  ACE</a>,  paying
+particular attention to Sections <a href="CHAP004.htm#SECT002">Warnings regarding  Options</a>,  <a href="CHAP004.htm#SECT005">What happens if no ACE Strategy Option or if  no  ACE  Option  is  passed</a>,
+and&nbsp;<a href="CHAP004.htm#SECT006">Interpretation of ACE  Options</a>,  which  give  various  warnings,
+hints and information on the interpretation of options.
+<p>
+There are eight strategy options. Each is passed without a value  (see
+Section&nbsp;<a href="CHAP004.htm#SECT006">Interpretation of  ACE  Options</a>)  except  for  <code>sims</code>  which
+expects one of the integer values: 1, 3, 5, 7, or 9; and, <code>felsch</code> can
+accept a value of 0 or 1, where 0  has  the  same  effect  as  passing
+<code>felsch</code> with  no  value.  Thus  the  eight  strategy  options  define
+thirteen standard strategies; these are listed  in  the  table  below,
+along with all but three of the options (of Chapter&nbsp;<a href="CHAP004.htm">Options for ACE</a>)
+that they set. Additionally, each strategy sets <code>path = 0</code>,  <code>psize  =
+256</code>, and <code>dsize = 1000</code>. Recall <code>mend</code>, <code>look</code> and  <code>com</code>  abbreviate
+<code>mendelsohn</code>  (see&nbsp;<a href="CHAP004.htm#SSEC013.5">option  mendelsohn</a>),   <code>lookahead</code>   (see&nbsp;<a href="CHAP004.htm#SSEC015.2">option lookahead</a>) and <code>compaction</code> (see&nbsp;<a href="CHAP004.htm#SSEC017.5">option compaction</a>), respectively.
+<p>
+<pre>
+                               option
+            ---------------------------------------------------------
+strategy    row  mend  no  look  com    ct     rt  fill  pmode  dmode
+---------------------------------------------------------------------
+default       1     0  -1     0   10     0      0     0      3      4
+easy          1     0   0     0  100     0   1000     1      0      0
+felsch := 0   0     0   0     0   10  1000      0     1      0      4
+felsch := 1   0     0  -1     0   10  1000      0     0      3      4
+hard          1     0  -1     0   10  1000      1     0      3      4
+hlt           1     0   0     1   10     0   1000     1      0      0
+purec         0     0   0     0  100  1000      0     1      0      4
+purer         0     0   0     0  100     0   1000     1      0      0
+sims := 1     1     0   0     0   10     0   1000     1      0      0
+sims := 3     1     0   0     0   10     0  -1000     1      0      4
+sims := 5     1     1   0     0   10     0   1000     1      0      0
+sims := 7     1     1   0     0   10     0  -1000     1      0      4
+sims := 9     0     0   0     0   10  1000      0     1      0      4
+---------------------------------------------------------------------
+</pre>
+<p>
+Note that we explicitly (re)set all of the listed  enumerator  options
+in all of the predefined strategies, even though some of them have  no
+effect. For example,  the  <code>fill</code>  value  is  irrelevant  in  HLT-type
+enumeration (see Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration Style</a>). The idea behind this is
+that,  if  you  later  change  some  options  individually,  then  the
+enumeration retains the ``flavour'' of the last selected  predefined
+strategy.
+<p>
+Note also that other options which may effect an enumeration are  left
+untouched by setting one of the predefined  strategies;  for  example,
+the values of <code>max</code> (see&nbsp;<a href="CHAP004.htm#SSEC017.6">option max</a>) and <code>asis</code> (see&nbsp;<a href="CHAP004.htm#SSEC013.1">option asis</a>).
+These options have an effect which  is  independent  of  the  selected
+strategy.
+<p>
+Note that, apart from the <code>felsch := 0</code> and <code>sims  :=  9</code>  strategies,
+all of the strategies are distinct, although some are very similar.
+<p>
+<p>
+<h2><a name="SECT001">5.1 The Strategies in Detail</a></h2>
+<p><p>
+<a name = "I0"></a>
+
+<a name = "I0"></a>
+<a name = "I1"></a>
+
+<a name = "I2"></a>
+
+<a name = "I2"></a>
+<a name = "I3"></a>
+
+<a name = "I4"></a>
+
+<a name = "I4"></a>
+<a name = "I5"></a>
+
+<a name = "I6"></a>
+
+<a name = "I7"></a>
+
+<a name = "I8"></a>
+
+Please note that the strategies  are  based  on  various  <strong>enumeration
+styles</strong>: <strong>C style</strong>, <strong>Cr style</strong>, <strong>CR style</strong>, <strong>R  style</strong>,  <strong>R*  style</strong>,
+<strong>Rc style</strong>, <strong>R/C style</strong> and <strong>defaulted R/C style</strong>, all  of  which  are
+described in detail in Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration Style</a>.
+<p>
+<p>
+<dl compact>
+<p>
+<dt><a name = "SSEC001.1"></a>
+<dt><li><code>default <dd></code>
+Selects the default strategy. (Shortest abbreviation: <code>def</code>.)
+<p>
+This  strategy  is  based  on   the   <strong>defaulted   R/C   style</strong>   (see
+Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration Style</a>). The idea here is that we assume that the
+enumeration is ``easy'' and start out in <strong>R style</strong>. If  it  turns  out
+not to be easy, then we regard it  as  ``hard'',  and  switch  to  <strong>CR
+style</strong>, after performing a <code>lookahead</code> (see&nbsp;<a href="CHAP004.htm#SSEC015.2">option lookahead</a>) on the
+entire table.
+<p>
+<dt><a name = "SSEC001.2"></a>
+<dt><li><code>easy <dd></code>
+Selects an ``easy'' R style strategy.
+<p>
+If this strategy is selected, we follow a HLT-type enumeration  style,
+i.e. <strong>R style</strong> (see Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration Style</a>), but turn <code>lookahead</code>
+(see&nbsp;<a href="CHAP004.htm#SSEC015.2">option lookahead</a>) and  <code>compaction</code>  (see&nbsp;<a href="CHAP004.htm#SSEC017.5">option  compaction</a>)
+off. For small and/or easy enumerations, this strategy is likely to be
+the fastest.
+<p>
+<a name = "SSEC001.3"></a>
+<dt><li><code>felsch</code>
+<dt><dt><li><code>felsch:=</code><var>val</var><code> <dd></code>
+Selects a Felsch strategy; <var>val</var> should be 0 or 1. 
+(Shortest abbreviation: <code>fel</code>.)
+<p>
+Here a <strong>C style</strong>  (see  Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration  Style</a>)  enumeration  is
+selected. Assigning <code>felsch</code> 0 or  no  value  selects  a  pure  Felsch
+strategy, and a value of 1 selects a Felsch strategy with all relators
+in  the  subgroup,  i.e.&nbsp;<code>no</code>=<font face="symbol">-</font>1  (see&nbsp;<a href="CHAP004.htm#SSEC013.4">option  no</a>),  and   turns
+gap-<code>fill</code>ing (see <a href="CHAP004.htm#SSEC014.1">option fill</a>) on.
+<p>
+<dt><a name = "SSEC001.4"></a>
+<dt><li><code>hard <dd></code>
+Selects a mixed <strong>R style</strong> and <strong>C style</strong> strategy.
+<p>
+In many ``hard'' enumerations, a mixture of <strong>R style</strong>  and  <strong>C  style</strong>
+(see Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration  Style</a>)  definitions,  all  tested  in  all
+essentially different positions, is appropriate. This  option  selects
+such a mixed strategy. The idea here is that most of the work is  done
+C  style  (with  the  relators  in  the   subgroup,   i.e.&nbsp;<code>no</code>=<font face="symbol">-</font>1
+(see&nbsp;<a href="CHAP004.htm#SSEC013.4">option no</a>), and with gap-<code>fill</code>ing (see <a href="CHAP004.htm#SSEC014.1">option fill</a>) on), but
+that every 1000 C  style  definitions  a  further  coset  number  is
+applied to all relators.
+<p>
+<strong>Guru  Notes:</strong>
+The 1000/1 mix is not necessarily optimal, and some  experimentation
+may be needed  to  find  an  acceptable  balance  (see,  for  example,
+<a href="biblio.htm#HR01"><cite>HR01</cite></a>). Note also that, the  longer  the  total  length  of  the
+presentation, the more work needs to be done  for  each  coset  number
+application to the relators; one coset number application  can  result
+in more than 1000 definitions, reversing the balance between R style
+and C style definitions.
+<p>
+<dt><a name = "SSEC001.5"></a>
+<dt><li><code>hlt <dd></code>
+Selects  <font face="Gill Sans,Helvetica,Arial">ACE</font>'s   standard   HLT   strategy.   
+<p>
+Unlike  Sims'  <a href="biblio.htm#Sim94"><cite>Sim94</cite></a>  default  HLT  strategy,  <code>hlt</code>  sets  the
+<code>lookahead</code>  option  (see&nbsp;<a href="CHAP004.htm#SSEC015.2">option  lookahead</a>).  However,  the  option
+sequence ``<code>hlt, lookahead := 0</code>'' easily achieves Sims'  default  HLT
+strategy  (recall,  the  ordering  of  options   is   respected;   see
+Section&nbsp;<a href="CHAP004.htm#SECT004">Honouring of the order in which ACE Options are passed</a>).
+<p>
+This is an <strong>R style</strong> (see Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration Style</a>) strategy.
+<p>
+<dt><a name = "SSEC001.6"></a>
+<dt><li><code>purec <dd></code>
+Sets the strategy to basic <strong>C style</strong> (see Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration  Style</a>).
+<p>
+In this strategy there is no <code>compaction</code>  (see&nbsp;<a href="CHAP004.htm#SSEC017.5">option  compaction</a>),
+no gap-<code>fill</code>ing (see <a href="CHAP004.htm#SSEC014.1">option fill</a>)  and  no  relators  in  subgroup,
+i.e.&nbsp;<code>no</code>=0 (see&nbsp;<a href="CHAP004.htm#SSEC013.4">option no</a>).
+<p>
+<dt><a name = "SSEC001.7"></a>
+<dt><li><code>purer <dd></code>
+Sets the strategy  to basic <strong>R style</strong> (see Section&nbsp;<a href="CHAP003.htm#SECT001">Enumeration  Style</a>).
+<p>
+In this strategy there is no <code>mendelsohn</code> (see  <a href="CHAP004.htm#SSEC013.5">option  mendelsohn</a>),
+no <code>compaction</code> (see&nbsp;<a href="CHAP004.htm#SSEC017.5">option compaction</a>), no <code>lookahead</code> (see&nbsp;<a href="CHAP004.htm#SSEC015.2">option lookahead</a>) and no <code>row</code>-filling (see <a href="CHAP004.htm#SSEC015.1">option row</a>).
+<p>
+<dt><a name = "SSEC001.8"></a>
+<dt><li><code>sims:=</code><var>val</var><code> <dd></code>
+Sets a Sims strategy; <var>val</var> should be one of 1, 3, 5, 7 or 9.
+<p>
+In his book&nbsp;<a href="biblio.htm#Sim94"><cite>Sim94</cite></a>, Sims discusses (and lists  in  Table  5.5.1)
+ten  standard  enumeration  strategies.  The  Sims'   strategies   are
+effectively <code>hlt</code> (see&nbsp;<a href="CHAP005.htm#SSEC001.5">option hlt</a>) without <code>lookahead</code>  (see&nbsp;<a href="CHAP004.htm#SSEC015.2">option lookahead</a>), with or without  <code>mendelsohn</code>  (see&nbsp;<a href="CHAP004.htm#SSEC013.5">option  mendelsohn</a>)
+set, in R (<code>rt</code> positive, <code>ct := 0</code>) or R* style (<code>rt</code> negative,  <code>ct
+:= 0</code>); and <code>felsch</code> (see&nbsp;<a href="CHAP005.htm#SSEC001.3">option felsch</a>); all either with or without
+(<code>lenlex</code>)   table   standardisation   (see    Section&nbsp;<a href="CHAP003.htm#SECT004">Coset    Table Standardisation  Schemes</a>  and&nbsp;<a href="CHAP006.htm#SSEC007.2">ACEStandardCosetNumbering</a>  or&nbsp;<a href="CHAP00D.htm#SSEC006.2">option standard</a>) as the enumeration  proceeds.  <font face="Gill Sans,Helvetica,Arial">ACE</font>  does  not  implement
+table standardisation during an enumeration, and so only provides  the
+odd-numbered strategies of Sims  (<font face="Gill Sans,Helvetica,Arial">ACE</font>'s  numbering  coincides  with
+that of Sims).
+<p>
+With care, it is often possible  to  duplicate  the  statistics  given
+in&nbsp;<a href="biblio.htm#Sim94"><cite>Sim94</cite></a>  for  his  odd-numbered  strategies  and  it  is  also
+possible  (using  the  interactive  facilities)  to  approximate   his
+even-numbered strategies. Examples and a more detailed  exposition  of
+the Sims strategies are given in Section&nbsp;<a href="CHAP00C.htm#SECT002">Emulating Sims</a>.
+<p>
+</dl>
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP004.htm">Previous</a>] [<a href ="CHAP006.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>ACE manual<br>Januar 2006
+</address></body></html>

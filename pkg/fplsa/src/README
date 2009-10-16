@@ -1,0 +1,249 @@
+This is some remarks co. FPLSA
+
+1. Files
+
+fplsa4.c   - C code of the program
+fplsa4.msg - file containing messages printed by the program
+fplsa4.ini - initiating file in which some regimes of computation,
+             sizes of working arrays etc. can be set
+FPLSA produces 
+fplsa4.ses - output file containing input and results in the
+             form close to standard mathematical one
+fplsa4.gap - output in the form readable by GAP
+
+The directory for input files can be set in fplsa4.ini.
+By default, the input files have extention *.in, i.e.,
+if your file has such extention you can omit the extention
+at the program run. If your file has no extention, you
+must add the dot to its name.
+
+Normally input looks like this:
+
+Generators: x -y z-;
+Weights:    1  2 2;
+Parameters: p q r;
+Limiting weight: 20;
+Relations:
+rel1;
+rel2;
+rel3.
+
+Because all alternatives are distinguished by the 1st letter X = G,W,.., 
+you can write between X and : everything what you want
+(except of : of course). Besides you can use comments <...> in
+any place (this comment you can use in fplsa4.ini also).
+You can omit any above item except of Generators, because
+without generators the task looses any sense.
+If you omit Weghts, the program sets all them = 1.
+If you omit Limiting weight, the program asks for it.
+If you omit relations, the program computes free algebra
+(infinite-dimensional in most cases).
+Pre- or postfix "-" at generator in the Generator item indicates that 
+this generator is odd one (Mitya Leites hates "-" before generators).
+If the item Relations is the last one  you can instead of "." after last
+relation type ";" as well. rel1, rel2,... are Lie polynomial in
+standard bracket notation. As a multiplication sign the blank " "
+(or several blanks or "new line" or "tab") is used. For scalar
+(parametric) polynomials the sign "^" is used before degree.
+You can use in input relations fractions as coefficients 
+(The program removes denominators  itself)   
+If you type the name of inexisting file, the program can
+constract it in the process of dialogue.BTW, to compute
+algebras with parameters remains still too dangerous,          !!!
+because work with them uses some rather complicated functions
+(such as multivariate polynomial GCD), which were not yet
+debugged carefully. Later I'll do this job with the help of
+more comfortable than GNU systems (Visual C++ or Borland C++
+of the last versions, or WATCOM) 
+     Note. Now it seems the program works with the polynomials
+           normally.
+
+Executable file has the name fplsa4 (if you use my file c.bat for compiling).
+Currently this file and *.msg, *.ini, *.ses, *.gap live in the same
+directory, but you can change this either in the C text or using
+some unknown for me UNIX methods.
+
+2. Compilation control
+
+Keep in mind that compiling with optimization level -O3 by GNU C
+compiler gives revealed error in one of the task, though it makes  !!!
+considerably faster code (about 50% faster) comparing even with
+-O2. (Perhaps there are tasks for which -O2 also gives wrong results)   
+     Note. Now the program computes that task, but the bug exist in
+           a hidden form.
+You can control the compilation setting on or off (or changing values
+if they are there) the following constants (I'll omit #define before them): 
+
+GNU - 32bit compiler if set on, otherwise 16bit. You have to keep
+    it on all the time
+SPACE_STATISTICS - computes and prints the maximum space used.
+    This computation does not take too much time, so it can be on everytime.
+INTEGER_ALLOCATION_CHECK - controls allocation of heap memory for big 
+    integers. You have to set it on in the case of unclear program crash.
+POLY_ARRAY_ALLOCATION_CHECK - controls allocation in stack of working arrays
+    for scalar polynomial functions (For problems with parameters).  
+INTEGER_MAX_SIZE - reports maximum size of big integer (in 2byte limbs)
+    arose in the computation (if it is interesting for you) 
+ECHO_TO_SCREEN - prints to the screen everything the program writes
+    in files *.ses and *.gap. As experience shows it takes rather much
+    time.
+    Note. If echo to screen is suppressed, you can not see the
+          program requests for name of file and limiting weight,
+          so you have to set file name in command line and limiting
+          weight in input file (or guess when to type them). 
+DEBUG, MEMORY, D_* - set on debugging and checking possible memory losts,
+    too difficult to explain how to use these abilities. They are useful
+    rather for me. 
+LEFT_COMMENT, RIGHT_COMMENT, SUBSCRIPT_INPUT_SIGN, ODD_GENERATOR_INPUT_SIGN
+    - left and right comment signs for *.ini and input files, 
+    signs for subscript and odd generator indication at input,
+    currently these constants are '<', '>', '_', '-' correspondently.
+    You can change them if you prefer others.
+GAP_NAME_SIZE - maximum length of GAP variable (like FPLSA.algebra etc.)
+    should not exceed this constant - 1. Currently GAP_NAME_SIZE = 64,
+    i.e., maximum name length should be 63.
+GAP_WIDTH - width of page in the *.gap file. Currently it is 79 to
+    keep right margin visible.
+There are also other constants and macrodefinitions, but they are useful for 
+me only.
+Of course, you can organize the control of compilation via UNIX "make" file,
+but I don't know how to "make" such files. As to me, they only muddle
+such simple jobs.
+
+3. Initiating file
+
+The initiating file fplsa4.ini contains settings weakly dependent
+on the problem under consideration.
+Its items have the form
+Determining text: value 
+
+Value can be either Boolean constant (Yes, No), or decimal number
+or text string.
+Determining text has essential initial part sufficient to separate
+alternatives. Within this part you have to remain everithing including
+blanks as it is.
+ 
+Crude time: - The GNU C uses one 32bit word to count clock ticks.
+The number of ticks per second is very large (I don't remember, but
+it seems to be 1 000 000). So that word allows to keep values of time
+no more than about 1 hour or so. I consider this as a bug of GNU C
+developers. For long times you have to set Crude time: Yes.
+This will cause an uncertainty increasing true time for several minutes 
+per day (not essential error for long tasks).
+
+Put ...: - to print or not to print different output items.
+
+Left normed output: - provides more compact and structured,
+  comparing with standard brackets, output form for Lie monomials.
+  Sometimes it is convenient, esp. for high order commutators.
+
+GAP output basis: - to write in *.gap file basis words.
+GAP output commutators: - to write in *.gap file commutator table.
+GAP output relations: - to write in *.gap file reduced relations
+                        (Groebner basis).
+GAP algebra name: - name of commutator table list in GAP.
+GAP basis name: - name of basis words list in GAP.
+GAP relations name: - name of list of relations in GAP.
+
+Coefficient sum table size: - size of array storing polynomials
+  assumed to be non-zero in the process of computation in parametric
+  case.
+
+Generator max. number: - maximum number of input generators.
+
+Input integer size: - size of working array for reading integer coefficients
+  contained in input relations. E.g., current value 32 means that
+  your input integers must be no longer than appr. 32*5 = 160 decimal digits.
+
+Input string size: - The program reads input file consequently portion by 
+portion. The text of any relation, for example, must not be longer (in bytes) 
+than the number set here.
+
+Line length: - Width of page in *.ses file.
+
+Name length: - Maximum length of generator or parameter input name.
+
+Relation size: - Size of array for storing computed relations.
+
+Lie monomial table size: - Size of table for Lie monomials (commutators
+  of generators).
+
+Node Lie term size: Node scalar factor size: Node scalar term size:
+  - The program uses 3 types of lists for different purposes and with 
+  different sizes of nodes. The above settings determine the sizes of 
+  pools for storing correspondent free nodes.
+
+OutLine size: - size of working array for preparing one line of 2D
+  output. This array contains some controlling symbols indicating
+  subscripts, superscripts, margins etc., that is why it is larger
+  than the width of session page. 
+
+Parameter max. number: - maximum number of input parameters.
+
+Even basis symbol: Odd basis symbol: - These symbols equipped with
+  integer subscripts present even and odd basis elements of superalgebra 
+  in output commutator table (in *.ses file).
+
+Input directory: - Directory containing input files.
+
+4. Internal structures
+
+Perhaps this information is useless for you, but it can give
+you some understanding of limitations of the program.
+
+Integers are represented by arrays of 2byte elements (limbs).
+The first limb contains sign of integer (1 bit) and its length (15 bits).
+
+Lie polynomials (Lie sums) are represented by lists of Lie terms.
+
+Lie term node contains the following fields:
+1.Position of Lie monomial in Lie monomial table,
+2,3.Pointers to coefficient numerator and denominator which can be either 
+  integers or scalar polynomials depending on input 
+  (you see that internal structures depend on input data, I did so
+  because many people, you in particular, are interested in numerical
+  coefficients only),  
+4.Pointer to next Lie term in a list.
+
+Scalar polynomial is a list of scalar terms.
+
+Scalar term has the fields:
+1.Pointer to scalar monomial,
+2.Pointer to integer coefficient (there are no denominators 
+  in scalar polynomials),
+3.Pointer to next scalar term in list.
+
+Scalar monomial is a list of scalar factors.
+
+Scalar factor contains the fields:
+1.Degree of parameter,
+2.Index number of parameter,
+ Attention!!! You have to swap these above fields for "big ending"
+ computers (like SUN for example), because I combined them in one word
+ for fast comparing in the process of polynomial addition,
+3.Pointer to the next scalar factor.
+
+Element of Lie monomial table contains the following fields:
+1.Order of this monomial in the ordering created by the program,
+2.Position of monomial having order equal to index of this element of table
+  (it is used to find monomial by its order),
+3.Position of left submonomial in Lie bracket
+  (or index number of generator if the monomial is not commutator),
+4.Position of right submonomial in Lie bracket,
+5. 1 bit for parity of Lie superalgebra element,
+6. 23 bits for index of basis word or inversed index of relation
+   if this monomial is leading for some relation,
+7. 8 bits for monomial weight.
+(Of course, you can change this bits distribution, e.g, if there are
+too large weights you can increase the bit field for them decreasing
+the bit field for index of basis element, this field seems to be too
+large: what can you do with 2^23-dimensional algebra. The sum of bits
+in bit fields should be 32, e.g., 1 + 23 + 8 = 32).
+
+Element of table for relations has the fields:
+1.Pointer to Lie sum representing the relation,
+2.Minimal index number of generator starting from which
+  it makes sense to multiply relation (to avoid redifferentiation
+  of relations by the same generator),
+3.Boolean field indicating whether this relation has to be 
+  substituted into higher relations.

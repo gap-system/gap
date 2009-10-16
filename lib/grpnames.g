@@ -2,7 +2,7 @@
 ##
 #W  grpnames.g                                                    Stefan Kohl
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpnames.g,v 4.5 2005/05/03 13:52:49 stefan Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -13,7 +13,7 @@
 ##  SmallGroup(n,i).
 ##
 Revision.grpnames_g :=
-  "@(#)$Id$";
+  "@(#)$Id: grpnames.g,v 4.5 2005/05/03 13:52:49 stefan Exp $";
 
 NAMES_OF_SMALL_GROUPS :=
 [ [ "1" ], [ "C2" ], [ "C3" ], [ "C4", "C2 x C2" ], [ "C5" ], [ "S3", "C6" ],

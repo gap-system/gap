@@ -47,9 +47,9 @@ fi
 oldminor=$(($minor-1))
 
 ##
-##  Checkout the branch 4R2  version
+##  Checkout the branch 4R4  version
 ##
-cvs update -r GAP4R3 $file
+cvs update -r GAP4R4 $file
 
 ##
 ##  add in the differences between the current verion and the previous

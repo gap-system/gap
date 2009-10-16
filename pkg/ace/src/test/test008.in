@@ -1,0 +1,16 @@
+
+# An interesting example from Leech's 1963 paper.
+# Uses m=168 & t=174; the coincs are (all) in the SG phase!
+# The holes % drops smoothly during the rest of the enumeration,
+#   as the table is `filled in'.
+
+Enum: [3,7]+;
+Gr: a,b;
+Rel: b^7, (ab)^2, (Ab)^3;
+Subgr: index 168;
+Gen: a^4, Ba^4b, B^2a^4b^2, B^3a^4b^3, B^4a^4b^4, B^5a^4b^5, B^6a^4b^6;
+
+Fel:1;  No:0;
+
+Mess:-5;
+End;

@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.sml47700_z :=
-    "@(#)$Id$";
+    "@(#)$Id: sml47700.z,v 1.1 2005/03/24 09:02:26 gap Exp $";
 
 SMALL_GROUP_LIB[ 47700 ] :=
 [ 36441018528822301517929638887676328437119,

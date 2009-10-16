@@ -1,0 +1,13 @@
+#Example: "2gp-a-Rel-i" . . . based on: examples/keyword_2gp
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound
+F := FreeGroup(3, "x");
+rels := ["x1^x2 * x3", "[x2, x1, x1]", 
+         "[x2 * [x2, x1] * x1^2, x1 * x2 ]"];
+procId := PqStart(F : Prime := 2, Relators := rels);
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also set a different print level by supplying <OutputLevel>
+#sub <ClassBound> for <3> if set and ok
+PqPcPresentation(procId : ClassBound := 3, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;

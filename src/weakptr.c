@@ -2,7 +2,7 @@
 **
 *W  weakptr.c                   GAP source                       Steve Linton
 **
-*H  @(#)$Id$
+*H  @(#)$Id: weakptr.c,v 4.20 2007/09/12 21:35:29 gap Exp $
 **
 *Y  Copyright (C)  1997,  School of Mathematical and Computational Sciences,
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -19,7 +19,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_weakptr_c =
-   "@(#)$Id$";
+   "@(#)$Id: weakptr.c,v 4.20 2007/09/12 21:35:29 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

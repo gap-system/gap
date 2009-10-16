@@ -1,0 +1,42 @@
+ACE 3.001        Fri Mar  2 10:43:51 2001
+=========================================
+Host information:
+  name = mango
+
+  #--- ACE 3.001: Run Parameters ---
+Group Name: G;
+Group Generators: rst;
+Group Relators: TrtRR, RsrSS, StsTT;
+Subgroup Name: H;
+Subgroup Generators: ;
+Wo:1000; Max:164; Mess:50; Ti:-1; Ho:-1; Loop:0;
+As:0; Path:0; Row:0; Mend:0; No:0; Look:0; Com:10;
+C:1000; R:0; Fi:1; PMod:0; PSiz:256; DMod:4; DSiz:1000;
+  #---------------------------------
+DD: a=24 r=1 h=5 n=25; l=3 c=+0.00; d=1
+DD: a=43 r=1 h=9 n=44; l=3 c=+0.00; d=0
+DD: a=63 r=1 h=14 n=64; l=3 c=+0.00; d=0
+CD: a=84 r=1 h=19 n=85; l=3 c=+0.00; m=84 t=84
+CD: a=104 r=1 h=24 n=105; l=3 c=+0.00; m=104 t=104
+CD: a=124 r=1 h=29 n=125; l=3 c=+0.00; m=124 t=124
+CD: a=144 r=1 h=34 n=145; l=3 c=+0.00; m=144 t=144
+CD: a=163 r=1 h=39 n=164; l=3 c=+0.00; m=163 t=163
+OVERFLOW (a=164 r=1 h=39 n=165; l=4 c=0.00; m=164 t=164)
+
+  #--- ACE 3.001: Run Parameters ---
+Group Name: G;
+Group Generators: rst;
+Group Relators: TrtRR, RsrSS, StsTT;
+Subgroup Name: H;
+Subgroup Generators: ;
+Wo:1000; Max:165; Mess:1; Ti:-1; Ho:-1; Loop:0;
+As:0; Path:0; Row:0; Mend:0; No:0; Look:0; Com:10;
+C:1000; R:0; Fi:1; PMod:0; PSiz:256; DMod:4; DSiz:1000;
+  #---------------------------------
+CD: a=165 r=1 h=39 n=166; l=1 c=+0.00; m=165 t=165
+DD: a=165 r=1 h=39 n=166; l=1 c=+0.00; d=1
+DD: a=165 r=1 h=39 n=166; l=1 c=+0.00; d=0
+OVERFLOW (a=165 r=1 h=40 n=166; l=2 c=0.00; m=165 t=165)
+
+=========================================
+ACE 3.001        Fri Mar  2 10:43:51 2001

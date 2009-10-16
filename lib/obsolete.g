@@ -2,7 +2,7 @@
 ##
 #W  obsolete.g                  GAP library                     Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: obsolete.g,v 4.23 2009/06/15 15:28:54 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -26,28 +26,7 @@
 ##  is regarded as ``obsolescent'' in {\GAP}~4.5.
 ##
 Revision.obsolete_g :=
-    "@(#)$Id$";
-
-
-##### Declarations from `utils.gd' which unfortuynately are used in packages
-
-DeclareSynonym( "PrimeOfPGroup", PrimePGroup );
-
-##  Underlying field of a vector space or algebra.
-DeclareAttribute( "UnderlyingField", IsVectorSpace );
-InstallMethod(UnderlyingField,"vector space",true,[IsVectorSpace],0,
-  LeftActingDomain);
-DeclareAttribute( "UnderlyingField", IsFFEMatrixGroup );
-InstallMethod(UnderlyingField,"generic",true,[IsVectorSpace],0,
-  FieldOfMatrixGroup);
-
-##  Dimension of matrices in an algebra.
-DeclareSynonym( "MatrixDimension", DimensionOfMatrixGroup);
-
-#####
-
-# monomial ordering: the function was badly defined, name is now obsolete
-DeclareSynonym( "MonomialTotalDegreeLess", MonomialExtGrlexLess );
+    "@(#)$Id: obsolete.g,v 4.23 2009/06/15 15:28:54 gap Exp $";
 
 #############################################################################
 ##
@@ -505,7 +484,7 @@ DeclareSynonymAttr( "NormedVectors", NormedRowVectors );
 ##  turned out to be unnecessary.  (The record returned by `PrimeBlocks' does
 ##  no longer have a component `exponents'.)
 ##  From {\GAP}~4.5 on, only the four argument version will be supported.
-##  
+##
 
 
 #############################################################################
@@ -517,6 +496,102 @@ DeclareSynonymAttr( "NormedVectors", NormedRowVectors );
 ##
 DeclareSynonym( "TryConwayPolynomialForFrobeniusCharacterValue",
     IsCheapConwayPolynomial );
+
+
+#############################################################################
+##
+#M  CharacteristicPolynomial( <F>, <mat> )
+#M  CharacteristicPolynomial( <field>, <matrix>, <indnum> )
+##
+##  The documentation of these usages of CharacteristicPolynomial was
+##  ambiguous, leading to surprising results if mat was over F but
+##  DefaultField (mat) properly contained F.
+##  Now there is a four argument version which allows to specify the field
+##  which specifies the linear action of mat, and another which specifies
+##  the vector space which mat acts upon.
+##
+##  In the future, the versions above could be given a differnt meaning,
+##  where the first argument simply specifies both fields in the case
+##  when they are the same.
+##
+##  The following provides backwards compatibility with  {\GAP}~4.4. in the
+##  cases where there is no ambiguity.
+##
+InstallOtherMethod( CharacteristicPolynomial,
+     "supply indeterminate 1",
+    [ IsField, IsMatrix ],
+    function( F, mat )
+        return CharacteristicPolynomial (F, mat, 1);
+    end );
+
+InstallOtherMethod( CharacteristicPolynomial,
+    "check default field, print error if ambiguous",
+    IsElmsCollsX,
+    [ IsField, IsOrdinaryMatrix, IsPosInt ],
+function( F, mat, inum )
+        if IsSubset (F, DefaultFieldOfMatrix (mat)) then
+            Info (InfoWarning, 1, "This usage of `CharacteristicPolynomial' is no longer supported. ",
+                "Please specify two fields instead.");
+            return CharacteristicPolynomial (F, F, mat, inum);
+        else
+            Error ("this usage of `CharacteristicPolynomial' is no longer supported, ",
+                "please specify two fields instead.");
+        fi;
+end );
+
+
+#############################################################################
+##
+#O  FormattedString( <obj>, <nr> )  . . formatted string repres. of an object
+##
+##  This variable name was not documented and is obsolete.
+##  (It had been introduced at a time when only unary methods were allowed
+##  for attributes.)
+##
+BIND_GLOBAL( "FormattedString", String );
+
+
+#############################################################################
+##
+#F  SubspacesAll
+#F  SubspacesDim
+##
+##  for compatibility with &GAP;&nbsp;4.1 only ...
+##
+DeclareSynonymAttr( "SubspacesAll", Subspaces);
+DeclareSynonym( "SubspacesDim", Subspaces);
+
+
+#############################################################################
+##
+##  In 2009, `IsTuple' was renamed to `IsDirectProductElement'.
+##  The following names should be still available and regarded as obsolescent
+##  in GAP 4.5, and should be removed in GAP 4.6.
+##
+#F  ComponentsOfTuplesFamily( ... )
+#F  IsTuple( ... )
+#F  IsTupleFamily( ... )
+#F  IsTupleCollection( ... )
+#F  Tuple( ... )
+#F  TupleNC( ... )
+#F  TuplesFamily( ... )
+#I  InfoTuples
+#R  IsDefaultTupleRep( ... )
+#V  EmptyTuplesFamily( ... )
+#V  TUPLES_FAMILIES
+##
+DeclareSynonym( "ComponentsOfTuplesFamily",
+    ComponentsOfDirectProductElementsFamily );
+DeclareSynonym( "IsTuple", IsDirectProductElement );
+DeclareSynonym( "IsTupleFamily", IsDirectProductElementFamily );
+DeclareSynonym( "IsTupleCollection", IsDirectProductElementCollection );
+DeclareSynonym( "Tuple", DirectProductElement );
+DeclareSynonym( "TupleNC", DirectProductElementNC );
+DeclareSynonym( "TuplesFamily", DirectProductElementsFamily );
+DeclareSynonym( "InfoTuples", InfoDirectProductElements );
+DeclareSynonym( "IsDefaultTupleRep", IsDefaultDirectProductElementRep );
+DeclareSynonym( "EmptyTuplesFamily", EmptyDirectProductElementsFamily );
+DeclareSynonym( "TUPLES_FAMILIES", DIRECT_PRODUCT_ELEMENT_FAMILIES );
 
 
 #############################################################################

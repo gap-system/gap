@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE Book SYSTEM "../../gapdoc/gapdoc.dtd"
+ [ <!ENTITY GAP "<Package>GAP</Package>">
+   <!ENTITY FactInt "<Package>FactInt</Package>">
+ ]>
+<?LaTeX ExtraPreamble="\usepackage{amsfonts}"?>
+<?LaTeX ExtraPreamble="\usepackage{amsxtra}"?>
+
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  factint.xml        FactInt documentation         Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: factint.xml,v 1.4 2007/09/26 10:45:10 stefan Exp $       ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Book Name="FactInt"> 
+
+<!-- #################################################################### -->
+
+<TitlePage>
+  <Title>&FactInt;</Title>
+  <Subtitle>Advanced Methods for Factoring Integers</Subtitle>
+  <Version>
+    Version <#Include SYSTEM "../version">
+  </Version>
+  <Author>
+    Stefan Kohl
+    <Email>kohl@mathematik.uni-stuttgart.de</Email>
+    <Homepage>
+      http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/
+    </Homepage>
+    <Address>
+       Institut für Geometrie und Topologie <Br/>
+       Pfaffenwaldring 57 <Br/>
+       Universität Stuttgart <Br/>
+       70550 Stuttgart <Br/>
+       Germany
+    </Address>
+  </Author>
+  <Date>September 26, 2007</Date>
+  <Copyright>
+    &copyright; 1999 - 2007 by Stefan Kohl.
+    This package is distributed under the GNU General Public License.
+    <Alt Only="LaTeX">\vspace{-1cm}</Alt>
+  </Copyright>
+  <#Include SYSTEM "abstract.xml">
+  <Acknowledgements>
+    I would like to thank Bettina Eick and Steve Linton for their support
+    and many interesting discussions.
+  </Acknowledgements>
+</TitlePage>
+
+<!-- #################################################################### -->
+
+<TableOfContents/>
+
+<!-- #################################################################### -->
+
+<Body>
+
+<#Include SYSTEM "preface.xml">
+<#Include SYSTEM "general.xml">
+<#Include SYSTEM "methods.xml">
+<#Include SYSTEM "timings.xml">
+
+</Body>
+
+<!-- #################################################################### -->
+
+<Bibliography Databases="factintbib.xml"/>
+
+<TheIndex/>
+
+<!-- #################################################################### -->
+
+</Book>
+
+<!-- #################################################################### -->

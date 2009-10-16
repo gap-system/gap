@@ -2,7 +2,7 @@
 ##  
 #W  helpbase.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id$
+#H  @(#)$Id: helpbase.gi,v 1.22 2008/12/03 18:34:47 gap Exp $
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ## and the actual help books.
 ##  
 Revision.helpbase_gi := 
-  "@(#)$Id$";
+  "@(#)$Id: helpbase.gi,v 1.22 2008/12/03 18:34:47 gap Exp $";
 
 #############################################################################
 ##  
@@ -188,9 +188,9 @@ InstallGlobalFunction(SIMPLE_STRING, function(str)
   # we simply list here in Position i how character i-1 should be translated
   trans :=Concatenation(
 "\000\>\<\c\004\005\006\007\b\t\n\013\014\r\016\017\020\021\022\023\024\025",
-"\026\027\030\031\032\033\034\035\036\037  \000   &\000   + -. ",
-"0123456789: < >? abcd",
-"efghijklmnopqrstuvwxyz \000  _\000abcdefghijklmnopqrstuvwxyz    ",
+"\026\027\030\031\032\033\034\035\036\037  \000   &\000  *+ -./",
+"0123456789: <=>? abcd",
+"efghijklmnopqrstuvwxyz[\000]^_\000abcdefghijklmnopqrstuvwxyz{ }~",
 "\177\200\201\202",
 "\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225",
 "\226\227\230\231\232\233\234\235\236\237\238",
@@ -242,8 +242,7 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
   # (looks a bit lengthy)
   sortfun := function(a, b)
     local main, pa, pb;
-    main := ["tutorial", "reference", "extending", "prg tutorial", 
-             "new features"];
+    main := ["tutorial", "reference"];
     pa := Position(main, a);
     pb := Position(main, b);
     if pa <> fail then
@@ -833,9 +832,10 @@ InstallValue(HELP_LAST, rec(MATCH := 0, BOOK := 0,
 NAMES_SYSTEM_GVARS:= "to be defined in init.g";
 
 InstallGlobalFunction(HELP, function( str )
-  local origstr, p, book, books, move, add, b;
+  local origstr, nwostr, p, book, books, move, add;
 
   origstr := ShallowCopy(str);
+  nwostr := NormalizedWhitespace(origstr);
   
   # extract the book
   p := Position( str, ':' );
@@ -878,7 +878,7 @@ InstallGlobalFunction(HELP, function( str )
 
   # if topic is "&" show last topic again, but with next viewer in viewer
   # list, or with last viewer again if there is no next one
-  elif book = "" and str = "&" then
+  elif book = "" and str = "&" and Length(nwostr) = 1 then
        if HELP_LAST.BOOK = 0 then
          HELP("Tutorial: The Help System");
        else
@@ -888,14 +888,14 @@ InstallGlobalFunction(HELP, function( str )
        return;
   
   # if the topic is '-' we are interested in the previous search again
-  elif book = "" and str = "-"  then
+  elif book = "" and str = "-" and Length(nwostr) = 1  then
       HELP_RING_IDX := (HELP_RING_IDX-1) mod HELP_RING_SIZE;
       books := HELP_BOOK_RING[HELP_RING_IDX+1];
       str  := HELP_TOPIC_RING[HELP_RING_IDX+1];
       move := true;
 
   # if the topic is '+' we are interested in the last section again
-  elif book = "" and str = "+"  then
+  elif book = "" and str = "+" and Length(nwostr) = 1  then
       HELP_RING_IDX := (HELP_RING_IDX+1) mod HELP_RING_SIZE;
       books := HELP_BOOK_RING[HELP_RING_IDX+1];
       str  := HELP_TOPIC_RING[HELP_RING_IDX+1];
@@ -907,11 +907,11 @@ InstallGlobalFunction(HELP, function( str )
       HELP_SHOW_FROM_LAST_TOPICS(Int(str));
     
   # if the topic is '<' we are interested in the one before 'LastTopic'
-  elif book = "" and str = "<"  then
+  elif book = "" and str = "<" and Length(nwostr) = 1  then
       HELP_SHOW_PREV();
 
   # if the topic is '>' we are interested in the one after 'LastTopic'
-  elif book = "" and str = ">"  then
+  elif book = "" and str = ">" and Length(nwostr) = 1  then
       HELP_SHOW_NEXT();
 
   # if the topic is '<<' we are interested in the previous chapter intro

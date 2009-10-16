@@ -1,6 +1,6 @@
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_dteval_h =
-   "@(#)$Id$";
+   "@(#)$Id: dteval.h,v 4.6 1997/11/26 17:43:13 frank Exp $";
 #endif
 
 

@@ -6,7 +6,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomfp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ghomfp.gi,v 4.49 2009/06/11 21:16:26 gap Exp $";
 
 #############################################################################
 ##
@@ -33,12 +33,30 @@ end);
 #M  IsSingleValued
 ##
 InstallMethod( IsSingleValued,
-  "map from fp group or free group, given on std. gens: test relators",
+  "map from fp group or free group on arbitrary gens: rewrite",
+  true,
+  [IsFromFpGroupGeneralMappingByImages and HasMappingGeneratorsImages],0,
+function(hom)
+local m, fp, s, sg, o, gi;
+  m:=MappingGeneratorsImages(hom);
+  fp:=IsomorphismFpGroupByGenerators(Source(hom),m[1]);
+  s:=Image(fp);
+  sg:=FreeGeneratorsOfFpGroup(s);
+  o:=One(Range(hom));
+  gi:=m[2];
+  return ForAll(RelatorsOfFpGroup(s),i->MappedWord(i,sg,gi)=o);
+end);
+
+InstallMethod( IsSingleValued,
+  "map from whole fp group or free group, given on std. gens: test relators",
   true,
   [IsFromFpGroupStdGensGeneralMappingByImages],0,
 function(hom)
 local s,sg,o,gi;
   s:=Source(hom);
+  if not IsWholeFamily(s) then
+    TryNextMethod();
+  fi;
   if IsFreeGroup(s) then
     return true;
   fi;
@@ -49,13 +67,16 @@ local s,sg,o,gi;
 end);
 
 InstallMethod( IsSingleValued,
-  "map from fp group or free group to perm, given on std. gens: test relators",
+  "map from whole fp group or free group to perm, std. gens: test relators",
   true,
   [IsFromFpGroupStdGensGeneralMappingByImages and 
    IsToPermGroupGeneralMappingByImages],0,
 function(hom)
 local s, bas, sg, o, gi, l, p, rel, start, i;
   s:=Source(hom);
+  if not IsWholeFamily(s) then
+    TryNextMethod();
+  fi;
   if IsFreeGroup(s) then
     return true;
   fi;
@@ -308,7 +329,7 @@ InstallMethod( ImagesRepresentative,
 function( hom, elm )
 local he,ue,p,mapi;
   ue:=UnderlyingElement(elm);
-  if IsDataObjectRep(ue) and IsOne(ue) then
+  if IsLetterAssocWordRep(ue) and IsOne(ue) then
     return One(Range(hom));
   fi;
   mapi:=MappingGeneratorsImages(hom);
@@ -490,8 +511,20 @@ local s,t,p,w,c,q,chom,tg,thom,hi,i,lp,max;
   s:=Source(hom);
   if HasIsWholeFamily(s) and IsWholeFamily(s) then
     t:=List(GeneratorsOfGroup(s),i->Image(hom,i));
+    if IsPermGroup(Range(hom)) and LargestMovedPoint(t)<>NrMovedPoints(t) then
+      c:=MappingPermListList(MovedPoints(t),[1..NrMovedPoints(t)]);
+      t:=List(t,i->i^c);
+      u:=u^c;
+    else
+      c:=false;
+    fi;
     p:=GroupWithGenerators(t);
-    SetParent(p,Range(hom));
+    if HasImagesSource(hom) and HasSize(Image(hom)) then
+      SetSize(p,Size(Image(hom)));
+    fi;
+    if c=false then
+      SetParent(p,Range(hom));
+    fi;
     if HasIsSurjective(hom) and IsSurjective(hom) then
       SetIndexInParent(p,1);
     fi;

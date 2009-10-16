@@ -7,7 +7,7 @@
 ##  1000 except 512, 768 andsize a product of more then 3 primes
 ##
 Revision.idgrp2_g :=
-    "@(#)$Id$";
+    "@(#)$Id: idgrp2.g,v 1.16 2006/11/27 08:38:18 gap Exp $";
 
 #############################################################################
 ##
@@ -99,7 +99,8 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
         fi;
 
         if not lookup and level >= 5 and ( not IsBound( coc ) ) then
-            classes := Orbits( G, asList );
+            classes := OrbitsDomain( G, asList );
+            # classes := Orbits( G, asList );
             classtyps := List( classes,
                                x -> [ Order( x[ 1 ] ), Length( x ) ] );
             sclasstyps := Set( classtyps );

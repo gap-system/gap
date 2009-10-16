@@ -1,0 +1,19 @@
+#Example: "5gp-maxoccur-Rel-i" . . . based on: GrpFP_2_pQuotient6
+#Demonstrates usage of `PqSetMaximalOccurrences'.
+#vars: F, rels, procId, class;
+#options: OutputLevel, OutputFile
+F := FreeGroup("a", "b");
+rels := ["a^5", "b^5"];
+procId := PqStart(F : Prime := 5, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+PqPcPresentation(procId : ClassBound := 1, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqSetMaximalOccurrences(procId, [3, 2]);;
+for class in [2 .. 6] do
+  PqNextClass(procId);
+od;
+PqDisplayPcPresentation(procId);;
+#comment: save the presentation to a different file by supplying <OutputFile>
+#sub <OutputFile> for <ANUPQData.outfile> if set and ok
+PqSavePcPresentation(procId, ANUPQData.outfile);;

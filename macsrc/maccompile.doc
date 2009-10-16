@@ -1,0 +1,108 @@
+Normally, you should not have to compile the GAP application for the
+Macintosh yourself, because the compiled application program is available from
+the usual GAP ftp sites.
+
+ Compiling GAP 4.x with Metrowerks Code Warrior Pro 5.0
+=======================================================
+
+You will need the standard GAP source files (srcXrYnZ.tar.gz), where X,Y,Z are 0..9, 
+which are part of the GAP distribution.  Uncompress these files, as describeld 
+in the readme file which comes with the GAP applications for the Mac. In 
+addition, you need the Macintosh specific files source and library files. 
+You will have to get these files from the GAP CVS server, or upon request,
+from the author (Burkhard Hšfling, hoefling@minet.uni-jena.de).
+
+You should now have a folder 'macsrc'
+in the GAP folder, which contains the following files (of course, a distribution 
+for GAP 3 need not contain the GAP 4 files, and viceversa).
+
+maccompile.doc - this file
+
+macgap.µ - Metrowerks CW Pro 2 project file
+macgap.µ.exp - export symbols for GAP application - needed for dynamic linking
+
+macdefs.h - the definitions for all (.c anz .r) Mac-specific files
+macheaders4.h - the definitions for all GAP 4 source files
+macheaders3.h - the definitions for all GAP 3 source files
+
+maccon.c - methods for GAP specific windows
+maccon.h
+macdocs.c - methods for text windows
+macdocs.h
+macedit.c - the text editor
+macedit.h
+macpaths.c - functions for converting Mac file specs <-> UNIX path names
+macpaths.h
+macte.c - text engine (TextEdit replacement)
+macte.h
+
+macedit.r - resource file to be compiled by Rez
+macres4.rsrc - resource file for GAP 4
+macres3.rsrc - resource file for GAP 3
+
+system3.c - the system specific file for GAP 3
+
+The following files are for URL support, they are part of the IC programmers'
+kit and are not required if you define IC_SUPPORT to be 0 in 'macdefs.h'.
+They are not required by GAP 3.
+
+ICAPI.h
+ICKeys.h
+ICTypes.h
+ICGlueCFM-PPC.lib
+ICGlueFar.o
+
+Then open the Metrowerks project file (macgap.µ) and select the target 
+(e.g. GAP 4 68K or GAP 4 PPC) which you want to build. Choose "MAKE" from 
+the project menu.  That's all, now you should have an application named 
+'GAP xxx 68K' or 'GAP xxx PPC', where 'xxx' is the GAP version.
+
+ Compiling GAP with other C compilers
+======================================
+
+Since I have never worked with Macintosh C compilers other than CodeWarrior 
+and Think C, I can only give some general hints:
+
+- implement routines which make your ANSI library print to the GAP log window.
+  (This may be a difficult task to do if your ANSI library doesn't provide a suitable 
+  interface).
+  
+- make sure your compiler has integers which are 4 bytes long, not 2 bytes. 
+  (This is a general requirement when compiling GAP)
+
+- the compiler must allow large static data (i.e.  data with more than 64K 
+  of length).  This is a problem with Think C v. 7.
+
+- you must make sure that every project file #includes the file
+  'macheadersX.h' (i.e., 'macheaders3.h' or  'macheaders4.h', 
+  where X is the GAP version number, as in 'srcXrYpZ'
+
+- make sure you compile (with Rez or similar, most Mac C compilers include such
+  a utility) the resource file 'macedit.r' and include the resulting resource 
+  file and the resource file 'macres.rsrc' in the application.
+  
+- make sure that the minimum partition size is set to at least 8000 KBytes, 
+  and the SIZE (-1) resource flags are set as follows: 
+    acceptSuspendResumeEvents    true
+    canBackground                true
+	doesActivateOnFGSwitch       true
+	onlyBackground               false
+    getFrontClicks               false
+    acceptAppDiedEvents          false
+    is32BitCompatible            true
+    isHighLevelEventAware        true
+    localAndRemoteHLEvents       true (?)
+    isStationeryAware            false
+    useTextEditServices          false
+    isDisplayManagerAware        false
+  (If you are not using CodeWarrior, a suitable SIZE (-1) resource should 
+  already be in your application, created from PlainText.r).
+  If you want the resource compiler to generate the SIZE resource for you, 
+  #define NEED_SIZE 1 in 'macdefs.h'.
+
+- make sure that all code segments are preloaded for the 68K version.
+
+- if you want to create/use dynamic libraries, you must make sure that all 
+   global variables in GAP (or, preferably, only those in the file 
+   'macgap.µ.exp') are exported into the PEF container - refer to your compiler
+   manual for details on how this must be done.

@@ -1,0 +1,79 @@
+HOWTO add a share package to the web pages and the ftp server
+=====================================================================
+
+Needed: a) the zoo file, say `newpkg.zoo',
+        b) a README file, say `newpkg.README'.
+
+1) Become root on chrystal, and go to the ftp directory
+
+         /user5/ftp/pub/gap/gap4
+
+   There are two subdirectories of importance for packages:
+   
+        * `share' for accepted share packages,
+        * `deposit/psh' for submitted share packages and other items.
+
+
+2) Go to `share' (or `deposit/psh'), and copy the files a), and b) into
+   this directory. Issue `chmod 444 *' and `chgrp ftp *'.
+
+3) (Web page belonging to package). Check out WWW from the
+   CVS repository. Go to WWW/Share.
+   Create the file `newpkg.input' (by copying the .input file of an existing
+   package, and change everything relevant; one could steal the description
+   from the README file). 
+   If necessary add a name link to the file `WWW/Util/ADDRESSES'.
+
+3a) For deposited packages etc., one needs to edit 
+    `WWW/Info4/deposit.input' (and cvs commit it afterwards).
+
+4) Issue `cvs add newpkg.input' and `cvs commit newpkg.input'.
+
+5) Edit the Makefile (in `WWW/Share'); add a target `newpkg.html'.
+   Issue `make', which will produce a file `newpkg.html'.
+   Issue `cvs commit Makefile'.
+
+6) Go to `WWW/Info4' and edit `Share.input', adding an item for newpkg.
+   Issue `cvs commit Share.input'.
+
+7) Go to WWW and issue `make stand', which should produce the new
+   web pages, along with the file sizes.
+
+
+==========================================================================
+
+If there is a new version of a package, or a new package, then 
+you can produce new `allshare' and `submitshare' files by the following
+script (as it is here to be called from `mkdistrib'); it is taken from
+`zooit':
+
+
+echo "Accepted Share Packages"
+chmod 755 ../etc/zoomerge
+for i in /home/ftp/pub/gap/gap4/share/*.zoo; do
+../etc/zoomerge allshare4r2.zoo $i
+done
+for i in /home/ftp/pub/gap/gap4/share/README*; do
+cp $i .
+done
+cp ../mkdistrib/README.allshare README
+for i in READM*; do
+zoo ah allshare4r2.zoo $i
+zoo c allshare4r2.zoo $i <TEXTCOM >&/dev/null
+done
+rm -f README*
+
+echo "Submitted Share Packages"
+chmod 755 ../etc/zoomerge
+for i in /home/ftp/pub/gap/gap4/deposit/psh/*.zoo; do
+../etc/zoomerge submitshare4r2.zoo $i
+done
+for i in /home/ftp/pub/gap/gap4/deposit/psh/README*; do
+cp $i .
+done
+cp ../mkdistrib/README.submitshare README
+for i in READM*; do
+zoo ah submitshare4r2.zoo $i
+zoo c submitshare4r2.zoo $i <TEXTCOM >&/dev/null
+done
+rm -f README*

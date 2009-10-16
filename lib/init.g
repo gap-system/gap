@@ -4,7 +4,7 @@
 #W                                                             & Frank Celler
 #W                                                         & Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: init.g,v 4.240 2009/08/12 11:57:59 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,15 +12,23 @@
 ##
 ##  This file initializes GAP.
 ##
+Revision := rec();
 Revision.init_g :=
-    "@(#)$Id$";
+    "@(#)$Id: init.g,v 4.240 2009/08/12 11:57:59 gap Exp $";
+
+#############################################################################
+##
+#1 Temporary error handling until we are able to read error.g
+##
+##
 
 #############################################################################
 ##
 #F  OnBreak( )  . . . . . . . . . function to call at entry to the break loop
 ##
 ##
-OnBreak := Where;
+OnBreak := function() Print("An error has occurred before the traceback ",
+        "functions are defined\n"); end;
 
 #############################################################################
 ##
@@ -48,6 +56,27 @@ end;
 ##  make it obsolete.
 ##
 OnQuit := function() end;
+
+
+Error := function( arg )
+    local x;
+    Print("Error before error-handling is initialized: ");
+    for x in arg do
+      Print(x);
+    od;
+    Print("\n");
+    JUMP_TO_CATCH("early error");
+end;
+
+ErrorInner := function(arg) 
+    local x;
+    Print("Error before error-handling is initialized: ");
+    for x in [6..LENGTH(arg)] do
+      Print(arg[x]);
+    od;
+    Print("\n");
+    JUMP_TO_CATCH("early error");
+end;
 
 #############################################################################
 ##
@@ -151,7 +180,6 @@ ReadGapRoot( "lib/global.g" );
 ##
 ReadGapRoot( "lib/system.g" );
 
-
 IS_READ_OR_COMPLETE := false;
 
 READED_FILES := [];
@@ -165,6 +193,22 @@ RANK_FILTER_STORE        := Error;	# defined in "filter.g"
 RANK_FILTER              := Error;	# defined in "filter.g"
 RankFilter               := Error;      # defined in "filter.g"
 
+
+#############################################################################
+##
+##  Set or disable break loop according to -T option
+##
+
+BIND_GLOBAL("TEACHING_MODE", GAPInfo.CommandLineOptions.T);
+BreakOnError := not GAPInfo.CommandLineOptions.T;
+    
+
+ADD_LIST(POST_RESTORE_FUNCS, function()
+    MAKE_READ_WRITE_GLOBAL("TEACHING_MODE");
+    TEACHING_MODE := GAPInfo.CommandLineOptions.T;
+    MAKE_READ_ONLY_GLOBAL("TEACHING_MODE");
+    BreakOnError := not GAPInfo.CommandLineOptions.T;
+end);
 
 #############################################################################
 ##
@@ -519,6 +563,7 @@ IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
 # allow type determination of IMPLICATIONS without using it
 TypeObj(IMPLICATIONS[1]);
 HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
+#T shouldn't this better be at the end of reading the library?
 
 # we cannot complete the following command because printing may mess up the
 # backslash-masked characters!
@@ -527,15 +572,26 @@ BIND_GLOBAL("VIEW_STRING_SPECIAL_CHARACTERS_OLD",
   # contains characters that should instead be printed after a `\'.
   Immutable([ "\c\b\n\r\"\\", "cbnr\"\\" ]));
 BIND_GLOBAL("SPECIAL_CHARS_VIEW_STRING",
-[ List(Concatenation([0..31],[34,92],[127..159]), CHAR_INT), [
+[ List(Concatenation([0..31],[34,92],[127..255]), CHAR_INT), [
 "\\000", "\\>", "\\<", "\\c", "\\004", "\\005", "\\006", "\\007", "\\b", "\\t",
 "\\n", "\\013", "\\014", "\\r", "\\016", "\\017", "\\020", "\\021", "\\022",
 "\\023", "\\024", "\\025", "\\026", "\\027", "\\030", "\\031", "\\032", "\\033",
-"\\034", "\\035", "\\036", "\\037", "\\\"", "\\\\", "\\177", "\\200", "\\201",
-"\\202", "\\203", "\\204", "\\205", "\\206", "\\207", "\\210", "\\211",
-"\\212", "\\213", "\\214", "\\215", "\\216", "\\217", "\\220", "\\221",
-"\\222", "\\223", "\\224", "\\225", "\\226", "\\227", "\\230", "\\231",
-"\\232", "\\233", "\\234", "\\235", "\\236", "\\237"]]);
+"\\034", "\\035", "\\036", "\\037", "\\\"", "\\\\", 
+"\\177","\\200","\\201","\\202","\\203","\\204","\\205","\\206","\\207",
+"\\210","\\211","\\212","\\213","\\214","\\215","\\216","\\217","\\220",
+"\\221","\\222","\\223","\\224","\\225","\\226","\\227","\\230","\\231",
+"\\232","\\233","\\234","\\235","\\236","\\237","\\240","\\241","\\242",
+"\\243","\\244","\\245","\\246","\\247","\\250","\\251","\\252","\\253",
+"\\254","\\255","\\256","\\257","\\260","\\261","\\262","\\263","\\264",
+"\\265","\\266","\\267","\\270","\\271","\\272","\\273","\\274","\\275",
+"\\276","\\277","\\300","\\301","\\302","\\303","\\304","\\305","\\306",
+"\\307","\\310","\\311","\\312","\\313","\\314","\\315","\\316","\\317",
+"\\320","\\321","\\322","\\323","\\324","\\325","\\326","\\327","\\330",
+"\\331","\\332","\\333","\\334","\\335","\\336","\\337","\\340","\\341",
+"\\342","\\343","\\344","\\345","\\346","\\347","\\350","\\351","\\352",
+"\\353","\\354","\\355","\\356","\\357","\\360","\\361","\\362","\\363",
+"\\364","\\365","\\366","\\367","\\370","\\371","\\372","\\373","\\374",
+"\\375","\\376","\\377" ]]);
 
 ReadOrComplete( "lib/read5.g" );
 
@@ -595,11 +651,22 @@ PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "cohorts.grp","irreducible solvable
 
 #############################################################################
 ##
-##  check whether version of loaded workspace coincides with
-##  version of GAP library
+##  When loading a workspace, deal with the two `GAPInfo' variables from the
+##  workspace and from the library file `lib/system.g'  of the installed GAP.
 ##
+##  - Print a warning if the version of the loaded workspace differs from the
+##    version of the GAP library.
+##  - Take all record components from `lib/system.g',
+##    except that the command line options of the loaded workspace are kept.
+##  - Take all record components available in the loaded workspace that are
+##    not initialized in `lib/system.g'.
+##  - Keep the information about loaded packages (component `PackagesLoaded')
+##    and reset the initialization flag of the packages.
+##    If GAP was not started with the '-A' command line option then call
+##    `AutoloadPackages'.
+##    
 Add( POST_RESTORE_FUNCS, function()
-    local wsp_version, name, iw;
+    local wsp_version, name;
 
     wsp_version := GAPInfo;
     RereadLib( "system.g" );
@@ -613,43 +680,45 @@ Add( POST_RESTORE_FUNCS, function()
       Info( InfoWarning, 1,
             "This may lead to wrong results or further errors." );
     fi;
-    for name in [ "PackagesLoaded", "PackagesInfo",
-        "PackagesInfoAutoload", "PackagesInfoAutoloadDocumentation",
-        "PackagesInfoRefuseLoad", "PackagesInfoInitialized",
-        "PackagesNames", "PackagesRestrictions",
-        "PackageInfoCurrent", "LoadedComponents",
-        "CompareKernelVersions", "SystemInformation" ] do
-      if IsBound( wsp_version.( name ) ) then
-        GAPInfo.( name ) := wsp_version.( name );
+        #
+    # I think this captures the old behaviour SL
+        #
+    GAPInfo.CommandLineOptionsRestore :=  GAPInfo.CommandLineOptions;
+    GAPInfo.CommandLineOptions := wsp_version.CommandLineOptions;
+    for name in RecFields(wsp_version) do
+      if not IsBound(GAPInfo.(name)) then
+        GAPInfo.(name) := wsp_version.(name);
       fi;
-      GAPInfo.CommandLineOptionsRestore := 
-                                     ShallowCopy(GAPInfo.CommandLineOptions);
-      for name in NamesOfComponents(SY_RESTORE_OPTIONS) do
-        GAPInfo.CommandLineOptionsRestore.(name) := SY_RESTORE_OPTIONS.(name);
-      od;
-  od;
-  #
-  # Workaround for warning message from reread of obsolete.g
-  # SL
-  #
-  iw := InfoLevel(InfoWarning);
-  SetInfoLevel(InfoWarning,0);
-  RereadLib( "obsolete.g" );
-  SetInfoLevel(InfoWarning,iw);
+    od;
+    # the initialization of these two should better be moved from
+    # system.g into package.* (then these lines can vanish) FL
+    for name in [ "PackagesLoaded", "PackagesInfo" ] do
+        if IsBound( wsp_version.( name ) ) then
+            GAPInfo.( name ) := wsp_version.( name );
+        fi;
+    od;
+    
+#      for name in NamesOfComponents(SY_RESTORE_OPTIONS) do
+#       GAPInfo.CommandLineOptionsRestore.(name) := SY_RESTORE_OPTIONS.(name);
+#T This is not good enough! (see system.g)
+#      od;
+    #    od;
+    
+#    RereadLib( "obsolete.g" );
 #T Remove this as soon as the globals corresponding to command line options
 #T have disappeared and are not getting unbound in `system.g'.
-    end );
+end );
+
 Add(POST_RESTORE_FUNCS, function() 
     local A;
-      # recheck in case user has given additional directories
-      A:= GAPInfo.CommandLineOptionsRestore.A;
-      if A = false or ( IsList( A ) and ( Length( A ) mod 2 = 0 ) ) then
-#T This is just a hack, GAPInfo.CommandLineOptionsRestore should be
-#T translated in the same way as GAPInfo.CommandLineOptions.
-        GAPInfo.PackagesInfoInitialized := false;
-        InitializePackagesInfoRecords(false);
-      fi;
+    # recheck in case user has given additional directories 
+    A:= GAPInfo.CommandLineOptionsRestore.A;
+    if A = false or ( IsList( A ) and ( Length( A ) mod 2 = 0 ) ) then
+      GAPInfo.PackagesInfoInitialized:= false;
+      AutoloadPackages();
+    fi;
 end);
+
 
 #############################################################################
 ##
@@ -718,6 +787,7 @@ GAPInfo.SystemInformation := function( basic, extended )
     fi;
   fi;
 end;
+
 Add( POST_RESTORE_FUNCS, function()
      GAPInfo.SystemInformation( not GAPInfo.CommandLineOptions.q,
                                 not GAPInfo.CommandLineOptions.b );
@@ -758,8 +828,16 @@ PAR_GAP_SLAVE_START := fail;
 ##
 ##  Read the .gaprc file
 ##
-READ( GAPInfo.gaprc );
 
+if not GAPInfo.CommandLineOptions.r then
+    READ( GAPInfo.gaprc );
+fi;
+
+############################################################################
+##
+#X  Name Synonyms for different spellings
+##
+ReadLib("transatl.g");
 
 #############################################################################
 ##
@@ -783,21 +861,15 @@ fi;
 ##
 ##  Autoload packages (suppressing banners)
 ##
-if not GAPInfo.CommandLineOptions.A then
 BANNER_ORIG:= BANNER;
 #T remove this as soon as `BANNER' is not used anymore
 MakeReadWriteGlobal("BANNER");
 UnbindGlobal("BANNER");
 BANNER:= false;
-GAPInfo.InfoWarningLevel:= InfoLevel( InfoWarning );
-SetInfoLevel( InfoWarning, 0 );
-  AutoloadPackages();
-SetInfoLevel( InfoWarning, GAPInfo.InfoWarningLevel );
-Unbind( GAPInfo.InfoWarningLevel );
+AutoloadPackages();
 BANNER:= BANNER_ORIG;
 MakeReadOnlyGlobal("BANNER");
 Unbind( BANNER_ORIG );
-fi;
 
 
 #############################################################################
@@ -864,9 +936,6 @@ end);
 ##
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
-HELP_ADD_BOOK("Extending", "Extending GAP 4 Reference Manual", "doc/ext");
-HELP_ADD_BOOK("Prg Tutorial", "Programmers Tutorial", "doc/prg");
-HELP_ADD_BOOK("New Features", "New Features for Developers", "doc/new");
 
 
 #############################################################################
@@ -875,6 +944,25 @@ HELP_ADD_BOOK("New Features", "New Features for Developers", "doc/new");
 ##
 if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 
+#############################################################################
+##
+##  Read init files and run a shell and do exit-time processing.
+##
+
+for file in GAPInfo.InitFiles do
+    Read(file);
+od;
+
+Add(POST_RESTORE_FUNCS, function()
+    local f;
+    for f in GAPInfo.InitFiles do
+        Read(f);
+    od;
+end);
+
+
+SESSION();
+    
 #############################################################################
 ##
 #E

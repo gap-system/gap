@@ -2,7 +2,7 @@
 ##  
 #W  helpdef.gi                  GAP Library       Frank Celler / Frank Lübeck
 ##  
-#H  @(#)$Id$
+#H  @(#)$Id: helpdef.gi,v 1.10 2008/06/24 09:07:13 gap Exp $
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,7 +17,7 @@
 ##  viewer is outsourced into `helpt2t.g{d,i}'.
 ##  
 Revision.helpdef_gi := 
-  "@(#)$Id$";
+  "@(#)$Id: helpdef.gi,v 1.10 2008/06/24 09:07:13 gap Exp $";
   
 ################ ???????????????????????????? ###############################
 

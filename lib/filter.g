@@ -4,7 +4,7 @@
 #W                                                             & Frank Celler
 #W                                                         & Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: filter.g,v 4.18 2008/09/18 07:58:02 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  filter1.g, which is compiled
 ##
 Revision.filter_g :=
-    "@(#)$Id$";
+    "@(#)$Id: filter.g,v 4.18 2008/09/18 07:58:02 gap Exp $";
 
 #############################################################################
 ##
@@ -152,7 +152,46 @@ end );
 
 #############################################################################
 ##
-#F  InstallTrueMethod( <to>, <from> )
+#F  InstallTrueMethod( <newfil>, <filt> )
+##
+##  <#GAPDoc Label="InstallTrueMethod">
+##  <ManSection>
+##  <Func Name="InstallTrueMethod" Arg="newfil, filt"/>
+##
+##  <Description>
+##  It may happen that a filter <A>newfil</A> shall be implied by another
+##  filter <A>filt</A>, which is usually a meet of other properties,
+##  or the meet of some properties and some categories.
+##  Such a logical implication can be installed as an <Q>immediate method</Q>
+##  for <A>newfil</A> that requires <A>filt</A> and that always returns
+##  <K>true</K>.
+##  (This should not be mixed up with the methods installed via
+##  <Ref Func="InstallImmediateMethod"/>, which have to be called at runtime
+##  for the actual objects.)
+##  <P/>
+##  <Ref Func="InstallTrueMethod"/> has the effect that <A>newfil</A> becomes
+##  an implied filter of <A>filt</A>,
+##  see&nbsp;<Ref Sect="Filters"/>.
+##  <P/>
+##  For example, each cyclic group is abelian,
+##  each finite vector space is finite dimensional,
+##  and each division ring is integral.
+##  The first of these implications is installed as follows.
+##  <P/>
+##  <Log><![CDATA[
+##  InstallTrueMethod( IsCommutative, IsGroup and IsCyclic );
+##  ]]></Log>
+##  <P/>
+##  Contrary to the immediate methods installed with
+##  <Ref Func="InstallImmediateMethod"/>, logical implications cannot be
+##  switched off.
+##  This means that after the above implication has been installed,
+##  one can rely on the fact that every object in the filter
+##  <C>IsGroup and IsCyclic</C> will also be in the filter
+##  <Ref Func="IsCommutative"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
 
@@ -166,8 +205,24 @@ end );
 
 #############################################################################
 ##
-#F  NewFilter( <name>[, <rank>] ) . . . . . . . . . . . . create a new filter
-#F  NewFilter( <name>, <implied>[, <rank>] )  . . . . . . create a new filter
+#F  NewFilter( <name>[, <implied>][, <rank>] )  . . . . . create a new filter
+##
+##  <#GAPDoc Label="NewFilter">
+##  <ManSection>
+##  <Func Name="NewFilter" Arg="name[, rank]"/>
+##
+##  <Description>
+##  <Ref Func="NewFilter"/> returns a simple filter with name <A>name</A>
+##  (see&nbsp;<Ref Sect="Other Filters"/>).
+##  The optional second argument <A>rank</A> denotes the incremental rank
+##  (see&nbsp;<Ref Sect="Filters"/>) of the filter,
+##  the default value is 1.
+##  <P/>
+##  The default value of the new simple filter for each object is
+##  <K>false</K>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewFilter", function( arg )
     local   name,  implied,  rank,  filter;
@@ -212,6 +267,17 @@ end );
 #############################################################################
 ##
 #F  DeclareFilter( <name>[, <implied>][, <rank>] )
+##
+##  <#GAPDoc Label="DeclareFilter">
+##  <ManSection>
+##  <Func Name="DeclareFilter" Arg="name[, rank]"/>
+##
+##  <Description>
+##  does the same as <Ref Func="NewFilter"/>
+##  and additionally makes the variable <A>name</A> read-only.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareFilter", function( arg )
     BIND_GLOBAL( arg[1], CALL_FUNC_LIST( NewFilter, arg ) );

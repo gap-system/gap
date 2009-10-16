@@ -2,7 +2,7 @@
 **
 *W  objpcgel.h                  GAP source                       Frank Celler
 **
-*H  @(#)$Id$
+*H  @(#)$Id: objpcgel.h,v 4.12 2002/04/15 10:03:53 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -10,7 +10,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objpcgel_h =
-   "@(#)$Id$";
+   "@(#)$Id: objpcgel.h,v 4.12 2002/04/15 10:03:53 sal Exp $";
 #endif
 
 

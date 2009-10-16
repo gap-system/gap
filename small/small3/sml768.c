@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.sml768_c :=
-    "@(#)$Id$";
+    "@(#)$Id: sml768.c,v 1.1 1998/07/18 15:27:23 gap Exp $";
 
 SMALL_GROUP_LIB[ 768 ].npnil[ 3 ] :=
 [ 381228747422865250897945077911311153054975001070600,

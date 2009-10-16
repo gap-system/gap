@@ -2,7 +2,7 @@
 ##
 #W  mgmhom.gd                    GAP library                  Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mgmhom.gd,v 4.8 2008/10/27 08:56:56 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,15 +11,23 @@
 ##  This file contains declarations for magma homomorphisms.
 ##
 Revision.mgmhom_gd:=
-    "@(#)$Id$";
+    "@(#)$Id: mgmhom.gd,v 4.8 2008/10/27 08:56:56 gap Exp $";
 
 #############################################################################
 ##
 #P  IsMagmaHomomorphism( <mapp> )
 ##
-##  A `MagmaHomomorphism' is a total single valued mapping which respects 
-##  multiplication.
-## 
+##  <#GAPDoc Label="IsMagmaHomomorphism">
+##  <ManSection>
+##  <Prop Name="IsMagmaHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  A <E>magma homomorphism</E> is a total single valued mapping
+##  which respects  multiplication.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareSynonymAttr( "IsMagmaHomomorphism",
 	IsMapping and RespectsMultiplication );
 
@@ -28,8 +36,16 @@ DeclareSynonymAttr( "IsMagmaHomomorphism",
 ##
 #F  MagmaHomomorphismByFunctionNC( <G>, <H>, <fn> ) 
 ##
-##  Creates the homomorphism from G to H without checking
-##  that <fn> is a homomorphism.
+##  <#GAPDoc Label="MagmaHomomorphismByFunctionNC">
+##  <ManSection>
+##  <Func Name="MagmaHomomorphismByFunctionNC" Arg='G, H, fn'/>
+##
+##  <Description>
+##  Creates the homomorphism from <A>G</A> to <A>H</A> without checking
+##  that <A>fn</A> is a homomorphism.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "MagmaHomomorphismByFunctionNC");
 
@@ -37,8 +53,14 @@ DeclareGlobalFunction( "MagmaHomomorphismByFunctionNC");
 ##
 #F  MagmaIsomorphismByFunctionsNC( <G>, <H>, <fn>, <inv> ) 
 ##
-##  Creates the isomorphism from G to H without checking
-##  that <fn> or <inv> are a homomorphisms or bijective or inverse.
+##  <ManSection>
+##  <Func Name="MagmaIsomorphismByFunctionsNC" Arg='G, H, fn, inv'/>
+##
+##  <Description>
+##  Creates the isomorphism from <A>G</A> to <A>H</A> without checking
+##  that <A>fn</A> or <A>inv</A> are homomorphisms or bijective or inverse.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "MagmaIsomorphismByFunctionsNC");
 
@@ -47,9 +69,18 @@ DeclareGlobalFunction( "MagmaIsomorphismByFunctionsNC");
 ##
 #O  NaturalHomomorphismByGenerators( <f>, <s> )
 ##
-##  returns a mapping from the magma <f> with <n> generators to the
-##  magma <s> with <n> generators, which maps the ith generator of <f> to the 
-##  ith generator of <s>.
+##  <#GAPDoc Label="NaturalHomomorphismByGenerators">
+##  <ManSection>
+##  <Oper Name="NaturalHomomorphismByGenerators" Arg='f, s'/>
+##
+##  <Description>
+##  returns a mapping from the magma <A>f</A> with <M>n</M> generators to the
+##  magma <A>s</A> with <M>n</M> generators,
+##  which maps the <M>i</M>-th generator of <A>f</A> to the 
+##  <M>i</M>-th generator of <A>s</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("NaturalHomomorphismByGenerators",[IsMagma, IsMagma]);
 
@@ -57,5 +88,4 @@ DeclareOperation("NaturalHomomorphismByGenerators",[IsMagma, IsMagma]);
 #############################################################################
 ##
 #E
-
 

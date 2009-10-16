@@ -1,0 +1,3002 @@
+% Twelve point font
+\font\twelverm=cmr12
+\font\twelvei=cmmi12
+\font\twelvesy=cmsy10 scaled \magstep1
+\font\twelveex=cmex10 scaled \magstep1
+\font\twelvebf=cmbx12
+\font\twelvesl=cmsl12
+\font\twelvett=cmtt12
+\font\twelveit=cmti12
+\font\ninerm=cmr9
+\font\ninei=cmmi9
+\font\ninesy=cmsy9
+\font\ninebf=cmbx9
+\font\sevenrm=cmr7
+\font\seveni=cmmi7
+\font\sevensy=cmsy7
+\font\sevenbf=cmbx7
+\def\twelvepoint{\def\rm{\fam0\twelverm}
+   \textfont0=\twelverm \scriptfont0=\ninerm \scriptscriptfont0=\sevenrm
+   \textfont1=\twelvei  \scriptfont1=\ninei  \scriptscriptfont1=\seveni
+   \textfont2=\twelvesy \scriptfont2=\ninesy \scriptscriptfont2=\sevensy
+   \textfont3=\twelveex \scriptfont3=\twelveex\scriptscriptfont3=\twelveex
+   \textfont\itfam=\twelveit  \def\it{\fam\itfam\twelveit}%
+   \textfont\slfam=\twelvesl  \def\sl{\fam\slfam\twelvesl}%
+   \textfont\ttfam=\twelvett  \def\tt{\fam\ttfam\twelvett}%
+   \textfont\bffam=\twelvebf  \scriptfont\bffam=\ninebf
+   \scriptscriptfont\bffam=\sevenbf  \def\bf{\fam\bffam\twelvebf}%
+   \normalbaselineskip=14pt
+   \setbox\strutbox=\hbox{\vrule height9.5pt depth4.5pt width0pt}%
+   \normalbaselines\rm}
+%
+% 11 point font
+\font\elevenrm=cmr10    scaled \magstephalf
+\font\eleveni=cmmi10    scaled \magstephalf
+\font\elevensy=cmsy10   scaled \magstephalf
+\font\elevenex=cmex10   scaled \magstephalf
+\font\elevenbf=cmbx10   scaled \magstephalf
+\font\elevensl=cmsl10   scaled \magstephalf
+\font\eleventt=cmtt10   scaled \magstephalf
+\font\elevenit=cmti10   scaled \magstephalf
+\font\eightrm=cmr8
+\font\eighti=cmmi8
+\font\eightsy=cmsy8
+\font\eightbf=cmbx8
+\font\sixrm=cmr6
+\font\sixi=cmmi6
+\font\sixsy=cmsy6
+\font\sixbf=cmbx6
+\def\elevenpoint{\def\rm{\fam0\elevenrm}% switch to 11-point type
+   \textfont0=\elevenrm \scriptfont0=\eightrm \scriptscriptfont0=\sixrm
+   \textfont1=\eleveni  \scriptfont1=\eighti  \scriptscriptfont1=\sixi
+   \textfont2=\elevensy \scriptfont2=\eightsy \scriptscriptfont2=\sixsy
+   \textfont3=\elevenex \scriptfont3=\elevenex\scriptscriptfont3=\elevenex
+   \textfont\itfam=\elevenit  \def\it{\fam\itfam\elevenit}%
+   \textfont\slfam=\elevensl  \def\sl{\fam\slfam\elevensl}%
+   \textfont\ttfam=\eleventt  \def\tt{\fam\ttfam\eleventt}%
+   \textfont\bffam=\elevenbf  \scriptfont\bffam=\eightbf
+   \scriptscriptfont\bffam=\sixbf  \def\bf{\fam\bffam\elevenbf}%
+   \normalbaselineskip=13pt
+   \setbox\strutbox=\hbox{\vrule height9pt depth4pt width0pt}%
+   \normalbaselines\rm}
+%
+\twelvepoint
+\parindent=0pt
+\raggedbottom
+
+% Make headline containing date
+\def\makeheadline{\vbox to 0pt{\vskip-45pt
+   \line{\vbox to 8.5pt{}\hskip-40pt\fiverm{\number\month}/{\number\day}/92\hfil}\vss}
+   \nointerlineskip}
+%
+\def\makeactive#1{\catcode`#1 = \active \ignorespaces}%
+\chardef\letter = 11 \chardef\other = 12
+\catcode`@=\letter
+\def\alwaysspace{\hglue\fontdimen2\the\font \relax}%
+{\makeactive\^^M \makeactive\ %
+\gdef\obeywhitespace{%
+\makeactive\^^M\def^^M{\par\indent}%
+\aftergroup\@removebox%
+\makeactive\ \let =\alwaysspace}}%
+\def\@removebox{\setbox0=\lastbox}
+%
+\font\titlefont=cmbx10 scaled\magstep4
+\font\authorfont=cmr12 scaled\magstep1
+\font\sectionheaderfont=cmbx12 scaled\magstep1
+\font\subsectionheaderfont=cmbx12
+\def\filenamefont{\tt}
+%
+\long\def\section#1{\bigbigbreak{\sectionheaderfont #1}\nobreak\medskip\nobreak}
+\long\def\subsection#1{\bigbreak{\subsectionheaderfont #1}\hskip0.75em}
+\def\twocols#1#2{\hskip0.45truein\hbox to 3.0truein{#1\hfil}\hskip0.4truein\relax
+                 \hbox to 2.45truein{#2\hfil}\hfil}
+\long\def\objectfile#1{{\elevenpoint\obeylines\obeyspaces\tt\ttraggedright
+                        #1\vskip0pt}}
+\newdimen\optionIndent\optionIndent=1.1in
+\long\def\defoption#1#2{{\advance\leftskip by1em\advance\leftskip by\optionIndent
+                       \noindent\llap{\hbox to\optionIndent{\tt #1\hfil}}#2\vskip0pt}}
+%
+\def\germR{\underline{{\rm R}}}
+\def\bfgermR{\underline{{\bf R}}}
+%
+\def\options{{\rm [}{\it options\/}{\rm ]}}
+%
+\newskip\bigbigskipamount \bigbigskipamount=20pt plus 7pt minus 5pt
+\def\bigbigskip{\vskip\bigbigskipamount}
+\def\bigbigbreak{\par\ifdim\lastskip<\bigbigskipamount
+  \removelastskip\penalty-300\bigbigskip\fi}
+\multiply\smallskipamount by4\divide\smallskipamount by3
+\multiply\medskipamount by4\divide\medskipamount by3
+\multiply\bigskipamount by4\divide\bigskipamount by3
+\multiply\bigbigskipamount by4\divide\bigbigskipamount by3
+%
+\pageno=1
+\centerline{{\titlefont PARTITION BACKTRACK PROGRAMS:}}
+\vskip10pt
+\centerline{{\titlefont USER'S MANUAL}}
+\vskip35pt
+\centerline{{\authorfont JEFFREY S. LEON}}
+\vskip6pt
+\centerline{Mathmatics Dept, m/c 249}
+\centerline{University of Illinois at Chicago}
+\centerline{Box 4348}
+\centerline{Chicago, IL 60680}
+\vskip40pt
+%
+\section{I.\quad INTRODUCTION}
+%
+This document describes a collection of programs for permutation group
+computations employing the partition backtrack method, as described in a
+recent article by the author (Leon, 1991).  At present, these programs
+perform the following computations:
+\medskip
+\twocols{set stabilizers,}{set images (see below),}
+\vskip4pt
+\twocols{ordered partition stabilizers,}{ordered partition images,}
+\vskip4pt
+\twocols{intersections,}{}
+\vskip4pt
+\twocols{centralizers (of elements),}{conjugacy (of elements),}
+\vskip4pt
+\twocols{centralizers (of subgroups),}{}
+\vskip4pt
+\twocols{automorphism groups of designs,}{isomorphism of designs,}
+\vskip4pt
+\twocols{automorphism groups of matrices,}{isomorphism of matrices,}
+\vskip4pt
+\twocols{monomial automorphism groups of}{monomial isomorphism of matrices}
+\vskip-1.5pt
+\twocols{matrices over small fields,}{over small fields,}
+\vskip4pt
+\twocols{automorphism groups of linear codes,}{isomorphism of linear codes.}
+\medbreak
+The term {\it set image} problem is used here to refer to the following
+problem: Given a permutation group
+$G$ and subsets $\Lambda$ and $\Phi$ of the domain, determine if there exists
+$g \in G$ such that $\Lambda^g = \Phi$.  The ordered partition image problem is
+defined analogously.  The term {\it design\/} is used here to refer to any
+collection of points and blocks.  An automorphism of a matrix is any permutation
+of the rows and columns that leaves the matrix invariant; two matrices are
+isomorphic if one may be transformed to the other by permutation of rows and
+columns.  For monomial automorphism groups and monomial isomorphism, the matrix entries
+must be taken from a finite field; in addition to permutation of rows and
+columns, we allow each row and each column to be multiplied by a nonzero
+field element.
+%
+\medbreak
+Note that each of the problems in the first column above involves
+computation of a subgroup; these problems will be referred to
+as {\it subgroup computations}.  For each problem
+in the second column, the set of permutations having the desired property
+either is empty or forms a right coset of an appropriate subgroup; we are
+seeking one coset representative (if it exists).  These problems
+will be referred to as {\it coset representative computations}.
+%
+\medbreak
+Some of the programs described here can be used to compute in groups of
+relatively high degree, considerably higher than those that can be
+handled by programs based on conventional algorithms.
+However, it should be kept mind that the programs are new.
+All appear to work correctly, but most have not
+been thoroughly tested, especially on intransitive groups.  (The set
+stabilizer program has been tested the most thoroughly, and in general those
+for subgroup computations have received more testing than those for coset
+representative calculations.)  The author would appreciate any reports of errors; they
+may be sent to {\tt leon@turing.math.uic.edu}.
+\medbreak
+Work on programs for the following computations is in progress:
+\medskip
+\twocols{unordered partition stabilizers,}{unordered partition images,}
+\vskip4pt
+\twocols{normalizers,}{conjugacy (of subgroups),}
+\vskip4pt
+\twocols{}{coset intersections,}
+\medbreak
+In the course of constructing test cases for the partition backtrack programs
+and verifying their output,
+the author has developed several other programs, not based on backtrack search.
+These programs are described briefly in Section~IX.  Many of these programs
+were put together quickly, with a view toward simplicity rather than
+efficiency and ease of use.
+\medbreak
+At present, the programs run on the following machines: The Sun/3, the Sun/4,
+the IBM~3090, and the IBM~PC.  Two versions are available for the IBM~PC: a standard version,
+which is limited to groups of degree no more than 1000 (roughly) due
+to the 640K memory limitation, and a 386/486 version using a DOS extender, that
+can handle larger groups.  The source code for all programs is written
+entirely in C and, with very minor exceptions, conforms to the ANSI
+standard.  The programs should compile, with minimal changes, with
+any C compiler fully supporting the ANSI standard.  The Sun/3 and Sun/4
+versions have been compiled with the GNU C compiler, the IBM~3090 version with the
+Waterloo~C compiler, and the IBM/PC versions with the Borland C++ and
+Zortech C++ compilers (both configured as C compilers).
+%
+%
+\section{II.\quad OBJECTS AND FILE FORMATS}
+%
+At present, the programs compute with objects of seven types:  Permutation
+groups, permutations, point sets, partitions (ordered or unordered),
+block designs, matrices, and linear codes.  Each object used as
+input by the programs is read from a file.  Likewise, each object constructed
+by the programs is written to a file.  All of these files
+are ordinary text files.  The format of the files is designed for
+compatibility with Cayley (Cannon, 1984); it is that of a Cayley library,
+with certain restrictions added.  Essentially, the restrictions say that
+the library may contain only statements defining the object, and (at present)
+that only certain attributes of the object may specified in the library.
+(Many of the permutation group libraries distributed with Cayley conform
+to these restrictions.)  Thus objects constructed by these programs 
+described here may be read into Cayley for further investigation.
+Likewise, objects defined in existing Cayley libraries may, in many cases,
+be used as input to the programs described here.  An alternative format,
+compatible with Gap, may be added at a later date.
+\medbreak
+The examples which follow illustrate the correct format for these object files.
+Note that the contents of the files is case--insensitive; upper and lower case
+letters may be used interchangeably.  (However, the names of the files may
+be case--sensitive, depending on the operating system.)  Also, the
+use of white space (blanks, tabs, newline characters) is optional:  Except
+within integers and identifiers, any number of whitespace characters may
+occur.  Text enclosed by ampersands or quotation marks is treated as a comment.
+%
+\subsection{a)\enskip Permutation groups:}The format for permutation group files
+is illustrated by following file, named {\filenamefont psp62}, which defines
+${\rm PSp}_6(2)$ as a permutation group
+on nonzero vectors (degree 63).
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY psp62;
+" PSp(6,2) acting on nonzero vectors, degree 63."
+psp62: permutation group(63);
+psp62.forder: 2^9 * 3^4 * 5 * 7;
+psp62.generators:
+  a = (1,2)(3,5)(4,7)(8,12)(11,16)(13,19)(17,18)(20,26)(21,28)(23,30)(24,32)
+      (25,34)(29,37)(31,40)(33,43)(36,46)(38,41)(39,49)(42,44)(45,52)(48,51)
+      (53,58)(57,62)(59,61),
+  b = (1,3,6,10,15,22)(2,4,8,13,20,27)(5,9,14,21,29,38)(7,11,17,23,31,41)
+      (12,18,24,33,44,34)(16,19,25)(26,35,45,53,32,42)(28,36,47)(30,39,50,
+      56,61,58)(37,48)(40,51,46,54,59,62)(49,55,60,63,52,57);
+FINISH;\vskip0pt}}
+\medbreak
+The line specifying the factored group order may be omitted; however, since the
+random Schreier method is currently used to construct a base and strong
+generating set for the group, there is a possibility (probably small) that
+the group may be generated incorrectly if this line is removed.  
+When generators are written in cycle format, as above, inclusion of cycles
+of length one is optional.  (For compatibility with Cayley, they should be
+omitted.)
+It is also
+possible to write the generators in image (rather than cycle) format; in
+this case, the file shown above would become:
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY psp62;
+" PSp(6,2) acting on nonzero vectors, degree 63."
+psp62: permutation group(63);
+psp62.forder: 2^9 * 3^4 * 5 * 7;
+psp62.generators:
+   a = /2,1,5,7,3,6,4,12,9,10,16,8,19,14,15,11,18,17,13,26,28,22,30,
+        32,34,20,27,21,37,23,40,24,43,25,35,46,29,41,49,31,38,44,33,42,
+        52,36,47,51,39,50,48,45,58,54,55,56,62,53,61,60,59,57,63/,
+   b = /3,4,6,8,9,10,11,13,14,15,17,18,20,21,22,19,23,24,25,27,29,1,
+        31,33,16,35,2,36,38,39,41,42,44,12,45,47,48,5,50,51,7,26,43,34,
+        53,54,28,37,55,56,46,57,32,59,60,61,49,30,62,63,58,40,52/;
+FINISH;\vskip0pt}}
+\medbreak
+Finally, if a base and strong generating set for the group are already
+known, they may be included in the file.  This eliminates the need for
+the programs to first construct a base and strong generating set for
+the input group.  The file format is then as follows.
+\nobreak\medskip\nobreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY psp62;
+" PSp(6,2) acting on nonzero vectors, degree 63."
+psp62: permutation group(63);
+psp62.forder: 2^9 * 3^4 * 5 * 7;
+psp62.base:  seq(1,3,6,2,4,5);
+psp62.strong generators:  [
+   x01 = (1,3)(4,27)(5,9)(7,45)(10,48)(11,17)(12,34)(13,20)(14,25)(15,
+         39)(16,63)(19,60)(21,55)(22,58)(23,28)(24,37)(31,53)(32,47)(33,
+         61)(36,42)(38,49)(44,50)(51,62)(54,59),
+   x02 = (2,16)(3,6)(5,55)(8,21)(9,40)(13,51)(14,46)(15,47)(17,44)(19,
+         59)(20,29)(22,36)(23,58)(24,61)(25,63)(26,37)(27,60)(31,50)(32,
+         48)(33,41)(34,56)(38,57)(43,45)(52,62),
+    .
+    .
+
+   x12 = (5,51)(7,12)(8,29)(9,62)(10,42)(13,55)(15,23)(18,35)(20,21)
+         (22,32)(28,39)(34,45)(36,48)(40,52)(43,56)(47,58)];
+FINISH;\vskip0pt}}
+\medbreak
+(The vertical dots indicated that part of the file has been omitted.)
+When a base and strong generating set are given, inclusion of the factored
+order of the group is purely optional.
+At present it is {\it not} possible to specify both generators and a base and
+strong generating set for a group.  (This obviously undesirable restriction
+will be removed eventually.)
+%
+\subsection{b)\enskip Permutations:}The format for permutation files
+is illustrated by following file, named {\filenamefont g}, which defines a permutation of
+$g$ of degree 63 and order 4, which turns out to lie in the group 
+${\rm PSp}_6(2)$ given above.
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY g;
+" An element of order 4 in the group psp62 above."
+g = (1,40,50,6)(2,58,18,34)(3,8,44,30)(4,10,15,48)(5,11)(7,60,38,32)
+    (12,46,22,56)(13,62,20,61)(16,42,36,63)(19,49,47,45)(21,53,31,
+    55)(24,33,37,51)(25,28)(26,52)(27,59,39,54)(29,41);
+FINISH;\vskip0pt}}
+\medbreak
+As with generators for permutation groups, permutations may be written in
+image format, rather than cycle format.  Note that, when cycle format is used,
+the file contains no explicit indication of the degree of the permutation.
+Thus, for example, the permutation {\tt g} above could be used wherever a
+permutation of degree 63 (the largest point appearing explicitly) or greater
+is expected.
+\medbreak
+Given the files above, the centralizer in ${\rm PSp}_6(2)$ of $g$ could be
+computed by the command
+\smallskip
+\hskip0.45truein{\tt cent\quad psp62\quad g\quad C}
+\smallskip
+which would save the centralizer (in the format described in part~(a) above)
+in the file {\filenamefont C}.
+%
+\subsection{c)\enskip Point sets:}The format for point sets is illustrated
+by following file, named {\filenamefont lambda}, which defines a subset $\Lambda$ of
+$\{1,\ldots,63\}$.
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY lambda;
+" A subset of {1,...,63} of size 31."
+lambda = [10,16,44,3,5,33,48,63,56,50,6,52,55,19,34,25,2,35,17,40,21,
+          58,49,36,39,12,60,30,15,29,37];
+FINISH;\vskip0pt}}
+\medbreak
+Note that there is no explicit indication of the size 
+of the base set.  Thus the set {\tt lambda} above could be used wherever
+a subset of $\{1,\ldots,m\}$ is expected for any $m$ with $m \geq 63$
+(the largest point appearing explicitly).
+\medbreak
+The set stabilizer in ${\rm PSp}_6(2)$ of $\Lambda$ could be computed
+by the command
+\smallskip
+\hskip0.45truein{\tt setstab\quad psp62\quad lambda\quad S}
+\smallskip
+which would save the stabilizer in the file {\filenamefont S}.
+%
+\subsection{d)\enskip Partitions:}The format for partitions (ordered or
+unordered) is illustrated
+by following file, named {\filenamefont pi}, which defines a partition
+$\Pi$ of $\{1,\ldots,63\}$.
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY pi;
+" An (ordered or unordered) partition of 1,...,63 having four "
+" cells of sizes 15, 20, 13, and 15. respectively."
+pi = seq([1,34,28,48,37,41,13,54,57,51,4,38,8,46,16],[2,40,21,
+          18,6,53,30,56,42,12,3,11,33,15,32,5,60,31,55,63],[7,
+          36,25,29,35,9,26,49,14,47,10,24,43],[17,58,52,50,59,
+          45,20,61,23,39,44,19,22,62,27]);
+FINISH;\vskip0pt}}
+\medbreak
+Note that the individual cells are delimited by square brackets.
+Note also that the file contains no indication whether the partition is ordered
+or unordered; rather each program operating on partitions interprets the
+partition as ordered or unordered, whichever is appropriate for the the
+program.   
+\medbreak
+The stabilizer in ${\rm PSp}_6(2)$ of $\Pi$, interpreted as an ordered
+partition, could be computed by the command
+\smallskip
+\hskip0.45truein{\tt parstab\quad psp62\quad pi\quad T}
+\smallskip
+which saves the stabilizer in the file {\filenamefont T}.
+%
+\subsection{e)\enskip Block designs:}Here a block design refers to any
+collection of subsets of $\{1,\ldots,n\}$; it is even possible to have
+repeated blocks, i.e., two different blocks containing exactly the same points.
+(If repeated blocks occur, we require that an automorphism preserve
+multiplicities.)  The file format for block designs
+is illustrated by following file, named {\filenamefont d17}, which defines
+a block design $D_{17}$ with 17 points and with 34 blocks, each of size 5.
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY d17;
+" The design with 17 points and 34 blocks, each containing "
+" 5 points, obtained from the codewords of weight 5 in the "
+" quadratic residue code of length 17 and dimension 9."
+d17 = seq( 17, 34,
+           [3,6,8,15,17], [1,4,7,9,16], [1,4,5,11,17],
+           [2,5,8,10,17], [3,4,7,8,14], [1,2,5,6,12],
+           [1,4,6,13,15], [1,3,6,9,11], [1,3,10,12,15],
+           [3,5,8,11,13], [2,8,9,12,13], [1,7,13,14,17],
+           [6,8,11,14,16], [4,5,8,9,15], [2,5,7,14,16],
+           [2,3,6,7,13], [3,4,10,16,17], [3,5,12,14,17],
+           [1,7,8,11,12], [5,7,10,13,15], [6,12,13,16,17],
+           [2,4,7,10,12], [2,9,11,14,17], [2,3,9,15,16],
+           [2,4,11,13,16], [6,7,10,11,17], [4,6,9,12,14],
+           [5,11,12,15,16], [1,8,10,13,16], [1,2,8,14,15],
+           [5,6,9,10,16], [4,10,11,14,15], [7,9,12,15,17],
+           [3,9,10,13,14] );
+FINISH;\vskip0pt}}
+\medbreak
+Note that the file contains the number of points, followed by the number
+of blocks, followed by a listing of the blocks.  Each block is delimited
+by square brackets.
+\medbreak
+The automorphism group of this block design could be computed by the command
+\smallskip
+\hskip0.45truein{\tt desauto\quad d17\quad A}
+\smallskip
+which saves the automorphism group in the file {\filenamefont A}.
+%
+\subsection{f)\enskip Matrices:}Here a matrix is merely a $k\times n$
+array of integers, each in the set $\{0,\ldots,q-1\}$ for some $k$, $n$, and
+$q$.  (At present, $q$ cannot exceed 256; this limit could be raised, at the
+cost of additional space, by minor changes to the source code.)
+The file format for matrices is
+illustrated by following file, named {\filenamefont m17},
+which represents incidence matrix $M_{17}$ for the block design $D_{17}$
+in part~(e) above.  (In the incidence matrix, rows correspond to points and
+columns to blocks.)
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY m17;
+" The incidence matrix of d17."
+m17 = seq( 2, 17, 34, seq(
+       0,1,1,0,0,1,1,1,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,
+       0,0,0,1,0,1,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0,1,0,0,0,0,
+       1,0,0,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,
+       0,1,1,0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,0,
+       0,0,1,1,0,1,0,0,0,1,0,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,
+       1,0,0,0,0,1,1,1,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,1,1,0,0,0,1,0,0,0,
+       0,1,0,0,1,0,0,0,0,0,0,1,0,0,1,1,0,0,1,1,0,1,0,0,0,1,0,0,0,0,0,0,1,0,
+       1,0,0,1,1,0,0,0,0,1,1,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,
+       0,1,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,1,0,1,1,
+       0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,1,0,0,1,0,1,1,0,1,
+       0,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1,1,0,1,0,0,0,1,0,0,
+       0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,1,1,0,1,1,0,0,0,0,1,1,0,0,0,0,1,0,
+       0,0,0,0,0,0,1,0,0,1,1,1,0,0,0,1,0,0,0,1,1,0,0,0,1,0,0,0,1,0,0,0,0,1,
+       0,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1,0,1,0,1,
+       1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,1,1,0,
+       0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,1,1,0,0,1,1,0,1,0,0,0,
+       1,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,0
+      ));
+FINISH;\vskip0pt}}
+\medbreak
+Note that the file contains the set size $q$, followed by the number $k$ of rows,
+followed by the number $n$ of columns, followed by the entries of the matrix
+listed in row--major order.  Note that matrix entries are not, in general,
+limited to 0 and 1; if $q$ is the set size, matrix entries may be integers
+in the range 0 through $q-1$.
+\medbreak
+The automorphism group of this matrix could be computed by the command
+\smallskip
+\hskip0.45truein{\tt matauto\quad m17\quad B}
+\smallskip
+which saves the automorphism group in the file {\filenamefont B}.
+\medbreak
+Matrices may also be specified using an alternate format, which is not
+compatible with Cayley, but which saves considerable space for large
+matrices.\footnote{${}^{\dag}$}{\elevenpoint At time of writing, the alternate format does not work
+correctly on some machines.}  This alternate format is available only when the set size $q$ is
+at most 9.  Using the alternate format, the matrix $M_{17}$ would be
+specified by a file as follows:
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+m17
+2  17  34
+0110011110010000001000000000110000
+0001010000100011000001111000010000
+1000100111000001110000010000000001
+0110101000000100100001001010000100
+0011010001000110010100000001001000
+1000011100001001000010000110001000
+0100100000010011001101000100000010
+1001100001101100001000000000110000
+0100000100100100000000110010001011
+0001000010000000100101000100101101
+0010000101001000001000101101000100
+0000010010100000011011000011000010
+0000001001110001000110001000100001
+0000100000011010010000100010010101
+1000001010000100000100010001010110
+0100000000001010100010011001101000
+1011000000010000110010100100000010
+\vskip0pt}}
+\medbreak
+With the alternate format, blanks may occur between matrix entries, but
+are not required.  The first line of the file is reserved for the matrix
+name; nothing else may be placed on this line.
+%
+\subsection{g)\enskip Linear codes:}
+The file format for lines codes is
+illustrated by following file, named {\filenamefont q17}, which represents the
+binary (17,9)--quadratic residue code $Q_{17}$ mentioned in part~(e) above.
+This file gives a generator matrix for the code, in the format of
+part~(f) above.
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY q17;
+" The (17,9) binary quadratic residue code."
+q17 = seq( 2, 9, 17, seq(
+           1,1,1,0,1,0,0,0,1,1,0,0,0,1,0,1,1,
+           1,1,1,1,0,1,0,0,0,1,1,0,0,0,1,0,1,
+           1,1,1,1,1,0,1,0,0,0,1,1,0,0,0,1,0,
+           0,1,1,1,1,1,0,1,0,0,0,1,1,0,0,0,1,
+           1,0,1,1,1,1,1,0,1,0,0,0,1,1,0,0,0,
+           0,1,0,1,1,1,1,1,0,1,0,0,0,1,1,0,0,
+           0,0,1,0,1,1,1,1,1,0,1,0,0,0,1,1,0,
+           0,0,0,1,0,1,1,1,1,1,0,1,0,0,0,1,1,
+           1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+      ));
+FINISH;\vskip0pt}}
+\medbreak
+Note that the file contains the size of the field for the code, followed by the 
+dimension of the code, followed by the
+length of the code, followed by a generator matrix whose entries are
+listed in row--major order.  At present, the field size is restricted to
+a prime integer (less than 255) or to 4; automorphism group and isomorphism
+calculations are practical only when the field size is quite small.
+  In the case of a prime, the field
+is taken as the integers modulo that prime.  
+\medbreak
+The automorphism group of this code could be computed by the command
+\smallskip
+\hskip0.45truein{\tt codeauto\quad q17\quad v17\quad H}
+\smallskip
+which saves the automorphism group as the group {\filenamefont H}.
+(Here file {\filenamefont v17} defines a matrix $V_{17}$ which is the
+transpose of the matrix $M_{17}$ of part~(f) above; the role of
+$V_{17}$ will be explained later.)
+\medbreak
+As with matrices, an alternate (not Cayley--compatible) format is provided
+for codes over field of size at most 9.\footnote{${}^{\dag}$}{\elevenpoint As with matrices, this
+alternate format at present fails to work correctly on some machines.}
+With the alternate format, the file defining the code $Q_{17}$
+would be as follows:
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+q17
+2  9  17
+11101000110001011
+11110100011000101
+11111010001100010
+01111101000110001
+10111110100011000
+01011111010001100
+00101111101000110
+00010111110100011
+11111111111111111
+\vskip0pt}}
+\bigbreak
+\hrule
+\bigbigbreak
+In the examples above, it was assumed that the name of file matched the
+name of the Cayley library that it contained.  Although this is
+recommended for simplicity, it need not be the case.  When the names
+do not match, an object is specified using the format
+\hbox{{\it fileName\/}{\tt ::}{\it libraryName\/}}.  For example, if the file
+{\filenamefont psp62} in part~(a) above were renamed {\filenamefont psp}
+and the file {\filenamefont g} in part~(b) were named {\filenamefont pspx4},
+but if the contents of both files remained unchanged, the command to
+compute the centralizer in ${\rm PSp}_6(2)$ of $g$ might be
+\smallskip
+\hskip0.45truein{\tt cent\quad psp::psp62\quad pspx4::g\quad gCentr::C}
+\smallskip
+where now the centralizer is saved in the file {\filenamefont gCentr}, but in a
+Cayley library named {\tt C}.  A path may also be specified, for example,
+\smallskip
+\hskip0.45in{\tt cent\quad ../groups/psp::psp62\quad ../groups/pspx4::g\quad gCentr::C}
+\smallskip
+in Unix.  (In MS~DOS on the IBM~PC, the forward slash must be replaced 
+by a backslash.  Under CMS on the IBM~370, the file name and file type must
+be separated by a period, rather than the blank normally used under CMS.)
+If however, the file name and the library name for input files
+differ only in that the file name contains path information, the
+{\tt -p} option (discussed later) may be useful.
+%
+\medbreak
+In the examples above, not only did the file name and the Cayley library
+name match, but both matched the actual name for the object appearing in
+the Cayley library.  Actually, the name for the object need not be
+related to the name of the Cayley library.  For example, the following
+is acceptable.
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+LIBRARY psp62;
+" PSp(6,2) acting on nonzero vectors, degree 63."
+G: permutation group(63);
+G.forder: 2^9 * 3^4 * 5 * 7;
+G.generators:
+  a = (1,2)(3,5)(4,7)(8,12)(11,16)(13,19)(17,18)(20,26)(21,28)(23,30)(24,32)
+      (25,34)(29,37)(31,40)(33,43)(36,46)(38,41)(39,49)(42,44)(45,52)(48,51)
+      (53,58)(57,62)(59,61),
+  b = (1,3,6,10,15,22)(2,4,8,13,20,27)(5,9,14,21,29,38)(7,11,17,23,31,41)
+      (12,18,24,33,44,34)(16,19,25)(26,35,45,53,32,42)(28,36,47)(30,39,50,
+      56,61,58)(37,48)(40,51,46,54,59,62)(49,55,60,63,52,57);
+FINISH;\vskip0pt}}
+\medbreak
+In this situation, the command line must still specify the Cayley library name
+(and file name, if different), but informative messages printed as the
+command executes use the object name ({\tt G}, in this case).  For
+objects created by commands, an object name different from the Cayley
+library name may be specified by means of the {\tt -n} option, discussed
+later.
+%
+%
+\section{III.\quad\kern-3pt FIELDS, MONOMIAL PERMUTATIONS, AND MATRICES\kern-2pt}
+%
+This section treats several topics that arise primarily in connection
+with computations involving combinatorial structures -- designs, matrices,
+and codes.
+%
+\subsection{i)\enskip Finite fields:}Finite fields arise when computing with
+codes, or with matrices whose entries belong to the field.  At present, only 
+fields ${\rm GF}(q)$ whose order $q$ is either 4 or a prime integer are 
+supported; moreover, we must have $q\leq 255$.  (For automorphism
+group and isomorphism calculations, time and space considerations generally 
+dictate a practical limit on $q$ that is far lower.)  Field elements are 
+numbered $0,1,\ldots,q-1$.  When $q$ is prime, the field is taken as the 
+integers modulo $q$.  When $q=4$, there is an essentially unique way to 
+number the field elements.  
+\smallbreak
+We denote the set of nonzero elements of
+${\rm GF}(q)$ by ${\rm GF}(q)^{\#}$.
+\bigbreak
+\subsection{ii)\enskip Monomial permutations:}Given a fixed field 
+${\rm GF}(q)$, a monomial permutation of monomial degree $n$ over 
+${\rm GF}(q)$ is essentially a permutation $s$ on 
+${\rm GF}(q)^{\#} \times \{1,\ldots,n\}$ which satisfies the following property, 
+henceforth referred to as the {\it monomial property:\/}
+$$\displaylines{(\alpha,i)^s = (\beta,j)\quad {\rm implies}\quad
+  (\gamma\alpha,i)^s = (\gamma\beta,j)\kern40pt\cr\kern40pt 
+  {\rm \hbox{for all}}\enskip
+  \alpha,\beta,\gamma\in {\rm GF}(q)^{\#}\enskip {\rm and}\enskip 
+  i,j\in\{1,\ldots,n\}.\cr}$$
+Note that $s$ is determined completely by its action on the points $(1,i)$,
+$1\leq i\leq n$; note also that the actual degree of $s$ is $(q-1)n$.
+\smallbreak
+For purposes of actual computation, however, we want 
+a representation of $s$ as a 
+permutation on $\{1,\ldots,(q-1)n\}$; to obtain this, 
+we number the pair $(\alpha,i)$ by 
+$(q-1)(i-1)+\overline{\alpha}$, where $\overline{\alpha}$ denotes the integer
+representing $\alpha$.  Then the monomial property becomes
+$$\displaylines{\bigl((q-1)(i-1)+\overline{\alpha}\bigr)^s = 
+(q-1)(j-1)+\overline{\beta}\quad{\rm implies}\kern40pt\cr
+  \kern40pt\bigl((q-1)(i-1)+\overline{\gamma\alpha}\bigr)^s = 
+(q-1)(j-1)+\overline{\gamma\beta}.\cr}$$
+\medbreak
+For example, over the field ${\rm GF}(4)$, the monomial permutation $s$ on
+${\rm GF}(4) \times \{1,2,3,4\}$ determined by
+$$ (1,1)^s = (3,2),\quad (1,2)^s = (2,4),\quad (1,3)^s = (1,1),\quad
+   (1,4)^s = (2,3)$$
+is represented as a permutation on $\{1,\ldots,12\}$ as follows:
+$$(1,6,10,8,2,4,11,9,3,5,12,7).$$
+%
+\bigbreak
+\subsection{iii)\enskip Permutations acting on matrices:}Let 
+$A = (a_{ij})$ be an $r \times c$ matrix with entries from an arbitrary set.
+A permutation $s$ of degree $r+c$ which fixes $\{1,\ldots,r\}$ setwise
+induces an action on $A$ as follows:  Row $i$ of $A$ is moved to row position $i^s$\enskip
+$(1\leq i\leq r)$ and column $j$ of $A$ is moved to column position
+$(r+j)^s-r$\enskip $(1\leq j\leq c)$.  Thus
+$$A^s = (b_{ij}),\quad {\rm where}\quad 
+  b_{ij} = a_{i^\prime j^\prime},\enskip {\rm with}\enskip
+  i^\prime = i^{s^{-1}}\enskip {\rm and}\enskip
+  j^\prime = (r+j)^{s^{-1}}-r.$$
+If $A^s = B$, we say that $s$ is an {\it isomorphism\/} of $A$ to $B$.  When
+$A^s=A$,\enskip $s$ is called an {\it automorphism\/} of $A$.  The group formed by 
+the automorphisms is called the {\it automorphism group\/} of $A$, and denoted
+${\rm AUT}(A)$.
+\medbreak
+For example, the action of a permutation $s$ of degree 7 on a $3\times 4$
+matrix $A$ is illustrated by the following.
+$$s = (1,3,2)(4,7,5),\qquad
+  A =   \pmatrix{8&0&4&3\cr
+                2&9&3&0\cr
+                0&1&7&5\cr},\qquad
+  A^s = \pmatrix{9&0&3&2\cr
+                1&5&7&0\cr
+                0&3&4&8\cr}.$$
+%
+\bigbreak
+\subsection{iv)\enskip Monomial permutations acting on matrices:}Now let 
+$A = (a_{ij})$ be an $r \times c$ matrix with entries from a field
+${\rm GF}(q)$.  A monomial permutation $s$ of monomial degree $r+c\kern3pt$
+(actual degree $(q-1)(r+c)\kern2pt)$ which fixes $\{1,\ldots,(q-1)r\}$ setwise
+induces an action on $A$.  This action is most easily described if we think of $s$ as
+a permutation on ${\rm GF}(q)^{\#} \times \{1,\ldots,n\}$, as in~(ii) above;
+then $s$ fixes $\{(\alpha,i)\vert \alpha\in{\rm GF}(q)^{\#},1\leq i\leq r\}$
+setwise.  If $(1,i)^s = (\alpha,k)$ and $(1,r+j)^s = (\beta,r+m)$, 
+then row $i$ of $A$ is multiplied by $\alpha$ and moved to row position $k$,\enskip
+and column $j$ of $A$ is multiplied by $\beta$ and moved to column position
+$m$.  Thus
+$$ A^s = (b_{ij}),\quad {\rm where}\quad
+   b_{ij} = \lambda^{-1}\mu^{-1}a_{i^\prime j^\prime},$$
+with $\lambda$, $\mu$, $i^\prime$, and $j^\prime$ determined by
+$$ (\lambda,i^\prime) = (1,i)^{s^{-1}}\quad {\rm and}\quad
+   (\mu,r+j^\prime) = (1,r+j)^{s^{-1}}.$$
+If $A^s = B$, we say that $s$ is an {\it monomial isomorphism\/} of $A$ to $B$.  When
+$A^s=A$,\enskip $s$ is called a {\it monomial automorphism\/} of $A$.  The group 
+formed by the automorphisms is called the {\it monomial automorphism group\/} of $A$, and denoted
+${\rm AUT}^*(A)$.
+\medbreak
+For example, over the field ${\rm GF}(4)$, the action of a 
+monomial permutation $s$ of monomial degree 5 (actual degree 15) 
+on a $2\times 3$ matrix $A$ is illustrated by the following.
+$$\displaylines{(1,1)^s = (3,2),\enskip\kern2pt (1,2)^s = (1,1),\enskip\kern2pt
+  (1,3)^s = (2,5),\enskip\kern2pt (1,4)^s = (3,3),\enskip\kern2pt (1,5)^s = (2,4),\cr
+  s = (1,6,3,5,2,4)(7,14,12,8,15,10,9,13,11),\quad\enskip
+  A =   \pmatrix{2&0&3\cr
+                 0&3&1\cr},\quad\enskip
+  A^s = \pmatrix{2&2&0\cr
+                 0&3&2\cr}.\cr}$$
+%
+% 
+%
+%
+\section{IV.\quad PARTITION BACKTRACK COMMANDS}
+%
+The commands employing the partition backtrack method that are currently 
+available are described below.  Note material
+in square brackets is optional.  (The brackets themselves are not to be
+typed.)  Discussion of most of the available options will be
+deferred to Section~V; only those unique to a specific command will be
+mentioned here.  
+\medskip
+Options are never required, but they may prove
+useful in controlling the format of the output or the procedures used in the
+computation. For example, certain options allow for a time versus space
+tradeoff.  For some ``unusual'' groups (e.g., very dense imprimitive groups),
+it may be necessary to specify nonstandard options in order to obtain
+acceptable performance.
+\medskip
+The partition backtrack programs described here represent full implementations
+of the partition backtrack method, as set forth in (Leon, 1991), with
+two exceptions.
+{\smallskip\advance\leftskip by 0.45in\relax
+ \item{i)}The criterion in Prop.~8(iii) is not checked.
+ \smallskip
+ \item{ii)}In coset--type computations, the refinement $\germR^+$ of Figure~8 is
+           always taken as $\germR$\footnote{${}^{\dag}$}{\elevenpoint In order to allow
+           this manual to be printed without special AMS~TeX fonts, underlined
+           letters (e.g., $\germR$) are used here as a substitute for 
+           letters appearing in the Euler Fraktur (German) font in (Leon, 1991).}
+\smallskip}
+%
+%
+\subsection{Set stabilizers:}Set stabilizers may be computed
+by the {\tt setstab} command.  The format is
+\smallskip
+\hskip0.45truein{\tt setstab}\quad \options\quad {\it permGroup\quad pointSet\quad
+                stabilizerSubgroup}
+\smallskip
+This command computes the set stabilizer in the permutation group {\it permGroup\/}
+of the set {\it pointSet\/} and saves the result (in Cayley library format)
+as the permutation group {\it stabilizerSubgroup}.
+\medbreak
+At present, the set stabilizer program sometimes
+run slowly in doubly transitive groups, and often runs very slowly in groups
+that are triply transitive or ``almost'' triply transitive (e.g.,
+${\rm SL}_n(2)$\kern2pt), especially when both the point set and its complement
+are large and when the set stabilizer turns out to be small.  Imprimitive
+groups closely related to doubly transitive groups may also cause
+difficulty.  Modifications to alleviate this difficulty, at least in part,
+will be added eventually.
+%
+%
+\subsection{Set images:}Given a permutation group $G$ on $\{1,\ldots,n\}$
+and subsets $\Lambda$ and $\Phi$ of $\{1,\ldots,n\}$, the {\tt setimage}
+command may be used to determine if there exists an element $g$ of $G$ such
+that $\Lambda^g = \Phi$.  The format is
+\smallskip
+\hskip0.45truein{\tt setimage}\quad \options\quad {\it permGroup\quad pointSet1\quad
+                pointSet2\quad groupElement}
+\smallskip
+where {\it permGroup}, {\it pointSet1}, {\it pointSet2}, and {\it groupElement}
+play the role of $G$, $\Lambda$, $\Phi$, and $g$, respectively.  That is,
+the command determines whether there exists an element of {\it permGroup\/}
+mapping {\it pointSet1\/} to {\it pointSet2\/} and, if so, saves one such
+element as the permutation {\it groupElement}.
+Note that {\it groupElement\/} will not be created if $\Phi\notin\Lambda^G$.
+(Unless the {\tt -q} option is specified, a message indicating whether
+$\Phi\in\Lambda^G$ will be written to the standard output.)
+The potential difficulties with doubly and triply transitive groups mentioned
+for set stabilizer computations apply here also.
+%
+%
+\subsection{Ordered partition stabilizers:}Stabilizers of ordered partitions
+may be computed by the {\tt parstab} command.  The format is
+\smallskip
+\hskip0.45truein{\tt parstab}\quad \options\quad {\it permGroup\quad ordPartition\quad
+                stabilizerSubgroup}
+\smallskip
+This command computes the stabilizer in the permutation group {\it permGroup\/}
+of the ordered partition {\it ordPartition\/} and saves the result as the
+permutation group {\it stabilizerSubgroup}.  The remarks about performance
+on doubly and triply transitive groups for set stabilizer computations
+apply here also.
+%
+%
+\subsection{Ordered partition images:}Given a permutation group $G$ on
+$\{1,\ldots,n\}$ and ordered partitions $\Pi$ and $\Sigma$ of $\{1,\ldots,n\}$,
+the {\tt parimage} command may be used to determine if there exists an
+element $g$ of $G$ such that $\Pi^g = \Sigma$.  The format is
+\smallskip
+\hskip0.45truein{\tt parimage}\quad \options\quad {\it permGroup\quad ordPartition1\quad
+                ordPartition2\quad groupElement}
+\smallskip
+where {\it permGroup}, {\it ordPartition1}, {\it ordPartition2}, and {\it groupElement}
+play the role of $G$, $\Pi$, $\Sigma$, and $g$, respectively.
+That is,
+the command determines whether there exists an element of {\it permGroup\/}
+mapping {\it ordPartition1\/} to {\it ordPartition2\/} and, if so, saves one
+such element as the permutation {\it groupElement}.
+The permutation {\it groupElement\/} is created only if $\Sigma\in\Pi^G$.
+The remarks about performance on doubly and triply
+transitive groups given above for
+set stabilizer computations apply here also.
+%
+%
+\subsection{Group intersections:}Given permutation groups $G$ and $H$ on
+$\{1,\ldots,n\}$, the {\tt inter} command may be used compute the
+intersection $G\cap H$.  The format is
+\smallskip
+\hskip0.45truein{\tt inter}\quad \options\quad {\it permGroup1\quad permGroup2\quad
+                interGroup}
+\smallskip
+This command computes the intersection of groups {\it permGroup1\/} and {\it permGroup2\/}
+and saves the result as the group {\it interGroup\/}.  The potential
+difficulty with doubly and triply transitive groups discussed above for set
+stabilizer computations applies here also when both groups are doubly
+or triply transitive.
+%
+%
+\subsection{Centralizers of elements:}Given a permutation group $G$ and
+a permutation $x$ (not necessarily contained in $G$), the
+{\tt cent} command may be used compute $C_G(x)$, the centralizer in $G$ of $x$.
+The format is
+\smallskip
+\hskip0.45truein{\tt cent}\quad \options\quad {\it permGroup\quad permutation\quad
+                centralizerSubgroup}
+\smallskip
+Here {\it permGroup}, {\it permutation}, and {\it centralizerSubgroup\/}
+play the role of $G$, $x$, and $C_G(x)$ above.  That is, the command computes
+the centralizer in the group {\it permGroup\/} of
+the permutation {\it permutation\/}
+and saves the result as the group {\it centralizerSubgroup}.
+\medbreak
+For this command, it is permissible to specify
+{\it permGroup\/} as {\tt \#}{\it n}, where {\it n\/}
+is an integer at least 2, in which case {\it permGroup\/} is taken as the symmetric
+group of degree {\it n}; in this situation, the normal restrictions on
+base size (discussed later) do not apply to {\it permGroup}, although they do apply to
+{\it centralizerSubgroup}.
+\medbreak
+The {\tt cent} command accepts an option {\tt -np} which can have an effect
+(often small) on performance.  If this option is specified, a refinement
+process based on the cycle structure of $x$ will not be used.  The effect is
+to reduce memory requirements a bit.  In many cases, the running time does
+not change significantly, but in some cases it does increase a great deal.
+\medbreak
+It should be noted that in many cases, perhaps most
+cases arising in practice, centralizer computations are fairly easy
+even for conventional algorithms, and the partition backtrack
+program may perform no better than, and perhaps not even as well as,
+programs based on conventional techniques, such as those in
+Cayley.  (Note, however, that, unlike Cayley, the program here does not require
+that the permutation to be centralized lie in the group.)
+%
+%
+\subsection{Conjugacy of elements:}Given a permutation group $G$ and
+permutations $x$ and $y$ (not necessarily contained in $G$), the
+{\tt conj} command may be used to determine if $x$ and $y$ are conjugate
+under $G$ and, if so, to find $g$ in $G$ with $x^g = y$.  The format is
+\smallskip
+\hskip0.45truein{\tt conj}\quad \options\quad {\it permGroup\quad permutation1\quad
+                permutation2\quad conjugatingElement}
+\smallskip
+Here {\it permGroup}, {\it permutation1}, {\it permutation2}, and
+{\it conjugatingElement\/} play the role of $G$, $x$, $y$, and $g$ above.
+That is, the command determines if there exists an element of
+{\it permGroup\/} conjugating
+{\it permutation1\/} to {\it permutation2\/} and, if so, it saves one such
+element as the permutation {\it conjugatingElement}.  If the two permutations
+are not conjugate in {\it permGroup}, then {\it conjugatingElement} is not
+created.  In any case, a message indicating the result is written to the
+standard output (unless the {\tt -q} option is specified).
+\medbreak
+As with the {\tt cent} command, {\it permGroup\/} may be specified
+as {\tt \#}{\it n}, in which case conjugacy in the symmetric group of
+degree {\it n} is checked.  (In this case, the program merely checks that
+the two permutations have the same cycle structure.)  Also, the {\tt -np}
+option is accepted, and it works as described above for the {\tt cent}
+command.
+\medbreak
+As with centralizer computations, conjugacy calculations are usually
+easy with conventional algorithms, and the partition backtrack method
+may not yield an improvement.
+%
+%
+\subsection{Centralizers of groups:}Given a permutation groups $G$ and
+a second permutation group $E$ (not necessarily contained in $G$), the
+{\tt gcent} command may be used compute $C_G(E)$, the centralizer in
+$G$ of $E$.  The format is
+\smallskip
+\hskip0.45truein{\tt gcent}\quad \options\quad {\it permGroup1\quad permGroup2\quad
+                centralizerSubgroup}
+\smallskip
+Here {\it permGroup1}, {\it permGroup2}, and {\it centralizerSubgroup\/}
+play the role of $G$, $E$, and $C_G(E)$ above.  That is, the command computes
+the centralizer in the group {\it permGroup1\/} of
+the group {\it permGroup2\/}
+and saves the result as the group {\it centralizerSubgroup}.
+\medbreak
+As with the element centralizer command ({\tt cent}),
+it is permissible to specify {\it permGroup1\/} as {\tt \#}{\it n},
+indicating the symmetric group of degree {\it n}.
+\medbreak
+To an even greater extent than element centralizer
+calculations, group centralizer calculations tend to
+be easy ones for conventional algorithms; the full power of the
+partition method is not needed, and perhaps not even desirable.  For this
+reason, little effort has gone into development of the {\tt gcent} command;
+its implementation is fairly crude, and it is included primarily
+for completeness.  There are two options, {\tt -cg:}{\it m} and
+{\tt -cp:}{\it p}, which affect its performance; for some groups $G$,
+it may be necessary to assign them values different from the defaults
+(current 3 and 10, respectively).  A full description of the significance
+of {\it m\/} and {\it p\/} will not be given here; however, we note that
+higher values (especially for {\it m}) increase
+memory requirements, and often increase execution time as well, but may be
+needed if the group $E$ fails to have a small generating set (e.g., if E is
+a large elementary abelian group).
+\medbreak
+By specifying {\it permGroup1\/} and {\it permGroup2\/} as the same group,
+the {\tt gcent} command may be used to compute the center of a group; note,
+however, that it represents an exceptionally inefficient algorithm for
+this purpose.
+%
+%
+%
+\subsection{Automorphism groups of designs:}The
+{\tt desauto} command may be used to compute the
+automorphism group of a design.  Here a {\it design\/} means any set
+of points (numbered $1,\ldots,n$ for some $n$) and any collection of subsets
+of the point set. The format of the design automorphism group command is:
+\smallskip
+\hskip0.45truein{\tt desauto}\quad \options\quad {\it design\quad autoGroup}
+\smallskip
+and the command sets {\it autoGroup} to the automorphism group of the
+design {\it design\/}.
+\medbreak
+The interpretation of the group {\it autoGroup\/} that is created depends
+on whether the {\tt -pb} (points and blocks) option is specified. 
+Let $p$ and $b$ denote the number of points and blocks, respectively, of
+the design.
+\smallskip
+{\advance\leftskip by0.70truein
+\noindent\llap{i)\enspace}If the option {\tt -pb} is specified, then {\it autoGroup} is constructed as
+a group of degree $p+b$, in which the action on $1,\ldots,p$ is the action
+on points and in which the action on $p+1,\ldots,p+b$ is the
+action on blocks, the $j$\kern1ptth block being
+represented by $p+j$.
+\smallskip\vskip2pt
+\noindent\llap{ii)\enspace}If the {\tt -pb} option is omitted, then
+{\it autoGroup} is constructed as a group of degree $p$, representing the
+action on points only.
+In this case, if there are repeated blocks, the group acting on
+points only has lower
+order than the group acting on points and blocks).
+When this situation arises, the group saved as {\it autoGroup} represents 
+the group on points
+only, but the information written to the standard output during the computation
+refers to the group acting on points and blocks.  (This occurs because the
+computation is carried out on points and blocks; restriction to points
+is performed only at the end; note also, for this reason, restriction to
+points only does not save time or memory.)\vskip0pt}
+\medbreak
+%
+%
+%
+\subsection{Isomorphism of designs:}The
+{\tt desiso} command may be used to check
+isomorphism of designs. The format is
+\smallskip
+\hskip0.45truein{\tt desiso}\quad \options\quad {\it design1\quad
+                 design2\quad isoPerm}
+\smallskip
+and the command sets {\it isoPerm} to an isomorphism from
+design {\it design1\/} to design {\it design2}, provided the designs
+are isomorphic.  (If not, the permutation {\it isoPerm\/} is
+not created.  In any case, a message indicating the result is written to
+the standard output, unless the {\tt -q} option is specified.)
+\medbreak
+As in the case of the {\tt desauto} command, described
+above, the presence or absence of the {\tt -pb} option determines whether
+{\it isoPerm\/} is constructed as a permutation on points and blocks, 
+or on points only (the default).  When the action on blocks is included,
+the $j$\kern1ptth block is represented by $p+j$.
+%
+%
+%
+%
+\subsection{Automorphism groups and monomial groups of matrices:}The
+{\tt matauto} command may be used to compute the
+automorphism group of a matrix.  If the matrix elements are taken from a
+small finite field ${\rm GF}(q)$, then optionally the monomial automorphism group may
+be computed.  (See Section~III for definitions.)
+The command format is:
+\smallskip
+\hskip0.45truein{\tt matauto}\quad \options\quad {\it matrix\quad autoGroup}
+\smallskip
+and the command sets {\it autoGroup} to the automorphism group of the
+matrix {\it matrix\/} or, if the {\tt -mm} option is specified, to the
+monomial automorphism group of {\it matrix\/}.
+\medbreak
+If the {\tt -tr} option is specified, the matrix is transposed after it is
+read in, and all computations apply to the transposed matrix.  
+\medbreak
+Let $r$ and $c$ denote the number of rows and columns, respectively, of
+the matrix $A = (a_{ij})$ whose group is to be constructed.  Normally
+the automorphism group has degree $r+c$ and the monomial automorphism group 
+has degree $(q-1)(r+c)$; the interpretation of these groups is described
+in Section~III.  However, if the {\tt -ro} (rows only) option is specified,
+the degree will be $r$ or $(q-1)r$, and the group will represent the action
+on rows only.  Note that restriction to rows only may reduce the order of
+the group, just as in the case of designs restriction to points only may
+reduce the order of the group.  When this occurs, the remarks above for
+design groups apply here also. 
+\medbreak
+At present, the program for computing monomial groups of matrices is a very
+crude one.  As a result, although it works reasonably for many matrices of
+fairly large size, it can fail to run in acceptable time even for very small
+matrices, e.g., matrices of all 0s.  Sometimes use of the {\tt -tr} option
+can get around this difficulty (which will be fixed eventually).
+%
+%
+%
+\subsection{Isomorphism and monomial isomorphism of matrices:}The
+{\tt matiso} command may be used to check
+if two matrices are isomorphic or, if the matrix elements are from a 
+finite field ${\rm GF}(q)$, monomially isomorphic.  (See Section~III for
+definitions.)  The command format is
+\smallskip
+\hskip0.45truein{\tt matiso}\quad \options\quad {\it matrix1\quad
+                 matrix2\quad isoPerm}
+\smallskip
+In the absence of the {\tt -mm} option, the command sets {\it isoPerm} to an 
+isomorphism from matrix {\it matrix1\/} to matrix {\it matrix2}, provided the matrices
+are isomorphic.  (If not, the permutation {\it isoPerm\/} is
+not created).  If the {\tt -mm} option is specified, the command sets 
+{\it isoPerm} to a monomial isomorphism from matrix {\it matrix1\/} to matrix {\it matrix2}, 
+provided the matrices are monomially isomorphic.  (In this case, the matrix
+entries should be field elements.)  The effect of the {\tt -ro} option is as
+described above for matrix automorphism group calculations.
+\medbreak
+Currently the monomial isomorphism program suffers from the same limitations
+as the monomial automorphism group program, as mentioned above.
+\medbreak
+%
+%
+\subsection{Automorphism groups of linear codes:}The
+{\tt codeauto} command may be used to compute the
+automorphism group of a linear code over a small field ${\rm GF}(q)$.  
+However, before the automorphism group of a code $C$ may be computed, 
+it is necessary to have a set $V$ of vectors (not necessarily codewords) 
+such that the following conditions hold.  In these conditions, $V^*$
+denotes the set of all nonzero scalar multiples of vectors in $V$.
+\smallbreak
+{\advance\leftskip by1em\parindent=1em\relax
+\item{i)} No vector in $V$ is a scalar multiple of any other vector in $V$.
+(In particular, $\vert V^*\vert = (q-1)\vert V\vert$.)
+\smallbreak
+\item{ii)} $V$ is ``reasonably small''.  (With a very large memory,
+           ``reasonably small'' might mean 100,000 or more.)
+\smallbreak
+\item{iii)} $V^*$ is invariant under ${\rm AUT}(C)$\enskip (the automorphism
+          group of $C$),
+\smallbreak
+\item{iv)} $\bigl\vert{\rm AUT}(V^*):{\rm AUT}(C)\bigr\vert$ is very small.
+            (The running time rises very rapidly as a function of this
+            index.  Note that, if $V$ spans $C$, the index is 1.)
+\smallbreak}
+Often the set of minimal weight vectors of the code (scalar multiples 
+removed if $q > 2$) make a suitable choice for $V$; minimum weight vectors
+of the dual code may also be used.  This choice for $V$ certainly 
+satisfies~(i) and~(iii), 
+may well satisfy~(ii), and in many cases satisfies~(iv).  The author has available
+programs for computing the set of minimum weight vectors (or vectors of
+any specified weight.)
+\medbreak
+The format of the code automorphism group command is
+\smallskip
+\hskip0.45truein{\tt codeauto}\quad \options\quad {\it code\quad
+                 invarVectors\quad autoGroup}
+\smallskip
+where {\it invarVectors\/} is the set $V$ of vectors described above
+(in the format of a matrix, whose rows are the vectors).  The command
+sets {\it autoGroup} to the automorphism group of the
+code {\it code}.
+\medbreak
+The {\tt -cv} (coordinates and vectors) option for codes 
+has essentially the same effect as the
+{\tt -pb} option for designs.  With this option, the automorphism
+group is saved in {\it autoGroup\/} as a permutation group
+of degree $\bigl(q-1)(n+\vert V\vert\bigr)$\enskip ($n =$ length of code),
+representing the action on (monomial) coordinates 
+and invariant vectors; without the {\tt -cv} option, it is saved as a permutation group 
+acting of degree $(q-1)n$, representing the action on (monomial)
+coordinates only.   (However, restriction to coordinates only can never lead to a reduction
+in the group order, as occurred with restriction to points or rows for
+designs or matrices.)  For an explanation of the format of monomial
+permutations, see Section~III.
+\medbreak
+At present, the program for computing groups of non--binary codes is a very
+crude one; sometimes it can fail to run in reasonable time even on small
+codes.  Eventually this program will be improved.
+\medbreak
+%
+%
+%
+\subsection{Isomorphism of linear codes:}The
+{\tt codeiso} command may be used to check isomorphism
+of linear codes.  However, before isomorphism of two codes
+$C_1$ and $C_2$ may be checked, it is necessary to have a sets $V_1$
+and $V_2$ of vectors (not necessarily codewords of the two codes)
+such that $V_1$ and $V_2$ satisfy conditions~(i), (ii), (iii), and~(iv) above
+relative to $C_1$ and $C_2$, respectively, and in addition such that
+any isomorphism of $C_1$ to $C_2$ must map $V_1^*$ to $V_2^*$.  (As with
+code automorphism groups, $V_1^*$ and $V_2^*$ denote the sets of nonzero scalar
+multiples of vectors in $V_1$ and $V_2$, respectively.
+Often suitable choices for $V_1$ and $V_2$ are the minimal weight vectors
+of $C_1$ and $C_2$, respectively (scalar multiples removed.); minimal weight vectors of the duals
+of the two codes also could be used.
+\medbreak
+The format of the code isomorphism command is
+\smallskip
+\hskip0.45truein{\tt codeiso}\quad \options\quad {\it code1\quad
+                 code2\quad invarVectors1\quad invarVectors2\quad
+                 isoPerm}
+\smallskip
+where {\it invarVectors1\/} and {\it invarVectors2\/}
+are the sets $V_1$ and $V_2$, respectively, of vectors described above
+(each in the format of a matrix, whose rows are the vectors).  The command
+sets {\it isoPerm} to an isomorphism from {\it code1\/} to {\it code2},
+if the codes are isomorphic; if not, {\it isoPerm\/} is not created.
+\medbreak
+As in the case of the {\tt codeauto} command, described
+above, the presence or absence of the {\tt -cv} option determines whether
+{\it isoPerm\/} is a permutation on (monomial) coordinates and invariant vectors,
+or on (monomial) coordinates only.  The interpretation of monomial permutations
+is described in Section~III..
+%
+%
+\vskip10pt
+\bigbigbreak
+Note that a number of the commands above are implemented as shell 
+files (under Unix), batch files (under MS~DOS), or exec files
+(under CMS).  The commands that are implemented in this manner, and the
+contents of the Unix shell files, are as follows.  (The list includes a few 
+commands to be discussed in Section~IX.)
+\bigskip
+\long\def\shellfile#1#2{\noindent\hskip0.45truein\hbox to1.0truein{#1\hfil}\relax
+                   \hbox to4.0truein{#2\hfil}\vskip2.0pt}\relax
+\vbox{{\it
+\shellfile{command}{contents of shell file}
+\vskip6pt
+\elevenpoint\tt
+\shellfile{setimage}{setstab -image \$*}
+\shellfile{parstab} {setstab -partn \$*}
+\shellfile{parimage}{setstab -image -partn \$*}
+\shellfile{conj}    {cent -conj \$*}
+\shellfile{gcent}   {cent -group \$*}
+\shellfile{desiso}  {desauto -iso \$*}
+\shellfile{matauto} {desauto -matrix \$*}
+\shellfile{matiso}  {desauto -iso -matrix \$*}
+\shellfile{codeauto}{desauto -code \$*}
+\shellfile{codeiso} {desauto -iso -code \$*}
+\shellfile{cjper}   {cjrndper -perm \$*}
+\shellfile{ncl}     {commut -ncl \$*}
+\shellfile{compper} {compgrp -perm:\$1 \$2 \$3}
+\shellfile{compset} {compgrp -set:\$1 \$2 \$3}
+\shellfile{chbase}  {orblist -chbase \$*}
+\shellfile{ptstab}  {orblist -ptstab \$*}
+\vskip0pt}}
+%
+%
+%
+\section{V.\quad OPTIONS}
+%
+A partial description of the options that are currently available
+follows.  Most of the options are available with all of
+the commands described in Section~IV.  A few options apply only to
+subgroup computations, or only to coset--representative computations;
+these restrictions are noted below.  Options applicable only to a single command
+are discussed with that command in Section~IV.
+\medbreak
+In general, options may be specified in any order.  However, if
+conflicting options are specified, the one specified last is
+the one that is used.  (In some cases, conflicting options are treated
+as an error.  Also, the {\tt -l} and {\tt -v} options, discussed later,
+are an exception to the general rule that options may be specified in
+any order; these options, if present, must come first, and the remainder
+of the command line is ignored.)
+\medbreak
+Entering any command with no options or arguments causes a brief
+summary of the command format to be displayed.
+\bigbreak
+\subsection{Options affecting file handling:}
+\nobreak\medskip\nobreak
+%
+\defoption{-a}{Normally, if a file name is specified for an object
+                 to be constructed, and if a file by that name already
+                 exists, the programs overwrite the existing file.  With
+                 the {\tt -a} option, they append to the existing file,
+                 rather than overwriting it.}
+\medbreak
+\defoption{-p:{\it path}}{Here {\it path\/} is a string.
+                 The string {\it path\/} is concatenated to
+                 the file name of every input file.  This option can be useful
+                 if all the input files are in another directory.
+                 For example,
+                 \smallskip
+                 \hskip0.15truein{\tt setstab\quad\kern-1pt  ../groups/psp62::psp62\quad\kern-1pt
+                 ../groups/lambda::lambda\quad\kern-2pt S}
+                 \smallskip
+                 may be written more compactly as
+                 \smallskip
+                 \hskip0.15truein{\tt setstab\quad  -p:../groups/\quad
+                 psp62\quad lambda\quad S}
+                 \smallskip
+                 (Note the final slash following {\tt groups} is required.).
+                 The {\tt -p} option has no effect on output files.}
+%
+\bigbreak
+\subsection{Options affecting output format:}
+\nobreak\medskip\nobreak
+%
+\medbreak
+\defoption{-i}{This option applies to commands that construct and write out
+               either a permutation or a permutation group.  It causes
+               permutations to be written in image format, rather
+               than in cycle format (the default).}
+%
+\medbreak
+\defoption{-n:{\it name}}{Here {\it name\/} is a string.  The object created
+                         by the command will be named {\it name}.  By
+                         default, the name assigned to the object will be
+                         the name of the Cayley library containing its
+                         definition.  Note this option affects only the
+                         name of the object, not that of the file or the
+                         Cayley library.}
+%
+\medbreak
+\defoption{-q}{Suppresses informative messages on the state of the
+               computation, normally written to the standard output during
+               the computation.}
+%
+\medbreak
+\defoption{-s}{Causes statistics on the pruning of the backtrack
+               search tree to be written out to the standard output.
+               These statistics relate to the backtrack search tree
+               defined in the author's paper (Leon, 1991), and are
+               likely to be meaningful only to users familiar with that
+               paper.}
+%
+\medbreak
+\defoption{-w:{\it n}}{Here {\it n\/} should be a nonnegative integer.
+                       This option applies only to coset representative
+                       computations.   If the degree is less
+                       than or equal to {\it n}, and if a coset representative
+                       is found, it will be included in the informative
+                       messages written to the standard output.  (In any case,
+                       the coset representative will be written to a file in
+                       Cayley library format.)  The default value of {\it n}
+                       is currently 300.}
+\bigbreak
+%
+\subsection{Options affecting performance of the algorithm:}
+\nobreak\medskip\nobreak
+\defoption{-b:{\it k}}{Here {\it k\/} is a nonnegative integer which
+                 determines the extent to which base changes are performed
+                 in an attempt to
+                 improve pruning of the backtrack search tree using
+                 tests on double--coset minimality (Leon, 1991, Prop~8).
+                 When {\it k}~=~0,
+                 base change is never performed (except during $\bfgermR$--base
+                 construction, when it is used for a different purpose).
+                 As {\it k\/} increases, the number of base change operations
+                 performed increases;  however,
+                 increasing {\it k\/} beyond the base size produces no
+                 further increase in the number of base change operations.
+                 Designating {\it k}~=~0 reduces memory requirements and often
+                 produces the best running times as well.  On the other
+                 hand, some high--density groups seem to require a higher
+                 value of {\it k\/} in order to obtain acceptable performance.
+                 By default, the program chooses a value of {\it k\/} based
+                 on the density and degree of transitivity of the group;
+                 quite often, this default value is 0.
+                 \smallskip
+                 {\it Note:}\enskip For coset representative computations,
+                 this option has no effect unless known subgroups of the two
+                 associated groups are specified; see discussion of the
+                 {\tt -kL} and {\tt -kR} options below.}
+%
+\medbreak
+\defoption{-g:$m$}{Here $m$ should be a nonnegative integer.
+                 This is one of several parameters providing a
+                 time vs.\ space tradeoff.
+                 Small values of $m$, say 10 or less, minimize memory
+                 requirements, while large values of $m$, say 100 or
+                 greater, reduce the running time moderately for most
+                 difficult groups.  Use of a high value is recommended
+                 for multiply transitive groups.
+                 \smallskip
+                 After $\bfgermR$--base construction, the program attempts to
+                 reduce the height of the Schreier trees for the
+                 containing group by adding new strong generators.  However,
+                 it will never add generators for this purpose if doing
+                 so would cause the total number of strong generators to
+                 exceed $m$.  (It will also stop adding generators if the height
+                 falls below certain goals currently fixed in the program.)}
+%
+\medbreak
+\defoption{-k:$H$}{Here $H$ specifies a permutation group (in the format
+                 {\it cayleyLibraryName\/} or
+                 {\it fileName}\kern1pt::\kern1pt{\it cayleyLibraryName}).
+                 This option applies only to subgroup
+                 calculations.  The group $H$ must
+                 be a known subgroup of the group being computed.  In
+                 principle, this option allows one to take advantage
+                 of any subgroup of the group being computed that happens
+                 to be known in advance. In practice, however, it seldom
+                 appears to speed up the computation by very much,
+                 and it increases memory requirements.}
+%
+\medbreak
+\newdimen\optionWidth \optionWidth=\hsize \advance\optionWidth by-1em\relax
+                     \advance\optionWidth by-\optionIndent
+{\advance\leftskip by1em\noindent\vtop{\hsize=\optionIndent\parindent=0pt\tt\noindent
+                 -kL:$J$\vskip1pt\noindent -kR:$M$}\relax
+                 \vtop{\hsize=\optionWidth\parindent=0pt
+                 Here $J$ and $M$ must specify permutation groups (each in the
+                 format  {\it cayleyLibraryName\/} or
+                 {\it fileName}\kern1pt::\kern1pt{\it cayleyLibraryName}).  These options
+                 apply only to coset representative calculations.  Either or
+                 both may be specified.  Associated with every coset
+                 representative computation, there are ``left'' and ``right''
+                 groups, as explained in Section~2 of (Leon, 1991).
+                 The groups $J$ and $M$ must be known subgroups of these
+                 left and right groups, respectively.  Specifying $J$ and/or $M$,
+                 if known, increases memory requirements, but in some cases
+                 it may improve the running time.  For some very dense groups,
+                 one or both of these options may be needed in order to allow
+                 the computation to finish in an acceptable amount of time.}\vskip0pt}
+%
+\medbreak
+\defoption{-mb:$k$}{Here $k$ should be a nonnegative integer.  This integer
+                represents an upper bound on the size of the base for a 
+                permutation group.  The default value of $k$ is 62, which is
+                more than adequate for many groups.  For further discussion of
+                the {\tt -mb} option, see Section~VII.}
+%
+\medbreak
+\defoption{-mw:$\ell$}{Here $\ell$ should be a nonnegative integer whose value
+                is at least several hundred.  This integer represents an upper 
+                bound on the length of any word in the generators of any
+                permutation group.  For further discussion, see Section~VII.}
+%
+\medbreak
+\defoption{-r:$p$}{Here $p$ should be a nonnegative integer, normally smaller
+                 than the integer $m$ specified for the {\tt -g} option
+                 described above.  This is another option providing for a
+                 time versus space
+                 tradeoff.  Small values of $p$, say less than 10, minimize
+                 memory requirements, while larger values, say 50 or higher,
+                 {\it may\/} reducing the running time, although usually not
+                 a great deal.
+                 \smallskip
+                 Whenever the number of strong generators for the containing
+                 group exceeds $p$, redundant strong generators are eliminated,
+                 using a procedure originally due to Sims (1971).}
+\bigbreak
+\subsection{Special options:}
+\nobreak\medskip\nobreak
+\defoption{-l}{This option, if present, must be the first option on the
+               command line, and the remainder of the command line is
+               ignored.  (It may be omitted.)  The {\tt -l} option merely
+               prints out limits on the default maximum base size, 
+               default maximum word length, degree, and other
+               quantities with which this version of the program has been
+               compiled.  (See Section~VII for discussion of these limits.)}
+\medbreak
+\defoption{-v}{This option, if present, must be the first option on the
+               command line, and the remainder of the command line is
+               ignored.  (It may be omitted.)  The {\tt -v} option is
+               intended to be used once following compilation of the program.
+               It attempts to check that all the source files for the
+               program were compiled with the same options and size limits.
+               (See Section~VII for discussion of size limits.)}
+%
+%
+%
+\section{VI.\quad OUTPUT AND RETURN CODES}
+%
+All programs for subgroup computations return a value of 0 if the
+computation is completed successfully and a nonzero value (currently 15) if
+the computation terminates due to an error (input file not found, incorrect
+format in input file, memory exhausted, size limit in program exceeded, etc.)
+All programs for coset representative
+computations return a value of 0 if the computation is completed
+successfully and a coset representative exists, 1 if it is
+completed but a coset representative does {\it not\/} exist, and a value different from
+0 and 1 (currently 15) if the computation terminates due to an error.
+\medbreak
+%
+Unless the {\tt -q} option is specified, all of the programs write
+information about the progress of the computation to the standard output.
+Some of this information, most notably that relating to the
+$\bfgermR$--base and the backtrack search tree (the latter
+given only if {\tt -s} is specified)
+will probably be meaningful primarily to users familiar with the
+author's paper (Leon, 1991).  Information of more general interest
+includes:
+\smallskip
+{\advance\leftskip by0.45truein\noindent
+\item{i)}The order of the containing group (unless it is the symmetric 
+group).  Note that this order is determined by computing a base and strong
+generating set for the containing group when it is read in, unless they are 
+supplied in the input file. 
+\smallskip
+\item{ii)}The new (changed) base and strong generating set for the 
+containing group computed during $\bfgermR$--base construction, and the corresponding
+basic orbit lengths.  In the notation of (Leon, 1991), this is the
+base $(\alpha_1,\ldots,\alpha_k)$ associated with the $\bfgermR$--base.
+\smallskip
+\item{iii)}A base for the subgroup to be computed (subgroup computations)
+or for the subgroup associated with the right coset whose representative
+is to be computed (coset representative computations).  
+This is the subgroup base associated
+with the $\bfgermR$--base; in the notation of (Leon, 1991), it is
+$(\hat{\alpha}_1,\ldots,\hat{\alpha}_{\ell})$.  Note that this base is a
+subsequence of the base for the containing group in~(ii) above.
+\smallskip
+\item{iv)}The basic cell sizes corresponding to the subgroup base in~(iii)
+above (for definitions, see (Leon, 1991)).  Note that each basic
+cell size provides an upper bound for the corresponding basic orbit length of the
+subgroup to be computed (subgroup--type computations).
+(Usually the bound is not sharp).
+\smallskip
+\item{v)}The number of strong generators for the containing group and the
+mean node depths in the Schreier trees for the basic orbits of the containing
+group.  Depending on the {\tt -g} and {\tt -r} options, following $\bfgermR$--base
+construction, additional strong generators may be added in an attempt to
+reduce the height of the Schreier trees.  Figures are provided both before
+and after additional strong generators are added.
+\smallskip
+\item{vi)}[subgroup computations only]\enskip A message for each strong 
+generator that is found for the subgroup.  The message gives the level and the basic
+orbit lengths for the subgroup constructed thus far.  (A generator will 
+be said to be at level $i$ if it fixes the first $i-1$ base points but
+moves the $i$\kern1ptth.)
+\smallskip
+\item{vii)}[subgroup computations only]\enskip The order of the subgroup that was
+computed.
+\smallskip
+\item{viii)}[subgroup computations only]\enskip The base (same as in~(iii) above)
+and basic orbit lengths for the subgroup that was computed.
+\smallskip
+\item{ix)}[coset representative computations only]\enskip A message indicating whether a coset
+representative exists.
+\smallskip
+\item{x)}[coset representative computations only]\enskip If a coset representative exists and the degree is sufficiently
+low (depending on the {\tt -w} option), the coset representative that was
+found.  
+\smallskip
+\item{xi)}The time required for the computation.  Note that the time to
+read in the containing group from a file, construct the initial base and
+strong generating set for the containing group (if not present in the input
+file), and to write out the subgroup or coset representative to a file is
+not included in this time.  All computations relating to calculation of
+the subgroup or coset representative (including base changes in the containing
+group) are included.
+\medbreak}
+%
+Note that, in subgroup computations, the actual strong generators for the
+subgroup are not written to standard output, and in coset computations,
+the actual coset representative found may not (depending on the degree and
+{\tt -w} option) be written to the standard output.  However, both may be
+found (in Cayley library format) in the output file that is created.
+\medbreak
+For design, matrix, or code isomorphism computations, the isomorphism that
+is constructed is written to the standard output (assuming that the degree
+is sufficiently low) in a more easily readable
+(but not Cayley compatible) format than that described in Sections~II
+and~III.  For designs with the {\tt -pb} option,
+the action on points and blocks is given separately.  For matrices, the
+action on rows and columns is given separately.  For monomial isomorphism of
+matrices for non--binary codes, the monomial 
+isomorphism is written in the following format:
+$$\bigl(\kern1pt[\lambda_1]i_1,[\lambda_2]i_2,\ldots,[\lambda_k]i_k\kern1pt\bigr)$$
+This denotes the monomial permutation mapping 1 to $\lambda_1i_1$,
+2 to $\lambda_2i_2$, etc.  For example, to apply this monomial permutation
+to the rows of an $r$ by $c$ matrix, row $j$ is multiplied by $\lambda_j$
+and the result is moved to row position $i_j$.
+
+%
+\medbreak
+%
+%
+%
+\section{VII.\quad SIZE LIMITS}
+%
+There are a few fixed limits on the sizes of objects that the programs can
+handle.  These limits can be changed only by recompiling the programs.
+The order of any group may have at most 30 distinct prime divisors.  The
+name of any file may have at most 60 characters (including path information
+supplied with the {\tt -p} option).   The name of any object may have at
+most 16 characters.
+Most importantly, if the program is compiled using 16--bit integers,
+the maximum degree of any permutation group is limited to slightly less
+than $2^{16}$ (about 65000).  If it is compiled using 32--bit integers,
+there is, for practical purposes, no fixed limit.
+Note, however, that use of 16--bit
+integers reduces memory requirements substantially, and it is recommended
+unless groups of degree greater than 65000 (approx) are to be used.
+Only machines having at least 20 to 25 megabytes of memory are
+likely to be able to handle groups of degree high enough to require 
+32--bit integers.   Currently both 16--bit and 32--bit compiled versions 
+of the programs are available.
+\medbreak
+Although there is no fixed limit on the base size for a permutation group,
+a limit must be established at the time that the program is initiated, and
+this limit remains fixed during that run.
+This limit may be set at $k$ by means of the {\tt -mb:$k$} option, or it
+may be allowed to default to 62.  Note that large values of $k$ increase 
+running times and memory requirements slightly even if the actual base size 
+turns out to be much less than $k$. 
+\medbreak
+For the most part, the amount of memory (real and virtual) available
+determines the sizes of objects that can be handled by the programs.
+Memory requirements depend heavily on the degree of the group, and 
+to a somewhat lesser extent on the base size.
+The programs can use virtual memory to some extent; however, if 
+virtual memory used exceeds real memory by a factor of more than 1.6 to 1.8,
+excessive paging is likely to occur.  The following steps may be taken
+to reduce memory requirements; the steps are listed in order of decreasing
+benefit.
+\medskip{\advance\leftskip by0.45in\noindent
+\item{i)}If the degree of the group is less than 65000 (approx), use a
+         16--bit version of the program rather than a 32--bit version.
+         The 16--bit version is likely to run about as fast as the 32--bit
+         version, and it requires a great deal less memory.
+\smallskip
+\item{ii)}Specify options of {\tt -g:1} and {\tt -r:1}.  These options
+          are likely to increase the execution time substantially, but
+          they often save a good deal of memory.   As a compromise,
+          values greater than 1 but less than the defaults may be
+          specified, e.g., {\tt -g:20} and {\tt -r:15} 
+\smallskip
+\item{iii)}Specify the option {\tt -b:0} if it is not already the default.
+           In the majority of cases, this option will not increase
+           execution time, and it reduces memory requirements considerably.
+           However, in a great many cases, {\tt -b:0} 
+           will already be the default.   (The value for this and other
+           options is displayed on the standard output when the program is
+           is run.)
+\smallskip
+\item{iv)}For (element) centralizer and conjugacy calculations, specify the
+          {\tt -np} option.  This saves a modest amount of memory.  The
+          effect on execution time is hard to predict; in some cases, it
+          may lead to a major increase.  For group centralizer calculations,
+          options of {\tt -cg:2} and {\tt -cp:$i$}, where $i$ is 3 to 5,
+          may be tried, although on some groups they may raise the 
+          running time to unacceptable levels.  
+\smallskip          
+\item{v)}Specify the option {\tt -mb:$k$} for a value of $k$ less than
+          the default of 62.  The {\tt -mb:$k$} options sets a limit of $k$
+          on the base size for the group; often a value considerably less
+          than 62 (e.g., 15 or 20) will be adequate.  However, the amount of 
+          memory saved is relatively small.
+\vskip0pt}
+\medbreak
+In the author's experience, the programs can often handle groups of degree
+as high as 2000$m$ to 3000$m$, where $m$ is the number of megabytes of
+{\it real\/} memory available.  However, for groups lacking a relatively
+small base, the limit on the degree is much lower.  Also, this limit
+applies only to memory requirements; depending on the type of computation
+and the specific groups, it may or may not be possible to perform 
+computations in groups this large in an acceptable amount of time.
+%
+%
+\section{VIII.\quad EXAMPLES}
+%
+The author has prepared a number of sample objects that may be used to
+test the programs.  In the Unix distribution, these objects
+appear in various subdirectories of the directory {\tt partn/examples}.
+%
+\medbreak
+The subdirectories {\tt psp62}, {\tt psp82}, {\tt psu72},
+{\tt omg84}, {\tt fi23}, {\tt ahs2}, {\tt rubik4}, and 
+{\tt syl128} of directory {\tt partn/examples} contain
+examples for computation in the groups ${\rm PSp}_6(2)$ of degree 63,
+${\rm PSp}_8(2)$ of degree 255, ${\rm PSU}_7(2)$ of degree 2709,
+$\Omega^+_8(4)$ of degree 5525, ${\rm Fi}_{23}$ of degree 31671, 
+${\rm AUT(HS)}\times {\rm AUT(HS)}$ of degree 200, 
+the group of a $4\times 4$ Rubik's cube (degree 96), and a Sylow 2--subgroup
+of the symmetric group {\it Sym\/}(128)\enskip of degree 128, respectively.
+Note that, for the last two groups, any base will be large, and the 
+{\tt -mb} option (e.g., {\tt -mb:75}) will need to be specified.
+Each of the directories contains files as follows, where {\it grp\/} is
+to be replaced by the actual name of the directory.
+\medbreak
+{\advance\leftskip by 1.0truein\relax
+   \noindent\llap{\hbox to0.75in{{\it grp}\hfil}}The permutation group mentioned above.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{{\it grp\/}{\tt\kern1ptx}\hfil}}A group permutation isomorphic to the
+          group {\it grp\/} and having a small but nontrivial intersection with
+          {\it grp}.  The intersection of {\it grp\/} and {\it grp\/}{\tt x} may
+           be computed by the command
+   \smallskip
+   \hskip0.4in{\tt inter\quad {\it grp\/}\quad {\it grp\/}x\quad int}
+   \smallskip
+          which saves the intersection as the group {\tt int}.  The file
+          {\it grp\/}{\tt x} contains a comment giving the order of the
+          intersection.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt set1\hfil}}A random point set of size half the degree
+                of {\it grp}.  Except in the case of {\tt rubik4}
+                and {\tt syl128}, the set stabilizer of
+                 {\tt set1} in the group {\it grp\/} turns out to be trivial.  This
+                 set stabilizer may be computed by the command
+   \smallskip
+   \hskip0.4in{\tt setstab\quad {\it grp\/}\quad set1\quad stab1}
+   \smallskip
+          which saves the set stabilizer as the group {\tt stab1}.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt set2\hfil}}A point set of size approximately
+                 half the degree whose set stabilizer in {\it grp\/} 
+                 is a dihedral group of low order, except in the case 
+                 of {\tt rubik4} and
+                 {\tt syl128}.  This set stabilizer may be computed by the command
+   \smallskip
+   \hskip0.4in{\tt setstab\quad {\it grp\/}\quad set2\quad stab2}
+   \smallskip
+          which saves the set stabilizer as the group {\tt stab2}.
+          The file {\tt set2} contains a comment indicating the order of the
+          stabilizer.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt set3\hfil}}A point set of size roughly
+                 half the degree (in most cases ) whose set stabilizer in {\it grp\/} is a
+                 group of high order.  This set stabilizer may be
+                 computed by the command
+   \smallskip
+   \hskip0.4in{\tt setstab\quad {\it grp\/}\quad set3\quad stab3}
+   \smallskip
+          which saves the set stabilizer as the group {\tt stab3}.
+          The file {\tt set3} contains a comment indicating the order of the
+          stabilizer.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt set1x\hfil}}A point set obtained by applying a
+                 randomly--chosen element of the group {\it grp\/} to {\tt set1}.
+                 The command
+   \smallskip
+   \hskip0.4in{\tt setimage\quad {\it grp\/}\quad set1\quad set1x\quad g}
+   \smallskip
+          may be used to find an element {\tt g} of the group {\it grp\/} mapping
+          {\tt set1} to {\tt set1x}.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt set1y\hfil}}A point set having the same cardinality
+                 as {\tt set1} but not equal to the image of {\tt set1}
+                 under any element of {\it grp\/}.  The command
+   \smallskip
+   \hskip0.4in{\tt setimage\quad {\it grp\/}\quad set1\quad set1y\quad h}
+   \smallskip
+          may be used to determine that {\tt set1y} is not in fact an
+          image of {\tt set1} under the group.  (The permutation $h$ will
+          {\it not\/} be created.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt par1\hfil}}A partition of the set $\{1,\ldots,n\}$, where
+                 $n$ is the degree of group {\it grp}.  (The file contains
+                 a comment indicating the number of cells and cell sizes.)
+                 The stabilizer in {\it grp\/} of
+                 {\tt par1}, treated as an ordered partition, may be computed by the
+                 command
+   \smallskip
+   \hskip0.4in{\tt parstab\quad {\it grp\/}\quad par1\quad pstab1}
+   \smallskip
+          which saves the ordered partition stabilizer as the group {\tt pstab1}.
+          The file {\tt par1} contains a comment giving the order of the
+          stabilizer.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt par1x\hfil}}A partition obtained by applying a
+                 randomly--chosen element of the group {\it grp\/} to {\tt par1}.
+                 The command
+   \smallskip
+   \hskip0.4in{\tt parimage\quad {\it grp\/}\quad par1\quad par1x\quad i}
+   \smallskip
+          may be used to find an element {\tt i} of the group {\it grp\/} mapping
+          {\tt par1} to {\tt par1x}.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt par1y\hfil}}A partition in which the sizes of the
+                 cells match those in {\tt par1}, but which is not the
+                 image of {\tt par1} under any element of the group {\it grp\/}.
+                 The command
+   \smallskip
+   \hskip0.4in{\tt parimage\quad {\it grp\/}\quad par1\quad par1y\quad j}
+   \smallskip
+          may be used to demonstrate that {\tt par1y} is not an image of
+          {\tt par1} under any group element.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt elt1\hfil}}An element of the group {\it grp\/}
+                 having a fairly
+                 large centralizer in {\it grp\/}.  This centralizer may be
+                 computed by the command
+   \smallskip
+   \hskip0.4in{\tt cent\quad {\it grp\/}\quad elt1\quad cent1}
+   \smallskip
+          which saves the centralizer as the group {\tt cent1}.
+          The file {\tt elt1} contains a comment stating the order of the
+          centralizer.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt elt1x\hfil}}An element conjugate
+                 under the group {\it grp\/}
+                 to {\tt elt1}.  An element of {\it grp\/} conjugating {\tt elt1}
+                 to {\tt elt1x} may be found by the command
+   \smallskip
+   \hskip0.4in{\tt conj\quad {\it grp\/}\quad elt1\quad elt1x\quad c1}
+   \smallskip
+          which sets {\tt c1} to such a conjugating element.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt elt2\hfil}}An permutation {\it not\/}
+                 in the group {\it grp\/} having a nontrivial
+                 centralizer in {\it grp}.  This centralizer may be
+                 computed by the command
+   \smallskip
+   \hskip0.4in{\tt cent\quad {\it grp\/}\quad elt2\quad cent2}
+   \smallskip
+          which saves the centralizer as the group {\tt cent2}.
+          The file {\tt cent2} contains a comment indicating the order of the
+          centralizer.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt elt2x\hfil}}A permutation (not in {\it grp\/})
+                 conjugate under {\it grp\/}
+                 to {\tt elt2}.  An element of {\it grp\/} conjugating {\tt elt2}
+                 to {\tt elt2x} may be found by the command
+   \smallskip
+   \hskip0.4in{\tt conj\quad {\it grp\/}\quad elt2\quad elt2x\quad c2}
+   \smallskip
+          which sets {\tt c2} to such an element.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt elt2y\hfil}}A permutation not in {\it grp\/}
+                 having the same cycle structure as {\tt elt2} but not
+                 conjugate under {\it grp\/} to {\tt elt2}.  Non--conjugacy may
+                 be demonstrated by the command
+   \smallskip
+   \hskip0.4in{\tt conj\quad {\it grp\/}\quad elt2\quad elt2y\quad d}
+   \smallskip
+          which does {\it not} create a permutation {\tt d}.
+\vskip0pt}
+\medbreak
+Note that, in the case of the group {\tt fi23}, about 16 megabytes of real
+memory may be needed to perform the calculations above.
+\bigbreak
+The subdirectories {\tt q17} and {\tt q32} contain designs, (0,1)--matrices,
+and codes based on the quadratic residue code $Q_{17}$ of length 17 and
+on the extended quadratic residue code $Q_{32}$ of length 32, respectively.
+The contents of these directories are as follows, where $i$ denotes either
+17 or 32.
+\medbreak
+{\advance\leftskip by 1.0truein\relax
+   \noindent\llap{\hbox to0.75in{\tt q\kern1pt$i$\hfil}}The quadratic or extended
+                      quadratic residue code.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt v\kern1pt$i$\hfil}}The matrix whose rows are
+                   the weight 5 ($i = 17$) or weight 8 ($i = 32$) codewords
+                   of the code {\tt q}\kern1pt$i$.  The automorphism group of the code
+                   {\tt q}\kern1pt$i$ may be computed by the command
+   \smallskip
+   \hskip0.4in{\tt codeauto\quad q\kern1pt$i$\quad v\kern1pt$i$\quad A}
+   \smallskip
+   or
+   \smallskip
+   \hskip0.4in{\tt codeauto\quad -cv\quad q\kern1pt$i$\quad v\kern1pt$i$\quad A}
+   \smallskip
+          which saves the automorphism group as the group {\tt A},
+          either as a group of degree $i$ or as a group of degree
+          $i+k$, where $k$ is the number of codewords in the set {\tt v}\kern1pt$i$.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt q\kern1pt$i$\kern1ptx\hfil}}Another quadratic residue
+                     code obtained from
+                     {\tt q}\kern1pt$i$ by applying a random permutation to the
+                      coordinates..
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt v\kern1pt$i$\kern1ptx\hfil}}The matrix whose rows are
+                   the weight 5 ($i = 17$) or weight 8 ($i = 32$) codewords
+                   of the code {\tt q}\kern1pt$i$\kern1pt{\tt x}.  An isomorphism from
+                   {\tt q}\kern1pt$i$ to {\tt q\kern1pt$i$\kern1ptx}
+                   may be found by the command
+   \smallskip
+   \hskip0.4in{\tt codeiso\quad q\kern1pt$i$\quad q\kern1pt$i$\kern1ptx\quad
+                v\kern1pt$i$\quad v\kern1pt$i$\kern1ptx\quad s}
+   \smallskip
+          which saves the isomorphism found as the permutation {\tt s}.
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt d\kern1pt$i$\hfil}}The design on $\{1,\ldots,i\}$
+                     whose blocks correspond to the codewords of
+                     weight 5 ($i = 17$) or weight 8 ($i = 32$) in {\tt q}\kern1pt$i$.
+                     The automorphism group of this design (which must
+                     contain the group of the corresponding code, and which
+                     in fact equals it) may be computed by the command
+   \smallskip
+   \hskip0.4in{\tt desauto\quad d\kern1pt$i$\quad B}
+   \smallskip
+   or
+   \smallskip
+   \hskip0.4in{\tt desauto\quad -pb\quad d\kern1pt$i$\quad B}
+   \smallskip
+          which saves the automorphism group as the group {\tt B}, either as a
+          group on points only, or as a group on points and blocks.  Note
+          that the incidence matrix of the design {\tt d}\kern1pt$i$ is the
+          transpose of the matrix {\tt v}\kern1pt$i$, so the same automorphism
+          group could be computed by the command
+   \smallskip
+   \hskip0.4in{\tt matauto\quad -tr\quad v\kern1pt$i$\quad A}
+   \medbreak
+   \noindent\llap{\hbox to0.75in{\tt d\kern1pt$i$\kern1ptx\hfil}}A design obtained from
+                     {\tt d}\kern1pt$i$ by applying a random permutation to the
+                     points.  (The order of the blocks is also permuted
+                     randomly.)  An isomorphism from {\tt d}\kern1pt$i$ to
+                     {\tt d\kern1pt$i$\kern1ptx} may be found by the command
+   \smallskip
+   \hskip0.4in{\tt desiso\quad d\kern1pt$i$\quad d\kern1pt$i$x t}
+   \smallskip
+          which sets {\tt t} to one such isomorphism.
+\vskip0pt}
+\bigbreak
+The subdirectory {\tt dmcl} contains a design based on
+the sporadic simple group of McLaughlin (McL, degree 275).  In this group,
+a point stabilizer has orbits of length 1, 112, and 162.  The design
+{\tt dmcl} on $\{1,\ldots,275\}$ has 275 blocks, each of size 112; the
+blocks are the orbits of length 112 in the 275 point stabilizers.
+The group of this design, which must contain AUT(McL) and turns out to
+equal to AUT(McL), may be computed by the command
+\smallskip
+\hskip0.4in{\tt desauto\quad dmcl\quad Y}
+\smallskip
+which saves the group as {\tt Y}.  (Note that we are computing the group
+of the design, not the group of the graph associated with the orbit of
+length 112; in general, the design group is larger than the graph group,
+although in this case they are the equal.)  The directory also contains a
+second design {\tt dmclx}, isomorphic to {\tt dmcl}.  An isomorphism may
+be found by the command
+\smallskip
+\hskip0.4in{\tt desiso\quad dmcl\quad dmclx\quad s}
+\smallskip
+which sets {\tt s} to an isomorphism from {\tt dmcl} to {\tt dmclx}.
+\bigbreak
+Finally, the subdirectories {\tt had32} and {\tt had104} 
+contains  $32\times32$ and $104\times104$ matrices
+over ${\rm GF}(3)$, respectively, which are 
+essentially the Paley--Hadamard matrices.  
+(The entries of -1 have been changed to 2.)  The (monomial) automorphism
+group of either of these Hadamard matrices may be computed by the command
+\smallskip
+\hskip0.4in{\tt matauto\quad -mm\quad had\kern1pt$i$\quad Z}
+\smallskip
+($i = 32{\rm\ or\ }104$),
+which sets {\tt Z} to the automorphism group.  This subdirectories also
+contain matrices {\tt had\kern1pt$i$\kern1ptx} obtained by 
+applying random monomial
+permutations to the rows and columns of {\tt had\kern1pt$i$}.  Equivalence of
+{\tt had\kern1pt$i$} and {\tt had\kern1pt$i$\kern1ptx} may be 
+established by the command
+\smallskip
+\hskip0.4in{\tt matiso\quad -mm\quad had\kern1pt$i$\quad had\kern1pt$i$\kern1ptx\quad w}
+\smallskip
+which sets {\tt w} to an monomial isomorphism 
+from {\tt had\kern1pt$i$} to {\tt had\kern1pt$i$\kern1ptx}.
+Finally, the subdirectories contain Hadamard designs {\tt dhad\kern1pt$i$}\kern3pt\
+($i = 32{\rm\ or\ }104$) and equivalent designs {\tt dhad\kern1pt$i$\kern1ptx},
+whose groups may be computed using the {\tt desauto} command, and whose
+equivalence may be established with the {\tt desiso} command.
+%
+%
+\section{IX.\quad OTHER COMMANDS}
+%
+In the course of testing and benchmarking the partition backtrack
+algorithms described in Section~IV, the author developed a number of other 
+programs.  Most of these programs were put
+together quickly, with a view toward simplicity rather than efficiency;
+in some cases, they are very inefficient.  Also, some of them perform
+only minimal error checking.  Nonetheless, they may prove useful since they 
+operate on objects specified in the format described in Section~II.
+\medbreak
+All of these programs accept the {\tt -a}, {\tt -i}, {\tt -mb:$k$}, {\tt -mw:$w$},
+{\tt -n:}{\it name}, {\tt -p:}{\it path}, and {\tt -q} options, as described
+in Section~V, whenever they would be meaningful.  (For example, the {\tt -i}
+option is meaningful only if the command creates a permutation or
+permutation group.)  Other options vary by command, and are discussed separately
+for each command below.
+%
+\subsection{Base and strong generating set construction:}The {\tt generate}
+command may be used to construct a probable base and strong generating set
+for the permutation group generated by specified permutations.  The random
+Schreier method (Leon, 1980) is used.  If the group order is known in advance,
+this method always produces a correct base and strong generating set, although
+there is no bound on the time required to do so.  Otherwise,
+there is no guarantee that the method will produce a correct result.  However,
+in the author's experience, it nearly always does give a correct result, and
+it runs far more quickly than alternative methods, such as the Schreier--Sims
+or Schreier--Todd-Coxeter--Sims algorithms.
+\medbreak
+The format for the command is
+%
+\smallskip
+\centerline{{\tt generate}\quad {\it options\/}\quad {\it inputGroup\/}\quad 
+                         {\it outputGroup}}
+%
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+            [{\tt -a}]\kern-1pt\enskip
+            [{\tt -i}]\kern-1pt\enskip
+            [{\tt -mb:}$k$]\kern-1pt\enskip
+            [{\tt -mw:}$w$]\kern-1pt\enskip
+            [{\tt -n:}{\it name\/}]\kern-1pt\enskip
+            [{\tt -nro}]\kern-1pt\enskip
+            [{\tt -p:}{\it path\/}]\kern-1pt\enskip
+            [{\tt -q}]\kern-1pt\enskip
+            [{\tt -s:}{\it seed\/}]\kern-1pt\enskip
+            [{\tt -ti:}$i$]\kern-1pt\enskip
+            [{\tt -tr:}$m$]\kern-1pt\enskip
+            [{\tt -z}]}
+\smallskip
+Here {\it inputGroup\/} denotes the original permutation group, for which
+a base and strong generating set are not yet available.
+The factored group order for {\it inputGroup\/} may or may not be present.
+The random Schreier method is used to construct a probable base and strong
+generating set for {\it inputGroup},, and the result is saved as the 
+permutation group {\it outputGroup}.
+If the factored group order is present, the computation will continue until
+a base and strong generating set has been found.  Otherwise it continues until
+{\it m\/} consecutive quasi--random elements of the group factor in terms of the
+possible base and strong generating set, where {\it m\/} is the integer
+specified in the {\tt -tr:}$m$ option (default 40).  High values of 
+{\it m} may be specified to reduce the chance of an incorrect result, at the
+cost of slowing down the computation.
+\medbreak
+Normally, before a new strong generator is added to the strong generating
+set, an attempt is made to replace the new generator by a power of it, in
+order to obtain generators of low order.  (This may be desirable later on if the 
+Schreier--Todd--Coxeter--Sims method is used to verify the base and strong
+generating set; in addition, it saves space whenever a non--involutory
+generator is converted to an involution.)    This attempt may be suppressed
+by the {\tt -nro} option.  Note, however, that replacement of generators
+by powers is relatively inexpensive, so the {\tt -nro} option saves little time.
+The {\tt -ti:}$i$ option may be specified in order to have the program
+try harder to find involutory generators.  Up to $i$ consecutive generators that
+cannot be converted to involutory generators will be rejected.  The default
+for $i$ is 0; higher values often increase the execution time a good
+deal.
+\medbreak
+If the {\tt -z} option is specified, the program will make some attempt
+to remove certain redundant strong generators from the strong generating set for
+{\it outputGroup}. 
+%
+\subsection{Base change:}The {\tt chbase}
+command may be used to change the base in a permutation group.  The
+command format is
+%
+\smallskip
+\centerline{{\tt chbase}\quad {\it inputGroup\/}\quad 
+                         $p_1,p_2,\ldots,p_k$\quad {\it outputGroup}}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -i}]\enskip
+        [{\tt -mb:}$k$]\enskip
+        [{\tt -mw:}$w$]\enskip
+        [{\tt -n:}{\it name\/}]\enskip
+        [{\tt -p:}{\it path\/}]\enskip
+        [{\tt -q}]\enskip
+        [{\tt -z}]}
+\smallskip
+The base for permutation group {\it inputGroup\/} is
+changed, if necessary, so that it begins  with $p_1,p_2,\ldots,p_k$,
+and the group with this new base is saved as {\it outputGroup}.  Note
+that, in the list $p_1,p_2,\ldots,p_k$ of points, individual points
+are separated by commas but {\it not\/} by blanks.  Note also that the
+points $p_1,p_2,\ldots,p_k$ are included in the new base even if
+they are redundant as base points.  However, no other redundant base points
+will appear in the new base.  If the {\tt -z} option is specified, certain
+redundant strong generators will be removed following the base change.
+%
+%
+\subsection{Conjugation by a specified permutation:}The {\tt cjper}
+command may be used to conjugate an object (group, permutation, point set,
+partition, design, matrix, or code) by a specified permutation.  The command
+format is
+%
+\smallskip
+\centerline{{\tt cjper}\quad {\it options\quad type\quad object\quad
+                             conjugateObject\quad conjugatingPerm}}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+            [{\tt -a}]\enskip
+            [{\tt -b}]\enskip
+            [{\tt -d:}{\it deg\/}]\enskip
+            [{\tt -i}]\enskip
+            [{\tt -mb:}$k$]\enskip
+            [{\tt -mm}]\enskip
+            [{\tt -mw:}$w$]\enskip
+            [{\tt -n:}{\it name\/}]\enskip
+            [{\tt -p:}{\it path\/}]\enskip
+            [{\tt -q}]\enskip}
+\smallskip
+Here {\it type\/} must be one of the keywords {\tt group}, {\tt perm},
+{\tt set}, {\tt partition}, {\tt design}, {\tt matrix}, or {\tt code},\enskip
+{\it object\/} must be an object of the type designated by {\it type},\enskip
+and {\it conjugatingPerm\/} must be a permutation.  In the event that {\it object\/}
+is a permutation, set, or partition, the {\tt -d:}{\it deg} option {\it must\/}
+be used to specify the degree {\it deg}.  The program sets
+{\it conjugateObject\/} to the object obtained by conjugating {\it object\/}
+by {\it conjugatingPerm\/}, in the case that {\it object\/} is a group 
+or permutation, or to the object obtained by
+applying {\it conjugatingPerm\/} to {\it object}, if {\it object} is a
+point set, partition, design, matrix, or code.  In the event that
+{\it object\/} is a group, the {\tt -b} option forces the program to
+compute a base and strong generating set for {\it conjugateObject\/}; by
+default, {\it conjugateObject\/} will have a base and strong generating
+set only if {\it object\/} does.
+\medbreak
+In the event that {\it object\/} is a design or matrix, the degree
+is treated as the number of points plus the number of blocks, or the
+number of rows plus the number of columns, respectively.
+Blocks or columns are permuted as well as points or rows.  However,
+since the input format for permutations permits a permutation of degree $n$
+to be treated as a permutation of any higher degree, this represents no
+real restriction.
+\medbreak
+If {\it object\/} is a matrix over a finite field ${\rm GF}(q)$, the {\tt -mm}
+option may be specified.  Then {\it conjugatingPerm\/} must have degree
+$(q-1)(r+c)$, where $r$ and $c$ are the number of rows and columns, and
+must satisfy the ``monomial property'', as described in Section~III.
+
+%
+\subsection{Conjugation by a random permutation:}The {\tt cjrndper}
+command may be used to conjugate an object by a either a random permutation,
+or by a permutation chosen at random from a specified permutation group.  The command
+format is
+%
+\smallskip
+\centerline{{\tt cjrndper}\quad {\it options\quad type\quad object\quad
+                             conjugateObject}\quad [{\it conjugatingPerm\/}]}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\kern-1pt\enskip
+        [{\tt -b}]\kern-1pt\enskip
+        [{\tt -d:}{\it deg\/}]\kern-1pt\enskip
+        [{\tt -g:}{\it grp\/}]\kern-1pt\enskip
+        [{\tt -i}]\kern-1pt\enskip
+        [{\tt -mb:}$k$]\kern-1pt\enskip
+        [{\tt -mm}]\kern-1pt\enskip
+        [{\tt -mw:}$w$]\kern-1pt\enskip
+        [{\tt -n:}{\it name}]\kern-1pt\enskip
+        [{\tt -p:}{\it path\/}]\kern-1pt\enskip
+        [{\tt -s:}{\it seed\/}]\kern-1pt\enskip
+        [{\tt -q}]}
+\smallskip
+Here {\it type\/} must be one of the keywords {\tt group}, {\tt perm},
+{\tt set}, {\tt partition}, {\tt design}, {\tt matrix}, or {\tt code},\enskip
+and {\it object\/} must be an object of the type designated by {\it type}.
+In the event that {\it object\/}
+is a permutation, set, or partition, the {\tt -d:}{\it deg} option {\it must}
+be used to specify the degree {\it deg}.  If {\it object\/} is a permutation
+or permutation group, the program sets
+{\it conjugateObject\/} to the object obtained by conjugating {\it object\/}
+by a certain permutation $x$; if {\it object\/} is a point set, partition,
+design, matrix, or code, it sets {\it conjugateObject\/} to the
+object obtained by applying a certain permutation $x$ to {\it object}.
+In either case, the permutation $x$ is
+chosen at random from the group {\it grp}, if the {\tt -g:}{\it grp} option
+is specified, or at random from the symmetric group, if the
+{\tt -g:}{\it grp} option is omitted.  If {\it conjugatingPerm\/} is specified, 
+the permutation $x$ is saved as {\it conjugatingPerm}.
+The {\tt -s:}{\it seed} option may be used to specify
+a specific seed for the random number generator that is used internally.
+In the event that {\it object\/} is a group, the {\tt -b} option forces the
+program to compute a base and strong generating set for {\it conjObject}, even
+when one is not available for {\it object}.
+\medbreak
+In the event that {\it object\/} is a design (or matrix), both points
+and blocks (or both rows and columns) are permuted.
+\medbreak
+If {\it object\/} is a matrix over a finite field ${\rm GF}(q)$, the {\tt -mm}
+option may be specified.  Then a random monomial permutation is applied
+to the rows and columns of the input matrix.
+%
+%
+%
+\subsection{Commutator groups and lower central series:}The {\tt commut}
+command may be used to compute commutator groups.  Repeated application of
+the command may be used to compute lower central series.  Specifically, given
+a group $G$ and a (not necessarily normal) subgroup $H$ of $G$, the command
+computes the commutator group $C = [G,H]$.  The command format is
+%
+\smallskip
+\centerline{{\tt commut}\quad {\it options}\quad {\it permGroup}\quad
+                        [{\it subgroup\/}]\quad {\it commutatorGroup}}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -i}]\enskip
+        [{\tt -mb:}$k$]\enskip
+        [{\tt -mw:}$w$]\enskip
+        [{\tt -n:}{\it name}]\enskip
+        [{\tt -p:}{\it path\/}]\enskip
+        [{\tt -q}]}
+\smallskip
+Here, {\it permGroup\/}, {\it subgroup\/}, and {\it commutatorGroup\/}
+play the role of $G$, $H$, and $C$ above, respectively.
+If {\it subgroup\/} is specified, it must be a subgroup of {\it permGroup\/}
+(not checked); the command sets {\it commutatorGroup\/}
+to the commutator of {\it permGroup\/} and {\it subgroup}.  If subgroup is
+omitted, the command sets {\it commutatorGroup\/} to the commutator of
+{\it permGroup\/} with itself (the derived group). 
+\medbreak
+At present, the strong generating set for the commutator group is
+constructed only by the random Schreier method.  Thus there is a
+(probably small) possibility that the base and strong generating set 
+constructed for the commutator group will be incorrect.  (If this
+occurs, the generators constructed will generate the commutator group, but
+not strongly.  This undesirable feature will be fixed eventually.)
+\medbreak
+The return code from the {\tt commut} command will 0 if the commutator group
+has order 1.  
+Otherwise the return code will depend on  whether the order of $H$ (i.e.,
+{\it subgroup\/})
+is known in advance.  If so, the return code will  1 if $\vert C\vert \neq
+\vert H\vert$ and 2 otherwise.  (If $H$ is normal in $G$, these correspond
+to the cases $H \subset G$ and $H = G$, respectively.)  If not, the return
+code will be 3. 
+%
+%
+%
+\subsection{Comparison of groups, normality, and centralization:}The {\tt compgrp} command may be
+used to check if either of two permutation groups is contained
+in the other, or normalizes the other, or whether the two groups
+centralize each other.  The command format is
+%
+\smallskip
+\centerline{{\tt compgrp}\quad [{\tt -c}] \enskip[{\tt -n}]\enskip
+            [{\tt -mb:}$k$]\enskip [{\tt -mw:}$w$]\enskip
+            [{\tt -p:}{\it path\/}]\quad {\it permGroup1\quad permGroup2}}
+\smallskip
+This command checks if either of {\it permGroup1\/} or {\it permGroup2\/} is contained
+in the other.  If the {\tt -n} option is specified, it also checks if
+either group normalizes the other.  (Note here the {\tt -n} option is used
+for a different purpose that that described in Section~V.)  If the {\tt -c} option is given, it
+checks whether the two groups centralize each other.  Messages indicating the result are
+written to the standard output.   The return code is 0 if the two groups
+are equal, 1 if {\it permGroup1\/} is a proper subgroup of {\it permGroup2\/},
+2 if {\it permGroup2\/} is a proper subgroup of {\it permGroup1\/}, and 3
+otherwise.\quad  Note:  The procedure for checking normality
+is, at present, extremely inefficient in many cases.
+%
+%
+%
+\subsection{Comparison of permutations:}The {\tt compper} command may be
+used to check if two permutations are equal, or if a permutation is the
+identity.  The command format is
+%
+\smallskip
+\centerline{{\tt compper}\quad {\it degree\quad permutation1}\quad 
+            {\tt [}{\it permutation2\/}{\tt ]}}
+\smallskip
+This command checks if {\it permutation1\/} and {\it permutation2}, both of
+which must be permutations of degree {\it degree}, are equal.  It prints a
+message indicating whether the permutations are equal, and gives a return
+code of 0 if they are equal and 1 otherwise.  If {\it permutation2\/} is
+omitted, it is taken as the identity; thus the command checks if
+{\it permutation1\/} is the identity.
+%
+%
+%
+\subsection{Comparison of point sets:}The {\tt compset} command may be
+used to check if two point sets are equal.  The command format is
+%
+\smallskip
+\centerline{{\tt compset}\quad {\it degree\quad set1}\quad 
+            {\tt [}{\it set2\/}{\tt ]}}
+\smallskip
+This command checks if {\it set1\/} and {\it set2}, both of
+which must be points sets of degree {\it degree}, are equal, or if either
+is contained in the other.  if {\it set2\/} is omitted, it is taken to be
+the empty set, and the command checks if {\it set1\/} is empty.  It prints a
+message indicating the result.  If {\it set2\/} is specified, the return code is 0 if
+the two sets are equal, 1 if {\it set1\/} is properly contained in {\it set2\/}, 
+2 if {\it set1\/} properly contains {\it set2\/}, and 3 otherwise.
+If {\it set2\/} is omitted, the return code is 0 if {\it set1\/} is empty
+and 1 otherwise.
+%
+%
+\subsection{Coset weight distributions of codes:}The {\tt cwtdist}
+command\footnote{${}^{\dag}$}{\elevenpoint At time of writing, this command
+was not complete.  It should be available shortly.}
+may be used to compute the coset weight distribution of a linear code.
+At present, the program is restricted to binary codes of codimension at
+most 32.  The program is highly optimized; nonetheless, time and space
+requirements may restrict the codimension to values less than its maximum
+of 32.  The command format is
+%
+\smallskip
+\centerline{{\tt cwtdist}\quad {\it options}\quad {\it code}\quad
+            [{\it maxCosWeight\/}\quad [{\it matrix\/}]]}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -n:}{\it name\/}]\enskip
+        [{\tt -p:}{\it path\/}]\enskip
+        [{\tt -q}]}
+\smallskip
+The program computes the coset weight distribution of the code 
+{\it code\/}, that is, for each $d$, it determines the number of cosets of
+the code having minimum weight $d$.  If {\it maxCosWeight\/} is specified
+(It should be an integer.), the computation is performed only for
+$d \leq {\it maxCosWeight}$.  If {\it matrix\/} is given, a coset representative
+is saved for one coset whose minimum weight is the minimum of the covering 
+radius and {\it maxCosetWeight\/}.  {\it Note:\/}  It is not possible to 
+specify {\it matrix\/} without specifying {\it maxCosWeight\/}; however,
+an artificially large value of {\it maxCosWeight\/} may be given instead.
+%
+%
+%
+\subsection{Designs from groups:}The {\tt orbdes} command may be used to
+construct a block design $D$ from a permutation group $G$, which normally
+should be transitive.  The design $D$ will have $n$ points and $n$ blocks, each
+having the same number of points, where $n$ is the degree.  The automorphism
+group ${\rm AUT}(D)$ will contain the group $G$ (perhaps properly).
+For a specified point $\gamma$, let $\Gamma$ denote the orbit of $\gamma$
+under the point stabilizer $G_1$.  The blocks of $D$ are exactly
+$\Gamma^{u_1},\ldots,\Gamma^{u_k}$, where $k$ is the size of the $G$--orbit
+of 1, and $u_1,\ldots,u_k$ map 1 to the different points of the $G$--orbit
+of 1.  The command format is
+%
+\smallskip
+\centerline{{\tt orbdes}\quad [{\tt -a}]\enskip[{\tt -m}]\enskip
+            [{\tt -mb:}$k$]\enskip [{\tt -mw:}$w$]\enskip
+            [{\tt -p:}{\it path\/}]\quad
+            {\it permGroup}\quad {\it point}\quad {\it design}}
+\smallskip
+Here {\it permGroup}, {\it point}, and {\it design\/} play the role of
+$G$, $\gamma$, and $D$ above, respectively.  If the {\tt -m} option is
+given, the incidence matrix of the design is written out as a matrix;
+otherwise the design is written in the standard format for designs.
+%
+%
+%
+\subsection{Finding group elements of specified order:}The {\tt fndelt}
+command may be used to locate group elements of specified order, using
+a quasi-random search process.  (Random group elements are examined in
+searching for ones whose order is a multiple of the specified order.)
+The command format is
+%
+\smallskip
+\centerline{{\tt fndelt}\quad {\it options}\quad {\it permGroup} \quad
+                        $n$\quad $k_1$\quad $k_2$\quad$\ldots$}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -f}]\enskip
+        [{\tt -i}]\enskip
+        [{\tt -m:}{\it trials}]\enskip
+        [{\tt -mb:}$k$]\enskip
+        [{\tt -mw:}$w$]\enskip
+        [{\tt -n:}{\it name}]}
+\vskip2pt
+\centerline{
+        [{\tt -o:}{\it ord\/}]\enskip
+        [{\tt -p:}{\it path\/}]\enskip
+        [{\tt -po}]\enskip
+        [{\tt -s:}{\it seed\/}]\enskip
+        [{\tt -wg:}{\it grp\/}]\enskip
+        [{\tt -wp:}{\it perm\/}]}
+\smallskip
+By default, the command searches quasi--randomly
+until it finds $n$ involutions in the
+group {\it permGroup\/}, and
+if $k_1,\,k_2,\,\ldots$ are specified, it saves the $k_1$\kern1ptst,
+$k_2$\kern1ptnd, $\ldots$ elements found.  (See discussion of the 
+{\tt -wp} and {\tt -wg} options below.)  The value of $n$ may be at
+most 99.  The seed used in the random number generator may be specified
+by the {\tt -s:}{\it seed\/} option; two invocations with the same
+(default or specified) seed should produce identical results.
+If the {\tt -o:}{\it ord\/}
+option is given, the command searches for elements of order {\it ord}, rather
+than for involutions.  If the {\tt -f} option is specified, it prints
+the number of fixed points of each element found.  If the {\tt -po} option
+is specified, it prints the orders of all products of the elements found.
+If the {\tt -wp:}{\it perm\/} option is given and $k_1$ is specified,
+the $k_1$\kern1ptst element found is saved as the permutation {\it perm}.
+If the {\tt -wg:}{\it grp\/} is given and at least $k_1$ is specified,
+a group {\it grp\/} is created using the $k_1$\kern1ptst,
+$k_2$\kern1ptnd, $\ldots$ elements found as generators.
+\medbreak
+%
+In some groups, elements of a specified order may be very difficult
+to find using the quasi--random search technique employed by {\tt fndelt}.
+For example, it is very difficult to find involutions in ${\rm PGL}_2(2^k)$
+if $k$ is fairly high (say 10 to 15).  The {\tt -m:}{\it trials\/} option
+may be used to terminate the command after {\it trials\/} random
+group elements have been generated, regardless of how many elements of
+the desired order have been found.  By default, {\it trials\/} is
+essentially infinite.
+\medbreak
+%
+%
+%
+\subsection{Normal closures:}The {\tt ncl}
+command may be used to compute normal closures of subgroups.  Specifically, 
+given a group $G$ and a subgroup $H$ of $G$, the command
+computes the normal closure $H^G$ of $H$ in $G$.  The command format is
+%
+\smallskip
+\centerline{{\tt ncl}\quad {\it options}\quad {\it permGroup}\quad
+                        {\it subgroup\/}\quad {\it normal closure}}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -i}]\enskip
+        [{\tt -mb:}$k$]\enskip
+        [{\tt -mw:}$w$]\enskip
+        [{\tt -n:}{\it name}]\enskip
+        [{\tt -p:}{\it path\/}]\enskip
+        [{\tt -q}]}
+\smallskip
+The command sets {\it normalClosure\/}
+to the normal closure in {\it permGroup\/} of {\it subgroup}.  (Note that
+{\it subgroup\/} must be a subgroup of {\it permGroup\/}; this is not checked.)
+\medbreak
+At present, the strong generating set for the normal closure is
+constructed only by the random Schreier method.  Thus there is a
+(probably small) possibility that the strong generating set
+may be incorrect.  (This will
+be fixed eventually; if it occurs, the generators obtained will generate
+the normal closure, but not strongly.)
+%
+%
+%
+\subsection{Orbit structure:}The {\tt orblist} command performs various
+calculations relating to the orbit structure of a specified group, or to the 
+orbit structure of point stabilizers within the group.  The command format
+%
+\smallskip
+\centerline{{\tt orblist}\quad {\it options}\quad {\it permGroup}\quad
+            [\kern1pt$p_1,p_2,\ldots,p_k$\quad[{\it ptStabGroup\/}]\kern1pt]}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -i}]\enskip
+        [{\tt -len}]\enskip
+        [{\tt -lr}]\enskip
+        [{\tt -mb:}$k$]\enskip
+        [{\tt -mw:}$w$]\enskip
+        [{\tt -n:}{\it name\/}]\enskip
+        [{\tt -p:}{\it path\/}]}
+\vskip2pt
+\centerline{
+        [{\tt -ps:}{\it set\/}]\enskip
+        [{\tt -q}]\enskip
+        [{\tt -r}]\enskip
+        [{\tt -s:}{\it seed\/}]\enskip
+        [{\tt -wno:}{\it $k$}]\enskip
+        [{\tt -wo:}{\it $p_1,p_2,\ldots$}]\enskip
+        [{\tt -wp:}{\it partn\/}]\enskip
+        [{\tt -z}]}
+\smallskip
+In the absence of any options, and with only one non--option parameter,
+the command writes (to standard output)
+the orbits of the group {\it permGroup}.  For each orbit, the orbit
+representative, the orbit length, and the list of points in the orbit
+are written.  If the {\tt -r} option is given, the order in which the
+orbits are listed is randomized; the seed for the random number generator
+that is used may be specified by means of the {\tt -s:}{\it seed\/} option.
+(Note that the {\tt -r} option is ignored if the {\tt -len} or {\tt -lr} options are
+specified.)
+\medbreak
+If the {\tt -len} option is specified, only the orbit lengths are
+written.  If the {\tt -lr} option is given, only the
+orbit representatives and orbit lengths are given; the output consists of
+a list of pairs {\it rep\/}{\tt :}{\it len}, where {\it rep\/} is an
+orbit representative and {\it len\/} is the length of the corresponding
+orbit.
+\medbreak
+The {\tt -wp:}{\it partn} may be used save the orbit partition of the
+group as the partition {\it partn}.
+The {\tt -wo:}{\it $p_1,p_2,\ldots$} option may be used to save the
+union of the orbits of points $p_1,p_2,\ldots$ as a point set; the
+name of the point set is the string {\it set\/} given by 
+the {\tt -ps:}{\it set\/} option.
+Alternatively, the {\tt -wno:}{\it $k$} option causes the union of
+the first $k$ orbits to be saved as a point set, whose name again
+is specified by the {\tt -ps:}{\it set\/} option.
+\medbreak
+If a second non--option parameter $p_1,p_2,\ldots,p_k$ is specified, 
+all orbit calculations are carried out in the stabilizer in ${\it permGroup\/}$ 
+of the point sequence $p_1,p_2,\ldots,p_k$, rather than in {\it permGroup\/} 
+itself.  Note that this entails a base change for the group {\it permGroup}.
+The {\tt -z} option causes redundant strong generators for {\it permGroup}
+to be removed following this base change.
+Specifying a third non--option parameter {\it ptStabGroup\/} option causes 
+point stabilizer of $p_1,p_2,\ldots,p_k$ to be saved
+as the permutation group {\it ptStab}.
+%
+%
+\subsection{Point stabilizers:}The {\tt ptstab}
+command may be used to compute point stabilizers in permutation groups.  The
+command format is
+%
+\smallskip
+\centerline{{\tt ptstab}\quad {\it options}\quad {\it permGroup}\quad
+            $p_1,p_2,\ldots,p_k$\quad {\it ptStabGroup\/}}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -i}]\enskip
+        [{\tt -mb:}$k$]\enskip
+        [{\tt -mw:}$w$]\enskip
+        [{\tt -n:}{\it name\/}]\enskip
+        [{\tt -p:}{\it path\/}]\enskip
+        [{\tt -q}]\enskip
+        [{\tt -z}]}
+\smallskip
+The point stabilizer in the group {\it permGroup\/} of the list
+$p_1,p_2,\ldots,p_k$ is computed and saved as the permutation group
+{\it ptStabGroup}.  Note that, in the list $p_1,p_2,\ldots,p_k$, individual
+points are separated by commas but {\it not\/} by blanks.
+The {\tt -z} option causes certain redundant strong generators for {\it ptStabGroup}
+to be removed before the group is saved.
+%
+%
+%
+%
+\subsection{Random point sets and partitions:}The {\tt randobj} 
+command may be used to construct a random $k$--element subset of 
+$\{1,\ldots,n\}$ for specified $n$ and $k$, or to construct a partition
+of $\{1,\ldots,n\}$ that is random subject to the cells having specified
+sizes.  The command format
+%
+\smallskip
+\centerline{{\tt randobj}\quad {\it options}\quad {\it type}\quad $n$\quad 
+            $k_1,k_2,\ldots,k_p$\quad {\it newObject}}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -e}]\enskip
+        [{\tt -n:}{\it name\/}]\enskip
+        [{\tt -s:}{\it seed\/}]}
+\smallskip
+Here {\it type\/} must be either {\tt set} or {\tt partition}; it indicates
+whether a point set or partition is to be constructed.  For a point set,
+$p$ must be 1; a random $k_1$--element subset of $\{1,\ldots,n\}$ is constructed.
+For a partition, in the absence of the {\tt -e} option, 
+$k_1 + k_2 + \ldots + k_p$ must equal $n$; a partition of $\{1,\ldots,n\}$
+random subject to having cell sizes $k_1$,~$k_2$,...,~$k_p$ is constructed.
+However, if the {\tt -e} option is specified, then $p$ must equal 1, and
+a random partition having $k_1$ cells of equal size (as closely as possible)
+is constructed.  In any case, the point set or partition constructed is saved
+as the object {\it newObject}.
+\medbreak
+The {\tt -s:}{\it seed} option may be used to specify an initial seed for
+the random number generator that is used.
+%
+%
+\subsection{Weight distributions of codes:}The {\tt wtdist}
+command may be used to compute the weight distribution of a linear code.
+The program is highly optimized, both for binary and nonbinary codes.
+The command format is
+%
+\smallskip
+\centerline{{\tt wtdist}\quad {\it options}\quad {\it code}\quad
+            [{\it saveWeight\/}\quad {\it matrix\/}]}
+\smallskip
+where {\it options\/} denotes
+\smallskip
+\centerline{
+        [{\tt -a}]\enskip
+        [{\tt -b}]\enskip
+        [{\tt -g}]\enskip
+        [{\tt -n:}{\it name\/}]\enskip
+        [{\tt -p:}{\it path\/}]\enskip
+        [{\tt -pf:}$p$]\enskip
+        [{\tt -s:}$m$]\enskip
+        [{\tt -q}]\enskip
+        [{\tt -1}]}
+\smallskip
+The weight distribution of the code {\it code\/} is computed and written to
+the standard output.  If {\it saveWeight\/} (which should be a positive
+integer) and {\it matrix\/} are specified, the codewords of weight
+{\it saveWeight\/} are saved; specifically, a new matrix {\it matrix\/} is
+created whose rows are the vectors of weight {\it saveWeight\/} in the
+code {\it code}.  However, for nonbinary fields, only one codeword from
+each one-dimensional subspace is saved.  (Thus, for a code over 
+${\rm GF}(q)$ with $k$ vectors of weight {\it saveWeight}, {\it matrix\/} will
+have $k/(q-1)$ rows.)  Also, if the {\tt -1} option is specified, only one
+codeword of weight {\it saveWeight\/} will be saved, and thus {\it matrix\/}
+will have only one row.  In the event that the code has no codewords of the
+specified weight, the matrix is not created.
+\medbreak
+Four options, {\tt -b}, {\tt -g}, {\tt pf:}$p$, and {\tt s:}$m$, are never
+necessary but may be used to optimize performance.  The {\tt -s:}$m$
+option may be coded if codewords of weight {\it saveWeight\/} are to be
+saved, and if the number of such codewords is known in advance; the value
+of $m$ should be the number of such codewords (excluding scalar multiples,
+for nonbinary fields).  Use of this option saves some time and space.  (If
+an incorrect value of $m$ is specified, the savings in time and space may
+be lost, but the results will still be correct.)
+\medbreak
+To understand the other optimization options,
+it is necessary to understand that the {\tt wtdist} command invokes one of 
+two programs: a considerably optimized program for codes over any field, or 
+an even more highly optimized one for binary codes meeting certain 
+constraints on length and dimension.  The binary code program requires a fixed
+amount of time (several seconds or more on a micro or workstation) to 
+construct a certain table of size 65536, even if the 
+dimension of the code is small.  Accordingly, the {\tt wtdist} command
+invokes the general code program for binary codes of low dimension; however,
+the criteria for choosing the cutoff point is relatively crude, and often
+a nonoptimal choice may be made.  The {\tt -g} option forces the general
+code program to be used, even if the binary one would be chosen by default.
+The {\tt -b} option forces the binary code program to be used, provided the
+code is binary, provided its length is at most 128, and provided its 
+dimension is at most 3.  (If any of these conditions fail, the binary
+program cannot be used.)  
+\medbreak
+The {\tt -pf:}$p$ option is applicable only if
+the general code program is employed.  The value of $p$, which is referred
+to as the {\it packing factor}, should be a positive integer such that
+$q^p\leq 65535$.  (Here $q$ is the field size.)  Internally, the program will pack
+$p$ coordinates of each codeword into a single 16--bit word.  Higher values
+of $p$ improve performance on codes of high dimension.  On the other hand,
+the size of the internal tables that must be allocated and initialized
+rise very rapidly as a function of $p$, and in particular, a value of 
+$p$ maximal subject to $q^p\leq 65535$ will be practical only with a 
+rather large memory, and will be optimal with respect to time 
+only for codes of quite high dimension, because of the large amount of time
+spent initializing the tables.  (The size in bytes of the largest single
+table used internally is roughly $q^p e k \lceil n/p\rceil$, where $n$ is
+the length, $k$ is the dimension, and $e$ is the exponent of the field.)
+The program will choose a packing factor by default, but at present the
+procedure for making this choice is crude.  In particular, if the program
+runs out of memory, a smaller packing pactor should be specified.
+%
+%
+\section{X.\quad THE UNIX DISTRIBUTION}
+%
+On Unix, the programs, documentation, and examples will be available
+by anonymous ftp from {\tt math.uic.edu}.  The 
+directory {\tt pub/leon/partn} should contain the following files,
+where {\it r} denotes the release number, e.g. {\tt 1.00}:
+\vskip1pt
+\smallskip
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+doc-\kern-1pt{\it r}.tar.Z
+examples-\kern-1pt{\it r}.tar.Z
+src-\kern-1pt{\it r}.tar.Z
+bin16-\kern-1pt{\it r}.sun4.tar.Z
+bin16-\kern-1pt{\it r}.sun3.tar.Z
+\vskip-2pt
+bin32-\kern-1pt{\it r}.sun4.tar.Z
+bin32-\kern-1pt{\it r}.sun3.tar.Z
+\vskip0pt}}
+\vskip-2pt
+(The last two files may be omitted to conserve disk space, but can be made
+available on request; contact the author at {\tt leon@turing.math.uic.edu}.)
+Users with a Sun/4 should obtain the files {\tt doc.tar.Z}, 
+{\tt examples.tar.Z}, and {\tt bin16.sun4.tar.Z}, which contain, respectively,
+the documentation, the examples, and 16-bit executables for the Sun/4.
+Users desiring the C language source code (of limited use, due to inadequate
+documentation) should obtain the file {\tt src.tar.Z}.  Note that source code
+is not required since binary executables for the programs are supplied.
+Users needing
+to compute with groups of degree greater that 65000 (approximate) should
+obtain the file {\tt bin32.sun4.tar.Z}, which contains 32-bit executables.
+Users with a Sun/3 merely substitute ``{\tt sun3}'' for ``{\tt sun4}'' in
+the preceding instructions.  Other users should obtain only the files
+{\tt doc.tar.Z}, {\tt examples.tar.Z}, and {\tt src.tar.Z}.  It will be
+necessary to compile the source; a make file is provided for this purpose
+(See Section~XI).
+\smallskip
+A directory, say {\tt partn}, should be created, and all the files should
+be downloaded or moved to this directory.  They should then be uncompressed
+and extracted by commands such as
+\smallskip
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+uncompress -v doc.tar.Z
+tar xvf doc.tar
+\vskip0pt}}
+\smallskip
+(Repeat the above for each of the files.)
+The result should be subdirectories of {\tt partn} as follows:
+\medbreak
+\hskip0.45truein\hbox to 0.85truein{\tt doc\hfil}{Documentation for the programs --
+           primarily this manual.}
+\vskip2pt
+\hskip0.45truein\hbox to 0.85truein{\tt examples\hfil}{The subdirectories of this
+           directory contain examples.  See Section~VIII.}
+\vskip2pt
+\hskip0.45truein\hbox to 0.85truein{\tt test\hfil}{Unix shell scripts to test
+          the partition backtrack programs, using some of the examples provided
+          in the {\tt examples} subdirectory.}
+\vskip2pt
+\hskip0.45truein\hbox to 0.85truein{\tt src\hfil}\vtop{\hsize=5.2truein\relax
+          Source code and a make file, 
+          to allow compilation of the programs on machines other than the
+          Sun/3 and Sun/4.}
+\vskip2pt
+\hskip0.45truein\hbox to 0.85truein{\tt bin16\hfil}{executable programs for the Sun/3 
+                       or Sun/4, using 16--bit integers.}
+\vskip2pt
+\hskip0.45truein\hbox to 0.85truein{\tt bin32\hfil}{executable programs for the Sun/3 
+                       or Sun/4, using 32--bit integers.}
+\smallskip
+For the Sun/3 or Sun/4, the appropriate directory {\tt partn/bin16} or 
+{\tt partn/bin32} should be added to the path, or the files from one of
+those directories should be copied to a directory on the path.  For other
+Unix machines, it will be necessary to recompile the source; see Section~XI.
+%
+\medbreak
+Once installation is complete, the programs may be tested using the 
+shell scripts in the subdirectory {\tt test}.  Specifically, the following
+shell scripts, written for the Bourne shell, are provided:
+\smallskip
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+test\_setstab
+test\_cent
+test\_inter
+test\_desauto
+test\_setimage
+test\_conj
+test\_desiso
+\vskip0pt}}
+Each of the above shell files may be run, without options or parameters.
+When {\tt test\_setstab} is run, the output is collected in a file named
+{\tt setstab.output}, as well as appearing on the screen.  This file 
+may be compared to the file {\tt setstab.correct}, supplied in the subdirectory
+{\tt tests}, which contains the correct output.  The files should match
+exactly.  The comparison may be performed, for example, with the command
+\smallskip
+\vskip2pt
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+diff setstab.output setstab.correct
+\vskip0pt}}
+The other shell files work in an analogous manner.
+\medbreak
+The tests above may take a number of hours, depending on the speed of the
+machine.  In addition, they require several megabytes of memory.  Each of
+the shell files accepts an option {\tt -s}, which runs a much less time--taking
+series of tests, requiring less memory.  When this option is used with
+{\tt test\_setstab}, the output in file {\tt setstab.output} should be
+compared to the file {\tt setstab-s.correct}, rather than to 
+{\tt setstab.correct}.  A similar remark applies to the other tests.
+\medbreak
+The programs described in this manual are also available, in binary form,
+for the IBM~PC and compatibles, under MS~DOS, and for the IBM~370
+family of machines, under CMS.  For details, please contact the author.
+%
+%
+\section{XI.\quad COMPILING THE SOURCE CODE}
+%
+As mentioned earlier, compiled versions of the programs described here are
+available for the IBM~PC (DOS), the Sun/3 and Sun/4 (Unix), and the
+IBM~370 (CMS).  For other systems, it will be necessary to compile the
+C source code.  The information in this section is intended for users
+intending to compile the source code.
+\medbreak
+To compile the C source code, a compiler that supports ANSI Standard C is
+required.
+With very minor exceptions, the source code conforms to the ANSI standard
+for C; it does, however, make use of a number of features not present in
+most pre--ANSI versions of C.  The code was written under the assumption
+that it would be compiled with optimization turned on, so it is important
+to enable optimization, as the programs tend to run quite slowly if
+compiled with optimization disabled.\footnote{${}^{\dag}$}{\elevenpoint However, some compilers
+fail to optimize the code correctly.  GNU~C~1.39 and~2.1 (Sun/3, Sun/4) and 
+Waterloo~C 3.2 (IBM~370) optimize it correctly; at present, 
+Borland~C++~3.0 and Microsoft~C~5.1 do not.  
+Microsoft~C~6.0/7.0 and Borland~C++~3.1 have not been
+tested.}  At present large sections of the source code
+are not commented or are commented incorrectly.  Accordingly, the source
+is provided primarily so that users may compile the programs on other
+machines, rather than modify them.  Eventually the author hopes to
+distribute adequately documented source code.
+\medbreak
+Prior to compiling the source, it is necessary to determine whether a
+special timing function needs to be supplied.  By default the programs
+use the C standard library function {\tt clock()} to measure execution
+times.  This is adequate on many systems.  However, on some systems (e.g., 
+Sun/3 and Sun/4 Unix), a problem arises because the {\tt clock()} function returns a 
+result with a resolution of one microsecond and thus ``wraps around'' in about
+36 minutes.  Unless the user is content with timing statistics correct modulo
+$2^{32}$ microseconds (about 71.58 minutes), an alternate timing function
+must be supplied in a file which should be named {\tt cputime.c}; 
+this function must return a value of type {\tt long}
+which represents the elapsed CPU time, and C macros 
+{\tt CPU\_TIME} and {\tt TICK} must be
+defined to specify the name of this special 
+function (e.g., {\tt cpuTime}) and the resolution
+of the function (in clock ticks per second), respectively.  
+In addition, a make file macro {\tt CPUTIME} must be defined to have
+the value {\tt cputime.o} (assuming object code files have suffix {\tt o}).
+These macros are discussed in more detail below.
+For the Sun/3 and Sun/4, source code for such a function 
+{\tt cpuTime()} is supplied in the file {\tt cputime.c}; perhaps this function
+will work on other Unix systems as well.  In the remainder of this section,
+it is assumed that such a function, if needed, has already been written.
+\medbreak
+A make file (named {\tt Makefile}) is provided with the source.  This make file
+is designed for the GNU~C compiler, version 2, on the Sun/3 and Sun/4, but with some
+other compilers and systems, only simple editting of the first few lines of the make file
+should be needed; the purpose of these lines is to define appropriate
+make file macros.  For some compilers, more extensive editting of the
+make file may be
+required.  Note that the make file assumes that all source code and include
+files (except system include files) are in the currect directory, and that
+all object and executable files are to be placed in this directory.
+\medbreak
+The make file provided with the source begins as follows:
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+COMPILE = gcc
+DEFINES = -DSUN\_UNIX\_GCC -DINT\_SIZE=32 -DCPU\_TIME=cpuTime -DTICK=1000 
+          -DLONG\_EXTERNAL\_NAMES -Dclock\_t=long 
+INCLUDES =
+COMPOPT = -c -O2 -Wall  
+LINKNAME = -o
+LINKOPT = -v
+OBJ = o
+CPUTIME = cputime.o
+BOUNDS =
+}}
+\medbreak
+The purpose of the make file macros defined here is as follows:
+\smallbreak
+{\advance\leftskip by 0.3in\noindent
+   {\tt COMPILE}:\quad  This macro specifies the command to invoke the C compiler;
+                   it may include path information.
+\smallbreak
+   {\tt DEFINES}:\quad  This make file macro specifies C macros to be defined
+                        for the compilation; these are discussed below.  
+\smallbreak
+   {\tt INCLUDES}:\quad  This macro is used to tell the compiler where
+                         to search for include files, if they are located
+                         other than in the standard location.  
+\smallbreak
+   {\tt COMPOPT}:\quad  This macro is used to specify compile--time options,
+                        other than those given by means of the 
+                        {\tt DEFINES} and {\tt INCLUDES} macros.  These
+                        options should include code optimization and
+                        compile--only (no linking) if these are not
+                        defaults.  For the IBM~PC, an option specifying the
+                        large memory model should be given. 
+\smallbreak
+   {\tt LINKNAME}:\quad  This macro is used to specify the linker option
+                        used to give the name of the executable file
+                        to be created.
+\smallbreak
+   {\tt LINKOPT}:\quad  This macro is used to specify linker options, other
+                        than that given by the {\tt LINKNAME} macro above.
+\smallbreak
+   {\tt OBJ}:\quad   This macro is used to specify the suffix (file type)
+                     for object files.  Normally this would be {\tt o}
+                     on Unix and {\tt obj} on MS~DOS.
+\smallbreak
+   {\tt CPUTIME}:\quad  Unless a special timing function is to be supplied
+                     (see discussion above), this value of this macro should
+                      be the null string.  If a special timing function is
+                      supplied, the value of the {\tt CPUTIME} macro should 
+                      be {\tt cputime.o}, assuming object files have suffix
+                      {\tt o}.
+\smallbreak
+   {\tt BOUNDS}:\quad  This macro is present for use on MS~DOS with Bounds Checker,
+                     a debugging product published by Nu-Mega Technologies
+                     and used heavily by the author in debugging the programs.
+                     Normally its value should be the null string.
+\medbreak}
+It remains to discuss the C language macros that must, or may, be defined
+by the make macro {\tt DEFINES}.  One of these C macros, {\tt INT\_SIZE}, always
+must be defined; the others are optional, or are required only in
+certain circumstances.  The C language macros are as follows:
+\smallbreak
+{\advance\leftskip by 0.3in\noindent
+    {\tt INT\_SIZE}:\quad  This macro is always required.  Its value must
+             be the number of bits in the C data type {\tt int}, usually
+             16 or 32.  (The programs have never been adapted to a system
+             in which the integer size is other than 16 or 32, although
+             it should not be difficult to do so.)
+             {\it Note:\/}\enskip This macro only specifies the size of the
+             C data type {\tt int}; it does {\it not\/} determine whether
+             the programs are compiled to use 16 or 32 bit integers.  
+\smallbreak
+   {\tt EXTRA\_LARGE}:\quad If this macro is defined, and {\tt INT\_SIZE}
+             above is 32, the programs will be compiled using 32--bit integers;
+             that is, points will be represented using the C data type
+             {\tt unsigned}.  Otherwise, if {\tt INT\_SIZE} is 32, the programs
+             will be compiled using 16--bit integers (with most compilers),
+             as points will be represented using the C data type
+             {\tt unsigned short}.  Note {\tt EXTRA\_LARGE} should not be
+             defined when {\tt INT\_SIZE} is 16.  Care must be taken, of
+             course, not to link object files compiled with {\tt EXTRA\_LARGE}
+             defined with those compiled without it defined, as the make file
+             cannot protect against this error.  (However, running the programs
+             with the {\tt -v} option will reveal this error.)
+         
+\smallbreak
+   {\tt LONG\_EXTERNAL\_NAMES}:\quad   This macro should (but need not) be defined
+             if the linker supports long external names (up to 31 characters).
+             If defined, its value is irrelevent.
+\smallbreak
+   {\tt CPU\_TIME}:\quad  This macro must be defined if a special timing function
+             is supplied, and its value must be the name of that function.  
+             If the standard C function {\tt clock()} is to be used, the
+             macro must not be defined (not even as the null string).  
+\smallbreak
+   {\tt NOFLOAT}:\quad  This macro probably should be defined on a system 
+              lacking floating point hardware support.  (If defined, its
+              value is irrelevant.)  Normally, the programs perform a 
+              small amount of floating point arithmetic in attempting to
+              produce a good $\bfgermR$--base; with software emulation of floating
+              point instructions, the cost of this use of floating point
+              arithmetic probably exceeds its benefit.  If the 
+              {\tt NOFLOAT} macro is defined, no floating point arithmetic
+              is used.  (In this case, it may be advantageous to add a
+              compiler option telling the compiler not to incorporate
+              floating--point support into the executable program.  For
+              example, under Borland C++, the {\tt -f-} option has this
+              effect.)
+\smallbreak
+   {\tt TICK}:\quad  This macro should be defined in two situations: (1)
+                If a special CPU time function is supplied, {\tt TICK}
+                should be defined to be the resolution (in clock ticks per
+                second) of that function, and (2) if the
+                {\tt NOFLOAT} macro is defined and if the compiler--supplied
+                definition of the standard C macro {\tt CLK\_TCK} is a
+                floating point constant (as occurs with Borland~C++), 
+                {\tt TICK} should be defined to be the nearest integer 
+                approximation to the value of {\tt CLK\_TCK}, e.g., 18 for
+                Borland~C++.
+\smallbreak
+   {\tt HUGE}:\quad This macro must be defined for the IBM PC (unless a
+               DOS extender is being used).  It simply causes a few pointers
+               to be declared as {\tt huge}.  Only one program, the
+               weight distribution program, uses huge pointers.
+\medbreak}
+In addition, the author recommends defining a symbol unique to the system
+and compiler, e.g., {\tt SUN\_UNIX\_GCC} above.  Then any code modifications
+unique to this system and compiler can be bracketed as follows:
+\medbreak
+\vbox{{\elevenpoint\advance\leftskip by 0.45truein\obeywhitespace\tt\catcode`^=\other
+\#ifdef SUN\_UNIX\_GCC
+   /* Code modifications for Sun Unix, GNU C compiler. */
+\#endif
+}}
+\medbreak
+Once the make file has been editted appropriately, all of the programs
+may be compiled at once by the command
+\smallskip
+\hskip0.45truein\relax {\tt make all}
+\smallskip
+or, alternatively, individual programs may be compiled by the commands
+\smallskip
+\hskip0.45truein\relax \hbox to1.5truein{\tt make setstab\hfil}for
+                    {\tt setstab}, {\tt setimage}, {\tt parstab}, and {\tt parimage},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make cent\hfil}for 
+                    {\tt cent}, {\tt conj}, {\tt gcent},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make inter\hfil}for
+                    {\tt inter},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make desauto\hfil}for
+                    {\tt desauto}, {\tt desiso}, {\tt matauto}, {\tt matiso},
+                    {\tt codeauto}, and {\tt codeiso},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make cjrndper\hfil}for
+                    {\tt cjrndper} and {\tt cjper},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make commut\hfil}for
+                    {\tt commut} and {\tt ncl},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make compgrp\hfil}for
+                    {\tt compgrp},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make fndelt\hfil}for
+                    {\tt fndelt},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make generate\hfil}for
+                    {\tt generate},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make orblist\hfil}for
+                    {\tt orblist}, {\tt chbase}, and {\tt ptstab},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make randobj\hfil}for
+                    {\tt randobj},
+\vskip1pt\noindent
+\hskip0.45truein\relax \hbox to1.5truein{\tt make wtdist\hfil}for
+                    {\tt wtdist} and {\tt cwtdist}.
+\smallskip
+Ideally, there should be no errors in compilation.  However, with some
+compilers (e.g., Zortech~C++), it is necessary to define {\tt const} to
+be a null string in order to avoid compile--time errors.  Typically
+compilers will generate a number of warnings; a number of them involve
+implicit conversion between pointers to constant and non--constant types.
+\medbreak
+The above commands place the executable programs in the current directory
+(that containing the source).   The final step is to move the executables
+to the directory in which they should reside, preferably one on the current
+path.  A shell file named {\tt install} is provided for this purpose.
+The command
+\vskip2pt
+\hskip0.45in\relax {\tt sh install\ }{\it bindir}
+\vskip2pt
+should be issued, where {\it bindir\/} is the name of the directory in
+which the binary files should be placed, e.g., {\tt ../bin}.  Note that
+this command also copies certain shell files from the source directory
+to the binary directory, renaming them by dropping the {\tt sh} suffix
+in the process.
+%
+\bigbreak
+\vskip15pt
+\centerline{\sectionheaderfont REFERENCES}
+\nobreak\medskip\nobreak
+Leon, J.\enskip (1980a),\enskip
+On an algorithm for finding a base and a strong generating set
+for a group given by generating permutations,\enskip
+{\it Math.\ Comp.}
+{\bf 35},
+941--974.
+\medbreak
+Leon, J.\enskip(1991),\enskip
+Permutation group algorithms based on partitions, I: Theory and algorithms,\enskip
+{\it J. Symbolic Comp.}
+{\bf 12},
+533--583.
+\medbreak
+Cannon, J.\enskip (1984),\enskip
+{\it A language for group theory,}\enskip
+Dept.\ of Pure Mathematics, University of Sydney, Australia.
+\medbreak
+Sims, C.~C.\enskip (1971),\enskip
+Computation with permutation groups,\enskip
+In (Petrick, S.~R., ed.),\enskip
+{\it Proc.\ of the Second Symposium on Symbolic and
+Algebraic Manipulation,}\enskip
+New York: Assoc.\ for Computing Mach.
+\bye

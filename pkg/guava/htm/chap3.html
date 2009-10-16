@@ -1,0 +1,1761 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>GAP (guava) - Chapter 3: Codes</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+</head>
+<body>
+
+
+<div class="pcenter"><table class="chlink"><tr><td class="chlink1">Goto Chapter: </td><td><a href="chap0.html">Top</a></td><td><a href="chap1.html">1</a></td><td><a href="chap2.html">2</a></td><td><a href="chap3.html">3</a></td><td><a href="chap4.html">4</a></td><td><a href="chap5.html">5</a></td><td><a href="chap6.html">6</a></td><td><a href="chap7.html">7</a></td><td><a href="chapBib.html">Bib</a></td><td><a href="chapInd.html">Ind</a></td></tr></table><br /></div>
+<p><a id="s0ss0" name="s0ss0"></a></p>
+
+<h3>3. Codes</h3>
+
+<p>A <em>code</em> is a set of codewords (recall a codeword in <strong class="pkg">GUAVA</strong> is simply a sequence of elements of a finite field GF(q), where q is a prime power). We call these the <em>elements</em> of the code. Depending on the type of code, a codeword can be interpreted as a vector or as a polynomial. This is explained in more detail in Chapter <a href="chap2.html#s0ss0"><b>2.</b></a>.</p>
+
+<p>In <strong class="pkg">GUAVA</strong>, codes can be a set specified by its elements (this will be called an <em>unrestricted code</em>), by a generator matrix listing a set of basis elements (for a linear code) or by a generator polynomial (for a cyclic code).</p>
+
+<p>Any code can be defined by its elements. If you like, you can give the code a name.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := ElementsCode(["1100", "1010", "0001"], "example code", GF(2) );
+a (4,3,1..4)2..4 example code over GF(2) 
+
+</pre></td></tr></table>
+
+<p>An (n,M,d) code is a code with word <em>length</em> n, <em>size</em> M and <em>minimum distance</em> d. If the minimum distance has not yet been calculated, the lower bound and upper bound are printed (except in the case where the code is a random linear codes, where these are not printed for efficiency reasons). So</p>
+
+
+<pre class="normal">
+
+a (4,3,1..4)2..4 code over GF(2)
+
+</pre>
+
+<p>means a binary unrestricted code of length 4, with 3 elements and the minimum distance is greater than or equal to 1 and less than or equal to 4 and the covering radius is greater than or equal to 2 and less than or equal to 4.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := ElementsCode(["1100", "1010", "0001"], "example code", GF(2) );
+a (4,3,1..4)2..4 example code over GF(2) 
+gap&gt; MinimumDistance(C);
+2
+gap&gt; C;
+a (4,3,2)2..4 example code over GF(2) 
+
+</pre></td></tr></table>
+
+<p>If the set of elements is a linear subspace of GF(q)^n, the code is called <em>linear</em>. If a code is linear, it can be defined by its <em>generator matrix</em> or <em>parity check matrix</em>. By definition, the rows of the generator matrix is a basis for the code (as a vector space over GF(q)). By definition, the rows of the parity check matrix is a basis for the dual space of the code,</p>
+
+<p class="pcenter">\[
+C^* = \{ v \in GF(q)^n\ |\ v\cdot c = 0,\ for \ all\ c \in C \}.
+ \]</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; G := GeneratorMatCode([[1,0,1],[0,1,2]], "demo code", GF(3) );
+a linear [3,2,1..2]1 demo code over GF(3) 
+
+</pre></td></tr></table>
+
+<p>So a linear [n, k, d]r code is a code with word <em>length</em> n, <em>dimension</em> k, <em>minimum distance</em> d and <em>covering radius</em> r.</p>
+
+<p>If the code is linear and all cyclic shifts of its codewords (regarded as n-tuples) are again codewords, the code is called <em>cyclic</em>. All elements of a cyclic code are multiples of the monic polynomial modulo a polynomial x^n -1, where n is the word length of the code. Such a polynomial is called a <em>generator polynomial</em> The generator polynomial must divide x^n-1 and its quotient is called a <em>check polynomial</em>. Multiplying a codeword in a cyclic code by the check polynomial yields zero (modulo the polynomial x^n -1). In <strong class="pkg">GUAVA</strong>, a cyclic code can be defined by either its generator polynomial or check polynomial.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; G := GeneratorPolCode(Indeterminate(GF(2))+Z(2)^0, 7, GF(2) );
+a cyclic [7,6,1..2]1 code defined by generator polynomial over GF(2)
+
+</pre></td></tr></table>
+
+<p>It is possible that <strong class="pkg">GUAVA</strong> does not know that an unrestricted code is in fact linear. This situation occurs for example when a code is generated from a list of elements with the function <code class="code">ElementsCode</code> (see <code class="func">ElementsCode</code> (<a href="chap5.html#s1ss1"><b>5.1-1</b></a>)). By calling the function <code class="code">IsLinearCode</code> (see <code class="func">IsLinearCode</code> (<a href="chap3.html#s3ss4"><b>3.3-4</b></a>)), <strong class="pkg">GUAVA</strong> tests if the code can be represented by a generator matrix. If so, the code record and the operations are converted accordingly.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; L := Z(2)*[ [0,0,0], [1,0,0], [0,1,1], [1,1,1] ];;
+gap&gt; C := ElementsCode( L, GF(2) );
+a (3,4,1..3)1 user defined unrestricted code over GF(2)
+# so far, GUAVA does not know what kind of code this is
+gap&gt; IsLinearCode( C );
+true                      # it is linear
+gap&gt; C;
+a linear [3,2,1]1 user defined unrestricted code over GF(2) 
+
+</pre></td></tr></table>
+
+<p>Of course the same holds for unrestricted codes that in fact are cyclic, or codes, defined by a generator matrix, that actually are cyclic.</p>
+
+<p>Codes are printed simply by giving a small description of their parameters, the word length, size or dimension and perhaps the minimum distance, followed by a short description and the base field of the code. The function <code class="code">Display</code> gives a more detailed description, showing the construction history of the code.</p>
+
+<p><strong class="pkg">GUAVA</strong> doesn't place much emphasis on the actual encoding and decoding processes; some algorithms have been included though. Encoding works simply by multiplying an information vector with a code, decoding is done by the functions <code class="code">Decode</code> or <code class="code">Decodeword</code>. For more information about encoding and decoding, see sections <a href="chap3.html#s2ss0"><b>3.2</b></a> and <a href="chap3.html#s10ss1"><b>3.10-1</b></a>.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; R := ReedMullerCode( 1, 3 );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2)
+gap&gt; w := [ 1, 0, 1, 1 ] * R;
+[ 1 0 0 1 1 0 0 1 ]
+gap&gt; Decode( R, w );
+[ 1 0 1 1 ]
+gap&gt; Decode( R, w + "10000000" ); # One error at the first position
+[ 1 0 1 1 ]                       # Corrected by Guava 
+
+</pre></td></tr></table>
+
+<p>Sections <a href="chap3.html#s1ss0"><b>3.1</b></a> and <a href="chap3.html#s2ss0"><b>3.2</b></a> describe the operations that are available for codes. Section <a href="chap3.html#s3ss0"><b>3.3</b></a> describe the functions that tests whether an object is a code and what kind of code it is (see <code class="code">IsCode</code>, <code class="func">IsLinearCode</code> (<a href="chap3.html#s3ss4"><b>3.3-4</b></a>) and <code class="code">IsCyclicCode</code>) and various other boolean functions for codes. Section <a href="chap3.html#s4ss0"><b>3.4</b></a> describe functions about equivalence and isomorphism of codes (see <code class="func">IsEquivalent</code> (<a href="chap3.html#s4ss1"><b>3.4-1</b></a>), <code class="func">CodeIsomorphism</code> (<a href="chap3.html#s4ss2"><b>3.4-2</b></a>) and <code class="func">AutomorphismGroup</code> (<a href="chap3.html#s4ss3"><b>3.4-3</b></a>)). Section <a href="chap3.html#s5ss0"><b>3.5</b></a> describes functions that work on <em>domains</em> (see Chapter "Domains and their Elements" in the <strong class="pkg">GAP</strong> Reference Manual). Section <a href="chap3.html#s6ss0"><b>3.6</b></a> describes functions for printing and displaying codes. Section <a href="chap3.html#s7ss0"><b>3.7</b></a> describes functions that return the matrices and polynomials that define a code (see <code class="func">GeneratorMat</code> (<a href="chap3.html#s7ss1"><b>3.7-1</b></a>), <code class="func">CheckMat</code> (<a href="chap3.html#s7ss2"><b>3.7-2</b></a>), <code class="func">GeneratorPol</code> (<a href="chap3.html#s7ss3"><b>3.7-3</b></a>), <code class="func">CheckPol</code> (<a href="chap3.html#s7ss4"><b>3.7-4</b></a>), <code class="func">RootsOfCode</code> (<a href="chap3.html#s7ss5"><b>3.7-5</b></a>)). Section <a href="chap3.html#s8ss0"><b>3.8</b></a> describes functions that return the basic parameters of codes (see <code class="func">WordLength</code> (<a href="chap3.html#s8ss1"><b>3.8-1</b></a>), <code class="func">Redundancy</code> (<a href="chap3.html#s8ss2"><b>3.8-2</b></a>) and <code class="func">MinimumDistance</code> (<a href="chap3.html#s8ss3"><b>3.8-3</b></a>)). Section <a href="chap3.html#s9ss0"><b>3.9</b></a> describes functions that return distance and weight distributions (see <code class="func">WeightDistribution</code> (<a href="chap3.html#s9ss1"><b>3.9-1</b></a>), <code class="func">InnerDistribution</code> (<a href="chap3.html#s9ss2"><b>3.9-2</b></a>), <code class="func">OuterDistribution</code> (<a href="chap3.html#s9ss4"><b>3.9-4</b></a>) and <code class="func">DistancesDistribution</code> (<a href="chap3.html#s9ss3"><b>3.9-3</b></a>)). Section <a href="chap3.html#s10ss0"><b>3.10</b></a> describes functions that are related to decoding (see <code class="func">Decode</code> (<a href="chap3.html#s10ss1"><b>3.10-1</b></a>), <code class="func">Decodeword</code> (<a href="chap3.html#s10ss2"><b>3.10-2</b></a>), <code class="func">Syndrome</code> (<a href="chap3.html#s10ss7"><b>3.10-7</b></a>), <code class="func">SyndromeTable</code> (<a href="chap3.html#s10ss8"><b>3.10-8</b></a>) and <code class="func">StandardArray</code> (<a href="chap3.html#s10ss9"><b>3.10-9</b></a>)). In Chapters <a href="chap5.html#s0ss0"><b>5.</b></a> and <a href="chap6.html#s0ss0"><b>6.</b></a> which follow, we describe functions that generate and manipulate codes.</p>
+
+<p><a id="s1ss0" name="s1ss0"></a></p>
+
+<h4>3.1 Comparisons of Codes</h4>
+
+<p><a id="s1ss1" name="s1ss1"></a></p>
+
+<h5>3.1-1 =</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; =</code>( <var>C1, C2</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>The equality operator <code class="code">C1 = C2</code> evaluates to `true' if the codes <var>C1</var> and <var>C2</var> are equal, and to `false' otherwise.</p>
+
+<p>The equality operator is also denoted <code class="code">EQ</code>, and <code class="code">Eq(C1,C2)</code> is the same as <code class="code">C1 = C2</code>. There is also an inequality operator, &lt; &gt;, or <code class="code">not EQ</code>.</p>
+
+<p>Note that codes are equal if and only if their set of elements are equal. Codes can also be compared with objects of other types. Of course they are never equal.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; M := [ [0, 0], [1, 0], [0, 1], [1, 1] ];;
+gap&gt; C1 := ElementsCode( M, GF(2) );
+a (2,4,1..2)0 user defined unrestricted code over GF(2)
+gap&gt; M = C1;
+false
+gap&gt; C2 := GeneratorMatCode( [ [1, 0], [0, 1] ], GF(2) );
+a linear [2,2,1]0 code defined by generator matrix over GF(2)
+gap&gt; C1 = C2;
+true
+gap&gt; ReedMullerCode( 1, 3 ) = HadamardCode( 8 );
+true
+gap&gt; WholeSpaceCode( 5, GF(4) ) = WholeSpaceCode( 5, GF(2) );
+false
+
+</pre></td></tr></table>
+
+<p>Another way of comparing codes is <code class="code">IsEquivalent</code>, which checks if two codes are equivalent (see <code class="func">IsEquivalent</code> (<a href="chap3.html#s4ss1"><b>3.4-1</b></a>)). By the way, this called <code class="code">CodeIsomorphism</code>. For the current version of <strong class="pkg">GUAVA</strong>, unless one of the codes is unrestricted, this calls Leon's C program (which only works for binary linear codes and only on a unix/linux computer).</p>
+
+<p><a id="s2ss0" name="s2ss0"></a></p>
+
+<h4>3.2 
+Operations for Codes
+</h4>
+
+<p><a id="s2ss1" name="s2ss1"></a></p>
+
+<h5>3.2-1 +</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; +</code>( <var>C1, C2</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>The operator `+' evaluates to the direct sum of the codes <var>C1</var> and <var>C2</var>. See <code class="func">DirectSumCode</code> (<a href="chap6.html#s2ss1"><b>6.2-1</b></a>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C1:=RandomLinearCode(10,5);
+a  [10,5,?] randomly generated code over GF(2)
+gap&gt; C2:=RandomLinearCode(9,4);
+a  [9,4,?] randomly generated code over GF(2)
+gap&gt; C1+C2;
+a linear [10,9,1]0..10 unknown linear code over GF(2)
+
+</pre></td></tr></table>
+
+<p><a id="s2ss2" name="s2ss2"></a></p>
+
+<h5>3.2-2 *</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; *</code>( <var>C1, C2</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>The operator `*' evaluates to the direct product of the codes <var>C1</var> and <var>C2</var>. See <code class="func">DirectProductCode</code> (<a href="chap6.html#s2ss3"><b>6.2-3</b></a>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C1 := GeneratorMatCode( [ [1, 0,0,0], [0, 1,0,0] ], GF(2) );
+a linear [4,2,1]1 code defined by generator matrix over GF(2)
+gap&gt; C2 := GeneratorMatCode( [ [0,0,1, 1], [0,0,0, 1] ], GF(2) );
+a linear [4,2,1]1 code defined by generator matrix over GF(2)
+gap&gt; C1*C2;
+a linear [16,4,1]4..12 direct product code
+
+</pre></td></tr></table>
+
+<p><a id="s2ss3" name="s2ss3"></a></p>
+
+<h5>3.2-3 *</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; *</code>( <var>m, C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>The operator <code class="code">m*C</code> evaluates to the element of <var>C</var> belonging to information word ('message') <var>m</var>. Here <var>m</var> may be a vector, polynomial, string or codeword or a list of those. This is the way to do encoding in <strong class="pkg">GUAVA</strong>. <var>C</var> must be linear, because in <strong class="pkg">GUAVA</strong>, encoding by multiplication is only defined for linear codes. If <var>C</var> is a cyclic code, this multiplication is the same as multiplying an information polynomial <var>m</var> by the generator polynomial of <var>C</var>. If <var>C</var> is a linear code, it is equal to the multiplication of an information vector <var>m</var> by a generator matrix of <var>C</var>.</p>
+
+<p>To invert this, use the function <code class="code">InformationWord</code> (see <code class="func">InformationWord</code> (<a href="chap3.html#s2ss4"><b>3.2-4</b></a>), which simply calls the function <code class="code">Decode</code>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := GeneratorMatCode( [ [1, 0,0,0], [0, 1,0,0] ], GF(2) );
+a linear [4,2,1]1 code defined by generator matrix over GF(2)
+gap&gt; m:=Codeword("11");
+[ 1 1 ]
+gap&gt; m*C;
+[ 1 1 0 0 ]
+
+</pre></td></tr></table>
+
+<p><a id="s2ss4" name="s2ss4"></a></p>
+
+<h5>3.2-4 InformationWord</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; InformationWord</code>( <var>c, C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>Here <var>C</var> is a linear code and <var>c</var> is a codeword in it. The command <code class="code">InformationWord</code> returns the message word (or 'information digits') m satisfying <code class="code">c=m*C</code>. This command simply calls <code class="code">Decode</code>, provided <code class="code">c in C</code> is true. Otherwise, it returns an error.</p>
+
+<p>To invert this, use the encoding function <code class="code">*</code> (see <code class="func">*</code> (<a href="chap3.html#s2ss3"><b>3.2-3</b></a>)).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C:=HammingCode(3);
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap&gt; c:=Random(C);
+[ 0 0 0 1 1 1 1 ]
+gap&gt; InformationWord(C,c);
+[ 0 1 1 1 ]
+gap&gt; c:=Codeword("1111100");
+[ 1 1 1 1 1 0 0 ]
+gap&gt; InformationWord(C,c);
+"ERROR: codeword must belong to code"
+gap&gt; C:=NordstromRobinsonCode();
+a (16,256,6)4 Nordstrom-Robinson code over GF(2)
+gap&gt; c:=Random(C);
+[ 0 0 0 1 0 0 0 1 0 0 1 0 1 1 0 1 ]
+gap&gt; InformationWord(C,c);
+"ERROR: code must be linear"
+
+</pre></td></tr></table>
+
+<p><a id="s3ss0" name="s3ss0"></a></p>
+
+<h4>3.3 
+Boolean Functions for Codes
+</h4>
+
+<p><a id="s3ss1" name="s3ss1"></a></p>
+
+<h5>3.3-1 in</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; in</code>( <var>c, C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>The command <code class="code">c in C</code> evaluates to `true' if <var>C</var> contains the codeword or list of codewords specified by <var>c</var>. Of course, <var>c</var> and <var>C</var> must have the same word lengths and base fields.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C:= HammingCode( 2 );; eC:= AsSSortedList( C );
+[ [ 0 0 0 ], [ 1 1 1 ] ]
+gap&gt; eC[2] in C;
+true
+gap&gt; [ 0 ] in C;
+false 
+
+</pre></td></tr></table>
+
+<p><a id="s3ss2" name="s3ss2"></a></p>
+
+<h5>3.3-2 IsSubset</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsSubset</code>( <var>C1, C2</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>The command <code class="code">IsSubset(C1,C2)</code> returns `true' if <var>C2</var> is a subcode of <var>C1</var>, i.e. if <var>C1</var> contains all the elements of <var>C2</var>.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; IsSubset( HammingCode(3), RepetitionCode( 7 ) );
+true
+gap&gt; IsSubset( RepetitionCode( 7 ), HammingCode( 3 ) );
+false
+gap&gt; IsSubset( WholeSpaceCode( 7 ), HammingCode( 3 ) );
+true
+
+</pre></td></tr></table>
+
+<p><a id="s3ss3" name="s3ss3"></a></p>
+
+<h5>3.3-3 IsCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsCode</code>( <var>obj</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsCode</code> returns `true' if <var>obj</var>, which can be an object of arbitrary type, is a code and `false' otherwise. Will cause an error if <var>obj</var> is an unbound variable.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; IsCode( 1 );
+false
+gap&gt; IsCode( ReedMullerCode( 2,3 ) );
+true
+
+</pre></td></tr></table>
+
+<p><a id="s3ss4" name="s3ss4"></a></p>
+
+<h5>3.3-4 IsLinearCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsLinearCode</code>( <var>obj</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsLinearCode</code> checks if object <var>obj</var> (not necessarily a code) is a linear code. If a code has already been marked as linear or cyclic, the function automatically returns `true'. Otherwise, the function checks if a basis G of the elements of <var>obj</var> exists that generates the elements of <var>obj</var>. If so, G is recorded as a generator matrix of <var>obj</var> and the function returns `true'. If not, the function returns `false'.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := ElementsCode( [ [0,0,0],[1,1,1] ], GF(2) );
+a (3,2,1..3)1 user defined unrestricted code over GF(2)
+gap&gt; IsLinearCode( C );
+true
+gap&gt; IsLinearCode( ElementsCode( [ [1,1,1] ], GF(2) ) );
+false
+gap&gt; IsLinearCode( 1 );
+false 
+
+</pre></td></tr></table>
+
+<p><a id="s3ss5" name="s3ss5"></a></p>
+
+<h5>3.3-5 IsCyclicCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsCyclicCode</code>( <var>obj</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsCyclicCode</code> checks if the object <var>obj</var> is a cyclic code. If a code has already been marked as cyclic, the function automatically returns `true'. Otherwise, the function checks if a polynomial g exists that generates the elements of <var>obj</var>. If so, g is recorded as a generator polynomial of <var>obj</var> and the function returns `true'. If not, the function returns `false'.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := ElementsCode( [ [0,0,0], [1,1,1] ], GF(2) );
+a (3,2,1..3)1 user defined unrestricted code over GF(2)
+gap&gt; # GUAVA does not know the code is cyclic
+gap&gt; IsCyclicCode( C );      # this command tells GUAVA to find out
+true
+gap&gt; IsCyclicCode( HammingCode( 4, GF(2) ) );
+false
+gap&gt; IsCyclicCode( 1 );
+false 
+
+</pre></td></tr></table>
+
+<p><a id="s3ss6" name="s3ss6"></a></p>
+
+<h5>3.3-6 IsPerfectCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsPerfectCode</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsPerfectCode(C)</code> returns `true' if <var>C</var> is a perfect code. If Csubset GF(q)^n then, by definition, this means that for some positive integer t, the space GF(q)^n is covered by non-overlapping spheres of (Hamming) radius t centered at the codewords in <var>C</var>. For a code with odd minimum distance d = 2t+1, this is the case when every word of the vector space of <var>C</var> is at distance at most t from exactly one element of <var>C</var>. Codes with even minimum distance are never perfect.</p>
+
+<p>In fact, a code that is not "trivially perfect" (the binary repetition codes of odd length, the codes consisting of one word, and the codes consisting of the whole vector space), and does not have the parameters of a Hamming or Golay code, cannot be perfect (see section 1.12 in <a href="chapBib.html#biBHP03">[HP03]</a>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; H := HammingCode(2);
+a linear [3,1,3]1 Hamming (2,2) code over GF(2)
+gap&gt; IsPerfectCode( H );
+true
+gap&gt; IsPerfectCode( ElementsCode([[1,1,0],[0,0,1]],GF(2)) );
+true
+gap&gt; IsPerfectCode( ReedSolomonCode( 6, 3 ) );
+false
+gap&gt; IsPerfectCode( BinaryGolayCode() );
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s3ss7" name="s3ss7"></a></p>
+
+<h5>3.3-7 IsMDSCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsMDSCode</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsMDSCode(C)</code> returns true if <var>C</var> is a maximum distance separable (MDS) code. A linear [n, k, d]-code of length n, dimension k and minimum distance d is an MDS code if k=n-d+1, in other words if <var>C</var> meets the Singleton bound (see <code class="func">UpperBoundSingleton</code> (<a href="chap7.html#s1ss1"><b>7.1-1</b></a>)). An unrestricted (n, M, d) code is called <em>MDS</em> if k=n-d+1, with k equal to the largest integer less than or equal to the logarithm of M with base q, the size of the base field of <var>C</var>.</p>
+
+<p>Well-known MDS codes include the repetition codes, the whole space codes, the even weight codes (these are the only <em>binary</em> MDS codes) and the Reed-Solomon codes.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C1 := ReedSolomonCode( 6, 3 );
+a cyclic [6,4,3]2 Reed-Solomon code over GF(7)
+gap&gt; IsMDSCode( C1 );
+true    # 6-3+1 = 4
+gap&gt; IsMDSCode( QRCode( 23, GF(2) ) );
+false 
+
+</pre></td></tr></table>
+
+<p><a id="s3ss8" name="s3ss8"></a></p>
+
+<h5>3.3-8 IsSelfDualCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsSelfDualCode</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsSelfDualCode(C)</code> returns `true' if <var>C</var> is self-dual, i.e. when <var>C</var> is equal to its dual code (see also <code class="func">DualCode</code> (<a href="chap6.html#s1ss13"><b>6.1-13</b></a>)). A code is self-dual if it contains all vectors that its elements are orthogonal to. If a code is self-dual, it automatically is self-orthogonal (see <code class="func">IsSelfOrthogonalCode</code> (<a href="chap3.html#s3ss9"><b>3.3-9</b></a>)).</p>
+
+<p>If <var>C</var> is a non-linear code, it cannot be self-dual (the dual code is always linear), so `false' is returned. A linear code can only be self-dual when its dimension k is equal to the redundancy r.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; IsSelfDualCode( ExtendedBinaryGolayCode() );
+true
+gap&gt; C := ReedMullerCode( 1, 3 );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2)
+gap&gt; DualCode( C ) = C;
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s3ss9" name="s3ss9"></a></p>
+
+<h5>3.3-9 IsSelfOrthogonalCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsSelfOrthogonalCode</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsSelfOrthogonalCode(C)</code> returns `true' if <var>C</var> is self-orthogonal. A code is <em>self-orthogonal</em> if every element of <var>C</var> is orthogonal to all elements of <var>C</var>, including itself. (In the linear case, this simply means that the generator matrix of <var>C</var> multiplied with its transpose yields a null matrix.)</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; R := ReedMullerCode(1,4);
+a linear [16,5,8]6 Reed-Muller (1,4) code over GF(2)
+gap&gt; IsSelfOrthogonalCode(R);
+true
+gap&gt; IsSelfDualCode(R);
+false 
+
+</pre></td></tr></table>
+
+<p><a id="s4ss0" name="s4ss0"></a></p>
+
+<h4>3.4 
+Equivalence and Isomorphism of Codes
+</h4>
+
+<p><a id="s4ss1" name="s4ss1"></a></p>
+
+<h5>3.4-1 IsEquivalent</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsEquivalent</code>( <var>C1, C2</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>We say that <var>C1</var> is <em>permutation equivalent</em> to <var>C2</var> if <var>C1</var> can be obtained from <var>C2</var> by carrying out column permutations. <code class="code">IsEquivalent</code> returns true if <var>C1</var> and <var>C2</var> are equivalent codes. At this time, <code class="code">IsEquivalent</code> only handles <em>binary</em> codes. (The external unix/linux program <strong class="button">desauto</strong> from J. S. Leon is called by <code class="code">IsEquivalent</code>.) Of course, if <var>C1</var> and <var>C2</var> are equal, they are also equivalent.</p>
+
+<p>Note that the algorithm is <em>very slow</em> for non-linear codes.</p>
+
+<p>More generally, we say that <var>C1</var> is <em>equivalent</em> to <var>C2</var> if <var>C1</var> can be obtained from <var>C2</var> by carrying out column permutations and a permutation of the alphabet.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; x:= Indeterminate( GF(2) );; pol:= x^3+x+1; 
+Z(2)^0+x_1+x_1^3
+gap&gt; H := GeneratorPolCode( pol, 7, GF(2));          
+a cyclic [7,4,1..3]1 code defined by generator polynomial over GF(2)
+gap&gt; H = HammingCode(3, GF(2));
+false
+gap&gt; IsEquivalent(H, HammingCode(3, GF(2)));
+true                        # H is equivalent to a Hamming code
+gap&gt; CodeIsomorphism(H, HammingCode(3, GF(2)));
+(3,4)(5,6,7) 
+
+</pre></td></tr></table>
+
+<p><a id="s4ss2" name="s4ss2"></a></p>
+
+<h5>3.4-2 CodeIsomorphism</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; CodeIsomorphism</code>( <var>C1, C2</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>If the two codes <var>C1</var> and <var>C2</var> are permutation equivalent codes (see <code class="func">IsEquivalent</code> (<a href="chap3.html#s4ss1"><b>3.4-1</b></a>)), <code class="code">CodeIsomorphism</code> returns the permutation that transforms <var>C1</var> into <var>C2</var>. If the codes are not equivalent, it returns `false'.</p>
+
+<p>At this time, <code class="code">IsEquivalent</code> only computes isomorphisms between <em>binary</em> codes on a linux/unix computer (since it calls Leon's C program <strong class="button">desauto</strong>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; x:= Indeterminate( GF(2) );; pol:= x^3+x+1; 
+Z(2)^0+x_1+x_1^3
+gap&gt; H := GeneratorPolCode( pol, 7, GF(2));          
+a cyclic [7,4,1..3]1 code defined by generator polynomial over GF(2)
+gap&gt; CodeIsomorphism(H, HammingCode(3, GF(2)));
+(3,4)(5,6,7) 
+gap&gt; PermutedCode(H, (3,4)(5,6,7)) = HammingCode(3, GF(2));
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s4ss3" name="s4ss3"></a></p>
+
+<h5>3.4-3 AutomorphismGroup</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; AutomorphismGroup</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">AutomorphismGroup</code> returns the automorphism group of a linear code <var>C</var>. For a binary code, the automorphism group is the largest permutation group of degree n such that each permutation applied to the columns of <var>C</var> again yields <var>C</var>. <strong class="pkg">GUAVA</strong> calls the external program <strong class="button">desauto</strong> written by J. S. Leon, if it exists, to compute the automorphism group. If Leon's program is not compiled on the system (and in the default directory) then it calls instead the much slower program <code class="code">PermutationAutomorphismGroup</code>.</p>
+
+<p>See Leon <a href="chapBib.html#biBLeon82">[L82]</a> for a more precise description of the method, and the <code class="file">guava/src/leon/doc</code> subdirectory for for details about Leon's C programs.</p>
+
+<p>The function <code class="code">PermutedCode</code> permutes the columns of a code (see <code class="func">PermutedCode</code> (<a href="chap6.html#s1ss4"><b>6.1-4</b></a>)).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; R := RepetitionCode(7,GF(2));
+a cyclic [7,1,7]3 repetition code over GF(2)
+gap&gt; AutomorphismGroup(R);
+Sym( [ 1 .. 7 ] )
+                        # every permutation keeps R identical
+gap&gt; C := CordaroWagnerCode(7);
+a linear [7,2,4]3 Cordaro-Wagner code over GF(2)
+gap&gt; AsSSortedList(C);
+[ [ 0 0 0 0 0 0 0 ], [ 0 0 1 1 1 1 1 ], [ 1 1 0 0 0 1 1 ], [ 1 1 1 1 1 0 0 ] ]
+gap&gt; AutomorphismGroup(C);
+Group([ (3,4), (4,5), (1,6)(2,7), (1,2), (6,7) ])
+gap&gt; C2 :=  PermutedCode(C, (1,6)(2,7));
+a linear [7,2,4]3 permuted code
+gap&gt; AsSSortedList(C2);
+[ [ 0 0 0 0 0 0 0 ], [ 0 0 1 1 1 1 1 ], [ 1 1 0 0 0 1 1 ], [ 1 1 1 1 1 0 0 ] ]
+gap&gt; C2 = C;
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s4ss4" name="s4ss4"></a></p>
+
+<h5>3.4-4 PermutationAutomorphismGroup</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; PermutationAutomorphismGroup</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">PermutationAutomorphismGroup</code> returns the permutation automorphism group of a linear code <var>C</var>. This is the largest permutation group of degree n such that each permutation applied to the columns of <var>C</var> again yields <var>C</var>. It is written in GAP, so is much slower than <code class="code">AutomorphismGroup</code>.</p>
+
+<p>When <var>C</var> is binary <code class="code">PermutationAutomorphismGroup</code> does <em>not</em> call <code class="code">AutomorphismGroup</code>, even though they agree mathematically in that case. This way <code class="code">PermutationAutomorphismGroup</code> can be called on any platform which runs GAP.</p>
+
+<p>The older name for this command, <code class="code">PermutationGroup</code>, will become obsolete in the next version of GAP.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; R := RepetitionCode(3,GF(3));
+a cyclic [3,1,3]2 repetition code over GF(3)
+gap&gt; G:=PermutationAutomorphismGroup(R);
+Group([ (), (1,3), (1,2,3), (2,3), (1,3,2), (1,2) ])
+gap&gt; G=SymmetricGroup(3);
+true
+
+</pre></td></tr></table>
+
+<p><a id="s5ss0" name="s5ss0"></a></p>
+
+<h4>3.5 
+Domain Functions for Codes
+</h4>
+
+<p>These are some <strong class="pkg">GAP</strong> functions that work on `Domains' in general. Their specific effect on `Codes' is explained here.</p>
+
+<p><a id="s5ss1" name="s5ss1"></a></p>
+
+<h5>3.5-1 IsFinite</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; IsFinite</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">IsFinite</code> is an implementation of the <strong class="pkg">GAP</strong> domain function <code class="code">IsFinite</code>. It returns true for a code <var>C</var>.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; IsFinite( RepetitionCode( 1000, GF(11) ) );
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s5ss2" name="s5ss2"></a></p>
+
+<h5>3.5-2 Size</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Size</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Size</code> returns the size of <var>C</var>, the number of elements of the code. If the code is linear, the size of the code is equal to q^k, where q is the size of the base field of <var>C</var> and k is the dimension.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; Size( RepetitionCode( 1000, GF(11) ) );
+11
+gap&gt; Size( NordstromRobinsonCode() );
+256 
+
+</pre></td></tr></table>
+
+<p><a id="s5ss3" name="s5ss3"></a></p>
+
+<h5>3.5-3 LeftActingDomain</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; LeftActingDomain</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">LeftActingDomain</code> returns the base field of a code <var>C</var>. Each element of <var>C</var> consists of elements of this base field. If the base field is F, and the word length of the code is n, then the codewords are elements of F^n. If <var>C</var> is a cyclic code, its elements are interpreted as polynomials with coefficients over F.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C1 := ElementsCode([[0,0,0], [1,0,1], [0,1,0]], GF(4));
+a (3,3,1..3)2..3 user defined unrestricted code over GF(4)
+gap&gt; LeftActingDomain( C1 );
+GF(2^2)
+gap&gt; LeftActingDomain( HammingCode( 3, GF(9) ) );
+GF(3^2) 
+
+</pre></td></tr></table>
+
+<p><a id="s5ss4" name="s5ss4"></a></p>
+
+<h5>3.5-4 Dimension</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Dimension</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Dimension</code> returns the parameter k of <var>C</var>, the dimension of the code, or the number of information symbols in each codeword. The dimension is not defined for non-linear codes; <code class="code">Dimension</code> then returns an error.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; Dimension( NullCode( 5, GF(5) ) );
+0
+gap&gt; C := BCHCode( 15, 4, GF(4) );
+a cyclic [15,9,5]3..4 BCH code, delta=5, b=1 over GF(4)
+gap&gt; Dimension( C );
+9
+gap&gt; Size( C ) = Size( LeftActingDomain( C ) ) ^ Dimension( C );
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s5ss5" name="s5ss5"></a></p>
+
+<h5>3.5-5 AsSSortedList</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; AsSSortedList</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">AsSSortedList</code> (as strictly sorted list) returns an immutable, duplicate free list of the elements of <var>C</var>. For a finite field GF(q) generated by powers of Z(q), the ordering on</p>
+
+<p class="pcenter">\[
+GF(q)=\{ 0 , Z(q)^0, Z(q), Z(q)^2, ...Z(q)^{q-2} \} 
+ \]</p>
+
+<p>is that determined by the exponents i. These elements are of the type codeword (see <code class="func">Codeword</code> (<a href="chap2.html#s1ss1"><b>2.1-1</b></a>)). Note that for large codes, generating the elements may be very time- and memory-consuming. For generating a specific element or a subset of the elements, use <code class="code">CodewordNr</code> (see <code class="func">CodewordNr</code> (<a href="chap2.html#s1ss2"><b>2.1-2</b></a>)).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := ConferenceCode( 5 );
+a (5,12,2)1..4 conference code over GF(2)
+gap&gt; AsSSortedList( C );
+[ [ 0 0 0 0 0 ], [ 0 0 1 1 1 ], [ 0 1 0 1 1 ], [ 0 1 1 0 1 ], [ 0 1 1 1 0 ], 
+  [ 1 0 0 1 1 ], [ 1 0 1 0 1 ], [ 1 0 1 1 0 ], [ 1 1 0 0 1 ], [ 1 1 0 1 0 ], 
+  [ 1 1 1 0 0 ], [ 1 1 1 1 1 ] ]
+gap&gt; CodewordNr( C, [ 1, 2 ] );
+[ [ 0 0 0 0 0 ], [ 0 0 1 1 1 ] ]
+
+</pre></td></tr></table>
+
+<p><a id="s6ss0" name="s6ss0"></a></p>
+
+<h4>3.6 
+Printing and Displaying Codes
+</h4>
+
+<p><a id="s6ss1" name="s6ss1"></a></p>
+
+<h5>3.6-1 Print</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Print</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Print</code> prints information about <var>C</var>. This is the same as typing the identifier <var>C</var> at the <strong class="pkg">GAP</strong>-prompt.</p>
+
+<p>If the argument is an unrestricted code, information in the form</p>
+
+
+<pre class="normal">
+
+a (n,M,d)r ... code over GF(q)
+
+</pre>
+
+<p>is printed, where <var>n</var> is the word length, <var>M</var> the number of elements of the code, <var>d</var> the minimum distance and <var>r</var> the covering radius.</p>
+
+<p>If the argument is a linear code, information in the form</p>
+
+
+<pre class="normal">
+
+a linear [n,k,d]r ... code over GF(q)
+
+</pre>
+
+<p>is printed, where <var>n</var> is the word length, <var>k</var> the dimension of the code, <var>d</var> the minimum distance and <var>r</var> the covering radius.</p>
+
+<p>Except for codes produced by <code class="code">RandomLinearCode</code>, if <var>d</var> is not yet known, it is displayed in the form</p>
+
+
+<pre class="normal">
+
+lowerbound..upperbound
+
+</pre>
+
+<p>and if <var>r</var> is not yet known, it is displayed in the same way. For certain ranges of n, the values of <var>lowerbound</var> and <var>upperbound</var> are obtained from tables.</p>
+
+<p>The function <code class="code">Display</code> gives more information. See <code class="func">Display</code> (<a href="chap3.html#s6ss3"><b>3.6-3</b></a>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C1 := ExtendedCode( HammingCode( 3, GF(2) ) );
+a linear [8,4,4]2 extended code
+gap&gt; Print( "This is ", NordstromRobinsonCode(), ". \n");
+This is a (16,256,6)4 Nordstrom-Robinson code over GF(2). 
+
+</pre></td></tr></table>
+
+<p><a id="s6ss2" name="s6ss2"></a></p>
+
+<h5>3.6-2 String</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; String</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">String</code> returns information about <var>C</var> in a string. This function is used by <code class="code">Print</code>.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; x:= Indeterminate( GF(3) );; pol:= x^2+1;
+x_1^2+Z(3)^0
+gap&gt; Factors(pol);
+[ x_1^2+Z(3)^0 ]
+gap&gt; H := GeneratorPolCode( pol, 8, GF(3));
+a cyclic [8,6,1..2]1..2 code defined by generator polynomial over GF(3)
+gap&gt; String(H);
+"a cyclic [8,6,1..2]1..2 code defined by generator polynomial over GF(3)"
+
+</pre></td></tr></table>
+
+<p><a id="s6ss3" name="s6ss3"></a></p>
+
+<h5>3.6-3 Display</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Display</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Display</code> prints the method of construction of code <var>C</var>. With this history, in most cases an equal or equivalent code can be reconstructed. If <var>C</var> is an unmanipulated code, the result is equal to output of the function <code class="code">Print</code> (see <code class="func">Print</code> (<a href="chap3.html#s6ss1"><b>3.6-1</b></a>)).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; Display( RepetitionCode( 6, GF(3) ) );
+a cyclic [6,1,6]4 repetition code over GF(3)
+gap&gt; C1 := ExtendedCode( HammingCode(2) );;
+gap&gt; C2 := PuncturedCode( ReedMullerCode( 2, 3 ) );;
+gap&gt; Display( LengthenedCode( UUVCode( C1, C2 ) ) );
+a linear [12,8,2]2..4 code, lengthened with 1 column(s) of
+a linear [11,8,1]1..2 U U+V construction code of
+U: a linear [4,1,4]2 extended code of
+   a linear [3,1,3]1 Hamming (2,2) code over GF(2)
+V: a linear [7,7,1]0 punctured code of
+   a cyclic [8,7,2]1 Reed-Muller (2,3) code over GF(2)
+
+</pre></td></tr></table>
+
+<p><a id="s7ss0" name="s7ss0"></a></p>
+
+<h4>3.7 
+Generating (Check) Matrices and Polynomials
+</h4>
+
+<p><a id="s7ss1" name="s7ss1"></a></p>
+
+<h5>3.7-1 GeneratorMat</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; GeneratorMat</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">GeneratorMat</code> returns a generator matrix of <var>C</var>. The code consists of all linear combinations of the rows of this matrix.</p>
+
+<p>If until now no generator matrix of <var>C</var> was determined, it is computed from either the parity check matrix, the generator polynomial, the check polynomial or the elements (if possible), whichever is available.</p>
+
+<p>If <var>C</var> is a non-linear code, the function returns an error.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; GeneratorMat( HammingCode( 3, GF(2) ) );
+[ [ an immutable GF2 vector of length 7], 
+  [ an immutable GF2 vector of length 7], 
+  [ an immutable GF2 vector of length 7], 
+  [ an immutable GF2 vector of length 7] ]
+gap&gt; Display(last);
+ 1 1 1 . . . .
+ 1 . . 1 1 . .
+ . 1 . 1 . 1 .
+ 1 1 . 1 . . 1
+gap&gt; GeneratorMat( RepetitionCode( 5, GF(25) ) );
+[ [ Z(5)^0, Z(5)^0, Z(5)^0, Z(5)^0, Z(5)^0 ] ]
+gap&gt; GeneratorMat( NullCode( 14, GF(4) ) );
+[  ]
+
+</pre></td></tr></table>
+
+<p><a id="s7ss2" name="s7ss2"></a></p>
+
+<h5>3.7-2 CheckMat</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; CheckMat</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">CheckMat</code> returns a parity check matrix of <var>C</var>. The code consists of all words orthogonal to each of the rows of this matrix. The transpose of the matrix is a right inverse of the generator matrix. The parity check matrix is computed from either the generator matrix, the generator polynomial, the check polynomial or the elements of <var>C</var> (if possible), whichever is available.</p>
+
+<p>If <var>C</var> is a non-linear code, the function returns an error.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; CheckMat( HammingCode(3, GF(2) ) );
+[ [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ], 
+  [ 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0 ],
+  [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ] ]
+gap&gt; Display(last);
+ . . . 1 1 1 1
+ . 1 1 . . 1 1
+ 1 . 1 . 1 . 1
+gap&gt; CheckMat( RepetitionCode( 5, GF(25) ) );
+[ [ Z(5)^0, Z(5)^2, 0*Z(5), 0*Z(5), 0*Z(5) ],
+  [ 0*Z(5), Z(5)^0, Z(5)^2, 0*Z(5), 0*Z(5) ],
+  [ 0*Z(5), 0*Z(5), Z(5)^0, Z(5)^2, 0*Z(5) ],
+  [ 0*Z(5), 0*Z(5), 0*Z(5), Z(5)^0, Z(5)^2 ] ]
+gap&gt; CheckMat( WholeSpaceCode( 12, GF(4) ) );
+[  ] 
+
+</pre></td></tr></table>
+
+<p><a id="s7ss3" name="s7ss3"></a></p>
+
+<h5>3.7-3 GeneratorPol</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; GeneratorPol</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">GeneratorPol</code> returns the generator polynomial of <var>C</var>. The code consists of all multiples of the generator polynomial modulo x^n-1, where n is the word length of <var>C</var>. The generator polynomial is determined from either the check polynomial, the generator or check matrix or the elements of <var>C</var> (if possible), whichever is available.</p>
+
+<p>If <var>C</var> is not a cyclic code, the function returns `false'.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; GeneratorPol(GeneratorMatCode([[1, 1, 0], [0, 1, 1]], GF(2)));
+Z(2)^0+x_1
+gap&gt; GeneratorPol( WholeSpaceCode( 4, GF(2) ) );
+Z(2)^0
+gap&gt; GeneratorPol( NullCode( 7, GF(3) ) );
+-Z(3)^0+x_1^7
+
+</pre></td></tr></table>
+
+<p><a id="s7ss4" name="s7ss4"></a></p>
+
+<h5>3.7-4 CheckPol</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; CheckPol</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">CheckPol</code> returns the check polynomial of <var>C</var>. The code consists of all polynomials f with</p>
+
+<p class="pcenter">\[
+f\cdot h \equiv 0 \ ({\rm mod}\  x^n-1),
+ \]</p>
+
+<p>where h is the check polynomial, and n is the word length of <var>C</var>. The check polynomial is computed from the generator polynomial, the generator or parity check matrix or the elements of <var>C</var> (if possible), whichever is available.</p>
+
+<p>If <var>C</var> if not a cyclic code, the function returns an error.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; CheckPol(GeneratorMatCode([[1, 1, 0], [0, 1, 1]], GF(2)));
+Z(2)^0+x_1+x_1^2
+gap&gt; CheckPol(WholeSpaceCode(4, GF(2)));
+Z(2)^0+x_1^4
+gap&gt; CheckPol(NullCode(7,GF(3)));
+Z(3)^0
+
+</pre></td></tr></table>
+
+<p><a id="s7ss5" name="s7ss5"></a></p>
+
+<h5>3.7-5 RootsOfCode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; RootsOfCode</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">RootsOfCode</code> returns a list of all zeros of the generator polynomial of a cyclic code <var>C</var>. These are finite field elements in the splitting field of the generator polynomial, GF(q^m), m is the multiplicative order of the size of the base field of the code, modulo the word length.</p>
+
+<p>The reverse process, constructing a code from a set of roots, can be carried out by the function <code class="code">RootsCode</code> (see <code class="func">RootsCode</code> (<a href="chap5.html#s5ss3"><b>5.5-3</b></a>)).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C1 := ReedSolomonCode( 16, 5 );
+a cyclic [16,12,5]3..4 Reed-Solomon code over GF(17)
+gap&gt; RootsOfCode( C1 );
+[ Z(17), Z(17)^2, Z(17)^3, Z(17)^4 ]
+gap&gt; C2 := RootsCode( 16, last );
+a cyclic [16,12,5]3..4 code defined by roots over GF(17)
+gap&gt; C1 = C2;
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s8ss0" name="s8ss0"></a></p>
+
+<h4>3.8 
+Parameters of Codes
+</h4>
+
+<p><a id="s8ss1" name="s8ss1"></a></p>
+
+<h5>3.8-1 WordLength</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; WordLength</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">WordLength</code> returns the parameter n of <var>C</var>, the word length of the elements. Elements of cyclic codes are polynomials of maximum degree n-1, as calculations are carried out modulo x^n-1.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; WordLength( NordstromRobinsonCode() );
+16
+gap&gt; WordLength( PuncturedCode( WholeSpaceCode(7) ) );
+6
+gap&gt; WordLength( UUVCode( WholeSpaceCode(7), RepetitionCode(7) ) );
+14 
+
+</pre></td></tr></table>
+
+<p><a id="s8ss2" name="s8ss2"></a></p>
+
+<h5>3.8-2 Redundancy</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Redundancy</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Redundancy</code> returns the redundancy r of <var>C</var>, which is equal to the number of check symbols in each element. If <var>C</var> is not a linear code the redundancy is not defined and <code class="code">Redundancy</code> returns an error.</p>
+
+<p>If a linear code <var>C</var> has dimension k and word length n, it has redundancy r=n-k.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := TernaryGolayCode();
+a cyclic [11,6,5]2 ternary Golay code over GF(3)
+gap&gt; Redundancy(C);
+5
+gap&gt; Redundancy( DualCode(C) );
+6 
+
+</pre></td></tr></table>
+
+<p><a id="s8ss3" name="s8ss3"></a></p>
+
+<h5>3.8-3 MinimumDistance</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; MinimumDistance</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">MinimumDistance</code> returns the minimum distance of <var>C</var>, the largest integer d with the property that every element of <var>C</var> has at least a Hamming distance d (see <code class="func">DistanceCodeword</code> (<a href="chap2.html#s6ss2"><b>2.6-2</b></a>)) to any other element of <var>C</var>. For linear codes, the minimum distance is equal to the minimum weight. This means that d is also the smallest positive value with w[d+1] &lt;&gt; 0, where w=(w[1],w[2],...,w[n]) is the weight distribution of <var>C</var> (see <code class="func">WeightDistribution</code> (<a href="chap3.html#s9ss1"><b>3.9-1</b></a>)). For unrestricted codes, d is the smallest positive value with w[d+1] &lt;&gt; 0, where w is the inner distribution of <var>C</var> (see <code class="func">InnerDistribution</code> (<a href="chap3.html#s9ss2"><b>3.9-2</b></a>)).</p>
+
+<p>For codes with only one element, the minimum distance is defined to be equal to the word length.</p>
+
+<p>For linear codes <var>C</var>, the algorithm used is the following: After replacing <var>C</var> by a permutation equivalent <var>C'</var>, one may assume the generator matrix has the following form G=(I_k , | , A), for some ktimes (n-k) matrix A. If A=0 then return d(C)=1. Next, find the minimum distance of the code spanned by the rows of A. Call this distance d(A). Note that d(A) is equal to the the Hamming distance d(v,0) where v is some proper linear combination of i distinct rows of A. Return d(C)=d(A)+i, where i is as in the previous step.</p>
+
+<p>This command may also be called using the syntax <code class="code">MinimumDistance(C, w)</code>. In this form, <code class="code">MinimumDistance</code> returns the minimum distance of a codeword <var>w</var> to the code <var>C</var>, also called the <em>distance from <var>w</var> to</em> <var>C</var>. This is the smallest value d for which there is an element c of the code <var>C</var> which is at distance d from <var>w</var>. So d is also the minimum value for which D[d+1] &lt;&gt; 0, where D is the distance distribution of <var>w</var> to <var>C</var> (see <code class="func">DistancesDistribution</code> (<a href="chap3.html#s9ss3"><b>3.9-3</b></a>)).</p>
+
+<p>Note that <var>w</var> must be an element of the same vector space as the elements of <var>C</var>. <var>w</var> does not necessarily belong to the code (if it does, the minimum distance is zero).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := MOLSCode(7);; MinimumDistance(C);
+3
+gap&gt; WeightDistribution(C);
+[ 1, 0, 0, 24, 24 ]
+gap&gt; MinimumDistance( WholeSpaceCode( 5, GF(3) ) );
+1
+gap&gt; MinimumDistance( NullCode( 4, GF(2) ) );
+4
+gap&gt; C := ConferenceCode(9);; MinimumDistance(C);
+4
+gap&gt; InnerDistribution(C);
+[ 1, 0, 0, 0, 63/5, 9/5, 18/5, 0, 9/10, 1/10 ] 
+gap&gt; C := MOLSCode(7);; w := CodewordNr( C, 17 );
+[ 3 3 6 2 ]
+gap&gt; MinimumDistance( C, w );
+0
+gap&gt; C := RemovedElementsCode( C, w );; MinimumDistance( C, w );
+3                           # so w no longer belongs to C 
+
+</pre></td></tr></table>
+
+<p>See also the <strong class="pkg">GUAVA</strong> commands relating to bounds on the minimum distance in section <a href="chap7.html#s1ss0"><b>7.1</b></a>.</p>
+
+<p><a id="s8ss4" name="s8ss4"></a></p>
+
+<h5>3.8-4 MinimumDistanceLeon</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; MinimumDistanceLeon</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">MinimumDistanceLeon</code> returns the ``probable'' minimum distance d_Leon of a linear binary code <var>C</var>, using an implementation of Leon's probabilistic polynomial time algorithm. Briefly: Let <var>C</var> be a linear code of dimension k over GF(q) as above. The algorithm has input parameters s and rho, where s is an integer between 2 and n-k, and rho is an integer between 2 and k.</p>
+
+
+<ul>
+<li><p>Find a generator matrix G of C.</p>
+
+</li>
+<li><p>Randomly permute the columns of G.</p>
+
+</li>
+<li><p>Perform Gaussian elimination on the permuted matrix to obtain a new matrix of the following form:</p>
+
+<p class="pcenter">\[
+G=(I_{k} \, | \, Z \, | \, B)
+ \]</p>
+
+<p>with Z a ktimes s matrix. If (Z,B) is the zero matrix then return 1 for the minimum distance. If Z=0 but not B then either choose another permutation of the rows of <var>C</var> or return `method fails'.</p>
+
+</li>
+<li><p>Search Z for at most rho rows that lead to codewords of weight less than rho.</p>
+
+</li>
+<li><p>For these codewords, compute the weight of the whole word in <var>C</var>. Return this weight.</p>
+
+</li>
+</ul>
+<p>(See for example J. S. Leon, <a href="chapBib.html#biBLeon88">[L88]</a> for more details.) Sometimes (as is the case in <strong class="pkg">GUAVA</strong>) this probabilistic algorithm is repeated several times and the most commonly occurring value is taken.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C:=RandomLinearCode(50,22,GF(2));
+a  [50,22,?] randomly generated code over GF(2)
+gap&gt; MinimumDistanceLeon(C); time;
+6
+211
+gap&gt; MinimumDistance(C); time;
+6
+1204
+
+</pre></td></tr></table>
+
+<p><a id="s8ss5" name="s8ss5"></a></p>
+
+<h5>3.8-5 DecreaseMinimumDistanceUpperBound</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; DecreaseMinimumDistanceUpperBound</code>( <var>C, t, m</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">DecreaseMinimumDistanceUpperBound</code> is an implementation of the algorithm for the minimum distance of a linear binary code <var>C</var> by Leon <a href="chapBib.html#biBLeon88">[L88]</a>. This algorithm tries to find codewords with small minimum weights. The parameter <var>t</var> is at least 1 and less than the dimension of <var>C</var>. The best results are obtained if it is close to the dimension of the code. The parameter <var>m</var> gives the number of runs that the algorithm will perform.</p>
+
+<p>The result returned is a record with two fields; the first, <code class="code">mindist</code>, gives the lowest weight found, and <code class="code">word</code> gives the corresponding codeword. (This was implemented before <code class="code">MinimumDistanceLeon</code> but independently. The older manual had given the command incorrectly, so the command was only found after reading all the <em>*.gi</em> files in the <strong class="pkg">GUAVA</strong> library. Though both <code class="code">MinimumDistance</code> and <code class="code">MinimumDistanceLeon</code> often run much faster than <code class="code">DecreaseMinimumDistanceUpperBound</code>, <code class="code">DecreaseMinimumDistanceUpperBound</code> appears to be more accurate than <code class="code">MinimumDistanceLeon</code>.)</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C:=RandomLinearCode(5,2,GF(2));
+a  [5,2,?] randomly generated code over GF(2)
+gap&gt; DecreaseMinimumDistanceUpperBound(C,1,4);
+rec( mindist := 3, word := [ 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0 ] )
+gap&gt; MinimumDistance(C);
+3
+gap&gt; C:=RandomLinearCode(8,4,GF(2));
+a  [8,4,?] randomly generated code over GF(2)
+gap&gt; DecreaseMinimumDistanceUpperBound(C,3,4);
+rec( mindist := 2,
+  word := [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ] )
+gap&gt; MinimumDistance(C);
+2
+
+</pre></td></tr></table>
+
+<p><a id="s8ss6" name="s8ss6"></a></p>
+
+<h5>3.8-6 MinimumDistanceRandom</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; MinimumDistanceRandom</code>( <var>C, num, s</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">MinimumDistanceRandom</code> returns an upper bound for the minimum distance d_random of a linear binary code <var>C</var>, using a probabilistic polynomial time algorithm. Briefly: Let <var>C</var> be a linear code of dimension k over GF(q) as above. The algorithm has input parameters num and s, where s is an integer between 2 and n-1, and num is an integer greater than or equal to 1.</p>
+
+
+<ul>
+<li><p>Find a generator matrix G of C.</p>
+
+</li>
+<li><p>Randomly permute the columns of G, written G_p..</p>
+
+</li>
+<li><p class="pcenter">\[
+G=(A, B)
+ \]</p>
+
+<p>with A a ktimes s matrix. If A is the zero matrix then return `method fails'.</p>
+
+</li>
+<li><p>Search A for at most 5 rows that lead to codewords, in the code C_A with generator matrix A, of minimum weight.</p>
+
+</li>
+<li><p>For these codewords, use the associated linear combination to compute the weight of the whole word in <var>C</var>. Return this weight and codeword.</p>
+
+</li>
+</ul>
+<p>This probabilistic algorithm is repeated <var>num</var> times (with different random permutations of the rows of G each time) and the weight and codeword of the lowest occurring weight is taken.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C:=RandomLinearCode(60,20,GF(2));
+a  [60,20,?] randomly generated code over GF(2)
+gap&gt; #mindist(C);time;
+gap&gt; #mindistleon(C,10,30);time; #doesn't work well
+gap&gt; a:=MinimumDistanceRandom(C,10,30);time; # done 10 times -with fastest time!!
+
+ This is a probabilistic algorithm which may return the wrong answer.
+[ 12, [ 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 1 0 0 1 0 0 0 1 0 0 0 0 0 0 1 0 0 
+        1 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 ] ]
+130
+gap&gt; a[2] in C;
+true
+gap&gt; b:=DecreaseMinimumDistanceUpperBound(C,10,1); time; #only done once!
+rec( mindist := 12, word := [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+      Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+      0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 
+      Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 
+      0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+      0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 
+      0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ] )
+649
+gap&gt; Codeword(b!.word) in C;
+true
+gap&gt; MinimumDistance(C);time;
+12
+196
+gap&gt; c:=MinimumDistanceLeon(C);time;
+12
+66
+gap&gt; C:=RandomLinearCode(30,10,GF(3));
+a  [30,10,?] randomly generated code over GF(3)
+gap&gt; a:=MinimumDistanceRandom(C,10,10);time;
+
+ This is a probabilistic algorithm which may return the wrong answer.
+[ 13, [ 0 0 0 1 0 0 0 0 0 0 1 0 2 2 1 1 0 2 2 0 1 0 2 1 0 0 0 1 0 2 ] ]
+229
+gap&gt; a[2] in C;
+true
+gap&gt; MinimumDistance(C);time;
+9
+45
+gap&gt; c:=MinimumDistanceLeon(C);
+Code must be binary. Quitting.
+0
+gap&gt; a:=MinimumDistanceRandom(C,1,29);time;
+
+ This is a probabilistic algorithm which may return the wrong answer.
+[ 10, [ 0 0 1 0 2 0 2 0 1 0 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 2 2 2 0 ] ]
+53
+
+</pre></td></tr></table>
+
+<p><a id="s8ss7" name="s8ss7"></a></p>
+
+<h5>3.8-7 CoveringRadius</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; CoveringRadius</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">CoveringRadius</code> returns the <em>covering radius</em> of a linear code <var>C</var>. This is the smallest number r with the property that each element v of the ambient vector space of <var>C</var> has at most a distance r to the code <var>C</var>. So for each vector v there must be an element c of <var>C</var> with d(v,c) &lt;= r. The smallest covering radius of any [n,k] binary linear code is denoted t(n,k). A binary linear code with reasonable small covering radius is called a <em>covering code</em>.</p>
+
+<p>If <var>C</var> is a perfect code (see <code class="func">IsPerfectCode</code> (<a href="chap3.html#s3ss6"><b>3.3-6</b></a>)), the covering radius is equal to t, the number of errors the code can correct, where d = 2t+1, with d the minimum distance of <var>C</var> (see <code class="func">MinimumDistance</code> (<a href="chap3.html#s8ss3"><b>3.8-3</b></a>)).</p>
+
+<p>If there exists a function called <code class="code">SpecialCoveringRadius</code> in the `operations' field of the code, then this function will be called to compute the covering radius of the code. At the moment, no code-specific functions are implemented.</p>
+
+<p>If the length of <code class="code">BoundsCoveringRadius</code> (see <code class="func">BoundsCoveringRadius</code> (<a href="chap7.html#s2ss1"><b>7.2-1</b></a>)), is 1, then the value in</p>
+
+
+<pre class="normal">
+
+C.boundsCoveringRadius
+
+</pre>
+
+<p>is returned. Otherwise, the function</p>
+
+
+<pre class="normal">
+
+C.operations.CoveringRadius
+
+</pre>
+
+<p>is executed, unless the redundancy of <var>C</var> is too large. In the last case, a warning is issued.</p>
+
+<p>The algorithm used to compute the covering radius is the following. First, <code class="code">CosetLeadersMatFFE</code> is used to compute the list of coset leaders (which returns a codeword in each coset of GF(q)^n/C of minimum weight). Then <code class="code">WeightVecFFE</code> is used to compute the weight of each of these coset leaders. The program returns the maximum of these weights.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; H := RandomLinearCode(10, 5, GF(2));
+a  [10,5,?] randomly generated code over GF(2)
+gap&gt; CoveringRadius(H);
+3
+gap&gt; H := HammingCode(4, GF(2));; IsPerfectCode(H);
+true
+gap&gt; CoveringRadius(H);
+1                       # Hamming codes have minimum distance 3
+gap&gt; CoveringRadius(ReedSolomonCode(7,4));
+3 
+gap&gt; CoveringRadius( BCHCode( 17, 3, GF(2) ) );
+3
+gap&gt; CoveringRadius( HammingCode( 5, GF(2) ) );
+1
+gap&gt; C := ReedMullerCode( 1, 9 );;
+gap&gt; CoveringRadius( C );
+CoveringRadius: warning, the covering radius of
+this code cannot be computed straightforward.
+Try to use IncreaseCoveringRadiusLowerBound( code ).
+(see the manual for more details).
+The covering radius of code lies in the interval:
+[ 240 .. 248 ]
+
+</pre></td></tr></table>
+
+<p>See also the <strong class="pkg">GUAVA</strong> commands relating to bounds on the minimum distance in section <a href="chap7.html#s2ss0"><b>7.2</b></a>.</p>
+
+<p><a id="s8ss8" name="s8ss8"></a></p>
+
+<h5>3.8-8 SetCoveringRadius</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; SetCoveringRadius</code>( <var>C, intlist</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">SetCoveringRadius</code> enables the user to set the covering radius herself, instead of letting <strong class="pkg">GUAVA</strong> compute it. If <var>intlist</var> is an integer, <strong class="pkg">GUAVA</strong> will simply put it in the `boundsCoveringRadius' field. If it is a list of integers, however, it will intersect this list with the `boundsCoveringRadius' field, thus taking the best of both lists. If this would leave an empty list, the field is set to <var>intlist</var>. Because some other computations use the covering radius of the code, it is important that the entered value is not wrong, otherwise new results may be invalid.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := BCHCode( 17, 3, GF(2) );;
+gap&gt; BoundsCoveringRadius( C );
+[ 3 .. 4 ]
+gap&gt; SetCoveringRadius( C, [ 2 .. 3 ] );
+gap&gt; BoundsCoveringRadius( C );
+[ [ 2 .. 3 ] ]
+
+</pre></td></tr></table>
+
+<p><a id="s9ss0" name="s9ss0"></a></p>
+
+<h4>3.9 
+Distributions
+</h4>
+
+<p><a id="s9ss1" name="s9ss1"></a></p>
+
+<h5>3.9-1 WeightDistribution</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; WeightDistribution</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">WeightDistribution</code> returns the weight distribution of <var>C</var>, as a vector. The i^th element of this vector contains the number of elements of <var>C</var> with weight i-1. For linear codes, the weight distribution is equal to the inner distribution (see <code class="func">InnerDistribution</code> (<a href="chap3.html#s9ss2"><b>3.9-2</b></a>)). If w is the weight distribution of a linear code <var>C</var>, it must have the zero codeword, so w[1] = 1 (one word of weight 0).</p>
+
+<p>Some codes, such as the Hamming codes, have precomputed weight distributions. For others, the program WeightDistribution calls the GAP program <code class="code">DistancesDistributionMatFFEVecFFE</code>, which is written in C. See also <code class="code">CodeWeightEnumerator</code>.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; WeightDistribution( ConferenceCode(9) );
+[ 1, 0, 0, 0, 0, 18, 0, 0, 0, 1 ]
+gap&gt; WeightDistribution( RepetitionCode( 7, GF(4) ) );
+[ 1, 0, 0, 0, 0, 0, 0, 3 ]
+gap&gt; WeightDistribution( WholeSpaceCode( 5, GF(2) ) );
+[ 1, 5, 10, 10, 5, 1 ] 
+
+</pre></td></tr></table>
+
+<p><a id="s9ss2" name="s9ss2"></a></p>
+
+<h5>3.9-2 InnerDistribution</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; InnerDistribution</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">InnerDistribution</code> returns the inner distribution of <var>C</var>. The i^th element of the vector contains the average number of elements of <var>C</var> at distance i-1 to an element of <var>C</var>. For linear codes, the inner distribution is equal to the weight distribution (see <code class="func">WeightDistribution</code> (<a href="chap3.html#s9ss1"><b>3.9-1</b></a>)).</p>
+
+<p>Suppose w is the inner distribution of <var>C</var>. Then w[1] = 1, because each element of <var>C</var> has exactly one element at distance zero (the element itself). The minimum distance of <var>C</var> is the smallest value d &gt; 0 with w[d+1] &lt;&gt; 0, because a distance between zero and d never occurs. See <code class="func">MinimumDistance</code> (<a href="chap3.html#s8ss3"><b>3.8-3</b></a>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; InnerDistribution( ConferenceCode(9) );
+[ 1, 0, 0, 0, 63/5, 9/5, 18/5, 0, 9/10, 1/10 ]
+gap&gt; InnerDistribution( RepetitionCode( 7, GF(4) ) );
+[ 1, 0, 0, 0, 0, 0, 0, 3 ] 
+
+</pre></td></tr></table>
+
+<p><a id="s9ss3" name="s9ss3"></a></p>
+
+<h5>3.9-3 DistancesDistribution</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; DistancesDistribution</code>( <var>C, w</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">DistancesDistribution</code> returns the distribution of the distances of all elements of <var>C</var> to a codeword <var>w</var> in the same vector space. The i^th element of the distance distribution is the number of codewords of <var>C</var> that have distance i-1 to <var>w</var>. The smallest value d with w[d+1] &lt;&gt; 0, is defined as the <em>distance to</em> <var>C</var> (see <code class="func">MinimumDistance</code> (<a href="chap3.html#s8ss3"><b>3.8-3</b></a>)).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; H := HadamardCode(20);
+a (20,40,10)6..8 Hadamard code of order 20 over GF(2)
+gap&gt; c := Codeword("10110101101010010101", H);
+[ 1 0 1 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 1 ]
+gap&gt; DistancesDistribution(H, c);
+[ 0, 0, 0, 0, 0, 1, 0, 7, 0, 12, 0, 12, 0, 7, 0, 1, 0, 0, 0, 0, 0 ]
+gap&gt; MinimumDistance(H, c);
+5                           # distance to H 
+
+</pre></td></tr></table>
+
+<p><a id="s9ss4" name="s9ss4"></a></p>
+
+<h5>3.9-4 OuterDistribution</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; OuterDistribution</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p>The function <code class="code">OuterDistribution</code> returns a list of length q^n, where q is the size of the base field of <var>C</var> and n is the word length. The elements of the list consist of pairs, the first coordinate being an element of GF(q)^n (this is a codeword type) and the second coordinate being a distribution of distances to the code (a list of integers). This table is <em>very</em> large, and for n &gt; 20 it will not fit in the memory of most computers. The function <code class="code">DistancesDistribution</code> (see <code class="func">DistancesDistribution</code> (<a href="chap3.html#s9ss3"><b>3.9-3</b></a>)) can be used to calculate one entry of the list.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := RepetitionCode( 3, GF(2) );
+a cyclic [3,1,3]1 repetition code over GF(2)
+gap&gt; OD := OuterDistribution(C);
+[ [ [ 0 0 0 ], [ 1, 0, 0, 1 ] ], [ [ 1 1 1 ], [ 1, 0, 0, 1 ] ],
+  [ [ 0 0 1 ], [ 0, 1, 1, 0 ] ], [ [ 1 1 0 ], [ 0, 1, 1, 0 ] ],
+  [ [ 1 0 0 ], [ 0, 1, 1, 0 ] ], [ [ 0 1 1 ], [ 0, 1, 1, 0 ] ],
+  [ [ 0 1 0 ], [ 0, 1, 1, 0 ] ], [ [ 1 0 1 ], [ 0, 1, 1, 0 ] ] ]
+gap&gt; WeightDistribution(C) = OD[1][2];
+true
+gap&gt; DistancesDistribution( C, Codeword("110") ) = OD[4][2];
+true 
+
+</pre></td></tr></table>
+
+<p><a id="s10ss0" name="s10ss0"></a></p>
+
+<h4>3.10 
+Decoding Functions
+</h4>
+
+<p><a id="s10ss1" name="s10ss1"></a></p>
+
+<h5>3.10-1 Decode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Decode</code>( <var>C, r</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Decode</code> decodes <var>r</var> (a 'received word') with respect to code <var>C</var> and returns the `message word' (i.e., the information digits associated to the codeword c in C closest to <var>r</var>). Here <var>r</var> can be a <strong class="pkg">GUAVA</strong> codeword or a list of codewords. First, possible errors in <var>r</var> are corrected, then the codeword is decoded to an <em>information codeword</em> m (and not an element of <var>C</var>). If the code record has a field `specialDecoder', this special algorithm is used to decode the vector. Hamming codes and BCH codes have such a special algorithm. (The algorithm used for BCH codes is the Sugiyama algorithm described, for example, in section 5.4.3 of <a href="chapBib.html#biBHP03">[HP03]</a>. <em>Work in progress:</em> special decoders are now being written for the generalized Reed-Solomon code.) If <var>C</var> is linear and no special decoder field has been set then syndrome decoding is used. Otherwise (when <var>C</var> is non-linear), no decoding algorithms have been implemented and an error is returned.</p>
+
+<p>A special decoder can be created by defining a function</p>
+
+
+<pre class="normal">
+
+C!.SpecialDecoder := function(C, r) ... end;
+
+</pre>
+
+<p>The function uses the arguments <var>C</var> (the code record itself) and <var>r</var> (a vector of the codeword type) to decode <var>r</var> to an information vector. A normal decoder would take a codeword <var>r</var> of the same word length and field as <var>C</var>, and would return an information vector of length k, the dimension of <var>C</var>. The user is not restricted to these normal demands though, and can for instance define a decoder for non-linear codes.</p>
+
+<p>Encoding is done by multiplying the information vector with the code (see <a href="chap3.html#s2ss0"><b>3.2</b></a>).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := HammingCode(3);
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap&gt; c := "1010"*C;                    # encoding
+[ 1 0 1 1 0 1 0 ]
+gap&gt; Decode(C, c);                     # decoding
+[ 1 0 1 0 ]
+gap&gt; Decode(C, Codeword("0010101"));
+[ 1 1 0 1 ]                            # one error corrected
+gap&gt; C!.SpecialDecoder := function(C, c)
+&gt; return NullWord(Dimension(C));
+&gt; end;
+function ( C, c ) ... end
+gap&gt; Decode(C, c);
+[ 0 0 0 0 ]           # new decoder always returns null word 
+
+</pre></td></tr></table>
+
+<p><a id="s10ss2" name="s10ss2"></a></p>
+
+<h5>3.10-2 Decodeword</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Decodeword</code>( <var>C, r</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Decodeword</code> decodes <var>r</var> (a 'received word') with respect to code <var>C</var> and returns the codeword c in C closest to <var>r</var>. Here <var>r</var> can be a <strong class="pkg">GUAVA</strong> codeword or a list of codewords. If the code record has a field `specialDecoder', this special algorithm is used to decode the vector. Hamming codes, generalized Reed-Solomon codes, and BCH codes have such a special algorithm. (The algorithm used for BCH codes is the Sugiyama algorithm described, for example, in section 5.4.3 of <a href="chapBib.html#biBHP03">[HP03]</a>. The algorithm used for generalized Reed-Solomon codes is the ``interpolation algorithm'' described for example in chapter 5 of <a href="chapBib.html#biBJH04">[JH04]</a>.) If <var>C</var> is linear and no special decoder field has been set then syndrome decoding is used. Otherwise, when <var>C</var> is non-linear, the nearest neighbor algorithm has been implemented (which should only be used for small-sized codes).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := HammingCode(3);
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap&gt; c := "1010"*C;                    # encoding
+[ 1 0 1 1 0 1 0 ]
+gap&gt; Decodeword(C, c);                     # decoding
+[ 1 0 1 1 0 1 0 ]
+gap&gt;
+gap&gt; R:=PolynomialRing(GF(11),["t"]);
+GF(11)[t]
+gap&gt; P:=List([1,3,4,5,7],i-&gt;Z(11)^i);
+[ Z(11), Z(11)^3, Z(11)^4, Z(11)^5, Z(11)^7 ]
+gap&gt; C:=GeneralizedReedSolomonCode(P,3,R);
+a linear [5,3,1..3]2  generalized Reed-Solomon code over GF(11)
+gap&gt; MinimumDistance(C);
+3
+gap&gt; c:=Random(C);
+[ 0 9 6 2 1 ]
+gap&gt; v:=Codeword("09620");
+[ 0 9 6 2 0 ]
+gap&gt; GeneralizedReedSolomonDecoderGao(C,v);
+[ 0 9 6 2 1 ]
+gap&gt; Decodeword(C,v); # calls the special interpolation decoder
+[ 0 9 6 2 1 ]
+gap&gt; G:=GeneratorMat(C);
+[ [ Z(11)^0, 0*Z(11), 0*Z(11), Z(11)^8, Z(11)^9 ],
+  [ 0*Z(11), Z(11)^0, 0*Z(11), Z(11)^0, Z(11)^8 ],
+  [ 0*Z(11), 0*Z(11), Z(11)^0, Z(11)^3, Z(11)^8 ] ]
+gap&gt; C1:=GeneratorMatCode(G,GF(11));
+a linear [5,3,1..3]2 code defined by generator matrix over GF(11)
+gap&gt; Decodeword(C,v); # calls syndrome decoding
+[ 0 9 6 2 1 ]
+
+</pre></td></tr></table>
+
+<p><a id="s10ss3" name="s10ss3"></a></p>
+
+<h5>3.10-3 GeneralizedReedSolomonDecoderGao</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; GeneralizedReedSolomonDecoderGao</code>( <var>C, r</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">GeneralizedReedSolomonDecoderGao</code> decodes <var>r</var> (a 'received word') to a codeword c in C in a generalized Reed-Solomon code <var>C</var> (see <code class="func">GeneralizedReedSolomonCode</code> (<a href="chap5.html#s6ss2"><b>5.6-2</b></a>)), closest to <var>r</var>. Here <var>r</var> must be a <strong class="pkg">GUAVA</strong> codeword. If the code record does not have name `generalized Reed-Solomon code' then an error is returned. Otherwise, the Gao decoder <a href="chapBib.html#biBGao03">[G03]</a> is used to compute c.</p>
+
+<p>For long codes, this method is faster in practice than the interpolation method used in <code class="code">Decodeword</code>.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; R:=PolynomialRing(GF(11),["t"]);
+GF(11)[t]
+gap&gt; P:=List([1,3,4,5,7],i-&gt;Z(11)^i);
+[ Z(11), Z(11)^3, Z(11)^4, Z(11)^5, Z(11)^7 ]
+gap&gt; C:=GeneralizedReedSolomonCode(P,3,R);
+a linear [5,3,1..3]2  generalized Reed-Solomon code over GF(11)
+gap&gt; MinimumDistance(C);
+3
+gap&gt; c:=Random(C);
+[ 0 9 6 2 1 ]
+gap&gt; v:=Codeword("09620");
+[ 0 9 6 2 0 ]
+gap&gt; GeneralizedReedSolomonDecoderGao(C,v); 
+[ 0 9 6 2 1 ]
+
+</pre></td></tr></table>
+
+<p><a id="s10ss4" name="s10ss4"></a></p>
+
+<h5>3.10-4 GeneralizedReedSolomonListDecoder</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; GeneralizedReedSolomonListDecoder</code>( <var>C, r, tau</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">GeneralizedReedSolomonListDecoder</code> implements Sudans list-decoding algorithm (see section 12.1 of <a href="chapBib.html#biBJH04">[JH04]</a>) for ``low rate'' Reed-Solomon codes. It returns the list of all codewords in C which are a distance of at most <var>tau</var> from <var>r</var> (a 'received word'). <var>C</var> must be a generalized Reed-Solomon code <var>C</var> (see <code class="func">GeneralizedReedSolomonCode</code> (<a href="chap5.html#s6ss2"><b>5.6-2</b></a>)) and <var>r</var> must be a <strong class="pkg">GUAVA</strong> codeword.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; F:=GF(16);
+GF(2^4)
+gap&gt;
+gap&gt; a:=PrimitiveRoot(F);; b:=a^7;; b^4+b^3+1; 
+0*Z(2)
+gap&gt; Pts:=List([0..14],i-&gt;b^i);
+[ Z(2)^0, Z(2^4)^7, Z(2^4)^14, Z(2^4)^6, Z(2^4)^13, Z(2^2), Z(2^4)^12, Z(2^4)^4,
+  Z(2^4)^11, Z(2^4)^3, Z(2^2)^2, Z(2^4)^2, Z(2^4)^9, Z(2^4), Z(2^4)^8 ]
+gap&gt; x:=X(F);;
+gap&gt; R1:=PolynomialRing(F,[x]);;
+gap&gt; vars:=IndeterminatesOfPolynomialRing(R1);;
+gap&gt; y:=X(F,vars);;
+gap&gt; R2:=PolynomialRing(F,[x,y]);;
+gap&gt; C:=GeneralizedReedSolomonCode(Pts,3,R1); 
+a linear [15,3,1..13]10..12  generalized Reed-Solomon code over GF(16)
+gap&gt; MinimumDistance(C); ## 6 error correcting
+13
+gap&gt; z:=Zero(F);;
+gap&gt; r:=[z,z,z,z,z,z,z,z,b^6,b^2,b^5,b^14,b,b^7,b^11];; 
+gap&gt; r:=Codeword(r);
+[ 0 0 0 0 0 0 0 0 a^12 a^14 a^5 a^8 a^7 a^4 a^2 ]
+gap&gt; cs:=GeneralizedReedSolomonListDecoder(C,r,2); time;
+[ [ 0 a^9 a^3 a^13 a^6 a^10 a^11 a a^12 a^14 a^5 a^8 a^7 a^4 a^2 ],
+  [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ] ]
+250
+gap&gt; c1:=cs[1]; c1 in C;
+[ 0 a^9 a^3 a^13 a^6 a^10 a^11 a a^12 a^14 a^5 a^8 a^7 a^4 a^2 ]
+true
+gap&gt; c2:=cs[2]; c2 in C;
+[ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+true
+gap&gt; WeightCodeword(c1-r);
+7
+gap&gt; WeightCodeword(c2-r);
+7
+
+</pre></td></tr></table>
+
+<p><a id="s10ss5" name="s10ss5"></a></p>
+
+<h5>3.10-5 NearestNeighborGRSDecodewords</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; NearestNeighborGRSDecodewords</code>( <var>C, v, dist</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">NearestNeighborGRSDecodewords</code> finds all generalized Reed-Solomon codewords within distance <var>dist</var> from <var>v</var> <em>and</em> the associated polynomial, using ``brute force''. Input: <var>v</var> is a received vector (a <strong class="pkg">GUAVA</strong> codeword), <var>C</var> is a GRS code, <var>dist</var> &gt; 0 is the distance from <var>v</var> to search in <var>C</var>. Output: a list of pairs [c,f(x)], where wt(c-v)&lt;= dist-1 and c = (f(x_1),...,f(x_n)).</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; F:=GF(16);
+GF(2^4)
+gap&gt; a:=PrimitiveRoot(F);; b:=a^7; b^4+b^3+1;
+Z(2^4)^7
+0*Z(2)
+gap&gt; Pts:=List([0..14],i-&gt;b^i);
+[ Z(2)^0, Z(2^4)^7, Z(2^4)^14, Z(2^4)^6, Z(2^4)^13, Z(2^2), Z(2^4)^12,
+  Z(2^4)^4, Z(2^4)^11, Z(2^4)^3, Z(2^2)^2, Z(2^4)^2, Z(2^4)^9, Z(2^4),
+  Z(2^4)^8 ]
+gap&gt; x:=X(F);;
+gap&gt; R1:=PolynomialRing(F,[x]);;
+gap&gt; vars:=IndeterminatesOfPolynomialRing(R1);;
+gap&gt; y:=X(F,vars);;
+gap&gt; R2:=PolynomialRing(F,[x,y]);;
+gap&gt; C:=GeneralizedReedSolomonCode(Pts,3,R1);
+a linear [15,3,1..13]10..12  generalized Reed-Solomon code over GF(16)
+gap&gt; MinimumDistance(C); # 6 error correcting
+13
+gap&gt; z:=Zero(F);
+0*Z(2)
+gap&gt; r:=[z,z,z,z,z,z,z,z,b^6,b^2,b^5,b^14,b,b^7,b^11];; # 7 errors
+gap&gt; r:=Codeword(r);
+[ 0 0 0 0 0 0 0 0 a^12 a^14 a^5 a^8 a^7 a^4 a^2 ]
+gap&gt; cs:=NearestNeighborGRSDecodewords(C,r,7);
+[ [ [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ], 0*Z(2) ],
+  [ [ 0 a^9 a^3 a^13 a^6 a^10 a^11 a a^12 a^14 a^5 a^8 a^7 a^4 a^2 ], x_1+Z(2)^0 ] ]
+
+</pre></td></tr></table>
+
+<p><a id="s10ss6" name="s10ss6"></a></p>
+
+<h5>3.10-6 NearestNeighborDecodewords</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; NearestNeighborDecodewords</code>( <var>C, v, dist</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">NearestNeighborDecodewords</code> finds all codewords in a linear code <var>C</var> within distance <var>dist</var> from <var>v</var>, using ``brute force''. Input: <var>v</var> is a received vector (a <strong class="pkg">GUAVA</strong> codeword), <var>C</var> is a linear code, <var>dist</var> &gt; 0 is the distance from <var>v</var> to search in <var>C</var>. Output: a list of c in C, where wt(c-v)&lt;= dist-1.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; F:=GF(16);
+GF(2^4)
+gap&gt; a:=PrimitiveRoot(F);; b:=a^7; b^4+b^3+1;
+Z(2^4)^7
+0*Z(2)
+gap&gt; Pts:=List([0..14],i-&gt;b^i);
+[ Z(2)^0, Z(2^4)^7, Z(2^4)^14, Z(2^4)^6, Z(2^4)^13, Z(2^2), Z(2^4)^12,
+  Z(2^4)^4, Z(2^4)^11, Z(2^4)^3, Z(2^2)^2, Z(2^4)^2, Z(2^4)^9, Z(2^4),
+  Z(2^4)^8 ]
+gap&gt; x:=X(F);;
+gap&gt; R1:=PolynomialRing(F,[x]);;
+gap&gt; vars:=IndeterminatesOfPolynomialRing(R1);;
+gap&gt; y:=X(F,vars);;
+gap&gt; R2:=PolynomialRing(F,[x,y]);;
+gap&gt; C:=GeneralizedReedSolomonCode(Pts,3,R1);
+a linear [15,3,1..13]10..12  generalized Reed-Solomon code over GF(16)
+gap&gt; MinimumDistance(C);
+13
+gap&gt; z:=Zero(F);
+0*Z(2)
+gap&gt; r:=[z,z,z,z,z,z,z,z,b^6,b^2,b^5,b^14,b,b^7,b^11];;
+gap&gt; r:=Codeword(r);
+[ 0 0 0 0 0 0 0 0 a^12 a^14 a^5 a^8 a^7 a^4 a^2 ]
+gap&gt; cs:=NearestNeighborDecodewords(C,r,7);
+[ [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ], 
+  [ 0 a^9 a^3 a^13 a^6 a^10 a^11 a a^12 a^14 a^5 a^8 a^7 a^4 a^2 ] ]
+
+
+</pre></td></tr></table>
+
+<p><a id="s10ss7" name="s10ss7"></a></p>
+
+<h5>3.10-7 Syndrome</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; Syndrome</code>( <var>C, v</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">Syndrome</code> returns the syndrome of word <var>v</var> with respect to a linear code <var>C</var>. <var>v</var> is a codeword in the ambient vector space of <var>C</var>. If <var>v</var> is an element of <var>C</var>, the syndrome is a zero vector. The syndrome can be used for looking up an error vector in the syndrome table (see <code class="func">SyndromeTable</code> (<a href="chap3.html#s10ss8"><b>3.10-8</b></a>)) that is needed to correct an error in v.</p>
+
+<p>A syndrome is not defined for non-linear codes. <code class="code">Syndrome</code> then returns an error.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C := HammingCode(4);
+a linear [15,11,3]1 Hamming (4,2) code over GF(2)
+gap&gt; v := CodewordNr( C, 7 );
+[ 1 1 0 0 0 0 0 0 0 0 0 0 1 1 0 ]
+gap&gt; Syndrome( C, v );
+[ 0 0 0 0 ]
+gap&gt; Syndrome( C, Codeword( "000000001100111" ) );
+[ 1 1 1 1 ]
+gap&gt; Syndrome( C, Codeword( "000000000000001" ) );
+[ 1 1 1 1 ]    # the same syndrome: both codewords are in the same
+               # coset of C 
+
+</pre></td></tr></table>
+
+<p><a id="s10ss8" name="s10ss8"></a></p>
+
+<h5>3.10-8 SyndromeTable</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; SyndromeTable</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">SyndromeTable</code> returns a <em>syndrome table</em> of a linear code <var>C</var>, consisting of two columns. The first column consists of the error vectors that correspond to the syndrome vectors in the second column. These vectors both are of the codeword type. After calculating the syndrome of a word <var>v</var> with <code class="code">Syndrome</code> (see <code class="func">Syndrome</code> (<a href="chap3.html#s10ss7"><b>3.10-7</b></a>)), the error vector needed to correct <var>v</var> can be found in the syndrome table. Subtracting this vector from <var>v</var> yields an element of <var>C</var>. To make the search for the syndrome as fast as possible, the syndrome table is sorted according to the syndrome vectors.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; H := HammingCode(2);
+a linear [3,1,3]1 Hamming (2,2) code over GF(2)
+gap&gt; SyndromeTable(H);
+[ [ [ 0 0 0 ], [ 0 0 ] ], [ [ 1 0 0 ], [ 0 1 ] ],
+  [ [ 0 1 0 ], [ 1 0 ] ], [ [ 0 0 1 ], [ 1 1 ] ] ]
+gap&gt; c := Codeword("101");
+[ 1 0 1 ]
+gap&gt; c in H;
+false          # c is not an element of H
+gap&gt; Syndrome(H,c);
+[ 1 0 ]        # according to the syndrome table,
+               # the error vector [ 0 1 0 ] belongs to this syndrome
+gap&gt; c - Codeword("010") in H;
+true           # so the corrected codeword is
+               # [ 1 0 1 ] - [ 0 1 0 ] = [ 1 1 1 ],
+               # this is an element of H 
+
+</pre></td></tr></table>
+
+<p><a id="s10ss9" name="s10ss9"></a></p>
+
+<h5>3.10-9 StandardArray</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; StandardArray</code>( <var>C</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">StandardArray</code> returns the standard array of a code <var>C</var>. This is a matrix with elements of the codeword type. It has q^r rows and q^k columns, where q is the size of the base field of <var>C</var>, r=n-k is the redundancy of <var>C</var>, and k is the dimension of <var>C</var>. The first row contains all the elements of <var>C</var>. Each other row contains words that do not belong to the code, with in the first column their syndrome vector (see <code class="func">Syndrome</code> (<a href="chap3.html#s10ss7"><b>3.10-7</b></a>)).</p>
+
+<p>A non-linear code does not have a standard array. <code class="code">StandardArray</code> then returns an error.</p>
+
+<p>Note that calculating a standard array can be very time- and memory- consuming.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; StandardArray(RepetitionCode(3)); 
+[ [ [ 0 0 0 ], [ 1 1 1 ] ], [ [ 0 0 1 ], [ 1 1 0 ] ], 
+  [ [ 0 1 0 ], [ 1 0 1 ] ], [ [ 1 0 0 ], [ 0 1 1 ] ] ]
+
+</pre></td></tr></table>
+
+<p><a id="s10ss10" name="s10ss10"></a></p>
+
+<h5>3.10-10 PermutationDecode</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&gt; PermutationDecode</code>( <var>C, v</var> )</td><td class="tdright">( function )</td></tr></table></div>
+<p><code class="code">PermutationDecode</code> performs permutation decoding when possible and returns original vector and prints 'fail' when not possible.</p>
+
+<p>This uses <code class="code">AutomorphismGroup</code> in the binary case, and (the slower) <code class="code">PermutationAutomorphismGroup</code> otherwise, to compute the permutation automorphism group P of <var>C</var>. The algorithm runs through the elements p of P checking if the weight of H(p* v) is less than (d-1)/2. If it is then the vector p* v is used to decode v: assuming <var>C</var> is in standard form then c=p^-1Em is the decoded word, where m is the information digits part of p* v. If no such p exists then ``fail'' is returned. See, for example, section 10.2 of Huffman and Pless <a href="chapBib.html#biBHP03">[HP03]</a> for more details.</p>
+
+
+<table class="example">
+<tr><td><pre>
+
+gap&gt; C0:=HammingCode(3,GF(2));
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap&gt; G0:=GeneratorMat(C0);;
+gap&gt; G := List(G0, ShallowCopy);;
+gap&gt; PutStandardForm(G);
+()
+gap&gt; Display(G);
+ 1 . . . . 1 1
+ . 1 . . 1 . 1
+ . . 1 . 1 1 .
+ . . . 1 1 1 1
+gap&gt; H0:=CheckMat(C0);;
+gap&gt; Display(H0);
+ . . . 1 1 1 1
+ . 1 1 . . 1 1
+ 1 . 1 . 1 . 1
+gap&gt; c0:=Random(C0);
+[ 0 0 0 1 1 1 1 ]
+gap&gt; v01:=c0[1]+Z(2)^2;;
+gap&gt; v1:=List(c0, ShallowCopy);;
+gap&gt; v1[1]:=v01;;
+gap&gt; v1:=Codeword(v1);
+[ 1 0 0 1 1 1 1 ]
+gap&gt; c1:=PermutationDecode(C0,v1);
+[ 0 0 0 1 1 1 1 ]
+gap&gt; c1=c0;
+true
+
+</pre></td></tr></table>
+
+
+<div class="pcenter">
+<table class="chlink"><tr><td><a href="chap0.html">Top of Book</a></td><td><a href="chap2.html">Previous Chapter</a></td><td><a href="chap4.html">Next Chapter</a></td></tr></table>
+<br />
+
+
+<div class="pcenter"><table class="chlink"><tr><td class="chlink1">Goto Chapter: </td><td><a href="chap0.html">Top</a></td><td><a href="chap1.html">1</a></td><td><a href="chap2.html">2</a></td><td><a href="chap3.html">3</a></td><td><a href="chap4.html">4</a></td><td><a href="chap5.html">5</a></td><td><a href="chap6.html">6</a></td><td><a href="chap7.html">7</a></td><td><a href="chapBib.html">Bib</a></td><td><a href="chapInd.html">Ind</a></td></tr></table><br /></div>
+
+</div>
+
+<hr />
+<p class="foot">generated by <a href="http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc">GAPDoc2HTML</a></p>
+</body>
+</html>

@@ -16,10 +16,21 @@
     <h1>Using <code>rsync</code> for a binary installation of <span
     class="pkg">GAP</span></h1>
 
+<p class="subtitle">Getting a fully installed GAP on Linux with two simple
+commands!</p>
+
+<p class="changes">Last changes 
+<!--    !grep "^-" CHANGES | head -1     --> 
+---  Fri, 17 Jul 2009 13:07:39 +0200
+&nbsp;&nbsp;&nbsp;(<a href="CHANGES">Details</a>)
+</p>
 <p>
-This service is introduced at the same time as <span
-class="pkg">GAP</span>&nbsp;4.4 and should be considered <i>experimental</i>
-until some experiences are gathered. Any reports or suggestions are welcome.
+This is a <a href="http://www.math.rwth-aachen.de:8001/~Frank.Luebeck">private 
+service</a> for installing 
+<span class="pkg">GAP</span>&nbsp;4.4 
+on Linux PCs with i686 or x86_64 compatible processors (Pentium, Athlon, 
+Xeon, Opteron, ...). 
+Any reports or suggestions are welcome.
 </p>
 
 <p>
@@ -29,14 +40,22 @@ via the internet with a reference installation. Some features are:
 
 <ul>
 <li>A compiled <span class="pkg">GAP</span> is already included in the
-distribution. It is compiled with some optimizations  and statically
-linked. Depending on the operating system kernel <span
-class="pkg">GAP</span> jobs can use up to 2&nbsp;GB or 3&nbsp;GB of main
-memory.
+distribution. It is statically
+linked to work independently of the operating system version. 
+On 64-bit systems <span class="pkg">GAP</span> can be called as 32-bit or
+as 64-bit application. See <a href="#32versus64">below</a> for further
+remarks.
 </li>
 <li>All distributed packages are installed, this is the main point which
-makes installation easier compared to a  direct installation  from 
+makes installation much easier compared to a  direct installation  from 
 the sources.
+</li>
+<li>
+Installation is by choosing a directory and two easy commands, as explained
+below (ok, some packages need other external software, see below). 
+</li>
+<li>
+Upgrades can be done by one simple command.
 </li>
 <li>
 ...
@@ -46,13 +65,14 @@ the sources.
 <h2>How to Get <span class="pkg">GAP</span> via this Service</h2>
 <p>
 (and not directly from the <a
-href="http://www.math.rwth-aachen.de:8001/GAP/xxx/tmpsite/Download/index.html">
+href="http://www.gap-system.org/Download/index.html">
 <span class="pkg">GAP</span> site</a>.)
 </p>
 
 <p>
-You need: a machine with PC architecture (i686) running under 
-<a href="http://www.linux.org">Linux</a>, a directory with about 500&nbsp;MB of
+You need: a machine with PC architecture (i686 or x86_64 compatible) 
+running under 
+<a href="http://www.linux.org">Linux</a>, a directory with about 650&nbsp;MB of
 free space and the <code>rsync</code> program (if you don't have
 <code>rsync</code>, there is certainly a package with this name in your
 Linux distribution).
@@ -80,20 +100,36 @@ put in that directory (the default is <code>/usr/local/bin</code>):
 <dd>for calling <span class="pkg">GAP</span></dd>
 <dt><code>gapL</code></dt>
 <dd>for calling <span class="pkg">GAP</span>, loading a workspace and then
-reading a users <code>~/.gaprc</code> file (if it exists)</dd>
+reading a users <code>~/.gaprc</code> file (if it exists) <br />
+This is the recommended way to start <span class="pkg">GAP</span>, it
+is much faster than calling <code>gap</code>.</dd>
 <dt><code>gapsync</code></dt>
 <dd>for updating this <span class="pkg">GAP</span> installation</dd>
+<dt><code>xgap</code></dt>
+<dd>using <span class="pkg">GAP</span> via an X11 interface with graphical
+capabilities (this does no longer work on newer systems and it may be quite
+difficult to fix this, sorry)</dd>
+<dt><code>pargap</code></dt>
+<dd>the variant of <span class="pkg">GAP</span> provided by the 
+<span class="pkg">ParGAP</span> package, see the package documentation</dd>
+<!-- does not work as done so far, needs a hack with path settings
 <dt><code>gac</code></dt>
 <dd>for calling the <span class="pkg">GAP</span> compiler</dd>
+-->
+<dt><code>gap64, gap64L, pargap64</code></dt>
+<dd>(only on x86_64 based 64-bit architecture) the scripts above always call
+the 32-bit version of <span class="pkg">GAP</span>, use these scripts to 
+call the 64-bit version</dd>
 <dt><code></code></dt>
 <dd></dd>
 </dl>
+<p>If some of these scripts exist already you will be asked if they can be
+deleted. Move them away first if you want to keep them.
+</p>
 <p>After giving these two directories, answer <code>y</code> to the next
 question to start the installation. Depending on your network connection
-you can use <span class="pkg">GAP</span> after a certain number of 
-minutes (about 130&nbsp;MB must be transfered via the internet; with a fast
-local connection it takes less than three minutes, and we tried an
-installation via DSL modem which took less than 30 minutes).
+you can use <span class="pkg">GAP</span> after two to ... minutes (about
+180&nbsp;MB must be transferred via the internet).
 </p>
 
 <h2>Updating</h2>
@@ -109,9 +145,38 @@ created after each syncronization locally.</p>
 job is running. If you have long running jobs do not use an automatic, say
 nightly, update.</p>
 
+
+<h2>A note on updating from a version before <span
+class="pkg">GAP</span>&nbsp;4.4.10 (October 2007)</h2>
+
+<p>There are two reasons to update the <code>gapsync</code> script itself:
+</p> 
+<ul>
+<li>The old script may no longer work on some systems after a system upgrade 
+(the reason is that the script uses some <code>bash</code> extensions of
+the <code>/bin/sh</code> shell which is restricted to  strict POSIX 
+behaviour on these newer systems).</li>
+<li>You may want to use the 64-bit version of <span class="pkg">GAP</span>
+which is supported by this distribution since version 4.4.10.</li>
+</ul>
+
+<p>This is easy to achieve, just follow the instructions for the first
+installation above: Get the current script by <code>rsync --port=8731 -azv
+beteigeuze.math.rwth-aachen.de::gap4r4/gapsync/gapsync .</code>, call this
+script <code>./gapsync</code>, give the same two paths as in your original
+installation, and when you are asked if the existing start scripts should be
+deleted answer <code>y</code>. That's it, from then just call the newly
+installed 
+<code>gapsync</code> for further updates.
+</p>
+
+
+
+
 <h2>Customization</h2>
 <p>
-You can customize the <code>gap</code>, <code>gapL</code>,
+You can customize the <code>gap</code>, <code>gap64</code>, <code>gapL</code>,
+<code>gap64L</code>,
 <code>gapsync</code> scripts by editing the files in the
 <code>local/bin</code> subdirectory of this <span class="pkg">GAP</span>
 installation.
@@ -119,31 +184,55 @@ installation.
 <p>
 You can customize the workspace used in your installation by copying
 <code>gapsync/CreateWorkspace.sh</code> to
-<code>local/bin/CreateWorkspace</code> and editing the latter.
+<code>local/bin/CreateWorkspace</code> (for 32-bit version) or
+<code>local/bin/CreateWorkspace64</code> (for 64-bit version)
+and editing the latter.
 For example, you may want another set of packages preloaded.
 </p>
 <p>Additional packages can be installed in the <code>local/pkg</code>
 subdirectory.
+</p>
+<p>Whenever you have changed something in the installation call
+<code>gapsync</code> which will produce an updated workspace.
 </p>
 <p>
 If you change things outside the <code>local</code> subdirectory they are
 deleted with the next call of <code>gapsync</code>. If you find errors in
 this part, please report them.
 </p>
-<p>The command <code>ReadLib("colorprompt.g");</code> within 
-<span class="pkg">GAP</span> loads a demo which configures the prompt and
-<span class="pkg">GAP</span> to appear in different colors. In case you like
-this, put this command in your <code>~/.gaprc</code> file.
+<!--<p>You can get colored prompts and input texts by the command 
+<code>ColorPrompt(true);</code>. In case you like this, put this command in
+your <code>~/.gaprc</code> file.
+(This functionality was formerly provided exclusively by this distribution;
+it was moved into the <span class="pkg">GAP</span> library with version
+4.4.5; please change former <code>ReadLib("colorprompt.g");</code> in your
+<code>.gaprc</code> file to the command given above.)
+</p>-->
+<p>If you have the pager program <code>less</code> available, you probably 
+want to put the lines</p>
+<pre>
+    PAGER := "less";
+    PAGER_OPTIONS := ["-f", "-r", "-a", "-i", "-M", "-j2"];
+</pre>
+<p>
+in your <code>~/.gaprc</code> file.
 </p>
+<p>Many people like to have the prompt, input and output in different
+colors, add the following line to your <code>~/.gaprc</code> file to use
+this:</p>
+<pre>
+    ColorPrompt(true);
+</pre>
 
 <h2>Removing this Installation</h2>
-<p>To remove this <span class="pkg">GAP</span> installation go to the
-subdirectory <code>gapsync</code> inside your installation and call
+<p>To remove this <span class="pkg">GAP</span> installation use the
+script <code>remove</code> in the 
+subdirectory <code>gapsync</code> of your installation:
 </p>
-<pre>   ./remove
+<pre>   &lt;path to your installation&gt;/gapsync/remove
 </pre>
-<p>(this just deletes the links to the four scripts mentioned above and the
-whole installation directory (starting <code>gap4r4</code>, so including
+<p>This just deletes the links to the  scripts mentioned above and the
+whole installation directory (starting <code>gap4r4</code>), so including
 any custom installations in the <code>gap4r4/local</code> subdirectory.
 </p>
 <p>You can also just delete or forget about the <code>gapsync</code> script
@@ -156,6 +245,132 @@ installation.
 <p>Please send comments and suggestions to 
 <a
 href="mailto:Frank.Luebeck@Math.RWTH-Aachen.De">Frank.Luebeck@Math.RWTH-Aachen.De</a>.
+</p>
+
+<h2>Notes on this Installation, in Particular Packages</h2>
+<p>The <span class="pkg">GAP</span> version is 4.4.12.</p>
+<p>Within <span class="pkg">GAP</span> the command 
+<code>SuggestUpgrades([]);</code> shows which packages are in 
+the distribution. </p>
+<p>The packages 
+<span class="pkg">Alnuth</span>, 
+<span class="pkg">HAP</span>,
+<span class="pkg">if</span>, 
+<span class="pkg">polymaking</span>, 
+<span class="pkg">qaos</span>,
+<span class="pkg">singular</span>,  
+and 
+<span class="pkg">SgpViz</span> 
+need or suggest further 
+external software, and may not work immediately with full functionality. 
+More details: <a
+href="http://www.gap-system.org/Manuals/pkg/alnuth/htm/CHAP004.htm">kash</a>,
+<a href="http://www.gap-system.org/Manuals/pkg/hap/README.hap">HAP</a>,
+<a href="http://www.gap-system.org/Manuals/pkg/polymaking/doc/chap1.html#X8794FBB27B46C08E">polymaking</a>,
+<a
+href="http://www.gap-system.org/Manuals/pkg/qaos/doc/qaos.html#SEC2">qaos</a>,
+<a
+href="http://www.gap-system.org/Manuals/pkg/singular/doc/chap1.html">singular</a>, 
+<a
+href="http://www.gap-system.org/Manuals/pkg/sgpviz/doc/chap1.html">graphviz</a>
+</p>
+<p>The package <span class="pkg">linboxing</span> currently doesn't work
+with this installation (with statically linked kernel modules).
+</p>
+<p>Note that the <span class="pkg">AtlasRep</span> package contains
+directories <code>gap4r4/pkg/atlasrep/data*</code> which are world writable
+(for caching downloaded representations). These are emptied with any update
+of this distribution.</p>
+<p>If you don't want this you can customize the script
+<code>gap4r4/local/bin/gapsync</code> in your installation, add the options 
+<code>--exclude=pkg/atlasrep/datagens --exclude=pkg/atlasrep/dataword</code>
+to the <code>rsync</code> call (search the line containing
+<code>--port</code>).
+</p>
+
+<p>
+The <span class="pkg">Carat</span> package also needs further installation.
+(The external binaries hard code their installation path, so I cannot
+prepare them for you.) You need a C-compiler (probably <code>gcc</code>) and 
+<code>tar</code>. After update go in the subdirectory <code>./gapsync</code>
+from the root of your <span class="pkg">GAP</span> installation and call
+there the script <code>./FinishInstallCarat</code>. This will install <span
+class="pkg">Carat</span> on i686 systems and install it for the
+<code>gap64</code> version on x86_64 systems. The script produces the
+necessary binaries and unpacks about 150 MB of data files. Finally, call
+<code>gapsync</code> to update your workspace.
+</p>
+
+<p><span class="pkg">XGap</span>: There were reports that it doesn't work
+properly on Linux systems using the <code>/dev</code> file system, due to 
+file permission problems. A proper fix is not yet available. Also, it does
+no longer work on some newer systems and it is not possible to compile it on 
+64-bit architectures.
+</p>
+
+<p>You can customize  details of the installation of
+<strong>any  package</strong> by copying that package to the directory
+<code>gap4r4/local/pkg</code>. You can also install <strong>additional 
+packages</strong> there.</p>
+<!--  is this ok now?
+<p>Currently, the packages <span class="pkg">Loops</span> and <span class="pkg">RCWA</span> cannot be used at the same time. (The authors will resolve problems with conflicting declarations.)
+</p>
+-->
+
+<h2><a name="32versus64">Shall I use the 32-bit or 64-bit version of <span
+class="pkg">GAP</span>?</a></h2>
+
+<p>
+If you have an x86_64 based system you can use both. The 64-bit version uses
+for many <span class="pkg">GAP</span> objects twice the memory as the 32-bit
+version and this can also make it a bit slower. The 32-bit version of <span
+class="pkg">GAP</span> can, depending on the configuration of the Linux
+kernel, use at most 2 or 3 Gigabyte of memory (and almost 4 GB on x86_64
+systems). So, there are two sitations where you want to use the 64-bit version:
+</p>
+<ul>
+<li>You are mainly using objects in your computations which do take
+advantage of the 64-bit architecture, these are compressed vectors and
+matrices over small finite fields, very long integers and bit lists.
+These objects need essentially the same memory on 32-bit and 64-bit systems
+and their basic arithmetic is faster because it works on 64-bit words.
+</li>
+<li>You really need a lot of memory and have a machine with more than 4 GB
+of physical memory. (But recall that many objects use up twice the memory,
+in some cases the 64-bit version is only  advantageous if you have even 
+more than  8 GB of physical memory!)
+</li>
+</ul>
+
+<h2>How to use dynamic modules?</h2>
+
+<p>The executables in this distribution are statically linked to make them
+as independent as possible of other files in your operating system. But this
+means for the <span class="pkg">GAP</span> executable that you cannot use
+additional packages with kernel modules (<code>LoadDynamicModule</code> in
+<span class="pkg">GAP</span> does not work). 
+</p>
+
+<p> If you want to use such packages or develop and test your own, you must
+compile <span class="pkg">GAP</span> on your system. An easy way to do that
+is the following (assuming you have standard tools like gcc, make
+installed):
+</p>
+<pre>
+cd &lt;path to directory containing your gap4r4>
+cp -lR gap4r4 gap4r4dyn   # hard links, needs almost no memory
+cd gap4r4dyn
+rm -rf bin/x86* bin/i686*
+make clean
+./configure
+make
+ln -s `pwd`/bin/gap.sh &lt;your bin dir>/gap.dyn
+</pre>
+<p>Repeat this (except the last line) whenever you change your gap4r4
+installation. 
+</p>
+<p>A few packages may not work with <code>gap.dyn</code>, you have to
+recompile them as well. See the files <code>gap4r4/gapsync/InstForRsync{32,64}</code> to see how I compiled the packages.
 </p>
 
   </body>

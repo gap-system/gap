@@ -1,0 +1,63 @@
+#############################################################################
+##
+#W  Makefile                    GAP source                       Frank Celler
+##
+#H  @(#)$Id: Makegap.in,v 1.2 1997/11/25 16:29:17 frank Exp $
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This  file compiles    and links  GAP.    It is  created from   the  file
+##  "Makegap.in" in the directory `cnf/'.
+##
+SHELL    = /bin/sh
+
+CC       = @CC@
+CFLAGS   = @CFLAGS@
+LDFLAGS  = @LDFLAGS@
+LIBS     = @LIBS@
+X_LIBS   = @X_LIBS@ -lXaw -lXmu -lXt -lXext -lX11 @X_PRE_LIBS@ @X_EXTRA_LIBS@
+X_CFLAGS = @X_CFLAGS@
+
+# OBJECTS are generated from SOURCE
+OBJECTS=xcmds.o utils.o gapgraph.o gaptext.o pty.o popdial.o xgap.o selfile.o 
+
+# compile and link XGAP
+xgap: $(OBJECTS)
+	$(CC) -o xgap $(OBJECTS) $(CFLAGS) $(LDFLAGS) $(LIBS) $(X_LIBS) $(LOPTS)
+
+# dependencies are automatically generated
+xcmds.o: @srcdir@/xcmds.c @srcdir@/utils.h @srcdir@/popdial.h \
+ @srcdir@/gapgraph.h @srcdir@/gaptext.h @srcdir@/xgap.h \
+ @srcdir@/pty.h @srcdir@/selfile.h @srcdir@/xcmds.h
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o xcmds.o -c @srcdir@/xcmds.c
+
+utils.o: @srcdir@/utils.c @srcdir@/utils.h
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o utils.o -c @srcdir@/utils.c
+
+gapgraph.o: @srcdir@/gapgraph.c @srcdir@/utils.h \
+ @srcdir@/gapgraph.h
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o gapgraph.o -c @srcdir@/gapgraph.c
+
+gaptext.o: @srcdir@/gaptext.c @srcdir@/utils.h \
+ @srcdir@/gaptext.h
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o gaptext.o -c @srcdir@/gaptext.c
+
+pty.o: @srcdir@/pty.c @srcdir@/utils.h @srcdir@/gaptext.h \
+ @srcdir@/xcmds.h @srcdir@/xgap.h @srcdir@/pty.h
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o pty.o -c @srcdir@/pty.c
+
+popdial.o: @srcdir@/popdial.c @srcdir@/utils.h \
+ @srcdir@/popdial.h @srcdir@/bitmaps/return.bm
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o popdial.o -c @srcdir@/popdial.c
+
+xgap.o: @srcdir@/xgap.c @srcdir@/utils.h @srcdir@/popdial.h \
+ @srcdir@/gapgraph.h @srcdir@/gaptext.h @srcdir@/xcmds.h \
+ @srcdir@/pty.h @srcdir@/selfile.h @srcdir@/xgap.h \
+ @srcdir@/bitmaps/checksym.bm @srcdir@/bitmaps/emptymk.bm \
+ @srcdir@/bitmaps/exmark.bm @srcdir@/bitmaps/menusym.bm
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o xgap.o -c @srcdir@/xgap.c
+
+selfile.o: @srcdir@/selfile.c @srcdir@/utils.h \
+ @srcdir@/selfile.h
+	$(CC) -I. $(CFLAGS) $(X_CFLAGS) $(COPTS) -o selfile.o -c @srcdir@/selfile.c
+

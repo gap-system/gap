@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- ########################################################################################### -->
+<!-- ##                                                                                       ## -->
+<!-- ##  resclassesbib.xml              ResClasses documentation                 Stefan Kohl  ## -->
+<!-- ##                                                                                       ## -->
+<!-- ##  $Id: resclassesbib.xml,v 1.4 2007/10/23 07:18:02 stefan Exp $                        ## -->
+<!-- ##                                                                                       ## -->
+<!-- ########################################################################################### -->
+
+<!DOCTYPE file SYSTEM "../../gapdoc/bibxmlext.dtd"[]>
+
+<file>
+
+<entry id="GAPDoc"><manual>
+  <author>
+    <name><first>Frank</first><last>Lübeck</last></name>
+    <name><first>Max</first><last>Neunhöffer</last></name>
+  </author>
+  <title><C>GAPDoc (Version 1.1)</C></title>
+  <organization>RWTH Aachen</organization>
+  <year>2007</year>
+  <other type="note">
+    GAP package, <URL>http://www.gap-system.org/Packages/gapdoc.html</URL>
+  </other>
+</manual></entry>
+
+<entry id="Polycyclic"><manual>
+  <author>
+    <name><first>Bettina</first><last>Eick</last></name>
+    <name><first>Werner</first><last>Nickel</last></name>
+  </author>
+  <title>
+    <C>Polycyclic -- Computation with polycyclic groups; Version 2.2</C>
+  </title>
+  <year>2007</year>
+  <other type="note">
+    GAP package, <URL>http://www.gap-system.org/Packages/polycyclic.html</URL>
+  </other>
+</manual></entry>
+
+<entry id="RCWA"><manual>
+  <author>
+    <name><first>Stefan</first><last>Kohl</last></name>
+  </author>
+  <title><C>RCWA - Residue-Class-Wise Affine Groups (Version 3.0)</C></title>
+  <year>2007</year>
+  <other type="note">
+    GAP package, <URL>http://www.gap-system.org/Packages/rcwa.html</URL>
+  </other>
+</manual></entry>
+
+</file>
+
+<!-- ########################################################################################### -->

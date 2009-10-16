@@ -1,0 +1,142 @@
+#!/usr/bin/perl
+
+#
+# Rat's thwap script, rewritten in perl and diffed a lot.
+#
+# django@ccs.neu.edu
+# July 24, 1993
+#
+# 1/19/94  v2.01   - bdowling
+# Added:   Interactive prompting     (-i)
+#          Whuggled option handling
+#            -Allows numeric signals
+#            -Allows varied ordering
+#          Changed finding processes slightly
+#          Added sysV support ??
+# 1997.08.05 jay
+# 	added Solaris support
+
+$0 =~ s#.*/##;
+$| = 1;
+
+$fakeit = 0;
+$iprompt = 0;
+
+# gdc - /usr/bin/kill -> /bin/kill, Redhat Linux 4.2 had only /bin/kill
+@valid_signals = split(/[ \t\n]+/, `/bin/kill -l`); 
+die "$0: error running 'kill' to gather signals!: $!\n" if $?;
+
+$signal = "KILL";
+
+while ($ARGV[0] =~ /^-/) {
+    $_ = shift(@ARGV);
+    if (/^-n$/) {
+	$fakeit = 1;  $iprompt = 0;
+    } elsif (/^-i$/) {
+	$iprompt = 1; $fakeit = 0;
+    } elsif (/^-(\w+)/) {
+	$signal = $1;
+	$signal =~ tr/[a-z]/[A-Z]/;
+	$signal =~ s/^SIG//;
+	die "$1: $signal is not a valid signal\n"
+	    if (! grep(/^$signal$/, 
+		       (@valid_signals, (1..$#valid_signals+1) ) ) );
+    }
+}
+#warn "> $signal\n";
+# we don't need to do this, since Perl can handle named signals just as well
+# as numberic ones. In fact, this causes us grief because kill -l does not
+# return the same thing on all systems
+#if (! ($signal =~ /^[0-9]+$/)) {	# We want to work with a numeric signal
+#    for($x=0;$x<=$#valid_signals;$x++) {
+#	do { $numsignal = ++$x; last; } if @valid_signals[$x] eq $signal;
+#    }
+#}
+#warn "> $signal\n";
+
+&usage if ($#ARGV < 0);
+
+foreach $uname ('/bin/uname', '/usr/bin/uname', '/sbin/uname') {
+    next unless (-x $uname);
+    chop($rev = `$uname -r`);
+    ($OSMAJOR = $rev) =~ s/\..*//;
+    last;
+}
+
+if ($OSMAJOR == 5) {	# System V
+  $ps_flags = " -f ";
+  $ps_flags .= " -e " if ($> == 0);
+  $ps_flags .= " -u $>" if ($> != 0);     # Do we need this?  Could we just do
+				        # ps -f above? It gets some root procs
+				        # such as rlogin etc. (which is cool!)
+} else {                # Assume BSD system, what others could we check for?
+  $ps_flags = "uxww";
+  $ps_flags .= "a" if ($> == 0);	# Only need this if we're root
+}
+
+# Don't want a leading "-" on the flags, so it works on both Alphas and Suns:
+$ps_pid = open(PS, "ps $ps_flags |"), "\n";
+$header = <PS>;
+$seen_header = 0;
+$thwapped = 0;
+
+while (<PS>) {
+    ($foo = $_) =~ s/^\s*//;
+    ($user, $pid, @rest) = split(' ',$foo);
+    next if ($pid == $$ || $pid == $ps_pid);	# Don't thwap this process!
+    next if (/thwap/);				# Hackish attempt to avoid
+				                #   thwapping this process
+						#   when invoked via rsh
+
+  testit: foreach $expr (@ARGV) {
+      if ($expr =~ /^[0-9]+$/) {		# make numbers only match pids
+	  next testit if ($pid != $expr);
+      }
+      if (grep(/$expr/, $_)) {
+#	  warn "expr = $expr; user = $user; pid = $pid; rest = @rest\n";
+	  warn $header if (! $seen_header);
+	  warn "\n" if ($seen_header && $iprompt);
+	  $seen_header = 1;
+	  warn $_;
+	  if (! $iprompt || &AskYN() ) {
+#	      warn "-> kill $signal $pid\n" if (! $fakeit);
+	      if (! $fakeit ) {
+		  # quotes needed around $signal so Perl will interpret both
+		  # numeric and non-numberic signals properly -- dNb 
+		  $killed = kill("$signal", $pid); 
+		  warn "kill: $!\n" if ! $killed; 
+		  $thwapped += $killed;
+	      } else {
+		  $thwapped++;
+	      }
+	  }
+	  last testit;		# Okay it's dead jim, we're done this loop.
+      }
+  }
+}
+
+close(PS);
+
+warn "$0: ", ( $fakeit ? "would have " : "" ),
+  "sent SIG${signal} to $thwapped process",
+  ($thwapped == 1 ? "" : "es"), "\n";
+
+sub usage {
+    warn <<"EOT";
+Usage: $0 [options] <user | pid | progname | perlregexp> ...
+Options:
+   -n        fake mode - only display processes that would be selected
+   -i        interactive mode - prompt on each suspect process
+   -<signal> any valid literal or numeric signal (see kill -l)
+
+EOT
+exit(1);
+}
+
+sub AskYN {
+    print STDERR "Send SIG", @valid_signals[$numsignal-1], " to this process? (y/n/a)? ";
+    $ans = <STDIN>; 
+    $iprompt = ! ($ans =~ /^a/i);
+    return( $ans =~ /^[ay]/i );
+}
+

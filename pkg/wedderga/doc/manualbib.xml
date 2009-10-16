@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id: manualbib.xml,v 1.2 2008/01/03 14:43:22 alexk Exp $ -->
+
+<entry id="BR"><article>
+  <author>
+    <name><first>Osnel</first><last>Broche</last></name>
+    <name><first>Ángel</first><last>del Río</last></name>
+  </author>  
+  <title>Wedderburn decomposition of finite group algebras</title>
+  <journal>Finite Fields Appl.</journal>
+  <year>2007</year>
+  <volume>13</volume>
+  <number>1</number>
+  <pages>71&ndash;79</pages>
+  <issn>1071-5797</issn>
+  <mrnumber>MR2284667 (2007m:16027)</mrnumber>
+  <mrclass>16S34</mrclass>
+  <mrreviewer>E. Jespers</mrreviewer>
+  <other type="fjournal">Finite Fields and their Applications</other>
+</article></entry>
+
+
+<entry id="OR"><article>
+  <author>
+    <name><first>Aurora</first><last>Olivieri</last></name>
+    <name><first>Ángel</first><last>del Río</last></name>
+  </author>  
+  <title>An algorithm to compute the primitive central idempotents and
+  the <C>W</C>edderburn decomposition of a rational group algebra</title>
+  <journal>J. Symbolic Comput.</journal>
+  <year>2003</year>
+  <volume>35</volume>
+  <number>6</number>
+  <pages>673&ndash;687</pages>
+  <issn>0747-7171</issn>
+  <mrnumber>MR1981041 (2004k:16073)</mrnumber>
+  <mrclass>16S34 (68W30)</mrclass>
+  <mrreviewer>E. Jespers</mrreviewer>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+</article></entry>
+
+
+<entry id="ORS"><article>
+  <author>
+    <name><first>Aurora</first><last>Olivieri</last></name>
+    <name><first>Ángel</first><last>del Río</last></name>
+    <name><first>Juan Jacobo</first><last>Simón</last></name>
+  </author>  
+  <title>On monomial characters and central idempotents of rational
+              group algebras</title>
+  <journal>Comm. Algebra</journal>
+  <year>2004</year>
+  <volume>32</volume>
+  <number>4</number>
+  <pages>1531&ndash;1550</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR2100373 (2005i:16054)</mrnumber>
+  <mrclass>16S34 (16U99 20C05)</mrclass>
+  <mrreviewer>E. Jespers</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+
+<entry id="O"><article>
+  <author>
+    <name><first>Gabriela</first><last>Olteanu</last></name>
+  </author>  
+  <title>Computing the <C>W</C>edderburn decomposition of group algebras by
+              the <C>B</C>rauer-<C>W</C>itt theorem</title>
+  <journal>Math. Comp.</journal>
+  <year>2007</year>
+  <volume>76</volume>
+  <number>258</number>
+  <pages>1073&ndash;1087 (electronic)</pages>
+  <issn>0025-5718</issn>
+  <mrnumber>MR2291851</mrnumber>
+  <mrclass>16S34 (20C15)</mrclass>
+  <mrreviewer>E. Jespers</mrreviewer>
+  <other type="coden">MCMPAF</other>
+  <other type="fjournal">Mathematics of Computation</other>
+</article></entry>
+
+
+<entry id="P"><book>
+  <author>
+    <name><first>Donald S.</first><last>Passman</last></name>
+  </author>  
+  <title>Infinite crossed products</title>
+  <publisher>Academic Press Inc.</publisher>
+  <year>1989</year>
+  <volume>135</volume>
+  <series>Pure and Applied Mathematics</series>
+  <address>Boston, MA</address>
+  <isbn>0-12-546390-1</isbn>
+  <mrnumber>MR979094 (90g:16002)</mrnumber>
+  <mrclass>16-02 (16A03 16A27 20C07)</mrclass>
+  <mrreviewer>Martin Lorenz</mrreviewer>
+  <other type="pages">xii+468</other>
+</book></entry>
+
+ 
+<entry id="R"><book>
+  <author>
+    <name><first>I.</first><last>Reiner</last></name>
+  </author>  
+  <title>Maximal orders</title>
+  <publisher>The Clarendon Press Oxford University Press</publisher>
+  <year>2003</year>
+  <volume>28</volume>
+  <series>London Mathematical Society Monographs. New Series</series>
+  <address>Oxford</address>
+  <note>Corrected reprint of the 1975 original,
+              With a foreword by M. J.  Taylor</note>
+  <isbn>0-19-852673-3</isbn>
+  <mrnumber>MR1972204 (2004c:16026)</mrnumber>
+  <mrclass>16H05 (11R54 16K20)</mrclass>
+  <other type="pages">xiv+395</other>
+</book></entry>
+
+
+<entry id="S"><article>
+  <author>
+    <name><first>Kenjiro</first><last>Shoda</last></name>
+  </author>  
+  <title>&#220;ber die monomialen <C>D</C>arstellungen einer endlichen <C>G</C>ruppe</title>
+  <journal>Proc. Phys.-Math. Soc. Japan</journal>
+  <year>1933</year>
+  <volume>III</volume>
+  <number>15</number>
+  <pages>249&ndash;257</pages>
+</article></entry>
+
+
+<entry id="Y"><book>
+  <author>
+    <name><first>Toshihiko</first><last>Yamada</last></name>
+  </author>  
+  <title>The <C>S</C>chur subgroup of the <C>B</C>rauer group</title>
+  <publisher>Springer-Verlag</publisher>
+  <year>1974</year>
+  <address>Berlin</address>
+  <note>Lecture Notes in Mathematics, Vol. 397</note>
+  <mrnumber>MR0347957 (50 #456)</mrnumber>
+  <mrclass>20C05 (12A60)</mrclass>
+  <mrreviewer>P. Fong</mrreviewer>
+  <other type="pages">v+159</other>
+</book></entry>

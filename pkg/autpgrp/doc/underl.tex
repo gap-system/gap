@@ -1,0 +1,124 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  underl.tex         AutPGrp documentation                 Bettina Eick
+%A                                                         Eamonn O'Brien
+%%
+%H  @(#)$Id: underl.tex,v 1.3 2004/10/01 10:20:06 gap Exp $
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The underlying function}
+
+Underlying the method installation for `AutomorphismGroup'
+is the function `AutomorphismGroupPGroup'. This function is
+intended for expert users who wish to influence the steps of 
+the algorithm.  Note also that `AutomorphismGroup' will always
+choose default values.
+
+\> AutomorphismGroupPGroup( <G> [,<flag>] )  F
+
+The input is a finite $p$-group as above and an optional <flag> 
+which can be true or false. Here the filters for <G> need not be 
+set, but they should be true for <G>. The possible values for <flag>
+are considered later in Chapter "Influencing the algorithm". If 
+<flag> is not supplied, the algorithm proceeds similarly to the 
+method installed for `AutomorphismGroup', but it produces slightly 
+more detailed output.  The output of the function is a record 
+which contains the following fields:
+
+\beginitems
+`glAutos' & a set of automorphisms which together with `agAutos'
+            generate the automorphism group;
+
+`glOrder' & an integer whose product with the `agOrders' gives
+            the size of the automorphism group;
+
+`agAutos' & a polycyclic generating sequence for a soluble normal
+            subgroup of the automorphism group;
+
+`agOrder' & the relative orders corresponding to `agAutos';
+
+`one'     & the identity element of the automorphism group;
+
+`group'   & the underlying group <G>;
+
+`size'    & the size of the automorphism group.
+\enditems
+
+We do not return an automorphism group in the standard form 
+because we wish to distinguish between `agAutos' and `glAutos'; 
+the latter act non-trivially on the Frattini quotient of <G>. This
+hybrid-group description of the automorphism group permits more 
+efficient computations with it. The following function converts
+the output of `AutomorphismGroupPGroup' to the output of 
+`AutomorphismGroup'.
+
+\> ConvertHybridAutGroup( <A> ) F
+
+\beginexample 
+gap> RequirePackage("autpgrp");
+#I ------------ The AutPGrp package --------------
+#I -- Computing automorphism groups of p-groups -- 
+true
+
+gap> H := SmallGroup (729, 34);
+<pc group of size 729 with 6 generators>
+
+gap> A := AutomorphismGroupPGroup(H);
+rec( glAutos := [  ], 
+     glOrder := 1, 
+     agAutos := [ Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1^2, f2, f3^2*f4, f4, f5^2*f6, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f2^2, f1, f3*f5^2, f5^2, f4*f6^2, f6^2 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1^2, f2^2, f3*f4^2*f5^2*f6, f4^2*f6, f5^2*f6, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1*f3, f2, f3*f5^2, f4*f6^2, f5, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ])
+                    -> [ f1, f2*f3, f3*f4, f4, f5*f6, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1*f4, f2, f3*f6^2, f4, f5, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1, f2*f4, f3, f4, f5, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1*f5, f2, f3, f4, f5, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1, f2*f5, f3*f6, f4, f5, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1*f6, f2, f3, f4, f5, f6 ], 
+                  Pcgs([ f1, f2, f3, f4, f5, f6 ]) 
+                    -> [ f1, f2*f6, f3, f4, f5, f6 ] ], 
+     agOrder := [ 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3 ], 
+     one     := IdentityMapping( <pc group of size 729 with 6 generators> ), 
+     group   := <pc group of size 729 with 6 generators>, 
+     size    := 52488 )
+
+gap> ConvertHybridAutGroup( A );
+<group of size 52488 with 11 generators>
+\endexample 
+
+Let <A> be the automorphism group of a $p$-group $G$ as computed by 
+`AutomorphismGroupPGroup'. Then the following function can compute 
+a pc group isomorphic to the solvable part of <A> stored in the record 
+component <A>.agGroup. This solvable part forms a subgroup of the
+automorphism group which  contains at least the automorphisms centralizing
+the Frattini factor of $G$. The pc group facilitates various further
+computations with <A>.
+
+\> PcGroupAutPGroup( <A> ) F
+
+computes a pc presentation for the solvable part of the automorphism
+group <A> defined by <A>.agGroup. <A> is the output of the function
+`AutomorphismGroupPGroup'.
+
+\beginexample
+gap> H := SmallGroup (729, 34);;
+gap> A := AutomorphismGroupPGroup(H);;
+gap> B := PcGroupAutPGroup( A );
+<pc group of size 52488 with 11 generators>
+gap> I := InnerAutGroupPGroup( B );
+Group([ f5, f4^2*f8, f6^2*f9^2, f11^2, f10^2, <identity> of ... ])
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

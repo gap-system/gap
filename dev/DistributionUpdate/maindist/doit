@@ -1,14 +1,14 @@
 #!/bin/csh
 #############################################################################
 ##
-##  $Id$
+##  $Id: doit,v 1.2 2003/12/19 17:47:50 gap Exp $
 
 
 ./setvar
 ./checkout
-./fixpermissions
 ./makedoc
 ./completionfiles
+./fixpermissions
 ./zooandtag
 ./winbin
 ./zooandtagdata

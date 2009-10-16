@@ -1,0 +1,5 @@
+
+##  $Id: gap64L,v 1.2 2008/07/19 15:02:53 gap Exp $   Frank Lübeck
+if test -e ${HOME}/.gaprc; then G="${HOME}/.gaprc"; else G=""; fi
+${BINPATH}/gap64 -L ${GAP_DIR}/bin/ws64gap4   "$@" $G
+

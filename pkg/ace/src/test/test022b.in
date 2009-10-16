@@ -1,0 +1,210 @@
+
+# This version of test022a.in is for the 2 generator runs only.
+# Hard is much better in PEACE than in ACE.
+
+Text;  Opt;
+
+Enum: M22;
+
+Wo:2500000;  Mess:500000;
+
+Gr: a,b;
+Rel:
+  b^4, 
+  a^2*b^-2*a^2*b^-1*a^-1*b^-1*a^2*b^-2*a^2*b^-1*a^-1*b,
+  a^-1*b*a*b*a^-2*b^2*a^-1*b*a*b^-2*a^-1*b*a*b*a^-2*b^2*a^-1*b*a*b^-2,
+  b*a*b*a*b^-2*a^3*b^-2*a^3*b^-2*a^3*b^-2*a^2*b*a^-2*b^2*a^-2*b,
+  a^-3*b^2*a^-3*b^-2*a^-4*b^-2*a^-1*b^-2*a*b^-2*a^-3*b^-2*a^-3*b^-2*a^-6,
+  a^3*b^-2*a^3*b^-2*a^2*b^-2*a^3*b^-2*a^3*b^-2*a^-1*b^-2*a^-1*b^-1*a^-1*
+    b^-2*a^2*b^-2*a^2*b, 
+  a^-1*b^2*a^-3*b^-2*a^-3*b^-2*a^-4*b^-1*a^-3*b^-2*a^4*b^-2*a^3*b^-2*a^3*
+    b^-2*a^-2*b, 
+  a^-1*b*a*b^2*a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^2*b^-1*a*b^-2*a^3*b^-2*a^3*
+    b^-2*a^-2*b^-1*a*b*a^4*b^-2*a^3*b^-2*a^3*b^-2,
+  a^-1*b^-1*a*b^2*a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^2*b^-1*a*b*a^-2*b^2*a^-2*
+    b^-2*a*b*a*b*a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-4*b^-2*a*b^-2*a*b,
+  a^-1*b^-2*a^-1*b^-1*a^4*b^-2*a^3*b^-2*a^3*b^-2*a^-1*b^-2*a*b*a*b*a*b^-2*
+    a^-3*b^-2*a^-3*b^-2*a^-4*b^-2*a^2*b^-2*a*b^-1*a^-1*b^-2*a^-2,
+  b^-2*a*b^-1*a*b*a^-2*b^-2*a^-1*b*a*b^-2*a^-1*b^-1*a^-1*b^-2*a*b*a^4*
+    b^-2*a^3*b^-2*a^4*b^-1*a^-1*b^-2*a^-2*b^-2*a^2*b^-2*a^-3*b^-2*a^-3*
+    b^-2*a^-2,
+  b^2*a*b*a^4*b^-2*a^3*b^-2*a^5*b*a^4*b^-2*a^3*b^-2*a^3*b*a^2*b^-2*a*b^-2*
+    a^-1*b^-2*a^2*b*a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-2,
+  a*b^-1*a^-1*b^2*a^-2*b*a^4*b^-2*a^3*b^-2*a^3*b^-2*a^-2*b^-1*a^2*b^-2*
+    a^-3*b^-2*a^-3*b^-2*a^-4*b*a^2*b^-2*a*b^-2*a^4*b^-2*a^3*b^-2*a^3,
+  a^-1*b^2*a^-3*b^-2*a^-4*b^-1*a^-1*b^-2*a^5*b^-2*a^3*b^-2*a^3*b^-2*a^-2*
+    b^-1*a^3*b^-2*a*b*a^5*b^-2*a^3*b^-2*a^3*b^-2*a^-3*b*a*b^-2*a*b^-2,
+  a^-2*b^2*a^-2*b*a^3*b*a*b^-2*a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^2*b^-2*a^2*
+    b^-2*a^2*b^-1*a*b^-2*a^-3*b^2*a^-3*b^-2*a^-4*b^-2*a^-1*b^-2*a^-2*b^-1*
+    a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-2, 
+  a^-2*b^2*a^-3*b^-2*a^-4*b^-1*a^-1*b^-2*a^2*b*a^-2*b^2*a^-2*b^-2*a*b*
+    a^-3*b*a^-1*b^-1*a*b^-2*a^2*b^-1*a^-1*b^-2*a^-3*b^-1*a*b^-2*a*b^-2*
+    a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^3*b^-2*a^-1*b^-1*a*b^-2*a^2*b^-1*a^-1*
+    b^-1, 
+  b*a*b^-2*a*b*a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-5*b^-2*a^-1*b^-2*a^4*b^-2*
+    a^3*b^-2*a^3*b^-2*a^-1*b^-2*a*b*a^5*b^-2*a^3*b^-2*a^3*b^-2*a^-3*b*a^4*
+    b^-2*a^3*b^-2*a^3*b^-2*a^-1
+  ;
+
+Text;
+Hard;  Gen: a;  Beg;
+
+Text;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+
+Text;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;   Prune:0,2;
+
+Text;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;   Prune:0,4;
+
+Text;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;   Prune:0,8;
+
+Text;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;   Prune:0,16;
+
+Text;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;   Prune:0,32;
+
+Text;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;   Prune:0,64;
+
+#Text;
+#Prune:0;     Prune:1;     Prune:0;
+
+Text;
+

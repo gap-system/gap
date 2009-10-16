@@ -1,0 +1,796 @@
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  zxz.xml            RCWA documentation            Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: zxz.xml,v 1.22 2009/09/18 21:35:15 stefan Exp $          ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Chapter Label="ch:ZxZ">
+<Heading>
+  Residue-Class-Wise Affine Mappings, Groups and Monoids over <M>&ZZ;^2</M>
+</Heading>
+
+<Ignore Remark="set screen width to 75, for the example tester">
+<Example>
+<![CDATA[
+gap> SizeScreen([75,24]);;
+]]>
+</Example>
+</Ignore>
+
+This chapter describes how to compute with residue-class-wise affine mappings
+of&nbsp;<M>&ZZ;^2</M> and with groups and monoids formed by them. <P/>
+
+The rings on which we have defined residue-class-wise affine mappings so
+far have all been principal ideal domains, and it has been crucial that all
+nontrivial principal ideals had finite index. However, the rings
+<M>&ZZ;^d</M>, <M>d > 1</M> are not principal ideal domains. Furthermore,
+their principal ideals have infinite index. Therefore as moduli of
+residue-class-wise affine mappings we can only use lattices of full rank,
+for these are precisely the ideals of <M>&ZZ;^d</M> of finite index.
+However, on the other hand we can also be more permissive and look at
+<M>&ZZ;^d</M> not only as a ring, but also as a free &ZZ;-module.
+The consequence of this is that then an affine mapping of <M>&ZZ;^d</M>
+is not just given by <M>v \mapsto (av+b)/c</M> for some
+<M>a, b, c \in &ZZ;^d</M>, but rather by <M>v \mapsto (vA+b)/c</M>,
+where <M>A \in &ZZ;^{d \times d}</M>.
+
+<!-- #################################################################### -->
+
+<Section Label="sec:DefinitionOfRcwaMappingsOfZxZ">
+<Heading>
+  The definition of residue-class-wise affine mappings of <M>&ZZ;^d</M>
+</Heading>
+
+<Index Key="rcwa mapping" Subkey="of Z x Z, definition">rcwa mapping</Index>
+
+Let <M>d \in &NN;</M>. We call a mapping <M>f: &ZZ;^d \rightarrow &ZZ;^d</M>
+<E>residue-class-wise affine</E> if there is a lattice <M>L = &ZZ;^d M</M>
+where <M>M \in &ZZ;^{d \times d}</M> is a matrix of full rank, such that the
+restrictions of <M>f</M> to the residue classes <M>r + L \in &ZZ;^d/L</M>
+are all affine.
+This means that for any residue class <M>r + L \in &ZZ;^d/L</M>,
+there is a matrix <M>A_{r+L} \in &ZZ;^{d \times d}</M>, a vector
+<M>b_{r+L} \in &ZZ;^d</M> and a positive integer <M>c_{r+L}</M>
+such that the restriction of&nbsp;<M>f</M> to <M>r + L</M> is given by
+<M>f|_{r + L}: \ r + L \ \rightarrow \ &ZZ;^d, \ \
+v \ \mapsto \ (v \cdot A_{r+L} + b_{r+L})/c_{r+L}</M>.
+For reasons of uniqueness, we assume that <M>L</M> is chosen maximal with
+respect to inclusion, and that no prime factor of <M>c_{r+L}</M> divides all
+coefficients of <M>A_{r+L}</M> and&nbsp;<M>b_{r+L}</M>. <P/>
+
+<Index Key="rcwa mapping" Subkey="modulus">rcwa mapping</Index>
+<Index Key="rcwa mapping" Subkey="class-wise translating">
+  rcwa mapping
+</Index>
+<Index Key="class-wise translating" Subkey="definition">
+  class-wise translating
+</Index>
+<Index Key="prime set" Subkey="definition">prime set</Index>
+
+We call the lattice <M>L</M> the <E>modulus</E> of <M>f</M>,
+written Mod(<M>f</M>).
+Further we define the <E>prime set</E> of&nbsp;<M>f</M> as the set of
+all primes which divide the determinant of at least one of the coefficients
+<M>A_{r+L}</M> or which divide the determinant of&nbsp;<M>M</M>, and
+we call the mapping&nbsp;<M>f</M> <E>class-wise translating</E> if all
+coefficients&nbsp;<M>A_{r+L}</M> are identity matrices and all
+coefficients&nbsp;<M>c_{r+L}</M> are equal to&nbsp;1. <P/>
+
+For the sake of simplicity, we identify a lattice with the Hermite normal
+form of the matrix by whose rows it is spanned.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:EnteringRcwaMappingsOfZxZ">
+<Heading>
+  Entering residue-class-wise affine mappings of <M>&ZZ;^2</M>
+</Heading>
+
+Residue-class-wise affine mappings of <M>&ZZ;^2</M> can be entered
+using the general constructor
+<Ref Meth="RcwaMapping" Label="by ring, modulus and list of coefficients"/>
+or the more specialized functions
+<Ref Func="ClassTransposition" Label="r1, m1, r2, m2"/>,
+<Ref Func="ClassRotation" Label="cl, u"/> and
+<Ref Func="ClassShift" Label="cl"/>. The arguments differ only slightly.
+
+<ManSection>
+  <Heading>
+    RcwaMapping (the general constructor; methods for <M>&ZZ;^2</M>)
+  </Heading>
+  <Meth Name="RcwaMapping" Arg="R, L, coeffs"
+        Label="by ring = Z x Z, modulus and coefficients"/>
+  <Meth Name="RcwaMapping" Arg="P1, P2"
+        Label="by two partitions of Z x Z into residue classes"/>
+  <Meth Name="RcwaMapping" Arg="cycles"
+        Label="of Z x Z, by residue class cycles"/>
+  <Meth Name="RcwaMapping" Arg="f, g"
+        Label="of Z x Z, by projections to coordinates"/>
+  <Returns>
+    <List>
+      <Mark>(a)</Mark>
+      <Item>
+        The rcwa mapping of <C><A>R</A> = Integers^2</C>
+        with modulus&nbsp;<A>L</A> and coefficients <A>coeffs</A>,
+      </Item>
+      <Mark>(b)</Mark>
+      <Item>
+        a bijective rcwa mapping which induces a bijection between
+        the partitions <A>P1</A> and <A>P2</A> of&nbsp;<M>&ZZ;^2</M>
+        into residue classes and which is affine on the elements
+        of <A>P1</A>,
+      </Item>
+      <Mark>(c)</Mark>
+      <Item>
+        a bijective rcwa mapping with <Q>residue class cycles</Q> given
+        by a list <A>cycles</A> of lists of pairwise disjoint residue classes
+        of&nbsp;<M>&ZZ;^2</M>, each of which it permutes cyclically, or
+      </Item>
+      <Mark>(d)</Mark>
+      <Item>
+        the rcwa mapping of&nbsp;<M>&ZZ;^2</M> whose projections to the
+        coordinates are given by <A>f</A> and&nbsp;<A>g</A> (warning:
+        by far not all -- or better: only very special rcwa mappings
+        of&nbsp;<M>&ZZ;^2</M> -- have projections to coordinates!),
+      </Item>
+    </List>
+    respectively.
+  </Returns>
+  <Description>
+    The modulus of an rcwa mapping of <M>&ZZ;^2</M> is a lattice of full
+    rank. It is represented by a matrix <A>L</A> in Hermite normal form,
+    whose rows are the spanning vectors. <P/>
+
+    A coefficient list for an rcwa mapping of <M>&ZZ;^2</M> with
+    modulus&nbsp;<A>L</A> consists of <M>|\det(<A>L</A>)|</M> coefficient
+    triples <C>[</C><M>A_{r+&ZZ;^2<A>L</A>}</M>, <M>b_{r+&ZZ;^2<A>L</A>}</M>,
+    <M>c_{r+&ZZ;^2<A>L</A>}</M><C>]</C>.
+    The entries <M>A_{r+&ZZ;^2<A>L</A>}</M> are <M>2 \times 2</M> integer
+    matrices, the <M>b_{r+&ZZ;^2<A>L</A>}</M> are elements of <M>&ZZ;^2</M>,
+    i.e. lists of two integers, and the <M>c_{r+&ZZ;^2<A>L</A>}</M> are
+    integers.
+    The ordering of the coefficient triples is determined by the ordering of
+    the representatives of the residue classes <M>r+&ZZ;^2<A>L</A></M> in
+    the sorted list returned by <C>AllResidues(Integers^2,<A>L</A>)</C>. <P/>
+
+    The methods for the operation <C>RcwaMapping</C> perform a number of
+    argument checks, which can be skipped by using <C>RcwaMappingNC</C>
+    instead.
+<Example>
+<![CDATA[
+gap> R := Integers^2;;
+gap> twice := RcwaMapping(R,[[1,0],[0,1]],
+>                           [[[[2,0],[0,2]],[0,0],1]]);       # method (a)
+Rcwa mapping of Z^2: [m,n] -> [2m,2n]
+gap> [4,5]^twice;
+[ 8, 10 ]
+gap> twice1 := RcwaMapping(R,[[1,0],[0,1]],
+>                            [[[[2,0],[0,1]],[0,0],1]]);      # method (a)
+Rcwa mapping of Z^2: [m,n] -> [2m,n]
+gap> [4,5]^twice1;
+[ 8, 5 ]
+gap> Image(twice1);
+(0,0)+(2,0)Z+(0,1)Z
+gap> hyperbolic := RcwaMapping(R,[[1,0],[0,2]],
+>                                [[[[4,0],[0,1]],[0, 0],2],
+>                                 [[[4,0],[0,1]],[2,-1],2]]); # method (a)
+<rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z>
+gap> IsBijective(hyperbolic);
+true
+gap> Display(hyperbolic);
+
+Bijective rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z
+
+   [m,n] mod (1,0)Z+(0,2)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0]                       | [2m,n/2]
+ [0,1]                       | [2m+1,(n-1)/2]
+
+gap> Display(hyperbolic:varnames:="v");
+
+Rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z
+
+     v mod (1,0)Z+(0,2)Z     |                Image of v
+-----------------------------+-------------------------------------------
+ [0,0]                       | v * [[4,0],[0,1]]/2
+ [0,1]                       | (v * [[4,0],[0,1]] + [2,-1])/2
+
+gap> Trajectory(hyperbolic,[0,10000],20);
+[ [ 0, 10000 ], [ 0, 5000 ], [ 0, 2500 ], [ 0, 1250 ], [ 0, 625 ], 
+  [ 1, 312 ], [ 2, 156 ], [ 4, 78 ], [ 8, 39 ], [ 17, 19 ], [ 35, 9 ], 
+  [ 71, 4 ], [ 142, 2 ], [ 284, 1 ], [ 569, 0 ], [ 1138, 0 ], 
+  [ 2276, 0 ], [ 4552, 0 ], [ 9104, 0 ], [ 18208, 0 ] ]
+gap> P1 := AllResidueClassesModulo(R,[[2,1],[0,2]]);
+[ (0,0)+(2,1)Z+(0,2)Z, (0,1)+(2,1)Z+(0,2)Z, (1,0)+(2,1)Z+(0,2)Z,
+  (1,1)+(2,1)Z+(0,2)Z ]
+gap> P2 := AllResidueClassesModulo(R,[[1,0],[0,4]]);
+[ (0,0)+(1,0)Z+(0,4)Z, (0,1)+(1,0)Z+(0,4)Z, (0,2)+(1,0)Z+(0,4)Z,
+  (0,3)+(1,0)Z+(0,4)Z ]
+gap> g := RcwaMapping(P1,P2);                                 # method (b)
+<bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,2)Z>
+gap> P1^g = P2;
+true
+gap> Display(g);
+
+Bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,2)Z
+
+   [m,n] mod (2,1)Z+(0,2)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0]                       | [m/2,-m+2n]
+ [0,1]                       | [m/2,-m+2n-1]
+ [1,0]                       | [(m-1)/2,-m+2n+3]
+ [1,1]                       | [(m-1)/2,-m+2n+2]
+
+gap> classes := List([[[0,0],[[2,1],[0,2]]],[[1,0],[[2,1],[0,4]]],
+>                     [[1,1],[[4,2],[0,4]]]],ResidueClass);
+[ (0,0)+(2,1)Z+(0,2)Z, (1,0)+(2,1)Z+(0,4)Z, (1,1)+(4,2)Z+(0,4)Z ]
+gap> g := RcwaMapping([classes]);                             # method (c)
+<bijective rcwa mapping of Z^2 with modulus (4,2)Z+(0,4)Z, of order 3>
+gap> Permutation(g,classes);
+(1,2,3)
+gap> Support(g);
+(0,0)+(2,1)Z+(0,2)Z U (1,0)+(2,1)Z+(0,4)Z U (1,1)+(4,2)Z+(0,4)Z
+gap> Display(g);
+
+Bijective rcwa mapping of Z^2 with modulus (4,2)Z+(0,4)Z, of order 3
+
+   [m,n] mod (4,2)Z+(0,4)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,2] [2,1] [2,3]     | [m+1,(-m+4n)/2]
+ [0,1] [0,3] [1,2] [1,3]     |
+ [2,0] [2,2] [3,0] [3,2]     |
+ [3,3]                       | [m,n]
+ [1,0] [3,1]                 | [2m-1,(m+2n+1)/2]
+ [1,1]                       | [(m-1)/2,(n-1)/2]
+
+gap> g := RcwaMapping(ClassTransposition(0,2,1,2),
+>                     ClassReflection(0,2));                  # method (d)
+<rcwa mapping of Z^2 with modulus (2,0)Z+(0,2)Z>
+gap> Display(g);
+
+Rcwa mapping of Z^2 with modulus (2,0)Z+(0,2)Z
+
+   [m,n] mod (2,0)Z+(0,2)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0]                       | [m+1,-n]
+ [0,1]                       | [m+1,n]
+ [1,0]                       | [m-1,-n]
+ [1,1]                       | [m-1,n]
+
+gap> g^2;
+IdentityMapping( ( Integers^2 ) )
+gap> List(Projections(g),Factorization);
+[ [ ClassTransposition(0,2,1,2) ], [ ClassReflection(0,2) ] ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Heading> ClassTransposition (for <M>&ZZ;^2</M>) </Heading>
+  <Func Name="ClassTransposition" Arg="r1, L1, r2, L2"
+                                  Label="r1, L1, r2, L2 (for Z x Z)"/>
+  <Func Name="ClassTransposition" Arg="cl1, cl2"
+                                  Label="cl1, cl2 (for Z x Z)"/>
+  <Returns>
+    The class transposition <M>\tau_{r_1+&ZZ;^2L_1,r_2+&ZZ;^2L_2}</M>.
+  </Returns>
+  <Description>
+    Let <M>d \in &NN;</M>, and let <M>L_1, L_2 \in &ZZ;^{d \times d}</M> be
+    matrices of full rank which are in Hermite normal form. Further let
+    <M>r_1 + &ZZ;^d L_1</M> and <M>r_2 + &ZZ;^d L_2</M> be disjoint residue
+    classes, and assume that the representatives <M>r_1</M> and <M>r_2</M>
+    are reduced modulo&nbsp;<M>&ZZ;^d L_1</M> and&nbsp;<M>&ZZ;^d L_2</M>,
+    respectively. Then we define the <E>class transposition</E>
+    <M>\tau_{r_1+&ZZ;^d L_1, r_2+&ZZ;^d L_2} \in {\rm Sym}(&ZZ;^d)</M> as the
+    involution which interchanges <M>r_1 + k L_1</M> and <M>r_2 + k L_2</M>
+    for all <M>k \in &ZZ;^d</M>. <P/>
+
+    The class transposition <M>\tau_{r_1+&ZZ;^d L_1, r_2+&ZZ;^d L_2}</M>
+    interchanges the residue classes <M>r_1+&ZZ;^d L_1</M> and
+    <M>r_2+&ZZ;^d L_2</M>, and fixes the complement of their union pointwise.
+    The set of all class transpositions of&nbsp;<M>&ZZ;^d</M> generates the
+    simple group CT(<M>&ZZ;^d</M>) (cf.&nbsp;<Cite Key="Kohl08c"/>). <P/>
+
+    <Index Key="TransposedClasses"
+           Subkey="of a class transposition of Z x Z">
+      <C>TransposedClasses</C>
+    </Index>
+
+    In the four-argument form, the arguments <A>r1</A>, <A>L1</A>,
+    <A>r2</A> and&nbsp;<A>L2</A> stand for <M>r_1</M>, <M>L_1</M>,
+    <M>r_2</M> and&nbsp;<M>L_2</M>, respectively.
+    In the two-argument form, the arguments <A>cl1</A> and&nbsp;<A>cl2</A>
+    stand for the residue classes <M>r_1+&ZZ;^2 L_1</M>
+    and&nbsp;<M>r_2+&ZZ;^2 L_2</M>, respectively.
+    Enclosing the argument list in list brackets is permitted.
+    The residue classes <M>r_1+&ZZ;^2 L_1</M> and <M>r_2+&ZZ;^2 L_2</M>
+    are stored as an attribute <C>TransposedClasses</C>. <P/>
+
+    <Index Key="SplittedClassTransposition"
+           Subkey="for a class transposition of Z x Z">
+      <C>SplittedClassTransposition</C>
+    </Index>
+
+    There is also a method for <C>SplittedClassTransposition</C> available
+    for class transpositions of <M>&ZZ;^2</M>. This method takes as first
+    argument the class transposition, and as second argument a list of
+    two integers. These integers are the numbers of parts into which the
+    class transposition is to be sliced in each dimension. Note that the
+    product of the returned class transpositions is not always equal to
+    the class transposition passed as first argument. However this equality
+    holds if the first entry of the second argument is&nbsp;1. <P/>
+<Example>
+<![CDATA[
+gap> ct := ClassTransposition([0,0],[[2,1],[0,2]],[1,0],[[2,1],[0,4]]);
+ClassTransposition((0,0)+(2,1)Z+(0,2)Z,(1,0)+(2,1)Z+(0,4)Z)
+gap> Display(ct);
+
+Bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,4)Z, of order 2
+
+   [m,n] mod (2,1)Z+(0,4)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,2]                 | [m+1,(-m+4n)/2]
+ [0,1] [0,3] [1,1] [1,2]     |
+ [1,3]                       | [m,n]
+ [1,0]                       | [m-1,(m+2n-1)/4]
+
+gap> TransposedClasses(ct);
+[ (1,0)+(2,0)Z+(0,4)Z, (0,0)+(2,1)Z+(0,2)Z ]
+gap> ct = ClassTransposition(last);
+true
+gap> SplittedClassTransposition(ct,[1,2]);
+[ ClassTransposition((1,0)+(2,0)Z+(0,8)Z,(0,0)+(2,1)Z+(0,4)Z), 
+  ClassTransposition((1,4)+(2,0)Z+(0,8)Z,(0,2)+(2,1)Z+(0,4)Z) ]
+gap> Product(last) = ct;
+true
+gap> SplittedClassTransposition(ct,[2,1]);
+[ ClassTransposition((0,0)+(4,0)Z+(0,2)Z,(1,0)+(4,0)Z+(0,4)Z), 
+  ClassTransposition((2,1)+(4,0)Z+(0,2)Z,(3,0)+(4,0)Z+(0,4)Z) ]
+gap> Product(last) = ct;
+false
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Heading> ClassRotation (for <M>&ZZ;^2</M>) </Heading>
+  <Func Name="ClassRotation" Arg="r, L, u" Label="r, L, u; for Z x Z"/>
+  <Func Name="ClassRotation" Arg="cl, u" Label="cl, u; for Z x Z"/>
+  <Returns> The class rotation <M>\rho_{r(m),u}</M>. </Returns>
+  <Description>
+    Let <M>d \in &NN;</M>. Given a residue class <M>r+&ZZ;^dL</M>
+    and a matrix <M>u \in {\rm GL}(d,&ZZ;)</M>, the <E>class rotation</E>
+    <M>\rho_{r+&ZZ;^dL,u}</M> is the rcwa mapping which maps
+    <M>v \in r+&ZZ;^dL</M> to <M>vu + r(1-u)</M>
+    and which fixes <M>&ZZ;^d \setminus r+&ZZ;^dL</M> pointwise.
+
+    <Index Key="RotationFactor" Subkey="of a class rotation of Z x Z">
+      <C>RotationFactor</C>
+    </Index>
+
+    In the two-argument form, the argument&nbsp;<A>cl</A> stands for the
+    residue class&nbsp;<M>r+&ZZ;^dL</M>. Enclosing the argument list in list
+    brackets is permitted. The argument <A>u</A> is stored as an attribute
+    <C>RotationFactor</C>.
+<Example>
+<![CDATA[
+gap> interchange := ClassRotation([0,0],[[1,0],[0,1]],[[0,1],[1,0]]);
+ClassRotation((Integers^2),[[0,1],[1,0]])
+gap> Display(interchange);
+Bijective rcwa mapping of Z^2: [m,n] -> [n,m]
+gap> classes := AllResidueClassesModulo(Integers^2,[[2,1],[0,3]]);
+[ (0,0)+(2,1)Z+(0,3)Z, (0,1)+(2,1)Z+(0,3)Z, (0,2)+(2,1)Z+(0,3)Z, 
+  (1,0)+(2,1)Z+(0,3)Z, (1,1)+(2,1)Z+(0,3)Z, (1,2)+(2,1)Z+(0,3)Z ]
+gap> transvection := ClassRotation(classes[5],[[1,1],[0,1]]);
+ClassRotation((1,1)+(2,1)Z+(0,3)Z,[[1,1],[0,1]])
+gap> Display(transvection);
+
+Tame bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,3)Z, of order infinity
+
+   [m,n] mod (2,1)Z+(0,3)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,1] [0,2] [1,0]     |
+ [1,2]                       | [m,n]
+ [1,1]                       | [m,(3m+2n-3)/2]
+
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Heading> ClassShift (for <M>&ZZ;^2</M>) </Heading>
+  <Func Name="ClassShift" Arg="r, L, k" Label="r, L, k; for Z x Z"/>
+  <Func Name="ClassShift" Arg="cl, k" Label="cl, k; for Z x Z"/>
+  <Returns> The class shift <M>\nu_{r+&ZZ;^dL,k}</M>. </Returns>
+  <Description>
+    Let <M>d \in &NN;</M>. Given a residue class <M>r+&ZZ;^dL</M> and
+    an integer <M>k \in \{1, \dots, d\}</M>, the <E>class shift</E>
+    <M>\nu_{r+&ZZ;^dL,k}</M> is the rcwa mapping which maps
+    <M>v \in r+&ZZ;^dL</M> to <M>v + L_k</M> and which fixes
+    <M>&ZZ;^d \setminus r+&ZZ;^dL</M> pointwise.
+    Here <M>L_k</M> denotes the <M>k</M>th row of&nbsp;<M>L</M>. <P/>
+
+    In the two-argument form, the argument&nbsp;<A>cl</A> stands for the
+    residue class&nbsp;<M>r+&ZZ;^dL</M>. Enclosing the argument list in
+    list brackets is permitted.
+<Example>
+<![CDATA[
+gap> shift1 := ClassShift([0,0],[[1,0],[0,1]],1);
+ClassShift((Integers^2),1)
+gap> Display(shift1);
+Tame bijective rcwa mapping of Z^2: [m,n] -> [m+1,n]
+gap> s := ClassShift(ResidueClass([1,1],[[2,1],[0,2]]),2);
+ClassShift((1,1)+(2,1)Z+(0,2)Z,2)
+gap> Display(s);
+
+Tame bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,2)Z, of order infinity
+
+   [m,n] mod (2,1)Z+(0,2)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,1] [1,0]           | [m,n]
+ [1,1]                       | [m,n+2]
+
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+<Index Key="IsClassTransposition" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsClassTransposition</C>
+</Index>
+<Index Key="IsClassRotation" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsClassRotation</C>
+</Index>
+<Index Key="IsClassShift" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsClassShift</C>
+</Index>
+
+As for other rings, class transpositions, class rotations and
+class shifts of&nbsp;<M>&ZZ;^2</M> have the distinguishing properties
+<C>IsClassTransposition</C>, <C>IsClassRotation</C>
+and <C>IsClassShift</C>.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:MethodsForRcwaMappingsOfZxZ">
+<Heading>
+  Methods for residue-class-wise affine mappings of <M>&ZZ;^2</M>
+</Heading>
+
+There are methods available for rcwa mappings of <M>&ZZ;^2</M> for the
+following general operations:
+
+<Index Key="View" Subkey="for an rcwa mapping of Z x Z">
+  <C>View</C>
+</Index>
+<Index Key="Display" Subkey="for an rcwa mapping of Z x Z">
+  <C>Display</C>
+</Index>
+<Index Key="Print" Subkey="for an rcwa mapping of Z x Z">
+  <C>Print</C>
+</Index>
+<Index Key="String" Subkey="for an rcwa mapping of Z x Z">
+  <C>String</C>
+</Index>
+<Index Key="LaTeXObj" Subkey="for an rcwa mapping of Z x Z">
+  <C>LaTeXObj</C>
+</Index>
+<Index Key="LaTeXAndXDVI" Subkey="for an rcwa mapping of Z x Z">
+  <C>LaTeXAndXDVI</C>
+</Index>
+<Index Key="Modulus" Subkey="of an rcwa mapping of Z x Z">
+  <C>Modulus</C>
+</Index>
+<Index Key="Coefficients" Subkey="of an rcwa mapping of Z x Z">
+  <C>Coefficients</C>
+</Index>
+<Index Key="Support" Subkey="of an rcwa mapping of Z x Z">
+  <C>Support</C>
+</Index>
+<Index Key="MovedPoints" Subkey="of an rcwa mapping of Z x Z">
+  <C>MovedPoints</C>
+</Index>
+<Index Key="Order" Subkey="of an rcwa mapping of Z x Z">
+  <C>Order</C>
+</Index>
+<Index Key="Multiplier" Subkey="of an rcwa mapping of Z x Z">
+  <C>Multiplier</C>
+</Index>
+<Index Key="Divisor" Subkey="of an rcwa mapping of Z x Z">
+  <C>Divisor</C>
+</Index>
+<Index Key="PrimeSet" Subkey="of an rcwa mapping of Z x Z">
+  <C>PrimeSet</C>
+</Index>
+<Index Key="One" Subkey="for an rcwa mapping of Z x Z">
+  <C>One</C>
+</Index>
+<Index Key="Zero" Subkey="for an rcwa mapping of Z x Z">
+  <C>Zero</C>
+</Index>
+<Index Key="IsInjective" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsInjective</C>
+</Index>
+<Index Key="IsSurjective" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsSurjective</C>
+</Index>
+<Index Key="IsBijective" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsBijective</C>
+</Index>
+<Index Key="IsTame" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsTame</C>
+</Index>
+<Index Key="IsIntegral" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsIntegral</C>
+</Index>
+<Index Key="IsBalanced" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsBalanced</C>
+</Index>
+<Index Key="IsClassWiseOrderPreserving"
+       Subkey="for an rcwa mapping of Z x Z">
+  <C>IsClassWiseOrderPreserving</C>
+</Index>
+<Index Key="IsOne" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsOne</C>
+</Index>
+<Index Key="IsZero" Subkey="for an rcwa mapping of Z x Z">
+  <C>IsZero</C>
+</Index>
+<Index Key="Trajectory" Subkey="for rcwa mappings of Z x Z">
+  <C>Trajectory</C>
+</Index>
+<Index Key="ShortCycles"
+       Subkey="for rcwa perm. of Z x Z, set of points and max. length">
+  <C>ShortCycles</C>
+</Index>
+<Index Key="Multpk" Subkey="for rcwa mapping of Z x Z, prime and exponent">
+  <C>Multpk</C>
+</Index>
+<Index Key="ClassWiseOrderPreservingOn" Subkey="for rcwa mappings of Z x Z">
+  <C>ClassWiseOrderPreservingOn</C>
+</Index>
+<Index Key="ClassWiseOrderReversingOn" Subkey="for rcwa mappings of Z x Z">
+  <C>ClassWiseOrderReversingOn</C>
+</Index>
+<Index Key="ClassWiseConstantOn" Subkey="for rcwa mappings of Z x Z">
+  <C>ClassWiseConstantOn</C>
+</Index>
+
+<List>
+  <Mark> Output </Mark>
+  <Item>
+    <C>View</C>, <C>Display</C>, <C>Print</C>, <C>String</C>,
+    <C>LaTeXObj</C>, <C>LaTeXAndXDVI</C>.
+  </Item> 
+  <Mark> Access to components </Mark>
+  <Item> <C>Modulus</C>, <C>Coefficients</C>. </Item>
+  <Mark> Attributes </Mark>
+  <Item>
+    <C>Support</C> / <C>MovedPoints</C>, <C>Order</C>,
+    <C>Multiplier</C>, <C>Divisor</C>, <C>PrimeSet</C>,
+    <C>One</C>, <C>Zero</C>.
+  </Item>
+  <Mark> Properties </Mark>
+  <Item>
+    <C>IsInjective</C>, <C>IsSurjective</C>, <C>IsBijective</C>,
+    <C>IsTame</C>, <C>IsIntegral</C>, <C>IsBalanced</C>,
+    <C>IsClassWiseOrderPreserving</C>, <C>IsOne</C>, <C>IsZero</C>.
+  </Item>
+  <Mark> Action on <M>&ZZ;^d</M> </Mark>
+  <Item>
+    <C>^</C> (for points / finite sets / residue class unions),
+    <C>Trajectory</C>, <C>ShortCycles</C>, <C>Multpk</C>,
+    <C>ClassWiseOrderPreservingOn</C>, <C>ClassWiseOrderReversingOn</C>,
+    <C>ClassWiseConstantOn</C>.
+  </Item>
+  <Mark> Arithmetical operations </Mark>
+  <Item>
+    <C>=</C>, <C>*</C> (multiplication / composition and multiplication
+    by a <M>2 \times 2</M> matrix or an integer),
+    <C>^</C> (exponentiation and conjugation), <C>Inverse</C>,
+    <C>+</C> (addition of a constant).
+  </Item>
+ </List>
+
+The above operations are documented either in the &GAP; Reference Manual
+or earlier in this mamual. The operations which are special for rcwa mappings
+of&nbsp;<M>&ZZ;^2</M> are described in the sequel. <P/>
+
+<ManSection>
+  <Oper Name="Projections" Arg="f"
+        Label="for an rcwa mapping of Z x Z"/>
+  <Returns>
+    The projections of the rcwa mapping <A>f</A> of <M>&ZZ;^2</M> to the
+    coordinates if such projections exist, and <C>fail</C> otherwise.
+  </Returns>
+  <Description>
+    An rcwa mapping can be projected to the first / second coordinate if and
+    only if the first / second coordinate of the image of a point depends
+    only on the first / second coordinate of the preimage. Note that this is
+    a very strong and restrictive condition.
+<Example>
+<![CDATA[
+gap> f := RcwaMapping(ClassTransposition(0,2,1,2),ClassReflection(0,2));;
+gap> Display(f);
+
+Rcwa mapping of Z^2 with modulus (2,0)Z+(0,2)Z
+
+    [m,n] mod (2,0)Z+(0,2)Z    |               Image of [m,n]
+-------------------------------+----------------------------------------------
+ [0,0]                         | [m+1,-n]
+ [0,1]                         | [m+1,n]
+ [1,0]                         | [m-1,-n]
+ [1,1]                         | [m-1,n]
+
+gap> List(Projections(f),Factorization);
+[ [ ClassTransposition(0,2,1,2) ], [ ClassReflection(0,2) ] ]
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:MethodsForRcwaGroupsOverZxZ">
+<Heading>
+  Methods for residue-class-wise affine groups and -monoids over <M>&ZZ;^2</M>
+</Heading>
+
+<Index Key="Rcwa"
+       Subkey="the monoid formed by all rcwa permutations of Z x Z">
+  <C>Rcwa</C>
+</Index>
+<Index Key="RCWA"
+       Subkey="the group formed by all rcwa permutations of Z x Z">
+  <C>RCWA</C>
+</Index>
+<Index Key="CT"
+       Subkey="the group generated by all class transpositions of Z x Z">
+  <C>CT</C>
+</Index>
+
+Residue-class-wise affine groups over <M>&ZZ;^2</M> can be entered by
+<C>Group</C>, <C>GroupByGenerators</C> and <C>GroupWithGenerators</C>,
+like any groups in &GAP;. Likewise, residue-class-wise affine monoids over
+<M>&ZZ;^2</M> can be entered by <C>Monoid</C> and <C>MonoidByGenerators</C>.
+The groups RCWA(<M>&ZZ;^2</M>) and CT(<M>&ZZ;^2</M>) are entered
+as <C>RCWA(Integers^2)</C> and <C>CT(Integers^2)</C>, respectively.
+The monoid Rcwa(<M>&ZZ;^2</M>) is entered as <C>Rcwa(Integers^2)</C>. <P/>
+
+<Index Key="Size" Subkey="for an rcwa group over Z x Z">
+  <C>Size</C>
+</Index>
+<Index Key="IsIntegral" Subkey="for an rcwa group over Z x Z">
+  <C>IsIntegral</C>
+</Index>
+<Index Key="IsClassWiseTranslating" Subkey="for an rcwa group over Z x Z">
+  <C>IsClassWiseTranslating</C>
+</Index>
+<Index Key="IsTame" Subkey="for an rcwa group over Z x Z">
+  <C>IsTame</C>
+</Index>
+<Index Key="Modulus" Subkey="of an rcwa group over Z x Z">
+  <C>Modulus</C>
+</Index>
+<Index Key="Multiplier" Subkey="of an rcwa group over Z x Z">
+  <C>Multiplier</C>
+</Index>
+<Index Key="Divisor" Subkey="of an rcwa group over Z x Z">
+  <C>Divisor</C>
+</Index>
+
+There are methods provided for the operations <C>Size</C>,
+<C>IsIntegral</C>, <C>IsClassWiseTranslating</C>, <C>IsTame</C>,
+<C>Modulus</C>, <C>Multiplier</C> and <C>Divisor</C>. <P/>
+
+There are methods for <Ref Attr="IsomorphismRcwaGroup"
+Label="for a group, over a given ring"/> which embed the groups SL(2,&ZZ;)
+and GL(2,&ZZ;) into RCWA(<M>&ZZ;^2</M>) in such a way that the support
+of the image is a specified residue class:
+
+<ManSection>
+  <Heading>
+    IsomorphismRcwaGroup (Embeddings of SL(2,&ZZ;) and GL(2,&ZZ;))
+  </Heading>
+  <Attr Name="IsomorphismRcwaGroup"
+        Arg="sl2z, cl" Label="for SL(2,Z) and a residue class"/>
+  <Attr Name="IsomorphismRcwaGroup"
+        Arg="gl2z, cl" Label="for GL(2,Z) and a residue class"/>
+  <Returns>
+    A monomorphism from <A>sl2z</A> respectively <A>gl2z</A>
+    to&nbsp;RCWA(<M>&ZZ;^2</M>), such that the support of the image
+    is the residue class&nbsp;<A>cl</A> and the generators
+    are affine on&nbsp;<A>cl</A>.
+  </Returns>
+  <Description>
+<Example>
+<![CDATA[
+gap> sl := SL(2,Integers);
+SL(2,Integers)
+gap> phi := IsomorphismRcwaGroup(sl,ResidueClass([1,0],[[2,2],[0,3]]));
+[ [ [ 0, 1 ], [ -1, 0 ] ], [ [ 1, 1 ], [ 0, 1 ] ] ] -> 
+[ ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[0,1],[-1,0]]), 
+  ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[1,1],[0,1]]) ]
+gap> Support(Image(phi));
+(1,0)+(2,2)Z+(0,3)Z
+gap> gl := GL(2,Integers);
+GL(2,Integers)
+gap> phi := IsomorphismRcwaGroup(gl,ResidueClass([1,0],[[2,2],[0,3]]));
+[ [ [ 0, 1 ], [ 1, 0 ] ], [ [ -1, 0 ], [ 0, 1 ] ], 
+  [ [ 1, 1 ], [ 0, 1 ] ] ] -> 
+[ ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[0,1],[1,0]]), 
+  ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[-1,0],[0,1]]), 
+  ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[1,1],[0,1]]) ]
+gap> [[-47,-37],[61,48]]^phi;
+ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[-47,-37],[61,48]])
+gap> Display(last);
+
+Bijective rcwa mapping of Z^2 with modulus (2,2)Z+(0,3)Z, of order 6
+
+   [m,n] mod (2,2)Z+(0,3)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,1] [0,2] [1,1]     |
+ [1,2]                       | [m,n]
+ [1,0]                       | [(-263m+122n+266)/3,(-1147m+532n+1147)/6]
+
+]]>
+</Example>
+  </Description>
+</ManSection>
+
+<Index Key="DrawOrbitPicture" Subkey="for rcwa groups over Z x Z">
+  <C>DrawOrbitPicture</C>
+</Index>
+
+The function <Ref Func="DrawOrbitPicture"
+                  Label="G, p0, r, h, w, colored, palette, filename"/>
+can also be used to depict orbits under the action of rcwa groups
+over&nbsp;<M>&ZZ;^2</M>. Further there is a function which depicts
+residue class unions of&nbsp;<M>&ZZ;^2</M> and partitions
+of&nbsp;<M>&ZZ;^2</M> into such:
+
+<ManSection>
+  <Heading> DrawGrid </Heading>
+  <Func Name="DrawGrid"
+        Arg="U, yrange, xrange, filename"
+        Label="U, yrange, xrange, filename"/>
+  <Func Name="DrawGrid"
+        Arg="P, yrange, xrange, filename"
+        Label="P, yrange, xrange, filename"/>
+  <Returns>
+    Nothing.
+  </Returns>
+  <Description>
+    This function depicts the residue class union <A>U</A>
+    of&nbsp;<M>&ZZ;^2</M> or the partition&nbsp;<A>P</A>
+    of&nbsp;<M>&ZZ;^2</M> into residue class unions, respectively.
+    The arguments <A>yrange</A> and <A>xrange</A> are the coordinate
+    ranges of the rectangular snippet to be drawn, and the argument
+    <A>filename</A> is the name, i.e. the full path name,
+    of the output file. If the first argument is a residue class union,
+    the output picture is black-and-white, where black pixels represent
+    members of&nbsp;<A>U</A> and white pixels represent non-members.
+    If the first argument is a partition of&nbsp;<M>&ZZ;^2</M> into residue
+    class unions, the produced picture is colored, and different colors are
+    used to denote membership in different parts.
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
+</Chapter>
+
+<!-- #################################################################### -->

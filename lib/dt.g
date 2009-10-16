@@ -2,7 +2,7 @@
 ##
 #W  dt.g                        GAP library                 Wolfgang Merkwitz
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: dt.g,v 4.12 2002/04/15 10:04:39 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -52,7 +52,7 @@
 ##  for pos( <b> ) for all trees <b> which are represented by <a>.
 ##
 Revision.dt_g :=
-  "@(#)$Id$";
+  "@(#)$Id: dt.g,v 4.12 2002/04/15 10:04:39 sal Exp $";
 
 
 

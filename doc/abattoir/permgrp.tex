@@ -97,11 +97,14 @@ number of points in the cycle~<c>.
 \Section{Permutations and lists}\null
 
 \>ListPerm( <perm> )
+\>ListPerm( <perm>, <length> )
 
 `ListPerm' returns a list <list> that contains the images of the positive
 integers  under the permutation   <perm>. That means that  `<list>[<i>] =
 <i>^<perm>',  where <i>  lies between 1   and the largest  point moved by
 <perm> (see "LargestMovedPointPerm").
+
+An optional second argument specifies the length of the desired list.
 
 \>PermList( <list> )
 

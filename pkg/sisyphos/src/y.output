@@ -1,0 +1,3141 @@
+Conflict in state 60 between rule 58 and token MOD resolved as reduce.
+Conflict in state 60 between rule 58 and token '+' resolved as reduce.
+Conflict in state 60 between rule 58 and token '-' resolved as reduce.
+Conflict in state 60 between rule 58 and token '*' resolved as reduce.
+Conflict in state 60 between rule 58 and token '/' resolved as reduce.
+Conflict in state 60 between rule 58 and token '^' resolved as shift.
+Conflict in state 60 between rule 58 and token '[' resolved as shift.
+Conflict in state 60 between rule 58 and token '.' resolved as shift.
+Conflict in state 90 between rule 54 and token MOD resolved as reduce.
+Conflict in state 90 between rule 54 and token '+' resolved as reduce.
+Conflict in state 90 between rule 54 and token '-' resolved as reduce.
+Conflict in state 90 between rule 54 and token '*' resolved as shift.
+Conflict in state 90 between rule 54 and token '/' resolved as shift.
+Conflict in state 90 between rule 54 and token '^' resolved as shift.
+Conflict in state 90 between rule 54 and token '[' resolved as shift.
+Conflict in state 90 between rule 54 and token '.' resolved as shift.
+Conflict in state 91 between rule 55 and token MOD resolved as reduce.
+Conflict in state 91 between rule 55 and token '+' resolved as reduce.
+Conflict in state 91 between rule 55 and token '-' resolved as reduce.
+Conflict in state 91 between rule 55 and token '*' resolved as shift.
+Conflict in state 91 between rule 55 and token '/' resolved as shift.
+Conflict in state 91 between rule 55 and token '^' resolved as shift.
+Conflict in state 91 between rule 55 and token '[' resolved as shift.
+Conflict in state 91 between rule 55 and token '.' resolved as shift.
+Conflict in state 92 between rule 56 and token MOD resolved as reduce.
+Conflict in state 92 between rule 56 and token '+' resolved as reduce.
+Conflict in state 92 between rule 56 and token '-' resolved as reduce.
+Conflict in state 92 between rule 56 and token '*' resolved as reduce.
+Conflict in state 92 between rule 56 and token '/' resolved as reduce.
+Conflict in state 92 between rule 56 and token '^' resolved as shift.
+Conflict in state 92 between rule 56 and token '[' resolved as shift.
+Conflict in state 92 between rule 56 and token '.' resolved as shift.
+Conflict in state 93 between rule 57 and token MOD resolved as reduce.
+Conflict in state 93 between rule 57 and token '+' resolved as reduce.
+Conflict in state 93 between rule 57 and token '-' resolved as reduce.
+Conflict in state 93 between rule 57 and token '*' resolved as reduce.
+Conflict in state 93 between rule 57 and token '/' resolved as reduce.
+Conflict in state 93 between rule 57 and token '^' resolved as shift.
+Conflict in state 93 between rule 57 and token '[' resolved as shift.
+Conflict in state 93 between rule 57 and token '.' resolved as shift.
+Conflict in state 94 between rule 59 and token MOD resolved as reduce.
+Conflict in state 94 between rule 59 and token '+' resolved as reduce.
+Conflict in state 94 between rule 59 and token '-' resolved as reduce.
+Conflict in state 94 between rule 59 and token '*' resolved as reduce.
+Conflict in state 94 between rule 59 and token '/' resolved as reduce.
+Conflict in state 94 between rule 59 and token '^' resolved as shift.
+Conflict in state 94 between rule 59 and token '[' resolved as shift.
+Conflict in state 94 between rule 59 and token '.' resolved as shift.
+Conflict in state 96 between rule 71 and token MOD resolved as reduce.
+Conflict in state 96 between rule 71 and token '+' resolved as reduce.
+Conflict in state 96 between rule 71 and token '-' resolved as reduce.
+Conflict in state 96 between rule 71 and token '*' resolved as reduce.
+Conflict in state 96 between rule 71 and token '/' resolved as reduce.
+Conflict in state 96 between rule 71 and token '^' resolved as reduce.
+Conflict in state 96 between rule 71 and token '[' resolved as reduce.
+Conflict in state 96 between rule 71 and token '.' resolved as reduce.
+Conflict in state 132 between rule 62 and token MOD resolved as reduce.
+Conflict in state 132 between rule 62 and token '+' resolved as reduce.
+Conflict in state 132 between rule 62 and token '-' resolved as reduce.
+Conflict in state 132 between rule 62 and token '*' resolved as reduce.
+Conflict in state 132 between rule 62 and token '/' resolved as reduce.
+Conflict in state 132 between rule 62 and token '^' resolved as shift.
+Conflict in state 132 between rule 62 and token '[' resolved as shift.
+Conflict in state 132 between rule 62 and token '.' resolved as shift.
+Conflict in state 192 between rule 39 and token '*' resolved as reduce.
+Conflict in state 192 between rule 39 and token '^' resolved as shift.
+
+Grammar
+rule 1    cmdlist ->		/* empty */
+rule 2    cmdlist -> cmdlist stat ';'
+rule 3    cmdlist -> cmdlist error ';'
+rule 4    stat ->		/* empty */
+rule 5    stat -> assign
+rule 6    stat -> IDENTIFIER
+rule 7    stat -> IDENTIFIER '(' exprlist ')'
+rule 8    stat -> BATCH '(' STRING ')'
+rule 9    stat -> QUIT
+rule 10   matrix -> MATRIX '(' '[' rowlist ']' ')'
+rule 11   rowlist -> row
+rule 12   rowlist -> rowlist ',' row
+rule 13   row -> '[' exprlist ']'
+rule 14   exprlist ->		/* empty */
+rule 15   exprlist -> exprlistp
+rule 16   exprlistp -> expr
+rule 17   exprlistp -> exprlistp ',' expr
+rule 18   numlist -> '[' litems ']'
+rule 19   litems ->		/* empty */
+rule 20   litems -> litemsp
+rule 21   litemsp -> sign NUMBER
+rule 22   litemsp -> litemsp ',' sign NUMBER
+rule 23   min ->		/* empty */
+rule 24   min -> MINIMAL ','
+rule 25   gendecl -> GENS '(' gens ')'
+rule 26   gens -> GEN
+rule 27   gens -> gens ',' GEN
+rule 28   gens -> gens error
+rule 29   reldecl -> RELS '(' rels ')'
+rule 30   rels -> rel
+rule 31   rels -> rels ',' rel
+rule 32   rels -> rels error
+rule 33   rel -> lword rside
+rule 34   rside ->		/* empty */
+rule 35   rside -> '=' rword
+rule 36   rword -> lword
+rule 37   rword -> ID
+rule 38   lword -> '(' lword ')'
+rule 39   lword -> lword '*' lword
+rule 40   lword -> lword '^' sign NUM
+rule 41   lword -> '[' lword ',' lword ']'
+rule 42   lword -> GEN
+rule 43   sign ->		/* empty */
+rule 44   sign -> '-'
+rule 45   @1 ->		/* empty */
+rule 46   assign -> IDENTIFIER '=' @1 expr
+rule 47   assign -> IDENTIFIER '[' expr ']' '=' expr
+rule 48   @2 ->		/* empty */
+rule 49   assign -> CGEN '=' @2 expr
+rule 50   @3 ->		/* empty */
+rule 51   assign -> NGEN '=' @3 expr
+rule 52   expr -> '(' expr ')'
+rule 53   expr -> IDENTIFIER '(' exprlist ')'
+rule 54   expr -> expr '+' expr
+rule 55   expr -> expr '-' expr
+rule 56   expr -> expr '*' expr
+rule 57   expr -> expr '/' expr
+rule 58   expr -> '-' expr
+rule 59   expr -> expr '^' expr
+rule 60   expr -> '[' expr ',' expr ']'
+rule 61   expr -> COMMUT '(' expr ',' expr ')'
+rule 62   expr -> expr MOD IDEAL '^' expr
+rule 63   expr -> IDENTIFIER
+rule 64   expr -> NGEN
+rule 65   expr -> CGEN
+rule 66   expr -> GRGEN
+rule 67   expr -> NUMBER
+rule 68   expr -> STRING
+rule 69   expr -> SEQ '(' exprlist ')'
+rule 70   expr -> matrix
+rule 71   expr -> expr '.' expr
+rule 72   expr -> expr '[' expr ']'
+rule 73   @4 ->		/* empty */
+rule 74   expr -> DEFGRP @4 '(' min NUMBER ',' gendecl ',' reldecl ')'
+rule 75   @5 ->		/* empty */
+rule 76   expr -> READGRP '(' NUMBER ',' STRING ')' @5 min NUMBER ',' gendecl ',' reldecl
+rule 77   expr -> READGRP '(' NUMBER ',' STRING '$'
+rule 78   expr -> ACTUAL
+rule 79   @6 ->		/* empty */
+rule 80   expr -> DEFPCGRP @6 '(' NUMBER ',' gendecl ',' reldecl wdecl ')'
+rule 81   @7 ->		/* empty */
+rule 82   expr -> READPCGRP '(' NUMBER ',' STRING ')' @7 NUMBER ',' gendecl ',' reldecl wdecl
+rule 83   expr -> READPCGRP '(' NUMBER ',' STRING '$'
+rule 84   @8 ->		/* empty */
+rule 85   expr -> DEFAGGRP @8 '(' gendecl ',' reldecl ')'
+rule 86   @9 ->		/* empty */
+rule 87   expr -> READAGGRP '(' NUMBER ',' STRING ')' @9 gendecl ',' reldecl
+rule 88   expr -> READAUTGRP '(' expr ',' STRING ')'
+rule 89   wdecl ->		/* empty */
+rule 90   wdecl -> WEIGHTS '(' numlist ')'
+
+Terminals, with rules where they appear
+
+$ (-1)
+'$' (36) 77 83
+'(' (40) 7 8 10 25 29 38 52 53 61 69 74 76 77 80 82 83 85 87 88 90
+')' (41) 7 8 10 25 29 38 52 53 61 69 74 76 80 82 85 87 88 90
+'*' (42) 39 56
+'+' (43) 54
+',' (44) 12 17 22 24 27 31 41 60 61 74 76 77 80 82 83 85 87 88
+'-' (45) 44 55 58
+'.' (46) 71
+'/' (47) 57
+';' (59) 2 3
+'=' (61) 35 46 47 49 51
+'[' (91) 10 13 18 41 47 60 72
+']' (93) 10 13 18 41 47 60 72
+'^' (94) 40 59 62
+error (256) 3 28 32
+NUMBER (258) 21 22 67 74 76 77 80 82 83 87
+NGEN (259) 51 64
+CGEN (260) 49 65
+GRGEN (261) 66
+QUIT (262) 9
+MOD (263) 62
+IDEAL (264) 62
+DEFGRP (265) 74
+DEFPCGRP (266) 80
+DEFAGGRP (267) 85
+STRING (268) 8 68 76 77 82 83 87 88
+IDENTIFIER (269) 6 7 46 47 53 63
+NUM (270) 40
+RELS (271) 29
+SEQ (272) 69
+MATRIX (273) 10
+GEN (274) 26 27 42
+ID (275) 37
+READAUTGRP (276) 88
+READGRP (277) 76 77
+READPCGRP (278) 82 83
+READAGGRP (279) 87
+MINIMAL (280) 24
+ACTUAL (281) 78
+GENS (282) 25
+WEIGHTS (283) 90
+BATCH (284) 8
+COMMUT (285) 61
+UMINUS (286)
+
+Nonterminals, with rules where they appear
+
+cmdlist (46)
+    on left: 1 2 3, on right: 2 3
+stat (47)
+    on left: 4 5 6 7 8 9, on right: 2
+matrix (48)
+    on left: 10, on right: 70
+rowlist (49)
+    on left: 11 12, on right: 10 12
+row (50)
+    on left: 13, on right: 11 12
+exprlist (51)
+    on left: 14 15, on right: 7 13 53 69
+exprlistp (52)
+    on left: 16 17, on right: 15 17
+numlist (53)
+    on left: 18, on right: 90
+litems (54)
+    on left: 19 20, on right: 18
+litemsp (55)
+    on left: 21 22, on right: 20 22
+min (56)
+    on left: 23 24, on right: 74 76
+gendecl (57)
+    on left: 25, on right: 74 76 80 82 85 87
+gens (58)
+    on left: 26 27 28, on right: 25 27 28
+reldecl (59)
+    on left: 29, on right: 74 76 80 82 85 87
+rels (60)
+    on left: 30 31 32, on right: 29 31 32
+rel (61)
+    on left: 33, on right: 30 31
+rside (62)
+    on left: 34 35, on right: 33
+rword (63)
+    on left: 36 37, on right: 35
+lword (64)
+    on left: 38 39 40 41 42, on right: 33 36 38 39 40 41
+sign (65)
+    on left: 43 44, on right: 21 22 40
+assign (66)
+    on left: 46 47 49 51, on right: 5
+@1 (67)
+    on left: 45, on right: 46
+@2 (68)
+    on left: 48, on right: 49
+@3 (69)
+    on left: 50, on right: 51
+expr (70)
+    on left: 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69
+    70 71 72 74 76 77 78 80 82 83 85 87 88, on right: 16 17 46 47 49
+    51 52 54 55 56 57 58 59 60 61 62 71 72 88
+@4 (71)
+    on left: 73, on right: 74
+@5 (72)
+    on left: 75, on right: 76
+@6 (73)
+    on left: 79, on right: 80
+@7 (74)
+    on left: 81, on right: 82
+@8 (75)
+    on left: 84, on right: 85
+@9 (76)
+    on left: 86, on right: 87
+wdecl (77)
+    on left: 89 90, on right: 80 82
+
+
+state 0
+
+    $default	reduce using rule 1 (cmdlist)
+
+    cmdlist	go to state 1
+
+
+
+state 1
+
+    cmdlist  ->  cmdlist . stat ';'   (rule 2)
+    cmdlist  ->  cmdlist . error ';'   (rule 3)
+
+    $   	go to state 221
+    error	shift, and go to state 2
+    NGEN	shift, and go to state 3
+    CGEN	shift, and go to state 4
+    QUIT	shift, and go to state 5
+    IDENTIFIER	shift, and go to state 6
+    BATCH	shift, and go to state 7
+
+    ';' 	reduce using rule 4 (stat)
+
+    stat	go to state 8
+    assign	go to state 9
+
+
+
+state 2
+
+    cmdlist  ->  cmdlist error . ';'   (rule 3)
+
+    ';' 	shift, and go to state 10
+
+
+
+state 3
+
+    assign  ->  NGEN . '=' @3 expr   (rule 51)
+
+    '=' 	shift, and go to state 11
+
+
+
+state 4
+
+    assign  ->  CGEN . '=' @2 expr   (rule 49)
+
+    '=' 	shift, and go to state 12
+
+
+
+state 5
+
+    stat  ->  QUIT .   (rule 9)
+
+    $default	reduce using rule 9 (stat)
+
+
+
+state 6
+
+    stat  ->  IDENTIFIER .   (rule 6)
+    stat  ->  IDENTIFIER . '(' exprlist ')'   (rule 7)
+    assign  ->  IDENTIFIER . '=' @1 expr   (rule 46)
+    assign  ->  IDENTIFIER . '[' expr ']' '=' expr   (rule 47)
+
+    '[' 	shift, and go to state 13
+    '(' 	shift, and go to state 14
+    '=' 	shift, and go to state 15
+
+    $default	reduce using rule 6 (stat)
+
+
+
+state 7
+
+    stat  ->  BATCH . '(' STRING ')'   (rule 8)
+
+    '(' 	shift, and go to state 16
+
+
+
+state 8
+
+    cmdlist  ->  cmdlist stat . ';'   (rule 2)
+
+    ';' 	shift, and go to state 17
+
+
+
+state 9
+
+    stat  ->  assign .   (rule 5)
+
+    $default	reduce using rule 5 (stat)
+
+
+
+state 10
+
+    cmdlist  ->  cmdlist error ';' .   (rule 3)
+
+    $default	reduce using rule 3 (cmdlist)
+
+
+
+state 11
+
+    assign  ->  NGEN '=' . @3 expr   (rule 51)
+
+    $default	reduce using rule 50 (@3)
+
+    @3  	go to state 18
+
+
+
+state 12
+
+    assign  ->  CGEN '=' . @2 expr   (rule 49)
+
+    $default	reduce using rule 48 (@2)
+
+    @2  	go to state 19
+
+
+
+state 13
+
+    assign  ->  IDENTIFIER '[' . expr ']' '=' expr   (rule 47)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 41
+
+
+
+state 14
+
+    stat  ->  IDENTIFIER '(' . exprlist ')'   (rule 7)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    $default	reduce using rule 14 (exprlist)
+
+    matrix	go to state 40
+    exprlist	go to state 42
+    exprlistp	go to state 43
+    expr	go to state 44
+
+
+
+state 15
+
+    assign  ->  IDENTIFIER '=' . @1 expr   (rule 46)
+
+    $default	reduce using rule 45 (@1)
+
+    @1  	go to state 45
+
+
+
+state 16
+
+    stat  ->  BATCH '(' . STRING ')'   (rule 8)
+
+    STRING	shift, and go to state 46
+
+
+
+state 17
+
+    cmdlist  ->  cmdlist stat ';' .   (rule 2)
+
+    $default	reduce using rule 2 (cmdlist)
+
+
+
+state 18
+
+    assign  ->  NGEN '=' @3 . expr   (rule 51)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 47
+
+
+
+state 19
+
+    assign  ->  CGEN '=' @2 . expr   (rule 49)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 48
+
+
+
+state 20
+
+    expr  ->  NUMBER .   (rule 67)
+
+    $default	reduce using rule 67 (expr)
+
+
+
+state 21
+
+    expr  ->  NGEN .   (rule 64)
+
+    $default	reduce using rule 64 (expr)
+
+
+
+state 22
+
+    expr  ->  CGEN .   (rule 65)
+
+    $default	reduce using rule 65 (expr)
+
+
+
+state 23
+
+    expr  ->  GRGEN .   (rule 66)
+
+    $default	reduce using rule 66 (expr)
+
+
+
+state 24
+
+    expr  ->  DEFGRP . @4 '(' min NUMBER ',' gendecl ',' reldecl ')'   (rule 74)
+
+    $default	reduce using rule 73 (@4)
+
+    @4  	go to state 49
+
+
+
+state 25
+
+    expr  ->  DEFPCGRP . @6 '(' NUMBER ',' gendecl ',' reldecl wdecl ')'   (rule 80)
+
+    $default	reduce using rule 79 (@6)
+
+    @6  	go to state 50
+
+
+
+state 26
+
+    expr  ->  DEFAGGRP . @8 '(' gendecl ',' reldecl ')'   (rule 85)
+
+    $default	reduce using rule 84 (@8)
+
+    @8  	go to state 51
+
+
+
+state 27
+
+    expr  ->  STRING .   (rule 68)
+
+    $default	reduce using rule 68 (expr)
+
+
+
+state 28
+
+    expr  ->  IDENTIFIER . '(' exprlist ')'   (rule 53)
+    expr  ->  IDENTIFIER .   (rule 63)
+
+    '(' 	shift, and go to state 52
+
+    $default	reduce using rule 63 (expr)
+
+
+
+state 29
+
+    expr  ->  SEQ . '(' exprlist ')'   (rule 69)
+
+    '(' 	shift, and go to state 53
+
+
+
+state 30
+
+    matrix  ->  MATRIX . '(' '[' rowlist ']' ')'   (rule 10)
+
+    '(' 	shift, and go to state 54
+
+
+
+state 31
+
+    expr  ->  READAUTGRP . '(' expr ',' STRING ')'   (rule 88)
+
+    '(' 	shift, and go to state 55
+
+
+
+state 32
+
+    expr  ->  READGRP . '(' NUMBER ',' STRING ')' @5 min NUMBER ',' gendecl ',' reldecl   (rule 76)
+    expr  ->  READGRP . '(' NUMBER ',' STRING '$'   (rule 77)
+
+    '(' 	shift, and go to state 56
+
+
+
+state 33
+
+    expr  ->  READPCGRP . '(' NUMBER ',' STRING ')' @7 NUMBER ',' gendecl ',' reldecl wdecl   (rule 82)
+    expr  ->  READPCGRP . '(' NUMBER ',' STRING '$'   (rule 83)
+
+    '(' 	shift, and go to state 57
+
+
+
+state 34
+
+    expr  ->  READAGGRP . '(' NUMBER ',' STRING ')' @9 gendecl ',' reldecl   (rule 87)
+
+    '(' 	shift, and go to state 58
+
+
+
+state 35
+
+    expr  ->  ACTUAL .   (rule 78)
+
+    $default	reduce using rule 78 (expr)
+
+
+
+state 36
+
+    expr  ->  COMMUT . '(' expr ',' expr ')'   (rule 61)
+
+    '(' 	shift, and go to state 59
+
+
+
+state 37
+
+    expr  ->  '-' . expr   (rule 58)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 60
+
+
+
+state 38
+
+    expr  ->  '[' . expr ',' expr ']'   (rule 60)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 61
+
+
+
+state 39
+
+    expr  ->  '(' . expr ')'   (rule 52)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 62
+
+
+
+state 40
+
+    expr  ->  matrix .   (rule 70)
+
+    $default	reduce using rule 70 (expr)
+
+
+
+state 41
+
+    assign  ->  IDENTIFIER '[' expr . ']' '=' expr   (rule 47)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ']' 	shift, and go to state 71
+
+
+
+state 42
+
+    stat  ->  IDENTIFIER '(' exprlist . ')'   (rule 7)
+
+    ')' 	shift, and go to state 72
+
+
+
+state 43
+
+    exprlist  ->  exprlistp .   (rule 15)
+    exprlistp  ->  exprlistp . ',' expr   (rule 17)
+
+    ',' 	shift, and go to state 73
+
+    $default	reduce using rule 15 (exprlist)
+
+
+
+state 44
+
+    exprlistp  ->  expr .   (rule 16)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 16 (exprlistp)
+
+
+
+state 45
+
+    assign  ->  IDENTIFIER '=' @1 . expr   (rule 46)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 74
+
+
+
+state 46
+
+    stat  ->  BATCH '(' STRING . ')'   (rule 8)
+
+    ')' 	shift, and go to state 75
+
+
+
+state 47
+
+    assign  ->  NGEN '=' @3 expr .   (rule 51)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 51 (assign)
+
+
+
+state 48
+
+    assign  ->  CGEN '=' @2 expr .   (rule 49)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 49 (assign)
+
+
+
+state 49
+
+    expr  ->  DEFGRP @4 . '(' min NUMBER ',' gendecl ',' reldecl ')'   (rule 74)
+
+    '(' 	shift, and go to state 76
+
+
+
+state 50
+
+    expr  ->  DEFPCGRP @6 . '(' NUMBER ',' gendecl ',' reldecl wdecl ')'   (rule 80)
+
+    '(' 	shift, and go to state 77
+
+
+
+state 51
+
+    expr  ->  DEFAGGRP @8 . '(' gendecl ',' reldecl ')'   (rule 85)
+
+    '(' 	shift, and go to state 78
+
+
+
+state 52
+
+    expr  ->  IDENTIFIER '(' . exprlist ')'   (rule 53)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    $default	reduce using rule 14 (exprlist)
+
+    matrix	go to state 40
+    exprlist	go to state 79
+    exprlistp	go to state 43
+    expr	go to state 44
+
+
+
+state 53
+
+    expr  ->  SEQ '(' . exprlist ')'   (rule 69)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    $default	reduce using rule 14 (exprlist)
+
+    matrix	go to state 40
+    exprlist	go to state 80
+    exprlistp	go to state 43
+    expr	go to state 44
+
+
+
+state 54
+
+    matrix  ->  MATRIX '(' . '[' rowlist ']' ')'   (rule 10)
+
+    '[' 	shift, and go to state 81
+
+
+
+state 55
+
+    expr  ->  READAUTGRP '(' . expr ',' STRING ')'   (rule 88)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 82
+
+
+
+state 56
+
+    expr  ->  READGRP '(' . NUMBER ',' STRING ')' @5 min NUMBER ',' gendecl ',' reldecl   (rule 76)
+    expr  ->  READGRP '(' . NUMBER ',' STRING '$'   (rule 77)
+
+    NUMBER	shift, and go to state 83
+
+
+
+state 57
+
+    expr  ->  READPCGRP '(' . NUMBER ',' STRING ')' @7 NUMBER ',' gendecl ',' reldecl wdecl   (rule 82)
+    expr  ->  READPCGRP '(' . NUMBER ',' STRING '$'   (rule 83)
+
+    NUMBER	shift, and go to state 84
+
+
+
+state 58
+
+    expr  ->  READAGGRP '(' . NUMBER ',' STRING ')' @9 gendecl ',' reldecl   (rule 87)
+
+    NUMBER	shift, and go to state 85
+
+
+
+state 59
+
+    expr  ->  COMMUT '(' . expr ',' expr ')'   (rule 61)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 86
+
+
+
+state 60
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  '-' expr .   (rule 58)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 58 (expr)
+
+
+
+state 61
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  '[' expr . ',' expr ']'   (rule 60)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ',' 	shift, and go to state 87
+
+
+
+state 62
+
+    expr  ->  '(' expr . ')'   (rule 52)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ')' 	shift, and go to state 88
+
+
+
+state 63
+
+    expr  ->  expr MOD . IDEAL '^' expr   (rule 62)
+
+    IDEAL	shift, and go to state 89
+
+
+
+state 64
+
+    expr  ->  expr '+' . expr   (rule 54)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 90
+
+
+
+state 65
+
+    expr  ->  expr '-' . expr   (rule 55)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 91
+
+
+
+state 66
+
+    expr  ->  expr '*' . expr   (rule 56)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 92
+
+
+
+state 67
+
+    expr  ->  expr '/' . expr   (rule 57)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 93
+
+
+
+state 68
+
+    expr  ->  expr '^' . expr   (rule 59)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 94
+
+
+
+state 69
+
+    expr  ->  expr '[' . expr ']'   (rule 72)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 95
+
+
+
+state 70
+
+    expr  ->  expr '.' . expr   (rule 71)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 96
+
+
+
+state 71
+
+    assign  ->  IDENTIFIER '[' expr ']' . '=' expr   (rule 47)
+
+    '=' 	shift, and go to state 97
+
+
+
+state 72
+
+    stat  ->  IDENTIFIER '(' exprlist ')' .   (rule 7)
+
+    $default	reduce using rule 7 (stat)
+
+
+
+state 73
+
+    exprlistp  ->  exprlistp ',' . expr   (rule 17)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 98
+
+
+
+state 74
+
+    assign  ->  IDENTIFIER '=' @1 expr .   (rule 46)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 46 (assign)
+
+
+
+state 75
+
+    stat  ->  BATCH '(' STRING ')' .   (rule 8)
+
+    $default	reduce using rule 8 (stat)
+
+
+
+state 76
+
+    expr  ->  DEFGRP @4 '(' . min NUMBER ',' gendecl ',' reldecl ')'   (rule 74)
+
+    MINIMAL	shift, and go to state 99
+
+    $default	reduce using rule 23 (min)
+
+    min 	go to state 100
+
+
+
+state 77
+
+    expr  ->  DEFPCGRP @6 '(' . NUMBER ',' gendecl ',' reldecl wdecl ')'   (rule 80)
+
+    NUMBER	shift, and go to state 101
+
+
+
+state 78
+
+    expr  ->  DEFAGGRP @8 '(' . gendecl ',' reldecl ')'   (rule 85)
+
+    GENS	shift, and go to state 102
+
+    gendecl	go to state 103
+
+
+
+state 79
+
+    expr  ->  IDENTIFIER '(' exprlist . ')'   (rule 53)
+
+    ')' 	shift, and go to state 104
+
+
+
+state 80
+
+    expr  ->  SEQ '(' exprlist . ')'   (rule 69)
+
+    ')' 	shift, and go to state 105
+
+
+
+state 81
+
+    matrix  ->  MATRIX '(' '[' . rowlist ']' ')'   (rule 10)
+
+    '[' 	shift, and go to state 106
+
+    rowlist	go to state 107
+    row 	go to state 108
+
+
+
+state 82
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+    expr  ->  READAUTGRP '(' expr . ',' STRING ')'   (rule 88)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ',' 	shift, and go to state 109
+
+
+
+state 83
+
+    expr  ->  READGRP '(' NUMBER . ',' STRING ')' @5 min NUMBER ',' gendecl ',' reldecl   (rule 76)
+    expr  ->  READGRP '(' NUMBER . ',' STRING '$'   (rule 77)
+
+    ',' 	shift, and go to state 110
+
+
+
+state 84
+
+    expr  ->  READPCGRP '(' NUMBER . ',' STRING ')' @7 NUMBER ',' gendecl ',' reldecl wdecl   (rule 82)
+    expr  ->  READPCGRP '(' NUMBER . ',' STRING '$'   (rule 83)
+
+    ',' 	shift, and go to state 111
+
+
+
+state 85
+
+    expr  ->  READAGGRP '(' NUMBER . ',' STRING ')' @9 gendecl ',' reldecl   (rule 87)
+
+    ',' 	shift, and go to state 112
+
+
+
+state 86
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  COMMUT '(' expr . ',' expr ')'   (rule 61)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ',' 	shift, and go to state 113
+
+
+
+state 87
+
+    expr  ->  '[' expr ',' . expr ']'   (rule 60)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 114
+
+
+
+state 88
+
+    expr  ->  '(' expr ')' .   (rule 52)
+
+    $default	reduce using rule 52 (expr)
+
+
+
+state 89
+
+    expr  ->  expr MOD IDEAL . '^' expr   (rule 62)
+
+    '^' 	shift, and go to state 115
+
+
+
+state 90
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr '+' expr .   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 54 (expr)
+
+
+
+state 91
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr '-' expr .   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 55 (expr)
+
+
+
+state 92
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr '*' expr .   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 56 (expr)
+
+
+
+state 93
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr '/' expr .   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 57 (expr)
+
+
+
+state 94
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr '^' expr .   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 59 (expr)
+
+
+
+state 95
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+    expr  ->  expr '[' expr . ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ']' 	shift, and go to state 116
+
+
+
+state 96
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr '.' expr .   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+
+    $default	reduce using rule 71 (expr)
+
+
+
+state 97
+
+    assign  ->  IDENTIFIER '[' expr ']' '=' . expr   (rule 47)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 117
+
+
+
+state 98
+
+    exprlistp  ->  exprlistp ',' expr .   (rule 17)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 17 (exprlistp)
+
+
+
+state 99
+
+    min  ->  MINIMAL . ','   (rule 24)
+
+    ',' 	shift, and go to state 118
+
+
+
+state 100
+
+    expr  ->  DEFGRP @4 '(' min . NUMBER ',' gendecl ',' reldecl ')'   (rule 74)
+
+    NUMBER	shift, and go to state 119
+
+
+
+state 101
+
+    expr  ->  DEFPCGRP @6 '(' NUMBER . ',' gendecl ',' reldecl wdecl ')'   (rule 80)
+
+    ',' 	shift, and go to state 120
+
+
+
+state 102
+
+    gendecl  ->  GENS . '(' gens ')'   (rule 25)
+
+    '(' 	shift, and go to state 121
+
+
+
+state 103
+
+    expr  ->  DEFAGGRP @8 '(' gendecl . ',' reldecl ')'   (rule 85)
+
+    ',' 	shift, and go to state 122
+
+
+
+state 104
+
+    expr  ->  IDENTIFIER '(' exprlist ')' .   (rule 53)
+
+    $default	reduce using rule 53 (expr)
+
+
+
+state 105
+
+    expr  ->  SEQ '(' exprlist ')' .   (rule 69)
+
+    $default	reduce using rule 69 (expr)
+
+
+
+state 106
+
+    row  ->  '[' . exprlist ']'   (rule 13)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    $default	reduce using rule 14 (exprlist)
+
+    matrix	go to state 40
+    exprlist	go to state 123
+    exprlistp	go to state 43
+    expr	go to state 44
+
+
+
+state 107
+
+    matrix  ->  MATRIX '(' '[' rowlist . ']' ')'   (rule 10)
+    rowlist  ->  rowlist . ',' row   (rule 12)
+
+    ']' 	shift, and go to state 124
+    ',' 	shift, and go to state 125
+
+
+
+state 108
+
+    rowlist  ->  row .   (rule 11)
+
+    $default	reduce using rule 11 (rowlist)
+
+
+
+state 109
+
+    expr  ->  READAUTGRP '(' expr ',' . STRING ')'   (rule 88)
+
+    STRING	shift, and go to state 126
+
+
+
+state 110
+
+    expr  ->  READGRP '(' NUMBER ',' . STRING ')' @5 min NUMBER ',' gendecl ',' reldecl   (rule 76)
+    expr  ->  READGRP '(' NUMBER ',' . STRING '$'   (rule 77)
+
+    STRING	shift, and go to state 127
+
+
+
+state 111
+
+    expr  ->  READPCGRP '(' NUMBER ',' . STRING ')' @7 NUMBER ',' gendecl ',' reldecl wdecl   (rule 82)
+    expr  ->  READPCGRP '(' NUMBER ',' . STRING '$'   (rule 83)
+
+    STRING	shift, and go to state 128
+
+
+
+state 112
+
+    expr  ->  READAGGRP '(' NUMBER ',' . STRING ')' @9 gendecl ',' reldecl   (rule 87)
+
+    STRING	shift, and go to state 129
+
+
+
+state 113
+
+    expr  ->  COMMUT '(' expr ',' . expr ')'   (rule 61)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 130
+
+
+
+state 114
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  '[' expr ',' expr . ']'   (rule 60)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ']' 	shift, and go to state 131
+
+
+
+state 115
+
+    expr  ->  expr MOD IDEAL '^' . expr   (rule 62)
+
+    NUMBER	shift, and go to state 20
+    NGEN	shift, and go to state 21
+    CGEN	shift, and go to state 22
+    GRGEN	shift, and go to state 23
+    DEFGRP	shift, and go to state 24
+    DEFPCGRP	shift, and go to state 25
+    DEFAGGRP	shift, and go to state 26
+    STRING	shift, and go to state 27
+    IDENTIFIER	shift, and go to state 28
+    SEQ 	shift, and go to state 29
+    MATRIX	shift, and go to state 30
+    READAUTGRP	shift, and go to state 31
+    READGRP	shift, and go to state 32
+    READPCGRP	shift, and go to state 33
+    READAGGRP	shift, and go to state 34
+    ACTUAL	shift, and go to state 35
+    COMMUT	shift, and go to state 36
+    '-' 	shift, and go to state 37
+    '[' 	shift, and go to state 38
+    '(' 	shift, and go to state 39
+
+    matrix	go to state 40
+    expr	go to state 132
+
+
+
+state 116
+
+    expr  ->  expr '[' expr ']' .   (rule 72)
+
+    $default	reduce using rule 72 (expr)
+
+
+
+state 117
+
+    assign  ->  IDENTIFIER '[' expr ']' '=' expr .   (rule 47)
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 47 (assign)
+
+
+
+state 118
+
+    min  ->  MINIMAL ',' .   (rule 24)
+
+    $default	reduce using rule 24 (min)
+
+
+
+state 119
+
+    expr  ->  DEFGRP @4 '(' min NUMBER . ',' gendecl ',' reldecl ')'   (rule 74)
+
+    ',' 	shift, and go to state 133
+
+
+
+state 120
+
+    expr  ->  DEFPCGRP @6 '(' NUMBER ',' . gendecl ',' reldecl wdecl ')'   (rule 80)
+
+    GENS	shift, and go to state 102
+
+    gendecl	go to state 134
+
+
+
+state 121
+
+    gendecl  ->  GENS '(' . gens ')'   (rule 25)
+
+    GEN 	shift, and go to state 135
+
+    gens	go to state 136
+
+
+
+state 122
+
+    expr  ->  DEFAGGRP @8 '(' gendecl ',' . reldecl ')'   (rule 85)
+
+    RELS	shift, and go to state 137
+
+    reldecl	go to state 138
+
+
+
+state 123
+
+    row  ->  '[' exprlist . ']'   (rule 13)
+
+    ']' 	shift, and go to state 139
+
+
+
+state 124
+
+    matrix  ->  MATRIX '(' '[' rowlist ']' . ')'   (rule 10)
+
+    ')' 	shift, and go to state 140
+
+
+
+state 125
+
+    rowlist  ->  rowlist ',' . row   (rule 12)
+
+    '[' 	shift, and go to state 106
+
+    row 	go to state 141
+
+
+
+state 126
+
+    expr  ->  READAUTGRP '(' expr ',' STRING . ')'   (rule 88)
+
+    ')' 	shift, and go to state 142
+
+
+
+state 127
+
+    expr  ->  READGRP '(' NUMBER ',' STRING . ')' @5 min NUMBER ',' gendecl ',' reldecl   (rule 76)
+    expr  ->  READGRP '(' NUMBER ',' STRING . '$'   (rule 77)
+
+    ')' 	shift, and go to state 143
+    '$' 	shift, and go to state 144
+
+
+
+state 128
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING . ')' @7 NUMBER ',' gendecl ',' reldecl wdecl   (rule 82)
+    expr  ->  READPCGRP '(' NUMBER ',' STRING . '$'   (rule 83)
+
+    ')' 	shift, and go to state 145
+    '$' 	shift, and go to state 146
+
+
+
+state 129
+
+    expr  ->  READAGGRP '(' NUMBER ',' STRING . ')' @9 gendecl ',' reldecl   (rule 87)
+
+    ')' 	shift, and go to state 147
+
+
+
+state 130
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  COMMUT '(' expr ',' expr . ')'   (rule 61)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    MOD 	shift, and go to state 63
+    '+' 	shift, and go to state 64
+    '-' 	shift, and go to state 65
+    '*' 	shift, and go to state 66
+    '/' 	shift, and go to state 67
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+    ')' 	shift, and go to state 148
+
+
+
+state 131
+
+    expr  ->  '[' expr ',' expr ']' .   (rule 60)
+
+    $default	reduce using rule 60 (expr)
+
+
+
+state 132
+
+    expr  ->  expr . '+' expr   (rule 54)
+    expr  ->  expr . '-' expr   (rule 55)
+    expr  ->  expr . '*' expr   (rule 56)
+    expr  ->  expr . '/' expr   (rule 57)
+    expr  ->  expr . '^' expr   (rule 59)
+    expr  ->  expr . MOD IDEAL '^' expr   (rule 62)
+    expr  ->  expr MOD IDEAL '^' expr .   (rule 62)
+    expr  ->  expr . '.' expr   (rule 71)
+    expr  ->  expr . '[' expr ']'   (rule 72)
+
+    '^' 	shift, and go to state 68
+    '[' 	shift, and go to state 69
+    '.' 	shift, and go to state 70
+
+    $default	reduce using rule 62 (expr)
+
+
+
+state 133
+
+    expr  ->  DEFGRP @4 '(' min NUMBER ',' . gendecl ',' reldecl ')'   (rule 74)
+
+    GENS	shift, and go to state 102
+
+    gendecl	go to state 149
+
+
+
+state 134
+
+    expr  ->  DEFPCGRP @6 '(' NUMBER ',' gendecl . ',' reldecl wdecl ')'   (rule 80)
+
+    ',' 	shift, and go to state 150
+
+
+
+state 135
+
+    gens  ->  GEN .   (rule 26)
+
+    $default	reduce using rule 26 (gens)
+
+
+
+state 136
+
+    gendecl  ->  GENS '(' gens . ')'   (rule 25)
+    gens  ->  gens . ',' GEN   (rule 27)
+    gens  ->  gens . error   (rule 28)
+
+    error	shift, and go to state 151
+    ')' 	shift, and go to state 152
+    ',' 	shift, and go to state 153
+
+
+
+state 137
+
+    reldecl  ->  RELS . '(' rels ')'   (rule 29)
+
+    '(' 	shift, and go to state 154
+
+
+
+state 138
+
+    expr  ->  DEFAGGRP @8 '(' gendecl ',' reldecl . ')'   (rule 85)
+
+    ')' 	shift, and go to state 155
+
+
+
+state 139
+
+    row  ->  '[' exprlist ']' .   (rule 13)
+
+    $default	reduce using rule 13 (row)
+
+
+
+state 140
+
+    matrix  ->  MATRIX '(' '[' rowlist ']' ')' .   (rule 10)
+
+    $default	reduce using rule 10 (matrix)
+
+
+
+state 141
+
+    rowlist  ->  rowlist ',' row .   (rule 12)
+
+    $default	reduce using rule 12 (rowlist)
+
+
+
+state 142
+
+    expr  ->  READAUTGRP '(' expr ',' STRING ')' .   (rule 88)
+
+    $default	reduce using rule 88 (expr)
+
+
+
+state 143
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' . @5 min NUMBER ',' gendecl ',' reldecl   (rule 76)
+
+    $default	reduce using rule 75 (@5)
+
+    @5  	go to state 156
+
+
+
+state 144
+
+    expr  ->  READGRP '(' NUMBER ',' STRING '$' .   (rule 77)
+
+    $default	reduce using rule 77 (expr)
+
+
+
+state 145
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' . @7 NUMBER ',' gendecl ',' reldecl wdecl   (rule 82)
+
+    $default	reduce using rule 81 (@7)
+
+    @7  	go to state 157
+
+
+
+state 146
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING '$' .   (rule 83)
+
+    $default	reduce using rule 83 (expr)
+
+
+
+state 147
+
+    expr  ->  READAGGRP '(' NUMBER ',' STRING ')' . @9 gendecl ',' reldecl   (rule 87)
+
+    $default	reduce using rule 86 (@9)
+
+    @9  	go to state 158
+
+
+
+state 148
+
+    expr  ->  COMMUT '(' expr ',' expr ')' .   (rule 61)
+
+    $default	reduce using rule 61 (expr)
+
+
+
+state 149
+
+    expr  ->  DEFGRP @4 '(' min NUMBER ',' gendecl . ',' reldecl ')'   (rule 74)
+
+    ',' 	shift, and go to state 159
+
+
+
+state 150
+
+    expr  ->  DEFPCGRP @6 '(' NUMBER ',' gendecl ',' . reldecl wdecl ')'   (rule 80)
+
+    RELS	shift, and go to state 137
+
+    reldecl	go to state 160
+
+
+
+state 151
+
+    gens  ->  gens error .   (rule 28)
+
+    $default	reduce using rule 28 (gens)
+
+
+
+state 152
+
+    gendecl  ->  GENS '(' gens ')' .   (rule 25)
+
+    $default	reduce using rule 25 (gendecl)
+
+
+
+state 153
+
+    gens  ->  gens ',' . GEN   (rule 27)
+
+    GEN 	shift, and go to state 161
+
+
+
+state 154
+
+    reldecl  ->  RELS '(' . rels ')'   (rule 29)
+
+    GEN 	shift, and go to state 162
+    '[' 	shift, and go to state 163
+    '(' 	shift, and go to state 164
+
+    rels	go to state 165
+    rel 	go to state 166
+    lword	go to state 167
+
+
+
+state 155
+
+    expr  ->  DEFAGGRP @8 '(' gendecl ',' reldecl ')' .   (rule 85)
+
+    $default	reduce using rule 85 (expr)
+
+
+
+state 156
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' @5 . min NUMBER ',' gendecl ',' reldecl   (rule 76)
+
+    MINIMAL	shift, and go to state 99
+
+    $default	reduce using rule 23 (min)
+
+    min 	go to state 168
+
+
+
+state 157
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' @7 . NUMBER ',' gendecl ',' reldecl wdecl   (rule 82)
+
+    NUMBER	shift, and go to state 169
+
+
+
+state 158
+
+    expr  ->  READAGGRP '(' NUMBER ',' STRING ')' @9 . gendecl ',' reldecl   (rule 87)
+
+    GENS	shift, and go to state 102
+
+    gendecl	go to state 170
+
+
+
+state 159
+
+    expr  ->  DEFGRP @4 '(' min NUMBER ',' gendecl ',' . reldecl ')'   (rule 74)
+
+    RELS	shift, and go to state 137
+
+    reldecl	go to state 171
+
+
+
+state 160
+
+    expr  ->  DEFPCGRP @6 '(' NUMBER ',' gendecl ',' reldecl . wdecl ')'   (rule 80)
+
+    WEIGHTS	shift, and go to state 172
+
+    $default	reduce using rule 89 (wdecl)
+
+    wdecl	go to state 173
+
+
+
+state 161
+
+    gens  ->  gens ',' GEN .   (rule 27)
+
+    $default	reduce using rule 27 (gens)
+
+
+
+state 162
+
+    lword  ->  GEN .   (rule 42)
+
+    $default	reduce using rule 42 (lword)
+
+
+
+state 163
+
+    lword  ->  '[' . lword ',' lword ']'   (rule 41)
+
+    GEN 	shift, and go to state 162
+    '[' 	shift, and go to state 163
+    '(' 	shift, and go to state 164
+
+    lword	go to state 174
+
+
+
+state 164
+
+    lword  ->  '(' . lword ')'   (rule 38)
+
+    GEN 	shift, and go to state 162
+    '[' 	shift, and go to state 163
+    '(' 	shift, and go to state 164
+
+    lword	go to state 175
+
+
+
+state 165
+
+    reldecl  ->  RELS '(' rels . ')'   (rule 29)
+    rels  ->  rels . ',' rel   (rule 31)
+    rels  ->  rels . error   (rule 32)
+
+    error	shift, and go to state 176
+    ')' 	shift, and go to state 177
+    ',' 	shift, and go to state 178
+
+
+
+state 166
+
+    rels  ->  rel .   (rule 30)
+
+    $default	reduce using rule 30 (rels)
+
+
+
+state 167
+
+    rel  ->  lword . rside   (rule 33)
+    lword  ->  lword . '*' lword   (rule 39)
+    lword  ->  lword . '^' sign NUM   (rule 40)
+
+    '*' 	shift, and go to state 179
+    '^' 	shift, and go to state 180
+    '=' 	shift, and go to state 181
+
+    $default	reduce using rule 34 (rside)
+
+    rside	go to state 182
+
+
+
+state 168
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' @5 min . NUMBER ',' gendecl ',' reldecl   (rule 76)
+
+    NUMBER	shift, and go to state 183
+
+
+
+state 169
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' @7 NUMBER . ',' gendecl ',' reldecl wdecl   (rule 82)
+
+    ',' 	shift, and go to state 184
+
+
+
+state 170
+
+    expr  ->  READAGGRP '(' NUMBER ',' STRING ')' @9 gendecl . ',' reldecl   (rule 87)
+
+    ',' 	shift, and go to state 185
+
+
+
+state 171
+
+    expr  ->  DEFGRP @4 '(' min NUMBER ',' gendecl ',' reldecl . ')'   (rule 74)
+
+    ')' 	shift, and go to state 186
+
+
+
+state 172
+
+    wdecl  ->  WEIGHTS . '(' numlist ')'   (rule 90)
+
+    '(' 	shift, and go to state 187
+
+
+
+state 173
+
+    expr  ->  DEFPCGRP @6 '(' NUMBER ',' gendecl ',' reldecl wdecl . ')'   (rule 80)
+
+    ')' 	shift, and go to state 188
+
+
+
+state 174
+
+    lword  ->  lword . '*' lword   (rule 39)
+    lword  ->  lword . '^' sign NUM   (rule 40)
+    lword  ->  '[' lword . ',' lword ']'   (rule 41)
+
+    '*' 	shift, and go to state 179
+    '^' 	shift, and go to state 180
+    ',' 	shift, and go to state 189
+
+
+
+state 175
+
+    lword  ->  '(' lword . ')'   (rule 38)
+    lword  ->  lword . '*' lword   (rule 39)
+    lword  ->  lword . '^' sign NUM   (rule 40)
+
+    '*' 	shift, and go to state 179
+    '^' 	shift, and go to state 180
+    ')' 	shift, and go to state 190
+
+
+
+state 176
+
+    rels  ->  rels error .   (rule 32)
+
+    $default	reduce using rule 32 (rels)
+
+
+
+state 177
+
+    reldecl  ->  RELS '(' rels ')' .   (rule 29)
+
+    $default	reduce using rule 29 (reldecl)
+
+
+
+state 178
+
+    rels  ->  rels ',' . rel   (rule 31)
+
+    GEN 	shift, and go to state 162
+    '[' 	shift, and go to state 163
+    '(' 	shift, and go to state 164
+
+    rel 	go to state 191
+    lword	go to state 167
+
+
+
+state 179
+
+    lword  ->  lword '*' . lword   (rule 39)
+
+    GEN 	shift, and go to state 162
+    '[' 	shift, and go to state 163
+    '(' 	shift, and go to state 164
+
+    lword	go to state 192
+
+
+
+state 180
+
+    lword  ->  lword '^' . sign NUM   (rule 40)
+
+    '-' 	shift, and go to state 193
+
+    $default	reduce using rule 43 (sign)
+
+    sign	go to state 194
+
+
+
+state 181
+
+    rside  ->  '=' . rword   (rule 35)
+
+    GEN 	shift, and go to state 162
+    ID  	shift, and go to state 195
+    '[' 	shift, and go to state 163
+    '(' 	shift, and go to state 164
+
+    rword	go to state 196
+    lword	go to state 197
+
+
+
+state 182
+
+    rel  ->  lword rside .   (rule 33)
+
+    $default	reduce using rule 33 (rel)
+
+
+
+state 183
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' @5 min NUMBER . ',' gendecl ',' reldecl   (rule 76)
+
+    ',' 	shift, and go to state 198
+
+
+
+state 184
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' @7 NUMBER ',' . gendecl ',' reldecl wdecl   (rule 82)
+
+    GENS	shift, and go to state 102
+
+    gendecl	go to state 199
+
+
+
+state 185
+
+    expr  ->  READAGGRP '(' NUMBER ',' STRING ')' @9 gendecl ',' . reldecl   (rule 87)
+
+    RELS	shift, and go to state 137
+
+    reldecl	go to state 200
+
+
+
+state 186
+
+    expr  ->  DEFGRP @4 '(' min NUMBER ',' gendecl ',' reldecl ')' .   (rule 74)
+
+    $default	reduce using rule 74 (expr)
+
+
+
+state 187
+
+    wdecl  ->  WEIGHTS '(' . numlist ')'   (rule 90)
+
+    '[' 	shift, and go to state 201
+
+    numlist	go to state 202
+
+
+
+state 188
+
+    expr  ->  DEFPCGRP @6 '(' NUMBER ',' gendecl ',' reldecl wdecl ')' .   (rule 80)
+
+    $default	reduce using rule 80 (expr)
+
+
+
+state 189
+
+    lword  ->  '[' lword ',' . lword ']'   (rule 41)
+
+    GEN 	shift, and go to state 162
+    '[' 	shift, and go to state 163
+    '(' 	shift, and go to state 164
+
+    lword	go to state 203
+
+
+
+state 190
+
+    lword  ->  '(' lword ')' .   (rule 38)
+
+    $default	reduce using rule 38 (lword)
+
+
+
+state 191
+
+    rels  ->  rels ',' rel .   (rule 31)
+
+    $default	reduce using rule 31 (rels)
+
+
+
+state 192
+
+    lword  ->  lword . '*' lword   (rule 39)
+    lword  ->  lword '*' lword .   (rule 39)
+    lword  ->  lword . '^' sign NUM   (rule 40)
+
+    '^' 	shift, and go to state 180
+
+    $default	reduce using rule 39 (lword)
+
+
+
+state 193
+
+    sign  ->  '-' .   (rule 44)
+
+    $default	reduce using rule 44 (sign)
+
+
+
+state 194
+
+    lword  ->  lword '^' sign . NUM   (rule 40)
+
+    NUM 	shift, and go to state 204
+
+
+
+state 195
+
+    rword  ->  ID .   (rule 37)
+
+    $default	reduce using rule 37 (rword)
+
+
+
+state 196
+
+    rside  ->  '=' rword .   (rule 35)
+
+    $default	reduce using rule 35 (rside)
+
+
+
+state 197
+
+    rword  ->  lword .   (rule 36)
+    lword  ->  lword . '*' lword   (rule 39)
+    lword  ->  lword . '^' sign NUM   (rule 40)
+
+    '*' 	shift, and go to state 179
+    '^' 	shift, and go to state 180
+
+    $default	reduce using rule 36 (rword)
+
+
+
+state 198
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' @5 min NUMBER ',' . gendecl ',' reldecl   (rule 76)
+
+    GENS	shift, and go to state 102
+
+    gendecl	go to state 205
+
+
+
+state 199
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' @7 NUMBER ',' gendecl . ',' reldecl wdecl   (rule 82)
+
+    ',' 	shift, and go to state 206
+
+
+
+state 200
+
+    expr  ->  READAGGRP '(' NUMBER ',' STRING ')' @9 gendecl ',' reldecl .   (rule 87)
+
+    $default	reduce using rule 87 (expr)
+
+
+
+state 201
+
+    numlist  ->  '[' . litems ']'   (rule 18)
+
+    '-' 	shift, and go to state 193
+
+    NUMBER	reduce using rule 43 (sign)
+    $default	reduce using rule 19 (litems)
+
+    litems	go to state 207
+    litemsp	go to state 208
+    sign	go to state 209
+
+
+
+state 202
+
+    wdecl  ->  WEIGHTS '(' numlist . ')'   (rule 90)
+
+    ')' 	shift, and go to state 210
+
+
+
+state 203
+
+    lword  ->  lword . '*' lword   (rule 39)
+    lword  ->  lword . '^' sign NUM   (rule 40)
+    lword  ->  '[' lword ',' lword . ']'   (rule 41)
+
+    '*' 	shift, and go to state 179
+    '^' 	shift, and go to state 180
+    ']' 	shift, and go to state 211
+
+
+
+state 204
+
+    lword  ->  lword '^' sign NUM .   (rule 40)
+
+    $default	reduce using rule 40 (lword)
+
+
+
+state 205
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' @5 min NUMBER ',' gendecl . ',' reldecl   (rule 76)
+
+    ',' 	shift, and go to state 212
+
+
+
+state 206
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' @7 NUMBER ',' gendecl ',' . reldecl wdecl   (rule 82)
+
+    RELS	shift, and go to state 137
+
+    reldecl	go to state 213
+
+
+
+state 207
+
+    numlist  ->  '[' litems . ']'   (rule 18)
+
+    ']' 	shift, and go to state 214
+
+
+
+state 208
+
+    litems  ->  litemsp .   (rule 20)
+    litemsp  ->  litemsp . ',' sign NUMBER   (rule 22)
+
+    ',' 	shift, and go to state 215
+
+    $default	reduce using rule 20 (litems)
+
+
+
+state 209
+
+    litemsp  ->  sign . NUMBER   (rule 21)
+
+    NUMBER	shift, and go to state 216
+
+
+
+state 210
+
+    wdecl  ->  WEIGHTS '(' numlist ')' .   (rule 90)
+
+    $default	reduce using rule 90 (wdecl)
+
+
+
+state 211
+
+    lword  ->  '[' lword ',' lword ']' .   (rule 41)
+
+    $default	reduce using rule 41 (lword)
+
+
+
+state 212
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' @5 min NUMBER ',' gendecl ',' . reldecl   (rule 76)
+
+    RELS	shift, and go to state 137
+
+    reldecl	go to state 217
+
+
+
+state 213
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' @7 NUMBER ',' gendecl ',' reldecl . wdecl   (rule 82)
+
+    WEIGHTS	shift, and go to state 172
+
+    $default	reduce using rule 89 (wdecl)
+
+    wdecl	go to state 218
+
+
+
+state 214
+
+    numlist  ->  '[' litems ']' .   (rule 18)
+
+    $default	reduce using rule 18 (numlist)
+
+
+
+state 215
+
+    litemsp  ->  litemsp ',' . sign NUMBER   (rule 22)
+
+    '-' 	shift, and go to state 193
+
+    $default	reduce using rule 43 (sign)
+
+    sign	go to state 219
+
+
+
+state 216
+
+    litemsp  ->  sign NUMBER .   (rule 21)
+
+    $default	reduce using rule 21 (litemsp)
+
+
+
+state 217
+
+    expr  ->  READGRP '(' NUMBER ',' STRING ')' @5 min NUMBER ',' gendecl ',' reldecl .   (rule 76)
+
+    $default	reduce using rule 76 (expr)
+
+
+
+state 218
+
+    expr  ->  READPCGRP '(' NUMBER ',' STRING ')' @7 NUMBER ',' gendecl ',' reldecl wdecl .   (rule 82)
+
+    $default	reduce using rule 82 (expr)
+
+
+
+state 219
+
+    litemsp  ->  litemsp ',' sign . NUMBER   (rule 22)
+
+    NUMBER	shift, and go to state 220
+
+
+
+state 220
+
+    litemsp  ->  litemsp ',' sign NUMBER .   (rule 22)
+
+    $default	reduce using rule 22 (litemsp)
+
+
+
+state 221
+
+    $   	go to state 222
+
+
+
+state 222
+
+    $default	accept

@@ -1,0 +1,165 @@
+<!-- $Id: intro.xml,v 1.28 2009/05/29 16:52:15 alexk Exp $ -->
+
+<!-- ********************Introduction******************** -->
+
+<Chapter Label="Intro">
+<Heading>Introduction</Heading>    
+
+<Section Label="IntroAims">
+<Heading>General aims of &Wedderga; package</Heading>
+The title ``&Wedderga;'' stands for ``<B>Wedder</B>burn decomposition of 
+<B>g</B>roup <B>a</B>lgebras''. This is a &GAP; package to compute the simple 
+components of the Wedderburn decomposition of semisimple group algebras.
+So the main functions of the package returns a list of simple algebras
+whose direct sum is isomorphic to the group algebra given as input.
+<P/>
+
+
+The method implemented by the package produces the Wedderburn decomposition 
+of a group algebra <M>FG</M> provided <M>G</M> is a finite group and 
+<M>F</M> is either a finite field of characteristic coprime to the 
+order of <M>G</M>, or an abelian number field (i.e. a subfield of a finite 
+cyclotomic extension of the rationals). 
+<P/>
+
+Other functions of &Wedderga; compute the primitive central idempotents 
+of semisimple group algebras. 
+<P/>
+
+The package also provides functions to construct crossed products over
+a group with coefficients in an associative ring with identity and the
+multiplication determined by a given action and twisting.<P/>
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="IntroMain">
+<Heading>Main functions of &Wedderga; package</Heading>
+
+The main functions of &Wedderga; are 
+<Ref Attr="WedderburnDecomposition" /> and
+<Ref Attr="WedderburnDecompositionInfo" />.
+<P/>
+
+<Ref Attr="WedderburnDecomposition" /> 
+computes a list of simple algebras such that their direct product is
+isomorphic to the group algebra <M>FG</M>, given as input. 
+Thus, the direct product of the entries of the output is
+the <E>Wedderburn decomposition</E> (<Ref Sect="WedDec" />) of <M>FG</M>. 
+<P/>
+
+If <M>F</M> is an abelian number field then the entries of the output are given
+as matrix algebras over cyclotomic algebras (see <Ref Sect="Cyclotomic" />),
+thus, the entries of the output of <Ref Attr="WedderburnDecomposition" /> are
+realizations of the <E>Wedderburn components</E> (<Ref Sect="WedDec" />) of
+<M>FG</M> as algebras which are <E>Brauer equivalent</E> (<Ref Sect="Brauer"/>)
+to <E>cyclotomic algebras</E> (<Ref Sect="Cyclotomic" />). Recall that the
+Brauer-Witt Theorem ensures that every simple factor of a semisimple group ring
+<M>FG</M> is Brauer equivalent (that is represents the same class in the Brauer
+group of its centre) to a cyclotomic algebra (<Cite Key="Y"/>. In this case the
+algorithm is based in a computational oriented proof of the Brauer-Witt Theorem
+due to Olteanu <Cite Key="O" /> which uses previous work by Olivieri, del Río
+and Simón <Cite Key="ORS" /> for rational group algebras of <E>strongly
+monomial groups</E> (<Ref Sect="StMon" />). 
+<P/>
+
+The Wedderburn components of <M>FG</M> are also matrix algebras over division
+rings which are finite extensions of the field <M>F</M>. If <M>F</M> is finite
+then by the Wedderburn theorem these division rings are finite fields. In this
+case the output of <Ref Attr="WedderburnDecomposition" /> represents the
+factors of <M>FG</M> as matrix algebras over finite extensions of the field
+<M>F</M>. 
+<P/>
+
+In theory &Wedderga; could handle the calculation of the Wedderburn
+decomposition of group algebras of groups of arbitrary size but in practice if
+the order of the group is greater than 5000 then the program may crash. The
+way the group is given is relevant for the performance. Usually the program
+works better for groups given as permutation groups or pc groups.
+
+<Example>
+<![CDATA[
+gap> LoadPackage("wedderga");
+-----------------------------------------------------------------------------
+Loading  Wedderga 4.3.3 (Wedderga)
+by Osnel Broche Cristo (osnel@ufla.br),
+   Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/),
+   Gabriela Olteanu (golteanu@um.es, olteanu@math.ubbcluj.ro),
+   Aurora Olivieri (olivieri@usb.ve), and
+   Angel del Rio (http://www.um.es/adelrio).
+-----------------------------------------------------------------------------
+true
+gap> QG := GroupRing( Rationals, SymmetricGroup(4) );
+<algebra-with-one over Rationals, with 2 generators>
+gap> WedderburnDecomposition(QG);
+[ Rationals, Rationals, ( Rationals^[ 3, 3 ] ), ( Rationals^[ 3, 3 ] ),
+  <crossed product with center Rationals over CF(3) of a group of size 2> ]
+gap> FG := GroupRing( CF(5), SymmetricGroup(4) );
+<algebra-with-one over CF(5), with 2 generators>
+gap> WedderburnDecomposition( FG );
+[ CF(5), CF(5), ( CF(5)^[ 3, 3 ] ), ( CF(5)^[ 3, 3 ] ),
+  <crossed product with center CF(5) over AsField( CF(5), CF(
+    15) ) of a group of size 2> ]
+gap> FG := GroupRing( GF(5), SymmetricGroup(4) ); 
+<algebra-with-one over GF(5), with 2 generators>
+gap> WedderburnDecomposition( FG );
+[ ( GF(5)^[ 1, 1 ] ), ( GF(5)^[ 1, 1 ] ), ( GF(5)^[ 2, 2 ] ), 
+  ( GF(5)^[ 3, 3 ] ), ( GF(5)^[ 3, 3 ] ) ]
+gap> FG := GroupRing( GF(5), SmallGroup(24,3) );
+<algebra-with-one over GF(5), with 4 generators>
+gap> WedderburnDecomposition( FG );
+[ ( GF(5)^[ 1, 1 ] ), ( GF(5^2)^[ 1, 1 ] ), ( GF(5)^[ 2, 2 ] ), 
+  ( GF(5^2)^[ 2, 2 ] ), ( GF(5)^[ 3, 3 ] ) ]
+]]>
+</Example>
+
+Instead of <Ref Attr="WedderburnDecomposition" />, that returns a list of 
+&GAP; objects, <Ref Attr="WedderburnDecompositionInfo" /> returns the numerical 
+description of these objects. 
+See Section <Ref Sect="NumDesc" /> for theoretical background.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="IntroInstall">
+<Heading>Installation and system requirements</Heading>
+
+&Wedderga; does not use external binaries and, therefore, works without
+restrictions on the type of the operating system. It is designed for &GAP;4.4  
+and no compatibility with previous releases of &GAP;4 is guaranteed. 
+<P/>
+
+To use the &Wedderga; online help it is necessary to install the &GAP;4 package 
+&GAPDoc; by Frank L&#252;beck  and  Max Neunhöffer, which is available from the 
+&GAP; site or from 
+<URL>http://www.math.rwth-aachen.de/&tilde;Frank.Luebeck/GAPDoc/</URL>.
+<P/> 
+
+&Wedderga; is distributed in standard formats
+(<File>tar.gz</File>, <File>tar.bz2</File>, <File>-win.zip</File>) 
+and can be obtained from  <URL>http://www.um.es/adelrio/wedderga.htm</URL>, 
+its mirror <URL>http://www.cs.st-andrews.ac.uk/&tilde;alexk/wedderga.htm</URL>
+or the page <URL>http://www.gap-system.org/Packages/wedderga.html</URL>
+at the &GAP; web site. The latter also offers <File>zoo</File>-archive.
+To unpack the archive <File>wedderga-X.X.X.zoo</File> you need the program 
+<File>unzoo</File>, which can be obtained from the &GAP; homepage 
+<URL>http://www.gap-system.org/</URL> (see section `Distribution').
+To install &Wedderga;, copy this archive into the <File>pkg</File> subdirectory of your 
+&GAP;4.4 installation. The subdirectory <File>wedderga</File> will be created in 
+the <File>pkg</File> directory after the following command: 
+<P/>
+<C>unzoo -x wedderga-X.X.X.zoo</C>
+<P/>
+When you don't have access to the directory of your main &GAP; 
+installation, you can also install the package 
+<E>outside the &GAP; main directory</E>
+by unpacking it inside a directory <File>MYGAPDIR/pkg</File>. 
+Then to be able to load Wedderga you need to call GAP with the 
+<C>-l ";MYGAPDIR"</C> option.
+<P/>
+Installation using other archive formats is performed in a similar way.
+</Section>
+
+</Chapter>

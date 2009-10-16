@@ -1,0 +1,18 @@
+#!/bin/csh
+#
+# script to execute Magma and modify its output file for input to pqp
+# you may need to change the path for Magma in the third line
+#
+# EO'B
+# March 1994
+#
+cat Magma_input Magma_rep >! Magma_INPUT
+magma < Magma_INPUT >! Magma_output
+egrep -v "Magma" Magma_output >! C_T1
+egrep -v "Loading" C_T1 >! C_T2
+sed 's/\[//' C_T2 >! C_T3
+sed 's/\]//' C_T3 >! C_T4
+egrep -v "help" C_T4 >! C_T5
+cp C_T5 LINK_output 
+\mv C_T5 LINK_output
+\rm -f C_T[1-4] Magma_output Magma_rep 

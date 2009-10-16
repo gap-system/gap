@@ -2,7 +2,7 @@
 ##
 #W  compat3d.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: compat3d.g,v 4.13 2004/05/03 07:24:09 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -18,7 +18,7 @@
 ##  compatibility mode once it has been loaded.
 ##
 Revision.compat3d_g :=
-    "@(#)$Id$";
+    "@(#)$Id: compat3d.g,v 4.13 2004/05/03 07:24:09 gap Exp $";
 
 
 #############################################################################
@@ -41,7 +41,7 @@ Print( "#I  Now the destructive part of the GAP 3 compatibility mode\n",
        "#I  (If I would be in favour of misusing the literature then\n",
        "#I  I would express the effect of loading this mode as follows.\n",
        "#I  \n",
-       "#I  ``Lasciate ogni speranza, voi ch' entrate!'')\n" );
+       "#I  ``Lasciate ogne speranza, voi ch'intrate'')\n" );
 
 
 #############################################################################

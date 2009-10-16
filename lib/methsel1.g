@@ -2,7 +2,7 @@
 ##
 #W  methsel1.g                   GAP library                  Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: methsel1.g,v 4.4 2002/04/15 10:05:03 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  is not compiled in the default setup. See also methsel2.g
 ##
 Revision.methsel1_g :=
-    "@(#)$Id$";
+    "@(#)$Id: methsel1.g,v 4.4 2002/04/15 10:05:03 sal Exp $";
 
 #############################################################################
 ##

@@ -3,7 +3,7 @@
 %A  ctbl.msk                    GAP documentation               Thomas Breuer
 %A                                                           Alexander Hulpke
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: ctbl.msk,v 1.52 2006/10/31 15:11:51 jjm Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -145,7 +145,6 @@ known Brauer character tables.
 
 \Declaration{CharacterTable}
 \Declaration{BrauerTable}
-\Declaration{CharacterTableRegular}
 \beginexample
 gap> g:= SymmetricGroup( 4 );
 Sym( [ 1 .. 4 ] )
@@ -159,12 +158,8 @@ gap> tblmod2 = BrauerTable( tbl, 2 );
 true
 gap> tblmod2 = BrauerTable( g, 2 );
 true
-gap> libtbl:= CharacterTable( "M" );
-CharacterTable( "M" )
-gap> CharacterTableRegular( libtbl, 2 );
-BrauerTable( "M", 2 )
-gap> BrauerTable( libtbl, 2 );
-fail
+gap> CharacterTable( "A5" );
+CharacterTable( "A5" )
 gap> CharacterTable( "Symmetric", 4 );
 CharacterTable( "Sym(4)" )
 gap> ComputedBrauerTables( tbl );
@@ -432,8 +427,6 @@ gap> ClassNames( tbl );
 gap> tbl.2a;
 2
 \endexample
-
-\Declaration{ClassParameters}
 
 \Declaration{Identifier}!{for character tables}
 \beginexample
@@ -921,12 +914,6 @@ element <el>.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{An Example of Advanced Dixon-Schneider Calculations}
 
-% The example below had to be adjusted when the splitting of 2-dim. spaces
-% was disabled.
-% As soon as a variant of this criterion will be available again,
-% the old version of the example should be put here.
-% (The example has not been changed in the development version.)
-
 First, we set the appropriate info level higher
 \beginexample
 gap> SetInfoLevel( InfoCharacterTable, 1 );
@@ -935,65 +922,67 @@ for printout of some internal results.
 We now define our group, which is isomorphic to ${\rm PSL}_4(3)$.
 \beginexample
 gap> g:= PrimitiveGroup(40,5);
-PSL(4, 3)
+PSL(4,3)
 gap> Size(g);
 6065280
 gap> d:= DixonInit( g );;
 #I  29 classes
-#I  choosing prime 65521
+#I  choosing prime 28081
 gap> c:= d.characterTable;;
 \endexample
-After the initialisation, two structure matrices are evaluated,
+After the initialisation, one structure matrix is evaluated,
 yielding smaller spaces and several irreducible characters.
 \beginexample
 gap> DixonSplit( d );
-#I  Matrix 5,Representative of Order 3,Centralizer: 5832
-#I  Dimensions: [ 1, 2, 1, 4, 12, 1, 1, 2, 1, 2, 1 ]
-5
-gap> DixonSplit( d );
-#I  Matrix 14,Representative of Order 3,Centralizer: 1944
-#I  Dimensions: [ 1, 1, 4, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 4 ]
-14
+#I  Matrix 20,Representative of Order 3,Centralizer: 5832
+#I  Dimensions: [ 1, 12, 2, 2, 4, 2, 1, 1, 1, 1, 1 ]
+#I  Two-dim space split
+#I  Two-dim space split
+#I  Two-dim space split
+20
 \endexample
 In this case spaces of the listed dimensions are a result of the
 splitting process.
+The three two dimensional spaces are split successfully by combinatoric
+means.
 
-We obtain three new irreducible characters by symmetrizations and notify them
+We obtain several irreducible characters by tensor products and notify them
 to the Dixon record.
 \beginexample
-gap> sym:= Symmetrizations( c, d.irreducibles, 2 );;
-gap> ro:= ReducedCharacters( c, d.irreducibles, sym );;
+gap> asp:= AntiSymmetricParts( c, d.irreducibles, 2 );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, asp );;
 gap> Length( ro.irreducibles );
 3
 gap> DxIncludeIrreducibles( d, ro.irreducibles );
 \endexample
 The tensor products of the nonlinear characters among each other are reduced
-with the known irreducible characters,
-which yields one new irreducible character.
+with the irreducible characters.
 The result is split according to the spaces found, which yields characters
-of smaller norms but no new irreducibles.
+of smaller norms, but no new irreducibles.
 \beginexample
 gap> nlc:= Filtered( d.irreducibles, i -> i[1] > 1 );;
 gap> t:= Tensored( nlc, nlc );;
-gap> ro2:= ReducedCharacters( c, d.irreducibles, t );;
-gap> Length( ro2.irreducibles );
-1
-gap> DxIncludeIrreducibles( d, ro2.irreducibles );
-gap> List( ro2.remainders, i -> ScalarProduct( c, i, i) );
-[ 2, 4, 6, 12, 16, 18, 24, 36, 44, 54, 72, 82, 96, 118, 132, 152, 176, 194, 
-  204, 214, 228, 268, 306, 396, 422, 450, 472, 498, 528, 582, 612, 648, 704, 
-  748, 856, 876, 984, 1142, 1186, 1312, 1398, 1496, 1538, 1584, 1688, 1836, 
-  1888, 1938, 1992, 2102, 2156, 2328, 2448, 2508, 3282, 3564, 3784, 4012, 
-  4086, 4164, 4400, 4896, 5682, 5776, 6336, 6444, 6928, 8408, 9782, 10264, 
-  11264, 13128, 15136, 17600, 19584, 19746, 31008, 35856, 62936 ]
-gap> t:= SplitCharacters( d, ro2.remainders );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, t );;  ro.irreducibles;
+[  ]
+gap> List( ro.remainders, i -> ScalarProduct( c, i, i) );
+[ 2, 2, 4, 4, 4, 4, 13, 13, 18, 18, 19, 21, 21, 36, 36, 29, 34, 34, 42, 34, 
+  48, 54, 62, 68, 68, 78, 84, 84, 88, 90, 159, 169, 169, 172, 172, 266, 271, 
+  271, 268, 274, 274, 280, 328, 373, 373, 456, 532, 576, 679, 683, 683, 754, 
+  768, 768, 890, 912, 962, 1453, 1453, 1601, 1601, 1728, 1739, 1739, 1802, 
+  2058, 2379, 2414, 2543, 2744, 2744, 2920, 3078, 3078, 4275, 4275, 4494, 
+  4760, 5112, 5115, 5115, 5414, 6080, 6318, 7100, 7369, 7369, 7798, 8644, 
+  10392, 12373, 12922, 14122, 14122, 18948, 21886, 24641, 24641, 25056, 
+  38942, 44950, 78778 ]
+gap> t:= SplitCharacters( d, ro.remainders );;
 gap> List( t, i -> ScalarProduct( c, i, i ) );
-[ 2, 8, 18, 4, 32, 50, 72, 16, 98, 128, 36, 64, 100, 144, 196, 256, 324, 400, 
-  582, 612, 648, 704, 748, 856, 876, 984, 1142, 1186, 1312, 1398, 1496, 1538, 
-  1584, 1688, 1836, 1888, 1938, 1992, 2102, 2156, 2328, 2448, 2508, 3282, 
-  3564, 3784, 4012, 4086, 4164, 4400, 4896, 5682, 5776, 6336, 6444, 6928, 
-  8408, 9782, 10264, 11264, 13128, 15136, 17600, 19584, 19746, 31008, 35856, 
-  62936 ]
+[ 2, 2, 4, 2, 2, 4, 4, 3, 6, 5, 5, 9, 9, 4, 12, 13, 18, 18, 18, 26, 32, 32, 
+  16, 42, 36, 84, 84, 88, 90, 159, 169, 169, 172, 172, 266, 271, 271, 268, 
+  274, 274, 280, 328, 373, 373, 456, 532, 576, 679, 683, 683, 754, 768, 768, 
+  890, 912, 962, 1453, 1453, 1601, 1601, 1728, 1739, 1739, 1802, 2058, 2379, 
+  2414, 2543, 2744, 2744, 2920, 3078, 3078, 4275, 4275, 4494, 4760, 5112, 
+  5115, 5115, 5414, 6080, 6318, 7100, 7369, 7369, 7798, 8644, 10392, 12373, 
+  12922, 14122, 14122, 18948, 21886, 24641, 24641, 25056, 38942, 44950, 78778 
+ ]
 \endexample
 Finally we calculate the characters induced from all cyclic subgroups and
 obtain the missing irreducibles by applying the LLL-algorithm to them.
@@ -1004,7 +993,7 @@ gap> Length( ro.irreducibles );
 0
 gap> l:= LLL( c, ro.remainders );;
 gap> Length( l.irreducibles );
-6
+13
 \endexample
 The LLL returns class function objects (see Chapter~"Class Functions"),
 and the Dixon record works with character values lists.
@@ -1012,11 +1001,12 @@ So we convert them to a list of values
 before feeding them in the machinery of the Dixon-algorithm.
 \beginexample
 gap> l.irreducibles[1];
-Character( CharacterTable( PSL(4, 3) ), [ 416, 0, 2, 0, -16, 0, 0, 0, 0, 0, 
-  0, 2, 0, 2, 0, -1, 0, 2, -16, 0, 0, 2, -1, 1, -1, 
-  E(20)+E(20)^9-E(20)^13-E(20)^17, -E(20)-E(20)^9+E(20)^13+E(20)^17, 0, 0 ] )
-gap> vals:= List( l.irreducibles, ValuesOfClassFunction );;
-gap> DxIncludeIrreducibles( d, vals );
+Character( CharacterTable( PSL(4,3) ), [ 640, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  -8, 0, 0, -8, 0, 0, 0, 1, -8, 0, 1, 0, 0, E(13)^7+E(13)^8+E(13)^11, 
+  E(13)+E(13)^3+E(13)^9, E(13)^2+E(13)^5+E(13)^6, E(13)^4+E(13)^10+E(13)^12, 
+  1 ] )
+gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
+gap> DxIncludeIrreducibles( d, l );
 gap> Length( d.irreducibles );
 29
 gap> Length( d.classes );
@@ -1028,7 +1018,7 @@ group.
 This makes them available also to the character table.
 \beginexample
 gap> irrs:= DixontinI( d );;
-#I  Total:2 matrices,[ 5, 14 ]
+#I  Total:1 matrices,[ 20 ]
 gap> SetIrr(g,irrs);
 gap> Length(Irr(c));
 29
@@ -1092,8 +1082,7 @@ X.3     1  1  1
 gap> d8:= CharacterTable( "Dihedral", 8 );;
 gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
 [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] ]
-gap> q8:= CharacterTableIsoclinic( d8, nsg[3] );;
-gap> Display( q8 );
+gap> Display( CharacterTableIsoclinic( d8, nsg[3] ) );
 Isoclinic(Dihedral(8))
 
      2  3  2  3  2  2
@@ -1106,12 +1095,6 @@ X.2     1  1  1 -1 -1
 X.3     1 -1  1  1 -1
 X.4     1 -1  1 -1  1
 X.5     2  . -2  .  .
-\endexample
-
-\Declaration{SourceOfIsoclinicTable}
-\beginexample
-gap> SourceOfIsoclinicTable( q8 );
-[ CharacterTable( "Dihedral(8)" ), [ 1, 2, 3 ], 3 ]
 \endexample
 
 %Declaration{CharacterTableOfNormalSubgroup}

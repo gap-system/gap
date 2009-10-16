@@ -1,0 +1,104 @@
+
+The GAP 4 package 'NQL'
+=======================
+
+Introduction
+------------
+
+This is the package 'NQL' written for GAP 4. It provides a first
+construction of finitely L-presented groups and a nilpotent quotient
+algorithm for L-presented groups.
+
+The features of this package include
+
+  - creating an L-presented group as new gap object,
+
+  - computing nilpotent quotients of L-presented groups, and
+
+  - epimorphisms from the L-presented group onto its
+    nilpotent quotients;
+
+  - computing the abelian invariants of an L-presented group
+
+There is a manual in the subdirectory 'doc' written in plain TeX which
+describes the functions available.
+
+If you have found a bug or any features missing please let me know
+(Ren\'e Hartung, email r.hartung [ed] tu-braunschweig.de).
+
+
+Contents
+--------
+
+With this version you should have obtained the following files and
+directories:
+
+  README          this file
+
+  init.g          the file that initializes this package
+
+  read.g          the file that reads in the package        
+
+  PackageInfo.g   the file for the new package loading mechanism
+
+  doc             the manual
+
+  gap             the GAP code
+
+
+Installation
+------------
+
+Make sure that the GAP 4 packages Polycyclic and FGA are installed. It
+suffices to unpack the package in the 'pkg' directory and load the
+package from within gap using `LoadPackage("NQL");'.
+
+
+Test-Files
+----------
+
+The NQL-package can be tested with `ReadPackage("NQL","tst/testall.gi");'.
+
+
+Compiling the Manual
+--------------------
+
+To get the manual and the GAP Help System work you have to compile the
+documentation of the 'NQL' package. For this purpose, change into the
+'doc' directory of 'NQL' and compile the manual via 'make':
+
+  sh> cd $GAPPATH/pkg/nql/doc
+  sh> make
+
+
+BugFixes/Changes/Features Added
+-----------------------------
+
+- Version 0.08: - minor changes due to problems with the FR-package
+                - added operation `DwyerQuotient'
+
+- Version 0.07: - added methods for approximating the Schur-multiplier
+ 		  of an LpGroup via its Dwyer-filtration
+                - added method for approximation the outer automorphism
+                  group of an LpGroup
+                - bug fixed in <SmallerQuotientSystem>,
+		- added method for saving a nilpotent quotient system,
+		- added method for <IsomorphismLpGroup> and <AsLpGroup>,
+		- added methods <NqEpimorphismNilpotentQuotient> and 
+                  <NilpotentQuotient> for FpGroups (if Werner's NQ is not
+                  present),
+		- added a parallel version of <ExtendQuotientSystem> using
+ 		  Gene Cooperman's ParGap-package,
+
+- Version 0.06: - finally accepted!
+
+- Version 0.05: - replaced DepthVector by PositionNonZero (due to 
+                  conflicts with FR).
+
+- Version 0.04: - Included the remarks from the referee, 
+		- added test files,
+		- added test whether or not an LpGroup is invariant
+		- name space for internal functions `NQL_*'
+
+- Version 0.03: Renamed the function CoveringGroup due to conflicts 
+                with the cohomolo package.

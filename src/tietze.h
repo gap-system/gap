@@ -2,7 +2,7 @@
 **
 *W  tietze.h                    GAP source                     Volkmar Felsch
 **
-*H  @(#)$Id$
+*H  @(#)$Id: tietze.h,v 4.8 2002/04/15 10:04:02 sal Exp $
 **
 *Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_tietze_h =
-   "@(#)$Id$";
+   "@(#)$Id: tietze.h,v 4.8 2002/04/15 10:04:02 sal Exp $";
 #endif
 
 

@@ -2,7 +2,7 @@
 **
 *W  calls.c                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: calls.c,v 4.55 2009/03/27 20:05:50 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -37,7 +37,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_calls_c =
-   "@(#)$Id$";
+   "@(#)$Id: calls.c,v 4.55 2009/03/27 20:05:50 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -895,10 +895,10 @@ typedef struct {
 }
 TypeHandlerInfo;
 
-static UInt HandlerSortingStatus = 0;
+static UInt HandlerSortingStatus;
 
 static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
-static UInt NHandlerFuncs = 0;
+static UInt NHandlerFuncs;
  
 void InitHandlerFunc (
     ObjFunc             hdlr,
@@ -928,6 +928,17 @@ void InitHandlerFunc (
 **
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
+
+void InitHandlerRegistration()
+{
+  /* initialize these here rather than statically to allow for restart */
+  /* can't do them in InitKernel of this module because it's called too late
+     so make it a function and call it from an earlier InitKernel */
+  HandlerSortingStatus = 0;
+  NHandlerFuncs = 0;
+
+}
+
 static void CheckHandlersBag(
     Bag         bag )
 {
@@ -1020,7 +1031,6 @@ const Char * CookieOfHandler (
             if ( hdlr == HandlerFuncs[i].hdlr )
                 return HandlerFuncs[i].cookie;
         }
-        ErrorQuit( "No Cookie for Handler", 0L, 0L );
         return (Char *)0L;
     }
     else {
@@ -1035,7 +1045,6 @@ const Char * CookieOfHandler (
             else
                 return HandlerFuncs[middle].cookie;
         }
-        ErrorQuit( "No Cookie for Handler", 0L, 0L );
         return (Char *)0L;
     }
 }
@@ -1333,8 +1342,8 @@ void PrintFunction (
         if ( IS_UNCOMPLETED_FUNC(func) )  {
             Pr( "<<uncompletable function>>", 0L, 0L );
         }
-        else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0 ) {
-            Pr("<<compiled code>>",0L,0L);
+        else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
+            Pr("<<kernel or compiled code>>",0L,0L);
         }
         else {
             SWITCH_TO_NEW_LVARS( func, NARG_FUNC(func), NLOC_FUNC(func),
@@ -1555,10 +1564,10 @@ Obj FuncCALL_FUNC_LIST (
 
 /****************************************************************************
 **
-
 *F  FuncNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
 Obj NAME_FUNC_Oper;
+Obj SET_NAME_FUNC_Oper;
 
 Obj FuncNAME_FUNC (
     Obj                 self,
@@ -1575,6 +1584,7 @@ Obj FuncNAME_FUNC (
 	    C_NEW_STRING(name, 7, "unknown");
             RESET_FILT_LIST( name, FN_IS_MUTABLE );
             NAME_FUNC(func) = name;
+            CHANGED_BAG(func);
 
         }
         return name;
@@ -1582,6 +1592,22 @@ Obj FuncNAME_FUNC (
     else {
         return DoOperation1Args( self, func );
     }
+}
+
+Obj FuncSET_NAME_FUNC(
+		      Obj self,
+		      Obj func,
+		      Obj name )
+{
+  while (!IsStringConv(name))
+    name = ErrorReturnObj("SET_NAME_FUNC( <func>, <name> ): <name> must be a string, not a %s",
+			  (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
+  if (TNUM_OBJ(func) == T_FUNCTION ) {
+    NAME_FUNC(func) = name;
+    CHANGED_BAG(func);
+  } else
+    DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
+  return (Obj) 0;
 }
 
 
@@ -1796,6 +1822,45 @@ Obj FuncIS_PROFILED_FUNC(
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
+Obj FuncFILENAME_FUNC(Obj self, Obj func) {
+  if (BODY_FUNC(func))
+    {
+      Obj fn =  FILENAME_BODY(BODY_FUNC(func));
+      if (fn)
+	return fn;
+      else
+	return Fail;
+    }
+  else
+    return Fail;
+}
+
+Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
+  if (BODY_FUNC(func)) 
+    {
+      Obj sl = STARTLINE_BODY(BODY_FUNC(func));
+      if (sl)
+	return sl;
+      else
+	return Fail;
+    }
+  else
+    return Fail;
+}
+
+Obj FuncENDLINE_FUNC(Obj self, Obj func) {
+  if (BODY_FUNC(func)) 
+    {
+      Obj el = ENDLINE_BODY(BODY_FUNC(func));
+      if (el)
+	return el;
+      else
+	return Fail;
+    }
+  else
+    return Fail;
+}
+
 
 /****************************************************************************
 **
@@ -1839,6 +1904,32 @@ Obj FuncUNPROFILE_FUNC(
     }
 
     return (Obj)0;
+}
+
+Obj FuncIsKernelFunction(Obj self, Obj func) {
+  if (!IS_FUNC(func))
+    return Fail;
+  else return (BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0) ? True : False;
+}
+
+Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
+{
+  Int narg;
+  ObjFunc hdlr;
+  const Char *cookie;
+  Obj cookieStr;
+  UInt len;
+  if (!IS_FUNC(func))
+    return Fail;
+  narg = NARG_FUNC(func);
+  if (narg == -1)
+    narg = 7;
+  hdlr = HDLR_FUNC(func, narg);
+  cookie = CookieOfHandler(hdlr);
+  len = SyStrlen(cookie);
+  cookieStr = NEW_STRING(len);
+  COPY_CHARS(cookieStr, cookie, len);
+  return cookieStr;
 }
 
 /****************************************************************************
@@ -1923,6 +2014,9 @@ static StructGVarOper GVarOpers [] = {
     { "NAME_FUNC", 1, "func", &NAME_FUNC_Oper,
       FuncNAME_FUNC, "src/calls.c:NAME_FUNC" },
 
+    { "SET_NAME_FUNC", 2, "func, name", &SET_NAME_FUNC_Oper,
+      FuncSET_NAME_FUNC, "src/calls.c:SET_NAME_FUNC" },
+
     { "NARG_FUNC", 1, "func", &NARG_FUNC_Oper,
       FuncNARG_FUNC, "src/calls.c:NARG_FUNC" },
 
@@ -1931,6 +2025,7 @@ static StructGVarOper GVarOpers [] = {
 
     { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
       FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
+
 
     { 0 }
 
@@ -1955,6 +2050,20 @@ static StructGVarFunc GVarFuncs [] = {
     { "UNPROFILE_FUNC", 1, "func",
       FuncUNPROFILE_FUNC, "src/calls.c:UNPROFILE_FUNC" },
 
+    { "IsKernelFunction", 1, "func",
+      FuncIsKernelFunction, "src/calls.c:IsKernelFunction" },
+
+    { "HandlerCookieOfFunction", 1, "func",
+      FuncHandlerCookieOfFunction, "src/calls.c:HandlerCookieOfFunction" },
+
+    { "FILENAME_FUNC", 1, "func", 
+      FuncFILENAME_FUNC, "src/calls.c:FILENAME_FUNC" },
+
+    { "STARTLINE_FUNC", 1, "func", 
+      FuncSTARTLINE_FUNC, "src/calls.c:STARTLINE_FUNC" },
+
+    { "ENDLINE_FUNC", 1, "func", 
+      FuncENDLINE_FUNC, "src/calls.c:ENDLINE_FUNC" },
     { 0 }
 
 };
@@ -1968,6 +2077,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  
     /* install the marking functions                                       */
     InfoBags[ T_FUNCTION ].name = "function";
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );

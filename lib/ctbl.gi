@@ -3,7 +3,7 @@
 #W  ctbl.gi                     GAP library                     Thomas Breuer
 #W                                                           & Goetz Pfeiffer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctbl.gi,v 4.117 2009/04/22 13:03:31 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -28,7 +28,7 @@
 ##  13. Auxiliary Stuff
 ##
 Revision.ctbl_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctbl.gi,v 4.117 2009/04/22 13:03:31 gap Exp $";
 
 
 #############################################################################
@@ -968,7 +968,7 @@ InstallMethod( LinearCharacters,
       return Irr( G, 0 );
     fi;
 
-    pi:= NaturalHomomorphismByNormalSubgroup( G, DerivedSubgroup( G ) );
+    pi:= NaturalHomomorphismByNormalSubgroupNC( G, DerivedSubgroup( G ) );
     img:= ImagesSource( pi );
     SetIsAbelian( img, true );
     return RestrictedClassFunctions( CharacterTable( img ),
@@ -1301,6 +1301,66 @@ InstallMethod( IsSimpleCharacterTable,
 
 #############################################################################
 ##
+#M  IsAlmostSimpleCharacterTable( <tbl> ) . . for an ordinary character table
+##
+##  <ManSection>
+##  <Meth Name="IsAlmostSimpleCharacterTable" Arg="tbl"/>
+##
+##  <Description>
+##  Given the ordinary character table of a group <M>G</M>,
+##  we can check whether <M>G</M> has a unique minimal normal subgroup.
+##  <P/>
+##  The simplicity and nonabelianness of this normal subgroup can be verified
+##  by showing that its order occurs as the order of
+##  a nonabelian simple group.
+##  Note that any minimal normal subgroup is the direct product of
+##  isomorphic simple groups,
+##  and by a result in <Cite Key="KimmerleLyonsSandlingTeague90"/>,
+##  no proper power of the order of a simple group is the order of a simple
+##  group.
+##  <P/>
+##  A finite group is almost simple if and only if it has a unique minimal
+##  normal subgroup <M>N</M> with the property that <M>N</M> is nonabelian
+##  and simple.
+##  (Note that in the this case, the centralizer of <M>N</M> is trivial,
+##  because otherwise it would contain a minimal normal subgroup different
+##  from <M>N</M>; so <M>G / N</M> acts as a group of outer automorphisms on
+##  <M>N</M>.)
+##  </Description>
+##  </ManSection>
+##
+##  Note that we could detect also whether a table belongs to an extension of
+##  a simple group of prime order by outer automorphisms.
+##  (These groups are not regarded as almost simple.)
+##  Namely, such a group has a unique minimal normal subgroup <M>N</M> of
+##  prime order <M>p</M>, say,
+##  and all nontrivial conjugacy classes of <M>G</M> inside <M>N</M>
+##  have length <M>[G:N]</M>.
+##
+InstallMethod( IsAlmostSimpleCharacterTable,
+    "for an ordinary character table",
+    [ IsOrdinaryTable ],
+    function( ordtbl )
+    local nsg, orbs;
+
+    nsg:= ClassPositionsOfMinimalNormalSubgroups( ordtbl );
+    if Length( nsg ) <> 1 then
+      return false;
+    fi;
+    orbs:= SizesConjugacyClasses( ordtbl ){ nsg[1] };
+    nsg:= Sum( orbs );
+
+    # An extension of a group of prime order by a subgroup of its
+    # automorphism group is *not* regarded as an almost simple group.
+    # (We could detect these groups from `orbs', i.e., the class lengths
+    # in the minimal normal subgroup.)
+    return     ( not IsPrimeInt( nsg ) )
+           and IsomorphismTypeInfoFiniteSimpleGroup( nsg ) <> fail;
+    end );
+
+
+#############################################################################
+##
 #M  IsSolvableCharacterTable( <tbl> ) . . . . for an ordinary character table
 ##
 InstallMethod( IsSolvableCharacterTable,
@@ -1340,6 +1400,82 @@ InstallMethod( IsSupersolvableCharacterTable,
     "for an ordinary character table",
     [ IsOrdinaryTable ],
     tbl -> Size( ClassPositionsOfSupersolvableResiduum( tbl ) ) = 1 );
+
+
+#############################################################################
+##
+#F  IsomorphismTypeInfoFiniteSimpleGroup( <tbl> )
+##
+##  The simplicity of the group with character table <A>tbl</A> can be
+##  checked.
+##  If there is only one simple group of the given order then we are done.
+##  Otherwise there are exactly two possibilities,
+##  and we distinguish them using the same arguments as in the function for
+##  groups.
+##  Namely, the group <M>A_8</M> contains an element (of order <M>5</M>)
+##  whose centralizer order is <M>15</M>, whereas the group <M>L_3(4)</M>
+##  does not have an element with this centralizer order,
+##  and the groups in the two infinite series <M>O(2n+1,q)</M> and
+##  <M>S(2n,q)</M>, where <M>q</M> is a power of the (odd) prime <M>p</M>,
+##  can be distinguished by the fact that in the latter group, any
+##  element of order <M>p</M> in the centre of the Sylow <M>p</M> subgroup
+##  has centralizer order divisible by <M>q^{{2n-2}} - 1</M>, whereas no such
+##  elements exist in the former group.
+##  (Note that <M>n</M> and <M>p</M> can be computed from the order of
+##  <M>O(2n+1,q)</M> or <M>S(2n,q)</M>).
+##
+InstallMethod( IsomorphismTypeInfoFiniteSimpleGroup,
+    [ "IsOrdinaryTable" ],
+    function( tbl )
+    local size, type, n, q, p, sylord, pos;
+
+    if not IsSimpleCharacterTable( tbl ) then
+      return fail;
+    fi;
+    size:= Size( tbl );
+    type:= IsomorphismTypeInfoFiniteSimpleGroup( size );
+    if IsRecord( type ) and not IsBound( type.series ) then
+      # There are two simple groups of the given order.
+      if size <> 20160 then
+        # Distinguish the two possibilities in the same way as the groups
+        # are distinguished by `IsomorphismTypeInfoFiniteSimpleGroup'.
+        n:= type.parameter[1];
+        q:= type.parameter[2];
+        p:= Factors( q )[1];
+        sylord:= 1;
+        while size mod p = 0 do
+          sylord:= sylord * p;
+          size:= size / p;
+        od;
+        pos:= First( [ 1 .. NrConjugacyClasses( tbl ) ],
+                     i ->     OrdersClassRepresentatives( tbl )[i] = p
+                          and SizesCentralizers( tbl )[i] mod sylord = 0 );
+        if SizesCentralizers( tbl )[ pos ] mod (q^(2*n-2)-1) <> 0 then
+          type:= rec( series:= "B",
+                      parameter:= [ n, q ],
+                      name:= Concatenation( "B(", String(n), ",", String(q),
+                                            ") ", "= O(", String(2*n+1), ",",
+                                            String(q), ")" ) );
+        else
+          type:= rec( series:= "C",
+                      parameter:= [ n, q ],
+                      name:= Concatenation( "C(", String(n), ",", String(q),
+                                            ") ", "= S(", String(2*n), ",",
+                                            String(q), ")" ) );
+        fi;
+      elif 15 in SizesCentralizers( tbl ) then
+        type:= rec( series:= "A",
+                    parameter:= 8,
+                    name:= Concatenation( "A(8) ", "~ A(3,2) = L(4,2) ",
+                                          "~ D(3,2) = O+(6,2)" ) );
+      else
+        type:= rec( series:= "L",
+                    parameter:= [ 3, 4 ],
+                    name:= "A(2,4) = L(3,4)" );
+      fi;
+    fi;
+    return type;
+    end );
 
 
 #############################################################################
@@ -1709,6 +1845,13 @@ InstallMethod( \.,
     fi;
     end );
 
+#############################################################################
+##
+#F  ColumnCharacterTable( <tbl>,<nr> )
+##
+InstallGlobalFunction(ColumnCharacterTable,function(T,n)
+  return Irr(T){[1..Length(Irr(T))]}[n];
+end);
 
 #############################################################################
 ##
@@ -2084,7 +2227,7 @@ InstallMethod( ClassPositionsOfLowerCentralSeries,
     # Compute the structure constants $a_{x,\overline{x},g}$ with $g$ and $x$
     # in $K_2$.
     # Put them into a matrix, the rows indexed by $g$, the columns by $x$.
-    inv:= PowerMap( tbl, -1 );
+    inv:= InverseClasses( tbl );
     mat:= List( K, x -> [] );
     for i in [ 2 .. Length( K ) ] do
       for j in K do
@@ -2188,7 +2331,6 @@ InstallMethod( ClassPositionsOfSolvableResiduum,
     "for an ordinary table",
     [ IsOrdinaryTable ],
     function( tbl )
-
     local nsg,       # list of all normal subgroups
           i,         # loop variable, position in `nsg'
           N,         # one normal subgroup
@@ -2241,7 +2383,6 @@ InstallMethod( ClassPositionsOfSupersolvableResiduum,
     "for an ordinary table",
     [ IsOrdinaryTable ],
     function( tbl )
-
     local nsg,       # list of all normal subgroups
           i,         # loop variable, position in `nsg'
           N,         # one normal subgroup
@@ -3116,31 +3257,109 @@ end );
 
 #############################################################################
 ##
+#O  Index( <tbl>, <subtbl> )
+#O  IndexOp( <tbl>, <subtbl> )
+#O  IndexNC( <tbl>, <subtbl> )
+##
+InstallMethod( Index,
+    "for two character tables",
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable ],
+    function( tbl, subtbl )
+    return Size( tbl ) / Size( subtbl );
+    end );
+
+InstallMethod( IndexOp,
+    "for two character tables",
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable ],
+    function( tbl, subtbl )
+    return Size( tbl ) / Size( subtbl );
+    end );
+
+InstallMethod( IndexNC,
+    "for two character tables",
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable ],
+    function( tbl, subtbl )
+    return Size( tbl ) / Size( subtbl );
+    end );
+
+
+#############################################################################
+##
 #M  IsInternallyConsistent( <tbl> ) . . . . . for an ordinary character table
 ##
 ##  Check consistency of information in the head of the character table
 ##  <tbl>, and check if the first orthogonality relation is satisfied.
-##
 #T also check the interface between table and group if the classes are stored?
+##
+##  <#GAPDoc Label="IsInternallyConsistent!for_character_tables">
+##  <ManSection>
+##  <Meth Name="IsInternallyConsistent"
+##   Arg='tbl' Label="for character tables"/>
+##
+##  <Description>
+##  For an <E>ordinary</E> character table <A>tbl</A>,
+##  <Ref Oper="IsInternallyConsistent"/>
+##  checks the consistency of the following attribute values (if stored).
+##  <List>
+##  <Item>
+##    <Ref Attr="Size"/>, <Ref Attr="SizesCentralizers"/>,
+##    and <Ref Attr="SizesConjugacyClasses"/>.
+##  </Item>
+##  <Item>
+##    <Ref Attr="SizesCentralizers"/> and
+##    <Ref Attr="OrdersClassRepresentatives"/>.
+##  </Item>
+##  <Item>
+##    <Ref Attr="ComputedPowerMaps"/> and
+##    <Ref Attr="OrdersClassRepresentatives"/>.
+##  </Item>
+##  <Item>
+##    <Ref Attr="SizesCentralizers"/>
+##    and <Ref Attr="Irr" Label="for a character table"/>.
+##  </Item>
+##  <Item>
+##    <Ref Attr="Irr" Label="for a character table"/>
+##    (first orthogonality relation).
+##  </Item>
+##  </List>
+##  <P/>
+##  For a <E>Brauer</E> table <A>tbl</A>,
+##  <Ref Meth="IsInternallyConsistent" Label="for character tables"/>
+##  checks the consistency of the following attribute values (if stored).
+##  <List>
+##  <Item>
+##    <Ref Attr="Size"/>, <Ref Attr="SizesCentralizers"/>,
+##    and <Ref Attr="SizesConjugacyClasses"/>.
+##  </Item>
+##  <Item>
+##    <Ref Attr="SizesCentralizers"/> and
+##    <Ref Attr="OrdersClassRepresentatives"/>.
+##  </Item>
+##  <Item>
+##    <Ref Attr="ComputedPowerMaps"/> and
+##    <Ref Attr="OrdersClassRepresentatives"/>.
+##  </Item>
+##  <Item>
+##    <Ref Attr="Irr" Label="for a character table"/>
+##    (closure under complex conjugation and Frobenius map).
+##  </Item>
+##  </List>
+##  <P/>
+##  If no inconsistency occurs, <K>true</K> is returned,
+##  otherwise each inconsistency is printed to the screen if the level of
+##  <Ref InfoClass="InfoWarning"/> is at least <M>1</M>
+##  (see&nbsp;<Ref Sect="Info Functions"/>),
+##  and <K>false</K> is returned at the end.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 InstallMethod( IsInternallyConsistent,
     "for an ordinary character table",
     [ IsOrdinaryTable ],
     function( tbl )
-
-    local flag,            # `true' if no inconsistency occurred yet
-          centralizers,
-          order,
-          nccl,
-          classes,
-          orders,
-          i, j,
-          powermap,
-          comp,
-          characters,
-          map,
-          row,
-          sum;
+    local flag, centralizers, order, nccl, classes, orders, i, j, powermap,
+          comp, characters, map, row, sum;
 
     flag:= true;
 
@@ -3265,6 +3484,7 @@ InstallMethod( IsInternallyConsistent,
             Info( InfoWarning, 1,
                   "IsInternallyConsistent(", tbl, "):\n",
                   "#I  Scpr( ., X[", i, "], X[", j, "] ) = ", sum / order );
+#T better warn only once or twice ...
           fi;
         od;
       od;
@@ -4641,9 +4861,9 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
 #T Admit splitting into two lines,
 #T admit that the first centralizer starts in the character names' area.
          Print( "\n" );
-         Print( FormattedString( "", prin[1] ) );
+         Print( String( "", prin[1] ) );
          for j in [ col + 1 .. col + acol ] do
-           Print( FormattedString( tbl_centralizers[ j-1 ], prin[j] ) );
+           Print( String( tbl_centralizers[ j-1 ], prin[j] ) );
          od;
          Print( "\n" );
        elif centralizers = true then
@@ -4665,9 +4885,9 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           od;
 
           for prime in primes do
-             Print( FormattedString( prime, prin[1] ) );
+             Print( String( prime, prin[1] ) );
              for j in [1..acol] do
-               Print( FormattedString( cen[prime][col+j-1], prin[col+j] ) );
+               Print( String( cen[prime][col+j-1], prin[col+j] ) );
              od;
              Print( "\n" );
           od;
@@ -4677,21 +4897,21 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
        if IsRecord( powermap ) then
          # three lines: power maps, p' part, and class names
          Print( "\n" );
-         Print( FormattedString( "p ", prin[1] ) );
+         Print( String( "p ", prin[1] ) );
          for j in [ 1 .. acol ] do
-           Print( FormattedString( powermap.power[classes[col+j-1]],
+           Print( String( powermap.power[classes[col+j-1]],
                                    prin[col+j] ) );
          od;
          Print( "\n" );
-         Print( FormattedString( "p'", prin[1] ) );
+         Print( String( "p'", prin[1] ) );
          for j in [ 1 .. acol ] do
-           Print( FormattedString( powermap.prime[classes[col+j-1]],
+           Print( String( powermap.prime[classes[col+j-1]],
                                    prin[col+j] ) );
          od;
          Print( "\n" );
-         Print( FormattedString( "", prin[1] ) );
+         Print( String( "", prin[1] ) );
          for j in [ 1 .. acol ] do
-           Print( FormattedString( powermap.names[classes[col+j-1]],
+           Print( String( powermap.names[classes[col+j-1]],
                                    prin[col+j] ) );
          od;
 
@@ -4699,20 +4919,20 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
 
          # first class names, then a line for each power map
          Print( "\n" );
-         Print( FormattedString( "", prin[1] ) );
+         Print( String( "", prin[1] ) );
          for i in [ 1 .. acol ] do
-           Print( FormattedString( nam[classes[col+i-1]], prin[col+i] ) );
+           Print( String( nam[classes[col+i-1]], prin[col+i] ) );
          od;
          for i in powermap do
            Print( "\n" );
-           Print( FormattedString( Concatenation( String(i), "P" ),
+           Print( String( Concatenation( String(i), "P" ),
                                    prin[1] ) );
            for j in [ 1 .. acol ] do
              q:= tbl_powermap[i][classes[col+j-1]];
              if IsInt( q ) then
-                Print( FormattedString( nam[q], prin[col+j] ) );
+                Print( String( nam[q], prin[col+j] ) );
              else
-                Print( FormattedString( "?", prin[col+j] ) );
+                Print( String( "?", prin[col+j] ) );
              fi;
            od;
          od;
@@ -4723,9 +4943,9 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
        Print( "\n" );
        if indicator <> [] then
           prin[1]:= prin[1] - iw[1];
-          Print( FormattedString( "", prin[1] ) );
+          Print( String( "", prin[1] ) );
           for i in indicator do
-             Print( FormattedString( i, iw[i] ) );
+             Print( String( i, iw[i] ) );
           od;
        fi;
 
@@ -4735,23 +4955,23 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           Print( "\n" );
 
           # character name
-          Print( FormattedString( charnames[i], -prin[1] ) );
+          Print( String( charnames[i], -prin[1] ) );
 
           # indicators
           for j in indicator do
             if j = 2 then
                if indic[j][i] = 0 then
-                 Print( FormattedString( "o", iw[j] ) );
+                 Print( String( "o", iw[j] ) );
                elif indic[j][i] = 1 then
-                 Print( FormattedString( "+", iw[j] ) );
+                 Print( String( "+", iw[j] ) );
                elif indic[j][i] = -1 then
-                 Print( FormattedString( "-", iw[j] ) );
+                 Print( String( "-", iw[j] ) );
                fi;
             else
                if indic[j][i] = 0 then
-                 Print( FormattedString( "0", iw[j] ) );
+                 Print( String( "0", iw[j] ) );
                else
-                 Print( FormattedString( stringEntry( indic[j][i],
+                 Print( String( stringEntry( indic[j][i],
                                                       stringEntryData ),
                                          iw[j]) );
               fi;
@@ -4761,7 +4981,7 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
             Print(" ");
           fi;
           for j in [ 1 .. acol ] do
-            Print( FormattedString( charvals[i][ classes[col+j-1] ],
+            Print( String( charvals[i][ classes[col+j-1] ],
                                     prin[ col+j ] ) );
           od;
        od;
@@ -5379,6 +5599,51 @@ InstallMethod( CharacterTableFactorGroup,
 
     # Return the result.
     return F;
+    end );
+
+
+#############################################################################
+##
+#M  CharacterTableFactorGroup( <modtbl>, <classes> )
+##
+InstallMethod( CharacterTableFactorGroup,
+    "for a Brauer table, and a list of class positions",
+    [ IsBrauerTable, IsList and IsCyclotomicCollection ],
+    function( modtbl, classes )
+    local p, ordtbl, sizes, fus, kernel, n, size, ordfact, modfact, factirr,
+          proj;
+
+    p:= UnderlyingCharacteristic( modtbl );
+    ordtbl:= OrdinaryCharacterTable( modtbl );
+
+    # Unite the positions corresponding to `classes' in `ordtbl'
+    # with the largest normal subgroup of `p' power order.
+    sizes:= SizesConjugacyClasses( ordtbl );
+    fus:= GetFusionMap( modtbl, ordtbl );
+    kernel:= fus{ classes };
+    for n in ClassPositionsOfNormalSubgroups( ordtbl ) do
+      size:= Sum( sizes{ n }, 0 );
+      if size mod p = 0 and IsPrimePowerInt( size ) then
+        UniteSet( kernel, n );
+      fi;
+    od;
+    kernel:= ClassPositionsOfNormalClosure( ordtbl, kernel );
+
+    # Construct the factor character tables.
+    ordfact:= CharacterTableFactorGroup( ordtbl, kernel );
+    modfact:= CharacterTableRegular( ordfact, p );
+
+    # Transfer the irreducibles between the modular tables.
+    fus:= CompositionMaps( InverseMap( GetFusionMap( modfact, ordfact ) ),
+              CompositionMaps( GetFusionMap( ordtbl, ordfact ), fus ) );
+    kernel:= ClassPositionsOfKernel( fus );
+    factirr:= Filtered( List( Irr( modtbl ), ValuesOfClassFunction ),
+                        x -> Length( Set( x{ kernel } ) ) = 1 );
+    proj:= ProjectionMap( fus );
+    SetIrr( modfact, List( factirr, x -> Character( modfact, x{ proj } ) ) );
+
+    # Return the result.
+    return modfact;
     end );
 
 
@@ -6142,7 +6407,7 @@ InstallMethod( CharacterTableWithSortedClasses,
 ##
 InstallGlobalFunction( SortedCharacterTable, function( arg )
     local i, j, tbl, kernels, list, columns, rows, chi, F, facttbl, kernel,
-          fus, nrfus, trans, ker, new;
+          fus, nrfus, trans, factfus, ker, new;
 
     # Check the arguments.
     if not ( Length( arg ) in [ 2, 3 ] and IsOrdinaryTable( arg[1] ) and
@@ -6227,9 +6492,9 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
 
       # permutation of classes:
       # `list[i] = k' if `i' maps to the `j'--th class of <F>, and
-      # `trans.columns[j] = i'
-      list:= OnTuples( GetFusionMap( tbl, F ), trans.columns );
-      columns:= Sortex( list );
+      # `trans.columns[j] = k'
+      factfus:= OnTuples( GetFusionMap( tbl, F ), trans.columns );
+      columns:= Sortex( ShallowCopy( factfus ) );
 
       # permutation of characters:
       # divide `Irr( <tbl> )' into two parts, those containing
@@ -6255,6 +6520,9 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
         # Delete the fusion to `F' on `tbl'.
         Unbind( fus[ Length( fus ) ] );
       fi;
+
+      # Store the fusion to `facttbl'.
+      StoreFusion( tbl, factfus, facttbl );
 
     fi;
 

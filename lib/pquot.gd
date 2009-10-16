@@ -2,111 +2,204 @@
 ##  
 #W  pquot.gd                    GAP Library                     Werner Nickel
 ##
-#H  $Id$
+#H  $Id: pquot.gd,v 4.21 2008/09/22 16:22:30 gap Exp $
 ##
 #Y  Copyright (C) 1998, . . . . . . . . .  University of St Andrews, Scotland
 ##
 Revision.pquot_gd :=
-    "$Id$";
+    "$Id: pquot.gd,v 4.21 2008/09/22 16:22:30 gap Exp $";
+
 
 #############################################################################
 ##  
 #F  AbelianPQuotient  . . . . . . . . . . .  initialize an abelian p-quotient
 ##
+##  <ManSection>
+##  <Func Name="AbelianPQuotient" Arg='qs'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "AbelianPQuotient" );
 
-#############################################################################
-##
-#F  PQuotient(<F>,<p> [,<c>] [,<logord>] [,<ctype>]) . . .  pq of an fp group
-##
-##  computes a factor <p>-group of a finitely presented group <F> in form 
-##  of a quotient system.  The quotient system can be converted into an
-##  epimorphism from <F> onto the <p>-group computed by the function
-##  "EpimorphismQuotientSystem". 
-##
-##  For a group $G$ define the exponent-$p$ central series of $G$ inductively
-##  by ${\cal P}_1(G) = G$ and ${\cal P}_{i+1}(G) = [{\cal P}_{i}(G),G]{\cal
-##  P}_{i+1}(G)^p.$  The factor groups modulo the terms of the lower
-##  exponent-$p$ central series are $p$-groups.  The group $G$ has $p$-class
-##  $c$ if ${\cal P}_c(G)\not={\cal P}_{c+1}(G)=1.$ 
-##  
-##  The algorithm computes successive quotients modulo the terms of the
-##  exponent-$p$ central series of <F>.  If the parameter <c> is present,
-##  then the factor group modulo the $(c+1)$-th term of the exponent-$p$
-##  central series of <F> is returned.  If <c> is not present, then the
-##  algorithm attempts to compute the largest factor <p>-group of <F>.  In
-##  case <F> does not have a largest factor <p>-group, the algorithm will not
-##  terminate.
-##
-##  By default the algorithm computes only with factor groups of order at
-##  most $p^{256}.$ If the parameter <logord> is present, it will compute
-##  with factor groups of order atmost $p^<logord>.$ If this parameter is
-##  specified, then the parameter <c> must also be given.  The present
-##  implementation produces an error message if the order of a $p$-quotient
-##  exceeds $p^{256}$ or $p^<logord>,$ respectively.  Note that the order of
-##  intermediate $p$-groups may be larger than the final order of a
-##  $p$-quotient.
-##
-##  The parameter <ctype> determines the type of collector that is used for
-##  computations within the factor <p>-group.  <ctype> must either be
-##  `single' in which case a simple collector from the left is used or
-##  `combinatorial' in which case a combinatorial collector from the left is
-##  used. 
-DeclareGlobalFunction( "PQuotient" );
 
 #############################################################################
 ##
-#O  EpimorphismPGroup( <fpgrp>, <p> ) .  factor p-group of a fin. pres. group
-#O  EpimorphismPGroup( <fpgrp>, <p>, <cl> )                    factor p-group
+#F  PQuotient(<F>, <p>[, <c>][, <logord>][, <ctype>])  . .  pq of an fp group
 ##
-##  computes an epimorphism from the finitely presented group <fpgrp> to the
-##  largest $p$-group of $p$-class <cl> which is a quotient of <fpgrp>. If <cl>
-##  is omitted, the largest finite $p$-group quotient (of $p$-class up to
-##  1000) is determined.
+##  <#GAPDoc Label="PQuotient">
+##  <ManSection>
+##  <Func Name="PQuotient" Arg='F, p[, c][, logord][, ctype]'/>
+##
+##  <Description>
+##  computes a factor <A>p</A>-group of a finitely presented group <A>F</A>
+##  in form  of a quotient system.
+##  The quotient system can be converted into an epimorphism from <A>F</A>
+##  onto the <A>p</A>-group computed by the function
+##  <Ref Func="EpimorphismQuotientSystem"/>. 
+##  <P/>
+##  For a group <M>G</M> define the exponent-<M>p</M> central series of
+##  <M>G</M> inductively by <M>{\cal P}_1(G) = G</M> and
+##  <M>{\cal P}_{{i+1}}(G) = [{\cal P}_i(G),G]{\cal P}_{{i+1}}(G)^p</M>.
+##  The factor groups modulo the terms of the lower
+##  exponent-<M>p</M> central series are <M>p</M>-groups.
+##  The group <M>G</M> has <M>p</M>-class
+##  <M>c</M> if <M>{\cal P}_c(G) \neq {\cal P}_{{c+1}}(G) = 1</M>. 
+##  <P/>
+##  The algorithm computes successive quotients modulo the terms of the
+##  exponent-<M>p</M> central series of <A>F</A>.
+##  If the parameter <A>c</A> is present,
+##  then the factor group modulo the <M>(c+1)</M>-th term of the
+##  exponent-<M>p</M> central series of <A>F</A> is returned.
+##  If <A>c</A> is not present, then the algorithm attempts to compute the
+##  largest factor <A>p</A>-group of <A>F</A>.
+##  In case <A>F</A> does not have a largest factor <A>p</A>-group,
+##  the algorithm will not terminate.
+##  <P/>
+##  By default the algorithm computes only with factor groups of order at
+##  most <M>p^{256}</M>. If the parameter <A>logord</A> is present, it will
+##  compute with factor groups of order at most <M>p^{<A>logord</A>}</M>.
+##  If this parameter is specified, then the parameter <A>c</A> must also be
+##  given.  The present
+##  implementation produces an error message if the order of a
+##  <M>p</M>-quotient exceeds <M>p^{256}</M> or <M>p^{<A>logord</A>}</M>,
+##  respectively.
+##  Note that the order of intermediate <M>p</M>-groups may be larger than
+##  the final order of a <M>p</M>-quotient.
+##  <P/>
+##  The parameter <A>ctype</A> determines the type of collector that is used
+##  for computations within the factor <A>p</A>-group.
+##  <A>ctype</A> must either be <C>"single"</C> in which case a simple
+##  collector from the left is used or <C>"combinatorial"</C> in which case
+##  a combinatorial collector from the left is used. 
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PQuotient" );
+
+
+#############################################################################
+##
+#O  EpimorphismPGroup( <fpgrp>, <p>[, <cl>] )  factor p-group of a f.p. group
+##
+##  <#GAPDoc Label="EpimorphismPGroup">
+##  <ManSection>
+##  <Oper Name="EpimorphismPGroup" Arg='fpgrp, p[, cl]'/>
+##
+##  <Description>
+##  computes an epimorphism from the finitely presented group <A>fpgrp</A> to
+##  the largest <M>p</M>-group of <M>p</M>-class <A>cl</A> which is
+##  a quotient of <A>fpgrp</A>.
+##  If <A>cl</A> is omitted, the largest finite <M>p</M>-group quotient
+##  (of <M>p</M>-class up to <M>1000</M>) is determined.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> hom:=EpimorphismPGroup(fp,2);
+##  [ f1, f2 ] -> [ a1, a2 ]
+##  gap> Size(Image(hom));
+##  8
+##  gap> hom:=EpimorphismPGroup(fp,3,7);
+##  [ f1, f2 ] -> [ a1, a2 ]
+##  gap> Size(Image(hom));
+##  6561
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "EpimorphismPGroup", [IsGroup, IsPosInt ] );
 DeclareOperation( "EpimorphismPGroup", [IsGroup, IsPosInt, IsPosInt] );
+
 
 #############################################################################
 ##
 #O  EpimorphismQuotientSystem(<quotsys>)
 ##
-##  For a quotient system <quotsys> obtained from the function "PQuotient",
-##  this operation returns an epimorphism $<F>\to<P>$ where $<F>$ is the
-##  finitely presented group of which <quotsys> is a quotient system and
-##  $<P>$ is a `PcGroup' isomorphic to the quotient of <F> determined by
-##  <quotsys>.
+##  <#GAPDoc Label="EpimorphismQuotientSystem">
+##  <ManSection>
+##  <Oper Name="EpimorphismQuotientSystem" Arg='quotsys'/>
 ##
-##  Different calls to this operation will create different groups <P>, each
-##  with its own family.
-##  
+##  <Description>
+##  For a quotient system <A>quotsys</A> obtained from the function
+##  <Ref Func="PQuotient"/>, this operation returns an epimorphism
+##  <M><A>F</A> \rightarrow <A>P</A></M> where <M><A>F</A></M> is the
+##  finitely presented group of which <A>quotsys</A> is a quotient system and
+##  <M><A>P</A></M> is a pc group isomorphic to the quotient of <A>F</A>
+##  determined by <A>quotsys</A>.
+##  <P/>
+##  Different calls to this operation will create different groups <A>P</A>,
+##  each with its own family.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PQuotient( FreeGroup(2), 5, 10, 1024, "combinatorial" );
+##  <5-quotient system of 5-class 10 with 520 generators>
+##  gap> phi := EpimorphismQuotientSystem( last );
+##  [ f1, f2 ] -> [ a1, a2 ]
+##  gap> Collected( Factors( Size( Image( phi ) ) ) );
+##  [ [ 5, 520 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "EpimorphismQuotientSystem", [IsQuotientSystem] );
+
 
 #############################################################################
 ##
-#F  EpimorphismNilpotentQuotient(<fpgrp>[,<n>])
+#F  EpimorphismNilpotentQuotient( <fpgrp>[, <n>] )
 ##
-##  returns an epimorphism on the class <n> finite nilpotent quotient of the
-##  finitely presented group <fpgrp>. If <n> is omitted, the largest
-##  finite nilpotent quotient (of $p$-class up to 1000) is taken.
+##  <#GAPDoc Label="EpimorphismNilpotentQuotient">
+##  <ManSection>
+##  <Func Name="EpimorphismNilpotentQuotient" Arg='fpgrp[, n]'/>
+##
+##  <Description>
+##  returns an epimorphism on the class <A>n</A> finite nilpotent quotient of
+##  the finitely presented group <A>fpgrp</A>.
+##  If <A>n</A> is omitted, the largest finite nilpotent quotient
+##  (of <M>p</M>-class up to <M>1000</M>) is taken.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> hom:=EpimorphismNilpotentQuotient(fp,7);
+##  [ f1, f2 ] -> [ f1*f4, f2*f5 ]
+##  gap> Size(Image(hom));
+##  52488
+##  ]]></Example>
+##  <P/>
+##  A related operation which is also applicable to finitely presented groups is
+##  <Ref Func="GQuotients"/>, which computes all epimorphisms from a
+##  (finitely presented) group <A>F</A> onto a given (finite) group <A>G</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> GQuotients(fp,Group((1,2,3),(1,2)));
+##  [ [ f1, f2 ] -> [ (2,3), (1,2) ], [ f1, f2 ] -> [ (2,3), (1,2,3) ],
+##    [ f1, f2 ] -> [ (1,2,3), (1,2) ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("EpimorphismNilpotentQuotientOp",[IsGroup,IsObject]);
 DeclareGlobalFunction("EpimorphismNilpotentQuotient");
 
-#############################################################################
-##
-#F  Nucleus . . . . . . . . . . . . . . . . . . . .  the nucleus of a p-cover
-##
-DeclareOperation("Nucleus",[IsPQuotientSystem,IsGroup]);
 
 #############################################################################
 ##
-#E  Emacs . . . . . . . . . . . . . . . . . . . . . . . . . . emacs variables
-##  
-##  Local Variables:
-##  mode:               outline
-##  tab-width:          4
-##  outline-regexp:     "#[ACEFHMOPRWY]"
-##  fill-column:        77
-##  fill-prefix:        "##  "
-##  End:
+#O  Nucleus . . . . . . . . . . . . . . . . . . . .  the nucleus of a p-cover
+##
+##  <ManSection>
+##  <Func Name="Nucleus" Arg='pq, G'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation("Nucleus",[IsPQuotientSystem,IsGroup]);
+
+
+#############################################################################
+##
+#E
 

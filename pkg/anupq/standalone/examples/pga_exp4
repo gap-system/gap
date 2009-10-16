@@ -1,0 +1,42 @@
+#all 2-generator exponent 4 groups
+
+1         #set up group presentation 
+c2c2
+2
+1
+1
+{a, b}
+{}
+0
+  
+7        #compute its 2-covering group 
+
+9        #enter p-group generation 
+
+1        #supply automorphisms 
+2        #number of automorphisms 
+
+0 1
+1 1
+
+0 1
+1 0
+
+0       #number of soluble automorphisms
+
+5       #iteration option 
+12      #class bound 
+1       #all descendants?
+0       #order bound?
+1       #PAG-generating sequence 
+
+0       #default algorithm?
+0       #rank of initial segment 
+0       #space efficiency
+1       #process terminal descendants completely
+4       #exponent law to enforce 
+0       #metabelian law to enforce 
+1       #default output 
+
+0       #exit 
+0       #exit 

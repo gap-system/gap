@@ -1,0 +1,50 @@
+<html><head><title>[format] 7 Other Applications</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="C006S000.htm">Previous</a>] [<a href = "theindex.htm">Index</a>]
+<h1>7 Other Applications</h1><p>
+<p>
+Up to this point our screens, i.e., normal subgroup functions, have yielded local formation residual subgroups, but there is no requirement that they do so. Screens for which the selected normal subgroups can be arbitrary have applications beyond formation theory. Chapter V of <a href="biblio.htm#CH"><cite>CH</cite></a> contains an account of a generalized normalizer theory built from them, and Wright (<a href="biblio.htm#WA"><cite>WA</cite></a>&nbsp;and&nbsp;<a href="biblio.htm#WB"><cite>WB</cite></a>) uses them to construct internal versions of formations that are conceptually related to ordinary formations much as Fitting sets are related to Fitting classes.
+<p>
+A major application of the generalized normalizers is to speed up computation of complements to normal factors (see&nbsp;<a href="biblio.htm#EW"><cite>EW</cite></a>).
+Suppose that <var>G</var> is a finite solvable group with an elementary abelian
+normal subgroup <var>A</var> for which there exists a normal subgroup <var>N</var> of <var>G</var>
+containing <var>A</var> such that <var>N/A</var> is nilpotent and <var>[N,A] = A</var>. Then <var>A</var> has a complement in <var>G</var>, and all complements
+are conjugate---indeed, they can be viewed as generalized
+<var><font face="helvetica,arial">F</font></var>-normalizers. We will show the idea, which of course is most useful with very large groups, by using <code>FNormalizerWrtFormation</code> to find a complement to an
+elementary abelian normal subgroup, in this case to <var>K</var> in <var>S<sub>4</sub></var> with <var>N =
+A<sub>4</sub></var>. 
+<p>
+We need to define a formation <code>F</code> in <font face="Gill Sans,Helvetica,Arial">GAP</font> (not a real formation,
+of course, just a local version) such that <code>ScreenOfFormation( F )(s4,p)</code> returns <var>N</var> for
+every call. In order to call <code>FNormalizerWrtFormation</code> we must also set the property
+<code>IsIntegrated</code> to <code>true</code>.
+<pre>
+gap&gt; preform := rec( name := "ForComplement",
+&gt; fScreen := function( H, p )
+&gt; return Subgroup( H, GeneratorsOfGroup( H ){[2,3,4]});
+&gt; end);;
+gap&gt; form := Formation(preform);
+formation of ForComplement groups 
+gap&gt; SetIsIntegrated(form, true);
+</pre>
+Now we may use the <code>FNormalizerWrtFormation</code> function with <code>s4</code> to
+get the complement, an <var>S<sub>3</sub></var>. (Recall that unless <code>form</code> already
+thinks it's integrated, <code>FNormalizerWrtFormation</code> will automatically
+integrate <code>form</code> before running its computations, which may not be
+the desired behavior.)
+<pre>
+gap&gt; comp := FNormalizerWrtFormation(s4, form); Size(comp);
+Group([ f1, f2 ])
+6
+</pre>
+<p>
+A user who wanted to employ the <var><font face="helvetica,arial">F</font></var>-normalizer technique to compute very
+many complements in this way would probably wish to create a new <font face="Gill Sans,Helvetica,Arial">GAP</font>
+function by extracting portions of the code that computes
+<var><font face="helvetica,arial">F</font></var>-systems. 
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="C006S000.htm">Previous</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>format manual<br>February 2003
+</address></body></html>

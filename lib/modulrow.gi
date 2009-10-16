@@ -2,7 +2,7 @@
 ##
 #W  modulrow.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: modulrow.gi,v 4.40 2008/04/14 16:28:42 stefan Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  (See the file `modulmat.gi' for the methods for matrix modules.)
 ##
 Revision.modulrow_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: modulrow.gi,v 4.40 2008/04/14 16:28:42 stefan Exp $";
 
 
 #############################################################################

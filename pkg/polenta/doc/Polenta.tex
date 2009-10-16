@@ -1,0 +1,217 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intro.tex             POLENTA documentation            Bjoern Assmann
+%W                                                     
+%W                                                     
+%W                                                       
+%%
+%H  @(#)$Id: Polenta.tex,v 1.9 2005/11/26 12:57:29 gap Exp $
+%%
+%Y 2003
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Methods for matrix groups}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Polycyclic presentations of matrix groups}
+ 
+Groups defined by polycyclic presentations are called PcpGroups in
+{\GAP}.
+We refer to the Polycyclic manual \cite{Polycyclic} for further
+background.
+
+Suppose that a collection $X$ of
+matrices of $GL(d,R)$ is given, where the ring $R$ 
+is either $\Q,\Z$ or a finite field.  Let $G= \< X >$. 
+If the group $G$ is polycyclic, then the
+following functions determine a PcpGroup isomorphic to $G$.
+ 
+\> PcpGroupByMatGroup( <G> )
+
+<G> is  a subgroup of $GL(d,R)$ where $R=\Q,\Z $ or $\F_q$.
+If <G> is polycyclic, then 
+this function determines a PcpGroup isomorphic to <G>. 
+If <G> is not polycyclic, then 
+this function returns 'fail'. 
+
+\> IsomorphismPcpGroup( <G> )
+ 
+<G> is  a subgroup of $GL(d,R)$ where $R=\Q,\Z $ or $\F_q$.
+If <G> is polycyclic, then 
+this function determines  an isomorphism
+onto a PcpGroup. 
+If <G> is not polycyclic, then
+this function returns 'fail'.
+
+
+Note that the method `IsomorphismPcpGroup', 
+installed in this package, cannot be
+applied directly to a group given by the function `AlmostCrystallographicGroup'.
+Please use  `POL_AlmostCrystallographicGroup' (with the same
+parameters as `AlmostCrystallographicGroup') instead. 
+
+\> Image( <map> ) 
+\> ImageElm( <map>, <elm> )
+\> ImagesSet( <map>, <elms> )
+\> PreImage( <map>, <pcpelm> )
+ 
+Here <map> is an isomorphism from a polycyclic matrix group <G>
+onto a PcpGroup <H> calculated
+by `IsomorphismPcpGroup(<G>)'.
+These functions can be used to compute with such an isomorphism. 
+If the input <elm>  is an element of <G>, then the function `ImageElm'
+ can be used to compute the image of <elm> under <map>. 
+If <elm> is not contained in <G>
+then the function `ImageElm' returns 'fail'. 
+The input <pcpelm> is an element
+of <H>. 
+
+\> IsSolvableGroup( <G> )
+%\> IsSolvableMatGroup( <G> )
+
+<G> is  a subgroup of $GL(d,R)$ where $R=\Q,\Z $ or $\F_q$.
+This function tests if <G> is
+solvable and returns 'true' or 'false'. 
+
+\> IsTriangularizableMatGroup( <G> )
+
+<G> is  a subgroup of $GL(d,\Q)$.
+ This function tests if <G> is triangularizable 
+and returns 'true' or 'false'. 
+
+\> IsPolycyclicMatGroup( <G> )
+
+<G> is  a subgroup of $GL(d,R)$ where $R=\Q,\Z $ or $\F_q$.
+This function tests if <G> is
+polycyclic and returns 'true' or 'false'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Module series}
+
+Let $G$ be a finitely generated solvable subgroup of $GL(d,\Q)$. The vector
+space $\Q^d$ is a module for the algebra $\Q[G]$. The following
+functions provide the possibility to compute certain module series of
+$\Q^d$. Recall that the radical $Rad_G(\Q^d)$ is defined to be the
+intersection of maximal $\Q[G]$-submodules of $\Q^d$. Also recall that the
+radical series 
+$$
+0=R_n \< R_{n-1} \< \dots \< R_1 \< R_0=\Q^d 
+$$
+is defined by $R_{i+1}:= Rad_G(R_i)$. 
+
+\> RadicalSeriesSolvableMatGroup( <G> )
+
+This function returns a 
+radical series for the $\Q[G]$-module $\Q^d$, where <G> is a
+solvable subgroup of $GL(d,\Q)$.
+
+A radical series of $\Q^d$ can be refined to a homogeneous series.
+
+\> HomogeneousSeriesAbelianMatGroup( <G> )
+
+A module is said to be homogeneous if it is the direct sum of pairwise
+irreducible isomorphic submodules. A homogeneous series of a module 
+is a submodule series such that the factors are homogeneous.
+This function returns a 
+homogeneous series for the $\Q[G]$-module $\Q^d$, where <G> is an
+abelian subgroup of $GL(d,\Q)$.  
+
+\> HomogeneousSeriesTriangularizableMatGroup( <G> )
+
+A module is said to be homogeneous if it is the direct sum of pairwise
+irreducible isomorphic submodules. A homogeneous series of a module 
+is a submodule series such that the factors are homogeneous.
+This function returns a 
+homogeneous series for the $\Q[G]$-module $\Q^d$, where <G> is a
+triangularizable subgroup of $GL(d,\Q)$.  
+
+A homogeneous series can be refined to a composition series.
+
+\> CompositionSeriesAbelianMatGroup( <G> )
+
+A composition series of a module is a submodule series such that 
+the factors are irreducible. This function returns a 
+composition series for the $\Q[G]$-module $\Q^d$, where <G> is an
+abelian subgroup of $GL(d,\Q)$.
+
+\> CompositionSeriesTriangularizableMatGroup( <G> )
+
+A composition series of a module is a submodule series such that 
+the factors are irreducible. This function returns a 
+composition series for the $\Q[G]$-module $\Q^d$, where <G> is a
+triangularizable subgroup of $GL(d,\Q)$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subgroups}
+
+%\> TriangNormalSubgroupFiniteInd( <G> )
+%
+%<G> is  a subgroup of $GL(d,\Q)$. If $G$ is solvable then
+%this function computes a triangularizable normal subgroup of <G>,
+%which is of finite index in <G>. If $G$ is not solvable, then the 
+%function returns 'fail'. 
+
+\> SubgroupsUnipotentByAbelianByFinite( <G> )
+
+<G> is  a subgroup of $GL(d,R)$ where $R=\Q$ or $\Z$.
+If <G> is polycyclic, then 
+this function returns a record containing two normal subgroups 
+$T$ and $U$ of $G$.
+The group $T$ is unipotent-by-abelian 
+(and thus triangularizable) and 
+of finite index in <G>. 
+The group $U$ is unipotent and is such that $T/U$ is abelian.  
+If <G> is not polycyclic, 
+then the algorithm returns 'fail'. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Examples}
+
+\> PolExamples( <l> )
+ 
+Returns some examples for polycyclic rational matrix groups, where <l> 
+is an integer
+between 1 and 24. 
+These can be used to test the functions in this package. 
+Some of the
+properties of the examples are summarised in the following table.
+
+\begintt
+PolExamples      number generators      subgroup of      Hirsch length
+          1                      3           GL(4,Z)                 6 
+          2                      2           GL(5,Z)                 6 
+          3                      2           GL(4,Q)                 4 
+          4                      2           GL(5,Q)                 6 
+          5                      9          GL(16,Z)                 3 
+          6                      6           GL(4,Z)                 3
+          7                      6           GL(4,Z)                 3
+          8                      7           GL(4,Z)                 3 
+          9                      5           GL(4,Q)                 3
+         10                      4           GL(4,Q)                 3 
+         11                      5           GL(4,Q)                 3
+         12                      5           GL(4,Q)                 3 
+         13                      5           GL(5,Q)                 4
+         14                      6           GL(5,Q)                 4 
+         15                      6           GL(5,Q)                 4 
+         16                      5           GL(5,Q)                 4
+         17                      5           GL(5,Q)                 4 
+         18                      5           GL(5,Q)                 4
+         19                      5           GL(5,Q)                 4 
+         20                      7          GL(16,Z)                 3 
+         21                      5          GL(16,Q)                 3 
+         22                      4          GL(16,Q)                 3
+         23                      5          GL(16,Q)                 3 
+         24                      5          GL(16,Q)                 3 
+
+\endtt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  fill-column:    73
+%%  End:
+%%
+
+

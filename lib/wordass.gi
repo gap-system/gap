@@ -8,19 +8,19 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: wordass.gi,v 4.37 2008/07/03 01:02:38 gap Exp $
 ##
 ##  This file contains generic methods for associative words.
 ##
 Revision.wordass_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: wordass.gi,v 4.37 2008/07/03 01:02:38 gap Exp $";
 
 #############################################################################
 ##
 #F  AssignGeneratorVariables(<G>)
 ##
-InstallMethod(AssignGeneratorVariables, "for a group with generators",
-        [IsGroup and HasGeneratorsOfGroup],
+InstallMethod(AssignGeneratorVariables, "default method for a group",
+        [IsGroup],
         function(G)
 local gens, g, s;
   gens := GeneratorsOfGroup(G);
@@ -837,7 +837,7 @@ end );
 ## position k, by z
 ##
 InstallOtherMethod(SubstitutedWord,
- "for three associate words",true,
+ "for three associative words",true,
 	[IsAssocWord, IsAssocWord, IsPosInt, IsAssocWord], 0, 
 function(u,v,k,z)
 local i;
@@ -1261,6 +1261,107 @@ local invname, nams, rels, p, a, b, z, i,br;
   return rels;
 end);
 
+InstallGlobalFunction(StringFactorizationWord,function(word)
+local wu, l, symbols, offset, occurrences, n, no, translate, findpatterns, nams, invnams, r, wordout, j;
+  wu:=UnderlyingElement(word);
+  l:=LetterRepAssocWord(wu);
+  if Length(l)=0 then
+    return "<identity>";
+  fi;
+  symbols:=Set(l);
+  offset:=-Minimum(l)+1;
+  occurrences:=List([1..Maximum(l)+offset],i->[]);
+  n:=Maximum(1,Maximum(l)+1);
+  no:=n;
+  translate:=[];
+
+  findpatterns:=function(l)
+  local p, c, notfound, jm, j, r, lr, z, a;
+    p:=1;
+    while p<Length(l) do
+      c:=l[p];
+      # does a repetitive phrase start?
+      notfound:=true;
+      jm:=p+QuoInt((Length(l)-p+1),2);
+      j:=p+1;
+      while j<=jm and notfound do
+	if l[j]=c and l{[p..j-1]}=l{[j..2*j-p-1]} then
+	  notfound:=false;
+	else
+	  j:=j+1;
+	fi;
+      od;
+      if not notfound then
+	# repetition found, define it as macro
+	r:=l{[p..j-1]};
+	lr:=j-p;
+	z:=1; # number of extras
+	while p+(z+1)*lr-1<=Length(l) and r=l{[p+z*lr..p+(z+1)*lr-1]} do
+	  z:=z+1;
+	od;
+	z:=z-1;
+
+	# does `r' have any internal repetition?
+	r:=findpatterns(r);
+
+	a:=Position(translate,[r,z]);
+	if a=fail then
+	  a:=n;
+	  translate[n]:=[r,z];
+	  n:=n+1;
+	fi;
+	# replace the word
+	l:=Concatenation(l{[1..p-1]},[a],l{[j+(z)*lr..Length(l)]});
+      fi;
+      p:=p+1;
+    od;
+    return l;
+  end;
+
+  l:=findpatterns(l);
+
+  # write out the word
+  nams:=FamilyObj(wu)!.names;
+  invnams:=[];
+  for j in nams do
+    r:=ShallowCopy(j);
+    if j[1] in CHARS_LALPHA then
+      r[1]:=CHARS_UALPHA[Position(CHARS_LALPHA,j[1])];
+    elif j[1] in CHARS_UALPHA then
+      r[1]:=CHARS_LALPHA[Position(CHARS_UALPHA,j[1])];
+    else
+      Error("name does not start with letter");
+    fi;
+    Add(invnams,r);
+  od;
+  r:="";
+  wordout:=function(k)
+  local i;
+    if k>=no then
+      if Length(translate[k][1])=1 and
+	translate[k][1][1]<no then
+	  # original generator
+	  wordout(translate[k][1][1]);
+      else
+	# translated
+	Add(r,'(');
+	for i in translate[k][1] do
+	  wordout(i);
+	od;
+	Add(r,')');
+      fi;
+      Append(r,String(translate[k][2]+1));
+    elif k<1 then 
+      Append(r,invnams[-k]);
+    else
+      Append(r,nams[k]);
+    fi;
+  end;
+  for j in l do
+    wordout(j);
+  od;
+  return r;
+end);
 
 #############################################################################
 ##

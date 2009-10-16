@@ -7,7 +7,7 @@
 ##  groups and the group identification routines. 
 ##
 Revision.small_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: small.gi,v 4.20 2005/03/24 13:26:03 gap Exp $";
 
 #############################################################################
 ##

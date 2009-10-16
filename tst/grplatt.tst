@@ -2,7 +2,7 @@
 ##
 #W  grplatt.tst                GAP tests                     Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grplatt.tst,v 4.13 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -11,7 +11,7 @@
 ##  Exclude from testall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: grplatt.tst,v 4.13 2005/05/05 15:04:16 gap Exp $");
 
 gap> g:=PerfectGroup(IsPermGroup,95040);;
 gap> l:=ConjugacyClassesSubgroups(g);;
@@ -58,7 +58,7 @@ gap> AsSortedList(List(NormalSubgroups(g),Size));
 [ 1, 2, 4, 4, 4, 8 ]
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 4747200000 );
+gap> STOP_TEST( "grplatt.tst",4630000839);
 
 
 #############################################################################

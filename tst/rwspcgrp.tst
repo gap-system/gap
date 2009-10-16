@@ -2,14 +2,14 @@
 ##
 #W  rwspcgrp.tst                GAP library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rwspcgrp.tst,v 4.12 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: rwspcgrp.tst,v 4.12 2005/05/05 15:04:16 gap Exp $");
 
 
 #############################################################################
@@ -907,7 +907,7 @@ gap> Print(ExtRepOfObj( w / l[1] ),"\n");
 
 #############################################################################
 
-gap> STOP_TEST( "rwspcgrp.tst", 239900000 );
+gap> STOP_TEST( "rwspcgrp.tst",252000906);
 
 
 #############################################################################

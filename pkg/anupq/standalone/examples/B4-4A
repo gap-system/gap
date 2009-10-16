@@ -1,0 +1,44 @@
+1
+B44
+2 #prime
+1 #class
+1 #print level
+{a, b, c, d} #gens
+{ }          #number of rels
+4 
+
+8 
+
+18 #supply auts
+2  #number of auts
+0 0 0 1 
+1 0 0 0
+0 1 0 0
+0 0 1 0
+1 1 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+
+0
+
+6 
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+2
+B44
+
+0
+

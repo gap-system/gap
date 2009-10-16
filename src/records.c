@@ -2,7 +2,7 @@
 **
 *W  records.c                   GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: records.c,v 4.23 2007/08/31 11:50:59 alexk Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_records_c =
-   "@(#)$Id$";
+   "@(#)$Id: records.c,v 4.23 2007/08/31 11:50:59 alexk Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -155,14 +155,23 @@ UInt            RNamName (
 UInt            RNamIntg (
     Int                 intg )
 {
-    Char                name [16];      /* integer converted to a string   */
+    Char                name [32];      /* integer converted to a string   */
     Char *              p;              /* loop variable                   */
+    UInt negative;
 
     /* convert the integer to a string                                     */
     p = name + sizeof(name);  *--p = '\0';
+    negative = (intg < 0);
+    if ( negative ) {
+        intg = -intg;
+    }
+   
     do {
         *--p = '0' + intg % 10;
     } while ( (intg /= 10) != 0 );
+    if( negative ) {
+        *--p = '-';
+    }
 
     /* return the name                                                     */
     return RNamName( p );

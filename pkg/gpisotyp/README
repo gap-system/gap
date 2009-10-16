@@ -1,0 +1,112 @@
+
+The GAP 4 Package `GpIsoTyp' -- Isomorphism Types of Groups
+===========================================================
+
+Description
+-----------
+
+This is Version 1.0 of the package `GpisoTyp' written for GAP 4,
+whose aim is to ...
+
+There is a manual in the subdirectory `doc' written in plain TeX.
+It describes the available functions in detail.
+
+The package consists entirely of GAP code, ...
+
+
+Authors
+-------
+
+The package was developed by Thomas Breuer.
+
+
+Feedback
+--------
+
+If you have used the `GpIsoTyp' package to solve a problem,
+please let us know by sending an email to 
+
+          Thomas Breuer     (sam@math.rwth-aachen.de)
+
+about it.
+
+Any comments about the package are very welcome.
+If you have found important features missing or if there is a bug,
+let us know and we will try to address it in the next version of the package.
+Messages should be sent to Thomas Breuer.
+
+
+Contents
+--------
+
+With this version you should have obtained this README file
+and an archive file containing the package data
+in the following files and directories:
+
+        doc             the directory with the package manual
+        gap             the directory with the GAP code
+        banner.g        the file for showing the package banner
+        init.g          the file for initializing the package
+        read.g          the file for reading in the package        
+        tst             the directory with some test files
+
+
+Unpacking
+---------
+
+You may have got the GAP interface of the package as
+a zoo archive (filename ends with .zoo)
+or a compressed tar archive (filename ends with .tgz).
+In each case, use the appropriate command on your system to unpack
+the archive.
+
+On UNIX systems the zoo archive may be unpacked by
+
+    zoo x gpisotyp1r0.zoo
+
+which will unpack the archive into a directory `gpisotyp' in the
+current directory. 
+
+On UNIX systems the compressed tar archive may be unpacked by
+
+    tar xzf gpisotyp1r0.tgz
+
+or, if tar on your system does not understand the option z, by
+
+    gunzip gpisotyp1r0.tgz
+    tar xf gpisotyp1r0.tar
+
+which will in each case unpack the code into a directory `gpisotyp'
+in the current directory.
+
+If your system does not have a zoo programme, you can pick up the
+C-code for unzoo from the GAP web page and compile it on your system.
+For this your system needs to have a C-compiler.
+unzoo can be used to unpack the zoo archive, as follows:
+
+    unzoo -x gpisotyp1r0.zoo
+
+unpacks the archive into a directory `gpisotyp' in the current directory.
+
+
+Installation
+------------
+
+Installation of the GpIsoTyp package means unpacking the archive file
+in an appropriate directory.
+
+For the two ways of installing GAP packages in general,
+see the sections "Installing GAP Packages" and
+"Installing a GAP Package in your home directory"
+in the GAP Reference Manual.
+
+Once you have successfully installed the GpIsotyp package,
+start GAP (possibly using the command line option -l) and type
+
+gap> RequirePackage( "gpisotyp" );
+true;
+gap>
+
+at the GAP prompt.
+Then the functions of the package are available in the current session.
+

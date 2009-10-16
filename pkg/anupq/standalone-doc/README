@@ -1,0 +1,267 @@
+###############################################################################
+#
+#     Australian National University p-Quotient Program 
+#
+#     Version 1.8
+#
+#     June 2001, February 2002, February 2004, July 2005, January 2006
+#
+###############################################################################
+
+This implementation was developed in C by 
+
+Eamonn O'Brien 
+Department of Mathematics
+University of Auckland
+Private Bag 92019, Auckland, New Zealand
+
+E-mail: obrien@math.auckland.ac.nz
+
+WWW http://www.math.auckland.ac.nz/~obrien
+
+###############################################################################
+#
+# Program content 
+# 
+###############################################################################
+
+The program provides access to implementations of the following algorithms:
+
+1. A p-quotient algorithm to compute a power-commutator presentation
+for a p-group.  The algorithm implemented here is based on that 
+described in Newman and O'Brien (1996), Havas and Newman (1980),
+and papers referred to there.
+
+Another description of the algorithm appears in Vaughan-Lee (1990b).
+A FORTRAN implementation of this algorithm was programmed by 
+Alford & Havas. The basic data structures of that implementation 
+are retained.
+
+The current implementation incorporates the following features:
+
+a. collection from the left (see Vaughan-Lee, 1990b); 
+   Vaughan-Lee's implementation of this collection 
+   algorithm is used in the program;
+
+b. an improved consistency algorithm (see Vaughan-Lee, 1982);
+
+c. new exponent law enforcement and power routines; 
+
+d. closing of relations under the action of automorphisms;
+
+e. some formula evaluation.
+
+2. A p-group generation algorithm to generate descriptions of p-groups. 
+The algorithm implemented here is based on the algorithms described in 
+Newman (1977) and O'Brien (1990). A FORTRAN implementation of this 
+algorithm was earlier developed by Newman & O'Brien.  
+
+3. A standard presentation algorithm used to compute a canonical 
+power-commutator presentation of a p-group. The algorithm 
+implemented here is described in O'Brien (1994).
+
+4. An algorithm which can be used to compute the automorphism group of 
+a p-group. The algorithm implemented here is described in O'Brien (1995).
+
+
+###############################################################################
+#
+#Access via other programs
+#
+###############################################################################
+
+Access to parts of this program is provided via GAP, Magma, and Quotpic.
+
+This program is supplied as a package within GAP, both GAP 3.4 and  GAP4.
+The link from GAP to pq is described in the manual for GAP  3.4,  and  is
+described in a separate manual supplied with the ANUPQ package  anupq.zoo
+archive for GAP4.
+
+###############################################################################
+#
+#References
+#
+###############################################################################
+
+George Havas and M.F. Newman (1980), "Application of computers
+to questions like those of Burnside", Burnside Groups (Bielefeld, 1977), 
+Lecture Notes in Math. 806, pp. 211-230. Springer-Verlag.
+
+M.F. Newman and E.A. O'Brien (1996), "Application of computers to 
+questions like those of Burnside II", 
+Internat. J. Algebra Comput. 6, 593-605.
+
+M.F. Newman (1977), "Determination of groups of prime-power order", 
+Group Theory (Canberra, 1975). Lecture Notes in Math. 573, pp. 73-84. 
+Springer-Verlag.
+
+E.A. O'Brien (1990), "The p-group generation algorithm",
+J. Symbolic Comput. 9, 677-698.
+
+E.A. O'Brien (1994), ``Isomorphism testing for p-groups", 
+J. Symbolic Comput. 17, 133-147.
+
+E.A. O'Brien (1995), ``Computing automorphism groups of p-groups", 
+Computational Algebra and Number Theory, (Sydney, 1992), pp. 83--90. 
+Kluwer Academic Publishers, Dordrecht.
+
+M.R. Vaughan-Lee (1982), "An Aspect of the Nilpotent Quotient Algorithm", 
+Computational Group Theory (Durham, 1982), pp. 76-83. Academic Press.
+
+Michael Vaughan-Lee (1990a), The Restricted Burnside Problem,
+London Mathematical Society monographs (New Ser.) #5.
+Clarendon Press, New York, Oxford.
+
+M.R. Vaughan-Lee (1990b), "Collection from the left", 
+J. Symbolic Comput. 9, 725-733.
+
+###############################################################################
+#
+# Installation procedure 
+#
+###############################################################################
+
+1. For installation for use with GAP4 please go to the README in the
+   main directory. The directory mapping of the anupq directory derived
+   from anupq.zoo is as follows:
+
+   doc -- manual for the GAP4 package that interfaces with pq
+   standalone-doc -- documentation on use of the pq standalone program
+   standalone -- contains the pq standalone TEST, examples, isom directories
+   include  -- C header files 
+   src -- C source files and a Makefile
+   lib -- GAP library files
+   tst -- GAP test files
+   examples -- GAP examples
+
+   After doing `make restoredirs' in the anupq directory, the anupq sub-
+   directories are remapped to the way they are in the distribution found at:
+
+   http://www.math.auckland.ac.nz/~obrien
+
+   namely the GAP4 doc directory, main directory README and a number of
+   other files there are moved to the directory doc; standalone-doc
+   is renamed doc; the examples, lib and tst directories are moved into
+   the gap directory; the examples, isom and TEST subdirectories of
+   standalone are moved to be in the main directory; and this README is 
+   moved to be in the main directory.
+
+   Doing `make GAP4remapdirs' establishes the directory structure above.
+
+2. The file, guide.tex, in the standalone-doc (or doc) directory is a 
+   LaTeX file. It is a basic guide to the use of the p-Quotient Program. 
+
+3. By default, the program has the following limits:
+   the maximum number of pc generators is 2^16 - 1 = 65535; 
+   the maximum number of defining generators is 2^9 - 1 = 511; 
+   the maximum class is 2^6 - 1 = 63. 
+
+   The data structures require that the following holds:
+   the sums of the exponents of 2 from  the above three quantities 
+   is at most (the number of bytes in a word) - 1.
+   Hence the sum is usually 31.
+
+   The program can be compiled in two modes; in fixed mode
+   the above limits are enforced; in runtime mode, these are 
+   also the default; however, the limit on the number of defining 
+   generators and the class can be altered by the user via 
+   on-line options "-c" and "-d"; if such selections are made, 
+   the maximum number of pc generators is consequently altered; 
+   a user must decide the limit on *each* of the number of 
+   defining generators and the class.
+
+   The default limits are set in the header files:
+   storage_fixed.h (for fixed version)
+   runtime.h       (for runtime version)
+
+   On average, the fixed mode version performs 5-10% more 
+   efficiently than the runtime version.
+
+   If you wish to compile the runtime mode version, then set
+   -DRUN_TIME as a compiler flag in the Makefile.
+
+4. The README in the main directory explains how to install the
+   GAP4 package ANUPQ together with the pq binary.
+
+   *Otherwise*, to create the pq binary --
+   a. change to the src directory;
+   b. ensure that the conditional compilation flags in the 
+      Makefile are set correctly; the -DLARGE_INT flag controls
+      the storage and display of automorphism group orders;
+      if you want to use this flag, you must have an up-to-date 
+      copy of the GNU MP procedures on your machine;
+   c. system dependent features are collected in system.c;
+      in particular, you may wish to look at the run time function 
+      to ensure that the CPU time reported by the program is correct;
+   d. type make pq
+   e. to remove all of the object files, type make clean
+
+   A binary file, pq, will be placed in a subdirectory of bin which
+   is created when configure and make are run in the main directory.
+
+5. The total space requirements for this directory (including 
+   the binary but excluding the object files) is about 3 MB.
+
+6. In p-group generation, if the automorphism group of the 
+   starting group is insoluble, then pq calls one of 
+   GAP or Magma to perform particular stabiliser computations 
+   (see the User Guide for more details).
+   The user of pq may choose which of these systems is to 
+   be called --  however, the choice for this link MUST be 
+   made by the user at compilation time by setting one of the
+   GAP_LINK or Magma_LINK flags in the Makefile.
+   Points 7 and 8 below discuss each of these links in turn.
+   
+7. The magma directory contains a cshell file, Magma_script, and 
+   one Magma library file, stabcalc.m 
+   
+   If you plan to use the link from this program to the system Magma, 
+   you will need to take the following action:
+
+   a. An environment variable, Magma_DIR, must be set to have as its
+      value the path to the directory cayley. If you wish to alter
+      the name of this environment variable, edit the occurrence
+      of this variable in the src file Magma.c, its occurrence
+      in Magma_script, and remake the binary.
+
+   b. The cshell file, Magma_script, executes magma. 
+      The binary for magma must be in your path.
+
+   The "egrep -v" commands in the Magma_script file are used to
+   remove certain output which occurs in the Magma log file.
+   In order that the Magma_output file is processed correctly
+   by pq, it is necessary that no text occurs before the listing 
+   of two integers and the generators of the stabiliser. 
+   On certain machines, the output file Magma_output may contain 
+   other junk before these entries -- if such is the case on your 
+   machine, you will need to add additional "egrep -v" command to 
+   remove such material.
+
+8. The link from pq to GAP assumes that you use GAP 3.4 or GAP4
+   *with* the *ANUPQ package* installed.
+
+   If the binary for GAP 3.4 or GAP4 is called gap and is in your 
+   default path, you need do no more; if it is not in your path, 
+   you must set an environment variable ANUPQ_EXEC_GAP to 
+   point to the GAP executable.
+
+9. The TEST subdirectory of standalone contains a number of log files, 
+   with extension .orig, together with a cshell file called TEST.
+   This test program runs through a number of the examples 
+   in the examples directory and compares the results generated with 
+   those listed in the .orig files of this directory. If the 
+   p-quotient program is running correctly, the TEST program 
+   should report only differences in the date, name of machines 
+   and times taken. If there are other significant differences, 
+   please report.
+   
+   Execute the test program by typing TEST 
+   (If your pq directory structure is different, you may need to alter 
+   the relative paths in TEST for both binary and command files.)
+
+   The total time taken for the test on a SPARCstation 10/51 is
+   about 30 seconds of user time.
+
+10. See the documentation for information on run-time parameters.
+
+11. Please report bugs/problems/feedback to obrien@math.auckland.ac.nz

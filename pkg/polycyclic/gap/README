@@ -1,0 +1,16 @@
+
+gap:
+
+This directory contains the gap code to compute with infinite
+polycyclic groups. It is splitted in various subdirectories:
+
+matrix     --  basic stuff for rational modules and related
+basic      --  basic stuff for pcp groups, collector etc.
+cohom      --  cohomology for pcp groups, complements and extensions
+action     --  actions of polycyclic groups and orbit-stabilizer methods
+pcpgrp     --  higher level functions for pcp groups
+matrep     --  computing a matrix representation for a pcp group
+exam       --  examples of pcp groups
+
+Each directory has its own README file containing more information
+about the various files containing the code.

@@ -2,7 +2,7 @@
 ##
 #W  domain.gi                   GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: domain.gi,v 4.49 2003/04/15 15:45:37 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the generic methods for domains.
 ##
 Revision.domain_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: domain.gi,v 4.49 2003/04/15 15:45:37 gap Exp $";
 
 
 #############################################################################

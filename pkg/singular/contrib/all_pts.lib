@@ -1,0 +1,74 @@
+////////////////////////////////////////////////
+//
+// functions to help with the ag_code routine
+//
+// ag_code_all_pts.sing, 8-2004,wdj
+// http://cadigweb.ew.usna.edu/~wdj/gap/singular/ag_code_all_pts.sing
+////////////////////////////////////////////////
+
+LIB "brnoeth.lib";  // need this
+
+proc pts_on_curve (poly f, int d)
+ {
+  list AD=Adj_div(f);
+  list nsp=NSplaces(1..d,AD);
+ return(nsp);
+ };
+
+/*
+
+// example:
+ring R=11,(x,y),lp;
+poly f=x3y+y3+x;
+int d=2;
+list pts=pts_on_curve(f,d);
+pts; // especially need pts[3] - to determine the 
+     // possibilities for G and D in the ag_code
+     // procedure. NSplaces computes rational
+     // places but does not identify them(!), as
+     // far as I can see. 
+
+// example 2:
+ring R=7,(x,y),lp;
+poly f=x7-y2-x;
+int d=1;
+list pts=pts_on_curve(f,d);
+pts;
+
+*/
+
+
+// f is a polynomial in x,y 
+// (belonging to) ring R = p,(x,y),lp;
+// defining an affine curve
+// C defined over a finite field F = GF(p)
+// proc finds pts of degree 1 over F
+// with x-coord = pt
+proc ratl_pts_on_curve (poly f, int p)
+ {
+ list pts=list();
+ ideal I;
+ list C;
+ for (int pt=0; pt<p; pt=pt+1)
+  {
+   I = f,x-pt;
+   C = closed_points( I );
+   pts = pts+C;
+  };
+ return(pts);
+};
+
+/*
+
+//         example:
+int p=11;
+int pt=3;
+ring R=p,(x,y),lp;
+poly f=x3y+y3+x;
+ideal I=f,x-pt;
+list C=closed_points( I );
+C;
+list all_pts=ratl_pts_on_curve(f,p);
+all_pts;
+
+*/

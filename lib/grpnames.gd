@@ -4,7 +4,7 @@
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpnames.gd,v 4.14 2009/01/06 11:19:49 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -15,15 +15,24 @@
 ##  Markus Püschel and Sebastian Egner.
 ##
 Revision.grpnames_gd :=
-  "@(#)$Id$";
+  "@(#)$Id: grpnames.gd,v 4.14 2009/01/06 11:19:49 gap Exp $";
 
 #############################################################################
 ##
 #A  DirectFactorsOfGroup( <G> ) . . . . . decomposition into a direct product
 ##
-##  A sorted list of factors [<G1>, .., <Gr>] such that
-##  <G> = <G1> x .. x <Gr> and none of the <Gi> is a direct product.
-##  This means
+##  <ManSection>
+##  <Attr Name="DirectFactorsOfGroup" Arg="G"/>
+##
+##  <Description>
+##    A sorted list of factors [<A>G1</A>, .., <A>Gr</A>] such that
+##    <A>G</A> = <A>G1</A> x .. x <A>Gr</A> and none of the <A>Gi</A>
+##    is a direct product.
+##  </Description>
+##  </ManSection>
+##
+##  The following hold:
+##
 ##    (1) <Gi> is a normal subgroup of <G>.
 ##    (2) <i> <= <j> ==> Size(<Gi>) <= Size(<Gj>).
 ##    (3) Size(<Gi>) > 1 unless <r> = 1 and <G> = 1.
@@ -122,10 +131,17 @@ DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
 ##
 #A  SemidirectFactorsOfGroup( <G> ) . decomposition into a semidirect product
 ##
-##  A list [[<H1>, <N1>], .., [<Hr>, <Nr>]] of all direct or semidirect
-##  decompositions with minimal <H>: <G> = <Hi> semidirect <Ni> and
-##  |<Hi>| = |<Hj>| is minimal with respect to all semidirect products.
-##  Note that this function also recognizes direct products.
+##  <ManSection>
+##  <Attr Name="SemidirectFactorsOfGroup" Arg="G"/>
+##
+##  <Description>
+##    A list [[<A>H1</A>, <A>N1</A>], .., [<A>Hr</A>, <A>Nr</A>]] of all
+##    direct or semidirect decompositions with minimal <A>H</A>:
+##    <A>G</A> = <A>Hi</A> semidirect <A>Ni</A> and |<A>Hi</A>| = |<A>Hj</A>|
+##    is minimal with respect to all semidirect products.
+##    Note that this function also recognizes direct products.
+##  </Description>
+##  </ManSection>
 ##
 ##  Literatur:
 ##    [1] Huppert Bd. I, Springer 1983.
@@ -169,17 +185,25 @@ DeclareAttribute( "SemidirectFactorsOfGroup", IsGroup );
 #A  DecompositionTypesOfGroup( <G> ) . .  descriptions of decomposition types
 #A  DecompositionTypes( <G> )
 ##
-##  A list of all possible decomposition types of the group
-##  into direct/semidirect products of non-splitting factors.
+##  <ManSection>
+##  <Attr Name="DecompositionTypesOfGroup" Arg="G"/>
+##  <Attr Name="DecompositionTypes" Arg="G"/>
 ##
-##  A *decomposition type* <type> is denoted by a specification of the form
-##  \begintt
-##  <type> ::= 
+##  <Description>
+##    A list of all possible decomposition types of the group
+##    into direct/semidirect products of non-splitting factors. <P/>
+##
+##    A <E>decomposition type</E> <A>type</A> is denoted by a specification
+##    of the form
+##    <Log><![CDATA[
+##    <type> ::= 
 ##      <integer>                 ; cyclic group of prime power order
 ##    | ["non-split", <integer>]  ; non-split extension; size annotated
 ##    | ["x", <type>, .., <type>] ; non-trivial direct product (ass., comm.)
 ##    | [":", <type>, <type>]     ; non-direct, non-trivial split extension
-##  \endtt
+##    ]]></Log>
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "DecompositionTypesOfGroup", IsGroup );
 DeclareSynonym( "DecompositionTypes", DecompositionTypesOfGroup );
@@ -189,9 +213,17 @@ DeclareSynonym( "DecompositionTypes", DecompositionTypesOfGroup );
 #P  IsDihedralGroup( <G> )
 #A  DihedralGenerators( <G> )
 ##
-##  Indicates whether the group <G> is a Dihedral group. If so, methods may
-##  set the attribute `DihedralGenerators' to [<t>,<s>] with two elements
-##  <t>, <s> such that <G> = $<t, s | t^2 = s^n = 1, s^t = s^-1>$.
+##  <ManSection>
+##  <Prop Name="IsDihedralGroup" Arg="G"/>
+##  <Attr Name="DihedralGenerators" Arg="G"/>
+##
+##  <Description>
+##    Indicates whether the group <A>G</A> is a dihedral group.
+##    If it is, methods may set the attribute <C>DihedralGenerators</C> to
+##    [<A>t</A>,<A>s</A>], where <A>t</A> and <A>s</A> are two elements such
+##    that <A>G</A> = <M><A>t, s | t^2 = s^n = 1, s^t = s^-1</A></M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "IsDihedralGroup", IsGroup );
 DeclareAttribute( "DihedralGenerators", IsGroup );
@@ -201,10 +233,18 @@ DeclareAttribute( "DihedralGenerators", IsGroup );
 #P  IsQuaternionGroup( <G> )
 #A  QuaternionGenerators( <G> )
 ##
-##  Indicates whether the group <G> is a generalized Quaternion group 
-##  of size $N = 2^(k+1)$, $k >= 2$. If so, methods may set the attribute
-##  `QuaternionGenerators' to [<t>,<s>] with two elements <t>, <s> such that 
-##  <G> = $<t, s | s^(2^k) = 1, t^2 = s^(2^k-1), s^t = s^-1>$.
+##  <ManSection>
+##  <Prop Name="IsQuaternionGroup" Arg="G"/>
+##  <Attr Name="QuaternionGenerators" Arg="G"/>
+##
+##  <Description>
+##    Indicates whether the group <A>G</A> is a generalized quaternion group 
+##    of size <M>N = 2^(k+1)</M>, <M>k >= 2</M>. If it is, methods may set
+##    the attribute <C>QuaternionGenerators</C> to [<A>t</A>,<A>s</A>],
+##    where <A>t</A> and <A>s</A> are two elements such that <A>G</A> =
+##    <M><A>t, s | s^(2^k) = 1, t^2 = s^(2^k-1), s^t = s^-1</A></M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "IsQuaternionGroup", IsGroup );
 DeclareAttribute( "QuaternionGenerators", IsGroup );
@@ -214,10 +254,18 @@ DeclareAttribute( "QuaternionGenerators", IsGroup );
 #P  IsQuasiDihedralGroup( <G> )
 #A  QuasiDihedralGenerators( <G> )
 ##
-##  Indicates whether the group <G> is a quasidihedral group 
-##  of size $N = 2^(k+1)$, $k >= 2$. If so, methods may set the attribute
-##  `QuasiDihedralGenerators' to [<t>,<s>] with two elements <t>, <s> such
-##  that <G> = $<t, s | s^(2^k) = t^2 = 1, s^t = s^(-1 + 2^(k-1))>$.
+##  <ManSection>
+##  <Prop Name="IsQuasiDihedralGroup" Arg="G"/>
+##  <Attr Name="QuasiDihedralGenerators" Arg="G"/>
+##
+##  <Description>
+##    Indicates whether the group <A>G</A> is a quasidihedral group 
+##    of size <M>N = 2^(k+1)</M>, <M>k >= 2</M>. If it is, methods may set
+##    the attribute <C>QuasiDihedralGenerators</C> to [<A>t</A>,<A>s</A>],
+##    where <A>t</A> and <A>s</A> are two elements such that <A>G</A> =
+##    <M><A>t, s | s^(2^k) = t^2 = 1, s^t = s^(-1 + 2^(k-1))</A></M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "IsQuasiDihedralGroup", IsGroup );
 DeclareAttribute( "QuasiDihedralGenerators", IsGroup );
@@ -226,10 +274,16 @@ DeclareAttribute( "QuasiDihedralGenerators", IsGroup );
 ##
 #P  IsPSL( <G> )
 ##
-##  Indicates whether the group <G> is isomorphic to the projective special
-##  linear group PSL(<n>,<q>) for some integer <n> and some prime power <q>.
+##  <ManSection>
+##  <Prop Name="IsPSL" Arg="G"/>
 ##
-##  Methods may set the attribute `npePSL'.
+##  <Description>
+##    Indicates whether the group <A>G</A> is isomorphic to the projective
+##    special linear group PSL(<A>n</A>,<A>q</A>) for some integer <A>n</A>
+##    and some prime power <A>q</A>. If it is, methods may set the attribute
+##    <C>npePSL</C>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "IsPSL", IsGroup );
 
@@ -238,6 +292,15 @@ DeclareProperty( "IsPSL", IsGroup );
 #A  npePSL .  triples (n,p,e) such that the group is isomorphic to PSL(n,p^e)
 #A  npeSL  .  triples (n,p,e) such that the group is isomorphic to  SL(n,p^e)
 #A  npeGL  .  triples (n,p,e) such that the group is isomorphic to  GL(n,p^e)
+##
+##  <ManSection>
+##  <Attr Name="npePSL" Arg="G"/>
+##  <Attr Name="npeSL" Arg="G"/>
+##  <Attr Name="npeGL" Arg="G"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "npePSL", IsGroup );
 DeclareAttribute( "npeSL", IsGroup );
@@ -254,6 +317,19 @@ DeclareAttribute( "npeGL", IsGroup );
 #A  GLDegree  . . . . . .  (one possible) degree of an isomorphic natural GL
 #A  GLUnderlyingField . .  (one possible) underlying field   "      "      "
 ##
+##  <Attr Name="AlternatingDegree" Arg="G"/>
+##  <Attr Name="SymmetricDegree" Arg="G"/>
+##  <Attr Name="PSLDegree" Arg="G"/>
+##  <Attr Name="PSLUnderlyingField" Arg="G"/>
+##  <Attr Name="SLDegree" Arg="G"/>
+##  <Attr Name="SLUnderlyingField" Arg="G"/>
+##  <Attr Name="GLDegree" Arg="G"/>
+##  <Attr Name="GLUnderlyingField" Arg="G"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "AlternatingDegree", IsGroup );
 DeclareAttribute( "SymmetricDegree", IsGroup );
 DeclareAttribute( "PSLDegree", IsGroup );
@@ -269,13 +345,24 @@ DeclareAttribute( "GLUnderlyingField", IsGroup );
 #F  SizeSL(  <n>, <q> )
 #F  SizePSL( <n>, <q> )
 ##
-##  Computes the size of the group GL(<n>,<p>^<e>), SL(<n>,<p>^<e>),
-##  PSL(<n>,<p>^<e>) respectively according to the formulas:
+##  <ManSection>
+##  <Func Name="SizeGL" Arg="n, q"/>
+##  <Func Name="SizeSL" Arg="n, q"/>
+##  <Func Name="SizePSL" Arg="n, q"/>
+##
+##  <Description>
+##    Computes the size of the group GL(<A>n</A>,<A>p</A>^<A>e</A>),
+##    SL(<A>n</A>,<A>p</A>^<A>e</A>) or PSL(<A>n</A>,<A>p</A>^<A>e</A>),
+##    respectively.
+##  </Description>
+##  </ManSection>
+##
+##  The following formulas are used:
 ##
 ##      |GL(n, p, e)|  = Product(p^(e n) - p^(e k) : k in [0..n-1])
 ##      |SL(n, p, e)|  = |GL(n, p, e)| / (p^e - 1)
 ##      |PSL(n, p, e)| = |SL(n, p, e)| / gcd(p^e - 1, n)
-##
+##  
 DeclareGlobalFunction( "SizeGL" );
 DeclareGlobalFunction( "SizeSL" );
 DeclareGlobalFunction( "SizePSL" );
@@ -284,12 +371,19 @@ DeclareGlobalFunction( "SizePSL" );
 ##
 #F  LinearGroupParameters( <N> )
 ##
-##  Determines all parameters <n> >= 2, <p> prime, <e> >= 1, 
-##  such that the given number is the size of one of the linear groups
-##  GL(<n>,<p>^<e>), SL(<n>,<p>^<e>), PSL(<n>,<p>^<e>).
+##  <ManSection>
+##  <Func Name="LinearGroupParameters" Arg="N"/>
 ##
-##  A record with the fields npeGL, npeSL, npePSL is returned 
-##  containing the lists of possible triples [<n>,<p>,<e>].
+##  <Description>
+##    Determines all parameters <A>n</A> >= 2, <A>p</A> prime, <A>e</A> >= 1,
+##    such that the given number is the size of one of the linear groups
+##    GL(<A>n</A>,<A>p</A>^<A>e</A>), SL(<A>n</A>,<A>p</A>^<A>e</A>) or
+##    PSL(<A>n</A>,<A>p</A>^<A>e</A>). <P/>
+##    A record with the fields <C>npeGL</C>, <C>npeSL</C>, <C>npePSL</C> is
+##    returned, which contains the lists of possible triples
+##    [<A>n</A>,<A>p</A>,<A>e</A>].
+##  </Description>
+##  </ManSection>
 ##
 ##  Lemma (o.B.):
 ##  Es bezeichne 
@@ -329,117 +423,206 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##
 #A  StructureDescription( <G> )
 ##
-##  The method for `StructureDescription' exhibits the structure of the
-##  given group to some extend using the strategy outlined below. The idea
-##  is to return a possibly short string which gives some insight in the
-##  structure of the considered group and can be computed reasonably quickly.
+##  <#GAPDoc Label="StructureDescription">
+##  <ManSection>
+##  <Attr Name="StructureDescription" Arg="G"/>
 ##
-##  Note that non-isomorphic groups can have the same `StructureDescription',
-##  since the structure description might not exhibit the structure of the
-##  considered group in all detail. However, isomorphic groups in different
-##  representation will always obtain the same structure description.
+##  <Description>
+##  The method for <Ref Func="StructureDescription"/> exhibits the structure
+##  of the given group <A>G</A> to some extent using the strategy outlined
+##    below. The idea is to return a possibly short string which gives some
+##    insight in the structure of the considered group. <P/>
 ##
-##  The `StructureDescription' is a string of the following form:
+##    Note that non-isomorphic groups can have the same
+##  <Ref Func="StructureDescription"/> value, since the structure description
+##  might not exhibit the structure of the considered groups in all detail.
+##  However, isomorphic groups in different representation will always obtain
+##  the same structure description. <P/>
 ##
-##  \begintt
+##  The value returned by <Ref Func="StructureDescription"/> is a string of
+##  the following form: <P/>
+##  <Listing><![CDATA[
 ##    StructureDescription(<G>) ::=
-##       1                                 ; trivial group 
-##     || C<size>                           ; cyclic group
-##     || A<degree>                         ; alternating group
-##     || S<degree>                         ; symmetric group
-##     || D<size>                           ; dihedral group
-##     || Q<size>                           ; quaternion group
-##     || QD<size>                          ; quasidihedral group
-##     || PSL(<n>,<q>)                      ; projective special linear group
-##     || SL(<n>,<q>)                       ; special linear group
-##     || GL(<n>,<q>)                       ; general linear group
-##     || PSU(<n>,<q>)                      ; proj. special unitary group
-##     || O(2<n>+1,<q>)                     ; orthogonal group, type B
-##     || O+(2<n>,<q>)                      ; orthogonal group, type D
-##     || O-(2<n>,<q>)                      ; orthogonal group, type 2D
-##     || PSp(2<n>,<q>)                     ; proj. special symplectic group
-##     || Sz(<q>)                           ; Suzuki group
-##     || Ree(<q>)                          ; Ree group (type 2F or 2G)
-##     || E(6,<q>) || E(7,<q>) || E(8,<q>)    ; Lie group of exceptional type
-##     || 2E(6,<q>) || F(4,<q>) || G(2,<q>)
-##     || 3D(4,<q>)                         ; Steinberg triality group
-##     || M11 || M12 || M22 || M23 || M24
-##     || J1 || J2 || J3 || J4 || Co1 || Co2
-##     || Co3 || Fi22 || Fi23 || Fi24' || Suz
-##     || HS || McL || He || HN || Th || B
-##     || M || ON || Ly || Ru                  ; sporadic simple group
-##     || 2F(4,2)'                          ; Tits group
-##     || PerfectGroup(<size>,<id>)         ; the indicated group from the
-##                                         ; library of perfect groups
-##     || A x B                             ; direct product
-##     || N : H                             ; semidirect product
-##     || C(G) . G/C(G) = G' . G/G'         ; non-split extension
-##                                         ; (equal alternatives and
-##                                         ; trivial extensions omitted)
-##     || Phi(G) . G/Phi(G)                 ; non-split extension:
-##                                         ; Frattini subgroup and
-##                                         ; Frattini factor group
-##  \endtt
+##        1                                 ; trivial group 
+##      | C<size>                           ; cyclic group
+##      | A<degree>                         ; alternating group
+##      | S<degree>                         ; symmetric group
+##      | D<size>                           ; dihedral group
+##      | Q<size>                           ; quaternion group
+##      | QD<size>                          ; quasidihedral group
+##      | PSL(<n>,<q>)                      ; projective special linear group
+##      | SL(<n>,<q>)                       ; special linear group
+##      | GL(<n>,<q>)                       ; general linear group
+##      | PSU(<n>,<q>)                      ; proj. special unitary group
+##      | O(2<n>+1,<q>)                     ; orthogonal group, type B
+##      | O+(2<n>,<q>)                      ; orthogonal group, type D
+##      | O-(2<n>,<q>)                      ; orthogonal group, type 2D
+##      | PSp(2<n>,<q>)                     ; proj. special symplectic group
+##      | Sz(<q>)                           ; Suzuki group
+##      | Ree(<q>)                          ; Ree group (type 2F or 2G)
+##      | E(6,<q>) | E(7,<q>) | E(8,<q>)    ; Lie group of exceptional type
+##      | 2E(6,<q>) | F(4,<q>) | G(2,<q>)
+##      | 3D(4,<q>)                         ; Steinberg triality group
+##      | M11 | M12 | M22 | M23 | M24
+##      | J1 | J2 | J3 | J4 | Co1 | Co2
+##      | Co3 | Fi22 | Fi23 | Fi24' | Suz
+##      | HS | McL | He | HN | Th | B
+##      | M | ON | Ly | Ru                  ; sporadic simple group
+##      | 2F(4,2)'                          ; Tits group
+##      | PerfectGroup(<size>,<id>)         ; the indicated group from the
+##                                          ; library of perfect groups
+##      | A x B                             ; direct product
+##      | N : H                             ; semidirect product
+##      | C(G) . G/C(G) = G' . G/G'         ; non-split extension
+##                                          ; (equal alternatives and
+##                                          ; trivial extensions omitted)
+##      | Phi(G) . G/Phi(G)                 ; non-split extension:
+##                                          ; Frattini subgroup and
+##                                          ; Frattini factor group
+##  ]]></Listing>
+##  <P/>
+##  Note that the <Ref Func="StructureDescription"/> is only <E>one</E>
+##  possible way of building up the given group from smaller pieces. <P/>
 ##
-##  Note that the method chooses *one* possible way of building up
-##  the given group from smaller pieces (others are possible too).
+##  The option <Q>short</Q> is recognized - if this option is set, an
+##  abbreviated output format is used (e.g. <C>"6x3"</C> instead of
+##  <C>"C6 x C3"</C>). <P/>
 ##
-##  The option ``short'' is recognized -- if this option is set, an
-##  abbreviated output format is used (e.g. `"6x3"' instead of `"C6 x C3"').
+##  If the <Ref Func="Name"/> attribute is not bound, but
+##  <Ref Func="StructureDescription"/> is, <Ref Func="View"/> prints the
+##  value of the attribute <Ref Func="StructureDescription"/>.
+##  The <Ref Func="Print"/>ed representation of a group is not affected
+##  by computing a <Ref Func="StructureDescription"/>. <P/>
 ##
-##  If the `Name' attribute is not bound, but `StructureDescription' is,
-##  `View' prints the value of the attribute `StructureDescription'.
-##  The `Print'ed representation of a group is not affected by computing
-##  a `StructureDescription'.
-##
-##  The strategy is
-##
-##  \beginlist
-##    \item{1.} Lookup in precomputed list, if the order of <G> is not
-##              larger than 100 and not equal to 64.
-##
-##    \item{2.} If <G> is abelian: decompose it into cyclic factors
-##              in ``elementary divisors style'',
-##              e.g. `"C2 x C3 x C3"' is `"C6 x C3"'.
-##
-##    \item{3.} Recognize alternating groups, symmetric groups,
-##              dihedral groups, quasidihedral groups, quaternion groups,
-##              PSL's, SL's, GL's and simple groups not listed so far
-##              as basic building blocks.
-##
-##    \item{4.} Decompose into a direct product of irreducible factors.
-##
-##    \item{5.} Recognize semidirect products ($N$:$H$), where $N$ is normal.
-##              Select a pair $N$, $H$ with the following preferences: 
-##              \beginlist
-##                \item{1.}  $H$ is abelian
-##
-##                \item{2.}  $N$ is abelian
-##
-##                \item{2a.} $N$ has many abelian invariants
-##
-##                \item{3.}  $N$ is a direct product
-##
-##                \item{3a.} $N$ has many direct factors
-##
-##                \item{4.}  $\phi: H \rightarrow$ Aut($N$), 
-##                           $h \mapsto (n \mapsto n^h)$ is injective.
-##              \endlist
-##
-##    \item{6.} Fall back to non-splitting extensions:
-##              If the centre or the commutator factor group is non-trivial,
-##              write <G> as Z(<G>).<G>/Z(<G>) resp. <G>'.<G>/<G>'.
-##              Otherwise if the Frattini subgroup is non-trivial,
-##              write <G> as $\Phi$(<G>).<G>/$\Phi$(<G>).
-##
-##    \item{7.} If no decomposition is found (maybe this is not the case for
-##              any finite group) try to identify <G> in the perfect groups
-##              library.
-##              If also this fails return a string describing this situation.
-##  \endlist
+##  The strategy used to compute a <Ref Func="StructureDescription"/> is
+##  as follows:
+##  <P/>
+##  <List>
+##  <Mark>1.</Mark>
+##  <Item>
+##    Lookup in a precomputed list, if the order of <A>G</A> is not
+##    larger than 100 and not equal to 64.
+##  </Item>
+##  <Mark>2.</Mark>
+##  <Item>
+##    If <A>G</A> is abelian, then decompose it into cyclic factors
+##    in <Q>elementary divisors style</Q>. For example,
+##    <C>"C2 x C3 x C3"</C> is <C>"C6 x C3"</C>.
+##  </Item>
+##  <Mark>3.</Mark>
+##  <Item>
+##    Recognize alternating groups, symmetric groups,
+##    dihedral groups, quasidihedral groups, quaternion groups,
+##    PSL's, SL's, GL's and simple groups not listed so far
+##    as basic building blocks.
+##  </Item>
+##  <Mark>4.</Mark>
+##  <Item>
+##    Decompose <A>G</A> into a direct product of irreducible factors.
+##  </Item>
+##  <Mark>5.</Mark>
+##  <Item>
+##    Recognize semidirect products <A>G</A>=<M>N</M>:<M>H</M>,
+##    where <M>N</M> is normal.
+##    Select a pair <M>N</M>, <M>H</M> with the following preferences:
+##    <List>
+##    <Mark>1.</Mark>
+##    <Item>
+##      <M>H</M> is abelian
+##    </Item>
+##    <Mark>2.</Mark>
+##    <Item>
+##      <M>N</M> is abelian
+##    </Item>
+##    <Mark>2a.</Mark>
+##    <Item>
+##      <M>N</M> has many abelian invariants
+##    </Item>
+##    <Mark>3.</Mark>
+##    <Item>
+##      <M>N</M> is a direct product
+##    </Item>
+##    <Mark>3a.</Mark>
+##    <Item>
+##      <M>N</M> has many direct factors
+##    </Item>
+##    <Mark>4.</Mark>
+##    <Item>
+##      <M>\phi: H \rightarrow</M> Aut(<M>N</M>), 
+##      <M>h \mapsto (n \mapsto n^h)</M> is injective.
+##    </Item>
+##    </List>
+##  </Item>
+##  <Mark>6.</Mark>
+##  <Item>
+##    Fall back to non-splitting extensions:
+##    If the centre or the commutator factor group is non-trivial,
+##    write <A>G</A> as Z(<A>G</A>).<A>G</A>/Z(<A>G</A>) or
+##    <A>G</A>'.<A>G</A>/<A>G</A>', respectively.
+##    Otherwise if the Frattini subgroup is non-trivial, write <A>G</A>
+##    as <M>\Phi</M>(<A>G</A>).<A>G</A>/<M>\Phi</M>(<A>G</A>).
+##  </Item>
+##  <Mark>7.</Mark>
+##  <Item>
+##    If no decomposition is found (maybe this is not the case for
+##    any finite group), try to identify <A>G</A> in the perfect groups
+##    library. If this fails also, then return a string describing this
+##    situation.
+##  </Item>
+##  </List>
+##  Note that <Ref Func="StructureDescription"/> is <E>not</E> intended
+##  to be a research tool, but rather an educational tool. The reasons for
+##  this are as follows:
+##  <List>
+##    <Mark>1.</Mark>
+##    <Item>
+##      <Q>Most</Q> groups do not have <Q>nice</Q> decompositions.
+##      This is in some contrast to what is often taught in elementary
+##      courses on group theory, where it is sometimes suggested that
+##      basically every group can be written as iterated direct or
+##      semidirect product of cyclic groups and nonabelian simple groups.
+##    </Item>
+##    <Mark>2.</Mark>
+##    <Item>
+##      In particular many <M>p</M>-groups have very <Q>similar</Q>
+##      structure, and <Ref Func="StructureDescription"/> can only
+##      exhibit a little of it. Changing this would likely make the
+##      output not essentially easier to read than a pc presentation.
+##    </Item>
+##    <Mark>3.</Mark>
+##    <Item>
+##      The output of <Ref Func="StructureDescription"/> is guaranteed
+##      to depend only on the isomorphism type of the group, but neither
+##      on the choice of its generators nor on the choice of its
+##      representation. Therefore <Ref Func="StructureDescription"/>
+##      needs to determine <E>all</E> possible decompositions of the
+##      group, and choose the <Q>nicest</Q> from them. This is very time-
+##      and memory-consuming if the group has many normal subgroups.
+##      Therefore, <Ref Func="StructureDescription"/> is particularly
+##      unsuitable for solvable groups and in particular <M>p</M>-groups,
+##      unless they are very small, i.e. have order less than&nbsp;128.
+##    </Item>
+##  </List>
+##  <Example><![CDATA[
+##  gap> l := AllSmallGroups(12);;
+##  gap> List(l,StructureDescription);; l;
+##  [ C3 : C4, C12, A4, D12, C6 x C2 ]
+##  gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
+##  [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", 
+##    "20x2", "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
+##  gap> List(AllTransitiveGroups(DegreeAction,6),
+##  >         G->StructureDescription(G:short));
+##  [ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", 
+##    "(3^2):4", "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
+##  gap> StructureDescription(PSL(4,2));
+##  "A8"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "StructureDescription", IsGroup );
 
 #############################################################################
 ##
-#E  grpnames.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E

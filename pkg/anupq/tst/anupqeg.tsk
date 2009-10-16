@@ -1,0 +1,46 @@
+##  anupqeg.tst skeleton
+##  To create new `anupqeg.tst' do:
+##     make_anupqeg
+LoadPackage("anupq");
+LogTo("anupqeg.tst-new0");
+#############################################################################
+##
+#A  anupqeg.tst               ANUPQ package                       Greg Gamble
+##
+##  Tests all but one of the ANUPQ examples.
+##  Execute this file with `ReadTest( "anupqeg.tst" );'.
+##  This is a *big* test, taking some 40 minutes on a *fast* (1GHz) machine.
+##  The number of GAPstones returned at the end do not mean much as  they  do
+##  not measure the time spent by the `pq' binary.
+##
+
+START_TEST( "Testing ANUPQ examples" );
+SetInfoLevel(InfoANUPQ, 1);
+examples := AllPqExamples();
+examples := Difference(examples, ["EpimorphismStandardPresentation-i"]);
+nexamples := Length( examples );
+LogTo();
+Exec("grep -e \"^gap> \" anupqeg.tst-new0 > anupqeg.tst-new");
+
+for i in [1..nexamples] do
+    example := examples[i];
+    PqExample( example, "anupqeg.tst-new0" );
+    ResetOptionsStack();
+    Exec( "grep -v -e \"^#I  [^#]\" anupqeg.tst-new0 >> anupqeg.tst-new" );
+    len := Length(example);
+    if not( example{[len - 1 .. len]} in ["-i", ".g", "ni"] ) then
+         AppendTo("anupqeg.tst-new",
+                  "# Executing interactive variant of example: \"",
+                  example, "\"\n");
+         PqExample( example, PqStart, "anupqeg.tst-new0" );
+         ResetOptionsStack();
+         Exec( "grep -v -e \"^#I  [^#]\" anupqeg.tst-new0 >> anupqeg.tst-new" );
+    fi;
+
+    if i mod 3 = 0 then 
+         AppendTo("anupqeg.tst-new", "PqQuitAll();\n"); 
+    fi;
+
+od;
+AppendTo("anupqeg.tst-new", "STOP_TEST( \"anupqeg.tst\", 1000000 );\n");
+quit;

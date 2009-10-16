@@ -1,0 +1,249 @@
+\Chapter{Installing XGAP}
+
+Installing {\XGAP} should be easy once you have installed {\GAP} itself. We
+assume here that you want to install {\XGAP} in its standard location,
+which is in the ``pkg'' subdirectory of the main {\GAP4} installation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Overview}
+
+You have to perform the following steps to install {\XGAP}:
+
+\beginlist
+\item{--} Get the sources
+\item{--} Unpack the sources with the <unzoo> utility
+\item{--} Use the <configure> script to adjust everything to your specific
+  system
+\item{--} Compile the C part of {\XGAP}
+\item{--} Edit a certain startup script (if necessary) and install it in 
+      an executable location in your system
+\endlist
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{What you need to install XGAP}
+
+Being a graphical user interface to {\GAP}, {\XGAP} of course needs
+graphics. At the moment this means that you need the X window system in the 
+Version 11 Release 5 or newer. So you *cannot* use {\XGAP} on a Macintosh
+or a Microsoft Windows computer. On the other hand the type of Unix you use 
+should not matter. Please contact Max Neunh\accent127offer (email:
+`max.neunhoeffer@math.rwth-aachen.de') or post to the gap-trouble  
+mailing list, if you encounter problems with certain system configurations.
+
+Because {\XGAP} contains a C-part you need a C compiler.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Getting and unpacking the sources}
+
+You can download the sources from the same places as {\GAP}. So the main
+FTP servers are:
+
+\begintt
+ftp://ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4/
+ftp://ftp.math.rwth-aachen.de/pub/gap4/
+ftp://ftp.ccs.neu.edu/pub/mirrors/ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4/
+ftp://pell.anu.edu.au/pub/algebra/gap4/
+\endtt
+
+You need only one file with the name ``xgap4r11.zoo''
+which is in the subdirectory for the packages.
+When you installed {\GAP} you used the utility <unzoo> to unpack the
+distribution. You will need this here again. See the {\GAP}-manual for
+instructions on how to get and compile this.
+You now change your current directory to the `pkg' subdirectory of the 
+location where you installed
+{\GAP} (you typed an <unzoo>-command, then a new directory called
+``gap4'' or something like that was created, this directory contains
+the `pkg' subdirectory). The standard location would be:
+
+\begintt
+# cd /usr/local/lib/gap4/pkg
+\endtt
+
+Now you extract the sources for the {\XGAP} package:
+
+\begintt
+# unzoo -x xgap4r11.zoo
+xgap/README     -- extracted as text
+xgap/Makefile.in        -- extracted as text
+xgap/configure  -- extracted as text
+xgap/configure.in       -- extracted as text
+xgap/init.g     -- extracted as text
+xgap/cnf/Makefile       -- extracted as text
+xgap/cnf/Makegap.in     -- extracted as text
+xgap/cnf/Makegap.top    -- extracted as text
+xgap/cnf/config.hin     -- extracted as text
+xgap/cnf/configure.in   -- extracted as text
+xgap/cnf/configure.out  -- extracted as text
+xgap/doc/answers.tex    -- extracted as text
+xgap/doc/diffgap3.tex   -- extracted as text
+/bin/mkdir: cannot make directory `xgap': File exists
+...
+\endtt
+
+Note that the warning is *not* serious.
+
+The <unzoo> utility unpacks the files and stores them into the apropriate
+subdirectories. {\XGAP} resides completely in the following subdirectory
+(assuming standard location):
+
+\begintt
+/usr/local/lib/gap4/pkg/xgap
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Configuring and Compiling the C part}
+
+You have to change your current working directory to the ``xgap''
+subdirectory. You do this by
+
+\begintt
+# cd xgap
+\endtt
+
+if your current working directory is the one, where you used
+<unzoo>. There you invoke the <configure> script by:
+
+\begintt
+# ./configure
+creating cache ./config.cache
+checking for make... make
+checking host system type... i686-unknown-linux2.0.34
+checking target system type... i686-unknown-linux2.0.34
+checking build system type... i686-unknown-linux2.0.34
+checking for gcc... gcc
+checking whether the C compiler (gcc  ) works... yes
+checking whether the C compiler (gcc  ) is a cross-compiler... no
+checking whether we are using GNU C... yes
+...
+updating cache ./config.cache
+creating ./config.status
+creating Makefile
+creating xgap.sh
+\endtt
+
+$\ldots$ indicate omissions. 
+This script tries to determine, which kind of operating system and
+libraries you have installed and configures the source
+accordingly. Normally this should produce some output but no error
+messages. The last step of the script produces some makefiles which are
+used to compile the code. You do this by typing
+
+\begintt
+# make
+if test ! -d bin;  then mkdir bin;  fi
+if test ! -d bin/i686-unknown-linux2.0.34-gcc; \ # line broken for this manual!
+                then mkdir bin/i686-unknown-linux2.0.34-gcc;  fi
+cp cnf/configure.out bin/i686-unknown-linux2.0.34-gcc/configure
+( cd bin/i686-unknown-linux2.0.34-gcc ; CC=gcc \ # line broken for this manual!
+                ./configure --target=i686-unknown-linux2.0.34  )
+creating cache ./config.cache
+checking for gcc... gcc
+checking whether the C compiler (gcc  ) works... yes
+checking whether the C compiler (gcc  ) is a cross-compiler... no
+checking whether we are using GNU C... yes
+...
+creating ./config.status
+creating Makefile
+creating config.h
+make[1]: Entering directory \                   # line broken for this manual!
+     `/usr/local/lib/gap4/pkg/xgap/bin/i686-unknown-linux2.0.34-gcc'
+gcc -I. -g -O2 -I/usr/X11R6/include  -o xcmds.o -c ../../src.x11/xcmds.c
+gcc -I. -g -O2 -I/usr/X11R6/include  -o utils.o -c ../../src.x11/utils.c
+...
+make[1]: Leaving directory \                    # line broken for this manual!
+     `/usr/local/lib/gap4/pkg/xgap/bin/i686-unknown-linux2.0.34-gcc'
+\endtt
+
+(a few lines were broken for typesetting purposes in this manual, the
+position is marked by a backslash) 
+
+Now all C sources are compiled and a binary executable is built. It is
+stored in a subdirectory of the ``bin'' subdirectory in your ``xgap''
+directory. The name of this location has something to do with your
+installation. It could for example be
+
+\begintt
+bin/i686-unknown-linux2.0.34-gcc/xgap
+\endtt
+
+if you compile on a Linux system using the GNU-C-Compiler.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the Startup Script}
+
+To make the startup of {\XGAP} more convenient there is a startup script
+which contains also some configuration information like the position of
+your {\GAP} installation. It is in the ``xgap'' directory
+and is called ``xgap.sh''. This file is automatically generated
+by the `configure' script and normally you should *not* have to change 
+anything in it. Just copy it to some location that people have in their
+``PATH'' environment variable, for example to ``/usr/local/bin''.
+This completes the installation.
+
+If you want to change anything in the installation, you
+can also edit the script until the line
+
+\begintt
+##  STOP EDITING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+\endtt
+
+You can specify the directory where {\GAP} is installed (``GAP\_DIR''), 
+the amount of memory that {\GAP} should use as initial workspace
+(``GAP\_MEM''), the name of the {\GAP}-executable (``GAP\_PRG'') and the
+name of the {\XGAP}-executable (``XGAP\_PRG''). The first three are exactly 
+the same things that you could edit in the main {\GAP} startup script.
+After that you have the possibility to control the behaviour of the {\XGAP}
+startup script. You can specify whether {\XGAP} goes into the background
+(``DAEMON'') and whether it prints out information about its parameters
+(``VERBOSE''). Note that it is possible to combine ``DAEMON=YES''
+and ``VERBOSE=YES'' because the script actually runs in the foreground and
+only the C program is put into the background.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing in a different than the standard location}
+
+It could happen that you do not want to install {\XGAP} in its
+standard location, perhaps because you do not want to bother your
+system administrator and have no access to the {\GAP} directory. In
+this case you can unpack {\XGAP} in any other location within a
+``pkg'' directory with the <unzoo> command as described above. Let us
+call this directory ``pkg'' for the moment. You get an ``xgap''
+subdirectory with all the files of {\XGAP} in it. You follow the
+standard procedure with two exceptions:
+
+Before you can configure and compile {\XGAP} you need a symbolic link
+``cnf'' which is in the directory where ``pkg'' is and points to the ``cnf''
+directory in the main {\GAP} directory. You can install this link directly
+after unzooing by (remember: you are in the ``pkg'' directory!):
+
+\begintt
+ln -s /usr/local/lib/gap4/cnf ..
+\endtt
+
+if ``/usr/local/lib/gap4'' is the location of the main {\GAP} installation.
+
+You can find out where the main {\GAP4} installation is by starting 
+{\GAP} as usual and looking at the variable `GAP_ROOT_PATHS' 
+within {\GAP}.
+
+Note that you have to edit the startup script ``xgap.sh'' (see previous 
+section) to
+adjust the paths for ``XGAP_DIR'' and ``GAP_DIR'', and possibly the
+name of the {\GAP} executable ``GAP_PRG''.  Enter your {\GAP}
+installation directory for the variable ``GAP_DIR'' and the name of
+the directory that contains ``pkg'' for the variable ``XGAP_DIR''. The 
+variable ``GAP_PRG'' has to contain the path to the {\GAP} executable relative
+to the ``bin'' subdirectory of the main {\GAP} installation. In most cases
+this value will already be correct. Note however that if {\GAP} and {\XGAP} 
+are compiled on different machines, then it is possible that these directory
+names differ for the {\GAP} and {\XGAP} executables respectively. 
+
+The script will automatically launch {\GAP} with two directories as
+library path such that all {\GAP} and {\XGAP} libraries will be found.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "manual"
+%%% End: 

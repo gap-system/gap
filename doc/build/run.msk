@@ -5,7 +5,7 @@
 %W                                                     & Alexander Hulpke
 %W                                                    & Burkhard Hoefling
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: run.msk,v 1.43 2006/09/27 21:40:31 gap Exp $
 %%
 %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %%
@@ -41,7 +41,7 @@ and how to save and load a {\GAP} workspace
 When you start {\GAP} under UNIX, you may specify a number of  options on
 the command-line to change  the default behaviour  of {\GAP}.  All  these
 options  start with a  hyphen `-', followed by a  single letter.  Options
-must not be   grouped, e.g.,  `gap  -gq' is   illegal, use   `gap -g  -q'
+must not be   grouped, e.g.,  `gap  -gq' is   invalid, use   `gap -g  -q'
 instead.  Some options  require an argument, this  must follow the option
 and  must be separated   by a <space>, e.g.,  `gap   -m 256k', it is  not
 correct to say `gap -m256k' instead. Certain Boolean options (b, q, e, r, 
@@ -402,6 +402,7 @@ changes  the  name  of  the  init  file  from  the  default  `init.g'  to
 Additional options, `-C', `-U', `-P', `-W', `-p' and `-z' are  used  
 internally in the {\GAP} compiler and/or on specific operating systems.
 
+\Declaration{Restart}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Running GAP under MacOS}
@@ -880,6 +881,17 @@ gap> quit;
 `SaveWorkspace' can only be used at the main `gap>' prompt. It cannot
 be included in the body of a loop or function, or called from a break loop.
 
+\Declaration{LoadWorkspace}
+
+\begintt
+gap> LoadWorkspace("savefile");
+... Loading workspace ...
+GAP4, Version: 4.number of day, i686-pc-linux-gnu-gcc
+ [...]
+gap> a;
+1
+\endtt
+
 \>`-L <filename>'{loading a saved workspace}
 
 A saved workspace can be loaded by starting {\GAP} with the option `-L'
@@ -897,8 +909,10 @@ the tilde to denote a home directory will *not* work.
 
 Under UNIX, it is possible to compress savefiles using `gzip'. Compression
 typically reduces the size of a workspace by a factor 3 or 4.
-If {\GAP} is started with a compressed savefile (omit the `.gz' ending),
-it will try to locate `gzip' on the system and uncompress the file
+
+These workspaces then can be loaded into {\GAP} as if they were uncompressed
+(omit the `.gz' ending). {\GAP} will try to locate 
+`gzip' on the system and uncompress the file
 automatically while reading it.
 \begintt
 you@unix> gzip -9 savefile

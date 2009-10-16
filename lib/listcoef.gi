@@ -21,7 +21,7 @@
 ##  different lengths, the returned result will have trailing zeros removed.
 ##
 Revision.listcoef_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: listcoef.gi,v 4.59 2006/03/16 19:50:53 gap Exp $";
 
 
 #############################################################################
@@ -1639,6 +1639,12 @@ InstallMethod( AddToListEntries, "fast kernel method", true,
          IsRange and IsRangeRep, IsInt], 0, 
         ADD_TO_LIST_ENTRIES_PLIST_RANGE);
 
+
+# data types for low index memory blocks. Created here to avoid having to
+# read the fp group stuff early
+InstallValue(TYPE_LOWINDEX_DATA,
+  NewType(NewFamily("LowIndexDataFamily",IsObject),
+    IsObject and IsDataObjectRep));
 
 #############################################################################
 ##

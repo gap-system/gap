@@ -1,0 +1,141 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  pargap.tex		NQL Doc				Rene Hartung
+%%
+%H  $Id: pargap.tex,v 1.2 2009/07/02 12:26:03 gap Exp $
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{On a parallel nilpotent quotient algorithm}
+
+We included a parallel version of \NQL's nilpotent quotient
+algorithm using the \ParGap-package of \GAP; see~\cite{ParGap}. In
+this chapter, we outline the basic usage of this parallel part of the
+\NQL-package. For further details on the parallel \GAP-sessions we refer to the
+\ParGap-manual~\cite{ParGap}. We note that the \ParGap-package has some
+bottlenecks in practice. Nevertheless the significant speed-up of our
+computations on a multiple-core system shows that this is a reasonable
+extension of the \NQL-package.\medskip
+
+For using the parallel version of the nilpotent quotient algorithm,
+you will need to install the \ParGap-package as described in its
+manual~\cite{ParGap}. When using Version~1.1.2 of the \ParGap-package,
+you will need to apply the following patch to `pargap/lib/masslave.g'
+as otherwise the \ParGap-session may crash. On a linux machine you can
+simply use `patch \< ../../nql/gap/pargap/patch' from within the directory
+`pargap/lib/'.
+
+\beginexample
+--- masslave.g	2001-11-16 13:17:04.000000000 +0100
++++ masslave.g	2009-05-06 12:20:19.000000000 +0200
+@@ -467,8 +467,9 @@
+   if Length(deltas)>1 then max2 := Maximum(max2, deltas[Length(deltas)-1]); fi;
+   max1 := deltas[Length(deltas)];
+   pos1 := Position( List(slaveArray, x->realtime-x.time), max1 );
+-  if max1 > slaveTaskTimeFactor and max1 > 30
+-     and slaveTaskTime[pos2].total > 60 then
++  if max1 > slaveTaskTimeFactor and
++     max1 > 30 and pos2 <> fail and 
++     slaveTaskTime[pos2].total > 60 then
+     Print("SLAVE ",pos1," SEEMS DEAD!!\n");
+   fi;
+ end);
+\endexample
+
+Now, you are ready for creating a \ParGap-session and you can load
+the \NQL-package from within \ParGap\ using `RequirePackage' as usual.
+The same methods as described previously are available. The following
+example shows the application of the `NilpotentQuotient'-method to
+the Grigorchuk group on a quad-core machine. Note that the significant
+speed-up of the nilpotent quotient algorithm is especially noticeable
+for large nilpotent quotients. This parallel version of \NQL\ successfully
+computes some nilpotent quotients which normally took more than a month
+to complete.
+
+\beginexample
+GAP4, Version: 4.4.12 of 17-Dec-2008, i686-pc-linux-gnu-gcc
+GAP4, Version: 4.4.12 of 17-Dec-2008, i686-pc-linux-gnu-gcc
+GAP4, Version: 4.4.12 of 17-Dec-2008, i686-pc-linux-gnu-gcc
+GAP4, Version: 4.4.12 of 17-Dec-2008, i686-pc-linux-gnu-gcc
+GAP4, Version: 4.4.12 of 17-Dec-2008, i686-pc-linux-gnu-gcc
+gap> TOPCnumSlaves;
+4
+gap> RequirePackage("NQL");
+true
+gap> G:=ExamplesOfLPresentations(1);
+<L-presented group on the generators [ a, b, c, d ]>
+gap> SetInfoLevel(InfoNQL,1);
+gap> NilpotentQuotient(G,2);
+#I  Class 1: 3 generators with relative orders: [ 2, 2, 2 ]
+#I  Computing a polycyclic presentation for the covering group...
+#I  Checking the consistency relations...
+master -> 1: (AGGLOM_TASK): [ [ -3, 1 ], [ -3, 2 ], [ -2, 1 ], [ 2, -1 ],
+  [ 3, -1 ] ]
+master -> 2: (AGGLOM_TASK): [ [ 3, -2 ], [ 1 ], [ 2 ], [ 3 ] ]
+1 -> master: [ [ 0, 0, 0, 0, 0, -2, 0 ], [ 0, 0, 0, 0, 0, 0, -2 ],
+  [ 0, 0, 0, 0, -2, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0 ],
+  [ 0, 0, 0, 0, 0, -2, 0 ] ]
+2 -> master: [ [ 0, 0, 0, 0, 0, 0, -2 ], [ 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0 ] ]
+#I  Broadcasting the slaves...
+#I  Inducing the endomorphisms...
+master -> 1:  1
+master -> 2:  2
+master -> 3:  3
+master -> 4:  4
+3 -> master: [ 2, 1 ]
+UPDATE: [ 3, [ 2, 1 ] ]
+1 -> master: [ 2, 1, 8, 1 ]
+UPDATE: [ 1, [ 2, 1, 8, 1 ] ]
+2 -> master: [ 2, 1, 3, 1, 4, 1 ]
+UPDATE: [ 2, [ 2, 1, 3, 1, 4, 1 ] ]
+master -> 1:  5
+master -> 2:  6
+master -> 3:  7
+4 -> master: [ 4, -1, 6, -1, 10, -1 ]
+UPDATE: [ 4, [ 4, -1, 6, -1, 10, -1 ] ]
+1 -> master: [ 6, 1, 8, 2 ]
+UPDATE: [ 5, [ 6, 1, 8, 2 ] ]
+2 -> master: [ 4, 2, 6, 1, 7, 1, 10, 1 ]
+UPDATE: [ 6, [ 4, 2, 6, 1, 7, 1, 10, 1 ] ]
+3 -> master: [ 6, 1 ]
+UPDATE: [ 7, [ 6, 1 ] ]
+master -> 1:  8
+master -> 2:  9
+master -> 3:  10
+1 -> master: [ 10, 1 ]
+UPDATE: [ 8, [ 10, 1 ] ]
+2 -> master: [  ]
+UPDATE: [ 9, [  ] ]
+3 -> master: [ 10, -1 ]
+UPDATE: [ 10, [ 10, -1 ] ]
+#I  Broadcasting the slaves...
+#I  Mapping the relations...
+master -> 1:  1
+master -> 2:  2
+master -> 3:  3
+master -> 4:  4
+1 -> master: [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ]
+2 -> master: [ 0, 0, 0, 2, 0, 1, 1, 0, 0, 1 ]
+3 -> master: [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ]
+4 -> master: [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ]
+master -> 1:  5
+master -> 2:  6
+master -> 3:  7
+1 -> master: [ 0, 0, 0, 1, 0, 1, 1, 0, 0, 1 ]
+2 -> master: [ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0 ]
+3 -> master: [ 0, 0, 0, 0, 0, 0, 0, 4, 6, 4 ]
+#I  Start spinning...
+#I  Extend the quotient system...
+#I  Class 2: 2 generators with relative orders: [ 2, 2 ]
+Pcp-group with orders [ 2, 2, 2, 2, 2 ]
+\endexample
+
+Note that the only difference in the parallel version of the \NQL-package
+is a parallel version of the operation `ExtendQuotientSystem'. This latter
+operation covers the induction step of the nilpotent quotient algorithm.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  pargap.tex .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  ends here
+%%

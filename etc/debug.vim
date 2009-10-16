@@ -4,7 +4,7 @@
 "
 " By Thomas Breuer and Max Neunhoeffer 2003
 "
-" $Id$
+" $Id: debug.vim,v 1.1 2003/04/07 17:06:17 gap Exp $
 "
 map <f2> OError("Breakpoint #<esc>"apa");<esc>
 map <f3> OPrint("Watchpoint #<esc>"apa\n");<esc>

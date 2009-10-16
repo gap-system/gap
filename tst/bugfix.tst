@@ -2,7 +2,7 @@
 ##
 #W  bugfix.tst
 ##
-#H  $Id$
+#H  $Id: bugfix.tst,v 1.80 2009/09/30 19:01:17 alexk Exp $
 ##
 ##  Exclude from testall.g: why?
 ##
@@ -94,15 +94,15 @@ gap> RelativeBasis(b,b2);;
 ## Testing if an element is in a Green's D equivalence class (fix 2 no. 12)
 gap> s := Semigroup(Transformation([1,1,3,4]),Transformation([1,2,2,4]));;
 gap> dc := GreensDClasses(s);;
-gap> PositionProperty(dc, x -> Transformation([1,1,3,4]) in x ) <> fail;
-true
+gap> Transformation([1,1,3,4]) in dc[1];
+false
 
 ## Testing if Green's D classes can be compared for finite semigroups
 gap> s := Transformation([1,1,3,4,5]);;
 gap> c := Transformation([2,3,4,5,1]);;
 gap> op5 := Semigroup(s,c);;
 gap> dcl := GreensDClasses(op5);;
-gap> IsGreensLessThanOrEqual(dcl[4],dcl[5])<>fail;
+gap> IsGreensLessThanOrEqual(dcl[4],dcl[5]);
 true
 
 ## Testing that GroupHClassOfGreensDClass is implemented
@@ -237,8 +237,8 @@ gap> Difference( [ 1, 1 ], [] );
 gap> f := FreeGroup( 2 );;
 gap> g := f/[f.1^4,f.2^4,Comm(f.1,f.2)];;
 gap> Elements(g);
-[ <identity ...>, f1, f2, f1^2, f2^2, f1*f2, f1^3, f1*f2^2, f1^2*f2, f2^3, 
-  f1^2*f2^2, f1^3*f2, f1*f2^3, f1^3*f2^2, f1^2*f2^3, f1^3*f2^3 ]
+[ <identity ...>, f1, f1^3, f2, f2^3, f1^2, f1*f2, f1*f2^3, f1^3*f2, 
+  f1^3*f2^3, f2^2, f1^2*f2, f1^2*f2^3, f1*f2^2, f1^3*f2^2, f1^2*f2^2 ]
 
 gap> NrPrimitiveGroups(441);
 24
@@ -1006,8 +1006,9 @@ gap> STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(gamma);
 # IsProbablyPrimeInt(2^9689-1);
 
 
-# 2005/07/20 (SK)
-gap> Float(355/113);
+# 2005/07/20 (SK), 2009/09/28 (AK)
+gap> if VERSION = "4.dev" then Float := MACFLOAT_STRING; fi;
+gap> Float("355")/Float("113");
 3.14159
 gap> Rat(last);
 355/113
@@ -1235,7 +1236,10 @@ gap> s:=FullTransformationSemigroup(4);;
 gap> ld:=GreensDClassOfElement(FullTransformationSemigroup(4),
 > Transformation([1,2,3,3]));;
 gap> rs:=AssociatedReesMatrixSemigroupOfDClass(ld);;
-gap> SandwichMatrixOfReesZeroMatrixSemigroup(rs);;
+gap> SandwichMatrixOfReesZeroMatrixSemigroup(rs);
+[ [ 0, 0, 0, (), (), () ], [ 0, (), (), 0, 0, () ],
+  [ (), 0, (), 0, (1,2)(3,4)(5,6), 0 ],
+  [ (), (1,3)(2,5)(4,6), 0, (1,4,5)(2,6,3), 0, 0 ] ]
 
 
 # 2006/01/11 (MC)
@@ -1287,11 +1291,11 @@ gap> RepresentativeAction(Group(()), [1], [2], OnSets);;
 
 
 # 2006/03/02 (AH)
-gap> x:=X(Rationals,"x");;
-gap> y:=X(Rationals,"y");;
-gap> a:=X(Rationals,"a");;
-gap> c:=X(Rationals,"c");;
-gap> s:=X(Rationals,"s");;
+gap> x:=X(Rationals,1);;
+gap> y:=X(Rationals,2);;
+gap> a:=X(Rationals,3);;
+gap> c:=X(Rationals,4);;
+gap> s:=X(Rationals,5);;
 gap> L:=[(a+c)*s-x,(a+c)*c-y,s^2+c^2-1];;
 gap> ReducedGroebnerBasis(L,MonomialLexOrdering([x,y,a,c,s]));
 [ c^2+s^2-1, -a*c+s^2+y-1, -a*s-c*s+x ]
@@ -1716,7 +1720,7 @@ false
 
 # 2007/07/07 (FL)
 gap> OnTuples([,1],());
-OnTuples for perm: list must not contain holes
+Error, OnTuples for perm: list must not contain holes
 
 
 # 2007/07/27 (AH)
@@ -1992,9 +1996,9 @@ fail
 
 
 # 2008/11/16 (TB)
-gap> att:= NewAttribute( "att", IsObject );;
-gap> prop1:= NewProperty( "prop1", IsObject );;
-gap> prop2:= NewProperty( "prop2", IsObject );;
+gap> att:= NewAttribute( "att", IsObject );
+gap> prop1:= NewProperty( "prop1", IsObject );
+gap> prop2:= NewProperty( "prop2", IsObject );
 gap> InstallTrueMethod( prop2, prop1 );
 gap> InstallImmediateMethod( att, Tester( prop2 ), 0, G -> 1 );
 gap> # The intended behaviour is that `prop1' implies `prop2',

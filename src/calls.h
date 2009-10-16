@@ -2,7 +2,7 @@
 **
 *W  calls.h                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: calls.h,v 4.24 2004/09/10 11:36:49 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -44,7 +44,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_calls_h =
-   "@(#)$Id$";
+   "@(#)$Id: calls.h,v 4.24 2004/09/10 11:36:49 sal Exp $";
 #endif
 
 
@@ -259,6 +259,9 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 **  saved workspace.  <cookie> should be a  unique  C string, identifying the
 **  handler
 */
+
+extern void InitHandlerRegistration( void );
+
 extern void InitHandlerFunc (
      ObjFunc            hdlr,
      const Char *       cookie );

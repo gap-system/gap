@@ -8,7 +8,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghompcgs_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ghompcgs.gi,v 4.55 2005/10/10 02:03:58 gap Exp $";
 
 # compute the powers of the source pcgs. We cache these to speed up frequent
 # mapping.

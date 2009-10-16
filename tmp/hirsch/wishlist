@@ -1,0 +1,44 @@
+Wunschliste f"ur Algorithmen, die implementiert werden k"onnten.
+F"ur die Punkte, die mit einem - gekennzeichnet sind, ist ein
+Algorithmus bekannt. Die mit einem * markierten Punkte m"ussen
+noch "uberdacht werden.
+
+
+- grundlegende Techniken:
+    - rekursives Kollekten
+    - sollen f"ur Erzeuger mit Potenzrelationen auch die 
+      inversen Konjugiertenrelationen in der Pr"asentation gespeicher
+      werden?
+
+
+- Beispiele von Pcp Gruppen:
+    - aus dem NQ
+    - aus dem PCQA
+    - aus den CrystGroups
+    - aus Kant
+    - aus Karels Library der Fast-Bieberbachgruppen
+    - Semidirekte Produkte relativ freier Gruppen mit Automorphismen
+      der Kommutatorfaktorgruppen
+    - "uber H^2 Berechnung
+
+- Algorithmen f"ur Pcp Gruppen:
+    - Homomorphismen, Kern und Bild
+    - Neue Pcp Pr"asentation f"ur gegebene Gruppe mit speziellen
+      Eigenschaften, z.B. durch eine vorgegebe Reihe
+    - Komplementberechnung
+    * Schnittberechnung
+    * Zentralisatorberechnung
+    * Torsionsuntergruppe
+    * torsionsfreier Normalteiler mit endlichem Index
+    * Normalisatorberechnung
+    * p-Sylowgruppen aller Kurosh
+    
+- Algorithmen f"ur nilpotente Pcp Gruppen:
+    - Torsionsuntergruppe / subdirekte Produktzerlegung
+    - Centralisatorberechnung / Zentrum
+    - Normalisatorberechnung  (->E.Lo)
+    - Schnitte von Untergruppen (->E.Lo)
+    
+- Algorithmen f"ur abelsche Pcp Gruppen:
+    - Zerlegung direktes Produkt von zyklischen Gruppen und
+      dazugeh"orige "Anderung der Pcp Pr"asentation 

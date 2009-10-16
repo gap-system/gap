@@ -2,7 +2,7 @@
 **
 *W  listoper.c                  GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: listoper.c,v 4.88 2003/12/01 12:54:14 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_listoper_c =
-   "@(#)$Id$";
+   "@(#)$Id: listoper.c,v 4.88 2003/12/01 12:54:14 sal Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 

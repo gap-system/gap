@@ -1,0 +1,9 @@
+In this directory there is some code contributed by David Joyner,
+wdj@usna.edu . The files can also be downloaded from:
+
+agcode.g:
+http://cadigweb.ew.usna.edu/~wdj/gap/singular/gap_singular_agcode.gap
+all_pts.LIB:
+http://cadigweb.ew.usna.edu/~wdj/gap/singular/ag_code_all_pts.sing
+rr_space.LIB:
+http://cadigweb.ew.usna.edu/~wdj/gap/singular/ag_code_rr_space.sing

@@ -1,0 +1,9 @@
+#Example: "B2-4" . . . the ``right'' way to generate B(2, 4)
+#Generates B(2, 4) by using the `Exponent' option
+#vars: F, procId;
+#options: 
+F := FreeGroup("a", "b");
+#alt: do
+#procId := PqStart( F );
+#alt: sub <procId> for <F>
+Pq( F : Prime := 2, Exponent := 4 );

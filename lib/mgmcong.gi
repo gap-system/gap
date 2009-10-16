@@ -2,7 +2,7 @@
 ##
 #W  mgmcong.gi              GAP library                       Robert F. Morse
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mgmcong.gi,v 4.19 2002/04/15 10:05:03 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##
 ##
 Revision.mgmcong_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: mgmcong.gi,v 4.19 2002/04/15 10:05:03 sal Exp $";
 
 
 #############################################################################

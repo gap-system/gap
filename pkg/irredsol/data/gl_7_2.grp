@@ -1,0 +1,41 @@
+############################################################################
+##
+##  gl_7_2.grp                   IRREDSOL                  Burkhard Hoefling
+##
+##  @(#)$Id: gl_7_2.grp,v 1.1 2005/06/28 10:52:40 gap Exp $
+##
+##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
+##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
+##  Technische Universitaet Braunschweig, Germany
+##
+
+
+############################################################################
+##
+#V  IRREDSOL_DATA.GUARDIANS
+##
+IRREDSOL_DATA.GUARDIANS[7][2] := [
+[ [ 561284445897217, 288080670097922 ], 889, 96011, 7, 1 ],
+];
+
+
+############################################################################
+##
+#V  IRREDSOL_DATA.GROUPS
+##
+IRREDSOL_DATA.GROUPS[7][2] := [
+[ 1, 3 ],
+];
+
+
+############################################################################
+##
+#V  IRREDSOL_DATA.GAL_PERM
+##
+IRREDSOL_DATA.GAL_PERM[7][2] := ();
+
+
+############################################################################
+##
+#E
+##

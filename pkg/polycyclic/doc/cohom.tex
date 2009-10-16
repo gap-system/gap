@@ -1,0 +1,331 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  cohomology.tex         GAP documentation                 Bettina Eick
+%W                                                          Werner Nickel
+%%
+%H  $Id: cohom.tex,v 1.5 2004/10/04 12:36:39 gap Exp $
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Cohomology for pcp-groups}
+
+The {\GAP} 4 package {\sf polycyclic} provides methods to compute the
+first and second cohomology group for a pcp-group $U$ and a finite
+dimensional $\Z U$ or $FU$ module $A$ where $F$ is a finite field. The
+algorithm for determining the first cohomology group is outlined in
+\cite{Eic00}.
+
+As a preparation for the cohomology computation, we introduce the 
+cohomology records. These records provide the technical setup for 
+our cohomology computations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cohomology records}
+
+Cohomology records provide the necessary technical setup for the
+cohomology computations for polycyclic groups.
+
+\>CRRecordByMats( <U>, <mats> )
+
+creates an external module. Let <U> be a pcp group which acts via the 
+list of matrices <mats> on a vector space of the form $\Z^n$ or $\F_p^n$.
+Then this function creates a record which can be used as input for the
+cohomology computations.
+
+\>CRRecordBySubgroup( <U>, <A> )
+\>CRRecordByPcp( <U>, <pcp> )
+
+creates an internal module. Let <U> be a pcp group and let <A> be a 
+normal elementary or free abelian normal subgroup of <A> or let <pcp>
+be a pcp of a normal elementary of free abelian subfactor of <U>. Then
+this function creates a record which can be used as input for the
+cohomology computations. 
+
+The returned cohomology record <C> contains the following entries:
+
+\beginitems
+<factor> &
+      a pcp of the acting group. If the module is external, then this is
+      <Pcp(U)>. If the module is internal, then this is <Pcp(U, A)> or
+      <Pcp(U, GroupOfPcp(pcp))>.
+
+<mats>, <invs> and <one> &
+      the matrix action of <factor> with acting matrices, their inverses
+      and the identity matrix.
+
+<dim> and <char> &
+      the dimension and characteristic of the matrices.
+
+<relators> and <enumrels> &
+      the right hand sides of the polycyclic relators of <factor> as 
+      generator exponents lists and a description for the corresponding 
+      left hand sides.
+
+<central> &
+      is true, if the matrices <mats> are all trivial. This is used
+      locally for efficiency reasons.
+\enditems
+
+And additionally, if $C$ defines an internal module, then it contains:
+
+\beginitems
+<group> & 
+      the original group <U>.
+
+<normal> &
+      this is either <Pcp(A)> or the input <pcp>. 
+
+<extension> &
+      information on the extension of <A> by <U/A>.
+
+\enditems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cohomology groups}
+
+Let $U$ be a pcp-group and $A$ a free or elementary abelian pcp-group
+and a $U$-module. By $Z^i(U, A)$ be denote the group of $i$-th cocycles
+and by $B^i(U, A)$ the $i$-th coboundaries. The factor $Z^i(U,A) / B^i(U,A)$
+is the $i$-th cohomology group. Since $A$ is elementary or free abelian,
+the groups $Z^i(U, A)$ and $B^i(U, A)$ are elementary or free abelian 
+groups as well. 
+
+The {\sf polycyclic} package provides methods to compute first and
+second cohomology group for a polycyclic group <U>.  We write all
+involved groups additively and we use an explicit description by bases
+for them.  Let $C$ be the cohomology record corresponding to $U$ and
+$A$.
+
+Let $f_1, \ldots, f_n$ be the elements in the entry $factor$ of the 
+cohomology record $C$. Then we use the following embedding of the 
+first cocycle group to describe 1-cocycles and 1-coboundaries:
+$Z^1(U, A) \ra A^n : \delta \ms (\delta(f_1), \ldots, \delta(f_n))$ 
+
+For the second cohomology group we recall that each element of $Z^2(U, A)$ 
+defines an extension $H$ of $A$ by $U$. Thus there is a pc-presentation 
+of $H$ extending the pc-presentation of $U$ given by the record $C$. 
+The extended presentation is defined by tails in $A$; that is, each 
+relator in the record entry $relators$ is extended by an element of $A$. 
+The concatenation of these tails yields a vector in $A^l$ where $l$ is
+the length of the record entry $relators$ of $C$. We use these tail 
+vectors to describe $Z^2(U, A)$ and $B^2(U, A)$. Note that this 
+description is dependent on the chosen presentation in $C$. However, 
+the factor $Z^2(U, A)/ B^2(U, A)$ is independent of the chosen presentation.
+ 
+The following functions are available to compute explicitly the first 
+and second cohomology group as described above.
+
+\>OneCoboundariesCR( <C> )
+
+\>OneCocyclesCR( <C> )
+
+\>TwoCoboundariesCR( <C> )
+
+\>TwoCocyclesCR( <C> )
+
+\>OneCohomologyCR( <C> )
+
+\>TwoCohomologyCR( <C> )
+
+The first 4 functions return bases of the corresponding group. The 
+last 2 functions need to describe a factor of additive abelian groups. 
+They return the following descriptions for these factors.
+
+\beginitems
+<gcc> &
+        the basis of the cocycles of <C>.
+
+<gcb> &
+        the basis of the coboundaries of <C>.
+
+<factor> &
+      a description of the factor of cocycles by coboundaries.
+      Usually, it would be most convenient to use additive mappings here.
+      However, these are not available in case that <A> is free abelian
+      and thus we use a description of this additive map as record. This
+      record contains
+      
+
+      \noindent\hbox{}\hfill\hbox{\vbox{
+      \advance\hsize-2cm
+      \beginitems
+      <gens> &
+                a base for the image.
+
+      <rels> &
+                relative orders for the image.
+
+      <imgs> &
+                the images for the elements in <gcc>.
+
+      <prei> & 
+                preimages for the elements in <gens>.
+
+      <denom> &
+                the kernel of the map; that is, another basis for <gcb>.
+
+       \enditems}}
+\enditems
+
+There is an additional function which can be used to compute the
+second cohomology group over an arbitrary finitely generated abelian
+group. The finitely generated abelian group should be realized as a
+factor of a free abelian group modulo a lattice. The function is
+called as 
+
+\> TwoCohomologyModCR( <C>, <lat> )
+
+where <C> is a cohomology record and <lat> is a basis for a sublattice
+of a free abelian module. The output format is the same as for 
+`TwoCohomologyCR'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Extended 1-cohomology}
+
+In some cases more information on the first cohomology group is
+of interest. In particular, if we have an internal module given and
+we want to compute the complements using the first cohomology group, 
+then we need additional information. This extended version of first 
+cohomology is obtained by the following functions.
+
+\>OneCoboundariesEX( <C> )
+
+returns a record consisting of the entries
+\beginitems
+<basis> &
+       a basis for $B^1(U, A) \leq A^n$.
+
+<transf> &
+      There is a derivation mapping from <A> to <B^1(U,A)>. This mapping
+      is described here as transformation from <A> to <basis>. 
+
+<fixpts> &
+      the fixpoints of <A>. This is also the kernel of the derivation mapping.
+\enditems
+
+\>OneCocyclesEX( <C> )
+
+returns a record consisting of the entries
+\beginitems
+<basis> &
+      a basis for $Z^1(U, A) \leq A^n$.
+
+<transl> & 
+      a special solution. This is only of interest in case that $C$ is 
+      an internal module and in this case it gives the translation vector 
+      in $A^n$ used to obtain complements corresponding to the elements in 
+      $basis$. If $C$ is not an internal module, then this vector is 
+      always the zero vector.
+\enditems
+
+\>OneCohomologyEX( <C> )
+
+       returns the combined information on the first cohomology group. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Extensions and Complements}
+
+The natural applications of first and second cohomology group is
+the determination of extensions and complements. Let $C$ be a 
+cohomology record. 
+
+\> ComplementCR( <C>, <c> )
+
+returns the complement corresponding to the 1-cocycle <c>. In the case
+that <C> is an external module, we construct the split extension of <U>
+with <A> first and then determine the complement. In the case that <C> 
+is an internal module, the vector <c> must be an element of the affine
+space corresponding to the complements as described by `OneCocyclesEX'.
+
+\> ComplementsCR( <C> )
+
+returns all complements using the correspondence to $Z^1(U,A)$. Further, 
+this function returns fail, if $Z^1(U,A)$ is infinite.
+
+\> ComplementClassesCR( <C> )
+
+returns complement classes using the correspondence to $H^1(U,A)$. Further, 
+this function returns fail, if $H^1(U,A)$ is infinite.
+
+\> ComplementClassesEfaPcps( <U>, <N>, <pcps> )
+
+Let $N$ be a normal subgroup of $U$. This function returns the complement 
+classes to $N$ in $U$. The classes are computed by iteration over the 
+$U$-invariant efa series of $N$ described by <pcps>. If at some stage in
+this iteration infinitely many complements are discovered, then the function
+returns fail. (Even though there might be only finitely many conjugacy
+classes of complements to $N$ in $U$.)
+
+\> ComplementClasses( [<V>,] <U>, <N> )
+
+Let $N$ and $U$ be normal subgroups of $V$ with $N \leq U \leq V$. This 
+function attempts to compute the $V$-conjugacy classes of complements to 
+$N$ in $U$. The algorithm proceeds by iteration over a $V$-invariant
+efa series of $N$. If at some stage in this iteration infinitely many 
+complements are discovered, then the algorithm returns fail. 
+
+\>ExtensionCR( <C>, <c> )
+
+returns the extension corresponding to the 2-cocycle $c$.
+
+\>ExtensionsCR( <C> )  
+
+returns all extensions using the correspondence to $Z^2(U,A)$. Further,
+this function returns fail, if $Z^2(U,A)$ is infinite.
+
+\>ExtensionClassesCR( <C> )
+        
+returns extension classes using the correspondence to $H^2(U,A)$. Further, 
+this function returns fail, if $H^2(U,A)$ is infinite.
+
+\>SplitExtensionPcpGroup( <U>, <mats> )
+
+returns the split extension of <U> by the $U$-module described by <mats>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Constructing pcp groups as extensions}
+
+This section contains an example application of the second cohomology
+group to the construction of pcp groups as extensions. The following
+constructs extensions of the group of upper unitriangular matrices with
+its natural lattice.
+
+\beginexample
+
+# get the group and its matrix action
+gap> G := UnitriangularPcpGroup(3,0);
+Pcp-group with orders [ 0, 0, 0 ]
+gap> mats := G!.mats;
+[ [ [ 1, 1, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+  [ [ 1, 0, 0 ], [ 0, 1, 1 ], [ 0, 0, 1 ] ],
+  [ [ 1, 0, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] ]
+
+# set up the cohomology record
+gap> C := CRRecordByMats(G,mats);;
+
+# compute the second cohomology group
+gap> cc := TwoCohomologyCR(C);;
+
+# the abelian invariants of H^2(G,M) 
+gap> cc.factor.rels;
+[ 2, 0, 0 ]
+
+# construct an extension which corresponds to a cocycle that has
+# infinite image in H^2(G,M)
+gap> c := cc.factor.prei[2];
+[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, -1, 1 ]
+gap> H := ExtensionCR( CR, c);
+Pcp-group with orders [ 0, 0, 0, 0, 0, 0 ]
+
+# check that the extension does not split - get the normal subgroup
+gap> N := H!.module;
+Pcp-group with orders [ 0, 0, 0 ]
+
+# create the interal module
+gap> C := CRRecordBySubgroup(H,N);;
+
+# use the complements routine
+gap> ComplementClassesCR(C);
+[  ]
+\endexample
+

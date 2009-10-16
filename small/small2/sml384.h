@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.sml384_h :=
-    "@(#)$Id$";
+    "@(#)$Id: sml384.h,v 1.1 1998/07/18 16:57:05 gap Exp $";
 
 SMALL_GROUP_LIB[ 384 ][ 8 ] :=
 [ 28275648268745588884940368392, 28275456020669953965956899336,

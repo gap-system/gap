@@ -2,7 +2,7 @@
 **
 *W  opers.h                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: opers.h,v 4.26 2007/10/16 17:35:48 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_opers_h =
-   "@(#)$Id$";
+   "@(#)$Id: opers.h,v 4.26 2007/10/16 17:35:48 gap Exp $";
 #endif
 
 

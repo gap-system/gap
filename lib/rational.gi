@@ -2,7 +2,7 @@
 ##
 #W  rational.gi                 GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rational.gi,v 4.39 2006/01/24 15:19:33 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains methods for rationals.
 ##
 Revision.rational_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rational.gi,v 4.39 2006/01/24 15:19:33 gap Exp $";
 
 
 #############################################################################

@@ -1,0 +1,196 @@
+#These cases are known to result in bugs:
+#If you have some more bugs,
+#  please send e-mail to:  gene@ccs.neu.edu
+
+#Note that this is more a stream-of-consciousness, than a formal list.
+# Reader Beware!    It gives you some idea of what I was thinking about,
+#                   but it's not a definitive statement.
+#                   These bugs can be a result of GAP/MPI or GAP, but
+#                   most often is is a strange interaction between them. 
+#This is a very informal list, hopefully with a limited lifetime.
+# So, I have not spent much time making it easily readable to others.
+
+[ Messages with a print length of about 100,000 characters or more may
+  fail under GAP/MPI.  For example, one such test resulted in the message:
+  Panic: NewBag called with size >= 2^24
+  This issue is architecture-dependent, and may be fixed in future
+  releases of GAP or GAP/MPI. ]
+
+# GAPMPI_Catch(Print,[5]) is the correct syntax.
+# Also, this would only happen if we didn't do ClearError()
+# Anyway, an end-user shouldn't be playing with this.
+gap> GAPMPI_Catch(Print,5);
+CallFuncList: <list> must be a list
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return a list for <list> to continue
+brk> 
+brk> Where();
+Segmentation fault (core dumped)
+# It's possible that this is a GAP bug, and not GAP/MPI
+
+ ^C or InterruptSlave(1) gives weird error:
+Syntax error: expression expected in stream line 1
+ y^
+[ This message should be ignored.  If on the master inside a "brk>" loop,
+  type "quit;" to leave the break loop.
+  Maybe this will go away in GAP 4.x, which now allows empty statements. ]
+
+  When GAP/MPI is idle for a while, messages like the following appear:
+gap> sendrecv.c(line 376): sendrecv.c(line 376): num_bytes = recv: Broken pipe
+num_bytes = recv: Broken pipe
+  Apparently, this occurs because MPINU uses SO_KEEPALIVE.  This is a mixed
+  blessing, since it causes a runaway process to get SIGPIPE and die.
+  A cleaner way of handling this will be arranged in the future.  The error
+  messages are usually false, and can be ignored.  A quick test can be
+  done by:
+gap> PingSlave(-1);
+true
+  where -1 means to ping all slaves.
+
+  Occasionally, GAP/MPI will die in the middle, leaving the terminal
+  or xterm in an uncertain state.  This is because GAP doesn't have a
+  chance to place the terminal back in standard mode, and so some of
+  the terminal options are still in GAP's CBREAK mode. For example,
+  newlines may not echo, and ^C may no longer produce a SIGINT.
+  It would be nice if running GAP again could fix this automatically,
+  as GAP re-initialized the terminal.  But maybe that's not possible,
+  because GAP is trying to save the terminal state (however broken it
+  may seem), and restore that same state on exit from GAP.
+
+  [ syIsIntr() is not checked until next top level "gap>", after which
+    the interrupt is finally recognized. ]
+  gap> MPI_Recv("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+  ^C
+  Syntax error: expression expected in stream line 1
+  [X]^
+  gap> 3;
+  user interrupt while printing
+  Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+  or you can return to continue
+  brk> quit;
+  [Y]gap>
+    [X = ^C ? (scanner.c seems to use that as signal to flush print buffer) ]
+    [ Y = 0377 (octal) ]
+
+  [ This bug appears to be tied to a GAP bug.  It may disappear in GAP 4.x
+    The related GAP bug is:
+      Read( InputTextString( "for i in [1..100000000] do od;" ));
+    after which, ^C (interrupt) and quit from break loop crashes GAP.
+    Detailed gdb notes for myself follow. ]
+  gap> SendMsg("j:=0");
+  gap> RecvMsg();
+  "<no_return_val>"
+  gap> SendMsg("for i in [1..100000000] do j:=j+1; od;");
+  ^C
+  gap> InterruptSlave(1);
+  gap> PingSlave(1);                                     
+  Broken pipe
+  [ Slave is likely to go into infinite loop or crash, and ignore ^C ]
+  On slave:  GAPMPI_Catch -> FuncCALL_FUNC_LIST -> ExecWhile -> ExecSeqStat7
+               -> FuncREAD_STREAM -> ReadFor -> GAPMPIAnswerIntr
+  AFTER:
+    GAPMPI_Catch -> FuncCALL_FUNC_LIST -> ExecWhile -> ExecSeqStat7
+  [ Apparently, longjmp of GAPMPIAnswerIntr is being caught by
+    ReadFromString(), and not going all the way to
+        GAPMPI_Catch(SlaveListener,[]) ]
+  [ The same behavior can be displayed on the master with: ]
+SIMPLER VERSION OF SAME BUG:
+    GAPMPI_Catch(ReadEvalPrint,["for i in [1..100000000] do j:=j+1; od;"]);
+AND:
+    ReadEvalPrint("for i in [1..100000000] do j:=j+1; od;");
+AND:
+    ReadEvalFromString("for i in [1..100000000] do j:=j+1; od;");
+AND:
+    Read( InputTextString( "for i in [1..100000000] do i:=i; od;" ) );
+    ^C
+    user interrupt at
+    ...
+    brk> 3;
+    3
+    brk> quit;
+    [ core dump ]
+# After First ^C:
+break ExecIntrStat
+break InterruptExecStat
+break ClearError
+break ReadEvalError
+break ../../src/read.c:1481
+EXECUTING longjmp goes to ../../src/read.c:1477
+Problem seems to be that ReadEvalCommand() returns STATUS_ERROR, and
+    READ() ignores it and decides that everything's okay.  Why a problem?
+Maybe READ() should return 0 (false), which gets translated to
+    to False by FuncREAD_STREAM (aka CALL_1ARGS() ), which ExecProcCall1args 
+    should then test and return 1 (leave-statement, return or quit)
+src/read.c:ReadFor:IntrCoding has garbage value when it gets decremented
+#0  IntrEnd (error=1) at ../../src/intrprtr.c:306
+#1  0x80eee53 in ReadEvalCommand () at ../../src/read.c:1872
+   [ UserHasQuit was set;  Called IntrEnd( 1UL ) {signalling error},
+      and set type = STATUS_ERROR; IntrResult = 0 ]
+#2  0x80fab26 in READ () at ../../src/streams.c:71
+  [ status of 32 == STATUS_ERROR received by ReadEvalCommand();
+    Does ClearError() and returns 1 = true;
+    Even stranger, CloseInput() apparently modifies status. ] 
+#3  0x80fbd5d in FuncREAD_STREAM (self=0x82e93b4, stream=0x82fd0d0)
+    at ../../src/streams.c:892
+#4  0x80aeca1 in ExecProccall1args (call=48) at ../../src/funcs.c:113
+  [ Always returns 0 (no leave-statement was executed); NrError = 0 ]
+
+#0  ClearError () at ../../src/stats.c:1541
+#1  0x80fac03 in READ () at ../../src/streams.c:114
+#2  0x80fbd5d in FuncREAD_STREAM (self=0x82e93b4, stream=0x82fd294)
+    at ../../src/streams.c:892
+#3  0x80aeca1 in ExecProccall1args (call=48) at ../../src/funcs.c:113
+#4  0x80f83ce in ExecSeqStat3 (stat=4) at ../../src/stats.c:192
+  AND IT BOMBS WHEN TRYING TO RETURN FROM ExecSeqStat3
+  [ So, GAPMPIAnswerIntr  needs to longjmp to GAPMPI_Catch instead,
+    if there is a catch available, or else we can debug what FuncREAD_STREAM()
+    is doing when it catches the current longjmp.  This seems to mean having
+    GAPMPI_Catch set and re-set its own global jump buffer. ]
+#4  0x80d68ea in IntrForEnd () at ../../src/intrprtr.c:742
+#5  0x810553d in ReadFor (follow=3221225472) at ../../src/read.c:1477
+#6  0x8105c6d in ReadEvalCommand () at ../../src/read.c:1840
+#7  0x8111a42 in READ () at ../../src/streams.c:71
+#8  0x8112c79 in FuncREAD_STREAM (self=0x83013b4, stream=0x830ef48)
+    at ../../src/streams.c:892
+   [ IntrForEnd happens inside a READ_ERROR() ]
+
+  Currently, MPINU does not have an internal buffer for messages.
+  So, if you do:
+  SendMsg( false, 1, 14 ); # Send message with tag 14
+  SendMsg( true, 1, 15 ); # Send message with tag 15
+  RecvMsg( 1, 15 ); # Will actually receive message with tag 14 (false) first
+  [ THEN THIS WILL FAIL ]
+
+  # This appears to be a bug in GAP:  (Run it in a _fresh_ GAP)
+  gap> z:=List([1..100000], x->' ');;
+  gap> str := "";
+  ""
+  gap> output := OutputTextString( str, true );
+  OutputTextString(0)
+  gap> PrintTo(output, z);
+  gap> CloseStream(output);
+  gap> Length(str);
+  1041
+  gap> # The actual number you see above may be different
+
+#=======================================================================
+#These have been tested for and seem to work correctly for me, now.
+
+  gap> RecvMsg();
+  ^C
+
+  gap> j:=0;
+  gap> for i in [1..100000000] do j:=j+1; od;
+  ^C
+
+  gap> SendMsg("3/0");
+  brk>
+  [ Master starts entering break loop a lot.  Apparently, slave sends
+     something to master? ]
+
+  gap> SendMsg("3/0");    
+  gap> Rational operations: divisor must not be zero
+  gap> 3;
+  3
+  gap> RecvMsg();     
+  "<no_return_val>"

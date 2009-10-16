@@ -3,7 +3,7 @@
 #W  irredsol.gi                 GAP group library                  Mark Short
 #W                                                           Burkhard Hofling
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: irredsol.gi,v 1.4 2001/12/13 11:48:06 gap Exp $
 ##
 #Y  Copyright (C) 1993, Murdoch University, Perth, Australia
 #Y  Copyright (C) 2001, Technische Universitaet, Braunschweig, Germany
@@ -20,7 +20,7 @@
 ##  missing from that list, subsequently discovered by Alexander Hulpke.
 ##
 Revision.irredsol_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: irredsol.gi,v 1.4 2001/12/13 11:48:06 gap Exp $";
 
 #############################################################################
 ##

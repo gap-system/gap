@@ -2,14 +2,14 @@
 ##
 #W  gprdperm.gi                 GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gprdperm.gi,v 4.41 2005/02/08 21:01:19 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprdperm_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: gprdperm.gi,v 4.41 2005/02/08 21:01:19 gap Exp $";
 
 
 #############################################################################

@@ -1,0 +1,39 @@
+
+# This is the 3 generator Engel-4 group of exponent 5 from Tom Litt's
+# thesis.  Note that there are free reductions in, eg, [a,ab,ab,ab,ab].
+
+Gr: a,b,c;
+Rel:
+  [a,b],
+
+  [c,a,a,a], [c,a,a,c], [c,a,c,a], [c,a,c,c],
+  [c,b,b,b], [c,b,b,c], [c,b,c,b], [c,b,c,c],
+
+  [c,a,a,b,b], [c,b,b,a,a], [c,a,c,b,b], [c,b,c,a,a],
+
+  (a)^5, (b)^5, (c)^5, (ab)^5, (aB)^5, (ac)^5, (aC)^5, (bc)^5, (bC)^5,
+  (abc)^5, (abC)^5, (aBc)^5, (aBC)^5, (abcc)^5, (abbc)^5, (abbcc)^5,
+  (aBcc)^5, (abbC)^5, 
+
+  (A)^5, (aab)^5, (aac)^5, (bbc)^5, (aaB)^5, (aaC)^5, (bbC)^5, (Abc)^5,
+  (ABc)^5, (AbC)^5, (ABC)^5, 
+
+  (Abcc)^5, (Abbc)^5, (Abbcc)^5, (ABcc)^5, (aBBc)^5, (aabc)^5, (aabC)^5,
+  (aaBc)^5, (aaBC)^5, (aabcc)^5, (aabbc)^5, (aaBcc)^5, (aabbC)^5, 
+
+  [a,c,c,c,c], [A,c,c,c,c], [a,C,C,C,C], [A,C,C,C,C],
+  [b,c,c,c,c], [B,c,c,c,c], [b,C,C,C,C], [B,C,C,C,C],
+
+  [c,a,a,a,a], [C,a,a,a,a], [c,A,A,A,A], [C,A,A,A,A],
+  [c,b,b,b,b], [C,b,b,b,b], [c,B,B,B,B], [C,B,B,B,B],
+
+  [a,ac,ac,ac,ac], [a,AC,AC,AC,AC], [b,bc,bc,bc,bc], [b,BC,BC,BC,BC],
+
+  [c,ac,ac,ac,ac], [c,AC,AC,AC,AC], [c,bc,bc,bc,bc], [c,BC,BC,BC,BC]
+  ;
+Gen: ab,bc;
+
+Wo:4M;
+Mess:10000;
+Hard;
+

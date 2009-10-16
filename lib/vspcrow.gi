@@ -2,7 +2,7 @@
 ##
 #W  vspcrow.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: vspcrow.gi,v 4.97 2009/09/30 10:05:20 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -31,7 +31,7 @@
 ##  8. Methods installed by somebody else without documenting this ...
 ##
 Revision.vspcrow_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: vspcrow.gi,v 4.97 2009/09/30 10:05:20 gap Exp $";
 
 
 #############################################################################
@@ -243,7 +243,8 @@ InstallHandlingByNiceBasis( "IsNonGaussianRowSpace", rec(
 ##  relative basis.
 ##  (So there is no need for `IsBasisGaussianRowSpace').
 ##
-##  If basis vectors are known then the component `heads' is bound.
+##  If basis vectors are known and if the space is nontrivial
+##  then the component `heads' is bound.
 ##
 DeclareRepresentation( "IsSemiEchelonBasisOfGaussianRowSpaceRep",
     IsAttributeStoringRep,
@@ -287,6 +288,9 @@ InstallMethod( Coefficients,
     # Check whether the vector has the right length.
     # (The heads info is not stored before the basis vectors are known.)
     vectors:= BasisVectors( B );
+    if IsEmpty( vectors ) then
+      return [];
+    fi;
     heads:= B!.heads;
     len:= Length( v );
     if len <> Length( heads ) then
@@ -610,7 +614,7 @@ InstallMethod( SemiEchelonBasis,
                    rec() );
 
     gens:= GeneratorsOfLeftModule( V );
-    if IsEmpty( gens ) or ForAll( gens, IsZero ) then
+    if ForAll( gens, IsZero ) then
       SetIsEmpty( B, true );
     else
       SetIsRectangularTable( B, true );
@@ -625,7 +629,6 @@ InstallMethod( SemiEchelonBasis,
     IsIdenticalObj,
     [ IsGaussianRowSpace, IsMatrix ],
     function( V, gens )
-
     local heads,   # heads info for the basis
           B,       # the basis, result
           gensi,   # immutable copy
@@ -742,7 +745,15 @@ InstallMethod( BasisVectors,
 InstallOtherMethod( Zero,
     "for a row space",
     [ IsRowSpace ],
-    V -> Zero( LeftActingDomain( V ) ) * [ 1 .. DimensionOfVectors( V ) ] );
+function(V)
+local d,z;
+  d:=LeftActingDomain(V);
+  z:=Zero( d ) * [ 1 .. DimensionOfVectors( V ) ];
+  if IsField(d) and IsFinite(d) and Size(d)<=256 then
+    ConvertToVectorRep(z,d);
+  fi;
+  return z;
+end);
 
 
 #############################################################################
@@ -750,15 +761,9 @@ InstallOtherMethod( Zero,
 #M  IsZero( <v> )
 ##
 InstallMethod( IsZero,
-    "for row vector",
+    "for a row vector",
     [ IsRowVector ],
-    function( v )
-    if IsEmpty( v ) then
-      return true;
-    else
-      return Length( v ) < PositionNot( v, Zero( v[1] ) );
-    fi;
-    end );
+    v -> IsEmpty( v ) or Length( v ) < PositionNot( v, Zero( v[1] ) ) );
 
 
 #############################################################################
@@ -984,6 +989,11 @@ InstallMethod( CanonicalBasis,
 
     ech:= SemiEchelonBasis( V );
     vectors:= BasisVectors( ech );
+    if IsEmpty( vectors ) then
+      SetIsEmpty( ech, true );
+      SetIsCanonicalBasis( ech, true );
+      return ech;
+    fi;
     heads := ShallowCopy( ech!.heads );
     n:= Length( heads );
 
@@ -1010,11 +1020,7 @@ InstallMethod( CanonicalBasis,
                             and IsSemiEchelonBasisOfGaussianRowSpaceRep
                             and IsCanonicalBasis ),
                    rec() );
-    if IsEmpty( vectors ) then
-      SetIsEmpty( B, true );
-    else
-      SetIsRectangularTable( B, true );
-    fi;
+    SetIsRectangularTable( B, true );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, base );
 
@@ -1197,7 +1203,7 @@ BindGlobal( "NextIterator_SubspacesDim", function( iter )
 
       # Get the next choice of pivot positions,
       # and install an iterator for spaces with this choice.
-      iter!.actchoice:= NextIterator( iter!.choiceiter );
+      iter!.actchoice:= ShallowCopy(NextIterator( iter!.choiceiter ));
       dim:= n * k - k * (k - 1) / 2 - Sum( iter!.actchoice );
       Add( iter!.actchoice, n + 1 );
       iter!.spaceiter:= IteratorByBasis(
@@ -1297,7 +1303,7 @@ InstallMethod( Iterator,
                                                  D!.dimension ) ) ) );
 #T better make this *really* clever!
       # Initialize.
-      iter!.actchoice:= NextIterator( iter!.choiceiter );
+      iter!.actchoice:= ShallowCopy(NextIterator( iter!.choiceiter ));
       iter!.spaceiter:= IteratorByBasis( CanonicalBasis( FullRowSpace(
            iter!.field, n * k - k * (k - 1) / 2
                                - Sum( iter!.actchoice ) ) ) );

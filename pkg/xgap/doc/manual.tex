@@ -1,0 +1,110 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                GAP documentation             Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  @(#)$Id: manual.tex,v 1.8 1999/03/23 18:39:52 ahulpke Exp $
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+\input ../../../doc/gapmacro
+\def\XGAP{{\sf XGAP}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{xgap}
+\UseReferences{../../../doc/tut}
+\UseReferences{../../../doc/prg}
+\UseReferences{../../../doc/ext}
+\UseReferences{../../../doc/ref}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont The XGAP 4 Manual}\bigskip
+  \centerline{\secfont by}\bigskip
+  \centerline{\secfont Frank Celler}\bigskip
+  \centerline{\secfont and}\bigskip
+  \centerline{\secfont Max Neunh\accent127offer}\bigskip
+  \centerline{(email: `max.neunhoeffer@math.rwth-aachen.de')}\vfill
+  \centerline{Copyright {\copyright} 1999 by Frank Celler and Max 
+              Neunh\accent127offer}\bigskip
+  \centerline{We adopt the copyright regulations of {\GAP} as detailed in the 
+              copyright notice in the {\GAP} manual.}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Colophon . . . . . . . . . . . . . . . . . . . . . . acknowledgements
+%%
+%\Colophon{
+%  follows...
+%}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
+%%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{../../../doc/manual,manual}}
+%\Input ../../../doc/ref/copyrigh
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
+%%
+\Chapters
+\Input{savetime}
+\Input{whatis}
+\Input{install}
+\Input{sgrplats}
+\Input{sglatsys}
+\Input{gobject}
+\Input{usercomm}
+\Input{posetops}
+\Input{graphs}
+\Input{diffgap3}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%%
+\Appendices
+\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex  . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+%%% Local Variables: 
+%%% mode: plain-tex
+%%% TeX-master: t
+%%% End: 

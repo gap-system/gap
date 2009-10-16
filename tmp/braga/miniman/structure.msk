@@ -1,0 +1,13 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  fpsemi.msk                GAP documentation                Isabel Araujo
+%%
+%A  @(#)$Id: structure.msk,v 1.1 1999/05/05 19:22:05 gap Exp $
+%%
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+
+
+\Chapter{Creating and working with algebraic structures}
+
+

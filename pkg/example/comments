@@ -1,0 +1,139 @@
+Thomas Breuer, October 2007
+
+This file contains comments concerning the translation of the
+documentation of the `Example' package to GAPDoc format.
+
+- I started with my conversion tools.
+  (Meanwhile they are available in the file `dev/gapmacro2gapdoc.g',
+  so one can look at them,
+  but if you use them then you do it at your own risk.)
+
+- Then I started to polish the result by hand.
+  In the case of the manual for the `Example' package,
+  just the newly created files `doc/*.xml' are subject to changes,
+  since the files in the `gap' directory of the package did not contain
+  parts of the documentation.
+  A detailed list of the changes can be found at the end of this file.
+  Note that meanwhile the situation may be different,
+  since the debugging facilities of GAPDoc have been improved substantially,
+  so one gets better error messages than in earlier versions.
+
+- Further formal improvements to be done:
+  - In `doc/main.xml', add the author's homepage (which was not available
+    in the old format).
+  - There are several <C> elements which can be turned into <Ref> elements
+    (pointing to the GAP Reference Manual) or into <F> elements.
+
+- Suggested changes of the *contents* (not related to the manual format):
+  - The function `ListDirectory' uses the system program `ls';
+    this should be mentioned,
+    perhaps this should even be regarded as an entry for
+    `Dependencies.ExternalConditions' in the `PackageInfo.g' file.
+    (Would it be reasonable to add a cross-reference to the function
+    `DirectoryContents' in the Reference Manual?)
+  - It seems that `FindFile' can run into an infinite loop if the files in
+    the directory in question do not form a tree; the documentation assumes
+    this, but it could be stated more explicitly.
+  - In the section ``The Banner'',
+    I would not *recommend* to add a `BannerString' component,
+    at most say that this is possible;
+    note that a default package banner is computed from the contents of
+    the `PacklageInfo.g' file.
+  - In the section ``Having an InfoClass'',
+    is it really true that ``level 1 is typical''?
+    (The default is zero, so one has to do something for getting level 1.)
+  - The appendix `hints.tex' described the manual format used by the
+    `Example' package, and this is no longer true after the format change
+    to GAPDoc; I have adjusted the obvious things but this was probably not
+    good enough.
+    (Should a `manualbib.xml' file be recommended instead of `manual.bib'?)
+  - The section ``Documentation Software Tools Needed'' describes what is
+    needed for a `gapmacro.tex' based package manual (in spite of the first
+    sentence of this section).
+    I started to adjust it, i.e., to reformulate and comment out,
+    but eventually I gave up -- does this section make sense anymore,
+    since processing the documentation with GAPDoc is so much simpler
+    (because GAP does the conversion, and external programs are needed only
+    in the end)?
+  - The cross-reference to the chapter ``The gapmacro.tex Manual Format''
+    in the book ``Extending GAP'' will not be available in the future,
+    this information will be moved to a separate document.
+  - Should the `LoadPackage' example in `install.xml' involve the
+    `VERSION' file, in order to avoid adjusting the version number here
+    with each release of the package?
+  - In the section ``CVS'', cvs access to GAP is mentioned;
+    as soon as we change this to svn, this section must be adjusted.
+
+
+-----------------------------------------------------------------------------
+
+And here is the promised explicit list of conversion steps by hand.
+
+- create main.xml
+- in `gapmacro2gapdoc.g', add the replacement
+  [ "{\\Example}", "&Example;" ]
+  to the function `RewriteText'
+- start gap, read  `gapmacro2gapdoc.g'
+- make sure that the ``old format'' manual.six files are available
+  (either because the old version is still there or because there
+  are the manual.six.old files)
+  [needed for identification of crossrefs to function kind or section kind]
+- run the conversion:
+    gap> TranslateMSK2XML( "doc/example.tex" );
+    gap> TranslateMSK2XML( "doc/install.tex" );
+    unidentified reference:
+    <Ref ???=";<A>myhomedir</A>/mygap"/>
+    gap> TranslateMSK2XML( "doc/hints.tex" );
+    unidentified reference:
+    <Ref ???="gapdoc:Introduction  and  Example"/>
+    unidentified reference:
+    <Ref ???="<A>package</A>"/>
+- go through the .xml files:
+  - fix unrecognized labels (here: one string misunderstood as cross-ref.,
+    and one crossref to GAPDoc),
+    to be found at ???
+  - change <Chapter>...</Chapter> in hints.xml to
+    <Appendix>...</Appendix>
+  - remove the <P/> elements above the beginning of the chapter
+- now `makedocrel.g' runs through and produces some error messages
+  (= hints how to proceed)
+  - non resolved references: space and line breaks are now relevant
+    (three times); 
+    and the M which was not translated (do it by hand now)
+  - and LaTeX errors: 
+    - There is a \> ... M in `example.xml' -- change it to a <ManSection>
+      (This case was very rare in the main manuals.)
+    - replace the `\ ' by &nbsp;
+    - replace the `#' by &hash;
+    - a problem with a list item that consists of several paragraphs
+      (rare case, not handled by the tools)
+    - deal with the line \kernttindent...  in Section ``The Banner''
+  - problem: \URL inside a list item was not found
+  - problem: \begintt ... \endtt inside a list was not found
+- (now the manual compiles.)
+- copy manual.css into doc, check the HTML version.
+- check the txt version.
+
+- still the manual is not good!
+  - follow the ``MOVE DOWN'' instructions in the .xml files
+    (Note that the end of a ``subsection'' was not explicit
+    in the old format.)
+  - replace <C> by <F> where appropriate (for filenames)
+  - remove unwanted comment lines
+  - adjust cross-references:
+    omit the ``in the ... Manual'' text behind cross-references,
+    remove the duplications of the kind ``<C>fun</C> (see <Ref Func="fun"/>)'',
+    turn obvious ``<C>fun</C>'' into ``<Ref Func="fun" BookName="ref"/>''
+  - in <ManSection>, introduce <Description>
+    (this does not happen in the case of function descriptions inside
+    GAP code files)
+  - introduce <P/> in an implicit enumeration (in the old version,
+    empty lines were sufficient)
+  - comment out parts that are obviously not true anymore
+  - removed the ``unstableoutput'' remark in `doc/example.xml',
+    since it seemed to make no sense
+  - change the text around cross-references to other manuals;
+    the specification ``of the ... Manual'' is no longer necessary
+  - ...
+
+

@@ -1,0 +1,45 @@
+#!/bin/sh
+
+PKGZOO=cryst-4.1.6.zoo
+
+# remove old archive
+rm -f $PKGZOO
+
+# goto <gaproot>/pkg
+cd ../..
+
+# make the package archive
+
+# first the binary files
+echo "!BINARY!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.dvi
+echo "!BINARY!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.pdf
+
+# then the text files
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.tex
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.bbl
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.six
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.lab
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.toc
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.mst
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/manual.ps
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/introduction.tex
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/cryst.tex
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/doc/make_doc
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/PackageInfo.g
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/init.g
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/read.g
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/README
+echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO cryst/Changelog
+for file in cryst/gap/*.g[di] ; do
+  echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO $file
+done
+for file in cryst/grp/spacegrp.* ; do
+  echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO $file
+done
+for file in cryst/htm/*.htm ; do
+  echo "!TEXT!" | zoo ach cryst/etc/$PKGZOO $file
+done
+
+# check the results
+cd cryst/etc
+zoo -list $PKGZOO

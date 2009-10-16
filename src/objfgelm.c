@@ -2,7 +2,7 @@
 **
 *W  objfgelm.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id$
+*H  @(#)$Id: objfgelm.c,v 4.45 2002/04/15 10:03:53 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -76,7 +76,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_objfgelm_c =
-   "@(#)$Id$";
+   "@(#)$Id: objfgelm.c,v 4.45 2002/04/15 10:03:53 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

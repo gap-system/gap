@@ -20,6 +20,8 @@ ReadLib( "object.gd"   );
 
 ReadLib( "variable.g"  );
 
+ReadLib( "package.gd"   );
+
 ReadLib( "coll.gd"     );
 ReadLib( "list.gd"     );
 ReadLib( "wpobj.gd"    );
@@ -50,6 +52,7 @@ ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
 
+ReadLib( "matobj1.gd"   );
 ReadLib( "vecmat.gd"   );
 ReadLib( "vec8bit.gd"   );
 ReadLib( "mat8bit.gd"   );
@@ -68,4 +71,11 @@ ReadLib( "options.gi"  );
 ReadLib( "attr.gd"     );
 ReadLib( "attr.gi"     );
 
-ReadLib( "float.g"     );
+ReadLib( "macfloat.g"  );
+
+ReadLib( "string.gd"   );
+
+ReadLib( "cmdledit.g"  );
+
+ReadLib( "error.g"   );
+ReadLib( "session.g" );

@@ -2,14 +2,14 @@
 ##
 #W  grpfree.tst                GAP-4 library                    Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpfree.tst,v 4.11 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: grpfree.tst,v 4.11 2005/05/05 15:04:16 gap Exp $");
 
 gap> g:= FreeGroup( "a", "b" );
 <free group on the generators [ a, b ]>
@@ -91,7 +91,7 @@ gap> Print(first50,"\n");
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
 
-gap> STOP_TEST( "grpfree.tst", 4200000 );
+gap> STOP_TEST( "grpfree.tst", 5000000 );
 
 
 #############################################################################

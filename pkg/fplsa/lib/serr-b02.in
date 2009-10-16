@@ -1,0 +1,8 @@
+Generators B_2: e_1 e_2;
+Weights:        1   1;
+Limiting weight: 6;
+Relations:
+[e_1,[e_1,e_2]];
+[e_2,[e_2,[e_2,e_1]]].
+
+

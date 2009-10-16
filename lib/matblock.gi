@@ -2,7 +2,7 @@
 ##
 #W  matblock.gi                 GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: matblock.gi,v 4.17 2009/06/26 15:49:59 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the implementation of methods for block matrices.
 ##
 Revision.matblock_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: matblock.gi,v 4.17 2009/06/26 15:49:59 gap Exp $";
 
 
 #############################################################################
@@ -55,7 +55,7 @@ DeclareRepresentation( "IsBlockMatrixRep",
 #F  BlockMatrix( <blocks>, <nrb>, <ncb>, <rpb>, <cpb>, <zero> )
 ##
 InstallGlobalFunction( BlockMatrix, function( arg )
-    local blocks, nrb, ncb, rpb, cpb, zero, newblocks, block, i;
+    local blocks, nrb, ncb, rpb, cpb, zero, dims, newblocks, block, i;
 
     # Check and get the arguments.
     if Length( arg ) < 3 or not
@@ -85,11 +85,15 @@ InstallGlobalFunction( BlockMatrix, function( arg )
     if not ( IsInt(rpb) and IsInt(cpb) and IsInt(nrb) and IsInt(ncb) ) then
       Error( "block matrices must be finite" );
     fi;
+    dims:= [ rpb, cpb ];
 
     # Remove zero blocks, and sort the list of blocks.
     newblocks:= [];
     for block in blocks do
       if IsBlockMatrixRep( block[3] ) or not IsZero( block[3] ) then
+        if DimensionsMat( block[3] ) <> dims then
+          Error( "all blocks must have the same dimensions" );
+        fi;
         Add( newblocks, block );
       fi;
     od;

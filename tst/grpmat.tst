@@ -2,14 +2,14 @@
 ##
 #W  grpmat.tst                  GAP tests                   Heiko Thei{\ss}en
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpmat.tst,v 4.17 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: grpmat.tst,v 4.17 2005/05/05 15:04:16 gap Exp $");
 
 gap> i := E(4);; G := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
 gap> gens := GeneratorsOfGroup( G );; IsSSortedList( gens );
@@ -56,7 +56,7 @@ gap> img:=Image( iso );;
 gap> Size(img);
 67010895544320000
 
-gap> STOP_TEST( "grpmat.tst", 1952300000 );
+gap> STOP_TEST( "grpmat.tst",1560006131);
 
 
 #############################################################################

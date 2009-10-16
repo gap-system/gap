@@ -2,7 +2,7 @@
 ##
 #W  zmodnz.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: zmodnz.gi,v 4.56 2008/09/17 08:56:30 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -27,7 +27,7 @@
 ##  again the ordering of representatives is chosen.
 ##
 Revision.zmodnz_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: zmodnz.gi,v 4.56 2008/09/17 08:56:30 gap Exp $";
 
 #T for small residue class rings, avoid constructing new objects by
 #T keeping an elements list, and change the constructor such that the
@@ -761,6 +761,7 @@ InstallMethod( PrintObj,
 InstallMethod( AsList,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -773,6 +774,7 @@ InstallMethod( AsList,
 InstallMethod( AsSSortedList,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -789,6 +791,7 @@ InstallMethod( AsSSortedList,
 InstallMethod( Random,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
                     Random( [ 0 .. Size( R ) - 1 ] ) ) );
 
@@ -800,6 +803,7 @@ InstallMethod( Random,
 InstallMethod( Size,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     R -> ElementsFamily( FamilyObj( R ) )!.modulus );
 
 

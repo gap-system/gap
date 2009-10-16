@@ -1,0 +1,16 @@
+# ACEExample "2p17-fel1" : enumeration of cosets of H in G,
+# where |G| = 2^17, H = Id, using felsch := 1 strategy.
+#
+local F, G, a, b, c, A, B, C;
+# We define a 3-generator deficiency 0 group cfd0R7, |cfd0R7| = 2^17 
+F := FreeGroup("a","b","c"); a := F.1;  b := F.2;  c := F.3;
+                             A := a^-1; B := b^-1; C := c^-1;
+G := F / [a*B*C*b*a*c, b*A*C*b*a*a*c*A, a*c*c*A*A*B*a*b];
+return ACEfunc(
+    FreeGeneratorsOfFpGroup(G), 
+    RelatorsOfFpGroup(G), 
+    [a*B*C*b*a*c, b*A*C*b*a*a*c*A, a*c*c*A*A*B*a*b] # |G : H| = 1
+    # Options that don't affect the enumeration
+    : echo, enum := "cfd0R7 (order 2^17)", subg := "Id", 
+    # Other options
+    mess := 10000, felsch := 1, wo := "2500k");

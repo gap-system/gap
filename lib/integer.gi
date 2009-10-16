@@ -2,19 +2,20 @@
 ##
 #W  integer.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
+#W                                                              & Stefan Kohl
 #W                                                            & Werner Nickel
 #W                                                           & Alice Niemeyer
 #W                                                         & Martin Schoenert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: integer.gi,v 4.84 2008/11/26 15:55:35 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.integer_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: integer.gi,v 4.84 2008/11/26 15:55:35 gap Exp $";
 
 
 #############################################################################
@@ -536,7 +537,9 @@ end);
 ##  D. Knuth, Seminumerical Algorithms  (TACP II),  AddiWesl,  1973,  369-371
 ##
 FactorsRho := function ( n, inc, cluster, limit )
-    local   i, sign,  factors,  composite,  x,  y,  k,  z,  g,  tmp;
+
+    local   i,  sign,  factors,  composite,  x,  y,  k,  z,  g,  tmp,
+            IsPrimeOrProbablyPrimeInt;
 
     # make $n$ positive and handle trivial cases
     sign := 1;
@@ -546,7 +549,12 @@ FactorsRho := function ( n, inc, cluster, limit )
     composite := [];
     while n mod 2 = 0  do Add( factors, 2 );  n := n / 2;  od;
     while n mod 3 = 0  do Add( factors, 3 );  n := n / 3;  od;
-    if IsPrimeInt(n)  then Add( factors, n );  n := 1;  fi;
+
+    if   ValueOption("UseProbabilisticPrimalityTest") = true
+    then IsPrimeOrProbablyPrimeInt := IsProbablyPrimeInt;
+    else IsPrimeOrProbablyPrimeInt := IsPrimeInt; fi;
+
+    if IsPrimeOrProbablyPrimeInt(n)  then Add( factors, n );  n := 1;  fi;
 
     # initialize $x_0$
     x := 1;  z := 1;  i := 0;
@@ -578,7 +586,9 @@ FactorsRho := function ( n, inc, cluster, limit )
                     composite := Concatenation( composite, tmp[2] );
 
                     n := n / g;
-                    if IsPrimeInt(n)  then Add( factors, n );  n := 1;  fi;
+                    if IsPrimeOrProbablyPrimeInt(n)  then
+                        Add( factors, n );  n := 1;
+                    fi;
                 fi;
             fi;
         od;
@@ -616,7 +626,10 @@ MakeReadOnlyGlobal( "FactorsRho" );
 ##  factorization failed and return the factorization found so far.
 ##
 InstallGlobalFunction(FactorsInt,function ( n )
-    local  sign,  factors,  p,  tmp;
+
+    local  sign,  factors,  p,  tmp, n_orig, len, rt, tmp2;
+
+    n_orig := n;
 
     # make $n$ positive and handle trivial cases
     sign := 1;
@@ -635,6 +648,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
     # do trial divisions by known primes
     for p  in Primes2  do
         while n mod p = 0  do Add( factors, p );  n := n / p;  od;
+        if p^2 > n then break; fi;
         if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
     od;
     
@@ -678,10 +692,34 @@ InstallGlobalFunction(FactorsInt,function ( n )
       fi;
     if 0 < Length(tmp[2])  then
       if ValueOption("quiet")<>true then
-	Error( "sorry,  cannot factor ", tmp[2], 
-	" try increasing trials in Rho method by option RhoTrials\n",
-        "or using the FactInt package, which provides more efficient\n",
-        "factoring methods" );
+        len := Length(tmp[2]);
+        if LoadPackage("FactInt") = true then
+##            # in general cases we should proceed with the found factors:
+##            while len > 0 do
+##              Append(tmp[1], Factors(tmp[2][len]));
+##              Unbind(tmp[2][len]);
+##              len := len-1;
+##            od;
+          # but this way we miss that FactInt can detect certain numbers of
+          # special shape for which it uses lookup tables, therefore for the
+          # moment:
+          return Factors(n_orig);
+        else
+          Error( "sorry,  cannot factor ", tmp[2], 
+            "\ntype 'return;' to try again with a larger number of trials in\n",
+            "FactorsRho (or use option 'RhoTrials')\n");
+          if ValueOption("RhoTrials") <> fail then
+            rt := 5 * ValueOption("RhoTrials");
+          else
+            rt := 5 * 8192;
+          fi;
+          while len > 0 do
+            tmp2 := FactorsInt(tmp[2][len]: RhoTrials := rt);
+            Append(tmp[1], tmp2);
+            Unbind(tmp[2][len]);
+            len := len-1;
+          od;
+        fi;
       else
 	factors := Concatenation( factors, tmp[2] );
       fi;
@@ -881,7 +919,7 @@ InstallGlobalFunction( IsOddInt, n -> n mod 2 = 1 );
 ##
 # a non-recursive version,  nowadays the algorithm can be applied to
 # numbers with many thousand digits
-BindGlobal("TraceModQF", function ( p, k, n )
+InstallGlobalFunction(TraceModQF, function ( p, k, n )
   local kb, trc, i;
   kb := [];
   while k <> 1 do
@@ -980,11 +1018,7 @@ BindGlobal( "IsProbablyPrimeIntWithFail", function( n )
     return false;
 end);
 
-InstallGlobalFunction( IsProbablyPrimeInt, function( n )
-  return IsProbablyPrimeIntWithFail(n) <> false;
-end);
-
-InstallGlobalFunction(IsPrimeInt,function ( n )
+InstallGlobalFunction(IsPrimeIntOld,function ( n )
   local res;
   res := IsProbablyPrimeIntWithFail(n);
   if res = false then
@@ -1299,17 +1333,42 @@ end);
 #M  RingByGenerators( <elms> ) . . . . . . .  ring generated by some integers
 ##
 InstallMethod( RingByGenerators,
-    "method that catches the cases of `Integers'",
+    "method that catches the cases of `Integers' and subrings of `Integers'",
     [ IsCyclotomicCollection ], 
     SUM_FLAGS, # test this before doing anything else
     function( elms )
-      if ForAll( elms, IsInt ) and Gcd( elms ) = 1 then
-        return Integers;
+      if ForAll( elms, IsInt ) then
+        # check that the number of generators is bigger than one
+        # to avoid infinite recursion    
+        if Length( elms ) > 1 then
+          return RingByGenerators( [ Gcd(elms) ] );
+        elif elms[1] = 1 then
+          return Integers;
+        else
+          TryNextMethod();        
+        fi;
       else
         TryNextMethod();
       fi;
     end );
-
+    
+    
+#############################################################################
+##
+#M  RingWithOneByGenerators( <elms> ) . . . . ring generated by some integers
+##
+InstallMethod( RingWithOneByGenerators,
+    "method that catches the cases of `Integers'",
+    [ IsCyclotomicCollection ], 
+    SUM_FLAGS, # test this before doing anything else
+    function( elms )
+      if ForAll( elms, IsInt ) then
+        return Integers;
+      else
+        TryNextMethod();
+      fi;
+    end );    
+    
 
 #############################################################################
 ##
@@ -1609,6 +1668,7 @@ InstallMethod( Random,
     function( Integers )
     return NrBitsInt( Random( [0..2^20-1] ) ) - 10;
     end );
+
 
 
 #############################################################################

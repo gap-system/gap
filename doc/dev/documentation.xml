@@ -1,0 +1,29 @@
+<!-- 
+
+  documentation.xml          GAP documentation    
+
+  Copyright (C) 2005,  The GAP Group
+
+Organization and compilation of GAP documentation.
+
+       $Id: documentation.xml,v 1.2 2008/01/07 15:52:47 alexk Exp $
+-->
+
+<Chapter Label="Chap-Documentation">
+<Heading>Maintaining the &GAP; documentation</Heading>
+
+This chapter explains shortly how the &GAP; documentation is organized
+and how to produce the viewable documents from the sources. 
+
+<Section Label="Sect-DocDirs">
+<Heading>The source of the &GAP; documentation</Heading>
+
+</Section>
+
+<Section Label="Sect-DocCompile">
+<Heading>How to compile the &GAP; manuals from the sources</Heading>
+...
+</Section>
+
+</Chapter>
+

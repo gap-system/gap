@@ -1,7 +1,7 @@
 #############################################################################
 #W  semirel.gi                  GAP library                James D. Mitchell
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: semirel.gi,v 4.43 2007/03/13 16:40:28 jamesm Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,8 +12,7 @@
 ##  congruences, and Rees congruences.
 ##
 Revision.semirel_gi :=
-    "@(#)$Id$";
-
+    "@(#)$Id: semirel.gi,v 4.43 2007/03/13 16:40:28 jamesm Exp $";
 
 #######################
 #######################
@@ -641,7 +640,8 @@ InstallMethod(GreensDClasses, "for a semigroup", true, [IsSemigroup], 0,
      for i in [1..Length(INT_L)] do
        INT_lc:=INT_L[i];
        pos:=PositionProperty(INT_Dclasses, x->IsSubset(x, INT_lc));
-
+	#JDM isn't it enough that INT_lc contains a single element in
+ 	#JDM INT_Dclasses[something].
        if pos=fail then  
 
           index:=index+1; Add(Rclasses, []); Add(Hclasses, []); Add(positions, []);
@@ -985,17 +985,16 @@ end);
 InstallMethod(FroidurePinExtendedAlg, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite], 0,
 function(mono)
 
-local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last, currentlength, b, s, r, newelt, j, p, 
-new, length, newword, first, final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi, old, 
-sortedelts, pos, semi, perm, free2;
+local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last, currentlength, b, s, r, newelt, j, p, new, length, newword, first, final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi, old, sortedelts, pos, semi, perm, free2;
 
 if not IsMonoid(mono) then 
-    semi := MonoidByAdjoiningIdentity(mono);
+	semi := MonoidByAdjoiningIdentity(mono);
 else
-   semi:=mono;
+	semi:=mono;
 fi;
 
-gens:=Set(GeneratorsOfMonoid(semi));
+#JDM gens:=Set(GeneratorsOfMonoid(semi));
+gens:=Set(Filtered(GeneratorsOfMonoid(semi), x-> not IsOne(x)));
 k:=Length(gens);
 free:=FreeMonoid(k);
 freegens:=GeneratorsOfMonoid(free);
@@ -1013,27 +1012,27 @@ pos:=List([1..k+1], x-> Position(actualelts, sortedelts[x]));
 # for a word <u>
 
 # position of first letter in <gens>
-   first:=Concatenation([fail], [1..k]); 	
+first:=Concatenation([fail], [1..k]); 	
 # position of last letter in <gens> 
-   final:=Concatenation([fail], [1..k]); 	   
+final:=Concatenation([fail], [1..k]); 	   
 # position of prefix of length |u|-1 in <fpelts>
-   prefix:=Concatenation([fail], List([1..k], x->1));    
+prefix:=Concatenation([fail], List([1..k], x->1));    
 # position of suffix of length |u|-1 in <fpelts>
-   suffix:=Concatenation([fail], List([1..k], x->1)); 
+suffix:=Concatenation([fail], List([1..k], x->1)); 
 # position of u*freegens[i] in <fpelts>
-   postmult:=Concatenation([[2..k+1]], List([1..k], x-> []));  
+postmult:=Concatenation([[2..k+1]], List([1..k], x-> []));  
 # true if u*freegens[i] is the same word as fpelts[i] 
-   reducedflags:=Concatenation([List([1..k], x->  true)], List([1..k], x-> [])); 
+reducedflags:=Concatenation([List([1..k], x->  true)], List([1..k], x-> [])); 
 # position of freegens[i]*u in <fpelts>
-   premult:=Concatenation([[2..k+1]],  List([1..k], x-> [])); 	
+premult:=Concatenation([[2..k+1]],  List([1..k], x-> [])); 	
 # length of <u>
-   length:=Concatenation([0], List([1..k], x->1));
+length:=Concatenation([0], List([1..k], x->1));
 
 # initialize loop
 
-u:=2;  			# position of the first generator
-v:=u;  			# place holder
-Last:=k+1; 		# the current position of the last element in <fpelts>
+u:=2;							# position of the first generator
+v:=u;							# place holder
+Last:=k+1;				# the current position of the last element in <fpelts>
 currentlength:=1;	# current length of words under consideration
 
 # loop
@@ -1110,7 +1109,14 @@ until u=Last+1;
 if IsMonoid(mono) then 
 
    fpsemi:=free/rules;
-   fpelts:=List(fpelts, x-> MappedWord(x, FreeGeneratorsOfFpMonoid(fpsemi), GeneratorsOfMonoid(fpsemi)));
+   fpelts:=List(fpelts, function(x)
+						local new;
+							new:=MappedWord(x, FreeGeneratorsOfFpMonoid(fpsemi), GeneratorsOfMonoid(fpsemi));
+
+							SetIsFpMonoidReducedElt(new, true);
+							return new;
+							end);
+
    SetAsSSortedList(fpsemi, fpelts);
    SetSize(fpsemi, Last);
    SetLeftCayleyGraphSemigroup(fpsemi, premult);
@@ -1124,25 +1130,44 @@ if IsMonoid(mono) then
    premult:=Permuted(OnTuplesTuples(premult, perm), perm);
    postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
 
-  #JDM set IsInjective, IsSurjective, IsTotal, IsSingleValued for IsomorphismFpSemigroup
-   SetIsomorphismFpMonoid(mono, SemigroupHomomorphismByImagesNC(mono, fpsemi, List(pos, x-> fpelts[x])));
+#JDM this step runs GreensRClasses somehow when MONOID is loaded!
+   
    SetAsSSortedList(mono, sortedelts);  
    SetSize(mono, Last);
    SetLeftCayleyGraphSemigroup(mono, premult);
    SetRightCayleyGraphSemigroup(mono, postmult);
    SetAssociatedFpSemigroup(mono, fpsemi);
-else
- 
-   #get rid of the identity! JDM better to do this online?
 
-   free2:=FreeSemigroup(k);
-   fpelts:=List(fpelts{[2..Last]}, x-> MappedWord(x, GeneratorsOfMonoid(free), GeneratorsOfSemigroup(free2)));
-   rules:=List(rules, x-> [MappedWord(x[1], GeneratorsOfMonoid(free), GeneratorsOfSemigroup(free2)), MappedWord(x[2], GeneratorsOfMonoid(free), GeneratorsOfSemigroup(free2))]);
+   u:=SemigroupHomomorphismByImagesNC(mono, fpsemi, 
+        List(pos, x-> fpelts[x]));
+   SetInverseGeneralMapping(u, SemigroupHomomorphismByImagesNC(fpsemi, mono, 
+   actualelts));
+   SetIsTotal(u, true); SetIsInjective(u, true); 
+   SetIsSurjective(u, true); SetIsSingleValued(u, true);
+   SetIsomorphismFpMonoid(mono, u);
+
+else
+
+#get rid of the identity! JDM better to do this online?
+
+	free2:=FreeSemigroup(k);
+
+	rules:=List(rules, x-> [MappedWord(x[1], GeneratorsOfMonoid(free), 
+           GeneratorsOfSemigroup(free2)), 
+           MappedWord(x[2], GeneratorsOfMonoid(free), 
+           GeneratorsOfSemigroup(free2))]);
 
    fpsemi:=free2/rules;
 
-   fpelts:=List(fpelts, x-> MappedWord(x, FreeGeneratorsOfFpSemigroup(fpsemi), GeneratorsOfSemigroup(fpsemi)));
-
+	fpelts:=List(fpelts{[2..Last]}, function(x)
+						local new;
+							new:=MappedWord(x, GeneratorsOfMonoid(free), GeneratorsOfSemigroup(fpsemi));
+							SetIsFpSemigpReducedElt(new, true);
+							return new;
+							end);
+   #fpelts:=List(fpelts, x-> MappedWord(x, 
+   #         FreeGeneratorsOfFpSemigroup(fpsemi),
+   #         GeneratorsOfSemigroup(fpsemi)));
 
    SetAsSSortedList(fpsemi, fpelts);
    SetSize(fpsemi, Last-1);
@@ -1159,17 +1184,29 @@ else
    pos:=pos{[2..Last]}-1;
    perm:=PermListList(pos, [1..Last-1]);
    sortedelts := List(sortedelts, 
-                      UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
+   UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
+	actualelts:=List(actualelts,UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
+ 
+   
    premult:=Permuted(OnTuplesTuples(premult, perm), perm);
    postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
-  
-  #JDM set IsInjective, IsSurjective, IsTotal, IsSingleValued for IsomorphismFpSemigroup
-  SetIsomorphismFpSemigroup(mono, SemigroupHomomorphismByImagesNC(mono, fpsemi, List(pos, x-> fpelts[x])));
+ 
    SetAsSSortedList(mono, sortedelts);
    SetSize(mono, Last-1);
    SetLeftCayleyGraphSemigroup(mono, premult);
    SetRightCayleyGraphSemigroup(mono, postmult);
    SetAssociatedFpSemigroup(mono, fpsemi);
+
+   u:=SemigroupHomomorphismByImagesNC(mono, fpsemi, 
+       List(pos, x-> fpelts[x]));
+       
+   SetInverseGeneralMapping(u, SemigroupHomomorphismByImagesNC(fpsemi, mono, 
+   actualelts));
+
+ 
+   SetIsTotal(u, true); SetIsInjective(u, true); 
+   SetIsSurjective(u, true); SetIsSingleValued(u, true);  
+   SetIsomorphismFpSemigroup(mono, u);
 fi;
 
 end);
@@ -1248,6 +1285,7 @@ local hom, filter;
     Error("<S> and <T> must have the same size");
   fi;
 
+	#SetAsSSortedList(imgslist, imgslist);
   hom:=rec(imgslist:=imgslist);
   
 Objectify(NewType( GeneralMappingsFamily
@@ -1260,6 +1298,8 @@ Objectify(NewType( GeneralMappingsFamily
   
   return hom;
 end);
+
+#
 
 ########
 ########
@@ -1276,6 +1316,10 @@ end);
 InstallMethod(PreImagesRepresentative,  "for semigroup homomorphism by images",  FamRangeEqFamElm, [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsMultiplicativeElement],
 function(hom, x)
 local preimgs, imgs;
+
+if HasInverseGeneralMapping(hom) then 
+	return ImageElm(InverseGeneralMapping(hom), x);
+fi;
 
 imgs:=hom!.imgslist;
 
@@ -1359,4 +1403,39 @@ return ForAll(GeneratorsOfSemigroup(Source(hom1)),
 
 end);
 
+#HACKS
+
+#JDM This is a terrible hack: the way that fp semigroups are implemented in GAP
+# means that every time you try to compute anything it first tries to find a 
+# reduced confluent rewriting system for the presentation. Despite the fact that
+# the fp semigroups generated by the FP algorithm already know all their 
+# elements and have a reduced confluent presentation.
+
+InstallMethod(\<, "for fp semigp elts produced by the Froidure-Pin algorithm", IsIdenticalObj, [IsFpSemigpReducedElt, IsFpSemigpReducedElt], function(x,y)
+
+if not x=y then 
+	return IsShortLexLessThanOrEqual(UnderlyingElement(x), UnderlyingElement(y));
+else
+	return false;
+fi;
+end);
+
+InstallMethod(\=, "for fp semigp elts produced by the Froidure-Pin algorithm", IsIdenticalObj, [IsFpSemigpReducedElt, IsFpSemigpReducedElt], function(x,y)
+			local S;
+
+			return UnderlyingElement(x)=UnderlyingElement(y);
+			
+end);
+
+InstallMethod(\<, "for fp monoid elts produced by the Froidure-Pin algorithm", IsIdenticalObj, [IsFpMonoidReducedElt, IsFpMonoidReducedElt], function(x,y)
+if not x=y then 
+	return IsShortLexLessThanOrEqual(UnderlyingElement(x), UnderlyingElement(y));
+else
+	return false;
+fi;
+end);
+
+InstallMethod(\=, "for fp monoid elts produced by the Froidure-Pin algorithm", IsIdenticalObj, [IsFpMonoidReducedElt, IsFpMonoidReducedElt], function(x,y)
+	return UnderlyingElement(x)=UnderlyingElement(y);
+end);
 

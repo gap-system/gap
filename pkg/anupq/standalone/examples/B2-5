@@ -1,0 +1,13 @@
+1       #menu option
+B(2,5)  #name of group
+5       #prime
+15      #maximal class of p-quotient
+1       #output level
+{a, b}  #number of defining generators
+{}      #number of relations
+5       #exponent law to be satisfied
+
+2       #menu option to save
+B25     #file name
+
+0       #exit from program

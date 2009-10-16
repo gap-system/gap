@@ -1,0 +1,103 @@
+\Chapter{ANU Sq Package}
+
+\>Sq( <G>, <L> )
+
+The function  `Sq' is  the  interface to the  Soluble Quotient standalone
+program.
+
+Let <G> be  a finitely presented group  and let <L> be  a list  of lists.
+Each of these lists is a list of integer pairs $[p_i,c_i]$, where $p_i$
+is  a prime and  $c_i$ is a  non-negative integer and $p_i \not= p_{i+1}$
+and $c_i$ positive for  $i\le k+1$. 
+`Sq' computes a  consistent
+power conjugate   presentation  for a  finite  soluble group  given  as a
+quotient of the finitely presented group <G> which is described by <L> as
+follows.
+
+Let  $H$ be a  group and  $p$ a  prime.  The  series  $$H = {P}^p_0(H)\ge
+{P}^p_1(H)\ge\cdots\,\,\hbox  to  1.5   cm{\hfil  with\ }    {P}^p_i(H) =
+[{P}^p_{i-1}(H),H] \left({P}^p_{i-1} (H)\right)^p$$ for $i  \ge 1$ is the
+{\it lower exponent-$p$ central series} of $H.$
+
+For $1 \le i \le k$ and $0 \le j \le  c_i$ define the list ${\rm L}_{i,j}
+=   [(p_1,c_1),\ldots,  (p_{i-1},c_{i-1}),(p_{i}, j)    ].$ Define  ${\rm
+L}_{1,0}(G) = G.$ For $1  \le i \le  k$ and $1  \le j \le c_i$ define the
+subgroups  $${\rm L}_{i,j}(G) =  {\rm  P}_{j}^{p_i}( {\rm L}_{i,0}(G) )$$
+and for $1  \le i \le  k+1$ define the  subgroups $${\rm L}_{i+1,0}(G) = {\rm
+L}_{i,c_i}(G)$$ and ${\rm L}(G)  = {\rm  L}_{k,c_k}(G).$ Note that  ${\rm
+L}_{i,j}(G) \ge {\rm L}_{i,j+1}(G)$ holds for $j \le c_i+1.$
+
+The chain of subgroups $$G  = {\rm L}_{1,0}(G)  \ge {\rm L}_{1,1}(G)  \ge
+\cdots  \ge {\rm L}_{1,c_1}(G)    = {\rm L}_{2,0}(G)\ge \cdots   \ge {\rm
+L}_{k,c_k}(G) = {\rm  L}(G)  $$   is   called  the  {\it  soluble   ${\rm
+L}$-series} of $G.$
+
+'Sq' computes  a  consistent  power  conjugate  presentation for  $G/{\rm
+L}(G),$ where  the   presentation exhibits a  composition  series  of the
+quotient group which is a refinement of the soluble ${\rm L}$-series.  An
+epimorphism from $G$ onto $G/{\rm L}(G)$ is listed in comments.
+
+The algorithm proceeds by computing power conjugate presentations for the
+quotients  $G/{\rm L}_{i,j}(G)$ in   turn.   Without loss of   generality
+assume that a  power conjugate presentation  for $G/{\rm L}_{i,j}(G)$ has
+been computed  for $j \le c_i+1.$ The  basic step computes a  power conjugate
+presentation for $G/{\rm L}_{i,j+1}(G).$ The group ${\rm L}_{i,j}(G)/{\rm
+L}_{i,j+1}(G)$  is  a  $p_{i}$-group.   If  during  the  basic step it is
+discovered that ${\rm  L}_{i,j}(G)   = {\rm L}_{i,j+1}(G),$  then   ${\rm
+L}_{i+1,0}(G)$ is set to ${\rm L}_{i,j}(G).$
+
+Note that during the basic step the vector enumerator is called.
+
+\beginexample
+     f := FreeGroup( "a", "b" );
+     f := f/[ (f.1*f.2)^2*f.2^-6, f.1^4*f.2^-1*f.1*f.2^-9*f.1^-1*f.2 ];
+     gap> g := Sq( f, [[2,1],[3,1],[2,2],[3,2]] );
+     rec(
+      generators := [ a.1, a.2, a.3, a.4, a.5, a.6, a.7, a.8 ],
+      relators := [ a.1^2*a.3^-1, a.1^-1*a.2*a.1*a.4^-1*a.2^-2, 
+          a.2^3*a.5^-1, a.1^-1*a.3*a.1*a.3^-1, 
+          a.2^-1*a.3*a.2*a.6^-1*a.5^-1*a.4^-1*a.3^-1, 
+          a.3^2*a.7^-1*a.5^-1, a.1^-1*a.4*a.1*a.7^-1*a.4^-1*a.3^-1, 
+          a.2^-1*a.4*a.2*a.8^-1*a.7^-1*a.6^-2*a.3^-1, 
+          a.3^-1*a.4*a.3*a.8^-2*a.7^-2*a.5^-1*a.4^-1, 
+          a.4^2*a.8^-2*a.7^-2*a.6^-2*a.5^-1, 
+          a.1^-1*a.5*a.1*a.8^-1*a.7^-1*a.6^-1*a.5^-1, a.2^-1*a.5*a.2*a.5^-1, 
+          a.3^-1*a.5*a.3*a.8^-2*a.6^-1*a.5^-1, a.4^-1*a.5*a.4*a.7^-1*a.5^-1, 
+          a.5^2, a.1^-1*a.6*a.1*a.8^-1*a.7^-2*a.6^-1, 
+          a.2^-1*a.6*a.2*a.8^-2*a.6^-2, a.3^-1*a.6*a.3*a.8^-2*a.7^-2*a.6^-2, 
+          a.4^-1*a.6*a.4*a.8^-1*a.7^-2, a.5^-1*a.6*a.5*a.8^-2*a.6^-2, a.6^3, 
+          a.1^-1*a.7*a.1*a.6^-2, a.2^-1*a.7*a.2*a.7^-2*a.6^-2, 
+          a.3^-1*a.7*a.3*a.8^-1*a.7^-1*a.6^-2, a.4^-1*a.7*a.4*a.6^-1, 
+          a.5^-1*a.7*a.5*a.7^-2, a.6^-1*a.7*a.6*a.8^-1*a.7^-1, a.7^3, 
+          a.1^-1*a.8*a.1*a.8^-2, a.2^-1*a.8*a.2*a.8^-1,
+          a.3^-1*a.8*a.3*a.8^-1, a.4^-1*a.8*a.4*a.8^-1,
+          a.5^-1*a.8*a.5*a.8^-1, a.6^-1*a.8*a.6*a.8^-1, 
+          a.7^-1*a.8*a.7*a.8^-1, a.8^3 ] )
+\endexample
+
+This implementation was developed in C by
+
+Alice C. Niemeyer
+Department of Mathematics
+University of Western Australia
+Nedlands, WA 6009
+Australia
+
+email: alice@maths.uwa.edu.au 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the ANU Sq Package}
+
+The ANU Sq  requires Steve Linton\'s vector enumerator (either as standalone
+or as GAP share  library). Make sure  that   it is installed before   trying
+to install the ANU Sq.
+
+Go to the `pkg/anusq' directory.
+
+Call `./configure ../..'  
+
+Edit `Makefile' to have the variable `ME' point to the location of the
+vector enumerator binary.
+
+Call `make bsd-gcc'  (replace `bsd-gcc' by the architecture you use, `make'
+without argument gives a list)

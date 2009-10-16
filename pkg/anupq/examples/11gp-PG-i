@@ -1,0 +1,22 @@
+#Example: "11gp-PG-i" . . . based on: examples/pga_11gp
+#Descendants of C11 x C11 x C11
+#vars: F, procId;
+#options: OutputLevel
+F := FreeGroup("a", "b", "c");
+procId := PqStart(F : Prime := 11);
+#comment: set a different print level by supplying <OutputLevel>
+PqPcPresentation(procId : ClassBound := 1, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqComputePCover(procId);;
+PqPGSupplyAutomorphisms(procId, [ [[ 2, 0, 0],
+                                   [ 0, 1, 0],
+                                   [ 0, 0, 1]],
+
+                                  [[10, 0, 1],
+                                   [10, 0, 0],
+                                   [ 0,10, 0]] ]);;
+PqPGConstructDescendants(procId : ClassBound := 2,
+                                  CapableDescendants,
+                                  StepSize := 1,
+                                  RankInitialSegmentSubgroups := 3);;

@@ -1,0 +1,53 @@
+
+# Makefile (make.ozone) - Colin Ramsay - 18 Oct 00
+#
+# Make file for ACE version 3.001.
+# Intended for SGI/IRIX boxes with cc.  
+# Tested on:
+#   "ozone"	Origin 2000 with R10000 (mips), IRIX64 6.5, 
+#		  cc (MIPS / MIPSpro C compiler)
+
+# Compiler switches
+#
+# -O2/3     : optimise quite a bit / a lot
+# -fullwarn : extra checks & additional warnings
+# -pedantic : warns of (non-standard) #ident
+# -ansi     : pure ANSI/ISO C
+# -64       : new style 64-bit mode
+# -n32      : new style 32-bit mode
+# -o32      : old style 32-bit mode
+
+CC = cc -64 -O2 -ansi
+
+# ACE Level 0, 1 & 2 switches 
+#
+# AL0_STAT   : If defined, include the statistics package.  Usually 
+#            : defined.
+# AL0_CC     : If defined, include "CC:" / "DD:" messages in the message
+# AL0_DD     :   feature.  Usually both on.
+# AL1_BINARY : If defined, use 1024 etc instead of 1000 etc for the
+#                workspace multipliers.  Usually not defined.
+# AL2_HINFO  : Prints host name etc at start of run.  Usually defined.
+
+FLAGS  = -DAL2_HINFO -DAL0_STAT -DAL0_CC -DAL0_DD
+
+# Sources
+
+SRC2  = ace.c parser.c postproc.c util2.c
+SRC1  = control.c util1.c
+SRC0  = coinc.c enum.c util0.c
+SRC0A = enum00.c enum01.c enum02.c
+
+# Note the setting of (THE)DATE, so that we can record the time/date of
+# this build in the executable (usage: "fprint(fop, "%s\n", DATE);").  This
+# may have to be changed for other shells/makes.  In fact, I can't figure
+# out how to do this on ozone!
+
+THEDATE = unknown
+
+# Build ACE
+
+ace: al2.h $(SRC2) al1.h $(SRC1) al0.h $(SRC0) $(SRC0A)
+	$(CC) $(FLAGS) -DDATE="\"$(THEDATE)\"" -o ace \
+		$(SRC2) $(SRC1) $(SRC0)
+

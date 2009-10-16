@@ -3,7 +3,7 @@
 #W  id768.b                GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id768_b :=
-    "@(#)$Id$";
+    "@(#)$Id: id768.b,v 1.2 2000/01/23 13:58:54 gap Exp $";
 
 ID_GROUP_TREE.next[768].next[2]:=
 rec(

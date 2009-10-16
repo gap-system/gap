@@ -1,0 +1,16 @@
+#Example: "3gp-a-Rel-i" . . . based on: examples/3gpA
+#(exponent 9 group with 2 generators of order 3)
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, OutputFile
+F := FreeGroup("a", "b");
+rels := ["a^3", "b^3"];
+procId := PqStart(F : Prime := 3, Exponent := 9, Relators := rels);
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also set a different print level by supplying <OutputLevel>
+#sub <ClassBound> for <12> if set and ok
+PqPcPresentation(procId : ClassBound := 12, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+#comment: save the presentation to a different file by supplying <OutputFile>
+#sub <OutputFile> for <ANUPQData.outfile> if set and ok
+PqSavePcPresentation(procId, ANUPQData.outfile);;

@@ -3,7 +3,7 @@
 #W  tom.gi                   GAP library                       Goetz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: tom.gi,v 4.54 2008/11/26 16:25:20 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -26,7 +26,7 @@
 ##  13. Generic Construction of Tables of Marks
 ##
 Revision.tom_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: tom.gi,v 4.54 2008/11/26 16:25:20 gap Exp $";
 
 
 #############################################################################
@@ -1952,9 +1952,17 @@ InstallMethod( IsInternallyConsistent,
     "for a table of marks, decomposition test",
     [ IsTableOfMarks ],
     function( tom )
-    local i, test;
+    local test, g, i;
 
     test:= true;
+
+    # Check that the underlying group has the right order.
+    if HasUnderlyingGroup( tom ) then
+      g:= UnderlyingGroup( tom );
+      if Size( g ) <> Size( Group( GeneratorsOfGroup( g ), One( g ) ) ) then
+        return false;
+      fi;
+    fi;
 
     for i in [ 1 .. Length( SubsTom( tom ) ) ] do
       if not TestRow( tom, i ) then
@@ -1984,9 +1992,8 @@ InstallMethod( DerivedSubgroupTom,
       return DerivedSubgroupsTomUnique( tom )[ sub ];
     fi;
 
-    poss:= DerivedSubgroupsTomPossible( tom );
-
     # Perhaps this is not the first time one has asked for this value.
+    poss:= DerivedSubgroupsTomPossible( tom );
     if IsBound( poss[ sub ] ) then
       return poss[ sub ];
     fi;
@@ -2807,7 +2814,7 @@ InstallMethod( FactorGroupTom,
 
     if IsTableOfMarksWithGens( tom ) then
 
-      hom:= NaturalHomomorphismByNormalSubgroup( UnderlyingGroup( tom ),
+      hom:= NaturalHomomorphismByNormalSubgroupNC( UnderlyingGroup( tom ),
                 RepresentativeTom( tom, nor ) );
       facgroup:= ImagesSource( hom );
 

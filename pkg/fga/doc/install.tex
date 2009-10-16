@@ -1,0 +1,58 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  install.tex            GAP documentation            Christian Sievers
+%%
+%H  $Id: install.tex,v 1.9 2005/05/13 18:48:00 gap Exp $
+%%
+%Y  2003
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Installing and loading the FGA package}
+
+\atindex{Installing and loading the FGA package}{@Installing %
+                        and loading the {\FGA} package|indexit}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the FGA package}\null
+
+\atindex{Installing the FGA package}{@Installing %
+                                      the {\FGA} package|indexit}
+The installation of the {\FGA} package follows standard {\GAP} rules.
+So the standard method is to unpack the archive into the `pkg'
+directory  of your {\GAP} distribution.  This will create an `fga'
+subdirectory. 
+
+For other non-standard options please see Chapter~"ref:Installing a
+GAP Package" in the {\GAP} Reference Manual.
+
+%To create the documentation, go into the `doc' directory and type
+%`make_doc'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Loading the FGA package}\null
+
+\atindex{Loading the FGA package}{@loading the {\FGA} package|indexit}
+The {\FGA} package is configured to autoload, so its functionality is
+usually available once {\GAP} is started.
+
+If {\GAP} does not autoload, you can request the package with the
+`LoadPackage' command like this:
+
+\beginexample
+gap> LoadPackage( "fga" );
+-----------------------------------------------------------------------------
+Loading  FGA 1.1 (Free Group Algorithms)
+by Christian Sievers (c.sievers@tu-bs.de).
+-----------------------------------------------------------------------------
+true
+\endexample
+
+You will not see the banner if {\FGA} has already been loaded.
+
+The `LoadPackage' command and ways to disable autoloading are
+described in Section~"ref:Loading a GAP Package" in the {\GAP}
+Reference Manual.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

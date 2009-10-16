@@ -4,8 +4,6 @@
 #W                                                           Alexander Hulpke
 #W                                                             Heiko Thei"sen
 ##
-#H  @(#)$Id$
-##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -16,35 +14,58 @@
 ##  4. Functions for ...
 ##
 Revision.ghom_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ghom.gi,v 4.116 2009/08/12 23:15:52 gap Exp $";
 
 
 #############################################################################
 ##
 #F  GroupHomomorphismByImages( <G>, <H>, <Ggens>, <Hgens> )
+#F  GroupHomomorphismByImages( <G>, <H>, <Hgens> )
+#F  GroupHomomorphismByImages( <G>, <H> )
 ##
 InstallGlobalFunction( GroupHomomorphismByImages,
-    function( G, H, Ggens, Hgens )
-    local hom;
+
+  function( arg )
+
+    local  hom, G, H, Ggens, Hgens;
+
+    if   not Length(arg) in [2..4]
+      or not IsGroup(arg[1]) or not IsGroup(arg[2])
+    then Error("for usage, see ?GroupHomomorphismByImages"); fi;
+
+    G := arg[1]; H := arg[2];
+
+    if   Length(arg) = 2
+    then Ggens := GeneratorsOfGroup(G); Hgens := GeneratorsOfGroup(H);
+    elif Length(arg) = 3
+    then Ggens := GeneratorsOfGroup(G); Hgens := arg[3];
+    elif Length(arg) = 4
+    then Ggens := arg[3]; Hgens := arg[4];
+    fi;
+
     if Length(Ggens)>0 then
       if not (IsDenseList(Ggens) and IsHomogeneousList(Ggens) and
 	FamilyObj(Ggens)=FamilyObj(G)) then
         Error("The generators do not all belong to the source");
       fi;
     fi;
+
     if Length(Hgens)>0 then
       if not (IsDenseList(Hgens) and IsHomogeneousList(Hgens) and
 	FamilyObj(Hgens)=FamilyObj(H)) then
         Error("The images do not all belong to the range");
       fi;
     fi;
+
     hom:= GroupGeneralMappingByImages( G, H, Ggens, Hgens );
+
     if IsMapping( hom ) and IsTotal( hom ) then
       return GroupHomomorphismByImagesNC( G, H, Ggens, Hgens );
     else
       return fail;
     fi;
-end );
+
+  end );
 
 
 #############################################################################
@@ -114,6 +135,20 @@ InstallMethod( \=, "compare source generator images", IsIdenticalObj,
     return true;
     end );
 
+#############################################################################
+##
+#M  IsOne( <hom> )
+##
+InstallMethod(IsOne,"using `MappingGeneratorsImages'",true,
+  [IsGroupHomomorphism and HasMappingGeneratorsImages],0,
+function(a)
+  local m;
+  if Source(a)=Range(a) and IsBijective(a) then
+    m:=MappingGeneratorsImages(a);
+    return ForAll([1..Length(m[1])],i->m[1][i]=m[2][i]);
+  fi;
+  return false;
+end);
 
 #############################################################################
 ##
@@ -157,7 +192,7 @@ local mapi;
 end);
 
 
-# thanks to `MappingGeneratorImages' this code is now obsolete.
+# thanks to `MappingGeneratorsImages' this code is now obsolete.
 # #############################################################################
 # ##
 # #M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . .  via images
@@ -229,7 +264,7 @@ InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective, IsBool );
 InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
     true, [ IsGroup, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
-local   filter,  hom,pcgs,imgso,mapi;
+local   filter,  hom,pcgs,imgso,mapi,l;
   
   hom := rec();
   # generators := Immutable( gens ),
@@ -270,13 +305,16 @@ local   filter,  hom,pcgs,imgso,mapi;
     filter := filter and IsToPcGroupGeneralMappingByImages;
   fi;
 
-  # Do we map a free group or an fp group by its standard generators?
+  # Do we map a subgroup of a free group or an fp group by a subset of its
+  # standard generators?
   # (So we can used MappedWord for mapping)?
   if IsSubgroupFpGroup(G) then
+    l:=List(GeneratorsOfGroup(G),UnderlyingElement);
     if HasIsWholeFamily(G) and IsWholeFamily(G) 
-      and List(gens,UnderlyingElement)
-          =List(GeneratorsOfGroup(G),UnderlyingElement) then
+      and IsSubset(l,List(gens,UnderlyingElement)) 
+      and IsSubset(FreeGeneratorsOfFpGroup(G),List(gens,UnderlyingElement)) then
       filter := filter and IsFromFpGroupStdGensGeneralMappingByImages;
+      hom.genpositions:=List(gens,i->Position(l,UnderlyingElement(i)));
     else
       filter := filter and IsFromFpGroupGeneralMappingByImages;
     fi;
@@ -324,11 +362,30 @@ local   hom;
   return hom;
 end );
 
-InstallOtherMethod( GroupHomomorphismByImagesNC, "for group with no generators",
-    [IsGroup,IsGroup,IsEmpty,IsEmpty], SUM_FLAGS,
-        function(g,h,gg,gh)
-    return GroupHomomorphismByFunction(g,h,x->One(h),x->One(g));
-end);
+InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group, list",
+                    true, [ IsGroup, IsGroup, IsList ], 0,
+
+  function( G, H, imgs )
+
+    local  hom;
+
+    hom := GroupGeneralMappingByImages( G, H, GeneratorsOfGroup(G), imgs );
+    SetIsMapping( hom, true );
+    return hom;
+  end );
+
+InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group",
+                    true, [ IsGroup, IsGroup ], 0,
+
+  function( G, H )
+
+    local  hom;
+
+    hom := GroupGeneralMappingByImages( G, H, GeneratorsOfGroup(G),
+                                              GeneratorsOfGroup(H) );
+    SetIsMapping( hom, true );
+    return hom;
+  end );
 
 #############################################################################
 ##
@@ -469,7 +526,12 @@ InstallMethod( ImagesSource, "for GHBI", true,
     0,
 function(hom)
 local G;
-  G:=SubgroupNC( Range( hom ), MappingGeneratorsImages(hom)[2] );
+  if Length(MappingGeneratorsImages(hom)[1])
+      >2*Length(GeneratorsOfGroup(Source(hom))) then
+    G:=SubgroupNC( Range( hom ), List(GeneratorsOfGroup(Source(hom)),i->Image(hom,i)));
+  else
+    G:=SubgroupNC( Range( hom ), MappingGeneratorsImages(hom)[2] );
+  fi;
   if IsPermGroup(G) and HasSource(hom) and HasSize(Source(hom)) then
     StabChainOptions(G).limit:=Size(Source(hom));
   fi;
@@ -1186,13 +1248,23 @@ end );
 #M  IsomorphismPermGroup( <G> ) . . . . . . . . .  by right regular operation
 ##
 InstallMethod( IsomorphismPermGroup, "right regular operation", true,
-        [ IsGroup and IsFinite ], 0,
-    function( G )
-    local   nice;
-    
-    nice := ActionHomomorphism( G, G, OnRight,"surjective" );
-    SetIsBijective( nice, true );
-    return nice;
+        [ IsGroup ], 0,
+function( G )
+local   nice;
+  if not HasIsFinite(G) then
+    Info(InfoWarning,1,"Testing finiteness of <G>. This might not terminate");
+  fi;
+  if not IsFinite(G) then
+    Error("<G> must be finite");
+  fi;
+  
+  if Size(G)>10^6 then
+    Info(InfoWarning,1,
+    "Trying regular permutation representation of group of order >10^6");
+  fi;
+  nice := ActionHomomorphism( G, G, OnRight,"surjective" );
+  SetIsBijective( nice, true );
+  return nice;
 end );
 
 #############################################################################

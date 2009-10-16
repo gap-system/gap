@@ -1,0 +1,69 @@
+Version 2.0: 2006/01/31
+  o PackageInfo.g:
+    - added field `PreloadFile TB
+    - comment added re `TestFile' field TB
+  o CHANGES,VERSION:
+    - added GG
+  o pre-GAP 4.4 compatibility features removed:
+    - init.g,read.g:
+      . all but `ReadPkg' commands removed GG
+      . `ReadPkg' changed to `ReadPackage' GG
+    - gap/banner.g:
+      . removed (PackageInfo.g takes care of this) GG
+    - gap/files.gi:
+      . `LOADED_PACKAGES' changed to `GAPInfo.PackagesLoaded' GG
+  o README,doc/*.tex:
+    - updated for changes in 2.0 and GAP 4.4 GG
+  o make_zoo:
+    - reads the version from VERSION GG
+    - do not exclude .toc and .lab files GG
+Version 1.5: 2003/06/18
+  Updated for new package loading mechanism to GAP 4.3 level
+  o PkgInfo.g:
+    - changed `AutoLoad' field to `Autoload' TB 
+    - added `BannerString' field TB
+    - renamed PackageInfo.g TB
+  o PackageInfo.g:
+    - added comments re new package loading scheme FL
+    - updated URLs and BannerString GG
+  o make_zoo:
+    - includes `PackageInfo.g' rather than `PkgInfo.g' AH
+    - .ps files are now marked as text GG
+    - modularised packing routine so can create a whole 
+      package archive or just a doc archive GG
+  o doc/*.tex:
+    - updated for the new package loading mechanism
+Version 1.3: 2003/01/13
+  Package now at GG's Aachen website
+  o PkgInfo.g:
+    - added preliminary version TB
+    - updated GG
+  o make_zoo:
+    - replaced -path usage by equivalent -name expression (non-GNU
+      versions of find don't have the -path option) GG
+Version 1.2: 2002/02/12
+  o Makefile.in:
+    - `make clean' target added GG
+  o make_zoo:
+    - added based on FL's packpack GG 
+  o doc/{install.tex,hints.tex}:
+    - split into chapters to enable production of HTML manual GG
+    - added an Appendix to the manual to give hints on how to produce
+      a polished package GG
+Version 1.1: 2001/10/07
+  Deleted `share'. GG
+  o gap/files.g:
+    - split into `gap/files.gd' and `gap/files.gi' GG
+  o gap/files.g[di]:
+    - added `HelloWorld' and `WhereIsPkgProgram' GG
+  o gap/banner.g,doc/{manual.mst,make_doc}:
+    - added GG
+Version 1.0: 1998/08/27
+  First release. AH, WN
+  o README:
+    - added AH
+  o init.g,read.g,Makefile.in,configure,src/hello.c,gap/files.g:
+    - autoloads documentation but does not autoload package AH
+    - `DeclarePackage' tests for the compiled binary AH
+  o doc/{manual.tex,example.tex}:
+    - added WN

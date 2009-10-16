@@ -3,7 +3,7 @@
 ##
 #W  mktest.sh      Test the examples in GAP manual files       Volkmar Felsch
 ##
-#H  $Id$
+#H  $Id: mktest.sh,v 1.7 2006/03/14 17:14:15 gap Exp $
 ##
 #Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
 ##

@@ -1,0 +1,151 @@
+/****************************************************************************
+**
+*D  check for the compiler features
+*/
+
+/* define as empty if `const' does not work                                */
+#undef const
+
+/* define as size of `short int' in bytes                                  */
+#define SIZEOF_SHORT		@SIZEOF_SHORT@
+
+/* define as size of `int' in bytes                                        */
+#define SIZEOF_INT		@SIZEOF_INT@
+
+/* define as size of `long int' in bytes                                   */
+#define SIZEOF_LONG		@SIZEOF_LONG@
+
+
+/****************************************************************************
+**
+*D  check for structs and typedefs
+*/
+
+/* define as 1 if `struct stat' contains a memeber `rdev'                  */
+#define HAVE_ST_RDEV		0
+
+/* define as `int' if not defined                                          */
+#undef uid_t
+#undef gid_t
+
+
+/****************************************************************************
+**
+*D  check for "the" standard include files
+*/
+
+/* define as 1 if you have the ANSI C include file "stdlib.h", "stdarg.h"  */
+#define STDC_HEADERS 		0
+
+/* define as 1 if you have the include file "libc.h"                       */
+#define HAVE_LIBC_H		0
+
+/* define as 1 if you have the include file "unistd.h"                     */
+#define HAVE_UNISTD_H		0
+
+
+/****************************************************************************
+**
+*D  check for timing functions
+*/
+
+/* define as 1 if you may include both "time.h" and "sys/time.h"           */
+#define TIME_WITH_SYS_TIME	0
+
+/* define as 1 if you have the include file "sys/time.h"                   */
+#define HAVE_SYS_TIME_H		0
+
+
+/****************************************************************************
+**
+*D  check for fork, wait, execute functions
+*/
+
+/* define as 1 if you have a posix include file "sys/wait.h"               */
+#define HAVE_SYS_WAIT_H		0
+
+/* define as 1 if you have `wait3' which fills the thrid argument          */
+#define HAVE_WAIT3		0
+
+/* define to `int' if <sys/types.h> doesn't define                         */
+#undef pid_t
+
+
+/****************************************************************************
+**
+*D  check for tty and pseudo tty functions
+*/
+
+/* define as 1 if you have the include file "termios.h"                    */
+#define HAVE_TERMIOS_H           0
+
+/* define as 1 if you have the include file "termio.h"                     */
+#define HAVE_TERMIO_H           0
+
+/* define as 1 if you have the include file "sgtty.h"                      */
+#define HAVE_SGTTY_H            0
+
+/* define as 1 if you have the include file "fcntl.h"                      */
+#define HAVE_FCNTL_H            0
+
+/* define as 1 if you have the include file "sys/ioctl.h"                  */
+#define HAVE_SYS_IOCTL_H        0
+
+/* define as 1 if you have the include file "sys/select.h"                 */
+#define HAVE_SYS_SELECT_H       0
+
+/* define as 1 if you have `select'                                        */
+#define HAVE_SELECT		0
+
+/* define as 1 if you have `getpseudotty'                                  */
+#define HAVE_GETPSEUDOTTY	0
+
+/* define as 1 if you have `_getpty'                                       */
+#define HAVE__GETPTY		0
+
+#define HAVE_GETPT              0
+#define HAVE_PTSNAME_R         0
+
+/****************************************************************************
+**
+*D  check for signal handling
+*/
+
+/* define as 1 if you have the include file "signal.h"                     */
+#define HAVE_SIGNAL_H           0
+
+/* define as the return type of the signal handler                         */
+#define RETSIGTYPE              @RETSIGTYPE@
+
+/* define as 1 if <RTSIGTYPE> is void                                      */
+#define HAVE_SIGNAL_VOID        0
+
+
+/****************************************************************************
+**
+*D  check for directory handling
+*/
+
+/* define as 1 if `closedir' returns void                                  */
+#define CLOSEDIR_VOID		0
+
+/* define as 1 if you have the include file "dirent.h"                     */
+#define HAVE_DIRENT_H		0
+
+/* define as 1 if you have the include file "sys/ndir.h"                   */
+#define HAVE_SYS_NDIR_H         0
+
+/* define as 1 if you have the include file "sys/dir.h"                    */
+#define HAVE_SYS_DIR_H          0
+
+/* define as 1 if you have the include file "ndir.h"                       */
+#define HAVE_NDIR_H             0
+
+
+/****************************************************************************
+**
+*D  check for XWindows features
+*/
+
+/* define as 1 if your OpenWindows does not deal with compressed exposures */
+#define HAVE_BROKEN_TEXT_EXPORE_COMPRESS	0

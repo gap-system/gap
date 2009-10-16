@@ -1,0 +1,12 @@
+#!/bin/sh
+# Automatically produce manual:
+# $Id: make_doc,v 1.1 1999/07/01 15:38:57 gap Exp $
+cd doc
+rm -rf manual.dvi
+make
+dvips manual.dvi -o manual.ps
+cd ..
+rm -rf htm
+mkdir htm
+../../etc/convert.pl -n xgap doc htm
+

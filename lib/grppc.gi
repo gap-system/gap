@@ -3,7 +3,7 @@
 #W  grppc.gi                    GAP Library                      Frank Celler
 #W                                                             & Bettina Eick
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grppc.gi,v 4.167 2005/12/26 19:22:07 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains the methods for groups with a polycyclic collector.
 ##
 Revision.grppc_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grppc.gi,v 4.167 2005/12/26 19:22:07 gap Exp $";
 
 #############################################################################
 ##
@@ -106,10 +106,7 @@ InstallMethod( InducedPcgsWrtHomePcgs,"pc group: home=family", true,
 ##
 #M  InducedPcgs( <pcgs>,<G> )
 ##
-InstallMethod( InducedPcgs, "cache pcgs", true, [ IsPcgs,IsGroup ], 
-    2, # rank this method higher than the CRISP method which also caches
-       # induced pcgs
-
+InstallMethod( InducedPcgs, "cache pcgs", true, [ IsPcgs,IsGroup ], 0,
 function(pcgs, G )
   local cache, i, igs;
   
@@ -141,6 +138,8 @@ function(pcgs, G )
   
   return igs;
 end );
+
+ADD_LIST(WRAPPER_OPERATIONS, InducedPcgs);
 
 
 #############################################################################
@@ -209,12 +208,15 @@ InstallMethod (ComputedInducedPcgses, "default method", [IsGroup],
 #F  SetInducedPcgs( <home>,<G>,<pcgs> )
 ##
 InstallGlobalFunction(SetInducedPcgs,function(home,G,pcgs)
+  home := ParentPcgs(home);
   if not HasHomePcgs(G) then
     SetHomePcgs(G,home);
   fi;
-  if IsIdenticalObj(ParentPcgs(pcgs),home) and
-      IsIdenticalObj(HomePcgs(G),home) then
-    SetInducedPcgsWrtHomePcgs(G,pcgs); 
+  if IsIdenticalObj(ParentPcgs(pcgs),home) then
+     Append (ComputedInducedPcgses(G), [home, pcgs]);
+     if IsIdenticalObj(HomePcgs(G),home) then
+        SetInducedPcgsWrtHomePcgs(G,pcgs); 
+     fi;
   fi;
   SetGroupOfPcgs (pcgs, G);
 end);
@@ -476,7 +478,7 @@ function( elm, grp )
     
     pcgs := InducedPcgsWrtHomePcgs (grp);
     ppcgs := ParentPcgs (pcgs);
-    if Length (pcgs) = Length (ppcgs) then
+    if Length (pcgs) = Length (ppcgs) or not CanEasilyTestMembership (GroupOfPcgs(ppcgs)) then
         TryNextMethod();
 	fi;
     if elm in GroupOfPcgs (ppcgs) then
@@ -504,7 +506,7 @@ function( elm, grp )
     
     for pcgs in ComputedInducedPcgses(grp) do
         ppcgs := ParentPcgs (pcgs);
-        if Length (pcgs) < Length (ppcgs) then
+        if Length (pcgs) < Length (ppcgs) and CanEasilyTestMembership (GroupOfPcgs(ppcgs)) then
             if elm in GroupOfPcgs (ppcgs) then
                 return SiftedPcElement(pcgs, elm) = One(grp);
             else
@@ -2269,24 +2271,37 @@ end);
 ##
 #M  CanEasilyComputePcgs( <pcgrp> ) . . . . . . . . . . . . . . . .  pc group
 ##
+
 InstallTrueMethod( CanEasilyComputePcgs, IsPcGroup );
-InstallTrueMethod( CanEasilyComputePcgs, HasPcgs );
+
+# InstallTrueMethod( CanEasilyComputePcgs, HasPcgs );
+# we cannot guarantee that computations with any pcgs is efficient
+
 InstallTrueMethod( CanEasilyComputePcgs, IsGroup and HasFamilyPcgs );
 
 
 #############################################################################
 ##
-#M  CanEasilyTestMembership( <pcgrp> )
+#M  CanEasilyTestMembership
 ##
-InstallTrueMethod(CanEasilyTestMembership,CanEasilyComputePcgs);
-InstallTrueMethod(CanComputeSize,CanEasilyComputePcgs);
+
+# InstallTrueMethod(CanEasilyTestMembership,CanEasilyComputePcgs); 
+# we cannot test membership using a pcgs
+
+# InstallTrueMethod(CanComputeSize, CanEasilyComputePcgs); #unneccessary
+
+#############################################################################
+##
+#M  IsSolvableGroup
+##
+InstallTrueMethod(IsSolvableGroup, CanEasilyComputePcgs);
 
 
 #############################################################################
 ##
-#M  CanComputeSizeAnySubgroup( <group that can compute pcgs> )
+#M  CanComputeSizeAnySubgroup
 ##
-InstallTrueMethod( CanComputeSizeAnySubgroup,CanEasilyComputePcgs );
+InstallTrueMethod( CanComputeSizeAnySubgroup, CanEasilyComputePcgs );
 
 #############################################################################
 ##
@@ -2369,7 +2384,7 @@ local matrix, snf, base, ord, cti, row, g, o, cf, j, i;
   cti:=snf.coltrans^-1;
   for i in [1..Length(cti)] do
     row:=cti[i];
-    g:=Product( List([1..Length(row)],j->Pcgs(G)[j]^row[j]));
+    g:=LinearCombinationPcgs(Pcgs(G),row,One(G));
     if not IsOne(g) then
       # get the involved prime factors
       o:=snf.normal[i][i];
@@ -2389,6 +2404,446 @@ local matrix, snf, base, ord, cti, row, g, o, cf, j, i;
   SortParallel(ord,base);
   return base;
 end);
+
+
+#############################################################################
+##
+#M  MinimalGeneratingSet( <A> )
+##
+InstallMethod(MinimalGeneratingSet,
+    "compute via Smith normal form",
+        [IsGroup and CanEasilyComputePcgs and IsAbelian], RankFilter (IsPcGroup),
+    function(G)
+    
+        local pcgs, matrix, snf, gens, cti, row, g, i;
+        
+        if IsTrivial (G) then
+            return [];
+        fi;
+        
+        pcgs := Pcgs (G);
+        matrix:=List([1..Length(pcgs)],i->List(ExponentsOfRelativePower(pcgs,i)));
+        for i in [1..Length(pcgs)] do
+            matrix[i][i]:=-RelativeOrders(pcgs)[i];
+        od;
+        snf:=NormalFormIntMat(matrix,1+8+16);
+
+        gens:=[];
+        cti:=snf.coltrans^-1;
+        for i in [1..Length(cti)] do
+            row:=cti[i];
+            g:=Product( List([1..Length(row)],j->pcgs[j]^row[j]));
+            if not IsOne(g) then
+                Add(gens,g);
+            fi;
+        od;
+        
+        return gens;
+    end);
+
+
+#############################################################################
+##
+#M  ExponentOfPGroupAndElm( <G>, <bound> )
+##
+
+# Return exponent and probably also an element of high order. If exponent is 
+# found to be larger than bound, just return the result found so far.
+# 
+# JS: A result of Higman detailed on p564 of C. Sims Computation with
+# F. P. Groups shows that an element of maximal order in a p-group
+# exists where its weight with respect to a special pcgs is at most
+# the p-class of the group.  Furthermore we need only check normed
+# row vectors as exponent vectors since every cyclic subgroup has a
+# generator with a normed row vector for exponents.
+# 
+# This function just checks all such vectors using a simple backtrack
+# method.  It handles the case of the trivial group and a regular
+# p-group specially.
+#
+# Assumed: G is a p-group, of max size p^30 or so.
+BindGlobal("ExponentOfPGroupAndElm",
+function(G,bound)
+        local all,pcgs,monic,weights,pclass,p;
+        monic := function(w,p,f)
+                local a,ldim,c,M,M1;
+                M := [0,0];
+                c := Maximum(w);
+                for ldim in [1..Size(w)] do
+                        a := ListWithIdenticalEntries(Size(w),0);
+                        a[ldim] := 1;
+                        M1 := all(ldim,a,w,p,c-w[ldim],f);
+                        if M1[1] > M[1] then M:=M1; if M[1] > bound then return M; fi; fi;
+                od;
+                return M;
+        end;
+        all := function(ldim,a,w,p,c,f)
+                local M,M1;
+                if ldim = Size(a) then return [f(a),PcElementByExponents(pcgs,a)]; fi;
+                M := [0,0];
+                a{[ldim+2..Size(a)]} := ListWithIdenticalEntries(Size(a)-ldim-1,0);
+                a[ldim+1] := Minimum( p-1, Int(c/w[ldim+1]) );
+                while a[ldim+1] >= 0 do
+                        M1 := all(ldim+1,a,w,p,c-a[ldim+1]*w[ldim+1],f);
+                        if M1[1] > M[1] then M:=M1; if M[1] > bound then return M; fi; fi;
+                        a[ldim+1] := a[ldim+1]-1;
+                od;
+                return M;
+        end;
+        p := PrimePGroup(G);
+        if p = fail then return [1,One(G)]; fi; # handle trivial p-group of size 1
+        pcgs := SpecialPcgs(G);
+        weights := LGLayers(pcgs);
+        pclass := Maximum(weights);
+        if pclass < p then # Easily recognized regular p-group
+                pclass := Maximum(List(pcgs,Order));
+                return [pclass,First(pcgs,g->Order(g)=pclass)];
+        fi;
+        bound := Minimum(p^(pclass-1),bound);
+        return monic(LGLayers(pcgs),PrimePGroup(G),a->Order(PcElementByExponents(pcgs,a)));
+end);
+
+InstallMethod( Exponent,"solvable group: does obvious bound work?",
+  true,[IsGroup and IsSolvableGroup],0,
+#based on code by Jack Schmidt
+function(G)
+local L, upper, lower, cnts, cnt, a, i;
+  if IsPGroup(G) then 
+    return ExponentOfPGroupAndElm(G,Size(G))[1];
+  fi;
+
+  L:=DerivedSeriesOfGroup(G);
+  upper:=1;
+  for i in [1..Length(L)-1] do
+    upper:=upper*Lcm(AbelianInvariants(L[i]));
+  od;
+  lower:=Lcm(List(Pcgs(G),Order));
+  cnts:=LogInt(Size(G),2);
+  cnt:=cnts;
+  repeat
+    a:=Lcm(lower,Order(Random(G)));
+    if a>lower then
+      if a=upper then 
+        return upper;
+      fi;
+      lower:=a;
+      cnt:=cnts;
+    else
+      cnt:=cnt-1;
+    fi;
+  until cnt<1;
+  # fails
+  TryNextMethod();
+end);
+
+
+#############################################################################
+##
+#M  AgemoOp( <G> )
+##
+InstallMethod( AgemoOp, "PGroups",true,[ IsPGroup, IsPosInt, IsPosInt ],0,
+function( G, p, n )
+local q, pcgs, sub, hom, f, ex, C;
+
+  q := p ^ n;
+  # if <G> is abelian,  raise the generators to the q.th power
+  if IsAbelian(G)  then
+      return SubgroupNC( G,Filtered( List( GeneratorsOfGroup( G ), x ->
+      x^q ),i->not IsOne(i)) );
+  fi;
+
+  # based on Code by Jack Schmidt
+  pcgs:=Pcgs(G);
+  ex:=One(G);
+  sub:=NormalClosure(G,SubgroupNC(G,Filtered(List(pcgs,i->i^q),x->x<>ex)));
+  hom:=NaturalHomomorphismByNormalSubgroup(G,sub);
+  f:=Range(hom);
+  ex:=ExponentOfPGroupAndElm(f,q);
+  while ex[1]>q do
+    # take the element of highest order in f and take power of its preimage
+    ex:=PreImagesRepresentative(hom,ex[2]^q);
+    sub:=NormalClosure(G,ClosureSubgroupNC(sub,ex));
+    hom:=NaturalHomomorphismByNormalSubgroup(G,sub);
+    f:=Range(hom);
+    ex:=ExponentOfPGroupAndElm(f,q);
+  od;
+  return sub;
+
+  # otherwise compute the conjugacy classes of elements
+  C := Set( List( ConjugacyClasses(G), x -> Representative(x)^q ) );
+  return NormalClosure( G, SubgroupNC( G, C ) );
+end );
+
+
+InstallMethod(Socle,"for p-groups",true,[IsPGroup],0,
+function(G)
+  if IsTrivial(G) then return G; fi;
+  return Omega(Center(G),PrimePGroup(G),1);
+end);
+
+
+#############################################################################
+##
+#M  OmegaOp( <G>, <p>, <n> )  . . . . . . . . . . . . for p-groups
+##
+##  The following method is due to Jack Schmidt
+##  Omega(G,p,e) is defined to be <g in G: g^(p^e)=1>
+
+# Omega_LowerBound returns a subgroup of Omega(G,p,e)
+# Assumed: G is a p-group, e is a positive integer
+BindGlobal("Omega_LowerBound_RANDOM",100); # number of random elements to test
+BindGlobal("Omega_LowerBound",
+function(G,p,e)
+local gens,H,fix_order;
+  fix_order:=function(g) while not IsOne(g^(p^e)) do g:=g^p; od; return g; end;
+  H:=Subgroup(G,List(Pcgs(G),fix_order));
+  H:=ClosureGroup(H,List([1..Omega_LowerBound_RANDOM],i->fix_order(Random(G))));
+  return H;
+end);
+
+# Omega_Search is a brute force search for Omega.
+# One can search by coset if Omega(G) = { g in G : g^(p^e) = 1 }
+# This is the case in regular p-groups, and if nilclass(G) < p
+# then G is regular.
+# Assumed: G is a p-group, e is a positive integer
+BindGlobal("Omega_Search",
+function(G,p,e)
+local g,H,fix_order,T;
+  H:=Omega_LowerBound(G,p,e);
+  fix_order:=function(g) while not IsOne(g^(p^e)) do g:=g^p; od; return g; end;
+  if NilpotencyClassOfGroup(G) < p 
+  then T:=RightTransversal(G,H);
+  else T:=G;
+  fi;
+  for g in T do
+    g:=fix_order(g);
+    if(g in H) then continue; fi;
+    H:=ClosureSubgroup(H,g);
+    if(H=G) then return G; fi;
+  od;
+  return H;
+end);
+
+
+# Omega_UpperBoundAbelianQuotient(G,p,e) returns a subgroup K<=G
+# such that Omega(G,p,e) <= K. Then Omega(K,p,e)=Omega(G,p,e)
+# allowing other methods to work on a smaller group.
+#
+# It is not guaranteed that K is a proper subgroup of G.
+#
+# In detail: Omega(G/[G,G],p,e) = K/[G,G] and K is returned.
+#
+# Assumed: G is a p-group, e is a positive integer
+
+BindGlobal("Omega_UpperBoundAbelianQuotient",
+function(G,p,e)
+local f;
+  f:=MaximalAbelianQuotient(G);
+  IsAbelian(Image(f));
+  return SubgroupByPcgs(G,Pcgs(PreImagesSet(f,Omega(Image(f),p,e))));
+end);
+
+# Efficiency notes:
+#
+# (1) "PreImagesSet" is used to find the preimage of Omega in G/[G,G].
+# there may very well be faster ways of doing this.
+#
+# (2) "SubgroupByPcgs(G,Pcgs(...))" is used to give the returned subgroup
+# with natural standard generators. There may be better ways of doing this,
+# and this may not be needed at all.
+
+
+# Omega_UpperBoundCentralQuotient(G,p,e) returns
+# a subgroup K with Omega(G,p,e) <= K <= G. The
+# algorithm is (moderately) randomized.
+#
+# The algorithm is NOT fast.
+#
+# In detail a random central element, z, of order p is 
+# selected and K is returned where K/<z> = Omega(G/<z>,p,e).
+#
+# Assumed: G is a p-group, e is a positive integer
+
+
+BindGlobal("Omega_UpperBoundCentralQuotient",
+function(G,p,e)
+local z,f;
+
+  z:=One(G); while(IsOne(z)) do z:=Random(Socle(G)); od;
+
+  f:=NaturalHomomorphismByNormalSubgroup(G,Subgroup(G,[z]));
+  IsAbelian(Image(f)); # Probably is not, but quick to check
+  return SubgroupByPcgs(G,Pcgs(PreImagesSet(f,Omega(Image(f),p,e))));
+end);
+
+# Efficiency Points:
+#
+# (1) "Omega" is used to compute Omega(G/<z>,p,e). |G/<z>| = |G|/p.
+# This is a very very tiny reduction AND it is very possible for
+# Omega(G/<z>)=G/<z> for every nontrivial element z of the socle without
+# Omega(G)=G. Hence the calculation of Omega(G/<z>) may take a very
+# long time AND may prove worthless.
+#
+# (2) "PreImagesSet" is used to calculate the preimage of Omega(G/<z>)
+# there may be more efficient methods to do this. I have noticed a very
+# wide spread of times for the various PreImage functions.
+
+# Omega(G,p,e) is a normal, characteristic, fully invariant subgroup that
+# behaves nicely under group homomorphisms. In particular
+# if Omega(G/N)=K/N then Omega(G) <= K. If Omega(G) <= K,
+# then Omega(G)=Omega(K). 
+#
+# Hence the general strategy is to find good upper bounds K for
+# Omega(G), and then compute Omega(K) instead. It is difficult
+# to tell when one's upper bound is actually equal to Omega(G),
+# so we attempt to terminate early by finding good lower bounds
+# H as well.
+#
+# Assumed: G is a p-group, e is a positive integer
+BindGlobal("Omega_Sims_CENTRAL",100);
+BindGlobal("Omega_Sims_RUNTIME",5000);
+
+
+#Choose a central element z of order p.  Suppose that by induction
+#we know H = Omega(G/<z>).  Then Omega(G) is contained in the inverse
+#image K of H in G.  Compute K/K'.  If that quotient has elements of
+#order p^2, then we can cut K down a bit.  Thus we may assume that we
+#know a normal subgroup K of G that contains Omega(G), K maps into
+#H, and K/K' has exponent p.  One would hope that K is small enough
+#that random methods combined with deterministic computations would
+#make it possible to compute Omega(K) = Omega(G).
+#-Charles Sims
+BindGlobal("Omega_Sims",
+function(G,p,e)
+local H,K,Knew,fails,gens,r;
+
+  if(IsTrivial(G)) then return G; fi;
+
+  K:=G;
+  H:=Omega_LowerBound(K,p,e);
+  if(H=K) then return K; fi;
+
+  # Step 1, reduce until K/K' = Omega(K/K') then Omega(G)=Omega(K)
+  while (true) do # there is a `break' below
+    Knew:=Omega_UpperBoundAbelianQuotient(K,p,e);
+    if(Knew=K) then break; fi;
+    K:=Knew;
+  od;
+
+  if (H=K) then 
+    return K; 
+  fi;
+
+  # Step 2, reduce until we have fail lots of times in a row
+  # or waste a lot of time.
+  r:=Runtime();
+  fails:=0;
+  while(fails<Omega_Sims_CENTRAL and Runtime()-r<Omega_Sims_RUNTIME) do
+    Knew:=Omega_UpperBoundCentralQuotient(K,p,e);
+    if(K=Knew) then fails:=fails+1; continue; fi;
+    fails:=0;
+    K:=Knew;
+    if(H=K) then return H; fi;
+  od;
+
+  # Step 3: Repeat step 1
+  while(true) do
+    Knew:=Omega_UpperBoundAbelianQuotient(K,p,e);
+    if(Knew=K) then break; fi;
+    K:=Knew;
+  od;
+  if(H=K) then return K; fi;
+  
+  # Step 4: If K<G, then we have reduced the problem, so just ask for Omega(K,p,e) directly.
+  if(K<>G) then return Omega(K,p,e); fi;
+
+    # Otherwise we try to search.
+    if(Size(G)<2^24) then return Omega_Search(G,p,e); fi;
+
+    # If the group is too big to search, just let the user know. If he wants
+    # to continue we can try and return a lower bound, but this is too small
+    # quite often.
+    Error("Inductive method failed. You may 'return;' if you wish to use a\n",
+      "(possible incorrect) lower bound ",H," for Omega.");
+    return H;
+end);
+
+InstallMethod( OmegaOp, "for p groups", true,
+        [ IsGroup, IsPosInt, IsPosInt ], 0,
+function( G, p, n )
+local   gens,  q,  gen,  ord,  o;
+  
+  # trivial cases
+  if n=0 then return TrivialSubgroup(G);fi;
+
+  if IsAbelian( G )  then
+    q := p^n;
+    gens := [  ];
+    for gen  in IndependentGeneratorsOfAbelianGroup( G )  do
+	ord := Order( gen );
+	o := GcdInt( ord, q );
+	if o <> 1  then
+	    Add( gens, gen ^ ( ord / o ) );
+	fi;
+    od;
+    return SubgroupNC( G, gens );
+  fi;
+
+  if not PrimePGroup(G)=p then
+    TryNextMethod();
+  fi;
+
+  if ForAll(Pcgs(G),g->IsOne(g^(p^n))) then 
+    return G;
+  elif(Size(G)<2^15) then 
+    return Omega_Search(G,p,n);
+  else 
+    return Omega_Sims(G,p,n);
+  fi;
+end);
+
+    
+############################################################################
+##
+#M  HallSubgroupOp (<grp>, <pi>)
+##
+InstallMethod (HallSubgroupOp, "via IsomoprhismPcGroup", true,
+    [IsGroup and IsSolvableGroup and IsFinite, IsList], 0,
+    function (grp, pi)
+        local iso;
+        iso := IsomorphismPcGroup (grp);
+        return PreImagesSet (iso, HallSubgroup (ImagesSource (iso), pi));
+    end);
+    
+    
+############################################################################
+##
+#M  HallSubgroupOp (<grp>, <pi>)
+##
+RedispatchOnCondition(HallSubgroupOp,true,[IsGroup,IsList],
+  [IsSolvableGroup and IsFinite,],1);
+
+
+############################################################################
+##
+#M  SylowComplementOp (<grp>, <p>)
+##
+InstallMethod (SylowComplementOp, "via IsomoprhismPcGroup", true,
+    [IsGroup and IsSolvableGroup and IsFinite, IsPosInt], 0,
+    function (grp, p)
+        local iso;
+        iso := IsomorphismPcGroup (grp);
+        return PreImagesSet (iso, SylowComplement (ImagesSource (iso), p));
+    end);
+    
+
+############################################################################
+##
+#M  SylowComplementOp (<grp>, <p>)
+##
+RedispatchOnCondition(SylowComplementOp,true,[IsGroup,IsPosInt],
+  [IsSolvableGroup and IsFinite,
+  IsPosInt ],1);
 
 
 #############################################################################

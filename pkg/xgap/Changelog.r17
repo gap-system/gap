@@ -1,0 +1,21 @@
+$Id: Changelog.r17,v 1.2 2003/05/17 13:24:37 gap Exp $
+
+This file describes the changes from xgap4r16 to xgap4r17:
+
+ * XGAP now reports "4.17" as version number instead of "4.16".
+
+ * PackageInfo.g file is now supplied.
+
+ * The new package loading mechanism is therefore supported.
+
+ * A documentation package is generated.
+
+ * The global variable 'last' is set in init.g to make the XGAP package
+   autoloadable.
+
+ * Changes in the autoconf usage: All files are now here.
+   No more referring to ../../cnf from main GAP.
+
+ * Slight changes in the startup shell script.
+
+ * Display of MBytes instead of KBytes.

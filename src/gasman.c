@@ -2,7 +2,7 @@
 **
 *W  gasman.c                    GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: gasman.c,v 4.71 2008/02/11 15:10:14 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -111,10 +111,11 @@
 **  Therefore  some bags  may  be  kept by  {\Gasman}, even   though they are
 **  already dead.
 */
+#include        <string.h>
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_gasman_c =
-   "@(#)$Id$";
+   "@(#)$Id: gasman.c,v 4.71 2008/02/11 15:10:14 sal Exp $";
 
 
 #define INCLUDE_DECLARATION_PART
@@ -210,9 +211,15 @@ const char * Revision_gasman_c =
 #endif
 #define WORDS_BAG(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
 
+#ifdef USE_NEWSHAPE
+#define HEADER_SIZE 2
+#else
 #define HEADER_SIZE 3
-#define NTYPES 256
+#endif
 
+/* This could be 65536, but would waste memory in various tables */
+
+#define NTYPES 256
 
 /****************************************************************************
 **
@@ -662,10 +669,24 @@ TNumGlobalBags GlobalBags;
 **  it is used by 'CollectBags'. <cookie> is also recorded to allow things to
 **  be matched up after loading a saved workspace.
 */
-static UInt GlobalSortingStatus = 0;
-Int WarnInitGlobalBag = 0;
+static UInt GlobalSortingStatus;
+Int WarnInitGlobalBag;
 
 extern TNumAbortFuncBags   AbortFuncBags;
+
+void ClearGlobalBags ( void )
+{
+  UInt i;
+  for (i = 0; i < GlobalBags.nr; i++)
+    {
+      GlobalBags.addr[i] = 0L;
+      GlobalBags.cookie[i] = 0L;
+    }
+  GlobalBags.nr = 0;
+  GlobalSortingStatus = 0;
+  WarnInitGlobalBag = 0;
+  return;
+}    
 
 void InitGlobalBag (
     Bag *               addr,
@@ -834,10 +855,14 @@ Bag NextBagRestoring( UInt size, UInt type)
   UInt i;
   *(Bag **)NextMptrRestoring = (AllocBags+HEADER_SIZE);
   bag = NextMptrRestoring;
+#ifdef USE_NEWSHAPE
+  ((UInt *)AllocBags)[0] = (size << 16 | type);
+#else
   ((UInt *)AllocBags)[0] = type;
   ((UInt *)AllocBags)[1] = size;
+#endif
   
-  ((Bag *)AllocBags)[2] = NextMptrRestoring;
+  ((Bag *)AllocBags)[HEADER_SIZE-1] = NextMptrRestoring;
   NextMptrRestoring++;
 #ifdef DEBUG_LOADING
   if ((Bag *)NextMptrRestoring >= OldBags)
@@ -930,6 +955,20 @@ void            InitCollectFuncBags (
 
 /****************************************************************************
 **
+*F  FinishBags() . . . . . . . . . . . . . . . . . . . . . . .finalize GASMAN
+**
+** `FinishBags()' ends GASMAN and returns all memory to the OS pool
+**
+*/
+
+void FinishBags( void )
+{
+  (*AllocFuncBags)(-(sizeof(Bag)*SizeWorkspace/1024),2);
+  return;
+}
+
+/****************************************************************************
+**
 *F  InitBags(...) . . . . . . . . . . . . . . . . . . . . . initialize Gasman
 **
 **  'InitBags'   remembers   <alloc-func>,  <stack-func>,     <stack-bottom>,
@@ -964,6 +1003,9 @@ void            InitBags (
     Bag *               p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
+    ClearGlobalBags();
+    WarnInitGlobalBag = 0;
+    
     /* install the allocator and the abort function                        */
     AllocFuncBags   = alloc_func;
     AbortFuncBags   = abort_func;
@@ -1081,12 +1123,12 @@ Bag NewBag (
 #ifdef  COUNT_BAGS
     /* update the statistics                                               */
     NrAllBags               += 1;
-    SizeAllBags             += size;
     InfoBags[type].nrLive   += 1;
     InfoBags[type].nrAll    += 1;
     InfoBags[type].sizeLive += size;
     InfoBags[type].sizeAll  += size;
 #endif
+    SizeAllBags             += size;
 
     /* get the identifier of the bag and set 'FreeMptrBags' to the next    */
     bag          = FreeMptrBags;
@@ -1098,8 +1140,13 @@ Bag NewBag (
 
 
     /* enter size-type words                                               */
+#ifdef USE_NEWSHAPE
+    *dst++ = (Bag)(size << 16 | type);
+#else
     *dst++ = (Bag)(type);
     *dst++ = (Bag)(size);
+#endif
+
 
     /* enter link word                                                     */
     *dst++ = bag;
@@ -1158,7 +1205,12 @@ void            RetypeBag (
 #endif
 
     /* change the size-type word                                           */
+#ifdef USE_NEWSHAPE
+    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFF0000L;
+    *(*bag-HEADER_SIZE) |= new_type;
+#else
     *(*bag-HEADER_SIZE) = new_type;
+#endif
 }
 
 
@@ -1258,16 +1310,20 @@ void            RetypeBag (
 
 #ifdef  COUNT_BAGS
     /* update the statistics                                               */
-    SizeAllBags             += new_size - old_size;
     InfoBags[type].sizeLive += new_size - old_size;
     InfoBags[type].sizeAll  += new_size - old_size;
 #endif
+    SizeAllBags             += new_size - old_size;
 
     /* if the real size of the bag doesn't change                          */
     if ( WORDS_BAG(new_size) == WORDS_BAG(old_size) ) {
 
         /* change the size word                                            */
+#ifdef USE_NEWSHAPE
+      *(*bag-2) = (new_size << 16 | type);
+#else
       *(*bag-2) = new_size;
+#endif
     }
 
     /* if the bag is shrunk                                                */
@@ -1277,16 +1333,25 @@ void            RetypeBag (
 
       /* leave magic size-type word for the sweeper, type must be 255    */
 	if ((WORDS_BAG(old_size)-WORDS_BAG(new_size) == 1))
-	  *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 1 << 16 | 255;
+	  *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 1 << 8 | 255;
 	else
 	  {
+#ifdef USE_NEWSHAPE
+	    *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 
+	      (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(Bag) << 16 | 255;
+#else
 	    *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 255;
 	    *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size) + 1) =
 	      (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(Bag);
+#endif
 	  }
 
         /* change the size- word                                       */
-        *(*bag-2) = new_size;
+#ifdef USE_NEWSHAPE
+      *(*bag-2) = (new_size << 16 | type);
+#else
+      *(*bag-2) = new_size;
+#endif
 
 
     }
@@ -1306,7 +1371,11 @@ void            RetypeBag (
         AllocBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
 
         /* change the size-type word                                       */
-        *(*bag-2) = new_size ;
+#ifdef USE_NEWSHAPE
+      *(*bag-2) = (new_size << 16 | type);
+#else
+      *(*bag-2) = new_size;
+#endif
     }
 
     /* if the bag is enlarged                                              */
@@ -1323,12 +1392,18 @@ void            RetypeBag (
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
 	
         /* leave magic size-type word  for the sweeper, type must be 255   */
+#ifdef USE_NEWSHAPE
+	*(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
+	*dst++ = (Bag)(new_size << 16 | type);
+#else
 	*(*bag-3) = 255; 
         *(*bag-2) = (((WORDS_BAG(old_size)+2) * sizeof(Bag)));
 	
         /* enter the new size-type word                                    */
+
         *dst++ = (Bag)type;
 	*dst++ = (Bag)new_size;
+#endif
 	
 
         /* if the bag is already on the changed bags list, keep it there   */
@@ -1878,7 +1953,12 @@ again:
 #endif
 
                 /* advance src                                             */
+#ifdef USE_NEWSHAPE
+		src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[0] >>16  );
+#else
                 src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1]  );
+#endif
+
 
             }
 
@@ -1904,10 +1984,14 @@ again:
             last = src;  type = 'r';
 
             /* advance src                                                 */
-	    if ((*(UInt *) src) >> 16 == 1)
+	    if ((*(UInt *) src) >> 8 == 1)
 	      src++;
 	    else
+#ifdef USE_NEWSHAPE
+	      src += 1 + WORDS_BAG(((UInt *)src)[0] >> 16);
+#else
 	      src += 1 + WORDS_BAG(((UInt *)src)[1]);
+#endif
 
         }
 
@@ -1948,8 +2032,13 @@ again:
             FreeMptrBags = src[HEADER_SIZE-1];
 
             /* advance src                                                 */
+#ifdef USE_NEWSHAPE
+            src += HEADER_SIZE +
+	      WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
+#else
             src += HEADER_SIZE +
 	      WORDS_BAG( ((UInt*)src)[1] ) ;
+#endif
 
         }
 
@@ -1966,13 +2055,22 @@ again:
 
             /* update count                                                */
             nrDeadBags += 1;
+#ifdef USE_NEWSHAPE
+	    sizeDeadBags += ((UInt *)src)[0] >> 16;
+#else
 	    sizeDeadBags += ((UInt *)src)[1];
+#endif
 
 #ifdef  COUNT_BAGS
             /* update the statistics                                       */
             InfoBags[*(UInt*)src & 0xFFL].nrLive -= 1;
+#ifdef USE_NEWSHAPE
+            InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
+	    ((UInt *)src)[0] >>16;
+#else
             InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
 	    ((UInt *)src)[1];
+#endif
 #endif
 
             /* don't free the identifier                                   */
@@ -1983,8 +2081,13 @@ again:
            nrHalfDeadBags ++;
 
             /* advance src                                                 */
+#ifdef USE_NEWSHAPE
+            src += HEADER_SIZE +
+	      WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
+#else
             src += HEADER_SIZE +
 	      WORDS_BAG( ((UInt*)src)[1] ) ;
+#endif
 
         }
 
@@ -2001,10 +2104,17 @@ again:
 
             /* update identifier, copy size-type and link field            */
             PTR_BAG( UNMARKED_ALIVE(src[HEADER_SIZE-1])) = dst+HEADER_SIZE;
+#ifdef USE_NEWSHAPE
+            end = src + HEADER_SIZE +
+	      WORDS_BAG( ((UInt*)src)[0] >>16 ) ;
+#else
             end = src + HEADER_SIZE +
 	      WORDS_BAG( ((UInt*)src)[1] ) ;
+#endif
             *dst++ = *src++;
+#ifndef USE_NEWSHAPE
             *dst++ = *src++;
+#endif
 
             *dst++ = (Bag)UNMARKED_ALIVE(*src++);
 
@@ -2020,8 +2130,14 @@ again:
               
               /* Otherwise do the default thing */
               else if ( dst != src ) {
+		memmove((void *)dst, (void *)src, (end - src)*sizeof(*src));
+		dst += (end-src);
+		src = end;
+		
+		/*
                 while ( src < end )
                   *dst++ = *src++;
+		*/
               }
               else {
                 dst = end;
@@ -2042,10 +2158,12 @@ again:
     AllocBags = YoungBags = dst;
 
     /* clear the new free area                                             */
-    if ( ! DirtyBags ) {
+    memset((void *)dst, 0, ((Char  *)src)-((Char *)dst));
+
+    /*    if ( ! DirtyBags ) {
         while ( dst < src )
             *dst++ = 0;
-    }
+	    } */
 
     /* information after the sweep phase                                   */
     NrDeadBags += nrDeadBags;
@@ -2163,11 +2281,7 @@ again:
             i = SpaceBetweenPointers(EndBags,StopBags)/7 - (SpaceBetweenPointers(OldBags,MptrBags)-NrLiveBags);
 
             /* move the bags area                                          */
-            dst = AllocBags + i;
-            src = AllocBags;
-            end = OldBags;
-            while ( end < src )
-                *--dst = *--src;
+	    memmove((void *)(OldBags+i), (void *)OldBags, SpaceBetweenPointers(AllocBags,OldBags)*sizeof(*OldBags));
 
             /* update the masterpointers                                   */
             for ( p = MptrBags; p < OldBags; p++ ) {
@@ -2206,7 +2320,7 @@ again:
 			 SpaceBetweenPointers(EndBags, MptrBags)/(1024/sizeof(Bag)));
 
     /* reset the stop pointer                                              */
-    if ( ! CacheSizeBags || EndBags < StopBags+WORDS_BAG(AllocSizeBags) )
+    if ( ! CacheSizeBags || EndBags < StopBags+WORDS_BAG(1024*AllocSizeBags) )
         StopBags = EndBags;
     else
         StopBags = StopBags + WORDS_BAG(1024*AllocSizeBags);

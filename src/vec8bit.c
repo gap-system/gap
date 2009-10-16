@@ -1,7 +1,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_vec8bit_c =
-   "@(#)$Id$";
+   "@(#)$Id: vec8bit.c,v 4.110 2009/04/06 12:07:23 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -604,7 +604,7 @@ void MakeFieldInfo8Bit( UInt q)
   CHANGED_BAG(FieldInfo8Bit);
 }
      
-static inline Obj GetFieldInfo8Bit( UInt q)
+Obj GetFieldInfo8Bit( UInt q)
 {
   Obj info;
   assert(2< q && q <= 256);
@@ -1927,9 +1927,8 @@ Obj SumVec8BitVec8BitMult( Obj vl, Obj vr, Obj mult )
   UInt elts;
   UInt q;
   UInt len;
-  Obj type;
-
   FFV v;
+  Obj type;
 
   q = FIELD_VEC8BIT(vl);
   len = LEN_VEC8BIT(vl);
@@ -3034,6 +3033,8 @@ Obj FuncELMS_VEC8BIT_RANGE (
 		e++;
 		p++;
 	      }
+		if ((char*)ptrD >= (char*) *res + (*res)[-2])
+			Pr("-", 0L, 0L);
 	    *ptrD = byte;
 	  }
       }
@@ -3252,10 +3253,8 @@ Obj FuncUNB_VEC8BIT (
 **  It is *not* used in the code and can be replaced by a dummy argument.
 **
 */
-Obj FuncPOSITION_NONZERO_VEC8BIT (
-    Obj                 self,
-    Obj                 list,
-    Obj                 zero )
+
+UInt PositionNonZeroVec8Bit ( Obj list, UInt from )
 {
     Obj                 info;
     UInt len;
@@ -3269,19 +3268,52 @@ Obj FuncPOSITION_NONZERO_VEC8BIT (
     len = LEN_VEC8BIT(list);
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
+    gettab = GETELT_FIELDINFO_8BIT(info);
     nb = (len + elts -1)/elts;
     ptr = BYTES_VEC8BIT(list);
-    i = 0;
+    i = from/elts;
+    j = from %elts;
+    /* might be an initial part byte */
+    if (j) {
+      if (i < nb && ptr[i])
+	for (j = from % elts; j < elts && (i*elts+j < len); j++)
+	  if (gettab[256*j + ptr[i]] != 0)
+	    return elts*i+j+1;
+      i++;
+    }
+
+    /* skip empty bytes */
     while (i < nb && !ptr[i])
       i++;
+    
     if (i >= nb)
-      return INTOBJ_INT(len+1);
+      return len+1;
+
+    /* Found a non-empty byte, locate the entry */
     byte = ptr[i];
-    gettab = GETELT_FIELDINFO_8BIT(info) + byte;
     j = 0;
-    while (gettab[256*j] == 0)
+    while (gettab[byte + 256*j] == 0)
       j++;
-    return INTOBJ_INT(elts*i+j+1);
+    return elts*i+j+1;
+}
+
+			    
+
+Obj FuncPOSITION_NONZERO_VEC8BIT (
+    Obj                 self,
+    Obj                 list,
+    Obj                 zero )
+{
+  return INTOBJ_INT(PositionNonZeroVec8Bit(list, 0));
+}
+
+Obj FuncPOSITION_NONZERO_VEC8BIT3 (
+    Obj                 self,
+    Obj                 list,
+    Obj                 zero,
+    Obj                 from)
+{
+  return INTOBJ_INT(PositionNonZeroVec8Bit(list, INT_INTOBJ(from)));
 }
 
 /****************************************************************************
@@ -4353,20 +4385,24 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
   SET_LEN_VEC8BIT(vec,newlen);
   ResizeBag( vec, SIZE_VEC8BIT( newlen, elts));
-  if (len != 0 && !knownclean && newlen > len)
+  if (!knownclean && newlen > len)
     {
       settab = SETELT_FIELDINFO_8BIT(info);
-      ptr = BYTES_VEC8BIT(vec) + (len -1) / elts;
-      byte = *ptr;
-      for (i = (len-1) % elts + 1; i < elts; i++)
-	byte = settab[ byte + 256 * i];
-      *ptr++ = byte;
+      ptr = BYTES_VEC8BIT(vec);
+      if (len) {
+        ptr += (len -1) / elts;
+        byte = *ptr;
+        for (i = (len-1) % elts + 1; i < elts; i++)
+          byte = settab[ byte + 256 * i];
+        *ptr++ = byte;
+      }
       ptr2 = BYTES_VEC8BIT(vec) + (newlen + elts -1) / elts;
       while (ptr < ptr2)
-	*ptr++ = (UInt1)0;
+	    *ptr++ = (UInt1)0;
     }
   return;
 }
+
 
 void ShiftLeftVec8Bit( Obj vec, UInt amount)
 {
@@ -4686,8 +4722,6 @@ Obj FuncRIGHTMOST_NONZERO_VEC8BIT( Obj self, Obj vec)
 {
   return INTOBJ_INT(RightMostNonZeroVec8Bit(vec));
 }
-
-
 
 /****************************************************************************
 **
@@ -5192,7 +5226,7 @@ Obj FuncQUOTREM_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
 ** the same field, which can be overwritten if necessary
 */
 
-static UInt RNheads = 0, RNvectors = 0, RNcoeffs = 0, RNrelns = 0;
+static UInt RNheads, RNvectors, RNcoeffs, RNrelns;
 
 
 Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
@@ -5327,10 +5361,8 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
       RNvectors = RNamName("vectors");
     }
   res = NEW_PREC( TransformationsNeeded ? 4 : 2);
-  SET_RNAM_PREC( res, 1, RNheads);
-  SET_ELM_PREC(  res, 1, heads);
-  SET_RNAM_PREC( res, 2, RNvectors);
-  SET_ELM_PREC(  res, 2, vectors);
+  AssPRec(res,RNheads,heads);
+  AssPRec(res,RNvectors,vectors);
   if (LEN_PLIST(vectors) == 0)
     RetypeBag(vectors, T_PLIST_EMPTY);
   if (TransformationsNeeded)
@@ -5340,15 +5372,14 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
 	  RNcoeffs = RNamName("coeffs");
 	  RNrelns = RNamName("relations");
 	}
-      SET_RNAM_PREC( res, 3, RNcoeffs);
-      SET_ELM_PREC ( res, 3, coeffs);
+      AssPRec(res,RNcoeffs,coeffs);
       if (LEN_PLIST(coeffs) == 0)
 	RetypeBag(coeffs, T_PLIST_EMPTY);
-      SET_RNAM_PREC( res, 4, RNrelns);
-      SET_ELM_PREC ( res, 4, relns);
+      AssPRec(res,RNrelns,relns);
       if (LEN_PLIST(relns) == 0)
 	RetypeBag(relns, T_PLIST_EMPTY);
     }
+  SortPRecRNam(res,0);
   return res;
 }
 
@@ -5815,6 +5846,99 @@ Obj FuncTRANSPOSED_MAT8BIT( Obj self, Obj mat)
 
 /****************************************************************************
 **
+*F  FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( <self>, <matl>, <matr>)
+**
+*/
+Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
+{
+  UInt nrowl, nrowr, ncoll, ncolr, ncol, p, q, i, j, k, l, s, zero,
+    mutable, elts;
+  Obj mat, type, row, info, shift[5];
+  UInt1 *getelt, *setelt, *scalar, *add, *datar, *data;
+
+  nrowl = LEN_MAT8BIT(matl);
+  nrowr = LEN_MAT8BIT(matr);
+  ncoll = LEN_VEC8BIT(ELM_MAT8BIT(matl,1));
+  ncolr = LEN_VEC8BIT(ELM_MAT8BIT(matr,1));
+  q = FIELD_VEC8BIT(ELM_MAT8BIT(matl,1));
+  if(q != FIELD_VEC8BIT(ELM_MAT8BIT(matr,1)))
+    return TRY_NEXT_METHOD;
+
+  mutable = IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr);
+
+  info = GetFieldInfo8Bit(q);
+  p = P_FIELDINFO_8BIT(info);
+  elts = ELS_BYTE_FIELDINFO_8BIT(info);
+  zero = FELT_FFE_FIELDINFO_8BIT(info)[0];
+
+  /* create a matrix */
+  mat = NewBag(T_POSOBJ, sizeof(Obj)*(nrowl*nrowr+2));
+  SET_LEN_MAT8BIT(mat,nrowl*nrowr);
+  TYPE_POSOBJ(mat) = TypeMat8Bit(q, mutable);
+  type = TypeVec8BitLocked(q, mutable);
+
+  /* allocate 0 matrix */
+  for (i = 1; i <= nrowl*nrowr; i++) {
+    row = ZeroVec8Bit(q, ncoll*ncolr, mutable);
+    TYPE_DATOBJ(row) = type; /* locked type */
+    SET_ELM_MAT8BIT(mat,i,row);
+    CHANGED_BAG(mat);
+  }
+
+  /* allocate data for shifts of rows of matr */
+  for (i = 0; i < elts; i++) {
+    shift[i] = NewBag(T_DATOBJ, ncolr/elts+200+sizeof(Obj));
+  }
+
+  /* allocation is done. speed up operations by getting lookup tables */
+  getelt = GETELT_FIELDINFO_8BIT(info);
+  setelt = SETELT_FIELDINFO_8BIT(info);
+  scalar = SCALAR_FIELDINFO_8BIT(info);
+  add = ADD_FIELDINFO_8BIT(info);
+
+  /* fill in matrix */
+  for (j = 1; j <= nrowr; j++) {
+    /* create shifts of rows of matr */
+    for (i = 0; i < elts; i++) {
+      data = (UInt1 *) ADDR_OBJ(shift[i]);
+      datar = BYTES_VEC8BIT(ELM_MAT8BIT(matr,j));
+      for (k = 0; k < ncolr; k++)
+	data[(k+i)/elts] = setelt[data[(k+i)/elts] + 256*((k+i)%elts + getelt[datar[k/elts]+256*(k%elts)]*elts)];
+    }
+    for (i = 1; i <= nrowl; i++) {
+      data = BYTES_VEC8BIT(ELM_MAT8BIT(mat,(i-1)*nrowr+j));
+      ncol = 0;
+      for (k = 0; k < ncoll; k++) {
+	s = getelt[BYTES_VEC8BIT(ELM_MAT8BIT(matl,i))[k/elts] + 256*(k%elts)];
+	l = 0;
+	if (s != zero) {
+	  /* append s*shift[ncol%elts] to data */
+	  datar = (UInt1 *) ADDR_OBJ(shift[ncol%elts]);
+	  if (ncol % elts) {
+	    if (p == 2)
+	      data[-1] ^= scalar[*datar++ + 256*s];
+	    else
+	      data[-1] = add[data[-1] + 256*scalar[*datar++ + 256*s]];
+	    l = elts - ncol%elts;
+	  }
+	  for (; l < ncolr; l += elts)
+	    *data++ = scalar[*datar++ + 256*s];
+	} else {
+	  if (ncol % elts)
+	    l = elts - ncol%elts;
+	  data += (ncolr+elts-1-l)/elts;
+	}
+	ncol += ncolr;
+      }
+    }
+  }
+
+  return mat;
+}
+
+
+/****************************************************************************
+**
 *f * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * * */
 
 
@@ -5912,6 +6036,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     {"POSITION_NONZERO_VEC8BIT", 2, "vec8bit, zero",
        FuncPOSITION_NONZERO_VEC8BIT, "src/vec8bit.c:POSITION_NONZERO_VEC8BIT" },
+
+    {"POSITION_NONZERO_VEC8BIT3", 3, "vec8bit, zero, from",
+       FuncPOSITION_NONZERO_VEC8BIT3, "src/vec8bit.c:POSITION_NONZERO_VEC8BIT3" },
 
     {"APPEND_VEC8BIT", 2, "vec8bitl, vec8bitr",
        FuncAPPEND_VEC8BIT, "src/vec8bit.c:APPEND_VEC8BIT" },
@@ -6021,6 +6148,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "TRANSPOSED_MAT8BIT", 1, "mat8bit",
       FuncTRANSPOSED_MAT8BIT, "src/vec8bit.c:TRANSPOSED_MAT8BIT" },
 
+    { "KRONECKERPRODUCT_MAT8BIT_MAT8BIT", 2, "mat8bit, mat8bit",
+      FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT, "src/vec8bit.c:KRONECKERPRODUCT_MAT8BIT_MAT8BIT" },
+
     { 0 }
 
 };
@@ -6051,6 +6181,12 @@ static Int PreSave( StructInitInfo * module )
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  RNheads = 0;
+  RNvectors = 0;
+  RNcoeffs = 0;
+  RNrelns = 0;
+  
+  
   /* import kind functions                                               */
   ImportFuncFromLibrary( "TYPE_VEC8BIT",       &TYPE_VEC8BIT     );
   ImportFuncFromLibrary( "TYPE_VEC8BIT_LOCKED",&TYPE_VEC8BIT_LOCKED );

@@ -1,0 +1,30 @@
+
+# See GHs ISAAC'91 paper.
+# An example of a case where No:-1; is clearly not good.
+
+Enum: J2 (Hall-Janko);
+Gr: a,b,c;
+Rel: a^3, b^3, c^3, abaBAB, (ca)^5, (cb)^5, (cBcb)^2, 
+  AbacAbaCABaC, abAcabACaBAC;
+Subg: Index 100;
+Gen: a,b,b^(cAc);
+
+Mess:10000;
+
+Felsch;  End;		# m=1305 t=1315
+No:-1;   End;		# m=2448 t=2473
+
+Fel:1;   End;		# m=459 t=477
+No:0;    End;		# m=432 t=450
+No:6;    End;		# m=350 t=367
+
+Max:500;
+Com:100;
+
+# We include the first 4 (?best value) relators in the subgroup,
+#   and use Mend:1 to give `plenty' of (variable) early defns.
+
+No:4;
+Mend:1;
+Aep:7;			# `best': m=245 t=270
+

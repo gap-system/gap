@@ -1,0 +1,261 @@
+C preface.tex 1. Preface
+C intro.tex 2. Introduction to polycyclic presentations
+C collect.tex 3. Collectors
+S 3.1. Constructing a Collector
+F 3.1. FromTheLeftCollector
+F 3.1. SetRelativeOrder
+F 3.1. SetRelativeOrderNC
+F 3.1. SetPower
+F 3.1. SetPowerNC
+F 3.1. SetConjugate
+F 3.1. SetConjugateNC
+F 3.1. SetCommutator
+F 3.1. UpdatePolycyclicCollector
+F 3.1. IsConfluent
+S 3.2. Accessing Parts of a Collector
+F 3.2. RelativeOrders
+F 3.2. GetPower
+F 3.2. GetPowerNC
+F 3.2. GetConjugate
+F 3.2. GetConjugateNC
+F 3.2. NumberOfGenerators
+F 3.2. ObjByExponents
+F 3.2. ExponentsByObj
+S 3.3. Special Features
+F 3.3. IsWeightedCollector
+F 3.3. AddHallPolynomials
+F 3.3. String
+F 3.3. FTLCollectorPrintTo
+F 3.3. FTLCollectorAppendTo
+F 3.3. UseLibraryCollector
+F 3.3. USE_LIBRARY_COLLECTOR
+F 3.3. DEBUG_COMBINATORIAL_COLLECTOR
+F 3.3. USE_COMBINATORIAL_COLLECTOR
+C defins.tex 4. Pcp-groups - polycyclically presented groups
+S 4.1. Pcp-elements -- elements of a pc-presented group
+F 4.1. PcpElementByExponentsNC
+F 4.1. PcpElementByExponents
+F 4.1. PcpElementByGenExpListNC
+F 4.1. PcpElementByGenExpList
+F 4.1. IsPcpElement
+F 4.1. IsPcpElementRep
+S 4.2. Methods for pcp-elements
+F 4.2. Collector
+F 4.2. Exponents
+F 4.2. GenExpList
+F 4.2. NameTag
+F 4.2. Depth
+F 4.2. LeadingExponent
+F 4.2. RelativeOrder
+F 4.2. RelativeIndex
+F 4.2. FactorOrder
+F 4.2. NormingExponent
+F 4.2. NormedPcpElement
+S 4.3. Pcp-groups - groups of pcp-elements
+F 4.3. PcpGroupByCollector
+F 4.3. PcpGroupByCollectorNC
+F 4.3. Group
+F 4.3. Subgroup
+C basics.tex 5. Basic methods and functions for pcp-groups
+S 5.1. Elementary methods for pcp-groups
+F 5.1. equality!subgroups
+F 5.1. Size
+F 5.1. Random
+F 5.1. Index
+F 5.1. membership
+F 5.1. Elements
+F 5.1. ClosureGroup
+F 5.1. NormalClosure
+F 5.1. HirschLength
+F 5.1. CommutatorSubgroup
+F 5.1. PRump
+F 5.1. SmallGeneratingSet
+S 5.2. Elementary properties of pcp-groups
+F 5.2. IsSubgroup
+F 5.2. IsNormal
+F 5.2. IsNilpotentGroup
+F 5.2. IsAbelian
+F 5.2. IsElementaryAbelian
+F 5.2. IsFreeAbelian
+S 5.3. Subgroups of pcp-groups
+F 5.3. Igs
+F 5.3. Igs
+F 5.3. IgsParallel
+F 5.3. Ngs
+F 5.3. Ngs
+F 5.3. Cgs
+F 5.3. Cgs
+F 5.3. CgsParallel
+F 5.3. SubgroupByIgs
+F 5.3. SubgroupByIgs
+F 5.3. AddToIgs
+F 5.3. AddToIgsParallel
+F 5.3. AddIgsToIgs
+S 5.4. Polycyclic presentation sequences for subfactors
+F 5.4. Pcp
+F 5.4. Pcp
+F 5.4. Pcp
+F 5.4. Pcp
+F 5.4. GeneratorsOfPcp
+F 5.4. pcp!as list
+F 5.4. Length
+F 5.4. RelativeOrdersOfPcp
+F 5.4. DenominatorOfPcp
+F 5.4. NumeratorOfPcp
+F 5.4. GroupOfPcp
+F 5.4. OneOfPcp
+F 5.4. ExponentsByPcp
+F 5.4. PcpGroupByPcp
+S 5.5. Factor groups of pcp-groups
+F 5.5. NaturalHomomorphism
+F 5.5. factor group
+F 5.5. FactorGroup
+S 5.6. Homomorphisms for pcp-groups
+F 5.6. GroupHomomorphismByImages
+F 5.6. Kernel
+F 5.6. Image
+F 5.6. Image
+F 5.6. Image
+F 5.6. PreImage
+F 5.6. PreImagesRepresentative
+F 5.6. IsInjective
+S 5.7. Changing the defining pc-presentation
+F 5.7. RefinedPcpGroup
+F 5.7. PcpGroupBySeries
+F 5.7. PcpGroupBySeries
+S 5.8. Printing a pc-presentation
+F 5.8. PrintPcpPresentation
+F 5.8. PrintPcpPresentation
+F 5.8. PrintPcpPresentation
+F 5.8. PrintPcpPresentation
+S 5.9. Converting to and from a presentation
+F 5.9. IsomorphismPcpGroup
+F 5.9. IsomorphismPcGroup
+C libraries.tex 6. Libraries and examples of pcp-groups
+S 6.1. Libraries of various types of polycyclic groups
+F 6.1. AbelianPcpGroup
+F 6.1. DihedralPcpGroup
+F 6.1. UnitriangularPcpGroup
+F 6.1. SubgroupUnitriangularPcpGroup
+F 6.1. InfiniteMetacyclicPcpGroup
+F 6.1. HeisenbergPcpGroup
+F 6.1. MaximalOrderByUnitsPcpGroup
+F 6.1. BurdeGrunewaldPcpGroup
+S 6.2. Some asorted example groups
+F 6.2. ExampleOfMetabelianPcpGroup
+F 6.2. ExamplesOfSomePcpGroups
+C methods.tex 7. Higher level methods for pcp-groups
+S 7.1. Subgroup series in pcp-groups
+F 7.1. PcpSeries
+F 7.1. EfaSeries
+F 7.1. SemiSimpleEfaSeries
+F 7.1. DerivedSeries
+F 7.1. RefinedDerivedSeries
+F 7.1. RefinedDerivedSeriesDown
+F 7.1. LowerCentralSeries
+F 7.1. UpperCentralSeries
+F 7.1. TorsionByPolyEFSeries
+F 7.1. PcpsBySeries
+F 7.1. PcpsBySeries
+F 7.1. PcpsOfEfaSeries
+S 7.2. Orbit stabilizer methods for pcp-groups
+F 7.2. PcpOrbitStabilizer
+F 7.2. PcpOrbitsStabilizers
+F 7.2. StabilizerIntegralAction
+F 7.2. OrbitIntegralAction
+F 7.2. NormalizerIntegralAction
+F 7.2. ConjugacyIntegralAction
+S 7.3. Centralizers, Normalizers and Intersections
+F 7.3. Centralizer!element in subgroup
+F 7.3. IsConjugate!elements
+F 7.3. Centralizer!subgroup in subgroup
+F 7.3. Normalizer
+F 7.3. IsConjugate!subgroups
+F 7.3. Intersection
+S 7.4. Finite subgroups
+F 7.4. TorsionSubgroup
+F 7.4. NormalTorsionSubgroup
+F 7.4. IsTorsionFree
+F 7.4. FiniteSubgroupClasses
+F 7.4. FiniteSubgroupClassesBySeries
+S 7.5. Subgroups of finite index and maximal subgroups
+F 7.5. MaximalSubgroupClassesByIndex
+F 7.5. LowIndexSubgroupClasses
+F 7.5. LowIndexNormals
+F 7.5. NilpotentByAbelianNormalSubgroup
+S 7.6. Further attributes for pcp-groups based on the Fitting subgroup
+F 7.6. FittingSubgroup
+F 7.6. IsNilpotentByFinite
+F 7.6. Centre
+F 7.6. FCCentre
+F 7.6. PolyZNormalSubgroup
+F 7.6. NilpotentByAbelianByFiniteSeries
+S 7.7. Functions for nilpotent groups
+F 7.7. MinimalGeneratingSet
+S 7.8. Random methods for pcp-groups
+F 7.8. RandomOrbitStabilizerPcpGroup
+F 7.8. RandomCentralizerPcpGroup
+F 7.8. RandomCentralizerPcpGroup
+F 7.8. RandomNormalizerPcpGroup
+S 7.9. Non-abelian tensor product and Schur extensions
+F 7.9. SchurExtension
+F 7.9. SchurExtensionEpimorphism
+F 7.9. SchurCovering
+F 7.9. SchurMultiplicator
+F 7.9. NonAbelianExteriorSquareEpimorphism
+F 7.9. NonAbelianExteriorSquare
+F 7.9. NonAbelianTensorSquareEpimorphism
+F 7.9. NonAbelianExteriorSquarePlusEmbedding
+F 7.9. NonAbelianExteriorSquarePlusEmbedding
+F 7.9. NonAbelianTensorSquarePlusEpimorphism
+F 7.9. NonAbelianTensorSquarePlus
+F 7.9. WhiteheadQuadraticFunctor
+S 7.10. Schur covers and Schur towers
+F 7.10. SchurCovers
+F 7.10. ReadOrderDB
+F 7.10. NrItCovers
+F 7.10. AllItCovers
+F 7.10. ItCover
+F 7.10. ReadCoclassDB
+F 7.10. NrCcCovers
+F 7.10. AllCcCovers
+F 7.10. CcCover
+C cohom.tex 8. Cohomology for pcp-groups
+S 8.1. Cohomology records
+F 8.1. CRRecordByMats
+F 8.1. CRRecordBySubgroup
+F 8.1. CRRecordByPcp
+S 8.2. Cohomology groups
+F 8.2. OneCoboundariesCR
+F 8.2. OneCocyclesCR
+F 8.2. TwoCoboundariesCR
+F 8.2. TwoCocyclesCR
+F 8.2. OneCohomologyCR
+F 8.2. TwoCohomologyCR
+F 8.2. TwoCohomologyModCR
+S 8.3. Extended 1-cohomology
+F 8.3. OneCoboundariesEX
+F 8.3. OneCocyclesEX
+F 8.3. OneCohomologyEX
+S 8.4. Extensions and Complements
+F 8.4. ComplementCR
+F 8.4. ComplementsCR
+F 8.4. ComplementClassesCR
+F 8.4. ComplementClassesEfaPcps
+F 8.4. ComplementClasses
+F 8.4. ExtensionCR
+F 8.4. ExtensionsCR
+F 8.4. ExtensionClassesCR
+F 8.4. SplitExtensionPcpGroup
+S 8.5. Constructing pcp groups as extensions
+C matreps.tex 9. Matrix Representations
+S 9.1. Unitriangular matrix groups
+F 9.1. UnitriangularMatrixRepresentation
+F 9.1. IsMatrixRepresentation
+S 9.2. Upper unitriangular matrix groups
+F 9.2. IsomorphismUpperUnitriMatGroupPcpGroup
+F 9.2. SiftUpperUnitriMatGroup
+F 9.2. RanksLevels
+F 9.2. MakeNewLevel
+F 9.2. SiftUpperUnitriMat
+F 9.2. DecomposeUpperUnitriMat

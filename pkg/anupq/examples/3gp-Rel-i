@@ -1,0 +1,16 @@
+#Example: "3gp-Rel-i" . . . based on: examples/3gp
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, OutputFile
+F := FreeGroup("a", "b", "c", "d");
+rels := ["(b * c^-1 * d)^-3", "(c * d^-1)^3", 
+         "[b, a] * c", "[c, a]", "[c, b] * d"];
+procId := PqStart(F : Prime := 3, Relators := rels);
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also set a different print level by supplying <OutputLevel>
+#sub <ClassBound> for <19> if set and ok
+PqPcPresentation(procId : ClassBound := 19, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+#comment: save the presentation to a different file by supplying <OutputFile>
+#sub <OutputFile> for <ANUPQData.outfile> if set and ok
+PqSavePcPresentation(procId, ANUPQData.outfile);;

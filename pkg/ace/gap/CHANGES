@@ -1,0 +1,111 @@
+#############################################################################
+##
+#W  CHANGES              ACE share package implementation         Greg Gamble
+##
+#H  $Id: CHANGES,v 1.1 2001/03/18 21:35:00 gap Exp $
+##
+
+##  More properly, this should properly be called `HISTORY'. Here, I  give  a
+##  brief history of the evolution of the ACE share package, mainly  so  that
+##  Alexander Hulpke and George Havas know what happened to various  elements
+##  of the original ACE  share  package,  but  maybe  there  are  others  who
+##  remember early pre-release versions of the package too.
+
+Changes up to Version 3.0 (that is, the pre-release history):
+------------------------------------------------------------
+The very first version of the ACE share package was written by  Alexander
+Hulpke. It was released as a pre-package at the time of GAP 4.1.
+
+Later, but still at the time  of  GAP  4.1,  Greg  Gamble  rewrote  parts
+dealing  with  the  way  the  share  package  dealt  with   options   (or
+`parameters' in the language of the  stand-alone  manual),  so  that  the
+order in which options were passed to ACE  was  retained,  in  the  cases
+where this was important.
+
+Then GAP 4.2 was released which provided the ``iostream'' functions,  for
+the first time, which made it possible to start up an ACE binary  process
+and interact with it, i.e. one could truly interact with the ACE binary's
+Level 2 interface. Previously, one could only construct a script file, do
+an `Exec' from within GAP that started an ACE binary process outside  GAP
+which obtained the input from the script file and directed the output  to
+another file. Armed with this  new  capability,  Greg  Gamble  wrote  new
+`interactive' equivalents of the ACE binary's  commands.  At  about  this
+time a number of commands/variable/options of Alexander Hulpke's original
+ACE share package were deprecated; they are:
+
+  `CallACE'         : now use `ACECosetTable' or `ACECosetTableFromGensAndRels'
+
+  option `outfile'  : now use option `aceinfile'
+
+  option `messfile' : use use option `aceoutfile'
+
+  `ACEinfo' record  : replaced by the `ACEData' record
+                      ... this change was made because a new `InfoClass',
+                      namely `InfoACE', was added (and it was thought too
+                      confusing to have both it and `ACEinfo')
+
+A directory with the standalone documentation that used to be called
+
+   ../acedoc
+
+is now called
+
+   ../standalone-doc
+
+(the former name didn't differentiate it enough from ../doc),  and  there
+are changes to Colin Ramsay's originals there too; but read  the  CHANGES
+in that directory if you want to know about those.
+
+Soon after the release of GAP 4.2, an initial idea of Greg  Gamble's  for
+providing ACE examples,  was  scrapped  in  favour  of  the  `ACEExample'
+function i.e. various `ACEexample<XXX>' functions contained in the files
+
+   example.gd
+   example.gi
+
+(which are no longer part of the ACE  share  package)  were  replaced  by
+providing the files in the
+
+   ../examples
+
+directory, which are read by the `ACEExample' function.
+
+In readiness for GAP 4.3, options `semilenlex' and `lenlex'  were  added.
+In GAP 4.2, the default scheme for standard numbering  of  cosets  is/was
+`semilenlex', whereas in GAP 4.3 it is/will be `lenlex'. The  manual  has
+the details. While the ACE share package is no longer GAP 4.1  compatible
+(too much iostream functionality was added for the interactive  functions
+to make GAP 4.1-compatibility a useful  consideration),  it  is  GAP  4.2
+compatible but has been developed for GAP 4.3.
+
+On 22 December 2000, an annoying bug in the ACE source code  was  finally
+diagnosed and in February 2001 was fixed. At that time a message from the
+ACE binary which wasn't correct Group Theory  terminology  was  adjusted.
+Again, read the CHANGES in
+
+   ../src
+
+if you're interested in the details.
+
+In March  2001,  the  `ACEExample'  default  function  was  changed  from
+`ACECosetTableFromGensAndRels' to `ACEStats' (this way the default output
+is, in general, short).
+
+On 18 March 2001, the function `ACEVersion' was renamed `ACEBinaryVersion'
+and `ACEPackageVersion' was added (the latter gives the version number of
+the GAP code part).
+
+By the way, the initial numbering (Alex Hulpke's version  didn't  have  a
+number) of the ACE share package as 3.0 was a faux  pas  by  Greg  Gamble
+(but one can't go backwards with the numbering, now).
+
+Of course, that's not the end of the story, other things have been  added
+along the way, including e.g. `ACEReadResearchExample' and the
+
+   ../res-examples
+
+directory, but it was not the purpose of this file to document additions;
+the idea was that things  that  behave  or  are  named  differently  from
+earlier versions or no longer exist, should be documented here.
+
+   - Greg Gamble -- 18 March, 2001

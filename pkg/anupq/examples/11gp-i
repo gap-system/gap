@@ -1,0 +1,16 @@
+#Example: "11gp-i" . . . based on: examples/11gp
+#vars: F, a, b, c, R, procId;
+#options: OutputLevel, ClassBound, OutputFile
+F := FreeGroup("a", "b", "c"); a := F.1; b := F.2; c := F.3;
+R := [PqLeftNormComm([b, a, a, b, c])^11, 
+      PqLeftNormComm([a, b, b, a, b, c])^11, (a * b)^11];
+procId := PqStart(F/R : Prime := 11);
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also set a different print level by supplying <OutputLevel>
+#sub <ClassBound> for <7> if set and ok
+PqPcPresentation(procId : ClassBound := 7, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+#comment: save the presentation to a different file by supplying <OutputFile>
+#sub <OutputFile> for <ANUPQData.outfile> if set and ok
+PqSavePcPresentation(procId, ANUPQData.outfile);;

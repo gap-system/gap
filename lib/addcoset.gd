@@ -2,7 +2,7 @@
 ##
 #W  addcoset.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: addcoset.gd,v 4.5 2002/04/15 10:04:22 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file declares the operations for additive cosets.
 ##
 Revision.addcoset_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: addcoset.gd,v 4.5 2002/04/15 10:04:22 sal Exp $";
 
 
 #############################################################################

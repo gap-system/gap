@@ -2,7 +2,7 @@
 ##  
 #W  pager.gd                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id$
+#H  @(#)$Id: pager.gd,v 1.3 2002/04/15 10:05:11 sal Exp $
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St. Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  But this utility is certainly useful for other purposes as well.
 ##  
 Revision.pager_gd := 
-  "@(#)$Id$";
+  "@(#)$Id: pager.gd,v 1.3 2002/04/15 10:05:11 sal Exp $";
 
 #############################################################################
 ##  

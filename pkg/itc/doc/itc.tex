@@ -1,0 +1,298 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  itc.tex                GAP documentation            Joachim Neub"user
+%%
+%H  $Id: itc.tex,v 1.16 2002/07/16 07:22:17 gap Exp $
+%%
+%Y  Copyright (C) 1999, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%%
+\def\ITC{{\sf ITC}}
+\def\XGAP{{\sf XGAP}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{What is ITC?}
+
+{\ITC} stands for *Interactive Todd Coxeter*, it is a program that
+allows you to execute interactively single steps in an enumeration of
+the cosets of a subgroup of a finitely presented group using the
+graphics surface {\XGAP} of {\GAP} and thus to see in various windows
+exactly what is happening. In this chapter we will
+
+\beginlist
+
+\item{--}
+  discuss the background situation that led to the concept of this
+  program,
+
+\item{--}
+  very briefly point to literature about coset enumeration,
+
+\item{--}
+  talk about envisaged use of {\ITC}, and
+
+\item{--}
+  explain some technical points.
+
+\endlist
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Background}
+
+Coset Enumeration, in the sequel abbreviated as CE, also known as the
+Todd-Coxeter procedure, is not only the oldest but also one of the most
+often used tools in Computational Group Theory and also probably the
+most often implemented one.
+
+An easy introduction to CE and some of its variants is given in
+\cite{Neu82}. In his book \cite{Sims94} Charles Sims puts CE into a
+much more general context based on the theory of automata. Both texts
+provide a fairly comprehensive guide to the extensive literature on
+CE. So we will assume in the sequel that the user of this manual
+understands the basic ideas of CE. We will use as far as possible the
+terminology of \cite{Neu82}.
+
+The main {\GAP} library does contain routines for executing coset
+enumerations (see Section "ref:Coset Tables and Coset Enumeration" in
+the {\GAP} reference manual). These routines are partly written in the
+{\GAP} language but for efficiency also use {\GAP} kernel functions
+written in C. Some of these programs are used by {\ITC}.
+
+The most efficient implementation of CE, allowing many ``strategies'',
+at present is the package ACE by George Havas and Colin Ramsey
+(see~\cite{Ram99}) which is also available as a {\GAP4} package.
+
+It should be understood that {\ITC} is no competitor for ACE. ACE can
+successfully deal with coset enumerations with millions of cosets. On
+the other hand handling coset tables graphically on the screen, even
+with using scrolling, in practice limits the use of {\ITC} to
+tables with a few thousand rows. For that reason also the speed of
+the single step in the enumeration does not matter as much and {\ITC}
+therefore is not tuned for speed in the way ACE is.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Teaching CE}
+
+In texts on CE usually examples are demonstrated, and whenever one
+teaches the method in class, one will have to work through some
+examples. In printing as well as on the blackboard this suffers from
+a certain difficulty: In CE a number of tables, the ``coset table'', the
+``subgroup tables'', and the ``relation tables'' are being changed all the
+time, one has to gain information from (the closing of rows of)
+subgroup and relation tables and has to transfer this information into
+all relevant places of all tables. Sometimes, when so-called
+``coincidences'' occur, one even has to erase and modify already
+existing entries in tables. Describing such steps in some detail as
+well as the ever changing tables soon occupy many pages in printing.
+Doing them in front of a class one can pretty soon get confused,
+forgetting to make entries or changes etc.
+
+So it is a natural demand to have a program that allows one to perform
+such steps in windows on the screen of a computer where such changes
+can be cleanly made, are transferred to all relevant places in all
+tables automatically, and are marked by colours so that one can really
+``play'' through nontrivial examples. This is what {\ITC} provides. So
+in a first place it can be considered as a teaching tool.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Experimenting with CE Strategies}
+
+However we hope that {\ITC} can also be used for experiments that
+ultimately may lead to a better understanding of existing methods or
+even the design of new ones.
+
+As explained in many papers about CE, the sequence in which steps are
+made has great influence on the efficiency of the methods. To be more
+exact: CE is basically a method of trial and error in which one
+defines cosets of a subgroup of a finitely presented group by
+constructing coset representatives as words in the generators of the
+group. But only the termination
+of the method (the closing of the tables) in the end guarantees that
+one has not made a mistake by defining more than one word representing
+the same coset. The discovery of such a mistake and its removal is
+what is called ``handling a coincidence'' and it is the number of
+occurrences of such mistakes (the number of coincidences encountered)
+that may vary immensely depending on the chosen sequence of definition
+of pretended representatives.
+
+Therefore many different ``strategies'' for CE have been discussed in
+the literature, and programs such as ACE allow one to use a wide
+variety of such strategies. However in spite of very detailed case
+studies, in particular by George Havas, that lead to certain ``rules of
+thumb'', no strategy is uniformly the best one, a strategy that is good
+for one presentation may turn out to be much less good for another one
+(see for instance \cite{CDHW73}, \cite{Hav91}, \cite{HR99a},
+and \cite{HR99b}). The
+possibility to try one's own strategy stepwise interactively therefore
+can be used to get some more insight into CE which to some extent is
+an art rather than a science.
+
+Already in the building of {\ITC} a nice side product was obtained
+from such experimentation: It is important to understand that in many
+cases coincidences cannot be completely avoided for a CE to terminate.
+However when many coincidences have occurred, one is led to ask if
+there is not a shorter sequence of definitions leading to the closure
+of the tables. Starting from a given CE with coincidences involved,
+one may try to ``prune'' the definition sequence from definitions that
+in retrospect can be recognized as being redundant. Such a procedure
+has for instance been employed many years ago ``by hand'' by John Leech
+in a search for a short definition sequence for the Fibonacci Group
+$F(2,7)$ that we will take as one of our examples. A very nice
+discussion of this idea and its history is given in Margaret Edeson's
+Master's Thesis (see~\cite{Ede89}). Using {\ITC} such ``pruning'' was
+first done interactively. This led to an algorithm that is described
+in the section ``The Short-cut Method'' (see Section~"The Short-cut
+Method"). It is now part of {\ITC} and can be called by `short-cut'
+(see~"short-cut"). In fact with the above mentioned old challenge
+problem of $F(2,7)$, it beats the formerly best known definition
+sequence leading to closure of the tables.
+
+Since {\ITC} will store sequences of definitions we intend in the
+future to investigate the possibility to improve runs of a ``Modified
+TC'' (MTC) by using such ``pruned'' definition sequences.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{How does it work?}
+
+{\ITC} is written using the graphics facilities provided by the
+{\GAP4} package {\XGAP}. We refer to the {\XGAP} manual for a
+general description of these.
+
+The {\ITC} Coset Table as well as the Relation Tables and Subgroup
+Tables can be depicted in windows, and definitions be made in these by
+mouse click. Moreover tables with the sequence of definitions, of
+pending coincidences, and of gaps of length 1 in Subgroup or
+Relation Tables can be inspected in further windows and be used for
+deciding about the next step. A number of menus allow certain
+actions to be called.
+
+In addition to the Coset Table Window which plays a special role,
+three different kinds of windows are used in {\ITC}:
+
+\beginitems
+
+*Pull-down menus* &
+  are used with the ``top buttons'' of the Coset Table (see~"the Top
+  Buttons"). Clicking one of these will pop up
+  a menu from which you can select actions of {\ITC}. You do this by
+  holding the left mouse button while moving the pointer to the
+  respective entry in the menu and releasing the mouse button there.
+  Then the respective action of the program will be executed while
+  the menu vanishes.
+
+*Query windows* &
+  (sometimes also called transient windows) are used when the user
+  has to specify additonal (in most cases numerical) data for an
+  action to be performed. E.g. a user wanting to fill rows has to
+  specify in such a query window which rows shall be filled. Note
+  that no further action can be taken while such a query window is
+  open. All other possibilities to operate {\ITC} are disabled
+  until the user has made the needed decision and closed the window.
+  Such query windows are opened by clicking the following menu
+  entries in the menus opened via the top buttons of the Coset Table
+  Window: In the menu of `Settings': `change default table size'
+  (see~"change default table size"), `extend table size' (see~"extend
+  table size"); in the menu of `File': `read definitions from file'
+  (see~"read definitions from file"), `write definitions to file'
+  (see~"write definitions to file"), and `write standardized table to
+  file' (see~"write standardized table to file"). Also such query
+  windows are opened by the following ``bottom buttons'' of the Coset
+  Table Window: `scroll by' (see~"scroll by"), `scroll to'
+  (see~"scroll to"), `Felsch' (see~"Felsch"), `fill gaps' (see~"fill
+  gaps"), `fill rows' (see~"fill rows"), `back to' (see~"back to"),
+  `HLT' (see~"HLT"), `short-cut' (see~"short-cut"), and `mark cosets'
+  (see~"mark cosets").
+
+All other windows &
+  are ordinary *display windows* that can stay open while operations
+  are caused by using other buttons or windows. Each of these display
+  windows contains a top button `Sheet' that via a pull-down menu
+  allows one either to write the contents of the display window to a
+  PostScript file or to close this display window. See the paragraph
+  *Button* `Sheet' in Section "The Top Buttons".
+  A display window is opened by clicking the menu entry
+  `show current settings' (see~"show current settings") in the menu
+  opened via the top button `Settings'. Further display windows are
+  opened by clicking the following bottom buttons in the Coset Table
+  Window: `show rels' (see~"show rels"), `show subgrp' (see~"show
+  subgrp"), `show defs' (see~"show defs"), `show gaps' (see~"show
+  gaps"), and `show coincs' (see~"show coincs").
+  Further display windows can be opened by clicking with the right
+  mouse button: coset numbers or dots in the Coset Table (see~"The
+  Coset Table"), entries in the Table of Definitions (see~"The Table
+  of Definitions"), entries in the List of Length 1 Gaps (see~"The
+  List of Length 1 Gaps"), and entries in the List of Pending
+  Coincidences (see~"The List of Pending Coincidences"). Also the
+  Subgroup Tables (see~"The Subgroup Tables") and the Relation Tables
+  (see~"The Relation Tables") are display windows that can be opened
+  by clicking the respective entries in the List of Subgroup
+  Generators (see~"The List of Subgroup Generators") or the List of
+  Relators (see~"The List of Relators"), respectively. The windows
+  of Relation Tables and of Subgroup Tables differ from the other
+  display windows in a technical way: Like the Coset Table Window,
+  they stay open while the contents of the displayed tables changes.
+  Moreover, the Relation Tables are scrolled parallel to the Coset
+  Table (see~"The Relation Tables").
+
+\enditems
+
+Depending on the window system and window manager you use, placing a
+new window on your screen might be done automatically or might require
+you to use the mouse to choose a position for the window and pressing
+the left mouse button to place the window.
+
+Making a window active is system and window manager dependent, in most
+cases you have either to move the pointer inside the window or you
+have to click the title bar of the window.
+
+We recommend to switch on title bars for all windows in your window
+manager setup. This seems to avoid a small bug in at least one window
+manager we know of and makes it easier to move your windows
+around. For the `twm' window manager for example you can achieve this
+with the option `DecorateTransients'.
+
+If you do not want to do this and experience problems with small
+dialog boxes that do not accept text entered via the keyboard, try to
+start up XGAP with the command line option `-W'. This invokes some
+code within XGAP which works around a bug in some window managers.
+
+Please note that because of some 16 bit limitations in the underlying
+X toolkit the present implementation of {\XGAP} may not be able to
+handle very large virtual windows properly. For instance, sheets
+containing more than 1630 coset definitions may be corrupt.
+
+In the following chapters we will describe the possibilities to work
+with windows in a systematic way and by way of examples of the use of
+{\ITC}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Acknowledgements and Addresses}
+
+We thank Max Neunh{\accent127 o}ffer for providing the needed
+environment in his package {\XGAP} and Thomas Breuer for frequent
+advice. A first version of {\ITC} was implemented, still under
+{\GAP}~3, by Ludger Hippe as part of his ``Staatsexamensarbeit'' in
+1997.
+
+Authors' e-mail addresses:
+
+\beginlist
+
+\item{}
+  Volkmar.Felsch@math.rwth-aachen.de
+
+\item{}
+  Joachim.Neubueser@math.rwth-aachen.de
+
+\endlist
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

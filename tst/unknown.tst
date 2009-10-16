@@ -2,14 +2,14 @@
 ##
 #W  unknown.tst                GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: unknown.tst,v 4.6 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: unknown.tst,v 4.6 2005/05/05 15:04:16 gap Exp $");
 
 gap> LargestUnknown:= 0;;
 gap> u:= Unknown();
@@ -83,7 +83,7 @@ Unknown(1)
 gap> u ^ 2;
 Unknown(18)
 
-gap> STOP_TEST( "unknown.tst", 200000 );
+gap> STOP_TEST( "unknown.tst", 170000 );
 
 #############################################################################
 ##

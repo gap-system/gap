@@ -1,0 +1,152 @@
+Here we describe the format of the examples.
+
+Firstly, each file *can* be read using `Read', but `PqExample' does a
+little more (by echoing to the screen) and requires the following:
+
+0. Blank lines are ok, but must consist of only a  new-line  (and  no
+other white-space.
+
+1. The file can start with any number of commented out lines followed
+by a line of form:
+
+#Example <example-name> . . . <comment>
+
+where  <example-name>  is  the  name  of  the  file  in  a  pair   of
+double-quotes and <comment> should say something like `based on ...'.
+This line can be followed  by  any  number  of  commented  out  lines
+followed by:
+
+#vars: <list>;
+
+where <list> is a comma (and/or blank) separated  list  of  variables
+used in the example. Missing one will cause the possible over-writing
+of a user variable. This line should be no longer than 72 characters.
+
+A number of examples have a <comment> stating  `based  on  <dir>/...'
+where <dir> is `examples' or `isom' which are sub-directories of  the
+`standalone' directory.
+
+2. The next line must be of form:
+
+#options: <list>
+
+(like 1. except <list> should contain a list of the  options  of  the
+example that the user can provide, to change  the  behaviour  of  the
+example).
+
+3. Any statement  for  which  GAP  does  not  produce  output  should
+terminate with a double-;. `PqExample' tries to emulate a user typing
+the commands and when executing a line  of  input  displays  all  the
+output a user would normally see. A double-; tells `PqExample' not to
+try to get output from the command on executing  it.  All  statements
+terminating with a double-; are displayed with a single ;.
+
+4. Comments that you want the user  to  see  should  appear  after  a
+double-#. On execution/printing of the example the user only sees one
+#.
+
+All other lines beginning with # are special:
+
+5. A line of form:
+
+#comment: set a different ... by supplying <...>
+
+is ignored when the example is executed but  Info-ed  at  `InfoANUPQ'
+level 1 when printed as:
+
+#I  In the next command, you may set a different ... by
+#I  supplying to `PqExample' the option: `...'
+
+where the ... is anything in each case but every other word should be
+something that makes sense in a similarly substituted  sentence.  The
+word `supplying' and a pair  of  angle  brackets  (<>)  enclosing  an
+option *must* be present.
+
+6. A line of form:
+
+#sub <<option>> for <<value>> if set and ok
+
+is interpreted only when the example is executed  (and  ignored  when
+printed). It states that if the option <option> has  been  passed  to
+`PqExample' and its value is ok then that value should be substituted
+for <value> on the next line. There should normally  be  a  companion
+`#comment:' line as per 5, to tell the user that the  option  exists,
+usually on the line previous, but in any case at  a  sensible  place.
+Care should be taken to ensure <value> only occurs once on  the  line
+(GAP's `ReplacedString' is used). The option <option>  should  either
+be exactly the option used in the following line (so that  the  right
+check is used) or the option with a  single  digit  (0..9)  appended.
+(The possibility of adding a digit is included  to  allow  the  cases
+where the same option occurs in more than one line of the example and
+one wishes to avail the user  of  changing  the  option  to  possibly
+different values in those places. There may  be  additional  argument
+checking required for  such  options  which  is  the  reason  10.  is
+provided.) Options passed to `PqExample' with ok values are stored in
+the record `ANUPQData.example.options'.
+
+7. A line of form:
+
+#add <<option>> for <value> if set and ok
+
+is very similar to `#sub' described in 6. It is interpreted only when
+the example is executed (and ignored when printed). It states that if
+the option <option> has been passed to `PqExample' and its  value  is
+ok then the following line which should be commented out by a  single
+#, should be made uncommented (by replacing the initial  `#'  with  a
+blank) and the value of <option> should be substituted for <value> on
+the next line (unlike `#sub', `<value>' should occur literally in the
+`#add' and the line following. All other things mentioned for  `#sub'
+(including that there should be a companion `#comment:'  line)  apply
+to `#add'.
+
+8. A line of form:
+
+#alt: do
+
+says uncomment the following  line  if  `PqExample'  is  called  with
+argument `PqStart'.
+
+9. A line of form:
+
+#alt: sub <var2> for <var1>
+
+says replace  <var1>  with  <var2>  if  `PqExample'  is  called  with
+argument `PqStart' (the idea being to  convert  the  example  form  a
+non-interactive example to an interactive one).
+
+10. All other lines starting with  a  #  are  lines  that  should  be
+executed in  the  background  (with  the  #  removed)  without  being
+displayed when `PqExample' is called  to  execute  an  example.  Such
+lines are ignored when `PqExample' is called  to  print  an  example.
+This has been added mainly for doing additional option checking.  For
+convenience,  `datarec'  may  be  used   as   an   abbreviation   for
+`ANUPQData.example.options'. 
+
+An example of how one might want to use this is as  follows.  Suppose
+there are two places where one uses `ClassBound' in the  example  but
+you wish to make it possible for  the  user  to  change  the  default
+values used. In this case, there will need to be lines something like
+`#sub <ClassBound1> for ...'  and  `#sub <ClassBound2> for  ...' i.e.
+`PqExample'  will  have  options  `ClassBound1'  and   `ClassBound2'.
+Suppose you need to ensure `ClassBound1'  >  `ClassBound2'  then  you
+might want to do something like the following:
+
+#if IsBound(datarec.ClassBound1) then
+#  if (IsBound(datarec.ClassBound2) and 
+#      datarec.ClassBound2 <= datarec.ClassBound1) or
+#     (not( IsBound(datarec.ClassBound2) ) and 19 <= datarec.ClassBound1) then
+#    datarec.ClassBound2 := datarec.ClassBound1 + 1;
+#    Info(InfoANUPQ,1, "ClassBound2 must be greater than ",datarec.ClassBound1);
+#    Info(InfoANUPQ,1, "ClassBound2 reset to ", datarec.ClassBound2);
+#  fi;
+#elif IsBound(datarec.ClassBound2) and datarec.ClassBound2 <= 3 then
+#  datarec.ClassBound2 := 4;
+#  Info(InfoANUPQ,1, "ClassBound2 must be greater than 3");
+#  Info(InfoANUPQ,1, "ClassBound2 reset to ", datarec.ClassBound2);
+#fi;
+
+Observe that the idea is not to accept values of  options  that  will
+run `PqExample' into error; it's not designed to  cope  with  such  a
+possibility.
+
+  - Greg Gamble -- 7 August, 2001; 14 February, 2002.

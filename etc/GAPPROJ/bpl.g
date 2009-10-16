@@ -44,17 +44,39 @@ COLORS:=["#8080ff","#80ffff","#80ff80","#ffff80","#ff8080"];
 MODE:=[
      # Mode 1: General list for GAP
      rec(suf:="", 
+         private:=false,
          title:="<font face=\"Gill Sans,Helvetica,Arial\">GAP</font> Project repository",
          titlenohtm:="GAP Project repository",
          dir:="gapproj/",
 	 footer:=Concatenation(
   "\n<H3><A HREF=\"http://www.gap-system.org\">",
   "<font face=\"Gill Sans,Helvetica,Arial\">GAP</font> home page</A></H3>")),
-     # Mode 2: Projects I'm interested in (AH)
+
+     # Mode 2: Projects I'm interested in (AH), public 
      rec(suf:="A", 
+         private:=false,
          title:="Possible thesis projects involving\n<font face=\"Gill Sans,Helvetica,Arial\">GAP</font>",
          titlenohtm:="Possible thesis projects, involving GAP",
          dir:="projects/",
+	 footer:=Concatenation(
+  "\n<H3><A HREF=\"http://www.math.colostate.edu/~hulpke\">Back</A>\n",
+  "to Alexander Hulpke's home page</H3>")),
+     # Mode 4: General list for GAP, including private
+     rec(suf:="", 
+         private:=true,
+         title:="<font face=\"Gill Sans,Helvetica,Arial\">GAP</font> Project repository\n (restricted)",
+         titlenohtm:="GAP Projects (internal)",
+         dir:="gapproj/private/",
+	 footer:=Concatenation(
+  "\n<H3><A HREF=\"http://www.gap-system.org\">",
+  "<font face=\"Gill Sans,Helvetica,Arial\">GAP</font> home page</A></H3>")),
+     # Mode 4: private list for AH (all projects, even private ones or ones
+     # with priority 0)
+     rec(suf:="A", 
+         private:=true,
+         title:="Possible thesis projects involving\n<font face=\"Gill Sans,Helvetica,Arial\">GAP</font> (private version)",
+         titlenohtm:="Possible thesis projects, involving GAP",
+         dir:="privateproj/",
 	 footer:=Concatenation(
   "\n<H3><A HREF=\"http://www.math.colostate.edu/~hulpke\">Back</A>\n",
   "to Alexander Hulpke's home page</H3>"))
@@ -67,10 +89,11 @@ SIGS:=[["AH","Alexander Hulpke","hulpke@math.colostate.edu"],
        ["VF","Volkmar Felsch","Volkmar.Felsch@Math.RWTH-Aachen.DE" ],
        ["FL","Frank L&uuml;beck","Frank.Luebeck@Math.RWTH-Aachen.De" ],
        ["TB","Thomas Breuer","Thomas.Breuer@Math.RWTH-Aachen.DE" ],
-       ["GAP","GAP group","gap-trouble@dcs.st-and.ac.uk" ],
+       ["GAP","GAP group","support@gap-system.org" ],
        ["WDJ","David Joyner","wdj@usna.edu"],
        ["BE","Bettina Eick","eick@tu-bs.de"],
-       ["SL","Steve Linton","sal@dcs.st-and.ac.uk"]
+       ["SL","Steve Linton","sal@dcs.st-and.ac.uk"],
+       ["SK","Stefan Kohl","kohl@mathematik.uni-stuttgart.de"]
        ];
 
 DeCR:=function(str)
@@ -116,7 +139,7 @@ local NumBlock,Section,fnam,stream,line,fn,str,r,nam,need,i,con,s1,s2;
          Contact:="",
 	 Date:="",
 	 Time:=1,
-	 Public:="no";
+	 Public:="no",
 	 Need:=1,
 	 NeedA:=0,
 	 Math:=1,
@@ -149,10 +172,11 @@ local NumBlock,Section,fnam,stream,line,fn,str,r,nam,need,i,con,s1,s2;
     r.(fn):=str;
   fi;
   CloseStream(stream);
+  r.Public:=LowercaseString(r.Public);
   # real need
   need:=Int(r.(Concatenation("Need",MODE[which].suf)));
   r.myneed:=need;
-  if need>0 then
+  if (need>0 and r.Public<>"no") or MODE[which].private then
     fnam:=Concatenation("gapproj",String(n),".html"); 
     r.fnam:=fnam;
     fnam:=Concatenation(MODE[which].dir,fnam);
@@ -160,10 +184,16 @@ local NumBlock,Section,fnam,stream,line,fn,str,r,nam,need,i,con,s1,s2;
     PrintTo(fnam,
       "<HEAD>\n<TITLE>",nam,"</TITLE>\n</HEAD>\n<BODY BGCOLOR=#FFFFFF>\n");
     AppendTo(fnam,"<A HREF=\"./projects.htm\">\n",MODE[which].title,
-      "</A>\n<HR><TABLE><TR><TD valign=top><H2>\n");
+      "</A>\n<HR><TABLE><TR><TD valign=top>\n");
     s1:=NumBlock("Need",need);
     s2:=NumBlock("Time",Int(r.Time));
-    AppendTo(fnam,nam,"\n</H2></TD>\n",s1,s2,"</TR>\n");
+    if r.Public="no" then
+      AppendTo(fnam,"<TABLE><TR><TD><B><font size=+2>",nam,
+      "\n</font></B></TR><TR><TD>(restricted)</TD></TR></TABLE>");
+    else
+      AppendTo(fnam,"<H2>",nam,"\n</H2>");
+    fi;
+    AppendTo(fnam,"\n</TD>&nbsp;&nbsp;\n",s1,s2,"</TR>\n");
     con:=r.Contact;
     for i in SIGS do
       if i[1]=con then
@@ -186,7 +216,6 @@ local NumBlock,Section,fnam,stream,line,fn,str,r,nam,need,i,con,s1,s2;
 	     "\n<BR>Last Update: ", r.Date,"\n<BR></TD>\n",s1,s2,
 	     "</TR></TABLE>\n<P><HR>\n");
     Section(fnam,"Description",r.Descr);
-    Section(fnam,"Application",r.Descr);
     Section(fnam,"References",r.Ref);
     Section(fnam,"Remarks",r.Rem);
     Section(fnam,"Usage",r.Manual);
@@ -254,7 +283,11 @@ local n,l,r,fnam,title,NumBlock,sorts,so,j;
     AppendTo(fnam,"</TR>\n");
     for r in l do
       AppendTo(fnam,"<TR>\n");
-      AppendTo(fnam,"<TD>\n<A HREF=\"",r.fnam,"\">",r.Name,"</A>\n");
+      if r.Public="no" then 
+	AppendTo(fnam,"<TD>\n<I><A HREF=\"",r.fnam,"\">",r.Name,"</A></I>\n");
+      else
+	AppendTo(fnam,"<TD>\n<A HREF=\"",r.fnam,"\">",r.Name,"</A>\n");
+      fi;
       for j in sorts do
 	AppendTo(fnam,NumBlock(Int(r.(j[2]))));
       od;
@@ -265,4 +298,5 @@ local n,l,r,fnam,title,NumBlock,sorts,so,j;
     AppendTo(fnam,"</BODY>\n");
   od;
 end;
+
 

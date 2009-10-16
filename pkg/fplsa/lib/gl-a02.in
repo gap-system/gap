@@ -1,0 +1,14 @@
+Generators A_2: x y z;
+Parameter: t;
+Limiting weight: 10;
+Relations:
+
+[[x,y],x] - 2 x;
+[[x,y],y] + 2 y;
+
+[y,z];
+[[x,y],z] + 4 z;
+[x,[x,[x,[x,[x,z]]]]];
+
+[[x,z],z];
+[[x,z],[x,[x,z]]] - 24 t^2 y.

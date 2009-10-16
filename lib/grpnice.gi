@@ -2,7 +2,7 @@
 ##
 #W  grpnice.gi                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpnice.gi,v 4.75 2009/06/23 16:20:21 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  monomorphisms..
 ##
 Revision.grpnice_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpnice.gi,v 4.75 2009/06/23 16:20:21 gap Exp $";
 
 #############################################################################
 ##
@@ -34,7 +34,7 @@ end);
 ##
 InstallGlobalFunction(RestrictedNiceMonomorphism,
 function(hom,G)
-  hom:=RestrictedMapping(hom,G);
+  hom:=RestrictedMapping(hom,G:surjective);
 
   # CompositionMapping methods need this to avoid forming an AsGHBI of an
   # nice mono!
@@ -200,7 +200,7 @@ function( elm, G )
     local   nice,  img;
  
     nice := NiceMonomorphism( G );
-    img  := ImagesRepresentative( nice, elm );
+    img  := ImagesRepresentative( nice, elm:actioncanfail:=true );
     return img<>fail and img in NiceObject( G )
        and PreImagesRepresentative( nice, img ) = elm;
 end );
@@ -511,8 +511,10 @@ local mon,iso;
   mon:=NiceMonomorphism(g);
   if not IsIdenticalObj(Source(mon),g) then
     mon:=RestrictedNiceMonomorphism(mon,g);
+    iso:=IsomorphismPermGroup(Image(mon,g));
+  else
+    iso:=IsomorphismPermGroup(NiceObject(g));
   fi;
-  iso:=IsomorphismPermGroup(NiceObject(g));
   if iso=fail then
     return fail;
   else

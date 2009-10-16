@@ -1,0 +1,17 @@
+#############################################################################
+##
+#W  probgen.g       prob. generation of finite simple groups    Thomas Breuer
+##
+#H  @(#)$Id: probgen.hea,v 1.1 2006/06/07 09:17:10 gap Exp $
+##
+#Y  Copyright (C)  2006,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+Revision.probgen_g :=
+    "@(#)$Id: probgen.hea,v 1.1 2006/06/07 09:17:10 gap Exp $";
+
+
+##  Here the code is added by the script `etc/xpl2gap'.
+#############################################################################
+##
+#E
+

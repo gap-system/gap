@@ -1,0 +1,13 @@
+1
+2gp
+2                            #prime 
+6                            #maximum class 
+1                            #print level
+{a, b}                       #generating set 
+{ [b, a, a], (a * b * a)^4 } #defining set of relations
+0                            #exponent      
+
+2                            #save option 
+2GP                          #file name 
+
+0                            #exit 

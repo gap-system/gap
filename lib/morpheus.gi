@@ -2,7 +2,7 @@
 ##
 #W  morpheus.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: morpheus.gi,v 4.123 2008/10/14 20:54:29 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This  file  contains declarations for Morpheus
 ##
 Revision.morpheus_gi:=
-  "@(#)$Id$";
+  "@(#)$Id: morpheus.gi,v 4.123 2008/10/14 20:54:29 gap Exp $";
 
 #############################################################################
 ##
@@ -66,71 +66,152 @@ InstallMethod( IsGroupOfAutomorphismsFiniteGroup,"default",true,
   [IsGroup],0,
   G->IsGroupOfAutomorphisms(G) and IsFinite(AutomorphismDomain(G)));
 
+# Try to embed automorphisms into wreath product.
+BindGlobal("AutomorphismWreathEmbedding",function(au,g)
+local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
+      img, j, conj, sm, cen, n, w, emb, ge, no,reps,synom,ginn,oemb;
+
+  gens:=GeneratorsOfGroup(g);
+  if Size(Centre(g))>1 then
+    return fail;
+  fi;
+  #sym:=SymmetricGroup(MovedPoints(g));
+  #syno:=Normalizer(sym,g);
+
+  inn:=Filtered(GeneratorsOfGroup(au),i->IsInnerAutomorphism(i));
+  out:=Filtered(GeneratorsOfGroup(au),i->not IsInnerAutomorphism(i));
+  nonperm:=Filtered(out,i->not IsConjugatorAutomorphism(i));
+  syno:=g;
+  #syno:=Group(List(Filtered(GeneratorsOfGroup(au),IsInnerAutomorphism),
+#	 x->ConjugatorOfConjugatorIsomorphism(x)),One(g));
+  for i in Filtered(out,IsConjugatorAutomorphism) do
+    syno:=ClosureGroup(syno,ConjugatorOfConjugatorIsomorphism(i));
+  od;
+  #nonperm:=Filtered(out,i->not IsInnerAutomorphism(i));
+  # enumerate cosets of subgroup of conjugator isomorphisms
+  orb:=[IdentityMapping(g)];
+  orbi:=[IdentityMapping(g)];
+  perms:=List(nonperm,i->[]);
+  free:=FreeGroup(Length(nonperm));
+  rep:=[One(free)];
+  i:=1;
+  maxl:=NrMovedPoints(g);
+  while i<=Length(orb) and Length(orb)<maxl do
+    for w in [1..Length(nonperm)] do
+      gen:=nonperm[w];
+      img:=orb[i]*gen;
+      j:=1;
+      conj:=fail;
+      while conj=fail and j<=Length(orb) do
+	sm:=img*orbi[j];
+	if IsConjugatorAutomorphism(sm) then
+	  conj:=ConjugatorOfConjugatorIsomorphism(sm);
+	else
+	  j:=j+1;
+	fi;
+      od;
+      #j:=First([1..Length(orb)],k->IsConjugatorAutomorphism(img*orbi[k]));
+      if conj=fail then
+	Add(orb,img);
+	Add(orbi,InverseGeneralMapping(img));
+	Add(rep,rep[i]*GeneratorsOfGroup(free)[w]);
+	perms[w][i]:=Length(orb);
+      else
+	perms[w][i]:=j;
+	if not conj in syno then
+	  syno:=ClosureGroup(syno,conj);
+	fi;
+      fi;
+    od;
+    i:=i+1;
+  od;
+
+  cen:=Centralizer(syno,g);
+  Info(InfoMorph,2,"|syno|=",Size(syno)," |cen|=",Size(cen));
+  if Size(cen)>1 then
+    w:=syno;
+    syno:=Complementclasses(syno,cen);
+    if Length(syno)=0 then 
+      return fail; # not unique permauts
+    fi;
+    syno:=syno[1];
+    synom:=GroupHomomorphismByImagesNC(w,syno,
+	    Concatenation(GeneratorsOfGroup(syno),GeneratorsOfGroup(cen)),
+	    Concatenation(GeneratorsOfGroup(syno),List(GeneratorsOfGroup(cen),x->One(syno))));
+  else
+    synom:=IdentityMapping(syno);
+  fi;
+
+  # try wreath embedding
+  if Length(orb)<maxl then
+    Info(InfoMorph,1,Length(orb)," copies");
+    perms:=List(perms,PermList);
+    Info(InfoMorph,2,List(rep,i->MappedWord(i,GeneratorsOfGroup(free),perms)));
+    n:=Length(orb);
+    w:=WreathProduct(syno,SymmetricGroup(n));
+    emb:=List(GeneratorsOfGroup(g),
+	  i->Product(List([1..n],j->Image(Embedding(w,j),Image(synom,Image(orbi[j],i))))));
+    ge:=Subgroup(w,emb);
+    emb:=GroupHomomorphismByImagesNC(g,ge,GeneratorsOfGroup(g),emb);
+    reps:=List(out,i->RepresentativeAction(w,GeneratorsOfGroup(ge),
+      List(GeneratorsOfGroup(g),j->Image(emb,Image(i,j))),OnTuples));
+    if not ForAll(reps,IsPerm) then
+      return fail;
+    fi;
+    #no:=Normalizer(w,ge);
+    #no:=ClosureGroup(ge,reps);
+    ginn:=List(inn,ConjugatorOfConjugatorIsomorphism);
+    no:=Group(List(ginn,i->Image(emb,i)), One(w));
+    oemb:=emb;
+    if Size(no)<Size(ge) then
+      emb:=RestrictedMapping(emb,Group(ginn,()));
+    fi;
+    no:=ClosureGroup(no,reps);
+    cen:=Centralizer(no,ge);
+    if Size(no)/Size(cen)<Length(orb) then
+      return fail;
+    fi;
+
+    if Size(cen)>1 then
+      no:=Complementclasses(no,cen);
+      if Length(no)>0 then
+	no:=no[1];
+      else
+	return fail;
+      fi;
+    fi;
+    #
+    #if Size(no)/Size(syno)<>Length(orb) then
+    #  Error("wreath embedding failed");
+    #fi;
+    sm:=SmallerDegreePermutationRepresentation(ClosureGroup(ge,no));
+    no:=Image(sm,no);
+    if IsIdenticalObj(emb,oemb) then
+      emb:=emb*sm;
+      return [no,emb,emb,Image(emb,ginn)];
+    else
+      emb:=emb*sm;
+      oemb:=oemb*sm;
+      return [no,emb,oemb,Group(Image(oemb,ginn),One(w))];
+    fi;
+  fi;
+  return fail;
+end);
+
 #############################################################################
 ##
 #F  AssignNiceMonomorphismAutomorphismGroup(<autgrp>,<g>)
 ##
 # try to find a small faithful action for an automorphism group
 InstallGlobalFunction(AssignNiceMonomorphismAutomorphismGroup,function(au,g)
-local c,	# classes
-      aug,	# gens(aug)
-      sel,osel, # class indices lists
-      u,	# closure of classes
-      i,j,p,	# index
-      r,ri,	# rep and image
-      cen,	# centralizer
-      gens,	# generators list
-      ran,	# image group,
-      img,	# image of autom.
-      hom;	# niceo.
+local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv, v, val, o, i, comb, best;
 
   hom:=fail;
+  allinner:=HasIsAutomorphismGroup(au) and IsAutomorphismGroup(au);
 
-  # short cut 1: If the group has a trivial centre and no outer automorphisms,
-  # take the group itself
-  if Size(Centre(g))=1 
-     and ForAll(GeneratorsOfGroup(au),IsConjugatorAutomorphism) then
-    ran:= Group( List( GeneratorsOfGroup( au ),
-                       ConjugatorOfConjugatorIsomorphism ),
-                 One( g ) );
-    Info(InfoMorph,1,"All automorphisms are conjugator");
-    Size(ran); #enforce size calculation
-
-    # if `ran' has a centralizing bit, we're still out of luck.
-    # TODO: try whether there is a centralizer complement into which we
-    # could go.
-
-    if Size(Centralizer(ran,g))=1 then
-      r:=ran; # the group of conjugating elements so far
-      cen:=TrivialSubgroup(r);
-
-      hom:=GroupHomomorphismByFunction(au,ran,
-	function(auto)
-	  if not IsConjugatorAutomorphism(auto) then
-	    return fail;
-	  fi;
-	  img:= ConjugatorOfConjugatorIsomorphism( auto );
-	  if not img in ran then
-	    # There is still something centralizing left.
-	    if not img in r then 
-	      # get the cenralizing bit
-	      r:=ClosureGroup(r,img);
-	      cen:=Centralizer(r,g);
-	    fi;
-	    # get the right coset element
-	    img:=First(List(Enumerator(cen),i->i*img),i->i in ran);
-	  fi;
-	  return img;
-	end,
-	function(elm)
-	  return ConjugatorAutomorphismNC( g, elm );
-	end);
-      SetIsGroupHomomorphism(hom,true);
-      SetRange( hom,ran );
-      SetIsBijective(hom,true);
-    fi;
-  elif not IsFinite(g) then
+  if not IsFinite(g) then
     Error("can't do!");
+
   elif IsAbelian(g) then
 
     SetIsFinite(au,true);
@@ -140,109 +221,226 @@ local c,	# classes
       c:=Union(c,Orbit(au,i));
     od;
     hom:=NiceMonomorphismAutomGroup(au,c,gens);
-    
+
+  elif Size(Centre(g))=1 and IsPermGroup(g) then
+    # if no centre, try to use exiting permrep
+    if ForAll(GeneratorsOfGroup(au),IsConjugatorAutomorphism) then
+      ran:= Group( List( GeneratorsOfGroup( au ),
+			ConjugatorOfConjugatorIsomorphism ),
+		  One( g ) );
+      Info(InfoMorph,1,"All automorphisms are conjugator");
+      Size(ran); #enforce size calculation
+
+      # if `ran' has a centralizing bit, we're still out of luck.
+      # TODO: try whether there is a centralizer complement into which we
+      # could go.
+
+      if Size(Centralizer(ran,g))=1 then
+	r:=ran; # the group of conjugating elements so far
+	cen:=TrivialSubgroup(r);
+
+	hom:=GroupHomomorphismByFunction(au,ran,
+	  function(auto)
+	    if not IsConjugatorAutomorphism(auto) then
+	      return fail;
+	    fi;
+	    img:=ConjugatorOfConjugatorIsomorphism( auto );
+	    if not img in ran then
+	      # There is still something centralizing left.
+	      if not img in r then 
+		# get the cenralizing bit
+		r:=ClosureGroup(r,img);
+		cen:=Centralizer(r,g);
+	      fi;
+	      # get the right coset element
+	      img:=First(List(Enumerator(cen),i->i*img),i->i in ran);
+	    fi;
+	    return img;
+	  end,
+	  function(elm)
+	    return ConjugatorAutomorphismNC( g, elm );
+	  end);
+	SetIsGroupHomomorphism(hom,true);
+	SetRange( hom,ran );
+	SetIsBijective(hom,true);
+      fi;
+    else
+      # permrep does not extend. Try larger permrep.
+      img:=AutomorphismWreathEmbedding(au,g);
+      if img<>fail then
+	Info(InfoMorph,1,"AWE succeeds");
+	# make a hom from auts to perm group
+	ran:=img[4];
+	r:=List(GeneratorsOfGroup(g),i->Image(img[3],i));
+	hom:=GroupHomomorphismByFunction(au,img[1],
+          function(auto)
+	    if IsConjugatorAutomorphism(auto) and
+	      ConjugatorOfConjugatorIsomorphism(auto) in Source(img[2]) then
+	      return Image(img[2],ConjugatorOfConjugatorIsomorphism(auto));
+	    fi;
+	    return RepresentativeAction(img[1],r,
+	             List(GeneratorsOfGroup(g),i->Image(img[3],Image(auto,i))),OnTuples);
+	  end,
+	  function(perm)
+	    if perm in ran then
+	      return ConjugatorAutomorphismNC(g,
+	               PreImagesRepresentative(img[2],perm));
+	    fi;
+	    return GroupHomomorphismByImagesNC(g,g,GeneratorsOfGroup(g),
+	             List(r,i->PreImagesRepresentative(img[3],i^perm)));
+	  end);
+
+      elif not IsAbelian(Socle(g)) and IsSimpleGroup(Socle(g)) then
+	Info(InfoMorph,1,"Try ARG");
+	img:=AutomorphismRepresentingGroup(g,GeneratorsOfGroup(au));
+	# make a hom from auts to perm group
+	ran:=Image(img[2],g);
+	r:=List(GeneratorsOfGroup(g),i->Image(img[2],i));
+	hom:=GroupHomomorphismByFunction(au,img[1],
+          function(auto)
+	    if IsInnerAutomorphism(auto) then
+	      return Image(img[2],ConjugatorOfConjugatorIsomorphism(auto));
+	    fi;
+	    return RepresentativeAction(img[1],r,
+	             List(GeneratorsOfGroup(g),i->Image(img[2],Image(auto,i))));
+	  end,
+	  function(perm)
+	    if perm in ran then
+	      return ConjugatorAutomorphismNC(g,
+	               PreImagesRepresentative(img[2],perm));
+	    fi;
+	    return GroupHomomorphismByImagesNC(g,g,GeneratorsOfGroup(g),
+	             List(r,i->PreImagesRepresentative(img[2],i^perm)));
+	  end);
+      fi;
+    fi;
   fi;
 
   if hom=fail then
-    # general case: compute small domain
-    u:=Centre(g); # a subgroup generated by the classes so far: If
-    # this is the whole group the automorphisms must act faithful on the
-    # closure. First try without central elements
-    
+    Info(InfoMorph,1,"General Case");
     SetIsFinite(au,true);
-    aug:=GeneratorsOfGroup(au);
-    c:=ShallowCopy(ConjugacyClasses(g));
-    Sort(c,function(a,b) return Size(a)<Size(b);end);
 
-    # for `small' classes compute the elements list
-    for i in c do
-      if Size(i)<30 then AsSSortedList(i);fi;
-    od;
-
-    # try to find a smallish set with trivial kernels under inner actions
-
-    sel:=[];
-    i:=0;
-    while Size(u)<Size(g) and i<Length(c) do
-      i:=i+1;
-      r:=Representative(c[i]);
-      cen:=Centralizer(c[i]);
-      if not r in u then 
-	# otherwise we won't get anything new
-	Add(sel,i); # we want this class
-	# the subgroup we get when adding the whole class
-	u:=NormalClosure(g,ClosureGroup(u,r)); 
-      fi;
-    od;
-    # take the centre away again
-    u:=NormalClosure(g,Subgroup(g,List(c{sel},Representative)));
-
-    # TODO: now try whether we can do the same without some of them
-
-    # do we need any central elements?
-    i:=1;
-    while Size(u)<Size(g) do
-      if not Representative(c[i]) in u then
-	Info(InfoMorph,3,"added central element");
-	Add(sel,i);
-	u:=ClosureGroup(u,Representative(c[i])); 
-      fi;
-      i:=i+1;
-    od;
-
-    Info(InfoMorph,2,"sz:",List(c{sel},Size));
-
-    # now fuse under automorphism action, orbit algorithm on classes
-    for i in sel do
-      r:=Representative(c[i]);
-      # candidates to fuse
-      osel:=Filtered(Difference([1..Length(c)],sel),
-	j->Size(c[j])=Size(c[i]) and Order(Representative(c[j]))=Order(r));
-      if Length(osel)>0 then
-	# map under all generators of au
-	j:=1;
-	while j<=Length(aug) do
-	  ri:=Image(aug[j],r);
-	  # is its image in one of the osel classes?
-	  p:=1;
-	  while p<=Length(osel) do
-	    if ri in c[osel[p]] then
-	      # it is, must add this class
-	      Add(sel,osel[p]);
-	      # break the loop (we grew anyhow)
-	      p:=Length(osel);
-	    fi;
-	    p:=p+1;
-	  od;
-	  j:=j+1;
-	od;
-      fi;
-    od;
-
-    # now sel is a list of the class indices. Find a small generating set from
-    # among them.
-
+    # general case: compute small domain
     gens:=[];
+    dom:=[];
     u:=TrivialSubgroup(g);
-    i:=0;
-    # take generators in turn from each class until satisfied. (We don't
-    # bother too much about their absolute number)
+    subs:=[];
+    orbs:=[];
     while Size(u)<Size(g) do
-      i:=i+1;
-      if i>Length(sel) then
-	i:=1;
+      # find a reasonable element
+      cnt:=0;
+      br:=false;
+      bv:=0;
+      if HasConjugacyClasses(g) then
+        for r in ConjugacyClasses(g) do
+	  if not Representative(r) in  u then
+	    v:=ClosureGroup(u,Representative(r));
+	    if allinner then
+	      val:=Size(Centralizer(r))*Size(NormalClosure(g,v));
+	    else
+	      val:=Size(Centralizer(r))*Size(v);
+	    fi;
+	    if val>bv then
+	      br:=Representative(r);
+	      bv:=val;
+	    fi;
+	  fi;
+	od;
+      else
+	repeat
+	  cnt:=cnt+1;
+	  repeat
+	    r:=Random(g);
+	  until not r in u;
+	  v:=ClosureGroup(u,r);
+	  if allinner then
+	    val:=Size(Centralizer(g,r))*Size(NormalClosure(g,v));
+	  else
+	    val:=Size(Centralizer(g,r))*Size(v);
+	  fi;
+	  if val>bv then
+	    br:=r;
+	    bv:=val;
+	  fi;
+	until bv>2^cnt;
       fi;
-      Info(InfoMorph,4,"random ",i);
-      r:=Random(c[sel[i]]);
-      if not r in u then
-	Add(gens,r);
+      r:=br;
+
+      if allinner then
+	u:=NormalClosure(g,ClosureGroup(u,r));
+      else
 	u:=ClosureGroup(u,r);
       fi;
+
+      #calculate orbit and closure
+      o:=Orbit(au,r);
+      v:=TrivialSubgroup(g);
+      i:=1;
+      while i<=Length(o) do
+	if not o[i] in v then
+          if allinner then
+	    v:=NormalClosure(g,ClosureGroup(v,o[i]));
+	  else
+	    v:=ClosureGroup(v,o[i]);
+	  fi;
+	  if Size(v)=Size(g) then
+	    i:=Length(o);
+	  fi;
+	fi;
+	i:=i+1;
+      od;
+      u:=ClosureGroup(u,v);
+
+      i:=1;
+      while Length(o)>0 and i<=Length(subs) do
+	if IsSubset(subs[i],v) then
+	  o:=[];
+	elif IsSubset(v,subs[i]) then
+	  subs[i]:=v;
+	  orbs[i]:=o;
+	  gens[i]:=r;
+	  o:=[];
+	fi;
+	i:=i+1;
+      od;
+      if Length(o)>0 then
+	Add(subs,v);
+	Add(orbs,o);
+	Add(gens,r);
+      fi;
     od;
 
-    Info(InfoMorph,1,"Found generating set ",Length(gens),", classes: ",
-	  List(c{sel},Size));
-    hom:=NiceMonomorphismAutomGroup(au,Union(List(c{sel},AsList)),gens);
+    # now find the smallest subset of domains
+    comb:=Filtered(Combinations([1..Length(subs)]),i->Length(i)>0);
+    bv:=infinity;
+    for i in comb do
+      val:=Sum(List(orbs{i},Length));
+      if val<bv then
+	v:=subs[i[1]];
+	for r in [2..Length(i)] do
+	  v:=ClosureGroup(v,subs[i[r]]);
+	od;
+	if Size(v)=Size(g) then
+	  best:=i;
+	  bv:=val;
+	fi;
+      fi;
+    od;
+    gens:=gens{best};
+    dom:=Union(orbs{best});
+    Unbind(orbs);
+
+    u:=SubgroupNC(g,gens);
+    while Size(u)<Size(g) do
+      repeat
+	r:=Random(dom);
+      until not r in u;
+      Add(gens,r);
+      u:=ClosureSubgroupNC(u,r);
+    od;
+    Info(InfoMorph,1,"Found generating set of ",Length(gens)," elements");
+    hom:=NiceMonomorphismAutomGroup(au,dom,gens);
+
   fi;
 
   SetFilterObj(hom,IsNiceMonomorphism);
@@ -260,6 +458,7 @@ local xset,fam,hom;
   One(aut); # to avoid infinite recursion once the niceo is set
 
   elmsgens:=Filtered(elmsgens,i->i in elms); # safety feature
+  #if Size(Group(elmsgens))<>Size(Source(One(aut))) then Error("holler1"); fi;
   xset:=ExternalSet(aut,elms);
   SetBaseOfGroup(xset,elmsgens);
   fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( aut ) ),
@@ -267,10 +466,10 @@ local xset,fam,hom;
   hom := rec(  );
   hom:=Objectify(NewType(fam,
 		IsActionHomomorphismAutomGroup and IsSurjective ),hom);
+  SetIsInjective(hom,true);
   SetUnderlyingExternalSet( hom, xset );
   hom!.basepos:=List(elmsgens,i->Position(elms,i));
   SetRange( hom, Image( hom ) );
-  SetIsInjective(hom,true);
   Setter(SurjectiveActionHomomorphismAttr)(xset,hom);
   Setter(IsomorphismPermGroup)(aut,ActionHomomorphism(xset,"surjective"));
   hom:=ActionHomomorphism(xset,"surjective");
@@ -291,6 +490,7 @@ local xset,g,imgs;
   g:=Source(One(ActingDomain(xset)));
   imgs:=OnTuples(hom!.basepos,elm);
   imgs:=Enumerator(xset){imgs};
+  #if g<>Group(BaseOfGroup(xset)) then Error("holler"); fi;
   elm:=GroupHomomorphismByImagesNC(g,g,BaseOfGroup(xset),imgs);
   SetIsBijective(elm,true);
   return elm;
@@ -488,7 +688,7 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip;
 
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
@@ -513,10 +713,14 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
   if tall then
     action:=action-8;
   fi;
+  derhom:=fail;
   tsur:=action>3; # test surjective
   if tsur then
     size:=Size(params.to);
     action:=action-4;
+    if Index(range,DerivedSubgroup(range))>1 then
+      derhom:=NaturalHomomorphismByNormalSubgroup(range,DerivedSubgroup(range));
+    fi;
   fi;
   tinj:=action>1; # test injective
   if tinj then
@@ -641,184 +845,196 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     # test class combination indicated by l:
     cla:=List([1..len],i->clali[i][l[i]]); 
     reps:=List(cla,Representative);
-
-    if rels<>false and IsPermGroup(range) then
-      # and precompute the powers
-      repspows:=List([1..len],i->[]);
-      for i in [1..len] do
-	for j in pows[i] do
-	  repspows[i][j+offset]:=reps[i]^j;
-	od;
-      od;
+    skip:=false;
+    if derhom<>fail then
+      if not Size(Group(List(reps,i->Image(derhom,i))))=Size(Image(derhom)) then
+#T The group `Image( derhom )' is abelian but initially does not know this;
+#T shouldn't this be set?
+#T Then computing the size on the l.h.s. may be sped up using `SubgroupNC'
+#T w.r.t. the (abelian) group.
+	skip:=true;
+	Info(InfoMorph,3,"skipped");
+      fi;
     fi;
 
-    #cenis:=List(cla,i->Intersection(range,Centralizer(i)));
-    # make sure we get new groups (we potentially add entries)
-    cenis:=[];
-    for i in cla do
-      cen:=Intersection(range,Centralizer(i));
-      if IsIdenticalObj(cen,Centralizer(i)) then
-	m:=Size(cen);
-	cen:=SubgroupNC(range,GeneratorsOfGroup(cen));
-	SetSize(cen,m);
-      fi;
-      Add(cenis,cen);
-    od;
-
-    # test, whether a gen.sys. can be taken from the classes in <cla>
-    # candidates.  This is another backtrack
-    m:=[];
-    m[len]:=[id];
-    # positions
-    mp:=[];
-    mp[len]:=1;
-    mp[len+1]:=-1;
-    # centralizers
-    cen:=[];
-    cen[len]:=cenis[len];
-    cen[len+1]:=range; # just for the recursion
-    i:=len-1;
-
-    # set up the lists
-    while i>0 do
-      #m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),j->j[1]);
-      m[i]:=MorClassOrbs(range,cenis[i],reps[i],cen[i+1]);
-      mp[i]:=1;
-
-      pop:=true;
-      while pop and i<=len do
-	pop:=false;
-	while mp[i]<=Length(m[i]) and TestRels(i)=false do
-	  mp[i]:=mp[i]+1; #increment because of relations
-	  Info(InfoMorph,4,"early break ",i);
+    if not skip then
+      if rels<>false and IsPermGroup(range) then
+	# and precompute the powers
+	repspows:=List([1..len],i->[]);
+	for i in [1..len] do
+	  for j in pows[i] do
+	    repspows[i][j+offset]:=reps[i]^j;
+	  od;
 	od;
-	if i<=len and mp[i]>Length(m[i]) then
-	  Info(InfoMorph,3,"early pop");
-	  pop:=true;
-	  i:=i+1;
-	  if i<=len then
-	    mp[i]:=mp[i]+1; #increment because of pop
-	  fi;
+      fi;
+
+      #cenis:=List(cla,i->Intersection(range,Centralizer(i)));
+      # make sure we get new groups (we potentially add entries)
+      cenis:=[];
+      for i in cla do
+	cen:=Intersection(range,Centralizer(i));
+	if IsIdenticalObj(cen,Centralizer(i)) then
+	  m:=Size(cen);
+	  cen:=SubgroupNC(range,GeneratorsOfGroup(cen));
+	  SetSize(cen,m);
 	fi;
+	Add(cenis,cen);
+      od;
+
+      # test, whether a gen.sys. can be taken from the classes in <cla>
+      # candidates.  This is another backtrack
+      m:=[];
+      m[len]:=[id];
+      # positions
+      mp:=[];
+      mp[len]:=1;
+      mp[len+1]:=-1;
+      # centralizers
+      cen:=[];
+      cen[len]:=cenis[len];
+      cen[len+1]:=range; # just for the recursion
+      i:=len-1;
+
+      # set up the lists
+      while i>0 do
+	#m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),j->j[1]);
+	m[i]:=MorClassOrbs(range,cenis[i],reps[i],cen[i+1]);
+	mp[i]:=1;
+
+	pop:=true;
+	while pop and i<=len do
+	  pop:=false;
+	  while mp[i]<=Length(m[i]) and TestRels(i)=false do
+	    mp[i]:=mp[i]+1; #increment because of relations
+	    Info(InfoMorph,4,"early break ",i);
+	  od;
+	  if i<=len and mp[i]>Length(m[i]) then
+	    Info(InfoMorph,3,"early pop");
+	    pop:=true;
+	    i:=i+1;
+	    if i<=len then
+	      mp[i]:=mp[i]+1; #increment because of pop
+	    fi;
+	  fi;
+	od;
+
+	if pop then
+	  i:=-99; # to drop out of outer loop
+	elif i>1 then
+	  cen[i]:=Centralizer(cen[i+1],reps[i]^(m[i][mp[i]]));
+	fi;
+	i:=i-1;
       od;
 
       if pop then
-        i:=-99; # to drop out of outer loop
-      elif i>1 then
-	cen[i]:=Centralizer(cen[i+1],reps[i]^(m[i][mp[i]]));
+	Info(InfoMorph,3,"allpop");
+	i:=len+2; # to avoid the following `while' loop
+      else
+	i:=1; 
+	Info(InfoMorph,3,"loop");
       fi;
-      i:=i-1;
-    od;
 
-    if pop then
-      Info(InfoMorph,3,"allpop");
-      i:=len+2; # to avoid the following `while' loop
-    else
-      i:=1; 
-      Info(InfoMorph,3,"loop");
-    fi;
-
-    while i<len do
-      if rels=false or TestRels(1) then
-	if rels=false then
-	  # otherwise the images are set by `TestRels' as a side effect.
-	  imgs:=List([1..len-1],i->reps[i]^(m[i][mp[i]]));
-	  imgs[len]:=reps[len];
-	fi;
-	Info(InfoMorph,4,"orders: ",List(imgs,Order));
-
-	# computing the size can be nasty. Thus try given relations first.
-	ok:=true;
-
-	if rels<>false then
-	  if tinj then
-	    ok:=ForAll(rels,i->i[2]=Order(MappedWord(i[1],free,imgs)));
-	  else
-	    ok:=ForAll(rels,i->IsInt(i[2]/Order(MappedWord(i[1],free,imgs))));
+      while i<len do
+	if rels=false or TestRels(1) then
+	  if rels=false then
+	    # otherwise the images are set by `TestRels' as a side effect.
+	    imgs:=List([1..len-1],i->reps[i]^(m[i][mp[i]]));
+	    imgs[len]:=reps[len];
 	  fi;
-	fi;
+	  Info(InfoMorph,4,"orders: ",List(imgs,Order));
 
-	# check surjectivity
-	if tsur and ok then
-	  ok:= Size( SubgroupNC( range, imgs ) ) = size;
-	fi;
+	  # computing the size can be nasty. Thus try given relations first.
+	  ok:=true;
 
-	if ok and thom then
-	  Info(InfoMorph,3,"testing");
-	  imgs:=GroupGeneralMappingByImages(params.from,range,gens,imgs);
-	  SetIsTotal(imgs,true);
-	  if tsur then
-	    SetIsSurjective(imgs,true);
+	  if rels<>false then
+	    if tinj then
+	      ok:=ForAll(rels,i->i[2]=Order(MappedWord(i[1],free,imgs)));
+	    else
+	      ok:=ForAll(rels,i->IsInt(i[2]/Order(MappedWord(i[1],free,imgs))));
+	    fi;
 	  fi;
 
-	  ok:=IsSingleValued(imgs);
-	  if ok and tinj then
-	    ok:=IsInjective(imgs);
+	  # check surjectivity
+	  if tsur and ok then
+	    ok:= Size( SubgroupNC( range, imgs ) ) = size;
 	  fi;
-	fi;
-	
-	if ok then
-	  Info(InfoMorph,2,"found");
-	  # do we want one or all?
-	  if tall then
-	    if rig then
-	      if not imgs in result then
-		result:= GroupByGenerators( Concatenation(
-			    GeneratorsOfGroup( result ), [ imgs ] ),
-			    One( result ) );
-		# note its niceo
-		hom:=NiceMonomorphismAutomGroup(result,dom,gens);
-		SetNiceMonomorphism(result,hom);
-		SetIsHandledByNiceMonomorphism(result,true);
 
-		Size(result);
-		Info(InfoMorph,2,"new ",Size(result));
+	  if ok and thom then
+	    Info(InfoMorph,3,"testing");
+	    imgs:=GroupGeneralMappingByImages(params.from,range,gens,imgs);
+	    SetIsTotal(imgs,true);
+	    if tsur then
+	      SetIsSurjective(imgs,true);
+	    fi;
+	    ok:=IsSingleValued(imgs);
+	    if ok and tinj then
+	      ok:=IsInjective(imgs);
+	    fi;
+	  fi;
+	  
+	  if ok then
+	    Info(InfoMorph,2,"found");
+	    # do we want one or all?
+	    if tall then
+	      if rig then
+		if not imgs in result then
+		  result:= GroupByGenerators( Concatenation(
+			      GeneratorsOfGroup( result ), [ imgs ] ),
+			      One( result ) );
+		  # note its niceo
+		  hom:=NiceMonomorphismAutomGroup(result,dom,gens);
+		  SetNiceMonomorphism(result,hom);
+		  SetIsHandledByNiceMonomorphism(result,true);
+
+		  Size(result);
+		  Info(InfoMorph,2,"new ",Size(result));
+		fi;
+	      else
+		Add(result,imgs);
 	      fi;
 	    else
-	      Add(result,imgs);
+	      return imgs;
 	    fi;
-	  else
-	    return imgs;
 	  fi;
 	fi;
-      fi;
 
-      mp[i]:=mp[i]+1;
-      while i<=len and mp[i]>Length(m[i]) do
-	mp[i]:=1;
-	i:=i+1;
-	if i<=len then
-	  mp[i]:=mp[i]+1;
-	fi;
-      od;
-
-      while i>1 and i<=len do
-	while i<=len and TestRels(i)=false do
-	  Info(InfoMorph,4,"intermediate break ",i);
-	  mp[i]:=mp[i]+1;
-	  while i<=len and mp[i]>Length(m[i]) do
-	    Info(InfoMorph,3,"intermediate pop ",i);
-	    i:=i+1;
-	    if i<=len then
-	      mp[i]:=mp[i]+1;
-	    fi;
-	  od;
+	mp[i]:=mp[i]+1;
+	while i<=len and mp[i]>Length(m[i]) do
+	  mp[i]:=1;
+	  i:=i+1;
+	  if i<=len then
+	    mp[i]:=mp[i]+1;
+	  fi;
 	od;
 
-	if i<=len then # i>len means we completely popped. This will then
-	               # also pop us out of both `while' loops.
-	  cen[i]:=Centralizer(cen[i+1],reps[i]^(m[i][mp[i]]));
-	  i:=i-1;
-	  #m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),j->j[1]);
-	  m[i]:=MorClassOrbs(range,cenis[i],reps[i],cen[i+1]);
-	  mp[i]:=1;
+	while i>1 and i<=len do
+	  while i<=len and TestRels(i)=false do
+	    Info(InfoMorph,4,"intermediate break ",i);
+	    mp[i]:=mp[i]+1;
+	    while i<=len and mp[i]>Length(m[i]) do
+	      Info(InfoMorph,3,"intermediate pop ",i);
+	      i:=i+1;
+	      if i<=len then
+		mp[i]:=mp[i]+1;
+	      fi;
+	    od;
+	  od;
 
-	else
-	  Info(InfoMorph,3,"allpop2");
-	fi;
+	  if i<=len then # i>len means we completely popped. This will then
+			# also pop us out of both `while' loops.
+	    cen[i]:=Centralizer(cen[i+1],reps[i]^(m[i][mp[i]]));
+	    i:=i-1;
+	    #m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),j->j[1]);
+	    m[i]:=MorClassOrbs(range,cenis[i],reps[i],cen[i+1]);
+	    mp[i]:=1;
+
+	  else
+	    Info(InfoMorph,3,"allpop2");
+	  fi;
+	od;
+
       od;
-
-    od;
+    fi;
 
     # 'free for increment'
     l[ind]:=l[ind]+1;
@@ -841,12 +1057,13 @@ end);
 ##                      as possible generators from the first classes in <cl>
 ##
 InstallGlobalFunction(MorFindGeneratingSystem,function(arg)
-local G,cl,lcl,len,comb,combc,com,a,cnt,s;
+local G,cl,lcl,len,comb,combc,com,a,cnt,s,alltwo;
   G:=arg[1];
   cl:=arg[2];
   Info(InfoMorph,1,"FindGenerators");
   # throw out the 1-Class
   cl:=Filtered(cl,i->Length(i)>1 or Size(i[1].representative)>1);
+  alltwo:=Set(Factors(Size(G)))=[2];
 
   #create just a list of ordinary classes.
   lcl:=List(cl,i->Concatenation(List(i,j->j.classes)));
@@ -864,9 +1081,13 @@ local G,cl,lcl,len,comb,combc,com,a,cnt,s;
     com:=0;
     while com<Length(comb) do
       com:=com+1;
-      a:=MorClassLoop(G,combc[com],rec(to:=G),4);
-      if Length(a)>0 then
-        return a;
+      # don't try only order 2 generators unless its a 2-group
+      if Set(List(Flat(combc[com]),i->Order(Representative(i))))<>[2] or
+	alltwo then
+	a:=MorClassLoop(G,combc[com],rec(to:=G),4);
+	if Length(a)>0 then
+	  return a;
+	fi;
       fi;
     od;
   od;
@@ -885,6 +1106,7 @@ InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,
       gens,i,c,hom,free,elms,price,result,rels,inns,bcl,vsu;
 
+  IsSolvableGroup(G); # force knowledge
   gens:=SmallGeneratingSet(G);
   len:=Length(gens);
   Gr:=MorRatClasses(G);
@@ -1210,20 +1432,8 @@ local o,p,gens,hens;
   return o;
 end);
 
-#############################################################################
-##
-#M  AutomorphismGroup(<G>) . . group of automorphisms, given as Homomorphisms
-##
-InstallMethod(AutomorphismGroup,"for groups",true,[IsGroup and IsFinite],0,
-function(G)
+BindGlobal("AutomorphismGroupMorpheus",function(G)
 local a,b,c,p;
-  if IsAbelian(G) then
-    a:=AutomorphismGroupAbelianGroup(G);
-    if HasIsFinite(G) and IsFinite(G) then
-      SetIsFinite(a,true);
-    fi;
-    return a;
-  fi;
   a:=Morphium(G,G,true);
   if IsList(a.aut) then
     a.aut:= GroupByGenerators( Concatenation( a.aut, a.inner ),
@@ -1264,6 +1474,209 @@ local a,b,c,p;
     SetIsGroupOfAutomorphismsFiniteGroup(a.aut,true);
   fi;
   return a.aut;
+end);
+
+InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
+  local s, c, acts, ttypes, ttypnam, k, act, t, j, iso, w, wemb, a, au,
+  auph, aup, n, wl, genimgs, thom, ahom, emb, lemb, d, ge, stbs, orb, base,
+  newbas, obas, p, r, orpo, imgperm, invmap, hom, i, gen,gens,tty;
+  #write g in a nice form
+  s:=Socle(g);
+  if IsSimpleGroup(s) then
+    return AutomorphismGroupMorpheus(g);
+  fi;
+  c:=ChiefSeriesThrough(g,[s]);
+  acts:=[];
+  ttypes:=[];
+  ttypnam:=[];
+  k:=g;
+  for i in [1..Length(c)-1] do
+    if IsSubset(s,c[i]) and not HasAbelianFactorGroup(c[i],c[i+1]) then
+      act:=WreathActionChiefFactor(g,c[i],c[i+1]);
+      Add(acts,act);
+      t:=act[4];
+      tty:=IsomorphismTypeInfoFiniteSimpleGroup(t);
+      j:=1;
+      while j<=Length(ttypes) do
+	if ttypnam[j]=tty then
+	  iso:=IsomorphismGroups(t,acts[ttypes[j][1]][4]);
+	  Add(ttypes[j],[Length(acts),iso]);
+	  j:=Length(ttypes)+10;
+	fi;
+	j:=j+1;
+      od;
+      if j<Length(ttypes)+2 then
+	Add(ttypes,[Length(acts)]);
+	Add(ttypnam,tty);
+	Info(InfoMorph,1,"New isomorphism type: ",
+	  ttypnam[Length(ttypnam)].name);
+      fi;
+    fi;
+  od;
+
+  # now build the wreath products
+  w:=[];
+  wemb:=[];
+  for i in ttypes do
+    t:=acts[i[1]][4];
+    a:=acts[i[1]][3];
+    au:=AutomorphismGroupMorpheus(t);
+    auph:=IsomorphismPermGroup(au);
+    aup:=Image(auph);
+    n:=acts[i[1]][5];
+    for j in [2..Length(i)] do
+      n:=n+acts[i[j][1]][5];
+    od;
+    #T replace symmetric group by a suitable wreath product
+    wl:=WreathProduct(aup,SymmetricGroup(n));
+    # now embedd all
+
+    n:=1;
+    # first is slightly special
+    genimgs:=[];
+    for gen in GeneratorsOfGroup(a) do
+      thom:=GroupHomomorphismByImagesNC(t,t,GeneratorsOfGroup(t),
+	      List(GeneratorsOfGroup(t),j->j^gen));
+      thom:=Image(auph,thom);
+      Add(genimgs,thom);
+    od;
+
+    ahom:=GroupHomomorphismByImagesNC(a,aup,GeneratorsOfGroup(a),genimgs);
+
+    emb:=acts[i[1]][2]*EmbeddingWreathInWreath(wl,acts[i[1]][1],ahom,n);
+    n:=n+acts[i[1]][5];
+    lemb:=[emb];
+
+    for j in [2..Length(i)] do
+      a:=acts[i[j][1]][3];
+      genimgs:=[];
+      for gen in GeneratorsOfGroup(a) do
+	thom:=i[j][2];
+	thom:=GroupHomomorphismByImagesNC(t,t,GeneratorsOfGroup(t),
+	  List(GeneratorsOfGroup(t),
+	  j->Image(thom,PreImagesRepresentative(thom,j)^gen)));
+	thom:=Image(auph,thom);
+	Add(genimgs,thom);
+      od;
+
+      ahom:=GroupHomomorphismByImagesNC(a,aup,GeneratorsOfGroup(a),genimgs);
+
+      emb:=acts[i[j][1]][2]*EmbeddingWreathInWreath(wl,acts[i[2][1]][1],ahom,n);
+      n:=n+acts[i[j][1]][5];
+      Add(lemb,emb);
+
+    od;
+    # now map into wl by combining
+    emb:=[];
+    for gen in GeneratorsOfGroup(g) do
+      Add(emb,Product(lemb,i->Image(i,gen)));
+    od;
+    emb:=GroupHomomorphismByImagesNC(g,wl,GeneratorsOfGroup(g),emb);
+    Add(w,wl);
+    Add(wemb,emb);
+
+  od;
+
+  # finally form a direct product for the different types
+  d:=DirectProduct(w);
+  emb:=[];
+  for gen in GeneratorsOfGroup(g) do
+    Add(emb,
+      Product([1..Length(w)],i->Image(Embedding(d,i),Image(wemb[i],gen))));
+  od;
+  emb:=GroupHomomorphismByImagesNC(g,d,GeneratorsOfGroup(g),emb);
+
+  aup:=Normalizer(d,Image(emb,g));
+
+  #reduce degree
+  s:=SmallerDegreePermutationRepresentation(aup);
+  emb:=emb*s;
+  aup:=Image(s,aup);
+  ge:=Image(emb,g);
+
+  # translate back into automorphisms
+  a:=[];
+  gens:=SmallGeneratingSet(aup);
+  for i in gens do
+    au:=GroupHomomorphismByImages(g,g,GeneratorsOfGroup(g),
+	 List(GeneratorsOfGroup(g),
+	   j->PreImagesRepresentative(emb,Image(emb,j)^i)));
+    Add(a,au);
+  od;
+  au:=Group(a);
+
+  #cleanup
+  Unbind(acts);Unbind(act);Unbind(ttypes);Unbind(w);Unbind(wl);
+  Unbind(wemb);Unbind(lemb);Unbind(ahom);Unbind(thom);Unbind(d);
+
+  # produce data to map fro au to aup:
+  lemb:=MovedPoints(aup);
+  stbs:=[];
+  orb:=Orbits(aup,MovedPoints(aup));
+  base:=BaseStabChain(StabChainMutable(aup));
+  newbas:=[];
+  for i in orb do
+    obas:=Filtered(base,x->x in i);
+    Append(newbas,obas);
+    p:=obas[1];
+    # get a set of elements that uniquely describes the point p
+    s:=SmallGeneratingSet(Stabilizer(ge,p));
+    if ForAny(Difference(i,[p]),j->ForAll(s,x->j^x=j)) then
+      Error("further fixpoint -- ambiguity");
+    fi;
+    stbs[p]:=s;
+    for j in [2..Length(obas)] do
+      r:=RepresentativeAction(aup,p,obas[j]);
+      stbs[obas[j]]:=List(s,i->i^r);
+    od;
+  od;
+  orpo:=List(MovedPoints(aup),x->First([1..Length(orb)],y->x in orb[y]));
+
+  imgperm:=function(autom)
+  local bi, s, i;
+    bi:=[];
+    for i in newbas do
+      s:=List(stbs[i],
+	      x->Image(emb,Image(autom,PreImagesRepresentative(emb,x))));
+      s:=First(orb[orpo[i]],x->ForAll(s,j->x^j=x));
+      Add(bi,s);
+    od;
+    return RepresentativeAction(aup,newbas,bi,OnTuples);
+  end;
+
+  invmap:=GroupHomomorphismByImagesNC(aup,au,gens,a);
+  hom:=GroupHomomorphismByFunction(au,aup,imgperm,
+	 function(x)
+	   return Image(invmap,x);
+	 end);
+  SetInverseGeneralMapping(hom,invmap);
+  SetInverseGeneralMapping(invmap,hom);
+  SetIsAutomorphismGroup(au,true);
+  SetIsGroupOfAutomorphismsFiniteGroup(au,true);
+  SetNiceMonomorphism(au,hom);
+  SetIsHandledByNiceMonomorphism(au,true);
+
+  return au;
+end);
+
+#############################################################################
+##
+#M  AutomorphismGroup(<G>) . . group of automorphisms, given as Homomorphisms
+##
+InstallMethod(AutomorphismGroup,"for groups",true,[IsGroup and IsFinite],0,
+function(G)
+local a;
+  if IsAbelian(G) then
+    a:=AutomorphismGroupAbelianGroup(G);
+    if HasIsFinite(G) and IsFinite(G) then
+      SetIsFinite(a,true);
+    fi;
+    return a;
+  elif Size(RadicalGroup(G))=1 then
+      return AutomorphismGroupFittingFree(G);
+  else
+    return AutomorphismGroupMorpheus(G);
+  fi;
 end);
 
 RedispatchOnCondition(AutomorphismGroup,true,[IsGroup],

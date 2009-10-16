@@ -2,7 +2,7 @@
 ##
 #W  attr.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: attr.gi,v 4.4 2007/03/19 10:26:41 stefan Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file defines some functions that tweak the behaviour of attributes
 ##
 Revision.attr_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: attr.gi,v 4.4 2007/03/19 10:26:41 stefan Exp $";
 
 
 #############################################################################
@@ -29,7 +29,7 @@ end);
 
 #############################################################################
 ##
-#F  DisableAttributeValueStoring( <attr> ) tell the attribute to resume 
+#F  DisableAttributeValueStoring( <attr> ) tell the attribute to stop
 ##                                           storing values
 ##
 

@@ -1,0 +1,16 @@
+#Example: "PqDescendants-2" . . . based on manual example
+#(demonstrates `PqDescendants' usage)
+#We compute all capable descendants of order 27
+#of an elementary abelian group of order 9.
+#vars: F, procId, G, A, des;
+#options: 
+F := FreeGroup( 2, "g" );
+G := PcGroupFpGroup( F / [ F.1^3, F.2^3, Comm(F.1, F.2) ] );
+#alt: do
+#procId := PqStart( G );
+#alt: sub <procId> for <G>
+des := PqDescendants( G : OrderBound := 3, ClassBound := 2,
+                          CapableDescendants );
+List(des, d -> Length( PCentralSeries( d, 3 ) ) - 1 );
+## For comparison let us now compute all descendants
+PqDescendants( G : OrderBound := 3, ClassBound := 2);

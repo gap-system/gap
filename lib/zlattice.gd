@@ -2,7 +2,7 @@
 ##
 #W  zlattice.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: zlattice.gd,v 4.26 2008/11/12 13:04:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,28 +12,41 @@
 ##  with lattices.
 ##
 Revision.zlattice_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: zlattice.gd,v 4.26 2008/11/12 13:04:46 gap Exp $";
 
 
 #############################################################################
 ##
 #V  InfoZLattice
 ##
+##  <ManSection>
+##  <InfoClass Name="InfoZLattice"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareInfoClass( "InfoZLattice" );
 
 
 #############################################################################
 ##
-#O  ScalarProduct( <v>, <w> )
-#O  ScalarProduct( <L>, <v>, <w> )
+#O  ScalarProduct( [<L>, ]<v>, <w> )
 ##
-##  Called with two row vectors <v>, <w> of the same length, `ScalarProduct'
-##  returns the standard scalar product of these vectors;
-##  this can also be computed as `<v> \* <w>'.
+##  <ManSection>
+##  <Oper Name="ScalarProduct" Arg='[L, ]v, w'/>
 ##
-##  Called with a lattice <L> and two elements <v>, <w> of <L>,
-##  `ScalarProduct' returns the scalar product of these elements w.r.t.~the
-##  scalar product associated to <L>.
+##  <Description>
+##  Called with two row vectors <A>v</A>, <A>w</A> of the same length,
+##  <Ref Func="ScalarProduct"/> returns the standard scalar product of these
+##  vectors; this can also be computed as <C><A>v</A> * <A>w</A></C>.
+##  <P/>
+##  Called with a lattice <A>L</A> and two elements <A>v</A>, <A>w</A> of
+##  <A>L</A>,
+##  <Ref Func="ScalarProduct"/> returns the scalar product of these elements
+##  w.r.t.&nbsp;the scalar product associated to <A>L</A>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "ScalarProduct", [ IsVector, IsVector ] );
 DeclareOperation( "ScalarProduct",
@@ -44,7 +57,13 @@ DeclareOperation( "ScalarProduct",
 ##
 #F  StandardScalarProduct( <L>, <x>, <y> )
 ##
-##  returns `<x> \* <y>'.
+##  <ManSection>
+##  <Func Name="StandardScalarProduct" Arg='L, x, y'/>
+##
+##  <Description>
+##  returns <C><A>x</A> * <A>y</A></C>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "StandardScalarProduct" );
 
@@ -52,94 +71,122 @@ DeclareGlobalFunction( "StandardScalarProduct" );
 #############################################################################
 ##
 ##  Decompositions
-#1
+##
+##  <#GAPDoc Label="[1]{zlattice}">
+##  <Index>decomposition matrix</Index>
+##  <Index>DEC</Index>
 ##  For computing the decomposition of a vector of integers into the rows of
 ##  a matrix of integers, with integral coefficients,
-##  one can use $p$-adic approximations, as follows.
-##
-##  Let $A$ be a square integral matrix, and $p$ an odd prime.
-##  The reduction of $A$ modulo $p$ is $\overline{A}$,
+##  one can use <M>p</M>-adic approximations, as follows.
+##  <P/>
+##  Let <M>A</M> be a square integral matrix, and <M>p</M> an odd prime.
+##  The reduction of <M>A</M> modulo <M>p</M> is <M>\overline{A}</M>,
 ##  its entries are  chosen in the interval
-##  $[-\frac{p-1}{2}, \frac{p-1}{2}]$.
-##  If $\overline{A}$ is regular over the field with $p$ elements,
-##  we can form $A^{\prime} = \overline{A}^{-1}$.
-##  Now we consider the integral linear equation system $x A = b$,
-##  i.e., we look for an integral solution $x$.
-##  Define $b_0 = b$, and then iteratively compute
-##  $$
-##  x_i = (b_i A^{\prime}) \bmod p,\ \ b_{i+1} = \frac{1}{p} (b_i - x_i A),
-##    i = 0, 1, 2, \ldots \.
-##  $$
+##  <M>[ -(p-1)/2, (p-1)/2 ]</M>.
+##  If <M>\overline{A}</M> is regular over the field with <M>p</M> elements,
+##  we can form <M>A' = \overline{A}^{{-1}}</M>.
+##  Now we consider the integral linear equation system <M>x A = b</M>,
+##  i.e., we look for an integral solution <M>x</M>.
+##  Define <M>b_0 = b</M>, and then iteratively compute
+##  <Display Mode="M">
+##  x_i = (b_i A') \bmod p,  b_{{i+1}} = (b_i - x_i A) / p,
+##    i = 0, 1, 2, \ldots .
+##  </Display>
 ##  By induction, we get                                                     
-##  $$
-##  p^{i+1} b_{i+1} + \left( \sum_{j=0}^{i} p^j x_j \right) A = b\.
-##  $$
-##  If there is an integral solution $x$ then it is unique,
-##  and there is an index $l$ such that $b_{l+1}$ is zero
-##  and $x = \sum_{j=0}^{l} p^j x_j$.               
-##
+##  <Display Mode="M">
+##  p^{{i+1}} b_{{i+1}} + \left( \sum_{{j = 0}}^i p^j x_j \right) A = b.
+##  </Display>
+##  If there is an integral solution <M>x</M> then it is unique,
+##  and there is an index <M>l</M> such that <M>b_{{l+1}}</M> is zero
+##  and <M>x = \sum_{{j = 0}}^l p^j x_j</M>.               
+##  <P/>
 ##  There are two useful generalizations of this idea.
-##  First, $A$ need not be square; it is only necessary that there is
-##  a square regular matrix formed by a subset of columns of $A$.
-##  Second, $A$ does not need to be integral;
+##  First, <M>A</M> need not be square; it is only necessary that there is
+##  a square regular matrix formed by a subset of columns of <M>A</M>.
+##  Second, <M>A</M> does not need to be integral;
 ##  the entries may be cyclotomic integers as well,
-##  in this case one can replace each column of <A> by the columns formed by
-##  the coefficients w.r.t.~an integral basis (which are integers).
+##  in this case one can replace each column of <M>A</M> by the columns
+##  formed by the coefficients w.r.t.&nbsp;an integral basis (which are
+##  integers).
 ##  Note that this preprocessing must be performed compatibly for
-##  <A> and <b>.
-##
-##  {\GAP} provides the following functions for this purpose
-##  (see also~"InverseMatMod").
+##  <M>A</M> and <M>b</M>.
+##  <P/>
+##  &GAP; provides the following functions for this purpose
+##  (see also&nbsp;<Ref Func="InverseMatMod"/>).
+##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
 #F  Decomposition( <A>, <B>, <depth> ) . . . . . . . . . . integral solutions
-#F  Decomposition( <A>, <B>, \"nonnegative\" ) . . . . . . integral solutions
 ##
-##  For a $m \times n$ matrix <A> of cyclotomics that has rank $m \leq n$,
-##  and a list <B> of cyclotomic vectors, each of length $n$,
-##  `Decomposition' tries to find integral solutions of the linear equation
-##  systems `<x> * <A> = <B>[i]',
-##  by computing the $p$-adic series of hypothetical solutions.
+##  <#GAPDoc Label="Decomposition">
+##  <ManSection>
+##  <Func Name="Decomposition" Arg='A, B, depth'/>
 ##
-##  `Decomposition( <A>, <B>, <depth> )', where <depth> is a nonnegative
-##  integer, computes for each vector `<B>[i]' the initial part
-##  $\sum_{k=0}^{<depth>} x_k p^k$,
-##  with all $x_k$ vectors of integers with entries bounded by
-##  $\pm\frac{p-1}{2}$.
-##  The prime $p$ is 83 first; if the reduction of <A>
-##  modulo $p$ is singular, the next prime is chosen automatically.
-##
-##  A list <X> is returned.
-##  If the computed initial part for `<x> * <A> = <B>[i]' *is* a solution,
-##  we have `<X>[i] = <x>', otherwise `<X>[i] = fail'.
-##
-##  `Decomposition( <A>, <B>, \"nonnegative\" )' assumes that the solutions
-##  have only nonnegative entries,
-##  and that the first column of <A> consists of positive integers.
+##  <Description>
+##  For a <M>m \times n</M> matrix <A>A</A> of cyclotomics that has rank
+##  <M>m \leq n</M>, and a list <A>B</A> of cyclotomic vectors,
+##  each of length <M>n</M>,
+##  <Ref Func="Decomposition"/> tries to find integral solutions
+##  of the linear equation systems <C><A>x</A> * <A>A</A> = <A>B</A>[i]</C>,
+##  by computing the <M>p</M>-adic series of hypothetical solutions.
+##  <P/>
+##  <C>Decomposition( <A>A</A>, <A>B</A>, <A>depth</A> )</C>,
+##  where <A>depth</A> is a nonnegative integer, computes for each vector
+##  <C><A>B</A>[i]</C> the initial part
+##  <M>\sum_{{k = 0}}^{<A>depth</A>} x_k p^k</M>,
+##  with all <M>x_k</M> vectors of integers with entries bounded by
+##  <M>\pm (p-1)/2</M>.
+##  The prime <M>p</M> is set to 83 first; if the reduction of <A>A</A>
+##  modulo <M>p</M> is singular, the next prime is chosen automatically.
+##  <P/>
+##  A list <A>X</A> is returned.
+##  If the computed initial part for <C><A>x</A> * <A>A</A> = <A>B</A>[i]</C>
+##  <E>is</E> a solution,
+##  we have <C><A>X</A>[i] = <A>x</A></C>,
+##  otherwise <C><A>X</A>[i] = fail</C>.
+##  <P/>
+##  If <A>depth</A> is not an integer then it must be the string
+##  <C>"nonnegative"</C>.
+##  <C>Decomposition( <A>A</A>, <A>B</A>, "nonnegative" )</C> assumes that
+##  the solutions have only nonnegative entries,
+##  and that the first column of <A>A</A> consists of positive integers.
 ##  This is satisfied, e.g., for the decomposition of ordinary characters
 ##  into Brauer characters.
-##  In this case the necessary number <depth> of iterations can be computed;
-##  the `i'-th entry of the returned list is `fail' if there *exists* no
-##  nonnegative integral solution of the system `<x> * <A> = <B>[i]', and it
-##  is the solution otherwise.
-##
-##  *Note* that the result is a list of `fail' if <A> has not full rank,
+##  In this case the necessary number <A>depth</A> of iterations can be
+##  computed; the <C>i</C>-th entry of the returned list is <K>fail</K> if
+##  there <E>exists</E> no nonnegative integral solution of the system
+##  <C><A>x</A> * <A>A</A> = <A>B</A>[i]</C>, and it is the solution
+##  otherwise.
+##  <P/>
+##  <E>Note</E> that the result is a list of <K>fail</K> if <A>A</A> has not
+##  full rank,
 ##  even if there might be a unique integral solution for some equation
 ##  system.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareOperation( "Decomposition", [IsMatrix,IsList,IsObject] );
+DeclareOperation( "Decomposition", [ IsMatrix, IsList, IsObject ] );
 
 
 #############################################################################
 ##
 #F  LinearIndependentColumns( <mat> )
 ##
-##  Called with a matrix <mat>, `LinearIndependentColumns' returns a maximal
-##  list of column positions such that the restriction of <mat> to these
-##  columns has the same rank as <mat>.
+##  <#GAPDoc Label="LinearIndependentColumns">
+##  <ManSection>
+##  <Func Name="LinearIndependentColumns" Arg='mat'/>
+##
+##  <Description>
+##  Called with a matrix <A>mat</A>, <C>LinearIndependentColumns</C> returns a maximal
+##  list of column positions such that the restriction of <A>mat</A> to these
+##  columns has the same rank as <A>mat</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LinearIndependentColumns" );
 
@@ -148,36 +195,54 @@ DeclareGlobalFunction( "LinearIndependentColumns" );
 ##
 #F  PadicCoefficients( <A>, <Amodpinv>, <b>, <prime>, <depth> )
 ##
-##  Let <A> be an integral matrix,
-##  <prime> a prime integer,
-##  <Amodpinv> an inverse of <A> modulo <prime>,
-##  <b> an integral vector,
-##  and <depth> a nonnegative integer.
-##  `PadicCoefficients' returns the list $[ x_0, x_1, \ldots, x_l, b_{l+1} ]$
-##  describing the <prime>-adic approximation of <b> (see above),
-##  where $l = <depth>$
-##  or $l$ is minimal with the property that $b_{l+1} = 0$.
+##  <#GAPDoc Label="PadicCoefficients">
+##  <ManSection>
+##  <Func Name="PadicCoefficients" Arg='A, Amodpinv, b, prime, depth'/>
+##
+##  <Description>
+##  Let <A>A</A> be an integral matrix,
+##  <A>prime</A> a prime integer,
+##  <A>Amodpinv</A> an inverse of <A>A</A> modulo <A>prime</A>,
+##  <A>b</A> an integral vector,
+##  and <A>depth</A> a nonnegative integer.
+##  <Ref Func="PadicCoefficients"/> returns the list
+##  <M>[ x_0, x_1, \ldots, x_l, b_{{l+1}} ]</M>
+##  describing the <A>prime</A>-adic approximation of <A>b</A> (see above),
+##  where <M>l = <A>depth</A></M>
+##  or <M>l</M> is minimal with the property that <M>b_{{l+1}} = 0</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PadicCoefficients" );
 
 
 #############################################################################
 ##
-#F  IntegralizedMat( <A> )
-#F  IntegralizedMat( <A>, <inforec> )
+#F  IntegralizedMat( <A>[, <inforec>] )
 ##
-##  `IntegralizedMat' returns for a matrix <A> of cyclotomics
-##  a record <intmat> with components `mat' and `inforec'.
-##  Each family of algebraic conjugate columns of <A> is encoded in a set of
-##  columns of the rational matrix `<intmat>.mat' by replacing cyclotomics
-##  in <A> by their coefficients w.r.t.~an integral basis.
-##  `<intmat>.inforec' is a record containing the information how to encode
-##  the columns.
+##  <#GAPDoc Label="IntegralizedMat">
+##  <ManSection>
+##  <Func Name="IntegralizedMat" Arg='A[, inforec]'/>
 ##
-##  If the only argument is <A>, the value of the component `inforec' is
-##  computed that can be entered as second argument <inforec> in a later call
-##  of `IntegralizedMat' with a matrix <B> that shall be encoded compatibly
-##  with <A>.
+##  <Description>
+##  <Ref Func="IntegralizedMat"/> returns, for a matrix <A>A</A> of
+##  cyclotomics, a record <C>intmat</C> with components <C>mat</C> and
+##  <C>inforec</C>.
+##  Each family of algebraic conjugate columns of <A>A</A> is encoded in a
+##  set of columns of the rational matrix <C>intmat.mat</C> by replacing
+##  cyclotomics in <A>A</A> by their coefficients w.r.t.&nbsp;an integral
+##  basis.
+##  <C>intmat.inforec</C> is a record containing the information how to
+##  encode the columns.
+##  <P/>
+##  If the only argument is <A>A</A>, the value of the component
+##  <C>inforec</C> is computed that can be entered as second argument
+##  <A>inforec</A> in a later call of <Ref Func="IntegralizedMat"/> with a
+##  matrix <A>B</A> that shall be encoded compatibly with <A>A</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IntegralizedMat" );
 
@@ -186,56 +251,80 @@ DeclareGlobalFunction( "IntegralizedMat" );
 ##
 #F  DecompositionInt( <A>, <B>, <depth> )  . . . . . . . . integral solutions
 ##
-##  `DecompositionInt' does the same as `Decomposition'
-##  (see~"Decomposition"),
-##  except that <A> and <B> must be integral matrices, and <depth> must be
-##  a nonnegative integer.
+##  <#GAPDoc Label="DecompositionInt">
+##  <ManSection>
+##  <Func Name="DecompositionInt" Arg='A, B, depth'/>
+##
+##  <Description>
+##  <Ref Func="DecompositionInt"/> does the same as
+##  <Ref Func="Decomposition"/>,
+##  except that <A>A</A> and <A>B</A> must be integral matrices,
+##  and <A>depth</A> must be a nonnegative integer.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "DecompositionInt" );
 
 
 #############################################################################
 ##
-#F  LLLReducedBasis( [<L>, ]<vectors>[, <y>][, \"linearcomb\"][, <lllout>] )
+#F  LLLReducedBasis( [<L>, ]<vectors>[, <y>][, "linearcomb"][, <lllout>] )
 ##
-##  provides an implementation of the LLL algorithm by
-##  Lenstra, Lenstra and Lov{\accent19 a}sz (see~\cite{LLL82}, \cite{Poh87}).
-##  The implementation follows the description on pages 94f. in~\cite{Coh93}.
+##  <#GAPDoc Label="LLLReducedBasis">
+##  <ManSection>
+##  <Func Name="LLLReducedBasis"
+##   Arg='[L, ]vectors[, y][, "linearcomb"][, lllout]'/>
 ##
-##  `LLLReducedBasis' returns a record whose component `basis' is a list of
-##  LLL reduced linearly independent vectors spanning the same lattice as
-##  the list <vectors>.
-##  <L> must be a lattice, with scalar product of the vectors <v> and <w>
-##  given by `ScalarProduct( <L>, <v>, <w> )'.
+##  <Description>
+##  <Index Subkey="for vectors">LLL algorithm</Index>
+##  <Index>short vectors spanning a lattice</Index>
+##  <Index>lattice base reduction</Index>
+##  provides an implementation of the <E>LLL algorithm</E> by
+##  Lenstra, Lenstra and Lovász (see&nbsp;<Cite Key="LLL82"/>,
+##  <Cite Key="Poh87"/>).
+##  The implementation follows the description
+##  in&nbsp;<Cite Key="Coh93" Where="p. 94f."/>.
+##  <P/>
+##  <Ref Func="LLLReducedBasis"/> returns a record whose component
+##  <C>basis</C> is a list of LLL reduced linearly independent vectors
+##  spanning the same lattice as the list <A>vectors</A>.
+##  <A>L</A> must be a lattice, with scalar product of the vectors <A>v</A>
+##  and <A>w</A> given by
+##  <C>ScalarProduct( <A>L</A>, <A>v</A>, <A>w</A> )</C>.
 ##  If no lattice is specified then the scalar product of vectors given by
-##  `ScalarProduct( <v>, <w> )' is used.
-##
-##  In the case of the option `\"linearcomb\"', the result record contains
-##  also the components `relations' and `transformation', with the following
-##  meaning.
-##  `relations' is a basis of the relation space of <vectors>, i.e., of
-##  vectors <x> such that `<x> \* <vectors>' is zero.
-##  `transformation' gives the expression of the new lattice basis in
+##  <C>ScalarProduct( <A>v</A>, <A>w</A> )</C> is used.
+##  <P/>
+##  In the case of the option <C>"linearcomb"</C>, the result record contains
+##  also the components <C>relations</C> and <C>transformation</C>,
+##  with the following meaning.
+##  <C>relations</C> is a basis of the relation space of <A>vectors</A>,
+##  i.e., of vectors <A>x</A> such that <C><A>x</A> * <A>vectors</A></C> is
+##  zero.
+##  <C>transformation</C> gives the expression of the new lattice basis in
 ##  terms of the old, i.e.,
-##  `transformation \* <vectors>' equals the `basis' component of the result.
-##
-##  Another optional argument is <y>, the ``sensitivity'' of the algorithm,
-##  a rational number between $\frac{1}{4}$ and $1$ (the default value is
-##  $\frac{3}{4}$).
-##
-##  The optional argument <lllout> is a record with the components `mue'
-##  and `B', both lists of length $k$, with the meaning that
-##  if <lllout> is present then the first $k$ vectors in <vectors> form
-##  an LLL reduced basis of the lattice they generate,
-##  and `<lllout>.mue' and `<lllout>.B' contain their scalar products and
-##  norms used internally in the algorithm, which are also present in the
-##  output of `LLLReducedBasis'.
-##  So <lllout> can be used for ``incremental'' calls of `LLLReducedBasis'.
-##
-##  The function `LLLReducedGramMat' (see~"LLLReducedGramMat")
+##  <C>transformation * <A>vectors</A></C> equals the <C>basis</C> component
+##  of the result.
+##  <P/>
+##  Another optional argument is <A>y</A>, the <Q>sensitivity</Q> of the
+##  algorithm, a rational number between <M>1/4</M> and <M>1</M>
+##  (the default value is <M>3/4</M>).
+##  <P/>
+##  The optional argument <A>lllout</A> is a record with the components
+##  <C>mue</C> and <C>B</C>, both lists of length <M>k</M>,
+##  with the meaning that if <A>lllout</A> is present then the first <M>k</M>
+##  vectors in <A>vectors</A> form an LLL reduced basis of the lattice they
+##  generate,
+##  and <C><A>lllout</A>.mue</C> and <C><A>lllout</A>.B</C> contain their
+##  scalar products and norms used internally in the algorithm,
+##  which are also present in the output of <Ref Func="LLLReducedBasis"/>.
+##  So <A>lllout</A> can be used for <Q>incremental</Q> calls of
+##  <Ref Func="LLLReducedBasis"/>.
+##  <P/>
+##  The function <Ref Func="LLLReducedGramMat"/>
 ##  computes an LLL reduced Gram matrix.
-##  
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> vectors:= [ [ 9, 1, 0, -1, -1 ], [ 15, -1, 0, 0, 0 ],
 ##  >                [ 16, 0, 1, 1, 1 ], [ 20, 0, -1, 0, 0 ],
 ##  >                [ 25, 1, 1, 0, 0 ] ];;
@@ -249,48 +338,61 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##        [ -1, -2, 1, 1, 0 ] ],
 ##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ],
 ##    B := [ 5, 36/5, 12, 50/3 ] )
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LLLReducedBasis" );
 
 
 #############################################################################
 ##
-#F  LLLReducedGramMat( <G> ) . . . . . . . . . . . .  LLL reduced Gram matrix
-#F  LLLReducedGramMat( <G>, <y> )
+#F  LLLReducedGramMat( <G>[, <y>] )  . . . . . . . .  LLL reduced Gram matrix
 ##
-##  `LLLReducedGramMat' provides an implementation of the LLL algorithm by
-##  Lenstra, Lenstra and Lov{\accent19 a}sz (see~\cite{LLL82},~\cite{Poh87}).
-##  The implementation follows the description on pages 94f. in~\cite{Coh93}.
+##  <#GAPDoc Label="LLLReducedGramMat">
+##  <ManSection>
+##  <Func Name="LLLReducedGramMat" Arg='G[, y]'/>
 ##
-##  Let <G> the Gram matrix of the vectors $(b_1, b_2, \ldots, b_n)$;
-##  this means <G> is either a square symmetric matrix or lower triangular
-##  matrix (only the entries in the lower triangular half are used by the
-##  program).
-##
-##  `LLLReducedGramMat' returns a record whose component `remainder' is the
-##  Gram matrix of the LLL reduced basis corresponding to $(b_1, b_2, \ldots,
-##  b_n)$.
-##  If <G> is a lower triangular matrix then also the `remainder' component
-##  of the result record is a lower triangular matrix.
-##
-##  The result record contains also the components `relations' and
-##  `transformation', which have the following meaning.
-##
-##  `relations' is a basis of the space of vectors $(x_1,x_2,\ldots,x_n)$
-##  such that $\sum_{i=1}^n x_i b_i$ is zero,
-##  and `transformation' gives the expression of the new lattice basis in
-##  terms of the old, i.e., `transformation' is the matrix $T$ such that
-##  $T . <G> . T^{tr}$ is the `remainder' component of the result.
-##
-##  The optional argument <y> denotes the ``sensitivity'' of the algorithm,
-##  it must be a rational number between $\frac{1}{4}$ and $1$; the default
-##  value is $<y> = \frac{3}{4}$.
-##
-##  The function `LLLReducedBasis' (see~"LLLReducedBasis")
-##  computes an LLL reduced basis.
-##
-##  \beginexample
+##  <Description>
+##  <Index Subkey="for Gram matrices">LLL algorithm</Index>
+##  <Index>lattice base reduction</Index>
+##  <Ref Func="LLLReducedGramMat"/> provides an implementation of the
+##  <E>LLL algorithm</E> by Lenstra, Lenstra and Lovász
+##  (see&nbsp;<Cite Key="LLL82"/>,&nbsp;<Cite Key="Poh87"/>).
+##  The implementation follows the description in
+##  <Cite Key="Coh93" Where="p. 94f."/>.
+##  <P/>
+##  Let <A>G</A> the Gram matrix of the vectors
+##  <M>(b_1, b_2, \ldots, b_n)</M>;
+##  this means <A>G</A> is either a square symmetric matrix or lower
+##  triangular matrix (only the entries in the lower triangular half are used
+##  by the program).
+##  <P/>
+##  <Ref Func="LLLReducedGramMat"/> returns a record whose component
+##  <C>remainder</C> is the Gram matrix of the LLL reduced basis
+##  corresponding to <M>(b_1, b_2, \ldots, b_n)</M>.
+##  If <A>G</A> is a lower triangular matrix then also the <C>remainder</C>
+##  component of the result record is a lower triangular matrix.
+##  <P/>
+##  The result record contains also the components <C>relations</C> and
+##  <C>transformation</C>, which have the following meaning.
+##  <P/>
+##  <C>relations</C> is a basis of the space of vectors
+##  <M>(x_1, x_2, \ldots, x_n)</M>
+##  such that <M>\sum_{{i = 1}}^n x_i b_i</M> is zero,
+##  and <C>transformation</C> gives the expression of the new lattice basis
+##  in terms of the old, i.e., <C>transformation</C> is the matrix <M>T</M>
+##  such that <M>T \cdot <A>G</A> \cdot T^{tr}</M> is the <C>remainder</C>
+##  component of the result.
+##  <P/>
+##  The optional argument <A>y</A> denotes the <Q>sensitivity</Q> of the
+##  algorithm, it must be a rational number between <M>1/4</M> and <M>1</M>;
+##  the default value is <M><A>y</A> = 3/4</M>.
+##  <P/>
+##  The function <Ref Func="LLLReducedBasis"/> computes an LLL reduced basis.
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> g:= [ [ 4, 6, 5, 2, 2 ], [ 6, 13, 7, 4, 4 ],
 ##  >    [ 5, 7, 11, 2, 0 ], [ 2, 4, 2, 8, 4 ], [ 2, 4, 0, 4, 8 ] ];;
 ##  gap> LLLReducedGramMat( g );; Display( last );
@@ -304,86 +406,112 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
 ##        [ -1/4, 1/8, 37/75, 8/21 ] ],
 ##    B := [ 4, 4, 75/16, 168/25, 32/7 ] )
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LLLReducedGramMat" );
 
 
 #############################################################################
 ##
-#F  ShortestVectors( <G>, <m>[, \"positive\"] )
+#F  ShortestVectors( <G>, <m>[, "positive"] )
 ##
-##  Let <G> be a regular matrix of a symmetric bilinear form,
-##  and <m> a nonnegative integer.
-##  `ShortestVectors' computes the vectors $x$ that satisfy
-##  $x . <G> . x^{tr} \leq <m>$,
+##  <#GAPDoc Label="ShortestVectors">
+##  <ManSection>
+##  <Func Name="ShortestVectors" Arg='G, m[, "positive"]'/>
+##
+##  <Description>
+##  Let <A>G</A> be a regular matrix of a symmetric bilinear form,
+##  and <A>m</A> a nonnegative integer.
+##  <Ref Func="ShortestVectors"/> computes the vectors <M>x</M> that satisfy
+##  <M>x \cdot <A>G</A> \cdot x^{tr} \leq <A>m</A></M>,
 ##  and returns a record describing these vectors.
 ##  The result record has the components
-##  \beginitems
-##  `vectors' &
-##       list of the nonzero vectors $x$, but only one of each pair $(x,-x)$,
-##
-##  `norms' &
-##       list of norms of the vectors according to the Gram matrix <G>.
-##  \enditems
-##  If the optional argument `\"positive\"' is entered,
-##  only those vectors $x$ with nonnegative entries are computed.
-##  \beginexample
+##  <List>
+##  <Mark><C>vectors</C></Mark>
+##  <Item>
+##     list of the nonzero vectors <M>x</M>, but only one of each pair
+##     <M>(x,-x)</M>,
+##  </Item>
+##  <Mark><C>norms</C></Mark>
+##  <Item>
+##     list of norms of the vectors according to the Gram matrix <A>G</A>.
+##  </Item>
+##  </List>
+##  If the optional argument <C>"positive"</C> is entered,
+##  only those vectors <M>x</M> with nonnegative entries are computed.
+##  <Example><![CDATA[
 ##  gap> g:= [ [ 2, 1, 1 ], [ 1, 2, 1 ], [ 1, 1, 2 ] ];;  
 ##  gap> ShortestVectors(g,4);; Display( last );
 ##  rec(
 ##    vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ], 
 ##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], [ 1, 0, 0 ] ],
 ##    norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ] )
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ShortestVectors" );
 
 
 #############################################################################
 ##
-#F  OrthogonalEmbeddings( <gram>[, \"positive\"][, <maxdim>] )
+#F  OrthogonalEmbeddings( <gram>[, "positive"][, <maxdim>] )
 ##
+##  <#GAPDoc Label="OrthogonalEmbeddings">
+##  <ManSection>
+##  <Func Name="OrthogonalEmbeddings" Arg='gram[, "positive"][, maxdim]'/>
+##
+##  <Description>
 ##  computes all possible orthogonal embeddings of a lattice given by its
-##  Gram matrix <gram>, which must be a regular matrix.
-##  In other words, all solutions $X$ of the problem
-##  $$
-##  X^{tr} . X = <gram>
-##  $$
-##  are calculated (see~\cite{Ple90}).
-##  Usually there are many solutions $X$
+##  Gram matrix <A>gram</A>, which must be a regular matrix.
+##  In other words, all solutions <M>X</M> of the problem
+##  <Display Mode="M">
+##  X^{tr} \cdot X = <A>gram</A>
+##  </Display>
+##  are calculated (see&nbsp;<Cite Key="Ple90"/>).
+##  Usually there are many solutions <M>X</M>
 ##  but all their rows are chosen from a small set of vectors,
-##  so `OrthogonalEmbeddings' returns the solutions in an encoded form,
-##  namely as a record with components
-##  \beginitems
-##  `vectors' &
-##       the list $L = [ x_1, x_2, \ldots, x_n ]$ of vectors
-##       that may be rows of a solution;
-##       these are exactly those vectors that fulfill the condition
-##       $x_i . <gram>^{-1} . x_i^{tr} \leq 1$
-##       (see~"ShortestVectors"),
-##       and we have $<gram> = \sum^n_{i=1} x_i^{tr} . x_i$,
-##
-##  `norms' &
-##       the list of values $x_i . <gram>^{-1} . x_i^{tr}$, and
-##
-##  `solutions' &
-##       a list <S> of lists; the <i>-th solution matrix is
-##       `<L>{ <S>[<i>] }',
-##       so the dimension of the <i>-th solution is the length of
-##       `<S>[<i>]'.
-##  \enditems
-##
-##  The optional argument `\"positive\"' will cause `OrthogonalEmbeddings'
-##  to compute only vectors $x_i$ with nonnegative entries.
+##  so <Ref Func="OrthogonalEmbeddings"/> returns the solutions
+##  in an encoded form, namely as a record with the following components.
+##  <List>
+##  <Mark><C>vectors</C></Mark>
+##  <Item>
+##     the list <M>L = [ x_1, x_2, \ldots, x_n ]</M> of vectors
+##     that may be rows of a solution;
+##     these are exactly those vectors that fulfill the condition
+##     <M>x_i \cdot <A>gram</A>^{{-1}} \cdot x_i^{tr} \leq 1</M>
+##     (see&nbsp;<Ref Func="ShortestVectors"/>),
+##     and we have <M><A>gram</A> = \sum_{{i = 1}}^n x_i^{tr} \cdot x_i</M>,
+##  </Item>
+##  <Mark><C>norms</C></Mark>
+##  <Item>
+##     the list of values <M>x_i \cdot <A>gram</A>^{{-1}} \cdot x_i^{tr}</M>,
+##     and
+##  </Item>
+##  <Mark><C>solutions</C></Mark>
+##  <Item>
+##     a list <A>S</A> of lists; the <A>i</A>-th solution matrix is
+##     <C><A>L</A>{ <A>S</A>[<A>i</A>] }</C>,
+##     so the dimension of the <A>i</A>-th solution is the length of
+##     <C><A>S</A>[<A>i</A>]</C>.
+##  </Item>
+##  </List>
+##  <P/>
+##  The optional argument <C>"positive"</C> will cause
+##  <Ref Func="OrthogonalEmbeddings"/>
+##  to compute only vectors <M>x_i</M> with nonnegative entries.
 ##  In the context of characters this is allowed (and useful)
-##  if <gram> is the matrix of scalar products of ordinary characters.
-##
-##  When `OrthogonalEmbeddings' is called with the optional argument
-##  <maxdim> (a positive integer),
-##  only solutions up to dimension <maxdim> are computed;
+##  if <A>gram</A> is the matrix of scalar products of ordinary characters.
+##  <P/>
+##  When <Ref Func="OrthogonalEmbeddings"/> is called with the optional
+##  argument <A>maxdim</A> (a positive integer),
+##  only solutions up to dimension <A>maxdim</A> are computed;
 ##  this will accelerate the algorithm in some cases.
-##  \beginexample
+##  <Example><![CDATA[
 ##  gap> b:= [ [ 3, -1, -1 ], [ -1, 3, -1 ], [ -1, -1, 3 ] ];;
 ##  gap> c:=OrthogonalEmbeddings( b );; Display( c );
 ##  rec(
@@ -394,12 +522,15 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##        [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ] )
 ##  gap> c.vectors{ c.solutions[1] };
 ##  [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ] ]
-##  \endexample
-##
-##  <gram> may be the matrix of scalar products of some virtual characters.
-##  From the characters and the embedding given by the matrix $X$,
-##  `Decreased' (see~"Decreased") may be able to compute irreducibles,
-##  see~"Reducing Virtual Characters".
+##  ]]></Example>
+##  <P/>
+##  <A>gram</A> may be the matrix of scalar products of some virtual
+##  characters.
+##  From the characters and the embedding given by the matrix <M>X</M>,
+##  <Ref Func="Decreased"/> may be able to compute irreducibles.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "OrthogonalEmbeddings" );
 
@@ -407,6 +538,13 @@ DeclareGlobalFunction( "OrthogonalEmbeddings" );
 #############################################################################
 ##
 #F  LLLint( <lat> ) . . . . . . . . . . . . . . . . . . . .  integer only LLL
+##
+##  <ManSection>
+##  <Func Name="LLLint" Arg='lat'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "LLLint" );
 #T The code was converted from Maple to GAP by Alexander.

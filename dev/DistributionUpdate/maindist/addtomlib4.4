@@ -1,7 +1,7 @@
 #!/bin/sh
 #############################################################################
 ##
-## $Id$
+## $Id: addtomlib4.4,v 1.6 2008/11/28 15:49:52 gapchron Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'
@@ -12,43 +12,38 @@ line='cd '${DISTROOT}
 echo $line
 $line 
 
-if [ \! -f tomlib1r1.zoo ];  then
-  echo "Creating tomlib1r1.zoo and tomlibxt1r1.zoo from CVS repository."
-  cd ${DISTNAME}/pkg/tomlib 
-  make dist
-  mv tomlib1r1.zoo tomlibxt1r1.zoo ${DISTROOT}
-  cd ${DISTROOT}
-else
-  echo "Found tomlib1r1.zoo and tomlibxt1r1.zoo archives."
+if [ \! -f tomlib${TOMLIBVER}.zoo ];  then
+  echo "Fetching tomlib${TOMLIBVER}.zoo from web page"
+  wget http://www.math.rwth-aachen.de/~Thomas.Breuer/tomlib/tomlib${TOMLIBVER}.zoo
 fi
 
-if [ \! -f tomlib1r1.zoo ];  then
-  echo "No files tomlib1r1.zoo and tomlibxt1r1.zoo in "${DISTROOT}
-  exit 1
+if [ \! -f tomlibxt${TOMLIBVER}.zoo ];  then
+  echo "Fetching tomlibxt${TOMLIBVER}.zoo from web page"
+  wget http://www.math.rwth-aachen.de/~Thomas.Breuer/tomlib/tomlibxt${TOMLIBVER}.zoo
 fi
 
-echo "Merging file "${DISTROOT}"/tomlib1r1.zoo into "
+echo "Merging file "${DISTROOT}"/tomlib${TOMLIBVER}.zoo into "
 echo "main archive."
 cd ${DISTNAME}/pkg
 rm -rf tomlib
-unzoo -x ${DISTROOT}/tomlib1r1.zoo
+unzoo -x ${DISTROOT}/tomlib${TOMLIBVER}.zoo
 cd ${DISTROOT}
 # they are all textfiles
-zooarchive=gap${RBVERSION}.zoo
+zooarchive=${ARCHNAME}.zoo
 find \
    ${DISTNAME}/pkg/tomlib \
        -type f -exec sh -c \
        '(echo "!TEXT!"; echo "/end") |  zoo ahc '${zooarchive}' '{} ";"
              
-echo "Repacking tomlibxt1r1.zoo to xtom1r1.zoo by prepending paths."
+echo "Repacking tomlibxt${TOMLIBVER}.zoo to xtom${TOMLIBVER}.zoo by prepending paths."
 cd ${DISTNAME}/pkg
 rm -rf tomlib
-unzoo -x ${DISTROOT}/tomlibxt1r1.zoo
+unzoo -x ${DISTROOT}/tomlibxt${TOMLIBVER}.zoo
 cd ${DISTROOT}
 find \
    ${DISTNAME}/pkg/tomlib \
        -type f -exec sh -c \
-       '(echo "!TEXT!"; echo "/end") |  zoo ahc xtom1r1.zoo '{} ";"
+       '(echo "!TEXT!"; echo "/end") |  zoo ahc xtom${TOMLIBVER}.zoo '{} ";"
 
 
 exit 0

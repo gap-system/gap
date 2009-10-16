@@ -1,0 +1,25 @@
+$Id: Changelog.r11,v 1.1 1999/11/30 22:55:25 gap Exp $
+This file describes the changes from xgap4r10 to xgap4r11:
+
+ * Fix of a small bug in a method installation of the operation `Relabel' for
+   a text object.
+   Thanks to Volkmar Felsch for reporting this bug.
+
+ * Added support for Hirsch lengths in "infinity" levels of space groups.
+
+ * Corrected handling of "infinity" levels for space groups. They are now
+   permuted if this is necessary for new inclusions.
+
+ * Fix of a bug which produced empty levels with space groups.
+
+ * Improved description of the concept of levels in the manual.
+
+ * Improved example of a space group via CRYST in the manual.
+ 
+ * Renaming of the first standard menu of graphic sheets from "Gap" to "Sheet".
+
+ * Renaming of "Gap" to "GAP" in some menus.
+
+ * Fix of some typos in the manual.
+
+

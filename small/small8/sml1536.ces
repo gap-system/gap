@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.sml1536_ces :=
-    "@(#)$Id$";
+    "@(#)$Id: sml1536.ces,v 1.1 1999/12/08 18:58:02 gap Exp $";
 
 SMALL_GROUP_LIB[ 1536 ].npnil[ 5 ][ 19 ] :=
 [ 179700331183475062020845393148, 2810243866698243863860007164,

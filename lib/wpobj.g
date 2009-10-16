@@ -2,7 +2,7 @@
 ##
 #W  wpobj.g                        GAP library                Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: wpobj.g,v 4.5 2002/04/15 10:05:30 sal Exp $
 ##
 #Y  Copyright (C)  1997,  
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  early in the bootstrap stage (therefore they are not in wpobj.gi)
 ##
 Revision.wpobj_g :=
-    "@(#)$Id$";
+    "@(#)$Id: wpobj.g,v 4.5 2002/04/15 10:05:30 sal Exp $";
 
 #############################################################################
 ##

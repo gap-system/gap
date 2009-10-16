@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd">
+
+<!--
+
+  recog.xml          recog package documentation                Max Neunhoeffer
+                                                                and Ákos Seress
+
+  Copyright (C) 2005, Lehrstuhl D für Mathematik, RWTH-Aachen
+
+-->
+
+<Book Name="recog">
+
+<TitlePage>
+    <Title>GAP 4 Package <Package>recog</Package></Title>
+    <Subtitle>Group Recognition Methods</Subtitle>
+    <Version>
+      <#Include SYSTEM "../VERSION">
+    </Version>
+    <Author>Max Neunhöffer
+<Address>
+Lehrstuhl D für Mathematik,
+RWTH Aachen,
+Templergraben 64,
+52062 Aachen,
+Germany
+</Address>
+    <Email>max.neunhoeffer@math.rwth-aachen.de</Email>
+    <Homepage>http://www.math.rwth-aachen.de/&tilde;Max.Neunhoeffer</Homepage>
+    </Author>
+    <Author>Ákos Seress
+<Address>
+Department of Mathematics,
+The Ohio State University,
+231 W 18th Avenue,
+Columbus, OH 43210 USA 
+</Address>
+    <Email>akos@math.ohio-state.edu</Email>
+    <Homepage>http://www.math.ohio-state.edu/people/display/display.php?ID=302
+    </Homepage>
+    </Author>
+    <Date>Oktober 2005</Date>
+
+<Copyright>
+  &copyright; 2005 by Max Neunhöffer and Ákos Seress<P/>
+
+  This package may be distributed under the terms and conditions of the
+  GNU Public License Version 2 or higher.
+</Copyright>
+
+</TitlePage>
+
+<!--  TableOfContents  . . . . . .  generate a table of contents   -->
+<TableOfContents/>
+
+<!--  The only chapter of the book  --> 
+<Body>
+<#Include SYSTEM "intro.xml">
+<#Include SYSTEM "install.xml">
+<#Include SYSTEM "methsel.xml">
+<#Include SYSTEM "recognition.xml">
+<#Include SYSTEM "afterrecog.xml">
+<#Include SYSTEM "examples.xml">
+<!-- more to come for the different recognition types -->
+</Body>
+
+<Bibliography Databases="recog"/>
+
+<!--  And finally an index as well   -->
+<TheIndex/>
+
+</Book>
+

@@ -2,14 +2,14 @@
 ##
 #W  pcgsspec.gi                 GAP library                      Bettina Eick
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: pcgsspec.gi,v 4.63 2006/05/02 08:49:07 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.pcgsspec_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: pcgsspec.gi,v 4.63 2006/05/02 08:49:07 gap Exp $";
 
 
 #############################################################################
@@ -156,6 +156,7 @@ PcgsSystemWithWf := function( pcgs, wf )
         newpcgs := pcgs;
     else
         newpcgs := PcgsByPcSequenceNC( FamilyObj(OneOfPcgs(pcgs)), list );
+        SetRelativeOrders(newpcgs, List(weights, x -> x[3]));
         SetOneOfPcgs( newpcgs, OneOfPcgs(pcgs) );
     fi;
 

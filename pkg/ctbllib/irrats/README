@@ -1,0 +1,39 @@
+Common Irrationalities extending the list in Appendix 1 of the ABC
+==================================================================
+
+This feature requires the following files.
+
+README             this file
+gap/irrats.g       GAP functions for creating the formatted HTML file
+gap/dispmat.g      utilities for creating formatted tables
+gap/htmlutil.g     utilities for creating HTML format
+htm/irrats.htm     the introductory HTML file
+                   (to be referenced in the homepage of the modular ATLAS)
+htm/char<p>.htm    the data files that are created automatically
+                   (one for each characteristic <p>)
+
+
+In order to create the files `char<p>.htm', the following must be done.
+
+1. Start GAP 4, read the file `irrats.g', and initialize the variables:
+
+       filename:= "irrdata";     # contains the table for `htm/irrats.htm'
+       format:= "HTML";
+       dirname:= "cambridge";    # the directory containing
+                                 # the Cambridge format files
+
+2. Compute the desired irrationalities (and perhaps store this list).
+
+       irratsinfo:= IrratNamesInCambridgeFormatFiles( dirname );;
+
+   The value is a list of pairs `[ <name>, <p> ]'
+   where <name> is the name of the atomic irrationality, such as "b23",
+   and <p> is a prime for which this irrationality shall be listed.
+
+3. Create the files `htm/char<p>.htm' and `irrdata.htm':
+
+       CreateCommonIrrationalityFile( irratsinfo, format, filename );
+
+4. Copy the table from `irrdata.htm' into `htm/irrats.htm',
+   and remove `irrdata.htm'.
+

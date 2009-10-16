@@ -2,7 +2,7 @@
 ##
 #W  wpobj.gd                     GAP library                 Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: wpobj.gd,v 4.6 2002/04/15 10:05:30 sal Exp $
 ##
 #Y  Copyright (C)  1997,  
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -43,7 +43,7 @@
 ##
 
 Revision.wpobj_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: wpobj.gd,v 4.6 2002/04/15 10:05:30 sal Exp $";
 
 
 #############################################################################

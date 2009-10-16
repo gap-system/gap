@@ -1,0 +1,46 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  resid.tex       FORMAT documentation        B. Eick and C.R.B. Wright
+%%
+%%  12-28-99
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Residual Functions}
+
+%\index{Residual Functions}
+
+\bigskip
+
+\> ResidualWrtFormation( <G>, <F> ) O
+
+Let <G> be a finite solvable group and <F> a formation. Then
+`ResidualWrtFormation' returns the <F>-residual subgroup of <G>.   
+
+The following special cases have their own functions.
+
+\bigskip
+
+\> NilpotentResidual( <G> ) A
+
+This is the last term of the descending central series of <G>.
+
+\> PResidual( <G>, <p> ) O
+
+This is the smallest normal subgroup of <G> whose index is a power of 
+the prime <p>.  
+
+\> PiResidual( <G>, <primes> ) O
+
+This is the smallest normal subgroup of <G> whose index is divisible 
+only by primes in the list <primes>.
+
+\> CoprimeResidual( <G>, <primes> ) O
+
+This is the smallest normal subgroup of <G> whose index is
+divisible only by primes *not* in the list `primes'.
+
+\> ElementaryAbelianProductResidual( <G> ) A
+
+This is the smallest normal subgroup of <G> whose factor group is a
+direct product of groups of prime order.
+
+

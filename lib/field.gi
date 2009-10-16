@@ -2,7 +2,7 @@
 ##
 #W  field.gi                    GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: field.gi,v 4.66 2007/07/02 12:58:42 stefan Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for division rings.
 ##
 Revision.field_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: field.gi,v 4.66 2007/07/02 12:58:42 stefan Exp $";
 
 
 #############################################################################

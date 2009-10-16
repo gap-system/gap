@@ -1,0 +1,32 @@
+#!/bin/sh
+#############################################################################
+##
+#W  maketoc            GAP 4 package `atlasrep'                 Thomas Breuer
+##
+#H  @(#)$Id: maketoc,v 1.18 2007/02/28 17:36:45 gap Exp $
+##
+#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This script produces the file 'pkg/atlasrep/gap/atlasprm.g'
+##  of GAP 4 from the data on a remote server, and saves the previous
+##  version of that file in 'pkg/atlasrep/gap/atlasprm.old'.
+##
+##  The script must be called from the directory 'pkg/atlasrep',
+##  in the form `etc/maketoc <gap>',
+##  where <gap> must be a command to call GAP 4.
+##
+$1 -q <<EOF
+LoadPackage( "atlasrep" );
+dstdir:= DirectoriesPackageLibrary( "atlasrep", "gap" );
+dstfile:= Filename( dstdir, "atlasprm.g" );
+if IsWritableFile( dstfile ) then
+  AtlasOfGroupRepresentationsUpdateTableOfContentsFile( dstfile );
+fi;
+quit;
+EOF
+
+
+#############################################################################
+##
+#E
+

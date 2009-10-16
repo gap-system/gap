@@ -4,7 +4,7 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id$
+*H  @(#)$Id: integer.h,v 4.13 2008/08/07 10:10:01 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,9 +12,14 @@
 **
 **  This file declares the functions handling arbitrary size integers.
 */
+
+#ifdef USE_GMP /* then use the gmp version of the header file */
+ #include "gmpints.h"
+#else /* read the rest of this file */
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_integer_h =
-   "@(#)$Id$";
+   "@(#)$Id: integer.h,v 4.13 2008/08/07 10:10:01 gap Exp $";
 #endif
 
 
@@ -35,6 +40,23 @@ typedef UInt2           TypDigit;
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
 #define INTBASE            (1L << NR_DIGIT_BITS)
 #define NR_SMALL_INT_BITS  (2*NR_DIGIT_BITS - 4)
+#define SIZE_INT(op)    (SIZE_OBJ(op) / sizeof(TypDigit))
+#define ADDR_INT(op)    ((TypDigit*)ADDR_OBJ(op))
+
+
+/**************************************************************************
+** The following two functions convert a C Int or UInt respectively into
+** a GAP integer, either an immediate, small integer if possible or 
+** otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
+**
+*F ObjInt_Int(Int i)
+*F ObjInt_UInt(UInt i)
+**
+****************************************************************************/
+
+Obj ObjInt_Int(Int i);
+Obj ObjInt_UInt(UInt i);
+
 
 /****************************************************************************
 **
@@ -80,7 +102,7 @@ extern  Int             LtInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually alread<<y handled in 'EvSum' for a better  efficiency.
+**  This case is usually already handled in 'EvalSum' for a better  efficiency.
 */
 extern  Obj             SumInt (
             Obj                 opL,
@@ -97,7 +119,7 @@ extern  Obj             SumInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvDiff' for a better efficiency.
+**  This case is usually already handled in 'EvalDiff' for a better efficiency.
 */
 extern  Obj             DiffInt (
             Obj                 opL,
@@ -114,7 +136,7 @@ extern  Obj             DiffInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvProd' for a better efficiency.
+**  This case is usually already handled in 'EvalProd' for a better efficiency.
 */
 extern  Obj             ProdInt (
             Obj                 opL,
@@ -131,7 +153,7 @@ extern  Obj             ProdInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvMod' for a better efficiency.
+**  This case is usually already handled in 'EvalMod' for a better efficiency.
 */
 extern  Obj             ModInt (
             Obj                 opL,
@@ -147,7 +169,7 @@ extern  Obj             ModInt (
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvPow' for a better  efficiency.
+**  This case is usually already handled in 'EvalPow' for a better  efficiency.
 */
 extern  Obj             PowInt (
             Obj                 opL,
@@ -164,7 +186,7 @@ extern  Obj             PowInt (
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **
-**  Note that this routine is not called from 'EvQuo', the  division  of  two
+**  Note that this routine is not called from 'EvalQuo', the  division  of  two
 **  integers yields  a  rational  and  is  therefor  performed  in  'QuoRat'.
 **  This operation is however available through the internal function 'Quo'.
 */
@@ -214,9 +236,10 @@ extern  Obj             GcdInt (
 */
 StructInitInfo * InitInfoInt ( void );
 
+/* this matches the USE_GMP test at the top of the file */
+#endif
 
 /****************************************************************************
 **
-
 *E  integer.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

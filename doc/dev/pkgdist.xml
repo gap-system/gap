@@ -1,0 +1,27 @@
+
+<!-- 
+
+  pkgdist.xml          GAP documentation    
+
+  Copyright (C) 2005,  The GAP Group
+
+Package distribution
+
+       $Id: pkgdist.xml,v 1.2 2008/01/07 15:52:47 alexk Exp $
+-->
+
+<Chapter Label="Chap-PkgDist">
+<Heading>Distributing packages via the &GAP; sites</Heading>
+
+This chapter describes how to collect information on packages and to
+maintain their re-distribution by The &GAP; Group.
+
+<Section Label="Sect-">
+<Heading>...</Heading>
+
+[Transfer existing READMEs to Manual format]
+
+</Section>
+
+</Chapter>
+

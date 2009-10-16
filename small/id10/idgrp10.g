@@ -7,7 +7,7 @@
 ##  order and for groups of cubefree order up to 50000.
 ##
 Revision.idgrp10_g :=
-    "@(#)$Id$";
+    "@(#)$Id: idgrp10.g,v 1.2 2005/04/02 09:34:37 gap Exp $";
 
 #############################################################################
 ##

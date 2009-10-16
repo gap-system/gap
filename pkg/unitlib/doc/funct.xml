@@ -1,0 +1,250 @@
+<!-- $Id: funct.xml,v 1.7 2009/05/31 21:50:10 alexk Exp $ -->
+<Chapter Label="Funct">
+<Heading>&UnitLib; functions</Heading>
+
+Since the main purpose of &UnitLib; is the storage of large amount
+of data, it has only two main user functions, which allow to read the 
+description of <M>V(KG)</M> for the given catalogue number of <M>G</M> 
+in the Small Groups Library of the &GAP; system, and to save the 
+description of <M>V(KG)</M> if the user would like to store it for 
+the further usage for the group that is not contained in the library.
+<P/>
+
+Examples below contain some functions from the &LAGUNA; package
+<Cite Key="Laguna"/>, see their description in the &LAGUNA; manual.
+<P/>
+
+To use the &UnitLib; package first you need to load it as follows:
+
+<Example>
+<![CDATA[
+gap> LoadPackage("unitlib");
+----------------------------------------------------------------------------
+Loading  UnitLib 3.0.0 (Library of normalized unit groups of modular group algebras)
+by Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/) and
+   Elena Yakimenko (k-algebra@zsu.zp.ua).
+----------------------------------------------------------------------------
+true
+]]>
+</Example>
+
+In case of a non-UNIX system, a warning will be displayed about non-availability
+of the library of normalized unit groups for groups of orders 128 and 243. 
+   
+<Section Label="MainFunctions">
+<Heading>MainFunctions</Heading>
+
+<ManSection>
+   <Func Name="PcNormalizedUnitGroupSmallGroup" 
+         Arg="s n" />  
+   <Returns>
+         PcGroup
+   </Returns>	 
+   <Description>
+         Let <A>s</A> be a power of prime <M>p</M> and
+	 <A>n</A> is an integer from <C>[ 1 .. NrSmallGroups(s) ]</C>.
+	 Then <C>PcNormalizedUnitGroupSmallGroup(<A>s</A>,<A>n</A>)</C> 
+	 returns the normalized unit group <M>V(KG)</M> 
+	 of the modular group algebra <M>KG</M>, where
+	 <M>G</M> is <C>SmallGroup(<A>s</A>,<A>n</A>)</C>
+	 and <M>K</M> is a field of <M>p</M> elements.
+   </Description>
+</ManSection>
+
+<Example>
+<![CDATA[
+gap> PcNormalizedUnitGroupSmallGroup(128,161);
+<pc group of size 170141183460469231731687303715884105728 with 127 generators>
+]]>
+</Example>
+
+The result returned by <C>PcNormalizedUnitGroupSmallGroup</C>
+will be equivalent to the following sequence of commands:
+ 
+<Log>                                                                         
+<![CDATA[                                                                         
+gap> G := SmallGroup( s, n );
+gap> p := PrimePGroup( G );
+gap> K := GF( p );
+gap> KG := GroupRing( K, G );
+gap> PcNormalizedUnitGroup( KG );
+]]>                                                                               
+</Log> 
+
+Nevertheless, <C>PcNormalizedUnitGroupSmallGroup</C>
+is not just a shortcut for such computation. It reads the description
+of the normalized unit group from the &UnitLib; library and then 
+reconstructs all its necessary attributes and properties.
+Thus, if you would like to obtain the group algebra <M>KG</M> or the
+field <M>K</M> and the group <M>G</M>, you should extract them from
+<M>V(KG)</M>, which should be constructed first.
+
+<Example>
+<![CDATA[
+gap> V:=PcNormalizedUnitGroup(GroupRing(GF(2),SmallGroup(8,3)));
+<pc group of size 128 with 7 generators>
+gap> V1:=PcNormalizedUnitGroupSmallGroup(8,3);                   
+<pc group of size 128 with 7 generators>
+gap> V1=V;     # two isomorphic groups but not identical objects
+false
+gap> IdGroup(V)=IdGroup(V1);
+true
+gap> IsomorphismGroups(V,V1);
+[ f1, f2, f3, f4, f5, f6, f7 ] -> [ f1, f2, f3, f4, f5, f6, f7 ]
+gap> KG:=UnderlyingGroupRing(V1);  # now the correct way
+<algebra-with-one over GF(2), with 3 generators>
+gap> V1=PcNormalizedUnitGroup(KG); # V1 is an attribute of KG
+true
+gap> K:=UnderlyingField(KG);
+GF(2)
+gap> G:=UnderlyingGroup(KG);     
+<pc group of size 8 with 3 generators>
+]]>
+</Example>
+
+Moreover, the original group <M>G</M> can be embedded into the output of the
+<C>PcNormalizedUnitGroupSmallGroup</C>, as it is shown in the next example:
+
+<Example>
+<![CDATA[
+gap> f:=Embedding(G,V1); 
+[ f1, f2, f3 ] -> [ f2, f1, f3 ]
+gap> g:=List(GeneratorsOfGroup(G), x -> x^f ); 
+[ f2, f1, f3 ]
+gap> G1:=Subgroup(V1,g);
+Group([ f2, f1, f3 ])
+gap> IdGroup(G1);
+[ 8, 3 ]
+]]>
+</Example>
+
+If the first argument <A>s</A> (the order of a group) is not a power of 
+prime, an error message will appear.
+If <A>s</A> is bigger than 243, you will get a warning telling that
+the library does not contain <M>V(KG)</M> for <M>G</M> of such order, 
+and you can use only data that you already stored in your 
+<File>unitlib/userdata</File> directory with the help of the function
+<Ref Func="SavePcNormalizedUnitGroup" />.
+<P/>
+
+It is worth to mention that for some groups of order 243, the construction 
+of the normalized unit group using <C>PcNormalizedUnitGroupSmallGroup</C> 
+may already require some noticeable amount of time. For example, it took 
+about 166 seconds of CPU time to compute 
+<C>PcNormalizedUnitGroupSmallGroup(243,30)</C> 
+on Intel Xeon 3.4 GHz with 2048 KB cache.
+
+<ManSection>
+   <Func Name="SavePcNormalizedUnitGroup" 
+         Arg="G" />
+   <Func Name="ParSavePcNormalizedUnitGroup" 
+         Arg="G" />
+   <Returns>
+         true
+   </Returns>	 
+   <Description>
+         Let <A>G</A> be a finite <M>p</M>-group of order <M>s</M>
+	 from the Small Groups Library of the &GAP; system, 
+	 constructed with the help of <C>SmallGroup(s,n)</C>. Then
+	 <C>SavePcNormalizedUnitGroup(<A>G</A>)</C> 
+         creates the file with the name of the form 
+	 <File>us&uscore;n.g</File> in the directory 
+	 <File>unitlib/userdata</File>, and returns <K>true</K>
+	 if this file was successfully generated.
+	 This file contains the description of the normalized unit 
+	 group <M>V(KG)</M> of the group algebra of the group 
+	 <A>G</A> over the field of <M>p</M> elements. 
+	 <P/>
+	 If the order of <A>G</A> is greater than 243, after this 
+	 you can construct the group <M>V(KG)</M> using  
+         <Ref Func="PcNormalizedUnitGroupSmallGroup" /> similarly
+	 to the previous section.
+	 The preliminary warning will be displayed, telling that
+	 for such orders you can use only those groups that were
+	 already computed by the user and saved to the 
+	 <File>unitlib/userdata</File> directory. 
+	 If there will be no such file there, you will get an error
+	 message, otherwise the computation will begin.
+	 <P/>
+	 If the order of <A>G</A> is less or equal to 243, then
+	 the file will be created in the <File>unitlib/userdata</File>
+	 directory, but &UnitLib; will continue to use the file
+	 with the same name from the appropriate directory in 
+	 <File>unitlib/data</File>. You can compare these two files 
+	 to make it sure that they are the same.
+	 <P/>
+	 <B>NOTE THAT:</B> 
+	 <P/>
+	 1. The argument should be the underlying group <M>G</M> 
+	 and not the normalized unit group <M>V(KG)</M>.
+	 <P/>
+	 2. The argument should be a group from the &GAP; Small Groups Library
+	 constructed with the help of <C>SmallGroup(s,n)</C>, otherwise
+	 the date consistency may be lost.
+	 <P/>
+	 <Ref Func="ParSavePcNormalizedUnitGroup" /> works in the same
+	 way, but uses the function <C>ParPcNormalizedUnitGroup</C> to
+	 parallelise the computation using the &GAP; package &SCSCP;.
+   </Description>
+</ManSection>
+
+<Example>
+<![CDATA[
+gap> SavePcNormalizedUnitGroup( SmallGroup( 256, 56092 ) );
+true
+gap> PcNormalizedUnitGroupSmallGroup( 256, 56092 );
+WARNING : the library of V(KG) for groups of order
+256 is not available yet !!!
+You can use only groups from the unitlib/userdata directory
+in case if you already computed their descriptions
+(See the manual for SavePcNormalizedUnitGroup).
+Description of V(KG) for G=SmallGroup(256, 56092) accepted, started its generation
+<pc group of size
+57896044618658097711785492504343953926634992332820282019728792003956564819968
+  with 255 generators>
+]]>
+</Example>
+
+</Section>
+
+
+<Alt Only="LaTeX">\newpage</Alt>
+
+
+<Section Label="Service">
+<Heading>Service tools</Heading>
+
+<ManSection>
+   <Func Name="UNITLIBBuildManual" 
+         Arg=""
+	 Comm="requires GAPDoc, UNIX or Linux and TeX" />
+   <Description>
+      This function is used to build the manual in the following formats:
+      DVI, PDF, PS, HTML and text for online help.
+      We recommend that the user should have a recent and fairly
+      complete &TeX; distribution.
+      Since &UnitLib; is distributed together with its manual,
+      it is not necessary for the user to use this function. Normally
+      it is intended to be used by the developers only. This is the only 
+      function of &UnitLib; which requires UNIX/Linux environment.
+   </Description>
+</ManSection>
+
+
+<ManSection>
+   <Func Name="UNITLIBBuildManualHTML" 
+         Arg=""
+	 Comm="requires only GAPDoc" />
+   <Description>
+      This fuction is used to build the manual only in HTML format.
+      This does not depend on the availability of the &TeX; installation
+      and works under Windows and MacOS as well.
+      Since &UnitLib; is distributed together with its manual,
+      it is not necessary for the user to use this function. Normally
+      it is intended to be used by the developers only.
+   </Description>
+</ManSection>
+
+</Section>
+
+</Chapter>

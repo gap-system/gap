@@ -1,0 +1,111 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  examples.tex            CRISP documentation           Burkhard H\"ofling
+%%
+%%  @(#)$Id: examples.tex,v 1.5 2002/01/16 12:23:06 gap Exp $
+%%
+%%  Copyright (C) 2000, Burkhard H\"ofling, Mathematisches Institut,
+%%  Friedrich Schiller-Universit\"at Jena, Germany
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Examples of group classes}
+
+This chapter describes some pre-defined 
+group classes, namely the classes of all abelian, nilpotent, and supersolvable
+groups. Moreover, there are some functions constructing the classes of all
+$p$-groups, $\pi$-groups, and abelian groups whose exponent divides a given
+positive integer. 
+
+The definitions of these group classes can also serve as further examples of
+how group classes can be defined using the methods described in the preceding
+chapters.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Pre-defined group classes}\null
+
+\>`TrivialGroups'{class}!{of all trivial groups} V
+
+\index{trivial groups!class of}%
+\index{class!of all trivial groups}
+The global variable `TrivialGroups' contains the class of all trivial groups. It is a
+subgroup closed saturated Fitting formation.
+
+\>`NilpotentGroups'{class}!{of all nilpotent groups} V
+
+\index{nilpotent groups!class of}%
+\index{class!of all nilpotent groups}%
+This global variable contains the class of all finite nilpotent groups. It is a
+subgroup closed saturated Fitting formation.
+
+
+\>`SupersolvableGroups'{class}!{of all supersolvable groups} V
+
+\index{supersolvable groups!class of}%
+\index{class!of all supersolvable groups}%
+This global variable contains the class of all finite supersolvable groups. It
+is a subgroup closed saturated formation.
+
+
+\>`AbelianGroups'{class}!{of all abelian groups} V
+
+\indextt{AbelianGroups}
+\index{abelian groups!class of}%
+\index{class!of all abelian groups}%
+is the class of all abelian groups. It is a subgroup closed formation.
+
+
+\>AbelianGroupsOfExponent(<n>) F
+
+\index{class!of all abelian groups of bounded exponent}
+\index{abelian groups of bounded exponent!class of}
+returns the class of all abelian groups of exponent dividing <n>, 
+where <n> is
+a positive integer. It is always a subgroup-closed formation.
+
+
+\>PiGroups(<pi>) F
+
+\index{class!of all $\pi$-groups}
+constructs the class of all <pi>-groups.  <pi> may be a non-empty class or a
+set of primes. The result is a subgroup-closed saturated Fitting formation.
+
+
+\>PGroups(<p>) F
+
+\index{class!of all $p$-groups}
+returns the class of all <p>-groups, where <p> is a prime.  The result is a
+subgroup-closed saturated Fitting formation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Pre-defined projector functions}\null
+
+\>NilpotentProjector(<grp>) A
+
+\index{Carter subgroup}%
+This function returns a projector for the class of all finite nilpotent
+groups. For a definition, see "Projector". Note that the nilpotent projectors
+of a finite solvable group equal its a Carter subgroups, that is, its
+self-normalizing nilpotent subgroups. 
+
+\>SupersolvableProjector(<grp>) A
+
+These functions return a projector for the class of all finite supersolvable
+groups. For a definition, see "Projector". 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Pre-defined sets of primes}\null
+
+\>`AllPrimes'{set}!{of all primes} V
+
+\index{primes!set of all}%
+\label{AllPrimes}%
+is the set of all (integral) primes. This should be
+installed as value for `Characteristic(<grpclass>)' if the group class
+<grpclass> contains cyclic groups of prime order~$p$ for arbitrary primes $p$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+%%
+

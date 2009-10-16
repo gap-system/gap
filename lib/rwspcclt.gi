@@ -9,7 +9,7 @@
 ##  This file contains generic methods polycyclic rewriting systems.
 ##
 Revision.rwspcclt_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rwspcclt.gi,v 4.32 2002/04/15 10:05:15 sal Exp $";
 
 
 #############################################################################

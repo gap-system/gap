@@ -2,7 +2,7 @@
 ##
 #W  fldabnum.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: fldabnum.gi,v 4.48 2002/04/15 10:04:40 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -18,7 +18,7 @@
 ##  by their family.)
 ##
 Revision.fldabnum_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: fldabnum.gi,v 4.48 2002/04/15 10:04:40 sal Exp $";
 
 
 #############################################################################

@@ -2,7 +2,7 @@
 %%
 %A  grpprod.msk                 GAP documentation            Alexander Hulpke
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: grpprod.msk,v 1.35 2007/01/31 19:02:11 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -29,6 +29,7 @@ the same kind again.
 Therefore the only guaranteed way to relate a product to its factors is via
 the embedding and projection homomorphisms (see~"Embeddings and
 Projections for Group Products");
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Direct Products}
@@ -70,6 +71,9 @@ gap> Image(e,(1,2));
 gap> Image(Projection(d,2),(1,2,3)(4,5)(8,9));
 (1,2)
 \endexample
+
+\Declaration{DirectProductInfo}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Semidirect Products}
@@ -126,7 +130,7 @@ true
 gap> p:=SemidirectProduct(g,apci,n);
 <pc group of size 24 with 4 generators>
 gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2)));
-[ f1, f2, f3, f4 ] -> [ (2,3), (2,3,4), (1,4)(2,3), (1,2)(3,4) ]
+[ f1, f2, f3, f4 ] -> [ (1,4), (1,4,3), (1,4)(2,3), (1,2)(3,4) ]
 \endexample
 
 \beginexample
@@ -287,14 +291,13 @@ gap> KuKGenerators(g,hom,hom2);
 [ (1,4)(2,5)(3,6), (1,6)(2,4)(3,5) ]
 \endexample
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Free Products}
 
-Let $G$ and $H$ be groups with presentations $\langle X\mid R\rangle$ and
+Let $G$ and $H$ be groups with presentations $\langle X\mid R\rangle$ and 
 $\langle Y\mid S\rangle$ respectively. Then the free product $G*H$ is
 the group with presentation $\langle X\cup Y\mid R\cup S\rangle$. This
-construction can be generalized to an arbitrary number of groups.
+construction can be generalized to an arbitrary number of groups. 
 
 \Declaration{FreeProduct}
 
@@ -326,4 +329,9 @@ of this embedding is described in the section for the appropriate product.
 returns the (<nr>-th) projection of the group product <P>. The actual meaning
 of the projection returned is described in the section for the appropriate
 product.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 

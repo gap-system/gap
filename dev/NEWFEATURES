@@ -1,7 +1,7 @@
 # This file should record, at least, all implemented and documented
 # changes (new features, performance improvements, ...) that will
-# probably be released in GAP 4.4. Of course some changes will not
-# need documentation Developers should add, at least a one-line
+# probably be released in GAP 4.5. Of course some changes will not
+# need documentation. Developers should add, at least a one-line
 # description and their initials. Adding a longer description means
 # that you are less likely to be pestered for one at release time.
 
@@ -11,142 +11,65 @@
 # all might be worth mentioning) will help in preparing the next
 # release announcement)
 
-Partition split (in permutation backtrack) is now in the kernel. In higher
-degrees this should give a speedup of a factor about 2. AH
+The behaviour of 'Info' can now be configured InfoClass-wise, see
+'SetInfoHandler'. (FL)
 
-Transversal computations in large permutation groups will be faster. AH
+New function 'CrcString' (FL)
 
-`Socle' method for finite groups (previously available only for primitive
-groups). AH
+Corrected documentation of 'Jacobi' (FL)
 
-Speedup in Dixon-Schneider when using large prime. AH
+New method for `Factorization' that can deal with larger groups
+(Nicholas Rohrbacher, AH)
 
-`AlgebraicExtension' takes optional name argument. AH
+New method for subgroup lattice based on lifting also in the case of
+nonsolvable groups. (AH)
 
-New methods for normalizers and subgroup conjugation in Sn. AH
+New function to compute presentation for group based on chief series (which
+produces nicer presentations than composition series). (AH)
 
-Dedicated stabilizer chain method for S_n (faster for larger
-degree). AH
+Small speed improvements in the 1-Cohomology (AH)
 
+Functions for computing continued fraction expansions and continued
+fraction approximations of algebraic numbers. (SK)
 
-The `\in' methods for SP and SU using invariant forms are now really used,
-after they have been ranked up by `NICE_FLAGS',
-such that they are preferred to the methods using the nice monomorphism.
-TB
+A method for computing symbolic names for finite groups,
+available via Name( <G> ).
+(SK, based on GAP3 code by Markus Püschel and Sebastian Egner)
 
-Vector spaces (of not too large dimension) consisting of rational functions
-are now supported, using the handling by nice bases.  TB
+The new function AClosestVectorCombinationsMatFFEVecFFECoords (see
+documentation) which had been requested by David Joyner. (SL)
 
-The analogous behaviour for spaces of uea elements is also supported now.  WdG
+`Enumerator' method for free magmas, `Iterator' method for partitions (TB)
 
-added version numbers for workspaces (so workspaces created with previous versions
-of GAP won't attempt to load and potentially cause crashes). BH
+`Iterator' methods for tuples and cartesian products (AK)
 
-Division rings are now in `IsRingWithOne' not just in `IsRing'.
-(One effect is that one can now ask a quaternion algebra for
-`GeneratorsOfAlgebraWithOne'.)  TB
+The scheme for variable names for polynomials has been changed to avoid
+accidentally creating different variables with the same name. (AH)
 
-`CreateCompletionFilesPkg' ran into an error when GAP had been started
-with more than one root directory.
-This was a harmless bug since it cannot be expected that users create
-completion files for packages;
-thus I did not put this into the list of bugfixes.  TB
+A simple method for multivariate polynomial factorization has been added (DJ, AH)
 
-Elementary Groebner Basis functionality. AH
+Module isomorphisms and automorphisms can now be computed by the MeatAxe
+(port of Michael Smith's code in the `autag' package of GAP3.) (AH, based on
+code by Michael Smith)
 
-Changed polynomial display and speedups to multivariate arithmetic. AH
+Speed improvement to `CompatiblePairs' (and thus to automorphism group and
+extension calculations for solvable groups. (AH)
 
-With the help of the new attribute `FactorsOfDirectProduct',
-Brauer character tables of direct products can be constructed
-for which the Brauer tables of all factors are known.
-(This helps if at least one factor is a library table that is not
-$p$-solvable.)  TB
+Better code for automorphism groups of fitting free groups. (AH)
 
-Removed 2GB limit on workspace sizes with gcc on 32-bit processors SL
+Basic methods for accessing the functionality for floats implemented
+in the kernel (not yet documented). (SK)
 
-Added type ID compaction to remove limit on total number of types
-created in a session. SL
+Primitive groups added to degree 2499. Groups of affine type are now
+stored as matrix groups; group names will have changed. (CMRD)
 
-Improved `IrreducibleRepresentationsByBaumClausen' and `IrrBaumClausen';
-for each representation, the smallest possible root of unity is now chosen
-for the evaluation.
-(For large groups (of order 2^16, say), this was very slow up to now;
-apparently nobody has ever used this for large groups.)   TB
+Provide internal functions ObjInt_Int and ObjInt_UInt and use them
+for FuncLENGTH to correctly report the length of long strings. (MN)
 
-LogMod now uses Pollard's rho method combined with a Pohlig/Hellmann
-approach. This cuts down memory requirements to (almost) constant and
-runtime often by a factor of 100 or 1000.  AH
+Added functions `SmallSimpleGroup' and `AllSmallNonabelianSimpleGroups'
+returning small-degree permutation representations of simple groups
+of given orders less than 10^6. (SK)
 
-Improved `StructureConstantsTable' and `GapInputSCTable' in the case of
-known (anti)symmetry (suggested by Marco Costantini).  TB
-
-New methods for testing whether a group is natural Sn/An that work better
-for large degrees. AS/AH
-
-Minor speedup to the `cyclic extension' subgroup lattice implementation. AH
-
-New operation `MinimalNormalSubgroups'. BH
-
-Extended `BrauerCharacterValue' to cases where the splitting field is not
-supported in GAP; up to now, this code had not been translated from GAP 3.5.
-  TB
-
-Basic functionality for `GaloisType'. (Good performance will require better
-factorization over algebraic extensions.) AH
-
-Enumerators for various domains are now created with `EnumeratorByFunctions',
-which provides a uniform interface that avoids introducing lots of filters
-and should be user-friendly enough for making enumerators more attractive.
-(For example enumerators corresponding to the functions in `lib/combinat.gi'
-might be useful.)
-Now also membership tests for such enumerators with `\in' work,
-which apparently nobody had noticed. TB
-
-The following behaviour has *changed*:
-Up to GAP 4.3 (and since GAP 3 times), `IsSimple' returned `true' for
-the trivial group; now the result is `false'. TB
-
-Improved methods for `Sort', `Sortex', `SortParallel', `SortingPerm',
-for the case that the list knows to be sorted, improved `NrArrangements'
-(all suggested by Luc Teirlinck)  TB
-
-Changes for `PossibleClassFusions':
-On the one hand, the efficiency has been improved,
-by using also power maps for primes not dividing the order of the subgroup.
-(A nice example is the fusion from 47:23 into B.)
-On the other hand, a new criterion (consider structure constants) has
-been added to the standard algorithm, so the results will be better in
-some (not too many) cases but the runtime becomes bigger in these cases;
-unfortunately, the runtime will also be bigger without a better result
-if the result is not unique up to table automorphisms.
-(One can omit the new check with an optional argument, but currently it is
-part of the default.)  TB
-
-Iterators for various domains are now created with `IteratorByFunctions',
-which provides a uniform interface that avoids introducing lots of filters
-and should be user-friendly enough for making enumerators more attractive.
-(The idea is due to Frank.)  TB
-
-Some speedups for `MinimalPolynomial' for finite field matrices. AH
-
-Added methods for factorization over algebraic extensions. AH
-
-Improved algorithm for `PrimeBlocks' (suggested by H. Pahlings);
-the result does no longer have a component `exponents', since in fact no
-ramification occurs.
-(This change of the output format is incompatible with earlier GAP versions,
-but if a user has really used the superfluous record component then it is
-reasonable to run into an error and to notice the theoretical improvement.)
-  TB
-
-Improved efficiency of `PossibleFusionsCharTableTom' (which is useful
-mainly for the libraries of character tables and of tables of marks,
-but this code is in the `lib' directory)  TB
-
-Added Felix Noeske's generic character tables of Schur double covers
-of alternating and symmetric groups; the main access may be via the
-command `CharacterTable' as supported in the `ctbllib' package,
-but the functionality belongs to the main GAP library, analogous to the
-situation with the generic tables of symmetric and alternating groups.
-  TB
-
+In Windows version `SetHelpViewer' accepts argument "browser" 
+to open HTML help books using the Windows default application 
+(typically, a web-browser). (AK)

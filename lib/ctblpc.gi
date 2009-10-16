@@ -2,7 +2,7 @@
 ##
 #W  ctblpc.gi                    GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblpc.gi,v 4.8 2002/04/15 10:04:35 sal Exp $
 ##
 #Y  Copyright (C) 1993, 1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the parts of the Dixon-Schneider specific to pc groups
 ##
 Revision.ctblpc_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblpc.gi,v 4.8 2002/04/15 10:04:35 sal Exp $";
 
 
 #############################################################################

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE Book SYSTEM "../../gapdoc/gapdoc.dtd"
+ [ <!ENTITY ResClasses "<Package>ResClasses</Package>">
+   <!ENTITY RCWA "<Package>RCWA</Package>"> ] >
+<?LaTeX ExtraPreamble=""?>
+
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  resclasses.xml     ResClasses documentation      Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: resclasses.xml,v 1.51 2007/09/26 14:38:27 stefan Exp $   ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Book Name="ResClasses"> 
+
+<!-- #################################################################### -->
+
+<TitlePage>
+  <Title>&ResClasses;</Title>
+  <Subtitle>
+    Set-Theoretic Computations with Residue Classes
+  </Subtitle>
+  <Version>
+    Version <#Include SYSTEM "../version">
+  </Version>
+  <Author>
+    Stefan Kohl
+    <Email>kohl@mathematik.uni-stuttgart.de</Email>
+    <Homepage>http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/</Homepage>
+    <Address>
+      Institut für Geometrie und Topologie <Br/>
+      Pfaffenwaldring 57 <Br/>
+      Universität Stuttgart <Br/>
+      70550 Stuttgart <Br/>
+      Germany
+    </Address>
+  </Author>
+  <Date>September 26, 2007</Date>
+  <Copyright>
+    &copyright; 2003 - 2007 by Stefan Kohl <P/>
+    This package is distributed under the GNU General Public License.
+  </Copyright>
+  <#Include SYSTEM "abstract.xml">
+</TitlePage>
+
+<!-- #################################################################### -->
+
+<TableOfContents/>
+
+<!-- #################################################################### -->
+
+<Body>
+
+<#Include SYSTEM "resclass.xml">
+<#Include SYSTEM "fixedrep.xml">
+<#Include SYSTEM "z_pi.xml">
+<#Include SYSTEM "resclaux.xml">
+
+</Body>
+
+<!-- #################################################################### -->
+
+<Bibliography Databases="resclassesbib.xml"/>
+
+<TheIndex/>
+
+<!-- #################################################################### -->
+
+</Book>
+
+<!-- #################################################################### -->

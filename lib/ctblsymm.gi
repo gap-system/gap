@@ -3,7 +3,7 @@
 #W  ctblsymm.gi                 GAP library                    Goetz Pfeiffer
 #W                                                               Felix Noeske
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblsymm.gi,v 4.17 2003/11/19 09:41:32 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  the   symmetric group  on   n points.
 ##  
 Revision.ctblsymm_gi :=
-     "@(#)$Id$";
+     "@(#)$Id: ctblsymm.gi,v 4.17 2003/11/19 09:41:32 gap Exp $";
 
 
 #############################################################################

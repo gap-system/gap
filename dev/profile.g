@@ -2,7 +2,7 @@
 ##
 #W  profile.g                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: profile.g,v 1.1 2000/02/09 17:04:45 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -10,7 +10,7 @@
 ##  This file contains the profiling functions.
 ##
 Revision.profile_g :=
-    "@(#)$Id$";
+    "@(#)$Id: profile.g,v 1.1 2000/02/09 17:04:45 sal Exp $";
 
 
 #############################################################################

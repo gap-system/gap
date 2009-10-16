@@ -10,7 +10,7 @@
 ##  fp group and vice versa.
 ##
 Revision.grppcfp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grppcfp.gi,v 4.49 2007/07/27 19:17:41 gap Exp $";
 
 #############################################################################
 ##
@@ -237,7 +237,7 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
                 imgs   := imgs,
                 prei   := prei );
   elif IsMapping(F) then
-    if IsWholeFamily(Image(F)) then
+    if IsSurjective(F) and IsWholeFamily(Range(F)) then
       return rec(source:=Source(F),
 		image:=Parent(Image(F)), # parent will replace full group
 		                         # with other gens.

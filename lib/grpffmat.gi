@@ -4,7 +4,7 @@
 #W                                                               Frank Lübeck
 #W                                                                Stefan Kohl
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpffmat.gi,v 4.46 2004/05/24 10:09:20 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  This file contains the operations for matrix groups over finite field.
 ##
 Revision.grpffmat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpffmat.gi,v 4.46 2004/05/24 10:09:20 gap Exp $";
 
 
 #############################################################################

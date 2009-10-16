@@ -1,0 +1,83 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intro.tex             GAP documentation                  Bettina Eick
+%W                                                          Werner Nickel
+%%
+%H  $Id: intro.tex,v 1.9 2003/10/24 12:05:36 werner Exp $
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Introduction to polycyclic presentations}
+
+Let $G$ be a polycyclic group and let $G = C_1 \rhd C_2 \ldots C_n\rhd
+C_{n+1} = 1$ be a *polycyclic series*, that  is, a subnormal series of
+$G$ with non-trivial cyclic factors.  For $1  \leq i \leq n$ we choose
+$g_i \in C_i$ such  that $C_i =  \langle  g_i, C_{i+1}  \rangle$.  Then
+the
+sequence $(g_1,   \ldots, g_n)$  is   called a  *polycyclic generating
+sequence of  $G$*.  Let $I$ be  the set of those  $i  \in \{1, \ldots,
+n\}$ with $r_i := [C_i : C_{i+1}]$ finite.  Each element of $G$ can be
+written <uniquely> as  $g_1^{e_1}\cdots g_n^{e_n}$ with $e_i\in\Z$ for
+$1\leq i\leq n$ and $0\leq e_i\<r_i$ for $i\in I$.
+
+Each polycyclic    generating sequence   of  $G$   gives  rise  to a
+*power-conjugate  (pc-)   presentation*  for  $G$  with  the  conjugate
+relations
+$$g_j^{g_i} = g_{i+1}^{e(i,j,i+1)} \cdots g_n^{e(i,j,n)}
+                    \hbox{ for } 1 \leq i \< j \leq n,$$
+$$g_j^{g_i^{-1}} = g_{i+1}^{f(i,j,i+1)} \cdots g_n^{f(i,j,n)}
+                    \hbox{ for } 1 \leq i \< j \leq n,$$
+and the power relations
+$$g_i^{r_i} = g_{i+1}^{l(i,i+1)} \cdots g_n^{l(i,n)}
+                    \hbox{ for } i \in I\.$$
+\bigskip
+
+Vice versa, we say that a group $G$ is defined by a pc-presentation if
+$G$  is  given by  a  presentation of  the  form  above on  generators
+$g_1,\ldots,g_n$.  These  generators are the  *defining generators* of
+$G$.  Here, $I$  is the set of  $1\leq i\leq n$ such that  $g_i$ has a
+power relation.  The positive integer $r_i$ for $i\in I$ is called the
+*relative order* of $g_i$. If  $G$ is given by a pc-presentation, then
+$G$  is polycyclic.  The subgroups  $C_i  = \langle  g_i, \ldots,  g_n
+\rangle$ form a  subnormal series $G = C_1 \geq  \ldots \geq C_{n+1} =
+1$  with cyclic  factors  and  we have  that  $g_i^{r_i}\in C_{i+1}$.  
+However, some of the factors of  this series may be smaller than $r_i$
+for $i\in I$ or finite if $i\not\in I.$
+
+If $G$ is defined by a pc-presentation, then
+each  element of  $G$    can be described   by   a word of   the  form
+$g_1^{e_1}\cdots g_n^{e_n}$ in the defining generators with $e_i\in\Z$
+for $1\leq i\leq n$ and $0\leq e_i\<r_i$ for $i\in I$.  Such a word is
+said to be in *collected  form*.  In general, an  element of the group
+can  be  represented by   more  than   one   collected word.    If the
+pc-presentation  has  the property    that each element  of  $G$   has
+precisely one word in collected form, then  the presentation is called
+*confluent* or *consistent*.  If that is the case, the generators with
+a power  relation correspond precisely to  the  finite factors  in the
+polycyclic series and $r_i$ is the order of $C_i/C_{i+1}$.
+
+The GAP 4 package {\sf polycyclic} is designed for computations with
+polycyclic groups which are given by consistent pc-presentations. In
+particular, all the functions described below assume that we compute
+with a group defined by a consistent pc-presentation. See Section 
+"Collectors" for a routine that checks the consistency of a
+pc-presentation. 
+
+A pc-presentation can be interpreted as a *rewriting system* in the
+following way.  One needs need to add a new generator $G_i$ for each
+generator $g_i$ together with the relations $g_iG_i = 1$ and $G_ig_i =
+1$.  Any occurrence in a relation of an inverse generator $g_i^{-1}$
+is replaced by $G_i$.  In this way one obtains a monoid presentation
+for the group $G$.  With respect to a particular ordering on the set
+of monoid words in the generators $g_1,\ldots g_n,G_1,\ldots G_n$, the
+*wreath product ordering*, this monoid presentation is a rewriting
+system.  If the pc-presentation is consistent, the 
+rewriting system is confluent.
+
+In this package we do not address this aspect of pc-presentations
+because it is of little relevance for the algorithms implemented here.
+For the definition of rewriting systems and confluence in this context
+as well as further details on the connections between pc-presentations
+and rewriting systems we recommend the book \cite{Sims94}.
+
+

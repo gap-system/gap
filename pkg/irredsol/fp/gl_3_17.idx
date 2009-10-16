@@ -1,0 +1,24 @@
+############################################################################
+##
+##  gl_3_17.idx                  IRREDSOL                  Burkhard Hoefling
+##
+##  @(#)$Id: gl_3_17.idx,v 1.1 2005/06/28 10:53:18 gap Exp $
+##
+##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
+##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
+##  Technische Universitaet Braunschweig, Germany
+##
+
+
+############################################################################
+##
+#V  IRREDSOL_DATA.FP_INDEX
+##
+IRREDSOL_DATA.FP_INDEX[3][17] := [ [ 24, 48, 96, 192, 384, 768, 1536, 3072, 6144, 12288 ], 
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ];
+
+
+############################################################################
+##
+#E
+##

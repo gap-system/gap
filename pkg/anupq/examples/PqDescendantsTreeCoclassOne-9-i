@@ -1,0 +1,9 @@
+#Example: "PqDescendantsTreeCoclassOne-9-i" . based on manual example
+#(demonstrates how one may use `PqDescendantsTreeCoclassOne' to
+# develop a descendants tree, by generating the 3-groups of rank 2
+# and 3-coclass 1 up to 3-class 5. Most effective in XGAP.)
+#vars: G, procId;
+#options:
+G := ElementaryAbelianGroup( 9 );
+procId := PqStart( G );
+PqDescendantsTreeCoclassOne( procId : TreeDepth := 5 );;

@@ -3,7 +3,7 @@
 %A  ctblmono.msk                GAP documentation               Thomas Breuer
 %A                                                         & Erzsebet Horvath
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: ctblmono.msk,v 1.14 2006/03/07 16:14:25 jjm Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -67,7 +67,7 @@ rec( isHomogeneous := false, comment := "restriction checked",
   character := Character( CharacterTable( Group(
     [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
       [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-      [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ),
+      [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ), 
   multiplicity := 1 )
 gap> chi:= Irr( Sl23 )[4];
 Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )

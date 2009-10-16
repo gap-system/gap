@@ -2,7 +2,7 @@
 ##
 #W  hash.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: hash.gi,v 4.17 2002/04/15 10:04:53 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  Hash tables module, implementation part. 
 ##
 Revision.hash_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: hash.gi,v 4.17 2002/04/15 10:04:53 sal Exp $";
 
 
 #############################################################################

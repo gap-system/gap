@@ -1,0 +1,54 @@
+#!/bin/sh
+
+PKGZOO=crystcat-1.1.1.zoo
+DOCZOO=crystcat-doc-1.1.1.zoo
+
+# remove old archives
+rm -f $PKGZOO
+rm -f $DOCZOO
+
+# goto <gaproot>/pkg
+cd ../..
+
+# make the package archive
+
+# first the binary files
+echo "!BINARY!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.dvi
+echo "!BINARY!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.pdf
+
+# then the text files
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.tex
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.bbl
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.six
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.lab
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.mst
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/manual.ps
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/crystcat.tex
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/doc/make_doc
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/PackageInfo.g
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/init.g
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/read.g
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/README
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/Changelog
+echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO crystcat/grp/crystcat.grp
+for file in crystcat/lib/*.g[di] ; do
+  echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO $file
+done
+for file in crystcat/htm/*.htm ; do
+  echo "!TEXT!" | zoo ach crystcat/etc/$PKGZOO $file
+done
+
+# make the package documentation archive
+
+echo "!BINARY!" | zoo ach crystcat/etc/$DOCZOO crystcat/doc/manual.pdf
+echo "!TEXT!"   | zoo ach crystcat/etc/$DOCZOO crystcat/doc/manual.six
+for file in crystcat/htm/*.htm ; do
+  echo "!TEXT!" | zoo ach crystcat/etc/$DOCZOO $file
+done
+
+# check the results
+
+cd crystcat/etc
+zoo -list $PKGZOO
+zoo -list $DOCZOO
+

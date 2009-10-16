@@ -1,0 +1,38 @@
+Below we list the changes made to this src directory from that
+supplied by Colin Ramsay and George Havas.
+
+  postproc.c . . . . . Function al2_normcl was modified. The word 
+                       `normalise' was used wrongly. The comments
+                       were modified and the printed output adjusted.
+
+                     - The words `the non-normalising conjugates' 
+                       previously on lines 297-298 were changed to
+                       `conjugates of subgroup generators by group 
+                       generators that cannot be traced to the subgroup'.
+                     - The words `g/G normalise w' previously on 
+                       line 303 were replaced with `gwG and Gwg are in 
+                       the subgroup'. 
+                     - The word `non-normalising' previously on line 309 
+                       was replaced with `added'.
+                     - The words `non-normalising combo.' previously on
+                       line 345 were replaced with `conjugate that's not in
+                       the subgrp.'
+                     - The words `one non-normalised' previously on
+                       line 347 were replaced with `1 conjugate not in sgp'. 
+                     - In the fprintf statements previously on lines 
+                       352 and 359, the words `Grp gen'r' were replaced
+                       by `Conjugate by grp gen'r' and `does not normalise'
+                       was replaced by `of'. (Slightly cumbersome but
+                       this way the variables keep the order they had
+                       before.)
+                     - The words `not in subgrp' were added before \n in the 
+                       fprintf statement previously on line 370.
+
+  ex/ex000.in  . . . . `sr:2;' line added.
+     ex007.in  . . . . New input file that demonstrates using `standard'
+                       and `sims:3' to approximate Sims strategy 4.
+GAP also has:
+
+  Makefile.in  . . . . Formed from the make.*** files.
+
+- Greg Gamble -- 1 April 2001

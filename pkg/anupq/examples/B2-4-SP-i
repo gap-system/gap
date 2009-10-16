@@ -1,0 +1,24 @@
+#Example: "B2-4-SP-i" . . . based on: isom/B2-4.com
+#Computes standard presentation for B(2,4)
+#vars: F, a, b, procId;
+#options: OutputLevel, ClassBound, StandardPresentationFile
+F := FreeGroup("a", "b"); a := F.1; b := F.2;
+procId := PqStart(F : Prime := 2, Exponent := 4);
+#comment: set a different print level by supplying <OutputLevel>
+#add <OutputLevel> for <value> if set and ok
+#PqSetOutputLevel(procId, value);;
+PqSPComputePcpAndPCover(procId : ClassBound := 1);;
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also save the presentation to a file by supplying <StandardPresentationFile>
+PqSPStandardPresentation(procId, [ [[0,1],
+                                    [1,1]],
+
+                                   [[0,1],
+                                    [1,0]] ]
+
+                         : # options
+#add <StandardPresentationFile> for <value> if set and ok
+#                          StandardPresentationFile := value,
+#sub <ClassBound> for <6> if set
+                           ClassBound := 6,
+                           PcgsAutomorphisms);;

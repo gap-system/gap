@@ -2,14 +2,14 @@
 ##
 #W  vspchom.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: vspchom.tst,v 4.25 2007/02/21 11:51:36 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: vspchom.tst,v 4.25 2007/02/21 11:51:36 gap Exp $");
 
 
 #############################################################################
@@ -541,7 +541,7 @@ End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
 
-gap> STOP_TEST( "vspchom.tst", 55100000 );
+gap> STOP_TEST( "vspchom.tst",74000701);
 
 
 #############################################################################

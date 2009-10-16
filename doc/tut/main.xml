@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- %W  main.xml        GAP 4 Tutorial        ... -->
+<!-- %H  $Id: main.xml,v 4.5 2008/08/18 15:49:33 gap Exp $ -->
+<!-- %Y  Copyright 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+   [ <!ENTITY ATLAS "<Package>Atlas</Package>">
+     <!ENTITY mdash "<Alt Only='HTML'>&#8212;</Alt><Alt Not='HTML'>---</Alt>">
+<#Include SYSTEM "../versiondata">
+   ]>
+
+<Book Name="tut">
+<TitlePage>
+  <Title>GAP &mdash; A Tutorial</Title>
+  <Version>Release &VERSIONNUMBER;, &RELEASEDAY;</Version>
+  <Author>The GAP Group
+    <Email>support@gap-system.org</Email>
+    <Homepage>http://www.gap-system.org</Homepage>
+  </Author>
+
+  <Copyright>
+<#Include SYSTEM "../ref/copyrigh.xml">
+  </Copyright>
+  <Acknowledgements>
+<#Include SYSTEM "../tut/authors.xml">
+  </Acknowledgements>
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "preface.xml">
+<#Include SYSTEM "introduc.xml">
+<#Include SYSTEM "lists.xml">
+<#Include SYSTEM "function.xml">
+<#Include SYSTEM "group.xml">
+<#Include SYSTEM "algvspc.xml">
+<#Include SYSTEM "domain.xml">
+<#Include SYSTEM "opers.xml">
+
+</Body>
+
+<Bibliography Databases="../manualbib.xml"/>
+
+<TheIndex/>
+
+</Book>
+
+<!-- ==================================================================== -->
+

@@ -1,4 +1,4 @@
-$Id$
+$Id: debugvim.txt,v 1.1 2003/04/07 17:06:17 gap Exp $
 Short introduction into debugging in GAP by Thomas Breuer and Max Neunhoeffer
 (see library file lib/debug.g)
 

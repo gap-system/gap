@@ -1,0 +1,111 @@
+
+The GAP 4 package `Alnuth'
+==========================
+
+This package provides an interface between GAP 4 and KANT respectively
+KASH, the shell of the computational algebraic number theory system KANT. By
+now the interface can only be used on a Linux system. KASH itself is not part
+of this package.  It has to be obtained and installed independently of this
+package. Alnuth works with KASH version 2.4 or 2.5. 
+
+
+Getting and installing Kash
+===========================
+
+KASH is available at
+
+           http://www.math.tu-berlin.de/~kant/download.html
+
+Note that you have to download two files for a complete installation
+of KASH. For the installation of version 2.5 of KASH on a Linux
+system you would do the following steps:
+
+--- Download the files
+    kash_2.5.6.common.tar.gz and kash_2.5.7.linux.tar.gz
+    into the same directory on your system.
+ 
+--- Unpack the files using tar.  This will create a directory
+    KASH_2.5 containing among other files the KASH executable called
+    kash.
+
+The place where KASH is located in your system is independent of the place
+where the Alnuth-package is installed.
+
+
+Installing this package
+=======================
+ 
+This package is available at
+
+           http://www.icm.tu-bs.de/ag_algebra/software/assmann/Alnuth
+ 
+in form of a gzipped tar-archive or as an uncompressed tar-archive.
+ 
+There are two ways of installing the package. If you have permission
+to add files to the installation of GAP 4 on your system you may
+install the Alnuth-package into the `pkg' subdirectory of the GAP
+installation tree.  If you do not have the permission to do that you
+may install the Alnuth-package in your private area. In the latter case you
+need to have a directory named pkg in your private area (for details see
+74.1 Installing a GAP Package in the reference manual). 
+
+--- Now move the alnuth.tar.gz of alnuth.tar file into the directory pkg
+    and unpack it:
+
+    bash> tar xfz alnuth.tar.gz        # for the gzipped tar-archive
+    bash> tar xf alnuth.tar         # for the uncompressed tar-archive
+
+--- Adjust the path of the executable for KASH
+
+    The package needs to know where the executable for KASH is. In the default
+    setting Alnuth will check if there is an executable called `kash' in your
+    search path. 
+    
+    If you do not want to use the default setting, then there are three other
+    possibilities.
+
+    If you are able to edit the file `pkg/alnuth/defs.g' you can change the line
+
+    BindGlobal( "KANTEXEC", Filename( DirectoriesSystemPrograms( ), "kash" ));
+
+    to something like
+
+    BindGlobal( "KANTEXEC", "mykash/kash -l mykash/lib" );
+
+    where `mykash' needs to be replaced with the directory where KASH
+    was installed.
+
+    Like always you can also change your personal `.gaprc' file (see 3.4 The
+    .gaprc file) for setting the variable KANTEXEC to a proper value. To do
+    this add the command line mentioned above to `.gaprc'.
+
+    The third possibility is to change the path to the executable within GAP
+    using one of the two functions `SetKantExecutable' and
+    `SetKantExecutablePermanently'.
+
+    You will find more detailed expalanations in the manual.
+ 
+  
+Loading and testing the package
+===============================
+
+To use this package you have to request it explicitly. This is done by calling
+
+    gap> LoadPackage("alnuth");
+    Loading Alnuth 2.2.5 ...
+    true
+    gap>
+
+Once the package is loaded, it is possible to check the correct installation
+by running the test suite of the package.
+
+    gap> ReadPackage( "Alnuth", "tst/testall.g" );
+
+
+
+
+
+
+
+
+

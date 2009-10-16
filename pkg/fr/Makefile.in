@@ -1,0 +1,97 @@
+#############################################################################
+##
+#W Makefile                                                 Laurent Bartholdi
+##
+#H   @(#)$Id: Makefile.in,v 1.15 2009/10/13 09:37:04 gap Exp $
+##
+#Y Copyright (C) 2007, Laurent Bartholdi
+##
+#############################################################################
+##
+##  This compiles the C/Java modules, creates archives, or
+##  compiles the documentation
+##
+#############################################################################
+
+.PHONY: doc clean wwwdir checkblocks tarballs
+
+# include @GAPDIR@/sysinfo.gap
+# LOCALBIN=bin/$(GAParch)
+
+LOCALBIN=bin/@TARGET@
+
+CFLAGS=@CFLAGS@ -fPIC
+CC=@CC@ $(CFLAGS)
+FORTRAN=@FORTRAN@ $(CFLAGS)
+JAVAC=@JAVAC@
+
+all: $(LOCALBIN) $(LOCALBIN)/fr_dll.so @JAVABUILD@
+
+distribute: wwwdir doc tarballs
+
+$(LOCALBIN):
+	mkdir -p $(LOCALBIN)
+
+$(LOCALBIN)/cpoly.o: src/cpoly.c
+	$(CC) -c $< -o $@
+
+$(LOCALBIN)/stripack.o: src/stripack.f90
+	$(FORTRAN) -c $< -o $@
+
+$(LOCALBIN)/grafpack.o: src/grafpack.f90
+	$(FORTRAN) -c $< -o $@
+
+$(LOCALBIN)/fr_dll.o: src/fr_dll.c
+	$(CC) -Wall -c $< -o $@ -I@GAPDIR@ -I@GAPDIR@/$(LOCALBIN) -DCONFIG_H
+
+$(LOCALBIN)/fr_dll.so: @OBJ@
+	$(CC) @SHARED@ -o $@ $+ @LIBS@
+
+java/javaplot.class: src/javaplot.java
+	$(JAVAC) -cp java/javaview.jar $< -d java
+
+java/javaview.jar:
+	wget -O javaview.zip http://www.javaview.de/download/data/javaview.zip
+	unzip -j -d java javaview.zip jars/javaview.jar
+	rm -f javaview.zip
+
+clean:
+	rm -rf .version $(LOCALBIN) `find doc -type l`
+
+.version: PackageInfo.g
+	grep '^Version :=' $< | awk -F'"' '{print $$2}' > $@
+
+wwwdir: .version tarballs
+	mkdir -p www
+	rm -f `find www -type l`
+	cp README www/README.fr
+	cp PackageInfo.g www/PackageInfo.g
+	ln -s chap0.html www/index.html
+	ln -s fr-`cat .version`.tar.gz www/fr.tar.gz
+	cp doc/manual.pdf www/manual.pdf
+	(cd doc; for i in *.html; do cp $$i ../www/$$i; done)
+	cp doc/manual.css www/manual.css
+	rsync -arvp --delete www/ laurent@mathpc02.uni-math.gwdg.de:public_html/FR/
+
+doc: doc/chap0.html
+
+doc/chap0.html: doc/fr.xml doc/frbib.xml gap/algebra.gd gap/frelement.gd \
+	gap/group.gd gap/img.gd gap/perlist.gd gap/vector.gd gap/examples.gd \
+	gap/frmachine.gd gap/helpers.gd gap/mealy.gd gap/trans.gd
+
+	echo 'LoadPackage("fr"); DOC@fr();' | @GAPPROG@ -r -A -q
+
+checkblocks:
+	grep '<#GAPDoc' PackageInfo.g gap/*d | awk -F'"' '{print $$2}' | sort > @@-blocks
+	grep '<#Include' doc/fr.xml | awk -F'"' '{print $$2}' | sort > @@-in
+	comm -3 @@-blocks @@-in
+	@rm @@-blocks @@-in
+
+tarballs: .version doc
+	rm -rf www/fr
+	mkdir -p www
+	tar cf - --exclude '*~' --exclude 'config.[ls]*' --exclude .cvsignore --exclude autom4te.cache --exclude sandbox --exclude www --exclude bin --exclude CVS --exclude .version -C .. fr | (cd www; tar xf -)
+	for i in www/fr/README `find www/fr -name \*.g\*`; do mv $$i $$i.old; sed 's/@\(fr\)\?/_FR/g' $$i.old > $$i; rm $$i.old; done
+	tar cfz www/fr-`cat .version`.tar.gz -C www fr
+
+#E Makefile . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

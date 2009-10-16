@@ -3,7 +3,7 @@
 #W  string.g                     GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: string.g,v 4.26 2008/09/09 16:11:14 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file deals with strings and characters.
 ##
 Revision.string_g :=
-    "@(#)$Id$";
+    "@(#)$Id: string.g,v 4.26 2008/09/09 16:11:14 gap Exp $";
 
 
 #############################################################################
@@ -20,10 +20,26 @@ Revision.string_g :=
 #C  IsChar( <obj> ) . . . . . . . . . . . . . . . . .  category of characters
 #C  IsCharCollection( <obj> ) . . . . . category of collections of characters
 ##
-##  A *character* is simply an object in {\GAP} that represents an arbitrary
-##  character from the character set of the operating system.
-##  Character literals can be entered in {\GAP} by enclosing the character
-##  in *singlequotes* `{'}'.
+##  <#GAPDoc Label="IsChar">
+##  <ManSection>
+##  <Filt Name="IsChar" Arg='obj' Type='Category'/>
+##  <Filt Name="IsCharCollection" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>character</E> is simply an object in &GAP; that represents an
+##  arbitrary character from the character set of the operating system.
+##  Character literals can be entered in &GAP; by enclosing the character
+##  in <E>singlequotes</E> <C>'</C>.
+##  <Example><![CDATA[
+##  gap> x:= 'a';  IsChar( x );
+##  'a'
+##  true
+##  gap> '*';
+##  '*'
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsChar", IS_OBJECT );
 
@@ -34,21 +50,57 @@ DeclareCategoryCollections( "IsChar" );
 ##
 #C  IsString( <obj> ) . . . . . . . . . . . . . . . . . . category of strings
 ##
-##  A *string* is  a dense list (see~"IsList", "IsDenseList")
-##  of characters (see~"IsChar"); thus strings are always homogeneous
-##  (see~"IsHomogeneousList").
-##  
-##  A string literal can either be entered  as the list of characters
-##  or by writing the characters between *doublequotes* `\"'.
-##  {\GAP} will always output strings in the latter format.
-##  However, the input via the double quote syntax enables {\GAP} to store
-##  the string in an efficient compact internal representation. See
-##  "IsStringRep" below for more details.
-##  
-##  Each character, in particular those which cannot be typed directly from the
-##  keyboard, can also be typed in three digit octal notation. And for some
-##  special characters (like the newline character) there is a further
-##  possibility to type them, see section "Special Characters".
+##  <#GAPDoc Label="IsString">
+##  <ManSection>
+##  <Filt Name="IsString" Arg='obj'/>
+##
+##  <Description>
+##  A <E>string</E> is a dense list (see&nbsp;<Ref Func="IsList"/>,
+##  <Ref Func="IsDenseList"/>) of characters (see&nbsp;<Ref Func="IsChar"/>);
+##  thus strings are always homogeneous
+##  (see&nbsp;<Ref Func="IsHomogeneousList"/>).
+##  <P/>
+##  A string literal can either be entered as the list of characters
+##  or by writing the characters between <E>doublequotes</E> <C>"</C>.
+##  &GAP; will always output strings in the latter format.
+##  However, the input via the double quote syntax enables &GAP; to store
+##  the string in an efficient compact internal representation.
+##  See <Ref Func="IsStringRep"/> below for more details.
+##  <P/>
+##  Each character, in particular those which cannot be typed directly from
+##  the keyboard, can also be typed in three digit octal notation.
+##  And for some special characters (like the newline character) there is a
+##  further possibility to type them,
+##  see section <Ref Sect="Special Characters"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> s1 := ['H','e','l','l','o',' ','w','o','r','l','d','.'];
+##  "Hello world."
+##  gap> IsString( s1 );
+##  true
+##  gap> s2 := "Hello world.";
+##  "Hello world."
+##  gap> s1 = s2;
+##  true
+##  gap> s3 := "";  # the empty string
+##  ""
+##  gap> s3 = [];
+##  true
+##  gap> IsString( [] );
+##  true
+##  gap> IsString( "123" );  IsString( 123 );
+##  true
+##  false
+##  gap> IsString( [ '1', '2', '3' ] );
+##  true
+##  gap> IsString( [ '1', '2', , '4' ] );  # strings must be dense
+##  false
+##  gap> IsString( [ '1', '2', 3 ] );  # strings must only contain characters
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategoryKernel( "IsString", IsHomogeneousList, IS_STRING );
 
@@ -59,11 +111,20 @@ InstallTrueMethod( IsString, IsCharCollection and IsList );
 ##
 #R  IsStringRep( <obj> )
 ##
-##  `IsStringRep' is a special (internal) representation of dense lists
-##  of characters.
+##  <#GAPDoc Label="IsStringRep">
+##  <ManSection>
+##  <Filt Name="IsStringRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  <Ref Func="IsStringRep"/> is a special (internal) representation of dense
+##  lists of characters.
 ##  Dense lists of characters can be converted into this representation
-##  using `ConvertToStringRep'.
-##  Note that calling `IsString' does *not* change the representation.
+##  using <Ref Func="ConvertToStringRep"/>.
+##  Note that calling <Ref Func="IsString"/> does <E>not</E> change the
+##  representation.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareRepresentationKernel( "IsStringRep",
     IsInternalRep, [], IS_OBJECT, IS_STRING_REP );
@@ -73,11 +134,22 @@ DeclareRepresentationKernel( "IsStringRep",
 ##
 #F  ConvertToStringRep( <obj> ) . . . . . . . . . . . . .  inplace conversion
 ##
-##  If <obj> is a dense internally represented list of characters then
-##  `ConvertToStringRep' changes the representation to `IsStringRep'.
-##  This is useful in particular for converting the empty list `[]',
-##  which usually is in `IsPlistRep', to `IsStringRep'.
-##  If <obj> is not a string then `ConvertToStringRep' signals an error.
+##  <#GAPDoc Label="ConvertToStringRep">
+##  <ManSection>
+##  <Func Name="ConvertToStringRep" Arg='obj'/>
+##
+##  <Description>
+##  If <A>obj</A> is a dense internally represented list of characters then
+##  <Ref Func="ConvertToStringRep"/> changes the representation to
+##  <Ref Func="IsStringRep"/>.
+##  This is useful in particular for converting the empty list <C>[]</C>,
+##  which usually is in <C>IsPlistRep</C>,
+##  to <Ref Func="IsStringRep"/>.
+##  If <A>obj</A> is not a string then <Ref Func="ConvertToStringRep"/>
+##  signals an error.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "ConvertToStringRep", CONV_STRING );
 
@@ -86,10 +158,18 @@ BIND_GLOBAL( "ConvertToStringRep", CONV_STRING );
 ##
 #V  CharsFamily . . . . . . . . . . . . . . . . . . . .  family of characters
 ##
-##  Each character lies in the family `CharFamily',
+##  <#GAPDoc Label="CharsFamily">
+##  <ManSection>
+##  <Var Name="CharsFamily"/>
+##
+##  <Description>
+##  Each character lies in the family <Ref Var="CharsFamily"/>,
 ##  each nonempty string lies in the collections family of this family.
-##  Note the subtle differences between the empty list `[]' and the empty
-##  string `\"\"' when both are printed.
+##  Note the subtle differences between the empty list <C>[]</C> and the
+##  empty string <C>""</C> when both are printed.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "CharsFamily", NewFamily( "CharsFamily", IsChar ) );
 
@@ -98,11 +178,26 @@ BIND_GLOBAL( "CharsFamily", NewFamily( "CharsFamily", IsChar ) );
 ##
 #V  TYPE_CHAR . . . . . . . . . . . . . . . . . . . . . . type of a character
 ##
+##  <ManSection>
+##  <Var Name="TYPE_CHAR"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "TYPE_CHAR", NewType( CharsFamily, IsChar and IsInternalRep ) );
+
 
 #############################################################################
 ##
 #V  TYPES_STRING . . . . . . . . . . . . . . . . . . . . . types of strings
+##
+##  <ManSection>
+##  <Var Name="TYPES_STRING"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "StringFamily", NewFamily( "StringsFamily", IsCharCollection ) );
 
@@ -127,25 +222,51 @@ BIND_GLOBAL( "TYPES_STRING",
           ]);
 
 
-          
-
-
-
 #############################################################################
 ##
 #F  IsEmptyString( <str> )  . . . . . . . . . . . . . . . empty string tester
 ##
-##  `IsEmptyString' returns `true' if <str> is the empty string in the
-##  representation `IsStringRep', and `false' otherwise.
-##  Note that the empty list `[]' and the empty string `\"\"' have the same
-##  type, the recommended way to distinguish them is via `IsEmptyString'.
+##  <#GAPDoc Label="IsEmptyString">
+##  <ManSection>
+##  <Func Name="IsEmptyString" Arg='str'/>
+##
+##  <Description>
+##  <Ref Func="IsEmptyString"/> returns <K>true</K> if <A>str</A> is the
+##  empty string in the representation <Ref Func="IsStringRep"/>,
+##  and <K>false</K> otherwise.
+##  Note that the empty list <C>[]</C> and the empty string <C>""</C> have
+##  the same type, the recommended way to distinguish them is via
+##  <Ref Func="IsEmptyString"/>.
 ##  For formatted printing, this distinction is sometimes necessary.
-#T The type is the same because `IsStringRep' is not *set* in this type,
-#T and `IsPlistRep' is *set*,
-#T although *calling* `IsStringRep' for `[]' yields `false',
-#T and *calling* `IsPlistRep' for `\"\"' yields `false', too.
-#T Why is `TNUM_OBJ_INT' used here,
-#T calling `IsStringRep' would be enough, or?
+##  <!-- The type is the same because <C>IsStringRep</C> is not <E>set</E> in this type,-->
+##  <!-- and <C>IsPlistRep</C> is <E>set</E>,-->
+##  <!-- although <E>calling</E> <C>IsStringRep</C> for <C>[]</C> yields <K>false</K>,-->
+##  <!-- and <E>calling</E> <C>IsPlistRep</C> for <C>""</C> yields <K>false</K>, too.-->
+##  <!-- Why is <C>TNUM_OBJ_INT</C> used here,-->
+##  <!-- calling <C>IsStringRep</C> would be enough, or?-->
+##  <P/>
+##  <Example><![CDATA[
+##  gap> l:= [];;  IsString( l );  IsEmptyString( l );  IsEmpty( l );
+##  true
+##  false
+##  true
+##  gap> l;  ConvertToStringRep( l );  l;
+##  [  ]
+##  ""
+##  gap> IsEmptyString( l );  IsEmptyString( "" );  IsEmptyString( "abc" );
+##  true
+##  true
+##  false
+##  gap> ll:= [ 'a', 'b' ];  IsStringRep( ll );  ConvertToStringRep( ll );
+##  "ab"
+##  false
+##  gap> ll;  IsStringRep( ll );
+##  "ab"
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "TNUM_EMPTY_STRING",
              [ TNUM_OBJ_INT( "" ), TNUM_OBJ_INT( Immutable( "" ) ) ] );

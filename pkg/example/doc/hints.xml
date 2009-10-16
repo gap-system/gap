@@ -1,0 +1,460 @@
+
+<!-- %W  hints.xml              GAP documentation                  Greg Gamble -->
+<!-- %H  $Id: hints.xml,v 1.1 2007/10/10 14:07:28 gap Exp $ -->
+<!-- %Y  Copyright (C) 2001, School of Math & Comp. Sci., St Andrews, Scotland -->
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Appendix Label="Hints for writing a GAP Package">
+<Heading>Hints for writing a GAP Package</Heading>
+
+The &Example; package is intended to be a prototype for a package.  Here
+we describe just what features one should emulate when writing one's  own
+&GAP; package for popular consumption, and a few pointers as to where to
+go for more information. Much of what is written here is amplified in the
+section <Ref Chap="Writing a GAP Package" BookName="ext"/> in the Extending &GAP; Manual.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Structure of a GAP Package">
+<Heading>Structure of a GAP Package</Heading>
+
+This  section  is  intended  to  amplify  the  recommendations  made   in
+Section&nbsp;<Ref Sect="The Files of a GAP Package" BookName="ext"/>.
+<P/>
+A &GAP; package should have an alphanumeric name (<A>package-name</A>,  say);
+mixed case is fine, but there should  be  no  whitespace.  The  directory
+<A>package-dir</A> containing the files of package  <A>package-name</A>  should  be
+just  <A>package-name</A>  converted  to  lowercase  (the   restriction   that
+<A>package-dir</A> must contain only lowercase characters may  change  in  the
+future).
+<P/>
+The directory  <A>package-dir</A>  should  be  a  subdirectory  of  <F>pkg</F>  and
+preferably should have the following structure  (below,  a  trailing  <C>/</C>
+distinguishes directories from ordinary files):
+<P/>
+&nbsp;&nbsp;<C><A>package-dir</A>/</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ README</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ configure</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ Makefile.in</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ PackageInfo.g</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ init.g</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ read.g</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ doc/</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ lib/</C>
+<P/>
+&nbsp;&nbsp;<C>\ \ src/</C>
+<P/>
+We now describe the above files and directories:
+<P/>
+<List>
+<Mark>
+<F>README</F></Mark>
+<Item>
+This should contain <Q>how  to  get  it</Q>  (from  the  &GAP;  <C>ftp</C>-  and
+web-sites) instructions, as well as installation instructions  and  names
+of the package  authors  and  their  email  addresses.  The  installation
+instructions and authors' names and addresses should be repeated  in  the
+package's documentation (which should be in the <F>doc</F> directory).
+</Item>
+<Mark><F>configure</F>, <F>Makefile.in</F></Mark>
+<Item>
+These files are only necessary if the package has a non-&GAP; component,
+e.g.&nbsp;some C code (the files of which should be in the  <F>src</F>  directory).
+The <F>configure</F> and <F>Makefile.in</F> files of the &Example; package provide
+prototypes. The <F>configure</F> file typically takes a  path  <A>path</A>  to  the
+&GAP; root  directory  as  argument  and  uses  the  value  assigned  to
+<C>GAParch</C> in the file <F>sysinfo.gap</F> (created when &GAP; was compiled) to
+determine the compilation architecture, inserts  this  in  place  of  the
+string <C>@GAPARCH@</C> in <F>Makefile.in</F> and creates a file  <F>Makefile</F>.  When
+<C>make</C> is run (which, of course, reads  the  constructed  <F>Makefile</F>),  a
+directory <F>bin</F> (if necessary) and a  subdirectory  of  <F>bin</F>  with  name
+equal to the string assigned  to  <C>GAParch</C>  in  the  file  <F>sysinfo.gap</F>
+should be created; any binaries constructed  by  compiling  the  code  in
+<F>src</F> should end up in this subdirectory of <F>bin</F>.
+</Item>
+<Mark><F>PackageInfo.g</F></Mark>
+<Item>
+Since &GAP;&nbsp;4.4, a &GAP; package <E>must</E> have  a  <F>PackageInfo.g</F>  file.
+The &Example;  package's  <F>PackageInfo.g</F>  file  is  well-commented  and
+should be used as a prototype.
+</Item>
+<Mark><F>init.g</F>, <F>read.g</F></Mark>
+<Item>
+A &GAP; package <E>must</E> have a file <F>init.g</F>
+(see Section&nbsp;<Ref Sect="The Files of a GAP Package" BookName="ext"/>).
+As of &GAP;&nbsp;4.4,  the
+typical <F>init.g</F> and <F>read.g</F> files should normally consist  entirely  of
+<Ref Func="ReadPackage" BookName="ref"/>
+commands (and possibly also <C>Read</C> commands).
+If the <Q>declaration</Q>  and
+<Q>implementation</Q> parts of  the  package  are  separated  (and  this  is
+recommended), there should be a <F>read.g</F> file. The  <Q>declaration</Q>  part
+of a package consists of function and variable  <E>name</E>  declarations  and
+these go in files with <C>.gd</C> extensions; these  files  are  read  in  via
+<C>ReadPackage</C> commands in the <F>init.g</F> file. The <Q>implementation</Q>  part
+of a package consists of the actual  definitions  of  the  functions  and
+variables whose names were declared  in  the  <Q>declaration</Q>  part,  and
+these go in files with <C>.gi</C> extensions; these  files  are  read  in  via
+<C>ReadPackage</C> commands in the <F>read.g</F> file. The reason for following the
+above dichotomy is that the <F>read.g</F> file is read  <E>after</E>  the  <F>init.g</F>
+file, thus enabling the possibility of  a  function's  implementation  to
+refer to another function whose name is known but is not actually defined
+yet. The &GAP; code (whether or not it is split into <Q>declaration</Q> and
+<Q>implementation</Q> parts) should go in the package's <F>lib</F> directory (see
+below).
+</Item>
+<Mark><F>doc</F></Mark>
+<Item>
+This directory should contain the package's documentation. Traditionally,
+a &TeX;-based system has been used for &GAP;  documentation,  which  is
+thoroughly described
+in Section&nbsp;<Ref Chap="The gapmacro.tex Manual Format" BookName="ext"/>.
+There is now an alternative XML-based system
+provided    by    the    &GAP;     package     <Package>GAPDoc</Package>     (see
+Chapter&nbsp;<Ref Sect="Introduction  and  Example" BookName="gapdoc"/>).
+Please spend some time reading the documentation  for  whichever
+system you decide to use for writing your  package's  documentation.  The
+&Example; package's documentation  was  written  using  the  traditional
+&TeX;-based system. If you plan on using this, please use the &Example;
+package's <F>doc</F> directory as a prototype, which you will observe contains
+the following files:
+<P/>
+&nbsp;&nbsp;<C>main.xml&nbsp;&hash; master file</C>
+<P/>
+&nbsp;&nbsp;<C><A>chapi</A>.xml&nbsp;&hash; chapter file(s) ... 1 for each chapter</C>
+<P/>
+&nbsp;&nbsp;<C>../makedocrel.g&nbsp;&nbsp;&nbsp;&hash; </C>&GAP;<C> input that generates the manuals</C>
+<P/>
+Generally, one should also provide a <F>manual.bib</F> Bib&TeX; database file
+(or write one's  own  bibliography  <F>manual.bbl</F>  file).
+<!--  Generating  the
+various formats of the manuals requires various software tools which  are
+called directly or indirectly by  <C>make&uscore;doc</C>  and  these  are  listed  in
+Section&nbsp;<Ref Sect="Documentation Software Tools Needed"/>. The file  <C>manual.mst</C>  is
+needed for generating a manual index; it should be  a  copy  of  the  one
+provided in the &Example; package. The only adjustments that  a  package
+writer should need to make to <C>make&uscore;doc</C> is to replace occurrences of the
+word <C>Example</C> with <A>package-name</A>. -->
+</Item>
+<Mark><F>lib</F></Mark>
+<Item>
+This is the preferred place for the &GAP; code, i.e.&nbsp;the <C>.g</C>, <C>.gd</C> and
+<C>.gi</C> files (other than <F>PackageInfo.g</F>, <F>init.g</F> and <F>read.g</F>). For some
+packages (the &Example; package included), the directory <F>gap</F> has  been
+used instead of <F>lib</F>; <F>lib</F> has the slight  advantage  that  it  is  the
+default  subdirectory  of  a  package  directory  searched  for  by   the
+<Ref Func="DirectoriesPackageLibrary" BookName="ref"/> command.
+</Item>
+<Mark><F>src</F></Mark>
+<Item>
+If the package has non-&GAP; code, e.g.&nbsp;C  code,  then  this  <Q>source</Q>
+code should go in the <F>src</F> directory.  If  there  are  <C>.h</C>  <Q>include</Q>
+files you may prefer to put these all together in  a  separate  <C>include</C>
+directory.
+</Item>
+</List>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Documentation Software Tools Needed">
+<Heading>Documentation Software Tools Needed</Heading>
+
+Whether you use the traditional  <F>gapmacro.tex</F>  &TeX;-based  system  or
+<Package>GAPDoc</Package> you will need to have the various following &TeX; tools
+installed:
+<P/>
+<List>
+<Mark>
+<C>tex</C> (or <C>latex</C> for <Package>GAPDoc</Package>), <C>bibtex</C> and <C>makeindex</C></Mark>
+<Item>
+for generating <C>.dvi</C>;
+</Item>
+<Mark><C>dvips</C></Mark>
+<Item>
+for generating <C>.ps</C>; and
+</Item>
+<Mark><C>pdftex</C> or <C>gs</C> and <C>ps2pdf</C> (or <C>pdflatex</C> for <Package>GAPDoc</Package>)</Mark>
+<Item>
+for generating <C>.pdf</C>;
+</Item>
+</List>
+<P/>
+Note that using <C>gs</C> and <C>ps2pdf</C> in lieu of <C>pdftex</C> or <C>pdflatex</C> is  a
+poor substitute unless your <C>gs</C> is at  least  version  6.<A>xx</A>  for  some
+<A>xx</A>.
+<P/>
+The rest of this section describes the various  additional  tools  needed
+for the <C>gapmacro.tex</C> documentation system.
+<P/>
+To produce the <C>.dvi</C>, <C>.ps</C> and <C>.pdf</C>  manual  formats,  the  following
+&GAP; tools (usually located  in  &GAP;'s  main  <F>doc</F>  directory)  are
+needed (provided by <C>tools<A>XXX</A>.zoo</C> for some version number <A>XXX</A> at the
+&GAP;  <C>ftp</C>-  or  web-sites,   or   can   be   obtained   by   emailing
+<Email>support@gap-system.org</Email>).
+<P/>
+<List>
+<Mark>
+<F>gapmacro.tex</F></Mark>
+<Item>
+The macros file that dictates the style and mark-up for  the  traditional
+&TeX;-based system of &GAP; documentation.
+</Item>
+<Mark><C>manualindex</C></Mark>
+<Item>
+This is an <C>awk</C> script that adjusts the  &TeX;-produced  index  entries
+and calls <C>makeindex</C> to process them.
+</Item>
+<Mark><F>mrabbrev.bib</F></Mark>
+<Item>
+This is usually supplied with your &TeX; tools but nevertheless  a  copy
+of <F>mrabbrev.bib</F> should be located in &GAP;'s main <F>doc</F> directory.  To
+find it on your system, try:
+<P/>
+<C>kpsewhich mrabbrev.bib</C>
+<P/>
+or if that doesn't work and you can't otherwise find it check out a  CTAN
+site, e.g.&nbsp;search for it at:
+<URL>http://www.dante.de/cgi-bin/ctan-index</URL>
+</Item>
+</List>
+<P/>
+If your manual cross-refers to <F>gapmacro.tex</F>-produced manuals
+(and so  has  <C>\\UseReferences</C>  commands  in  its   <C>manual.tex</C>),
+  then   a
+<F>manual.lab</F> file
+ (generated by running <C>tex manual</C>) for each such other
+manual is needed (this includes the <Q>main</Q> manuals, e.g.&nbsp;those  in  the
+<F>doc/ref</F>, <F>doc/ext</F> etc.&nbsp;directories).
+<P/>
+If your manual cross-refers to <Package>GAPDoc</Package>-produced manuals (and  so
+has  <C>\\UseGapDocReferences</C>  commands   in   its   <C>manual.tex</C>),   then
+<C>manual.lab</C> files need to be generated for these too. Since  &GAP;&nbsp;4.3,
+this is done by starting &GAP; and running:
+<P/>
+&nbsp;&nbsp;<C>gap> GapDocManualLab( "<A>package</A>" );</C>
+<P/>
+for each <A>package</A> whose manual is cross-referred to.
+<P/>
+To produce an HTML version of the manual one needs  the  Perl  5  program
+<F>convert.pl</F> which is usually located in the subdirectory  <F>etc</F>  of  the
+&GAP; root directory. The <F>etc</F> directory  is  not  part  of  the  usual
+&GAP;  distribution.  The  <F>etc</F>  directory  files  are  obtained   from
+<C>tools<A>XXX</A>.zoo</C> for some version number <A>XXX</A> at the  &GAP;  <C>ftp</C>-  or
+web-sites,      or      can      be      obtained       by       emailing
+<Email>support@gap-system.org</Email>.
+<P/>
+Finally, to ensure the mathematics formulae are rendered as well as  they
+can be in the HTML version,  one  should  also  have  the  program  <C>tth</C>
+(&TeX;  to  HTML  converter);  <F>convert.pl</F>  calls  <F>tth</F>  to  translate
+mathmode formulae to HTML (if it's available). The <F>tth</F> program is  easy
+to compile and can be obtained from
+<URL>http://hutchinson.belmont.ma.us/tth/tth-noncom/download.html</URL>
+<P/>
+As a package author, you are not obliged to provide an  HTML  version  of
+your  package  manual,  but  if  you  have  kept  to  the  guidelines  in
+Section&nbsp;<Ref Chap="The gapmacro.tex Manual  Format" BookName="ext"/>,
+you should have no trouble in producing one. A prototype  of  the
+command to execute is in the file <F>make_doc</F>; note that the  HTML  manual
+is produced in files with <C>.htm</C> extensions in a directory <F>htm</F>  outside
+the <F>doc</F> directory. The beginning  of  the  file  <F>convert.pl</F>  contains
+instructions on its usage should you need them.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Functions and Variables and Choices of Their Names">
+<Heading>Functions and Variables and Choices of Their Names</Heading>
+
+In writing the &GAP; code for your package  you  need  to  be  a  little
+careful on just how you define your functions and variables.
+<P/>
+<E>Firstly</E>, in general one should avoid defining functions  and  variables
+via assignment statements in the way you would interactively, e.g.
+<P/>
+<Example><![CDATA[
+gap> Cubed := function(x) return x^3; end;
+]]></Example>
+<P/>
+The reason for this is that such  functions  and  variables  are  <E>easily
+overwritten</E> and what's more you are not warned about it when it happens.
+<P/>
+To protect a function  or  variable  against  overwriting  there  is  the
+command  <Ref Func="BindGlobal" BookName="ref"/>,
+or alternatively (and equivalently)  you  may  define  a  global
+function via a <C>DeclareGlobalFunction</C> and  <C>InstallGlobalFunction</C>  pair
+or a global variable via  a  <C>DeclareGlobalVariable</C>  and  <C>InstallValue</C>
+pair. There are also operations and their methods,  and  related  objects
+like attributes and filters which also have <C>Declare...</C> and <C>Install...</C>
+pairs.
+<P/>
+<E>Secondly</E>,  it's  a  good  idea  to  reduce  the  chance  of  accidental
+overwriting by choosing names for your functions and variables that begin
+with a string that identifies it  with  the  package,  e.g.&nbsp;some  of  the
+undocumented functions in the &Example; package begin with <C>Eg</C>. This is
+especially important in cases where you actually want the user to be able
+to change the value of a function or variable defined  by  your  package,
+for which you haved used direct assignments  (for  which  the  user  will
+receive no warning  if  she  accidentally  overwrites  them).  It's  also
+important  for  functions  and  variables   defined   via   <C>BindGlobal</C>,
+<C>DeclareGlobalFunction</C>/<C>InstallGlobalFunction</C>                       and
+<C>DeclareGlobalVariable</C>/<C>InstallValue</C>, in order to  avoid  name  clashes
+that may  occur  with  (extensions  of)  the  &GAP;  library  and  other
+packages. On the other hand, operations and their  methods  (defined  via
+<C>DeclareOperation</C>, <C>InstallMethod</C> etc.&nbsp;pairs) and  their  relatives  do
+not need this consideration, as they avoid name clashes by  allowing  for
+more than one <Q>method</Q> for the same-named object.
+<P/>
+The method <C>Recipe</C> was included in the &Example; package to demonstrate
+the definition of a  function  via  a  <C>DeclareOperation</C>/<C>InstallMethod</C>
+pair; <C>Recipe( FruitCake );</C> gives a <Q>method</Q> for making a  fruit  cake
+(forgive the pun).
+<P/>
+<E>Thirdly</E>, functions or variables with  <C>Set<A>XXX</A></C>  or  <C>Has<A>XXX</A></C>  names
+(even if they are defined as operations) should be avoided as  these  may
+clash with objects associated with attributes or  properties  (attributes
+and  properties   <A>XXX</A>   declared   via   the   <C>DeclareAttribute</C>   and
+<C>DeclareProperty</C> commands have associated  with  them  testers  of  form
+<C>Has<A>XXX</A></C> and setters of form <C>Set<A>XXX</A></C>).
+<P/>
+<E>Fourthly</E>, it is a good  idea  to  have  some  convention  for  internal
+functions and variables  (i.e.&nbsp;the  functions  and  variables  you  don't
+intend for the  user  to  use).  For  example,  they  might  be  entirely
+capitalised.
+<P/>
+<E>Finally</E>,        note        the        advantage        of        using
+<C>DeclareGlobalFunction</C>/<C>InstallGlobalFunction</C>,
+<C>DeclareGlobalVariable</C>/<C>InstallValue</C>,    etc.&nbsp;pairs    (rather     than
+<C>BindGlobal</C>) to define functions and variables, which allow the  package
+author to organise her function- and variable- definitions in  any  order
+without worrying about any interdependence. The  <C>Declare...</C>  statements
+should go in files with <C>.gd</C> extensions and be loaded  by  <C>ReadPackage</C>
+statements in the package <F>init.g</F> file, and the <C>Install...</C> definitions
+should go in files with <C>.gi</C> extensions and be loaded  by  <C>ReadPackage</C>
+statements in the package <F>read.g</F> file;  this  ensures  that  the  <C>.gi</C>
+files are read <E>after</E> the <C>.gd</C> files. All other package code should  go
+in <C>.g</C> files (other than the <F>init.g</F> and <F>read.g</F> files themselves) and
+be loaded via <C>ReadPackage</C> statements in the <F>init.g</F> file.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Having an InfoClass">
+<Heading>Having an InfoClass</Heading>
+
+It is a good idea to declare an <C>InfoClass</C> for your package. This  gives
+the package user the opportunity  to  control  the  verbosity  of  output
+and/or the possibility of receiving debugging information
+(see&nbsp;<Ref Sect="Info functions" BookName="ref"/>).  Below,  we  give  a  quick
+overview of its utility.
+<P/>
+An <C>InfoClass</C> is defined with  a  <C>DeclareInfoClass(  <A>InfoPkgname</A>  );</C>
+statement and may be set to have an initial <C>InfoLevel</C>  other  than  the
+zero default (which means no <C>Info</C> statement is to  output  information)
+via a <C>SetInfoLevel( <A>InfoPkgname</A>, <A>level</A>  );</C>  statement.  An  initial
+<C>InfoLevel</C> of 1 is typical.
+<P/>
+<C>Info</C> statements have the form: <C>Info( <A>InfoPkgname</A>, <A>level</A>,  <A>expr1</A>,
+<A>expr2</A>, ... );</C>  where  the  expression  list  <C><A>expr1</A>,  <A>expr2</A>,  ...</C>
+appears just like it would in a <C>Print</C> statement. The only difference is
+that the expression list is  only  printed  (or  even  executed)  if  the
+<C>InfoLevel</C> of <A>InfoPkgname</A> is at least <A>level</A>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The Banner">
+<Heading>The Banner</Heading>
+
+Since &GAP;&nbsp;4.4, the package  banner,  if  one  is  desired,  should  be
+provided by assigning a string to the <C>BannerString</C> field of the  record
+argument of <C>SetPackageInfo</C> in the <F>PackageInfo.g</F> file.
+<P/>
+It is a good idea to have a hook into  your  package  documentation  from
+your banner. The &Example; package suggests to the &GAP; user:
+<P/>
+<Log><![CDATA[
+For help, type: ?Example package
+]]></Log>
+<P/>
+In order for this to display the introduction of the  &Example;  package
+the following index-entry:
+<P/>
+<C>&tlt;Index&tgt;Example package&tlt;/Index&tgt;</C>
+<P/>
+was added just before the first paragraph of the introductory section  in
+the file <F>example.xml</F>. The &Example; package  uses  the
+<Package>GAPDoc</Package>
+(see Section&nbsp;<Ref Sect="Documentation Software Tools Needed"/>)   
+for documentation
+(you will need some different scheme to achieve this  using
+the <F>gapmacro.tex</F> system).
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Packing up your GAP Package">
+<Heading>Packing up your GAP Package</Heading>
+
+In the past, it was recommended that your &GAP; package should be packed
+via the <C>zoo</C> program, but now any of four different archive formats  are
+accepted (see Section <Ref Sect="Wrapping Up a GAP Package" BookName="ext"/>
+the details). The &Example;  package  file  <F>make_zoo</F>
+provides  a  template  packing-up  script  that  uses  <C>zoo</C>.  The  <F>etc</F>
+directory obtained from <C>tools<A>XXX</A>.zoo</C> for some  version  number  <A>XXX</A>
+(this  is  described  above
+in Section&nbsp;<Ref Sect="Documentation Software Tools Needed"/>) contains a file  <F>packpack</F>  which  provides  a  more  versatile
+packing-up script.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="New versions of your GAP Package">
+<Heading>New versions of your GAP Package</Heading>
+
+You will notice that there is a file <F>VERSION</F> which contains the current
+version of the &Example; package. Such a file is entirely optional. Note
+that this file is <E>not</E> read at all when &GAP; loads the package. &GAP;
+establishes the package version by reading the <F>PackageInfo.g</F> file.  The
+current maintainer of the &Example; package finds it convenient to  have
+a file <F>VERSION</F> that is read both by <F>doc/manual.tex</F> and <F>make_zoo</F>. It
+is however important that each new version of a package has a new  number
+and  that  version  numbers  of  successive  package  versions   increase
+(see&nbsp;<Ref Sect="Version Numbers" BookName="ext"/> for the details).
+<P/>
+It's also useful to have a <F>CHANGES</F> file that records the  main  changes
+between versions of your package.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="CVS">
+<Heading>CVS</Heading>
+
+When your package is ready to be refereed and/or  made  available  as  an
+<Q>accepted</Q> &GAP; package, it may be of benefit to obtain CVS access to
+&GAP;; as a first step towards this you should make  a  request  to  the
+&GAP; team via an email to <Email>support@gap-system.org</Email>.
+
+</Section>
+</Appendix>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

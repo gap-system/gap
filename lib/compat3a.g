@@ -2,7 +2,7 @@
 ##
 #W  compat3a.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: compat3a.g,v 4.45 2007/02/06 22:28:08 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -22,7 +22,7 @@
 ##  This file is *not* read as part of the {\GAP}~4 library.
 ##
 Revision.compat3a_g :=
-    "@(#)$Id$";
+    "@(#)$Id: compat3a.g,v 4.45 2007/02/06 22:28:08 gap Exp $";
 
 
 #############################################################################
@@ -52,7 +52,7 @@ end );
 ## this would be tediously hard to fix -- would have to alter the
 ## "infinite list of names" to allow a finite list of overrides
 ## if this was done, it would be worth doing in general -- build a
-##  construct for a (finitely) mutable infinite list 
+##  construct for a (finitely) mutable infinite list
 
 
 #############################################################################
@@ -636,11 +636,8 @@ InstallMethod( MinPol,
 #F  Mod( <R>, <r>, <s> )
 ##
 ##  (was already obsolete in {\GAP}~3)
-##  This variable is also defined in the `resclasses' package.
 ##
-if not IsBound( Mod ) then
-  DeclareSynonym( "Mod", EuclideanRemainder );
-fi;
+DeclareSynonym( "Mod", EuclideanRemainder );
 
 
 #############################################################################
@@ -1077,6 +1074,18 @@ DeclareSynonym( "NewBasis", Basis );
 ##
 DeclareSynonym( "MutableBasisByGenerators", MutableBasis );
 
+#############################################################################
+##
+#A  UnderlyingField( <obj> )
+##
+##  Underlying field of a vector space or an algebra.
+##
+DeclareAttribute( "UnderlyingField", IsVectorSpace );
+InstallMethod(UnderlyingField,"vector space",true,[IsVectorSpace],0,
+  LeftActingDomain);
+DeclareAttribute( "UnderlyingField", IsFFEMatrixGroup );
+InstallMethod(UnderlyingField,"generic",true,[IsFFEMatrixGroup],0,
+  FieldOfMatrixGroup);
 
 #############################################################################
 ##
@@ -1089,6 +1098,32 @@ end );
 DeclareSynonym( "PrimitiveAffinePermGroupByMatrixGroup",
     AffineActionByMatrixGroup );
 
+#############################################################################
+##
+#S  PrimeOfPGroup
+##
+##  Prime of p-group.
+##  was replaced by PrimePGroup.
+##
+DeclareSynonym( "PrimeOfPGroup", PrimePGroup );
+
+#############################################################################
+##
+#S  MatrixDimension
+##
+##  Dimension of matrices in an algebra.
+##  was replaced by DimensionOfMatrixGroup.
+##
+DeclareSynonym( "MatrixDimension", DimensionOfMatrixGroup);
+
+#############################################################################
+##
+#S  MonomialTotalDegreeLess
+##
+##  monomial ordering: the function was badly defined, name is now obsolete
+##  was replaced by MonomialExtGrlexLess.
+##
+DeclareSynonym( "MonomialTotalDegreeLess", MonomialExtGrlexLess );
 
 #############################################################################
 ##

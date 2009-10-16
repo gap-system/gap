@@ -1,0 +1,17 @@
+Generators A_5: x y z;
+Parameter: t;
+Limiting weight: 34;
+Relations:
+
+[[x,y],x] - 2 x;
+[[x,y],y] + 2 y;
+
+[y,z];
+[[x,y],z] + 4 z;
+[x,[x,[x,[x,[x,z]]]]];
+
+3 [[x,z],[x,[x,z]]] - 2 [z,[x,[x,[x,z]]]] - 768 t^2 y;
+[z,[z,[x,z]]];
+4 [[x,[x,[x,z]]],[z,[x,z]]] - 3 [[x,[x,z]],[z,[x,[x,z]]]] - 15552 t^2 z;
+[[x,z],[[x,z],[[x,z],[[x,z],z]]]];
+

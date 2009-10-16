@@ -1,0 +1,39 @@
+
+# An example which illustrates a problem with the sgdone et al flags
+# in ACE 3.000.  See email from Volker Gebhardt to GH on 8 Dec 2000,
+# and the Changes file in the ACE 3.001 distribution.  This works OK
+# on all versions of ACE 3.001 after 11 Dec 2000.
+
+Gr: x, a, b, c, d, e, f, g;
+Rel: x^2, a^2, b^2, c^2, d^2, e^2, f^2, g^2,  (x, a), (x, g),
+  (b*c)^3, (b*d)^2, (b*e)^2, (b*f)^2, (b*g)^2,
+           (c*d)^3, (c*e)^2, (c*f)^2, (c*g)^2,
+                    (d*e)^3, (d*f)^2, (d*g)^2,
+                             (e*f)^3, (e*g)^2,
+                                      (f*g)^3,
+  (b, x*b*x), (a, e*d*c*b), (a, f)*d*c*b*d*c*d, (a*g)^5,
+  (c*d*e*f, x*b*x), (b, x*c*d*e*f*x), (c*d*e*f, x*c*d*e*f*x);
+Gen: x,b,c,d,e,f,g;
+
+Wo: 12M;  Mess: 200000;
+
+Hard;  Row:0;  No:0;  R:16;  Fi:5;
+
+Text;  Beg;  Dump;  Dump: 2;
+
+# At this point, the index is 1140000 and sgdone, okstart/cont/redo,
+# & tabinfo/index are all set.
+
+Add Rel: b^a;
+
+Text;  Redo;  Dump;  Dump: 2;
+
+# At this point, the index is 1 (correctly), but sgdone, okcont &
+# tabinfo/index are incorrectly clear.
+
+Text;  Redo;  Dump;  Dump: 2;
+
+# At this point, everything is OK again
+
+Text;
+

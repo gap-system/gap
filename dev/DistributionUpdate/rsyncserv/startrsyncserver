@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-##  $Id$     Frank Lübeck
+##  $Id: startrsyncserver,v 1.2 2007/09/30 22:01:23 gap Exp $     Frank Lübeck
 
 exec rsync --port 8731 --daemon --config rsyncd.conf 
 

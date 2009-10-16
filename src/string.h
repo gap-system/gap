@@ -2,7 +2,7 @@
 **
 *W  string.h                    GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: string.h,v 4.19 2008/04/10 22:24:56 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -24,7 +24,7 @@
 **  installed in the appropriate tables by 'InitString'.  */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_string_h =
-   "@(#)$Id$";
+   "@(#)$Id: string.h,v 4.19 2008/04/10 22:24:56 gap Exp $";
 #endif
 
 #include <string.h>  /* for memcpy */
@@ -117,7 +117,7 @@ extern Obj NEW_STRING(Int len);
 **  Note that 'GROW_STRING' is a macro, so do not call it with arguments that
 **  have sideeffects.
 */
-#define GROW_STRING(list,len)   ((len) < (SIZE_OBJ(list) - sizeof(UInt) - 1) ? \
+#define GROW_STRING(list,len)   ( ((len) + sizeof(UInt) < SIZE_OBJ(list)) ? \
                                  0L : GrowString(list,len) )
 
 extern  Int             GrowString (

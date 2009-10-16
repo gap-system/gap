@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- $Id: manual.xml,v 1.7 2009/05/31 21:50:11 alexk Exp $ -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+[<!ENTITY LAGUNA "<Package>LAGUNA</Package>">]
+[<!ENTITY UnitLib "<Package>UnitLib</Package>">]
+[<!ENTITY QaoS "<Package>Qaos</Package>">]
+[<!ENTITY SCSCP "<Package>SCSCP</Package>">]
+[<!ENTITY ParGAP "<Package>ParGAP</Package>">] >
+
+<Book Name="UnitLib">
+
+<TitlePage>
+  <Title>&UnitLib;</Title>
+  <Subtitle>The library of normalized unit groups of modular group algebras</Subtitle>
+  <Version>Version 3.0.0</Version>
+
+  <Author>Alexander Konovalov
+          <Email>konovalov@member.ams.org</Email>
+	      <Homepage>http://www.cs.st-andrews.ac.uk/&tilde;alexk/</Homepage>
+          <Address>
+            School of Computer Science<Br/>
+            University of St Andrews<Br/>
+            Jack Cole Building, North Haugh,<Br/>
+            St Andrews, Fife, KY16 9SX, Scotland
+          </Address> 
+  </Author>
+
+  <Author>Elena Yakimenko
+          <Email>k-algebra@zsu.zp.ua</Email>
+          <Address>
+            Department of Mathematics<Br/>
+            Zaporozhye National University<Br/>
+            Ul.Zhukovskogo, 66, Zaporozhye<Br/>
+	        69600 Ukraine
+          </Address> 
+  </Author>
+
+  <Date>31 May 2009</Date>
+
+<Abstract>
+
+<Index Key="UnitLib package">&UnitLib; package</Index> 
+
+The &UnitLib; package extends the &LAGUNA; package and provides the 
+library of normalized unit groups of modular group algebras of all 
+finite <M>p</M>-groups of order not greater than 243 over the field 
+of <M>p</M> elements.
+<P/>
+It also contains a parallel implementation of the computation of the 
+normalized unit group of a modular group algebra of a finite 
+<M>p</M>-group (which should be retrieved from the &GAP; Small Groups 
+Library) over the field of <M>p</M> elements.
+</Abstract>
+
+<Copyright>
+  &copyright; 2006-2009 by Alexander Konovalov and Elena Yakimenko<P/>
+
+  &UnitLib; is free software; you can redistribute it and/or modify it 
+  under the terms of the GNU General Public License as published by 
+  the Free Software Foundation; either version 2 of the License, or 
+  (at your option) any later version. For details, see the FSF's own site
+  <URL>http://www.gnu.org/licenses/gpl.html</URL>.<P/>
+
+  If you obtained &UnitLib;, we would be grateful for a short notification
+  sent to one of the authors.<P/>
+
+  If you publish a result which was partially obtained with the usage of
+  &UnitLib;, please cite it in the following form:<P/>
+
+  A. Konovalov and E. Yakimenko. 
+  <E>UnitLib --- The library of normalized unit groups of modular group 
+     algebras, Version 3.0.0;</E> 2009 
+     (<URL>http://www.cs.st-andrews.ac.uk/&tilde;alexk/unitlib.htm</URL>).
+</Copyright>
+  
+<Acknowledgements>
+The first version of the package (as well as the subsequent version 2.1)
+was released in 2006, when the first author was a postdoctoral 
+research collaborator at the Vrije Universiteit Brussels, Belgium. 
+It is a pleasure of the first author to express his gratitude to 
+Prof. Dr. Eric Jespers for his warm hospitality and to acknowledge 
+the support provided by the Francqui Stichting grant ADSI107.
+<P/>
+
+Both authors are very grateful to the members of the &GAP; team: 
+Thomas Breuer, Stefan Kohl and Frank L&#252;beck for helpful suggestions. 
+We would like to acknowledge Bettina Eick for communicating the package,
+and the referee for testing &UnitLib; and useful comments. 
+Finally, we wish to thank the Centre for Interdisciplinary Research in 
+Computational Algebra of the University of St Andrews and the 
+Computational Cluster of the Kiev National Taras Shevchenko University
+for offering their computer facilities for computations.
+</Acknowledgements>
+
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "intro.xml">
+<#Include SYSTEM "funct.xml"> 
+<#Include SYSTEM "tech.xml">
+<#Include SYSTEM "example.xml">
+
+</Body>
+
+<Bibliography Databases="manual"/>
+
+<TheIndex/>
+
+</Book>

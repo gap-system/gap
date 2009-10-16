@@ -3,13 +3,13 @@ Discrete Logarithm
 @Contact
 GAP
 @Date
-2002/5/31
+2006/8/14
 @Time
 3
 @Public
 Yes
 @Need
-2
+1
 @NeedA
 1
 @Math
@@ -26,8 +26,7 @@ a^b=c or to show that no such c can exist.
 </P>
 
 <P>
-The current implementation in GAP is Baby-step/Giant step which works OK but
-still could be improved for big examples.
+The current implementation in GAP is Pollard-Rho.
 </P>
 @Ref
 <UL>

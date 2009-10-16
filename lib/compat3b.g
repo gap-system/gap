@@ -2,7 +2,7 @@
 ##
 #W  compat3b.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: compat3b.g,v 4.26 2002/04/15 10:04:30 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -29,7 +29,7 @@
 ##  This file is read only if the user explicitly reads it.
 ##
 Revision.compat3b_g :=
-    "@(#)$Id$";
+    "@(#)$Id: compat3b.g,v 4.26 2002/04/15 10:04:30 sal Exp $";
 
 
 #############################################################################

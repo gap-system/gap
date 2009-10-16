@@ -3,7 +3,7 @@
 #W  fieldfin.gi                 GAP library                     Werner Nickel
 #W                                                         & Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: fieldfin.gi,v 4.50 2008/12/15 16:21:44 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -23,7 +23,7 @@
 ##  4. Automorphisms of Finite Fields
 ##
 Revision.fieldfin_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: fieldfin.gi,v 4.50 2008/12/15 16:21:44 gap Exp $";
 
 
 #############################################################################
@@ -211,8 +211,9 @@ InstallMethod( \in,
     local F;
 
     F:= Field( Concatenation( GeneratorsOfGroup( G ), [ One( G ) ] ) );
-    return elm in F and LogFFE( elm, PrimitiveRoot( F ) ) mod
-           ( ( Size( F ) - 1 ) / Size( G ) ) = 0;
+    return     elm in F and not IsZero( elm )
+           and LogFFE( elm, PrimitiveRoot( F ) ) mod
+               ( ( Size( F ) - 1 ) / Size( G ) ) = 0;
     end );
 
 

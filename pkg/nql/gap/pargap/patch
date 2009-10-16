@@ -1,0 +1,14 @@
+--- masslave.g	2001-11-16 13:17:04.000000000 +0100
++++ masslave.g	2009-05-06 12:20:19.000000000 +0200
+@@ -467,8 +467,9 @@
+   if Length(deltas)>1 then max2 := Maximum(max2, deltas[Length(deltas)-1]); fi;
+   max1 := deltas[Length(deltas)];
+   pos1 := Position( List(slaveArray, x->realtime-x.time), max1 );
+-  if max1 > slaveTaskTimeFactor and max1 > 30
+-     and slaveTaskTime[pos2].total > 60 then
++  if max1 > slaveTaskTimeFactor and
++     max1 > 30 and pos2 <> fail and 
++     slaveTaskTime[pos2].total > 60 then
+     Print("SLAVE ",pos1," SEEMS DEAD!!\n");
+   fi;
+ end);

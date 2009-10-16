@@ -2,7 +2,7 @@
 **
 *W  dt.c                        GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id$
+*H  @(#)$Id: dt.c,v 4.29 2002/04/15 10:03:46 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -55,7 +55,7 @@
 #include       "system.h"
 
 const char * Revision_dt_c =
-   "@(#)$Id$";
+   "@(#)$Id: dt.c,v 4.29 2002/04/15 10:03:46 sal Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */

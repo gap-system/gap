@@ -1,0 +1,10 @@
+#/bin/csh
+
+verifyit() {
+    echo Subject: sq report
+    echo `date` at `hostname` by $USER
+}
+
+
+verifyit | /bin/mail alice@maths.uwa.edu.au
+

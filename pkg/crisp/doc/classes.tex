@@ -1,0 +1,195 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  classes.tex              CRISP documentation           Burkhard H\"ofling
+%%
+%%  @(#)$Id: classes.tex,v 1.8 2001/11/05 12:55:50 gap Exp $
+%%
+%%  Copyright (C) 2000, Burkhard H\"ofling, Mathematisches Institut,
+%%  Friedrich Schiller-Universit\"at Jena, Germany
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Set theoretical classes}
+
+In {\CRISP}, a class (in the set-theoretical sense) is usually represented
+by an algorithm which decides membership in that class. Wherever this makes
+sense, sets (see "ref:Set" in the {\GAP} reference
+manual) may also be used as classes.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating set theoretical classes}\null
+
+\index{classes!creating}
+
+\>IsClass(<C>) C
+
+returns true if <C> is a class object. The category of class objects is a
+subcategory of the category `IsListOrCollection'.
+
+\>Class(<rec>) O
+\>Class(<func>) O
+
+returns a class <C>. In the first form, <rec> must be a record having a
+component `\\in' and an optional component `name'. The values of these
+components, if present, are bound to the attributes `MemberFunction' and
+`Name' (see "ref:Name") of the class created. The value bound to `\\in' must be a function
+<func> which returns `true' if a {\GAP} object belongs to <C>, and `false'
+otherwise; cf. "MemberFunction" below. The second form is equivalent to `Class(rec(\\in
+:= <func>))'. It is the user's responsibility to ensure that <func> returns the same
+result for different {\GAP} objects representing the same mathematical object (or
+element, in the {\GAP} sense; see "ref:objects and elements" in the {\GAP}
+reference manual).
+
+\beginexample
+gap> RequirePackage ("crisp");
+                                                   
+             _____  ___    __  ____   ___        
+            / ___/ / _ \  / / / __/  / _ \       
+           / /__  /   _/ / / _\_ \  / ___/       
+           \___/ /_/\_\ /_/ /____/ /_/           
+                                                    
+                 A GAP 4 package for           
+          Computing with Radicals, Injectors        
+            Schunck classes and Projectors          
+              of finite solvable groups             
+                                                    
+                By Burkhard H\"ofling               
+                                                    
+                For help, type ?CRISP               
+                                                    
+true
+gap> FermatPrimes := Class (p -> IsPrime (p) and p = 2^LogInt (p, 2) + 1); 
+Class (in:=function( p ) ... end)
+\endexample
+
+\>View(<class>)!{for classes}
+
+If the class does not have a name, this produces a brief description of the
+information defining <class> which has been supplied by the user. If the
+class has a name, only its name will be printed.
+
+\begintt
+gap> View (FermatPrimes);
+Class (in:=function( p ) ... end)
+\endtt
+
+\>Print(<class>)!{for classes}
+
+`Print' behaves very similarly to `View', except that the defining
+information is being printed in a more explicit way if possible.
+
+\begintt
+gap> Print (FermatPrimes);
+Class (rec ( in = function ( p )
+    return IsPrime( p ) and p = 2 ^ LogInt( p, 2 ) + 1;
+end))
+\endtt
+
+
+\>Display(<class>)!{for classes}
+
+For classes, `Display' works exactly as `Print'.
+
+\>`<obj> in <class>'{element test}!{for classes}
+
+\indextt{in!for classes}% 
+\index{membership test!for classes}%
+returns true or false, depending upon whether <obj> belongs to <class> or
+not. If <obj> can store attributes, the outcome of the membership test is
+stored in an attribute `ComputedIsMembers' of <obj>.
+
+\>`<C1> = <C2>'{equality!for classes}
+
+Since it is not possible to compare classes given by membership algorithms,
+two classes are equal in {\GAP} if and only if they are the same {\GAP}
+object (see "ref:IsIdenticalObj" in the {\GAP} reference manual).
+
+\>`<C1> \<\ <C2>'{comparison!for classes}
+
+The operation `\<' for classes has no mathematical meaning; it only exists
+so that one can form sorted lists of classes.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties of classes}\null
+
+\index{classes!properties of}
+\index{properties!of classes}
+
+\>IsEmpty(<C>)!{for classes} P
+
+This property may be set to `true' or `false' if the class <C> is empty
+resp. not empty.
+
+\>MemberFunction(<C>) A
+
+This attribute, if bound, stores a function with one argument, <obj>,
+which decides if <obj> belongs to <C> or not, and returns `true' and `false' accordingly.
+If present, this function is called by the default method for `\\in'.
+`MemberFunction' is part of the definition of <C> and should not be called 
+directly by the user.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lattice operations for classes}\null
+
+\index{lattice operations!for classes}
+
+\>Complement(<C>) O
+
+returns the unary complement of the class <C>, that is, the class consisting
+of all objects not in <C>. <C> may also be a set.
+
+\beginexample
+gap> cmpl := Complement([1,2]);
+Complement ([ 1, 2 ])
+gap> Complement (cmpl);
+[ 1, 2 ]
+\endexample
+
+\>Intersection(<list>)!{of classes} F
+\>Intersection(<C1>, <C2>, \dots)!{of classes} F
+\indextt{INTERSECTION\noexpand_LIMIT}
+
+returns the intersection of the groups in <list>, resp. of the classes
+<C1>, <C2>, \dots. If one of the classes is a list with fewer than
+`INTERSECTION_LIMIT' elements, then the result will be
+a sublist of that list. By default, `INTERSECTION_LIMIT' is 1000. 
+
+\beginexample
+gap> Intersection (Class (IsPrimeInt), [1..10]);
+[ 2, 3, 5, 7 ]
+gap> Intersection (Class (IsPrimeInt), Class (n -> n = 2^LogInt (n+1, 2) - 1));
+Intersection ([ Class (in:=function( n ) ... end), 
+  Class (in:=function( n ) ... end) ])
+\endexample
+
+\>Union(<C>, <D>) F
+
+returns the union of <C> and <D>.  
+
+\beginexample
+gap> Union (Class (n -> n mod 2 = 0), Class (n -> n mod 3 = 0));
+Union ([ Class (in:=function( n ) ... end), Class (in:=function( n ) ... end) 
+ ])
+\endexample
+
+\>Difference(<C>, <D>) O
+
+returns the difference of <C> and <D>. If <C> is a list, then the
+result will be a sublist of <C>.
+
+\beginexample
+gap> Difference (Class (IsPrimePowerInt), Class (IsPrimeInt));
+Intersection ([ Class (in:=function( n ) ... end), 
+  Complement (Class (in:=function( n ) ... end)) ])
+gap> Difference ([1..10], Class (IsPrimeInt));
+[ 1, 4, 6, 8, 9, 10 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+%%
+

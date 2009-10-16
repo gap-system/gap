@@ -1,0 +1,632 @@
+Development notes file, by Marco Costantini with updated by Alexander Konovalov
+
+This file contains notes for development and for releasing a new version; 
+it is not intended to be a part of the release.
+
+######################################################################
+
+MAKING A CHANGE:
+
+* test the package functionality:
+
+ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
+
+* update the local gap dev version:
+cd /usr/local/gap_dev/4.0/
+make
+cd
+gap_dev -A -N
+CreateCompletionFiles();
+
+* test the package functionality:
+
+ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
+
+* do the changes.
+
+* if a new file is added, add lines like
+Revision.("openmath/dev_notes.txt") :=
+    "@(#)$Id: dev_notes.txt,v 1.44 2009/05/26 16:42:07 alexk Exp $"; see
+also the file structure at
+/usr/local/gap_dev/4.0/doc/htm/ext/CHAP003.htm#SECT002
+
+* check that new features or bug fixes are included in the test file, 
+and, if test file is modified, test the package functionality.
+
+cd /usr/local/gap_dev/4.0/pkg/openmath/tst
+nano test_new.src
+
+mv test_new test_new.bak
+gap_dev -T -A -b < test_new.src
+nano +30000 test_new
+
+diff test_new test_new.bak
+
+rm test_new.bak
+gap_dev
+ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
+
+* check that the README files and the manual contain the changes.
+
+* test that the manual still compiles, and that the content is OK:
+
+cd /usr/local/gap_dev/4.0/pkg/openmath/doc
+./make_doc
+xpdf manual.pdf &
+
+* commit the various changes to the CVS repository.
+
+
+
+PREPARING A NEW RELEASE:
+
+* check the functionality, also with gpipe method, and with an older
+version of Gap.
+
+* modify date and version number in file PackageInfo.g and version 
+number in files doc/manual.xml, doc/openmath.xml and init.g
+
+* test the PackageInfo.g, and that the documentation is available in Gap:
+
+ValidatePackageInfo( Filename( DirectoriesPackageLibrary( "openmath", "" ), "PackageInfo.g" ) );
+?OMPrint
+
+* commit PackageInfo.g and doc/manual.xml
+
+* copy the package directory to some place to create the tarball
+
+* remove "phantom" directories:
+
+rm -rf OMlib bin protos
+
+* remove the various *.bak, *~ and files from compilation doing make clean in both
+locations, otherwise get a fresh copy from CVS repository
+
+* remove dev_notes.txt and Makefile from the package's root directory
+
+* remove possibly hidden files left e.g. '.DS_Store' left by Mac OS
+
+* do chmod -x:
+cd /usr/local/gap_dev/4.0/pkg/openmath
+chmod -x tst/test5.omt
+
+* compile the documentation:
+
+ReadPackage("openmath/gap/buildman.g");
+OPENMATHBuildManual();
+
+* remove CVS subdirectories:
+rm -r CVS/ */CVS/ */*/CVS/
+
+* prepare the archive, with the right version number:
+cd ..
+tar cfvz openmath-06.01.03.tar.gz openmath/
+
+* note the archive size:
+ls -l openmath-*.tar.gz
+
+* copy archive, PackageInfo.g, README to web page:
+scp openmath-*.tar.gz openmath/PackageInfo.g openmath/README gate.science.unitn.it:
+
+scp openmath-*.tar.gz PackageInfo.g README  degiorgi:public_html/gap_code/openmath/
+rm openmath-*.tar.gz PackageInfo.g README
+
+* check the PackageInfo.g online:
+
+konqueror http://www.gap-system.org/Packages/Authors/authors.html &
+http://www-math.science.unitn.it/~costanti/gap_code/openmath/PackageInfo.g
+
+* update the web-page: modify version, link and size:
+pico public_html/index.html
+
+* get a fresh copy of CVS repository, with CVS directories.
+
+* recompile, reconfigure, etc... :
+
+cd openmath
+
+cd doc
+./make_doc
+cd ..
+
+cd OMCv1.3c/src/
+./configure
+make
+cd ../../
+./configure ../../
+make
+
+chmod -x tst/test5.omt
+
+* test again:
+
+?OMTest
+ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
+
+* Send a mail about the new release to the GAP Support to include it in the
+  next update of the packages archive
+
+* check that the new version is uploaded on the Gap site.
+
+* advertise the new version
+
+
+######################################################################
+
+ENCODING AND CONVERSIONS:
+
+OpenMath objects can be encoded into various formats:
+
+XML	(as defined by OpenMath standard)
+binary	(as defined by OpenMath standard)
+gpipe	(defined as the output of the program 'gpipe', included in the package)
+
+
+Conversion from OpenMath to Gap:
+
+* 'OMgetObjectByteStream' takes a stream in gpipe encoding and returns a
+Gap object. 
+
+* 'gpipe' takes a file in XML or binary encoding, autodetects, and
+produces a gpipe encoded file. 
+
+* 'OMpipeObject' takes a string in XML or binary encoding, pipes it to
+'gpipe', and calls 'OMgetObjectByteStream'.
+
+* 'OMgetObjectXMLTree' converts the OpenMath XML into a tree (using the
+function ParseTreeXMLString from package GapDoc) and parses it.
+
+* 'OMGetObject' takes a stream in XML or binary encoding, pipes it to
+'gpipe', and calls either OMpipeObject or OMgetObjectXMLTree.
+
+
+Conversion from Gap to OpenMath:
+
+OMPutObject takes a Gap object and puts into a stream, with XML
+encoding.
+
+This package includes the external program 'tpipe' (OMCv1.3c/src/tpipe)
+that converts an OpenMath object with unknown/binary/XML encoding to
+binary or XML encoding, and 'gpipe' (bin/*/gpipe), that converts an
+OpenMath object with unknown/binary/XML encoding to gpipe.
+
+
+
+
+######################################################################
+
+
+VALIDATING XML:
+
+
+The following function can be used to validate the OpenMath XML objects
+produced by the package. It requires the program 'xmllint', from
+Libxml2, the XML C library for Gnome, available from
+http://www.xmlsoft.org/ and included in most modern Linux distributions. 
+
+
+OMValidate := function ( obj )
+
+    local  file, fromgap_stream, togap_stream, togap, xmllint_exec, openmath2_rng, OMPutObject;
+
+    OMPutObject := function ( stream, x )
+          OMIndent := 0;
+          OMWriteLine( stream, [ "<OMOBJ xmlns=\"http://www.openmath.org/OpenMath\">" ] );
+          OMIndent := OMIndent + 1;
+          OMPut( stream, x );
+          OMIndent := OMIndent - 1;
+          OMWriteLine( stream, [ "</OMOBJ>" ] );
+          return;
+      end;
+
+    file := Filename( OMDirectoryTemporary, "testfile" );
+    fromgap_stream := OutputTextFile( file, false );
+    SetPrintFormattingStatus( fromgap_stream, false );
+    OMPutObject( fromgap_stream, obj );
+    CloseStream( fromgap_stream );
+
+    xmllint_exec := Filename( DirectoriesSystemPrograms(  ), "xmllint" );
+    openmath2_rng := Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "openmath2.rng" );
+
+    togap := "";
+    togap_stream := OutputTextString( togap, false );
+    SetPrintFormattingStatus( togap_stream, false );
+    Process( OMDirectoryTemporary, xmllint_exec, InputTextNone(), togap_stream,
+     [ "--noout", "--relaxng", openmath2_rng, "testfile" ] );
+    CloseStream( togap_stream );
+
+    if togap <> "testfile validates\n" and togap <> "testfile fails to validate\n"  then
+        Print( togap );
+    fi;
+
+    return togap = "testfile validates\n";
+end;
+
+
+The XML produced by this package can be partially validated with http://validator.w3.org
+
+Just prepend the following line to a file generated by this package,
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+and one of the following, for OpenMath version 2.0, 1.1, 1.0 respectively.
+
+<!DOCTYPE OMOBJ SYSTEM "http://www.openmath.org/standard/om20-2004-06-30/openmath2.dtd">
+<!DOCTYPE OMOBJ SYSTEM "http://www.openmath.org/standard/om11/omobj.dtd">
+<!DOCTYPE OMOBJ SYSTEM "http://www.openmath.org/standard/relaxng/openmath1.dtd">
+
+
+
+######################################################################
+
+KNOWN PROBLEMS:
+These problems are from the original code by Andrew Solomon.
+
+* A set doesn't store to be a set, hence the method ``OMPut: for a set''
+is used only for the empty set. 
+
+IsSet([ 1, true, false ]);
+OMPrint([ 1, true, false ]);
+OMPrint([  ]);
+
+
+* Conversion of CharacterTable doesn't work.
+
+OMTest(CharacterTable( AlternatingGroup( [ 1 .. 3 ] ) ));
+
+
+* Consecutive comments <!-- ... --> or encodings <? ... ?> inside an
+input stream are not supported.
+
+stream := InputTextUser(); g := OMGetObject(stream);CloseStream(stream);
+
+<!-- ... -->
+<? .
+
+* OMPut: for a Hasse diagram creates OpenMath variables like <OMV name="1"/>
+which are invalid OpenMath variables names.
+
+* Having different compiled versions of the OMCv1.3c library for
+different architectures is not supported.
+
+######################################################################
+
+TODO:
+
+
+* Include experimental, or updated CDs
+http://www.openmath.org/cdnames.html
+
+- For converting Gap -> OpenMath, add a method for 'OMPut', in file
+gap/omput.gi .
+
+- For converting OpenMath -> Gap, add in 'OMsymTable_new', in file
+gap/new.g .
+
+- For converting a nullary symbol OpenMath -> Gap, add code in
+'OMnullarySymbolToGAP', in file gap/gap.g . (Remark: OMnullarySymbolToGAP
+removed by AK in April 2009, now all is done by OMsymLookup function).
+
+- For a conversion in Yacas, use there OMDef(yacasSymbol, cd, name)
+
+
+######################################################################
+
+TODO:
+
+
+* Convert OMsymTable and related stuff from list to record
+(Remark: done by AK in April 2009 with renaming to OMsymRecord).
+
+* Remove the difference between nullary and n-ary symbols, and use the
+OpenMath roles instead, see the OpenMath Standard, version 2.0, section
+"2.1.4 OpenMath Symbol Roles". (Remark: OMnullarySymbolToGAP
+removed by AK in April 2009, now all is done by OMsymLookup function).
+
+
+######################################################################
+
+TODO:
+
+
+* Check the file permissions: in some case -rw-rw-r-- should be replaced
+with -rw-r--r-- .
+
+
+######################################################################
+
+TODO:
+
+* In function OMgapNativeStatementFunc, of gap/gap.g, is it necessary to
+use READ_COMMAND (instead e.g. of Read) ?
+
+Is it necessary to use ViewString ? 
+
+Would it be possible to remove ViewString, or to use StringView from the
+GapDoc package, and to remove the file gap/printutil.g? 
+
+The only purpose of gap/printutil.g is to provide ViewString to
+OMgapNativeStatementFunc. 
+
+Is Gap is started with -A, openmath is loaded, and thereafter GapDoc is
+loaded, then an error occurs, because IsObjToBePrinted is defined in
+both.
+
+
+######################################################################
+
+TODO:
+
+Check the functions OMnextToken and OMinstreamNextByte: they do the same.
+
+Some IsHasseDiagram stuff is already defined in main Gap library
+lib/relation.gd:
+
+#P  IsHasseDiagram(<rel>)
+##
+##  returns `true' if the binary relation <rel>  is  a  Hasse  Diagram  of  a
+##  partial  order,  i.e.  was  computed   via   `HasseDiagramBinaryRelation'
+##  (see~"HasseDiagramBinaryRelation").
+##
+DeclareProperty("IsHasseDiagram", IsBinaryRelation);
+
+Something from hasse/hasse.g could be removed.
+
+
+
+######################################################################
+
+
+TODO:
+
+Maybe the top-level makefile can be changed, in order to automatically
+compile the OMCv1.3c library. Maybe not, in order to point that the Gap
+code and the OMCv1.3c library are two different products.
+
+
+TODO:
+
+* update OMCv1.3c library
+
+---> The library is available from:
+ftp://ftp-sop.inria.fr/safir/OM
+
+The package contains the OMCv1.3c library, it could be updated to
+OMCv1.4a. It is available also at
+http://www.openmath.org/software/OMCv1.4a.tgz
+
+There is file with a wrong name: this is fixed with (compare also with
+OMCv1.3c):
+
+cd OMCv1.4a/src
+mv test1.omx test1.omt
+
+
+After compiling, I get 
+
+--- doing some auto-tests for OpenMath lib libOM.a ...
+
+auto testing general IO...
+ok: test pipe1
+ok: test pipe2
+failed: test pipe3 (please check file BUGREP)
+
+auto testing automatic encoding detection...
+failed: test binary encoding auto detect (please check file BUGREP)
+ok: test XML encoding auto detect
+
+Hence it is not clear to me whether it works correctly or not.
+
+
+Mail about this.
+
+OpenMath INRIA C library
+
+Da: 
+Marco Costantini <costanti@science.unitn.it>
+
+A: 
+olivier.arsac@sophia.inria.fr, stephane.dalmas@sophia.inria.fr
+
+Data: 
+19:09, 20/12/2005
+
+Dear Olivier Arsac and Stéphane Dalmas,
+I have downloaded the file "OpenMath INRIA C library" 
+http://www.openmath.org/cocoon/openmath/software/OMCv1.4a.tgz
+
+Is there a newer version, or is the latest version available at 
+http://www.openmath.org/cocoon/openmath/software/ ?
+
+In src directory there is a file test1.omx , but the test in Makefile requires 
+test1.omt .
+
+
+However, the test fails: I get (on a Linux 2.4.21-0.13mdk i686 machine)
+
+--- doing some auto-tests for OpenMath lib libOM.a ...
+
+auto testing general IO...
+ok: test pipe1
+ok: test pipe2
+failed: test pipe3 (please check file BUGREP)
+
+auto testing automatic encoding detection...
+failed: test binary encoding auto detect (please check file BUGREP)
+ok: test XML encoding auto detect
+
+auto testing encodings...
+ok: test enc string XML
+ok: test enc string binary
+ok: test enc wide char string XML
+ok: test enc wide char string binary
+ok: test enc array XML
+ok: test enc array binary
+ok: test enc double XML
+ok: test enc double binary
+
+--- auto-tests done.
+
+What can I do to solve/further investigate  this problem? I cannot find any 
+"file BUGREP".
+
+Best regards,
+Marco Costantini
+
+
+
+Re: OpenMath INRIA C library
+
+Da: 
+Stephane Dalmas <Stephane.Dalmas@sophia.inria.fr>
+
+A: 
+costanti@science.unitn.it
+
+Data: 
+venerdì 15:14:00
+
+> Dear Olivier Arsac and Stéphane Dalmas,
+>   
+Dear Marco (Olivier is no longer here, he works for a company now),
+> I have downloaded the file "OpenMath INRIA C library" 
+> http://www.openmath.org/cocoon/openmath/software/OMCv1.4a.tgz
+>
+> Is there a newer version, or is the latest version available at 
+> http://www.openmath.org/cocoon/openmath/software/ ?
+>   
+I'm afraid it is the latest version...  It dates back from a time when 
+there was no readily available XML library.
+> In src directory there is a file test1.omx , but the test in Makefile requires 
+> test1.omt .
+>   
+It's attached at the end of this message.
+>
+> However, the test fails: I get (on a Linux 2.4.21-0.13mdk i686 machine)
+>
+>   
+I checked here and it works right (on a Fedora Core 3 Linux 
+distribution, first time I tried to compile the library in 3 years...). 
+Maybe it is because "test1.omt" is missing ?
+> What can I do to solve/further investigate  this problem? I cannot find any 
+> "file BUGREP".
+>   
+The file says that there is no know bug ! and that you should mail us if 
+you find one.
+
+I'm no more working on that and thus won't be able to help you a lot...
+
+Best regards,
+   
+    Stéphane.
+
+The home-page of Olivier Arsac is now http://www.arsac.org/olivier/
+
+######################################################################
+
+Descriptions of utilities (copied from their output):
+
+omproxy 
+   OpenMath proxy.
+   Repeats an incoming stream.
+   (stream may be socket or file).
+   when going through, OpenMath objects may be traced.
+
+   eg: omproxy -o received.om
+   eg: omproxy -i tosend.om -h server.com -p 8000
+   eg: omproxy -l 8000 -d routed.om -h server.com -p 8000
+   eg: omproxy -i in.om -o out.om -v3
+
+   -l --inport: int (7007)
+      port to listen to for connection to proxy.
+   -p --outport: int (7007)
+      port to use for host connection.
+   -h --host: string (res08-obk1.resnet.st-andrews.ac.uk)
+      host to connect to.
+   -i --infile: string
+      file to read from (instead of socket).
+   -o --outfile: string
+      file to write to (instead of socket).
+   -d --dupfile: string
+      duplicate output into this file.
+   -e --encoding: string (mimic)
+      encoding used for output. (mimic, binary or xml)
+   --tracefile: string
+      file to write log to (default is stdout).
+   -v --verbosity: int (0)
+      verbosity level (0 nothing, 1 only tokens, 2 tokens+time, 3 2+values).
+
+
+tenc -[bt] -[swad]
+   Test some encode/decode functions,
+   in binary or text mode depending on option switch -b or -t).
+   -s for string utf7 encoding.
+   -w for wide char string utf7 encoding.
+   -a for byte arrays encoding.
+   -d for portable double encoding.
+   Exit status is 0 if test has run smoothly, 1 otherwise.
+
+
+tpipe -[ubx][bx] inFile outFile
+   Pipe OpenMath inFile into OpenMath outFile
+   in/outFile may be replaced by - for stdin/out.
+   Used mainly for tests or sample purpose
+   May also be used as a conversion tool,
+   or as a basic pretty printer for XML OpenMath files.
+   u/b/x means unknown/binary/xml encoding.
+   u: creates an input device that will try to autodetect its encoding type.
+   eg: tpipe -bx A B
+         Converts binary file A into XML text file B.
+         (pretty printing it by the way).
+       tpipe -ub A B
+         Converts an unknown encoding type OpenMath file A into a binary file B.
+
+
+gpipe -[ubx] inFile outFile
+   Pipe OpenMath inFile into GAP-stream outFile
+   in/outFile may be replaced by - for stdin/out.
+   Used mainly for tests or sample purpose
+   May also be used as a conversion tool,
+   or as a basic pretty printer for XML OpenMath files.
+   u/b/x means unknown/binary/xml encoding.
+   u: creates an input device that will try to autodetect its encoding type.
+   eg: tpipe -b A B
+         Converts binary file A into GAP input file B.
+       tpipe -u A B
+         Converts an unknown encoding type OpenMath file A into a GAP input file B.
+
+######################################################################
+
+How to produce binary test files:
+
+1) *.bin is the binary file produced by tpipe, for example:
+
+../OMCv1.3c/src/tpipe -xb test3.omt test3.bin
+
+2) *.out is the output file produced from *.bin by gpipe, for example:
+
+../OMCv1.3c/src/tpipe -xb test4.omt test4.bin
+../bin/i686-apple-darwin9.6.0-gcc/gpipe -b test4.bin test4.out
+
+######################################################################
+
+GAPDoc manual HOW-TO:
+
+ReadPackage("openmath/gap/buildman.g");
+
+then
+
+OPENMATHBuildManual();
+
+or 
+
+OPENMATHBuildManualHTML();
+
+######################################################################
+
+TODO:
+
+* cleanup in the cds directory.
+* fill placeholders in OMsymRecord with more symbols where appropriate
+* test and move entries from OMsymRecord_new in new.g to gap.g
+* implement more private CDs from the SCIEnce project

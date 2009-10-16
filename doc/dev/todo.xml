@@ -1,0 +1,26 @@
+
+<!-- 
+
+  todo.xml           GAP documentation    
+
+  Copyright (C) 2005,  The GAP Group
+
+Todo lists, wishlists, projects
+
+       $Id: todo.xml,v 1.2 2008/01/07 15:52:47 alexk Exp $
+-->
+
+<Chapter Label="Chap-Todo">
+<Heading>Todo- and wishlists</Heading>
+
+Here we explain how to distribute ideas on future development to
+all developers, and how to keep track of the fix of known bugs and
+inefficiencies.
+
+<Section Label="Sect-">
+<Heading>...</Heading>
+
+</Section>
+
+</Chapter>
+

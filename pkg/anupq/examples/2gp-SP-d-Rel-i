@@ -1,0 +1,25 @@
+#Example: "2gp-SP-d-Rel-i" . . . based on: isom/red1.com
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, StandardPresentationFile
+F := FreeGroup("a", "b", "c", "d");
+rels := ["b^4", "b^2 * [b, a, a]^-1", "d^16", "a^16 * (c * d)^-1",
+         "b^8 * (d * c^4)^-1", "b * (a^2 * b^-1 * a^2)^-1"];
+procId := PqStart(F : Prime := 2, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+#add <OutputLevel> for <value> if set and ok
+#PqSetOutputLevel(procId, value);;
+PqSPComputePcpAndPCover(procId : ClassBound := 1);;
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also save the presentation to a file by supplying <StandardPresentationFile>
+PqSPStandardPresentation(procId, [ [[0,1],
+                                    [1,1]],
+
+                                   [[0,1],
+                                    [1,0]] ]
+
+                         : # options
+#add <StandardPresentationFile> for <value> if set and ok
+#                          StandardPresentationFile := value,
+#sub <ClassBound> for <10> if set
+                           ClassBound := 10,
+                           PcgsAutomorphisms);;

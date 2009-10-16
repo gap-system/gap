@@ -2,14 +2,14 @@
 ##
 #W  semigrp.tst                 GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: semigrp.tst,v 4.18 2007/08/14 11:13:52 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: semigrp.tst,v 4.18 2007/08/14 11:13:52 alexk Exp $");
 gap> ###############################################
 gap> ##
 gap> ##  AsTransformation - changing representation
@@ -96,9 +96,9 @@ gap> IsTransformationSemigroup(M);
 true
 gap> IsTransformationMonoid(M);
 true
-gap> I := MagmaIdealByGenerators(M, [b]);;
-gap> J := SemigroupIdealByGenerators(M,[b]);;
-gap> I = J;
+gap> K := MagmaIdealByGenerators(M, [b]);;
+gap> L := SemigroupIdealByGenerators(M,[b]);;
+gap> K = L;
 true
 gap> ########################
 gap> #
@@ -114,10 +114,10 @@ gap> e := Transformation([1,2,3,3]);;
 gap> f := Transformation([1,2,4,4]);;
 gap> O4 := Monoid([a,b,c,d,e,f]);;
 gap> 
-gap> I := MagmaIdealByGenerators(O4, [a*f]);;
+gap> J := MagmaIdealByGenerators(O4, [a*f]);;
 gap> C := SemigroupCongruenceByGeneratingPairs(O4, [[a*f, a*e]]);;
 gap> P := EquivalenceRelationPartition(C);;
-gap> AsSSortedList(I) = AsSSortedList(P[1]);     # true
+gap> AsSSortedList(J) = AsSSortedList(P[1]);     # true
 true
 gap> Length(P);
 1
@@ -286,7 +286,7 @@ gap> CategoryCollections(IsMultiplicativeElementWithZero)(m);
 true
 gap> 
 gap> 
-gap> STOP_TEST( "semigrp.tst", 86300000 );
+gap> STOP_TEST( "semigrp.tst",135000574);
 
 
 #############################################################################

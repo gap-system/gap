@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+[<!ENTITY AlgAut "<Package>AlgAut</Package>">] >
+
+<Book Name="AlgAut">
+
+<TitlePage>
+  <Title>&AlgAut;</Title>
+  <Subtitle>Computing the automorphism group of algebras</Subtitle>
+  <Version>Version 0.1</Version>
+
+<Author>
+Bettina Eick
+  </Author>
+
+  <Author>
+  Csaba Schneider
+  <Email>csaba.schneider@sztaki.hu</Email>
+  <Homepage>http://www.sztaki.hu/~schneider</Homepage>
+          <Address>
+    	    Informatics Research Laboratory<Br/>
+    	    Computer and Automation Research Institute<Br/>
+    	    1518 Budapest Pf. 63.<Br/>
+    	    Hungary
+       </Address> 
+  </Author>
+
+  <Date>2007</Date>
+
+
+
+<Abstract>
+Abstract
+</Abstract>
+
+<Copyright>
+  &copyright; 2007 Bettina Eick and Csaba Schneider
+</Copyright>
+  
+<Acknowledgements>
+We are grateful
+</Acknowledgements>
+
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "functions.xml">
+
+</Body>
+<Bibliography Databases="manual"/>
+
+
+</Book>

@@ -2,7 +2,7 @@
 ##
 #W  basicpcg.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: basicpcg.gi,v 4.18 2009/01/07 04:19:05 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  types.
 ##
 Revision.basicpcg_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: basicpcg.gi,v 4.18 2009/01/07 04:19:05 gap Exp $";
 
 
 #############################################################################
@@ -44,12 +44,13 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     fi;
     if ForAll(ints,i->i=1) then
       # the stupid trivial group case
-      return CyclicGroup(1);
+      return CyclicGroup( IsPcGroup, 1 );
     fi;
 
     pis := List( ints, Factors );
-    f   := FreeGroup( Sum( List(pis{Filtered([1..Length(pis)],i->ints[i]>1)},
-                                Length ) ) );
+    f   := FreeGroup( IsSyllableWordsFamily,
+             Sum( List(pis{Filtered([1..Length(pis)],i->ints[i]>1)},
+                  Length ) ) );
     g   := GeneratorsOfGroup(f);
     r   := [];
     k   := 1;
@@ -83,6 +84,11 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     k:=GroupWithGenerators(k,One(f));
     SetSize(k,Size(f));
     SetIsAbelian( k, true );
+
+    if ForAll(ints,IsPrimePowerInt) then
+      SetIndependentGeneratorsOfAbelianGroup(k,GeneratorsOfGroup(k));
+    fi;
+
     if Size(Set(Filtered(Flat(pis),p->p<>1))) = 1 then
         SetIsPGroup( k, true );
         SetPrimePGroup( k, First(Flat(pis),p -> p<>1) );
@@ -162,10 +168,11 @@ function( filter, n )
     # Catch the case n = 1.
     if n = 1 then
         f := GroupByRws( SingleCollector( FreeGroup( 0 ), [] ) );
+        SetMinimalGeneratingSet (f, []);
         
     else
         pi := Factors( n );
-        f  := FreeGroup( Length(pi) );
+        f  := FreeGroup( IsSyllableWordsFamily, Length(pi) );
         g  := GeneratorsOfGroup(f);
         r  := [];
         for i  in [ 1 .. Length(g)-1 ]  do
@@ -177,6 +184,7 @@ function( filter, n )
             SetIsPGroup( f, true );
             SetPrimePGroup( f, pi[1] );
         fi;
+        SetMinimalGeneratingSet (f, [f.1]);
     fi;
 
     SetSize( f, n );
@@ -206,7 +214,7 @@ function( filter, n )
         CyclicGroup( IsPcGroup, 2 );
     fi;
     pi := Factors(n/2);
-    f  := FreeGroup( Length(pi)+1 );
+    f  := FreeGroup( IsSyllableWordsFamily, Length(pi)+1 );
     g  := GeneratorsOfGroup(f);
     r  := [];
     for i  in [ 2 .. Length(g)-1 ]  do
@@ -319,7 +327,7 @@ function( filters, order, exp )
         eps2 := 0;
     fi;
 
-    f := FreeGroup(2*n+1);
+    f := FreeGroup( IsSyllableWordsFamily, 2*n+1);
     e := GeneratorsOfGroup(f);
     z := e[ 2*n+1 ];
     r := [];

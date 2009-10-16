@@ -2,14 +2,14 @@
 ##
 #W  compat3.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: compat3.tst,v 1.6 2005/05/25 15:15:02 gap Exp $
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testall.g: not expected to be of interest for users
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: compat3.tst,v 1.6 2005/05/25 15:15:02 gap Exp $");
 
 # Read the library files `compat3a.g', `compat3b.g', `compat3c.g'.
 gap> ReadLib( "compat3c.g" );

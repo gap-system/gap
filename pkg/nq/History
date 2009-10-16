@@ -1,0 +1,148 @@
+
+   Dec 1992: Version 1.0 of the ANU NQ
+
+22 Jan 1993: Version 1.1 of the ANU NQ
+	   + introduction of this file and the file README
+	   + added option -t to nq
+	   + improvements to testNq
+	   + added target clean to the make file
+26 Feb 1993: Version 1.1b
+	   + added the option -a to nq and the corresponding
+	     output routine outputMatrix() to glimt.c.
+22 Jun 1993: 
+           + The file README has not yet been updated with a
+             description of the option -a. 
+12 Aug 1993: Version 1.1c
+           + modified the file engel.c to allow checking of more
+             identities. This entry has been made in Oct 93; it
+             has to be checked what the modifications are and which
+             options have been added.
+14 Oct 1993:
+           + changed the functions buildPairs() and buildWord()
+             such that they also build words with negative exponents.
+             This can be switched off using the option -s (s for
+             semigroup words).
+           + Added a check for the identity matrix to the function 
+             addRow(). A flag EarlyStop is set if the check is
+             positive. This flag is now used in the files
+             consistency.c, relations.c and engel.c to stop the
+             computation as soon as all new generators are eliminated.
+           + Fixed the last printing of the total runtime in main().
+
+Maerz 1994:
+           + Version 1.1d
+           + changed the function evalEngel() in engel.c such that it
+             stops checking instances of the Engel law as soon as all
+             instances of a certain weight did not yield anything new.
+             This is not proved to be mathematically sound.
+           + the function buildPairs() in engel.c now checks if an
+             instance [x, ny] of the n-th Engel law is trivial for
+             weight reasons.
+           + the function Collect() in collect.c aborts a run if it
+             runs into an integer overflow.
+           + the functions outputMatrix() and printGapMatrix() in
+             glimt.c have been changed to print only rows and columns
+             whose pivot entry is not 1.
+           + the function MatrixToExpVec() in glimt.c now frees the
+             large matrix row by row.
+           + Update the README file.
+
+04 Aug 1994:
+           + Version 1.1e
+           + fixed printing of preimages in PrintEpim() in relation.c.
+           + the error function of Collect() now prints the generator
+             which caused the error. Collect() was also slightly
+             reformatted.
+30 Mar 1995:
+           + added option that allows to check the Engel condition in
+             reverse order
+
+ 2 Jul 1995:
+           + added -m option that outputs all non-zero vectors handed
+             to addRow() to file.
+
+25 Aug 1995:
+           + built integer overflow check into function Number() in
+             presentation.c .
+
+22 Nov 1995:
+           + replaced the function Commutator() in collect.c.  Instead
+             of using Solve to solve uv x = vu the equation is solved
+             directly. 
+
+27 June 1996:
+           + while MFN was visiting the Magnus group in New York they
+             indicated interest in using this code.  Dmitry Bormotov (their
+             chief programmer) got in contact with me and today I made a copy
+             of the this version of the code available to him via anonymous
+             ftp on gregory.dcs.st-and.ac.uk:pub/werner 
+
+Oct 1996:
+           + Added support for metabelian identities.
+
+Sep 1997:
+           + Added the option -p to toggle the printing of the epimorphism
+             and the nilpotent quotient at the end of a run.  I also added
+             code to print the definitions of each generator of weight at
+             least 2.
+
+Jan 1998:
+           + print statements for the definitions of new generators.
+           + added option -E to reverse the order in which Engel
+             generators are processes.
+
+March 1998:
+           + NQ now reads from stdin when the file name argument is missing
+
+March 1998: Version 1.2 of the ANU NQ
+        
+2 Nov 1998:
+           + GAP4 print routines (gap.c) added.  The -g option now
+             prints a pc-presentation in GAP4 style at the end of a
+             run. 
+
+28 Dec 1998:
+           + Evaluation of an Engel identity redefines the Commute
+             array.  As a consequence, commutator calculations are
+             carried out only with the precision required to evaluate
+             an iterated commutator.  This gives a speedup of a factor
+             of 3-4 in Engel-4 and Engel-5 groups.
+
+3 Jan 1999:
+           + Implementation of parsing Engel-n commutators and
+             evaluation of those commutators with redefined Commute[]
+             arrays. 
+
+10 Aug 1999:
+           + turned NQ into a GAP 4 package
+           + modified the GAP 4 output routines
+
+25 Aug 1999:
+           + wrote new setup for nq using autoconf
+           + replaced in glimt.c all BSD compatible integer functions
+             by GMP functions.  Now libmp.a is not needed anymore.
+
+June 2001:
+           + extended the input grammar to accept identical generators
+             as part of the generator list seperated from the other
+             generators by a semicolon
+           + added machinery to evaluate identical relations
+
+June 2002:
+           + added a combinatorial collector
+           + reconstruction of the integer matrix code
+
+October 2002:
+           + rewrite of the examples code
+
+
+12 February 2003:
+           + The package is released.
+
+21 February 2003:
+           + removed instances of `share package'
+           + removed obsolete files doc/manual.in gap/nqrest.gi
+
+06 February 2007:
+           + filter out the identity word as relator
+           + Release this as version 2.2

@@ -1,0 +1,923 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  ace.tex         ACE documentation introduction       Alexander Hulpke
+%W                                                      Joachim Neub"user
+%W                                                            Greg Gamble
+%%
+%H  $Id: ace.tex,v 1.61 2006/01/26 16:15:05 gap Exp $
+%%
+%Y  Copyright (C) 2000  Centre for Discrete Mathematics and Computing
+%Y                      Department of Information Tech. & Electrical Eng.
+%Y                      University of Queensland, Australia.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The ACE Package}
+
+\index{ACE}
+The ``Advanced Coset Enumerator'' {\ACE}:
+
+\begintt
+ACE coset enumerator (C) 1995-2001 by George Havas and Colin Ramsay
+\endtt
+\URL{http://www.itee.uq.edu.au/~cram/ce.html}
+
+can  be called  from within  {\GAP} through  an interface,  written by
+Alexander Hulpke and Greg Gamble, which is described in this manual.
+
+The interface links to an external binary and therefore is only usable
+under UNIX (see  Section~"Installing  the  ACE  Package"  for  how  to
+install  {\ACE}).  It  will  not  work  on  Windows  or  a  pre-MacOSX
+Macintosh. The current version requires at least {\GAP}~4.4. Users who
+still have {\GAP}~4.3,  must  use  {\ACE}  4.1.  (The  first  versions
+supported {\GAP}~4.2.) {\ACE} can be used through this interface in  a
+variety of ways:
+
+\beginlist%unordered
+
+\item{--} one may supplant the  usual  {\GAP}  coset  enumerator  (see
+Section~"Using ACE as a Default for Coset Enumerations"),
+
+\item{--}  one  may  generate  a  coset  table  using  {\ACE}  without
+redefining the usual {\GAP} coset enumerator (see  Section~"Using  ACE
+Directly to Generate a Coset Table"),
+
+\item{--} one  may  simply  test  whether  a  coset  enumeration  will
+terminate (see Section~"Using ACE Directly to  Test  whether  a  Coset
+Enumeration Terminates"),
+
+\item{--} one may  use  {\GAP}  to  write  a  script  for  the  {\ACE}
+standalone  (see  Section~"Writing  ACE  Standalone  Input  Files   to
+Generate a Coset Table"), and
+
+\item{--} one may interact with  the  {\ACE}  standalone  from  within
+{\GAP} (see Section~"Using ACE Interactively").  Among  other  things,
+the   interactive   {\ACE}   interface   functions    (described    in
+Chapter~"Functions for Using ACE Interactively") enable  the  user  to
+search for subgroups of a group (see the note  of  Section~"Using  ACE
+Interactively").
+
+\endlist
+
+Each of these ways gives the user access to a welter of options, which
+are discussed in full  in  Chapters~"Options  for  ACE"  and~"Strategy
+Options for ACE". Yet more options are provided in Appendix~"Other ACE
+Options",  but  please  take  note  of  the  Appendix's   introductory
+paragraph. Check out Appendix~"Examples" for numerous examples of  the
+{\ACE} commands.
+
+*Note*: Some care needs to be taken with  options;  be  sure  to  read
+Section~"General Warnings  regarding  the  Use  of  Options"  and  the
+introductory sections of Chapter~"Options for ACE" for  some  warnings
+regarding them and a general discussion of their use, before using any
+of the functions provided by this interface to the {\ACE} binary.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Using ACE as a Default for Coset Enumerations}
+
+After loading {\ACE} (see Section~"Loading the ACE Package"),  if  you
+want to use the {\ACE} coset enumerator as a  default  for  all  coset
+enumerations done by {\GAP} (which may also  get  called  indirectly),
+you can achieve this  by  setting  the  global  variable  `TCENUM'  to
+`ACETCENUM'.
+
+\beginexample
+gap> TCENUM:=ACETCENUM;;
+\endexample
+
+This    sets    the    function    `CosetTableFromGensAndRels'    (see
+Section~"ref:Coset  Tables  and  Coset  Enumeration"  in  the   {\GAP}
+Reference Manual) to be  the  function  `ACECosetTableFromGensAndRels'
+(described in Section~"Using ACE Directly to Generate a Coset Table"),
+which then can be called with all the options defined for  the  {\ACE}
+interface, not just the options `max' and `silent'. If `TCENUM' is set
+to `ACETCENUM' without any  further  action,  the  `default'  strategy
+(option) of the {\ACE} enumerator will be used (see  Chapter~"Strategy
+Options for ACE").
+
+You can switch back to the coset  enumerator  built  into  the  {\GAP}
+library by assigning `TCENUM' to `GAPTCENUM'.
+
+\beginexample
+gap> TCENUM:=GAPTCENUM;;
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Using ACE Directly to Generate a Coset Table}
+
+If, on the other hand you do not want to set up  {\ACE}  globally  for
+your coset enumerations, you may call the {\ACE}  interface  directly,
+which will allow you to decide for yourself, for each such call, which
+options you want to use for running {\ACE}. Please note  the  warnings
+regarding options in Section~"General Warnings regarding  the  Use  of
+Options". The functions discussed in this and  the  following  section
+(`ACECosetTableFromGensAndRels' and `ACEStats')  are  non-interactive,
+i.e.~by their use, a file with your  input  data  in  {\ACE}  readable
+format will be handed to {\ACE} and you will get the  answer  back  in
+{\GAP} format. At that moment however the {\ACE}  job  is  terminated,
+that is, you cannot send any further questions or requests  about  the
+result of that job to {\ACE}. For an interactive use  of  {\ACE}  from
+{\GAP} see Section~"Using ACE  Interactively"  and  Chapter~"Functions
+for Using ACE Interactively".
+
+Using the {\ACE} interface directly to generate a coset table is  done
+by either of
+
+\atindex{ACECosetTable}{@\noexpand`ACECosetTable'!non-interactive}
+\>ACECosetTableFromGensAndRels( <fgens>, <rels>, <sgens> [: <options>] ) F
+\>ACECosetTable( <fgens>, <rels>, <sgens> [: <options>] ) F
+
+Here <fgens> is a list of free generators, <rels> a list of  words  in
+these generators giving relators for a finitely presented  group,  and
+<sgens> the list of subgroup generators, again expressed as  words  in
+the free generators. All these are given in the standard {\GAP} format
+(see Chapter~"ref:Finitely Presented Groups" of the  {\GAP}  Reference
+Manual). Note that the 3-argument form  of  `ACECosetTable'  described
+here is merely a synonym for `ACECosetTableFromGensAndRels', and  that
+`ACECosetTable' may be called in a different  way  in  an  interactive
+{\ACE}    session    (see    Sections~"Using    ACE     Interactively"
+and~"ACECosetTable!interactive").
+
+Behind the colon any  selection  of  the  options  available  for  the
+interface (see Chapters~"Options for ACE"  and~"Strategy  Options  for
+ACE") can be given, separated by commas like record components.  These
+can be used e.g.~to preset limits of space and time  to  be  used,  to
+modify input and output and to modify the enumeration procedure.  Note
+that strategies are simply special options that set a  number  of  the
+options, detailed in Chapter~"Options for ACE", all at once.
+
+Please see Section~"General Warnings regarding the Use of Options" for
+a discussion regarding global and local passing of  options,  and  the
+non-orthogonal nature of {\ACE}'s options.
+
+Each of `ACECosetTableFromGensAndRels' and `ACECosetTable'  calls  the
+{\ACE} binary and, if successful, returns a standard coset table, as a
+{\GAP} list of  lists.  At  the  time  of  writing,  two  coset  table
+standardisations schemes were possible: `lenlex' and `semilenlex' (see
+Section~"Coset Table Standardisation Schemes"). The user  may  control
+which standardisation scheme is used by selecting either the  `lenlex'
+(see~"option  lenlex")  or  `semilenlex'   (see~"option   semilenlex")
+option;  otherwise  (since  {\GAP}~4.3)  the  table  is   standardised
+according to {\GAP}'s the  value  of  `CosetTableStandard'  (which  by
+default is `lenlex'; for {\GAP}~4.2, the variable `CosetTableStandard'
+didn't exist and the default standardisation scheme was `semilenlex').
+We provide  `IsACEStandardCosetTable'  (see~"IsACEStandardCosetTable")
+to determine whether a table (list of lists) is standard  relative  to
+{\GAP}'s default standardisation scheme, or with the  use  of  options
+(e.g.~`lenlex' or `semilenlex') to another standardisation scheme.
+
+If the determination of a coset table is unsuccessful, then one of the
+following occurs:
+
+\beginlist%unordered
+
+\item{--} with the `incomplete' option  (see~"option  incomplete")  an
+incomplete coset table is returned (as a list of lists), with zeros in
+positions where valid coset numbers could not be determined; or
+
+\item{--} with the `silent' option (see~"option  silent"),  `fail'  is
+returned; or
+
+\item{--} a  `break'-loop  is  entered.  This  last   possibility   is
+discussed in detail via the example that follows.
+
+\endlist
+
+The example given  below  is  the  call  for  a  presentation  of  the
+Fibonacci group F(2,7) for  which  we  shall  discuss  the  impact  of
+various options in Section~"Fun with ACEExample". Observe that in  the
+example, no options are passed,  which  means  that  {\ACE}  uses  the
+`default' strategy (see Chapter~"Strategy Options for ACE").
+
+\beginexample
+gap> F:= FreeGroup( "a", "b", "c", "d", "e", "x", "y");;
+gap> a:= F.1;; b:= F.2;; c:= F.3;; d:= F.4;; e:= F.5;; x:= F.6;; y:= F.7;;
+gap> fgens:= [a, b, c, d, e, x, y,];;
+gap> rels:= [ a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1,
+>             e*x*y^-1, x*y*a^-1, y*a*b^-1];;
+gap> ACECosetTable(fgens, rels, [c]);;
+\endexample
+
+\atindex{break-loop}{@\noexpand`break'-loop}
+In computing  the  coset  table,  `ACECosetTableFromGensAndRels'  must
+first do a coset enumeration (which is where {\ACE} comes in!). If the
+coset enumeration does not finish in the preset limits a  `break'-loop
+is entered,  unless  the  `incomplete'  (see~"option  incomplete")  or
+`silent' (see~"option silent") options is set. In  the  event  that  a
+`break'-loop is entered, don't despair or be frightened  by  the  word
+`Error'; by tweaking {\ACE}'s options via the `SetACEOptions' function
+that becomes available in the `break'-loop and then  typing  `return;'
+it may be possible to help {\ACE} complete the coset enumeration  (and
+hence successfully compute the coset table); if not, you will  end  up
+in the `break'-loop again, and you can have another go (or `quit;'  if
+you've had enough). The  `SetACEOptions'  function  is  a  no-argument
+function; it's there *purely* to pass *options* (which, of course, are
+listed behind a colon (`:')  with  record  components  syntax).  Let's
+continue the Fibonacci example above, redoing  the  last  command  but
+with the option `max := 2'  (see~"option  max"),  so  that  the  coset
+enumeration has only two coset numbers to play with and hence is bound
+to fail to complete, putting us in a `break'-loop.
+
+\atindex{ACECosetTable}{@\noexpand`ACECosetTable'!\noexpand`break'-loop example}
+\beginexample
+gap> ACECosetTable(fgens, rels, [c] : max := 2);
+Error, no coset table ...
+ the `ACE' coset enumeration failed with the result:
+ OVERFLOW (a=2 r=1 h=1 n=3; l=5 c=0.00; m=2 t=2)
+ called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+ try relaxing any restrictive options
+ e.g. try the `hard' strategy or increasing `workspace'
+ type: '?strategy options' for info on strategies
+ type: '?options for ACE' for info on options
+ type: 'DisplayACEOptions();' to see current ACE options;
+ type: 'SetACEOptions(:<option1> := <value1>, ...);'
+ to set <option1> to <value1> etc.
+ (i.e. pass options after the ':' in the usual way)
+ ... and then, type: 'return;' to continue.
+ Otherwise, type: 'quit;' to quit to outer loop.
+brk> SetACEOptions(: max := 0);
+brk> return;
+[ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], 
+  [ 1 ], [ 1 ], [ 1 ], [ 1 ] ]
+\endexample
+
+Observe how the lines  after  the  ```Entering  break  read-eval-print
+loop''' announcement tell you *exactly* what to  do  (for  {\GAP}  4.2
+these  lines  are  instead   `Info'-ed   *before*   the   `break'-loop
+announcement). At  the  `break'-loop  prompt  `brk>'  we  relaxed  all
+restrictions on `max' (by re-setting it to 0) and typed  `return;'  to
+leave the `break'-loop. The coset  enumeration  was  then  successful,
+allowing the computation of what turned out  to  be  a  trivial  coset
+table. Despite the fact that the eventual coset  table  only  has  one
+line (i.e.~there is exactly one coset number)  {\ACE}  *did*  need  to
+define more than 2 coset numbers. To  find  out  just  how  many  were
+required before the final  collapse,  let's  set  the  `InfoLevel'  of
+`InfoACE' (see~"SetInfoACELevel") to 2, so that the {\ACE} enumeration
+result is printed.
+
+\beginexample
+gap> SetInfoACELevel(2);
+gap> ACECosetTable(fgens, rels, [c]);
+#I  INDEX = 1 (a=1 r=2 h=2 n=2; l=6 c=0.01; m=2049 t=3127)
+[ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], 
+  [ 1 ], [ 1 ], [ 1 ], [ 1 ] ]
+\endexample
+
+The enumeration result line is the `Info' line  beginning  ```\#I '''.
+Appendix~"The Meanings of  ACE's  Output  Messages"  explains  how  to
+interpret such output messages from {\ACE}. In particular, it explains
+that `t=3127' tells us that a `t'otal number  of  3127  coset  numbers
+needed to be defined before the final  collapse  to  1  coset  number.
+Using some of the many options that {\ACE} provides, one  may  achieve
+this  result  more  efficiently,  e.g.~with   the   `purec'   strategy
+(see~"option purec"):
+
+\beginexample
+gap> ACECosetTable(fgens, rels, [c] : purec);
+#I  INDEX = 1 (a=1 r=2 h=2 n=2; l=4 c=0.00; m=332 t=332)
+[ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], 
+  [ 1 ], [ 1 ], [ 1 ], [ 1 ] ]
+\endexample
+
+{\ACE} needs to define a `t'otal number of only  (relatively-speaking)
+332 coset numbers before the final collapse to 1 coset number.
+
+*Notes:* 
+To initiate the coset enumeration,  the  `start'  option  (see~"option
+start") is quietly inserted after the user's supplied options,  unless
+the user herself supplies one  of  the  enumeration-invoking  options,
+which are: `start', or one of its synonyms, `aep'  (see~"option  aep")
+or `rep' (see~"option rep").
+
+When  a  user  calls  `ACECosetTable'   with   the   `lenlex'   option
+(see~"option  lenlex"),  occasionally  it  is  necessary  to   enforce
+`asis'${}=1$ (see~"option asis"), which may be counter to the  desires
+of the  user.  The  occasions  where  this  action  is  necessary  are
+precisely those for which, for the  arguments  <gens>  and  <rels>  of
+`ACECosetTable',   `IsACEGeneratorsInPreferredOrder'   would    return
+`false'.
+
+The non-interactive `ACECosetTable' and `ACECosetTableFromGensAndRels'
+now use an iostream to communicate with the {\ACE} binary in order  to
+avoid filling up a temporary directory with an incomplete coset  table
+in  the  case  where  an  enumeration  overflows.  This  is  generally
+advantageous. However, on some systems, it may *not* be  advisable  to
+repeatedly  call  `ACECosetTable'  or   `ACECosetTableFromGensAndRels'
+(e.g.~in a loop), since one may run out of the pseudo  ttys  used  for
+iostreams. If you encounter this problem, consider using an adaptation
+of  the  usage  of  the  interactive  forms  of  `ACECosetTable'   and
+`ACEStats'                            (see~"ACECosetTable!interactive"
+and~"ACEStats!interactive"), together with  `ACEStart'  initialisation
+steps, that is sketched in the schema below. For the  following  code,
+it  is  imagined  the  scenario  is  one  of  looping   over   several
+possibilities of <fgens>, <rels> and <sgens>; the two special forms of
+`ACEStart' used, allow one to continually re-use a single  interactive
+{\ACE} process (i.e.~only *one* iostream is used).
+
+\){\kernttindent}\# start the interactive ACE process with no group information
+\){\kernttindent}procId := ACEStart(0);
+\){\kernttindent}while <expr> do
+\){\kernttindent\quad}fgens := ...; rels := ...; sgens := ...;
+\){\kernttindent\quad}ACEStart(procId, fgens, rels, sgens : <options>);
+\){\kernttindent\quad}if ACEStats(procId).index > 0 then
+\){\kernttindent\quad\quad}table := ACECosetTable(procId);
+\){\kernttindent\quad\quad}...
+\){\kernttindent\quad}fi;
+\){\kernttindent}od;
+
+For an already  calculated  coset  table,  we  provide  the  following
+function to determine whether or not it has been standardised.
+
+\>IsACEStandardCosetTable( <table> [: <option>] ) F
+
+returns `true' if <table> (a list of lists of  integers)  is  standard
+according to {\GAP}'s default or  the  <option>  (either  `lenlex'  or
+`semilenlex')  standardisation  scheme,  or  `false'  otherwise.   See
+Section~"Coset  Table  Standardisation   Schemes"   for   a   detailed
+discussion of the `lenlex' and `semilenlex' standardisation schemes.
+
+*Note:*
+Essentially, `IsACEStandardCosetTable'  extends  the  {\GAP}  function
+`IsStandardized'.
+
+\atindex{lenlex standardisation}{@\noexpand`lenlex' standardisation}
+Users who wish their coset tables  to  use  `ACECosetTable'  with  the
+`lenlex'    (see~"option     lenlex")     option,     which     causes
+`lenlex' standardisation to occur at the {\ACE} (rather  than  {\GAP})
+level, should be aquainted with the following function.
+
+\atindex{IsACEGeneratorsInPreferredOrder}%
+{@\noexpand`IsACEGeneratorsInPreferredOrder'!non-interactive}
+\>IsACEGeneratorsInPreferredOrder( <gens>, <rels> ) F
+
+returns `true' if <gens>, a list of free group generators, are  in  an
+order which will  not  be  changed  by  {\ACE},  for  the  group  with
+presentation $\langle <gens> \mid <rels>\rangle$, where  <rels>  is  a
+list   of   relators   (i.e.~words   in   the   generators    <gens>).
+`IsACEGeneratorsInPreferredOrder' may also be called  in  a  different
+way         for         interactive          {\ACE}          processes
+(see~"IsACEGeneratorsInPreferredOrder!interactive").
+
+For a presentation with more than one generator, the  first  generator
+of which is an involution and the second is  not,  {\ACE}  prefers  to
+switch the  first  two  generators.  `IsACEGeneratorsInPreferredOrder'
+returns `true' if the order of the  generators  <gens>  would  not  be
+changed  within  {\ACE}  and  `false',  otherwise.  (Technically,   by
+``involution'' above, we really mean ``a generator `x' for which there
+is a relator in <rels> of form `x*x' or `x^2'''. Such a generator may,
+of course, turn out to actually be the identity.)
+
+*Guru Notes:*
+If  `IsACEGeneratorsInPreferredOrder(<gens>,  <rels>)'  would   return
+`false', it is possible to enforce a user's order  of  the  generators
+within {\ACE}, by setting the option `asis' (see~"option asis")  to  1
+and, by passing the relator that determines that `<gens>[1]' (which we
+will assume is `x') has order  at  most  2,  as:  `x*x'  (rather  than
+`x^2').  Behind  the  scenes  this  is  precisely  what  is  done,  if
+necessary, when `ACECosetTable' is called with the `lenlex' option.
+
+The user may avoid all the technicalities  by  either  not  using  the
+`lenlex' option (and allowing {\GAP} to  take  care  of  the  `lenlex'
+standardisation), or by swapping the first  two  generators  in  those
+cases where  `IsACEGeneratorsInPreferredOrder(<gens>,  <rels>)'  would
+return `false'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Using ACE Directly to Test whether a Coset Enumeration Terminates}
+
+If you only want to  test, whether a coset enumeration terminates, and
+don't want to  transfer the whole coset table  to {\GAP}, you can call
+
+\atindex{ACEStats}{@\noexpand`ACEStats'!non-interactive}
+\>ACEStats( <fgens>, <rels>, <sgens> [: <options>] ) F
+
+which calls {\ACE} non-interactively to do the coset enumeration,  the
+result of which is parsed and returned as a {\GAP} record with fields
+
+\beginitems
+
+\quad`index' &the index of the subgroup $\langle <sgens>  \rangle$  in
+$\langle <fgens> \mid <rels> \rangle$, or $0$ if the enumeration  does
+not succeed;
+
+\quad`cputime' &the total CPU  time  used  as  an  integer  number  of
+`cputimeUnits' (the next field);
+
+\quad`cputimeUnits' &the units of the  `cputime'  field,  e.g.~`"10^-2
+seconds"';
+
+\indextt{activecosets}
+\quad`activecosets' &the number of currently  *active*  (i.e.~*alive*)
+coset numbers (see Section~"Coset Statistics Terminology");
+
+\indextt{maxcosets}
+\quad`maxcosets' &the *maximum* number of alive coset numbers  at  any
+one  time  in   the   enumeration   (see   Section~"Coset   Statistics
+Terminology"); and
+
+\indextt{totcosets}
+\quad`totcosets' &the  *total*  number  of  coset  numbers  that  were
+defined   in   the   enumeration   (see   Section~"Coset    Statistics
+Terminology").
+
+\enditems
+
+Options (see Chapters~"Options  for  ACE"  and~"Strategy  Options  for
+ACE")   are   used    in    exactly    the    same    way    as    for
+`ACECosetTableFromGensAndRels', discussed in the previous section; and
+the same  warnings  alluded  to  previously,  regarding  options  (see
+Section~"General Warnings regarding the Use of Options"), apply.
+
+*Notes:*
+To initiate the coset enumeration,  the  `start'  option  (see~"option
+start") is quietly inserted after the user's supplied options,  unless
+the user herself supplies one  of  the  enumeration-invoking  options,
+which are: `start', or one of its synonyms, `aep'  (see~"option  aep")
+or `rep' (see~"option rep").
+
+The fields of the  `ACEStats'  record  are  determined  by  parsing  a
+``results  message''  (see  Appendix~"The  Meanings  of  ACE's  Output
+Messages") from {\ACE}.
+
+`ACEStats' may also be called in a different  way  in  an  interactive
+{\ACE} session (see~"ACEStats!interactive").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Writing ACE Standalone Input Files to Generate a Coset Table}
+
+If you want to use {\ACE} as a standalone with its own syntax, you can
+write an {\ACE} standalone input file by calling `ACECosetTable'  with
+three arguments (see "ACECosetTableFromGensAndRels")  and  the  option
+`aceinfile := <filename>' (see~"option aceinfile"). This will keep the
+input file for the {\ACE} standalone produced by the {\GAP}  interface
+under the file name <filename> (and  just  return)  so  that  you  can
+perform interactive work in the standalone.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Using ACE Interactively}
+
+An interactive {\ACE} process is initiated with the command
+
+\>ACEStart( <fgens>, <rels>, <sgens> [:<options>] )!{introduction} F
+
+whose    arguments    and    options    are     exactly     as     for
+`ACECosetTableFromGensAndRels'  and  `ACEStats',   as   discussed   in
+Sections~"Using ACE Directly to Generate a Coset Table" and~"Using ACE
+Directly to Test whether a Coset Enumeration  Terminates".  The  usual
+warnings  regarding  options  apply  (see  Section~"General   Warnings
+regarding the Use of Options"). `ACEStart' has a number of other forms
+(see~"ACEStart!details").
+
+The return value is an integer (numbering from 1) which represents the
+running process. (It is possible to have  more  than  one  interactive
+process running at once.) The integer returned may be  used  to  index
+which of these processes an  interactive  {\ACE}  function  should  be
+applied to.
+
+An interactive {\ACE} process is terminated with the command
+
+\>ACEQuit( <i> )!{introduction} F
+
+where <i> is the integer returned by `ACEStart' when the  process  was
+begun.   `ACEQuit'   may   also   be   called   with   no    arguments
+(see~"ACEQuit!details").
+
+We discuss each of these commands, as well as the range  of  functions
+which enable one to access  features  of  the  {\ACE}  standalone  not
+available non-interactively, in depth, in Chapter~"Functions for Using
+ACE interactively".
+
+*Note:*
+
+\index{coincidence}
+{\ACE} not only allows one to do a coset enumeration of a group  by  a
+given (and then fixed) subgroup but it also allows one to  search  for
+subgroups by starting from a given one (possibly the trivial subgroup)
+and then augmenting  it  by  adding  new  subgroup  generators  either
+explicitly               via                `ACEAddSubgroupGenerators'
+(see~"ACEAddSubgroupGenerators")   or   implicitly   by    introducing
+*coincidences* (see `ACECosetCoincidence':  "ACECosetCoincidence",  or
+`ACERandomCoincidences': "ACERandomCoincidences");  or  one  can  find
+smaller   subgroups    by    deleting    subgroup    generators    via
+`ACEDeleteSubgroupGenerators' (see~"ACEDeleteSubgroupGenerators").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Accessing ACE Examples with ACEExample and ACEReadResearchExample}
+
+There are a number of examples available in the `examples'  directory,
+which may be accessed via
+
+\>ACEExample() F
+\>ACEExample( <examplename> [:<options>] ) F
+\>ACEExample( <examplename>, <ACEfunc> [:<options>] ) F
+
+where  <examplename>  is  a  string,  the  name  of  an  example  (and
+corresponding file in the `examples' directory); and <ACEfunc> is  the
+{\ACE} function with which the example is to be executed. 
+
+If `ACEExample' is called with no arguments,  or  with  the  argument:
+`"index"' (meant in the sense of ``list''),  or  with  a  non-existent
+example  name,  a  list  of  available  examples  is  displayed.   See
+Section~"Fun with ACEExample" where the list is displayed.
+
+By  default,  examples  are  executed  via  `ACEStats'.  However,   if
+`ACEExample' is called with a second argument (choose from the (other)
+alternatives:   `ACECosetTableFromGensAndRels'    (or,    equivalently
+`ACECosetTable'), or `ACEStart'), the example is executed  using  that
+function, instead. Note that, whereas the first  argument  appears  in
+double quotes (since it's a string),  the  second  argument  does  not
+(since it's a function); e.g.~to execute example `"A5"' with  function
+`ACECosetTable', one would type: `ACEExample("A5", ACECosetTable);'.
+
+`ACEExample' also accepts user options, which  may  be  passed  either
+globally  (i.e.~by  using  `PushOptions'  to  push   them   onto   the
+`OptionsStack') or locally  behind  a  colon  after  the  `ACEExample'
+arguments, and they are passed to `ACEStats' or <ACEfunc> as  if  they
+were *appended* to the existing options of <examplename>; in this way,
+the user may *over-ride* any or all of the options  of  <examplename>.
+This is done by passing  an  option  `aceexampleoptions'  (see~"option
+aceexampleoptions"), which sets up a mechanism to  reverse  the  usual
+order in which options of recursively called functions are pushed onto
+the `OptionsStack'. The option `aceexampleoptions'  is  *not*  a  user
+option; it is intended only for *internal* use  by  `ACEExample',  for
+the above purpose. In the portion of the  output  due  to  the  `echo'
+option, if one has  passed  options  to  `ACEExample',  one  will  see
+`aceexampleoptions' listed first and the result of the interaction  of
+<examplename>'s options and the additional options.
+
+Consider the example `"A5"'. The effect of running
+
+\beginexample
+gap> ACEExample("A5", ACEStart);
+\endexample
+
+is essentially equivalent to executing:
+
+\beginexample
+gap> file := Filename(DirectoriesPackageLibrary("ace", "examples"), "A5");;
+gap> ACEfunc := ACEStart;;
+gap> ReadAsFunction(file)();
+\endexample
+
+except that some internal ``magic'' of `ACEExample' edits the  example
+file and displays equivalent commands a user ``would'' execute. If the
+user  has  passed  options  to  `ACEExample'   these   appear   in   a
+```\# User Options''' block after the original options of the  example
+in the `Info' portion of the output. By comparing with the portion  of
+the output from the `echo' option (unless the user has over-ridden the
+`echo' option), the user may directly observe any over-riding  effects
+of user-passed options.
+
+Please see Section~"Fun with ACEExample" for some sample  interactions
+with `ACEExample'.
+
+*Notes*
+
+Most examples use the `mess'  ($=  `messages'$)  option.  To  see  the
+effect of this, it is recommended to do: `SetInfoACELevel(3);'  before
+calling `ACEExample', with an example.
+
+The coset table output from `ACEExample', when called with many of the
+examples and with the {\ACE}  function  `ACECosetTableFromGensAndRels'
+is often quite long. Recall that  the  output  may  be  suppressed  by
+following the (`ACEExample') command with a double semicolon (`;;').
+
+Also, try `SetInfoACELevel(2);' before  calling `ACEExample', with  an
+example.
+
+If you unexpectedly observe `aceexampleoptions' in your  output,  then
+most probably you have unintentionally passed options  by  the  global
+method, by having a non-empty `OptionsStack'. One possible  remedy  is
+to use `FlushOptionsStack();' (see~"FlushOptionsStack"), before trying
+your `ACEExample' call again.
+
+As discussed in Section~"Interpretation  of  ACE  Options",  there  is
+generally no sensible meaning that can  be  attributed  to  setting  a
+strategy option (see Chapter~"Strategy Options for ACE")  to  `false';
+if you wish to nullify the effect of a strategy option,  pass  another
+strategy  option,  e.g.~pass  the  `default'  (see~"option   default")
+strategy option.
+
+Also provided are:
+
+\> ACEReadResearchExample( <filename> ) F
+\> ACEReadResearchExample() F
+
+which perform `Read' (see Section~"ref:Read" in the  {\GAP}  Reference
+Manual) on <filename> or, with no argument,  the  file  with  filename
+`"pgrelfind.g"' in the `res-examples' directory;  e.g.~the  effect  of
+running
+
+\beginexample
+gap> ACEReadResearchExample("pgrelfind.g");
+\endexample
+
+is equivalent to executing:
+
+\beginexample
+gap> Read( Filename(DirectoriesPackageLibrary("ace", "res-examples"),
+>                   "pgrelfind.g") );
+\endexample
+
+The examples provided in the `res-examples'  directory  were  used  to
+solve a genuine research problem, the results of which are reported in
+\cite{CHHR01}. Please see Section~"Using  ACEReadResearchExample"  for
+a detailed description and examples of its use.
+
+\> ACEPrintResearchExample( <example-filename> ) F
+\> ACEPrintResearchExample( <example-filename>, <output-filename>) F
+
+print the ``essential'' contents of the file <example-filename> in the
+`res-examples' directory to the terminal, or with two arguments to the
+file  <output-filename>;  <example-filename>   and   <output-filename>
+should be strings. `ACEPrintResearchExample' is provided  to  make  it
+easy for users to copy and edit the examples for their own purposes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{General Warnings regarding the Use of Options}
+
+Firstly, let us mention (and we will remind you later) that an  {\ACE}
+strategy is merely a special option of {\ACE} that sets  a  number  of
+the options described in Chapter~"Options for ACE" all  at  once.  The
+strategy options are discussed in their own chapter (Chapter~"Strategy
+Options for ACE").
+
+In Section~"Passing ACE Options", we describe the two  means  provided
+by {\GAP} by which {\ACE} options may be passed. In  Section~"Warnings
+regarding Options", we discuss how options ``left over'' from previous
+calculations can upset subsequent calculations; and hence, to  ``clear
+the  decks''   in   such   circumstances,   why   we   have   provided
+`FlushOptionsStack'   (see~"FlushOptionsStack").   However,   removing
+`OptionsStack' options does not remove the options  previously  passed
+to  an  *interactive*  {\ACE}  process;  Section~"Warnings   regarding
+Options" discusses that too.
+
+Note,  that  the  {\ACE}  package   treatment   of   options   is   an
+``enhancement'' over the general way {\GAP} treats  options.  Firstly,
+the {\ACE} binary allows abbreviations and mixed case of  options  and
+so  the  {\ACE}  package  does  also,   as   much   as   is   possible
+(see~"Abbreviations and mixed case for ACE Options"). Secondly,  since
+{\ACE}'s options are in general not orthogonal,  the  order  in  which
+they are put to {\ACE} is, in general, honoured (see~"Honouring of the
+order in which ACE Options are passed"). Thirdly, the {\ACE}  binary's
+concept of a boolean option is slightly different to that of {\GAP}'s;
+Section~"Interpretation of ACE Options" discusses, in particular,  how
+an option detected by {\GAP} as `true' is passed to the {\ACE} binary.
+
+Finally, Section~"What happens if no ACE Strategy Option or if no  ACE
+Option is passed" discusses what happens if no option is selected.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The ACEData Record}
+
+\>`ACEData' V
+
+is a {\GAP} record in which the essential data for an  {\ACE}  session
+within {\GAP} is stored; its fields are:
+
+\beginitems
+
+\quad`binary' & the path of the {\ACE} binary;
+
+\quad`tmpdir' & the path of the  temporary  directory  containing  the
+non-interactive   {\ACE}   input   and   output   files   (also    see
+"ACEDirectoryTemporary" below);
+
+\quad`ni'     & the data record for a non-interactive {\ACE} process;
+
+\quad`io'     & list  of  data  records  for  `ACEStart'   (see  below 
+and~"ACEStart") processes;
+
+\quad`infile' & the full path of the {\ACE} input file;
+
+\quad`outfile'& the full path of the {\ACE} output file; and
+
+\quad`version'& the  version  of  the  current  {\ACE}  binary.   More
+detailed information regarding the compilation of the binary is  given
+by `ACEBinaryVersion' (see~"ACEBinaryVersion").
+
+\enditems
+
+Non-interactive processes used to use files rather than streams (hence
+the fields `infile' and `outfile' above;  these  may  disappear  in  a
+later version of the {\ACE} package).
+
+Each time an interactive {\ACE} process is  initiated  via  `ACEStart'
+(see~"ACEStart"), an identifying number <ioIndex> is generated for the
+interactive process and  a  record  `ACEData.io[<ioIndex>]'  with  the
+following fields is created. A  non-interactive  process  has  similar
+fields but is stored in the record `ACEData.ni'.
+
+\beginitems
+
+\quad`procId' & the identifying number of the process  (<ioIndex>  for
+interactive processes, and 0 for a non-interactive process);
+
+\quad`args'   & a record with fields: `fgens', `rels',  `sgens'  whose
+values  are  the  corresponding   arguments   passed   originally   to
+`ACEStart';
+
+\quad`options'& the current options record of the interactive process;
+
+\quad`acegens'& a list of strings representing the generators used  by
+{\ACE} (if the names of the generators passed via the  first  argument
+<fgens> of `ACEStart' were all lowercase alphabetic  characters,  then
+`acegens' is the `String' equivalent of <fgens>,  i.e.~`acegens[1]   =
+String(<fgens>[1])' etc.);
+
+\quad`stream' & the IOStream opened for an interactive {\ACE}  process
+initiated via `ACEStart'; and
+
+\quad`enumResult' & 
+the enumeration result (string) without the trailing  newline,  output
+from {\ACE};
+
+\quad`stats'  & a record as output by the function `ACEStats'.
+
+\quad`enforceAsis' & 
+a  boolean  that  is  set  to  `true'  whenever  the   `asis'   option
+(see~"option asis") must  be  set  to  `1'.  It  is  usually  `false'.
+See~"IsACEGeneratorsInPreferredOrder" *Guru Notes* for the details.
+
+\enditems
+
+\>ACEDirectoryTemporary( <dir> ) F
+
+calls the UNIX command `mkdir'  to  create  <dir>,  which  must  be  a
+string, and if  successful  a  directory  object  for  <dir>  is  both
+assigned to `ACEData.tmpdir' and returned. The fields `ACEData.infile'
+and `ACEData.outfile' are also set to be  files  in  `ACEData.tmpdir',
+and on exit from {\GAP} <dir> is removed. Most users will  never  need
+this command;  by  default,  {\GAP}  typically  chooses  a  ``random''
+subdirectory of `/tmp' for  `ACEData.tmpdir'  which  may  occasionally
+have limits on what  may  be  written  there.  `ACEDirectoryTemporary'
+permits the user to choose a directory (object) where one  is  not  so
+limited.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Setting the Verbosity of ACE via Info and InfoACE}
+
+\>`InfoACE' V
+
+The output of the {\ACE} binary is, by default, not displayed. However
+the user may choose to see some, or all, of this output. This is  done
+via the `Info' mechanism  (see  Chapter~"ref:Info  Functions"  in  the
+{\GAP} Reference Manual). For this purpose, there is  the  <InfoClass>
+`InfoACE'. Each line of output from {\ACE} is directed to  a  call  to
+`Info' and will be displayed for the user to see if the `InfoLevel' of
+`InfoACE' is high enough. By default, the `InfoLevel' of `InfoACE'  is
+1, and it is recommended that you leave it at this level,  or  higher.
+Only messages which we think that the user will really want to see are
+directed to `Info' at `InfoACE' level 1. To turn off  *all*  `InfoACE'
+messaging, set the `InfoACE' level to 0  (see~"SetInfoACELevel").  For
+convenience, we provide the function
+
+\>InfoACELevel() F
+
+which returns the current `InfoLevel' of `InfoACE', i.e.~it is  simply
+a shorthand for `InfoLevel(InfoACE)'.
+
+To set the `InfoLevel' of `InfoACE' we also provide
+
+\>SetInfoACELevel( <level> ) F
+\>SetInfoACELevel() F
+
+which for a non-negative integer  <level>,  sets  the  `InfoLevel'  of
+`InfoACE'    to    <level>    (i.e.~it    is    a    shorthand     for
+`SetInfoLevel(InfoACE, <level>)'),  or  with  no  arguments  sets  the
+`InfoACE' level to the default value 1.  Currently,  information  from
+{\ACE} is directed to `Info' at four `InfoACE' levels: 1, 2, 3 and  4.
+The command
+
+\beginexample
+gap> SetInfoACELevel(2);
+\endexample
+
+enables the display of the results line of an enumeration from {\ACE},
+whereas
+
+\beginexample
+gap> SetInfoACELevel(3);
+\endexample
+
+enables the display of  all  of  the  output  from  {\ACE}  (including
+{\ACE}'s  banner,  containing  the  host  machine   information);   in
+particular,  the  progress  messages,  emitted  by  {\ACE}  when   the
+`messages' option (see~"option messages") is set to a non-zero  value,
+will be displayed via `Info'. Finally,
+
+\beginexample
+gap> SetInfoACELevel(4);
+\endexample
+
+enables the display of all the input  directed  to  {\ACE}  (behind  a
+```ToACE> ''' prompt, so you can distinguish it  from  other  output).
+The `InfoACE' level of 4 is really for gurus who are familiar with the
+{\ACE} standalone.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Acknowledgements}
+
+Large parts of this manual,  in  particular  the  description  of  the
+options for running {\ACE}, are directly copied  from  the  respective
+descriptions in the manual~\cite{Ram99} for the standalone version  of
+{\ACE} by Colin Ramsay.  Most  of  the  examples,  in  the  `examples'
+directory and accessed  via  the  `ACEExample'  function,  are  direct
+translations of Colin Ramsay's  `test\#\#\#.in'  files  in  the  `src'
+directory.
+
+Many thanks to Joachim Neub{\accent127u}ser who not only provided  one
+of the early manual drafts and hence a template for the style  of  the
+manual and conceptual hooks for the design of the  Package  code,  but
+also meticulously proof-read  all  drafts  and  made  many  insightful
+comments.
+
+Many thanks also to Volkmar Felsch who, in testing the {\ACE} Package,
+discovered a number of bugs, made a number of important suggestions on
+code improvement, thoroughly checked all the  examples,  and  provided
+the example found at the end of Section~"Steering  ACE  Interactively"
+which  demonstrates  rather  nicely  how  one  can  use  the  function
+`ACEConjugatesForSubgroupNormalClosure'.
+
+Finally, we wish to acknowledge the contribution of Charles Sims.  The
+inclusion of the `incomplete' (see "option incomplete")  and  `lenlex'
+(see~"option lenlex") options, were made in response  to  requests  to
+the  {\GAP}  developers  to  include  such  options  for  coset  table
+functions. Also, the definition of `lenlex' standardisation  of  coset
+tables (see Section~"Coset Table Standardisation Schemes"), is due  to
+him.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Changes from earlier versions}
+
+A reasonably comprehensive history of  the  evolution  of  pre-release
+versions of the {\ACE} Package, is contained in the file `CHANGES'  in
+the `gap' directory. 
+
+The `3.xxx' versions of the {\ACE} Package were compatible with {\GAP}
+4.2, but were built for use with  {\GAP}  4.3.  However,  the  current
+version of the {\ACE} Package requires at least {\GAP} 4.4. Users  who
+still have {\GAP} 4.3 will need  to  use  {\ACE}  4.1.  One  important
+change in {\GAP} from {\GAP} 4.2 to {\GAP} 4.3 that has relevance  for
+{\ACE} Package users is the change of the  default  standard  for  the
+numbering of  cosets  in  a  coset  table  (see  Section~"Coset  Table
+Standardisation Schemes").
+
+\>ACEPackageVersion() F
+
+gives the current version of the {\ACE} Package (i.e.~the {\GAP}  code
+component; the  function  `ACEBinaryVersion'  (see~"ACEBinaryVersion")
+gives details of the C code compilation).
+
+*History of release versions*
+
+\beginlist
+
+\item{`3.001'}
+First release.
+
+\item{`3.002'}
+`ACEIgnoreUnknownDefault' (see~"ACEIgnoreUnknownDefault")  added.
+
+\item{}
+Option `continue'  changed  to  `continu'  (see~"option  continu")  --
+`continue' is a keyword in {\GAP} 4.3.
+
+\item{`3.003'}
+Initial value of `ACEIgnoreUnknownDefault' is now  `true'  (previously
+it was `false').
+
+\item{}
+`ACECosetTableFromGensAndRels' and the non-interactive `ACECosetTable'
+(except when producing an input script via  option  `ACEinfile'),  and
+the non-interactive `ACEStats' which previously  used  files  all  now
+invoke iostreams.
+
+\item{}
+Option `pkgbanner' used to control  the  printing  of  the  banner  on
+loading (see~"Loading the ACE Package").
+
+\item{`4.0'}
+Revised for {\GAP} 4.4, for which the option `pkgbanner' is no  longer
+available (most of its function is now provided by the third  argument
+of the `LoadPackage' function; see~"ref:LoadPackage").
+
+\item{}
+The package version number now has a single decimal  place,  to  avoid
+being confused with the binary version number.
+
+\item{`4.1'}
+Added $M_{12}$ presentation to `res-examples/pgrelfind.g'.
+
+\item{`5.0'}
+Pre-{\GAP} 4.4 compatibility removed.  Now  at  least  {\GAP}  4.4  is
+required. Option `pkgbanner' has been completely removed.
+
+\endlist
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

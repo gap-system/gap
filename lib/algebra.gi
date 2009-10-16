@@ -3,7 +3,7 @@
 #W  algebra.gi                  GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: algebra.gi,v 4.82 2007/08/16 20:35:41 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains generic methods for algebras and algebras-with-one.
 ##
 Revision.algebra_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: algebra.gi,v 4.82 2007/08/16 20:35:41 gap Exp $";
 
 
 #############################################################################
@@ -3277,7 +3277,11 @@ InstallMethod( IsCentral,
 BindGlobal( "FreeAlgebraConstructor", function( name, magma )
     return function( arg )
     local   R,          # coefficients ring
-            names;      # names of the algebra generators
+            names,      # names of the algebra generators
+            M,          # magma
+            A,          # algebra
+            F,          # family
+            i;
 
     # Check the argument list.
     if Length( arg ) = 0 or not IsRing( arg[1] ) then
@@ -3305,15 +3309,50 @@ BindGlobal( "FreeAlgebraConstructor", function( name, magma )
       Error( "usage: ", name, "( <R>, <rank> )\n",
                  "or ", name, "( <R>, <name1>, ... )" );
     fi;
-
+    
+    M := magma( names );
+    
     # Construct the algebra as free magma algebra of a free magma over `R'.
-    R:= FreeMagmaRing( R, magma( names ) );
+    A := FreeMagmaRing( R, M );
 
     # Store the names.
-    ElementsFamily( FamilyObj( R ) )!.names:= names;
+    F := ElementsFamily( FamilyObj( A ) );
+    F!.names:= names;
+    
+    # Install grading
+    if HasOne(M) then i := 0; else i := 1; fi;
+    SetGrading( A, rec(min_degree := i,
+                                     max_degree := infinity,
+                                     source := Integers,
+                                     hom_components := function(degree)
+        local i, d, B, x, y;
+        if HasOne(M) then
+            B := [[One(M)],GeneratorsOfMagmaWithOne(M)];
+        else
+            B := [[],GeneratorsOfMagma(M)];
+        fi;
+        for d in [2..degree] do
+            Add(B,[]);
+            if IsAssociative(M) then
+                for x in B[2] do for y in B[d] do
+                    Add(B[d+1],x*y);
+                od; od;
+            else
+                for i in [2..d] do
+                    for x in B[i] do for y in B[d+2-i] do
+                        Add(B[d+1],x*y);
+                    od; od;
+                od;
+            fi;
+        od;
+        x := Zero(R);
+        y := [One(R)];
+        return VectorSpace(R, List(B[degree+1],
+                       p->ElementOfMagmaRing( F, x, y, [p] )));
+    end));
 
     # Return the result.
-    return R;
+    return A;
     end;
 end );
 

@@ -1,0 +1,261 @@
+#!/usr/bin/env perl
+
+$pwd = `pwd`;
+chomp $pwd;
+$tstdir = "$pwd/tst";
+$i = "";
+$tmpdir = "/tmp/testPq";
+while ( (-d "$tmpdir$i") && !(-W "$tmpdir$i") ) { $i++ }
+$tmpdir .= $i;
+system("rm -rf $tmpdir; mkdir $tmpdir");
+print "Made dir: $tmpdir\n";
+
+$ANUPQversion = `cat VERSION`;
+$pqbinaryversion = "1.8";
+$AutPGrpversion = "1.2";
+chomp $ANUPQversion;
+
+$GAPversion = "4.4"; # required GAP version for ANUPQ
+
+print "Testing installation of ANUPQ Package (version $ANUPQversion)\n\n",
+      "The first two tests check that the pq C program compiled ok.\n";
+$pq = "$pwd/bin/@GAPARCH@/pq";
+### standalone tests ###############################################
+# Test 1
+syswrite STDOUT, "Testing the pq binary ...",
+         length( "Testing the pq binary ..." );
+check("test1.pga", "");
+# Test 2
+syswrite STDOUT, "Testing the pq binary's stack size ...",
+         length( "Testing the pq binary's stack size ..." );
+check("test2.pga", "");
+
+print "The pq C program compiled ok! We test it's the right one below.\n\n",
+      "The next tests check that you have the right version of GAP\n",
+      "for version $ANUPQversion of the ANUPQ package and that GAP is finding\n",
+      "the right versions of the ANUPQ and AutPGrp packages.\n\n";
+### GAP - ANUPQ package tests #####################################
+# Test GAP
+print "Checking GAP ...\n";
+$pq_does_not_know_GAP = 0;
+if ( ($gap = $ENV{ANUPQ_GAP_EXEC}) ne "" ) {
+  print " Found ANUPQ_GAP_EXEC environment variable set to: $gap\n"; 
+} elsif (-e "$tstdir/GAP" && (`wc -w $tstdir/GAP` + 0) ) {
+  open(GAP, "<$tstdir/GAP");
+  chomp($gap = <GAP>);
+  print " pq binary made with GAP set to: $gap\n";
+} else {
+  $pq_does_not_know_GAP = 1;
+  chomp($gap = `which gap4` || `which gap`);
+  print " Found gap: $gap\n";
+}
+open( GAPIN, ">$tmpdir/gapinput");
+print GAPIN
+      "if VERSION[1] <> '4' then\n",
+      "  #GAP 3\n",
+      "  CompareVersionNumbers := function(arg) return VERSION{[7..11]};end;\n",
+      "  TestPackageAvailability := function(arg) return \"GAP 3\"; end;\n",
+      "fi;\n",
+      "CompareVersionNumbers(VERSION, \"$GAPversion\");\n",
+      "VERSION;\n",
+      "SetInfoLevel(InfoWarning, 0); # switch off warning messages\n",
+      "if not CompareVersionNumbers(VERSION, \"4.4\") then\n",
+      "  UPDATED_PACKAGES.anupq.safeversion := \"\";;   # avoid unsafe msg\n",
+      "  UPDATED_PACKAGES.autpgrp.safeversion := \"\";; # avoid unsafe msg\n",
+      "  LoadPackage := RequirePackage;\n",
+      "fi;\n",
+      "TestPackageAvailability(\"anupq\", \"$ANUPQversion\");\n",
+      "if LoadPackage(\"anupq\", \"$ANUPQversion\") = true then\n",
+      "  if CompareVersionNumbers(VERSION, \"4.4\") then\n",
+      "    Print(GAPInfo.PackagesInfo.anupq[1].Version, \"\\n\");\n",
+      "  else\n",
+      "    Print(PACKAGES_VERSIONS.anupq, \"\\n\");\n",
+      "  fi;\n",
+      "  Print(ANUPQData.version, \"\\n\");\n",
+      "fi;\n",
+      "TestPackageAvailability(\"autpgrp\", \"\");\n",
+      "TestPackageAvailability(\"autpgrp\", \"$AutPGrpversion\");\n",
+      "if LoadPackage(\"autpgrp\", \"$AutPGrpversion\") = true then\n",
+      "  if CompareVersionNumbers(VERSION, \"4.4\") then\n",
+      "    Print(GAPInfo.PackagesInfo.autpgrp[1].Version);\n",
+      "  else\n",
+      "    Print(PACKAGES_VERSIONS.autpgrp);\n",
+      "  fi;\n",
+      "elif LoadPackage(\"autpgrp\") = true then\n",
+      "  if CompareVersionNumbers(VERSION, \"4.4\") then\n",
+      "    Print(GAPInfo.PackagesInfo.autpgrp[1].Version, \"\\n\");\n",
+      "  else\n",
+      "    Print(PACKAGES_VERSIONS.autpgrp, \"\\n\");\n",
+      "  fi;\n",
+      "fi;\n";
+close GAPIN;
+print " Starting GAP to determine version and package availability ...\n"; 
+system("$gap -A -q -r < $tmpdir/gapinput > $tmpdir/gapout");
+#print "$tmpdir/gapinput:\n";
+#system("more $tmpdir/gapinput");
+#print "$tmpdir/gapoutput:\n";
+#system("more $tmpdir/gapoutput");
+open(GAPOUT, "<$tmpdir/gapout");
+$line = <GAPOUT>;
+while ( $line =~ /^\#W/ ) {
+  $line = <GAPOUT>;
+}
+$version = <GAPOUT>;
+if ( $line !~ /(true|false)/ ) { # the GAP 3 case
+  $version = $line;
+}
+$version =~ s/"//g;
+chomp $version;
+if ( $line =~ /true/ ) {
+  print "  GAP version ($version) ... OK.\n";
+} elsif ( $line =~ /false/ ) {
+  die "  GAP version ($version) ... too old! At least GAP $GAPversion required!\n";
+} else { 
+  die "  GAP version ($version) ... please install GAP 4,",
+      " at least version $GAPversion required!\n\n",
+      "  If you already have a new enough version of GAP 4 installed\n",
+      "  then you probably need to compile pq with an",
+      " explicit GAP path, e.g.\n\n",
+      "    make GAP=/usr/local/bin/gap4\n";
+}
+if ( ($line = <GAPOUT>) !~ /(fail|#I  Error)/ ) {
+  while ( ($line = <GAPOUT>) =~ /^#I/ ) { }
+  chomp ($ANUPQfoundversion = $line);
+  if ($ANUPQfoundversion == $ANUPQversion) {
+    print "  GAP found ANUPQ package (version $ANUPQfoundversion) ... good.\n";
+  } else { # $ANUPQfoundversion > $ANUPQversion
+    print "  GAP found ANUPQ package in a more recent version ",
+            "($ANUPQfoundversion) ...\n",
+          "   Please check your installation!\n";
+  }
+} else {
+  die "  GAP did not find version $ANUPQversion of ANUPQ package ... \n".
+      "   Please check installation instructions for ANUPQ package.\n";
+}
+if ( ($line = <GAPOUT>) !~ /(fail|#I  Error)/ ) {
+  chomp ($pqbinaryfoundversion = $line);
+  if ($pqbinaryversion eq $pqbinaryfoundversion) {
+    print "  GAP found pq binary (version $pqbinaryfoundversion) ... good.\n";
+  } else {
+    die "  GAP found pq binary (version $pqbinaryfoundversion) ... not current!\n",
+        "   ANUPQ $ANUPQversion uses version $pqbinaryversion of ",
+           "the pq program.\n",
+        "   It seems an earlier installation has been found?!\n";
+  }
+} else {
+  die "  GAP does not have the appropriate pq program installed ... \n",
+      "   ANUPQ $ANUPQversion uses version $pqbinaryversion of \n",
+      "   the pq program.\n";
+}
+if ( ($line = <GAPOUT>) !~ /(fail|#I  Error)/ ) {
+  if ( ($line = <GAPOUT>) !~ /(fail|#I  Error)/ ) {
+    chomp ($AutPGrpfoundversion = <GAPOUT>);
+    print "  GAP found AutPGrp package (version $AutPGrpfoundversion) ... good.\n";
+  } else {
+    chomp ($AutPGrpfoundversion = <GAPOUT>);
+    die "  GAP found AutPGrp package (version $AutPGrpfoundversion) ... too old!\n",
+        "   The ANUPQ package requires at least version $AutPGrpversion of ",
+           "the AutPGrp package.\n";
+  }
+} else {
+  die "  GAP does not have the AutPGrp package installed ... \n",
+      "   The ANUPQ package requires the AutPGrp package \n",
+      "   (at least version $AutPGrpversion) for the computation of \n",
+      "   automorphism groups.\n";
+}
+close GAPOUT;
+print " GAP is OK.\n\n";
+# Test 3
+syswrite STDOUT, "Checking the link between the pq binary and GAP ...",
+         length( "Checking the link between the pq binary and GAP ..." );
+$pq_does_not_know_GAP &&
+  die " The environment variable: ANUPQ_GAP_EXEC is not set;\n".
+      " and the pq binary was made with: make ... GAP=\"\" ??\n".
+      " Please check the ANUPQ package installation instructions\n".
+      " and either set the environment variable: ANUPQ_GAP_EXEC, or\n".
+      " re-make the pq binary setting GAP to a valid path.\n";
+check("test3.pga", "");
+# Test 4
+syswrite STDOUT,"Testing the standard presentation part of the pq binary ...",
+         length("Testing the standard presentation part of the pq binary ...");
+check("test4.sp", "-i -k ");
+# Test 5
+syswrite STDOUT, "Doing p-group generation (final GAP/ANUPQ) test ...",
+         length( "Doing p-group generation (final GAP/ANUPQ) test ..." );
+open( GAPIN, ">$tmpdir/gapinput");
+print GAPIN "SetInfoLevel(InfoWarning, 0); LoadPackage( \"anupq\" );;\n",
+            "SetInfoLevel(InfoWarning, 1);\n",
+            "SetInfoLevel(InfoANUPQ, 1);\n",
+            "ReadTest( \"tst/anupga.tst\" );\n";
+close GAPIN;
+system("$gap -b < $tmpdir/gapinput > $tmpdir/gapout");
+open(GAPOUT, "<$tmpdir/gapout");
+$seen_gap_prompt = 0;
+while (<GAPOUT>) {
+  $seen_gap_prompt = 1 if ( /^gap> /);
+  next if ( !$seen_gap_prompt );
+  if ( /^((gap> )*(\#I --|[+] |$)|true$)/ ) {
+    next;
+  } elsif( /Pcgs\(\[ f1, f2, f3, f4 \]\) -> \[ / ) {
+    next;
+  } else {
+    print " error.\n";
+    die   " Please email the file: $tmpdir/gapout\n",
+          " to Werner.Nickel\@mathematik.tu-darmstadt.de\n";
+  }
+}
+print " OK.\n",
+      "Tests complete.\n";
+system("rm -rf $tmpdir; mkdir $tmpdir");
+print "Removed dir: $tmpdir\n",
+      "Enjoy using your functional ANUPQ package!\n";
+
+sub check {
+  my ($file, $opts) = @_;
+  (my $outfile = $file) =~ s/[.](pga|sp)/.out/;
+  # run pq over test file and clean out system-dependent stuff
+  system("( cd $tmpdir; ".
+         "  $pq $opts< $tstdir/$file ".
+         "  | grep -v seconds | grep -v '#I --' ".
+         # sometimes emitted by gap-dev if a C source file CRC is out-of-date
+         "  | grep -v '#W ' ". 
+         # sometimes Info-ed by other packages
+         "  | grep -v 'GAPDoc not available' ".
+         "  | grep -v '#I  default' | grep -v '#I  a method' ".
+         "  | grep -v '#I  underly' | grep -v '#I  probably' ".
+         "  | grep -v ' g1, g2' | grep -v '  g18, g19, g20' ".
+         "  > $outfile )");
+
+  # now the only differences with the master copy should be due to pq's banner
+  my @diff = `diff $tstdir/out/$outfile $tmpdir/$outfile`;
+  if ($diff[0] =~ /^0a1,2/) {
+    @diff = splice(@diff, 3); #remove first three difference lines
+  } 
+
+  if (@diff == 0) {
+    print " OK.\n";
+  } else {
+    #print " differences:\n @diff";
+    if ( $file =~ /3/ ) {
+      if ($ENV{ANUPQ_GAP_EXEC} ne "") {
+        die " Please check the ANUPQ package installation instructions.\n"
+           ." The setting of the environment variable: ANUPQ_GAP_EXEC\n"
+           ." is not a valid path for GAP.\n";
+      } else {
+        die " Please check the ANUPQ package installation instructions.\n"
+           ." Value of <path> when the pq was made with: make ... GAP=<path>\n" 
+           ." is not a valid path for GAP.\n";
+      }
+    } else {
+      if ( $file =~ /4/ && @diff == 10 && 
+	   !(grep { !/^\d+d\d+$/ && !/^<.*automorphism group/ } @diff) ) {
+	#differences due to not compiling with gmp
+        print " OK.\n";
+      } else {
+        print " error.\n";
+        die   " Please email the file: $tmpdir/$outfile\n",
+              " to Werner.Nickel\@mathematik.tu-darmstadt.de\n";
+      }
+    }
+  }
+}

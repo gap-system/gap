@@ -3,7 +3,7 @@
 #W  polyfinf.gi                 GAP Library                      Frank Celler
 #W                                                         & Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: polyfinf.gi,v 4.40 2004/12/10 21:04:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains functions for polynomials over finite fields
 ##
 Revision.polyfinf_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: polyfinf.gi,v 4.40 2004/12/10 21:04:57 gap Exp $";
 
 
 #############################################################################
@@ -104,7 +104,7 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d,powc,fc,fam;
 
   # in the following <pow> = x ^ (q ^ (<deg>+1))
   deg := 0;
-  #px  := LaurentPolynomialByExtRep(
+  #px  := LaurentPolynomialByExtRepNC(
   #	      FamilyObj(f), [One(br)],1, ind );
   #  pow := px;
   px:=[Zero(br),-One(br)];
@@ -239,7 +239,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
   if v[2]=0 then
     k:=1/l*f;
   else
-    k:=LaurentPolynomialByExtRep( FamilyObj(f), 1/l*v[1],0, ind );
+    k:=LaurentPolynomialByExtRepNC( FamilyObj(f), 1/l*v[1],0, ind );
   fi;
   v   := v[2];
 
@@ -567,12 +567,13 @@ end);
 #F  FFPUpperBoundOrder( <R>, <f> )  . . . . . . . . . . . . . . . . . . local
 ##
 ##  Computes the  irreducible factors f_i  of a polynomial  <f>  over a field
-##  with  p^n  elements.  It returns a list  l of triples (f_i,a_i,pp_i) such
+##  with  p^n  elements. It returns a list l of quadruples (f_i,a_i,pp_i,pb_i) such
 ##  that the p-part  of x  mod  f_i is p^a_i and  the p'-part divides d_i for
-##  which the prime powers pp_i are given.
+##  which the prime powers pp_i and not-yet-prime powers pb_i (in case
+##  factorization fails) are given.
 ##
 BindGlobal("FFPUpperBoundOrder",function( R, f )
-local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg;
+local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
 
   # factorize <f> into irreducible factors
   fs := Collected( Factors( R, f ) );
@@ -583,23 +584,46 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg;
   # <phi>(m) gives ( minpol of 1^(1/m) )( F.char )
   # cache values
   if not IsBound(F!.FFPUBOVAL) then
-    F!.FFPUBOVAL:=[ PrimePowersInt( Characteristic(F)-1 ) ];
+    F!.FFPUBOVAL:=[ [PrimePowersInt( Characteristic(F)-1 ),[]] ];
   fi;
 
   L:=F!.FFPUBOVAL;
   phi := function( m )
-      local	x, d, pp, i;
+      local x, pp, a, good,bad, d, i;
       if not IsBound( L[m] )  then
+	  bad:=[];
 	  x := Characteristic(F)^m-1;
 	  for d  in Difference( DivisorsInt( m ), [m] )  do
 	      pp := phi( d );
+	      if Length(pp[2])>0 then
+		bad:=ProductPP(pp[2],bad);
+	      fi;
+	      pp:=pp[1]; # nothing bad can happen here as d is small
 	      for i  in [ 1 .. Length(pp)/2 ]  do
 		  x := x / pp[2*i-1]^pp[2*i];
 	      od;
 	  od;
-	  L[m] := PrimePowersInt( x );
+	  a := PrimePowersInt( x:quiet );
+	  good:=[];
+	  for i in [1,3..Length(a)-1] do
+	    if IsPrimeInt(a[i]) then
+	      Add(good,a[i]);
+	      Add(good,a[i+1]);
+	    else
+	      Add(bad,a[i]);
+	      Add(bad,a[i+1]);
+	    fi;
+	  od;
+	  good:=[good,bad];
+	  if Length(good[1])<Length(a) then
+	    Info(InfoWarning,1,"disregarded nonfactorable",bad);
+	  else
+	    L[m]:=good;
+	  fi;
+      else
+	good:=L[m];
       fi;
-      return L[m];
+      return good;
   end;
 
   # compute a_i and pp_i
@@ -615,15 +639,18 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg;
       # p'-part: (p^n)^d_i-1/(p^n-1) where d_i is the degree of f_i
       d   := DegreeOfLaurentPolynomial(fs[i][1]);
       pp  := [];
+      pb:=[];
       deg := DegreeOverPrimeField(F);
       for f  in DivisorsInt( d*deg )  do
 	  if deg mod f <> 0  then
-	      pp := ProductPP( phi(f), pp );
+	      t:=phi(f);
+	      pp := ProductPP( t[1], pp );
+	      pb := ProductPP( t[2], pb );
 	  fi;
       od;
 
       # add <a> and <pp> to <B>
-      Add( B, [fs[i][1],a,pp] );
+      Add( B, [fs[i][1],a,pp,pb] );
   od;
 
   # OK, that's it
@@ -643,7 +670,7 @@ InstallOtherMethod( ProjectiveOrder,
     "divide and conquer for univariate polynomials", true,
     [ IsUnivariatePolynomial ],0,
 function( f )
-local   v,  R,  U,  x,  O,  n,  g,  q,  o;
+local   v,  R,  U,  x,  O,  n,  g,  q,  o,rem,bas;
 
   # <f> must not be divisible by x.
   v := CoefficientsOfLaurentPolynomial(f);
@@ -668,8 +695,22 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o;
   O := [];
   n := 1;
   for g  in U  do
+      if Length(g[3])=0 and Length(g[4])>0 then
+	# in this case `FFPOrderKnownDividend' might run in an infinite
+	# recursion.
+  Error("cannot compute order due to limits in the integer factorization!");
+      fi;
       #o := FFPOrderKnownDividend(R,EuclideanRemainder(R,x,g[1]),g[1],g[3]);
-      o := FFPOrderKnownDividend(R,QuotRemLaurpols(x,g[1],2),g[1],g[3]);
+      bas:=QuotRemLaurpols(x,g[1],2);
+      o := FFPOrderKnownDividend(R,bas,g[1],g[3]);
+      if Length(g[4])>0 then
+	q:=DegreeOfLaurentPolynomial(PowerMod(bas,o[1],g[1]));
+	if not(q=0 or q=infinity) then
+  # in fact x^o[1] is not congruent to a constant -- we really need the
+  # primes.
+  Error("cannot compute order due to limits in the integer factorization!");
+	fi;
+      fi;
       q := Characteristic(CoefficientsRing(R))^g[2];
       n := LcmInt( n, o[1]*q );
       Add( O, [ o[1]*q, o[2]^q ] );

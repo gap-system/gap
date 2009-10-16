@@ -2,7 +2,7 @@
 ##
 #W  mgmideal.gd                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mgmideal.gd,v 4.3 2002/04/15 10:05:03 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the declaration of operations for magma ideals.
 ##
 Revision.mgmideal_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: mgmideal.gd,v 4.3 2002/04/15 10:05:03 sal Exp $";
 
 #############################################################################
 #############################################################################

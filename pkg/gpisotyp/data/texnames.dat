@@ -1,0 +1,170 @@
+#############################################################################
+##
+#W  texnames.dat         GAP 4 package `gpisotyp'               Thomas Breuer
+##
+#H  @(#)$Id: texnames.dat,v 1.2 2002/05/13 15:43:29 gap Exp $
+##
+#Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the {\LaTeX} names defined by the package.
+##  It is notified via an `AUTO' statement in `gap/stdnames.gd'.
+##
+Revision.( "gpisotyp/gap/htmnames_dat" ) :=
+    "@(#)$Id: texnames.dat,v 1.2 2002/05/13 15:43:29 gap Exp $";
+
+
+#############################################################################
+##
+#V  LaTeXNamesOfGroups
+##
+##  When this file is read automatically, we set the components `sortnames'
+##  and `TestNotificationsOfNames' initially to `false';
+##  after reading the file, the components are set to `true'.
+##  (The consistency checks are performed when the file is read from
+##  `tst/stdnames.tst'.)
+##
+if IsReadOnlyGlobal( "LaTeXNamesOfGroups" ) then
+  MakeReadWriteGlobal( "LaTeXNamesOfGroups" );
+  UnbindGlobal( "LaTeXNamesOfGroups" );
+fi;
+LaTeXNamesOfGroups := EmptyNameTranslatorObject( rec(
+    NormalizedName           := LowercaseString,
+    ParseFunction            := ParseForwardsWithSuffix,
+    SortNames                := GpIsoTypGlobals.SortNames,
+    TestNotificationsOfNames := GpIsoTypGlobals.TestNotificationsOfNames ) );
+MakeReadOnlyGlobal( "LaTeXNamesOfGroups" );
+
+
+#############################################################################
+##
+##  Introduce shorthands that will be removed again in the end.
+##
+NILNOG:= NotifyIndividualLaTeXNameOfGroup;
+NPLNOG:= NotifyParametrizedLaTeXNameOfGroup;
+
+
+#############################################################################
+##
+##  cyclic groups C<n>, $<n> \geq 1$
+##  alternating groups A<n>, $<n> \geq 1$
+##  symmetric groups S<n>, $<n> \geq 1$
+##
+for p in [ "C","A","S" ] do
+  NPLNOG( [ p, IsDigitChar ],
+          [ Concatenation( p, "_{" ), IsDigitChar, "}" ],
+          [ 2, "IsPosInt" ],
+          [ 2, "IdFunc", 2 ] );
+od;
+
+
+#############################################################################
+##
+##  sporadic simple groups
+##
+for entry in StandardizerForNamesOfGroups.SporadicSimpleGroupInfo do
+  pos:= PositionProperty( entry[1], IsDigitChar );
+  if pos <> fail then
+    NILNOG( entry[1], Concatenation( entry[1]{ [ 1 .. pos-1 ] }, "_{",
+            entry[1]{ [ pos .. Length( entry[1] ) ] }, "}" ) );
+  elif entry[1] <> "McL" then
+    NILNOG( entry[1], entry[1] );
+  else
+    NILNOG( "McL", "M^cL" );
+  fi;
+od;
+
+
+#############################################################################
+##
+##  projective special linear groups L<n>(<q>), <q> a prime power
+##  projective special unitary groups U<n>(<q>), <q> a prime power
+##  projective symplectic groups S<n>(<q>), <n> even, <q> a prime power
+##  orthogonal groups O<n>(<q>), <n> odd, <q> an odd prime power
+##
+for p in [ ["L","IsPosInt"], ["U","IsPosInt"], ["S","IsEvenInt"],
+           ["O","IsOddInt"] ] do
+  NPLNOG( [ p[1], IsDigitChar, "(", IsDigitChar, ")" ],
+          [ Concatenation( p[1], "_{" ), IsDigitChar, "}(",
+            IsDigitChar, ")" ],
+          [ 2, p[2],
+            4, "IsPrimePowerInt" ],
+          [ 2, "IdFunc", 2,
+            4, "IdFunc", 4 ] );
+od;
+
+
+#############################################################################
+##
+##  orthogonal groups O<n>+(<q>), <n> even, <q> a prime power
+##  orthogonal groups O<n>-(<q>), <n> even, <q> a prime power
+##
+for p in [ "+", "-" ] do
+  NPLNOG( [ "O", IsDigitChar, Concatenation( p, "(" ), IsDigitChar, ")" ],
+          [ Concatenation( "O^", p, "_{" ), IsDigitChar,
+                "}(", IsDigitChar, ")" ],
+          [ 2, "IsEvenInt",
+            4, "IsPrimePowerInt" ],
+          [ 2, "IdFunc", 2,
+            4, "IdFunc", 4 ] );
+od;
+
+
+#############################################################################
+##
+##  exceptional groups F4(<q>), <q> a prime power
+##  exceptional groups G2(<q>), <q> a prime power
+##  exceptional groups E<n>(<q>), $<n> \in \{ 6, 7, 8 \}$, <q> a prime power
+##
+for p in [ ["F","4"], ["G","2"], ["E","6"], ["E","7"], ["E","8"] ] do
+  NPLNOG( [ Concatenation( p[1], p[2], "(" ), IsDigitChar, ")" ],
+          [ Concatenation( p[1], "_{", p[2], "}(" ),
+            IsDigitChar, ")" ],
+          [ 2, "IsPrimePowerInt" ],
+          [ 2, "IdFunc", 2 ] );
+od;
+
+
+#############################################################################
+##
+##  exceptional groups 2E6(<q>), <q> a prime power
+##  exceptional groups 3D4(<q>), <q> a prime power
+##  exceptional groups 2G2(<q>), <q> a prime power
+##  exceptional groups 2F4(<q>), <q> a power of $2$
+##
+for p in [ ["2","E","6"], ["3","D","4"], ["2","G","2"], ["2","F","4"] ] do
+  NPLNOG( [ Concatenation( p[1], p[2], p[3], "(" ), IsDigitChar, ")" ],
+          [ Concatenation( "{}^{", p[1], "}", p[2], "_{", p[3],
+                "}(" ), IsDigitChar, ")" ],
+          [ 2, "IsPrimePowerInt" ],
+          [ 2, "IdFunc", 2 ] );
+od;
+
+
+#############################################################################
+##
+##  exceptional Suzuki groups Sz(<q>), <q> an odd power of $2$
+##
+NPLNOG( [ "Sz(", IsDigitChar, ")" ],
+        [ "Sz(", IsDigitChar, ")" ],
+        [ 2, "IsPrimePowerInt" ],
+        [ 2, "IdFunc", 2 ] );
+
+
+#############################################################################
+##
+##  Remove the shorthands,
+##  sort the lists, and reset the components of the name translator object.
+##
+Unbind( NILNOG );
+Unbind( NPLNOG );
+
+SortParallel( LaTeXNamesOfGroups.IndividualAdmissibleNames,
+              LaTeXNamesOfGroups.IndividualTranslatedNames );
+LaTeXNamesOfGroups.SortNames := true;
+LaTeXNamesOfGroups.TestNotificationsOfNames := true;
+
+
+#############################################################################
+##
+#E
+

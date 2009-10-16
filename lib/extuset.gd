@@ -2,7 +2,7 @@
 ##
 #W  extuset.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: extuset.gd,v 4.6 2002/04/15 10:04:39 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file declares the operations for external upper sets.
 ##
 Revision.extuset_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: extuset.gd,v 4.6 2002/04/15 10:04:39 sal Exp $";
 
 
 #############################################################################

@@ -1,0 +1,753 @@
+<!-- $Id: theory.xml,v 1.19 2008/01/28 14:39:10 alexk Exp $ -->
+
+<!-- ********************theory******************** -->
+
+<Chapter Label="Theory">
+<Heading>The basic theory behind &Wedderga;</Heading>    
+
+
+In this chapter we describe the theory that is behind the algorithms used by &Wedderga;. <P/>
+
+All the rings considered in this chapter are associative and have an identity. <P/>
+
+We use the following notation: <M>&QQ;</M> denotes the field of rationals and <M>\mathbb F_q</M> the finite field 
+of order <M>q</M>. For every positive integer <M>k</M>, we denote a complex <M>k</M>-th primitive root 
+of unity by <M>\xi_k</M> and so <M>&QQ;(\xi_k)</M> is the <M>k</M>-th cyclotomic extension of <M>&QQ;</M>.
+
+<Section Label="GroupRings">
+<Heading>Group rings and group algebras</Heading>
+
+<Index>group ring</Index>
+Given a group <M>G</M> and a ring <M>R</M>, the <E>group ring</E> 
+<M>RG</M> over the group <M>G</M> with coefficients in <M>R</M> is the ring whose underlying additive 
+group is a right <M>R-</M>module with basis <M>G</M> such that the product is defined by the 
+following rule
+  <Display> 
+  (gr)(hs)=(gh)(rs)
+  </Display>
+for <M>r,s \in R</M> and <M>g, h \in G</M>, and extended to <M>RG</M> by linearity.
+<P/>
+
+<Index>group algebra</Index>
+A <E>group algebra</E> is a group ring in which the coefficient ring is a field.
+
+</Section>
+
+<!-- ********************************************************* -->
+
+
+<Section Label="Semisimple">
+<Heading>Semisimple group algebras</Heading>
+
+<Index>semisimple ring</Index>
+
+We say that a ring <M>R</M> is semisimple if it is a direct sum of simple 
+left (alternatively right) ideals or equivalently if <M>R</M> is isomorphic 
+to a direct product of simple algebras each one isomorphic to a matrix ring 
+over a division ring.
+<P/>
+ 
+By Maschke's Theorem, if <M>G</M> is a finite group then the group algebra 
+<M>FG</M> is semisimple if and only the characteristic of the coefficient 
+field <M>F</M> does not divide the order of <M>G</M>.
+<P/>
+
+In fact, an arbitrary group ring <M>RG</M> is semisimple if and only if the 
+coefficient ring <M>R</M> is semisimple, the group <M>G</M> is finite and 
+the order of <M>G</M> is invertible in <M>R</M>.
+<P/>
+
+Some authors use the notion semisimple ring for rings with zero Jacobson 
+radical. To avoid confusion we usually refer to semisimple rings as 
+semisimple artinian rings.
+
+</Section>
+
+
+<!-- ********************************************************* -->
+
+
+<Section Label="WedDec">
+<Heading>Wedderburn decomposition</Heading>
+
+<Index>Wedderburn decomposition</Index>
+<Index>Wedderburn components</Index>
+
+If <M>R</M> is a <E>semisimple ring</E> (<Ref Sect="Semisimple" />) then the <E>Wedderburn decomposition</E> of 
+<M>R</M> is the decomposition of <M>R</M> as a direct product of simple algebras. 
+The factors of this Wedderburn decomposition are called <E>Wedderburn components</E>
+of <M>R</M>. 
+Each Wedderburn component of <M>R</M> is of the form <M>Re</M> for <M>e</M> a <E>primitive central 
+idempotent</E> (<Ref Sect="Idempotents" />) of <M>R</M>.
+<P/> 
+
+Let <M>FG</M> be a <E>semisimple group algebra</E> (<Ref Sect="Semisimple" />).
+If <M>F</M> has positive characteristic, then the Wedderburn components of <M>FG</M>
+are matrix algebras over finite extensions of <M>F</M>.
+If <M>F</M> has zero characteristic then by the 
+<E>Brauer-Witt Theorem</E> <Cite Key="Y" />, 
+the <E>Wedderburn components</E> of <M>FG</M> are <E>Brauer equivalent</E> 
+(<Ref Sect="Brauer" />)
+to <E>cyclotomic algebras</E> (<Ref Sect="Cyclotomic" />). <P/> 
+
+The main functions of &Wedderga; compute the Wedderburn components of a semisimple group algebra <M>FG</M>,
+such that the coefficient field is either an abelian number field (i.e. a subfield of a finite cyclotomic extension 
+of the rationals) or a finite field. 
+In the finite case, the Wedderburn components are matrix algebras over finite fields and so can be described by the 
+size of the matrices and the size of the finite field.
+<P/>
+
+In the zero characteristic case each Wedderburn component <M>A</M> is <E>Brauer equivalent</E> (<Ref Sect="Brauer"/>)
+to a <E>cyclotomic algebra</E> (<Ref Sect="Cyclotomic" />) 
+and therefore <M>A</M> is a 
+(possibly fractional) matrix algebra over <E>cyclotomic algebra</E> 
+and can be described numerically in one of the following three forms:
+  <Display>
+  [n,K],
+  </Display> 
+
+  <Display>
+  [n,K,k,[d,\alpha,\beta]],
+  </Display>
+  
+  <Display>
+  [n,K,k,[d_i,\alpha_i,\beta_i]_{i=1}^m, [\gamma_{i,j}]_{1\le i &lt; j \le n} ],
+  </Display>
+where <M>n</M> is the matrix size, <M>K</M> is the centre of <M>A</M> (a finite field extension of <M>F</M>) 
+and the remaining data are integers whose interpretation is explained in <Ref Sect="NumDesc" />.
+<P/>
+
+In some cases (for the zero characteristic coefficient field) the size <M>n</M> 
+of the matrix algebras is not a positive integer but a positive rational number. 
+This is a consequence of the fact that the <E>Brauer-Witt Theorem</E> 
+<Cite Key="Y" /> only ensures that each <E>Wedderburn component</E> 
+(<Ref Sect="WedDec" />) of a semisimple group algebra is Brauer equivalent 
+(<Ref Sect="Brauer" />) to a <E>cyclotomic algebra</E> (<Ref Sect="Cyclotomic" />), 
+but not necessarily isomorphic to a full matrix algebra of a cyclotomic algebra. 
+For example, a Wedderburn component <M>D</M> of a group algebra can be a division 
+algebra but not a cyclotomic algebra. In this case <M>M_n(D)</M> is a cyclotomic 
+algebra <M>C</M> for some <M>n</M> and therefore <M>D</M> can be described
+as <M>M_{1/n}(C)</M> (see last Example in <Ref Attr="WedderburnDecomposition" />).
+<P/> 
+
+The main algorithm of &Wedderga; is based on a computational oriented proof of the Brauer-Witt Theorem
+due to Olteanu <Cite Key="O" /> which uses previous work by Olivieri, del Río and Simón <Cite Key="ORS" /> 
+for rational group algebras of <E>strongly monomial groups</E> 
+(<Ref Sect="StMon" />). 
+
+</Section>
+
+<!-- ********************************************************* -->
+
+
+<Section Label="Idempotents">
+<Heading>Characters and primitive central idempotents</Heading>
+
+<Index>primitive central idempotent</Index>
+<Index>field of character values</Index>
+
+A <E>primitive central idempotent</E> of a ring <M>R</M> is a non-zero central idempotent 
+<M>e</M> which cannot be written as the sum of two non-zero central idempotents 
+of <M>Re</M>, or equivalently, such that <M>Re</M> is indecomposable as a direct 
+product of two non-trivial two-sided ideals.  <P/>
+
+The <E>Wedderburn components</E> (<Ref Sect="WedDec" />) of a semisimple ring 
+<M>R</M> are the rings of the form <M>Re</M> for <M>e</M> running over the set 
+of primitive central idempotents of <M>R</M>. <P/>
+
+Let <M>FG</M> be a <E>semisimple group algebra</E> (<Ref Sect="Semisimple" />)
+and <M>\chi</M> an irreducible character 
+of <M>G</M> (in an algebraic closure of <M>F</M>).
+Then there is a unique Wedderburn component <M>A=A_F(\chi)</M> of <M>FG</M> such that <M>\chi(A)\ne 0</M>. 
+Let <M>e_F(\chi)</M> denote the unique primitive central idempotent of <M>FG</M> in <M>A_F(\chi)</M>, 
+that is the identity of <M>A_F(\chi)</M>, i.e. 
+    <Display>
+    A_F(\chi)=FGe_F(\chi).
+    </Display>
+
+The centre of <M>A_F(\chi)</M> is <M>F(\chi)=F(\chi(g):g \in G)</M>, the <E>field of character values</E> of 
+<M>\chi</M> over <M>F</M>. <P/>
+
+The map <M>\chi \mapsto A_F(\chi)</M> defines a surjective map from the set of irreducible characters of 
+<M>G</M> (in an algebraic closure of <M>F</M>) onto the set of Wedderburn components of <M>FG</M>. 
+<P/>
+
+Equivalently, the map <M>\chi \mapsto e_F(\chi)</M> defines a surjective map from the set of irreducible characters 
+of <M>G</M> (in an algebraic closure of <M>F</M>) onto the set of primitive central idempontents of <M>FG</M>. <P/>
+
+If the irreducible character <M>\chi</M> of <M>G</M> takes values in <M>F</M> then 
+  <Display>
+  e_F(\chi) = e(\chi) = \frac{\chi(1)}{|G|} \sum_{g\in G} \chi(g^{-1}) g.
+  </Display><P/>  
+In general one has 
+  <Display>
+  e_F(\chi) = \sum_{\sigma \in Gal(F(\chi)/F)} e(\sigma \circ \chi).
+  </Display><P/>  
+
+</Section>
+
+
+<!-- ********************************************************* -->
+
+
+<Section Label="Brauer">
+<Heading>Central simple algebras and Brauer equivalence</Heading>
+
+Let <M>K</M> be a field.
+<Index Key="central simple algebra">central simple algebra</Index>
+A <E>central simple <M>K</M>-algebra</E> is a finite dimensional <M>K</M>-algebra 
+with center <M>K</M> which has no non-trivial proper ideals. 
+Every central simple <M>K</M>-algebra is isomorphic to a matrix algebra <M>M_n(D)</M>
+where <M>D</M> is a division algebra (which is finite-dimensional over <M>K</M> and has centre <M>K</M>).
+The division algebra <M>D</M> is unique up to <M>K</M>-isomorphisms.
+<P/>
+
+<Index Key="Brauer equivalence">(Brauer) equivalence</Index>
+<Index Key="equivalence (Brauer)">equivalence (Brauer)</Index>
+Two central simple <M>K</M>-algebras <M>A</M> and <M>B</M> are said to be <E>Brauer equivalent</E>, 
+or simply <E>equivalent</E>, if there is a division algebra <M>D</M> and two positive integers <M>m</M> and <M>n</M> 
+such that <M>A</M> is isomorphic to <M>M_m(D)</M> and <M>B</M> is isomorphic to <M>M_n(D)</M>.
+<P/>
+
+</Section>
+
+
+<!-- ********************************************************* -->
+
+<Section Label="CrossedProd">
+<Heading>Crossed Products</Heading>
+
+<Index Key="Crossed Product">Crossed Product</Index>
+Let <M>R</M> be a ring and <M>G</M> a group. <P/>
+
+<B>Intrinsic definition</B>.
+
+A <E>crossed product</E> <Cite Key="P" /> of <M>G</M> over <M>R</M> (or with coefficients in <M>R</M>) is a ring <M>R*G</M> with 
+a decomposition into a direct sum of additive subgroups
+  <Display>
+  R*G = \bigoplus_{g \in G} A_g
+  </Display>
+such that for each <M>g,h</M> in <M>G</M> one has:<P/>
+* <M>A_1=R</M> (here <M>1</M> denotes the identity of <M>G</M>),<P/>
+* <M>A_g A_h = A_{gh}</M> and <P/>
+* <M>A_g</M> has a unit of <M>R*G</M>.<P/>
+
+<B>Extrinsic definition</B>.
+
+Let <M>Aut(R)</M> denote the group of automorphisms of <M>R</M> and let <M>R^*</M> denote the group of units of 
+<M>R</M>.<P/>
+
+Let <M>a:G \rightarrow Aut(R)</M> and <M>t:G \times G \rightarrow R^*</M> 
+be mappings satisfying the following conditions 
+for every <M>g</M>, <M>h</M> and <M>k</M> in <M>G</M>: 
+<P/>
+
+(1) <M>a(gh)^{-1} a(g) a(h)</M> is the inner automorphism of <M>R</M> induced by 
+<M>t(g,h)</M> (i.e. the automorphism <M>x\mapsto t(g,h)^{-1} x t(g,h)</M>) and <P/>
+
+(2) <M>t(gh,k) t(g,h)^k = t(g,hk) t(h,k)</M>, where for 
+<M>g \in G</M> and <M>x \in R</M> we denote <M>a(g)(x)</M> by <M>x^g</M>.
+<P/>
+
+The <E>crossed product</E> <Cite Key="P" /> of <M>G</M> over <M>R</M> (or with coefficients in <M>R</M>), 
+action <M>a</M> and twisting <M>t</M> is the ring 
+  <Display>
+  R*_a^t G = \bigoplus_{g\in G} u_g R
+  </Display> 
+where <M>\{u_g : g\in G \}</M> is a set of symbols in one-to-one correspondence with <M>G</M>,  with addition and multiplication defined by 
+  <Display> 
+   (u_g r) + (u_g s) = u_g(r+s), \quad (u_g r)(u_h s) = u_{gh} t(g,h) r^h s
+  </Display>
+for <M>g,h \in G</M> and <M>r,s\in R</M>, and extended to <M>R*_a^t G</M> by linearity.<P/>
+
+The associativity of the product defined is a consequence of conditions (1) and (2) <Cite Key="P" />.<P/>
+
+<B>Equivalence of the two definitions</B>.
+
+Obviously the crossed product of <M>G</M> over <M>R</M> defined using the extrinsic definition is a crossed product 
+of <M>G</M> over <M>u_1 R</M> in the sense of the first definition. 
+Moreover, there is <M>r_0</M> in <M>R^*</M> such that <M>u_1r_0</M> is the identity of <M>R*_a^t G</M> and the map 
+<M>r \mapsto u_1 r_0 r </M> is a ring isomorphism <M>R \rightarrow u_1R </M>. <P/>
+
+<Index Key="Basis of units">Basis of units (for crossed product)</Index>
+Conversely, let <M>R*G=\bigoplus_{g\in G} A_g</M> be an (intrinsic) crossed product and select for each <M>g\in G</M> a 
+unit <M>u_g\in A_g</M> of <M>R*G</M>. 
+This is called a <E>basis of units for the crossed product</E> <M>R*G</M>. 
+Then the maps <M>a:G \rightarrow Aut(R)</M> and <M>t:G\times G \rightarrow R^*</M> given by 
+  <Display>
+  r^g = u_g^{-1} r u_g, \quad t(g,h) = u_{gh}^{-1} u_g u_h \quad (g,h \in G, r \in R)
+  </Display>
+satisfy conditions (1) and (2) and <M>R*G = R*_a^t G</M>. <P/>
+
+The choice of a basis of units <M>u_g \in A_g</M> determines the action <M>a</M> and twisting <M>t</M>. 
+If <M>\{u_g \in A_g : g \in G \}</M> and <M>\{v_g \in A_g : g \in G \}</M> are two sets of units of <M>R*G</M>
+then <M>v_g = u_g r_g</M> for some units <M>r_g</M> of <M>R</M>. 
+Changing the basis of units results in a change of the action and the twisting and so changes the extrinsic definition of
+the crossed product but it does not change the intrinsic crossed product. <P/> 
+
+It is customary to select <M>u_1=1</M>. In that case <M>a(1)</M> is the identity map of <M>R</M> and 
+<M>t(1,g)=t(g,1)=1</M> for each <M>g</M> in <M>G</M>. 
+
+</Section>
+
+
+<!-- ********************************************************* -->
+
+<Section Label="CyclicCP">
+<Heading>Cyclic Crossed Products</Heading>
+
+
+<Index Key="Cyclic Crossed Product">Cyclic Crossed Product</Index>
+Let <M>R*G=\bigoplus_{g \in G} A_g</M> be a <E>crossed product</E> 
+(<Ref Sect="CrossedProd" />) and assume that <M>G = \langle g \rangle </M> is cyclic. 
+Then the crossed product can be given using a particularly nice description. <P/>
+
+Select a unit <M>u</M> in <M>A_{g}</M>, and let <M>a</M> be the automorphism 
+of <M>R</M> given by <M>r^a = u^{-1} r u</M>.  
+<P/>
+
+If <M>G</M> is infinite then set <M>u_{g^k} = u^k</M> for every integer <M>k</M>.
+Then   
+  <Display>
+    R*G = R[ u | ru = u r^a ],
+  </Display>
+a skew polynomial ring. Therefore in this case <M>R*G</M> is determined
+by 
+<Display>
+[ R, a ].
+</Display>
+
+If <M>G</M> is finite of order <M>d</M> then set <M>u_{g^k} = u^k</M>
+for <M>0 \le k &lt; d</M>. Then <M> b = u^d \in R </M> and
+  <Display>
+    R*G = R[ u | ru = u r^a, u^d = b ]
+  </Display>
+Therefore, <M>R*G</M> is completely determined by the following data:
+  <Display>
+    [ R , [ d , a , b ] ]
+  </Display>
+  
+</Section>
+
+<!-- ********************************************************* -->
+
+
+
+<Section Label="AbelianCP">
+<Heading>Abelian Crossed Products</Heading>
+
+
+<Index Key="Abelian Crossed Product">Abelian Crossed Product</Index>
+Let <M>R*G=\bigoplus_{g \in G} A_g</M> be a <E>crossed product</E> 
+(<Ref Sect="CrossedProd" />) and assume that <M>G</M> is abelian. 
+Then the crossed product can be given using a simple description. <P/>
+
+Express <M>G</M> as a direct sum of cyclic groups:
+  <Display>
+  G = \langle g_1 \rangle \times \cdots \times \langle g_n \rangle
+  </Display>
+and for each <M>i=1,\dots,n</M> select a unit <M>u_i</M> in <M>A_{g_i}</M>. <P/>
+
+Each element <M>g</M> of <M>G</M> has a unique expression 
+  <Display>
+  g = g_1^{k_1} \cdots g_n^{k_n},
+  </Display>
+where <M>k_i</M> is an arbitrary integer, if <M>g_i</M> has infinite order, 
+and <M>0 \le k_i &lt; d_i</M>, 
+if <M>g_i</M> has finite order <M>d_i</M>.
+Then one selects a basis for the crossed product by taking
+  <Display>
+  u_g = u_{g_1^{k_1} \cdots g_n^{k_n}} = u_1^{k_1} \cdots u_n^{k_n}.
+  </Display>
+<P/>
+
+* For each <M>i=1,\dots, n</M>, let <M>a_i</M> be the automorphism of <M>R</M> given by 
+<M>r^{a_i} = u_i^{-1} r u_i</M>. 
+<P/>
+
+* For each <M>1 \le i &lt; j \le n</M>, let <M>t_{i,j} = u_j^{-1} u_i^{-1} u_j u_i \in R</M>. <P/>
+
+* If <M>g_i</M> has finite order <M>d_i</M>, let <M>b_i=u_i^{d_i} \in R</M>. <P/>
+
+Then 
+  <Display>
+  R*G = R[u_1,\dots,u_n | ru_i = u_i r^{a_i}, u_j u_i = t_{ij} u_i u_j, u_i^{d_i} = b_i (1 \le i &lt; j \le n) ],
+  </Display>
+where the last relation vanishes if <M>g_i</M> has infinite order.<P/>
+
+Therefore <M>R*G</M> is completely determined by the following data:
+  <Display>
+  [ R , [ d_i , a_i , b_i ]_{i=1}^n, [ t_{i,j} ]_{1 \le i &lt; j \le n} ].
+  </Display>
+  
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="ClassCP">
+<Heading>Classical crossed products</Heading>
+
+<Index Key="ClassicalCP">Classical Crossed Product</Index>
+A <E>classical crossed product</E> is a crossed product <M>L*_a^t G</M>, where <M>L/K</M> is a finite Galois 
+extension, <M>G=Gal(L/K)</M> is the Galois group of <M>L/K</M> and 
+<M>a</M> is the natural action of <M>G</M> on <M>L</M>.
+
+Then <M>t</M> is a <M>2</M>-cocycle and the <E>crossed product</E> 
+(<Ref Sect="CrossedProd" />) <M>L*_a^t G</M> is denoted by <M>(L/K,t)</M>. 
+The crossed product <M>(L/K,t)</M> is known to be a central simple <M>K</M>-algebra  <Cite Key="R" />. <P/> 
+
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="CycAlg">
+<Heading>Cyclic Algebras</Heading>
+
+<Index Key="Cyclic Algebra">Cyclic Algebra</Index>
+A <E>cyclic algebra</E> is a <E>classical crossed product</E> 
+(<Ref Sect="ClassCP" />) <M>(L/K,t)</M> where <M>L/K</M> 
+is a finite cyclic field extension. 
+The cyclic algebras have a very simple form. <P/>
+
+Assume that <M>Gal(L/K)</M> is generated by <M>g</M> and has order <M>d</M>.
+Let <M>u=u_g</M> be the basis unit (<Ref Sect="CrossedProd" />) of the crossed product 
+corresponding to <M>g</M> and take the remaining basis units for the crossed 
+product by setting <M>u_{g^i} = u^i</M>, (<M> i = 0, 1, \dots, d-1 </M>). 
+Then <M>a = u^n \in K</M>. The cyclic algebra is usually denoted by <M>(L/K,a)</M> and one has the following 
+description of <M>(L/K,t)</M>
+  <Display>
+  (L/K,t) = (L/K,a) = L[u| r u = u r^g, u^d = a ].
+  </Display>
+<P/>
+
+
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="Cyclotomic">
+<Heading>Cyclotomic algebras</Heading>
+
+<Index Key="Cyclotomic algebra">Cyclotomic algebra</Index>
+A <E>cyclotomic algebra</E> over <M>F</M> is a 
+<E>classical crossed product</E> (<Ref Sect="ClassCP" />)
+<M>(F(\xi)/F,t)</M>, 
+where <M>F</M> is a field, <M>\xi</M> is a root of unity in an extension of <M>F</M> 
+and <M>t(g,h)</M> is a root of unity for every <M>g</M> and <M>h</M> in 
+<M>Gal(F(\xi)/F)</M>. <P/>
+
+The <E>Brauer-Witt Theorem</E> <Cite Key="Y" /> asserts that every <E>Wedderburn component</E> (<Ref Sect="WedDec" />)
+of a group algebra is <E>Brauer equivalent</E> (<Ref Sect="Brauer" />) 
+(over its centre) to a cyclotomic algebra. <P/> 
+
+</Section>
+
+<!-- ********************************************************* -->
+
+
+
+<Section Label="NumDesc">
+<Heading>Numerical description of cyclotomic algebras</Heading>
+
+Let <M>A=(F(\xi)/F,t)</M> be a <E>cyclotomic algebra</E> 
+(<Ref Sect="Cyclotomic" />), 
+where <M>\xi=\xi_k</M> is a <M>k</M>-th root of unity. 
+Then the Galois group <M>G=Gal(F(\xi)/F)</M> is abelian and therefore one can obtain a simplified form for the
+description of cyclotomic algebras as for any 
+<E>abelian crossed product</E> (<Ref Sect="AbelianCP" />). <P/>
+
+Then the <M>n \times n</M> matrix algebra <M>M_n(A)</M> can be described numerically in one of the following forms: <P/>
+
+* If <M>F(\xi)=F</M>, (i.e. <M>G=1</M>) then <M>A=M_n(F)</M> and thus the only data needed to describe <M>A</M> 
+are the matrix size  <M>n</M> and the field <M>F</M>:
+  <Display>
+  [n,F]
+  </Display>  
+  <P/>
+
+* If <M>G</M> is cyclic (but not trivial) of order <M>d</M> then <M>A</M> is a cyclic cyclotomic algebra
+  <Display>
+  A = F(\xi) [ u | \xi u = u \xi^\alpha, u^d = \xi^\beta ]
+  </Display>
+and so <M>M_n(A)</M> can be described with the following data 
+  <Display>
+  [n,F,k,[d,\alpha,\beta]],
+  </Display>
+where the integers <M>k</M>, <M>d</M>, <M>\alpha</M> and <M>\beta</M>
+satisfy the following conditions:
+  <Display>
+  \alpha^d \equiv 1 \; mod \; k, \quad 
+  \beta(\alpha-1) \equiv 0 \; mod \; k.
+  </Display>
+<P/>
+
+* If <M>G</M> is abelian but not cyclic then <M>M_n(A)</M> 
+can be described with the following data 
+(see <Ref Sect="AbelianCP" />):
+  <Display>
+  [n,F,k,[d_i,\alpha_i,\beta_i]_{i=1}^m, [\gamma_{i,j}]_{1\le i &lt; j \le m} ]
+  </Display>
+representing the <M>n \times n</M> matrix ring over the following algebra:
+  <Display>
+  A = F(\xi)[ u_1, \ldots, u_m \mid 
+  \xi u_i = u_i \xi^{\alpha_i}, \quad
+  u_i^{d_i}=\xi^{\beta_i}, \quad
+  u_s u_r = \xi^{\gamma_{rs}} u_r u_s, \quad
+  i = 1, \ldots, m, \quad
+  0 \le r &lt; s \le m ]
+  </Display>
+where 
+<P/> 
+* <M>\{g_1,\ldots,g_m\}</M> is an independent set of generators of <M>G</M>, <P/>
+* <M>d_i</M> is the order of <M>g_i</M>, <P/>
+* <M>\alpha_i</M>, <M>\beta_i</M> and <M>\gamma_{rs}</M> are integers, and
+  <Display> 
+    \xi^{g_i} = \xi^{\alpha_i}.
+  </Display>
+
+</Section>
+
+
+<!-- ********************************************************* -->
+
+
+<Section Label="IdempotentsSbgps">
+<Heading>Idempotents given by subgroups</Heading>
+
+<Index><M>\varepsilon(K,H)</M></Index>
+<Index><M>e(G,K,H)</M></Index>
+<Index><M>e_C(G,K,H)</M></Index>
+
+Let <M>G</M> be a finite group and <M>F</M> a field whose characteristic does not 
+divide the order of <M>G</M>. If <M>H</M> is a subgroup of <M>G</M> then set
+<Display>
+\widehat{H} = |H|^{-1}\sum_{x \in H} x.
+</Display>
+The element <M>\widehat{H}</M> is an idempotent of <M>FG</M> which is central in
+<M>FG</M> if and only if <M>H</M> is normal in <M>G</M>. 
+<P/>
+
+If <M>H</M> is a proper normal subgroup of a subgroup <M>K</M> of  <M>G</M>
+then set <Display> \varepsilon(K,H) = \prod_{L} (\widehat{N}-\widehat{L})
+</Display> where <M>L</M> runs on the normal subgroups of <M>K</M> which are
+minimal among the normal subgroups of <M>K</M> containing <M>N</M> properly. By
+convention, <M>\varepsilon(K,K)=\widehat{K}</M>. The element
+<M>\varepsilon(K,H)</M> is an idempotent of <M>FG</M>. 
+<P/>
+
+If <M>H</M> and <M>K</M> are subgroups of <M>G</M> such that <M>H</M> is normal in 
+<M>K</M> then <M>e(G,K,H)</M> denotes the sum of all different <M>G</M>-conjugates 
+of <M>\varepsilon(K,H)</M>.
+The element <M>e(G,K,H)</M> is central in <M>FG</M>. 
+In general it is not an idempotent but if the 
+different conjugates of <M>\varepsilon(K,H)</M> are orthogonal then 
+<M>e(G,K,H)</M> is a central idempotent of <M>FG</M>.
+<P/>
+
+If <M>(K,H)</M> is a Shoda Pair (<Ref Sect="SPDef" />) of <M>G</M> then there is
+a non-zero rational number <M>a</M> such that <M>ae(G,K,H))</M> is a <E>primitive central idempotent</E>  
+(<Ref Sect="Idempotents" />) of the rational group algebra <M>&QQ; G</M>. 
+If <M>(K,H)</M> is a strong Shoda pair (<Ref Sect="SSPDef" />) of <M>G</M> then
+<M>e(G,K,H)</M> is a primitive central idempotent of <M>&QQ; G</M>. 
+<P/>
+
+Assume now that <M>F</M> is a finite field of order <M>q</M>, 
+<M>(K,H)</M> is a strong Shoda pair of <M>G</M> and 
+<M>C</M> is a cyclotomic class of <M>K/H</M> containing a 
+generator of <M>K/H</M>. Then <M>e_C(G,K,H)</M> is a primitive 
+central idempotent of <M>FG</M> (see <Ref Sect="CyclotomicClass" />). 
+<P/>
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="SPDef">
+<Heading>Shoda pairs</Heading>
+
+Let <M>G</M> be a finite group.
+<Index>Shoda pair</Index>
+A <E>Shoda pair</E> of <M>G</M> is a pair <M>(K,H)</M> of subgroups of <M>G</M>
+for which there is a linear character <M>\chi</M> of <M>K</M> with
+kernel <M>H</M> such that the induced character <M>\chi^G</M> in <M>G</M> is 
+irreducible.
+By <Cite Key="S" /> or <Cite Key="ORS" />, <M>(K,H)</M> is a Shoda pair if and only
+if the following conditions hold:<P/>
+* <M>H</M> is normal in <M>K</M>, <P/>
+* <M>K/H</M> is cyclic and <P/> 
+* if <M>K^g \cap K \subseteq H</M> for some <M>g \in G</M> then <M>g \in K</M>. <P/>
+
+<Index>primitive central idempotent realized by a Shoda pair</Index>
+If <M>(K,H)</M> is a Shoda pair and <M>\chi</M> is a linear character of <M>K\le G</M> with kernel <M>H</M> 
+then the <E>primitive central idempotent</E>  (<Ref Sect="Idempotents" />)
+of <M>&QQ; G</M> 
+associated to the irreducible character <M>\chi^G</M> is of the form 
+<M>e=e_&QQ; (\chi^G)=a e(G,K,H)</M> for some <M>a \in &QQ; </M> <Cite Key="ORS" /> 
+(see <Ref Sect="IdempotentsSbgps" /> for the definition of <M>e(G,K,H)</M>).
+In that case we say that <M>e</M> is the <E>primitive central idempotent realized 
+by the Shoda pair</E> <M>(K,H)</M> of <M>G</M>. <P/>
+
+A group <M>G</M> is monomial, that is every irreducible character of <M>G</M> is 
+monomial, if and only if every primitive central idempotent of <M>&QQ; G</M> is 
+realizable by a Shoda pair of <M>G</M>.
+<P/>
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="SSPDef">
+<Heading>Strong Shoda pairs</Heading>
+
+<Index>strong Shoda pair</Index>
+A <E>strong Shoda pair</E> of <M>G</M> is a pair <M>(K,H)</M> of
+subgroups of <M>G</M> satisfying the following conditions:<P/>
+* <M>H</M> is normal in <M>K</M> and <M>K</M> is normal in the normalizer <M>N</M> of <M>H</M> in 
+  <M>G</M>, <P/>
+* <M>K/H</M> is cyclic and a maximal abelian subgroup of <M>N/H</M> and <P/>
+* for every <M>g \in G\setminus N</M> ,  <M>\varepsilon(K,H)\varepsilon(K,H)^g=0</M>.
+(See <Ref Sect="IdempotentsSbgps" /> for the definition of <M>\varepsilon(K,H)</M>).
+<P/>
+
+Let <M>(K,H)</M> be a strong Shoda pair of <M>G</M>. 
+Then <M>(K,H)</M> is a Shoda pair (<Ref Sect="SPDef" />) of <M>G</M>. 
+Thus there is a linear character <M>\theta</M> of <M>K</M> with kernel <M>H</M> 
+such that the induced character <M>\chi=\chi(G,K,H)=\theta^G</M> is irreducible. 
+Moreover the <E>primitive central idempotent</E> (<Ref Sect="Idempotents" />)
+<M>e_{&QQ; }(\chi)</M> of <M>&QQ; G</M> 
+realized by <M>(K,H)</M> is <M>e(G,K,H)</M>, see <Cite Key="ORS" />. <P/>
+
+<Index>equivalent strong Shoda pairs</Index>
+Two <E>strong Shoda pairs</E> (<Ref Sect="SSPDef"/>) <M>(K_1,H_1)</M> and <M>(K_2,H_2)</M> of <M>G</M> 
+are said to be <E>equivalent</E> if the characters
+<M>\chi(G,K_1,H_1)</M> and <M>\chi(G,K_2,H_2)</M> are Galois conjugate, or equivalently if 
+<M>e(G,K_1,H_1)=e(G,K_2,H_2)</M>.<P/>
+
+The advantage of strong Shoda pairs over Shoda pairs is that 
+one can describe the simple algebra
+<M>FGe_F(\chi)</M> as a matrix algebra of a <E>cyclotomic algebra</E> 
+(<Ref Sect="Cyclotomic" />, see <Cite Key="ORS" /> for <M>F=&QQ; </M> and 
+<Cite Key="O" /> for the general case). <P/>
+
+More precisely, <M>&QQ; Ge(G,K,H)</M> is isomorphic to <M>M_n(&QQ; (\xi)*_a^t N/K)</M>, 
+where <M>\xi</M> is a <M>[K:H]</M>-th root of unity, <M>N</M> is the normalizer of 
+<M>H</M> in <M>G</M>, <M>n=[G:N]</M> and <M>&QQ; (\xi)*_a^t N/K</M> is a <E>crossed product</E> (see <Ref Sect="CrossedProd" />) with action <M>a</M> and twisting <M>t</M> given as follows: <P/>
+Let <M>x</M> be a fixed generator of <M>K/H</M> and 
+<M>\varphi : N/K \rightarrow N/H</M> a fixed left inverse of the canonical projection 
+<M>N/H\rightarrow N/K</M>. Then 
+  <Display>
+  \xi^{a(r)} = \xi^i, \mbox{ if }  x^{\varphi(r)}= x^i
+  </Display>
+and 
+  <Display>
+  t(r,s) = \xi^j, \mbox{ if } \varphi(rs)^{-1} \varphi(r)\varphi(s) = x^j,
+  </Display>
+for <M>r,s \in N/K</M> and integers <M>i</M> and <M>j</M>, see <Cite Key="ORS" />. 
+Notice that the cocycle is the one given by the natural extension
+  <Display>
+  1 \rightarrow K/H \rightarrow N/H \rightarrow N/K \rightarrow 1 
+  </Display>
+where <M>K/H</M> is identified with the multiplicative group generated by <M>\xi</M>. 
+Furthermore the centre of the algebra is <M>&QQ; (\chi)</M>, the field of character values over <M>&QQ; </M>,
+and <M>N/K</M> is isomorphic to <M>Gal(&QQ; (\xi)/&QQ; (\chi))</M>.
+<P/>
+
+If the rational field is changed to an arbitrary ring <M>F</M> of characteristic <M>0</M> then the Wedderburn 
+component <M>A_F(\chi)</M>, where <M>\chi = \chi(G,K,H)</M> is isomorphic to <M>F(\chi)\otimes_{&QQ; (\chi)}A_&QQ; (\chi)</M>.
+Using the description given above of <M>A_&QQ; (\chi)=&QQ; G e(G,K,H)</M> one can easily describe <M>A_F(\chi)</M> as
+<M>M_{nd}(F(\xi)/F(\chi),t')</M>, where <M>d=[&QQ; (\xi): &QQ;(\chi)]/[F(\xi):F(\chi)]</M> and 
+<M>t'</M> is the restriction to <M>Gal(F(\xi)/F(\chi))</M> of <M>t</M> 
+(a cocycle of <M>N/K = Gal(&QQ; (\xi)/&QQ;  (\chi))</M>). <P/>
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="StMon">
+<Heading>Strongly monomial characters and strongly monomial groups</Heading>
+
+<Index Key="SMCh">strongly monomial character</Index>
+Let <M>G</M> be a finite group an <M>\chi</M> an irreducible character of <M>G</M>.<P/>
+
+One says that <M>\chi</M> is <E>strongly monomial</E> if there is a <E>strong Shoda pair</E> (<Ref Sect="SSPDef"/>)
+<M>(K,H)</M> of <M>G</M> and a linear character <M>\theta</M> of <M>K</M> of <M>G</M> with kernel <M>H</M> 
+such that <M>\chi=\theta^G</M>.<P/>
+
+<Index Key="SMG">strongly monomial group</Index>  
+The group <M>G</M> is <E>strongly monomial</E> 
+if every irreducible character of <M>G</M> is 
+strongly monomial. <P/>
+
+Strong Shoda pairs where firstly introduced by Olivieri, del Río and Simón who proved that 
+every abelian-by-supersolvable group is strongly monomial  <Cite Key="ORS" />.
+The algorithm to compute the Wedderburn decomposition of rational group algebras for strongly monomial groups
+was explained in <Cite Key="OR" />. 
+This method was extended for semisimple finite group algebras by Broche Cristo and del Río in <Cite Key="BR" /> 
+(see Section <Ref Sect="CyclotomicClass" />). 
+Finally, Olteanu <Cite Key="O" /> shows how to compute the <E>Wedderburn decomposition</E> (<Ref Sect="WedDec" />)
+of an arbitrary semisimple group ring by making use of not only the strong Shoda pairs of <M>G</M> but also 
+the strong Shoda pairs of the subgroups of <M>G</M>. 
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Alt Only="LaTeX">\pagebreak</Alt>.
+
+<Section Label="CyclotomicClass">
+<Heading>Cyclotomic Classes and Strong Shoda Pairs</Heading>
+
+Let <M>G</M> be a finite group and <M>F</M> a finite field of order <M>q</M>, 
+coprime to the order of <M>G</M>. <P/>
+
+<Index>cyclotomic class</Index>
+Given a positive integer <M>n</M>, coprime to <M>q</M>, 
+the <M>q</M>-<E>cyclotomic classes</E> modulo <M>n</M> are 
+the set of residue classes module <M>n</M> of the form
+  <Display>
+  \{i,iq,iq^2,iq^3, \dots \}
+  </Display>
+The <M>q</M>-cyclotomic classes module <M>n</M> form a partition of the set of residue classes module <M>n</M>. <P/>
+
+<Index>generating cyclotomic class</Index>
+A <E>generating cyclotomic class </E> module <M>n</M> is a cyclotomic class containing 
+a generator of the additive group of residue classes module <M>n</M>, or equivalently 
+formed by integers coprime to <M>n</M>. <P/>
+
+Let <M>(K,H)</M> be a strong Shoda pair (<Ref Sect="SSPDef" />) 
+of <M>G</M> and set <M>n=[K:H]</M>. 
+Fix a primitive <M>n</M>-th root of unity <M>\xi</M> in some extension of <M>F</M>
+and an element <M>g</M> of <M>K</M> such that <M>gH</M> is a generator of <M>K/H</M>.
+Let <M>C</M> be a generating <M>q</M>-cyclotomic class modulo <M>n</M>. Then set 
+    <Display>
+    \varepsilon_C(K,H) = [K:H]^{-1} \widehat{H} \sum_{i=0}^{n-1} tr(\xi^{-ci})g^i,
+    </Display>
+where <M>c</M> is an arbitrary element of <M>C</M> and <M>tr</M> is the trace map 
+of the field extension <M>F(\xi)/F</M>. Then <M>\varepsilon_C(K,H)</M> does not 
+depend on the choice of <M>c \in C</M> and is a <E>primitive central idempotent</E>  
+(<Ref Sect="Idempotents" />) of <M>FK</M>. <P/>
+
+<Index>primitive central idempotent realized by a strong Shoda pair and a cyclotomic class</Index>
+Finally, let <M>e_C(G,K,H)</M> denote the sum of the different <M>G</M>-conjugates of
+<M>\varepsilon_C(K,H)</M>. 
+Then <M>e_C(G,K,H)</M> is a <E>primitive central idempotent</E>  
+(<Ref Sect="Idempotents" />) of <M>FG</M> <Cite Key="BR" />. 
+We say that <M>e_C(G,K,H)</M> is the primitive central idempotent realized by the 
+strong Shoda pair <M>(K,H)</M> of the group <M>G</M> and the cyclotomic class <M>C</M>.
+<P/>
+
+If <M>G</M> is <E>strongly monomial</E> (<Ref Sect="StMon" />) then every primitive central idempotent of <M>FG</M> 
+is realizable by some <E>strong Shoda pair</E> (<Ref Sect="SSPDef"/>) of <M>G</M> and some cyclotomic class <M>C</M> 
+<Cite Key="BR" />. As in the zero characteristic case, this explain how to compute the <E>Wedderburn decomposition</E> 
+(<Ref Sect="WedDec" />) of <M>FG</M> for a finite semisimple algebra of a strongly monomial group 
+(see <Cite Key="BR" /> for details). 
+
+For non strongly monomial groups the algorithm to compute the Wedderburn decomposition just uses the Brauer 
+characters. 
+<P/>
+
+</Section>
+
+</Chapter>

@@ -1,0 +1,27 @@
+
+# Normal run; a is involn, 3 columns ...
+
+Wo:10k;
+mess:100000;
+
+gr:a,b;
+rel:aa,abAbabAb;
+end;
+stat;
+dump:1;
+
+# Now a PT run; note that the presentation has already been munged,
+#   but that we switch to 4 columns (this affects Fi too!) ...
+
+pt;
+stat;
+dump:1;
+
+# Now a PT run ab initio; a is no longer treated as as involn, so a & A
+#   are different, and we get dedns/coincs ...
+
+gr:a,b;
+rel:aa,abAbabAb;
+pt;
+stat;
+dump:1;

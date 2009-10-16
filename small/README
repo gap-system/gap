@@ -6,7 +6,17 @@
 ##
 ##  This file contains information about the SmallGroups Library
 ##
-"@(#)$Id$";
+"@(#)$Id: README,v 1.13 2008/05/29 06:10:46 gap Exp $";
+
+#############################################################################
+#
+# Copyright
+#
+#############################################################################
+
+The SmallGroups Library is copyright by Hans Ulrich Besche, Bettina Eick and 
+Eamonn O'Brien in 2007. You are free to distribute the SmallGroups Library, 
+provided that you make no modifications nor remove this copyright notice.
 
 #############################################################################
 #
@@ -53,14 +63,15 @@ http://www.scitec.auckland.ac.nz/~obrien/
 #############################################################################
 
 The SmallGroups Library is a catalogue of groups of `small' order. 
-Currently, (Apr. 2005) it contains the groups 
+Currently, (May 2008) it contains the groups 
 
     * of order at most 2000 except 1024.
+    * of squarefree order.
     * of cubefree order at most 50 000.
     * of order p^n for n <= 6 and all primes p.
-    * of squarefree order.
+    * of order p^7 for the primes p = 2,3,5,7,11.
     * whose order factorises in at most 3 primes.
-    * of order q^n * p for q^n dividing 2^8, 3^6, 5^5, 7^4 and p prime
+    * of order q^n * p for q^n dividing 2^8, 3^6, 5^5, 7^4 and p a prime
       different to q
 
 The SmallGroups Library provides access to the groups of these orders and 
@@ -123,7 +134,7 @@ UnloadSmallGroupsData()
 # 
 #############################################################################
 
-The SmallGroups Library is organised in 10 layers. Each layer contains the
+The SmallGroups Library is organised in 11 layers. Each layer contains the
 groups of certain orders:
 
      Layer 1: the orders with at most 3 prime factors; that is, the orders
@@ -151,6 +162,8 @@ groups of certain orders:
 
      Layer 10: the remaining groups of squarefree order and of
                cubefree order at most 50000.
+
+     Layer 11: the orders p^7 with p = 3,5,7,11.
 
 This setup has been chosen for two reasons. First, the organisation in 
 layers permits to add new layers (and thus new group orders) without changes 
@@ -612,7 +625,7 @@ to the 12 Frattini factors.
 #
 #############################################################################
 
-This file contains the generic construction of groups of order p^4, p^5
+This layer contains the generic construction of groups of order p^4, p^5
 and p^6 with order > 3125 (those with order up to 3125 are contained in
 the lower layers of the small groups library).
 
@@ -703,6 +716,27 @@ IDENTIFICATION:
 
 #############################################################################
 #
+# Layer 11 
+#
+#############################################################################
+
+DETERMINATION:
+
+The groups of order p^7 have been determined by O'Brien and Vaughan-Lee, see 
+[17]. This layer contains these groups for some small primes: p = 3,5,7,11.
+
+STORING:
+
+The groups are encoded by PcGroupCode and then the various codes are stored 
+in compressed form. See the groups of order 512 for details. Pc presentations 
+for the groups are produced at run-time for these groups.
+
+IDENTIFICATION:
+
+There is no identification function available for the groups in this layer.
+
+#############################################################################
+#
 # Concluding remarks
 #
 #############################################################################
@@ -774,9 +808,9 @@ earlier layers.
      The groups of order 128.
      J. Algebra 129 (1), 136 - 158 (1990)
 
-[13]  M. F. Newman, E. A. O'Brien and M. R. Vaughan-Lee.
-      Groups and nilpotent Lie rings whose order is the sixth power of a prime.
-      J. Algebra 278, 383 - 401 (2003)
+[13] M. F. Newman, E. A. O'Brien and M. R. Vaughan-Lee.
+     Groups and nilpotent Lie rings whose order is the sixth power of a prime.
+     J. Algebra 278, 383 - 401 (2003)
 
 [14] E. A. O'Brien.
      The p-group generation algorithm.
@@ -788,6 +822,10 @@ earlier layers.
 
 [16] E. A. O'Brien.
      The ANUPQ share package of Gap 3.
+
+[17] E. A. O'Brien and M. R. Vaughan-Lee.
+     The groups of order p^7 for odd prime p. 
+     J. Algebra 292, 243 - 258 (2005)
 
 
 #############################################################################

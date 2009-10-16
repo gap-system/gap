@@ -1,0 +1,819 @@
+\documentclass{article}
+
+
+\usepackage{fullpage}
+\usepackage{noitemsep}
+\usepackage{lgrind}
+
+\newcommand{\OM}{{\sl OpenMath}}
+
+\begin{document} 
+
+\begin{center} 
+{\LARGE
+{\bf The INRIA OpenMath Library}
+}
+\end{center} 
+
+\begin{center} 
+Olivier Arsac\\
+St\'ephane Dalmas\\
+Projet SAFIR, INRIA Sophia Antipolis\\
+{\tt stephane.dalmas@sophia.inria.fr} \\
+{\tt olivier.arsac@sophia.inria.fr}\\
+\vspace{0.4cm}
+\today{}
+\end{center} 
+\vspace{1cm}
+
+This document describes the {\OM} C library developed in the SAFIR project at
+INRIA. This library enables the exchange of {\OM} objects between two
+processes and more generally the input and output of {\OM} objects. This
+library is now part of Esprit Project 24.969 ``OpenMath: Accessing and Using
+Mathematical Information Electronically''.
+
+The library has been compiled and tested successfully on various kinds of
+Unix systems (including Solaris, Linux and Digital Unix) and Windows
+(NT and 9*).
+
+\section{The Structure of the API}
+
+The library and its API are logically structured in four parts:
+\begin{itemize} 
+\item Functions that deal with {\sl devices}, the abstraction
+from which {\OM} objects are read and written to.
+\item Functions that read from and write to {\OM} devices. These functions 
+use a simple model that read and write tokens.
+\item Functions that create I/O  structures to be used by devices, so that,
+for example, an {\OM} object can be read from a file or a socket. This part
+is extensible by the user. 
+\item Functions that deal with interprocess communication.
+\end{itemize} 
+
+\section{{\OM} Expressions}
+
+\subsection{Expressions}
+
+The library understands the following kinds of basic {\OM} expressions:
+\begin{itemize} 
+\item integers
+\item double precision  floating-point numbers (64 bits, following IEEE 754)
+\item byte arrays
+\item character strings
+\item symbols
+\item variables
+\end{itemize} 
+and the four kinds of constructions: 
+\begin{itemize} 
+\item applications $e_0(e_1, \ldots e_n)$
+\item errors $s(e_1, \ldots e_n)$
+\item binders $e_1, (v_1, \ldots v_n), e_2 $
+\item attributed expressions $[s_1 e_1, \ldots s_n e_n] e$
+\end{itemize} 
+where $e_i$ are {\OM} expressions, $v_i$ are {\OM} variables and $s$ and
+$s_i$ are {\OM} symbols. 
+
+\subsection{Symbols}
+
+Symbols are constructed from a content dictionary (abbreviated as CD in the
+sequel) and a name.
+A content dictionary is identified by its name. 
+The API permits the creation of any symbol in any content dictionary:
+there is nothing that prevents creating symbols that does not belong to a
+known CD.
+
+\subsection{Encoding and Decoding {\OM} Expressions}
+
+An {\OM} object is encoded as a sequence of bytes that is read and written
+sequentially. The library views this sequence as a stream of tokens.
+Expressions are linearized in a way that looks like Lisp with typed
+parenthesis. For example, the linearization of the application of $S$ to
+$E_1\ldots E_n$ is: 
+\begin{itemize} 
+\item indicating that this is an application (a ``begin application'' token)
+\item linearizing $S$
+\item linearizing $E_1$,\ldots $E_n$
+\item indicating that all arguments have been given (an ``end application''
+token) 
+\end{itemize} 
+The other constructions are linearized the same way (each one with its own
+begin and end tokens). 
+Note that there is no explicit arity indication so that we don't have to
+introduce a special mechanism when we don't know beforehand how many
+arguments there are.
+
+To give attributes to an expression, the attributes and their associated
+values are put before the expression. To give the attributes $a_i$
+with values $v_i$ (where $a_i$ are symbols and $v_i$ are {\OM} expressions) to
+an expression $E$ the process is:
+\begin{itemize} 
+\item put a ``begin attributed expression'' token
+\item put a ``begin attribute pairs'' token
+\item put the symbol $a_1$ followed by the linearization of $v_1$ {\sl etc}
+\item put an ``end attribute pairs'' token
+\item linearize $E$
+\item put an ``end attributed expression'' token
+
+\end{itemize} 
+
+Decoding is done by first querying the type of the next {\OM} token and
+then invoking the right function to get this particular kind of token.
+
+\section{Big Integers}
+
+The library supports big integers that can potentially be given in various
+formats. The {\tt OMBigIntType} describes the different possible formats.
+\begin{verbatim} 
+typedef enum OMbigIntType {
+  OMBIunknown = 0,
+  /* this is base 10, digits in normal order */
+  OMBIbase10 
+  /* this is base 16, digits in normal order (MSB) */
+  OMbigIntBase16
+} OMbigIntType;
+\end{verbatim} 
+
+\section{Functions Dealing with {\OM} Devices}
+
+{\OM} expressions are read and written through {\sl devices}.
+Basically, an {\OM} device has an associated encoding and an I/O method. 
+There are basically two encodings defined and implemented. 
+The first one is a human readable and writable one that can be
+used for example as the encoding for sending {\OM} objects via e-mail or
+storing {\OM} objects to files. 
+This encoding is SGML compatible in the sense that it can be used to represent
+{\OM} objects in SGML texts. I has an XML variant.
+The second encoding is a binary one that can be used when compactness and
+speed of encoding and decoding is important.
+The encodings are defined by the {\tt OMencodingType} type which is an
+enumerated type defined as  
+\begin{verbatim} 
+typedef enum OMencodingType 
+   {OMencodingUnknown, OMencodingBinary, OMencodingSGML, OMencodingXML} OMencodingType;
+\end{verbatim} 
+{\tt OMencodingUnknown} is to be used when creating a device that does not
+know which kind of encoding will be used. It must be used only for input
+devices.
+
+
+A device is created with the following function, given an encoding and
+an appropriate I/O method:
+\begin{itemize} 
+\item {\tt OMdev OMmakeDevice(OMencodingType encoding, OMIO IO)}
+\end{itemize} 
+Devices are closed with the following function
+\begin{itemize} 
+\item {\tt void OMcloseDevice(OMdev dev)}
+\end{itemize} 
+
+Whether a device could be used both for reading and writing is entirely
+dependent on its I/O method. 
+
+The user can define its own I/O method as a function returning
+an {\tt OMIO} object. This could enable him, for example, to use an
+existing transport protocol to exchange {\OM} expressions or to implement
+cut-and-paste of {\OM} expression by writing I/O structures that input and
+output to strings. Section \ref{io} describes the available I/O structures in
+the library.
+
+
+An {\tt OMdev} object is a pointer to a structure that contains a lot of
+state. Almost all functions taking an {\tt OMdev} object modify it. Likewise,
+an {\tt OMIO} object carries a lot of state. 
+
+
+\section{Functions to Write {\OM} Expressions to Devices}
+
+\subsection{Beginning and Ending Objects}
+
+The following two functions mark the beginning and end of an {\OM} object.
+\begin{itemize} 
+\item \verb+OMstatus OMputObject(OMdev dev)+
+\item \verb+OMstatus OMputEndObject(OMdev dev)+
+\end{itemize} 
+These functions should be called  before and after an {\OM} object in
+constructed in a device. 
+In particular, the \verb+OMputEndObject+ function insures that the object has
+been completely written if any buffering was used.
+
+\subsection{Writing Basic Objects}
+
+Basic {\OM} objects are written using these functions:
+\begin{itemize} 
+\item \verb+OMstatus OMputInt32(OMdev dev, int n)+
+\item \verb+OMstatus OMputBigInt(OMdev dev, const char *data, int len, int sign, OMbigIntType format)+
+\item \verb+OMstatus OMputFloat64(OMdev dev, double *f)+
+\item 
+\verb+OMstatus OMputByteArray(OMdev dev, const char *data, int len)+
+\item \verb+OMstatus OMputString(OMdev dev, const char *s)+
+\item \verb+OMstatus OMputVar(OMdev dev, const char *name)+
+\item \verb+OMstatus OMputSymbol(OMdev dev, const char *cd, const char *name)+
+\end{itemize} 
+
+The {\tt char *} arguments of {\tt OMputString}, {\tt OMputVar} and {\tt
+OMputSymbol} are null-terminated strings. There are other functions that
+accept non null-terminated arrays of characters with their length.
+These are 
+\begin{itemize} 
+\item \verb+OMstatus OMputStringN(OMdev dev, const char *str, int len)+
+\item \verb+OMstatus OMputVarN(OMdev dev, const char *var, int len)+
+\item
+\verb+OMstatus OMputSymbolN(OMdev dev, const char *cd, int clen, const char *name, int nlen)+
+\end{itemize} 
+
+The format for the {\tt data} argument of the {\tt OMputBigInt} function is
+given by {\tt format}. When {\tt format} is {\tt OMBIbase10}, it is the
+sequence of character of its base 10 representation without sign (most
+significant digit first). The sign of the big integer is given by the 
+{\tt sign} argument that should be an integer greater or
+equal to zero for a positive integer and less than zero for a negative
+one. For example, the following line outputs the value of $20!$ to {\tt dev}:
+\begin{verbatim} 
+OMputBigInt(dev, "265252859812191058636308480000000", 33, 1, OMBIbase10);
+\end{verbatim} 
+
+\subsection{Writing Structured Objects}
+
+The following functions are used to mark the beginning and end of the
+structured objects. They should be called in nested pairs, correctly
+bracketed:  
+\begin{itemize} 
+\item \verb+OMstatus OMputApp(OMdev dev)+
+\item \verb+OMstatus OMputEndApp(OMdev dev)+
+\item \verb+OMstatus OMputAttr(OMdev dev)+
+\item \verb+OMstatus OMputEndAttr(OMdev dev)+
+\item \verb+OMstatus OMputBind(OMdev dev)+
+\item \verb+OMstatus OMputEndBind(OMdev dev)+
+\item \verb+OMstatus OMputBVar(OMdev dev)+
+\item \verb+OMstatus OMputEndBVar(OMdev dev)+
+\item \verb+OMstatus OMputAtp(OMdev dev)+
+\item \verb+OMstatus OMputEndAtp(OMdev dev)+
+\item \verb+OMstatus OMputError(OMdev dev)+
+\item \verb+OMstatus OMputEndError(OMdev dev)+
+\end{itemize} 
+
+Here is an example showing how to use these functions to output $\sin x + y$,
+where $x$ and $y$ are represented as variables and $\sin$ is the symbol whose
+name is {\tt sin} in the {\tt Basic} content dictionary. This can be done
+using the following sequence:
+\begin{verbatim} 
+OMputObject(dev);
+OMputApp(dev);
+  OMputSymbol(dev, "Basic", "sin");
+  OMputApp(dev)
+    OMputSymbol(dev, "Basic", "+");
+    OMputVar(dev, "x");
+    OMputVar(dev, "y");
+  OMputEndApp(dev);
+OMputEndApp(dev);
+OMputEndObject(dev);
+\end{verbatim} 
+
+
+\section{Functions to Extract {\OM} Expressions from Devices}
+
+
+\subsection{Testing the type of the current token}
+
+The first step in decoding an expression from a device is to call the 
+{\tt OMgetType} function
+\begin{itemize} 
+\item \verb+OMstatus OMgetType(OMdev dev, OMtokenType *type)+
+\end{itemize} 
+so that the correct function can be called to recover the current token.
+
+{\tt OMgetType} returns via its {\tt type} argument an {\tt OMtokenType}
+object indicating the type of the next object to be read from the device. 
+{\tt OMtokenType} is an enumerated type defined as 
+\begin{verbatim} 
+typedef enum OMtokenType {
+  OMtokenUnknown, /* error catching trick */
+  OMtokenInt32,
+  OMtokenBigInt,
+  OMtokenFloat64,
+  OMtokenByteArray,
+  OMtokenVar,
+  OMtokenString,
+  OMtokenSymbol,
+  OMtokenComment,
+  OMtokenApp, OMtokenEndApp,
+  OMtokenAttr, OMtokenEndAttr,
+  OMtokenAtp, OMtokenEndAtp,
+  OMtokenError, OMtokenEndError,
+  OMtokenObject, OMtokenEndObject,
+  OMtokenBind, OMtokenEndBind, 
+  OMtokenBVar, OMtokenEndBVar,
+} OMtokenType;
+\end{verbatim} 
+Note that the type of the current token can be tested multiple times. Two
+successive calls to {\tt OMgetType} will always return the same result if no
+other {\tt OMget...} function was called in between. 
+
+\subsection{Extracting the current token}
+
+\noindent
+The following functions are used to read the basic {\OM} objects from
+devices: 
+\begin{itemize} 
+\item \verb+OMstatus OMgetInt32(OMdev dev, int *i)+
+\item \verb+OMstatus OMgetFloat64(OMdev dev, double *d)+
+\item 
+\verb+OMstatus OMgetBigInt(OMdev dev, char **data, int *len, int *sign, OMbigIntType *fmt)+
+\item 
+\verb+OMstatus OMgetBigIntN(OMdev dev, char *data, int len, int *sign, OMbigIntType *fmt)+
+\item \verb+OMstatus OMgetByteArray(OMdev dev, char **data, int *len)+
+\item \verb+OMstatus OMgetByteArrayN(OMdev dev, char *data, int len)+
+\item \verb+OMstatus OMgetString(OMdev dev, char **str)+
+\item \verb+OMstatus OMgetStringN(OMdev dev, char *str, int len)+
+\item \verb+OMstatus OMgetVar(OMdev dev, char **var)+
+\item \verb+OMstatus OMgetVarN(OMdev dev, char *var, int len)+
+\item \verb+OMstatus OMgetSymbol(OMdev dev, char **cd, char **name)+
+\item \verb+OMstatus OMgetSymbolN(OMdev dev, char *cd, int clen, char *name, int nlen)+
+\end{itemize} 
+The functions that return variable size data exist in two versions. A simple
+version that does the necessary memory allocation itself 
+(using {\tt OMmalloc}) and a
+version (suffixed with {\tt N}) that lets the user do the allocation itself.
+The size of the needed area can be determined with the following function:
+\begin{itemize} 
+\item \verb+int OMgetLength(OMdev dev)+ returns the length of the next
+object. 
+\end{itemize} 
+that works for big integers, byte arrays, strings and variables. For symbols,
+the following function returns both the length of the content dictionary name
+and the length of the symbol name:
+\begin{itemize} 
+\item \verb+OMstatus OMgetSymbolLength(OMdev dev, int *clen, int *nlen)+
+\end{itemize} 
+
+When the current token does not carry any data i.e. when {\tt OMgetType}
+returns a marker ({\tt OMtokenApp},{\tt OMtokenEndApp},{\tt OMtokenAttr},{\tt OM tokenEndAttr},{\tt OMtokenAtp},{\tt OMtokenEndAtp},{\tt OMtokenError},{\tt OMtokenEndError},{\tt OMtokenObject},{\tt OMtokenEndObject},{\tt OMtokenBind},{\tt  OMtokenEndBind},{\tt OMtokenBVar} or {\tt OMtokenEndBVar}) it is necessary to call the correct function to remove the
+marker. The available functions are
+\begin{itemize} 
+\item \verb+OMstatus OMgetObject(OMdev dev)+
+\item \verb+OMstatus OMgetEndObject(OMdev dev)+
+\item \verb+OMstatus OMgetApp(OMdev dev)+
+\item \verb+OMstatus OMgetEndApp(OMdev dev)+
+\item \verb+OMstatus OMgetAttr(OMdev dev)+
+\item \verb+OMstatus OMgetEndAttr(OMdev dev)+
+\item \verb+OMstatus OMgetAtp(OMdev dev)+
+\item \verb+OMstatus OMgetEndAtp(OMdev dev)+
+\item \verb+OMstatus OMgetBind(OMdev dev)+
+\item \verb+OMstatus OMgetEndBind(OMdev dev)+
+\item \verb+OMstatus OMgetBVar(OMdev dev)+
+\item \verb+OMstatus OMgetEndBVar(OMdev dev)+
+\item \verb+OMstatus OMgetError(OMdev dev)+
+\item \verb+OMstatus OMgetEndError(OMdev dev)+
+
+\end{itemize} 
+
+
+All the previous functions return {\tt OMsuccess} when they succeed. When
+they return something else, there has been a problem such as calling the
+wrong function ({\tt OMgetApp} when there is not a ``beginning of
+application'' mark) or a system error. 
+
+The sequence of calls to read an expression is thus completely similar
+(if we omit the calls to {\tt OMgetType}) to the sequence of calls to
+write the expression. For example, the previous expression ($\sin x + y$)
+can be recovered via the sequence:
+\begin{verbatim} 
+OMgetObject(dev);
+OMgetApp(dev);
+  OMgetSymbol(dev, ...);
+  OMgetApp(dev);
+    OMgetSymbol(dev, ...);
+    OMgetVar(dev, ...);
+    OMgetVar(dev, ...);
+  OMgetEndApp(dev);
+OMgetEndApp(dev);
+OMgetEndObject(dev);
+\end{verbatim} 
+
+\verb+OMgetInt32(OMdev dev, int *i)+ returns the integer through its {\tt i}
+argument. 
+
+\verb+OMgetBigInt(OMdev dev, char **data, int *len, int *sign, OMbigIntType *fmt)+
+returns the data corresponding to the big integer in {\tt data}, its length
+in {\tt len}, its sign in {\tt sign} and its format in {\tt fmt}.
+
+\verb+OMgetBigIntN(OMdev dev, char *data, int len, int *sign, OMbigIntType *fmt)+ 
+copies the data corresponding to the big integer in {\tt data} buffer that
+should be (at least) {\tt len} characters long. The sign and format are
+returned in the {\tt sign} and {\tt fmt} arguments.
+
+\verb+OMgetByteArray(OMdev dev, char **data, int *len)+ returns the byte
+array through its {\tt data} argument. Its length is returned via the 
+{\tt len} argument.
+
+\verb+OMgetByteArrayN(OMdev dev, char *data, int len)+ copies the byte array
+in the {\tt data} buffer that should be (at least) {\tt len} characters
+long. 
+
+\verb+OMgetString(OMdev dev, char **str)+ returns the string trough its 
+{\tt str} argument.
+
+\verb+OMgetStringN(OMdev dev, char *str, int len)+ copies the string
+in the {\tt str} buffer whose length should be (at least) {\tt len}.
+If {\tt len} is greater than the actual length of the string, a null
+character is added at the end of {\tt str}.
+
+\verb+OMgetVar(OMdev dev, char **var)+ returns the name of the
+variable (as a null-terminated string) in its {\tt var} argument
+
+\verb+OMgetVarN(OMdev dev, char *var, int len)+ copies the name of the
+variable in the {\tt var} buffer, whose length should be (at least) 
+{\tt len}. 
+If {\tt len} is greater than the actual length of the variable name, a null 
+character is added at the end of {\tt var}.
+
+\verb+OMgetSymbol(OMdev dev, char **cd, char **name)+ returns the content
+dictionary and the name of the symbol through the {\tt cd} and {\tt name}
+arguments. 
+
+\verb+OMgetSymbolN(OMdev dev, char *cd, int clen, char *name, int nlen)+ 
+copies the content dictionary and the name of the symbols in the {\tt cd} and
+{\tt name} buffers. {\tt cd} should be at least {\tt clen} character long and
+{\tt name} should be at least {\tt nlen} long. When there is enough room
+(based on {\tt clen} or {\tt nlen}) a null character is added after the last
+character of the name ({\tt cd} or {\tt name}).
+
+%
+%All functions that use a {\tt char **} arguments work as follows:
+%if the argument is a pointer to a null pointer, the relevant data is
+%stored in a space allocated by the library (using {\tt OMalloc}). Otherwise,
+%it should point to a sufficiently large area of the memory.
+%The size of the needed area can be determined with the following function:
+%\begin{itemize} 
+%\item \verb+int OMgetLength(OMdev dev)+ returns the length of the next
+%object. 
+%\end{itemize} 
+%When the next type of {\OM} expression (as returned by {\tt OMgetType})
+%is {\tt OMbyteArrayToken}, {\tt OMstringToken} or {\tt OMvarToken}, the
+%length is the length of the data in bytes. When the object is an integer, the
+%length is the length in bytes needed for the ``digits'' (without sign).
+%Note that there is no way to get the length of a symbol name or its content
+%dictionary. 
+%
+%Here is how to read a variable in a buffer allocated by the library
+%\begin{verbatim} 
+%char *varname = (char *) 0;
+%int len;
+%OMgetVar(dev, &varname, &len);
+%\end{verbatim} 
+%and in a buffer allocated by the calling program:
+%\begin{verbatim} 
+%char *varname;
+%int len;
+%len = OMgetLength(dev);
+%varname = (char *) malloc(((size_t) len) + 1);
+%OMgetVar(dev, &varname, &len);
+%varname[len] = '\000';
+%\end{verbatim} 
+%
+%The character arrays returned by {\tt OMgetBigInt}, {\tt OMgetVar}, {\tt
+%OMgetSymbol}, {\tt OMgetString} are C strings i.e. they are null terminated. 
+%When the area where to copy the objects is supplied by the program, the
+%library does not end the data with a null byte. 
+
+
+\section{Comments in the SGML/XML Encodings}
+
+The library can also output and read comments (SGML/XML comments) with the
+following functions:
+\begin{itemize} 
+\item \verb+OMstatus OMputComment(OMdev dev, char *comment)+
+\item \verb+OMstatus OMputCommentN(OMdev dev, char *comment, int len)+
+\item \verb+OMstatus OMgetComment(OMdev dev, char **comment)+
+\item \verb+OMstatus OMgetCommentN(OMdev dev, char *comment, int len)+
+\end{itemize} 
+
+By default, comments are silently ignored by the library when reading {\OM}
+objects (and writing them using the binary encoding).
+The function 
+\begin{itemize} 
+\item \verb+OMbool OMignoreComment(OMdev dev, OMbool set)+
+\end{itemize} 
+changes this behaviour. When called with {\tt OMfalse}, comments are passed
+to the application: the {\tt OMgetType} function will return
+{\tt OMtokenComment} when the current token is a comment and the 
+{\tt OMgetComment} or {\tt OMgetCommentN} functions should be used to get the
+comments. When {\tt OMignoreComment} is called with {\tt OMtrue}, comments
+are ignored.
+
+\section{I/O Functions for Devices}
+\label{io}
+
+We provide four functions that produce {\tt OMIO}
+objects for devices. These functions provide I/O through the {\tt stdio}
+library (on {\tt FILE} object), file descriptors and character strings. 
+
+\begin{itemize} 
+\item \verb+OMIO OMmakeIOFile(FILE *f)+ associates the device with the
+file pointer {\tt f}.
+\item \verb+OMIO OMmakeIOfd(int fd)+ associates the device with the file
+descriptor {\tt fd}.
+\item \verb+OMIO OMmakeIOHandle(HANDLE handle)+ associates the device with a file handle *Windows specific version of \verb+OMmakeIOfd()+.{\tt fd}.
+\item \verb+OMIO OMmakeIOString(char **s)+  associates the device with a string.
+\end{itemize} 
+For example, the following code opens a device that reads from standard
+input: 
+\begin{verbatim} 
+dev = OMmakeDevice(OMencodingSGML, OMmakeIOFile(stdin));
+\end{verbatim} 
+
+The {\tt OMmakeIOString} builds an input device that reads from a string
+or an output device that writes to a string. For input, {\tt s} must point to
+a character string (null terminated). For output, {\tt s} will point to a
+string allocated by the library (note that the string {\tt s} points to can
+be reallocated by the library).
+
+\section{Communications}
+
+A communication layer can be put above the device layer. 
+In fact, the I/O structure in a device provides all the necessary support to
+use any transmission or communication means.
+This library directly provides some connection-oriented, client-server
+facilities (based on {\sc tcp}). 
+A set of functions are used to set up connections. Connections are described
+by the {\tt OMconn} type. An {\tt OMconn} is a (pointer to a) structure with
+two user-accessible fields {\tt in} and {\tt out}. {\tt in} is a pointer to a
+device to be used for input. {\tt out} is pointer to a device to be used for
+output. These devices use the binary encoding.
+
+An {\tt OMconn} object is made with the following function:
+\begin{itemize} 
+\item \verb+OMconn OMmakeConn(int timeout)+
+\end{itemize} 
+where {\tt timeout} is a timeout for the connection, expressed in
+milliseconds. 
+
+\begin{itemize} 
+\item \verb+OMdev OMconnIn(OMconn conn)+ returns the input device
+associated with the connection.
+\item \verb+OMdev OMconnOut(OMconn conn)+ returns the output device
+associated with the connection.
+\end{itemize} 
+
+\subsection{Functions to Initiate an {\tt OMconn}}
+
+The functions we provide can be divided in two classes. The first one
+simply establishes an interprocess communication using {\sc IP} addresses.
+The second one provides functions that can be used to launch a server. 
+The addresses used are then generated by the library.
+
+%If a call to one of these functions returns {\tt OMfailed}, the {\tt error}
+%field of the {\tt conn} structure contains the reason of the failure.
+
+\subsubsection{Simple Connections Functions}
+
+The following functions allow a client {\OM} application to contact an OM
+server at a specified address:
+\begin{itemize} 
+\item \verb+OMstatus OMconnTCP(OMconn conn, char *machine, int port)+
+\item \verb+OMstatus OMconnUnix(OMconn conn, char *file)+
+\end{itemize} 
+These functions first physically establish the connection. Then, they enter
+negotiation with the server (they send the first message). When they return,
+the negotiation is finished and the devices in the {\tt conn} argument are
+ready. 
+
+On the server side, the following functions provide bindings at specified
+addresses and take care of the negotiation:
+\begin{itemize} 
+\item \verb+OMstatus OMbindTCP(OMconn conn, int port)+
+\item \verb+OMstatus OMbindUnix(OMconn conn, char *file)+
+\end{itemize} 
+
+All four the previous  functions block until the connection is established
+(and negotiation is over) or the timeout of the {\tt conn} argument is
+reached.
+
+The following function returns the file descriptor associated with a device.
+This is intended to be used when there is a need to poll the device (through
+the {\tt select} or {\tt poll} system calls).
+\begin{itemize}
+\item \verb+OMdeviceFd(OMdev dev)+
+\end{itemize} 
+%When there is no file descriptor associated with the device, the 
+
+\subsubsection{Functions that Launch Servers}
+
+These functions provide the same functionalities for launching a server that
+were provided in the {\sc asap} library. 
+In this model, the client calls {\tt OMlaunch} with a machine name {\tt
+mach} and a string {\tt cmd} that is executed via {\tt rsh} on machine
+{\tt mach} as a shell command line. This command is supposed to launch the
+server program. The command is executed in an environment (in the {\sc unix}
+sense) where some variables are associated with an address on the machine that
+runs the client. The server can then connect to the client with the 
+{\tt OMserveClient} function.
+If the machine name is {\tt localhost}, the command is started on the
+same machine (without calling {\tt rsh}).
+
+\begin{itemize} 
+\item 
+\verb+OMstatus OMlaunchEnv(OMconn conn, char *machine, char *command, char *env)+
+\item \verb+OMstatus OMlaunch(OMconn conn, char *machine, char *command)+
+\item \verb+OMstatus OMserveClient(OMconn conn)+
+\end{itemize} 
+
+The environment variables passed to the server (launched program) are
+{\verb+OM_CALLER_UNIX_SOCKET+} (when a local connection is required) and 
+{\verb+OM_CALLER_MACHINE+} and {\verb+OM_CALLER_PORT+} (for internet
+connections).
+
+The {\tt OMlaunchEnv} function enables the command to be run with a
+particular environment (in the {\sc unix} sense). For example to run a
+{\tt plot} server on the {\tt kama} machine, we could use a piece of code
+such as 
+\begin{verbatim} 
+conn = OMmakeConn(2000);
+OMlaunchEnv(conn, "kama", "plot", "DISPLAY=rati:0 PATH=/users/bin");
+\end{verbatim} 
+
+
+
+\subsubsection{Termination}
+
+\begin{itemize} 
+\item \verb+OMstatus OMconnClose(OMconn conn)+
+\end{itemize} 
+
+\section{Parameters}
+
+The library internally uses three functions that can be supplied by the user.
+\begin{itemize} 
+\item \verb+extern void *(*OMmalloc) (size_t size)+
+\item \verb+extern void *(*OMrealloc) (void *ptr, size_t size)+
+\item \verb+extern void (*OMfree) (void *ptr)+
+\end{itemize} 
+
+\begin{itemize} 
+\item {\tt OMmalloc} is used for all memory allocations in the library. 
+The default value is the {\tt malloc} function.
+\item {\tt OMfree} is used for deallocations. The default value is the {\tt
+free} function. 
+\item {\tt OMfatal} is invoked when a fatal error is detected in the library
+(for example when memory allocation failed or when an inconsistency is
+detected in the library code data structures). The default value just does an
+{\tt exit}.
+\end{itemize}
+{\tt OMfatal} is declared as 
+{\tt extern void (*OMfatal)(OMstatus status)}. 
+All memory allocations and deallocations in the library are done through the
+{\tt OMmalloc} and {\tt OMfree} functions.
+
+\section{Miscellaneous Functions and Variables}
+
+\begin{itemize} 
+\item \verb+char *OMstatusToString(OMstatus status)+ converts a status to a
+human readable string.
+\item \verb+char *OMtokenTypeToString(OMtokenType ttype)+ converts a
+{\tt tokenType} to a human readable string.
+\item \verb+OMencodingType OMgetDeviceEncoding(OMdev dev)+ returns the
+encoding actually used by the device.
+\item \verb+char *OMlibDynamicInfo(void)+
+\item \verb+extern const char *OMlibVersion+ is the version of the library.
+\item \verb+extern const char *OMlibInfo+ contains some textual information
+about the library.
+\end{itemize} 
+%
+%\section{Functions to construct OM trees}
+%
+%All of these functions copy their arguments (i.e. there is no pointer to
+%their arguments left in the constructed OM tree). Maybe symbols and contexts
+%can be shared ?
+
+\section{Using the Library}
+
+Our prototype provides two libraries 
+\begin{itemize} 
+\item {\tt libOM.a} for operations on devices
+\item {\tt libOMconn.a} for communications 
+\end{itemize} 
+There are two related header files 
+\begin{itemize} 
+\item {\tt OM.h} contains the definition of the object types and
+the prototypes of the functions of {\tt libOM.a}
+\item {\tt OMconn.h} contains the type definitions and prototypes for 
+{\tt libOMconn.a}
+\end{itemize} 
+
+To use the library with your code you need to include the header files
+{\tt OM.h} and {\tt OMconn.h} (if you need the interprocess communication
+functions). You then has to link with {\tt libOM.a} and {\tt libConn.a} (if
+needed). The header files can be used with a C\verb-++- compiler.
+
+Some sample programs are given along with the sources ({\tt tenc.c} and 
+{\tt tpipe.c}). They are used to do auto-testing and may be useful as first
+examples. 
+
+To build the library from its sources, it is necessary to first produce the 
+{\tt Makefile} by running the {\tt configure} script ({\tt ./configure}).
+Then, just type {\tt make}. 
+
+The library may be built in two modes. If the preprocessor symbol
+\verb+OM_DEBUG+ is set during compilation the resulting library contains a
+lot of assertion and consistency checks that may turn to be useful during
+code development. In this mode, the following functions can be used to change
+the way the messages are produced:
+\begin{itemize} 
+\item \verb+FILE *OMsetVerbosityOutput(FILE * logFile)+ sets the file where 
+log messages are written to (default is {\tt stderr}).
+\item \verb+int OMsetVerbosityLevel(int level)+ sets the verbosity level. 
+0 means nothing is printed, 1 means everything is printed (default), 2 is
+less verbose. It returns the last verbosity level.
+\end{itemize} 
+If you  don't define \verb+OM_DEBUG+ the resulting library is smaller and
+more efficient but it assumes a correct use of its API.
+
+\section{Examples}
+
+This section contains pieces of C code showing some uses of the functions in
+this library. The goal of this code is to implement a program that reads an
+{\OM} object from a device and write it to another device (some sort of {\OM}
+pipe). 
+
+The {\tt main} function opens the devices, then calls {\tt pipeObj} until input device is empty. The {\tt pipeObj} function reads one {\OM} object from 
+{\tt devin} and writes it to {\tt devout}.
+\lgrindfile{readfile}
+
+
+{\tt pipeObj} calls {\tt OMgetType} to get the type of the current token and
+then uses some auxiliary functions ({\tt pipeApp}, {\tt pipeAttr}, {\tt
+pipeError} \ldots ) to read constructions (applications,
+attributions and errors).
+\lgrindfile{pipe}
+
+Some of the auxiliary functions to read constructions are
+\lgrindfile{auxiliary}
+
+{\tt checkStatus} is a function that checks the return code of the library
+function. It could look like
+\lgrindfile{checkStatus}
+
+
+%The {\tt pipeObj} function is intended to read an {\OM} object from the {\tt
+%devin} device and write it to the {\tt devout} device.
+%
+%
+%
+%\subsection{Reading from a file}
+%
+%
+%
+%
+%
+
+%
+%\section{Restrictions of the Current Implementation and Future Changes}
+%
+%This library is work in progress and the user should be aware that some
+%changes are planned and that some features are not yet completely implemented.
+%Here is the list of features that should not be used:
+%\begin{itemize} 
+%\item {\tt OMencodingUnknown} should never be used now. 
+%\end{itemize} 
+%Future changes as we can foresee them:
+%\begin{itemize} 
+%\item Auto-detection of the encoding will be added soon (so that 
+%{\tt OMencodingUnknown} will be useful).
+%\item Support for the XML encoding will be documented.
+%\end{itemize} 
+%
+%\section{Differences with the Previous Version}
+%
+%Two previous versions of this library was distributed to a few sites. The
+%current version has some improvements and changes:
+%\begin{itemize} 
+%\item The oldest library used ``context'' instead of ``content dictionary''
+%(CD).
+%\item There are no more ``command'' objects.
+%\item The encodings used by the current library are different.
+%\item The current library is less abstract with respect to content dictionary
+%(contexts) and symbols. There are no more constructed with the special
+%functions  {\tt OMmakeContext} and {\tt OMmakeSymbol} and thus the
+%corresponding accessors functions are gone ({\tt OMcontextName}, {\tt
+%OMsymbolContext} and {\tt OMsymbolName}). 
+%\item All functions that read the device now return an 
+%{\tt OMstatus}. Previously, {\tt OMgetType} and {\tt OMgetSymbol} did not.
+%\item Some type names have been changed, especially all those that ended in 
+%\verb+_t+ ({\tt OMstatus\_t} is now {\tt OMstatus}). 
+%\item Some names have changed, particulary those of the elements of
+%enumerated types..
+%\item Most {\tt OMget...} functions have changed so that the user can either
+%provide its own buffer for reading data or retrieved the data in a buffer
+%allocated by the library.
+%\end{itemize} 
+
+\end{document} 
+
+
+OMfatal ne retourne plus un OMbool, OMputFloat64 prend un pointeur sur un
+double.
+
+OMmakeIOString marche-t-il en entr\'ee et sortie ?
+
+Que se passe-t-il quand le verbosity level est \`a autre chose que 0 1 2 ?
+(et pourquoi 1 c'est ....).

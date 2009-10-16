@@ -2,7 +2,7 @@
 ##
 #W  pcgscomp.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: pcgscomp.gi,v 4.28 2005/10/11 09:28:41 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  with or defined by a pc series.
 ##
 Revision.pcgscomp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: pcgscomp.gi,v 4.28 2005/10/11 09:28:41 gap Exp $";
 
 
 #############################################################################

@@ -1,0 +1,1334 @@
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  algs.xml           RCWA documentation            Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: algs.xml,v 1.72 2009/09/18 21:35:14 stefan Exp $         ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Chapter Label="ch:algorithms">
+<Heading>The Algorithms Implemented in RCWA</Heading>
+
+This chapter lists brief descriptions of many of the algorithms and methods
+implemented in this package. These descriptions are kept very informal and
+short, and some of them provide only rudimentary information. They are listed
+in alphabetical order. The word <Q>trivial</Q> as a description means that
+essentially nothing is done except of storing or recalling one or several
+values, and <Q>straightforward</Q> means that no sophisticated algorithm
+is used. Note that <Q>trivial</Q> and <Q>straightforward</Q> are to be read
+as <E>mathematically</E> trivial respectively straightforward, and that the
+code of a function or method attributed in this way can still be reasonably
+long and complicated. Longer and better descriptions of many of the
+algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
+
+<List>
+
+  <Mark>
+    <C>ActionOnRespectedPartition(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q> after having computed a respected partition
+    by <C>RespectedPartition</C>. One only needs to know how to compute
+    images of residue classes under affine mappings.
+  </Item>
+
+  <Mark>
+    <C>Ball(<A>G</A>,<A>g</A>,<A>r</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>Ball(<A>G</A>,<A>p</A>,<A>r</A>,<A>act</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>ClassPairs</C>
+  </Mark>
+  <Item>
+    Run over all 4-tuples, and filter by divisibility criteria,
+    size comparisons, ordering of the entries etc.
+  </Item>
+
+  <Mark>
+    <C>ClassReflection(<A>r</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>ClassRotation(<A>r</A>,<A>m</A>,<A>u</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>ClassShift(<A>r</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>ClassTransposition(<A>r1</A>,<A>m1</A>,<A>r2</A>,<A>m2</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>ClassWiseOrderPreservingOn(<A>f</A>)</C>, etc.
+  </Mark>
+  <Item>
+    Forms the union of the residue classes modulo the modulus
+    of&nbsp;<A>f</A> in whose corresponding coefficient triple
+    the first entry is positive, zero or negative, respectively.
+  </Item>
+
+  <Mark>
+    <C>Coefficients(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>CommonRightInverse(<A>l</A>,<A>r</A>)</C>
+  </Mark>
+  <Item>
+    (See <C>RightInverse</C>.)
+  </Item>
+
+  <Mark>
+    <C>CT(<A>R</A>)</C>
+  </Mark>
+  <Item>
+    Attributes and properties are set according
+    to&nbsp;<Cite Key="Kohl09"/>.
+  </Item>
+
+  <Mark>
+    <C>DecreasingOn(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Forms the union of the residue classes which are determined by the
+    coefficients as indicated.
+  </Item>
+
+  <Mark>
+    <C>DerivedSubgroup(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    No genuine method -- &GAP; Library methods already work for tame groups.
+  </Item>
+
+  <Mark>
+    <C>Determinant(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Evaluation of the given expression.
+    For the mathematical meaning (epimorphism!), see Theorem&nbsp;2.11.9
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>DirectProduct(<A>G1</A>,<A>G2</A>, ... )</C>
+  </Mark>
+  <Item>
+    Restricts the groups <A>G1</A>, <A>G2</A>, ...
+    to disjoint residue classes. See <C>Restriction</C>
+    and Corollary&nbsp;2.3.3 in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>Display(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>Divisor(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Lcm of coefficients, as indicated.
+  </Item>
+
+  <Mark>
+    <C>DrawOrbitPicture</C>
+  </Mark>
+  <Item>
+    Compute spheres of radius <M>1, \dots, r</M> around the given point(s).
+    Choose the origin either in the lower left corner of the picture
+    (if all points lie in the first quadrant) or in the middle of the picture
+    (if they don't). Mark points of the ball with black pixels in case of
+    a monochrome picture. Choose colors from the given palette depending on
+    the distance from the starting points in case of a colored picture.
+  </Item>
+
+  <Mark>
+    <C>EpimorphismFromFpGroup(<A>G</A>,<A>r</A>)</C>
+  </Mark>
+  <Item>
+    If the package <Package>FR</Package>&nbsp;<Cite Key="FR"/> is loaded,
+    then use its function <C>FindGroupRelations</C> to find relations.
+    Otherwise proceed as follows: First compute the ball of
+    radius&nbsp;<A>r</A> around&nbsp;1 in the free group whose rank is the
+    number of stored generators of&nbsp;<A>G</A>. Then compute the images
+    of the elements of that ball under the natural projection onto the
+    group&nbsp;<A>G</A>. Take pairs of elements of the ball whose images
+    coincide, and add their quotients to the set of known relations.
+    For images which have finite order, add the corresponding power
+    relations. Finally, regardless of whether <Package>FR</Package>
+    is present or not, simplify the finitely presented group with the
+    determined relations by the operation <C>IsomorphismSimplifiedFpGroup</C>
+    from the &GAP; Library, and return the natural epimorphism from it
+    to&nbsp;<A>G</A>.
+  </Item>
+
+  <Mark>
+    <C>Exponent(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Check whether <A>G</A> is finite. If it is, then use the &GAP; Library
+    method, applied to <C>Image(IsomorphismPermGroup(<A>G</A>))</C>.
+    Check whether <A>G</A> is tame. If yes, return <C>infinity</C>.
+    If not, run a loop over <A>G</A> until finding an element of infinite
+    order. Once one is found, return <C>infinity</C>. <P/>
+
+    The final loop to find a non-torsion element can be left away under
+    the assumption that any finitely generated wild rcwa group has a wild
+    element. It looks likely that this holds, but currently the author does
+    not know a proof.
+  </Item>
+
+  <Mark>
+    <C>FactorizationIntoCSCRCT(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    This uses a rather sophisticated method which will likely
+    some time be published elsewhere. At the moment termination is not
+    guaranteed, but in case of termination the result is certain.
+    The strategy is roughly first to make the mapping class-wise
+    order-preserving and balanced, and then to remove all prime factors
+    from multiplier and divisor one after the other in decreasing order
+    by dividing by appropriate class transpositions.
+    The remaining integral mapping can be factored almost similarly
+    easily as a permutation of a finite set can be factored into
+    transpositions.
+  </Item>
+
+  <Mark>
+    <C>FactorizationOnConnectedComponents(<A>f</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    Calls <Package>GRAPE</Package> to get the connected components of the
+    transition graph, and then computes a partition of the suitably
+    <Q>blown up</Q> coefficient list corresponding to the connected
+    components.
+  </Item>
+
+  <Mark>
+    <C>FixedPointsOfAffinePartialMappings(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>GluckTaylorInvariant(<A>a</A>(</C>
+  </Mark>
+  <Item>
+    Evaluation of the given expression.
+  </Item>
+
+  <Mark>
+    <C>GuessedDivergence(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Numerical computation of the limit of some series, which seems to
+    converge <Q>often</Q>. Caution!!!
+  </Item>
+
+  <Mark>
+    <C>Image(<A>f</A>)</C>, <C>Image(<A>f</A>,<A>S</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q> if one can compute images of residue classes
+    under affine mappings and unite and intersect residue classes
+    (Chinese Remainder Theorem).
+    See Lemma&nbsp;1.2.1 in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>ImageDensity(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Evaluation of the given expression.
+  </Item>
+
+  <Mark>
+    <C><A>g</A> in <A>G</A></C> (membership test for rcwa groups)
+  </Mark>
+  <Item>
+    Test whether the mapping <A>g</A> or its inverse is in the list of
+    generators of&nbsp;<A>G</A>. If it is, return <C>true</C>.
+    Test whether its prime set is a subset of the prime set of&nbsp;<A>G</A>.
+    If not, return <C>false</C>. Test whether the multiplier or the divisor
+    of&nbsp;<A>g</A> has a prime factor which does not divide the multiplier
+    of&nbsp;<A>G</A>. If yes, return <C>false</C>. Test if <A>G</A> is
+    class-wise order-preserving, and <A>g</A> is not. If so, return
+    <C>false</C>. Test if the sign of <A>g</A> is&nbsp;-1 and all generators
+    of&nbsp;<A>G</A> have sign&nbsp;1. If yes, return <C>false</C>.
+    Test if <A>G</A> is class-wise order-preserving, all generators
+    of&nbsp;<A>G</A> have determinant&nbsp;0 and <A>g</A> has
+    determinant&nbsp;<M>\neq 0</M>. If yes, return <C>false</C>.
+    Test whether the support of&nbsp;<A>g</A> is a subset of the support
+    of&nbsp;<A>G</A>. If not, return <C>false</C>.
+    Test whether <A>G</A> fixes the nonnegative integers setwise,
+    but&nbsp;<A>g</A> does not. If yes, return <C>false</C>. <P/>
+
+    If <A>G</A> is tame, proceed as follows:
+    Test whether the modulus of <A>g</A> divides the modulus of <A>G</A>.
+    If not, return <C>false</C>. Test whether <A>G</A> is finite and <A>g</A>
+    has infinite order. If so, return <C>false</C>. Test whether <A>g</A>
+    is tame. If not, return <C>false</C>.
+    Compute a respected partition <C>P</C> of <A>G</A> and the
+    finite permutation group <C>H</C> induced by <A>G</A> on it
+    (see <C>RespectedPartition</C>).
+    Check whether <A>g</A> permutes <C>P</C>. If not, return <C>false</C>.
+    Let <C>h</C> be the permutation induced by <A>g</A> on <C>P</C>.
+    Check whether <C>h</C> lies in <C>H</C>. If not, return <C>false</C>.
+    Compute an element <C>g1</C> of <A>G</A> which acts on&nbsp;<C>P</C>
+    like&nbsp;<A>g</A>. For this purpose, factor <A>h</A> into generators
+    of&nbsp;<C>H</C> using <C>PreImagesRepresentative</C>, and compute the
+    corresponding product of generators of&nbsp;<A>G</A>.
+    Let <C>k := g/g1</C>. The mapping <C>k</C> is always integral.
+    Compute the kernel&nbsp;<C>K</C> of the action of <A>G</A>
+    on&nbsp;<C>P</C> using <C>KernelOfActionOnRespectedPartition</C>. Check
+    whether <C>k</C> lies in&nbsp;<C>K</C>. This is done using the package
+    <Package>Polycyclic</Package>&nbsp;<Cite Key="Polycyclic"/>, and uses an
+    isomorphism from a supergroup of &nbsp;<C>K</C> which is isomorphic
+    to the <C>|P|</C>-fold direct product of the infinite dihedral group
+    and which always contains&nbsp;<C>k</C> to a polycyclically presented
+    group. If&nbsp;<C>k</C> lies in&nbsp;<C>K</C>, return <C>true</C>,
+    otherwise return <C>false</C>. <P/>
+
+    If <A>G</A> is not tame, proceed as follows:
+    Look for finite orbits of&nbsp;<A>G</A>. If some are found, test whether
+    <A>g</A> acts on them, and whether the induced permutations lie in
+    the permutation groups induced by&nbsp;<A>G</A>. If for one of the
+    examined orbits one of the latter two questions has a negative answer,
+    then return <C>false</C>.
+    Look for a positive integer&nbsp;<M>m</M> such that <A>g</A> does
+    not leave a partition of&nbsp;&ZZ; into unions of residue
+    classes (mod&nbsp;<M>m</M>) invariant which is fixed by&nbsp;<A>G</A>.
+    If successful, return <C>false</C>. If not, try to factor <A>g</A> into
+    generators of&nbsp;<A>G</A> using <C>PreImagesRepresentative</C>.
+    If successful, return <C>true</C>. If <A>g</A> is in <A>G</A>, this
+    terminates after a finite number of steps. Both runtime and memory
+    requirements are exponential in the word length. If <A>g</A> is not
+    in <A>G</A> at this stage, the method runs into an infinite loop.
+  </Item>
+
+  <Mark>
+    <C><A>f</A> in <A>M</A></C> (membership test for rcwa monoids)
+  </Mark>
+  <Item>
+    Test whether the mapping <A>f</A> is in the list of generators
+    of&nbsp;<A>G</A>. If it is, return <C>true</C>.
+    Test whether the multiplier of <A>f</A> is zero, but all generators
+    of&nbsp;<A>M</A> have nonzero multiplier. If yes, return <C>false</C>.
+    Test if neither&nbsp;<A>f</A> nor any generator of&nbsp;<A>M</A>
+    has multiplier zero. If so, check whether the prime set of&nbsp;<A>f</A>
+    is a subset of the prime set of&nbsp;<A>M</A>, and whether the set of
+    prime factors of the multiplier of&nbsp;<A>f</A> is a subset of the union
+    of the sets of prime factors of the multipliers of the generators
+    of&nbsp;<A>M</A>. If one of these is not the case, return <C>false</C>.
+    Check whether the set of prime factors of the divisor
+    of&nbsp;<A>f</A> is a subset of the union of the sets of prime factors
+    of the divisors of the generators of&nbsp;<A>M</A>.
+    If not, return <C>false</C>.
+    If the underlying ring is &ZZ; or a semilocalization thereof,
+    then check whether <A>f</A> is not class-wise order-preserving,
+    but <A>M</A>&nbsp;is. If so, return <C>false</C>. <P/>
+
+    If <A>f</A> is not injective, but all generators of&nbsp;<A>M</A> are,
+    then return <C>false</C>.
+    If <A>f</A> is not surjective, but all generators of&nbsp;<A>M</A> are,
+    then return <C>false</C>.
+    If the support of&nbsp;<A>f</A> is not a subset of the support
+    of&nbsp;<A>M</A>, then return <C>false</C>.
+    If <A>f</A> is not sign-preserving, but <A>M</A> is,
+    then return <C>false</C>.
+    Check whether <A>M</A> is tame. If so, then return <C>false</C> provided
+    that one of the following three conditions hold: 1.&nbsp;The modulus
+    of&nbsp;<A>f</A> does not divide the modulus of&nbsp;<A>M</A>.
+    2.&nbsp;<A>f</A> is not tame. 3.&nbsp;<A>M</A> is finite, and <A>f</A>
+    is bijective and has infinite order.
+    If membership has still not been decided, use <C>ShortOrbits</C> to look
+    for finite orbits of&nbsp;<A>M</A>, and check whether <A>f</A> fixes all
+    of them setwise. If a finite orbit is found which <A>f</A> does not map
+    to itself, then return <C>false</C>. <P/>
+
+    Finally compute balls of increasing radius around&nbsp;1 until <A>f</A>
+    is found to lie in one of them. If that happens, return <C>true</C>.
+    If <A>f</A> is an element of&nbsp;<A>M</A>, this will eventually
+    terminate, but if at this stage <A>f</A> is not an element
+    of&nbsp;<A>M</A>, this will run into an infinite loop.
+  </Item>
+
+  <Mark>
+    <C><A>point</A> in <A>orbit</A></C> (membership test for orbits)
+  </Mark>
+  <Item>
+    Uses the equality test for orbits:
+    The orbit equality test computes balls of increasing radius around the
+    orbit representatives until they intersect nontrivially. Once they do so,
+    it returns <C>true</C>. If it finds that one or both of the orbits are
+    finite, it makes use of that information, and returns <C>false</C> if
+    appropriate. In between, i.e. after having computed balls to a certain
+    extent depending on the properties of the group, it chooses a suitable
+    modulus&nbsp;<M>m</M> and computes orbits (modulo&nbsp;<M>m</M>).
+    If the representatives of the orbits to be compared belong to different
+    orbits (mod&nbsp;<M>m</M>), it returns <C>false</C>. If this is not the
+    case although the orbits are different, the equality test runs into an
+    infinite loop.
+  </Item>
+
+  <Mark>
+    <C>IncreasingOn(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Forms the union of the residue classes which are determined by the
+    coefficients as indicated.
+  </Item>
+
+  <Mark>
+    <C>Index(<A>G</A>,<A>H</A>)</C>
+  </Mark>
+  <Item>
+    In general, i.e. if the underlying ring is not&nbsp;&ZZ;, proceed
+    as follows: If both groups <A>G</A> and&nbsp;<A>H</A> are finite,
+    return the quotient of their orders. If <A>G</A> is infinite,
+    but <A>H</A> is finite, return <C>infinity</C>. Otherwise return the
+    number of right cosets of <A>H</A> in&nbsp;<A>G</A>, computed by the
+    &GAP; Library function <C>RightCosets</C>. <P/>
+
+    If the underlying ring is&nbsp;&ZZ;, do additionally the
+    following before attempting to compute the list of right cosets:
+    If the group <A>G</A> is class-wise order-preserving, check whether one
+    of its generators has nonzero determinant, and whether all generators
+    of&nbsp;<A>H</A> have determinant&nbsp;zero.
+    If so, then return <C>infinity</C>.
+    Check whether <A>H</A> is tame, but <A>G</A> is not.
+    If so, then return <C>infinity</C>.
+    If <A>G</A> is tame, then check whether the rank of the largest free
+    abelian subgroup of the kernel of the action of <A>G</A> on a respected
+    partition is higher than the corresponding rank for&nbsp;<A>H</A>.
+    For this check, use <C>RankOfKernelOfActionOnRespectedPartition</C>.
+    If it is, then return <C>infinity</C>.
+  </Item>
+
+  <Mark>
+    <C>Induction(<A>g</A>,<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Computes <C>f * g * RightInverse(<A>f</A>)</C>.
+  </Item>
+
+  <Mark>
+    <C>Induction(<A>G</A>,<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Gets a set of generators by applying <C>Induction(<A>g</A>,<A>f</A>)</C>
+    to the generators <A>g</A> of&nbsp;<A>G</A>.
+  </Item>
+
+  <Mark>
+    <C>InjectiveAsMappingFrom(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    The function starts with the entire source of <A>f</A> as <Q>preimage</Q>
+    <C>pre</C> and the empty set as <Q>image</Q>&nbsp;<C>im</C>.
+    It loops over the residue classes (mod&nbsp;<C>Mod(<A>f</A>)</C>).
+    For any such residue class <C>cl</C> the following is done: Firstly,
+    the image of <C>cl</C> under&nbsp;<A>f</A> is added to&nbsp;<C>im</C>.
+    Secondly, the intersection of the preimage of the intersection of the
+    image of <C>cl</C> under <A>f</A> and <C>im</C> under <A>f</A> and
+    <C>cl</C> is subtracted from&nbsp;<C>pre</C>. 
+  </Item>
+
+  <Mark>
+    <C>IntegralConjugate(<A>f</A>)</C>, 
+    <C>IntegralConjugate(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Uses the algorithm described in the proof of Theorem&nbsp;2.5.14
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>IntegralizingConjugator(<A>f</A>)</C>, 
+    <C>IntegralizingConjugator(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Uses the algorithm described in the proof of Theorem&nbsp;2.5.14
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>Inverse(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Essentially inversion of affine mappings.
+    See Lemma&nbsp;1.3.1, Part&nbsp;(b) in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>IsBalanced(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Checks whether the sets of prime factors of the multiplier and
+    the divisor of&nbsp;<A>f</A> are the same.
+  </Item>
+
+  <Mark>
+    <C>IsClassReflection(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Computes the support of&nbsp;<A>g</A>, and compares&nbsp;<A>g</A> with
+    the corresponding class reflection.
+  </Item>
+
+  <Mark>
+    <C>IsClassRotation(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Computes the support of&nbsp;<A>g</A>, extracts the possible rotation
+    factor from the coefficients and compares&nbsp;<A>g</A> with the
+    corresponding class rotation.
+  </Item>
+
+  <Mark>
+    <C>IsClassShift(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Computes the support of&nbsp;<A>g</A>, and compares&nbsp;<A>g</A> with
+    the corresponding class shift.
+  </Item>
+
+  <Mark>
+    <C>IsClassTransposition(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Computes the support of&nbsp;<A>g</A>, writes it as a disjoint union of
+    two residue classes and compares&nbsp;<A>g</A> with the class transposition
+    which interchanges them.
+  </Item>
+
+  <Mark>
+    <C>IsClassWiseOrderPreserving(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Tests whether the first entry of all coefficient triples is positive.
+  </Item>
+
+  <Mark>
+    <C>IsConjugate(RCWA(Integers),<A>f</A>,<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Test whether <A>f</A> and <A>g</A> have the same order, and whether
+    either both or none of them is tame. If not, return <C>false</C>. <P/>
+
+    If the mappings are wild, use <C>ShortCycles</C> to search for finite
+    cycles not belonging to an infinite series, until their numbers for a
+    particular length differ. This may run into an infinite loop.
+    If it terminates, return <C>false</C>. <P/>
+
+    If the mappings are tame, use the method described in the proof of
+    Theorem&nbsp;2.5.14 in&nbsp;<Cite Key="Kohl05"/> to construct
+    integral conjugates of <A>f</A> and <A>g</A>. Then essentially use
+    the algorithm described in the proof of Theorem&nbsp;2.6.7
+    in&nbsp;<Cite Key="Kohl05"/> to compute <Q>standard representatives</Q>
+    of the conjugacy classes which the integral conjugates of <A>f</A>
+    and <A>g</A> belong to. Finally compare these standard representatives,
+    and return <C>true</C> if they are equal and <C>false</C> if not.
+  </Item>
+
+  <Mark>
+    <C>IsInjective(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    See <C>Image</C>.
+  </Item>
+
+  <Mark>
+    <C>IsIntegral(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>IsomorphismMatrixGroup(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Uses the algorithm described in the proof of Theorem&nbsp;2.6.3
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>IsomorphismPermGroup(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    If the group <A>G</A> is finite and class-wise order-preserving,
+    use <C>ActionOnRespectedPartition</C>.
+    If <A>G</A> is finite, but not class-wise order-preserving, compute
+    the action on the respected partition which is obtained by splitting
+    any residue class <M>r(m)</M> in <C>RespectedPartition(<A>G</A></C>
+    into three residue classes <M>r(3m), r+m(3m), r+2m(3m)</M>. 
+    If <A>G</A> is infinite, there is no isomorphism to a finite
+    permutation group, thus return <C>fail</C>.
+  </Item>
+
+  <Mark>
+    <C>IsomorphismRcwaGroup(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    The method for finite groups uses <C>RcwaMapping</C>, Part&nbsp;(d). <P/>
+
+    The method for free products of finite groups uses the Table-Tennis
+    Lemma (which is also known as <E>Ping-Pong Lemma</E>,
+    cf. e.g. Section&nbsp;II.B. in&nbsp;<Cite Key="LaHarpe00"/>).
+    It uses regular permutation representations of the factors
+    <M>G_r</M> (<M>r = 0, \dots ,m-1</M>) of the free product on residue
+    classes modulo <M>n_r := |G_r|</M>.
+    The basic idea is that since point stabilizers in regular permutation
+    groups are trivial, all non-identity elements map any of the permuted
+    residue classes into their complements.
+    To get into a situation where the Table-Tennis Lemma is applicable,
+    the method computes conjugates of the images of the mentioned permutation
+    representations under bijective rcwa mappings <M>\sigma_r</M> which
+    satisfy <M>0(n_r)^{\sigma_r} = &ZZ; \setminus r(m)</M>. <P/>
+
+    The method for free groups uses an adaptation of the construction given
+    on page&nbsp;27 in&nbsp;<Cite Key="LaHarpe00"/> from PSL(2,&CC;) to
+    RCWA(&ZZ;). As an equivalent for the closed discs used there, the method
+    takes the residue classes modulo two times the rank of the free group.
+  </Item>
+
+  <Mark>
+    <C>IsPerfect(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    If the group <A>G</A> is trivial, then return <C>true</C>.
+    Otherwise if it is abelian, then return <C>false</C>. <P/>
+
+    If the underlying ring is&nbsp;&ZZ;, then do the following:
+    If one of the generators of&nbsp;<A>G</A> has sign&nbsp;-1, then
+    return <C>false</C>. If&nbsp;<A>G</A> is class-wise order-preserving
+    and one of the generators has nonzero determinant, then return
+    <C>false</C>. <P/>
+
+    If <A>G</A> is wild, and perfectness has not been decided so far,
+    then give up. If <A>G</A> is finite, then check the image of
+    <C>IsomorphismPermGroup(<A>G</A>)</C> for perfectness, and return
+    <C>true</C> or <C>false</C> accordingly. <P/>
+
+    If the group&nbsp;<A>G</A> is tame and if it acts transitively
+    on its stored respected partition, then return <C>true</C> or
+    <C>false</C> depending on whether the finite permutation group
+    <C>ActionOnRespectedPartition(<A>G</A>)</C> is perfect or not.
+    If&nbsp;<A>G</A> does not act transitively on its stored respected
+    partition, then give up.
+  </Item>
+
+  <Mark>
+    <C>IsPrimeSwitch(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Checks whether the multiplier of&nbsp;<A>g</A> is an odd prime,
+    and compares <A>g</A> with the corresponding prime switch.
+  </Item>
+
+  <Mark>
+    <C>IsSignPreserving(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    If <A>f</A> is not class-wise order-preserving, then return <C>false</C>.
+    Otherwise let <M>c \geq 1</M> be greater than or equal to the maximum of
+    the absolute values of the coefficients <M>b_{r(m)}</M> of the affine
+    partial mappings of&nbsp;<A>f</A>, and check whether
+    the minimum of the image of <M>\{0, \dots, c\}</M> under&nbsp;<A>f</A>
+    is nonnegative and whether the maximum of the image of
+    <M>\{-c, \dots, -1\}</M> under&nbsp;<A>f</A> is negative.
+    If both is the case, then return <C>true</C>, otherwise
+    return <C>false</C>.
+  </Item>
+
+  <Mark>
+    <C>IsSolvable(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    If <A>G</A> is abelian, then return <C>true</C>.
+    If <A>G</A> is tame, then return <C>true</C> or <C>false</C> depending on
+    whether <C>ActionOnRespectedPartition(<A>G</A>)</C> is solvable or not.
+    If <A>G</A> is wild, then give up.
+  </Item>
+
+  <Mark>
+    <C>IsSubset(<A>G</A>,<A>H</A>)</C> (checking for a subgroup relation)
+  </Mark>
+  <Item>
+    Check whether the set of stored generators of&nbsp;<A>H</A> is a subset
+    of the set of stored generators of&nbsp;<A>G</A>. If so, return
+    <C>true</C>. Check whether the prime set of&nbsp;<A>H</A> is a subset
+    of the prime set of&nbsp;<A>G</A>. If not, return <C>false</C>.
+    Check whether the support of&nbsp;<A>H</A> is a subset
+    of the support of&nbsp;<A>G</A>. If not, return <C>false</C>.
+    Check whether <A>G</A> is tame, but <A>H</A> is wild.
+    If so, return <C>false</C>. <P/>
+
+    If <A>G</A> and <A>H</A> are both tame, then proceed as follows:
+    If the multiplier of <A>H</A> does not divide the multiplier
+    of&nbsp;<A>G</A>, then return <C>false</C>.
+    If <A>H</A> does not respect the stored respected partition
+    of&nbsp;<A>G</A>, then return <C>false</C>.
+    Check whether the finite permutation group induced by <A>H</A> on
+    <C>RespectedPartition(<A>G</A>)</C> is a subgroup of
+    <C>ActionOnRespectedPartition(<A>G</A>)</C>. If yes, return <C>true</C>.
+    Check whether the order of&nbsp;<A>H</A> is greater than the order
+    of&nbsp;<A>G</A>. If so, return <C>false</C>. <P/>
+
+    Finally use the membership test to check whether all generators
+    of&nbsp;<A>H</A> lie in&nbsp;<A>G</A>, and return <C>true</C> or
+    <C>false</C> accordingly.
+  </Item>
+
+  <Mark>
+    <C>IsSurjective(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    See <C>Image</C>.
+  </Item>
+
+  <Mark>
+    <C>IsTame(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Checks whether the modulus of the group is nonzero.
+  </Item>
+
+  <Mark>
+    <C>IsTame(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Application of the criteria given in Corollary&nbsp;2.5.10
+    and&nbsp;2.5.12 and Theorem&nbsp;A.8 and&nbsp;A.11
+    in&nbsp;<Cite Key="Kohl05"/>, as well as of the criteria given
+    in&nbsp;<Cite Key="Kohl07b"/>.
+
+    The criterion <Q>surjective, but not injective means wild</Q>
+    (Theorem&nbsp;A.8 in&nbsp;<Cite Key="Kohl05"/>) is the subject
+    of&nbsp;<Cite Key="Kohl07a"/>.
+
+    The package <Package>GRAPE</Package> is needed for the application
+    of the criterion which says that an rcwa permutation is wild if
+    a transition graph has a weakly-connected component which is not
+    strongly-connected (cf. Theorem&nbsp;A.11 in&nbsp;<Cite Key="Kohl05"/>).
+  </Item>
+
+  <Mark>
+    <C>IsTransitive(<A>G</A>,Integers)</C>
+  </Mark>
+  <Item>
+    Look for finite orbits, using <C>ShortOrbits</C> on a couple of
+    intervals. If a finite orbit is found, return <C>false</C>.
+    Test if <A>G</A> is finite. If yes, return <C>false</C>. <P/>
+
+    Search for an element <C>g</C> and a residue class <M>r(m)</M>
+    such that the restriction of <C>g</C> to <M>r(m)</M> is given
+    by <M>n \mapsto n + m</M>. Then the cyclic group generated by <C>g</C>
+    acts transitively on <M>r(m)</M>. The element <C>g</C> is searched
+    among the generators of <A>G</A>, its powers, its commutators,
+    powers of its commutators and products of few different generators.
+    The search for such an element may run into an infinite loop,
+    as there is no guarantee that the group has a suitable element. <P/>
+
+    If suitable <C>g</C> and <M>r(m)</M> are found, proceed as follows: <P/>
+
+    Put <M>S := r(m)</M>. Put <M>S := S \cup S^g</M> for all generators
+    <M>g</M> of <A>G</A>, and repeat this until <M>S</M> remains constant.
+    This may run into an infinite loop. <P/>
+
+    If it terminates: If <M>S = &ZZ;</M>, return <C>true</C>,
+    otherwise return <C>false</C>.
+  </Item>
+
+  <Mark>
+    <C>KernelOfActionOnRespectedPartition(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    First determine the abelian invariants of the kernel&nbsp;<C>K</C>.
+    For this, compute sufficiently many quotients of orders of
+    permutation groups induced by&nbsp;<A>G</A> on refinements of
+    the stored respected partition&nbsp;<C>P</C> by the order of the
+    permutation group induced by&nbsp;<A>G</A> on&nbsp;<C>P</C> itself.
+    Then use a random walk through the group <A>G</A>.
+    Compute powers of elements encountered along the way which
+    fix&nbsp;<C>P</C>.
+    Translate these kernel elements into elements of a polycyclically
+    presented group isomorphic to the <C>|P|</C>-fold direct product of
+    the infinite dihedral group (<C>K</C> certainly embeds into this group).
+    Use <Package>Polycyclic</Package>&nbsp;<Cite Key="Polycyclic"/>
+    to collect independent <Q>nice</Q> generators of&nbsp;<C>K</C>.
+    Proceed until the permutation groups induced by&nbsp;<C>K</C> on the
+    refined respected partitions all equal the initially stored quotients.
+  </Item>
+
+  <Mark>
+    <C>LargestSourcesOfAffineMappings(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Forms unions of residue classes modulo the modulus of the mapping,
+    whose corresponding coefficient triples are equal.
+  </Item>
+
+  <Mark>
+    <C>LaTeXObj(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Collects residue classes those corresponding coefficient triples
+    are equal.
+  </Item>
+
+  <Mark>
+    <C>LikelyContractionCentre(<A>f</A>,<A>maxn</A>,<A>bound</A>)</C>
+  </Mark>
+  <Item>
+    Computes trajectories with starting values from a given interval, until
+    a cycle is reached. Aborts if the trajectory exceeds the prescribed
+    bound. Form the union of the detected cycles.
+  </Item>
+
+  <Mark>
+    <C>LocalizedRcwaMapping(<A>f</A>,<A>p</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>Loops(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Runs over the residue classes modulo the modulus of&nbsp;<A>f</A>,
+    and selects those of them which <A>f</A> does not map to themselves,
+    but which intersect nontrivially with their images under&nbsp;<A>f</A>.
+  </Item>
+
+  <Mark>
+    <C>mKnot(<A>m</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>, following the definition given in
+    <Cite Key="Keller99"/>.
+  </Item>
+
+  <Mark>
+    <C>Modulus(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Searches for a wild element in the group.
+    If unsuccessful, tries to construct a respected partition
+    (see <C>RespectedPartition</C>).
+  </Item>
+
+  <Mark>
+    <C>Modulus(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>MovedPoints(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Needs only forming unions of residue classes and determining
+    fixed points of affine mappings.
+  </Item>
+
+  <Mark>
+    <C>Multiplier(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Lcm of coefficients, as indicated.
+  </Item>
+
+  <Mark>
+    <C>Multpk(<A>f</A>,<A>p</A>,<A>k</A>)</C>
+  </Mark>
+  <Item>
+    Forms the union of the residue classes modulo the modulus of the
+    mapping, which are determined by the given divisibility criteria
+    for the coefficients of the corresponding affine mapping.
+  </Item>
+
+  <Mark>
+    <C>NrConjugacyClassesOfRCWAZOfOrder(<A>ord</A>)</C>
+  </Mark>
+  <Item>
+    The class numbers are taken from Corollary&nbsp;2.7.1
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>Orbit(<A>G</A>,<A>pnt</A>,<A>gens</A>,<A>acts</A>,<A>act</A>)</C>
+  </Mark>
+  <Item>
+    Check if the orbit has length less than a certain bound.
+    If so, then return it as a list.
+    Otherwise test whether the group <A>G</A> is tame or wild. <P/>
+
+    If <A>G</A> is tame, then test whether <A>G</A> is finite.
+    If yes, then compute the orbit by the &GAP; Library method.
+    Otherwise proceed as follows:
+    Compute a respected partition&nbsp;<M>\mathcal{P}</M> of&nbsp;<A>G</A>.
+    Use&nbsp;<M>\mathcal{P}</M> to find a residue class&nbsp;<M>r(m)</M>
+    which is a subset of the orbit to be computed. In general, <M>r(m)</M>
+    will not be one of the residue classes in&nbsp;<M>\mathcal{P}</M>, but
+    a subset of one of them.
+    Put <M>\Omega := r(m)</M>. Unite the set&nbsp;<M>\Omega</M> with its
+    images under all the generators of&nbsp;<A>G</A> and their inverses.
+    Repeat that until <M>\Omega</M> does not change any more.
+    Return&nbsp;<M>\Omega</M>. <P/>
+
+    If <A>G</A> is wild, then return an orbit object which stores the
+    group&nbsp;<A>G</A>, the representative&nbsp;<A>rep</A> and the
+    action&nbsp;<A>act</A>.
+  </Item>
+
+  <Mark>
+    <C>OrbitsModulo(<A>f</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    Uses <Package>GRAPE</Package> to compute the connected
+    components of the transition graph.
+  </Item>
+
+  <Mark>
+    <C>OrbitsModulo(<A>G</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>Order(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Test for <C>IsTame</C>.
+    If the mapping is not tame, then return <C>infinity</C>.
+    Otherwise use Corollary&nbsp;2.5.10 in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>PreImage(<A>f</A>,<A>S</A>)</C>
+  </Mark>
+  <Item>
+    See <C>Image</C>.
+  </Item>
+
+  <Mark>
+    <C>PreImagesRepresentative(<A>phi</A>,<A>g</A>)</C>,
+    <C>PreImagesRepresentatives(<A>phi</A>,<A>g</A>)</C>
+  </Mark>
+  <Item>
+    As indicated in the documentation of these methods.
+    The underlying idea to successively compute two balls around&nbsp;1
+    and&nbsp;<A>g</A> until they intersect nontrivially is standard
+    in computational group theory. For rcwa groups it would mean wasting
+    both memory and runtime to actually compute group elements.
+    Thus only images of tuples of points are computed and stored.
+  </Item>
+
+  <Mark>
+    <C>PrimeSet(<A>f</A>)</C>,
+    <C>PrimeSet(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>PrimeSwitch(<A>p</A>)</C>
+  </Mark>
+  <Item>
+    Multiplication of rcwa mappings as indicated.
+  </Item>
+
+  <Mark>
+    <C>Print(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C><A>f</A>*<A>g</A></C>
+  </Mark>
+  <Item>
+    Essentially composition of affine mappings.
+    See Lemma&nbsp;1.3.1, Part&nbsp;(a) in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>Projections(<A>G</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    Use <C>OrbitsModulo</C> to determine the supports of the images of the
+    epimorphisms to be determined, and use <C>RestrictedPerm</C> to compute
+    the images of the generators of&nbsp;<A>G</A> under these epimorphisms.
+  </Item>
+
+  <Mark>
+    <C>Random(RCWA(Integers))</C>
+  </Mark>
+  <Item>
+    Computes a product of <Q>randomly</Q> chosen class shifts,
+    class reflections and class transpositions. This seems to
+    be suitable for generating reasonably good examples.
+  </Item>
+
+  <Mark>
+    <C>RankOfKernelOfActionOnRespectedPartition(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    This performs basically the first part of the computations done by
+    <C>KernelOfActionOnRespectedPartition</C>.
+  </Item>
+
+  <Mark>
+    <C>RCWA(<A>R</A>)</C>
+  </Mark>
+  <Item>
+    Attributes and properties are set according to Theorem&nbsp;2.1.1,
+    Theorem&nbsp;2.1.2, Corollary&nbsp;2.1.6 and Theorem&nbsp;2.12.8
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>RcwaGroupByPermGroup(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Uses <C>RcwaMapping</C>, Part&nbsp;(d).
+  </Item>
+
+  <Mark>
+    <C>RcwaMapping</C>
+  </Mark>
+  <Item>
+    (a)-(c): <Q>trivial</Q>,
+    (d): <C>n&circum;perm - n</C> for determining the coefficients,
+    (e): <Q>affine mappings by values at two given points</Q>,
+    (f) and (g): <Q>trivial</Q>,
+    (h) and (i): correspond to Lemma&nbsp;2.1.4 in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>RepresentativeAction(<A>G</A>,<A>src</A>,<A>dest</A>,<A>act</A>)</C>,
+    <C>RepresentativeActionPreImage</C>
+  </Mark>
+  <Item>
+    As indicated in the documentation of these methods.
+    The underlying idea to successively compute two balls around
+    <A>src</A> and <A>dest</A> until they intersect nontrivially
+    is standard in computational group theory. Words standing for
+    products of generators of <A>G</A> are stored for any image
+    of <A>src</A> or <A>dest</A>.    
+  </Item>
+
+  <Mark>
+    <C>RepresentativeAction(RCWA(Integers),<A>P1</A>,<A>P2</A>)</C>
+  </Mark>
+  <Item>
+    Arbitrary mapping: see Lemma&nbsp;2.1.4 in&nbsp;<Cite Key="Kohl05"/>.
+    Tame mapping: see proof of Theorem&nbsp;2.8.9
+    in&nbsp;<Cite Key="Kohl05"/>. The former is almost trivial, while the
+    latter is a bit complicated and takes usually also much more time.
+  </Item>
+
+  <Mark>
+    <C>RepresentativeAction(RCWA(Integers),<A>f</A>,<A>g</A>)</C>
+  </Mark>
+  <Item>
+    The algorithm used by <C>IsConjugate</C> constructs actually also
+    an element <C>x</C> such that <C><A>f</A>&circum;x = <A>g</A></C>.
+  </Item>
+
+  <Mark>
+    <C>RespectedPartition(<A>f</A>)</C>,
+    <C>RespectedPartition(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    Uses the algorithm described in the proof of Theorem&nbsp;2.5.8
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>RespectsPartition(<A>G</A>,<A>P</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>RestrictedPerm(<A>g</A>,<A>S</A></C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>Restriction(<A>g</A>,<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Computes the action of <C>RightInverse(<A>f</A>) * g * f</C> on the
+    image of&nbsp;<A>f</A>.
+  </Item>
+
+  <Mark>
+    <C>Restriction(<A>G</A>,<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Gets a set of generators by applying
+    <C>Restriction(<A>g</A>,<A>f</A>)</C>
+    to the generators <A>g</A> of&nbsp;<A>G</A>.
+  </Item>
+
+  <Mark>
+    <C>RightInverse(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q> if one knows how to compute images of residue
+    classes under affine mappings, and how to compute inverses of
+    affine mappings.
+  </Item>
+
+  <Mark>
+    <C>Root(<A>f</A>,<A>k</A>)</C>
+  </Mark>
+  <Item>
+    If <A>f</A> is bijective, class-wise order-preserving and has
+    finite order: <P/>
+
+    Find a conjugate of <A>f</A> which is a product of class transpositions.
+    Slice cycles <M>\prod_{i=2}^l \tau_{r_1(m_1),r_i(m_i)}</M>
+    of&nbsp;<A>f</A> a respected partition <M>\mathcal{P}</M> into cycles
+    <M>\prod_{i=1}^l \prod_{j=0}^{k-1} \tau_{r_1(km_1),r_i+jm_i(km_i)}</M>
+    of the <A>k</A>-fold
+    length on the refined partition which one gets from <M>\mathcal{P}</M>
+    by decomposing any <M>r_i(m_i) \in \mathcal{P}</M> into residue classes
+    (mod&nbsp;<M>km_i</M>). Finally conjugate the resulting permutation
+    back. <P/>
+
+    Other cases seem to be more difficult and are currently not covered.
+  </Item>
+
+  <Mark>
+    <C>RotationFactor(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>SemilocalizedRcwaMapping(<A>f</A>,<A>pi</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>ShortCycles(<A>f</A>,<A>maxlng</A>)</C>
+  </Mark>
+  <Item>
+    Looks for fixed points of affine partial mappings of powers
+    of&nbsp;<A>f</A>.
+  </Item>
+
+  <Mark>
+    <C>ShortOrbits(<A>G</A>,<A>S</A>,<A>maxlng</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>Sign(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    Evaluation of the given expression.
+    For the mathematical meaning (epimorphism!), see Theorem&nbsp;2.12.8
+    in&nbsp;<Cite Key="Kohl05"/>.
+  </Item>
+
+  <Mark>
+    <C>Sinks(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Computes the strongly connected components of the transition graph
+    by the function
+    <C>STRONGLY&uscore;CONNECTED&uscore;COMPONENTS&uscore;DIGRAPH</C>,
+    and selects those which are proper subsets of their preimages and
+    proper supersets of their images under&nbsp;<A>f</A>.
+  </Item>
+
+  <Mark>
+    <C>Size(<A>G</A>)</C> (order of an rcwa group)
+  </Mark>
+  <Item>
+    Test whether one of the generators of the group&nbsp;<A>G</A> has
+    infinite order. If so, return <C>infinity</C>.
+    Test whether the group <A>G</A> is tame. If not, return <C>infinity</C>.
+    Test whether <C>RankOfKernelOfActionOnRespectedPartition(<A>G</A>)</C>
+    is nonzero. If so, return <C>infinity</C>.
+    Otherwise if <A>G</A> is class-wise order-preserving, return the size
+    of the permutation group induced on the stored respected partition.
+    If <A>G</A> is not class-wise order-preserving, return the size
+    of the permutation group induced on the refinement of the stored
+    respected partition which is obtained by splitting each residue class
+    into three residue classes with equal moduli.
+  </Item>
+
+  <Mark>
+    <C>Size(<A>M</A>)</C> (order of an rcwa monoid)
+  </Mark>
+  <Item>
+    Check whether <A>M</A> is in fact an rcwa group. If so, use the method
+    for rcwa groups instead. Check whether one of the generators
+    of&nbsp;<A>M</A> is surjective, but not injective. If so, return
+    <C>infinity</C>. Check whether for all generators&nbsp;<M>f</M>
+    of&nbsp;<A>M</A>, the image of the union of the loops of&nbsp;<M>f</M>
+    under&nbsp;<M>f</M> is finite. If not, return <C>infinity</C>.
+    Check whether one of the generators of&nbsp;<A>M</A> is bijective and
+    has infinite order. If so, return <C>infinity</C>.
+    Check whether one of the generators of&nbsp;<A>M</A> is wild.
+    If so, return <C>infinity</C>.
+    Apply the above criteria to the elements of the ball of radius&nbsp;2
+    around&nbsp;1, and return <C>infinity</C> if appropriate.
+    Finally attempt to compute the list of elements of&nbsp;<A>M</A>.
+    If this is successful, return the length of the resulting list.
+  </Item>
+
+  <Mark>
+    <C>Sources(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    Computes the strongly connected components of the transition graph
+    by the function
+    <C>STRONGLY&uscore;CONNECTED&uscore;COMPONENTS&uscore;DIGRAPH</C>,
+    and selects those which are proper supersets of their preimages and
+    proper subsets of their images under&nbsp;<A>f</A>.
+  </Item>
+
+  <Mark>
+    <C>SplittedClassTransposition(<A>ct</A>,<A>k</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>StructureDescription(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    This method uses a combination of techniques to obtain some basic
+    information on the structure of an rcwa group.
+    The returned description reflects the way the group has been built
+    (<C>DirectProduct</C>, <C>WreathProduct</C>, etc.).
+  </Item>
+
+  <Mark>
+    <C><A>f</A>+<A>g</A></C>
+  </Mark>
+  <Item>
+    Pointwise addition of affine mappings.
+  </Item>
+
+  <Mark>
+    <C>Support(<A>G</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q>.
+  </Item>
+
+  <Mark>
+    <C>Trajectory(<A>f</A>,<A>n</A>,...)</C>
+  </Mark>
+  <Item>
+    Iterated application of an rcwa mapping.
+    In the methods computing <Q>accumulated coefficients</Q>,
+    additionally composition of affine mappings.
+  </Item>
+
+  <Mark>
+    <C>TransitionGraph(<A>f</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Straightforward</Q> -- just check a sufficiently long interval.
+  </Item>
+
+  <Mark>
+    <C>TransitionMatrix(<A>f</A>,<A>m</A>)</C>
+  </Mark>
+  <Item>
+    Evaluation of the given expression.
+  </Item>
+
+  <Mark>
+    <C>TransposedClasses(<A>g</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>View(<A>f</A>)</C>
+  </Mark>
+  <Item>
+    <Q>Trivial</Q>.
+  </Item>
+
+  <Mark>
+    <C>WreathProduct(<A>G</A>,<A>P</A>)</C>
+  </Mark>
+  <Item>
+    Uses <C>DirectProduct</C> to embed the <C>DegreeAction(<A>P</A>)</C>th
+    direct power of&nbsp;<A>G</A>, and <C>RcwaMapping</C>, Part&nbsp;(d)
+    to embed the finite permutation group&nbsp;<A>P</A>.
+  </Item>
+
+  <Mark>
+    <C>WreathProduct(<A>G</A>,<A>Z</A>)</C>
+  </Mark>
+  <Item>
+    Restricts <A>G</A> to the residue class&nbsp;3(4), and encodes the
+    generator of&nbsp;<A>Z</A> as <M>\tau_{0(2),1(2)} \cdot
+    \tau_{0(2),1(4)}</M>. It is used that the images of&nbsp;3(4) under
+    powers of this mapping are pairwise disjoint residue classes.
+  </Item>
+
+</List>
+
+</Chapter>
+
+<!-- #################################################################### -->

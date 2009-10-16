@@ -1,0 +1,10 @@
+Generators B_3:
+e_1 e_2 e_3;
+Limiting weight: 10;
+Relations:
+[e_1,[e_1,e_2]];
+[e_1,e_3];
+[e_2,[e_2,e_1]];
+[e_2,[e_2,e_3]];
+[e_3,[e_3,[e_3,e_2]]].
+

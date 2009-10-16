@@ -2,7 +2,7 @@
 **
 *W  funcs.c                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: funcs.c,v 4.42 2009/09/25 15:17:05 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -22,7 +22,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_funcs_c =
-   "@(#)$Id$";
+   "@(#)$Id: funcs.c,v 4.42 2009/09/25 15:17:05 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -766,9 +766,8 @@ Obj             EvalFunccallXargs (
 **
 */
 
-
-static Int RecursionDepth;
-static UInt RecursionTrapInterval = 5000;
+Int RecursionDepth;
+static UInt RecursionTrapInterval;
 
 static void RecursionDepthTrap( void )
 {
@@ -846,7 +845,12 @@ Obj DoExecFunc0args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
-    /* switch back to the old values bag                                   */
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* Switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
@@ -879,6 +883,10 @@ Obj             DoExecFunc1args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
@@ -915,6 +923,10 @@ Obj             DoExecFunc2args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
@@ -953,6 +965,10 @@ Obj             DoExecFunc3args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
@@ -993,6 +1009,10 @@ Obj             DoExecFunc4args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
@@ -1035,6 +1055,10 @@ Obj             DoExecFunc5args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
@@ -1079,6 +1103,10 @@ Obj             DoExecFunc6args (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
@@ -1127,6 +1155,10 @@ Obj             DoExecFuncXargs (
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
@@ -1322,7 +1354,7 @@ void            ExecBegin ( Obj frame )
     ADDR_OBJ(execState)[2] = CurrLVars;
     /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
     CHANGED_BAG( CurrLVars );
-    ADDR_OBJ(execState)[3] = (Obj)(Int)CurrStat;
+    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)CurrStat);
     ExecState = execState;
 
     /* set up new state                                                    */
@@ -1340,7 +1372,7 @@ void            ExecEnd (
         assert( CurrStat  == 0 );
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)(Int)(ADDR_OBJ(ExecState)[3]) );
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
         SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 
@@ -1350,7 +1382,7 @@ void            ExecEnd (
     else {
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)(Int)(ADDR_OBJ(ExecState)[3]) );
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
         SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 
@@ -1417,6 +1449,8 @@ static Int InitLibrary (
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  RecursionTrapInterval = 5000;
+  
     /* make the global variable known to Gasman                            */
     InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
 

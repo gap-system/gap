@@ -1,0 +1,109 @@
+#############################################################################
+##
+#W  grp_tom.dat                 GAP table library               Thomas Breuer
+##
+#H  @(#)$Id: grp_tom.dat,v 1.1 2008/06/24 16:27:06 gap Exp $
+##
+#Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the mapping between the GAP Character Table Library
+##  and the groups stored in the GAP Library of Tables of Marks.
+##
+Revision.grp_tom_dat :=
+    "@(#)$Id: grp_tom.dat,v 1.1 2008/06/24 16:27:06 gap Exp $";
+
+
+DatabaseAttributeSetData( CTblLibData.IdEnumerator, "tom",
+"25-Jul-2007, 09:26:24 UTC",rec(
+automatic:=[
+["(2.A4x3).2",["unique max. subgroup of the right order",[["2.A7",42]]]],
+["(2.A5x3).2",["unique max. subgroup of the right order",[["2.A8",162]]]],
+["(3xD10).2",["hard test",[["M23",101]]]],
+["(A4xD10).2",["hard test",[["M24",1171]]]],
+["(A5xA5):4",["unique max. subgroup of the right order",[["A10",425]]]],
+["(A6xA4).2",["unique max. subgroup of the right order",[["A10",424]]]],
+["(A6xA5):2",["unique max. subgroup of the right order",[["A11",781]]]],
+["(A7x3).2",["unique max. subgroup of the right order",[["A10",426]]]],
+["(A7xA4):2",["unique max. subgroup of the right order",[["A11",783]]]],
+["(A8x3).2",["unique max. subgroup of the right order",[["A11",784]]]],
+["(A9x3).2",["hard test",[["A12",2533]]]],
+["11:5",["hard test",[["HS",284]]]],
+["17:8",["hard test",[["J3",101]]]],
+["19:9",["hard test",[["J3",106]]]],
+["2(A4xA4).2^2",["unique max. subgroup of the right order",[["U4(3)",356]]]],
+["2.(A4xA4)",["hard test",[["U4(2)",108]]]],
+["2.L2(3)",["unique max. subgroup of the right order",[["2.A5",11]]]],
+["2.S3",["unique max. subgroup of the right order",[["2.A5",9]]]],
+["2^(1+1+2+2):S3",["hard test",[["McL",277]]]],
+["2^(1+3):L3(2)",["hard test",[["2^4:A7",187]]]],
+["2^(2+4).(S3x2)",["hard test",[["McL.2",581]]]],
+["2^(2+4).S3",["hard test",[["McL",277]]]],
+["2^(2+4):(3x3):2",["hard test",[["2^4:A7",182]]]],
+["2^(3+3):7",["unique max. subgroup of the right order",[["Sz(8)",21]]]],
+["2^2.(2^7.3^2).s3",["unique max. subgroup of the right order",
+  [["Co3",2397]]]],
+["2^4.(S4x2)",["hard test",[["2^4.S6",447]]]],
+["2^4:D8",["hard test",[["M22",122]]]],
+["2x(3^2.QD16)",["hard test",[["HS",486]]]],
+["2x11:5",["hard test",[["Co3",1035]]]],
+["2x5:4",["hard test",[["M12",92]]]],
+["2x7:3",["hard test",[["M23",78]]]],
+["3.A6",["hard test",[["3.PGL2(9)",46]]]],
+["3.A6.2_1",["hard test",[["3.A6.2^2",114]]]],
+["3.A6.2_3",["hard test",[["3.A6.2^2",116]]]],
+["3.A7",["hard test",[["3.S7",181]]]],
+["3^(1+2):8",["hard test",[["J2",130]]]],
+["3^(1+2):SD16",["unique max. subgroup of the right order",[["U3(3).2",98]]]],
+["3^(1+4)_+.2S4",["unique max. subgroup of the right order",[["U4(3)",375]]]],
+["3^1+4:4s6",["unique max. subgroup of the right order",[["Co3",2469]]]],
+["3^2:2A4",["unique max. subgroup of the right order",[["A9",193]]]],
+["3^2:4",["hard test",[["3^2:Q8",11]]]],
+["3^2:8",["unique max. subgroup of the right order",[["2.A6",24]]]],
+["3^3:A4",["hard test",[["U4(2)",109]]]],
+["3^4.3^2.Q8",["hard test",[["3^(1+4)+:2S5",156]]]],
+["3^4:(3^2:Q8)",["hard test",[["McL",352]]]],
+["3^5:(2xm11)",["unique max. subgroup of the right order",[["Co3",2474]]]],
+["4.2^4",["hard test",[["4.2^4:S5",424]]]],
+["4.2^4:(2xS3)",["hard test",[["4.2^4:S5",529]]]],
+["4.2^4:S4",["hard test",[["4.2^4:S5",531]]]],
+["4.s4",["hard test",[["U3(3)",31]]]],
+["4^3:S4",["hard test",[["4^3:L3(2)",421]]]],
+["5:4x2^2",["hard test",[["HS",365]]]],
+["5:4xA4",["hard test",[["HS",473]]]],
+["7:3",["hard test",[["A7",25]]]],
+["7:3xS3",["hard test",[["M24",931]]]],
+["A11Syl2",["hard test",[["A11",517]]]],
+["A4xC4",["hard test",[["HS",266]]]],
+["Co3N2",["hard test",[["Co3",1948]]]],
+["Co3N3",["hard test",[["Co3",2437]]]],
+["D10",["hard test",[["5:4",5]]]],
+["D20",["unique max. subgroup of the right order",[["L2(11).2",21]]]],
+["D8xV4",["hard test",[["HS",178]]]],
+["HSN2",["hard test",[["HS",520]]]],
+["J2N2",["hard test",[["J2",137]]]],
+["J3N2",["hard test",[["J3",119]]]],
+["L3(4)Syl2",["hard test",[["L3(4)",78]]]],
+["M11N2",["hard test",[["M11",18]]]],
+["M12N2",["hard test",[["M12",106]]]],
+["M12N3",["hard test",[["M12",118]]]],
+["M22C2A",["hard test",[["M22",142]]]],
+["M23C2A",["hard test",[["M23",193]]]],
+["M24C2A",["hard test",[["M24",1512]]]],
+["M24N2",["hard test",[["M24",1396]]]],
+["McLN2",["hard test",[["McL",201]]]],
+["S3",["unique max. subgroup of the right order",[["A5",6]]]],
+["S3x2",["unique max. subgroup of the right order",[["S5",15]]]],
+["S4x2^2",["hard test",[["HS",369]]]],
+["a4",["unique max. subgroup of the right order",[["A5",8]]]],
+["bd10",["unique max. subgroup of the right order",[["2.A5",10]]]],
+["mo62p",["hard test",[["2^4:S5",196]]]],
+["s3wrs2",["unique max. subgroup of the right order",[["S6",52]]]],
+],
+nonautomatic:=[
+]));
+
+
+#############################################################################
+##
+#E
+

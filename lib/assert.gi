@@ -2,7 +2,7 @@
 ##
 #W  assert.gi                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: assert.gi,v 4.5 2002/04/15 10:04:26 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -24,7 +24,7 @@
 ##  This file is the GAP level implementation part of that package
 ##
 Revision.assert_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: assert.gi,v 4.5 2002/04/15 10:04:26 sal Exp $";
 
 #############################################################################
 ##

@@ -3,7 +3,7 @@
 *W  streams.c                   GAP source                       Frank Celler
 *W                                                  & Burkhard Hoefling (MAC)
 **
-*H  @(#)$Id$
+*H  @(#)$Id: streams.c,v 4.95 2009/09/25 15:17:06 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -32,7 +32,7 @@
 
 
 const char * Revision_streams_c =
-   "@(#)$Id$";
+   "@(#)$Id: streams.c,v 4.95 2009/09/25 15:17:06 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -42,6 +42,7 @@ const char * Revision_streams_c =
 
 #include        "gap.h"                 /* error handling, initialisation  */
 #include        "read.h"                /* reader                          */
+#include        "funcs.h"               /* functions                       */
 
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
@@ -61,6 +62,8 @@ const char * Revision_streams_c =
 #include        "streams.h"             /* streams package                 */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "vars.h"                /* BottomLVars for execution contexts */
+
 
 /****************************************************************************
 **
@@ -73,7 +76,7 @@ Int READ_COMMAND ( void ) {
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand();
+    status = ReadEvalCommand(BottomLVars);
     if( status == STATUS_EOF )
         return 0;
 
@@ -87,6 +90,7 @@ Int READ_COMMAND ( void ) {
 
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
+        RecursionDepth = 0;
         UserHasQuit = 1;
     }
     else if (status == STATUS_QQUIT) {
@@ -162,7 +166,7 @@ Int READ ( void )
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        status = ReadEvalCommand();
+        status = ReadEvalCommand(BottomLVars);
 	if (UserHasQuit || UserHasQUIT)
 	  break;
         /* handle return-value or return-void command                      */
@@ -176,6 +180,7 @@ Int READ ( void )
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
 	  break;
 	else if (status == STATUS_QUIT) {
+          RecursionDepth = 0;
 	  UserHasQuit = 1;
 	  break;
 	}
@@ -260,7 +265,7 @@ Int READ_TEST ( void )
 
         /* read and evaluate the command                                   */
         ClearError();
-        type = ReadEvalCommand();
+        type = ReadEvalCommand(BottomLVars);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
@@ -392,7 +397,7 @@ Int READ_GAP_ROOT ( Char * filename )
 	  SySetBuffering(Input->file);
             while ( 1 ) {
                 ClearError();
-                type = ReadEvalCommand();
+                type = ReadEvalCommand(BottomLVars);
 		if (UserHasQuit || UserHasQUIT)
 		  break;
                 if ( type == 1 || type == 2 ) {

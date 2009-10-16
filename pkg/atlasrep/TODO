@@ -1,0 +1,233 @@
+TODO                       GAP 4 package 'atlasrep'             Thomas Breuer
+
+TODO now
+========
+
+-----------------------------------------------------------------------
+overview: provide subgroup/supergroup info for categorized table!
+
+where is the class "pkg" defined?
+
+tst/testinst.g: check the permissions! (how?)
+
+-----------------------------------------------------------------------
+
+for the next release
+====================
+
+-----------------------------------------------------------------------
+
+- in SLD: replace order function by order check?
+  (with desired order as an argument, which can be given to `OrderMatTrial')
+
+- ComputedMinimalRepresentationInfo:
+  call in a test file?
+
+- missing min. perm. repr. info!
+
+- Call `AtlasClassNames' for all tables of nonsimple and almost simple
+  groups in a test function?
+
+- make standardization info explicit,
+  in particular the orders of the generators (and add a check of all data)
+
+- new test: run all SLP as BBox?
+
+- how to test GAP readability?
+
+- check TOM standardizations!
+
+- add missing group order info: 557 names, 171 have no character table
+
+- (which of the restrictions yield standard generators?)
+
+- alternative group names!
+
+- add a test for integral repres.:
+  reduce mod a few primes, test group order!
+
+- ReplaceAtlasTableOfContents: prints only the automatic part
+  (is this documented?)
+
+- test integral representations via reduction mod 2
+
+- inform about superfluous htm files in the local and the public directory
+
+- replace `atlasprm.g' only if data were added/changed
+  (since `make webrefresh' will otherwise replace the file just because of
+  a changed ``lastupdated'')
+
+- mention the ``RemoteUpdates'' function also in the section
+  about ``private extensions'' that warns about corrupted files!
+  (problem if the local files are compressed!!)
+
+- how many files are in the database now?
+  (ATLAS v1 had 4250 files in `reps', and 456 in `words')
+  (ATLAS v2 on 08.01.2002: 4645 files in `datagens', 415 files in `dataword')
+  atlasrep v1.0 has 2107 times AGRTOC in its atlasprm.g,
+  atlasrep v1.1 has at least 3712 times AGRTOC
+
+- names:
+
+AGRGNAN("M20","M20");
+AGRGNAN("2aM20","2aM20");
+AGRGNAN("2bM20","2bM20");
+AGRGNAN("2cM20","2cM20");
+AGRGNAN("4bM20","4bM20");
+
+- quaternionic representations: 2.J2 < GL(3,H(Q(b5))), ...
+
+- ask Max: clicking `gzipped' or `zoo' in index.html yields an error -- why?
+
+- acknowledgements via URLs!
+
+- check all #T entries in the gap files and %T in docum. files!
+
+- what happens if a file transfer is interrupted?
+  (How to get rid of corrupted files?
+  Issue warnings if a file is incomplete?)
+
+- ask Rob again for Tilman Schulz' data files!
+
+- new function: isoclinic group
+
+- new script: check for unused locals
+  (also other packages)
+
+- Web services:
+  hyperlinks between group info files and the corresponding files in `ctbltoc'
+  (and TOM, and gpisotyp, ...)
+
+- if info w.r.t. <std> is required and a script for <std2> -> <std> is
+  available as well as the info w.r.t. <std2>
+  then announce the availability w.r.t. <std>,
+  and fetch this automatically!
+
+- when isotypes are available,
+  access info about ``all maxes known''!
+  (also: function `AtlasName' for isotype, string, group, ...?)
+
+- print a warning if no standardization is entered
+  and several poss. exist (if default choice is really a choice)
+
+- ResultOfStraightLineProgram for ATLAS SLPs:
+  own function that checks whether the standardizations coincide?
+
+- AtlasNames & isom. types, also for docum. (and connect to TOM library)
+
+- new test for automorphism scripts: check whether the gen. mapping is
+  really a homomorphism (``hard test'')
+
+- Make standardization definitions explicitly accessible in GAP.
+  (crossref. to HumanReadable..., IsStandardGener...)
+
+  code for AtlasOfGroupRepresentationsTestStandardization:
+
+      tbl:= CharacterTable( gapname );
+      if tbl = fail then
+        Print( "#I  no ord. table of `", gapname, "' available\n" );
+        return result;
+      fi;
+      tom:= TableOfMarks( tbl );
+      if tom = fail then
+        Print( "#I  no t.o.m. of `", gapname, "' available\n" );
+        return result;
+      fi;
+      info:= StandardGeneratorsInfo( tom );
+      if info = fail then
+        Print( "#I  no std. gen. info for `", gapname, "' available\n" );
+        return result;
+      fi;
+
+      for i in [ 1 .. Length( info ) ] do
+
+        # Take one representation if available.
+        gens:= OneAtlasGeneratingSet( name, i );
+#T what do we want: check *all* representations or check the coincidence
+#T of standardization definitions?
+        if gens <> fail then
+          gens:= gens.generators;
+          coincides:= IsStandardGeneratorsOfGroup( info[i], Group( gens ), gens );
+          if coincides and info[i].ATLAS = false then
+            Print( "#I  coincides for ", Ordinal( i ), " std. gen. of `",
+                   name, "'!\n" );
+          elif not coincides and info[i].ATLAS = true then
+            Print( "#I  wrong for ", Ordinal( i ), " std. gen. of `", name,
+                   "'\n" );
+            result:= false;
+          fi;
+        fi;
+
+- When `InfoRead1' is ``cleaned'' then mention this in the documentation.
+
+- store/replace of t.o.c. also for private t.o.c.s!
+
+- as soon as `tomlib' gets its own documentation, change the crossreference
+  of `RepresentativeTomByGeneratorsNC'.
+
+- as soon as isomorphism types become available, change the example using
+  tables of marks
+
+- AGRTestFiles() needed about 12 minutes before the stream code was changed;
+  (with a much smaller database)
+  how long now??
+  [test for BM-files: space/time?]
+
+- finish the treatment of prime fields in `scanmtx.gi' as soon as the streams
+  stuff is efficient again
+
+- which tests do currently not work for private directories?
+
+- explicit standardization info: `DisplayStandardizationInfo' (for isom. type)
+  (and compare with that in `tomlib')
+
+- create a *common* table of contents, in order to sort the data across
+  the tocs; rebuild after each Notify or Forget or Reload!
+  (``JoinPrivateTOCs''?)
+  [maintain a list of *all* filenames, for checking whether a new file
+  exists already?]
+
+- the common TOC is needed:
+  for example, if I put new cyc2ccls scripts into a private directory,
+  I want to run the tests on the union of all TOCs
+
+- add new functionality:
+  - ``total number of data'' (representations, scripts, files, ...)
+  - AllAtlasSLPInfo( "cyclic" ) -- for all groups
+  - admit `DisplayAtlasInfo( <inforec> )'?
+
+- manual: - section 2.5: is the info about ``irreducible'' or ``primitive''
+            available?
+            [note that also the AGRRNG info is more than the filenames say]
+
+- display the t.o.c. via the ``browse'' matrix:
+  DisplayStringLabelledMatrix as default, ``browse'' as option);
+  use this also in genus, ctbllib, ...
+  [see gap/4.0/pkg/ctbllib/irrats/gap/dispmat.g]
+
+- other (precalculated) format for the t.o.c. easier (faster) readable?
+
+- deal with Magma format files again
+
+
+-------------------------------------------------------------------------
+
+matters discussed:
+-----------------
+
+Date: Tue, 03 Oct 2000 10:28:42 +0100
+From: "R. A. Wilson" <R.A.Wilson@bham.ac.uk>
+To: Thomas.Breuer@Math.RWTH-Aachen.De
+Subject: Re: Atlas of Group Representations
+
+Hi, Thomas,
+
+Definitions of standard generators are at the moment
+only distributed on HTML pages. I know we have talked
+about GAP-readable definitions, but I don't think
+we are any nearer to implementing such things.
+Perhaps you have some idea of what you want? - then
+maybe I can see if I can provide something like it.
+
+Rob.
+

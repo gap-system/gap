@@ -2,7 +2,7 @@
 **
 *W  saveload.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id$
+*H  @(#)$Id: saveload.c,v 4.58 2009/10/15 09:02:03 gap Exp $
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_saveload_c =
-   "@(#)$Id$";
+   "@(#)$Id: saveload.c,v 4.58 2009/10/15 09:02:03 gap Exp $";
 
 #include        <unistd.h>              /* write, read                     */
    
@@ -30,7 +30,7 @@ const char * Revision_saveload_c =
 #include        "scanner.h"             /* scanner                         */
 #include        "sysfiles.h"            /* file input/output               */
 #include        "plist.h"               /* plain lists                     */
-#include        "float.h"               /* floating points */
+#include        "macfloat.h"            /* floating points */
 #include        "compstat.h"            /* statically compiled modules     */
 
 #define INCLUDE_DECLARATION_PART
@@ -44,10 +44,10 @@ const char * Revision_saveload_c =
 */
 
 
-static Int SaveFile = -1;
+static Int SaveFile;
 static UInt1 LoadBuffer[100000];
-static UInt1* LBPointer = LoadBuffer;
-static UInt1* LBEnd = LoadBuffer;
+static UInt1* LBPointer;
+static UInt1* LBEnd;
 
 static Int OpenForSave( Obj fname ) 
 {
@@ -95,7 +95,9 @@ static void CloseAfterSave( void )
       SyExit(2);
     }
 
-  write(syBuf[SaveFile].fp, LoadBuffer, LBPointer-LoadBuffer);
+  if (write(syBuf[SaveFile].fp, LoadBuffer, LBPointer-LoadBuffer) < 0)
+    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
+               syBuf[SaveFile].fp, 0L);
   SyFclose(SaveFile);
   SaveFile = -1;
 }
@@ -146,7 +148,9 @@ void SAVE_BYTE_BUF( void )
 
 void SAVE_BYTE_BUF( void )
 {
-  write(syBuf[SaveFile].fp, LoadBuffer, LBEnd-LoadBuffer);
+  if (write(syBuf[SaveFile].fp, LoadBuffer, LBEnd-LoadBuffer) < 0)
+    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
+               syBuf[SaveFile].fp, 0L);
   LBPointer = LoadBuffer;
   return;
 }
@@ -417,10 +421,19 @@ Obj LoadSubObj()
 
 void SaveHandler( ObjFunc hdlr )
 {
+  const Char * cookie;
   if (hdlr == (ObjFunc)0)
     SaveCStr("");
   else
-    SaveCStr((const Char *)CookieOfHandler(hdlr));
+    {
+      cookie = CookieOfHandler(hdlr);
+      if (!cookie)
+	{
+	  Pr("No cookie for Handler -- workspace will be corrupt\n",0,0);
+	  SaveCStr("");
+	}
+      SaveCStr(cookie);
+    }
 }
 
 
@@ -462,9 +475,10 @@ Double LoadDouble( void)
 
 static void SaveBagData (Bag bag)
 {
+#ifndef USE_NEWSHAPE
   SaveUInt((UInt)PTR_BAG(bag)[-3]);
+#endif
   SaveUInt((UInt)PTR_BAG(bag)[-2]);
-
 
   /* dispatch */
   (*(SaveObjFuncs[ TNUM_BAG( bag )]))(bag);
@@ -476,16 +490,14 @@ static void SaveBagData (Bag bag)
 static void LoadBagData ( )
 {
   Bag bag;
-#ifndef NEWSHAPE
-  UInt sizetype;
-#else
   UInt size;
   UInt type;
-#endif
   
-  /* Recover the sizetype word */
-#ifndef NEWSHAPE
-  sizetype=LoadUInt();
+  /* Recover the size & type */
+#ifdef USE_NEWSHAPE
+  size = LoadUInt();
+  type = size & 0xFFL;
+  size >>= 16;
 #else
   type = LoadUInt();
   size = LoadUInt();
@@ -503,18 +515,10 @@ static void LoadBagData ( )
 #endif  
 
   /* Get GASMAN to set up the bag for me */
-#ifndef NEWSHAPE
-  bag = NextBagRestoring( sizetype );
-#else
   bag = NextBagRestoring( size, type );
-#endif
   
   /* despatch */
-#ifndef NEWSHAPE
-  (*(LoadObjFuncs[ sizetype & 0xFFL ]))(bag);
-#else
   (*(LoadObjFuncs[ type ]))(bag);
-#endif
   
   return;
 }
@@ -539,7 +543,7 @@ static void WriteEndiannessMarker( void )
   SAVE_BYTE(((UInt1 *)&x)[1]);
   SAVE_BYTE(((UInt1 *)&x)[2]);
   SAVE_BYTE(((UInt1 *)&x)[3]);
-#if SYS_IS_64_BIT
+#ifdef SYS_IS_64_BIT
   SAVE_BYTE(((UInt1 *)&x)[4]);
   SAVE_BYTE(((UInt1 *)&x)[5]);
   SAVE_BYTE(((UInt1 *)&x)[6]);
@@ -750,6 +754,10 @@ Obj SaveWorkspace( Obj fname )
 }
 
 
+Obj FuncSaveWorkspace(Obj self, Obj filename )
+{
+  return SaveWorkspace( filename );
+}
 
 
 /***************************************************************************
@@ -977,12 +985,10 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
   OpenForLoad( CSTR_STRING(fname) );
   LoadCStr(buf,256);
   Pr("Header string: %s\n",(Int) buf, 0L);
-#ifdef SYS_IS_64_BIT
-  if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
-#else
-  if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
-#endif
-    ErrorQuit("Header is bad",0L,0L);
+  LoadCStr(buf,256);
+  Pr("GAP Version: %s\n",(Int)buf, 0L);
+  LoadCStr(buf,256);
+  Pr("Word length: %s\n",(Int)buf, 0L);
   CheckEndiannessMarker();
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
@@ -998,6 +1004,9 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
     ErrorQuit("Bad divider",0L,0L);
   for (i = 0; i < nMods; i++)
     {
+      UInt type;
+      type = LoadUInt();
+      Pr("Type: %d ",type,0);
       relative = LoadUInt();
       if (relative)
 	Pr("GAP root relative ", 0L, 0L);
@@ -1039,6 +1048,9 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 */
 static StructGVarFunc GVarFuncs [] = {
 
+    { "SaveWorkspace", 1, "fname", 
+      FuncSaveWorkspace, "src/saveload.c:SaveWorkspace" },
+
     { "DumpWorkspace", 1, "fname", 
       FuncDumpWorkspace, "src/saveload.c:DumpWorkspace" },
 
@@ -1061,6 +1073,10 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  SaveFile = -1;
+  LBPointer = LoadBuffer;
+  LBEnd = LoadBuffer;
+  
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 

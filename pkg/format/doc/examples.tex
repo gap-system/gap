@@ -1,0 +1,252 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  examples.tex          FORMAT documentation  B. Eick and C.R.B. Wright
+%%
+%%  9-19-01
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Formation Examples}
+
+%\index{Formation Examples}
+
+
+The following is a {\GAP} session that illustrates the various functions
+in the package.  We have chosen to work with the symmetric group $S_4$
+and the special linear group $SL(2,3)$ as examples, because it is easy
+to print and read the results of computations for these groups, and the
+answers can be checked by inspection. However, both
+$S_4$ and $SL(2,3)$ are extremely small examples for the algorithms in
+\FORMAT. In
+\cite{EW} we describe effective application of the algorithms  to groups
+of  composition length as much as 61, for which the computations take
+a few seconds to complete. The file `grp' contains some of these groups and other groups readable as GAP4 input.
+
+\beginexample
+gap> LoadPackage("format");;
+\endexample
+A primitive banner appears.
+
+First we define $S_4$ as a permutation group and compute some 
+subgroups of it.
+\beginexample
+gap> G := SymmetricGroup(4);
+Sym( [ 1 .. 4 ] )
+gap> SystemNormalizer(G);  CarterSubgroup(G);
+Group([ (3,4) ])
+Group([ (3,4), (1,3)(2,4), (1,2)(3,4) ])
+\endexample
+Now we take the formation of supersolvable groups from the examples
+and look at it.
+\beginexample
+gap> sup := Formation("Supersolvable");
+formation of Supersolvable groups 
+gap> KnownAttributesOfObject(sup); KnownPropertiesOfObject(sup);
+[ "NameOfFormation", "ScreenOfFormation" ]
+[ "IsIntegrated" ]
+\endexample 
+
+We can look at the screen for `sup'.
+\beginexample
+gap> ScreenOfFormation(sup);
+<Operation "AbelianExponentResidual">
+gap> ScreenOfFormation(sup)(G,2); ScreenOfFormation(sup)(G,3);
+Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
+Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
+\endexample
+We get the residuals for `G' of the formations of abelian groups of exponent 1 ($= 2-1$) and of exponent 2 (=$3-1$).
+
+Notice that `sup' does not yet have a residual function.
+ Let's compute some subgroups of `G' corresponding to `sup'.
+\beginexample
+gap> ResidualWrtFormation(G, sup);
+Group([ (1,2)(3,4), (1,4)(2,3) ])
+gap> KnownAttributesOfObject(sup);
+[ "NameOfFormation", "ScreenOfFormation", "ResidualFunctionOfFormation" ]
+\endexample
+ The residual function for `sup' was required and created.
+\beginexample
+gap> FNormalizerWrtFormation(G, sup);
+Group([ (3,4), (2,4,3) ])
+gap> CoveringSubgroupWrtFormation(G, sup);
+Group([ (3,4), (2,4,3) ])
+gap> KnownAttributesOfObject(G);
+[ "Size", "One", "SmallestMovedPoint", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses", "TrivialSubmagmaWithOne", 
+  "MultiplicativeNeutralElement", "DerivedSubgroup", "IsomorphismPcGroup", 
+  "IsomorphismSpecialPcGroup", "Pcgs", "PcgsElementaryAbelianSeries", 
+  "StabChainOptions", "ComputedResidualWrtFormations", 
+  "ComputedAbelianExponentResiduals", "ComputedFNormalizerWrtFormations", 
+  "ComputedCoveringSubgroup1s", "ComputedCoveringSubgroup2s", 
+  "SystemNormalizer", "CarterSubgroup" ]
+\endexample
+ The `AbelianExponentResidual's were computed in connection with the
+local definition of `sup'. (`AbelianExponentResidual(G, n)' returns
+the smallest normal subgroup of `G' whose factor group is abelian of
+exponent dividing `n-1'.) Here are some of the other records.
+\beginexample
+gap> ComputedResidualWrtFormations(G);
+[ formation of Supersolvable groups , Group([ (1,2)(3,4), (1,4)(2,3) ]) ]
+gap> ComputedFNormalizerWrtFormations(G);
+[ formation of Nilpotent groups , Group([ (3,4) ]), 
+  formation of Supersolvable groups , Group([ (3,4), (2,4,3) ]) ]
+gap> ComputedCoveringSubgroup2s(G);
+[  ]
+gap> ComputedCoveringSubgroup1s(G);
+[ formation of Nilpotent groups , Group([ (3,4), (1,3)(2,4), (1,2)(3,4) ]), 
+  formation of Supersolvable groups , Group([ (3,4), (2,4,3) ]) ]
+\endexample
+The call by `CoveringSubgroupWrtFormation' was to `CoveringSubgroup1', not
+`CoveringSubgroup2'.
+
+We could also have started with a pc group or a nice enough matrix group.
+\beginexample
+gap> s4 := SmallGroup(IdGroup(G));
+<pc group of size 24 with 4 generators>
+\endexample
+This is $S_4$ again. The answers just look different now.
+\beginexample
+gap> SystemNormalizer(s4); CarterSubgroup(s4);
+Group([ f1 ])
+Group([ f1, f4, f3*f4 ])
+\endexample
+Similarly, we have $SL(2,3)$ and an isomorphic pc group.
+\beginexample
+gap> sl := SpecialLinearGroup(2,3);
+SL(2,3)
+gap> h := SmallGroup(IdGroup(sl));
+<pc group of size 24 with 4 generators>
+\endexample
+We get the following subgroups.
+\beginexample
+gap> CarterSubgroup(sl); Size(last);
+<group of 2x2 matrices in characteristic 3>
+6
+gap> SystemNormalizer(h); CarterSubgroup(h);
+Group([ f1, f4 ])
+Group([ f1, f4 ])
+\endexample
+
+Now let's make new formations from old.
+\beginexample
+gap> ab := Formation("Abelian");
+formation of Abelian groups 
+gap> KnownPropertiesOfObject(ab); KnownAttributesOfObject(ab);
+[  ]
+[ "NameOfFormation", "ResidualFunctionOfFormation" ]
+gap> nil2 := Formation("PNilpotent",2);
+formation of 2Nilpotent groups 
+gap> KnownPropertiesOfObject(nil2); KnownAttributesOfObject(nil2);
+[ "IsIntegrated" ]
+[ "NameOfFormation", "ScreenOfFormation", "ResidualFunctionOfFormation" ]
+\endexample
+Compute the product and check some attributes.
+\beginexample
+gap> form := ProductOfFormations(ab, nil2);
+formation of (AbelianBy2Nilpotent) groups 
+gap> KnownAttributesOfObject(form);
+[ "NameOfFormation", "ResidualFunctionOfFormation" ]
+\endexample
+Now the product in the other order, which *is* locally defined.
+\beginexample
+gap> form2 := ProductOfFormations(nil2, ab);
+formation of (2NilpotentByAbelian) groups 
+gap> KnownAttributesOfObject(form2);
+[ "NameOfFormation", "ScreenOfFormation", "ResidualFunctionOfFormation" ]
+\endexample
+We check the results on `G', which is still $S_4$.
+\beginexample
+gap> ResidualWrtFormation(G, form);  ResidualWrtFormation(G, form2);
+Group(())
+Group([ (1,3)(2,4), (1,2)(3,4) ])
+gap> KnownPropertiesOfObject(form2);
+[  ]
+\endexample
+Although `form2' is not integrated, we can make an integrated formation
+that differs from `form2' only in its local definition, i.e., whose
+residual subgroups are the same as those for `form2'.
+\beginexample
+gap> Integrated(form2);
+formation of (2NilpotentByAbelian)Int groups 
+\endexample
+`FNormalizerWrtFormation' and
+`CoveringSubgroupWrtFormation' both require integrated formations, so they
+silently replace `form2' by this last formation without, however,
+changing `form2'. 
+\beginexample
+gap> FNormalizerWrtFormation(G, form2); CoveringSubgroupWrtFormation(G, form2);
+Group([ (3,4), (2,4,3) ])
+Group([ (3,4), (2,4,3) ])
+gap> KnownPropertiesOfObject(form2);
+[  ]
+gap> ComputedCoveringSubgroup1s(G);
+[ formation of (2NilpotentByAbelian)Int groups , Group([ (3,4), (2,4,3) ]), 
+  formation of Nilpotent groups , Group([ (3,4), (1,3)(2,4), (1,2)(3,4) ]), 
+  formation of Supersolvable groups , Group([ (3,4), (2,4,3) ]) ]
+gap> ComputedResidualWrtFormations(G);
+[ formation of (2NilpotentByAbelian) groups , 
+  Group([ (1,3)(2,4), (1,2)(3,4) ]), 
+  formation of (AbelianBy2Nilpotent) groups , Group(()), 
+  formation of 2Nilpotent groups , Group([ (1,2)(3,4), (1,3)(2,4) ]), 
+  formation of Abelian groups , Group([ (1,3,2), (2,4,3) ]), 
+  formation of Supersolvable groups , Group([ (1,2)(3,4), (1,4)(2,3) ]) ]
+\endexample
+Lots of work has been going on behind the scenes.
+
+Before we compute an intersection, we construct yet another formation.
+\beginexample
+gap> pig := Formation("PiGroups", [2,5]);
+formation of (2,5)-Group groups with support [ 2, 5 ]
+gap> form := Intersection(pig, nil2);
+formation of ((2,5)-GroupAnd2Nilpotent) groups with support [ 2, 5 ]
+gap> KnownAttributesOfObject(form);
+[ "NameOfFormation", "ScreenOfFormation", "SupportOfFormation", 
+  "ResidualFunctionOfFormation" ]
+\endexample
+ Let's cut down the support of `nil2' to $\{2,5\}$.
+\beginexample
+gap> form3 := ChangedSupport(nil2, [2,5]);
+formation of Changed2Nilpotent[ 2, 5 ] groups 
+gap> SupportOfFormation(form3);
+[ 2, 5 ]
+gap> form = form3;
+false
+\endexample
+Although the formations defined by `form' and `form3' are abstractly
+identical, {\GAP} has no way to know this fact, and so distinguishes
+them.
+
+We can mix the various operations, too.
+\beginexample
+gap> ProductOfFormations(Intersection(pig, nil2), sup);
+formation of (((2,5)-GroupAnd2Nilpotent)BySupersolvable) groups 
+gap> Intersection(pig, ProductOfFormations(nil2, sup));
+formation of ((2,5)-GroupAnd(2NilpotentBySupersolvable)) groups with support 
+[ 2, 5 ]
+\endexample
+
+  Now let's define our own formation.
+\beginexample
+gap> preform := rec( name := "MyOwn", 
+>  fScreen := function( G, p)
+>  return DerivedSubgroup( G );
+>  end);
+rec( name := "MyOwn", fScreen := function( G, p ) ... end )
+gap> form := Formation(preform);
+formation of MyOwn groups 
+gap> KnownAttributesOfObject(form); KnownPropertiesOfObject(form);
+[ "NameOfFormation", "ScreenOfFormation" ]
+[  ]
+\endexample
+In fact, the definition is integrated. Let's tell {\GAP} so and compute
+some related subgroups.
+\beginexample
+gap> SetIsIntegrated(form, true);
+gap> ResidualWrtFormation(G, form);
+Group([ (1,3)(2,4), (1,2)(3,4) ])
+gap> FNormalizerWrtFormation(G, form);
+Group([ (3,4), (2,4,3) ])
+gap> CoveringSubgroup1(G, form);
+Group([ (3,4), (2,4,3) ])
+\endexample
+These answers are consistent with the fact that MyOwn is really just the
+formation of abelian by nilpotent groups.

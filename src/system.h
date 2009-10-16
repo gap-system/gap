@@ -9,7 +9,7 @@
 *W                                                  & Burkhard Hoefling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id$
+*H  @(#)$Id: system.h,v 4.68 2007/10/07 22:11:00 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -235,7 +235,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_system_h =
-   "@(#)$Id$";
+   "@(#)$Id: system.h,v 4.68 2007/10/07 22:11:00 gap Exp $";
 #endif
 extern const char * Revision_system_c;  /* gap.c uses this */
 extern const char * Revision_system_h;
@@ -403,6 +403,44 @@ typedef unsigned char           UInt1;
 typedef unsigned short int      UInt2;
 typedef unsigned long int       UInt4;
 typedef unsigned long int       UInt;
+#endif
+
+
+/****************************************************************************
+**
+*F  Macros to allow detection of dangerous assignments
+**
+**  NL makes its argument not a valid lvalue, but has no effect at runtime
+*/
+
+#ifdef __GNUC__ 
+static inline Char IDENT_Char(Char x)
+{
+     return x;
+}
+#define NL_Char(x) (IDENT_Char((x)))
+#else
+#define NL_Char(x) (x)
+#endif
+
+#ifdef __GNUC__ 
+static inline Int IDENT_Int(Int x)
+{
+     return x;
+}
+#define NL_Int(x) (IDENT_Int((x)))
+#else
+#define NL_Int(x) (x)
+#endif
+
+#ifdef __GNUC__ 
+static inline UInt IDENT_UInt(UInt x)
+{
+     return x;
+}
+#define NL_UInt(x) (IDENT_UInt((x)))
+#else
+#define NL_UInt(x) (x)
 #endif
 
 
@@ -672,7 +710,7 @@ extern UInt SyLineEdit;
 extern UInt SyMsgsFlagBags;
 
 
-extern Int SyGasmanNumbers[2][7];
+extern Int SyGasmanNumbers[2][9];
 
 /****************************************************************************
 **
@@ -743,6 +781,9 @@ extern Char * SyRestoring;
 */
 
 extern UInt SyInitializing;
+
+extern Char **SyOriginalArgv;
+extern UInt SyOriginalArgc;
 
 /****************************************************************************
 **
@@ -944,6 +985,15 @@ extern Int SyStrncmp (
             const Char *    str2,
             UInt                len );
 
+/****************************************************************************
+**
+*F  SyIntString( <string> ) . . . . . . . . extract a C integer from a string
+**
+*/
+
+extern Int SyIntString( const Char *string );
+
+
 
 /****************************************************************************
 **
@@ -1052,9 +1102,9 @@ extern void SyAbortBags (
 #define MODULE_DYNAMIC          3
 
 
+
 /****************************************************************************
 **
-
 *T  StructInitInfo  . . . . . . . . . . . . . . . . . module init information
 */
 typedef struct init_info {

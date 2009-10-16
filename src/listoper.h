@@ -2,7 +2,7 @@
 **
 *W  listoper.h                  GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: listoper.h,v 4.10 2002/04/15 10:03:51 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_listoper_h =
-   "@(#)$Id$";
+   "@(#)$Id: listoper.h,v 4.10 2002/04/15 10:03:51 sal Exp $";
 #endif
 
 /* These functions are exported because specialised methods may want to

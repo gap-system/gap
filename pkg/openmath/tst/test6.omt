@@ -1,0 +1,130 @@
+<!-- CD="cas" test -->
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="assign"/>
+		<OMSTR>a</OMSTR>
+		<OMI> 1 </OMI>
+	</OMA>
+</OMOBJ>
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="retrieve"/>
+		<OMSTR>a</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>a := 3;</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>Size([1,2,3]);</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>quit;</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_error"/>
+	</OMA>
+</OMOBJ>
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_output"/>
+	</OMA>
+</OMOBJ>
+
+
+
+<!-- character table examples -->
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>c := CharacterTable("V4");</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="retrieve"/>
+		<OMSTR>c</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>c := CharacterTable("S3");</OMSTR>
+	</OMA>
+</OMOBJ>
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>c := CharacterTable("fooey);</OMSTR>
+	</OMA>
+</OMOBJ>
+
+<!-- this tests the security feature -->
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>c := READ("fooey");</OMSTR>
+	</OMA>
+</OMOBJ>
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+		<OMSTR>c := CharacterTable("fooey");</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="retrieve"/>
+		<OMSTR>c</OMSTR>
+	</OMA>
+</OMOBJ>
+
+
+
+<!-- end character table examples -->
+
+
+
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="quit"/>
+	</OMA>
+</OMOBJ>
+
+

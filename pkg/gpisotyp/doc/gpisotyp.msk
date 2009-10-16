@@ -1,0 +1,74 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  gpisotyp.msk              GAP documentation             Thomas Breuer
+%%
+%H  $Id: gpisotyp.msk,v 1.3 2002/07/10 15:43:42 gap Exp $
+%%
+%Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Introduction to the GpIsoTyp Package}
+
+The aim of the {\GAP}~4 package GpIsoTyp is to provide 
+
+uniform access to databases that are isomorphism type oriented
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{...}
+
+about group isomorphism types,
+
+about standard names
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the GpIsoTyp Package}
+
+To install the package unpack the archive file in a
+directory in the `pkg' directory of your local copy of {\GAP}~4.
+This might be the `pkg' directory of the {\GAP}~4 home directory,
+see Section~"ref:Installing GAP Packages"
+of the {\GAP}~4 Reference Manual for details.
+It is however also possible to keep an additional `pkg' directory
+in your private directories,
+see~"ref:Installing a GAP Package in your home directory"
+of the {\GAP}~4 Reference Manual.
+The latter possibility *must* be chosen if you do not have write access
+to the {\GAP} root directory.
+
+The package consists entirely of {\GAP} code,
+no external binaries need to be compiled.
+
+For checking the installation, one can run the tests in the files
+with extension `.tst' in the `tst' directory of the package
+(see~"Sanity Checks for the Package GpIsoTyp" for details).
+
+Both dvi and pdf versions of the package manual are available
+(as `manual.dvi' and `manual.pdf' respectively) in the `doc' directory
+of the package,
+an HTML version can be found in the `htm' directory.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Loading the GpIsoTyp Package}
+
+The GpIsoTyp package may be loaded automatically when {\GAP} is started,
+or it has to be loaded within {\GAP} as follows.
+\beginexample
+gap> RequirePackage( "gpisotyp" );
+\endexample
+See~"ref:Loading a GAP Package" in the {\GAP} Reference Manual
+for details about these alternatives.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Section{Acknowledgements}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

@@ -3,7 +3,7 @@
 ##
 #W  gac.sh                      GAP compiler                 Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gac.in,v 4.27 2009/07/07 13:23:26 caj Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -93,7 +93,10 @@ OBJECTS="\
     saveload.o  scanner.o   sctable.o   set.o        stats.o     \
     streams.o   string.o    sysfiles.o  system.o     tietze.o    \
     vars.o      vecgf2.o    vecffe.o    vec8bit.o    vector.o    \
-    weakptr.o   iostream.o  float.o "
+    weakptr.o   iostream.o  macfloat.o "
+
+EXTOBJS=extern/jenkins/jhash.o
+
 
 #############################################################################
 ##
@@ -149,18 +152,9 @@ c_link () {
 process_o_file () {
   name=$1
   o_file=$2
-  if [ $comp_mode = comp_static ]; then
-    # just remember for the linking stage later
-    names="${names} ${name}"
-    objects="${objects} $o_file"
-  else
-     if [ "X$output" != "X" ]; then
-	so_file=$output
-     else
-	so_file=${name}.so
-     fi
-     c_link_dyn $so_file $o_file
-  fi
+  # just remember for the linking stage later
+  names="${names} ${name}"
+  objects="${objects} $o_file"
 }
 
 #############################################################################
@@ -192,10 +186,6 @@ process_c_file () {
     c_compile $o_file $c_file "$c_compile_opts"
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
-      if [ $comp_mode != "comp_static" ]; then
-	echo rm -f $o_file
-	rm -f $o_file
-      fi
     fi 
 }
 
@@ -428,15 +418,26 @@ for input in ${inputs}; do
 
 
 #  static link phase
-if [ $comp_mode = "comp_static" -a $comp_howfar = "link" ]; then
-    make_compstat
+if [ $comp_howfar = "link" ]; then
+    if [ $comp_mode = "comp_static" ]; then
+        make_compstat
 
-    # link everything together
-    if [ "X${output}" = "X" ]; then output="gacout"; fi
-    for object in $OBJECTS;  do
-        objects="${gap_binary}/${object} ${objects}"
-    done
-    c_link ${output} "${objects}"
+        # link everything together
+        if [ "X${output}" = "X" ]; then output="gacout"; fi
+
+        for object in $OBJECTS;  do
+            objects="${gap_binary}/${object} ${objects}"
+        done
+        for object in $EXTOBJS;  do
+            objects="${gap_dir}/${object} ${objects}"
+        done
+
+        c_link ${output} "${objects}"
+
+    else
+        c_link_dyn ${output} "${objects}"
+    fi
+    
     echo rm -f ${temps_o}
     rm -f ${temps_o}
 fi

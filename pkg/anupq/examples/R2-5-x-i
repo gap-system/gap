@@ -1,0 +1,19 @@
+#Example: "R2-5-x-i" . . . based on: GrpFP_2_pQuotient7
+#Construction of R(2,5) extended to see how many
+#words starting with the first pc generator squared
+#need to be considered when doing the exponent law checks
+#vars: F, procId;
+#options: OutputLevel1, OutputLevel2, OutputFile
+F := FreeGroup("a", "b");
+procId := PqStart(F : Prime := 5, Exponent := 5);
+#comment: set a different print level by supplying <OutputLevel1>
+PqPcPresentation(procId : ClassBound := 6, 
+#sub <OutputLevel1> for <1> if set and ok
+                          OutputLevel := 1);;
+PqSetupTablesForNextClass(procId);;
+PqTails(procId, 0);;
+PqDoConsistencyChecks(procId, 0, 0);;
+#comment: set a different print level by supplying <OutputLevel2>
+#sub <OutputLevel2> for <3> if set and ok
+PqSetOutputLevel(procId, 3);;
+PqDoExponentChecks(procId);;

@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcrep_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: grppcrep.gd,v 4.5 2002/04/15 10:04:52 sal Exp $";
 
 #############################################################################
 ## some module stuff

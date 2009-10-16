@@ -1,0 +1,52 @@
+#!/bin/sh
+#############################################################################
+##
+#W  exportpictures     GAP 4 package '<pkgnam>'                 Thomas Breuer
+##
+#H  @(#)$Id: exportpictures,v 1.1 2004/03/26 09:49:34 gap Exp $
+##
+#Y  Copyright (C)  2004,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This script takes the file 'pkg/<pkgnam>/doc/<texfile>'
+##  creates a tex file for each picture contained in this file, with
+##  name as prescribed in the '%BP' line at the beginning of the picture,
+##  calls 'latex', 'dvips', and 'gs' for each such picture, and stores the
+##  output files in the directory 'pkg/<pkgnam>/htm'.
+##
+##  It must be called from the directory 'pkg/<pkgnam>/doc',
+##  in the form `../etc/exportpictures <texfile>'.
+##
+##  (This script is used in the package `ctbllib'.)
+##
+gawk --traditional \
+    'BEGIN {
+        FS = " "
+    }
+
+    /^\%BP / {
+        outfile = $2
+        outfiletex = outfile ".tex"
+        printf( "% This file was created from %s, do not edit!\n",
+                FILENAME ) > outfiletex
+        print( "\\batchmode\\documentclass{article}" ) >> outfiletex
+        print( "\\usepackage{graphicx}\\usepackage{epsfig}" ) >> outfiletex
+        print( "\\pagestyle{empty}\\begin{document}" ) >> outfiletex
+        while ( getline && $1 !~ /^\%EP/ ) {
+             print( $0 ) >> outfiletex
+        }
+        print( "\\end{document}" ) >> outfiletex
+        system( "latex " outfiletex )
+        system( "dvips -o " outfile ".ps " outfile )
+        system( "gs -sDEVICE=ppmraw -sOutputFile=- -sNOPAUSE -q " \
+                outfile ".ps -c showpage -c quit | pnmcrop| pnmmargin " \
+                "-white 10 | pnmtopng > " outfile ".png" )
+        system( "rm -rf " outfiletex " " outfile ".aux " outfile ".dvi " \
+                outfile ".log " outfile ".ps" )
+        system( "mv " outfile ".png ../htm" )
+    }' < $1
+
+
+#############################################################################
+##
+#E
+

@@ -1,0 +1,40 @@
+#Example: "PqPCover" . . . based on `PqPCover' manual example
+#vars: F, a, b, procId1, procId2, procId3, procId4, G, R, H, rels;
+#options: 
+F := FreeGroup("a", "b"); a := F.1; b := F.2;
+#alt: do
+#procId1 := PqStart( F );
+#alt: sub <procId1> for <F>
+PqPCover( F : Prime := 2, ClassBound := 3 );
+
+## Now let's get a p-cover of a p-quotient of an fp group
+G := F / [a^4, b^4];
+#alt: do
+#procId2 := PqStart( G );
+#alt: sub <procId2> for <G>
+PqPCover( G : Prime := 2, ClassBound := 3 );
+
+## Now let's get a p-cover of a different p-quotient of the same group
+#alt: sub <procId2> for <G>
+PqPCover( G : Prime := 2, ClassBound := 3, 
+#alt: do
+#              RedoPcp,
+              Exponent := 4 );
+
+## Now we'll get a p-cover of a p-quotient of another fp group
+## which we will redo using the `Relators' option
+R := [ a^25, Comm(Comm(b, a), a), b^5 ];
+H := F / R;
+#alt: do
+#procId3 := PqStart( H );
+#alt: sub <procId3> for <H>
+PqPCover( H : Prime := 5, ClassBound := 5, Metabelian );
+
+## Now we redo the previous example using the `Relators' option
+F := FreeGroup("a", "b");
+rels := [ "a^25", "[b, a, a]", "b^5" ];
+#alt: do
+#procId4 := PqStart( F );
+#alt: sub <procId4> for <F>
+PqPCover( F : Prime := 5, ClassBound := 5, Metabelian, 
+              Relators := rels );

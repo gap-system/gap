@@ -1,3 +1,6 @@
+#ifndef INCLUDED_CONFIG_H
+#define INCLUDED_CONFIG_H
+
 /****************************************************************************
 **
 *D  user edit-able defines
@@ -134,6 +137,10 @@
 #define HAVE_GETPT              0
 #define HAVE_PTSNAME_R         0
 #define HAVE_SETPGID           0
+
+#define HAVE_MEMCPY            0
+#define HAVE_MEMMOVE           0
+#define HAVE_MEMSET            0  
 /****************************************************************************
 **
 *D  define if and how dynamic loading is supported
@@ -404,6 +411,9 @@
 /* define as 1 if you have `gethostbyname'                                 */
 #define HAVE_GETHOSTBYNAME       0
 
+/* define as 1 if you have `atol'                                 */
+#define HAVE_ATOL       0
+
 
 /****************************************************************************
 **
@@ -416,3 +426,4 @@
 /* define if this is the Darwin port */
 #define SYS_IS_DARWIN          0
 
+#endif

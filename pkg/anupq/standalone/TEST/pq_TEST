@@ -1,0 +1,39 @@
+# 
+#test file for p-quotent implementation in ANU p-Quotient Program
+#EO'B June 1993
+#
+../bin/pq < ../examples/2gp
+../bin/pq < op2 > 2gp.new
+diff 2gp.orig 2gp.new
+../bin/pq < ../examples/3gp   
+../bin/pq < op3 > 3gp.new
+diff 3gp.orig 3gp.new
+../bin/pq < ../examples/5gp   
+../bin/pq < op5 > 5gp.new
+diff 5gp.orig 5gp.new
+../bin/pq < ../examples/B2-5
+../bin/pq < opB2-5 > B2-5.new
+diff B2-5.orig B2-5.new 
+../bin/pq < ../examples/B2-8
+../bin/pq < opB2-8 > B2-8.new
+diff B2-8.orig B2-8.new
+../bin/pq < ../examples/7gp  
+../bin/pq < op7 > 7gp.new
+diff 7gp.orig 7gp.new
+../bin/pq < ../examples/11gpA
+../bin/pq < op11 > 11gp.new
+diff 11gp.orig 11gp.new
+../bin/pq < ../examples/B4-4A  
+../bin/pq < opB4-4 > B4-4.new
+diff B4-4.orig B4-4.new
+../bin/pq < ../examples/B2-5A  
+../bin/pq < opB2-5A > B2-5A.new
+diff B2-5A.orig B2-5A.new
+../bin/pq < ../examples/metabelian
+../bin/pq < opmeta > meta.new
+diff meta.orig meta.new
+../bin/pq < ../examples/maxoccur 
+../bin/pq < opmoccur > moccur.new
+diff moccur.orig moccur.new
+\rm *.new
+\rm R25 B25 B28 2GP 11GP 7GP 5GP 3GP B44 META MO

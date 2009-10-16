@@ -1,0 +1,51 @@
+                       The CRISP package
+                         Version 1.3.2
+
+The GAP package CRISP provides algorithms for computing subgroups of
+finite solvable groups related to a group class C. In particular, it
+allows to compute C-radicals and C-injectors for Fitting classes (and
+Fitting sets) C, C-residuals for formations C, and C-projectors for
+Schunck classes C. In order to carry out these computations, the group
+class C must be represented by an algorithm which can decide membership
+in the group class. 
+
+Moreover, CRISP contains algorithms for the computation of normal subgroups 
+invariant under a prescribed set of automorphisms and belonging to a given 
+group class.
+
+This includes an improved method to compute the set of all normal subgroups 
+of a finite solvable group, its characteristic subgroups, and the socle and 
+p-socles for given primes p.
+
+This version of CRISP requires at least GAP 4.4.
+
+In order to install CRISP, you have to get the archive file `crisp-1r3n2.zoo', 
+or any other package format suitable for your system.
+
+You can download `crisp-1r3n2' from the packages section of www.gap-system.org.
+
+To install CRISP, move the downloaded package file `crisp-1r3n2.zoo' into the 
+`pkg' directory in which you plan to install CRISP. Usually, this will be 
+the directory `pkg' in the GAP directory. 
+
+If you already have a previous version of CRISP, that is, there is a 
+directory `crisp' in the `pkg' directory, delete (or rename) this 
+directory first.
+
+Then decompress the package archive. You should now have a directory `crisp'
+in the `pkg' directory. That's all. Usually, CRISP is automatically loaded 
+at startup, and should be listed among the packages.
+
+To load the CRISP package manually, type
+
+    LoadPackage ("crisp");
+
+at the GAP prompt. If everything is ok, this should return `true'.
+
+Please do not hesitate to report any bugs or other problems/suggestions 
+to the author:
+
+Burkhard H\"ofling
+WWW:    http://www-public.tu-bs.de:8080/~bhoeflin
+e-mail: b.hoefling@tu-bs.de
+

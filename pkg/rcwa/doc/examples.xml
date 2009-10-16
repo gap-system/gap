@@ -1,0 +1,2596 @@
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  examples.xml         RCWA documentation          Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: examples.xml,v 1.134 2009/09/18 21:35:15 stefan Exp $    ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Chapter Label="ch:Examples"><Heading>Examples</Heading>
+
+<Ignore Remark="set screen width to 75, for the example tester">
+<Example>
+<![CDATA[
+gap> SizeScreen([75,24]);;
+]]>
+</Example>
+</Ignore>
+
+This chapter discusses a number of <Q>nice</Q> examples of rcwa mappings
+and -groups in detail. All of them show different aspects of the package,
+and the order in which they appear is entirely arbitrary. In particular
+they are not ordered by degree of difficulty or interest. <P/>
+
+<Index Key="RCWAReadExamples"><C>RCWAReadExamples</C></Index>
+<Index Key="RCWAExamples"><C>RCWAExamples</C></Index>
+<Index Key="UnwrapExample"><C>UnwrapExample</C></Index>
+
+The rcwa mappings, rcwa groups and other objects defined in this chapter can
+be found in the file <F>pkg/rcwa/examples/examples.g</F>. This file can be
+read into the current &GAP; session by issueing <C>RCWAReadExamples( );</C>.
+Afterwards, the examples are stored in a record <C>RCWAExamples</C> of
+records. The global variable assignments made in a section of this chapter
+can be performed by issueing <C>UnwrapExample(<A>name</A>)</C>, where
+<A>name</A> is given at the end of the corresponding section. Assignments
+which do not need much typing are omitted. The names of the variables which
+are actually assigned are listed by the function <C>UnwrapExample</C>. <P/>
+
+The examples are typically far from discussing the respective aspects
+exhaustively. It is quite likely that in many instances by just a few
+little modifications or additional easy commands you can find out
+interesting things yourself -- have fun!
+
+<!-- #################################################################### -->
+
+<Section Label="sec:HigmanThompsonGroup">
+<Heading>
+  The Higman-Thompson group
+</Heading>
+
+The Higman-Thompson group is a finitely presented infinite simple group,
+cf.&nbsp;<Cite Key="Higman74"/>. <P/>
+
+We show that the group
+
+<Example>
+<![CDATA[
+gap> G := Group(List([[0,2,1,4],[0,4,1,4],[1,4,2,4],[2,4,3,4]],
+>                    ClassTransposition));
+<rcwa group over Z with 4 generators>
+]]>
+</Example>
+
+is isomorphic to the Higman-Thompson group. 
+This isomorphy has been pointed out by John P. McDermott.
+We take a slightly different set of generators
+
+<Example>
+<![CDATA[
+gap> k := ClassTransposition(0,2,1,2);;
+gap> l := ClassTransposition(1,2,2,4);;
+gap> m := ClassTransposition(0,2,1,4);;
+gap> n := ClassTransposition(1,4,2,4);;
+gap> H := Group(k,l,m,n);
+<rcwa group over Z with 4 generators>
+gap> G = H; # k, l, m and n generate G as well
+true
+]]>
+</Example>
+
+Now we verify that our four generators satisfy the relations given on
+page&nbsp;50 in&nbsp;<Cite Key="Higman74"/>, when we read <C>k</C>
+as&nbsp;<M>\kappa</M>, <C>l</C> as&nbsp;<M>\lambda</M>, <C>m</C>
+as&nbsp;<M>\mu</M> and <C>n</C> as&nbsp;<M>\nu</M>:
+
+<Example>
+<![CDATA[
+gap> HigmanThompsonRels :=
+> [ k^2, l^2, m^2, n^2,                           # (1) in Higman's book
+>   l*k*m*k*l*n*k*n*m*k*l*k*m,                    # (2)        "
+>   k*n*l*k*m*n*k*l*n*m*n*l*n*m,                  # (3)        "
+>   (l*k*m*k*l*n)^3, (m*k*l*k*m*n)^3,             # (4)        "
+>   (l*n*m)^2*k*(m*n*l)^2*k,                      # (5)        "
+>   (l*n*m*n)^5,                                  # (6)        "
+>   (l*k*n*k*l*n)^3*k*n*k*(m*k*n*k*m*n)^3*k*n*k*n,# (7)        "
+>   ((l*k*m*n)^2*(m*k*l*n)^2)^3,                  # (8)        "
+>   (l*n*l*k*m*k*m*n*l*n*m*k*m*k)^4,              # (9)        "
+>   (m*n*m*k*l*k*l*n*m*n*l*k*l*k)^4,              #(10)        "
+>   (l*m*k*l*k*m*l*k*n*k)^2,                      #(11)        "
+>   (m*l*k*m*k*l*m*k*n*k)^2 ];                    #(12)        "
+[ IdentityMapping( Integers ), IdentityMapping( Integers ), 
+  IdentityMapping( Integers ), IdentityMapping( Integers ), 
+  IdentityMapping( Integers ), IdentityMapping( Integers ), 
+  IdentityMapping( Integers ), IdentityMapping( Integers ), 
+  IdentityMapping( Integers ), IdentityMapping( Integers ), 
+  IdentityMapping( Integers ), IdentityMapping( Integers ), 
+  IdentityMapping( Integers ), IdentityMapping( Integers ), 
+  IdentityMapping( Integers ), IdentityMapping( Integers ) ]
+]]>
+</Example>
+
+We conclude that our group is an homomorphic image of the Higman-Thompson
+group. But since the Higman-Thompson group is simple and our group is not
+trivial, this means indeed that the two groups are isomorphic. <P/>
+
+In fact it is straightforward to show that <C>G</C> is the group
+<M>{\rm CT}_\emptyset(&ZZ;)</M> in Corollary&nbsp;3.7
+in&nbsp;<Cite Key="Kohl09"/>, which is generated by the set of all
+class transpositions which interchange residue classes modulo powers
+of&nbsp;2. First we check that <C>G</C> contains all 11 class
+transpositions which interchange residue classes modulo 2 or&nbsp;4:
+
+<Example>
+<![CDATA[
+gap> S := Filtered(List(ClassPairs(4),ClassTransposition),
+>                  ct->Mod(ct) in [2,4]);
+[ ClassTransposition(0,2,1,2), ClassTransposition(0,2,1,4), 
+  ClassTransposition(0,2,3,4), ClassTransposition(0,4,1,4), 
+  ClassTransposition(0,4,2,4), ClassTransposition(0,4,3,4), 
+  ClassTransposition(1,2,0,4), ClassTransposition(1,2,2,4), 
+  ClassTransposition(1,4,2,4), ClassTransposition(1,4,3,4), 
+  ClassTransposition(2,4,3,4) ]
+gap> IsSubset(G,S);
+true
+]]>
+</Example>
+
+Then we give a function which takes a class transposition
+<M>\tau \in {\rm CT}_\emptyset(&ZZ;)</M>, and which returns
+a factorization of an element <M>\gamma</M> satisfying
+<M>\tau^\gamma \in S</M> into <M>g_1 := (0(2),1(4)) \in S</M>,
+<M>g_2 := (0(2),3(4)) \in S</M>, <M>g_3 := (1(2),0(4)) \in S</M>,
+<M>g_4 := (1(2),2(4)) \in S</M>, <M>h_1 := (0(4),1(4)) \in S</M>
+and <M>h_2 := (1(4),2(4)) \in S</M>:
+
+<Listing Type="GAP code">
+<![CDATA[
+ReducingConjugator := function ( tau )
+
+  local  w, F, g1, g2, g3, g4, h1, h2, h, cls, cl, r;
+
+  g1 := ClassTransposition(0,2,1,4); h1 := ClassTransposition(0,4,1,4);
+  g2 := ClassTransposition(0,2,3,4); h2 := ClassTransposition(1,4,2,4);
+  g3 := ClassTransposition(1,2,0,4);
+  g4 := ClassTransposition(1,2,2,4);
+
+  F := FreeGroup("g1","g2","g3","g4","h1","h2");
+
+  w := One(F); if Mod(tau) <= 4 then return w; fi;
+
+  # Before we can reduce the moduli of the interchanged residue classes,
+  # we must make sure that both of them have at least modulus 4.
+  cls := TransposedClasses(tau);
+  if Mod(cls[1]) = 2 then
+    if Residue(cls[1]) = 0 then
+      if Residue(cls[2]) mod 4 = 1 then tau := tau^g2; w := w * F.2;
+                                   else tau := tau^g1; w := w * F.1; fi;
+    else
+      if Residue(cls[2]) mod 4 = 0 then tau := tau^g4; w := w * F.4;
+                                   else tau := tau^g3; w := w * F.3; fi;
+    fi;
+  fi;
+
+  while Mod(tau) > 4 do # Now we can successively reduce the moduli.
+    if not ForAny(AllResidueClassesModulo(2),
+                  cl -> IsEmpty(Intersection(cl,Support(tau))))
+    then
+      cls := TransposedClasses(tau);
+      h := Filtered([h1,h2],
+             hi->Length(Filtered(cls,cl->IsSubset(Support(hi),cl)))=1);
+      h := h[1]; tau := tau^h;
+      if h = h1 then w := w * F.5; else w := w * F.6; fi;
+    fi;
+    cl := TransposedClasses(tau)[2]; # class with larger modulus
+    r  := Residue(cl);
+    if   r mod 4 = 1 then tau := tau^g1; w := w * F.1;
+    elif r mod 4 = 3 then tau := tau^g2; w := w * F.2;
+    elif r mod 4 = 0 then tau := tau^g3; w := w * F.3;
+    elif r mod 4 = 2 then tau := tau^g4; w := w * F.4; fi;
+  od;
+
+  return w;
+end;
+]]>
+</Listing>
+
+After assigning <C>g1</C>, <C>g2</C>, <C>g3</C>, <C>g4</C>, <C>h1</C>
+and&nbsp;<C>h2</C> appropriately, we obtain for example:
+
+<Listing Type="Example">
+<![CDATA[
+gap> ReducingConjugator(ClassTransposition(3,16,34,256));
+h2*g1*h1*g1*h1*g1*h1*g1*h2*g2*h2*g4*h2*g4*h2*g3
+gap> gamma := h2*g1*h1*g1*h1*g1*h1*g1*h2*g2*h2*g4*h2*g4*h2*g3;
+<bijective rcwa mapping of Z with modulus 256>
+gap> ct := ClassTransposition(3,16,34,256)^gamma;;
+gap> IsClassTransposition(ct);;
+gap> ct;
+ClassTransposition(1,4,2,4)
+]]>
+</Listing>
+
+The Higman-Thompson group can also be embedded in a natural way
+into CT(GF(2)[x]):
+
+<Example>
+<![CDATA[
+gap> x := Indeterminate(GF(2));; SetName(x,"x");
+gap> R := PolynomialRing(GF(2),1);;
+gap> k := ClassTransposition(0,x,1,x);;
+gap> l := ClassTransposition(1,x,x,x^2);;
+gap> m := ClassTransposition(0,x,1,x^2);;
+gap> n := ClassTransposition(1,x^2,x,x^2);;
+gap> G := Group(k,l,m,n);
+<rcwa group over Z with 4 generators>
+]]>
+</Example>
+
+The correctness of this representation can likewise be verified by simply
+checking the defining relations given above. <P/>
+
+Issue <C>UnwrapExample("HigmanThompson");</C>
+in order to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:Sigma_T">
+<Heading>
+  An extension of the Collatz mapping T to a permutation of <M>&ZZ;^2</M>
+</Heading>
+
+The Collatz mapping&nbsp;<M>T</M> is surjective, but not injective:
+
+<Example>
+<![CDATA[
+gap> T := RcwaMapping([[1,0,2],[3,1,2]]);;
+gap> Display(T);
+
+Rcwa mapping of Z with modulus 2
+
+              n mod 2               |            Image of n
+------------------------------------+------------------------------------
+  0                                 | n/2
+  1                                 | (3n + 1)/2
+
+gap> IsInjective(T); IsSurjective(T);
+false
+true
+gap> PreImages(T,2);
+[ 1, 4 ]
+]]>
+</Example>
+
+Often, dealing with bijective rcwa mappings is easier.
+Indeed the Collatz mapping&nbsp;<M>T</M> can be extended in natural
+ways to permutations of&nbsp;<M>&ZZ;^2</M>. For example, the following
+permutation acts on the second coordinate just like&nbsp;<M>T</M>:
+
+<Example>
+<![CDATA[
+gap> Sigma_T := RcwaMapping( Integers^2, [[1,0],[0,6]],
+>                            [[[[2,0],[0,1]],[0,0],2],
+>                             [[[4,0],[0,3]],[2,1],2],
+>                             [[[2,0],[0,1]],[0,0],2],
+>                             [[[4,0],[0,3]],[2,1],2],
+>                             [[[4,0],[0,1]],[0,0],2],
+>                             [[[4,0],[0,3]],[2,1],2]] );
+<rcwa mapping of Z^2 with modulus (1,0)Z+(0,6)Z>
+gap> IsBijective(Sigma_T);
+true
+gap> Display(Sigma_T);
+
+Bijective rcwa mapping of Z^2 with modulus (1,0)Z+(0,6)Z
+
+   [m,n] mod (1,0)Z+(0,6)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,2]                 | [m,n/2]
+ [0,1] [0,3] [0,5]           | [2m+1,(3n+1)/2]
+ [0,4]                       | [2m,n/2]
+
+gap> Display(Sigma_T^-1);
+
+Bijective rcwa mapping of Z^2 with modulus (2,0)Z+(0,3)Z
+
+   [m,n] mod (2,0)Z+(0,3)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,1] [1,0] [1,1]     | [m,2n]
+ [0,2]                       | [m/2,2n]
+ [1,2]                       | [(m-1)/2,(2n-1)/3]
+
+]]>
+</Example>
+
+Now, the <M>3n+1</M> conjecture is equivalent to the assertion that
+the line <M>n=4</M> is a set of representatives for the cycles of
+<C>Sigma&uscore;T</C> on the half plane <M>n > 0</M>. <P/>
+
+Let's have a look at a part of a cycle of <C>Sigma&uscore;T</C>:
+
+<Example>
+<![CDATA[
+gap> Trajectory(Sigma_T,[0,27],75);
+[ [ 0, 27 ], [ 1, 41 ], [ 3, 62 ], [ 3, 31 ], [ 7, 47 ], [ 15, 71 ], 
+  [ 31, 107 ], [ 63, 161 ], [ 127, 242 ], [ 127, 121 ], [ 255, 182 ], 
+  [ 255, 91 ], [ 511, 137 ], [ 1023, 206 ], [ 1023, 103 ], 
+  [ 2047, 155 ], [ 4095, 233 ], [ 8191, 350 ], [ 8191, 175 ], 
+  [ 16383, 263 ], [ 32767, 395 ], [ 65535, 593 ], [ 131071, 890 ], 
+  [ 131071, 445 ], [ 262143, 668 ], [ 262143, 334 ], [ 524286, 167 ], 
+  [ 1048573, 251 ], [ 2097147, 377 ], [ 4194295, 566 ], [ 4194295, 283 ], 
+  [ 8388591, 425 ], [ 16777183, 638 ], [ 16777183, 319 ], 
+  [ 33554367, 479 ], [ 67108735, 719 ], [ 134217471, 1079 ], 
+  [ 268434943, 1619 ], [ 536869887, 2429 ], [ 1073739775, 3644 ], 
+  [ 1073739775, 1822 ], [ 2147479550, 911 ], [ 4294959101, 1367 ], 
+  [ 8589918203, 2051 ], [ 17179836407, 3077 ], [ 34359672815, 4616 ], 
+  [ 34359672815, 2308 ], [ 68719345630, 1154 ], [ 68719345630, 577 ], 
+  [ 137438691261, 866 ], [ 137438691261, 433 ], [ 274877382523, 650 ], 
+  [ 274877382523, 325 ], [ 549754765047, 488 ], [ 549754765047, 244 ], 
+  [ 1099509530094, 122 ], [ 1099509530094, 61 ], [ 2199019060189, 92 ], 
+  [ 2199019060189, 46 ], [ 4398038120378, 23 ], [ 8796076240757, 35 ], 
+  [ 17592152481515, 53 ], [ 35184304963031, 80 ], [ 35184304963031, 40 ], 
+  [ 70368609926062, 20 ], [ 70368609926062, 10 ], [ 140737219852124, 5 ], 
+  [ 281474439704249, 8 ], [ 281474439704249, 4 ], [ 562948879408498, 2 ], 
+  [ 562948879408498, 1 ], [ 1125897758816997, 2 ], 
+  [ 1125897758816997, 1 ], [ 2251795517633995, 2 ], 
+  [ 2251795517633995, 1 ] ]
+gap> Trajectory(Sigma_T^-1,[0,27],20);
+[ [ 0, 27 ], [ 0, 54 ], [ 0, 108 ], [ 0, 216 ], [ 0, 432 ], [ 0, 864 ], 
+  [ 0, 1728 ], [ 0, 3456 ], [ 0, 6912 ], [ 0, 13824 ], [ 0, 27648 ], 
+  [ 0, 55296 ], [ 0, 110592 ], [ 0, 221184 ], [ 0, 442368 ], 
+  [ 0, 884736 ], [ 0, 1769472 ], [ 0, 3538944 ], [ 0, 7077888 ], 
+  [ 0, 14155776 ] ]
+]]>
+</Example>
+
+While it seems easy to make conjectures regarding the behaviour of cycles
+of <C>Sigma&uscore;T</C>, obtaining results on it is apparently hard.
+We observe however that <C>Sigma&uscore;T</C> can be written as a product
+of two permutations of&nbsp;<M>&ZZ;^2</M> whose cycles can be described
+easily:
+
+<Example>
+<![CDATA[
+gap> a := RcwaMapping(Integers^2,[[1,0],[0,2]],[[[[4,0],[0,1]],[0, 0],2],
+>                                               [[[4,0],[0,1]],[2,-1],2]]);
+<rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z>
+gap> b := a^-1*Sigma_T;
+<bijective rcwa mapping of Z^2 with modulus (2,0)Z+(0,3)Z>
+gap> Display(a);
+
+Bijective rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z
+
+   [m,n] mod (1,0)Z+(0,2)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0]                       | [2m,n/2]
+ [0,1]                       | [2m+1,(n-1)/2]
+
+gap> Display(b);
+
+Bijective rcwa mapping of Z^2 with modulus (2,0)Z+(0,3)Z
+
+   [m,n] mod (2,0)Z+(0,3)Z   |              Image of [m,n]
+-----------------------------+-------------------------------------------
+ [0,0] [0,1]                 | [m/2,n]
+ [0,2]                       | [m,n]
+ [1,0] [1,1] [1,2]           | [m,3n+2]
+
+]]>
+</Example>
+
+It is easy to see that both <C>a</C> and&nbsp;<C>b</C> have infinite order.
+The cycles of&nbsp;<C>a</C> have roughly hyperbolic shape and run, so to
+speak, from <M>(0,\pm \infty)</M> to <M>(\pm \infty,0)</M>.
+A given cycle contains only finitely many points both of whose coordinates
+are nonzero. The fixed points of&nbsp;<C>a</C> are (0,0) and (-1,-1).
+We have a look at an example of a cycle of&nbsp;<C>a</C>:
+
+<Example>
+<![CDATA[
+gap> Trajectory(a,[1000,1000],15);
+[ [ 1000, 1000 ], [ 2000, 500 ], [ 4000, 250 ], [ 8000, 125 ], 
+  [ 16001, 62 ], [ 32002, 31 ], [ 64005, 15 ], [ 128011, 7 ], 
+  [ 256023, 3 ], [ 512047, 1 ], [ 1024095, 0 ], [ 2048190, 0 ], 
+  [ 4096380, 0 ], [ 8192760, 0 ], [ 16385520, 0 ] ]
+gap> Trajectory(a^-1,[1000,1000],15);
+[ [ 1000, 1000 ], [ 500, 2000 ], [ 250, 4000 ], [ 125, 8000 ], 
+  [ 62, 16001 ], [ 31, 32002 ], [ 15, 64005 ], [ 7, 128011 ], 
+  [ 3, 256023 ], [ 1, 512047 ], [ 0, 1024095 ], [ 0, 2048190 ], 
+  [ 0, 4096380 ], [ 0, 8192760 ], [ 0, 16385520 ] ]
+]]>
+</Example>
+
+It is left as an easy exercise to the reader to find out how the cycles
+of&nbsp;<C>b</C> look like. <P/>
+
+Issue <C>UnwrapExample("ZxZ");</C>
+in order to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:FactoringTheCollatzPermutation">
+<Heading>
+  Factoring Collatz' permutation of the integers
+</Heading>
+
+In 1932, Lothar Collatz mentioned in his notebook the following permutation
+of the integers:
+
+<Example>
+<![CDATA[
+gap> Collatz := RcwaMapping([[2,0,3],[4,-1,3],[4,1,3]]);;
+gap> Display(Collatz);
+
+Rcwa mapping of Z with modulus 3
+
+              n mod 3               |            Image of n
+------------------------------------+------------------------------------
+  0                                 | 2n/3
+  1                                 | (4n - 1)/3
+  2                                 | (4n + 1)/3
+
+gap> ShortCycles(Collatz,[-50..50],50); # There are some finite cycles:
+[ [ -111, -74, -99, -66, -44, -59, -79, -105, -70, -93, -62, -83 ], 
+  [ -9, -6, -4, -5, -7 ], [ -3, -2 ], [ -1 ], [ 0 ], [ 1 ], [ 2, 3 ], 
+  [ 4, 5, 7, 9, 6 ], [ 44, 59, 79, 105, 70, 93, 62, 83, 111, 74, 99, 66 ] ]
+]]>
+</Example>
+
+The cycle structure of Collatz' permutation has not been completely
+determined yet. In particular it is not known whether the cycle
+containing&nbsp;8 is finite or infinite. 
+Nevertheless, the factorization routine included in this package can
+determine a factorization of this permutation into class transpositions,
+i.e. involutions interchanging two disjoint residue classes:
+
+<Example>
+<![CDATA[
+gap> Collatz in CT(Integers);  # `Collatz' lies in the simple group CT(Z).
+true
+gap> Length(Factorization(Collatz));
+212
+]]>
+</Example>
+
+Setting the Info level of <C>InfoRCWA</C> equal to&nbsp;2 (simply issue
+<C>RCWAInfo(2);</C>) causes the factorization routine to display detailed
+information on the progress of the factoring process. For reasons of saving
+space, this is not done in this manual. <P/>
+
+We would like to get a factorization into fewer factors. Firstly, we try
+to factor the inverse -- just like the various options interpreted by the
+factorization routine, this has influence on decisions taken during the
+factoring process:
+
+<Example>
+<![CDATA[
+gap> Length(Factorization(Collatz^-1));
+129
+]]>
+</Example>
+
+This is already a shorter product, but can still be improved.
+We remember the <C>mKnot</C>'s, of which the permutation <C>mKnot(3)</C>
+looks very similar to Collatz' permutation. Therefore it is straightforward
+to try to factor both <C>mKnot(3)</C> and <C>Collatz/mKnot(3)</C>, and to
+look whether the sum of the numbers of factors is less than&nbsp;129:
+
+<Example>
+<![CDATA[
+gap> KnotFacts := Factorization(mKnot(3));;
+gap> QuotFacts := Factorization(Collatz/mKnot(3));;
+gap> List([KnotFacts,QuotFacts],Length);
+[ 59, 9 ]
+gap> CollatzFacts := Concatenation(QuotFacts,KnotFacts);
+[ ClassTransposition(0,6,4,6), ClassTransposition(0,6,5,6), 
+  ClassTransposition(0,6,3,6), ClassTransposition(0,6,1,6), 
+  ClassTransposition(0,6,2,6), ClassTransposition(2,3,4,6), 
+  ClassTransposition(0,3,4,6), ClassTransposition(2,3,1,6), 
+  ClassTransposition(0,3,1,6), ClassTransposition(0,36,35,36), 
+  ClassTransposition(0,36,22,36), ClassTransposition(0,36,18,36), 
+  ClassTransposition(0,36,17,36), ClassTransposition(0,36,14,36), 
+  ClassTransposition(0,36,20,36), ClassTransposition(0,36,4,36), 
+  ClassTransposition(2,36,8,36), ClassTransposition(2,36,16,36), 
+  ClassTransposition(2,36,13,36), ClassTransposition(2,36,9,36), 
+  ClassTransposition(2,36,7,36), ClassTransposition(2,36,6,36), 
+  ClassTransposition(2,36,3,36), ClassTransposition(2,36,10,36), 
+  ClassTransposition(2,36,15,36), ClassTransposition(2,36,12,36), 
+  ClassTransposition(2,36,5,36), ClassTransposition(21,36,28,36), 
+  ClassTransposition(21,36,33,36), ClassTransposition(21,36,30,36), 
+  ClassTransposition(21,36,23,36), ClassTransposition(21,36,34,36), 
+  ClassTransposition(21,36,31,36), ClassTransposition(21,36,27,36), 
+  ClassTransposition(21,36,25,36), ClassTransposition(21,36,24,36), 
+  ClassTransposition(26,36,32,36), ClassTransposition(26,36,29,36), 
+  ClassTransposition(10,18,35,36), ClassTransposition(5,18,35,36), 
+  ClassTransposition(10,18,17,36), ClassTransposition(5,18,17,36), 
+  ClassTransposition(8,12,14,24), ClassTransposition(6,9,17,18), 
+  ClassTransposition(3,9,17,18), ClassTransposition(0,9,17,18), 
+  ClassTransposition(6,9,16,18), ClassTransposition(3,9,16,18), 
+  ClassTransposition(0,9,16,18), ClassTransposition(6,9,11,18), 
+  ClassTransposition(3,9,11,18), ClassTransposition(0,9,11,18), 
+  ClassTransposition(6,9,4,18), ClassTransposition(3,9,4,18), 
+  ClassTransposition(0,9,4,18), ClassTransposition(0,6,14,24), 
+  ClassTransposition(0,6,2,24), ClassTransposition(8,12,17,18), 
+  ClassTransposition(7,12,17,18), ClassTransposition(8,12,11,18), 
+  ClassTransposition(7,12,11,18), PrimeSwitch(3)^-1, 
+  ClassTransposition(7,12,17,18), ClassTransposition(2,6,17,18), 
+  ClassTransposition(0,3,17,18), PrimeSwitch(3)^-1, PrimeSwitch(3)^-1, 
+  PrimeSwitch(3)^-1 ]
+gap> Product(CollatzFacts) = Collatz; # Check.
+true
+]]>
+</Example>
+
+The factors <C>PrimeSwitch(3)</C> are products of 6 class transpositions
+(cf.&nbsp;<Ref Func="PrimeSwitch" Label="p"/>). <P/>
+
+Issue <C>UnwrapExample("CollatzlikePerms");</C>
+to assign the global variable <C>Collatz</C> defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:SlowlyContractingMapping">
+<Heading>
+  An rcwa mapping which seems to be contracting, but very slow
+</Heading>
+
+The iterates of an integer under the Collatz mapping <M>T</M> seem to
+approach its contraction centre -- this is the finite set where all
+trajectories end up after a finite number of steps -- rather quickly and
+do not get very large before doing so (of course this is a purely heuristic
+statement as the <M>3n+1</M> Conjecture has not been proved so far!):
+
+<Example>
+<![CDATA[
+gap> T := RcwaMapping([[1,0,2],[3,1,2]]);;
+gap> S0 := LikelyContractionCentre(T,100,1000);
+#I  Warning: `LikelyContractionCentre' is highly probabilistic.
+The returned result can only be regarded as a rough guess.
+See ?LikelyContractionCentre for more information.
+[ -136, -91, -82, -68, -61, -55, -41, -37, -34, -25, -17, -10, -7, -5, 
+  -1, 0, 1, 2 ]
+gap> S0^T = S0; # This holds by definition of the contraction centre.
+true
+gap> List([1..30],n->Length(Trajectory(T,n,S0)));
+[ 1, 1, 5, 2, 4, 6, 11, 3, 13, 5, 10, 7, 7, 12, 12, 4, 9, 14, 14, 6, 6, 
+  11, 11, 8, 16, 8, 70, 13, 13, 13 ]
+gap> Maximum(List([1..1000],n->Length(Trajectory(T,n,S0))));
+113
+gap> Maximum(List([1..1000],n->Maximum(Trajectory(T,n,S0))));
+125252
+]]>
+</Example>
+
+The following mapping seems to be contracting as well, but its trajectories
+are much longer:
+
+<Log>
+<![CDATA[
+gap> f6 := RcwaMapping([[ 1,0,6],[ 5, 1,6],[ 7,-2,6],
+>                       [11,3,6],[11,-2,6],[11,-1,6]]);;
+gap> Display(f6);
+
+Rcwa mapping of Z with modulus 6
+
+              n mod 6               |            Image of n
+------------------------------------+------------------------------------
+  0                                 | n/6
+  1                                 | (5n + 1)/6
+  2                                 | (7n - 2)/6
+  3                                 | (11n + 3)/6
+  4                                 | (11n - 2)/6
+  5                                 | (11n - 1)/6
+
+gap> S0 := LikelyContractionCentre(f6,1000,100000);;
+#I  Warning: `LikelyContractionCentre' is highly probabilistic.
+The returned result can only be regarded as a rough guess.
+See ?LikelyContractionCentre for more information.
+gap> Trajectory(f6,25,S0);
+[ 25, 21, 39, 72, 12, 2 ]
+gap> List([1..100],n->Length(Trajectory(f6,n,S0)));
+[ 1, 1, 3, 4, 1, 2, 3, 2, 1, 5, 7, 2, 8, 17, 3, 16, 1, 4, 17, 6, 5, 2, 
+  5, 5, 6, 1, 4, 2, 15, 1, 1, 3, 2, 5, 13, 3, 2, 3, 4, 1, 8, 4, 4, 2, 7, 
+  19, 23517, 3, 9, 3, 1, 18, 14, 2, 20, 23512, 14, 2, 6, 6, 1, 4, 19, 
+  12, 23511, 8, 23513, 10, 1, 13, 13, 3, 1, 23517, 7, 20, 7, 9, 9, 6, 
+  12, 8, 6, 18, 14, 23516, 31, 12, 23545, 4, 21, 19, 5, 1, 17, 17, 13, 
+  19, 6, 23515 ]
+gap> Maximum(Trajectory(f6,47,S0));
+7363391777762473304431877054771075818733690108051469808715809256737742295\
+45698886054
+]]>
+</Log>
+
+Computing the trajectory of 3224 takes quite a while -- this trajectory
+ascends to about <M>3 \cdot 10^{2197}</M>, before it approaches the fixed
+point&nbsp;2 after 19949562 steps. <P/>
+
+When constructing the mapping <C>f6</C>, the denominators of the
+partial mappings have been chosen to be equal and the numerators have
+been chosen to be numbers coprime to the common denominator, whose product
+is just a little bit smaller than the <C>Modulus(f6)</C>th power of the
+denominator. In the example we have <M>5 \cdot 7 \cdot 11^3 = 46585</M>
+and <M>6^6 = 46656</M>. <P/>
+
+Although the trajectories of <C>T</C> are much shorter than those of
+<C>f6</C>, it seems likely that this does not make the problem of deciding
+whether the mapping&nbsp;<C>T</C> is contracting essentially easier --
+even for mappings with much shorter trajectories than&nbsp;<C>T</C>
+the problem seems to be equally hard. A solution can usually only be found
+in trivial cases, i.e. for example when there is some <M>k</M> such that
+applying the <M>k</M>th power of the respective mapping to any integer
+decreases its absolute value. <P/>
+
+Issue <C>UnwrapExample("SlowlyContractingMappings");</C>
+to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:AndaloroResult">
+<Heading>Checking a result by P. Andaloro</Heading>
+
+In <Cite Key="Andaloro00"/>, P.&nbsp;Andaloro has shown that proving that
+trajectories of integers <M>n \in 1(16)</M> under the Collatz mapping always
+contain&nbsp;1 would be sufficient to prove the <M>3n+1</M> Conjecture.
+In the sequel, this result is verified by &RCWA;. Checking that the
+union of the images of the residue class 1(16) under powers of the Collatz
+mapping&nbsp;<M>T</M> contains <M>&ZZ; \setminus 0(3)</M> is obviously
+enough. Thus we put <M>S := 1(16)</M>, and successively unite the
+set&nbsp;<M>S</M> with its image under&nbsp;<M>T</M>:
+
+<Example>
+<![CDATA[
+gap> T := RcwaMapping([[1,0,2],[3,1,2]]);
+<rcwa mapping of Z with modulus 2>
+gap> S := ResidueClass(Integers,16,1);
+1(16)
+gap> S := Union(S,S^T);
+1(16) U 2(24)
+gap> S := Union(S,S^T);
+1(12) U 2(24) U 17(48) U 33(48)
+gap> S := Union(S,S^T);
+<union of 30 residue classes (mod 144)>
+gap> S := Union(S,S^T);
+<union of 42 residue classes (mod 144)>
+gap> S := Union(S,S^T);
+<union of 172 residue classes (mod 432)>
+gap> S := Union(S,S^T);
+<union of 676 residue classes (mod 1296)>
+gap> S := Union(S,S^T);
+<union of 810 residue classes (mod 1296)>
+gap> S := Union(S,S^T);
+<union of 2638 residue classes (mod 3888)>
+gap> S := Union(S,S^T);
+<union of 33 residue classes (mod 48)>
+gap> S := Union(S,S^T);
+<union of 33 residue classes (mod 48)>
+gap> Union(S,ResidueClass(Integers,3,0)); # Et voila ...
+Integers
+]]>
+</Example>
+
+Further similar computations are shown in
+Section&nbsp;<Ref Label="sec:CollatzImagesAndPreImages"/>. <P/>
+
+Issue <C>UnwrapExample("CollatzMapping");</C>
+to assign the global variable&nbsp;<C>T</C> defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:MatthewsLeighExamples">
+<Heading>Two examples by Matthews and Leigh</Heading>
+
+In <Cite Key="MatthewsLeigh87"/>, K.&nbsp;R.&nbsp;Matthews and
+G.&nbsp;M.&nbsp;Leigh have shown that two trajectories of the following
+(surjective, but not injective) mappings are acyclic (mod&nbsp;<M>x</M>)
+and divergent:
+
+<Example>
+<![CDATA[
+gap> x := Indeterminate(GF(4),1);; SetName(x,"x");
+gap> R := PolynomialRing(GF(2),1);
+GF(2)[x]
+gap> ML1 := RcwaMapping(R,x,[[1,0,x],[(x+1)^3,1,x]]*One(R));;
+gap> ML2 := RcwaMapping(R,x,[[1,0,x],[(x+1)^2,1,x]]*One(R));;
+gap> Display(ML1);
+
+Rcwa mapping of GF(2)[x] with modulus x
+
+        P mod x         |                  Image of P
+------------------------+------------------------------------------------
+ 0*Z(2)                 | P/x
+ Z(2)^0                 | ((x^3+x^2+x+Z(2)^0)*P + Z(2)^0)/x
+
+gap> Display(ML2);
+
+Rcwa mapping of GF(2)[x] with modulus x
+
+        P mod x         |                  Image of P
+------------------------+------------------------------------------------
+ 0*Z(2)                 | P/x
+ Z(2)^0                 | ((x^2+Z(2)^0)*P + Z(2)^0)/x
+
+gap> List([ML1,ML2],IsSurjective);
+[ true, true ]
+gap> List([ML1,ML2],IsInjective);
+[ false, false ]
+gap> traj1 := Trajectory(ML1,One(R),16);
+[ Z(2)^0, x^2+x+Z(2)^0, x^4+x^2+x, x^3+x+Z(2)^0, x^5+x^4+x^2, x^4+x^3+x, 
+  x^3+x^2+Z(2)^0, x^5+x^2+Z(2)^0, x^7+x^6+x^5+x^3+Z(2)^0, 
+  x^9+x^7+x^6+x^5+x^3+x+Z(2)^0, x^11+x^10+x^8+x^7+x^6+x^5+x^2, 
+  x^10+x^9+x^7+x^6+x^5+x^4+x, x^9+x^8+x^6+x^5+x^4+x^3+Z(2)^0, 
+  x^11+x^8+x^7+x^6+x^4+x+Z(2)^0, x^13+x^12+x^11+x^8+x^7+x^6+x^4, 
+  x^12+x^11+x^10+x^7+x^6+x^5+x^3 ]
+gap> traj2 := Trajectory(ML2,(x^3+x+1)*One(R),16);
+[ x^3+x+Z(2)^0, x^4+x+Z(2)^0, x^5+x^3+x^2+x+Z(2)^0, x^6+x^3+Z(2)^0, 
+  x^7+x^5+x^4+x^2+x, x^6+x^4+x^3+x+Z(2)^0, x^7+x^4+x^3+x+Z(2)^0, 
+  x^8+x^6+x^5+x^4+x^3+x+Z(2)^0, x^9+x^6+x^3+x+Z(2)^0, 
+  x^10+x^8+x^7+x^5+x^4+x+Z(2)^0, x^11+x^8+x^7+x^5+x^4+x^3+x^2+x+Z(2)^0, 
+  x^12+x^10+x^9+x^8+x^7+x^5+Z(2)^0, x^13+x^10+x^7+x^4+x, 
+  x^12+x^9+x^6+x^3+Z(2)^0, x^13+x^11+x^10+x^8+x^7+x^5+x^4+x^2+x, 
+  x^12+x^10+x^9+x^7+x^6+x^4+x^3+x+Z(2)^0 ]
+]]>
+</Example>
+
+The pattern which Matthews and Leigh used to show the divergence of the
+above trajectories can be recognized easily by looking at the corresponding
+Markov chains with the two states 0&nbsp;mod&nbsp;<M>x</M> and
+1&nbsp;mod&nbsp;<M>x</M>:
+
+<Example>
+<![CDATA[
+gap> traj1modx := Trajectory(ML1,One(R),400,x);;
+gap> traj2modx := Trajectory(ML2,(x^3+x+1)*One(R),600,x);;
+gap> List(traj1modx{[1..150]},val->Position([Zero(R),One(R)],val)-1);
+[ 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 
+  1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 
+  1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+gap> List(traj2modx{[1..150]},val->Position([Zero(R),One(R)],val)-1);
+[ 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 
+  1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 
+  0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+]]>
+</Example>
+
+What is important here are the lengths of the intervals between two changes
+from one state to the other:
+
+<Example>
+<![CDATA[
+gap> ChangePoints := l->Filtered([1..Length(l)-1],pos->l[pos]<>l[pos+1]);;
+gap> Diffs := l->List([1..Length(l)-1],pos->l[pos+1]-l[pos]);;
+gap> Diffs(ChangePoints(traj1modx)); # The pattern in the first ...
+[ 1, 1, 2, 4, 2, 2, 4, 8, 4, 4, 8, 16, 8, 8, 16, 32, 16, 16, 32, 64, 32, 
+  32, 64 ]
+gap> Diffs(ChangePoints(traj2modx)); # ... and in the second example.
+[ 1, 7, 1, 1, 1, 13, 1, 1, 1, 1, 1, 1, 1, 25, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 49, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 97, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 193, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+gap> Diffs(ChangePoints(last)); # Make this a bit more obvious.
+[ 1, 3, 1, 7, 1, 15, 1, 31, 1, 63, 1 ]
+]]>
+</Example>
+
+This looks clearly acyclic, thus the trajectories diverge.
+Needless to say however that this computational evidence does not replace
+the proof along these lines given in the article cited above, but just
+sheds a light on the idea behind it. <P/>
+
+Issue <C>UnwrapExample("MatthewsLeigh");</C>
+to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:OrdersOfCommutators">
+<Heading>Orders of commutators</Heading>
+
+We enter some wild rcwa permutation:
+
+<Example>
+<![CDATA[
+gap> u := RcwaMapping([[3,0,5],[9,1,5],[3,-1,5],[9,-2,5],[9,4,5]]);;
+gap> IsTame(u);;
+gap> Display(u);
+
+Wild bijective rcwa mapping of Z with modulus 5
+
+              n mod 5               |            Image of n
+------------------------------------+------------------------------------
+  0                                 | 3n/5
+  1                                 | (9n + 1)/5
+  2                                 | (3n - 1)/5
+  3                                 | (9n - 2)/5
+  4                                 | (9n + 4)/5
+
+]]>
+</Example>
+
+We would like to compute the order of <M>[u,n \mapsto n + k]</M>
+and <M>[u^2,n \mapsto n + k]</M> for different values of&nbsp;<M>k</M>:
+
+<Example>
+<![CDATA[
+gap> nu := ClassShift(0,1);; # n -> n + 1
+gap> l := Filtered([0..100],k->IsTame(Comm(u,nu^k)));
+[ 0, 2, 3, 5, 6, 9, 10, 12, 13, 15, 17, 18, 20, 21, 24, 25, 27, 28, 30, 
+  32, 33, 35, 36, 39, 40, 42, 43, 45, 47, 48, 50, 51, 54, 55, 57, 58, 
+  60, 62, 63, 65, 66, 69, 70, 72, 73, 75, 77, 78, 80, 81, 84, 85, 87, 
+  88, 90, 92, 93, 95, 96, 99, 100 ]
+gap> List(l,k->Order(Comm(u,nu^k)));
+[ 1, 6, 5, 3, 5, 5, 3, infinity, 7, infinity, 7, 5, 3, infinity, 
+  infinity, 3, 5, 7, infinity, 7, infinity, 3, 5, 5, 3, 5, infinity, 
+  infinity, infinity, 5, 3, 5, 5, 3, infinity, 7, infinity, 7, 5, 3, 
+  infinity, infinity, 3, 5, 7, infinity, 7, infinity, 3, 5, 5, 3, 5, 
+  infinity, infinity, infinity, 5, 3, 5, 5, 3 ]
+gap> u2 := u^2;
+<wild bijective rcwa mapping of Z with modulus 25>
+gap> Filtered([1..16],k->IsTame(Comm(u2,nu^k))); # k < 15 -> commutator wild!
+[ 15 ]
+gap> Order(Comm(u2,nu^15));
+infinity
+gap> u2nu17 := Comm(u2,nu^17);
+<bijective rcwa mapping of Z with modulus 81>
+gap> cycs := ShortCycles(u2nu17,[-100..100],100);;
+gap> List(cycs,Length);
+[ 72, 72, 73, 72, 73, 72, 72, 73, 72, 72, 72, 73, 72, 72, 73, 72, 72, 
+  73, 72, 72, 73, 72, 72 ]
+gap> Lcm(last);
+5256
+gap> u2nu17^5256; # This element has indeed order 2^3*3^2*73 = 5256.
+IdentityMapping( Integers )
+gap> u2nu18 := Comm(u2,nu^18);
+<bijective rcwa mapping of Z with modulus 81>
+gap> cycs := ShortCycles(u2nu18,[-100..100],100);;
+gap> List(cycs,Length);
+[ 22, 22, 22, 21, 22, 22, 22, 21, 21, 22, 22, 21, 22, 21, 22, 22, 21, 
+  22, 22, 21, 22, 22, 21 ]
+gap> Lcm(last);
+462
+gap> u2nu18^462; # This is an element of order 2*3*7*11 = 462.
+IdentityMapping( Integers )
+gap> List([Comm(u2,nu^20),Comm(u2,nu^25),Comm(u2,nu^30)],Order);
+[ 29, 9, 15 ]
+]]>
+</Example>
+
+We observe that our commutators have various different orders, and
+that the prime factors of these orders are not all <Q>very small</Q>. <P/>
+
+Issue <C>UnwrapExample("CollatzlikePerms");</C>
+to assign the global variable&nbsp;<C>u</C> defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:OddNumberOfGens_FiniteOrder">
+<Heading>
+  An infinite subgroup of CT(GF(2)[x]) with many torsion elements
+</Heading>
+
+In this section, we have a look at the following subgroup of CT(GF(2)[x]):
+
+<Example>
+<![CDATA[
+gap> x := Indeterminate(GF(2));; SetName(x,"x");
+gap> R := PolynomialRing(GF(2),1);
+GF(2)[x]
+gap> a := ClassTransposition(0,x,1,x);;
+gap> b := ClassTransposition(0,x^2+1,1,x^2+1);;
+gap> c := ClassTransposition(1,x,0,x^2+x);;
+gap> G := Group(a,b,c);
+<rcwa group over GF(2)[x] with 3 generators>
+gap> Display(G);
+
+Rcwa group over GF(2)[x], generated by
+
+[
+Bijective rcwa mapping of GF(2)[x]: P -> P + Z(2)^0
+
+Bijective rcwa mapping of GF(2)[x] with modulus x^2+Z(2)^0, of order 2
+
+     P mod x^2+Z(2)^0     |                    Image of P
+--------------------------+---------------------------------------------------
+ 0*Z(2)   Z(2)^0          | P + Z(2)^0
+ x        x+Z(2)^0        | P
+
+
+Bijective rcwa mapping of GF(2)[x] with modulus x^2+x, of order 2
+
+       P mod x^2+x        |                    Image of P
+--------------------------+---------------------------------------------------
+ 0*Z(2)                   | (P + x+Z(2)^0)/(x+Z(2)^0)
+ Z(2)^0   x+Z(2)^0        | (x+Z(2)^0)*P + x+Z(2)^0
+ x                        | P
+
+]
+
+]]>
+</Example>
+
+We can easily find 2 normal subgroups of&nbsp;<C>G</C>:
+
+<Example>
+<![CDATA[
+gap> N1 := Subgroup(G,[a*b,a*c]);
+<rcwa group over GF(2)[x] with 2 generators>
+gap> IsNormal(G,N1);
+true
+gap> Index(G,N1);
+2
+gap> G/N1;
+Group([ (1,2), (1,2), (1,2) ])
+gap> N2 := Subgroup(G,[a*b*c,a*c]);;
+gap> IsNormal(G,N2);
+true
+gap> IsSubgroup(N1,N2);
+false
+]]>
+</Example>
+
+Products of even numbers of generators of&nbsp;<C>G</C> may have
+infinite order. For example, we have
+
+<Example>
+<![CDATA[
+gap> Order(a*b);
+2
+gap> Order(a*c);
+infinity
+gap> Order(b*c);
+infinity
+]]>
+</Example>
+
+We would like to have a look at orders of products of odd numbers of
+generators. In order to restrict our considerations to <Q>essentially
+different</Q> products (as far as we can easily do this), we use
+the following auxiliary function:
+
+<Listing Type="GAP code">
+<![CDATA[
+NormedWords := function ( F, lng )
+
+  local  words, gens, tuples, w;
+
+  gens   := GeneratorsOfGroup(F);
+  tuples := EnumeratorOfTuples([1..3],lng);
+  words  := [];
+
+  for w in tuples do
+    if    (w[1] = 1 or not 1 in w)
+      and PositionSublist(w,[1,1]) = fail
+      and PositionSublist(w,[2,2]) = fail
+      and PositionSublist(w,[3,3]) = fail
+      and PositionSublist(w,[2,1]) = fail
+      and w[1] < w[lng]
+      and w{[1,lng]} <> [1,2]
+      and (w{[1..3]} = [1,2,3] or PositionSublist(w,[1,2,3]) = fail)
+    then Add(words,w); fi;
+  od;
+
+  words := List(words,word->Product(List(word,i->gens[i])));
+  return words;
+end;
+]]>
+</Listing>
+
+Now let's compute the possible orders of products of 3, 5, 7 or 9 generators:
+
+<Log>
+<![CDATA[
+gap> F := FreeGroup("a","b","c");;
+gap> phi := EpimorphismByGenerators(F,G);
+[ a, b, c ] -> [ ClassTransposition(0*Z(2),x,Z(2)^0,x), 
+  ClassTransposition(0*Z(2),x^2+Z(2)^0,Z(2)^0,x^2+Z(2)^0), 
+  ClassTransposition(Z(2)^0,x,0*Z(2),x^2+x) ]
+gap> B3 := NormedWords(F,3);
+[ a*b*c ]
+gap> B3 := List(B3,g->g^phi);
+[ <bijective rcwa mapping of GF(2)[x] with modulus x^3+x> ]
+gap> List(B3,Order);
+[ 20 ]
+gap> B5 := NormedWords(F,5);
+[ a*b*c*a*c, a*b*c*b*c ]
+gap> B5 := List(B5,g->g^phi);
+[ <bijective rcwa mapping of GF(2)[x] with modulus x^3+x>, 
+  <bijective rcwa mapping of GF(2)[x] with modulus x^4+x^3+x^2+x> ]
+gap> List(B5,Order);
+[ 12, 12 ]
+gap> B7 := NormedWords(F,7);
+[ a*b*c*a*c*a*c, a*b*c*a*c*b*c, a*b*c*b*c*a*c, a*b*c*b*c*b*c ]
+gap> B7 := List(B7,g->g^phi);
+[ <bijective rcwa mapping of GF(2)[x] with modulus x^4+x^3+x^2+x>, 
+  <bijective rcwa mapping of GF(2)[x] with modulus x^5+x>, 
+  <bijective rcwa mapping of GF(2)[x] with modulus x^4+x^3+x^2+x>, 
+  <bijective rcwa mapping of GF(2)[x] with modulus x^5+x> ]
+gap> List(B7,Order);
+[ 12, 12, 12, 30 ]
+gap> B9 := NormedWords(F,9);
+[ a*b*c*a*b*c*a*b*c, a*b*c*a*c*a*c*a*c, a*b*c*a*c*a*c*b*c, a*b*c*a*c*b*c*a*c, 
+  a*b*c*a*c*b*c*b*c, a*b*c*b*c*a*c*a*c, a*b*c*b*c*a*c*b*c, a*b*c*b*c*b*c*a*c, 
+  a*b*c*b*c*b*c*b*c ]
+gap> B9 := List(B9,g->g^phi);;
+gap> List(B9,Order);
+[ 20, 4, 30, 12, 42, 30, 4, 42, 12 ]
+]]>
+</Log>
+
+Issue <C>UnwrapExample("OddNumberOfGens_FiniteOrder");</C>
+in order to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:AbelianGroupOverPolynomialRing">
+<Heading>An abelian rcwa group over a polynomial ring</Heading>
+
+We enter a 2-generated abelian wild rcwa group over GF(4)[<M>x</M>]:
+
+<Example>
+<![CDATA[
+gap> x := Indeterminate(GF(4),1);; SetName(x,"x");
+gap> R := PolynomialRing(GF(4),1);
+GF(2^2)[x]
+gap> e := One(GF(4));;
+gap> p := x^2 + x + e;;    q := x^2 + e;;
+gap> r := x^2 + x + Z(4);; s := x^2 + x + Z(4)^2;;
+gap> cg := List( AllResidues(R,x^2), pol -> [ p, p * pol mod q, q ] );;
+gap> ch := List( AllResidues(R,x^2), pol -> [ r, r * pol mod s, s ] );;
+gap> g := RcwaMapping( R, q, cg );
+<rcwa mapping of GF(2^2)[x] with modulus x^2+Z(2)^0>
+gap> h := RcwaMapping( R, s, ch );
+<rcwa mapping of GF(2^2)[x] with modulus x^2+x+Z(2^2)^2>
+gap> List([g,h],IsTame);
+[ false, false ]
+gap> G := Group(g,h);
+<rcwa group over GF(2^2)[x] with 2 generators>
+gap> IsAbelian(G);
+true
+gap> IsTame(G);
+false
+]]>
+</Example>
+
+It is easy to see that all orbits on GF(4)[<M>x</M>] under the action
+of <C>G</C> are finite. <P/>
+
+Now we compute the action of the group <C>G</C> on one of its orbits, and
+make some statistics of the orbits of <C>G</C> containing polynomials of
+degree less than&nbsp;4:
+
+<Example>
+<![CDATA[
+gap> orb := Orbit(G,x^5);
+[ x^5, x^5+x^4+x^2+Z(2)^0, x^5+x^3+x^2+Z(2^2)*x+Z(2)^0, x^5+x^3, 
+  x^5+x^4+x^3+x^2+Z(2^2)^2*x+Z(2^2)^2, x^5+x, x^5+x^4+x^3, 
+  x^5+x^2+Z(2^2)^2*x, x^5+x^4+x^2+x, x^5+x^3+x^2+Z(2^2)^2*x+Z(2)^0, 
+  x^5+x^4+Z(2^2)*x+Z(2^2), x^5+x^3+x, x^5+x^4+x^3+x^2+Z(2^2)*x+Z(2^2), 
+  x^5+x^4+x^3+x+Z(2)^0, x^5+x^2+Z(2^2)*x, x^5+x^4+Z(2^2)^2*x+Z(2^2)^2 ]
+gap> H := Action(G,orb);
+Group([ (1,2,4,7,6,9,12,14)(3,5,8,11,10,13,15,16), 
+  (1,3,6,10)(2,5,9,13)(4,8,12,15)(7,11,14,16) ])
+gap> IsAbelian(H); # check ...
+true
+gap> IsCyclic(H);  # H, and therefore also G, is not cyclic
+false
+gap> Exponent(H);
+8
+gap> Collected(List(ShortOrbits(G,AllResidues(R,x^4),100),Length));
+[ [ 1, 4 ], [ 2, 6 ], [ 4, 12 ], [ 8, 24 ] ]
+]]>
+</Example>
+
+Changing the generators a little changes the structure of the group
+and its action on the underlying ring a lot:
+
+<Example>
+<![CDATA[
+gap> cg[1][2] := cg[1][2] + (x^2 + e) * p * q;;
+gap> ch[7][2] := ch[7][2] + x * r * s;;
+gap> g := RcwaMapping( R, q, cg );; h := RcwaMapping( R, s, ch );;
+gap> G := Group(g,h);
+<rcwa group over GF(2^2)[x] with 2 generators>
+gap> IsAbelian(G);
+false
+gap> Support(G);
+GF(2^2)[x] \ [ Z(2)^0, Z(2^2), Z(2^2)^2 ]
+gap> orb := Orbit(G,Zero(R));;
+gap> Length(orb);
+87
+gap> StructureDescription(Action(G,orb));
+"A87"
+gap> Collected(List(orb,DegreeOfLaurentPolynomial));
+[ [ 1, 2 ], [ 2, 4 ], [ 3, 16 ], [ 4, 64 ], [ infinity, 1 ] ]
+gap> S := AllResidues(R,x^6);;
+gap> orbs := ShortOrbits(G,S,-1:finite);;
+gap> List(orbs,Length);
+[ 87, 1, 1, 1, 2, 2, 2, 2, 2, 4, 4, 4, 20, 4, 12, 4, 20, 4, 4, 12, 8, 8, 
+  48, 48, 16, 8, 8, 56, 8, 88, 8, 8, 8, 400, 16, 48, 16, 16, 16, 80, 16, 
+  16, 16, 96, 32, 192, 32, 16, 16, 416, 16, 48, 16, 16, 880, 16, 16, 16, 
+  16, 16, 16, 16, 16, 16, 848, 16, 16, 32, 16, 16, 16, 16, 16, 16, 16 ]
+gap> Position(last,880);
+55
+gap> Set(orbs[55],DegreeOfLaurentPolynomial); # all elm's have same degree
+[ 5 ]
+gap> H := Action(G,orbs[55]);;
+gap> IsPrimitive(H,MovedPoints(H));
+false
+gap> List(Blocks(H,MovedPoints(H)),Length);
+[ 110, 110, 110, 110, 110, 110, 110, 110 ]
+]]>
+</Example>
+
+Issue <C>UnwrapExample("AbelianGroupOverPolynomialRing");</C>
+to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:CheckingForSolvability">
+<Heading>Checking for solvability</Heading>
+
+Presently there is no general method available for testing wild rcwa groups
+for solvability. However, sometimes the question for solvability can be
+answered anyway.
+In the example below, the idea is to find a subgroup&nbsp;<A>U</A> which acts
+on a finite set&nbsp;<A>S</A> of integers, and which induces on&nbsp;<A>S</A>
+a non-solvable finite permutation group:
+
+<Example>
+<![CDATA[
+gap> a := RcwaMapping([[3,0,2],[3, 1,4],[3,0,2],[3,-1,4]]);;
+gap> b := RcwaMapping([[3,0,2],[3,13,4],[3,0,2],[3,-1,4]]);;
+gap> G := Group(a,b);;
+gap> ShortOrbits(Group(Comm(a,b)),[-10..10],100);
+[ [ -10 ], [ -9 ], [ -30, -21, -14, -13, -11, -8 ], [ -7 ], [ -6 ], 
+  [ -12, -5, -4, -3, -2, 1 ], [ -1 ], [ 0 ], [ 2 ], [ 3 ], 
+  [ 4, 5, 6, 7, 10, 15 ], [ 8 ], [ 9 ] ]
+gap> S := [ 4, 5, 6, 7, 10, 15 ];;
+gap> Cycle(Comm(a,b),4);
+[ 4, 7, 10, 15, 5, 6 ]
+gap> elm := RepresentativeAction(G,S,Permuted(S,(1,4)),OnTuples);
+<bijective rcwa mapping of Z with modulus 81>
+gap> List(S,n->n^elm);
+[ 7, 5, 6, 4, 10, 15 ]
+gap> U := Group(Comm(a,b),elm);
+<rcwa group over Z with 2 generators>
+gap> Action(U,S);
+Group([ (1,4,5,6,2,3), (1,4) ])
+gap> IsNaturalSymmetricGroup(last);
+true
+]]>
+</Example>
+
+Thus the subgroup <A>U</A> induces on <A>S</A> a natural symmetric group of
+degree&nbsp;6. Therefore the group&nbsp;<A>G</A> is not solvable.
+We conclude this example by factoring the group element <A>elm</A> into
+generators:
+
+<Example>
+<![CDATA[
+gap> F := FreeGroup("a","b");
+<free group on the generators [ a, b ]>
+gap> RepresentativeActionPreImage(G,S,Permuted(S,(1,4)),OnTuples,F);
+a^-2*b^-2*a*b*a^-1*b*a*b^-2*a
+gap> a^-2*b^-2*a*b*a^-1*b*a*b^-2*a = elm;
+true
+]]>
+</Example>
+
+Issue <C>UnwrapExample("CheckingForSolvability");</C>
+to assign the global variables <C>a</C>, <C>b</C> and <C>G</C>
+defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:LocalExample">
+<Heading>Some examples over (semi)localizations of the integers</Heading>
+
+We start with something one can observe when trying to <Q>transfer</Q> an
+rcwa mapping from the ring of integers to one of its localizations:
+
+<Example>
+<![CDATA[
+gap> a := RcwaMapping([[3,0,2],[3,1,4],[3,0,2],[3,-1,4]]);;
+gap> IsBijective(a);
+true
+gap> a2 := LocalizedRcwaMapping(a,2);
+<rcwa mapping of Z_( 2 ) with modulus 4>
+gap> IsSurjective(a2); # As expected
+true
+gap> IsInjective(a2); # Why not??
+false
+gap> 0^a2;
+0
+gap> (1/3)^a2; # That's the reason!
+0
+]]>
+</Example>
+
+The above can also be explained easily by pointing out that the
+modulus of the inverse of <C>a</C> is&nbsp;3, and that 3 is a unit
+of&nbsp;<M>&ZZ;_{(2)}</M>.
+Moving to <M>&ZZ;_{(2,3)}</M> solves this problem:
+
+<Example>
+<![CDATA[
+gap> a23 := SemilocalizedRcwaMapping(a,[2,3]);
+<rcwa mapping of Z_( 2, 3 ) with modulus 4>
+gap> IsBijective(a23);
+true
+]]>
+</Example>
+
+We get additional finite cycles, e.g.:
+
+<Example>
+<![CDATA[
+gap> List(ShortOrbits(Group(a23),[0..50]/5,50),orb->Cycle(a23,orb[1]));
+[ [ 0 ], [ 1/5, 2/5, 3/5 ], 
+  [ 4/5, 6/5, 9/5, 8/5, 12/5, 18/5, 27/5, 19/5, 13/5, 11/5, 7/5 ], 
+  [ 1 ], [ 2, 3 ], [ 14/5, 21/5, 17/5 ], 
+  [ 16/5, 24/5, 36/5, 54/5, 81/5, 62/5, 93/5, 71/5, 52/5, 78/5, 117/5, 
+      89/5, 68/5, 102/5, 153/5, 116/5, 174/5, 261/5, 197/5, 149/5, 
+      113/5, 86/5, 129/5, 98/5, 147/5, 109/5, 83/5, 61/5, 47/5, 34/5, 
+      51/5, 37/5, 29/5, 23/5 ], [ 4, 6, 9, 7, 5 ] ]
+gap> List(last,Length);
+[ 1, 3, 11, 1, 2, 3, 34, 5 ]
+gap> List(ShortOrbits(Group(a23),[0..50]/7,50),orb->Cycle(a23,orb[1]));
+[ [ 0 ], [ -1/7, 1/7 ], [ 2/7, 3/7, 4/7, 6/7, 9/7, 5/7 ], [ 1 ], 
+  [ 2, 3 ], [ 4, 6, 9, 7, 5 ] ]
+gap> List(last,Length);
+[ 1, 2, 6, 1, 2, 5 ]
+]]>
+</Example>
+
+However the structure of a group with prime set <M>\mathbb{P}</M>
+remains invariant under the <Q>transfer</Q> from &ZZ;
+to&nbsp;<M>&ZZ;_{(\mathbb{P})}</M>. <P/>
+
+<Q>Transferring</Q> a non-invertible rcwa mapping from the ring of integers
+to some of its (semi)localizations can also turn it into an invertible one:
+
+<Example>
+<![CDATA[
+gap> v := RcwaMapping([[6,0,1],[1,-7,2],[6,0,1],[1,-1,1],
+>                      [6,0,1],[1, 1,2],[6,0,1],[1,-1,1]]);;
+gap> Display(v);
+
+Rcwa mapping of Z with modulus 8
+
+              n mod 8               |            Image of n
+------------------------------------+------------------------------------
+  0 2 4 6                           | 6n
+  1                                 | (n - 7)/2
+  3 7                               | n - 1
+  5                                 | (n + 1)/2
+
+gap> IsInjective(v);
+true
+gap> IsSurjective(v);
+false
+gap> Image(v);
+Z \ 4(12) U 8(12)
+gap> Difference(Integers,last);
+4(12) U 8(12)
+gap> v2 := LocalizedRcwaMapping(v,2);
+<rcwa mapping of Z_( 2 ) with modulus 8>
+gap> IsBijective(v2);
+true
+gap> Display(v2^-1);
+
+Bijective rcwa mapping of Z_( 2 ) with modulus 4
+
+              n mod 4               |            Image of n
+------------------------------------+------------------------------------
+  0                                 | 1/3 n / 2
+  1                                 | 2 n + 7
+  2                                 | n + 1
+  3                                 | 2 n - 1
+
+gap> S := ResidueClass(Z_pi(2),2,0);; l := [S];;
+gap> for i in [1..10] do Add(l,l[Length(l)]^v2); od;
+gap> l; # Visibly v2 is wild ...
+[ 0(2), 0(4), 0(8), 0(16), 0(32), 0(64), 0(128), 0(256), 0(512),
+  0(1024), 0(2048) ]
+gap> w2 := RcwaMapping(Z_pi(2),[[1,0,2],[2,-1,1],[1,1,1],[2,-1,1]]);;
+gap> v2w2 := Comm(v2,w2);; v2w2^-1;;
+gap> Display(v2w2);
+
+Bijective rcwa mapping of Z_( 2 ) with modulus 8
+
+              n mod 8               |            Image of n
+------------------------------------+------------------------------------
+  0 3 4 7                           | n
+  1                                 | n + 4
+  2 6                               | 3 n
+  5                                 | n - 4
+
+]]>
+</Example>
+
+Again, viewed as an rcwa mapping of the integers the commutator given at
+the end of the example would not be surjective. <P/>
+
+Issue <C>UnwrapExample("Semilocals");</C>
+to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:Twisting257CyclesToModulus32">
+<Heading>
+  Twisting 257-cycles into an rcwa mapping with modulus 32
+</Heading>
+
+We define an rcwa mapping <A>x</A> of order&nbsp;257 with modulus&nbsp;32.
+The easiest way to construct such a mapping is to prescribe a transition
+graph and then to assign suitable affine mappings to its vertices.
+
+<Example>
+<![CDATA[
+gap> x_257 := RcwaMapping(
+>      [[ 16,  2,  1], [ 16, 18,  1], [  1, 16,  1], [ 16, 18,  1],
+>       [  1, 16,  1], [ 16, 18,  1], [  1, 16,  1], [ 16, 18,  1],
+>       [  1, 16,  1], [ 16, 18,  1], [  1, 16,  1], [ 16, 18,  1],
+>       [  1, 16,  1], [ 16, 18,  1], [  1, 16,  1], [ 16, 18,  1],
+>       [  1,  0, 16], [ 16, 18,  1], [  1,-14,  1], [ 16, 18,  1],
+>       [  1,-14,  1], [ 16, 18,  1], [  1,-14,  1], [ 16, 18,  1],
+>       [  1,-14,  1], [ 16, 18,  1], [  1,-14,  1], [ 16, 18,  1],
+>       [  1,-14,  1], [ 16, 18,  1], [  1,-14,  1], [  1,-31,  1]]);;
+gap> Order(x_257);; Display(x_257);
+
+Bijective rcwa mapping of Z with modulus 32, of order 257
+
+              n mod 32              |             Image of n
+------------------------------------+------------------------------------
+   0                                | 16n + 2
+   1  3  5  7  9 11 13 15 17 19 21  |
+  23 25 27 29                       | 16n + 18
+   2  4  6  8 10 12 14              | n + 16
+  16                                | n/16
+  18 20 22 24 26 28 30              | n - 14
+  31                                | n - 31
+
+gap> Length(Cycle(x_257,0));
+257
+]]>
+</Example>
+
+Issue <C>UnwrapExample("LongCyclesOfPrimeLength");</C>
+to assign the global variable <C>x&uscore;257</C> defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:ModuliOfPowers">
+<Heading> The behaviour of the moduli of powers </Heading>
+
+We give some examples of how the series of the moduli of powers of a given
+rcwa mapping of the integers can look like.
+
+<Example>
+<![CDATA[
+gap> a := RcwaMapping([[3,0,2],[3, 1,4],[3,0,2],[3,-1,4]]);;
+gap> List([0..4],i->Modulus(a^i));
+[ 1, 4, 16, 64, 256 ]
+gap> e1 := RcwaMapping([[1,4,1],[2,0,1],[1,0,2],[2,0,1]]);;
+gap> e2 := RcwaMapping([[1,4,1],[2,0,1],[1,0,2],[1,0,1],
+>                       [1,4,1],[2,0,1],[1,0,1],[1,0,1]]);;
+gap> List([e1,e2],Order);
+[ infinity, infinity ]
+gap> List([1..20],i->Modulus(e1^i));
+[ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ]
+gap> List([1..20],i->Modulus(e2^i));
+[ 8, 4, 8, 4, 8, 4, 8, 4, 8, 4, 8, 4, 8, 4, 8, 4, 8, 4, 8, 4 ]
+gap> Display(e2);
+
+Bijective rcwa mapping of Z with modulus 8, of order infinity
+
+              n mod 8               |            Image of n
+------------------------------------+------------------------------------
+  0 4                               | n + 4
+  1 5                               | 2n
+  2                                 | n/2
+  3 6 7                             | n
+
+gap> e2^2 = Restriction(RcwaMapping([[1,2,1]]),RcwaMapping([[4,0,1]]));
+true
+gap> g:=RcwaMapping([[2,2,1],[1, 4,1],[1,0,2],[2,2,1],[1,-4,1],[1,-2,1]]);;
+gap> h:=RcwaMapping([[2,2,1],[1,-2,1],[1,0,2],[2,2,1],[1,-1,1],[1, 1,1]]);;
+gap> List([0..7],i->Modulus(g^i));
+[ 1, 6, 12, 12, 12, 12, 6, 1 ]
+gap> List([1..18],i->Modulus((g^3*h)^i));
+[ 12, 6, 12, 12, 12, 6, 12, 6, 12, 12, 12, 6, 12, 6, 12, 12, 12, 6 ]
+gap> u := RcwaMapping([[3,0,5],[9,1,5],[3,-1,5],[9,-2,5],[9,4,5]]);;
+gap> List([0..3],i->Modulus(u^i));
+[ 1, 5, 25, 125 ]
+gap> v6 := RcwaMapping([[-1,2,1],[1,-1,1],[1,-1,1]]);;
+gap> List([0..6],i->Modulus(v6^i));
+[ 1, 3, 3, 3, 3, 3, 1 ]
+gap> w8 := RcwaMapping([[-1,3,1],[1,-1,1],[1,-1,1],[1,-1,1]]);;
+gap> List([0..8],i->Modulus(w8^i));
+[ 1, 4, 4, 4, 4, 4, 4, 4, 1 ]
+gap> z := RcwaMapping([[2,1,1],[1, 1,1],[2,-1,1],[2, -2,1],
+>                      [1,6,2],[1, 1,1],[1,-6,2],[2,  5,1],
+>                      [1,6,2],[1, 1,1],[1, 1,1],[2, -5,1],
+>                      [1,0,1],[1,-4,1],[1, 0,1],[2,-10,1]]);;
+gap> IsBijective(z);
+true
+gap> List([0..25],i->Modulus(z^i));
+[ 1, 16, 32, 64, 64, 128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 
+  256, 256, 512, 512, 512, 512, 512, 512, 1024, 1024, 1024 ]
+]]>
+</Example>
+
+Issue <C>UnwrapExample("ModuliOfPowers");</C>
+to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:CollatzImagesAndPreImages">
+<Heading> Images and preimages under the Collatz mapping </Heading>
+
+We have a look at the images of the residue class 1(2)
+under powers of the Collatz mapping.
+
+<Example>
+<![CDATA[
+gap> T := RcwaMapping([[1,0,2],[3,1,2]]);;
+gap> S0 := ResidueClass(Integers,2,1);;
+gap> S1 := S0^T;
+2(3)
+gap> S2 := S1^T;
+1(3) U 8(9)
+gap> S3 := S2^T;
+2(3) U 4(9)
+gap> S4 := S3^T;
+Z \ 0(3) U 5(9)
+gap> S5 := S4^T;
+Z \ 0(3) U 7(9)
+gap> S6 := S5^T;
+Z \ 0(3)
+gap> S7 := S6^T;
+Z \ 0(3)
+]]>
+</Example>
+
+Thus the image gets stable after applying the mapping <M>T</M> for
+the 6th time. Hence <M>T^6</M> maps the residue class 1(2) surjectively
+onto the union of the residue classes 1(3) and 2(3), which <M>T</M>
+stabilizes setwise.
+Now we would like to determine the preimages of 1(3) and 2(3) in 1(2)
+under <M>T^6</M>. The residue class 1(2) has to be the disjoint union of
+these sets.
+
+<Example>
+<![CDATA[
+gap> U := Intersection(PreImage(T^6,ResidueClass(Integers,3,1)),S0);
+<union of 11 residue classes (mod 64)>
+gap> V := Intersection(PreImage(T^6,ResidueClass(Integers,3,2)),S0);
+<union of 21 residue classes (mod 64)>
+gap> AsUnionOfFewClasses(U);
+[ 1(64), 5(64), 7(64), 9(64), 21(64), 23(64), 29(64), 31(64), 49(64), 
+  51(64), 59(64) ]
+gap> AsUnionOfFewClasses(V);
+[ 3(32), 11(32), 13(32), 15(32), 25(32), 17(64), 19(64), 27(64), 33(64), 
+  37(64), 39(64), 41(64), 53(64), 55(64), 61(64), 63(64) ]
+gap> Union(U,V) = S0 and Intersection(U,V) = [];  # consistency check
+true
+]]>
+</Example>
+
+The images of the residue class 0(3) under powers of&nbsp;<M>T</M> look
+as follows:
+
+<Example>
+<![CDATA[
+gap> S0 := ResidueClass(Integers,3,0);
+0(3)
+gap> S1 := S0^T;
+0(3) U 5(9)
+gap> S2 := S1^T;
+0(3) U 5(9) U 7(9) U 8(27)
+gap> S3 := S2^T;
+<union of 20 residue classes (mod 27)>
+gap> S4 := S3^T;
+<union of 73 residue classes (mod 81)>
+gap> S5 := S4^T;
+Z \ 10(81) U 37(81)
+gap> S6 := S5^T;
+Integers
+gap> S7 := S6^T;
+Integers
+]]>
+</Example>
+
+Thus every integer is the image of a multiple of&nbsp;3
+under&nbsp;<M>T^6</M>. This means that it would be sufficient to prove the
+<M>3n+1</M> Conjecture for multiples of&nbsp;3.
+We can obtain the corresponding result for multiples of&nbsp;5 as follows:
+
+<Example>
+<![CDATA[
+gap> S := [ResidueClass(Integers,5,0)];
+[ 0(5) ]
+gap> for i in [1..12] do Add(S,S[i]^T); od;
+gap> for s in S do View(s); Print("\n"); od;
+0(5)
+0(5) U 8(15)
+0(5) U 4(15) U 8(15)
+0(5) U 2(15) U 4(15) U 8(15) U 29(45)
+<union of 73 residue classes (mod 135)>
+<union of 244 residue classes (mod 405)>
+<union of 784 residue classes (mod 1215)>
+<union of 824 residue classes (mod 1215)>
+<union of 2593 residue classes (mod 3645)>
+<union of 2647 residue classes (mod 3645)>
+<union of 2665 residue classes (mod 3645)>
+<union of 2671 residue classes (mod 3645)>
+1(3) U 2(3) U 0(15)
+gap> Union(S[13],ResidueClass(Integers,3,0));
+Integers
+gap>  List(S,Si->Float(Density(Si)));
+[ 0.2, 0.266667, 0.333333, 0.422222, 0.540741, 0.602469, 0.645267, 
+  0.678189, 0.711385, 0.7262, 0.731139, 0.732785, 0.733333 ]
+]]>
+</Example>
+
+Issue <C>UnwrapExample("CollatzMapping");</C>
+to assign the global variable&nbsp;<C>T</C> defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:FourTransitiveGroup">
+<Heading>
+  A group which acts 4-transitively on the positive integers
+</Heading>
+
+In this section, we would like to show that the group <M>G</M> generated
+by the two wild mappings
+
+<Example>
+<![CDATA[
+gap> a := RcwaMapping([[3,0,2],[3,1,4],[3,0,2],[3,-1,4]]);;
+gap> u := RcwaMapping([[3,0,5],[9,1,5],[3,-1,5],[9,-2,5],[9,4,5]]);;
+gap> SetName(a,"a"); SetName(u,"u"); G := Group(a,u);;
+]]>
+</Example>
+
+which we have already investigated in earlier examples acts 4-transitively
+on the set of positive integers.
+
+Obviously, it acts on the set of positive integers.
+First we show that this action is transitive.
+
+We start by checking in which residue classes sufficiently large positive
+integers are mapped to smaller ones by a suitable group element:
+
+<Example>
+<![CDATA[
+gap> List([a,a^-1,u,u^-1],DecreasingOn);
+[ 1(2), 0(3), 0(5) U 2(5), 2(3) ]
+gap> Union(last);
+Z \ 4(30) U 16(30) U 28(30)
+]]>
+</Example>
+
+We see that we cannot always choose such a group element from the set of
+generators and their inverses -- otherwise the union would be
+<C>Integers</C>.
+
+<Example>
+<![CDATA[
+gap> List([a,a^-1,u,u^-1,a^2,a^-2,u^2,u^-2],DecreasingOn);
+[ 1(2), 0(3), 0(5) U 2(5), 2(3), 1(8) U 7(8), 0(3) U 2(9) U 7(9), 
+  0(25) U 12(25) U 17(25) U 20(25), 2(3) U 1(9) U 3(9) ]
+gap> Union(last); # Still not enough ...
+Z \ 4(90) U 58(90) U 76(90)
+gap> List([a,a^-1,u,u^-1,a^2,a^-2,u^2,u^-2,a*u,u*a,(a*u)^-1,(u*a)^-1],
+>         DecreasingOn);
+[ 1(2), 0(3), 0(5) U 2(5), 2(3), 1(8) U 7(8), 0(3) U 2(9) U 7(9), 
+  0(25) U 12(25) U 17(25) U 20(25), 2(3) U 1(9) U 3(9), 
+  3(5) U 0(10) U 7(20) U 9(20), 0(5) U 2(5), 2(3), 3(9) U 4(9) U 8(9) ]
+gap> Union(last); # ... but that's it!
+Integers
+]]>
+</Example>
+
+Finally, we have to deal with <Q>small</Q> integers. We use the notation for
+the coefficients of rcwa mappings introduced at the beginning of this manual.
+Let <M>c_{r(m)} &gt; a_{r(m)}</M>. Then we easily see that
+<M>(a_{r(m)}n+b_{r(m)})/c_{r(m)} &gt; n</M> implies
+<M>n &lt; b_{r(m)}/(c_{r(m)}-a_{r(m)})</M>.
+Thus we can restrict our considerations to integers
+<M>n &lt; b_{\rm max}</M>, where <M>b_{\rm max}</M> is the largest
+second entry of a coefficient triple of one of the group elements
+in our list:
+
+<Example>
+<![CDATA[
+gap> List([a,a^-1,u,u^-1,a^2,a^-2,u^2,u^-2,a*u,u*a,(a*u)^-1,(u*a)^-1],
+>         f->Maximum(List(Coefficients(f),c->c[2])));
+[ 1, 1, 4, 2, 7, 7, 56, 28, 25, 17, 17, 11 ]
+gap> Maximum(last);
+56
+]]>
+</Example>
+
+Thus this upper bound is 56. The rest is easy -- all we have to do is
+to check that the orbit containing&nbsp;1 contains also all other positive
+integers less than or equal to&nbsp;56:
+
+<Example>
+<![CDATA[
+gap> S := [1];;
+gap> while not IsSubset(S,[1..56]) do
+>      S := Union(S,S^a,S^u,S^(a^-1),S^(u^-1));
+>    od;
+gap> IsSubset(S,[1..56]);
+true
+]]>
+</Example>
+
+Checking 2-transitivity is computationally harder, and in the sequel we
+will omit some steps which are in practice needed to find out
+<Q>what&nbsp;to&nbsp;do</Q>.
+
+The approach taken here is to show that the stabilizer of&nbsp;1
+in&nbsp;<M>G</M> acts transitively on the set of positive integers greater
+than&nbsp;1. We do this by similar means as used above for showing the
+transitivity of the action of <M>G</M> on the positive integers.
+
+We start by determining all products of at most 5 generators and their
+inverses, which stabilize&nbsp;1 (taking at most 4-generator products would
+not suffice!):
+
+<Example>
+<![CDATA[
+gap> gens := [a,u,a^-1,u^-1];;
+gap> tups := Concatenation(List([1..5],k->Tuples([1..4],k)));;
+gap> Length(tups);
+1364
+gap> tups := Filtered(tups,tup->ForAll([[1,3],[3,1],[2,4],[4,2]],
+>                                      l->PositionSublist(tup,l)=fail));;
+gap> Length(tups);
+484
+gap> stab := [];;
+gap> for tup in tups do
+>      n := 1;
+>      for i in tup do n := n^gens[i]; od;
+>      if n = 1 then Add(stab,tup); fi;
+>    od;
+gap> Length(stab);
+118
+gap> stabelm := List(stab,tup->Product(List(tup,i->gens[i])));;
+gap> ForAll(stabelm,elm->1^elm=1); # Check.
+true
+]]>
+</Example>
+
+The resulting products have various different not quite small moduli:
+
+<Example>
+<![CDATA[
+gap> List(stabelm,Modulus);
+[ 4, 3, 16, 25, 9, 81, 64, 100, 108, 100, 25, 75, 27, 243, 324, 243, 
+  256, 400, 144, 400, 100, 432, 324, 400, 80, 400, 625, 25, 75, 135, 
+  150, 75, 225, 81, 729, 486, 729, 144, 144, 81, 729, 1296, 729, 6561, 
+  1024, 1600, 192, 1600, 400, 576, 432, 1600, 320, 1600, 2500, 100, 100, 
+  180, 192, 192, 108, 972, 1728, 972, 8748, 1600, 400, 320, 80, 1600, 
+  2500, 300, 2500, 625, 625, 75, 675, 75, 75, 135, 405, 600, 120, 600, 
+  1875, 75, 225, 405, 225, 225, 675, 243, 2187, 729, 2187, 216, 216, 
+  243, 2187, 1944, 2187, 19683, 576, 144, 576, 432, 81, 81, 729, 2187, 
+  5184, 324, 8748, 243, 2187, 19683, 26244, 19683 ]
+gap> Lcm(last);
+12597120000
+gap> Collected(Factors(last));
+[ [ 2, 10 ], [ 3, 9 ], [ 5, 4 ] ]
+]]>
+</Example>
+
+Similar as before, we determine for any of the above mappings the
+residue classes whose elements larger than the largest <M>b_{r(m)}</M>
+- coefficient of the respective mapping are mapped to smaller integers:
+
+<Example>
+<![CDATA[
+gap> decs := List(stabelm,DecreasingOn);;
+gap> List(decs,Modulus);
+[ 2, 3, 8, 25, 9, 9, 16, 100, 12, 50, 25, 75, 27, 81, 54, 81, 64, 400, 
+  48, 200, 100, 72, 108, 400, 80, 200, 625, 25, 75, 45, 75, 75, 225, 81, 
+  243, 81, 243, 144, 144, 81, 243, 216, 243, 243, 128, 1600, 64, 400, 
+  400, 48, 144, 1600, 320, 400, 2500, 100, 100, 60, 96, 192, 108, 324, 
+  144, 324, 972, 400, 400, 80, 80, 400, 2500, 100, 1250, 625, 625, 25, 
+  75, 75, 75, 45, 135, 600, 120, 150, 1875, 75, 225, 135, 225, 225, 675, 
+  243, 729, 243, 729, 108, 216, 243, 729, 162, 729, 2187, 144, 144, 144, 
+  144, 81, 81, 243, 729, 1296, 324, 972, 243, 729, 2187, 1458, 2187 ]
+gap> Lcm(last);
+174960000
+]]>
+</Example>
+
+Since the least common multiple of the moduli of these unions of residue
+classes is as large as 174960000, directly forming their union and
+checking whether it is equal to the set of integers would take relatively
+much time and memory. However, starting with the set of integers and
+subtracting the above sets one-by-one in a suitably chosen order is cheap:
+
+<Example>
+<![CDATA[
+gap> SortParallel(decs,stabelm,
+>      function(S1,S2)
+>        return First([1..100],k->Factorial(k) mod Modulus(S1)=0)
+>             < First([1..100],k->Factorial(k) mod Modulus(S2)=0);
+>      end);
+gap> S := Integers;;
+gap> for i in [1..Length(decs)] do
+>      S_old := S; S := Difference(S,decs[i]);
+>      if S <> S_old then ViewObj(S); Print("\n"); fi;
+>      if S = [] then maxind := i; break; fi;
+>    od;
+0(2)
+2(6) U 4(6)
+<union of 8 residue classes (mod 30)>
+<union of 19 residue classes (mod 90)>
+<union of 114 residue classes (mod 720)>
+<union of 99 residue classes (mod 720)>
+<union of 57 residue classes (mod 720)>
+<union of 54 residue classes (mod 720)>
+<union of 41 residue classes (mod 720)>
+<union of 35 residue classes (mod 720)>
+<union of 8 residue classes (mod 720)>
+4(720) U 94(720) U 148(720) U 238(720)
+<union of 24 residue classes (mod 5760)>
+<union of 72 residue classes (mod 51840)>
+<union of 48 residue classes (mod 51840)>
+<union of 192 residue classes (mod 259200)>
+<union of 168 residue classes (mod 259200)>
+<union of 120 residue classes (mod 259200)>
+<union of 96 residue classes (mod 259200)>
+<union of 72 residue classes (mod 259200)>
+<union of 60 residue classes (mod 259200)>
+<union of 48 residue classes (mod 259200)>
+<union of 24 residue classes (mod 259200)>
+<union of 12 residue classes (mod 259200)>
+<union of 24 residue classes (mod 777600)>
+<union of 12 residue classes (mod 777600)>
+111604(194400) U 14404(777600) U 208804(777600)
+[  ]
+]]>
+</Example>
+
+Similar as above, it remains to check that the <Q>small</Q> integers all
+lie in the orbit containing&nbsp;2. Obviously, it is sufficient to check
+that any integer greater than&nbsp;2 is mapped to a smaller one by some
+suitably chosen element of the stabilizer under consideration:
+
+<Example>
+<![CDATA[
+gap> Maximum(List(stabelm{[1..maxind]},
+>                 f->Maximum(List(Coefficients(f),c->c[2]))));
+6581
+gap> Filtered([3..6581],n->Minimum(List(stabelm,elm->n^elm))>=n);
+[ 4 ]
+]]>
+</Example>
+
+We have to treat 4 separately:
+
+<Example>
+<![CDATA[
+gap> 1^(u*a*u^2*a^-1*u);
+1
+gap> 4^(u*a*u^2*a^-1*u);
+3
+]]>
+</Example>
+
+Now we know that any positive integer greater than&nbsp;1 lies in the same
+orbit under the action of the stabilizer of&nbsp;1 in&nbsp;<M>G</M>
+as&nbsp;2, thus that this stabilizer acts transitively on
+<M>&NN; \setminus \{1\}</M>. But this means that we have established
+the 2-transitivity of the action of <M>G</M> on&nbsp;&NN;. <P/>
+
+In the following, we essentially repeat the above steps to show that
+this action is indeed 3-transitive:
+
+<Example>
+<![CDATA[
+gap> tups := Concatenation(List([1..6],k->Tuples([1..4],k)));;
+gap> tups := Filtered(tups,tup->ForAll([[1,3],[3,1],[2,4],[4,2]],
+>                                      l->PositionSublist(tup,l)=fail));;
+gap> stab := [];;
+gap> for tup in tups do
+>      l := [1,2];
+>      for i in tup do l := List(l,n->n^gens[i]); od;
+>      if l = [1,2] then Add(stab,tup); fi;
+>    od;
+gap> Length(stab);
+212
+gap> stabelm := List(stab,tup->Product(List(tup,i->gens[i])));;
+gap> decs := List(stabelm,DecreasingOn);;
+gap> SortParallel(decs,stabelm,function(S1,S2)
+>      return First([1..100],k->Factorial(k) mod Mod(S1)=0)
+>           < First([1..100],k->Factorial(k) mod Mod(S2)=0); end);
+gap> S := Integers;;
+gap> for i in [1..Length(decs)] do
+>      S_old := S; S := Difference(S,decs[i]);
+>      if S <> S_old then ViewObj(S); Print("\n"); fi;
+>      if S = [] then break; fi;
+>    od;
+Z \ 1(8) U 7(8)
+<union of 151 residue classes (mod 240)>
+<union of 208 residue classes (mod 720)>
+<union of 51 residue classes (mod 720)>
+<union of 45 residue classes (mod 720)>
+<union of 39 residue classes (mod 720)>
+<union of 33 residue classes (mod 720)>
+<union of 23 residue classes (mod 720)>
+<union of 19 residue classes (mod 720)>
+<union of 17 residue classes (mod 720)>
+<union of 16 residue classes (mod 720)>
+<union of 14 residue classes (mod 720)>
+<union of 8 residue classes (mod 720)>
+<union of 7 residue classes (mod 720)>
+238(360) U 4(720) U 148(720) U 454(720)
+<union of 38 residue classes (mod 5760)>
+<union of 37 residue classes (mod 5760)>
+<union of 25 residue classes (mod 5760)>
+<union of 21 residue classes (mod 5760)>
+<union of 17 residue classes (mod 5760)>
+<union of 16 residue classes (mod 5760)>
+<union of 138 residue classes (mod 51840)>
+<union of 48 residue classes (mod 51840)>
+<union of 32 residue classes (mod 51840)>
+<union of 20 residue classes (mod 51840)>
+<union of 16 residue classes (mod 51840)>
+<union of 68 residue classes (mod 259200)>
+<union of 42 residue classes (mod 259200)>
+<union of 32 residue classes (mod 259200)>
+<union of 26 residue classes (mod 259200)>
+<union of 25 residue classes (mod 259200)>
+<union of 11 residue classes (mod 259200)>
+<union of 10 residue classes (mod 259200)>
+<union of 7 residue classes (mod 259200)>
+13414(129600) U 2164(259200) U 66964(259200) U 228964(259200)
+2164(259200) U 66964(259200) U 228964(259200)
+[  ]
+gap> Maximum(List(stabelm,f->Maximum(List(Coefficients(f),c->c[2]))));
+515816
+gap> smallnum := [4..515816];;
+gap> for i in [1..Length(stabelm)] do
+>      smallnum := Filtered(smallnum,n->n^stabelm[i]>=n);
+>    od;
+gap> smallnum;
+[  ]
+]]>
+</Example>
+
+The same for 4-transitivity:
+
+<Example>
+<![CDATA[
+gap> tups := Concatenation(List([1..8],k->Tuples([1..4],k)));;
+gap> tups := Filtered(tups,tup->ForAll([[1,3],[3,1],[2,4],[4,2]],
+>                                      l->PositionSublist(tup,l)=fail));;
+gap> stab := [];;
+gap> for tup in tups do
+>      l := [1,2,3];
+>      for i in tup do l := List(l,n->n^gens[i]); od;
+>      if l = [1,2,3] then Add(stab,tup); fi;
+>    od;
+gap> Length(stab);
+528
+gap> stabelm := [];;
+gap> for i in [1..Length(stab)] do
+>      elm := One(G);
+>      for j in stab[i] do
+>        if Modulus(elm) > 10000 then elm := fail; break; fi;
+>        elm := elm * gens[j];
+>      od;
+>      if elm <> fail then Add(stabelm,elm); fi;
+>    od;
+gap> Length(stabelm);
+334
+gap> decs := List(stabelm,DecreasingOn);;
+gap> SortParallel(decs,stabelm,
+>      function(S1,S2)
+>        return First([1..100],k->Factorial(k) mod Modulus(S1) = 0)
+>             < First([1..100],k->Factorial(k) mod Modulus(S2) = 0);
+>      end);
+gap> S := Integers;;
+gap> for i in [1..Length(decs)] do
+>      S_old := S; S := Difference(S,decs[i]);
+>      if S <> S_old then ViewObj(S); Print("\n"); fi;
+>      if S = [] then maxind := i; break; fi;
+>    od;
+Z \ 1(8) U 7(8)
+<union of 46 residue classes (mod 72)>
+<union of 20 residue classes (mod 72)>
+4(18)
+<union of 28 residue classes (mod 576)>
+<union of 22 residue classes (mod 576)>
+<union of 21 residue classes (mod 576)>
+40(72) U 4(144) U 94(144) U 346(576) U 418(576)
+<union of 16 residue classes (mod 576)>
+<union of 15 residue classes (mod 576)>
+4(144) U 94(144) U 346(576) U 418(576)
+<union of 30 residue classes (mod 5184)>
+<union of 26 residue classes (mod 5184)>
+<union of 6 residue classes (mod 1296)>
+<union of 504 residue classes (mod 129600)>
+<union of 324 residue classes (mod 129600)>
+<union of 282 residue classes (mod 129600)>
+<union of 239 residue classes (mod 129600)>
+<union of 218 residue classes (mod 129600)>
+<union of 194 residue classes (mod 129600)>
+<union of 154 residue classes (mod 129600)>
+<union of 97 residue classes (mod 129600)>
+<union of 85 residue classes (mod 129600)>
+<union of 77 residue classes (mod 129600)>
+<union of 67 residue classes (mod 129600)>
+<union of 125 residue classes (mod 259200)>
+<union of 108 residue classes (mod 259200)>
+<union of 107 residue classes (mod 259200)>
+<union of 101 residue classes (mod 259200)>
+<union of 100 residue classes (mod 259200)>
+<union of 84 residue classes (mod 259200)>
+<union of 80 residue classes (mod 259200)>
+<union of 76 residue classes (mod 259200)>
+<union of 70 residue classes (mod 259200)>
+<union of 66 residue classes (mod 259200)>
+<union of 54 residue classes (mod 259200)>
+<union of 53 residue classes (mod 259200)>
+<union of 47 residue classes (mod 259200)>
+<union of 43 residue classes (mod 259200)>
+<union of 31 residue classes (mod 259200)>
+<union of 24 residue classes (mod 259200)>
+<union of 23 residue classes (mod 259200)>
+<union of 13 residue classes (mod 259200)>
+57406(129600) U 115006(129600) U 192676(259200) U 250276(259200)
+57406(129600) U 192676(259200) U 250276(259200) U 374206(388800)
+57406(129600) U 192676(259200) U 250276(259200)
+250276(259200) U 57406(388800) U 316606(388800) U 451876(777600)
+316606(388800) U 451876(777600) U 509476(777600) U 768676(777600)
+<union of 18 residue classes (mod 3110400)>
+451876(777600) U 509476(777600) U 705406(777600) U 768676(777600)
+ U 2649406(3110400)
+451876(777600) U 705406(777600) U 768676(777600) U 2649406(3110400)
+451876(777600) U 705406(777600) U 2649406(3110400)
+705406(777600) U 2007076(3110400) U 2649406(3110400) U 2784676(3110400)
+<union of 14 residue classes (mod 9331200)>
+2260606(2332800) U 5759806(9331200) U 5895076(9331200) U 8227876(9331200)
+4593406(6998400) U 15091006(27993600) U 17559076(27993600)
+ U 24557476(27993600)
+<union of 14 residue classes (mod 83980800)>
+18590206(20995200) U 24557476(83980800) U 45552676(83980800)
+ U 71078206(83980800)
+[  ]
+gap> Maximum(List(stabelm{[1..maxind]},
+>                 f->Maximum(List(Coefficients(f),c->c[2]))));
+58975
+gap> smallnum := [5..58975];;
+gap> for i in [1..maxind] do
+>      smallnum := Filtered(smallnum,n->n^stabelm[i]>=n);
+>    od;
+gap> smallnum;
+[  ]
+]]>
+</Example>
+
+There is even some evidence that the degree of transitivity of the action of
+<M>G</M> on the positive integers is higher than&nbsp;4:
+
+<Example>
+<![CDATA[
+gap> phi := EpimorphismFromFreeGroup(G);
+[ a, u ] -> [ a, u ]
+gap> F := Source(phi);
+<free group on the generators [ a, u ]>
+gap> List([5..20],
+>         n->RepresentativeActionPreImage(G,[1,2,3,4,5],
+>                                           [1,2,3,4,n],OnTuples,F));
+[ <identity ...>, a^-3*u^4*a*u^-2*a^2, 
+  a^-2*u*a^-1*u*a^-1*u*a^-1*u*a^-1*u^-1*a, a^4*u^-2*a^-4, a^-1*u^-4*a, 
+  u^2*a^-1*u^2*a^-1*u^-2, u^-2*a^-2*u^4, a^-1*u^2*a, a^-1*u^-6*a, 
+  a^2*u^4*a^2*u^2, u^-4*a*u^-2*a^-3, a^-1*u^-2*a^-3*u^4*a^2, 
+  a^3*u^2*a*u^2, a*u^-4*a*u^-4*a^-2, u^-2*a*u^2*a*u^-2, u^-4*a^2*u^2 ]
+]]>
+</Example>
+
+Issue <C>UnwrapExample("CollatzlikePerms");</C> to assign the
+global variables&nbsp;<C>a</C> and&nbsp;<C>u</C> defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:ThreeButNotFourTransitiveGroup">
+<Heading>
+  A group which acts 3-transitively, but not 4-transitively on &ZZ;
+</Heading>
+
+In this section, we would like to show that the wild group <M>G</M> generated
+by the two tame mappings <M>n \mapsto n + 1</M> and <M>\tau_{1(2),0(4)}</M>
+acts 3-transitively, but not 4-transitively on the set of integers.
+
+<Example>
+<![CDATA[
+gap> G := Group(ClassShift(0,1),ClassTransposition(1,2,0,4));
+<rcwa group over Z with 2 generators>
+gap> IsTame(G);
+false
+gap> (G.1^-2*G.2)^3*(G.1^2*G.2)^3; # G <> the free product C_infty * C_2.
+IdentityMapping( Integers )
+gap> Display(G);
+
+Wild rcwa group over Z, generated by
+
+[
+Tame bijective rcwa mapping of Z: n -> n + 1
+
+Bijective rcwa mapping of Z with modulus 4, of order 2
+
+              n mod 4               |            Image of n
+------------------------------------+------------------------------------
+  0                                 | (n + 2)/2
+  1 3                               | 2n - 2
+  2                                 | n
+
+]
+
+]]>
+</Example>
+
+This group acts transitively on&nbsp;&ZZ;, since already the cyclic
+group generated by the first of the two generators does so. Next we have to
+show that it acts 2-transitively. We essentially proceed as in the example
+in the previous section, by checking that the stabilizer of&nbsp;0
+acts transitively on <M>&ZZ; \setminus \{0\}</M>.
+
+<Example>
+<![CDATA[
+gap> gens := [ClassShift(0,1)^-1,ClassTransposition(1,2,0,4),ClassShift(0,1)];;
+gap> tups := Concatenation(List([1..6],k->Tuples([-1,0,1],k)));;
+gap> tups := Filtered(tups,tup->ForAll([[0,0],[-1,1],[1,-1]],
+>                                      l->PositionSublist(tup,l)=fail));;
+gap> Length(tups);
+189
+gap> stab := [];;
+gap> for tup in tups do
+>      n := 0;
+>      for i in tup do n := n^gens[i+2]; od;
+>      if n = 0 then Add(stab,tup); fi;
+>    od;
+gap> stabelm := List(stab,tup->Product(List(tup,i->gens[i+2])));;
+gap> Collected(List(stabelm,Modulus));
+[ [ 4, 6 ], [ 8, 4 ], [ 16, 3 ] ]
+gap> decs := List(stabelm,DecreasingOn);
+[ 0(4), 3(4), 0(4), 3(4), 2(4), 0(4), 4(8), 2(4), 2(4), 0(4), 1(4), 
+  0(8), 3(8) ]
+gap> Union(decs);
+Integers
+]]>
+</Example>
+
+Similar as in the previous section, it remains to check that the integers
+with <Q>small</Q> absolute value all lie in the orbit containing&nbsp;1 under
+the action of the stabilizer of&nbsp;0:
+
+<Example>
+<![CDATA[
+gap> Maximum(List(stabelm,f->Maximum(List(Coefficients(f),c->AbsInt(c[2])))));
+21
+gap> S := [1];;
+gap> for elm in stabelm do S := Union(S,S^elm,S^(elm^-1)); od;
+gap> IsSubset(S,Difference([-21..21],[0])); # Not yet ..
+false
+gap> for elm in stabelm do S := Union(S,S^elm,S^(elm^-1)); od;
+gap> IsSubset(S,Difference([-21..21],[0])); # ... but now!
+true
+]]>
+</Example>
+
+Now we have to check for 3-transitivity. Since we cannot find for every
+residue class an element of the pointwise stabilizer of <M>\{0,1\}</M>
+which properly divides its elements, we also have to take additions and
+subtractions into consideration. Since the moduli of all of our stabilizer
+elements are quite small, simply looking at sets of representatives is cheap:
+
+<Example>
+<![CDATA[
+gap> tups := Concatenation(List([1..10],k->Tuples([-1,0,1],k)));;
+gap> tups := Filtered(tups,tup->ForAll([[0,0],[-1,1],[1,-1]],
+>                                      l->PositionSublist(tup,l)=fail));;
+gap> Length(tups);
+3069
+gap> stab := [];;
+gap> for tup in tups do
+>      l := [0,1];
+>      for i in tup do l := List(l,n->n^gens[i+2]); od;
+>      if l = [0,1] then Add(stab,tup); fi;
+>    od;
+gap> Length(stab);
+10
+gap> stabelm := List(stab,tup->Product(List(tup,i->gens[i+2])));;
+gap> Maximum(List(stabelm,Modulus));
+8
+gap> Maximum(List(stabelm,
+>                 f->Maximum(List(Coefficients(f),c->AbsInt(c[2])))));
+8
+gap> decsp := List(stabelm,elm->Filtered([9..16],n->n^elm<n));
+[ [ 9, 13 ], [ 10, 12, 14, 16 ], [ 12, 16 ], [ 9, 13 ], [ 12, 16 ], 
+  [ 9, 11, 13, 15 ], [ 9, 11, 13, 15 ], [ 12, 16 ], [ 12, 16 ], 
+  [ 9, 11, 13, 15 ] ]
+gap> Union(decsp);
+[ 9, 10, 11, 12, 13, 14, 15, 16 ]
+gap> decsm := List(stabelm,elm->Filtered([-16..-9],n->n^elm>n));
+[ [ -15, -13, -11, -9 ], [ -16, -12 ], [ -16, -12 ], [ -15, -11 ], 
+  [ -16, -14, -12, -10 ], [ -15, -11 ], [ -15, -11 ], 
+  [ -16, -14, -12, -10 ], [ -16, -14, -12, -10 ], [ -15, -11 ] ]
+gap> Union(decsm);
+[ -16, -15, -14, -13, -12, -11, -10, -9 ]
+gap> S := [2];;
+gap> for elm in stabelm do S := Union(S,S^elm,S^(elm^-1)); od;
+gap> IsSubset(S,Difference([-8..8],[0,1]));
+true
+]]>
+</Example>
+
+At this point we have established 3-transitivity.
+It remains to check that the group <M>G</M> does not act 4-transitively.
+We do this by checking that it is not transitive on 4-tuples (mod&nbsp;4).
+Since <M>n</M>&nbsp;mod&nbsp;8 determines the image of <M>n</M> under
+a generator of <M>G</M> (mod&nbsp;4), it suffices to compute (mod&nbsp;8):
+
+<Example>
+<![CDATA[
+gap> orb := [[0,1,2,3]];;
+gap> extend := function ()
+>      local gen;
+>      for gen in gens do
+>        orb := Union(orb,List(orb,l->List(l,n->n^gen) mod 8));
+>      od;
+>    end;;
+gap> repeat
+>      old := ShallowCopy(orb);
+>      extend(); Print(Length(orb),"\n");
+>    until orb = old;
+7
+27
+97
+279
+573
+916
+1185
+1313
+1341
+1344
+1344
+gap> Length(Set(List(orb,l->l mod 4)));
+120
+gap> last < 4^4;
+true
+]]>
+</Example>
+
+This shows that <M>G</M> acts not 4-transitively on&nbsp;&ZZ;.
+The corresponding calculation for 3-tuples looks as follows:
+
+<Example>
+<![CDATA[
+gap> orb := [[0,1,2]];;
+gap> repeat
+>      old := ShallowCopy(orb);
+>      extend(); Print(Length(orb),"\n");
+>    until orb = old;
+7
+27
+84
+207
+363
+459
+503
+512
+512
+gap> Length(Set(List(orb,l->l mod 4)));
+64
+gap> last = 4^3;
+true
+]]>
+</Example>
+
+Needless to say that the latter kind of argumentation is not suitable
+for proving, but only for disproving <M>k</M>-transitivity. 
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:GrigorchukGroups">
+<Heading>
+  Finite quotients of Grigorchuk groups
+</Heading>
+
+In this section, we show how to construct finite quotients of the two
+infinite periodic groups introduced by Rostislav Grigorchuk
+in&nbsp;<Cite Key="Grigorchuk80"/> with the help of &RCWA;.
+
+The first of these, nowadays known as <Q>Grigorchuk group</Q>, is
+investigated in an example given on the &GAP; website -- see
+<URL>http://www.gap-system.org/Doc/Examples/grigorchuk.html</URL>.
+
+The &RCWA; package permits a simpler and more elegant construction
+of the finite quotients of this group: The function <C>TopElement</C>
+given on the mentioned webpage gets unnecessary, and the function
+<C>SequenceElement</C> can be simplified as follows:
+
+<Listing>
+<![CDATA[
+SequenceElement := function ( r, level )
+
+  return Permutation(Product(Filtered([1..level-1],k->k mod 3 <> r),
+                             k->ClassTransposition(    2^(k-1)-1,2^(k+1),
+                                                   2^k+2^(k-1)-1,2^(k+1))),
+                     [0..2^level-1]);
+end;
+]]>
+</Listing>
+
+The actual constructors for the generators are modified as follows:
+
+<Listing>
+<![CDATA[
+a := level -> Permutation(ClassTransposition(0,2,1,2),[0..2^level-1]);
+b := level -> SequenceElement(0,level);
+c := level -> SequenceElement(2,level);
+d := level -> SequenceElement(1,level);
+]]>
+</Listing>
+
+All computations given on the webpage can now be done just as with the
+<Q>original</Q> construction of the quotients of the Grigorchuk group.
+In the sequel, we construct finite quotients of the second group introduced
+in&nbsp;<Cite Key="Grigorchuk80"/>:
+
+<Example>
+<![CDATA[
+gap> FourCycle := RcwaMapping((4,5,6,7),[4..7]);
+<bijective rcwa mapping of Z with modulus 4, of order 4>
+gap> GrigorchukGroup2Generator := function ( level )
+>      if level = 1 then return FourCycle; else
+>        return   Restriction(FourCycle, RcwaMapping([[4,1,1]]))
+>               * Restriction(FourCycle, RcwaMapping([[4,3,1]]))
+>               * Restriction(GrigorchukGroup2Generator(level-1),
+>                             RcwaMapping([[4,0,1]]));
+>      fi;
+>    end;;
+gap> GrigorchukGroup2 := level -> Group(FourCycle,
+>                                       GrigorchukGroup2Generator(level));;
+]]>
+</Example>
+
+We can do similar things as shown in the example on the &GAP; webpage
+for the <Q>first</Q> Grigorchuk group:
+
+<Example>
+<![CDATA[
+gap> G := List([1..4],lev->GrigorchukGroup2(lev)); # The first 4 quotients.
+[ <rcwa group over Z with 2 generators>, 
+  <rcwa group over Z with 2 generators>, 
+  <rcwa group over Z with 2 generators>, 
+  <rcwa group over Z with 2 generators> ]
+gap> H := List([1..4],lev->Action(G[lev],[0..4^lev-1])); # Isom. perm.-gps.
+[ Group([ (1,2,3,4), (1,2,3,4) ]), 
+  Group([ (1,2,3,4)(5,6,7,8)(9,10,11,12)(13,14,15,16), 
+      (1,5,9,13)(2,6,10,14)(4,8,12,16) ]), 
+  <permutation group with 2 generators>, 
+  <permutation group with 2 generators> ]
+gap> List(H,Size);
+[ 4, 1024, 4294967296, 1329227995784915872903807060280344576 ]
+gap> List(last,n->Collected(Factors(n)));
+[ [ [ 2, 2 ] ], [ [ 2, 10 ] ], [ [ 2, 32 ] ], [ [ 2, 120 ] ] ]
+gap> List(H,NilpotencyClassOfGroup);      
+[ 1, 6, 14, 40 ]
+]]>
+</Example>
+
+Issue <C>UnwrapExample("GrigorchukQuotients");</C>
+to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:ForwardOrbit">
+<Heading>
+  Forward orbits of a monoid with 2 generators
+</Heading>
+
+The <M>3n+1</M> Conjecture asserts that the forward orbit of any positive
+integer under the Collatz mapping <M>T</M> contains&nbsp;1. In contrast,
+it seems likely that <Q>most</Q> trajectories of the two mappings
+<Alt Only="LaTeX">
+  <Display>
+  <![CDATA[
+    T_5^\pm: \ \mathbb{Z} \longrightarrow \mathbb{Z}, \ \ \ \
+    n \ \longmapsto \
+    \begin{cases}
+      \frac{n}{2}        & \text{if} \ n \ \text{even}, \\
+      \frac{5n \pm 1}{2} & \text{if} \ n \ \text{odd}
+    \end{cases}
+  ]]>
+  </Display>
+</Alt>
+<Alt Only="HTML"><![CDATA[<center>
+  <img src = "t5pm.png" width = "372" height = "61"
+       alt = "T5+/-: Z -> Z, n |-> (n/2 if n even, (5n+/-1)/2 if n odd)" />
+</center>]]></Alt>
+<Alt Only="Text"><Verb><![CDATA[
+                                       /
+                                      | n/2          if n even,
+          T_5+/-:  Z -> Z,   n  |->  <
+                                      | (5n +/- 1)/2 if n odd
+                                       \
+]]></Verb></Alt>
+diverge.
+However we can show by means of computation that the forward orbit of any
+positive integer under the action of the monoid generated by the two
+mappings <M>T_5^-</M> and&nbsp;<M>T_5^+</M> indeed contains&nbsp;1.
+First of all, we enter the generators:
+
+<Example>
+<![CDATA[
+gap> T5m := RcwaMapping([[1,0,2],[5,-1,2]]);;
+gap> T5p := RcwaMapping([[1,0,2],[5, 1,2]]);;
+]]>
+</Example>
+
+We look for a number <M>k</M> such that for any residue class <M>r(2^k)</M>
+there is a product&nbsp;<M>f</M> of <M>k</M>&nbsp;mappings <M>T_5^\pm</M>
+whose restriction to <M>r(2^k)</M> is given by <M>n \mapsto (an+b)/c</M>
+where <M>c>a</M>:
+
+<Example>
+<![CDATA[
+gap> k := 1;;
+gap> repeat
+>      maps := List(Tuples([T5m,T5p],k),Product);
+>      decr := List(maps,DecreasingOn);
+>      decreasable := Union(decr);
+>      Print(k,": "); View(decreasable); Print("\n");
+>      k := k + 1;
+>    until decreasable = Integers;
+1: 0(2)
+2: 0(4)
+3: Z \ 1(8) U 7(8)
+4: 0(4) U 3(16) U 6(16) U 10(16) U 13(16)
+5: Z \ 7(32) U 25(32)
+6: <union of 48 residue classes (mod 64)>
+7: Integers
+]]>
+</Example>
+
+Thus <M>k=7</M> serves our purposes.
+To be sure that for any positive integer <M>n</M> our monoid contains
+a mapping <M>f</M> such that <M>n^f&lt;n</M>, we still need to check this
+condition for <Q>small</Q>&nbsp;<M>n</M>. Since in case <M>c>a</M> we have
+<M>(an+b)/c \geq n</M> if only if <M>n \leq b/(c-a)</M>, we only need to
+check those <M>n</M> which are not larger than the largest coefficient
+<M>b_{r(m)}</M> occuring in any of the products under consideration:
+
+<Example>
+<![CDATA[
+gap> maxb := Maximum(List(maps,f->Maximum(List(Coefficients(f),t->t[2]))));
+25999
+gap> small := Filtered([1..maxb],n->ForAll(maps,f->n^f>=n));
+[ 1, 7, 9, 11 ]
+]]>
+</Example>
+
+This means that except of&nbsp;1, only for <M>n \in \{{7,9,11\}}</M> there
+is no product of 7 mappings <M>T_5^\pm</M> which maps <M>n</M> to a smaller
+integer. We check that also the forward orbits of these three integers
+contain&nbsp;1 by successively computing preimages of&nbsp;1: 
+
+<Example>
+<![CDATA[
+gap> S := [1];; k := 0;;
+gap> repeat
+>      S := Union(S,PreImage(T5m,S),PreImage(T5p,S));
+>      k := k+1;
+>    until IsSubset(S,small);
+gap> k;
+17
+]]>
+</Example>
+
+Issue <C>UnwrapExample("CollatzMapping");</C>
+to assign the global variables defined in this example.
+
+</Section>
+
+<!-- #################################################################### -->
+
+<Section Label="sec:F2andPSL2Z">
+<Heading>
+  The free group of rank 2 and the modular group PSL(2,&ZZ;)
+</Heading>
+
+The free group of rank&nbsp;2 embeds into RCWA(&ZZ;) -- in fact it embeds
+even in the subgroup which is generated by all class transpositions.
+An explicit embedding can be constructed by transferring the construction
+of the so-called <Q>Schottky groups</Q> (cf.&nbsp;<Cite Key="LaHarpe00"/>,
+page&nbsp;27) from PSL(2,&CC;) to RCWA(&ZZ;)
+(we use the notation from the cited book):
+
+<Example>
+<![CDATA[
+gap> D := AllResidueClassesModulo(4);
+[ 0(4), 1(4), 2(4), 3(4) ]
+gap> gamma1 := RepresentativeAction(RCWA(Integers),
+>                                   Difference(Integers,D[1]),D[2]);;
+gap> gamma2 := RepresentativeAction(RCWA(Integers),
+>                                   Difference(Integers,D[3]),D[4]);;
+gap> F2 := Group(gamma1,gamma2);
+<rcwa group over Z with 2 generators>
+]]>
+</Example>
+
+We can do some checks:
+
+<Example>
+<![CDATA[
+gap> X1 := Union(D{[1,2]});; X2 := Union(D{[3,4]});;
+gap>     IsSubset(X1,X2^gamma1) and IsSubset(X1,X2^(gamma1^-1))
+>    and IsSubset(X2,X1^gamma2) and IsSubset(X2,X1^(gamma2^-1));
+true
+]]>
+</Example>
+
+The generators are products of 3 class transpositions, each:
+
+<Example>
+<![CDATA[
+gap> Factorization(gamma1);
+[ ClassTransposition(0,2,1,2), ClassTransposition(3,4,5,8),
+  ClassTransposition(0,2,1,8) ]
+gap> Factorization(gamma2);
+[ ClassTransposition(0,2,1,2), ClassTransposition(1,4,7,8),
+  ClassTransposition(0,2,3,8) ]
+]]>
+</Example>
+
+The above construction is used by <Ref Attr="IsomorphismRcwaGroup"
+Label="for a group"/> to embed free groups of any rank&nbsp;<M>\geq 2</M>.
+<P/>
+
+We give another only slightly different representation of the free group
+of rank&nbsp;2. We verify that it really is one by applying the
+so-called <E>Table-Tennis Lemma</E> (see e.g.&nbsp;<Cite Key="LaHarpe00"/>,
+Section&nbsp;II.B.) to the infinite cyclic groups generated by the two
+generators and to the same two sets <C>X1</C> and <C>X2</C> as above:
+
+<Example>
+<![CDATA[
+gap> r1 := ClassTransposition(0,2,1,2)*ClassTransposition(0,2,1,4);;
+gap> r2 := ClassTransposition(0,2,1,2)*ClassTransposition(0,2,3,4);;
+gap> F2 := Group(r1^2,r2^2);;
+gap> List(GeneratorsOfGroup(F2),IsTame);
+[ false, false ]
+gap>     IsSubset(X1,X2^F2.1) and IsSubset(X1,X2^(F2.1^-1))
+>    and IsSubset(X2,X1^F2.2) and IsSubset(X2,X1^(F2.2^-1));
+true
+gap> [Sources(r1),Sinks(r1),Loops(r1)]; # compare with X1
+[ [ 0(4) ], [ 1(4) ], [ 0(4), 1(4) ] ]
+gap> [Sources(r2),Sinks(r2),Loops(r2)]; # compare with X2
+[ [ 2(4) ], [ 3(4) ], [ 2(4), 3(4) ] ]
+gap>    IsSubset(X1,Union(Sinks(r1))) and IsSubset(X1,Union(Sinks(r1^-1)))
+>   and IsSubset(X2,Union(Sinks(r2))) and IsSubset(X2,Union(Sinks(r2^-1)));
+true
+gap> IsSubset(Union(Sinks(r1)),X2^F2.1) and
+>    IsSubset(Union(Sinks(r1^-1)),X2^(F2.1^-1));
+true
+gap> IsSubset(Union(Sinks(r2)),X1^F2.2) and
+>    IsSubset(Union(Sinks(r2^-1)),X1^(F2.2^-1));
+true
+]]>
+</Example>
+
+Drawing the transition graphs of <C>r1</C> and <C>r2</C> for modulus&nbsp;4
+may help to understand what is actually done in this calculation.
+It is easy to see that the group generated by <C>r1</C> and&nbsp;<C>r2</C>
+is <E>not</E> free:
+
+<Example>
+<![CDATA[
+gap> Order(r1/r2);
+3
+]]>
+</Example>
+
+The modular group PSL(2,&ZZ;) embeds into CT(&ZZ;) as well.
+We give an embedding, and check that it really is one by applying
+the Table Tennis Lemma as above:
+
+<Example>
+<![CDATA[
+gap> PSL2Z := 
+>      Group(ClassTransposition(0,3,1,3) * ClassTransposition(0,3,2,3),
+>            ClassTransposition(1,3,0,6) * ClassTransposition(2,3,3,6));;
+gap> List(GeneratorsOfGroup(PSL2Z),Order);
+[ 3, 2 ]
+gap> X1 := Difference(Integers,ResidueClass(0,3));
+Z \ 0(3)
+gap> X2 := ResidueClass(0,3);
+0(3)
+gap> IsSubset(X1,X2^PSL2Z.1) and IsSubset(X1,X2^(PSL2Z.1^2));
+true
+gap> IsSubset(X2,X1^PSL2Z.2);
+true
+]]>
+</Example>
+
+A slightly different representation of PSL(2,&ZZ;) can be obtained by using
+&RCWA;'s general method for <C>IsomorphismRcwaGroup</C> for free products of
+finite groups:
+
+<Example>
+<![CDATA[
+gap> G := Image(IsomorphismRcwaGroup(FreeProduct(CyclicGroup(3),
+>                                                CyclicGroup(2))));
+<wild rcwa group over Z with 2 generators>
+gap> List(GeneratorsOfGroup(G),Factorization);
+[ [ ClassTransposition(0,4,2,4), ClassTransposition(1,2,0,4) ],
+  [ ClassTransposition(0,2,1,2) ] ]
+]]>
+</Example>
+
+Issue <C>UnwrapExample("F2_PSL2Z");</C>
+to assign the global variables defined in this example.
+
+<Alt Only="HTML">&nbsp;</Alt>
+
+</Section>
+
+<!-- #################################################################### -->
+
+</Chapter>
+
+<!-- #################################################################### -->

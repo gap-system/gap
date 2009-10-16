@@ -1,0 +1,29 @@
+#Example: "3gp-a-x-Rel-i" . . . based on: examples/3gpA
+#(exponent 9 group with 2 generators of order 3, extended)
+#vars: F, rels, procId;
+#options: OutputLevel1, OutputLevel2, OutputLevel3, OutputFile
+F := FreeGroup("a", "b");
+rels := ["a^3", "b^3"];
+procId := PqStart(F : Prime := 3, Exponent := 9, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel1>
+PqPcPresentation(procId : ClassBound := 4, 
+#sub <OutputLevel1> for <1> if set and ok
+                          OutputLevel := 1);;
+#comment: set a different print level by supplying <OutputLevel2>
+#sub <OutputLevel2> for <2> if set and ok
+PqDisplayPcPresentation(procId : OutputLevel := 2);;
+PqNextClass(procId);;
+#comment: set a different print level by supplying <OutputLevel3>
+#sub <OutputLevel3> for <1> if set and ok
+PqSetOutputLevel(procId, 1);;
+PqSetupTablesForNextClass(procId);;
+PqTails(procId, 0);;
+PqDoConsistencyChecks(procId, 0, 0);;
+PqCollectDefiningRelations(procId);;
+PqDoExponentChecks(procId);;
+PqEliminateRedundantGenerators(procId);;
+#sub <OutputLevel2> for <2> if set and ok
+PqDisplayPcPresentation(procId : OutputLevel := 2);;
+#comment: save the presentation to a different file by supplying <OutputFile>
+#sub <OutputFile> for <ANUPQData.outfile> if set and ok
+PqSavePcPresentation(procId, ANUPQData.outfile);;

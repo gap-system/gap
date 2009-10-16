@@ -2,7 +2,7 @@
 ##
 #W  ctblmaps.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblmaps.gi,v 4.48 2008/08/20 15:05:32 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -19,10 +19,7 @@
 ##  6. Subroutines for the Construction of Class Fusions
 ##
 Revision.ctblmaps_gi :=
-    "@(#)$Id$";
-
-
-#T UpdateMap: assertions for returned `true' in the library occurrences
+    "@(#)$Id: ctblmaps.gi,v 4.48 2008/08/20 15:05:32 gap Exp $";
 
 
 #############################################################################
@@ -278,6 +275,7 @@ InstallMethod( PossiblePowerMaps,
     function( ordtbl, prime, arec )
     local chars,          # list of characters to be used
           decompose,      # boolean: is decomposition of characters allowed?
+          useorders,      # boolean: use element orders information?
           approxpowermap, # known approximation of the power map
           quick,          # boolean: immediately return if the map is unique?
           maxamb,         # entry in parameters record
@@ -311,6 +309,12 @@ InstallMethod( PossiblePowerMaps,
       decompose:= arec.decompose;
     fi;
 
+    if IsBound( arec.useorders ) then
+      useorders:= arec.useorders;
+    else
+      useorders:= true;
+    fi;
+
     if IsBound( arec.powermap ) then
       approxpowermap:= arec.powermap;
     else
@@ -330,7 +334,7 @@ InstallMethod( PossiblePowerMaps,
     fi;
 
     # Initialize the parametrized map.
-    powermap:= InitPowerMap( ordtbl, prime );
+    powermap:= InitPowerMap( ordtbl, prime, useorders );
     if powermap = fail then
       Info( InfoCharacterTable, 2,
             "PossiblePowerMaps: no initialization possible" );
@@ -1128,7 +1132,10 @@ InstallGlobalFunction( StoreFusion, function( source, fusion, destination )
 
     # The fusion is new, add it.
     Add( ComputedClassFusions( source ), Immutable( fusion ) );
-    Add( NamesOfFusionSources( destination ), Identifier( source ) );
+    source:= Identifier( source );
+    if not source in NamesOfFusionSources( destination ) then
+      Add( NamesOfFusionSources( destination ), source );
+    fi;
 end );
 
 
@@ -1424,15 +1431,15 @@ InstallMethod( PossibleClassFusions,
                                   quick:= quick ) ) );
     od;
 
-    if    HasAutomorphismsOfTable( subtbl )
-       or IsCharacterTable( subtbl ) then
-      subtaut:= AutomorphismsOfTable( subtbl );
-    else
-      subtaut:= GroupByGenerators( [], () );
+    subtaut:= GroupByGenerators( [], () );
+    if 1 < Length( subgroupfusions ) then
+      if    HasAutomorphismsOfTable( subtbl )
+         or IsCharacterTable( subtbl ) then
+        subtaut:= AutomorphismsOfTable( subtbl );
+      fi;
+      subgroupfusions:= RepresentativesFusions( subtaut, subgroupfusions,
+                            Group( () ) );
     fi;
-#T would not be needed if there is just one possibility!!
-    subgroupfusions:= RepresentativesFusions( subtaut, subgroupfusions,
-                          Group( () ) );
 
     if verify or 1 < Length( subgroupfusions ) then
 
@@ -1780,14 +1787,11 @@ end );
 
 
 #############################################################################
-## 
-#M  Indirected( <character>, <paramap> )
 ##
-InstallMethod( Indirected,
-    [ IsList, IsList ],
-    function( character, paramap )
+#F  Indirected( <character>, <paramap> )
+##
+InstallGlobalFunction( Indirected, function( character, paramap )
     local i, imagelist, indirected;
-
     indirected:= [];
     for i in [ 1 .. Length( paramap ) ] do
       if IsInt( paramap[i] ) then
@@ -1802,7 +1806,7 @@ InstallMethod( Indirected,
       fi;
     od;
     return indirected;
-    end );
+end );
 
 
 #############################################################################
@@ -2878,10 +2882,11 @@ end );
 
 #############################################################################
 ##
-#F  InitPowerMap( <tbl>, <prime> )
+#F  InitPowerMap( <tbl>, <prime>[, <useorders>] )
 ##
-InstallGlobalFunction( InitPowerMap, function( tbl, prime )
-    local i, j, k,        # loop variables
+InstallGlobalFunction( InitPowerMap, function( arg )
+    local tbl, prime, useorders,
+          i, j, k,        # loop variables
           powermap,       # power map for prime `prime', result
           centralizers,   # centralizer orders of `tbl'
           nccl,           # number of conjugacy classes of `tbl'
@@ -2889,32 +2894,34 @@ InstallGlobalFunction( InitPowerMap, function( tbl, prime )
           sameord;        # contains at position <i> the list of those
                           # classes that (may) have representative order <i>
 
+    tbl:= arg[1];
+    prime:= arg[2];
+    if IsBound( arg[3] ) then
+      useorders:= arg[3];
+    else
+      useorders:= true;
+    fi;
     powermap:= [];
     centralizers:= SizesCentralizers( tbl );
     nccl:= Length( centralizers );
 
-    if IsCharacterTable( tbl ) or HasOrdersClassRepresentatives( tbl ) then
+    if useorders and ( IsCharacterTable( tbl )
+                       or HasOrdersClassRepresentatives( tbl ) ) then
 
       # Both element orders and centralizer orders are available.
       # Construct the list `sameord'.
-
       orders:= OrdersClassRepresentatives( tbl );
       sameord:= [];
 
       for i in [ 1 .. Length( orders ) ] do
-
         if IsInt( orders[i] ) then
-
           if IsBound( sameord[ orders[i] ] ) then
             AddSet( sameord[ orders[i] ], i );
           else
             sameord[ orders[i] ]:= [ i ];
           fi;
-
         else
-
           # parametrized orders
-
           for j in orders[i] do
             if IsBound( sameord[j] ) then
               AddSet( sameord[j], i );
@@ -2922,9 +2929,7 @@ InstallGlobalFunction( InitPowerMap, function( tbl, prime )
               sameord[j]:= [ i ];
             fi;
           od;
-
         fi;
-
       od;
 
       for i in [ 1 .. nccl ] do
@@ -3043,8 +3048,6 @@ InstallGlobalFunction( InitPowerMap, function( tbl, prime )
     if ( IsInt( powermap[1] ) and powermap[1] <> 1 ) or
        ( IsList( powermap[1] ) and not 1 in powermap[1] ) then
       Print( "#E InitPowerMap: class 1 cannot contain the identity\n" );
-#T ??
-#T assert ?
       return fail;
     fi;
     powermap[1]:= 1;

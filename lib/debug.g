@@ -3,7 +3,7 @@
 #W  debug.g                      GAP library                    Thomas Breuer
 #W                                                          & Max Neunhoeffer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: debug.g,v 1.4 2005/08/23 08:36:52 gap Exp $
 ##
 #Y  Copyright (C)  2003,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2003 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  than vim.
 ##
 Revision.debug_g :=
-    "@(#)$Id$";
+    "@(#)$Id: debug.g,v 1.4 2005/08/23 08:36:52 gap Exp $";
 
 BindGlobal( "DEBUG", rec() );
 DEBUG.debugvim_txt:= Filename( DirectoriesLibrary( "etc" ), "debugvim.txt" );

@@ -3,8 +3,9 @@
 *W  costab.c                    GAP source                       Frank Celler
 *W                                                           & Volkmar Felsch
 *W                                                         & Martin Schoenert
+*W                                                         & Alexander Hulpke
 **
-*H  @(#)$Id$
+*H  @(#)$Id: costab.c,v 4.43 2006/03/15 23:22:24 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +16,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_costab_c =
-   "@(#)$Id$";
+   "@(#)$Id: costab.c,v 4.43 2006/03/15 23:22:24 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -2984,6 +2985,259 @@ Obj FuncAddAbelianRelator (
     return INTOBJ_INT( numrows );
 }
 
+/* new type functions that use different data structures */
+
+UInt ret1,ret2;
+
+UInt RelatorScan (
+  Obj t,
+  UInt di,
+  Obj r )
+{
+    UInt  m,i,p,a,j;
+    UInt  pa=0,pb=0;
+    UInt * rp;
+    rp=(UInt*)ADDR_OBJ(r);
+    m=rp[1]; /* length is in position 1 */
+    i=2;
+    p=di;
+    while ((p!=0) && (i<=(m+1))){
+      a=rp[i];
+      pa=p;
+      p=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,a),p));
+      if (p!=0) i++;
+    }
+
+    if (i>(m+1)) {
+      if (p==di) 
+        return 1;
+      else
+        return 0;
+    }
+
+    /*  backwards scan */
+    j=m+1;
+    p=di;
+    while ((p!=0) && (j>=i)) {
+      /* a=INT_INTOBJ(ELM_PLIST(invtab,INT_INTOBJ(ELM_PLIST(r,j))));*/
+
+      a=rp[j];
+      if ((a%2)==1)
+        a++;
+      else
+        a--;
+      pb=p;
+      p=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,a),p));
+      if (p!=0) j--;
+    }
+
+    if (j<i) {
+      if (p==pa) 
+        return 1;
+      else
+        return 0;
+    }
+    else {
+      if (j==i) {
+	a=rp[i];
+	if ((a%2)==0) {
+	  p=a-1;
+	  ret1=pb;
+	  ret2=p;
+	}
+	else {
+	  p=a+1;
+	  ret1=pa;
+	  ret2=a;
+	}
+	SET_ELM_PLIST(ELM_PLIST(t,a),pa,INTOBJ_INT(pb));
+	SET_ELM_PLIST(ELM_PLIST(t,p),pb,INTOBJ_INT(pa));
+
+        return 2;
+      }
+      else
+        return 1;
+    }
+
+}
+
+/* data object type for the mangled relators */
+Obj TYPE_LOWINDEX_DATA;
+
+/****************************************************************************
+**
+*F  FuncLOWINDEX_COSET_SCAN( <t>,<r>,<s1>,<s2>)
+**
+*/
+Obj FuncLOWINDEX_COSET_SCAN (
+    Obj                 self,
+    Obj                 t,              /* table */
+    Obj                 r,              /* relators */
+    Obj                 s1,             /* stack */
+    Obj                 s2 )            /* stack */
+{
+  UInt ok,i,j,d,e,x,y,l,sd;
+  Obj  rx;
+  UInt * s1a;
+  UInt * s2a;
+
+  ok=1;
+  j=1;
+  /* we convert stack entries to c-integers to avoid conversion */
+  sd=LEN_PLIST(s1);
+  s1a=(UInt*)ADDR_OBJ(s1);
+  s2a=(UInt*)ADDR_OBJ(s2);
+  s1a[1]=INT_INTOBJ(s1a[1]);
+  s2a[1]=INT_INTOBJ(s2a[1]);
+  while ((ok==1) && (j>0)) {
+    d=s1a[j];
+    x=s2a[j];
+    j--;
+    rx=ELM_PLIST(r,x);
+    l=LEN_PLIST(rx);
+    i=1;
+    while ((ok==1)&&(i<=l)) {
+      ok=RelatorScan(t,d,ELM_PLIST(rx,i));
+      if (ok==2) {
+	j++;
+	if (j>sd) {
+	  sd=2*sd;
+	  GROW_PLIST(s1,sd);
+	  SET_LEN_PLIST(s1,sd);
+	  CHANGED_BAG(s1);
+	  GROW_PLIST(s2,sd);
+	  SET_LEN_PLIST(s2,sd);
+	  CHANGED_BAG(s2);
+	  s1a=(UInt*)ADDR_OBJ(s1);
+	  s2a=(UInt*)ADDR_OBJ(s2);
+	}
+	s1a[j]=ret1;
+	s2a[j]=ret2;
+        ok=1;
+      }
+      i++;
+    }
+
+    e=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,x),d));
+    y=x+1;
+    rx=ELM_PLIST(r,y);
+    i=1;
+    while ((ok==1)&&(i<=l)) {
+      ok=RelatorScan(t,e,ELM_PLIST(rx,i));
+      if (ok==2) {
+	j++;
+	if (j>sd) {
+	  sd=2*sd;
+	  GROW_PLIST(s1,sd);
+	  GROW_PLIST(s2,sd);
+	  s1a=(UInt*)ADDR_OBJ(s1);
+	  s2a=(UInt*)ADDR_OBJ(s2);
+	}
+	s1a[j]=ret1;
+	s2a[j]=ret2;
+        ok=1;
+      }
+      i++;
+    }
+  }
+  /* clean up the mess we made */
+  for (i=1;i<=sd;i++) {
+    s1a[i]=(Int)INTOBJ_INT(0);
+    s2a[i]=(Int)INTOBJ_INT(0);
+  }
+  if (ok==1)
+    return True;
+  else
+    return False;
+}
+
+/****************************************************************************
+**
+*F  FuncLOWINDEX_IS_FIRST( <t>,<n>,<mu>,<nu>)
+**
+*/
+Obj FuncLOWINDEX_IS_FIRST (
+    Obj                 self,
+    Obj                 t,              /* table */
+    Obj                 nobj,              /* relators */
+    Obj                 muo,             /* stack */
+    Obj                 nuo )            /* stack */
+{
+  UInt l,ok,b,g,ga,de,a,n,mm;
+  UInt * mu;
+  UInt * nu;
+
+  mm=LEN_PLIST(t)-1;
+  n=INT_INTOBJ(nobj);
+  mu=(UInt*)ADDR_OBJ(muo);
+  nu=(UInt*)ADDR_OBJ(nuo);
+  for (b=1;b<=n;nu[b++]=0);
+  l=0;
+  for (a=2;a<=n;a++) {
+    for (b=1;b<=l;nu[mu[b++]]=0);
+    mu[1]=a;
+    nu[a]=1;
+    l=1;
+    ok=1;
+    b=1;
+    while ((ok==1) && (b<=n)) {
+      g=1;
+      while ((ok==1)&&(g<=mm)) {
+	ga=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),b));
+	de=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),mu[b]));
+	if ((ga==0)||(de==0)) 
+	  ok=0;
+	else {
+	  if (nu[de]==0) {
+	    l++;
+	    mu[l]=de;
+	    nu[de]=l;
+	  }
+	  if (nu[de]<ga) 
+	    return False;
+	  else {
+	    if (nu[de]>ga) {
+	      ok=0;
+	    }
+	  }
+	}
+	g=g+2;
+      }
+      b=b+1;
+    }
+  }
+  return True;
+}
+
+/****************************************************************************
+**
+*F  FuncLOWINDEX_PREPARE_RELS( <rels> )
+**
+*/
+Obj FuncLOWINDEX_PREPARE_RELS (
+    Obj                 self,
+    Obj                 r )             /* rels */
+{
+   UInt i,j,k,l;
+   Obj ri, rel;
+   UInt * rp;
+
+   for (i=1;i<=LEN_PLIST(r);i++) {
+    ri=ELM_PLIST(r,i);
+    for (j=1;j<=LEN_PLIST(ri);j++) {
+      rel=ELM_PLIST(ri,j); /* single relator */
+      l=LEN_PLIST(rel);
+      rp=(UInt*)ADDR_OBJ(rel);
+      for (k=1;k<=l;k++) 
+	rp[k]=INT_INTOBJ(rp[k]); /* convert relator entries to C-integers */
+      /* change type */
+      TYPE_DATOBJ(rel) = TYPE_LOWINDEX_DATA;
+      RetypeBag(rel,T_DATOBJ);
+
+    }
+   }
+   return (Obj) 0;
+}
 
 /****************************************************************************
 **
@@ -3031,6 +3285,15 @@ static StructGVarFunc GVarFuncs [] = {
     { "AddAbelianRelator", 2, "rels, number",
       FuncAddAbelianRelator, "src/costab.c:AddAbelianRelator" },
 
+    { "LOWINDEX_COSET_SCAN", 4, "table, relators, stack1,stack2",
+      FuncLOWINDEX_COSET_SCAN, "src/costab.c:LOWINDEX_COSET_SCAN" },
+
+    { "LOWINDEX_IS_FIRST", 4, "table, n, mu, nu",
+      FuncLOWINDEX_IS_FIRST, "src/costab.c:LOWINDEX_IS_FIRST" },
+
+    { "LOWINDEX_PREPARE_RELS", 1, "rels",
+      FuncLOWINDEX_PREPARE_RELS, "src/costab.c:LOWINDEX_PREPARE_RELS" },
+
     { 0 }
 
 };
@@ -3046,6 +3309,9 @@ static Int InitKernel (
 {
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* import kind (and unkind) functions */
+    ImportGVarFromLibrary( "TYPE_LOWINDEX_DATA",&TYPE_LOWINDEX_DATA     );
 
     /* static variables                                                    */
     InitGlobalBag( &objRel      , "src/costab.c:objRel"       );

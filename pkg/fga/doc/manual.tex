@@ -1,0 +1,101 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                FGA documentation         Christian Sievers
+%%
+%H  $Id: manual.tex,v 1.3 2005/05/04 12:23:51 gap Exp $
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapmacro . . . . . . . . . . . . . . . . . read the GAP macro package
+%%
+\input ../../../doc/gapmacro
+\Package{FGA}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{FGA}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../doc/ref}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont FGA}\bigskip
+  \centerline{\subtitlefont Free Group Algorithms}
+  \bigskip\bigskip\bigskip
+  \centerline{\subtitlefont A GAP4 Package}\bigskip\bigskip
+%  \centerline{\secfont Version 0.9}
+  \vfill
+  \centerline{\secfont by}\vfill
+  \centerline{\secfont Christian Sievers}\medskip
+  \centerline{Fachbereich Mathematik und Informatik}
+  \centerline{Institut Computational Mathematics}
+  \medskip
+  \centerline{TU Braunschweig}\medskip
+  \centerline{Pockelsstr. 14}
+  \centerline{D-38106 Braunschweig}
+% \medskip
+% \centerline{email: c.sievers@tu-bs.de}
+  \vfill
+  \centerline{\secfont{\Month} \Year}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\OneColumnTableOfContents     %since it's very short
+%\TableOfContents             %use instead if ToC is longer than a column
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter 
+%%
+\FrontMatter
+%
+\immediate\write\citeout{\bs bibdata{./manual,../../../doc/manual}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters 
+%%
+\Chapters
+\Input{intro}
+\Input{FGA}
+\Input{install}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices 
+%%
+\Appendices
+%\Input{hints}
+\Bibliography
+\Index
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex	. . . . . . . . . . . . . . . . . . . . . . . . ends here

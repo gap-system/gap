@@ -3,7 +3,7 @@
 #W  solmxgrp.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: solmxgrp.gi,v 4.16 2002/04/15 10:05:22 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -24,7 +24,7 @@
 ##       p-group" is too long and hence should be rewritten.
 ##
 Revision.solmxgrp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: solmxgrp.gi,v 4.16 2002/04/15 10:05:22 sal Exp $";
 
 # InfoChain already declared.
 #DeclareInfoClass("InfoChain");

@@ -1,0 +1,120 @@
+\Chapter{Differences to XGAP 3}
+
+This rather short chapter is intended for the user who knows {\XGAP} 3 well
+and quickly wants to know what has changed. So it covers mainly those
+parts, where existing code using {\XGAP} has to be changed. For the totally 
+new features and packages there are only a few references to the other
+parts of the documentation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Concept}
+
+There are two main changes in the concept. The first is the migration to
+{\GAP4} with all the bells and whistles like object oriented design with
+operations, methods and method selection via filters. {\XGAP4} is rewritten 
+nearly totally with these technologies. This should make the reusage of
+code in the future easier. One can now use big parts of the code of {\XGAP}
+for own structures by just replacing some methods via overloading.
+
+The second change is that there is no longer any mathematical ``knowledge''
+or algorithm in {\XGAP}. It is now only a front end and a graphical user
+interface. All code for finitely presented groups resides now in the {\GAP}
+library. This is a much cleaner concept and should make the management of
+the source code easier. At the same time {\XGAP} has become a much more
+generic program. Operations for subgroups are for example no longer hard
+wired into {\XGAP} case by case but there is generic code which can be
+adapted just by hacking a few tables.
+
+These generalizations made some sacrifices necessary, because {\XGAP} does
+no longer know anything about the mathematics it is displaying. It may for
+example happen that {\XGAP} does no longer adapt its behaviour to the
+amount of data that is known about some finitely presented groups. The
+reason for this is, that the generic poset routines cannot know that the
+vertices stand for groups at all. So sometimes one has to trigger the
+comparison of subgroups of finitely presented groups manually (see section
+"Compare Subgroups" for a description how to do this).
+
+In the old {\GAP3} version of {\XGAP} there were three different programs
+for the full subgroup lattice of a (finite) group (`GraphicLattice'), the
+interactive partial subgroup lattice of a finite group
+(`InteractiveLattice') and the interactive partial subgroup lattice of a
+finitely presented group (`InteractiveFpLattice') respectively. Now there
+is only one generic program to display subgroup lattices interactively
+(`GraphicSubgroupLattice').
+
+{\XGAP} can now handle subgroups of infinite index. They are either
+placed in a ``finite size'' level or in an ``infinity'' level. See
+"levelsintro" for details.
+
+A new logging facility allows to automatically produce a protocol of
+the actions the user performs via mouse clicks. This is convenient
+because the normal {\GAP} command script contains no useful
+information about the selected entries in the menus. See
+"loggingfacility" for details.
+
+There is a new layer to display generic posets that do not have to be
+subgroup lattices. It can be used to display posets interactively very
+easily. This is for example used in the new link to the C-MeatAxe written
+by Michael Ringe. The code for this link is also included in {\XGAP4}.
+
+Code for the display of graphic graphs is planned but not yet completed.
+
+The user of {\XGAP} should not realize much of those changes (except of
+course the name of the function to display a subgroup lattice). The
+programmer on the other hand has to get used to the new techniques. It was
+not in all places possible to achieve total compatibility for existing
+code. Some changes also were introduced deliberately to make the
+programmers adapt their programs to the new situation!
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{User Interface}
+
+Some menu entries have been moved to new places, mainly because of the
+division of generic poset code and specialized code for graphic subgroup
+lattices. There are some new features and nearly all old features have made 
+it into the new version.
+
+The handling of the mouse is unchanged. However the introduction of levels
+gives the user new possibilities.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Where code has to be changed}
+
+All {\GAP} objects corresponding to graphic sheets and graphic objects are
+no longer records but component objects. This means that the programmer can 
+no longer mess around in the data structures. If you want to add new
+fields, then you have to use inheritance and define new categories. This
+means also that the (internal) data structures of sheets has changed
+massively. Programs that try to access record components of old {\XGAP}
+structures will no longer work!
+
+The operation `InstallGSMethod' is no longer present. It is replaced by the 
+``callback'' mechanism with the operations `InstallCallback',
+`RemoveCallback' and `Callback' (see "GraphicSheet" for details). This
+means, that mouse events are handled differently. This was changed
+deliberately because there is a big difference: In {\XGAP4} you can install 
+more than one function for one type of mouse event. All such callback
+functions are called one after the other. There was only one graphic sheet
+method for each event in {\XGAP3}. So you can *not* just change the name of 
+the operation to install the callback. You have to think about this
+difference! 
+
+See the section "Operations for Graphic Objects" for an overview
+which operations exist now for which graphic objects. The main difference
+is the introduction of `Revive', `ViewObj' and `WindowId' together with the 
+concept of the `IsAlive' filter.
+
+There was a bug in {\XGAP3} in the creation of menus: If an entry starts
+with a minus sign, it will become a separating line instead of a real menu
+entry. This disturbed the numbering of the menu entries, such that `Enable' 
+and `Check' did not work on the correct entry. This bug is fixed in
+{\XGAP4} so code which contained a workaround for this bug has to be
+changed. `Enable' and `Check' behave now like expected and documented in
+"Enable" and "Check".
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

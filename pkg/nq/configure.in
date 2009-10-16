@@ -1,0 +1,76 @@
+dnl ##
+dnl ## Process this file with autoconf to produce a configure script.
+dnl ## 
+AC_INIT(configure)
+
+AC_CONFIG_AUX_DIR(cnf)
+
+AC_CONFIG_HEADER(src/config.h:src/config.hin)
+
+dnl ##
+dnl ## C is the language 
+dnl ##
+AC_LANG_C
+
+dnl ##
+dnl ## determine the system name
+dnl ##
+AC_CANONICAL_SYSTEM
+
+dnl ##
+dnl ## Is there a way to determine the GAP root directory?
+dnl ## Which C-compiler is used? Export the result to the Makefile. On
+dnl ## some systems, the C-compiler name is a path name, so we have to
+dnl ## strip off the directory component.
+dnl ##
+AC_PROG_CC
+BASECC=`basename ${CC}`
+AC_SUBST(BASECC)
+
+dnl ##
+dnl ## Checks for programs.
+dnl ##
+
+dnl ##
+dnl ## Checks for header files.
+dnl ##
+AC_CHECK_HEADERS(sys/time.h)
+
+AC_CHECK_HEADER( gmp.h, HAVE_GMP_INC=true, HAVE_GMP_INC=false)
+if test $HAVE_GMP_INC = false; then
+   echo ""; 
+   echo "    Warning: cannot locate the GNU MP include file gmp.h.";
+   echo "    Find the directory containing  gmp.h  and when you";
+   echo "    run make add the argument GNU_MP_INC=<gnu-mp-dir>.";
+   echo ""
+fi
+
+dnl ##
+dnl ## Checks for existence of GMP libraries and include files.
+dnl ## The first check is for GMP 4, the second for GMP 3 or earlier. 
+dnl ##
+AC_CHECK_LIB( gmp, __gmpz_init, HAVE_GMP=true, HAVE_GMP=false)
+if test $HAVE_GMP = false; then
+   AC_CHECK_LIB( gmp, mpz_out_str, HAVE_GMP=true, HAVE_GMP=false)
+fi;
+if test $HAVE_GMP = false; then
+   echo ""; 
+   echo "    Warning: cannot locate the GNU MP library libgmp.a.";
+   echo "    Find the directory containing  libgmp.a  and when you run";
+   echo "    make add the argument GNU_MP_LIB=<gnu-mp-dir>.";
+   echo ""
+fi
+
+dnl ##
+dnl ## Checks for typedefs, structures, and compiler characteristics.
+dnl ##
+
+dnl ##
+dnl ## Checks for library functions.
+dnl ##
+AC_TYPE_SIGNAL
+AC_CHECK_FUNCS(gethostname)
+AC_CHECK_FUNCS(getrusage)
+
+AC_OUTPUT(Makefile)
+

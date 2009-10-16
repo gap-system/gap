@@ -2,7 +2,7 @@
 **
 *W  records.h                   GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: records.h,v 4.9 2002/04/15 10:03:56 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_records_h =
-   "@(#)$Id$";
+   "@(#)$Id: records.h,v 4.9 2002/04/15 10:03:56 sal Exp $";
 #endif
 
 

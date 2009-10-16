@@ -2,7 +2,7 @@
 ##
 #W  ffeconway.gi               GAP library                       Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ffeconway.gi,v 4.20 2008/08/13 08:43:38 sal Exp $
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
@@ -10,7 +10,7 @@
 ##  coefficients of polynomials modulo the Conway polynomial.
 ##
 Revision.ffeconway_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ffeconway.gi,v 4.20 2008/08/13 08:43:38 sal Exp $";
 
 #############################################################################
 ##
@@ -1634,7 +1634,7 @@ InstallMethod( Display,
     od;
     for dr in d do
         for s in dr do
-            Print(FormattedString(s,-w-1));
+            Print(String(s,-w-1));
         od;
         Print("\n");
     od;
@@ -1670,3 +1670,5 @@ FFECONWAY.WriteOverSmallestCommonField := function(v)
     return p^d;
 end;
         
+
+SetNamesForFunctionsInRecord("FFECONWAY");

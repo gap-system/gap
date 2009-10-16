@@ -1,6 +1,0 @@
-This archive contains all deposited package contributions (as of the release
-date of this version of GAP), that make use of the `RequirePackage' mechanism,
-but are not yet accepted GAP packages. As with the accepted GAP packages
-archive, you should extract it in the `pkg' directory. See
-http://www.gap-system.org/Info4/deposit.html#pkg
-for more details about such user contributions.

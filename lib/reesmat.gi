@@ -1,9 +1,8 @@
-
 #############################################################################
 ##
 #W  reesmat.gi           GAP library         Andrew Solomon and Isabel Araujo
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: reesmat.gi,v 4.24 2006/11/14 16:13:13 jamesm Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +11,7 @@
 ##  This file contains the implementation of Rees matrix semigroups.
 ##
 Revision.reesmat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: reesmat.gi,v 4.24 2006/11/14 16:13:13 jamesm Exp $";
 
 #JDM: make a NC version of ReesMatrixSemigroup and ReesZeroMatrixSemigroup
 
@@ -89,39 +88,40 @@ end);
 ##
 InstallGlobalFunction(ReesZeroMatrixSemigroupElement,
 function(R, i, a, lambda)
-	local
-				S, 				# The underlying semigroup
-				elt;			# the newly created element
+  local S, elt;
 
-	# Check that R is a Rees Matrix semigroup
-	if not IsReesZeroMatrixSemigroup(R) then
-		Error("ReesZeroMatrixSemigroupElement - first argument must be a Rees Matrix semigroup");
-	fi;
-
-	S  := UnderlyingSemigroupOfReesZeroMatrixSemigroup(R);
-	# check that <a> is in the underlying semigroup
-	if not a in S then
-		 Error("ReesZeroMatrixSemigroupElement - second argument must be in underlying semigroup");
+  if not IsReesZeroMatrixSemigroup(R) then
+    Error("ReesZeroMatrixSemigroupElement - first argument must be a Rees Matrix semigroup");
+  fi;
+  
+  S  := UnderlyingSemigroupOfReesZeroMatrixSemigroup(R);
+  # check that <a> is in the underlying semigroup
+  if not a in S then
+    Error("ReesZeroMatrixSemigroupElement - second argument must be in underlying semigroup");
   fi;
 
-	# check that <i> and <lambda> are in the correct range
-	if not (i in [1 .. RowsOfReesZeroMatrixSemigroup(R)] and
-		lambda in [1 .. ColumnsOfReesZeroMatrixSemigroup(R)]) then
-			Error("ReesZeroMatrixSemigroupElement -  indices out of range");
-	fi;
+  # check that <i> and <lambda> are in the correct range
+  if not (i in [1 .. RowsOfReesZeroMatrixSemigroup(R)] and
+    lambda in [1 .. ColumnsOfReesZeroMatrixSemigroup(R)]) then
+    Error("ReesZeroMatrixSemigroupElement -  indices out of range");
+  fi;
 
-	# The arguments are sensible. Create the element.
-	if IsMultiplicativeZero(S,a) then
-		# has the zero already been created?
-		if HasMultiplicativeZero(R) then
-			return MultiplicativeZero(R);
-		else
-			# need to get the elements family from the whole semigroup
-			elt := Objectify(FamilyObj(R)!.wholeSemigroup!.eType, rec());
-			SetReesZeroMatrixSemigroupElementIsZero(elt, true);
-			SetMultiplicativeZero(R, elt);
-			return elt;
-		fi;
+  # The arguments are sensible. Create the element.
+  if a=MultiplicativeZero(S) then
+    # has the zero already been created?
+    return MultiplicativeZero(S);		
+
+#JDM I think that MultiplicativeZero is or should be set when 
+#JDM the RMZS is created so that the following can't occur...
+#if HasMultiplicativeZero(R) then
+#			return MultiplicativeZero(R);
+#		else
+# need to get the elements family from the whole semigroup
+#			elt := Objectify(FamilyObj(R)!.wholeSemigroup!.eType, rec());
+#			SetReesZeroMatrixSemigroupElementIsZero(elt, true);
+#			SetMultiplicativeZero(R, elt);
+#			return elt;
+#		fi;
 	else
     	elt := Objectify(FamilyObj(R)!.wholeSemigroup!.eType, rec());
 		SetReesZeroMatrixSemigroupElementIsZero(elt, false);
@@ -442,7 +442,7 @@ end);
 ##  and (b; j, mu) is (aM_{lambda,j}b; i, mu)
 ##  where M is the sandwich matrix
 ##
-## JDM
+## 
 InstallMethod(\*,
 "for two elements of a Rees matrix semigroup",
 IsIdenticalObj,
@@ -530,7 +530,7 @@ function(x, y)
 		return  MultiplicativeZero(R);
 	fi;
 
-	#JDM
+#JDM
 #	return ReesZeroMatrixSemigroupElement(R, c, i, mu);
 #
 
@@ -987,7 +987,7 @@ InstallMethod( Enumerator, "for a Rees zero matrix semigroup",
 end );
 
 
-#JDM: the functions from here on down need to be rechecked/written.
+#JDM: the functions from here on down need to be rechecked.
 
 ############################################################################
 ##

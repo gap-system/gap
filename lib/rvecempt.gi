@@ -2,14 +2,14 @@
 ##
 #W  rvecempt.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rvecempt.gi,v 4.10 2002/04/15 10:05:15 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.rvecempt_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rvecempt.gi,v 4.10 2002/04/15 10:05:15 sal Exp $";
 
 
 #############################################################################

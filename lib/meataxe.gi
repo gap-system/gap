@@ -4,7 +4,7 @@
 #W                                                                 Sarah Rees
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$ 
+#H  @(#)$Id: meataxe.gi,v 4.78 2009/03/27 10:09:10 gap Exp $ 
 ##
 #Y  Copyright 1994 -- School of Mathematical Sciences, ANU   
 #Y  (C) 1998-2001 School Math. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  standard MeatAxe interface.  It defines the MeatAxe SMTX.
 ##
 Revision.meataxe_gi:=
-  "@(#)$Id$";
+  "@(#)$Id: meataxe.gi,v 4.78 2009/03/27 10:09:10 gap Exp $";
 
 InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;
@@ -345,24 +345,22 @@ end;
 SMTX.OrthogonalVector:=SMTX_OrthogonalVector;
 
 SubGModLeadPos:=function(sub,dim,subdim,zero)
-local leadpos,cfleadpos,i,j,k;
+local leadpos,i,j,k;
    ## As in SpinnedBasis, leadpos[i] gives the position of the first nonzero 
    ## entry (which will always be 1) of sub[i].
 
    leadpos:=[];
-   cfleadpos:=[];
-   for i in [1..dim] do cfleadpos[i]:=0; od;
    for i in [1..subdim] do
       j:=1;
       while j <= dim and sub[i][j]=zero do j:=j + 1; od;
-      leadpos[i]:=j; cfleadpos[j]:=1;
+      leadpos[i]:=j;
       for k in [1..i - 1] do
          if leadpos[k] = j then
             Error ("Subbasis isn't normed.");
          fi;
       od;
    od;
-  return [leadpos,cfleadpos];
+  return leadpos;
 end;
 
 #############################################################################
@@ -412,7 +410,6 @@ SMTX_SpinnedBasis:=function ( arg  )
    dim:=Length(ans[1]);
    subdim:=Length(ans);
    leadpos:=SubGModLeadPos(ans,dim,subdim,zero);
-   leadpos:=leadpos[1];
      
    i:=1;
    while i <= subdim do
@@ -609,6 +606,91 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
    fi;
 
    return erg;
+end;
+
+SMTX_SubQuotActions:=function(matrices,sub,dim,subdim,F,typ)
+local s, c, q, leadpos, zero, zerov, smatrices, newg, im, newim, k, subi,
+      qmats, smats, nmats, sr, qr, g, h, erg, i, j;
+
+  s:=(typ mod 2)=1; # subspace indicator
+  typ:=QuoInt(typ,2);
+  q:=(typ mod 2)=1; # quotient indicator
+  c:=typ>1; # common indicator
+
+  zero:=Zero(F);
+  leadpos:=SubGModLeadPos(sub,dim,subdim,zero);
+
+  if subdim*2<dim and not (q or c) then
+    # the subspace dimension is small and we only want the subspace action:
+    # performing a base change is too expensive
+
+    zerov:=ListWithIdenticalEntries(subdim,zero);
+    ConvertToVectorRep(zerov,F);
+
+    smatrices:=[];
+    for g in matrices do
+      newg:=[]; 
+      for i in [1..subdim] do
+	im:=ShallowCopy(sub[i] * g);
+	newim:=ShallowCopy(zerov);
+	for j in [1..subdim] do
+	  k:=im[leadpos[j]];
+	  if k<> zero then
+	    newim[j]:=k;
+	    AddRowVector(im,sub[j],-k);
+	  fi;
+	od;
+
+	# Check that the vector is now zero - if not, then sub was 
+	# not the basis of a submodule 
+	if im <> Zero(im) then return fail; fi;
+	Add (newg, newim);
+      od;
+      Add(smatrices,ImmutableMatrix(F,newg));
+    od;
+    return rec(smatrices:=smatrices);
+  else
+    # we want the quotient or all or the subspace dimension is big enough to
+    # merit a basechange
+
+    # first extend the basis
+    sub:=ShallowCopy(sub);
+    Append(sub,One(matrices[1]){Difference([1..dim],leadpos)});
+    sub:=ImmutableMatrix(F,sub);
+    subi:=sub^-1;
+    qmats:=[];
+    smats:=[];
+    nmats:=[];
+    sr:=[1..subdim];qr:=[subdim+1..dim];
+    for g in matrices do
+      g:=sub*g*subi;
+      if s then 
+	h:=g{sr}{sr};
+	h:=ImmutableMatrix(F,h);
+	Add(smats,h);
+      fi;
+      if q then 
+	h:=g{qr}{qr};
+	h:=ImmutableMatrix(F,h);
+	Add(qmats,h);
+      fi;
+      if c then Add(nmats,g);fi;
+    od;
+    erg:=rec();
+    if s then
+      erg.smatrices:=smats;
+    fi;
+    if q then
+      erg.qmatrices:=qmats;
+    fi;
+    if c then
+      erg.nmatrices:=nmats;
+    fi;
+    if q or c then
+      erg.nbasis:=sub;
+    fi; 
+    return erg;
+  fi;
 end;
 
 
@@ -983,7 +1065,7 @@ SMTX.SMCoRaEl:=SMTX_SMCoRaEl;
 # how many random elements should we try before (temporarily ) giving up?
 # This number is set relatively high to minimize the chance of an unlucky
 # random run in functions such as composition series computation. 
-SMTX.RAND_ELM_LIMIT:=500; 
+SMTX.RAND_ELM_LIMIT:=5000; 
 
 #############################################################################
 ##
@@ -1994,6 +2076,7 @@ SMTX.FieldGenCentMat:=function ( module )
     # Finally recalculate centmat and its minimal polynomial.
     centmat:=SMTX.CentMat (module);
     newcentmat:=Value (genpol, centmat,centmat^0);
+    ConvertToMatrixRep(newcentmat,q);
     SMTX.SetFGCentMat (module, newcentmat);
     SMTX.SetFGCentMatMinPoly(module,MinimalPolynomialMatrixNC(F,newcentmat,1));
     # Ugh! That was very inefficient - should work out the min poly using
@@ -2491,9 +2574,11 @@ SMTX_IsomorphismComp:=function (module1, module2, action)
 end;
 SMTX.IsomorphismComp:=SMTX_IsomorphismComp;
 
-SMTX.Isomorphism:=function(module1,module2)
+SMTX.IsomorphismIrred:=function(module1,module2)
   return SMTX.IsomorphismComp(module1,module2,true);
 end;
+
+SMTX.Isomorphism:=SMTX.IsomorphismIrred;
 
 SMTX.IsEquivalent:=function(module1,module2)
   return SMTX.IsomorphismComp(module1,module2,false)<>fail;
@@ -2504,20 +2589,11 @@ end;
 #F  SMTX.MatrixSum (matrices1, matrices2) direct sum of two lists of matrices
 ##
 SMTX_MatrixSum:=function (matrices1, matrices2) 
-   local dim, dim1, dim2, matrices, zero, nmats, i, j, k;
-   dim1:=Length (matrices1[1]); dim2:=Length (matrices2[1]);
-   dim:=dim1 + dim2;
-   zero:=0*matrices1[1][1][1];
+   local matrices, nmats, i;
    matrices:=[];
    nmats:=Length (matrices1);
    for i in [1..nmats] do
-      matrices[i]:=NullMat (dim, dim, zero);
-      for j in [1..dim1] do for k in [1..dim1] do
-         matrices[i][j][k]:=matrices1[i][j][k];
-      od; od;
-      for j in [1..dim2] do for k in [1..dim2] do
-         matrices[i][j + dim1][k + dim1]:=matrices2[i][j][k];
-      od; od;
+      matrices[i]:=DirectSumMat(matrices1[i],matrices2[i]);
    od;
 
    return  matrices;
@@ -3132,8 +3208,7 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin,F;
 	                  List(k,i->LinearCombinationVecs(fb,i)));
 	TriangulizeMat(sq);
 	sq:=ImmutableMatrix(F,sq);
-#T      Assert(2,SMTX.InducedAction(m,sq)<>fail);
-#T InducedAction runs into an error if the assertion is executed!
+	Assert(2,SMTX.InducedAction(m,sq)<>fail);
 	if not sq in neu then
           Info(InfoMeatAxe,2,"submodule dimension ",Length(sq));
 	  Add(neu,sq);
@@ -3341,7 +3416,6 @@ SMTX_BasisInOrbit:=function ( module  )
    normedans:=[v];
    subdim:=1;
    leadpos:=SubGModLeadPos(ans,dim,subdim,zero);
-   leadpos:=leadpos[1];
      
    i:=1;
    while i <= subdim do
@@ -3402,7 +3476,7 @@ SMTX_InvariantBilinearForm:=function ( module  )
      return module.InvariantBilinearForm; 
    fi;
    DM:=SMTX.DualModule(module);
-   iso:=MTX.Isomorphism(module,DM);
+   iso:=MTX.IsomorphismIrred(module,DM);
    if iso = fail then 
        SMTX.SetInvariantBilinearForm(module, fail);
        return fail; 
@@ -3464,7 +3538,7 @@ SMTX_InvariantSesquilinearForm:=function ( module  )
      return module.InvariantSesquilinearForm; 
    fi;
    DM:=SMTX.TwistedDualModule(module);
-   iso:=MTX.Isomorphism(module,DM);
+   iso:=MTX.IsomorphismIrred(module,DM);
    if iso = fail then 
        SMTX.SetInvariantSesquilinearForm(module, fail);
        return fail; 

@@ -1,0 +1,105 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  gappkg.msk                GAP documentation             Werner Nickel -->
+<!-- %W                                                       Alexander Hulpke -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: gappkg.msk,v 1.18 2004/01/26 10:09:20 gap Exp </M> -->
+<!-- %% -->
+<P/>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="GAP Packages">
+<Heading>GAP Packages</Heading>
+
+<Index>package</Index>
+The  functionality  of  &GAP;  can  be  extended  by  loading  &GAP;
+packages. Many packages are distributed  together with the core system
+of &GAP; consisting of the &GAP;  kernel, the &GAP; library and the
+various data libraries.
+<P/>
+&GAP; packages are written by (groups  of) &GAP; users which may not
+be  members  of the  &GAP;  developer  team. The  responsibility  and
+copyright of a &GAP; package remains with the original author(s).
+<P/>
+&GAP;  packages  have  their  own  documentation  which  is  smoothly
+integrated into the &GAP; help system.
+<P/>
+All  &GAP;  users   who  develop  new  code  are   invited  to  share
+the  results  of their  efforts  with  other  &GAP; users  by  making
+the  code  and its  documentation  available  in  form of  a  package.
+Information how  to do  this is  available from  the &GAP;  Web pages
+(<URL>http://www.gap-system.org</URL>)
+and in Chapter <Ref Chap="Writing a GAP Package"/>.
+There  are  possibilities  to get  a  package  distributed together  with
+&GAP;  and it  is possible  to submit  a package  to a formal refereeing
+process.
+<P/>
+In this Chapter we describe how to use existing packages.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Installing a GAP Package">
+<Heading>Installing a GAP Package</Heading>
+
+Before a  package can be  used it must  be installed. With  a standard
+installation of  &GAP; there should  be quite a few  packages already
+available. But since &GAP; packages are released independently of the
+main  &GAP; system  it  may be  sensible to  upgrade  or install  new
+packages between  upgrades of your &GAP; installation.
+<P/>
+A package consists of a collection  of files within a single directory
+that must  be a subdirectory of  the <F>pkg</F>  directory   in one  of the
+&GAP; root directories, see <Ref Sect="GAP Root Directory"/>. (If you don't
+have access  to the <F>pkg</F>  directory in your main  &GAP; installation
+you can add private root directories as explained in that section.)
+<P/>
+Whenever  you  get from  somewhere  an  archive  of a  &GAP;  package
+it  should be  accompanied  with  a <F>README</F>  file  that explains  its
+installation.  Some packages  just  consist  of  &GAP;  code and  the
+installation  is  done  by  unpacking   the  archive  in  one  of  the
+places  described above.  There are  also packages  that need  further
+installation steps,  there may be  for example some  external programs
+which  have  to  be  compiled  (this is  often  done  by  just  saying
+<C>./configure; make</C>  inside the unpacked package  directory, but check
+the individual <F>README</F> files).
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Loading a GAP Package">
+<Heading>Loading a GAP Package</Heading>
+
+<Index>automatic loading of GAP packages</Index>
+<Index>disable automatic loading</Index>
+Some &GAP; packages are prepared for <E>automatic loading</E>,
+that is they will be loaded automatically with &GAP;,
+others must in each case be separately loaded by a call to
+<Ref Func="LoadPackage"/>.
+
+<#Include Label="LoadPackage">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Functions for GAP Packages">
+<Heading>Functions for GAP Packages</Heading>
+
+The  following functions  are  mainly  used in  files  contained in  a
+package and not by users of a package.
+
+<#Include Label="ReadPackage">
+<#Include Label="TestPackageAvailability">
+<#Include Label="InstalledPackageVersion">
+<#Include Label="DirectoriesPackageLibrary">
+<#Include Label="DirectoriesPackagePrograms">
+<#Include Label="CompareVersionNumbers">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

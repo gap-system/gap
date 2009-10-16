@@ -1,0 +1,10 @@
+
+
+This directory contains the GAPDoc source files needed to produce
+the manual of Slal. The files are
+
+      * slal.xml   (the xml file, contains almost everything),
+
+The manual can be produced in GAP (when GAPDoc is loaded) with the command
+
+    gap> MakeGAPDocDoc( ".", "slal",  [], "slal" );;

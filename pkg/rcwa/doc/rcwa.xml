@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE Book SYSTEM "../../gapdoc/gapdoc.dtd"
+ [ <!ENTITY GAP "<Package>GAP</Package>">
+   <!ENTITY RCWA "<Package>RCWA</Package>">
+   <!ENTITY ResClasses "<Package>ResClasses</Package>">
+ ]>
+<?LaTeX ExtraPreamble="
+\usepackage{amsfonts}
+\usepackage{amsxtra}
+"?>
+
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  rcwa.xml           RCWA documentation            Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: rcwa.xml,v 1.108 2008/03/04 15:37:06 stefan Exp $        ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Book Name="RCWA"> 
+
+<!-- #################################################################### -->
+
+<TitlePage>
+  <Title>&RCWA;</Title>
+  <Subtitle>Residue-Class-Wise Affine Groups</Subtitle>
+  <Version>
+    Version <#Include SYSTEM "../version">
+  </Version>
+  <Author>
+    Stefan Kohl
+    <Email>kohl@mathematik.uni-stuttgart.de</Email>
+    <Homepage>
+      http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/
+    </Homepage>
+    <Address>
+       Institut für Geometrie und Topologie <Br/>
+       Pfaffenwaldring 57 <Br/>
+       Universität Stuttgart <Br/>
+       70550 Stuttgart <Br/>
+       Germany
+    </Address>
+  </Author>
+  <Date>September 26, 2007</Date>
+  <Copyright>
+    &copyright; 2003 - 2007 by Stefan Kohl.
+    This package is distributed under the GNU General Public License.
+    <Alt Only="LaTeX">\vspace{-1cm}</Alt>
+  </Copyright>
+  <#Include SYSTEM "abstract.xml">
+  <Acknowledgements>
+    I am very grateful to Bettina&nbsp;Eick for communicating this package
+    and for her kind help in improving its documentation.
+    Further I thank the two anonymous referees for their
+    constructive criticism and their helpful suggestions. <P/>
+
+    I am also very grateful to Laurent Bartholdi for his hint on how
+    to construct wreath products of residue-class-wise affine groups
+    with&nbsp;(&ZZ;,+). Last but not least I thank all the people who
+    have invited me so far to give talks on the subject in their seminars
+    and on their conferences.
+  </Acknowledgements>
+</TitlePage>
+
+<!-- #################################################################### -->
+
+<TableOfContents/>
+
+<!-- #################################################################### -->
+
+<Body>
+
+<#Include SYSTEM "about.xml">
+<#Include SYSTEM "rcwamap.xml">
+<#Include SYSTEM "rcwagrp.xml">
+<#Include SYSTEM "rcwamono.xml">
+<#Include SYSTEM "zxz.xml">
+<#Include SYSTEM "examples.xml">
+<#Include SYSTEM "algs.xml">
+<#Include SYSTEM "rcwaaux.xml">
+
+</Body>
+
+<!-- #################################################################### -->
+
+<Bibliography Databases="rcwabib.xml"/>
+
+<TheIndex/>
+
+<!-- #################################################################### -->
+
+</Book>
+
+<!-- #################################################################### -->

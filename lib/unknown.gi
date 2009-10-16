@@ -2,7 +2,7 @@
 ##
 #W  unknown.gi                 GAP Library                   Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: unknown.gi,v 4.9 2002/04/15 10:05:25 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -26,7 +26,7 @@
 ##  because the unknown could stand for 0.
 ##
 Revision.unknown_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: unknown.gi,v 4.9 2002/04/15 10:05:25 sal Exp $";
 
 
 #############################################################################

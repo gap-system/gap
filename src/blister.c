@@ -3,7 +3,7 @@
 *W  blister.c                   GAP source                       Frank Celler
 *W                                                         & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: blister.c,v 4.59 2009/03/13 19:00:08 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -73,7 +73,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_blister_c =
-   "@(#)$Id$";
+   "@(#)$Id: blister.c,v 4.59 2009/03/13 19:00:08 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -738,23 +738,26 @@ void AssBlistImm (
 **  only positive integers, that <poss> and <vals>  have the same length, and
 **  that <vals> is dense.
 **
-**  'AsssBlist' is the function in 'AsssListFuncs' for boolean lists.
+**  'AsssBlist' is intended as function in 'AsssListFuncs' for boolean lists.
+**  Note that currently, we use AsssListDefault instead. This ensures 
+**  automatically that <list> remains a blist if possible.
 **
-**  'AsssBlist' simply converts  the boolean list   to a plain  list and then
-**  does the same stuff  as 'AsssPlist'.  This is   because a boolean is  not
-**  very likely to stay a boolean list after the assignment.
 */
-void AsssBlist (
+void AsssBlist (     /*  currently not used */
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
 {
-    /* convert <list> to a plain list                                      */
-    PLAIN_LIST(list);
-    CLEAR_FILTS_LIST(list);
+   Int   i, len, pos;
+   Obj   val;
 
-    /* and delegate                                                        */
-    ASSS_LIST( list, poss, vals );
+   len = LEN_LIST(poss);
+   for (i=1; i <= len; i++) {
+      /* use generic macros because list might be unpacked */
+      pos = INT_INTOBJ(ELMW_LIST(poss, i));
+      val = ELMW_LIST(vals, i);
+      ASS_LIST( list, pos, val);
+    }
 }
 
 
@@ -2711,7 +2714,7 @@ static Int InitKernel (
         ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsBlist;
         AssListFuncs    [ t1            ] = AssBlist;
         AssListFuncs    [ t1 +IMMUTABLE ] = AssBlistImm;
-        AsssListFuncs   [ t1            ] = AsssBlist;
+        AsssListFuncs   [ t1            ] = AsssListDefault;
         AsssListFuncs   [ t1 +IMMUTABLE ] = AsssBlistImm;
         IsDenseListFuncs[ t1            ] = IsDenseBlist;
         IsDenseListFuncs[ t1 +IMMUTABLE ] = IsDenseBlist;

@@ -1,0 +1,9 @@
+This directory contains sample input files illustrating  
+the construction of the standard pcp of a p-group.
+
+All contain presentations supplied using "key word" format.
+To execute the contents of  "file", use the following command
+
+pq -i -k < file
+
+Note the use of -k to specify the use of "key word" format.

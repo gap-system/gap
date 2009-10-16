@@ -1,7 +1,7 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
+##  $Id: checkout,v 1.7 2005/06/10 09:28:30 gap Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'
@@ -33,21 +33,10 @@ fi
 echo 'Removing all .cvsignore files'
 find ${DISTNAME} -name .cvsignore -exec rm -f {} ";"
 
-# set the version
-echo 'Setting the version.'
-chmod 644 $DISTNAME/lib/system.g
-#rm -f $DISTNAME/lib/version.g
-#echo "VERSION := \"4.$FULLVERSION\";" > ${DISTNAME}/lib/version.g
-#echo "DATE := \"$DATE\";" >> ${DISTNAME}/lib/version.g
-
-sed "1,90s/4.dev/4.$FULLVERSION/g" ${DISTNAME}/lib/system.g > ${DISTNAME}/lib/vers2
-sed "1,90s/today/$DATE/g" ${DISTNAME}/lib/vers2 > ${DISTNAME}/lib/system.g
-rm -f ${DISTNAME}/lib/vers2
-
 # get the packages archive
 cd ${DISTROOT}
 
-wget -O pkgnow.tgz "${PKGLOC}"
+wget -O pkgnow.tgz ${PKGLOC}
 cd ${DISTROOT}/${DISTNAME}/pkg
 tar zxf ../../pkgnow.tgz
 

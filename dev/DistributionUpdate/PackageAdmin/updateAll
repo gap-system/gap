@@ -1,0 +1,28 @@
+#!/bin/sh
+
+mypath=`dirname  $0`/
+
+cd ${mypath}
+
+rm -f UPDATEALLLOG
+updatePackageInfoFiles > UPDATEALLLOG
+echo ======================================================================= >> UPDATEALLLOG
+updatePackageArchives >> UPDATEALLLOG
+echo ======================================================================= >> UPDATEALLLOG
+updatePackageDocs >> UPDATEALLLOG
+echo ======================================================================= >> UPDATEALLLOG
+writePackageWebInfos >> UPDATEALLLOG
+echo ======================================================================= >> UPDATEALLLOG
+
+if [ ""$1 != "" ]; then
+  mv UPDATEALLLOG UPDATEALLLOG1
+  grep -B1 ===== UPDATEALLLOG1 > UPDATEALLLOG
+  echo "" >> UPDATEALLLOG
+  echo "" >> UPDATEALLLOG
+  cat UPDATEALLLOG1 >> UPDATEALLLOG
+  rm -f UPDATEALLLOG1
+  mail -s "Package Update"  $1 < UPDATEALLLOG
+else
+  echo done
+fi
+

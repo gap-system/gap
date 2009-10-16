@@ -1,0 +1,8 @@
+Generators, general antiburgers: X Y T;
+Weights:                         1 1 1;
+Limiting weight: 6;
+Parameters: p_1 p_2 p_3 p_4 p_5;
+Relations:
+[[Y,X],X] + p_1 [Y,X] - p_3 Y;
+[[Y,X],Y] + [X,T] +  p_4 Y;
+p_2 [Y,X] + [T,Y] + p_5 Y;

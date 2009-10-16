@@ -2,7 +2,7 @@
 ##
 #W  mgmring.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mgmring.gi,v 4.60 2005/07/20 15:51:40 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,7 +17,7 @@
 ##  5. methods for groups of free magma ring elements
 ##
 Revision.mgmring_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: mgmring.gi,v 4.60 2005/07/20 15:51:40 gap Exp $";
 
 
 #T > Dear Craig,

@@ -1,0 +1,124 @@
+<html><head><title>[GUAVA] 1 About GUAVA</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>1 About GUAVA</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP001.htm#SECT001">Acknowledgements</a>
+<li> <A HREF="CHAP001.htm#SECT002">Installing GUAVA</a>
+<li> <A HREF="CHAP001.htm#SECT003">Loading GUAVA</a>
+</ol><p>
+<p>
+<a name = "I0"></a>
+
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font> is a <font face="Gill Sans,Helvetica,Arial">GAP</font>&nbsp;4  package for computing with codes. Except for
+the automorphism group and isomorphism testing functions, which make  use
+of J.S.&nbsp;Leon's partition backtrack programs, <font face="Gill Sans,Helvetica,Arial">GUAVA</font> is written  in  the
+<font face="Gill Sans,Helvetica,Arial">GAP</font> language. Several algorithms that need the speed  were  integrated
+in the <font face="Gill Sans,Helvetica,Arial">GAP</font> kernel. Please send your bug reports to the email  address:
+<a href="mailto:gap-trouble@dcs.st-and.ac.uk">gap-trouble@dcs.st-and.ac.uk</a>
+<p>
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font> is  primarily  designed for   the  construction and analysis  of
+codes.  The functions can be divided into three subcategories:
+<p>
+<p>
+<dl compact>
+<p>
+<dt><strong>Construction of codes</strong>:<dd>
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font>    can    construct    <strong>unrestricted</strong>,    <strong>linear</strong>  and  <strong>cyclic
+codes</strong>. Information about  the code is stored in  a record, together with
+operations applicable to the code.
+<p>
+<dt><strong>Manipulations of codes</strong>:<dd>
+Manipulation transforms  one code into  another, or constructs a new code
+from two  codes. The new code can  profit from the  data in the record of
+the old code(s), so in these cases calculation time decreases.
+<p>
+<dt><strong>Computations of information about codes</strong>:<dd>
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font> can calculate important data of codes very fast. The results are
+stored in the code record.
+<p>
+</dl>
+<p>
+<p>
+<h2><a name="SECT001">1.1 Acknowledgements</a></h2>
+<p><p>
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font> was written by Jasper Cramwinckel, Erik Roijackers, and Reinald
+Baart.  as a final project during their study of Mathematics at the Delft
+University of  Technology, department of Pure Mathematics,  and in Aachen,
+at Lehrstuhl D fuer Mathematik.
+<p>
+In version&nbsp;1.3, new functions were added by Eric Minkes, also from Delft
+University of Technology.
+<p>
+JC,ER and RB would like to  thank the <font face="Gill Sans,Helvetica,Arial">GAP</font> people at  the  RWTH Aachen for
+their support, A.E.&nbsp;Brouwer for his advice and J.&nbsp;Simonis for his
+supervision.
+<p>
+The <font face="Gill Sans,Helvetica,Arial">GAP</font>&nbsp;4 version of <font face="Gill Sans,Helvetica,Arial">GUAVA</font> was created by Lea Ruscio and is maintained
+by David Joyner. For further details, see the CHANGES file in the
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font> directory.
+<p>
+<p>
+<h2><a name="SECT002">1.2 Installing GUAVA</a></h2>
+<p><p>
+To install <font face="Gill Sans,Helvetica,Arial">GUAVA</font> (as a <font face="Gill Sans,Helvetica,Arial">GAP</font>4  Package) unpack the archive  file
+in a directory in the <code>pkg</code> hierarchy of your version of  <font face="Gill Sans,Helvetica,Arial">GAP</font>4.  (This
+might be the <code>pkg</code> directory of the <font face="Gill Sans,Helvetica,Arial">GAP</font>4 home directory; it is however
+also possible to keep an  additional  <code>pkg</code>  directory  in  your  private
+directories, see section <a href="badlink:ref:Installing a GAP Package in your home directory">Installing a GAP  Package  in  your  home directory</a> of the <font face="Gill Sans,Helvetica,Arial">GAP</font>4 reference manual  for  details  on  how  to  do
+this.)
+<p>
+After unpacking <font face="Gill Sans,Helvetica,Arial">GUAVA</font> the <font face="Gill Sans,Helvetica,Arial">GAP</font>-only part of <font face="Gill Sans,Helvetica,Arial">GUAVA</font>  is  installed.
+The parts of <font face="Gill Sans,Helvetica,Arial">GUAVA</font> depending on J.&nbsp;Leon's backtrack  programs  package
+(for  computing  automorphism  groups)  are  only  available  in  a  UNIX
+environment, where you should proceed as follows:
+<p>
+Go to the newly created <code>guava</code> directory and call  <code>./configure  </code><var>path</var><code></code>
+where <var>path</var> is the path to the <font face="Gill Sans,Helvetica,Arial">GAP</font> home directory. So for example, if
+you install the package in the main <code>pkg</code> directory call
+<p>
+<pre>
+./configure ../..
+</pre>
+<p>
+This will fetch the architecture type for which <font face="Gill Sans,Helvetica,Arial">GAP</font> has been  compiled
+last and create a <code>Makefile</code>. Now call
+<p>
+<pre>
+make
+</pre>
+<p>
+to compile the binary and to install it in the appropriate place.
+<p>
+This completes the installation of <font face="Gill Sans,Helvetica,Arial">GUAVA</font> for a single architecture. If
+you use this installation of <font face="Gill Sans,Helvetica,Arial">GUAVA</font> on different hardware platforms you
+will have to compile the binary for each  platform  separately.  This  is
+done by calling <code>configure</code> and <code>make</code> for the package  anew  immediately
+after compiling <font face="Gill Sans,Helvetica,Arial">GAP</font> itself for the respective  architecture.  If  your
+version of <font face="Gill Sans,Helvetica,Arial">GAP</font> is already compiled (and has last been compiled on  the
+same architecture) you do  not  need  to  compile  <font face="Gill Sans,Helvetica,Arial">GAP</font>  again;  it  is
+sufficient to call the <code>configure</code> script in the <font face="Gill Sans,Helvetica,Arial">GAP</font> home directory.
+<p>
+<p>
+<h2><a name="SECT003">1.3 Loading GUAVA</a></h2>
+<p><p>
+After starting up <font face="Gill Sans,Helvetica,Arial">GAP</font>, the  <font face="Gill Sans,Helvetica,Arial">GUAVA</font> package needs  to be loaded. Load
+<font face="Gill Sans,Helvetica,Arial">GUAVA</font> by typing at the <font face="Gill Sans,Helvetica,Arial">GAP</font> prompt:
+<p>
+<pre>
+gap&gt; LoadPackage("guava");
+</pre>
+<p>
+If <font face="Gill Sans,Helvetica,Arial">GUAVA</font> isn't  already  in memory,  it is  loaded and author information
+is displayed.
+<p>
+If you  are a frequent user of  <font face="Gill Sans,Helvetica,Arial">GUAVA</font>, you might consider putting this
+line in your <code>.gaprc</code> file.
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>GUAVA manual<br>April 2004
+</address></body></html>

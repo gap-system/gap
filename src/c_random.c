@@ -27,6 +27,7 @@ static Obj  NameFunc[4];
 static Obj  NamsFunc[4];
 static Int  NargFunc[4];
 static Obj  DefaultName;
+static Obj FileName;
 
 /* handler for function 2 */
 static Obj  HdlrFunc2 (
@@ -56,7 +57,7 @@ static Obj  HdlrFunc2 (
  t_3 = GC_R__N;
  CHECK_BOUND( t_3, "R_N" )
  t_2 = MOD( t_3, INTOBJ_INT(55) );
- C_SUM( t_1, t_2, INTOBJ_INT(1) )
+ C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  AssGVar( G_R__N, t_1 );
  
  /* R_X[R_N] := (R_X[R_N] + R_X[((R_N + 30) mod 55 + 1)]) mod R_228; */
@@ -75,12 +76,12 @@ static Obj  HdlrFunc2 (
  CHECK_BOUND( t_7, "R_X" )
  t_11 = GC_R__N;
  CHECK_BOUND( t_11, "R_N" )
- C_SUM( t_10, t_11, INTOBJ_INT(30) )
+ C_SUM_FIA( t_10, t_11, INTOBJ_INT(30) )
  t_9 = MOD( t_10, INTOBJ_INT(55) );
- C_SUM( t_8, t_9, INTOBJ_INT(1) )
+ C_SUM_FIA( t_8, t_9, INTOBJ_INT(1) )
  CHECK_INT_POS( t_8 )
  C_ELM_LIST_FPL( t_6, t_7, t_8 )
- C_SUM( t_4, t_5, t_6 )
+ C_SUM_FIA( t_4, t_5, t_6 )
  t_5 = GC_R__228;
  CHECK_BOUND( t_5, "R_228" )
  t_3 = MOD( t_4, t_5 );
@@ -97,12 +98,12 @@ static Obj  HdlrFunc2 (
  t_8 = GF_LEN__LIST;
  t_7 = CALL_1ARGS( t_8, a_list );
  CHECK_FUNC_RESULT( t_7 )
- C_PROD( t_5, t_6, t_7 )
+ C_PROD_FIA( t_5, t_6, t_7 )
  t_6 = GC_R__228;
  CHECK_BOUND( t_6, "R_228" )
  t_3 = CALL_2ARGS( t_4, t_5, t_6 );
  CHECK_FUNC_RESULT( t_3 )
- C_SUM( t_2, t_3, INTOBJ_INT(1) )
+ C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
  CHECK_INT_POS( t_2 )
  C_ELM_LIST_FPL( t_1, a_list, t_2 )
  RES_BRK_CURR_STAT();
@@ -168,8 +169,8 @@ static Obj  HdlrFunc3 (
   C_DIFF_INTOBJS( t_8, l_i, INTOBJ_INT(1) )
   CHECK_INT_POS( t_8 )
   C_ELM_LIST_FPL( t_6, t_7, t_8 )
-  C_PROD( t_5, INTOBJ_INT(1664525), t_6 )
-  C_SUM( t_4, t_5, INTOBJ_INT(1) )
+  C_PROD_FIA( t_5, INTOBJ_INT(1664525), t_6 )
+  C_SUM_FIA( t_4, t_5, INTOBJ_INT(1) )
   t_5 = GC_R__228;
   CHECK_BOUND( t_5, "R_228" )
   t_3 = MOD( t_4, t_5 );
@@ -188,7 +189,7 @@ static Obj  HdlrFunc3 (
   t_4 = GC_R__N;
   CHECK_BOUND( t_4, "R_N" )
   t_3 = MOD( t_4, INTOBJ_INT(55) );
-  C_SUM( t_2, t_3, INTOBJ_INT(1) )
+  C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
   AssGVar( G_R__N, t_2 );
   
   /* R_X[R_N] := (R_X[R_N] + R_X[((R_N + 30) mod 55 + 1)]) mod R_228; */
@@ -207,12 +208,12 @@ static Obj  HdlrFunc3 (
   CHECK_BOUND( t_8, "R_X" )
   t_12 = GC_R__N;
   CHECK_BOUND( t_12, "R_N" )
-  C_SUM( t_11, t_12, INTOBJ_INT(30) )
+  C_SUM_FIA( t_11, t_12, INTOBJ_INT(30) )
   t_10 = MOD( t_11, INTOBJ_INT(55) );
-  C_SUM( t_9, t_10, INTOBJ_INT(1) )
+  C_SUM_FIA( t_9, t_10, INTOBJ_INT(1) )
   CHECK_INT_POS( t_9 )
   C_ELM_LIST_FPL( t_7, t_8, t_9 )
-  C_SUM( t_5, t_6, t_7 )
+  C_SUM_FIA( t_5, t_6, t_7 )
   t_6 = GC_R__228;
   CHECK_BOUND( t_6, "R_228" )
   t_4 = MOD( t_5, t_6 );
@@ -247,10 +248,10 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.random_g := "@(#)$Id$"; */
+ /* Revision.random_g := "@(#)$Id: c_random.c,v 4.25 2009/03/25 11:42:47 gap Exp $"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 57, "@(#)$Id$" )
+ C_NEW_STRING( t_2, 53, "@(#)$Id: c_random.c,v 4.25 2009/03/25 11:42:47 gap Exp $" )
  ASS_REC( t_1, R_random__g, t_2 );
  
  /* R_N := 1; */
@@ -272,7 +273,10 @@ static Obj  HdlrFunc1 (
   end; */
  t_1 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_1 ) = CurrLVars;
- t_2 = NewBag( T_BODY, 0 );
+ t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_2) = INTOBJ_INT(27);
+ ENDLINE_BODY(t_2) = INTOBJ_INT(30);
+ FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( CurrLVars );
  AssGVar( G_RANDOM__LIST, t_1 );
@@ -292,7 +296,10 @@ static Obj  HdlrFunc1 (
   end; */
  t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_1 ) = CurrLVars;
- t_2 = NewBag( T_BODY, 0 );
+ t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_2) = INTOBJ_INT(34);
+ ENDLINE_BODY(t_2) = INTOBJ_INT(42);
+ FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( CurrLVars );
  AssGVar( G_RANDOM__SEED, t_1 );
@@ -337,13 +344,14 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "RANDOM_SEED", &GF_RANDOM__SEED );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(128778786)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(128778786)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](128778786)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(128778786)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](128778786)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(128778786)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](128778786)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(75217378)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(75217378)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(75217378)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](75217378)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(75217378)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](75217378)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(75217378)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](75217378)" );
  
  /* return success */
  return 0;
@@ -374,6 +382,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" )
+ C_NEW_STRING( FileName, 20, "GAPROOT/lib/random.g" )
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
@@ -388,7 +397,7 @@ static Int InitLibrary ( StructInitInfo * module )
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
  ENVI_FUNC( func1 ) = CurrLVars;
  CHANGED_BAG( CurrLVars );
- body1 = NewBag( T_BODY, 0);
+ body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
  BODY_FUNC( func1 ) = body1;
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
@@ -439,7 +448,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 128778786,
+ /* crc         = */ 75217378,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

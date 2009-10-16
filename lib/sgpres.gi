@@ -2,7 +2,7 @@
 ##
 #W  sgpres.gi                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: sgpres.gi,v 4.65 2009/05/11 18:36:25 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,8 @@
 ##  presented groups (fp groups).
 ##
 Revision.sgpres_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: sgpres.gi,v 4.65 2009/05/11 18:36:25 gap Exp $";
+
 
 #############################################################################
 ##
@@ -1169,7 +1170,7 @@ local column, gens, i, range, table, transversal;
   # construct a permutations representation of G on the cosets of H.
   gens := GeneratorsOfGroup(G);
   if not (IsPermGroup(G) and IsPermGroup(H) and
-          Length(Orbit(G,1))=NrMovedPoints(G) and H=Stabilizer(G,1)) then
+          IsEqualSet(Orbit(G,1),[1..NrMovedPoints(G)]) and H=Stabilizer(G,1)) then
     transversal := RightTransversal( G, H );
     gens := List( gens, gen -> Permutation( gen, transversal,OnRight ) );
     range := [ 1 .. Length( transversal ) ];

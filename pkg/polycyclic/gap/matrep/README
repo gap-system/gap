@@ -1,0 +1,7 @@
+
+gap/matrep:
+
+matrep.gd/gi -- Function to compute an integral matrix representation
+                for a polycyclic group.
+
+unitri.gd/gi -- Convert a unitriangular matrix group into a pcp group.

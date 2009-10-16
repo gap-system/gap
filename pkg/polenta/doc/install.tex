@@ -1,0 +1,105 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  install.tex           POLENTA documentation            Bjoern Assmann
+%W                                                     
+%W                                                     
+%W                                                       
+%%
+%H  @(#)$Id: install.tex,v 1.7 2007/06/17 18:01:31 gap Exp $
+%%
+%Y 2003
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Installation}
+
+\atindex{Installation}{@Installation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing this package}\null
+
+The Polenta package is part of the standard distribution of {\GAP} and
+so normally there should be no need to install it separately.
+If by any chance it is not part of your {\GAP} distribution, then 
+the standard method is to unpack	 the package into the `pkg'
+directory  of your {\GAP} distribution.  This will create a `polenta'
+subdirectory. 
+For other non-standard options please see  Chapter~"ref:Installing a
+GAP Package" of the {\GAP} Reference Manual.
+
+Note that the GAP-Packages Alnuth and Polycyclic are needed for this package.
+Normally they should be contained in your distribution. If not, 
+they can be obtained at
+\begintt
+               www.gap-system.org/Packages/packages.html             
+
+\endtt
+
+
+%To create the documentation, go into the `doc' directory and type
+%`make_doc'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Getting and installing KASH}
+                    
+Note that the {\GAP} package Alnuth whose functionality is used by the Polenta
+package requires the installation of KANT respectively
+KASH, the shell
+of the computational algebraic number theory system KANT.  KASH itself
+is not part of Alnuth.  It has to be obtained and installed
+independently.
+                                                            
+KASH is available at
+\begintt
+               www.math.tu-berlin.de/~kant/download.html
+\endtt
+Note that you have to download two files for a complete installation
+of KASH.  To install version 2.4 of KASH on a Linux
+system you should do the following:
+\beginlist
+\item{1.} Download the files
+    kash_2.4.common.tar.gz and kash_2.4.1.linux.tar.gz
+    into the same directory on your system.
+                                                                               
+\item{2.} Unpack the files using tar.  This will create a directory
+    KASH_2.4 containing, amongst other files, the KASH executable called
+    kash.  The place where KASH is put is independent of the place
+    where the Alnuth or Polenta package is installed.
+    
+\endlist
+                                                                               
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Loading the Polenta package}\null
+
+\atindex{Loading the Polenta package}{@loading the {\Polenta} package}
+If the {\Polenta} Package is not already loaded 
+then you have to request it explicitly. 
+This  can be 
+done by `LoadPackage("polenta")'.
+The `LoadPackage' command is described in Section~"ref:LoadPackage"
+in the {\GAP} Reference Manual.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Running the test suite}
+
+    Once the package is installed, it is possible to check the correct
+    installation by running the test suite of the package.
+
+\beginexample
+    gap> ReadPackage( "Polenta", "tst/testall.g" );
+\endexample
+    For more details on  Test Files see 
+    Section~"ref:Test Files" of the 
+    {\GAP} Reference Manual.
+
+    If the test suite runs into an error, even though the packages
+    Polycyclic and 
+    Alnuth  and  the computational algebraic number theory system KANT
+    have been correctly installed, then please send a message
+    to `BjoernAssmann@gmx.net' including the error message.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+
+

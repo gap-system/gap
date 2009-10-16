@@ -5,7 +5,7 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ratfun.gi,v 4.118 2008/07/17 14:41:07 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  polynomials and polynomials and their families.
 ##
 Revision.ratfun_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ratfun.gi,v 4.118 2008/07/17 14:41:07 gap Exp $";
 
 #############################################################################
 ##
@@ -1767,6 +1767,257 @@ function(p)
   return rec(coefficients:=c,
              monomials:=m,
              variables:=v);
+end);
+
+
+#####################################################################
+#
+# routines provide a simple multivariate factorization
+# as in MCA exercise 16.10.
+#
+#  11-15-04,  WDJ and AH
+
+# n is the number of terms in m. n1 is the number of variable occuring
+# in each monomial term of m. returns the degrees of each variable in the
+# monomial m.
+BindGlobal("MVFactorDegreeMonomialTerm",function(m)
+local degrees, e, n0, i, j, l, n1, n;
+  e:=ExtRepPolynomialRatFun(m);
+  n0:=Length(e);
+  n:=Int(n0/2);
+  degrees:=[];
+  for i in [1..n] do
+  l:=e[2*i-1];
+  n1:=Length(l);
+  for j  in [1..Int(n1/2)] do
+    degrees:=Concatenation(degrees,[l[2*j]]);
+  od;
+  od;
+  return degrees;
+end);
+
+
+BindGlobal("MVFactorKroneckerMap",function(f,vars,var,p)
+# maps polys in x1,...,xn to polys in x 
+# induced by xi -> x^(p^(i-1))
+local g;
+  g:=Value(f,vars, List([1..Length(vars)],i->var[1]^(p^(i-1))));
+  return g;
+end);
+
+BindGlobal("MVFactorInverseKroneckerMapUnivariate",function(g,varpow)
+local coeffs,d,f,i;
+
+  if not IsUnivariatePolynomial(g) then
+    Error("this function assumes polynomial is univariate");
+  fi;
+  coeffs:=CoefficientsOfUnivariateLaurentPolynomial(g);
+  coeffs:=ShiftedCoeffs(coeffs[1],coeffs[2]);
+  d:=Length(coeffs)-1;
+  f:=Zero(g);
+  for i in [1..Length(coeffs)] do
+    if not IsZero(coeffs[i]) then
+      f:=f+coeffs[i]*varpow[i];
+    fi;
+  od;
+  return f;
+end);
+
+InstallGlobalFunction(MultivariateFactorsPolynomial,function(R,f)
+local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p, 
+      forig, cnt, vals, bv, bd, g, varpow, fam, fex, N, cand, ti, 
+      terms, div, ediv, r, ffactors, i, j, k;
+
+# input: f is a poly in R=F[x1,...,xn]
+# output: all divisors of f
+
+  cp:=ConstituentsPolynomial(f);
+  mons:=cp.monomials;
+  # count variable frequencies
+  L:=ListWithIdenticalEntries(
+    Maximum(List(cp.variables,
+      IndeterminateNumberOfUnivariateRationalFunction)),0);
+  for i in mons do
+    T:=ExtRepPolynomialRatFun(i)[1];
+    for j in [1,3..Length(T)-1] do
+      L[T[j]]:=L[T[j]]+T[j+1];
+    od;
+  od;
+  T:=[1..Length(L)];
+  SortParallel(L,T);
+  T:=Reversed(T);
+  L:=Reversed(L);
+  if ForAny([1..Length(L)],i->L[i]>0 and L[T[i]]<>L[i]) then
+    perm:=PermList(T)^-1;
+    Info(InfoPoly,2,"Variable swap: ",perm);
+    f:=OnIndeterminates(f,perm);
+    cp:=ConstituentsPolynomial(f);
+    mons:=cp.monomials;
+  else
+    perm:=(); # irrelevant swap
+  fi;
+
+  vars:=cp.variables;
+  nvars:=Length(vars);
+  F:=CoefficientsRing(R);
+  R1:=PolynomialRing(F,1);
+  var:=IndeterminatesOfPolynomialRing(R1);
+  degrees:=List([1..Length(mons)],i->MVFactorDegreeMonomialTerm(mons[i]));
+  d:=Maximum(Flat(degrees));
+  p:=NextPrimeInt(d);
+  p:=Maximum(d+1,2);
+
+  forig:=f;
+
+  # coefficient shift to remove duplicate roots
+  cnt:=0;
+  vals:=List(vars,i->Zero(F));
+  bv:=vals;
+  bd:=infinity;
+  repeat
+    if cnt>0 then
+      vals:=List(vars,i->Random(F));
+      f:=Value(forig,vars,List([1..nvars],i->vars[i]-vals[i]));
+    fi;
+    g:=MVFactorKroneckerMap(f,vars,var,p);
+    cnt:=cnt+1;
+    L:=DegreeOfUnivariateLaurentPolynomial(Gcd(g,Derivative(g)));
+    if L<bd then
+      bv:=vals;
+      bd:=L;
+    fi;
+    Info(InfoPoly,3,"Trying shift: ",vals,": ",L);
+  until cnt>DegreeOfUnivariateLaurentPolynomial(g) or L=0;
+  if bv<>vals then
+    vals:=bv;
+    f:=Value(forig,vars,List([1..nvars],i->vars[i]-vals[i]));
+    g:=MVFactorKroneckerMap(f,vars,var,p);
+  fi;
+
+
+  # prepare padic representations of powers
+  L:=ListWithIdenticalEntries(nvars,0);
+  varpow:=List([0..DegreeOfUnivariateLaurentPolynomial(g)],
+		i->Concatenation(CoefficientsQadic(i,p),L){[1..nvars]});
+  varpow:=List(varpow,i->Product(List([1..nvars],j->vars[j]^i[j])));
+
+  L:=Factors(R1,g);
+  Info(InfoPoly,1,"Factors of degrees ",
+       List(L,DegreeOfUnivariateLaurentPolynomial));
+
+  fam:=FamilyObj(f);
+  fex:=ExtRepPolynomialRatFun(f);
+  N:=Length(L);
+  cand:=[1..N];
+  for k in [1..QuoInt(N,2)] do
+    T:=NrCombinations(cand,k);
+    if T>100000 then
+      Info(InfoWarning,1,
+      "need to try ",T," combinations -- this might take very long");
+    fi;
+    T:=Combinations(cand,k);
+    Info(InfoPoly,2,"Length ",k,": ",Length(T)," candidates");
+    ti:=1;
+    while ti<=Length(T) do;
+      terms:=T[ti];
+      div:=Product(L{terms});
+      div:=MVFactorInverseKroneckerMapUnivariate(div,varpow);
+      ediv:=ExtRepPolynomialRatFun(div);
+      #if not IsOne(ediv[Length(ediv)]) then
+      #  div:=div/ediv[Length(ediv)];
+      #	 ediv:=ExtRepPolynomialRatFun(div);
+      #fi;
+      # call the library routine used to test quotient of polynomials
+      r:=QuotientPolynomialsExtRep(fam,fex,ediv);
+      if r<>fail then
+	fex:=r;
+	f:=PolynomialByExtRepNC(fam,fex);
+	Info(InfoPoly,1,"found factor ",terms," ",div," remainder ",f);
+	ffactors:=MultivariateFactorsPolynomial(R,f);
+	Add(ffactors,div);
+	if ForAny(vals,i->not IsZero(i)) then
+	  ffactors:=List(ffactors,
+	                 i->Value(i,vars,List([1..nvars],j->vars[j]+vals[j])));
+	fi;
+
+	if not IsOne(perm) then
+	  ffactors:=List(ffactors,i->OnIndeterminates(i,perm^-1));
+	fi;
+	return ffactors;
+      fi;
+      ti:=ti+1;
+    od;
+  od;
+
+  if ForAny(vals,i->not IsZero(i)) then
+    f:=Value(f,vars,List([1..nvars],j->vars[j]+vals[j]));
+  fi;
+
+  if not IsOne(perm) then
+    f:=OnIndeterminates(f,perm^-1);
+  fi;
+  return [f];
+end);
+
+#############################################################################
+##
+#M  Factors(<R>,<f> ) . .  factors of polynomial
+##
+InstallMethod(Factors,"reduce to univariate case",IsCollsElms,
+  [IsPolynomialRing,IsPolynomial],0,
+function(R,f)
+local cr, irf, i, opt, r,cp;
+
+  if not HasIsUnivariateRationalFunction(f) and
+    IsUnivariateRationalFunction(f) then
+    return Factors(R,f);
+  fi;
+  cr:=CoefficientsRing(R);
+  irf:=IrrFacsPol(f);
+  i:=PositionProperty(irf,i->i[1]=cr);
+  if i<>fail then
+    # if we know the factors,return
+    return irf[i][2];
+  fi;
+
+  opt:=ValueOption("factoroptions");
+  PushOptions(rec(factoroptions:=rec())); # options do not hold for
+                                          # subsequent factorizations
+  if opt=fail then
+    opt:=rec();
+  fi;
+
+  cp:=ConstituentsPolynomial(f);
+  if not IsSubset(IndeterminatesOfPolynomialRing(R),cp.variables) then
+    PopOptions();
+    TryNextMethod();
+  fi;
+
+  r:=MultivariateFactorsPolynomial(R,f);
+  if r=fail then
+    PopOptions();
+    TryNextMethod();
+  fi;
+
+  # convert into standard associates and sort
+  r:=List(r,x -> StandardAssociate(R,x));
+  Sort(r);
+
+  if Length(r)>0 then
+    # correct leading term
+    r[1]:=r[1]*Quotient(R,f,Product(r));
+  fi;
+
+  # and return
+  if not IsBound(opt.onlydegs) and not IsBound(opt.stopdegs) then
+    StoreFactorsPol(cr,f,r);
+    for i in r do
+      StoreFactorsPol(cr,i,[i]);
+    od;
+  fi;
+  PopOptions();
+  return r;
+
 end);
 
 #############################################################################

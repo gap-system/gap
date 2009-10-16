@@ -1,0 +1,60 @@
+1
+R25
+
+5       #prime
+1       #class
+1       #print level
+{a, b}  #number of gens
+{}      #relations
+5       #exponent
+
+8       #interactive
+
+18       #supply auts
+2        #number of auts
+2 0
+0 1
+4 1
+4 0
+0
+
+6       #next class
+20      #queue factor
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+6
+20
+
+2
+R25 
+
+0

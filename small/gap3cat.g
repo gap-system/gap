@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.gap3cat_g :=
-    "@(#)$Id$";
+    "@(#)$Id: gap3cat.g,v 4.1 1998/07/18 16:18:23 gap Exp $";
 
 GAP3_CATALOGUE_ID_GROUP := [
 ,,, [ 2, 1 ],, [ 2, 1 ],, [ 3, 2, 4, 5, 1 ], [ 2, 1 ], [ 2, 1 ],, [ 4, 2, 5,

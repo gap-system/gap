@@ -1,0 +1,57 @@
+#start point for Nottingham group 
+
+1
+Nott
+5
+3
+1
+{a, b}
+{a^5, b^5, [b, a, b]}
+0
+
+7        #compute 5-covering group
+
+2
+Nott
+
+9
+
+1
+6
+1 0 0 0
+0 1 0 1
+
+1 1 0 0
+0 1 0 0
+
+1 0 0 0 
+0 4 0 0 
+
+1 0 0 0
+0 2 0 0 
+
+4 0 0 0 
+0 1 0 0 
+
+2 0 0 0 
+0 1 0 0 
+
+0         #number of soluble automorphisms
+
+5         #iteration 
+4         #class bound
+0         #construct all descendants?
+1         #step size  
+1         #PAG-generating sequence 
+
+0         #default algorithm?
+4         #rank of subgroup
+0         #space efficient?
+0         #completely process terminal descendants?
+0         #exponent law
+0         #metabelian law 
+
+1         #default output 
+
+0         
+0

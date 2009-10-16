@@ -1,0 +1,184 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  singular.tex            GAP documentation
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{We get started}
+
+\Section{First steps}
+
+First the package needs to be loaded:
+
+\begintt
+gap> RequirePackage("singular");
+true
+\endtt
+
+This loads some {\GAP} functions, and starts {\sf Singular}.
+
+Currently the interface only provides functions for computing Gr\"{o}bner 
+bases. In the examples we assume that we have a ring and an ideal
+defined as follows:
+
+\beginexample
+gap> R:= PolynomialRing( Rationals, ["x","y","z"] );
+PolynomialRing(..., [ x, y, z ])
+gap> gR:= IndeterminatesOfPolynomialRing( R );;
+gap> x:= gR[1];; y:= gR[2];; z:= gR[3];;
+gap> I:= Ideal( R, [ x*y*z-1, x*y+x*z+y*z, x+y+z ] );
+<two-sided ideal in PolynomialRing(..., [ x, y, z ]), (3 generators)>
+\endexample
+
+Before being able to calculate a Gr\"{o}bner basis of `I' we have
+to tell Singular in which ring we work.
+
+
+\>SendRingToSingular( <R> )
+
+sends the ring <R> to {\sf Singular}. After this command the ring <R>
+is the default ring, and all ideals are assumed to be ideals of this
+ring.
+
+\>SendIdealToSingular( <I> )
+
+sends an ideal to {\sf Singular}. It is not necessary to call this function
+(the other functions will do it if necessary).
+
+\>GroebnerBasis( <I> )
+
+calculates a Gr\"{o}bner basis of the ideal <I>, using the {\tt groebner}
+function of {\sf Singular}. <I> must be an ideal of the current default ring.
+
+
+\>StandardBasis( <I> ) 
+
+calculates a Gr\"{o}bner basis of the ideal <I>, using the {\tt std}
+function of {\sf Singular}. <I> must be an ideal of the current default ring.
+
+
+We remark that `GroebnerBasis' is an attribute of an ideal. It is set both
+by the functions `GroebnerBasis' and `StandardBasis'. This means that
+if one of these two is called after the other has been called, the output
+of the first call will be returned.
+
+\beginexample
+gap> SendRingToSingular( R );
+gap> GroebnerBasis( I );
+[ x+y+z, y^2+y*z+z^2, -1+z^3 ]
+\endexample
+
+\Section{Term orderings}
+
+A ring in {\GAP} can have the attribute `TermOrdering', which can be
+a string or a list. If it is a string it has to be one of 
+\begintt 
+"lp", "dp", "Dp" 
+\endtt
+which means that the corresponding term ordering in {\sf Singular} will be 
+used. It can also be a list of even length of the form 
+`[ str1, d1, str2, d2, ... ]'. Here `str1', `str2' are strings of the above 
+type, or 
+\begintt
+"wp", "Wp"
+\endtt
+
+If it is a string of the first type, then the `d1' etc. is a number
+describing the number of variables having that ordering. If it is a string
+of the second type `d1' etc. is an integer vector, describing the weight
+of each variable.
+
+\beginexample
+gap> R:= PolynomialRing( Rationals, [ "a", "b", "c", "d", "e" ] );;
+gap> SetTermOrdering( R, [ "dp", 2, "wp", [1,1,2] ] );
+gap> SendRingToSingular( R );
+\endexample
+
+Now the first two indeterminates (namely `a', `b') are ordered 
+by `dp', and the last three by `wp' with weight vector `[ 1, 1, 2 ]'.
+
+*If no ordering is supplied then `dp' will be used.*
+
+\beginexample
+gap> gR:= IndeterminatesOfPolynomialRing( R );;
+gap> a:= gR[1];; b:=gR[2];; c:= gR[3];; d:= gR[4];; e:= gR[5];;
+gap> I:= Ideal( R, [ a*b*c*d*e -1,
+> a*b*c*d + a*b*c*e + a*b*d*e + a*c*d*e + b*c*d*e,             
+> a*b*c + a*b*e + a*d*e + b*c*d + c*d*e,                       
+>  a*b + a*e + b*c + c*d + d*e,                                
+> a + b + c + d + e] );                                        
+<two-sided ideal in PolynomialRing(..., [ a, b, c, d, e ]), (5 generators)>
+gap> gb:= StandardBasis( I );;
+gap> Length( gb );
+25
+\endexample
+
+
+\Section{Implemented ground fields}
+
+
+Currently the interface supports polynomial rings defined over
+the rational numbers, and finite fields (prime and non-prime).
+
+\Section{Small Lie algebras}
+
+The package contains lists of small-dimensional Lie algebras (all Lie
+algebras of dimensions $\leq 5$, and nilpotent Lie algebras of dimensions
+$6$, $7$). There are functions for deciding whether a given Lie algebra
+is contained in one of these lists, and for deciding whether tw given Lie
+algebras are isomorphic. These function print the isomorphism that it tries
+to construct. This still contains some indeterminates, and the function
+basically decides whether there are values for these indeterminates such
+that the resulting map is an isomorphism.
+
+\>AreIsomorphic( <K>, <L> )
+
+Returns `true' if the Lie algebras <K>, <L> are isomorphic, `false'
+otherwise.
+
+\> LookUp( <L> )
+
+Tries to see whether <L> is contained in one of the lists of small 
+dimensional Lie algebras. If this is the case, then the index of the 
+Lie algebra in one of those lists is returned.
+
+\beginexample
+gap> A:= SimpleLieAlgebra("G",2,Rationals);
+<Lie algebra of dimension 14 over Rationals>
+gap> K:= Subalgebra( A, Basis(A){[1,2,3,4,5,6]} );
+<Lie algebra over Rationals, with 6 generators>
+gap> LookUp( K );
+Looking for L in the list dim6
+
+v.6 ---> x[1,1](v.6) 
+v.5 ---> x[2,1](v.6) + x[2,2](v.5) 
+v.4 ---> x[3,1](v.6) + x[3,2](v.5) + x[3,3](v.4) 
+v.3 ---> x[4,1](v.6) + x[4,2](v.5) + x[4,3](v.4) + x[4,4](v.3) 
+v.1 ---> x[5,1](v.6) + x[5,2](v.5) + x[5,3](v.4) + x[5,4](v.3) + x[5,
+5](v.1) + x[5,6](v.2) 
+v.2 ---> x[6,1](v.6) + x[6,2](v.5) + x[6,3](v.4) + x[6,4](v.3) + x[6,
+5](v.1) + x[6,6](v.2) 
+
+20
+gap> A:= SimpleLieAlgebra("A",3,GF(3));    
+<Lie algebra of dimension 15 over GF(3)>
+gap> K:= Subalgebra( A, Basis(A){[1,2,3,4,5,6]} );
+<Lie algebra over GF(3), with 6 generators>
+gap> AreIsomorphic( K, K );
+v.6 ---> x[1,1](v.6) 
+v.4 ---> x[2,1](v.6) + x[2,2](v.4) + x[2,3](v.5) 
+v.5 ---> x[3,1](v.6) + x[3,2](v.4) + x[3,3](v.5) 
+v.1 ---> x[4,1](v.6) + x[4,2](v.4) + x[4,3](v.5) + x[4,4](v.1) + x[4,
+5](v.2) + x[4,6](v.3) 
+v.2 ---> x[5,1](v.6) + x[5,2](v.4) + x[5,3](v.5) + x[5,4](v.1) + x[5,
+5](v.2) + x[5,6](v.3) 
+v.3 ---> x[6,1](v.6) + x[6,2](v.4) + x[6,3](v.5) + x[6,4](v.1) + x[6,
+5](v.2) + x[6,6](v.3) 
+
+true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%

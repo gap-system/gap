@@ -1,0 +1,41 @@
+C intro.tex 1. Introduction
+I 1.0. Polenta
+I 1.0. Polycyclic
+S 1.1. The package
+S 1.2. Polycyclic groups
+C Polenta.tex 2. Methods for matrix groups
+S 2.1. Polycyclic presentations of matrix groups
+F 2.1. PcpGroupByMatGroup
+F 2.1. IsomorphismPcpGroup
+F 2.1. Image
+F 2.1. ImageElm
+F 2.1. ImagesSet
+F 2.1. PreImage
+F 2.1. IsSolvableGroup
+F 2.1. IsTriangularizableMatGroup
+F 2.1. IsPolycyclicMatGroup
+S 2.2. Module series
+F 2.2. RadicalSeriesSolvableMatGroup
+F 2.2. HomogeneousSeriesAbelianMatGroup
+F 2.2. HomogeneousSeriesTriangularizableMatGroup
+F 2.2. CompositionSeriesAbelianMatGroup
+F 2.2. CompositionSeriesTriangularizableMatGroup
+S 2.3. Subgroups
+F 2.3. SubgroupsUnipotentByAbelianByFinite
+S 2.4. Examples
+F 2.4. PolExamples
+C example.tex 3. An example application
+S 3.1. Presentation for rational matrix groups
+S 3.2. Modules series
+S 3.3. Triangularizable subgroups
+C install.tex 4. Installation
+I 4.0. Installation
+S 4.1. Installing this package
+S 4.2. Getting and installing KASH
+S 4.3. Loading the Polenta package
+I 4.3. Loading the Polenta package
+S 4.4. Running the test suite
+C info.tex 5. Information Messages
+S 5.1. Info Class
+F 5.1. InfoPolenta
+S 5.2. Example

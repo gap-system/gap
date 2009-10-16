@@ -1,0 +1,921 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  gapmacro.tex                GAP manual                   Frank Celler
+%A                                                           Heiko Theissen
+%A                                                           Alexander Hulpke
+%%
+%%  @(#)$Id: gapmacro.tex,v 1.1 2007/05/08 07:47:21 gap Exp $
+%%
+%%  DO NOT RELY ON MACRO DEFINITIONS IN THIS FILE!
+%%  The official definition of the manual style is to be found in the file
+%%  `ext:document.tex'.
+%%
+%%  The following macros are defined in this file.
+%%
+%%  `text'   set text in typewriter style (use `\<' instead of `<')
+%%  <text>   set text in italics (use $\<$ instead of $<$ for less than)
+%%  *text*   set text in emphasized style (i.e. slanted)
+%%  $a.b$    same as $a \cdot b$ (use $\.$ instead of $.$ for full stop)
+%%  "ref"    refer to a label (like "function!for category")
+%%  \pif     sets a single '
+%%  \cite{.} make a citation
+%%  \index{.} \indextt{.} make index entry (\indextt in typewriter style)
+%%
+%%  \beginitems         produce itemized texts with 3pc hanging indentation
+%%    item & text
+%%
+%%    item & text ...
+%%  \enditems
+%%
+%%  \begintt            verbatim text in typewriter style
+%%    verbatim material
+%%  \endtt
+%%  \beginexample     verbatim text in typewriter style
+%%    verbatim material
+%%  \endexample
+%%
+%%  \Input{file}  includes file `file.tex'
+%%  \Chapter{title} followed by a blank line
+%%  \Section{title} followed by a blank line
+%%      make  chapter  or section   title. Automatically  generates  table of
+%%      contents. \null after \Section{...} inhibits indexing.
+%%  \>function( arguments )!{ index subentry }
+%%  \>`a binop b'{binary operation}!{ index subentry }
+%%      make a  heading for a subsection   explaining a function  or a binary
+%%      operation. This automatically generates   a label and an  index entry
+%%      (with optional subentry).
+%%  \){\fmark ...}
+%%      the same without label and index entry
+%%
+%%  \URL{url}
+%%  \Mailto{}
+%%
+%%  \BeginningOfBook
+%%  \FrontMatter, \Chapters, \Appendices, \EndMatter     parts of the book
+%%  \Bibliography, \Index, \TableOfContents  make these chapters (w/o head)
+%%  \EndOfBook
+%%
+
+\input amssym.tex
+
+% Page dimensions and double column output.
+\hsize 39pc
+\vsize 52pc
+
+% do we run pdftex? 
+\expandafter\ifx\csname pdfdest\endcsname\relax
+\immediate\write16{Running TeX}
+% no: define dummy bookmarking functions
+\global\def\bookmarkdestin#1{}
+\global\def\setbookmarkind#1#2{}
+\global\def\setbookmark#1#2{}
+\global\def\indexbookmark#1#2{}
+\else
+\immediate\write16{Running PDFTeX}
+% yes: define macros to do pdf stuff and set some parameters
+\global\def\bookmarkdestin#1{\pdfdest name {#1} xyz}
+\global\def\setbookmarkind#1#2{%
+  \setindent{\chapterlen{\the\chapno}}
+  \pdfoutline goto name {#1} count -\indentno {#2}}
+\global\def\setbookmark#1#2{%
+  \setindent{\chapterlen{\the\chapno}}
+  \pdfoutline goto name {#1} count 0 {#2}}
+% special treatment for the index to get proper indention
+\global\def\indexbookmark#1#2{%
+  \pdfoutline goto name {#1} count -27 {#2}}
+\pdfinfo{
+/Subject (GAP Manual)
+/Author (The GAP Group)
+}
+\pdfcatalog{
+/URI (http://www.gap-system.org)
+/PageMode /UseOutlines}
+\pdfcompresslevel 9
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+%  Generic double column output.
+%
+%    Modified from a routine written by Donald Knuth (The TeXBook, App. E)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  The user may modify the following to his tastes:
+%
+%      \pagewidth     vertical length of page.
+%      \pageheight    horizontal width of page.
+%      \colwidth      column width
+%      \separator     macro to generate column separator. Default is nothing.
+%                     \rulesep sets it to \vrule. \norulesep doesn't.
+%      \makepage      default is what is contained in plain.
+\catcode`@=11 % from plain.tex
+% Create and initialize new dimensions.
+\newdimen\pagewidth  \newdimen\pageheight  \newdimen\colwidth
+\pagewidth=\hsize    \pageheight=\vsize    \colwidth=3.2truein
+
+\def\draft{\hsize 42pc\vsize 63pc\pagewidth=\hsize \pageheight=\vsize}
+
+\def\pif{\char39}
+
+% This routine is used by \output ; this is different from
+%   the one found in App. E.
+\def\onepageout#1{{\setbox255=\vbox{#1}
+  \hsize=\pagewidth \vsize=\pageheight \plainoutput}}
+\def\normaloutput{\onepageout{\unvbox255}}
+\maxdeadcycles=100 % \output is called quite often
+
+\output={\normaloutput}
+\newbox\partialpage \newdimen\origvsize \newif\ifrigid
+\def\begindoublecolumns{\global\origvsize=\vsize \begingroup
+  \output={\global\setbox\partialpage=\vbox{\unvbox255\kern0pt}}\eject
+  \output={\doublecolumnout} \hsize=\colwidth \dimen@=\pageheight
+  \advance\dimen@ by-\ht\partialpage \multiply\dimen@ by2
+  \ifdim\dimen@<2\baselineskip \dimen@=2\baselineskip\fi
+  \vsize=\dimen@}
+\def\enddoublecolumns{\output={\balancecolumns}\eject
+  \endgroup \global\vsize=\origvsize \pagegoal=\vsize}
+\def\doublecolumnout{\splittopskip=\topskip \splitmaxdepth=\maxdepth
+  \setbox0=\vsplit255 to.46\vsize \setbox2=\vsplit255 to.46\vsize
+  %\setbox0=\vbox{A\unvbox0B\vfill}\setbox2=\vbox{C\unvbox2D\vfill}%
+  \onepageout\pagesofar \global\vsize=2\pageheight
+  \unvbox255 \penalty\outputpenalty}
+\def\pagesofar{\unvbox\partialpage
+  \wd0=\hsize \wd2=\hsize
+  %\hbox to\pagewidth{\box0\hfil\separator\hfil\box2}}
+  \hbox to\pagewidth{\valign{##\vfill\cr%
+  \vbox{\unvbox0}\cr\noalign{\hfil\separator\hfil}\vbox{\unvbox2}\cr}}}
+\def\norulesep{\let\separator=\relax}
+\def\rulesep{\let\separator=\vrule}
+\let\separator=\relax
+\def\balancecolumns{\setbox0=\vbox{\unvbox255} \dimen@=\ht0
+  \advance\dimen@ by\topskip \advance\dimen@ by-\baselineskip
+  \divide\dimen@ by2 \splittopskip=\topskip
+  {\vbadness=10000 \loop \global\setbox3=\copy0
+    \global\setbox1=\vsplit3 to\dimen@
+    \ifdim\ht3>\dimen@ \global\advance\dimen@ by1pt \repeat}
+  \ifrigid
+    \setbox0=\vtop{\unvbox1}
+    \setbox2=\vtop{\unvbox3}
+  \else
+    \setbox0=\vbox to\dimen@{\unvbox1}
+    \setbox2=\vbox to\dimen@{\dimen2=\dp3 \unvbox3\kern-\dimen2 \vfil}
+  \fi
+  \global\vsize=\origvsize \pagesofar}
+\catcode`@=12
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\colwidth 19pc
+\newdimen\manindent      \manindent 3pc
+\newdimen\smallmanindent \smallmanindent 1pc
+\parskip 1ex plus 0.5ex minus 0.5ex
+\parindent 0pt
+
+% Additional fonts.
+\font\inchhigh=cminch
+\font\titlefont=cmssdc10 at 40pt
+\font\subtitlefont=cmssdc10 at 24pt
+\font\secfont=cmssdc10 at 14pt
+\font\sf=cmss10
+\font\bsf=cmssdc10
+\font\smallrom=cmr8
+\font\sevenit=cmti10 at 7pt \scriptfont\itfam=\sevenit
+\font\fiveit=cmti10 at 5pt  \scriptscriptfont\itfam=\fiveit
+
+% If you don't have `msb' fonts, replace the next 4 lines by `\let\Bbb=\bf'.
+\newfam\msbfam \def\Bbb{\fam\msbfam}
+\font\tenmsb=msbm10         \textfont\msbfam=\tenmsb
+\font\sevenmsb=msbm7        \scriptfont\msbfam=\sevenmsb
+\font\fivemsb=msbm5         \scriptscriptfont\msbfam=\fivemsb
+\font\sevenmsa=msam7
+
+% the dark triangle
+\def\darktriangleright{\raise.4ex\hbox{\sevenmsa\char"49}}
+
+% Math mode should use text italic.
+{\count0=\itfam \advance\count0 by-1 \multiply\count0 by"100
+ \count1=`A
+ \loop \count2=\mathcode\count1 \advance\count2 by\count0
+       \global\mathcode\count1=\count2
+      {\advance\count1 by'040
+       \count2=\mathcode\count1 \advance\count2 by\count0
+       \global\mathcode\count1=\count2}
+ \ifnum\count1<`Z \advance\count1 by1\repeat}
+
+% macros for verbatim scanning (almost copied from `The TeXbook')
+\chardef\other=12
+\def\undocatcodespecials{\catcode`\\=\other     \catcode`\{=\other
+  \catcode`\}=\other     \catcode`\<=\other     \catcode`\$=\other
+  \catcode`\%=\other     \catcode`\~=\other     \catcode`\^=\other
+  \catcode`\_=\other     \catcode`\*=\other     \catcode`\`=\other
+  \catcode`\!=\other     \catcode`\"=\other     \catcode`\&=\other
+  \catcode`\#=\other     \catcode`\|=\other}
+\def\ttindent{5mm} % indentation amount of verbatim examples
+\def\kernttindent{\hskip\ttindent\relax} % for use in %\begintt
+{\obeyspaces\global\let =\ }
+{\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
+\catcode`#=\active \catcode`&=6 \gdef#{\char35}%
+%\catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\char35 &1}^^M}%
+ \gdef\ttverbatim{\begingroup\undocatcodespecials \catcode`\#=\active%
+   \parindent 0pt \def\_^^M{\allowbreak}\def\${$}\def\`{`}%
+   \def\par{\ifvmode\allowbreak\vskip 1pc plus 1pt\else\endgraf\penalty100\relax\fi}%
+   \obeyspaces \obeylines \tt}}
+\outer\def\begintt{\par
+  \begingroup\advance\leftskip by \ttindent
+  \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \ttfinish}
+{\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
+  |obeylines % end of line is active
+  |gdef||{|char124} %
+  |gdef|ttfinish#1^^M#2\endtt{#1|medskip{#2}|endgroup %
+  |endgroup%
+  |vskip-|parskip|medskip|noindent|ignorespaces}}
+\def\unstableoutput{}
+\outer\def\beginexample{\par
+  \begingroup\advance\leftskip by \ttindent
+  \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
+{\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
+  |obeylines % end of line is active
+  |gdef||{|char124} %
+  |gdef|examplefinish#1^^M#2\endexample{#1|medskip{#2}|endgroup %
+  |endgroup%
+  |vskip-|parskip|medskip|noindent|ignorespaces}}
+
+% Input/output streams. Chapter and section counters.
+\newwrite\labelout \newwrite\indexout \newwrite\secindout
+\newwrite\tocout   \newwrite\citeout  \newwrite\ans
+\newread \labelin  \newread \indexin  \newread \tocin  \newread \citein
+\countdef\chapno=1 \newcount\secno    \newcount\subsecno \newcount\exno
+\newcount\indentno 
+\newcount\chapnum  %GG \chapnum is a numerical \chapno for the .six file
+\def\chapterno{{\edef\tempa{\thechapter}\tempa}}
+%\def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
+%  \chapterno\ifx\thechapter\emptychapter\else--\fi \number\pageno\fi}
+%\def\doindex#1#2#3{\write\indexout{\noexpand\indexentry{#1#2#3}%
+%  {\ifnum\pageno<0 \romannumeral-\pageno \else
+%   \thechapter\ifx\thechapter\emptychapter\else--\fi \number\pageno\fi}}%
+%  \ifvmode\nobreak\fi}
+
+%AH
+\def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
+  \number\pageno\fi}
+  
+%\def\doindex#1#2#3{\protectedwrite\indexout{\noexpand\indexentry{#1#2#3}%
+%  {\ifnum\pageno<0\romannumeral-\pageno\else%
+%   \number\pageno\fi}}%
+%  \ifvmode\nobreak\else\unskip\fi}
+{\catcode`@=11 
+\catcode`<=\active \catcode`_=\active \catcode`!=\active \catcode`*=\active 
+\catcode``=\active 
+
+\global\let\n@exp\noexpand
+
+\gdef\doindex#1#2#3{\begingroup
+  %\let_\underscore\let`\lq\let<\<\let!\excl
+  \def\noexpand{}% this kills noexpands from some index entries
+  \def\protect{\n@exp\n@exp\n@exp}%
+  \def_{\protect_}\def*{\protect*}\def`{\protect `}\def<{\protect <}\def!{\protect!}%
+  \edef\tmp{\n@exp\n@exp\n@exp\indexentry{#1#2#3}}%
+  \expandafter\write\expandafter\indexout\expandafter{\tmp{\folio}}%
+  %{\scrollmode\errorcontextlines 1\show\tmp\errorstopmode}%
+  \ifvmode\nobreak\else\unskip\fi\endgroup}%
+}
+
+% Additional active characters and their default meanings.
+\mathcode`.="2201 \mathchardef\.="702E
+\def\undoquotes{\catcode`'=12 \catcode``=12 \def\"##1{{\accent127 ##1}}}
+\def\excl{!} \chardef\lqq=`\\ \let\underscore=\_
+\chardef\<=`<
+\catcode`!=\active \let!=\excl
+\catcode`^=\active \def^{\ifmmode\sp\else{\char`\^}\fi}
+\catcode`_=\active \def\activeusc{\ifmmode\sb\else\_\fi}
+                   \let_=\activeusc                     \let\_=\underscore
+\catcode`*=\active \def*{\ifmmode\let\next=\*\else\let\next=\bold\fi\next}
+                   \def\bold#1*{{\bf #1\/}}             \chardef\*=`*
+\catcode`<=\active \def<#1>{{\chardef*=`*\let_=\_\it#1\/}}
+                                                       
+\catcode`"=\active \def"{\begingroup\undoquotes\doref}  \chardef\"=`"
+                                                        \chardef\\=`\\
+
+{\catcode`|=0 \catcode`\\=12 |gdef|bs{\}}
+% Labels (which are automatically generated by ``\Section'' and ``\>'').
+%\newif\iflabmultdef
+\newif\iflabundef
+\newif\iflabchanged
+\def\doref#1"{\bookref#1:"}
+\def\bookref#1:#2"{\def\tempa{#2}\ifx\tempa\empty\printref{\book:#1}\else
+  \printbookref#1:#2"\fi}
+\def\printbookref#1:#2:"{\printref{#1:#2}}
+
+% Macros which write labels, citations and index entries on auxiliary files.
+% 
+% 1. Some code was moved around so that all the labels and indexing stuff
+%    would be together.
+% 2. Modified \makelabel, \printref and \label to be more like the LaTeX
+%    commands \newlabel, \ref and \label, respectively. The commands:
+%    \@xp, \@firstoftwo, \@secondoftwo, \namedef, \@ifundefined 
+%    \protectedwrite are adapted pieces of LaTeX code (\@xp is actually
+%    AmSLaTeX's abbreviation of \expandafter).
+% 3. The upshot of 2. is that now underscore is allowed in labels and
+%    index-entries and that the \makelabel commands written to the
+%    manual.lab files have arguments that are no longer put in lowercase.
+%    The labels formed inside TeX from the \makelabel commands maps
+%    underscores to | (needed to be a non-active character) and then
+%    converts to lowercase.
+% 4. Since GapDoc uses < and > in some of its labels a temporary re-defintion
+%    of <#1> was necessary, inside \@xplowr.
+% - GG 2001/06/11, 2001/09/02
+\catcode`@=11
+\let\@xp\expandafter
+\long\def\@firstoftwo#1#2{#1}
+\long\def\@secondoftwo#1#2{#2}
+\def\namedef#1{\expandafter\def\csname #1\endcsname}
+\def\@ifundefined#1{\@xplowr{#1}%
+  \@xp\ifx\csname \xpandlowr\endcsname\relax%
+    \@xp\@firstoftwo%
+  \else%
+    \@xp\@secondoftwo%
+  \fi}
+\def\protectedwrite#1#2{\begingroup\let_\relax\immediate\write#1{#2}\endgroup}
+\def\@xplowr#1{\begingroup\def_{|}\def<##1>{|##1|}\let\next=\relax%
+  \expandafter\edef\next{\gdef\noexpand\xpandlowr{#1}}%
+  \lowercase\expandafter{\next}\endgroup}
+\def\makelabel#1#2{\@xplowr{r@#1}%
+  \@ifundefined{\xpandlowr}%
+    \relax%
+    {\let_\activeusc}%\protectedwrite{16}{Label `#1' multiply defined.}}%
+  \let_\activeusc%\protectedwrite{16}{Defined label `#1'.}%
+  \begingroup\edef_{|}\global\namedef{\xpandlowr}{#2}\endgroup}
+\gdef\printref#1{\@xplowr{#1}%
+  \@xp\ifx\csname r@\xpandlowr\endcsname\relax\lqq\xpandlowr''%
+  \protectedwrite{16}{Label `#1' undefined.}\global\labundeftrue%
+  \else\csname r@\xpandlowr\endcsname\fi\endgroup\let_\activeusc}
+
+% Macros which write labels, citations and index entries on auxiliary files.
+\gdef\label#1{\@xplowr{#1}
+  \ifnum\secno=0 \edef\@currentlabel{\thechapter}\else
+  \ifnum\subsecno=0 \edef\@currentlabel{\thechapter.\the\secno}\else
+  \edef\@currentlabel{\thechapter.\the\secno.\the\subsecno}\fi\fi
+  \@xp\ifx\csname r@\book:\xpandlowr\endcsname\@currentlabel\else%
+  %\immediate\write16{Label `\book:#1' has changed.}
+  \global\labchangedtrue\fi
+  \protectedwrite\labelout{\string\makelabel{\book:#1}{\@currentlabel}}%
+  \let_\activeusc}
+
+ \gdef\sigel#1{[\expandafter\ifx\csname c@#1\endcsname\relax
+  \immediate\write16{Reference `#1' undefined.}\global\labundeftrue
+  #1\else \csname c@#1\endcsname\fi]}
+ \gdef\bibitem[#1]#2{\expandafter\gdef\csname c@#2\endcsname{#1}%
+  \item{\sigel{#2}}%
+  \immediate\write\labelout{\noexpand\setcitlab{#2}\noexpand{#1}}}
+ \gdef\setcitlab#1#2{\expandafter\gdef\csname c@#1\endcsname{#2}}
+\catcode`@=12%
+
+\def\cite#1{\write\citeout{\bs citation{#1}}\sigel{#1}}
+\def\dosecindex#1#2#3{\ifchapter{\let\ =\space%
+   \protectedwrite\secindout{#1 \the\chapno.\the\secno. #2#3}}\fi}
+\def\bothindex#1#2#3#4{\doindex{#2}{#3}{#4}\dosecindex{#1}{#2}{#4}}
+\def\index#1{\bothindex I{#1}{}{}}
+\def\atindex#1#2{\doindex{\scrubafterexcl#1!\end}{#2}{}\dosecindex I{#1}{}}
+\def\indextt#1{\doindex{\scrubafterexcl#1!\end}%
+   {@`\scrubafterexcl#1!\end'\scrubbeforeexcl#1!\end}{}\dosecindex I{#1}{}}
+%\def\indextt#1{\atindex{#1}{@`#1'}}
+\def\indexit#1{{\it #1}}
+
+% Macros for generating the table of contents.
+\newif\iffirstsec \firstsectrue
+\def\dotsfill{\leaders\hbox to12pt{\hss.\hss}\hfill}
+
+\def\appcontents#1#2#3{}
+
+\def\chapcontents#1#2#3{%
+   %\iffirstsec\firstsecfalse\else\line{}\fi% empty line
+   \par\penalty-5\medskip
+   \line{\bf\kern\manindent\vbox{\advance\hsize by-\manindent
+   \advance\hsize by-1.5em
+   \rightskip 0pt plus1fil \emergencystretch 3em
+   \noindent\llap{\hbox to\manindent{\hss #1\kern\smallmanindent}}\strut
+   #2~\hfill \strut\rlap{\hbox to1.5em{\hss #3}}}\hfil}}
+
+\def\seccontents#1#2#3{
+   \par\penalty-5\medskip
+   \setchapterlen#1.
+   \line{\kern\manindent\vbox{\advance\hsize by-\manindent
+   \advance\hsize by-1.5em
+   \rightskip 0pt plus1fil \emergencystretch 3em
+   \noindent\llap{\hbox to\manindent{\hss #1\kern\smallmanindent}}\strut
+   #2~\dotsfill \strut\rlap{\hbox to1.5em{\hss #3}}}\hfil}}
+
+% GG ... the idea of \ors is to put the right no. of \or s in the \appno
+%        macro so that for an appendix:
+%         1. \the\chapno gives the number needed in the .six file, and
+%         2. \appno\chapno gives the right letter A, B, ... for the .lab file
+\newtoks\ortoks
+\long\def\addor{\begingroup\ortoks\expandafter{\ors\or}
+   \xdef\ors{\the\ortoks}\endgroup}
+\def\setors{{\xdef\ors{} \count0=\chapno
+   \loop\ifnum\count0>0 \addor \advance\count0 by -1\repeat}}
+\def\appno#1{\expandafter\ifcase\expandafter#1\ors\or A\or B\or C\or D\or E\or 
+   F\or G\or H\or I\or J\or K\or L\or M\or N\or O\or P\or Q\or R\or S\or T\or 
+   U\or V\or W\or X\or Y\or Z\else\immediate\write16{Counter too large} \fi}
+
+% Macros for chapter and section headings.
+\def\filename{appendix}
+\def\tocstrut{{\setbox0=\hbox{1}\vrule width 0pt height\ht0}}
+\outer\def\Input#1{\def\filename{#1.tex}\input #1}
+\def\emptychapter{\noexpand\tocstrut}
+\def\normalchapter{\the\chapno}
+% GG 
+\def\appendixchapter{\appno\chapno} % \appno behaves like LaTeX's \Alph
+\newif\ifchapter           % set to true when \thechapter = \normalchapter
+                           % ... or ...  when \thechapter = \appendixchapter
+
+{\catcode`@=11%
+%
+\gdef\setchapterlen#1.#2.{\expandafter\gdef\csname ch@#1\endcsname{#2}}
+\gdef\chapterlen#1{%
+\ifchapter
+\expandafter\ifx\csname ch@#1\endcsname\relax%
+0%
+\else\csname ch@#1\endcsname\fi
+\else 0\fi}%
+}
+\def\setindent#1{\indentno=#1}
+
+
+\def\Chapter#1 \par{\vfill\supereject \headlinefalse
+%  \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
+  \advance\chapno by1 \secno=0\subsecno=0\exno=0%\ifnum\pageno>0 \pageno=1 \fi
+  \bookmarkdestin{#1}
+  \def\chapname{#1} \label{#1}
+  \immediate\write16{Chapter `#1' .}%
+  \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\the\pageno}}
+  \ifchapter
+    \immediate\write\secindout{C \filename\space\the\chapno. \chapname}\fi
+  \setbookmarkind{#1}{#1}
+  \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
+  \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-1em
+%    \hyphenpenalty=10000 \linepenalty=10000
+    \leftskip 0pt plus\hsize \parfillskip 0pt \baselineskip 44pt\relax #1}
+  \line{\box0\hfil\box1}\nobreak \mark{}\vskip 40pt}
+
+% start hack added by TB
+\def\PreliminaryChapter#1 \par{\vfill\supereject \headlinefalse
+%  \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
+  \advance\chapno by1 \secno=0\subsecno=0\exno=0%\ifnum\pageno>0 \pageno=1 \fi
+  \bookmarkdestin{#1}
+  \def\chapname{#1 (preliminary)} \label{#1}
+  \write\tocout{\noexpand\chapcontents{\thechapter}{#1 (preliminary)}{\the\pageno}}
+  \ifchapter
+    \immediate\write\secindout{C \filename\space\the\chapno. \chapname}\fi
+  \setbookmarkind{#1}{#1}
+  \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
+  \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-1em
+%    \hyphenpenalty=10000 \linepenalty=10000
+    \leftskip 0pt plus\hsize \parfillskip 0pt \baselineskip 44pt\relax #1 (preliminary)}
+  \line{\box0\hfil\box1}\nobreak \mark{}\vskip 40pt}
+% end hack added by TB
+
+\outer\def\Section#1#2\par{\bigbreak \advance\secno by1
+  \subsecno=0
+  \ifx\thechapter\emptychapter
+    \edef\tempa{\the\secno}
+  \else
+    \edef\tempa{\thechapter.\the\secno}%
+  \fi%
+  \bookmarkdestin{\tempa}
+  \setbookmark{\tempa}{#1}
+  \expandafter\writesecline\tempa\\{#1}
+  \dosecindex S{#1}{}
+  \ifx#2\nolabel\else{\let\ =\space\label{#1}}\fi
+  \ifx#2\null\else \edef\tempb{{#1@#1}}
+    \expandafter\doindex\tempb{|indexit}{}\fi
+  \noindent{\baselineskip 18pt\let!=\space \mark{Section \the\secno. #1}%
+  \secfont \tempa \enspace #1}\par\nobreak\medskip}
+
+\def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}
+  {\the\pageno}}}
+\def\letter#1{\medskip{\secfont #1}\endgraf\nobreak%
+  \edef\tempa{LeTtEr#1}%
+  \bookmarkdestin{\tempa}%
+  \setbookmark{\tempa}{#1}%
+  }
+
+% Macros for generating paragraph headings (e.g., function descriptions).
+\def\fmark{\noindent\llap{\darktriangleright\rm\enspace}}
+\def\moveup#1{\leavevmode \raise.16ex\hbox{\rm #1}}
+\def\fpar{\endgraf\endgroup\nobreak\smallskip\noindent\ignorespaces}
+\def\>{\begingroup\undoquotes\obeylines\angle}
+\def\){\begingroup\obeylines\cloparen}
+{\obeylines
+\gdef\angle#1
+  {\endgroup \ifx\par\fpar \global\def\susemarker{\fmark}\else%
+  \global\advance\subsecno by1%
+  \global\def\susemarker{\noindent\llap{\smallrom\the\subsecno\kern.5ex%
+  \darktriangleright\rm\enspace}}%
+    \ifvmode \vskip -\lastskip \fi \medskip%
+    \begingroup\let\par=\fpar \parskip 0pt \fi%
+  \endgraf\nobreak\oporfunc#1\end}%
+\gdef\cloparen#1
+  {\endgroup \ifx\par\fpar \else%
+    \ifvmode \vskip -\lastskip \fi \medskip%
+    \begingroup\let\par=\fpar \parskip 0pt \fi%
+  \endgraf{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}\def\|{\vrule\relax}%
+  \noindent\typewriter#1'}}%
+\gdef\scanparen#1(#2\end{\def\tempa{#2}\ifx\tempa\empty%
+  \def\next{\begingroup\cloparen\susemarker#1
+  \label{#1}\bothindex F{#1}{@`#1'}{}}%
+  \else\def\next{\delparen#1(#2\end}\fi \next}}
+\def\delparen#1(\end{\function#1}
+\def\oporfunc#1#2\end{\ifx#1`\def\next{\oporvalue#1#2}\else
+                             \def\next{\scanparen#1#2(\end}\fi \next}
+\long\def\oporvalue`#1'#2{\ifx#2V\def\next{\operation`#1'{#1}@{`#1'} V}\else
+                                 \def\next{\operation`#1'{#2}}\fi \next}
+\long\def\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}}
+  \susemarker\typewriter#1'%
+  \ifx#3!\def\next{\suboperation{#2}}
+    \else\ifx#3@\def\next{\subatoperation{#2}}
+    \else\endheaderline \label{#2}%
+    \bothindex F{#2}{}{}\let\next=#3\fi\fi\next}
+\long\def\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}
+  \susemarker\typewriter#1(#2)'}%
+  \ifx#3!\def\next{\subfunction{#1}}\else
+    \endheaderline\label{#1}\bothindex F{#1}{@`#1'}{}%
+    \let\next=#3\fi\next}
+\def\subfunction#1#2{\endheaderline\label{#1!#2}%
+  \bothindex F{#1}{@`#1'}{!#2}}
+\def\suboperation#1#2{\endheaderline\label{#1!#2}%
+  \bothindex F{#1}{}{!#2}}
+\def\subatoperation#1#2{\endheaderline\label{#1}%
+  \doindex{\scrubafterexcl#1!\end}{@#2}{}
+  \dosecindex F{#1}{}}
+\def\scrubafterexcl#1!#2\end{#1}
+\def\scrubbeforeexcl#1!#2\end{\if\relax#2\else!\removeendexcl#2\fi}
+\def\removeendexcl#1!{#1}
+
+\def\endheaderline{\hskip 0pt plus 1filll}
+
+% Macro for item lists.
+\catcode`&=\active
+\def\beginitems{%
+  \smallskip
+  \begingroup
+    \def&{\par \nobreak \hangindent\manindent \hangafter 0
+      {\parskip 0pt\noindent}\ignorespaces}
+    \parindent 0pt
+    \catcode`&=\active
+}
+\def\enditems{\par \endgroup \smallskip \noindent \ignorespaces}
+
+% Macro for item lists.
+\def\beginlist{%
+  \smallskip
+  \begingroup
+    \parindent=2em
+}
+\def\endlist{\par \endgroup \smallskip \noindent \ignorespaces}
+\catcode`&=4
+
+% Macros for exercises.
+\outer\def\exercise{\advance\exno by1\begingroup
+  \def\par{\endgraf\endgroup\medskip\noindent}
+  \medskip\noindent{\bf Exercise \chapterno.\the\exno.}\quad}
+\outer\def\answer{\immediate\write\ans{}%
+  \immediate\write\ans{\noexpand\answerto{\thechapter.\the\exno.}}%
+  \copytoblankline}
+\def\answerto#1{{\noindent\bf #1}}
+\def\copytoblankline{\begingroup\setupcopy\copyans}
+{\undoquotes
+\gdef\setupcopy{\undocatcodespecials \obeylines \obeyspaces}
+\obeylines \gdef\copyans#1
+  {\def\next{#1}%
+  \ifx\next\empty\let\next=\endgroup %
+  \else\immediate\write\ans{\next}\let\next=\copyans\fi\next}}
+
+% Macros for the active backquote character (`).
+{\catcode`.=\active \gdef.{\char'056 \penalty0}}
+\def\writetyper{\catcode`.=\active \chardef\{ =`{ \chardef\}=`}
+                      \chardef*=`* \chardef"=`"   \chardef~=`~}
+\catcode``=\active
+\def`{\futurelet\next\backquote}
+\def\typewriter#1'{\leavevmode{\writetyper \chardef`=96 \tt #1}}
+\def\backquote{\ifx\next`\let\next=\doublebackquote
+                    \else\let\next=\typewriter \fi \next}
+\def\doublebackquote`{\lqq}
+
+% The \Package command for argument <pkg> defines a macro \<pkg> that
+% sets the text <pkg> in sans-serif i.e. a share package author should
+% put a \Package{<pkg>} in their manual.tex file and then use {\<pkg>}
+% when they refer to package <pkg>.
+
+\def\Package#1{\namedef{#1}{{\sf #1}}}
+\Package{GAP}
+\Package{MOC}
+\Package{ATLAS}
+
+% For one-off references to a share package there is the following:
+
+\def\package#1{{\sf #1}}
+
+% The day
+
+\def\Day{\number\day}
+
+% The month in words
+
+\def\Month{\ifcase\month\or January\or February\or March\or April\or May\or
+  June\or July\or August\or September\or October\or November\or December\fi}
+
+% The year
+
+\def\Year{\number\year}
+
+% The date
+
+\def\Today{{\Day} {\Month} {\Year}}
+  
+% Miscellaneous macros.
+\def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
+\def\C{{\Bbb C}} \def\F{{\Bbb F}} \def\calR{{\cal R}}
+
+%T do we want these
+%\def\stars{\bigskip\centerline{\*\qquad\*\qquad\*}\bigskip}
+
+% Page numbers and running heads.
+\newif\ifheadline
+\nopagenumbers
+\def\makeheadline{\vbox to0pt{\vskip-22.5pt\hbox to\pagewidth{\vbox to8.5pt
+  {}\the\headline}\vss}\nointerlineskip}
+\headline={\ifheadline\ifodd\pageno \righthead\hfil{\rm\folio}\else
+                                    {\rm\folio}\hfil\lefthead \fi
+  \else\global\headlinetrue \hfil\fi}
+
+% Macro for inputting an auxiliary file.
+\def\inputaux#1#2#3{\immediate\openin#1=#2\jobname.#3
+  \ifeof#1\immediate\write16{No file #2\jobname.#3.}\else
+  \immediate\closein#1 \input#2\jobname.#3 \fi}
+
+% Macros for the parts of the manual.
+\outer\def\FrontMatter{%
+  \let\thechapter=\emptychapter
+  \def\lefthead{\it\chapname} \let\righthead=\lefthead
+
+  \begingroup
+  \undoquotes
+  \inputaux\labelin{}{lab}
+  %\setbox0=\vbox{\Bibliography}
+  \endgroup
+  \labchangedfalse
+  
+  % Open the auxiliary files for output.
+  \immediate\openout\tocout   =\jobname.toc
+  \immediate\openout\labelout =\jobname.lab
+  \immediate\openout\indexout =\jobname.idx
+  \immediate\openout\secindout=\jobname.six
+  \immediate\openout\citeout  =\jobname.aux
+%  \immediate\openout\ans=answers
+  \immediate\write\citeout{\bs bibstyle{alpha}}
+
+  \ifodd\pageno\else\headlinefalse\null\vfill\eject\fi
+%  \pageno=1
+}
+  
+\outer\def\Chapters{\vfill\eject
+  \chapno=0 \let\thechapter=\normalchapter \chaptertrue
+  \def\lefthead{{\it Chapter \the\chapno. \chapname}}
+  \def\righthead{\ifx\botmark\empty\lefthead\else{\it \botmark}\fi}}
+
+% GG
+% Rather than reset \chapno in \Appendices, for the .six file (which GAP's 
+% help uses), we number appendices as if they were chapters (via \the\chapno) 
+% i.e. if the last chapter was numbered 7 then for the .six file the first 
+% appendix would be numbered 8.
+% The \setors macro puts (\number\chapno - 1) \or s in the \ors macro so that 
+% \appno\chapno (= \appendixchapter) numbers the appendices sequentially from A
+% for the .lab file (which TeX uses).
+\outer\def\Appendices{\vfill\eject
+  \setors \let\thechapter=\appendixchapter \chaptertrue
+  \def\lefthead{{\it Appendix \thechapter. \chapname}}
+  \def\righthead{\ifx\botmark\empty\lefthead\else{\it \botmark}\fi}}
+
+\def\EndMatter{\vfill\eject
+  \def\thechapter{} \chapterfalse
+  \def\lefthead{{\it \chapname}}
+  \let\righthead=\lefthead
+  \hbadness=5000\relax
+  \gdef\EndMatter{}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \BeginningOfBook  . . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\def\BeginningOfBook#1{%
+  \def\book{#1}%
+  \pageno=-1%
+  \pageno=1%
+  \headlinefalse%
+  \let\thechapter=\emptychapter%
+  \def\lefthead{\it\chapname}%
+  \let\righthead=\lefthead%
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \UseReferences{<book-path>}	. . . use references from book in <book-path>
+%%
+\def\UseReferences#1{{\undoquotes
+    \inputaux\labelin{#1/}{lab}}
+}
+\let\UseGapDocReferences\UseReferences %needed so that the HTML converter
+                                       %can tell the difference
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \EndOfBook	. . . . . . . . . . . . . . . . . . . . . . . .  end the book
+%%
+\def\EndOfBook{\vfill\supereject
+  \immediate\write16{##}
+  \immediate\closeout\citeout
+  \immediate\write16{## Citations for BibTeX written on \jobname.aux.}
+  \immediate\closeout\indexout
+  \immediate\write16{## Index entries for makeindex written on \jobname.idx.}
+  \immediate\closeout\secindout
+  \immediate\write16{## Section index entries written on \jobname.six.}
+  \immediate\closeout\labelout
+  \immediate\write16{## Label definitions written on \jobname.lab.}
+  \immediate\closeout\tocout
+  \immediate\write16{## Table of contents written on \jobname.toc.}
+  %\iflabmultdef\immediate\write16{## There were multiply-defined labels.}\fi
+  \iflabundef\immediate\write16{## There were undefined labels or
+  references.}\fi
+  \iflabchanged\immediate\write16{## Labels have changed, run again. (Or
+  they were multiply defined.)}\fi
+  \immediate\write16{##}
+  \end
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \TableOfContents  . . . . . . . . . . . . . . produce a table of contents
+%%
+% name of the chapter containing the table of contents
+\def\TOCHeader{Contents}
+
+% explanation at the beginning of the table of contents
+\def\TOCMatter{%
+}
+
+% macros for generating the table of contents
+%\newif\iffirstsec\firstsectrue
+\def\dotsfill{\leaders\hbox to12pt{\hss.\hss}\hfill}
+
+% produce the chapter "Contents"
+\outer\def\TableOfContents{\Chapter{\TOCHeader}
+
+\TOCMatter
+\vskip 20pt
+\begingroup
+\rigidfalse
+\let!=\space
+\begindoublecolumns
+\inputaux\tocin{}{toc}\vfill\eject
+\enddoublecolumns
+\endgroup
+}
+
+% a one column version of \TableOfContents for short manuals
+\outer\def\OneColumnTableOfContents{\Chapter{\TOCHeader}
+
+\TOCMatter
+\vskip 20pt
+\begingroup
+\rigidfalse
+\let!=\space
+\inputaux\tocin{}{toc}\vfill\eject
+\endgroup
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \TitlePage{<text>}	. . . . . . . . . . . . . . . . generate a title page
+%%
+\long\def\TitlePage#1{%
+  \null\vfill#1\null\vfill\eject
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \Colophon{<text>}	. . . . . . . . . . . . . . generate a colophon page
+%%
+\long\def\Colophon#1{\Chapter{}
+
+#1\null\vfill\eject
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \Answers  . . . . . . . . . . . . .  produce the answers to the exercises
+%%
+% header for the answers
+\def\AnswersHeader{Answers to the Exercises}
+%
+% produce the chapter "Answers"
+\def\Answers{\Chapter{\AnswersHeader}
+
+  \parindent\manindent
+  \parskip 1ex plus 0.5ex minus 0.5ex
+  \immediate\closeout\ans
+  \input answers
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \Bibliography . . . . . . . . . . . .  produce the chapter "Bibliography"
+%%
+% header for the bibliography
+\def\BibHeader{Bibliography}
+
+% produce the chapter bibliography
+\def\Bibliography{\EndMatter\Chapter{\BibHeader}
+
+  \begingroup\undoquotes\frenchspacing
+  \parindent\manindent
+  \pretolerance=5000 %badness allowed for hypenation
+  \tolerance=5000    %badness allowed before overfull boxes appear 
+  \parskip 1ex plus 0.5ex minus 0.5ex
+  \def\begin##1##2{} \def\end##1{}
+  \let\newblock=\relax \let\em=\sl
+  \inputaux\citein{}{bbl}
+  \endgroup
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \Index  . . . . . . . . . . . . . . . . . .   produce the chapter "Index"
+%%
+% header for the index
+\def\IndexHeader{Index}
+
+% explanation at the beginning of the index
+\def\IndexMatter{%
+This index covers only this manual.
+A page number in {\it italics} refers to a whole section which is devoted to
+the indexed subject.  Keywords are sorted with case and spaces ignored,
+e.g., ```PermutationCharacter''' comes before ``permutation group''.%
+}
+
+% kerning in full index after letter
+\def\idxkern{\kern.3em}
+
+% produce the chapter index
+\def\Index{\EndMatter%
+% get the proper bookmarking function
+\global\let\setbookmarkind=\indexbookmark%
+\Chapter{\IndexHeader}
+
+  \IndexMatter
+  \bigskip
+  \begindoublecolumns
+  \pretolerance=5000 %badness allowed for hypenation
+  \tolerance=5000    %badness allowed before overfull boxes appear 
+  \parindent 0pt \parskip 0pt \rightskip 0pt plus2em \emergencystretch 2em
+  \everypar{\hangindent\smallmanindent}
+  \def\par{\endgraf\leftskip 0pt}
+  \def\sub{\advance\leftskip by\smallmanindent}
+  \def\subsub{\advance\leftskip by2\smallmanindent}
+  \obeylines
+  \inputaux\indexin{}{ind}
+  \enddoublecolumns
+}
+
+% pseudo chapters used for authors, preface, copyright &c.
+\def\PseudoInput#1#2#3{%
+\vfill\eject% to ensure the pseudo-chapter no. doesn't get into headline
+\advance\chapno by1\secno=0\subsecno=0
+\immediate\write\secindout{C #1.tex \thechapter. #2}
+\label{#2}\label{#3}} % we do this for the benefit of the HTML manuals
+
+% some often-used LaTeX functions
+\def\frac#1#2{{{#1}\over{#2}}}
+
+% as the etalchar gets written out in manual.lab, better make it nonfancy
+% (otherwise something breaks).
+\def\etalchar#1{$^{#1}$}
+\def\etalchar#1{#1}
+
+% nasty trick to cope with the `newcommand' created by bibtex
+\def\newcommand#1#2#3#4#5{}
+
+% URL stuff
+\def\URL#1{\par\kernttindent\hbox{`#1'}\ifx\EndMatter\empty\else\qquad\fi}
+\def\Mailto#1{\penalty-1000\hskip 0pt plus10cm\hbox{`#1'}}
+
+% ragged bottom will avoid large blank spaces
+\raggedbottom
+\frenchspacing
+\vfuzz=2pt

@@ -1,0 +1,38 @@
+#all descendants of c2 x c2 having order at most 2^5
+
+1         #set up group presentation 
+c2c2
+2
+1
+1
+{a, b}
+{}
+0
+  
+7        #compute its 2-covering group 
+
+9        #enter p-group generation 
+
+1        #supply automorphisms 
+2        #number of automorphisms 
+
+0 1
+1 1
+
+0 1
+1 0
+
+0       #number of soluble automorphisms
+
+5       #iteration option 
+7       #class bound 
+1       #all descendants?
+1       #set order bound?
+5       #order bound
+1       #PAG-generating sequence 
+
+1       #default algorithm?
+1       #default output 
+
+0       #exit 
+0       #exit 

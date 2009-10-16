@@ -1,0 +1,286 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intro.tex       ANUPQ documentation - introduction      Werner Nickel
+%%
+%%
+%H  $Id: intro.tex,v 1.30 2006/01/24 04:57:16 gap Exp $
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Introduction}
+
+\index{ANUPQ}
+The {\GAP}~4 package {\ANUPQ} provides an interface to  the  ANU  `pq'  C
+progam written by Eamonn O'Brien,  making  the  functionality  of  the  C
+program available to {\GAP}. Henceforth, we shall refer to  the  {\ANUPQ}
+package when referring to the {\GAP}  interface,  and  to  the  ANU  `pq'
+program or just `pq' when referring to that C program.
+
+The `pq' program consists of implementations of the following algorithms:
+
+\beginlist%ordered
+
+\item{1.}
+A *$p$-quotient algorithm* to  compute  pc-presentations  for  $p$-factor
+groups of finitely presented groups.
+
+%The algorithm implemented here is based on that described by  Newman  and
+%O'Brien \cite{NO96}, Havas and Newman~\cite{HN80}, and papers referred to
+%there. Another description of  the  algorithm  is  given  by  Vaughan-Lee
+%(see~\cite{VL90a}, \cite{VL90b}).  A  FORTRAN  implementation  of  this
+%algorithm was programmed by Alford and Havas. The basic  data  structures
+%of that implementation are retained.
+
+\item{2.} 
+A *$p$-group generation algorithm* to generate pc presentations of groups
+of prime power order.
+
+%The algorithm implemented here is based on the  algorithms  described  by
+%Newman~\cite{New77} and O'Brien~\cite{OBr90}. A FORTRAN implementation of
+%this algorithm was developed earlier by Newman and O'Brien.
+
+\item{3.}
+A  *standard  presentation  algorithm*  used  to  compute   a   canonical
+pc-presentation of a $p$-group.
+
+%The algorithm implemented here is described in~\cite{OBr94}.
+
+\item{4.} 
+An algorithm which can be used to compute the *automorphism group*  of  a
+$p$-group.
+
+\item{}
+This part of the `pq' program is  not  accessible  through  the  {\ANUPQ}
+package. Instead, users are advised  to  consider  the  {\GAP}~4  package
+{\AutPGrp} by Bettina Eick and Eamonn O'Brien, which implements a  better
+algorithm in  {\GAP}  for  the  computation  of  automorphism  groups  of
+$p$-groups.
+%The algorithm implemented here is described in~\cite{OBr94}.
+
+\endlist
+
+%Further   background   may   be   found   in~\cite{OBr95},   \cite{VL84}
+%and~\cite{NNN98}.
+
+The current version of the  {\ANUPQ}  package  requires  {\GAP}~4.4,  and
+version 1.2 of the {\AutPGrp} package. All code  that  made  the  package
+compatible with earlier versions of {\GAP} has been removed. If you still
+have {\GAP}~4.3 (at least fix4), then  you  must  use  {\ANUPQ}~2.2,  and
+{\AutPGrp}~1.1. You should not  use  earlier  versions  of  the  {\ANUPQ}
+package since they are known to have bugs.
+
+*How to read this manual*
+
+It is not expected that readers of this manual will read it in  a  linear
+fashion from cover to cover; some sections contain material that  is  far
+too technical to be absorbed on a first reading.
+
+Firstly,  installers  of  the  {\ANUPQ}  package  will   need   to   read
+Chapter~"Installing the ANUPQ package", if they have not already  gleaned
+these details from the `README' file.
+
+Once the {\ANUPQ} package is installed, users  of  the  {\ANUPQ}  package
+will benefit most by first reading Chapter~"Mathematical  Background  and
+Terminology", which gives a  brief  description  of  the  background  and
+terminology used (this chapter also cites  a  number  of  references  for
+further reading), and the introduction of Chapter~"Infrastructure"  (skip
+the remainder of the chapter on a first reading).
+
+Then  the  user/reader  should  pursue   Chapter~"Non-interactive   ANUPQ
+functions" in detail, delving into Chapter~"ANUPQ Options"  as  necessary
+for the options of the functions that are described. The user will become
+best acquainted with the {\ANUPQ} package by trying  the  examples.  This
+chapter describes the non-interactive functions of the {\ANUPQ}  package,
+i.e.~``one-shot'' functions that invoke the `pq' program in  such  a  way
+that once {\GAP} has got what it needs, the `pq' is allowed to  exit.  It
+is expected that most of the time, users will only need these functions.
+
+Advanced users will want to explore Chapter~"Interactive ANUPQ functions"
+which describes all the interactive functions of  the  {\ANUPQ}  package;
+these are functions that  extract  information  via  a  dialogue  with  a
+running `pq' process. Occasionally, a user needs the ``next  step'';  the
+functions provided in this chapter make use of data from  previous  steps
+retained by the `pq' program, thus allowing the user to interact with the
+`pq' program like one can when one uses the `pq' program as a stand-alone
+(see~`guide.dvi' in the `standalone-doc' directory).
+
+After   having   read    Chapters~"Non-interactive    ANUPQ    functions"
+and~"Interactive ANUPQ functions", cross-references will have  taken  the
+reader into Chapter~"ANUPQ Options"; by this stage, the reader need  only
+read the introduction of Chapter~"ANUPQ Options".
+
+After the reader has developed some facility with the  {\ANUPQ}  package,
+she should explore the examples described in Appendix~"Examples".
+
+If  you  run  into   trouble   using   the   {\ANUPQ}   functions,   some
+troubleshooting hints are given in Section~"Hints and Warnings  regarding
+the  use  of  Options".  If  the  troubleshooting   hints   don't   help,
+Section~"Authors and Acknowledgements" below, gives contact  details  for
+the authors of the components of the {\ANUPQ} package.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Authors and Acknowledgements}
+
+The C implementation of the ANU `pq' standalone was developed by
+
+\begintt
+Eamonn O'Brien
+Department of Mathematics
+University of Auckland
+Private Bag 92019
+Auckland
+New Zealand
+\endtt
+{\kernttindent}`email:' \Mailto{obrien@math.auckland.ac.nz}
+
+The {\GAP} 4 version of this package was adapted from the {\GAP} 3
+version by  
+
+\begintt
+Werner Nickel
+AG 2, Fachbereich Mathematik, TU Darmstadt
+Schlossgartenstr. 7, 64289 Darmstadt, Germany
+\endtt
+{\kernttindent}`email:' \Mailto{nickel@mathematik.tu-darmstadt.de}
+
+An  interactive  interface  using  iostreams  was  developed   with   the
+assistance of Werner Nickel by
+
+%\begintt
+\){\kernttindent}Greg Gamble
+\){\kernttindent}Lehrstuhl D f\accent127ur Mathematik, RWTH Aachen
+\){\kernttindent}Templergraben 64, 52062 Aachen, Germany
+%\endtt
+
+{\kernttindent}`email:' \Mailto{gregg@math.rwth-aachen.de} 
+
+The authors would  like  to  thank  Joachim  Neub\accent127user  for  his
+careful    proof-reading    and    advice,    and     for     formulating
+Chapter~"Mathematical Background and Terminology".
+
+We would also like to thank Bettina Eick who by her testing and provision
+of examples helped us to eliminate a number of bugs and  who  provided  a
+number of valuable suggestions for extensions of the package  beyond  the
+{\GAP}~3 capabilities. 
+
+\index{bug reports}
+If you find a bug, the last section of {\ANUPQ}'s `README' describes  the
+information we need and where to send us a bug report;  please  take  the
+time to read this (i.e.~help us to help you).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Change history}
+
+Below we list the main changes between versions of the {\ANUPQ} package.
+
+\beginlist
+
+\atindex{option pkgbanner}{@option \noexpand`pkgbanner'}
+  
+\item{`3.0'}
+Backward compatibility code for pre-4.4 versions of {\GAP}  removed.  The
+{\ANUPQ} package now requires at least {\GAP}~4.4 and version 1.2 of  the
+{\AutPGrp} package, and the {\AutPGrp} package is now essential.
+
+\item{}
+Deprecated commands replaced by {\GAP}~4.4 commands, e.g.~`PrimeOfPGroup'
+replaced by `PrimePGroup', `ReadPkg' replaced by `ReadPackage', including
+in the `pq' program code (so `pq' program is now version 1.8).
+
+\item{}
+Improved non-isomorphism test in `IsPqIsomorphicPGroup' using  suggestion
+made by Marco Costantini (thanks Marco).
+
+\item{}
+Removed `pkgbanner' option that used to control how the {\ANUPQ}  package
+banner was displayed.
+
+\item{`2.2'}
+Corrected a typo. in `PackageInfo.g'.
+
+\item{`2.1'}
+Binomial coefficient algorithm in `pq' program (now version 1.7) modified
+to avoid overflow.
+
+\item{}
+A bug discovered by Tobias Ro{\ss}mann was fixed. It was  caused  in  the
+{\ANUPQ} package's interface by not passing on the  parameter  `StepSize'
+to the `pq' program properly. This bug  could  result  in  computing  the
+wrong number of descendants if a `StepSize' different from 1 was chosen.
+
+\item{}
+Changes suggested by Gary Zablackis were implemented in order to make the
+package run under Windows with cygwin:
+
+\itemitem{--}%unordered
+use `[grp]' as default filename instead of `\<grp>',
+
+\itemitem{--}
+add target to the makefile for compiling the `pq'  program  with  cygwin,
+and
+
+\itemitem{--} 
+run `PqQuitAll()' more often in test examples. This reduces the number of
+simultaneously running processes and avoids bumping into system limits.
+
+\item{`2.0'}
+Changes to `pq' program (now version 1.6) and  {\GAP}  code  to  fix  bug
+reported by Boris Girnat (thanks Boris!) where too many descendants  were
+generated for a group of class more than 1  with  insoluble  automorphism
+group. Also more changes for {\GAP}~4.4, for which
+
+\itemitem{--}%unordered
+option `pkgbanner' for suppression of the package  banner  is  deprecated
+(now does nothing); its function is now provided by an optional  argument
+of  the  `LoadPackage';  see  Section~"ref:LoadPackage"  in  the   {\GAP}
+Reference Manual); and
+
+\itemitem{--}
+the package banner is no longer `Info'-ed at `InfoANUPQ' level 1, and  so
+cannot be suppressed by setting the `InfoANUPQ' level to 0.
+
+\item{}
+For {\GAP}~4.3fix4, the previous behaviour  for  the  display/suppression
+and `Info'-ing of the banner is unchanged, and `RequirePackage'  must  be
+used rather than the new command `LoadPackage'.
+
+\item{}
+`PqSupplementInnerAutomorphisms' now returns a record  analogous  to  the
+`AutomorphismGroupPGroup'  function  of  the  {\AutPGrp}   package,   and
+`AutomorphismGroupPGroup' rather than `PqSupplementInnerAutomorphisms' is
+now used to generate the required automorphism group data  in  descendant
+calculations. The corresponding `PqExample' example  has  similarly  been
+modified.
+
+\item{`1.5'}
+Fixed bug in the filtering of ones from input to `pq' program (thanks  to
+Robert Morse again for  the  fix).  Some  preparatory  changes  made  for
+{\GAP}~4.4.
+
+\item{`1.4'}
+Removed an unnecessary file and line from a file in the `src' directory.
+
+\item{`1.3'}
+Efficiency improvements: in particular, the use of `IsSyllableWordsFamily'
+as first argument of some `FreeGroup' commands.
+
+\item{`1.2'}
+Fixed some inefficiencies in transmission of relators to the `pq' program
+(thanks to  Robert  Morse  for  identifying  the  problem).  Updated  for
+bugfixes in fix4 of {\GAP}~4.3, which required some usages of  `Pcgs'  to
+be replaced by `GeneralizedPcgs'. Requires at least {\GAP}~4.3fix4 and an
+updated {\AutPGrp} package that  uses  `SetGeneralizedPcgs'  in  lieu  of
+`SetPcgs' in its definition of `ConvertHybridAutGroup'.
+
+\item{`1.1'}
+First {\GAP}~4 release. Requires  at  least  {\GAP}~4.2,  but  {\GAP}~4.3
+recommended. Supersedes the earlier {\GAP}~3 version (1.0) in many  ways;
+in particular, it provides an interactive interface  using  the  IOStream
+technology introduced in {\GAP}~4.2.
+
+\endlist
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

@@ -1,0 +1,28 @@
+
+# In ACE 3.000, the (re)setting of maxrow from maxrow1 in al1_start() in
+# control.c was awry.  Setting maxrow for a redo/continue with maxrow<nextdf 
+# caused it to be `rounded up' to nextdf.  If nextdf = maxrow+1 = tabsiz+1 
+# from the previous run, this is past the end of the table.  Depending on
+# the machine/OS/compiler, this could cause a crash.  See email to/from 
+# Volker Gebhardt, Feb 2001.
+#
+# On older versions of ACE, the attempt to set Max:160 would be rounded
+# up to one past the current size (ie, 165), which is too big.  Newer
+# versions round up Max:160 to only 164.
+
+#Text;
+#Opt;
+Gr: rst;
+Rel: r^t=r^2, s^r=s^2, t^s=t^2;
+Fel;
+Wo: 1000;		# int(1000/6) - 2 = 164
+Max: 164;
+Mess: 50;
+Text;
+Beg;
+Max: 160;
+Mess: 1;
+Text;
+Cont;
+Text;
+

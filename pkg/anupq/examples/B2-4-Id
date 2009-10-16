@@ -1,0 +1,13 @@
+#Example: "B2-4-Id" . . . alternative way to generate B(2, 4)
+#Generates B(2, 4) by using the `Identities' option
+#... this is not as efficient as using `Exponent' but
+#demonstrates the usage of the `Identities' option.
+#vars: F, f, procId;
+#options: 
+F := FreeGroup("a", "b");
+## All words w in the pc generators of B(2, 4) satisfy f(w) = 1 
+f := w -> w^4;
+#alt: do
+#procId := PqStart( F );
+#alt: sub <procId> for <F>
+Pq( F : Prime := 2, Identities := [ f ] );

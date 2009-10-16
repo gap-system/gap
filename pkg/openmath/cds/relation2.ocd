@@ -1,0 +1,104 @@
+<CD>
+<CDName> relation2 </CDName>
+<CDURL> http://www.openmath.org/cd/relation2.ocd </CDURL>
+<CDReviewDate> 2003-04-16 </CDReviewDate>
+<CDDate> 2001-04-16 </CDDate>
+<CDVersion> 1 </CDVersion>
+<CDRevision> 0 </CDRevision>
+<CDStatus> experimental </CDStatus>
+<CDUses>
+  <CDName>set1</CDName>
+  <CDName>list1</CDName>
+</CDUses>
+
+<Description>
+    This CD holds the binary relations. 
+</Description>
+
+<CDDefinition>
+<Name> binary_relation </Name>
+<Description> 
+The argument to binary_relation is a set of pairs.
+</Description>
+<FMP>
+</FMP>
+
+<Example>
+An example which represents the statement (1,2) \in r.
+<OMOBJ>
+  <OMA>
+    <OMS cd="set1" name="in"/>
+    <OMA>
+      <OMS cd="list1" name="list"/>
+      <OMI> 1 </OMI>
+      <OMI> 2 </OMI>
+    </OMA>
+    <OMV name="r" />
+  </OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+
+<CDDefinition>
+<Name> hasse_diagram </Name>
+<Description> 
+The arguments to hasse_diagram are pairs
+of the form (elt, list) where <list> is the list
+of elements which cover <elt>.
+Define a relation < by a < b if 
+b covers a. Then
+a) < has the properties that 
+	i) (a <b) and (b<c) implies not(a<c) 
+	ii) not (a < a)
+
+b) the reflexive transitive closure of < is a partial order.
+
+</Description>
+<Example>
+An example of a hasse diagram.
+<OMOBJ>
+  <OMA>
+    <OMS cd="relation2" name="hasse_diagram"/>
+    <OMA> <!-- 0 < a,b,c -->
+      <OMS cd="list1" name="list"/>
+      <OMSTR> 0 </OMSTR>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMSTR> a </OMSTR>
+				<OMSTR> b </OMSTR>
+				<OMSTR> c </OMSTR>
+			</OMA>
+    </OMA>
+    <OMA> <!-- a < 1 -->
+      <OMS cd="list1" name="list"/>
+      <OMSTR> a </OMSTR>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMSTR> 1 </OMSTR>
+			</OMA>
+    </OMA>
+    <OMA> <!-- b < 1 -->
+      <OMS cd="list1" name="list"/>
+      <OMSTR> b </OMSTR>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMSTR> 1 </OMSTR>
+			</OMA>
+    </OMA>
+    <OMA> <!-- c < 1 -->
+      <OMS cd="list1" name="list"/>
+      <OMSTR> c </OMSTR>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMSTR> 1 </OMSTR>
+			</OMA>
+    </OMA>
+  </OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+
+</CD>
+

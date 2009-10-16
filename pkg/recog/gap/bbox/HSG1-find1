@@ -1,0 +1,26 @@
+# Black box algorithm to find standard generators of HS
+
+	set V 0
+lbl SEMISTD
+	rand 1
+	ord 1 A
+	incr V
+	if V gt 1000 then timeout
+	if A notin 1 2 3 4 5 6 7 8 10 11 12 15 20 then fail
+	if A noteq 20 then jmp SEMISTD
+
+	pwr 10 1 2
+	pwr 4 1 3
+
+	set X 0
+lbl CONJUGATE
+	incr X
+	if X gt 1000 then timeout
+	rand 4
+	cjr 3 4
+	mu 2 3 5
+	ord 5 D
+	if D notin 5 6 8 10 11 15 20 then fail
+	if D noteq 11 then jmp CONJUGATE
+
+	oup 2 2 3

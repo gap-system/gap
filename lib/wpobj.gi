@@ -2,7 +2,7 @@
 ##
 #W  wpobj.gi                     GAP library                 Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: wpobj.gi,v 4.8 2002/04/15 10:05:30 sal Exp $
 ##
 #Y  Copyright (C)  1997,  
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the implementations for weak pointer objects
 ##
 Revision.wpobj_gi :=
-  "@(#)$Id$";
+  "@(#)$Id: wpobj.gi,v 4.8 2002/04/15 10:05:30 sal Exp $";
 
 #############################################################################
 ##

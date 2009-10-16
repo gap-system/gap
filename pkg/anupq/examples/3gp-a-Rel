@@ -1,0 +1,13 @@
+#Example: "3gp-a-Rel" . . . based on: examples/3gpA
+#(exponent 9 group with 2 generators of order 3)
+#vars: F, procId, rels;
+#options: OutputLevel 
+F := FreeGroup("a", "b");
+rels := ["a^3", "b^3"];
+#alt: do
+#procId := PqStart( F );
+#comment: set a different print level by supplying <OutputLevel>
+#alt: sub <procId> for <F>
+Pq( F : Prime := 3, Exponent := 9, Relators := rels, ClassBound := 6,
+#sub <OutputLevel> for <1> if set and ok
+        OutputLevel := 1 );

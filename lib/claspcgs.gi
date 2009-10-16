@@ -2,7 +2,7 @@
 ##
 #W  claspcgs.gi                 GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: claspcgs.gi,v 4.71 2005/06/24 14:54:21 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  representation of the groups.
 ##
 Revision.claspcgs_gi:=
-    "@(#)$Id$";
+    "@(#)$Id: claspcgs.gi,v 4.71 2005/06/24 14:54:21 sal Exp $";
 
 #############################################################################
 ##

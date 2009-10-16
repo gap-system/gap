@@ -4,7 +4,7 @@
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpnames.gi,v 4.19 2009/09/23 15:55:26 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -21,7 +21,7 @@
 ##  from GAP3 code written by Markus Püschel and Sebastian Egner.
 ##
 Revision.grpnames_gi :=
-  "@(#)$Id$";
+  "@(#)$Id: grpnames.gi,v 4.19 2009/09/23 15:55:26 gap Exp $";
 
 #############################################################################
 ##
@@ -32,16 +32,35 @@ InstallMethod( DirectFactorsOfGroup,
 
   function ( G )
 
-    local  N, facts;
+    local  N, facts, sizes, i, j, s1, s2;
 
     if not IsFinite(G) then TryNextMethod(); fi;
-    N := Difference(NormalSubgroups(G),[TrivialSubgroup(G),G]);
-    facts := First(Combinations(N,2),
-                   norms -> Product(List(norms,Size)) = Size(G)
-                            and IsTrivial(Intersection(norms)));
-    if   facts = fail
-    then return [ G ];
-    else return Union(List(facts,DirectFactorsOfGroup)); fi;
+    N := ShallowCopy(NormalSubgroups(G));
+    sizes := List(N,Size);
+    SortParallel(sizes,N);
+    for s1 in Difference(Set(sizes),[Size(G),1]) do
+      i := PositionSet(sizes,s1);
+      s2 := Size(G)/s1;
+      if s1 <= s2 then 
+        repeat
+          if s2 > s1 then
+            j := PositionSet(sizes,s2);
+            if j = fail then break; fi;
+          else 
+            j := i + 1;
+          fi;
+          while sizes[j] = s2 do
+            if IsTrivial(Intersection(N[i],N[j])) then
+              return Union(DirectFactorsOfGroup(N[i]),
+                           DirectFactorsOfGroup(N[j]));
+            fi;
+            j := j + 1;
+          od;
+          i := i + 1;
+        until sizes[i] <> s1;
+      fi;
+    od;
+    return [ G ];
   end );
 
 #############################################################################
@@ -575,6 +594,10 @@ InstallMethod( IsPSL,
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
+    if Size(G)>12 and not IsSimpleGroup(G) then
+      return false;
+    fi;
+
     # check if G has appropiate size
     npes := LinearGroupParameters(Size(G)).npePSL;
     if Length(npes) = 0 then return false; fi;
@@ -1077,8 +1100,10 @@ InstallMethod( StructureDescription,
     elif not IsTrivial(FrattiniSubgroup(G))
     then return insertsep([StructureDescription(FrattiniSubgroup(G)),
                            StructureDescription(G/FrattiniSubgroup(G))],
-                          " . ","x:.");       
-    elif IsPosInt(NrPerfectGroups(Size(G))) then
+                          " . ","x:.");
+    elif     IsPosInt(NrPerfectGroups(Size(G)))
+         and not Size(G) in [ 86016, 368640, 737280 ]
+    then
          id := PerfectIdentification(G);
          return Concatenation("PerfectGroup(",String(id[1]),",",
                                               String(id[2]),")");

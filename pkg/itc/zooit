@@ -1,0 +1,44 @@
+#!/bin/sh
+
+cd ..
+ARCHNAME=itc-1p4.zoo
+
+# prepare two auxiliary files which will be used to mark
+# the files to be zooed as text or binary files
+rm -f TEXTCOM BINCOM
+echo '!TEXT!'  >TEXTCOM
+echo '/END'   >>TEXTCOM
+echo '!BINARY!'>BINCOM
+echo '/END'   >>BINCOM
+
+# start new zoo file
+rm -f $ARCHNAME
+
+# zoo it
+zoo ahc $ARCHNAME itc/README <TEXTCOM
+
+for i in itc/*.g; do
+  zoo ahc $ARCHNAME $i <TEXTCOM
+done
+
+zoo ahc $ARCHNAME itc/gap/itc.gd itc/gap/itc.gi <TEXTCOM
+
+for i in itc/examples/[a-z]*; do
+  zoo ahc $ARCHNAME $i <TEXTCOM
+done
+
+for i in itc/doc/{make_doc,*.tex,manual.{bib,ind,mst,six,toc}}; do
+  zoo ahc $ARCHNAME $i <TEXTCOM
+done
+
+for i in itc/doc/{manual.{dvi,pdf}}; do
+  zoo ahc $ARCHNAME $i <BINCOM
+done
+
+for i in itc/htm/*.htm; do
+  zoo ahc $ARCHNAME $i <TEXTCOM
+done
+
+# remove the auxiliary files
+rm -f TEXTCOM BINCOM
+

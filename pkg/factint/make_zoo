@@ -1,0 +1,5 @@
+#!/bin/sh
+cd ..
+rm -f README.factint factint.zoo
+cp factint/readme.txt README.factint
+find factint -type f | egrep -v 'CVS|zoo|bin|[.]cvs|[.]aux|[.]toc|[.][ib]lg|[.]log|[.]ind|[.]idx|[.]lab|[.]swp|[.]bak|~|[.]#' | zoo ahI factint.zoo

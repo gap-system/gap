@@ -1,0 +1,13 @@
+#Example: "2gp-Rel" . . . based on: examples/2gp
+#Construction of largest quotient of class 6 of a 2-group
+#vars: F, procId, rels;
+#options: OutputLevel 
+F := FreeGroup("a", "b");
+rels := [ "[b, a, a]", "(a * b * a)^4"];
+#alt: do
+#procId := PqStart( F );
+#comment: set a different print level by supplying <OutputLevel>
+#alt: sub <procId> for <F>
+Pq( F : Prime := 2, ClassBound := 6, Relators := rels, 
+#sub <OutputLevel> for <1> if set and ok
+        OutputLevel := 1 );

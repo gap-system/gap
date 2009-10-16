@@ -1,0 +1,120 @@
+How to test manual examples
+===========================
+
+There is the `testexample' script in doc/test which we use to check the
+manual examples before a release.
+
+How to build the various manuals (.dvi, .pdf, .ps, HTML)
+========================================================
+
+Change to directory doc and do:
+
+   ./make_doc
+
+(Don't do: make     ... the Makefile is out-of-date.)
+If you have trouble with the build, check you have the pre-requisite
+software, most of which comes standard with RedHat 6.0 Linux:
+
+I: tex, bibtex, makeindex, dvips, pdftex
+
+   The above are all packaged up nicely in teTeX (http://www.tug.org/teTeX/), 
+   which is generally easy to install, even from sources. The Linux
+   distributions do an ok job of packaging up the teTeX distribution.
+   (Some of us purists don't like the way the various brands of Linux
+   decompose teTeX though.)
+
+   Building the Ref manual, in particular, requires a large pool_size.
+   If you have an older version of TeX, built with Web2C 6.1, you will
+   need to build a `big TeX' (to find out what version of Web2C TeX was
+   built with, just type: tex    ... it announces itself on the 1st line).
+   However, if you have a TeX as old as that you probably won't have pdftex.
+   Since version 0.9 of teTeX, pdftex has been included and the TeX provided 
+   has been built with Web2C 7.2+, which allows the pool_size to be set 
+   dynamically in a config file: texmf.cnf. This file is generally in a path 
+   something like: .../texmf/web2c/texmf.cnf. Try:
+
+   kpsewhich texmf.cnf
+
+   ... that should return the correct path of that file on your system.
+     Check the value of pool_size in the texmf.cnf file: 125000 is too small
+   and double that is fine (and is also ample for pdftex, which needs 
+   just a bit more than tex). So setting:
+
+   pool_size = 250000
+
+   should ensure the tex-ing part goes ok.
+     If you have to compile pdftex from sources you may need to upgrade
+   your (g)cc; actually you need g++ or c++. egcs is now the official supplier 
+   of gcc, and the latest version should give the compiler with the addons
+   you need. Find it at: http://gcc.gnu.org/
+   
+   There is a benign problem with amssym.tex in older distributions of TeX
+   (including teTeX-0.9). Version 2.2b, dated 26 February 1997 or later,
+   is fine. Version 2.2a has a bug which opens a \begingroup that never
+   gets closed with an \endgroup resulting in a:
+   (\end occurred inside a group at level 1)
+   error message, when tex-ing perfectly good .tex files that input 
+   gapmacro.tex (and hence amssym.tex). The error message can be
+   safely ignored, but if it bothers you, replace your amssym.tex with the
+   latest from CTAN (start at URL: http://www.tug.org/CTANfind.html and
+   type: amssym.tex   in the first search box and <return>; that will take
+   you to a list of mirror sites, link to the one closest you, and among the
+   list of choices highlighted you want the version dated 26 February 1997 or
+   later. Hold <shift> down when you link to your choice to download, with
+   Netscape. If one mirror site is incomplete and doesn't have it, back up
+   and select another site.).
+
+II: perl
+
+   make_doc runs a number of other scripts to make the manuals.
+   etc/buildman.pe creates ref/XXX.tex files from build/XXX.msk files.
+   etc/convert.pl creates the HTML versions of the manuals.
+   Both of these require perl (perl 4 versions are insufficient).
+   Probably even perl 5.003 won't work. Versions of perl later than
+   perl 5.004_004 should be fine. Find out the version with: perl -v.
+   Find the latest perl at http://www.perl.com/pub.
+
+   The scripts mentioned above both assume perl has path: /usr/bin/perl
+   If this is not the case on your system edit the first line of each of
+   etc/buildman.pe and etc/convert.pl to the path of perl on your system.
+
+III: awk
+
+   In creating the indices of each manual, make_doc runs a script 
+   doc/manualindex, which runs awk, then makeindex and then awk again.
+   The second awk script has been sanitised of `match' commands which
+   are not understood by awk on SunOS 5.5 (Solaris). Thus now any awk
+   should suffice (including those that are really nawk or gawk = GNU-awk).
+   It's possible that on some systems one may actually need GNU-awk (i.e. 
+   gawk which on Linux systems is symbolically linked to awk).
+   To run properly the makeindex step requires a manual.mst (Makeindex
+   STyle) file (in the directory where manual.tex lies).
+   Creating the all-manuals HTML index is done with scripts 
+   doc/htm/allhtmlindex and doc/htm/onehtmlindex. The second of these
+   also uses awk and has been similarly sanitised of `match' commands.
+   At the time of writing GNU-awk was obtainable via URL:
+   http://www.crossmyt.com/hc/htmlchek/awk-perl.html
+
+IV: tth
+
+   In creating the HTML manuals, make_doc calls etc/convert.pl with option
+   -t (which means use tth whenever a maths formula $...$ or $$...$$ is
+   encountered); etc/convert.pl should work with any version of tth; it was
+   originally designed to work with tth 2.0, but has been modified so that it
+   also now works for the later versions (at least up to tth 2.86). (At some 
+   stage between these two versions a <p> (paragraph) was inserted before each 
+   translated formula. The current etc/convert.pl now copes with this.)
+   To find out the version of your tth, type:  tth -H
+   (etc/convert.pl now calls tth with the -H switch to discover its version
+   number, and announces that version number.)
+   Versions before tth 2.0 should definitely be upgraded, but even versions
+   up to tth 2.51 are deficient (being unaware of \mid, \land, \gets, \lbrack,
+   \rbrack and unable to translate \not\in or \not\subset ... etc/convert.pl
+   copes with all but the last of these deficiencies - if a version of TtH
+   prior to 2.52 is used etc/convert.p translates \not\subset to the words:
+   not subset - if you don't like this, upgrade!)
+   Download the latest tth from URL:
+   http://hutchinson.belmont.ma.us/tth/tth-noncom/download.html
+   Compiling what is downloaded via the
+   `C code for any platform.' link is easy with gcc.
+

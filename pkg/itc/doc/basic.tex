@@ -1,0 +1,339 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  basic.tex              GAP documentation            Joachim Neub"user
+%%
+%H  $Id: basic.tex,v 1.8 2002/07/16 14:17:37 gap Exp $
+%%
+%Y  Copyright (C) 1999, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The Basic Operations}
+
+\index{Mendelsohn Condition}
+
+For the meaning of terms used and the mathematical background we again
+refer to \cite{Neu82}.
+In particular, we will quote as ``Mendelsohn Condition'' the condition
+formulated in Lemma~1 and Theorem~2 of that paper for eventual
+termination of a CE.
+In Sections "Making a Definition" and
+"Handling a Coincidence" of this chapter, respectively, we describe
+briefly what the two basic operations ``Making a Definition'' and
+``Handling a Coincidence'' do in {\ITC}. In Section "Some Definition
+Strategies" we introduce some ``Definition Strategies'' from which a
+definition sequence can be put together if one does not want to define
+it step by step. Sections "Sorting definitions" and "The Short-cut
+Method" describe methods by which one can modify existing definition
+sequences. The latter one may be of particular interest because it
+tries to ``prune'' a posteriori a definition sequence that has led to
+closure of all tables only after a number of coincidences had to be
+handled.
+
+In the subsequent chapters we will then refer to these operations and
+strategies.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Making a Definition}
+
+\index{definition!making}
+
+{\ITC} provides the possibility to define new coset numbers by
+clicking into certain places in various tables.
+
+In each of these cases a new coset number will be defined to represent
+a coset that is the product (from the right) of an already defined
+coset with coset number $i$ by an element $x$ which is a generator or
+its inverse. If $c$ is the highest coset number defined so far, this
+new coset number will be $c+1$. It should be clear from understanding
+the idea of CE that this new coset number may in fact (by a different
+word in the generators) represent a coset for which a (lower) number
+has already been defined, and that this fact may only become apparent
+much later in the CE process.
+
+The new coset number $c+1$ is inserted into all relevant places in the
+coset table and all other tables. Also all consequences of this
+definition are entered into all tables, which in particular will get a
+new row $c+1$. This newly defined coset number will occur in red
+colour in all places and so will the entries made as consequence of
+this definition. Entries that were previously coloured red get
+recoloured black.
+
+Note however that as a consequence of this definition we may have
+obtained one or several coincidences. If this happens and if the
+coincidence handling is switched on (see `coincidence handling on',
+"coincidence handling on", in the menu of the top button `Settings')
+several coset numbers may get eliminated, and as the newly defined one
+may be among them, in fact it may not appear at all on the screen.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Some Definition Strategies}
+
+\index{definition!strategies}
+
+Already the first implementations of CE used different ``strategies''
+for defining coset numbers, many interesting comparisons of their
+merits can be found in papers of George Havas and also in Sims' book
+\cite{Sims94}. Not all but some are availavble in {\ITC}, but those
+that are come in two forms.
+
+\beginlist
+
+\item{--}
+  Either {\ITC} can be asked to try to close the table following a
+  chosen strategy. All commands to do this can be chosen from the menu
+  pulled down using the top button `Close' (see~"close table by Felsch"
+  ff.).
+
+\item{--} Or one can prescribe that {\ITC} follows such a strategy
+  only for a number of steps. This can in principle be done using
+  bottom buttons. However since there are several choices of filling
+  gaps of length 1, one has to specify this choice before specifying
+  the number of such ``fill gaps'' steps. This choice can be made using
+  the possibilities offered in the menu pulled down by the top button
+  `Settings' (see~"gaps strategy 1").
+
+\endlist
+
+In the sequel we will describe the available strategies independently
+of their being used in one or the other way.
+
+The *Felsch Strategy* (named after Hartmut Felsch, who first
+implemented it completely, see~\cite{Fel61}, although according to
+John Leech, see~\cite{Lee84}, the strategy was already used before in
+a partial implementation by Bandler, see~\cite{Ban56}) proceeds to
+define new coset numbers by row-wise from left to right filling the
+empty places of the Coset Table. It should be noted that of course
+quite different definition sequences can be obtained by just permuting
+the columns of the Coset Table. Using {\ITC} this can either be
+achieved by renumbering the generators in the input of the group, or
+by filling lines in a different order ``by hand''. The Felsch strategy
+automatically fulfills the ``Mendelsohn Condition'' and hence is bound
+to stop eventually if the index of <h> in <g> is finite.
+
+The *HLT Strategy* is named after B. Haselgrove, J. Leech, and H. F.
+Trotter, see~\cite{Lee84}. Its idea is to go for finding consequences
+soon by making definitions such that rows in Subgroup and Relation
+Tables get filled. Originally (when computers were still very slow)
+after a definition made in this way no search for consequences was
+started in order to save time, but only the consequences obtained ``on
+purpose'' by filling a row were noted. In {\ITC} this is not the case,
+after each definition a complete search for all consequences is made,
+so that what we call HLT is not quite the original method. Note that
+by a pure HLT strategy the Mendelsohn Condition is not guaranteed.
+The CE may run into infinite loops although the index of <h> in <g> is
+finite. In programs such as ACE therefore in order to guarantee the
+Mendelsohn Condition the default HLT is modified by closing a row of
+the Coset Table after all corresponding rows of Relation Tables have
+been closed.
+Note that this is not done in {\ITC} because we
+want to provide the user with the possibility to experiment with
+clearly understood alternatives, not with a safe program to enumerate
+millions of cosets.
+
+*Filling gaps of length 1* in relation (or subgroup) tables has in
+particular been propagated by George Havas. The idea is that this is
+the ``cheapest'' way to obtain consequences. As will be seen in the
+examples, in particular that of the Fibonacci Group $F(2,7)$, the
+result heavily depends on the choice of one of the sometimes many gaps
+of length 1 to be filled. (Note in particular that these can occur
+not only in the Relation Tables that are shown by {\ITC}, but also in
+relation tables belonging to cyclicly permuted relators.) To explain
+the different strategies available in {\ITC} for filling gaps of
+length 1 we have to introduce the notions of the equivalence class
+and of the weight of a gap of length 1.
+
+Let a gap of length 1 in a Relation Table or Subgroup Table between
+coset numbers $i$ and $j$ be filled by defining a new coset number $k$
+in this place. Then, still excluding the newly introduced $k$th row,
+this fills two places in the Coset Table which we call a ``pair'' of
+``dots'' (These places will indeed be marked by dots in the {\ITC} Coset
+Table). On the set of all dots in the Coset Table we define the
+finest equivalence relation in which ``paired'' dots are equivalent. So
+each gap of length 1 in a Subgroup or Relation Table determines a
+unique equivalence class of dots, and the length of this class is
+defined to be the ``weight'' of the gap of length 1. For each class we
+define its ``representative'' to be the first of its dots with respect
+to the usual row-wise from left to right ordering of positions in the
+Coset Table. (Instead of speaking of equivalnce classes of dots, we
+will sometimes also speak of equivalence classes of gaps of length 1.)
+
+For choosing the next gap of length 1 we can now define several
+strategies:
+
+\beginitems
+
+`strategy 1 (first gap)' &
+  Here the gap belonging to the first dot in the row-wise from left to
+  right scan of the Coset Table (irrespective of its weight) is filled.
+
+`strategy 2 (first rep of maximal weight)' &
+  Here among the equivalence classes of gaps of maximal weight the one
+  is chosen for which the representative dot occurs first in the
+  row-wise from left to right scan of the Coset Table.
+
+`strategy 3 (last rep of maximal weight)' &
+  Here among the equivalence classes of gaps of maximal weight the one
+  is chosen for which the representative dot occurs last in the
+  row-wise from left to right scan of the Coset Table.
+
+\enditems
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Handling a Coincidence}
+
+Whenever a row in a Subgroup or Relation Table closes because of a new
+definition made we will get a consequence, saying that the product of
+a coset with number $i$ by $x$, a generator or its inverse, equals a
+coset with number $j$. This fact may not yet be ``known'' in the Coset
+Table, in which case it is entered into the Coset Table, or it may
+already be known in exactly this form in the Coset Table, in which
+case no action is needed. However the Coset Table may also contain
+already the information that the product of the coset with number $i$
+by $x$ equals a coset with number $k$ different from $j$. In this
+case we learn that $j$ and $k$ really denote the same coset.
+
+When such a ``coincidence'' is detected, and if $k$ is bigger than $j$,
+say, all consequences of the fact that then the $j$th and the $k$th
+row of the Coset Table must describe the same facts are saved in the
+$j$ th row and other rows of the Coset Table, before the $k$th row is
+declared ``dead''. (See \cite{Neu82} for a simplified description of
+that process and a justification why it preserves all essential
+features of a coset table.)
+
+This is done automatically in {\ITC} if the coincidence handling is
+switched on, it can be done ``by hand'' if it is switched off
+(see~"coincidence handling off").
+
+Note that as a consequence of handling a particular coincidence new
+ones may be detected. All these are worked off automatically or must
+be worked off ``by hand'', respectively, before new definitions can be
+made.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sorting Definitions}
+
+\index{definition!sorting}
+
+The purpose of this method is to modify definition sequences in order
+to be able to compare different such sequences. This will be done by
+constructing from a given definition sequence a ``canonical'' one by
+reordering and renumbering coset numbers. The method proceeds as
+follows.
+
+In a first *step* all cosets obtained from the coset with number $1$
+by multiplication with generators or their inverses will be arranged
+in the order in which they occur in a row-wise scan of the Coset Table
+from left to right. Then the first of these is taken and an analogous
+step is performed with its images under all the generators and their
+inverses. The coset numbers obtained in this way are appended to the
+sequence obtained in the first step. After that the same is done again
+and again in obvious analogy to this second step until all coset
+numbers in the Coset Table have been rearranged by this procedure.
+
+Then the coset numbers are changed according to this new ordering.
+
+The definition sequence thus obtained is now processed by CE (with
+prescribed definition sequence). In this CE some of the coset numbers
+may get eliminated by coincidences, so that the resulting definition
+sequence may be shorter (but can never get longer) than the original
+one. Moreover because of such a coincidence the intended ordering may
+again be disturbed. If that is the case, the whole *procedure* -- as
+described up to this point -- is repeated. However since the second
+definition sequence will be lexicographically earlier than the first
+one we must arrive at a stable sequence after a finite number of
+repetitions of such procedures.
+
+This ``Sorting Definitions'' is applied to the definition sequence after
+all tables have been closed. Note that if the original definition
+sequence will have been obtained by a pure Felsch strategy, it will
+not be changed by this Sorting Definition method.
+
+We remark that this method can be used independently of the Short-cut
+method (to be described next) before or after it. Combining the two
+methods may in fact improve but also deteriorate results.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Short-cut Method}
+
+It is easy to construct examples of presentations of finite groups
+such that any coset enumeration process will have to define some
+``redundant'' coset numbers, that is, will have to handle some
+``coincidences'' before finding the order of that group. An easy example
+is the trivial group presented on one generator $x$ by the relators
+$x^5$ and $x^7$. In such cases it is a natural challenge to find
+definition sequences that reach the result with few coincidences
+showing up. No method is known that will construct a definition
+sequence with a number of coincidences guaranteed to be minimal. The
+package ACE by George Havas and Colin Ramsey (see~\cite{Ram99})
+contains various strategies that have proven to be very efficient in
+constructing from scratch definition sequences involving few
+coincidences.
+
+Here we describe a different approach, namely to try a posteriori to
+construct a definition sequence with few coincidences by ``pruning'' an
+already existing definition sequence that had led to coincidences. We
+call this the ``Short-cut method''.
+
+Let a definition sequence be given that at the end after defining a
+last coset number $n$ leads to closure of the tables. We trace back
+the sequence of those definitions from $n$ to coset number $1$ that
+were actually used to reach coset number $n$. Say $k$ coset numbers
+occur in that sequence which we number $i_1~=~1,...,i_k~=~n$. We mark
+these $k$ coset numbers as being ``indispensable'' and move their
+sequence to the beginning of a new definition sequence. In general not
+all coset numbers defined in the CE will occur in the sequence of
+indispensables, so we complement the sequence of indispensables by the
+remaining coset numbers in the order in which they occurred in the
+original definition sequence. If we now start a CE with that new
+definition sequence, it must definitely close after having worked
+through this whole series, however it may in fact lead to closure
+after only a subset of these definitions.
+
+With the definition sequence obtained from this second CE (that at the
+beginning will still retain indispensables) we now repeat the same
+procedure starting again from the last coset defined before closure,
+if this was not yet marked indispensable. The subsequence thus
+obtained is again marked indispensable and moved to the beginning of
+the previously existing definition sequence. Behind these, we put
+again all remaining coset numbers of the previously obtained sequence
+and then start a CE again. (Note that those marked ``indispensable'' in
+the first ``loop'' now come behind those marked ``indispensable'' in the
+second ``loop'' and that some of the ``indispensables'' of the first
+``loop'' may now in fact vanish in this second CE).
+
+Obviously this process can be iterated as long as not all coset
+numbers in one of the sequences obtained on the way are marked
+indispensable. Once this is the case, the Short-cut method stops.
+
+{\ITC} also allows one to prescribe the number of ``loops'' to be
+performed.
+
+As can be seen from the examples, the Short-cut method works
+with surprising success. In the case of some presentations that for
+a long time have been used as challenges for finding the shortest
+definition sequence leading to closure, the Short-cut method even
+improved on results that had been found ``by hand'' with quite some
+effort by experts on CE (see Section~"The Fibonacci Group F(2,7)").
+
+However it should be emphasized again that no claim is made that the
+method will find the minimal number of cosets needed to reach closure.
+In fact the examples given show that the result of the Short-cut
+method depends on the definition sequence that it starts from.
+
+Although yielding its result only a posteriori, we hope that beyond
+answering challenges, finding a short definition sequence may become
+of use in algorithms such as the modified TC if this is implemented to
+follow a prescribed definition sequence.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

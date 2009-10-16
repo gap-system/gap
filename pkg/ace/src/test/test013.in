@@ -1,0 +1,10 @@
+
+# test013.in - Colin Ramsay - 1 Nov 99
+#
+# Noddy test of the PT facility.
+
+Gr: ab;
+Rel: a^2,b^3,(ab)^5;
+
+Sims:3;  DSiz:1;  PT:1;
+

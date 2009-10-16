@@ -2,7 +2,7 @@
 **
 *W  rational.c                  GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: rational.c,v 4.32 2002/04/15 10:03:55 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -46,7 +46,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_rational_c =
-   "@(#)$Id$";
+   "@(#)$Id: rational.c,v 4.32 2002/04/15 10:03:55 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 

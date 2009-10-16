@@ -3,14 +3,14 @@
 #W  quogphom.gd			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: quogphom.gd,v 4.12 2002/04/15 10:05:13 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.quogphom_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: quogphom.gd,v 4.12 2002/04/15 10:05:13 sal Exp $";
 
 #############################################################################
 ##

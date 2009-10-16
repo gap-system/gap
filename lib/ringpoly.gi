@@ -7,29 +7,84 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods  for attributes, properties and operations
-##  for polynomial rings.
+##  for polynomial rings and function fields.
 ##
 Revision.ringpoly_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ringpoly.gi,v 4.55 2009/05/05 15:43:00 gap Exp $";
 
 
 #############################################################################
 ##
 #M  GiveNumbersNIndeterminates(<ratfunfam>,<count>,<names>,<avoid>)
 BindGlobal("GiveNumbersNIndeterminates",function(rfam,cnt,nam,avoid)
-local idn,i,nbound;
+local opt, idn, nbound, p, i,str;
+  opt:=0;
+  if ValueOption("old")=true then
+    opt:=1;
+  elif ValueOption("new")=true then
+    opt:=2;
+  else
+    if INDETERMINATENAMEREUSE<>0 then
+      opt:=INDETERMINATENAMEREUSE;
+    fi;
+  fi;
+
   avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
   idn:=[];
   i:=1;
   while Length(idn)<cnt do
     nbound:=IsBound(nam[Length(idn)+1]);
-    # skip unwanted indeterminates
-    while (i in avoid) or (nbound and HasIndeterminateName(rfam,i)) do
-      i:=i+1;
-    od;
-    Add(idn,i);
-    if nbound then
-      SetIndeterminateName(rfam,i,nam[Length(idn)]);
+    if nbound then 
+      str:=nam[Length(idn)+1];
+    else
+      str:=fail;
+    fi;
+    if nbound and Length(str)>2 and str[1]='x' and str[2]='_' 
+     and ForAll(str{[3..Length(str)]},IsDigitChar) then
+      p:=Int(str{[3..Length(str)]});
+      if IsPosInt(p) then
+	Add(idn,p);
+      else
+	p:=fail;
+      fi;
+    elif nbound and opt<>2 and IsBound(rfam!.namesIndets) then
+      # is the indeterminate already used?
+      p:=Position(rfam!.namesIndets,str);
+      if p<>fail then
+	if opt<>1 then
+	  Error(
+  "Indeterminate ``",str,"'' is already used.\n",
+  "Use the `old' option; e.g. X(Rationals,\"",str,"\":old);\n",
+  "  to re-use the variable already defined with this name and the\n",
+  "`new' option; e.g. X(Rationals,\"",str,"\":new);\n",
+  "  to create a new variable with the duplicate name.\n");
+	else
+	  if p in avoid then
+	    Info(InfoWarning,1,
+  "The `old' option to re-use variables was given, but the variable with this\n",
+  "#I  name was explicitly to be avoided. I assume the `new' option was given.");
+
+	    p:=fail;
+	  else
+	    # reuse the old variable
+	    Add(idn,p);
+	  fi;
+	fi;
+      fi;
+    else
+      p:=fail;
+    fi;
+
+    if p=fail then
+      # skip unwanted indeterminates
+      while (i in avoid) or (nbound and HasIndeterminateName(rfam,i)) do
+	i:=i+1;
+      od;
+      Add(idn,i);
+
+      if nbound then
+	SetIndeterminateName(rfam,i,str);
+      fi;
     fi;
     i:=i+1;
   od;
@@ -94,6 +149,8 @@ function( r, n )
     # over a field the ring should be an algebra with one.
     if HasIsField(r) and IsField(r)  then
       type:=type and IsAlgebraWithOne;
+    elif HasIsRingWithOne(r) and IsRingWithOne(r) then
+      type:=type and IsRingWithOne;
     fi;
 
     if Length(n) = 1 and HasIsField(r) and IsField(r)  then
@@ -163,6 +220,11 @@ function( r, n )
     # and return
     return prng;
 
+end );
+
+InstallMethod( PolynomialRing,"name",true, [ IsRing, IsString ], 0,
+function( r, nam )
+  return PolynomialRing( r, [nam]);
 end );
 
 InstallMethod( PolynomialRing,"names",true, [ IsRing, IsList ], 0,
@@ -460,7 +522,7 @@ function( ogens )
          HasCoefficientsOfLaurentPolynomial(ogens[i]));
 
     univ:=Filtered(ogens{g},
-	     i->DegreeOfUnivariateLaurentPolynomial(i)>-1 and
+	     i->DegreeOfUnivariateLaurentPolynomial(i)>0 and
 		DegreeOfUnivariateLaurentPolynomial(i)<infinity);
 
     gens:=ogens{Difference([1..Length(ogens)],g)};
@@ -500,6 +562,35 @@ end );
 
 #############################################################################
 ##
+#M  PseudoRandom
+##
+InstallMethod(PseudoRandom,"polynomial ring",true,
+    [IsPolynomialRing],0,
+function(R)
+  local inds, F, n, nrterms, degbound, ran, p, m, i, j;
+  inds:=IndeterminatesOfPolynomialRing(R);
+  F:=LeftActingDomain(R);
+  if IsFinite(inds) then
+    n:=Length(inds);
+  else
+    n:=1000; 
+  fi;
+  nrterms:=20+Random([-19..100+n]);
+  degbound:=RootInt(nrterms,n)+3;
+  ran:=Concatenation([0,0],[0..degbound]);
+  p:=Zero(R);
+  for i in [1..nrterms] do
+    m:=One(R);
+    for j in inds do
+      m:=m*j^Random(ran);
+    od;
+    p:=p+Random(F)*m;
+  od;
+  return p;
+end);
+
+#############################################################################
+##
 #M  MinimalPolynomial( <ring>, <elm> )
 ##
 InstallOtherMethod( MinimalPolynomial,"supply indeterminate 1",
@@ -521,6 +612,180 @@ local c;
   return f*StandardAssociate(CoefficientsRing(R),c)/c;
 end);
 
+InstallMethod(FunctionField,"indetlist",true,[IsRing,IsList],
+# force higher ranking than following (string) method
+  1,
+function(r,n)
+  local efam,rfun,zero,one,ind,type,fcfl,i;
+  if not IsIntegralRing(r) then 
+    Error("function fields can only be generated over integral rings");
+  fi;
+  if IsRationalFunctionCollection(n) and ForAll(n,IsLaurentPolynomial) then
+    n:=List(n,IndeterminateNumberOfLaurentPolynomial);
+  fi;
+  if IsEmpty(n) or not IsInt(n[1]) then
+    TryNextMethod();
+  fi;
+
+  # get the elements family of the ring
+  efam := ElementsFamily(FamilyObj(r));
+
+  # get the rational functions of the elements family
+  rfun := RationalFunctionsFamily(efam);
+
+  # first the indeterminates
+  zero := Zero(r);
+  one  := One(r);
+  ind  := [];
+  for i  in n  do
+    Add(ind,UnivariatePolynomialByCoefficients(efam,[zero,one],i));
+  od;
+
+  # construct a polynomial ring
+  type := IsFunctionField and IsAttributeStoringRep and IsLeftModule 
+          and IsAlgebraWithOne;
+
+
+  # Polynomial rings over commutative rings are themselves commutative.
+  if HasIsCommutative(r) and IsCommutative(r) then
+    type:= type and IsCommutative;
+  fi;
+
+  fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());
+
+  # set the left acting domain
+  SetLeftActingDomain(fcfl,r);
+
+  # set the indeterminates
+  Setter(IndeterminatesOfFunctionField)(fcfl,ind);
+
+  # set known properties
+  SetIsFinite(fcfl,false);
+  SetIsFiniteDimensional(fcfl,false);
+  SetSize(fcfl,infinity);
+
+  # set the coefficients ring
+  SetCoefficientsRing(fcfl,r);
+
+  # set one and zero
+  SetOne( fcfl,ind[1]^0);
+  SetZero(fcfl,ind[1]*Zero(r));
+
+  # set the generators left operator ring-with-one if the rank is one
+  SetGeneratorsOfLeftOperatorRingWithOne(fcfl,ind);
+
+  # and return
+  return fcfl;
+
+end);
+
+InstallMethod(FunctionField,"names",true,[IsRing,IsList],0,
+function(r,nam)
+  if not IsString(nam[1]) then
+    TryNextMethod();
+  fi;
+  return FunctionField(r,GiveNumbersNIndeterminates(
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
+	                             Length(nam),nam,[]));
+end);
+
+
+InstallMethod(FunctionField,"rank",true,[IsRing,IsPosInt],0,
+function(r,n)
+  return FunctionField(r,[1 .. n]);
+end);
+
+InstallOtherMethod(FunctionField,"rank,avoid",true,
+  [IsRing,IsPosInt,IsList],0,
+function(r,n,a)
+  return FunctionField(r,GiveNumbersNIndeterminates(
+           RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),n,[],a));
+end);
+
+InstallOtherMethod(FunctionField,"names,avoid",true,[IsRing,IsList,IsList],0,
+function(r,nam,a)
+  return FunctionField(r,GiveNumbersNIndeterminates(
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
+	                             Length(nam),nam,a));
+end);
+
+
+#############################################################################
+InstallOtherMethod(FunctionField,
+    true,
+    [IsRing],
+    0,
+
+function(r)
+    return FunctionField(r,[1]);
+end);
+
+#############################################################################
+##
+#M  ViewObj(<fctfld>)
+##
+InstallMethod(ViewObj,"for function field",true,[IsFunctionField],
+    # override the higher ranking FLMLOR method
+    RankFilter(IsFLMLOR),
+function(obj)
+    Print("FunctionField(...,",
+        IndeterminatesOfFunctionField(obj),")");
+end);
+
+
+#############################################################################
+##
+#M  PrintObj(<fctfld>)
+##
+InstallMethod(PrintObj,"for a function field",true,[IsFunctionField],
+    # override the higher ranking FLMLOR method
+    RankFilter(IsFLMLOR),
+function(obj)
+local i,f;
+    Print("FunctionField(",LeftActingDomain(obj),",[");
+    f:=false;
+    for i in IndeterminatesOfFunctionField(obj) do
+      if f then Print(",");fi;
+      Print("\"",i,"\"");
+      f:=true;
+    od;
+    Print("])");
+end);
+
+#############################################################################
+##
+#M  <ratfun> in <ffield>
+##
+InstallMethod(\in,"ratfun in fctfield",IsElmsColls,
+    [IsRationalFunction,IsFunctionField],0,
+function(f,R)
+  local crng,inds,ext,exp,i;
+
+  # and the indeterminates and coefficients ring of <R>
+  crng := CoefficientsRing(R);
+  inds := Set(List(IndeterminatesOfFunctionField(R),
+		      x -> ExtRepPolynomialRatFun(x)[1][1]));
+
+  for ext in [ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f)] do
+    # first check the indeterminates
+    for exp  in ext{[1,3 .. Length(ext)-1]}  do
+      for i  in exp{[1,3 .. Length(exp)-1]}  do
+	if not i in inds  then
+	  return false;
+	fi;
+      od;
+    od;
+
+    # then the coefficients
+    for i  in ext{[2,4 .. Length(ext)]}  do
+      if not i in crng  then
+	return false;
+      fi;
+    od;
+  od;
+  return true;
+
+end);
 
 #############################################################################
 ##

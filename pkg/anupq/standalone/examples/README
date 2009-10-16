@@ -1,0 +1,21 @@
+The files: 5gpA, pga_example and pga_interactive use the basic  format
+for inputting relations and so the pq program must be called with  the
+`-b' flag for these.
+
+Those files which begin with keyword_ are examples of files containing
+presentations defined using key words i.e.  the  pq  program  must  be
+called with the `-k' flag.
+
+For all other input files the pq program  should  be  called  with  no
+flags.
+
+All files beginning  with  pga_  are  examples  of  usage  of  p-group
+generation, except that:  pga_template  is  a  template  for  creating
+p-group generation input files.
+
+All input files not  beginning  with  pga_  utilize  features  of  the
+p-quotient algorithm.
+
+For Version 1.6 of pq, the following line was added to each pga_ file:
+
+0       #number of soluble automorphisms

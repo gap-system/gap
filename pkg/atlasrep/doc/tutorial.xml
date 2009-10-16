@@ -1,0 +1,329 @@
+
+<!-- %W  tutorial.xml    GAP 4 package AtlasRep             Thomas Breuer -->
+<!-- %H  $Id: tutorial.xml,v 1.3 2009/07/29 14:08:47 gap Exp $ -->
+<!-- %Y  Copyright 2008, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="chap:tutorial">
+<Heading>Tutorial for the <Package>AtlasRep</Package> Package</Heading>
+
+This chapter gives a brief overview of the basic functionality
+provided by the <Package>AtlasRep</Package> package.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:tutaccessgroup">
+<Heading>Accessing a Specific Group in
+<Package>AtlasRep</Package></Heading>
+
+The <Package>AtlasRep</Package> package gives access to a database,
+the &ATLAS; of Group Representations <Cite Key="AGR"/>,
+that contains representations and related data for several groups,
+mainly nearly simple groups and their maximal subgroups.
+
+<P/>
+
+Note that the data are not part of the package.
+They are fetched from the internet as soon as they are needed for the
+first time, see Section&nbsp;<Ref Subsect="subsect:Local or remote access"/>.
+In the following, we assume that either you are working online and this
+mechanism works
+(see Section&nbsp;<Ref Sect="sect:Installing the AtlasRep Package"/>),
+or that the data you are working with are already available on your machine.
+
+<P/>
+
+First of all, we load the package,
+
+<Example><![CDATA[
+gap> LoadPackage( "atlasrep" );
+true
+]]></Example>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="sect:tutnearlysimple">
+<Heading>Accessing a Nearly Simple Group in
+<Package>AtlasRep</Package></Heading>
+
+Each nearly simple group that occurs in this database is specified by a
+<E>name</E>,
+which is a string similar to the name used in the &ATLAS; of Finite Groups
+<Cite Key="CCN85"/>.
+For nearly simple groups whose character table is contained in the
+&GAP; Character Table Library&nbsp;<Cite Key="CTblLib1.1.3"/>,
+the name is equal to the
+<Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+value of this character table.
+Examples of such names are
+<C>"M24"</C> for the Mathieu group <M>M_{24}</M> and
+<C>"2.A9"</C> for the double cover of the alternating group <M>A_9</M>.
+The <E>admissible names</E>, that is, the names that actually occur,
+are listed in the first column of the
+overview table that is printed by the function
+<Ref Func="DisplayAtlasInfo"/>, called without arguments, see below.
+The other columns of the table describe which data are available in the
+database.
+
+<P/>
+
+For example, <Ref Func="DisplayAtlasInfo"/> may print the following lines.
+Omissions are indicated with <Q><C>...</C></Q>.
+
+<Log><![CDATA[
+gap> DisplayAtlasInfo();
+group                        #  maxes  cl  cyc  out  find  check  pres
+----------------------------------------------------------------------
+...
+2.A8                        26          -    -          -      -     -
+2.A9                         7          -    -          -      -     -
+2.Co1                        7          -    -          -      -     -
+2.F4(2)                      6          -    -          -      -     -
+2.F4(2).2                    1          -    -          -      -     -
+...
+M23                         69      7   +    +          +      +     +
+M24                         62      9   +    +          +      +     +
+McL                         46     12   +    +          +      +     +
+McL.2                       27     10   -    +          +      +     +
+O10+(2)                     24      4   -    -    2     -      -     -
+O10+(2).2                   12          -    -          -      +     +
+...
+]]></Log>
+
+<P/>
+
+Called with an admissible name as the only argument,
+the function <Ref Func="AtlasGroup" Label="for various arguments"/> returns
+a group isomorphic to the group with the given name.
+If permutation generators are available in the database
+then a permutation group (of smallest available degree) is returned,
+otherwise a matrix group.
+
+<Example><![CDATA[
+gap> g:= AtlasGroup( "M24" );
+Group([ (1,4)(2,7)(3,17)(5,13)(6,9)(8,15)(10,19)(11,18)(12,21)(14,16)(20,
+    24)(22,23), (1,4,6)(2,21,14)(3,9,15)(5,18,10)(13,17,16)(19,24,23) ])
+gap> IsPermGroup( g );  NrMovedPoints( g );  Size( g );
+true
+24
+244823040
+]]></Example>
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="sect:tutmaxes">
+<Heading>Accessing a Maximal Subgroup of a Nearly Simple Group in
+<Package>AtlasRep</Package></Heading>
+
+Many maximal subgroups of nearly simple groups can be constructed
+by restricting a representation of the nearly simple group in question.
+The function
+<Ref Func="AtlasSubgroup" Label="for a group name (and various arguments) and a number"/>
+can be used for that.
+Given the name of the nearly simple group and the number of the
+conjugacy class of maximal subgroups,
+this function returns a representative of this class.
+
+<Example><![CDATA[
+gap> g:= AtlasSubgroup( "M24", 1 );
+Group([ (2,10)(3,12)(4,14)(6,9)(8,16)(15,18)(20,22)(21,24), 
+  (1,7,2,9)(3,22,10,23)(4,19,8,12)(5,14)(6,18)(13,16,17,24) ])
+gap> IsPermGroup( g );  NrMovedPoints( g );  Size( g );
+true
+23
+10200960
+]]></Example>
+
+The classes of maximal subgroups are ordered w.r.t.&nbsp;decreasing
+subgroup order.
+So the first class contains the largest maximal subgroups.
+
+<P/>
+
+Note that groups obtained this way may be not very suitable for
+computations in the sense that much smaller representations exist.
+For example, the sporadic simple O'Nan group <M>O'N</M> contains a
+maximal subgroup <M>S</M> isomorphic with the Janko group <M>J_1</M>;
+the smallest permutation representation of <M>O'N</M> has degree <M>122760</M>,
+so restricting this representation to <M>S</M> yields a representation of
+<M>J_1</M> of that degree.
+However, <M>J_1</M> has a permutation representation of degree <M>266</M>,
+which admits much more efficient computations.
+If you are just interested in any representation of the subgroup and not in
+its embedding into the large group
+then one possibility to get a <Q>nicer</Q> representation is to call
+<Ref Func="SmallerDegreePermutationRepresentation" BookName="ref"/>.
+In the abovementioned example, this works well;
+in general, we cannot expect that we get a representation of smallest degree.
+
+<Example><![CDATA[
+gap> s:= AtlasSubgroup( "ON", 3 );
+<permutation group of size 175560 with 2 generators>
+gap> NrMovedPoints( s );  Size( s );
+122760
+175560
+gap> hom:= SmallerDegreePermutationRepresentation( s );;
+gap> NrMovedPoints( Image( hom ) );                    
+266
+]]></Example>
+
+</Subsection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:tutaccessrepres">
+<Heading>Accessing a Specific Representation in
+<Package>AtlasRep</Package></Heading>
+
+For many groups, the &ATLAS; of Group Representations contains
+several representations.
+The function <Ref Func="DisplayAtlasInfo"/>, called with an admissible
+group name as the only argument, lists the data available.
+
+<Example><![CDATA[
+gap> DisplayAtlasInfo( "A5" );  
+Representations for G = A5:    (all refer to std. generators 1)
+---------------------------
+ 1: G <= Sym(5)                      on cosets of A4 (1st max.)
+ 2: G <= Sym(6)                      on cosets of D10 (2nd max.)
+ 3: G <= Sym(10)                     on cosets of S3 (3rd max.)
+ 4: G <= GL(4a,2)
+ 5: G <= GL(4b,2)
+ 6: G <= GL(4,3)
+ 7: G <= GL(6,3)
+ 8: G <= GL(2a,4)
+ 9: G <= GL(2b,4)
+10: G <= GL(3,5)
+11: G <= GL(5,5)
+12: G <= GL(3a,9)
+13: G <= GL(3b,9)
+14: G <= GL(4,Z)
+15: G <= GL(5,Z)
+16: G <= GL(6,Z)
+17: G <= GL(3a,Field([Sqrt(5)]))
+18: G <= GL(3b,Field([Sqrt(5)]))
+
+Programs for G = A5:    (all refer to std. generators 1)
+--------------------
+available maxes of G:  [ 1 .. 3 ] (all)
+standard generators checker available
+presentation available
+]]></Example>
+
+In order to fetch one of the listed permutation groups or matrix groups,
+you can call <Ref Func="AtlasGroup" Label="for various arguments"/>
+with second argument the function
+<Ref Func="Position" BookName="ref"/> and third argument the position in
+the list.
+
+<Example><![CDATA[
+gap> AtlasGroup( "A5", Position, 1 );
+Group([ (1,2)(3,4), (1,3,5) ])
+]]></Example>
+
+Note that this approach may yield a different representation after an update
+of the database, if new representations for the group become available.
+
+<P/>
+
+Alternatively, you can describe the desired representation by conditions,
+such as the degree in the case of a permutation representation,
+and the dimension and the base ring in the case of a matrix representation.
+
+<Example><![CDATA[
+gap> AtlasGroup( "A5", NrMovedPoints, 10 );
+Group([ (2,4)(3,5)(6,8)(7,10), (1,2,3)(4,6,7)(5,8,9) ])
+gap> AtlasGroup( "A5", Dimension, 4, Ring, GF(2) );
+<matrix group of size 60 with 2 generators>
+]]></Example>
+
+<P/>
+
+The same holds for the restriction of representations to maximal subgroups:
+Use
+<Ref Func="AtlasSubgroup" Label="for a group name (and various arguments) and a number"/>
+with the same arguments as
+<Ref Func="AtlasGroup" Label="for various arguments"/>,
+except that the number of the maximal subgroup
+is entered as the last argument.
+Note that the arguments do not necessarily describe the restricted
+representation, since the subgroup may move fewer points than the big group.
+
+<Example><![CDATA[
+gap> AtlasSubgroup( "A5", Dimension, 4, Ring, GF(2), 1 );
+<matrix group of size 12 with 2 generators>
+gap> g:= AtlasSubgroup( "A5", NrMovedPoints, 10, 3 );       
+Group([ (2,4)(3,5)(6,8)(7,10), (1,4)(3,8)(5,7)(6,10) ])
+gap> Size( g );  NrMovedPoints( g );
+6
+9
+]]></Example>
+
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:tutstdgens">
+<Heading>Standard Generators in <Package>AtlasRep</Package></Heading>
+
+The database stores so-called <Q>standard generators</Q> of the groups,
+see Section&nbsp;<Ref Sect="sect:Standard Generators Used in AtlasRep"/>.
+An important property of these generators is that mapping the
+standard generators for one representation to the standard generators
+for another representation of the same group yields an isomorphism.
+This allows you to switch between different representations.
+
+<P/>
+
+If you are interested in the generators provided by the database
+rather than in the groups they generate,
+you can use the function <Ref Func="OneAtlasGeneratingSetInfo"/>
+instead of <Ref Func="AtlasGroup" Label="for various arguments"/>,
+with the same arguments.
+This will return a record that describes the representation in question.
+Calling the function <Ref Func="AtlasGenerators"/> yields a record
+whose component <C>generators</C> holds the list of standard generators.
+
+<P/>
+
+<Example><![CDATA[
+gap> info:= OneAtlasGeneratingSetInfo( "A5", NrMovedPoints, 10 );
+rec( groupname := "A5", standardization := 1, 
+  identifier := [ "A5", [ "A5G1-p10B0.m1", "A5G1-p10B0.m2" ], 1, 10 ], 
+  p := 10, id := "", stabilizer := "S3", size := 60, repnr := 3 )
+gap> info2:= AtlasGenerators( info );                             
+rec( generators := [ (2,4)(3,5)(6,8)(7,10), (1,2,3)(4,6,7)(5,8,9) ], 
+  groupname := "A5", standardization := 1, repnr := 3, 
+  identifier := [ "A5", [ "A5G1-p10B0.m1", "A5G1-p10B0.m2" ], 1, 10 ], 
+  p := 10, id := "", stabilizer := "S3", size := 60 )
+gap> info2.generators;
+[ (2,4)(3,5)(6,8)(7,10), (1,2,3)(4,6,7)(5,8,9) ]
+]]></Example>
+
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:tutaccessrelinfo">
+<Heading>Accessing Information Related to Groups in
+<Package>AtlasRep</Package></Heading>
+
+Besides group representations, the database contains related information
+such as presentations or conjugacy class representatives of several groups.
+Examples how to use this information can be found in
+Section&nbsp;<Ref Sect="sect:Examples of Using the AtlasRep Package"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+</Chapter>
+

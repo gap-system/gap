@@ -1,0 +1,5 @@
+If you do not have GNU 'flex' on your machine, stndard 'lex' is used to
+process the file 'sisscan.l'. In this case it is likely that you get errors
+which will break the compilation. The SISYPHOS distribution contains
+preprocessed versions of 'sisscan.l' and 'sisgram.y' that can be used if you
+encounter this problem. Just say 'make no-flex' instead of 'make'.

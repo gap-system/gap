@@ -1,7 +1,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_vecgf2_c =
-   "@(#)$Id$";
+   "@(#)$Id: vecgf2.c,v 4.119 2009/09/24 09:29:44 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -32,7 +32,9 @@ const char * Revision_vecgf2_c =
 #undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
-#include        "integer.h"             /* (long) integers                 */
+
+#include        "integer.h"             /* integers                        */
+
 #include        "vec8bit.h"             /* vectors over bigger small fields*/
 #include        <assert.h>
 
@@ -1060,7 +1062,7 @@ Obj ShallowCopyVecGF2( Obj vec )
 
 
 
-static UInt RNheads = 0, RNvectors = 0, RNcoeffs = 0, RNrelns = 0;
+static UInt RNheads, RNvectors, RNcoeffs, RNrelns;
 
 
 Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
@@ -1153,10 +1155,8 @@ Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
       RNvectors = RNamName("vectors");
     }
   res = NEW_PREC( TransformationsNeeded ? 4 : 2);
-  SET_RNAM_PREC( res, 1, RNheads);
-  SET_ELM_PREC(  res, 1, heads);
-  SET_RNAM_PREC( res, 2, RNvectors);
-  SET_ELM_PREC(  res, 2, vectors);
+  AssPRec(res,RNheads,heads);
+  AssPRec(res,RNvectors,vectors);
   if (LEN_PLIST(vectors) == 0)
     RetypeBag(vectors, T_PLIST_EMPTY);
   if (TransformationsNeeded)
@@ -1166,15 +1166,14 @@ Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
 	  RNcoeffs = RNamName("coeffs");
 	  RNrelns = RNamName("relations");
 	}
-      SET_RNAM_PREC( res, 3, RNcoeffs);
-      SET_ELM_PREC ( res, 3, coeffs);
+      AssPRec(res,RNcoeffs,coeffs);
       if (LEN_PLIST(coeffs) == 0)
 	RetypeBag(coeffs, T_PLIST_EMPTY);
-      SET_RNAM_PREC( res, 4, RNrelns);
-      SET_ELM_PREC ( res, 4, relns);
+      AssPRec(res,RNrelns,relns);
       if (LEN_PLIST(relns) == 0)
 	RetypeBag(relns, T_PLIST_EMPTY);
     }
+  SortPRecRNam(res,0);
   return res;
 }
 
@@ -2541,10 +2540,8 @@ Obj FuncSHRINKCOEFFS_GF2VEC (
 **  The pointless zero argument is because this is a method for PositionNot
 **  It is *not* used in the code and can be replaced by a dummy argument.
 */
-Obj FuncPOSITION_NONZERO_GF2VEC(
-    Obj                 self,
-    Obj                 vec,
-    Obj                 zero)
+
+UInt PositionNonZeroGF2Vec ( Obj vec, UInt from)
 {
     UInt                len;
     UInt                nbb;
@@ -2555,12 +2552,28 @@ Obj FuncPOSITION_NONZERO_GF2VEC(
     /* get length and number of blocks                                     */
     len = LEN_GF2VEC(vec);
     if ( len == 0 ) {
-      return INTOBJ_INT(len+1);
+      return 1;
     }
 
+
+    nbb = from / BIPEB;
+    pos = from % BIPEB;
+    ptr = BLOCKS_GF2VEC(vec)+nbb;
+    if (pos) /* partial block to check */
+      {
+	pos = from+1;
+	while ( (pos - 1)%BIPEB  && pos <= len)
+	  {
+	    if ((*ptr) & MASK_POS_GF2VEC(pos)) 
+	      return (pos);
+	    pos++;
+	  }
+	if (pos > len)
+	  return len+1;
+	nbb++;
+	ptr++;
+      }
     /* find first non-trivial block                                         */
-    nbb = 0;
-    ptr = BLOCKS_GF2VEC(vec);
     nb = NUMBER_BLOCKS_GF2VEC(vec);
     while ( nbb < nb && ! *ptr ) {
         nbb++;
@@ -2574,9 +2587,27 @@ Obj FuncPOSITION_NONZERO_GF2VEC(
     }
     /* as the code is intended to run over, trailing 1's are innocent */
     if (pos <= len)
-      return INTOBJ_INT(pos);
+      return pos;
     else
-      return INTOBJ_INT(len+1);
+      return len+1;
+}
+
+
+Obj FuncPOSITION_NONZERO_GF2VEC(
+    Obj                 self,
+    Obj                 vec,
+    Obj                 zero)
+{
+  return INTOBJ_INT(PositionNonZeroGF2Vec(vec, 0));
+}
+
+Obj FuncPOSITION_NONZERO_GF2VEC3(
+    Obj                 self,
+    Obj                 vec,
+    Obj                 zero,
+    Obj                 from)
+{
+  return INTOBJ_INT(PositionNonZeroGF2Vec(vec, INT_INTOBJ(from)));
 }
 
 
@@ -2859,7 +2890,93 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
 **
 */
 
+#ifdef USE_GMP
 
+Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
+{
+  UInt len,nd,i,nonz;
+  UInt head,a;
+  UInt off,off2;		/* 0 based */
+  Obj zahl;  /* the long number */
+  UInt *num;
+  UInt *vp;
+  len = LEN_GF2VEC(vec);
+  num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
+  off = (len -1) % BIPEB + 1; /* number of significant bits in last word */
+  off2 = BIPEB - off;         /* number of insignificant bits in last word */
+
+  /* mask out the last bits */
+#ifdef SYS_IS_64_BIT
+  *num &= 0xffffffffffffffff >> off2;
+#else
+  *num &= 0xffffffff >> off2;
+#endif
+
+  if (len <=NR_SMALL_INT_BITS) 
+    /* it still fits into a small integer */
+    return INTOBJ_INT(revertbits(*num,len));
+  else {
+    /* we might have to build a long integer */
+
+    /* the number of words (limbs) we need. */
+    nd = ((len-1)/GMP_LIMB_BITS)+1;
+
+    zahl = NewBag( T_INTPOS, nd*sizeof(UInt) );
+    /*    zahl = NewBag( T_INTPOS, (((nd+1)>>1)<<1)*sizeof(UInt) );*/
+    /* +1)>>1)<<1: round up to next even number*/
+
+    /* garbage collection might lose pointer */
+    num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
+
+    vp = (TypLimb *)ADDR_OBJ(zahl); /* the place we write to */
+    nonz=0; /* last non-zero position */ 
+    i=1;
+
+    if (off!=BIPEB) {
+      head = revertbits(*num,off); /* the last 'off' bits, reverted */
+      while (i<nd) {
+	/* next word */
+	num--;
+	*vp = head; /* the bits left from last word */
+	a = revertbits(*num,BIPEB); /* the full word reverted */
+	head = a>>off2; /* next head: trailing `off' bits */
+	a =a << off; /* the rest of the word */
+	*vp |=a;
+	if (*vp != 0) {nonz=i;} 
+	vp++;
+	i++;
+      }
+      *vp = head; /* last head bits */
+      vp++;
+      if (head !=0) {
+	nonz=i; 
+      }
+    }
+    else {
+      while (i<=nd) {
+        *vp=revertbits(*num--,BIPEB);
+	if (*vp != 0) {nonz=i;} 
+	vp++;
+	i++;
+      }
+    }
+
+    /* findme - check this part (jjm)*/
+    i=nd%2; 
+    if (i==1) { 
+      *vp=0; /* erase the trailing two digits if existing */
+      nd++; /* point to the last position */
+    }
+
+    zahl = GMP_NORMALIZE(zahl);
+    zahl = GMP_REDUCE(zahl);
+    
+    return zahl;
+  }
+
+}
+
+#else
 
 Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
 {
@@ -2890,8 +3007,10 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
     /* the number of words we need. A word is two digits */
     nd = ((len-1)/NR_DIGIT_BITS/2)+1;
 
-    zahl = NewBag( T_INTPOS, (((nd+1)>>1)<<1)*sizeof(UInt) );
-    /* +1)>>1)<<1: round up to next even number*/
+    /* zahl = NewBag( T_INTPOS, nd*sizeof(UInt) ); */
+       zahl = NewBag( T_INTPOS, (((nd+1)>>1)<<1)*sizeof(UInt) );
+    /* +1)>>1)<<1: round up to next even number 
+     legacy long ints always have a multiple of 4 digits. */
 
     /* garbage collection might lose pointer */
     num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
@@ -2967,11 +3086,12 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
       ResizeBag(zahl,nd*sizeof(UInt)); 
 
     }
-
     return zahl;
   }
 
 }
+
+#endif
 
 
 /****************************************************************************
@@ -4219,6 +4339,97 @@ Obj FuncDETERMINANT_LIST_GF2VECS( Obj self, Obj mat)
 
 /****************************************************************************
 **
+*F  FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( <self>, <matl>, <matr>)
+**
+*/
+
+Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
+{
+  UInt nrowl, nrowr, nrowp, ncoll, ncolr, ncolp, ncol,
+    i, j, k, l, mutable;
+  Obj mat, type, row, shift[BIPEB];
+  UInt *datar, *data;
+
+  nrowl = LEN_GF2MAT(matl);
+  nrowr = LEN_GF2MAT(matr);
+  nrowp = nrowl*nrowr;
+  ncoll = LEN_GF2VEC(ELM_GF2MAT(matl,1));
+  ncolr = LEN_GF2VEC(ELM_GF2MAT(matr,1));
+  ncolp = ncoll*ncolr;
+
+  mutable = IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr);
+
+  /* create a matrix */
+  mat = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT(nrowp));
+  SET_LEN_GF2MAT(mat,nrowp);
+  if (mutable) {
+    TYPE_POSOBJ(mat) = TYPE_LIST_GF2MAT;
+    type = TYPE_LIST_GF2VEC_LOCKED;
+  } else {
+    TYPE_POSOBJ(mat) = TYPE_LIST_GF2MAT_IMM;
+    type = TYPE_LIST_GF2VEC_IMM_LOCKED;
+  }
+
+  /* allocate 0 matrix */
+
+  for (i = 1; i <= nrowp; i++) {
+    NEW_GF2VEC(row, type, ncolp);
+    SET_LEN_GF2VEC(row, ncolp);
+    SET_ELM_GF2MAT(mat,i,row);
+    CHANGED_BAG(mat);
+  }
+
+  /* allocate data for shifts of rows of matr */
+  for (i = 0; i < BIPEB; i++) {
+    shift[i] = NewBag(T_DATOBJ, SIZE_PLEN_GF2VEC(ncolr+2*BIPEB));
+  }
+
+  /* fill in matrix */
+  for (j = 1; j <= nrowr; j++) {
+    /* create shifts of rows of matr */
+    data = (UInt *) ADDR_OBJ(shift[0]);
+    datar = BLOCKS_GF2VEC(ELM_GF2MAT(matr,j));
+    for (k = 0; k < (ncolr+BIPEB-1)/BIPEB; k++)
+      data[k] = datar[k];
+    data[k] = 0;
+    
+    for (i = 1; i < BIPEB; i++) { /* now shifts in [1..BIPEB-1] */
+      data = (UInt *) ADDR_OBJ(shift[i]);
+      datar = BLOCKS_GF2VEC(ELM_GF2MAT(matr,j));
+      data[0] = datar[0] << i;
+      for (k = 1; k < (ncolr+BIPEB-1)/BIPEB; k++)
+	data[k] = (datar[k] << i) | (datar[k-1] >> (BIPEB-i));
+      data[k] = datar[k-1] >> (BIPEB-i);
+    }
+    for (i = 1; i <= nrowl; i++) {
+      data = BLOCKS_GF2VEC(ELM_GF2MAT(mat,(i-1)*nrowr+j));
+      ncol = 0;
+      for (k = 1; k <= ncoll; k++) {
+	l = 0;
+	if (BLOCK_ELM_GF2VEC(ELM_GF2MAT(matl,i),k) & MASK_POS_GF2VEC(k)) {
+	  /* append shift[ncol%BIPEB] to data */
+	  datar = (UInt *) ADDR_OBJ(shift[ncol%BIPEB]);
+	  if (ncol % BIPEB) {
+	    data[-1] ^= *datar++;
+	    l = BIPEB - ncol%BIPEB;
+	  }
+	  for (; l < ncolr; l += BIPEB)
+	    *data++ = *datar++;
+	} else {
+	  if (ncol % BIPEB)
+	    l = BIPEB - ncol%BIPEB;
+	  data += (ncolr+BIPEB-1-l)/BIPEB;
+	}
+	ncol += ncolr;
+      }
+    }
+  }
+
+  return mat;
+}
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -4326,6 +4537,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "POSITION_NONZERO_GF2VEC", 2, "gf2vec, zero",
       FuncPOSITION_NONZERO_GF2VEC, "src/vecgf2.c:POSITION_NONZERO_GF2VEC" },
 
+    { "POSITION_NONZERO_GF2VEC3", 3, "gf2vec, zero, from",
+      FuncPOSITION_NONZERO_GF2VEC3, "src/vecgf2.c:POSITION_NONZERO_GF2VEC3" },
+
     { "MULT_ROW_VECTOR_GF2VECS_2", 2, "gf2vecl, mul",
       FuncMULT_ROW_VECTOR_GF2VECS_2, "src/vecgf2.c:MULT_ROW_VECTOR_GF2VECS_2" },
 
@@ -4363,46 +4577,49 @@ static StructGVarFunc GVarFuncs [] = {
       FuncCONV_GF2MAT, "src/vecgf2.c:CONV_GF2MAT" },
 
     { "PROD_GF2VEC_ANYMAT", 2, "vec, mat",
-      FuncProdGF2VecAnyMat, "sec/vecgf2.c:PROD_GF2VEC_ANYMAT" },
+      FuncProdGF2VecAnyMat, "src/vecgf2.c:PROD_GF2VEC_ANYMAT" },
     
     { "RIGHTMOST_NONZERO_GF2VEC", 1, "vec",
-      FuncRIGHTMOST_NONZERO_GF2VEC, "sec/vecgf2.c:RIGHTMOST_NONZERO_GF2VEC" },
+      FuncRIGHTMOST_NONZERO_GF2VEC, "src/vecgf2.c:RIGHTMOST_NONZERO_GF2VEC" },
     
     { "RESIZE_GF2VEC", 2, "vec, newlen",
-      FuncRESIZE_GF2VEC, "sec/vecgf2.c:RESIZE_GF2VEC" },
+      FuncRESIZE_GF2VEC, "src/vecgf2.c:RESIZE_GF2VEC" },
     
     { "SHIFT_LEFT_GF2VEC", 2, "vec, amount",
-      FuncSHIFT_LEFT_GF2VEC, "sec/vecgf2.c:SHIFT_LEFT_GF2VEC" },
+      FuncSHIFT_LEFT_GF2VEC, "src/vecgf2.c:SHIFT_LEFT_GF2VEC" },
     
     { "SHIFT_RIGHT_GF2VEC", 3, "vec, amount, zero",
-      FuncSHIFT_RIGHT_GF2VEC, "sec/vecgf2.c:SHIFT_RIGHT_GF2VEC" },
+      FuncSHIFT_RIGHT_GF2VEC, "src/vecgf2.c:SHIFT_RIGHT_GF2VEC" },
 
     { "ADD_GF2VEC_GF2VEC_SHIFTED", 4, "vec1, vec2,len2, off",
-      FuncADD_GF2VEC_GF2VEC_SHIFTED, "sec/vecgf2.c:ADD_GF2VEC_GF2VEC_SHIFTED" },
+      FuncADD_GF2VEC_GF2VEC_SHIFTED, "src/vecgf2.c:ADD_GF2VEC_GF2VEC_SHIFTED" },
     
     { "PROD_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
-      FuncPROD_COEFFS_GF2VEC, "sec/vecgf2.c:PROD_COEFFS_GF2VEC" },
+      FuncPROD_COEFFS_GF2VEC, "src/vecgf2.c:PROD_COEFFS_GF2VEC" },
 
     { "REDUCE_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
-      FuncREDUCE_COEFFS_GF2VEC, "sec/vecgf2.c:REDUCE_COEFFS_GF2VEC" },
+      FuncREDUCE_COEFFS_GF2VEC, "src/vecgf2.c:REDUCE_COEFFS_GF2VEC" },
 
     { "QUOTREM_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
-      FuncQUOTREM_COEFFS_GF2VEC, "sec/vecgf2.c:QUOTREM_COEFFS_GF2VEC" },
+      FuncQUOTREM_COEFFS_GF2VEC, "src/vecgf2.c:QUOTREM_COEFFS_GF2VEC" },
 
     { "SEMIECHELON_LIST_GF2VECS", 1, "mat",
-      FuncSEMIECHELON_LIST_GF2VECS, "sec/vecgf2.c:SEMIECHELON_LIST_GF2VECS" },
+      FuncSEMIECHELON_LIST_GF2VECS, "src/vecgf2.c:SEMIECHELON_LIST_GF2VECS" },
 
     { "SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS", 1, "mat",
-      FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS, "sec/vecgf2.c:SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS" },
+      FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS, "src/vecgf2.c:SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS" },
 
     { "TRIANGULIZE_LIST_GF2VECS", 1, "mat",
-      FuncTRIANGULIZE_LIST_GF2VECS, "sec/vecgf2.c:TRIANGULIZE_LIST_GF2VECS" },
+      FuncTRIANGULIZE_LIST_GF2VECS, "src/vecgf2.c:TRIANGULIZE_LIST_GF2VECS" },
 
     { "DETERMINANT_LIST_GF2VECS", 1, "mat",
-      FuncDETERMINANT_LIST_GF2VECS, "sec/vecgf2.c:DETERMINANT_LIST_GF2VECS" },
+      FuncDETERMINANT_LIST_GF2VECS, "src/vecgf2.c:DETERMINANT_LIST_GF2VECS" },
 
     { "RANK_LIST_GF2VECS", 1, "mat",
-      FuncRANK_LIST_GF2VECS, "sec/vecgf2.c:RANK_LIST_GF2VECS" },
+      FuncRANK_LIST_GF2VECS, "src/vecgf2.c:RANK_LIST_GF2VECS" },
+    
+    { "KRONECKERPRODUCT_GF2MAT_GF2MAT", 2, "mat, mat",
+      FuncKRONECKERPRODUCT_GF2MAT_GF2MAT, "src/vecgf2.c:KRONECKERPRODUCT_GF2MAT_GF2MAT" },
     
     { 0 }
 
@@ -4417,6 +4634,11 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  RNheads = 0;
+  RNvectors = 0;
+  RNcoeffs = 0;
+  RNrelns = 0;
+
     /* import kind functions                                               */
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC",     &TYPE_LIST_GF2VEC     );
     ImportGVarFromLibrary( "TYPE_LIST_GF2VEC_IMM", &TYPE_LIST_GF2VEC_IMM );

@@ -1,0 +1,142 @@
+
+# This version of test022.in is for PEACE pruning runs.
+
+Text;  Opt;
+
+Enum: M22;
+
+Wo:2000;  Mess:10000;
+
+Gr: a,b,c,d;
+Rel:
+  d^-1*b*d^-1*b,
+  a*c^-1*a^2*b^2,
+  b^-2*d*b*d*b^-2*d^-1,
+  a^2*d^-1*a^3*d^-1*a,
+  a*d^-1*a*d^-1*a*d*b*d,
+  c*b^-1*c^-1*d^-2*b^-1*c*b*d^-1,
+  d*a^-1*d^2*b*d*a*d*b*d,
+  a*b^-1*a^-1*d^-1*c^-1*a*d*a^-1*b*c,
+  c^-1*a*d*a^-1*d^-1*a*d^-1*a^-1*c*b,
+  b*d*b*c^-1*a*d*a^-1*d*c^-1*a*d*a^-1,
+  b*d*c^-1*a*d^2*a^-1*d*b*a^2*d^-1*a,
+  c*d^-1*c*b^-1*d^-1*b^-1*a*d^-2*a^-1*c*b^-2,
+  c^2*d*c^-1*a*d*a^-1*b^-1*a*d*a^-1*d^2,
+  a*b*a^-1*c*b*d*b*c^-1*a*d*b^-1*a^-1*d^-2*b^-1*d^-1,
+  a^-1*b^2*c^-1*a*d^2*a*b*a^-1*c^-2*a*d*a^-1*d^2,
+  a*c^-1*b*d*b^4*a^2*b*a^-1*c^-1*d^-1*c^-1*d^-1*b^-2,
+  a^3*b*a^4*b^2*a^3*b^2*a^3*b^2*a*d^-1,
+  b*a*b*a^-1*c^4*b*a*c*a^-1*b^-1*a^2*c^2*a*d*a^-1*d^3,
+  a*c*a^-1*b^-1*a^2*c^3*b*a*c*a^-1*b^-1*a^2*c^3*b^2*d^-1*b^-2
+  ;
+
+Text;
+Felsch:1;  No:0;  Gen: a;  Beg;
+
+Prune:0,50;  Prune:0,50;  Prune:0,50;  Prune:0,50;  Prune:0,50;
+Prune:0,50;  Prune:0,50;  Prune:0,50;  Prune:0,50;  Prune:0,50;
+Prune:0;     Prune:1;     Prune:0;
+
+Wo:75000;  Mess:200000;
+
+Gr: a,b,c;
+Rel:
+  b^4, 
+  a*c^-1*a^2*b^2, 
+  c*a*b^-1*a^-1*b^-1*c*a*b^-1*a^-1*b,
+  c^3*a^-1*c^3*a^-1*c^3*a^-1, c^-3*a^-2*b^-1*c^-3*a^-2*b^-1,
+  b*a*b*a^-1*c^4*b*c*a*b^-1*a^-1, 
+  a^3*c^-3*a^-1*c^-1*a^-1*c*a*c^-3*a^-3*c^-1,
+  c^-3*a^-2*b*a*c^-1*a^-3*c*a*c^3*a^-3*b,
+  a^-2*c^-3*a^-2*b^-1*c^3*a^-3*b^-1*a*b*a^2*c^3,
+  a^-1*b^-1*a^2*c^3*a*c^-3*a^-1*b^-1*a^3*c^-3*a^-1*c^-1*a*c*b,
+  a^-1*b^2*a^-1*b^-1*a^2*c^3*a^-4*c*b*a*b*a^2*b*a^2*c^3*b^-1*c*b^-1*c^-1,
+  c*b^-2*a^2*c^3*a^-3*c*b*a^2*c^2*a^3*b^-1*c^-1*b^-2*a^3*c^-3*a^-2,
+  a^-1*b^-1*c^-4*a^-2*b^-1*a^-3*b^-1*a^3*c^-3*a^-2*b*c*a^-1*b^2*a^2*c^-3*
+    a^-2,
+  a^-1*c^-1*b*a^3*c^-3*a^-2*b^-1*c*a^-1*b^-1*a^-1*c^-4*a^-2*b*a*c^-1*a^-1*
+    c^-1*b^-1*a^3*c^-3, 
+  b^-2*a*b*a^2*c^2*a^-1*c*a*c^3*a^-3*b*a^-1*b^-1*c*b^-2*a^-1*b^-2*c*a^-1*
+    b^-1*a^3*c^-3, 
+  a^-1*c^-2*a^-2*b^-1*a^-3*b*a^2*c^3*a*c^3*a^-3*b^-1*a^-1*c*a*c^3*a*c^-3*
+    a^-2, 
+  c^-2*a^-2*b^-1*a^-3*c*a^2*c^3*a^-3*b^-1*a*c*b*a^-3*c^-2*a^-1*c^-1*a^2*
+    c^-1*b*a^-1*c*b^-2,
+  b*a^-1*c*b*a^3*c^-3*a^-2*c^-1*a^-1*c*a*c^3*a^-2*b^2*a*b*c^-1*a^3*c^-3*
+    a^-1*c^-1*a^2*c^-4*a^-2*b^-1*a^-2
+  ;
+
+Text;
+Hard;    Gen: a;  Beg;  # No:10;  Rt:2;  -- in PEACE ??
+
+Prune:0,5;   Prune:0,5;   Prune:0,5;   Prune:0,5;   Prune:0,5;
+Prune:0,10;  Prune:0,10;  Prune:0,10;  Prune:0,10;  Prune:0,10;
+Prune:0,20;  Prune:0,20;  Prune:0,20;  Prune:0,20;  Prune:0,20;
+Prune:0,40;  Prune:0,40;  Prune:0,40;  Prune:0,40;  Prune:0,40;
+Prune:0;     Prune:1;     Prune:0;
+
+Wo:2500000;  Mess:500000;
+
+Gr: a,b;
+Rel:
+  b^4, 
+  a^2*b^-2*a^2*b^-1*a^-1*b^-1*a^2*b^-2*a^2*b^-1*a^-1*b,
+  a^-1*b*a*b*a^-2*b^2*a^-1*b*a*b^-2*a^-1*b*a*b*a^-2*b^2*a^-1*b*a*b^-2,
+  b*a*b*a*b^-2*a^3*b^-2*a^3*b^-2*a^3*b^-2*a^2*b*a^-2*b^2*a^-2*b,
+  a^-3*b^2*a^-3*b^-2*a^-4*b^-2*a^-1*b^-2*a*b^-2*a^-3*b^-2*a^-3*b^-2*a^-6,
+  a^3*b^-2*a^3*b^-2*a^2*b^-2*a^3*b^-2*a^3*b^-2*a^-1*b^-2*a^-1*b^-1*a^-1*
+    b^-2*a^2*b^-2*a^2*b, 
+  a^-1*b^2*a^-3*b^-2*a^-3*b^-2*a^-4*b^-1*a^-3*b^-2*a^4*b^-2*a^3*b^-2*a^3*
+    b^-2*a^-2*b, 
+  a^-1*b*a*b^2*a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^2*b^-1*a*b^-2*a^3*b^-2*a^3*
+    b^-2*a^-2*b^-1*a*b*a^4*b^-2*a^3*b^-2*a^3*b^-2,
+  a^-1*b^-1*a*b^2*a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^2*b^-1*a*b*a^-2*b^2*a^-2*
+    b^-2*a*b*a*b*a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-4*b^-2*a*b^-2*a*b,
+  a^-1*b^-2*a^-1*b^-1*a^4*b^-2*a^3*b^-2*a^3*b^-2*a^-1*b^-2*a*b*a*b*a*b^-2*
+    a^-3*b^-2*a^-3*b^-2*a^-4*b^-2*a^2*b^-2*a*b^-1*a^-1*b^-2*a^-2,
+  b^-2*a*b^-1*a*b*a^-2*b^-2*a^-1*b*a*b^-2*a^-1*b^-1*a^-1*b^-2*a*b*a^4*
+    b^-2*a^3*b^-2*a^4*b^-1*a^-1*b^-2*a^-2*b^-2*a^2*b^-2*a^-3*b^-2*a^-3*
+    b^-2*a^-2,
+  b^2*a*b*a^4*b^-2*a^3*b^-2*a^5*b*a^4*b^-2*a^3*b^-2*a^3*b*a^2*b^-2*a*b^-2*
+    a^-1*b^-2*a^2*b*a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-2,
+  a*b^-1*a^-1*b^2*a^-2*b*a^4*b^-2*a^3*b^-2*a^3*b^-2*a^-2*b^-1*a^2*b^-2*
+    a^-3*b^-2*a^-3*b^-2*a^-4*b*a^2*b^-2*a*b^-2*a^4*b^-2*a^3*b^-2*a^3,
+  a^-1*b^2*a^-3*b^-2*a^-4*b^-1*a^-1*b^-2*a^5*b^-2*a^3*b^-2*a^3*b^-2*a^-2*
+    b^-1*a^3*b^-2*a*b*a^5*b^-2*a^3*b^-2*a^3*b^-2*a^-3*b*a*b^-2*a*b^-2,
+  a^-2*b^2*a^-2*b*a^3*b*a*b^-2*a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^2*b^-2*a^2*
+    b^-2*a^2*b^-1*a*b^-2*a^-3*b^2*a^-3*b^-2*a^-4*b^-2*a^-1*b^-2*a^-2*b^-1*
+    a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-2, 
+  a^-2*b^2*a^-3*b^-2*a^-4*b^-1*a^-1*b^-2*a^2*b*a^-2*b^2*a^-2*b^-2*a*b*
+    a^-3*b*a^-1*b^-1*a*b^-2*a^2*b^-1*a^-1*b^-2*a^-3*b^-1*a*b^-2*a*b^-2*
+    a^-1*b^-1*a^-1*b^-2*a^2*b^-2*a^3*b^-2*a^-1*b^-1*a*b^-2*a^2*b^-1*a^-1*
+    b^-1, 
+  b*a*b^-2*a*b*a^2*b^-2*a^-3*b^-2*a^-3*b^-2*a^-5*b^-2*a^-1*b^-2*a^4*b^-2*
+    a^3*b^-2*a^3*b^-2*a^-1*b^-2*a*b*a^5*b^-2*a^3*b^-2*a^3*b^-2*a^-3*b*a^4*
+    b^-2*a^3*b^-2*a^3*b^-2*a^-1
+  ;
+
+Text;
+Sims:3;  Gen: a;  Beg;  ## Hard; -- in PEACE ??
+
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;   Prune:0,1;
+#Prune:0;     Prune:1;     Prune:0;
+

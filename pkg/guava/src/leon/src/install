@@ -1,0 +1,12 @@
+for file in setstab cent inter desauto cjrndper commut compgrp fndelt generate orbdes orblist randobj wtdist; do
+   if [ -f $file ]
+      then mv $file $1/$file
+   fi
+done
+
+for file in setimage parstab parimage conj gcent desiso matauto matiso codeauto codeiso cjper compper compset ncl chbase ptstab; do
+   if [ ! -f $1/$file ]
+      then cp $file.sh $1/$file
+   fi
+done
+   

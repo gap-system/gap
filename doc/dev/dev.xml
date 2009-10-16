@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?LaTeX ExtraPreamble="\usepackage[pdftex]{graphicx}"?>
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+[<!ENTITY C "<Package>C</Package>">]
+[<!ENTITY GASMAN "<Package>GASMAN</Package>">] >
+
+<!--
+
+  dev.xml                  GAP documentation                  Thomas Breuer
+                                                              Frank Lübeck
+                                                              Max Neunhöffer
+
+    Copyright (C) 2005  The GAP Group
+
+    $Id: dev.xml,v 1.4 2008/01/07 15:52:47 alexk Exp $
+
+-->
+
+<Book Name="Development">
+
+<TitlePage>
+    <Title>The &GAP; 4 Development Manual</Title>
+    <Subtitle>Administrating the &GAP; Project</Subtitle>
+    <Version>
+      <#Include SYSTEM "VERSION">
+    </Version>
+    <Author>The &GAP; Group
+    <Email>support@gap-system.org</Email>
+    <Homepage>http://www.gap-system.org</Homepage>
+    </Author>
+    <Date>2005</Date>
+    <Copyright> 2005, The &GAP; Group</Copyright>
+<Abstract>
+In this <Emph>development manual</Emph> we collect documentation 
+of various tasks needed for the further development, maintenance and
+distribution of &GAP;.
+<P/>
+Some sections provide practical howto's and check lists for tasks like,
+e.g.: commiting changes, testing, wrapping archives, compiling documentation.
+<P/>
+Other sections document certain conventions which are followed by the
+active members of The &GAP; Group. Some examples: there are several
+mailing lists which are used for different purposes; there is a mechanism
+how larger changes to the &GAP; system should be announced and discussed
+among the developers before they are commited, called <Emph>proposals</Emph>;
+there is a concept of <Emph>modules</Emph> where  parts of the
+&GAP; system are assigned to specified maintainers.
+</Abstract>
+
+
+</TitlePage>
+
+<!--  TableOfContents  . . . . . .  generate a table of contents   -->
+<TableOfContents/>
+
+<!--  The chapters are in separate files  --> 
+<Body>
+<#Include SYSTEM "structure.xml">
+<#Include SYSTEM "updates.xml">
+<#Include SYSTEM "kernel.xml">
+<#Include SYSTEM "lib.xml">
+<#Include SYSTEM "documentation.xml">
+<#Include SYSTEM "todo.xml">
+<#Include SYSTEM "testing.xml">
+<#Include SYSTEM "cvshints.xml">
+<#Include SYSTEM "pkgdist.xml">
+<#Include SYSTEM "website.xml">
+<#Include SYSTEM "newcode.xml">
+</Body>
+
+<!--  We want a bibliography  -->
+<Bibliography Databases="../manualbib.xml"/>
+
+<!--  And finally an index as well   -->
+<TheIndex/>
+
+</Book>
+

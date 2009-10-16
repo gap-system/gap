@@ -2,14 +2,14 @@
 ##
 #W  grpperm.gi                  GAP library                   Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpperm.gi,v 4.170 2009/02/25 13:42:20 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpperm_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpperm.gi,v 4.170 2009/02/25 13:42:20 gap Exp $";
 
 
 #############################################################################
@@ -385,7 +385,7 @@ end);
 #M  NrMovedPoints( <C> )  . . . . . . . . .  for a collection of permutations 
 ##
 NrMovedPointsPerms := function( C )
-    local   mov,  sma,  pnt;
+    local mov, sma, pnt, gen;
     
     mov := 0;
     sma := SmallestMovedPoint( C );
@@ -393,23 +393,24 @@ NrMovedPointsPerms := function( C )
         return 0;
     fi;
     for pnt  in [ sma .. LargestMovedPoint( C ) ]  do
-        if ForAny( C, gen -> pnt ^ gen <> pnt )  then
-            mov := mov + 1;
+      for gen in C do
+        if pnt ^ gen <> pnt then
+          mov:= mov + 1;
+          break;
         fi;
+      od;
     od;
     return mov;
 end;
 
 InstallMethod( NrMovedPoints,
     "for a collection of permutations",
-    true,
-    [ IsPermCollection ], 0,
+    [ IsPermCollection ],
     NrMovedPointsPerms );
 
 InstallMethod( NrMovedPoints,
     "for an empty list",
-    true,
-    [ IsList and IsEmpty ], 0,
+    [ IsList and IsEmpty ],
     NrMovedPointsPerms );
 
 
@@ -625,6 +626,8 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     local   C,          # closure of < <G>, <obj> >, result
             P, inpar,   # parent of the closure
             g,          # an element of gens
+	    o,		# order
+	    newgens,    # new generator list
             chain;      # the stabilizer chain created
 
     options:=ShallowCopy(options); # options will be overwritten
@@ -632,6 +635,21 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     gens := Filtered( gens, gen -> not gen in G );
     if IsEmpty( gens )  then
         return G;
+    fi;
+
+    # is the closure normalizing?
+    if Length(gens)=1 and 
+       ForAll(gens,i->ForAll(GeneratorsOfGroup(G),j->j^i in G)) then
+      g:=gens[1];
+      if Size(G)>1 then
+	o:=First(Difference(DivisorsInt(Order(g)),[1]),j->g^j in G);
+	options.limit:=Size(G)*o;
+      else
+	o:=First(Difference(DivisorsInt(Order(g)),[1]),j->IsOne(g^j));
+	options.limit:=o;
+      fi;
+      options.size:=options.limit;
+      #Print(options.limit,"<<\n");
     fi;
 
     # otherwise decide between random and deterministic methods
@@ -691,8 +709,16 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     else
         chain := ClosureRandomPermGroup( chain, gens, options );
     fi;
-    if inpar  then  C := GroupStabChain( P, chain, true );
-              else  C := GroupStabChain( chain );           fi;
+
+    newgens:=Concatenation(GeneratorsOfGroup(G),gens);
+    if Length(chain.generators)<=Length(newgens) then
+      if inpar  then  C := GroupStabChain( P, chain, true );
+		else  C := GroupStabChain( chain );           fi;
+    else
+      if inpar  then  C := SubgroupNC(P,newgens);
+		else  C := Group( newgens,One(G) );           fi;
+      SetStabChainMutable(C,chain);
+    fi;
     SetStabChainOptions( C, rec( random := options.random ) );
 
     UseSubsetRelation( C, G );
@@ -933,7 +959,6 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
               C := DoNormalClosurePermGroup( CUV, C );
            fi;
         until IsEmpty( list );
-        if doneCUV then C := Subgroup(CUV, GeneratorsOfGroup(C)); fi;
     fi;
 
     # do the deterministic method; it will also check correctness 
@@ -947,7 +972,8 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
         od;
     od;
     if not IsEmpty( list )  then
-        C := ClosureGroup( C, list );
+        C := ClosureGroup( C, list, rec( random := 0,
+                                           temp := true ) );
         if not doneCUV then
            CUV := ClosureGroup( U, V );
            doneCUV := true;
@@ -999,7 +1025,6 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
                D := DoNormalClosurePermGroup( G, D );
             fi;
         until list = [];
-        D := Subgroup(G,GeneratorsOfGroup(D));
     fi;
 
     # do the deterministic method; it will also check random result
@@ -1014,7 +1039,8 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
          od;
     od;
     if not IsEmpty( list )  then
-        D := ClosureGroup(D,list);
+        D := ClosureGroup(D,list,rec( random := 0,
+                                        temp := true ) );
 	# give D a proper randomness
 	if IsBound(StabChainOptions(G).random) then
 	  StabChainOptions(D).random:=StabChainOptions(G).random;
@@ -1388,7 +1414,6 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     if   q = 1  then
         return TrivialSubgroup( G );
     fi;
-
     # go down in stabilizers as long as possible
     S := StabChainMutable( G );
     while Length( S.orbit ) mod p <> 0  do
@@ -1411,12 +1436,13 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     # if the group is not transitive work with the transitive constituents
     D := MovedPoints( G );
     if not IsTransitive( G, D )  then
+	Info(InfoGroup,1,"PermSylow: transitive");
         S := G;
         D := ShallowCopy( D );
         while q < Size( S )  do
             O := Orbit( S, D[1] );
             f := ActionHomomorphism( S, O,"surjective" );
-            T := SylowSubgroupPermGroup( ImagesSource( f ), p );
+            T := SylowSubgroupPermGroup( Range( f ), p );
             S := PreImagesSet( f, T );
             SubtractSet( D, O );
         od;
@@ -1426,9 +1452,10 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     # if the group is not primitive work in the image first
     B := Blocks( G, D );
     if Length( B ) <> 1  then
+	Info(InfoGroup,1,"PermSylow: blocks");
         f := ActionHomomorphism( G, B, OnSets,"surjective" );
-        T := SylowSubgroupPermGroup( ImagesSource( f ), p );
-        if Size( T ) < Size( ImagesSource( f ) )  then
+        T := SylowSubgroupPermGroup( Range( f ), p );
+        if Size( T ) < Size( Range( f ) )  then
             T := PreImagesSet( f, T );
             S := SylowSubgroupPermGroup( T , p) ;
             return S;
@@ -1436,6 +1463,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     fi;
 
     # find a <p> element whose centralizer contains a full <p>-Sylow subgroup
+    Info(InfoGroup,1,"PermSylow: element");
     repeat g := Random( G );  until Order( g ) mod p = 0;
     g := g ^ (Order( g ) / p);
     C := Centralizer( G, g );
@@ -1450,8 +1478,9 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
 
     # the centralizer acts on the cycles of the <p> element
     B := List( Cycles( g, D ), Set );
+    Info(InfoGroup,1,"PermSylow: cycleaction");
     f := ActionHomomorphism( C, B, OnSets,"surjective" );
-    T := SylowSubgroupPermGroup( ImagesSource( f ), p );
+    T := SylowSubgroupPermGroup( Range( f ), p );
     S := PreImagesSet( f, T );
     return S;
 
@@ -1554,438 +1583,6 @@ InstallMethod( FrattiniSubgroup,"for permgrp", true, [ IsPermGroup ], 0,
         Add(k, l[i]^p);
     od;
     return SolvableNormalClosurePermGroup( G, k );
-end );
-        
-#############################################################################
-##
-#M  OmegaOp( <G>, <p>, <n> )  . . . . . . . . . . . . for abelian perm groups
-##
-InstallMethod( OmegaOp, "in abelian perm groups", true,
-        [ IsPermGroup, IsPosInt, IsPosInt ], 0,
-    function( G, p, n )
-    local   gens,  q,  gen,  ord,  o;
-    
-    if not IsAbelian( G )  then
-        TryNextMethod();
-    fi;
-    q := p ^ n;
-    gens := [  ];
-    for gen  in IndependentGeneratorsOfAbelianGroup( G )  do
-        ord := Order( gen );
-        o := GcdInt( ord, q );
-        if o <> 1  then
-            Add( gens, gen ^ ( ord / o ) );
-        fi;
-    od;
-    return SubgroupNC( G, gens );
-end );
-
-#############################################################################
-##
-#F  MinimizeExplicitTransversal( <U>, <maxmoved> )  . . . . . . . . . . local
-##
-InstallGlobalFunction( MinimizeExplicitTransversal, function( U, maxmoved )
-    local   explicit,  lenflock,  flock,  lenblock,  index,  s;
-    
-    if     IsBound( U.explicit )
-       and IsBound( U.stabilizer )  then
-        explicit := U.explicit;
-        lenflock := U.stabilizer.index * U.lenblock / Length( U.orbit );
-        flock    := U.flock;
-        lenblock := U.lenblock;
-        index    := U.index;
-        ChangeStabChain( U, [ 1 .. maxmoved ] );
-        for s  in [ 1 .. Length( explicit ) ]  do
-            explicit[ s ] := MinimalElementCosetStabChain( U, explicit[ s ] );
-        od;
-        Sort( explicit );
-        U.explicit := explicit;
-        U.lenflock := lenflock;
-        U.flock    := flock;
-        U.lenblock := lenblock;
-        U.index    := index;
-    fi;
-end );
-
-#############################################################################
-##
-#F  RightTransversalPermGroupConstructor( <filter>, <G>, <U> )  . constructor
-##
-BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
-    local   enum,  orbs,  domain,  bpt;
-    
-    enum := Objectify( NewType( FamilyObj( G ),
-                           filter and IsList and IsDuplicateFreeList
-                           and IsAttributeStoringRep ),
-          rec( group := G,
-            subgroup := U,
-      stabChainGroup := CopyStabChain( StabChainMutable( G ) ),
-   stabChainSubgroup := CopyStabChain( StabChainMutable( U ) ) ) );
-    if not IsTrivial( G )  then
-        orbs := ShallowCopy( OrbitsDomain( U, MovedPoints( G ) ) );
-        Sort( orbs, function( o1, o2 )
-            return Length( o1 ) < Length( o2 ); end );
-        domain := Concatenation( orbs );
-        G := enum!.stabChainGroup;
-        U := enum!.stabChainSubgroup;
-        while    Length( G.genlabels ) <> 0
-              or Length( U.genlabels ) <> 0  do
-            bpt := First( domain, p -> not IsFixedStabilizer( G, p ) );
-            ChangeStabChain( G, [ bpt ], true  );  G := G.stabilizer;
-            ChangeStabChain( U, [ bpt ], false );  U := U.stabilizer;
-        od;
-    fi;
-    AddCosetInfoStabChain( enum!.stabChainGroup, enum!.stabChainSubgroup,
-            LargestMovedPoint( enum!.group ) );
-    MinimizeExplicitTransversal( enum!.stabChainSubgroup,
-            LargestMovedPoint( enum!.group ) );
-    return enum;
-end );
-
-
-#############################################################################
-##
-#R  IsRightTransversalPermGroupRep( <obj> ) . right transversal of perm group
-##
-DeclareRepresentation( "IsRightTransversalPermGroupRep",
-    IsRightTransversalRep,
-    [ "stabChainGroup", "stabChainSubgroup" ] );
-
-InstallMethod( \[\],
-    "for right transversal of perm. group, and pos. integer",
-    true,
-    [ IsList and IsRightTransversalPermGroupRep, IsPosInt ], 0,
-    function( cs, num )
-    return CosetNumber( cs!.stabChainGroup, cs!.stabChainSubgroup, num );
-end );
-
-InstallMethod( PositionCanonical,
-    "for right transversal of perm. group, and permutation",
-    IsCollsElms,
-    [ IsList and IsRightTransversalPermGroupRep, IsPerm ], 0,
-    function( cs, elm )
-    return NumberCoset( cs!.stabChainGroup,
-                        cs!.stabChainSubgroup,
-                        elm );
-end );
-
-
-#############################################################################
-##
-#M  RightTransversalOp( <G>, <U> )  . . . . . . . . . . . . . for perm groups
-##
-InstallMethod( RightTransversalOp,
-    "for two perm. groups",
-    IsIdenticalObj,
-    [ IsPermGroup, IsPermGroup ], 0,
-    function( G, U )
-    return RightTransversalPermGroupConstructor(
-               IsRightTransversalPermGroupRep, G, U );
-end );
-
-
-#############################################################################
-##
-#F  AddCosetInfoStabChain( <G>, <U>, <maxmoved> ) . . . . . .  add coset info
-##
-MAX_SIZE_TRANSVERSAL := 100000;
-
-InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
-    local   orb,  pimg,  img,  vert,  s,  t,  index,
-            block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
-            ss,  tt,t1,t1lim;
-    
-    if IsEmpty( G.genlabels )  then
-        U.index    := 1;
-        U.explicit := [ U.identity ];
-        U.lenflock := 1;
-        U.flock    := U.explicit;
-    else
-        AddCosetInfoStabChain( G.stabilizer, U.stabilizer, maxmoved );
-        
-        # U.index := [G_1:U_1];
-        U.index := U.stabilizer.index * Length( G.orbit ) / Length( U.orbit );
-        
-        # block := 1 ^ <U,G_1>; is a block for G.
-        block := OrbitPerms( Concatenation( U.generators,
-                 G.stabilizer.generators ), G.orbit[ 1 ] );
-        U.lenblock := Length( block );
-        lenflock := Length( G.orbit ) / U.lenblock;
-
-        # For small indices,  permutations   are multiplied,  so  we  need  a
-        # multiplied transversal.
-        if     IsBound( U.stabilizer.explicit )
-           and U.lenblock * maxmoved <= MAX_SIZE_TRANSVERSAL
-           and U.index    * maxmoved <= MAX_SIZE_TRANSVERSAL * lenflock  then
-            U.explicit := [  ];
-            U.flock    := [ G.identity ];
-            tt := [  ];  tt[ G.orbit[ 1 ] ] := G.identity;
-            for t  in G.orbit  do
-                tt[ t ] := tt[ t ^ G.transversal[ t ] ] /
-                           G.transversal[ t ];
-            od;
-        fi;
-        
-        # flock := { G.transversal[ B[1] ] | B in block system };
-        blist := BlistList( G.orbit, block );
-        pos := Position( blist, false );
-        while pos <> fail  do
-            img := G.orbit[ pos ];
-            B := block{ [ 1 .. U.lenblock ] };
-            sliced := [  ];
-            while img <> G.orbit[ 1 ]  do
-                Add( sliced, G.transversal[ img ] );
-                img := img ^ G.transversal[ img ];
-            od;
-            for i  in Reversed( [ 1 .. Length( sliced ) ] )  do
-                for j  in [ 1 .. Length( B ) ]  do
-                    B[ j ] := B[ j ] / sliced[ i ];
-                od;
-            od;
-            Append( block, B );
-            if IsBound( U.explicit )  then
-                Add( U.flock, tt[ B[ 1 ] ] );
-            fi;
-            #UniteBlist( blist, BlistList( G.orbit, B ) );
-            UniteBlistList(G.orbit, blist, B );
-            pos := Position( blist, false, pos );
-        od;
-        G.orbit := block;
-        
-        # Let <s> loop over the transversal elements in the stabilizer.
-        U.repsStab := List( [ 1 .. U.lenblock ], x ->
-                           BlistList( [ 1 .. U.stabilizer.index ], [  ] ) );
-        U.repsStab[ 1 ] := BlistList( [ 1 .. U.stabilizer.index ],
-                                      [ 1 .. U.stabilizer.index ] );
-        index := U.stabilizer.index * lenflock;
-        s := 1;
-        
-        # For  large  indices, store only   the  numbers of  the  transversal
-        # elements needed.
-        if not IsBound( U.explicit )  then
-
-            # If  the   stabilizer   is the   topmost  level   with  explicit
-            # transversal, this must contain minimal coset representatives.
-            MinimizeExplicitTransversal( U.stabilizer, maxmoved );
-            
-	    # if there are over 200 points, do a cheap test first.
-	    t1lim:=Length(G.orbit);
-	    if t1lim>200 then
-	      t1lim:=50;
-	    fi;
-
-            orb := G.orbit{ [ 1 .. U.lenblock ] };
-            pimg := [  ];
-            while index < U.index  do
-                pimg{ orb } := CosetNumber( G.stabilizer, U.stabilizer, s,
-                                       orb );
-                t := 2;
-                while t <= U.lenblock  and  index < U.index  do
-
-		    # do not test all points first if not necessary
-		    # (test only at most t1lim points, if the test succeeds,
-		    # test the rest)
-		    # this gives a major speedup.
-		    t1:=Minimum(t-1,t1lim);
-                    # For this point  in the  block,  find the images  of the
-                    # earlier points under the representative.
-                    vert := G.orbit{ [ 1 .. t1 ] };
-                    img := G.orbit[ t ];
-                    while img <> G.orbit[ 1 ]  do
-                        vert := OnTuples( vert, G.transversal[ img ] );
-                        img  := img           ^ G.transversal[ img ];
-                    od;
-
-                    # If $Ust = Us't'$ then $1t'/t/s in 1U$. Also if $1t'/t/s
-                    # in 1U$ then $st/t' =  u.g_1$ with $u  in U, g_1 in G_1$
-                    # and $g_1  =  u_1.s'$ with $u_1  in U_1,  s' in S_1$, so
-                    # $Ust = Us't'$.
-                    if ForAll( [ 1 .. t1 ], i -> not IsBound
-                       ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
-
-		      # do all points
-		      if t1<t-1 then
-			vert := G.orbit{ [ 1 .. t - 1 ] };
-			img := G.orbit[ t ];
-			while img <> G.orbit[ 1 ]  do
-			    vert := OnTuples( vert, G.transversal[ img ] );
-			    img  := img           ^ G.transversal[ img ];
-			od;
-			if ForAll( [ t1+1 .. t - 1 ], i -> not IsBound
-			  ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
-			    U.repsStab[ t ][ s ] := true;
-			    index := index + lenflock;
-			fi;
-		      else
-                        U.repsStab[ t ][ s ] := true;
-                        index := index + lenflock;
-		      fi;
-                    fi;
-
-                    t := t + 1;
-                od;
-                s := s + 1;
-            od;
-            
-        # For small indices, store a transversal explicitly.
-        else
-            for ss  in U.stabilizer.flock  do
-                Append( U.explicit, U.stabilizer.explicit * ss );
-            od;
-            while index < U.index  do
-                t := 2;
-                while t <= U.lenblock  and  index < U.index  do
-                    ss := U.explicit[ s ] * tt[ G.orbit[ t ] ];
-                    if ForAll( [ 1 .. t - 1 ], i -> not IsBound
-                           ( U.translabels[ G.orbit[ i ] / ss ] ) )  then
-                        U.repsStab[ t ][ s ] := true;
-                        Add( U.explicit, ss );
-                        index := index + lenflock;
-                    fi;
-                    t := t + 1;
-                od;
-                s := s + 1;
-            od;
-            Unbind( U.stabilizer.explicit );
-            Unbind( U.stabilizer.flock    );
-        fi;
-                    
-    fi;
-end );
-
-#############################################################################
-##
-#F  NumberCoset( <G>, <U>, <r> )  . . . . . . . . . . . . . . coset to number
-##
-InstallGlobalFunction( NumberCoset, function( G, U, r )
-    local   num,  b,  t,  u,  g1,  pnt,  bpt;
-    
-    if IsEmpty( G.genlabels )  or  U.index = 1  then
-        return 1;
-    fi;
-    
-    # Find the block number of $r$.
-    bpt := G.orbit[ 1 ];
-    b := QuoInt( Position( G.orbit, bpt ^ r ) - 1, U.lenblock );
-        
-    # For small indices, look at the explicit transversal.
-    if IsBound( U.explicit )  then
-        return b * U.lenflock + Position( U.explicit,
-               MinimalElementCosetStabChain( U, r / U.flock[ b + 1 ] ) );
-    fi;
-        
-    pnt := G.orbit[ b * U.lenblock + 1 ];
-    while pnt <> bpt  do
-        r   := r   * G.transversal[ pnt ];
-        pnt := pnt ^ G.transversal[ pnt ];
-    od;
-    
-    # Now $r$ stabilises the block. Find the first $t in G/G_1$ such that $Ur
-    # = Ust$ for $s in G_1$. In this code, G.orbit[ <t> ] = bpt ^ $t$.
-    num := b * U.stabilizer.index * U.lenblock / Length( U.orbit );
-             # \_________This is [<U,G_1>:U] = U.lenflock_________/
-    t := 1;
-    pnt := G.orbit[ t ] / r;
-    while not IsBound( U.translabels[ pnt ] )  do
-        num := num + SizeBlist( U.repsStab[ t ] );
-        t := t + 1;
-        pnt := G.orbit[ t ] / r;
-    od;
-        
-    # $r/t = u.g_1$ with $u in U, g_1 in G_1$, hence $t/r.u = g_1^-1$.
-    u := U.identity;
-    while pnt ^ u <> bpt  do
-        u := u * U.transversal[ pnt ^ u ];
-    od;
-    g1 := LeftQuotient( u, r );  # Now <g1> = $g_1.t = u mod r$.
-    while bpt ^ g1 <> bpt  do
-        g1 := g1 * G.transversal[ bpt ^ g1 ];
-    od;
-                
-    # The number of $r$  is the number of $g_1$  plus an offset <num> for
-    # the earlier values of $t$.
-    return num + SizeBlist( U.repsStab[ t ]{ [ 1 ..
-                   NumberCoset( G.stabilizer, U.stabilizer, g1 ) ] } );
-
-end );
-
-#############################################################################
-##
-#F  CosetNumber( <arg> )  . . . . . . . . . . . . . . . . . . number to coset
-##
-InstallGlobalFunction( CosetNumber, function( arg )
-    local   G,  U,  num,  tup,  b,  t,  rep,  pnt,  bpt,  index,  len;
-
-    # Get the arguments.
-    G := arg[ 1 ];  U := arg[ 2 ];  num := arg[ 3 ];
-    if Length( arg ) > 3  then  tup := arg[ 4 ];
-                          else  tup := false;     fi;
-
-    if num = 1  then
-        if tup = false  then  return G.identity;
-                        else  return tup;         fi;
-    fi;
-    
-    # Find the block $b$ addressed by <num>.
-    if IsBound( U.explicit )  then
-        index := U.lenflock;
-    else
-        index := U.stabilizer.index * U.lenblock / Length( U.orbit );
-               # \_________This is [<U,G_1>:U] = U.lenflock_________/
-    fi;
-    b := QuoInt( num - 1, index );
-    num := ( num - 1 ) mod index + 1;
-        
-    # For small indices, look at the explicit transversal.
-    if IsBound( U.explicit )  then
-        if tup = false  then
-            return U.explicit[ num ] * U.flock[ b + 1 ];
-        else
-            return List( tup, t -> t / U.flock[ b + 1 ] / U.explicit[ num ] );
-        fi;
-    fi;
-        
-    # Otherwise, find the point $t$ addressed by <num>.
-    t := 1;
-    len := SizeBlist( U.repsStab[ t ] );
-    while num > len  do
-        num := num - len;
-        t := t + 1;
-        len := SizeBlist( U.repsStab[ t ] );
-    od;
-    if len < U.stabilizer.index  then
-        num := PositionNthTrueBlist( U.repsStab[ t ], num );
-    fi;
-        
-    # Find the representative $s$ in   the stabilizer addressed by <num>  and
-    # return $st$.
-    rep := G.identity;
-    bpt := G.orbit[ 1 ];
-    if tup = false  then
-        pnt := G.orbit[ b * U.lenblock + 1 ];
-        while pnt <> bpt  do
-            rep := rep * G.transversal[ pnt ];
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        pnt := G.orbit[ t ];
-        while pnt <> bpt  do
-            rep := rep * G.transversal[ pnt ];
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        return CosetNumber( G.stabilizer, U.stabilizer, num ) / rep;
-    else
-        pnt := G.orbit[ b * U.lenblock + 1 ];
-        while pnt <> bpt  do
-            tup := OnTuples( tup, G.transversal[ pnt ] );
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        pnt := G.orbit[ t ];
-        while pnt <> bpt  do
-            tup := OnTuples( tup, G.transversal[ pnt ] );
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        return CosetNumber( G.stabilizer, U.stabilizer, num, tup );
-    fi;
 end );
 
 #############################################################################
@@ -2520,6 +2117,36 @@ local ran,d,emb,u,act;
   u:=SubgroupNC(d,u);
   act:=ActionHomomorphism(d,RightTransversal(d,u),OnRight,"surjective");
   return Image(act,d);
+end);
+
+InstallGlobalFunction(ReducedPermdegree,function(g)
+  local dom, deg, orb, gdeg, p, ndom, s,hom;
+  dom:=MovedPoints(g);
+  deg:=Length(dom);
+  orb:=ShallowCopy(Orbits(g,dom));
+  if Length(orb)=1 then return fail;fi;
+  gdeg:=20*LogInt(Size(g),2); # good degree
+  Sort(orb,function(a,b) return Length(a)<Length(b);end);
+  p:=PositionProperty(orb,i->Length(i)>=gdeg);
+  if p=fail then p:=Length(orb);fi;
+  ndom:=orb[p];
+  if Length(ndom)*2>Length(dom) then return fail;fi;
+  s:=Stabilizer(g,orb[p],OnTuples);
+  p:=p+1;
+  if p>Length(orb) then p:=1;fi;
+  while Size(s)>1 do
+    while not ForAny(orb[p],j->ForAny(GeneratorsOfGroup(s),k->j^k<>j)) do
+      p:=p+1;
+      if p>Length(orb) then p:=1;fi;
+    od;
+    ndom:=Union(ndom,orb[p]);
+    s:=Stabilizer(s,orb[p],OnTuples);
+  od;
+  if Length(ndom)*2>Length(dom) then return fail;fi;
+  hom:=ActionHomomorphism(g,ndom,"surjective");
+  SetIsInjective(hom,true);
+  SetSize(Image(hom),Size(g));
+  return hom;
 end);
 
 #############################################################################

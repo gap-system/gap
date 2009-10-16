@@ -1,0 +1,46 @@
+# Used by ExponentsOfUnitsDescriptionWithRankKant
+# part of the code coincides with units.kt3
+#
+# INPUT:
+# - polynomial 'f' with integer coefficients
+# - list 'elms'
+#
+om := MaximalOrder( f ); # was 'OrderMaximal'
+#
+os := OptimisedRepresentation( om ); # was 'OrderShort'
+if os then
+    os:=os.ext1;
+else
+    os:=om; 
+fi;
+os := Simplify(LLL(os)); # 'LLL' was 'Order LLL', 'Simplify' was 'OrderSimplify'
+#
+# compute units
+#
+un := UnitGroup( os );
+un1 := Apply( x->un.ext1(x), List( Generators(un) ) );
+un2 := List( un1, x ->  ElementToSequence( Element( om, x ) ) );
+# un2 is the 1st part of the output.
+#
+# TODO BELOW
+#
+# exponents are also printed in decomp.kt3
+#
+# print exponents
+AppendTo(outt," KANTVart := [ \n");
+for i in [1..Length(elms)] do
+   a := Elt( oe, elms[i] );
+   b := EltMove( a, os );
+   #TODO: What is EltUnitDecompose ???
+   c := EltUnitDecompose( b, "expons" );
+   AppendTo(outt,c,",\n");
+od;
+AppendTo(outt,"]; \n \n");
+#
+# get the rank of the group (order of the torsion subgroup of the unit group)
+rank := Order( TorsionUnitGroup( os ) ); # was 'OrderTorsionUnitRank(os)';
+#
+# OUTPUT: the list of the length three,
+# 1st element is the list 'un'
+# 2nd element is the list of 'c' obtained from 'elms' as above
+# 3rd element is 'rank'

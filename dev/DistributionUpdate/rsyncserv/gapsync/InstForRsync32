@@ -1,0 +1,301 @@
+#!/usr/bin/tcsh
+
+# $Id: InstForRsync32,v 1.9 2009/07/17 10:45:43 gap Exp $
+
+# You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
+# And the files: gap4r4.tar.gz, packages-XXX.tar.gz, tools4r4.tar.gz,
+#                xtom1r1.tar.gz
+
+# Frank Lübeck, Frank.Luebeck@Math.RWTH-Aachen.De for questions and complaints.
+
+# Note, that this isn't and is not intended to be a sophisticated script.
+# Even if it doesn't work completely automatically for you, you may get 
+# an idea what to do for a complete installation of GAP.
+
+
+setenv NAME "4r4"
+
+# adjust settings as you like, the example is  for gcc under Linux ix86
+# (use settings like "-v8a -fast" or "-v9a -fast" for 32bit or 64bit
+# compilations with SUN's compilers under Solaris, and similar for other
+# systems)
+setenv COPTS "-Wall -O2 -g -fomit-frame-pointer -pipe -mpreferred-stack-boundary=2 -march=i686 -fno-strict-aliasing"
+# on x86_64 bit:
+#setenv COPTS ""
+
+# you can also set this to choose a C compiler
+#setenv CC ...
+
+# and you can fix extra linker options, e.g.,
+setenv LOPTS "-static"
+
+tar xzvpf gap{$NAME}p*.tar.gz
+tar xzvpf tools{$NAME}p*.tar.gz
+tar xzvpf xtom1*.tar.gz
+rm -f gap$NAME/GAP\ \*
+rm -f gap$NAME/bin/*.exe
+rm -f gap$NAME/bin/*.dll
+rm -rf gap$NAME/bin/*cygwin*
+cd gap$NAME/pkg
+tar xzvpf ../../packages-*.tar.gz
+#tar xzvpf ../../tomlibx*.tar.gz
+# we fetch 2 not yet re-distributed packages
+wget http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/cvec/cvec-1.7.tar.gz
+tar xzf cvec*.tar.gz
+rm -f cvec*.tar.gz
+cp cvec/README README.cvec
+rm -f cvec/doc/manual.ps cvec/doc/manual.dvi
+# and another one in the end (needs password)
+
+cd ..
+
+# quite a few packages have unpleasant file permissions
+# - we remove write permissions for group and world
+# - we give read permissions for everyone
+# - we give write permissions for user
+# then we are only left with some files with unnecessary executable bit set
+chmod -R g-w pkg
+chmod -R o-w pkg
+chmod -R u+r pkg
+chmod -R g+r pkg
+chmod -R o+r pkg
+chmod -R u+w pkg
+
+# compile GAP
+./configure
+make
+#unsetenv COPTS
+#unsetenv LOPTS
+# we collect all start scripts in 'bin'
+cp bin/`sed -e 's/GAParch=//' sysinfo.gap`/gac bin
+
+# now the packages
+cd pkg
+
+cd ace
+./configure ../..
+make CC="gcc -Wall -ansi -O2 -static"
+strip bin/*/ace
+cd ..
+
+cd anupq
+./configure ../..
+make linux-iX86-gcc2 LOPTS="-static"
+cd ..
+
+# You may not want a writable directory here! In this case substitute
+# the directories 'datagens' and 'dataword' by links to somewhere else.
+cd atlasrep
+chmod 1777 datagens dataword
+cd ..
+
+
+# create dynamic library first
+# a statically linked GAP containing the kernel module from Browse and
+# other packages is produced in the end.
+cd Browse
+./configure
+make
+cd ..
+
+# Installation of Carat produces a lot of data, maybe you want to leave 
+# this out until a user complains.
+# It is not possible to provide precompiled binaries because these have the
+# path to some data files burned in.
+# Here we install first Gmp in pkg/Gmplib and include only a link to
+# the Carat standalone installation which must be done on the users machine.
+cd carat
+tar xzpf carat-2.1b1.tgz
+rm -f bin
+#ln -s carat-2.1b1/bin bin
+cd carat-2.1b1/functions
+tar xzpf gmp-*.tar.gz
+cd ..
+make TOPDIR=`pwd` Links
+# compile for generic i686
+cd functions/Gmp
+./configure --build=pentiumpro-pc-linux-gnu --prefix=`pwd`/../../../../Gmplib
+# in x86_64:
+###  ./configure  --prefix=`pwd`/../../../../Gmplib
+make 
+make install
+cp longlong.h ../../../../Gmplib/include
+cd ../../..
+rm -rf carat-2.1b1
+ln -s ../../local/pkg/CaratStandalone/carat-2.1b1/bin bin
+cd ..
+
+cd cohomolo
+#make clean
+rm -rf bin/*
+./configure 
+cd standalone/progs.d
+mv makefile makefile.orig
+echo 'CFLAGS='$COPTS' -static' > makefile
+grep -v "^\(CFLAGS\)" makefile.orig >> makefile
+cd ../..
+make 
+cd ..
+
+# create dynamic library first
+# a statically linked GAP containing the kernel module from CVec and
+# other packages is produced in the end.
+###  currently not yet re-distributed
+cd cvec
+./configure
+make
+cd ..
+
+cd example
+./configure ../..
+make CC="gcc -O2 -Wall -static"
+cd ..
+
+cd fplsa
+./configure ../..
+make CC="gcc -static -O2 "
+cd doc
+tex manual
+tex manual
+makeindex manual
+tex manual
+cd ../..
+
+cd grape
+./configure ../..
+make LD=-static
+cd ..
+
+cd guava*
+./configure ../..
+make CFLAGS="-O2 -g -static"
+cd ..
+
+# create dynamic library first
+# a statically linked GAP containing the kernel module from IO and
+# other packages is produced in the end.
+cd io
+./configure
+make
+cd ..
+
+cd kbmag
+make clean
+rm -rf bin/*
+./configure ../..
+make COPTS="-O2 -g -static"
+cd ..
+
+# for nq use the GMP version which comes with Carat
+cd nq-*
+./configure
+make GNU_MP_LIB=../../Gmplib/lib GNU_MP_INC=../../Gmplib/include
+strip bin/*/*
+cd ..
+
+# openmath
+cd openmath
+cd OMCv1.3c/src
+./configure
+make
+cd ../..
+./configure ../..
+make
+cd ..
+
+# needs Tcl/Tk (/usr/bin/wish)  and GraphViz  (/usr/bin/dot)
+cd sgpviz/src
+# no longer there? ./configure
+make xsemi
+make xaut
+cd ../..
+
+# create dynamic library first
+# a statically linked GAP containing the kernel module from EDIM and
+# other packages is produced in the end.
+cd edim
+#make clean
+unsetenv LANG
+unsetenv LC_ALL
+./configure
+# produce the ediv.so file for dynamic loading.
+make
+cd ..
+
+#  see the pargap documentation how to use this 
+#  (in particular, user needs procgroup file)
+cd pargap
+./configure ../..
+# produce gapmpi.o and start script
+make 
+cp bin/pargap.sh ../../bin/
+cd ..
+# no longer needed from 4.4 on
+rm -f ALLPKG
+
+# in the end produce a GAP binary with all package kernel modules and the
+# pargap stuff
+setenv ARCHSTR `sed -e 's/GAParch=//' ../sysinfo.gap`
+cd ../bin/$ARCHSTR
+# new static gap with ediv module, see SHOW_STAT();
+rm -f gap.o
+make COPTS="-DGAPMPI -DPARGAPMPI -DPARGAP" gap.o
+./gac -o gap -P "gapmpi.o -lm ../../pkg/pargap/bin/*/libmpi.a -lpanel -lncurses -static" -p "-DEDIVSTATIC -DNCURSESSTATIC -DCVECSTATIC -DIOSTATIC -I../../pkg/io/bin/$ARCHSTR" ../../pkg/edim/src/ediv.c ../../pkg/Browse/src/ncurses.c ../../pkg/cvec/src/cvec.c ../../pkg/io/src/io.c
+
+strip gap
+
+cd ../../pkg
+
+# For XGap the following shared libraries of the X window system must be 
+# installed on your machine together with the development files (header 
+# files and so on):
+# 
+#   libXaw.so, libXmu.so, libXt.so, libXext.so, libX11.so, libSM.so, libICE.so
+# 
+# In addition you need on XFree Version >= 4:
+# 
+#   libXpm.so
+#
+# If you  miss one of  these under Linux you  can usually just  install some
+# more packages of your favorite distribution. The development files usually
+# come in some package with "dev" in its name.
+
+
+###### can no longer compile under Ubuntu feisty (7.04). 
+###### libXaw is now libXaw6 or libXaw7
+###### even after overwriting X_LIBS accordingly, it doesn't compile, e.g.,
+####/build/buildd/libx11-1.1.1/obj-i486-linux-gnu/src/../../src/ConnDis.c:1197:
+####undefined reference to `XdmcpWrap'
+
+###cd xgap
+###./configure
+###make LOPTS="-static  -lXaw -lXpm -lXmu -lXt -lXext -ldl -lXpm -lX11"
+###cp bin/xgap.sh ../../bin/
+###cd ..
+# for now we just fetch an old compile (Ubuntu hoary)
+cd xgap
+tar xzvf ~luebeck/xgapbini686.tgz
+cd ..
+
+
+# cleanup-don't need to distribute .o files 
+cd ..
+find . -name \*.o -exec file {} \; | grep ": ELF " | cut -f1 -d: | xargs rm -f 
+
+# copy the gapsync directory
+mkdir gapsync
+cd gapsync
+cp -a ~/gap4/dev/DistributionUpdate/rsyncserv/gapsync/CVS .
+cvs update
+rm -rf CVS
+cd ..
+
+
+
+## This needs a password, only interesting for people who help developing it`
+#cd pkg
+#svn export svn://luebeck@thuban.math.rwth-aachen.de/home2/thuban/svnuser/REPOSITORY.chop/trunk/chop
+#cd chop
+#gapL -l \;<pathtothisgap>   <makedoc.g
+#cd ..
+

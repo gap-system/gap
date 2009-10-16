@@ -1,0 +1,139 @@
+################################
+#                              #
+# big test script for SISYPHOS #
+#                              #
+################################
+#
+#
+# check C3xC3xC3 and C9xC3
+#
+c3c3c3 = pcgroup ( 3, gens(a,b,c), rels(a^3,b^3,c^3) );
+c9c3   = pcgroup ( 3, gens(a,b,c), rels(a^3=c,b^3,c^3) );
+h1 = group ( minimal, 3, gens(a,b,c), rels(a^3,b^3,c^3) );
+h2 = group ( minimal, 3, gens(a,b), rels(a^9,b^3,[b,a]) );
+h3 = group ( 3, gens(a,b,c), rels(a^9,b^3,c=a^3,[b,a]) );
+
+echo ( "checking C3xC3xC3 and C3xC3xC3" );
+echo ( "isomorphic ?" );
+isomorphic ( c3c3c3, h1 );
+print ( isomorphisms ( c3c3c3, h1 ), none );
+
+echo ( "checking C3xC3xC3 and C9xC3, using minimal presentation" );
+echo ( "isomorphic ?" );
+isomorphic ( c3c3c3, h2 );
+
+echo ( "checking C3xC3xC3 and C9xC3, using 3-generator presentation" );
+echo ( "isomorphic ?" );
+isomorphic ( c3c3c3, h3 );
+
+#
+# check C2xC2xC2
+#
+echo ( "checking C2xC2xC2" );
+c2c2c2 = pcgroup ( 2, gens(a,b,c), rels(a^2,b^2,c^2) );
+psl27 = automorphisms ( c2c2c2 );
+epsl27 = elements ( psl27, outer );
+echo ( "generating system for Aut(G) = Gl(3,2) = PSL(2,7)" );
+print ( psl27, images );
+echo ( "element list for Aut(G) = Gl(3,2) = PSL(2,7)" );
+print ( epsl27, images );
+
+#
+# check quaternion group 
+#
+echo ( "checking quaternion group" );
+q8 = pcgroup ( 2, gens(a,b,c), rels(a^2=c,b^2=c,c^2,[b,a]=c) );
+aq8 = automorphisms ( q8 );
+eaq8 = elements ( aq8, outer );
+echo ( "generating system for Out(G) = Gl(2,2)" );
+print ( aq8, images );
+echo ( "element list for Out(G) = Gl(2,2)" );
+print ( eaq8, images );
+
+#
+# check group no. 173 of order 64
+#
+g173pc = readpcgroup ( 173, "gps64" );
+g173 = readgroup ( 173, "gps64.r" );
+
+echo ( "checking group 173 of order 64" );
+echo ( "compute automorphisms using canonical minimal  presentation" );
+i173 =  isomorphisms ( g173pc, g173 );
+print ( i173, images );
+echo ( "as permutations:" );
+print ( i173, permutations );
+echo ( "as cycles:" );
+print ( i173, cycles );
+echo ( "GAP style" );
+set ( displaystyle,  gap);
+print ( i173, images );
+set ( displaystyle,  sisyphos);
+
+echo ( "compute automorphisms using only pc-presentation" );
+a173pc = automorphisms ( g173pc );
+print ( a173pc, images );
+
+echo ( "compute automorphisms using other minimal presenation" );
+h173_a = group ( 2, gens(a1,a2,a3), rels(a1^8,a2^4,a3^2,[a2,a1],
+	a3*a1=a1^3*a3,a3*a2=a2^3*a3) );
+isoh = isomorphisms ( g173pc, h173_a );
+print ( isoh, images );
+
+echo ( "compute automorphisms using non minimal presenation" );
+h173_b = group ( 2, gens(a,b,c,d), rels(a^4=d,b^4,c^2,d^2,
+	[b,a],[d,b],[d,c],c*a=a^3*c,c*b=b^3*c ) );
+isoh1 = isomorphisms ( g173pc, h173_b );
+print ( isoh1, images );
+
+reset;
+
+#
+# check 2. group of O'Brien's paper "Isomorphism testing for p-groups"
+#
+g2 = readpcgroup ( 1, "g2" );
+p2_a = group ( minimal, 3, gens(x,y), rels([[[x,y],y],y],[[x,y],x]) );
+p2_b = group ( minimal, 3, gens(x,y), rels([[[y,x],x],x],[[y,x],y]) );
+
+echo ( "checking group g2 of order 3^37 and class 10, using canonical presentation" );
+print ( isomorphisms ( g2, p2_a ), images );
+
+echo ( "checking group g2 of order 3^37 and class 10, using twisted presentation" );
+print ( isomorphisms ( g2, p2_b ), images );
+
+#
+# check 2. group of O'Briens forthcoming paper on automorphism groups
+#
+reset;
+ob2 = readpcgroup ( 2, "obrienf" );
+ob2_m = group ( minimal, 2, gens (a,b), rels(b^4,b^2=[[b,a],a],a^1024) );
+ob2_s = group ( 2, gens(a,b,c,d), rels(b^4,b^2=[[b,a],a],d^16,a^16=c*d,b^8=d*c^4) );
+
+echo ( "checking group ob2 of order 2^53 and class 14, using minimal presentation" );
+print ( isomorphisms ( ob2, ob2_m ), images );
+
+echo ( "checking group ob2 of order 2^53 and class 14, using 4-generator presentation" );
+print ( isomorphisms ( ob2, ob2_s ), images );
+
+#
+# compute full automorphism group of FG_173
+#
+reset;
+echo ( "computing automorphism group of FG_173" );
+g173pc = readpcgroup ( 173, "gps64" );
+g173fp = readgroup ( 173, "gps64.r" );
+setdomain ( g173pc );
+autfg = grauto ( g173fp, 0, grpautos, full );
+print ( autfg );
+
+#
+# compute ag-presentation for V(FG_173) 
+#
+echo ( "computing presentation for V(FG_173)" );
+unitgroup ( 12, "V", true );
+
+#
+# that's all
+#
+
+
+

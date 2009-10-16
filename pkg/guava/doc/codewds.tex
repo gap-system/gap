@@ -1,0 +1,409 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%A  codewds.tex                GUAVA documentation              Reinald Baart
+%A                                                       & Jasper Cramwinckel
+%A                                                          & Erik Roijackers
+%
+%H  $Id: codewds.tex,v 1.4 2004/12/20 21:26:05 gap Exp $
+%
+%Y  Copyright (C)  1995,  Vakgroep Algemene Wiskunde,  T.U. Delft,  Nederland
+%
+\Chapter{Codewords}
+
+\index{codeword}
+A <codeword> is an n-tuple of elements of a finite field GF(q). 
+In {\GUAVA}, the `Codeword' command produces a GAP object, 
+with this base vector as its most important component. 
+This object may be thought of as an n-vector (or list of elements of
+GF(q) of length n) which has several extra properties
+and is displayed by {\GAP} on the screen differently.
+
+\beginexample
+  gap> C:=RandomLinearCode(20,10,GF(4));
+  a  [20,10,?] randomly generated code over GF(4)
+  gap> c:=Random(C);
+  [ 1 a 0 0 0 1 1 a^2 0 0 a 1 1 1 a 1 1 a a 0 ]
+  gap> NamesOfComponents(C);
+  [ "LeftActingDomain", "GeneratorsOfLeftOperatorAdditiveGroup", "WordLength",
+    "GeneratorMat", "name", "Basis", "NiceFreeLeftModule", "Dimension", 
+     "Representative", "ZeroImmutable" ]
+  gap> NamesOfComponents(c);
+  [ "VectorCodeword", "WordLength", "treatAsPoly" ]
+  gap> c!.VectorCodeword;
+  < immutable compressed vector length 20 over GF(4) > 
+  gap> Display(last);
+  [ Z(2^2), Z(2^2), Z(2^2), Z(2)^0, Z(2^2), Z(2^2)^2, 0*Z(2), Z(2^2), Z(2^2),
+    Z(2)^0, Z(2^2)^2, 0*Z(2), 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2^2)^2,
+    Z(2)^0, 0*Z(2) ]
+  gap> C!.Dimension;
+  10
+\endexample
+
+Codewords have been implemented in {\GUAVA} mainly to ease
+interfacing  with the  user. The user  can  input  codewords in different
+formats, and output information is formatted in a readable way.
+
+Codewords   work together  with codes     (see "Codes"), although    many
+operations are available on codewords themselves.
+
+The first section describes how codewords are constructed (see "Codeword"
+and "IsCodeword").
+
+Sections~"Comparisons  of  Codewords"  and~"Arithmetic Operations for
+Codewords" describe the arithmetic operations applicable to codewords.
+
+Section~"Functions that convert  Codewords  to  Vectors  or  Polynomials"
+describe functions that convert codewords back to vectors or  polynomials
+(see "VectorCodeword" and "PolyCodeword").
+
+Section~"Functions that Change the Display Form of a  Codeword"  describe
+functions  that  change  the   way   a   codeword   is   displayed   (see
+"TreatAsVector" and "TreatAsPoly").
+
+Finally, Section~"Other  Codeword  Functions"  describes  a  function  to
+generate a null word (see "NullWord") and some functions  for  extracting
+properties  of   codewords   (see   "DistanceCodeword",   "Support"   and
+"WeightCodeword").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Construction of Codewords}
+
+\>Codeword( <obj> [, <n>] [, <F>] )
+
+`Codeword' returns  a codeword  or a list  of codewords  constructed from
+<obj>.  The object <obj>  can be a vector,  a  string, a polynomial or  a
+codeword. It may also be a list of those (even a mixed list).
+
+If a number  <n> is   specified, all  constructed codewords  have  length
+<n>. This  is the only  way to make sure that  all  elements of <obj> are
+converted  to  codewords of the same  length.  Elements of <obj> that are
+longer   than <n>  are   reduced in   length  by  cutting  of the    last
+positions. Elements of <obj> that are  shorter than <n> are lengthened by
+adding zeros  at  the  end.  If no  <n>  is specified,  each  constructed
+codeword is handled individually.
+
+If a  Galois field <F>  is specified, all  codewords are constructed over
+this field. This is the  only way to  make sure that  all elements of obj
+are converted to the same field <F> (otherwise they  are converted one by
+one). Note that all elements of <obj> must have elements over <F> or over
+`Integers'.   Converting  from  one  Galois    field to another    is not
+allowed. If no <F> is specified, vectors or strings with integer elements
+will be converted to the smallest Galois field possible.
+
+Note that a significant speed  increase is achieved  if <F> is specified,
+even when all elements of <obj> already have elements over <F>.
+
+Every vector in <obj> can be a  finite field vector over  <F> or a vector
+over `Integers'. In the last case, it is converted to <F> or, if omitted,
+to the smallest Galois field possible (one of: GF(p), p=2,3,5,7,11).
+
+Every string in <obj> must be a string of numbers, without spaces, commas
+or any other characters. These numbers must be from 0 to 9. The string is
+converted to a codeword over <F> or, if <F> is omitted, over the smallest
+Galois  field  possible. Note that since  all  numbers in  the string are
+interpreted as one-digit  numbers, Galois fields of  size larger than  10
+are not properly represented when using strings.
+
+Every polynomial in <obj> is converted to a codeword of length <n> or, if
+omitted, of a length dictated by the degree of the  polynomial. If <F> is
+specified, a polynomial in <obj> must be over <F>.
+
+Every  element of  <obj>  that is already   a codeword  is  changed to  a
+codeword of length <n>. If no <n> was  specified,  the  codeword  doesn't
+change. If <F> is specified, the codeword must have base field <F>.
+
+\beginexample
+gap> c1 := Codeword([0,1,1,1,0]);
+[ 0 1 1 1 0 ]
+gap> VectorCodeword( c1 ); 
+[ 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ]
+gap> c2 := Codeword([0,1,1,1,0], GF(3));
+[ 0 1 1 1 0 ]
+gap> VectorCodeword( c2 );
+[ 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0, 0*Z(3) ]
+gap> Codeword([c, c2, "0110"]);
+[ [ 0 1 1 1 0 ], [ 0 1 1 1 0 ], [ 0 1 1 0 ] ]
+gap> p := UnivariatePolynomial(GF(2), [Z(2)^0, 0*Z(2), Z(2)^0]);
+Z(2)^0+x_1^2
+gap> IsPolynomial(p);
+true
+gap> c3:=Codeword(p);
+x^2 + 1
+gap> IsPolynomial(c3);
+false
+gap> c3[1];
+Z(2)^0
+gap> c3!.VectorCodeword;
+<an immutable GF2 vector of length 3>
+gap> Display(last);
+[ Z(2)^0, 0*Z(2), Z(2)^0 ]
+
+\endexample
+
+\>Codeword( <obj>, <C> )
+
+In this format, the  elements of <obj>  are converted to elements  of the
+same vector space as the   elements of a code   <C>. This is the same  as
+calling  `Codeword' with the word length  of <C>  (which  is <n>) and the
+field of <C> (which is <F>).
+
+\beginexample
+gap> C := WholeSpaceCode(7,GF(5));
+a cyclic [7,7,1]0 whole space code over GF(5)
+gap> Codeword(["0220110", [1,1,1]], C);
+[ [ 0 2 2 0 1 1 0 ], [ 1 1 1 0 0 0 0 ] ]
+gap> Codeword(["0220110", [1,1,1]], 7, GF(5));
+[ [ 0 2 2 0 1 1 0 ], [ 1 1 1 0 0 0 0 ] ] 
+\endexample
+
+\>IsCodeword( <obj> )
+
+`IsCodeword' returns `true' if <obj>, which can be an object of arbitrary
+type, is of  the codeword type and `false'  otherwise.  The function will
+signal an error if <obj> is an unbound variable.
+
+\beginexample
+gap> IsCodeword(1);
+false
+gap> IsCodeword(ReedMullerCode(2,3));
+false
+gap> IsCodeword("11111");
+false
+gap> IsCodeword(Codeword("11111"));
+true 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Codewords}
+
+\>`<$c_1$> = <$c_2$>'{codewords!equality}
+\>`<$c_1$> \<> <$c_2$>'{codewords!inequality}
+
+The equality operator  `=' evaluates to  `true' if the  codewords <$c_1$>
+and <$c_2$> are equal, and to  `false' otherwise. The inequality operator
+`\<>'  evaluates to `true' if  the codewords <$c_1$>  and <$c_2$> are not
+equal, and to `false' otherwise.
+
+Note  that codewords are  equal if  and only  if  their base  vectors are
+equal.   Whether they  are  represented  as a vector  or  polynomial  has
+nothing to do with the comparison.
+
+Comparing codewords with objects    of other types is  not   recommended,
+although it is  possible. If <$c_2$> is  the  codeword, the  other object
+<$c_1$>  is first  converted to a   codeword, after  which  comparison is
+possible. This way, a codeword can be compared with a vector, polynomial,
+or string. If <$c_1$> is the codeword, then problems may arise if <$c_2$>
+is a polynomial.  In that case, the comparison  always yields  a `false',
+because the  polynomial  comparison    is called (see    `Comparisons  of
+Polynomials').
+
+\beginexample
+gap> P := UnivariatePolynomial(GF(2), Z(2)*[1,0,0,1]);
+Z(2)^0+x_1^3
+gap> c := Codeword(P, GF(2));
+x^3 + 1
+gap> P = c;        # codeword operation
+true
+gap> c2 := Codeword("1001", GF(2));
+[ 1 0 0 1 ]
+gap> c = c2;
+true 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Arithmetic Operations for Codewords}
+
+The following operations are always available for codewords. The operands
+must have a common base field, and must have the same length. No implicit
+conversions are performed.
+
+\>`<$c_1$> + <$c_2$>'{codewords!addition}
+
+The operator  `+'  evaluates  to the   sum of the  codewords <$c_1$>  and
+<$c_2$>.
+
+\>`<$c_1$> - <$c_2$>'{codewords!subtraction}
+
+The operator `-' evaluates to the difference of the codewords <$c_1$> and
+<$c_2$>.
+
+\>`<C> + <c>'{code!cosets}
+\>`<c> + <C>'{code!cosets}
+
+The operator `+' evaluates to the  coset code of  code <C> after adding a
+codeword <c> to all codewords. See "CosetCode".
+
+In general, the    operations just described  can also    be performed on
+vectors,  strings or polynomials,  although this is  not recommended. The
+vector, string  or  polynomial is  first converted  to  a codeword, after
+which the normal operation is performed. For this to  go right, make sure
+that at  least one of  the operands is a  codeword. Further more, it will
+not  work when  the  right operand  is  a  polynomial. In that  case, the
+polynomial operations ('FiniteFieldPolynomialOps') are called, instead of
+the codeword operations ('CodewordOps').
+
+Some other   code-oriented  operations with  codewords are   described in
+"Operations for Codes".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions that Convert Codewords to Vectors or Polynomials}
+
+\>VectorCodeword( <obj> )
+
+Here <obj> can be a code word or a list of code words. This function
+retyurns the corresponding vectors over a finite field.
+
+\beginexample
+gap> a := Codeword("011011");; VectorCodeword(a);
+[ 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0 ]
+\endexample
+
+\>PolyCodeword( <obj> )
+
+`PolyCodeword' returns  a  polynomial or a  list   of polynomials over  a
+Galois field, converted from <obj>.  The object <obj>  can be a code word, or
+a list of codewords.
+
+\beginexample
+gap> a := Codeword("011011");; PolyCodeword(a);
+x_1+x_1^2+x_1^4+x_1^5
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions that Change the Display Form of a  Codeword}
+
+\>TreatAsVector( <obj> )
+
+`TreatAsVector' adapts the  codewords  in  <obj>  to make sure  they  are
+printed as   vectors.    <obj> may   be    a  codeword   or a    list  of
+codewords.  Elements of <obj> that are   not codewords are ignored. After
+this function  is called, the codewords will  be  treated as vectors. The
+vector representation is  obtained by using the  coefficient list of  the
+polynomial.
+
+Note that    this only  changes   the   way    a codeword   is   printed.
+`TreatAsVector' returns nothing, it  is called only  for its side effect.
+The   function  `VectorCodeword' converts    codewords to  vectors   (see
+"VectorCodeword").
+
+\beginexample
+gap> B := BinaryGolayCode();
+a cyclic [23,12,7]3 binary Golay code over GF(2)
+gap> c := CodewordNr(B, 4);
+x^22 + x^20 + x^17 + x^14 + x^13 + x^12 + x^11 + x^10
+gap> TreatAsVector(c);
+gap> c;
+[ 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 1 0 0 1 0 1 ] 
+\endexample
+
+\>TreatAsPoly( <obj> )
+
+`TreatAsPoly' adapts the codewords in <obj> to make sure they are printed
+as polynomials. <obj> may be a codeword or a  list of codewords. Elements
+of <obj> that  are  not codewords are  ignored.  After  this  function is
+called, the codewords will  be treated as  polynomials. The finite  field
+vector that defines  the codeword is  used as a  coefficient list of  the
+polynomial representation,  where the first element  of the vector is the
+coefficient  of degree zero,   the second element   is the coefficient of
+degree one,  etc,  until the last element,   which is the  coefficient of
+highest degree.
+
+Note that this only changes the way a codeword is printed.  `TreatAsPoly'
+returns nothing,  it is called   only for its  side  effect. The function
+`PolyCodeword' converts codewords to polynomials (see "PolyCodeword").
+
+\beginexample
+gap> a := Codeword("00001",GF(2));
+[ 0 0 0 0 1 ]
+gap> TreatAsPoly(a); a;
+x^4
+gap> b := NullWord(6,GF(4));
+[ 0 0 0 0 0 0 ]
+gap> TreatAsPoly(b); b;
+0 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Other Codeword Functions}
+
+\>NullWord( <n> )
+\>NullWord( <n>, <F> )
+\>NullWord( <C> )
+
+`NullWord' returns  a codeword of  length <n> over the  field <F> of only
+zeros.  The default for <F> is `GF(2)'. <n> must be greater then zero. If
+only a code <C> is specified, `NullWord' will return a null word with the
+word length and the Galois field of <C>.
+
+\beginexample
+gap> NullWord(8);
+[ 0 0 0 0 0 0 0 0 ]
+gap> Codeword("0000") = NullWord(4);
+true
+gap> NullWord(5,GF(16));
+[ 0 0 0 0 0 ]
+gap> NullWord(ExtendedTernaryGolayCode());
+[ 0 0 0 0 0 0 0 0 0 0 0 0 ] 
+\endexample
+
+\>DistanceCodeword( <$c_1$>, <$c_2$> )
+
+`DistanceCodeword' returns the Hamming distance from $c_1$ to $c_2$. Both
+variables  must be codewords with equal  word length over the same Galois
+field. The Hamming distance between two words  is the number of places in
+which  they  differ. As a  result,  `DistanceCodeword'  always returns an
+integer between zero and the word length of the codewords.
+
+\beginexample
+gap> a := Codeword([0, 1, 2, 0, 1, 2]);; b := NullWord(6, GF(3));;
+gap> DistanceCodeword(a, b);
+4
+gap> DistanceCodeword(b, a);
+4
+gap> DistanceCodeword(a, a);
+0 
+\endexample
+
+\>Support( <c> )
+
+`Support' returns  a set  of integers  indicating   the positions of  the
+non-zero entries in a codeword <c>.
+
+\beginexample
+gap> a := Codeword("012320023002");; Support(a);
+[ 2, 3, 4, 5, 8, 9, 12 ]
+gap> Support(NullWord(7));
+[  ] 
+\endexample
+
+The support  of  a list with  codewords  can be calculated by  taking the
+union of the individual supports. The weight of the support is the length
+of the set.
+
+\beginexample
+gap> L := Codeword(["000000", "101010", "222000"], GF(3));;
+gap> S := Union(List(L, i -> Support(i)));
+[ 1, 2, 3, 5 ]
+gap> Length(S);
+4 
+\endexample
+
+\>WeightCodeword( <c> )
+
+`WeightCodeword'  returns the weight  of  a codeword <c>,  the number  of
+non-zero entries in <c>. As a result,  `WeightCodeword' always returns an
+integer between zero and the word length of the codeword.
+
+\beginexample
+gap> WeightCodeword(Codeword("22222"));
+5
+gap> WeightCodeword(NullWord(3));
+0
+gap> C := HammingCode(3);
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap> Minimum(List(AsSSortedList(C){[2..Size(C)]}, WeightCodeword ) );
+3 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%E

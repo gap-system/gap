@@ -1,0 +1,27 @@
+----- C8
+2,
+gens(a,b,c),
+rels(a^2=b,b^2=c,c^2=1),
+weights([1,2,4]);
+----- C4xC2
+2,
+gens(a,b,c),
+rels(a^2=c,b^2=1,c^2=1),
+weights([1,1,2]);
+----- D4
+2,
+gens(a,b,c),
+rels(a^2=1,b^2=1,c^2=1,[b,a]=c),
+weights([1,1,2]);
+----- Q8
+2,
+gens(a,b,c),
+rels(a^2=c,b^2=c,c^2=1,[b,a]=c),
+weights([1,1,2]);
+----- C2xC2xC2
+2,
+gens(a,b,c),
+rels(a^2=1,b^2=1,c^2=1),
+weights([1,1,1]);
+-----
+

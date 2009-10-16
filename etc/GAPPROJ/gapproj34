@@ -1,0 +1,45 @@
+@Name
+Use GMP for integer arithmetic
+@Contact
+GAP
+@Date
+December 19, 2003
+@Time
+4
+@Public
+No
+@Need
+3
+@NeedA
+0
+@Math
+2
+@Prog
+4
+@Component
+Kernel
+@Descr
+At the moment GAP uses its own long integer arithmetic. Replacing this by
+the (higher optimized) GNU multiprecision arithmetic (GMP) should provide an
+overall speedup to all routines using integer arithmetic.
+<P>
+
+Care needs to be taken of the following issues:
+<UL>
+<LI>
+If the GMP library uses malloc, this has to be integrated with the GAP
+memory manager.
+<LI>
+For performance reasons it is crucial to represent small integers as
+immediate objects, as is done already. This means that GMP is only called if
+the result of a calculation will be too large and that a GMP result must be
+converted into an immediate integer if it is sufficiently small
+</UL>
+
+@Manual
+@Ref
+@Rem
+Currently under way
+@Application
+
+

@@ -1,0 +1,13 @@
+#Example: "5gp-c-Rel-i" . . . based on: examples/keyword_5gp
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound
+F := FreeGroup("a", "b", "c", "d");
+rels := ["[a, b, b, c]", "(a * b * c^d * a)^25", 
+         "(a * b)^25 * [a, c, c, d]^-2"];
+procId := PqStart(F : Prime := 5, Relators := rels);
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also set a different print level by supplying <OutputLevel>
+#sub <ClassBound> for <2> if set and ok
+PqPcPresentation(procId : ClassBound := 2, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;

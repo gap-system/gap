@@ -3,7 +3,7 @@
 #W  lierep.gi                   GAP library                Willem de Graaf
 #W                                                     and Craig A. Struble
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: lierep.gi,v 4.37 2005/06/24 14:54:21 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains methods for modules over Lie algebras.
 ##
 Revision.lierep_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: lierep.gi,v 4.37 2005/06/24 14:54:21 sal Exp $";
 
 
 ###########################################################################
@@ -189,7 +189,7 @@ InstallMethod( \+,
           while i < Length( list ) do  # take equal things together.
             if list[i][1] = list[i+1][1] then
                list[i][2]:= list[i][2]+list[i+1][2];
-               RemoveElmList( list, i+1 );
+               Remove( list, i+1 );
             else
                i:= i+1;
             fi;
@@ -577,7 +577,7 @@ InstallGlobalFunction( LieCoboundaryOperator,
          for q in [1..s+1] do
            elts:= bL{t};
            z:= elts[q];
-           RemoveElmList( elts, q );
+           Remove( elts, q );
            inp:= [c]; Append( inp, elts );
            if IsLeftAlgebraModuleElementCollection( V ) then
              val:= val - sn*( z^ValueCochain( inp ) );
@@ -915,7 +915,7 @@ BindGlobal( "NextIterator_WeylOrbit", function( it )
                 a:= stack[Length(stack)];
                 mu:= a[1]; bound:= a[2]+1;
                 len:= len-1;
-                RemoveElmList( stack, Length(stack) );
+                Remove( stack, Length(stack) );
             fi;
 
         fi;
@@ -1304,8 +1304,8 @@ InstallMethod( DecomposeTensorProduct,
                 else
                     mlts[p]:= mlts[p]+mult;
                     if mlts[p] = 0 then
-                        RemoveElmList( mlts, p );
-                        RemoveElmList( wts, p );
+                        Remove( mlts, p );
+                        Remove( wts, p );
                     fi;
 
                 fi;
@@ -1608,8 +1608,8 @@ InstallGlobalFunction( CollectUEALatticeElement,
          e:= Filtered( e, x-> IsBound(x) );
          # `e' now contains the rest of the polynomial.
 
-         p:= PolynomialByExtRep( fam, fac )/(vars[1]^d);
-         q:= PolynomialByExtRep( fam, e );
+         p:= PolynomialByExtRepNC( fam, fac )/(vars[1]^d);
+         q:= PolynomialByExtRepNC( fam, e );
 
          # So now we have `pol = vars[1]^d*p+q', where `p' does not contain
          # `vars[1]' and `q' has lower degree in `vars[1]'. We can also
@@ -2783,23 +2783,20 @@ InstallMethod(\+,
 
         # See whether in `lu' there is a vector with the same number as
         # `lv[k]'. If not, then insert...
-
-        p:= PositionSorted( vecs, lv[k], function( a, b ) return a[1] < b[1];
-                                                                end );
-        if p > Length( vecs ) then
-            Add( vecs, lv[k] );
-            Add( lu, lv[k] );
-            Add( lu, lv[k+1] );
-        elif vecs[p][1] <> lv[k][1] then
-            InsertElmList( vecs, p, lv[k] );
-            InsertElmList( lu, 2*p-1, lv[k] );
-            InsertElmList( lu, 2*p, lv[k+1] );
+        
+        p := PositionFirstComponent(vecs, lv[k]);
+#        p:= PositionSorted( vecs, lv[k], function( a, b ) return a[1] < b[1];
+ #                                                               end );
+        if p > Length( vecs ) or vecs[p][1] <> lv[k][1] then
+            Add(vecs, lv[k],p);
+            Add(lu, lv[k], 2*p-1);
+            Add(lu, lv[k+1], 2*p);
         else
             cf:= lu[2*p]+lv[k+1];
             if cf = 0*cf then
-                RemoveElmList( lu, 2*p-1 );
-                RemoveElmList( lu, 2*p-1 );
-                RemoveElmList( vecs, p );
+                Remove( lu, 2*p-1 );
+                Remove( lu, 2*p-1 );
+                Remove( vecs, p );
             else
                 lu[2*p]:= cf;
             fi;
@@ -3084,12 +3081,10 @@ TriangulizeWeightRepElementList:= function( ww )
                     ww[i]:= ww[i] - cf*ww[k];
                     for b in basechange[k] do
                         b1:= [ b[1], -cf*b[2] ];
-                        pos:= PositionSorted( basechange[i], b1,
-                                      function( x, y ) return x[1] < y[1];
-                                  end );
+                        pos := PositionFirstComponent( basechange[i], b1[1]);
                         if Length( basechange[i] ) < pos or 
-                                     basechange[i][pos][1] <> b1[1] then
-                            InsertElmList( basechange[i], pos, b1 );
+                           basechange[i][pos][1] <> b1[1] then
+                            Add(basechange[i], b1, pos);
                         else
                             basechange[i][pos][2]:= basechange[i][pos][2]+
                                                               b1[2];
@@ -3460,14 +3455,10 @@ InstallMethod( HighestWeightModule,
                       # We search for the position in `z' where to insert y_i.
 
                         pos1:= PositionSorted( z, i );
-                        if pos1 > Length( z ) then
-                            Add( em, i );
-                            Add( em, 1 );
-                        elif z[pos1] <> i then
-
+                        if pos1 > Length( z ) or z[pos1] <> i then
                             # There is no y_i in `m', so insert it.
-                            InsertElmList( em, 2*pos1-1, i );
-                            InsertElmList( em, 2*pos1, 1 );
+                            Add(em, i, 2*pos1-1);
+                            Add(em, 1, 2*pos1);
                         else
                             # We increase the exponent of y_i by 1.
                             em[2*pos1]:= em[2*pos1]+1;

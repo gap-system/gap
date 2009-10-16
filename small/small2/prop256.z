@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.prop256_z :=
-    "@(#)$Id$";
+    "@(#)$Id: prop256.z,v 1.2 1998/07/25 13:54:48 gap Exp $";
 
 PROPERTIES_SMALL_GROUPS[ 256 ] := rec(
 isAbelian := [ 1, 39, 316, 497, 537, 826, 4384, 5525, 6534, 6723, 6732, 10298

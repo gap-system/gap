@@ -1,0 +1,17 @@
+#Example: "11gp-3-Engel-Id" . . . 3-Engel group for prime 11
+#Non-trivial example of using the `Identities' option
+#vars: F, a, b, G, f, procId, Q;
+#options: 
+F := FreeGroup("a", "b"); a := F.1; b := F.2;
+G := F/[ a^11, b^11 ];
+## All word pairs u, v in the pc generators of the 11-quotient Q of G 
+## must satisfy the Engel identity: [u, v, v, v] = 1.
+f := function(u, v) return PqLeftNormComm( [u, v, v, v] ); end;
+#alt: do
+#procId := PqStart( G );
+#alt: sub <procId> for <G>
+Q := Pq( G : Prime := 11, Identities := [ f ] );
+## We do a ``sample'' check that pairs of elements of Q do satisfy
+## the given identity:
+f( Random(Q), Random(Q) );
+f( Q.1, Q.2 );

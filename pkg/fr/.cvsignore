@@ -1,0 +1,3 @@
+.version
+config.status config.log Makefile
+autom4te.cache bin www sandbox

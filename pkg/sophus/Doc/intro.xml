@@ -1,0 +1,116 @@
+<!-- $Id: intro.xml,v 1.6 2004/10/18 13:17:38 gap Exp $ -->
+<Chapter Label="Intro">
+<Heading>The theory</Heading>    
+
+<P/>
+The &Sophus; package was originally designed to aid the author to
+classify some small-dimensional nilpotent Lie algebras over small fields. The 
+classification follows the ideas that were used to classify small 
+<Math>p</Math>-groups by O'Brien <Cite Key="O'B"/>. The theory developed
+by O'Brien could easily be adopted to Lie algebras, and the details of
+this new theory can be found in <Cite Key="Sch"/>. Here we only summarise
+the main ideas, so that the user can understand the procedures
+implemented in this package.
+
+In this section <Math>L</Math> denotes a finitely generated, and hence 
+finite-dimensional, nilpotent Lie algebra. 
+Suppose that <Math>L</Math> has 
+nilpotency class <Math>c</Math>, and hence the
+lower central series is as follows:
+<Display>
+L= \gamma_1(L)>\gamma_2(L)=L'>\gamma_3(L)>\cdots >\gamma_c(L)>\gamma_{c+1}(L)=0.
+</Display>
+We say that  a basis <Math>\mathcal B=\{b_1,\ldots,b_n\}</Math> for <Math>L</Math> is <Emph>compatible with the
+lower central series</Emph> if there are indices
+<Math>1=i_1&tlt;i_2&tlt;\cdots&tlt;i_{c}&tlt;n</Math> such that 
+<Math>\{b_{i_k},\ldots,b_n\}</Math> is
+a basis of <Math>\gamma_k(L)</Math> for <Math>k\in\{1,\ldots,c\}</Math>. We compute the
+structure constants table with respect to this basis, that is, we
+compute coefficients <Math>\alpha_{i,j}^k</Math> for <Math>1\leq i&tlt;j&tlt;k\leq n</Math> such that
+<Display>
+[b_i,b_j]=\sum_{k=j+1}^n\alpha_{i,j}^k b_k.
+</Display>
+Suppose that <Math>b_i\in\gamma_j(L)\setminus\gamma_{j+1}(L)</Math>. Then we say that
+the number <Math>j</Math> is the <Emph>weight</Emph> of the basis element
+<Math>b_i</Math>.
+
+
+<P/>
+Note that in the nilpotent Lie
+algebra  <Math>L</Math> minimal
+generating sets have the same size, namely the dimension of <Math>L/L'</Math>. If
+<Math>\dim L/L'=d</Math> then we call <Math>L</Math> a <Math>d</Math><Emph>-generator algebra</Emph>. 
+We call a basis <Math>\mathcal B</Math> a <Emph>nilpotent basis</Emph> 
+if the following
+hold.
+<List>
+<Item> The basis <Math>\mathcal B</Math> 
+is compatible with the lower central
+series.
+</Item>
+<Item>For each <Math>b_i\in \mathcal B</Math> with weight <Math>w\geq
+2</Math> 
+there are
+  <Math>b_{j_1},\ b_{j_2}\in\mathcal B</Math> with weight 1 and <Math>w-1</Math>, respectively such
+  that <Math>b_i=[b_{j_1},b_{j_2}]</Math>. The product <Math>[b_{j_1},b_{j_2}]</Math> is
+  called the definition of <Math>b_i</Math>.</Item>
+</List>
+
+
+<P/>
+A Lie
+algebra <Math>K</Math> is said to be a <Emph>central extension</Emph> of <Math>L</Math> if <Math>L\cong
+K/I</Math> for some ideal <Math>I</Math> such that <Math>I\leq Z(K)\cap K'</Math>.
+Suppose that <Math>c</Math> denotes the nilpotency
+class of <Math>L</Math>. Then a Lie algebra <Math>K</Math>
+is an <Emph>immediate descendant</Emph> of <Math>L</Math> if <Math>K</Math> has class <Math>c+1</Math> and <Math>K/\gamma_{c+1}(K)\cong L</Math>. As in this case <Math>\gamma_{c+1}(K)\leq Z(K)\cap K'</Math>, it follows
+that an immediate descendant <Math>K</Math> is a central extension of <Math>L</Math>. If <Math>s=\dim \gamma_{c+1}(K)</Math> then <Math>K</Math> is said to be a <Emph>step-<Math>s</Math></Emph> immediate descendant of <Math>L</Math>.
+
+<P/>Let <Math>L</Math> be a
+<Math>d</Math>-generator nilpotent Lie algebra with class <Math>c</Math>, and let <Math>F</Math> be a free Lie algebra of rank
+<Math>d</Math>. Choose an ideal <Math>I</Math> of <Math>F</Math> such that <Math>L\cong F/I</Math>. Then the Lie
+algebra <Math>L^*=F/[I,F]</Math> is called the <Emph>Lie cover</Emph> of <Math>L</Math>.
+The <Emph>Lie multiplicator</Emph> in <Math>L^*</Math> is
+the subspace <Math>I/[I,F]</Math> and the <Emph>Lie nucleus</Emph> is <Math>\gamma_c(L^*)</Math>. It clear from the definition that <Math>L^*/M\cong L</Math>. It is verified in <Cite Key="Sch"/> that, up to
+isomorphism, the Lie cover,
+the Lie multiplicator and the Lie nucleus are determined by the
+isomorphism type of <Math>L</Math>.
+Further, each
+central extension of the nilpotent Lie algebra
+<Math>L</Math> is a quotient of the Lie cover <Math>L^*</Math>. Thus
+it is possible to obtain all such descendants by first computing the
+Lie cover; this procedure is explained in <Cite Key="Sch"/>.
+Similar ideas can be used to compute the automorphism group of a
+nilpotent Lie algebra, and to verify isomorphism between two nilpotent
+Lie algebras; see <Cite Key="Sch"/> for details.
+
+<P/>The main functions in &Sophus; are thus able to compute
+<List>
+<Item> a nilpotent basis for a nilpotent Lie algebra;</Item>
+<Item> the cover of a nilpotent Lie algebra;</Item>
+<Item> the immediate descendants of a nilpotent Lie algebra;</Item>
+<Item> the full automorphism group of a nilpotent Lie algebra.</Item>
+</List>
+There is also a function in the package to check if two nilpotent Lie
+algebras are isomorphic. After repeated applications of the immediate 
+descendants algorithm, it is, in theory, possible to list all
+nilpotent Lie algebras of a given dimension over a prime 
+field <Math>\mathbb F_p</Math>. Of course, this computation requires
+relatively large computational resources, and quickly becomes
+unfeasible as the dimension or the characteristic <Math>p</Math> grows.
+
+<P/>
+The &Sophus; package was written for the GAP~4 computer algebra
+system. In many procedures it is very important that we can compute
+the stabiliser of a subspace under some matrix group action. This is
+carried out using the procedures implemented in the <A>autpgrp</A> package <Cite Key="autpgrp"/>. 
+Hence this package is required to run &Sophus;.
+
+<P/>
+The current version of &Sophus; deals with
+general nilpotent  Lie algebras over finite 
+prime fields. If you are to compute with Lie algebras
+obtained  from  group algebras via the bracket operation, 
+then another GAP package LAGUNA <Cite Key="Laguna"/> 
+may also offer some very efficient methods.
+</Chapter>

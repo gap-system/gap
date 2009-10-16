@@ -1,0 +1,12 @@
+#
+#    Cartan matrix:
+#
+#        [ 2, -1 ]
+#        [ -4, 2 ]
+#
+< e1, e2 |
+    [ e2, e1, e1 ],
+    [ e1, e2, e2, e2, e2, e2 ],
+#    additional relation:
+    [ e2, e1, e2, e2, e2, e1, e2, e2, e1, e1 ]
+>

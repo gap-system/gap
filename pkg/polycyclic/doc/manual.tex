@@ -1,0 +1,119 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                GAP documentation             Werner Nickel
+%%                                                 based on manual.tex by
+%%
+%W                                                          Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  $Id: manual.tex,v 1.16 2003/10/22 10:33:26 gap Exp $
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapmacros . . . . . . . . . . . . . . . .  read the GAP macro package
+%%
+\input gapmacro
+\input mymacro
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{polycyclic}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseGapDocReferences{../../../doc/ref}
+%
+%
+\Package{polycyclic}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont Polycyclic}\bigskip
+  \centerline{\subtitlefont Computation with polycyclic groups}
+   \bigskip
+   \bigskip
+   \bigskip
+  \centerline{\subtitlefont A GAP 4 package}
+  \vfill
+  \centerline{\secfont by}
+   \bigskip
+  \centerline{\secfont Bettina Eick}
+    \medskip
+  \centerline{\secfont Institut f\accent127 ur Geometrie}
+    \medskip
+  \centerline{\secfont TU Braunschweig}
+    \bigskip
+  \centerline{\secfont and}
+    \bigskip
+  \centerline{\secfont Werner Nickel}
+    \medskip
+  \centerline{\secfont Fachbereich Mathematik}
+    \medskip
+  \centerline{\secfont TU Darmstadt}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\OneColumnTableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+%%
+\FrontMatter
+%\immediate\write\citeout{\bs bibdata{gapdoc/mrabbrev,polycyclic,gapdoc/manual}}
+\immediate\write\citeout{\bs bibdata{polycyclic}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  . . . . . . . . . . . . . . . . . .  The different chapters
+%%
+\Chapters
+\Input{preface}
+\Input{intro}
+\Input{collect}
+\Input{defins}
+\Input{basics}
+\Input{libraries}
+\Input{methods}
+\Input{cohom}
+\Input{matreps}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%%
+\Appendices
+\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex  . . . . . . . . . . . . . . . . . . . . . . . . ends here

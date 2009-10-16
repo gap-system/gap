@@ -1,0 +1,31 @@
+C intro.tex 1. The Almost Crystallographic Groups Package
+S 1.1. More about almost crystallographic groups
+C algos.tex 2. Algorithms for almost crystallographic groups
+S 2.1. Properties of almost crystallographic groups
+F 2.1. IsAlmostCrystallographic
+F 2.1. IsAlmostBieberbachGroup
+S 2.2. Betti numbers
+F 2.2. OrientationModule
+F 2.2. BettiNumber
+F 2.2. BettiNumbers
+S 2.3. Determination of certain extensions
+F 2.3. HasExtensionOfType
+C aclib.tex 3. The catalog of almost crystallographic groups
+S 3.1. Rational matrix groups
+F 3.1. AlmostCrystallographicGroup
+F 3.1. AlmostCrystallographicDim3
+F 3.1. AlmostCrystallographicDim4
+S 3.2. Polycyclically presented groups
+F 3.2. AlmostCrystallographicPcpGroup
+F 3.2. AlmostCrystallographicPcpDim3
+F 3.2. AlmostCrystallographicPcpDim4
+F 3.2. IsomorphismPcpGroup
+F 3.2. HolonomyGroup
+F 3.2. NaturalHomomorphismOnHolonomyGroup
+S 3.3. More about the type and the defining parameters
+F 3.3. AlmostCrystallographicInfo
+S 3.4. The electronic versus the printed library
+C examp.tex 4. Example computations with almost crystallographic groups
+S 4.1. Example computations I
+S 4.2. Example computations II
+S 4.3. Example computations III

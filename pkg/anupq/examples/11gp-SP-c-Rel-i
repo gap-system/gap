@@ -1,0 +1,63 @@
+#Example: "11gp-SP-c-Rel-i" . . . based on: isom/11gp_c.com
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, StandardPresentationFile
+F := FreeGroup("a", "b", "c");
+rels := ["a^11", "b^11", "c^11", "[b, a, a, a, b]", 
+         "[c, a]", "[c, b]", "[b, a, b]"];
+procId := PqStart(F : Prime := 11, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+#add <OutputLevel> for <value> if set and ok
+#PqSetOutputLevel(procId, value);;
+PqSPComputePcpAndPCover(procId : ClassBound := 3);;
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also save the presentation to a file by supplying <StandardPresentationFile>
+PqSPStandardPresentation(procId, [ [[1,0,0,0,0],
+                                    [0,1,0,0,1],
+                                    [0,0,1,0,0]],
+
+                                   [[1,0,0,0,0],
+                                    [0,1,0,0,0],
+                                    [0,0,1,0,1]],
+
+                                   [[1,0,9,0,0],
+                                    [0,1,0,0,0],
+                                    [0,0,1,0,0]],
+
+                                   [[1,7,8,0,0],
+                                    [0,1,0,0,0],
+                                    [0,0,1,0,0]],
+
+                                   [[10,0,0,0,0],
+                                    [0,1,0,0,0],
+                                    [0,0,1,0,0]],
+
+                                   [[2,0,0,0,0],
+                                    [0,1,0,0,0],
+                                    [0,0,1,0,0]],
+
+                                   [[1,0,8,0,0],
+                                    [0,1,3,0,0],
+                                    [0,0,1,0,0]],
+
+                                   [[1,0,9,0,0],
+                                    [0,1,0,0,0],
+                                    [0,0,3,0,0]],
+
+                                   [[1,0,2,0,0],
+                                    [0,1,0,0,0],
+                                    [0,0,10,0,0]],
+
+                                   [[1,9,10,0,0],
+                                    [0,3,7,0,0],
+                                    [0,0,6,0,0]],
+
+                                   [[1,5,9,0,0],
+                                    [0,7,4,0,0],
+                                    [0,0,10,0,0]]]
+
+                         : # options
+#add <StandardPresentationFile> for <value> if set and ok
+#                          StandardPresentationFile := value,
+#sub <ClassBound> for <8> if set
+                           ClassBound := 8,#for 9 perm.deg.>2^31, pq dies
+                           PcgsAutomorphisms);;

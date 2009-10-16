@@ -1,0 +1,34 @@
+C intro.tex 1. Introduction to FORMAT
+I 1.0. Format
+C forms.tex 2. Formations in GAP
+F 2.0. Formation
+F 2.0. Formation
+F 2.0. IsFormation
+F 2.0. NameOfFormation
+F 2.0. ResidualFunctionOfFormation
+F 2.0. ScreenOfFormation
+F 2.0. SupportOfFormation
+F 2.0. ChangedSupport
+F 2.0. IsIntegrated
+F 2.0. Integrated
+F 2.0. formation!equality
+F 2.0. formation!comparison
+F 2.0. Intersection
+F 2.0. ProductOfFormations
+C resid.tex 3. Residual Functions
+F 3.0. ResidualWrtFormation
+F 3.0. NilpotentResidual
+F 3.0. PResidual
+F 3.0. PiResidual
+F 3.0. CoprimeResidual
+F 3.0. ElementaryAbelianProductResidual
+C norm.tex 4. FNormalizers
+F 4.0. FNormalizerWrtFormation
+F 4.0. SystemNormalizer
+C cover.tex 5. Covering Subgroups
+F 5.0. CoveringSubgroup1
+F 5.0. CoveringSubgroup2
+F 5.0. CoveringSubgroupWrtFormation
+F 5.0. CarterSubgroup
+C examples.tex 6. Formation Examples
+C others.tex 7. Other Applications

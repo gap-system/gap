@@ -1,0 +1,175 @@
+ 
+          # Select option
+ 
+     # Input: either A. initial or B. from data file
+ 
+       # A. initial, first create covering group
+ 
+1           # Compute pc presentation
+            # Input group identifier
+name
+            # Input prime
+5
+            # Input maximum class
+1
+            # Input print level (0-3)
+1
+            # Input number of generators
+2
+            # Input number of relations
+0
+            # Input exponent law (0 if none)
+5
+            # Input relations (...)
+ 
+ 
+          # Select option
+7           # Compute p-covering group
+          # Select option
+            # To manipulate the p-covering presentation go to advanced menu (8)
+            # see example Y (set metabelian flag)
+            # or go to p-group generation (9)
+8
+1
+5 1;
+17
+1
+5 2;
+17
+11
+0
+9
+          # Select option (in p-group generation basic menu)
+            # For detailed control go to advanced p-group generation menu (6)
+            # else
+1
+            # Input the number of automorphisms
+2
+            # Now enter the data for automorphism 1
+            # Input ...  exponents for image of pcp generator 1 and so on
+2 0
+0 1
+4 1
+4 0
+
+0         # number of soluble automorphisms
+            # if number of soluble automorphisms is nonzero need to enter
+            #    the relative order of each soluble automorphism
+ 
+               # image of generator d under automorphism a
+ 
+    # B. from data file
+ 
+          # Select option (in p-group generation basic menu)
+            # For detailed control go to advanced p-group generation menu (6)
+ 
+            # Enter input file name
+ 
+            # Which group?
+# Now there is a group with its automorphisms ready to process
+ 
+          # Select option
+             # Go straight to descendant construction (5) or first extend
+             # and display automorphisms (2) or go to the advanced menu (6)
+5
+             # Input class bound on descendants
+4
+             # Construct all descendants? Different follow up questions
+1
+                # if yes,
+                   # Set an order bound on the descendants?
+1
+                      # Input order bound on descendants
+7
+               # if no and class increase 1
+                   # Input step size
+ 
+                # if no and class increase more than 1
+                   # Constant step size?
+ 
+                   # if yes, Input step size
+ 
+                   # if no, Input ... step sizes: s t u ...
+ 
+             # PAG-generating sequence for automorphism group?
+                # if no, calls CAYLEY (not available on VAX) and
+                # creates files which should eventually be deleted
+0
+             # Do you want default algorithm?
+0
+                # if no, Rank of the initial segment subgroup? (0 for default)
+0
+                # if PAG, Space efficient computation?
+ 
+                # Completely process terminal descendants?
+0
+                # Input exponent law (0 if none)
+5
+                # Enforce metabelian law?
+0
+ 
+             # Do you want default output?
+0
+                # if no, answer questions, and in some cases, supplementaries
+                  # Do you want default permutation group output?
+1
+                     # if no,
+                     # Print degree of permutation group?
+ 
+                     # Print extended automorphisms?
+ 
+                     # Print automorphism matrices?
+ 
+                     # Print permutations?
+ 
+                  # Do you want default orbit information?
+1
+                     # if no,
+                     # Summary of orbit information?
+ 
+                     # Complete listing of orbits?
+ 
+                  # Do you want default group information?
+0
+                     # if no,
+                     # Print standard matrix of allowable subgroup?
+0
+                     # Presentation of reduced p-covering groups?
+0
+                     # Presentation of immediate descendants?
+1
+                     # Print nuclear rank of descendants?
+1
+                     # Print p-multiplicator rank of descendants?
+1
+                  # Do you want default automorphism group information?
+0
+                     # if no,
+                     # Print commutator matrix?
+0
+                     # Automorphism group description of descendants?
+0
+                     # Automorphism group order of descendants?
+1
+                  # Do you want algorithm trace information?
+0
+ 
+ 
+# Now program calculates all the immediate descendants prescribed and
+# produces the output requested
+# It also creates output files name_class* which contain groups, described
+# by their (attentuated) covering groups and automorphisms
+ 
+          # Select option (3 to select a group to continue,
+             #             0 to return to main menu)
+0
+          # Select option (in whatever menu, 0 to exit main menu)
+0
+ 
+ 
+# ? extend template to handle advanced menu
+ 
+ 
+# This is to be followed by some explicit examples of input files built
+# from the template and the corresponding outputs
+# e.g. thin metabelian, exponent p

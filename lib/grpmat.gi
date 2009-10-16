@@ -2,7 +2,7 @@
 ##
 #W  grpmat.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpmat.gi,v 4.68 2008/04/01 21:35:13 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the methods for matrix groups.
 ##
 Revision.grpmat_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpmat.gi,v 4.68 2008/04/01 21:35:13 gap Exp $";
 
 
 #############################################################################
@@ -451,8 +451,10 @@ end );
 InstallMethod( IsomorphismPermGroup,"matrix group", true,
   [ IsMatrixGroup ], 10,
 function(G)
+local map;
   if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
-    return RestrictedMapping(NiceMonomorphism(G),G);
+    map:=NiceMonomorphism(G);
+    return GeneralRestrictedMapping(map,G,Image(map,G));
   else
     if not HasIsFinite(G) then
       Info(InfoWarning,1,

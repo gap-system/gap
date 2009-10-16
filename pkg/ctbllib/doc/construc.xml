@@ -1,0 +1,135 @@
+
+<!--  @(#)$Id: construc.xml,v 1.3 2009/05/08 16:14:52 gap Exp $ -->
+
+<Chapter Label="chap:constructions">
+<Heading>Functions for Character Table Constructions</Heading>
+
+<#Include Label="construc:intro">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:attrs">
+<Heading>Attributes for Character Table Constructions</Heading>
+
+<#Include Label="ConstructionInfoCharacterTable">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:MGA">
+<Heading>Character Tables of Groups of Structure <M>M.G.A</M></Heading>
+
+<#Include Label="PossibleCharacterTablesOfTypeMGA">
+<#Include Label="BrauerTableOfTypeMGA">
+<#Include Label="PossibleActionsForTypeMGA">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:GS3">
+<Heading>Character Tables of Groups of Structure <M>G.S_3</M>}</Heading>
+
+<#Include Label="CharacterTableOfTypeGS3">
+<#Include Label="PossibleActionsForTypeGS3">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:GV4">
+<Heading>Character Tables of Groups of Structure <M>G.V_4</M></Heading>
+
+<#Include Label="construc:GV4">
+
+<#Include Label="PossibleCharacterTablesOfTypeGV4">
+<#Include Label="PossibleActionsForTypeGV4">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:V4G">
+<Heading>Character Tables of Groups of Structure <M>V_4.G</M></Heading>
+
+<#Include Label="construc:V4G">
+
+<#Include Label="PossibleCharacterTablesOfTypeV4G">
+<#Include Label="BrauerTableOfTypeV4G">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:subdirindex2">
+<Heading>Character Tables of Subdirect Products of Index Two</Heading>
+
+<#Include Label="construc:subdirindex2">
+
+<#Include Label="CharacterTableOfIndexTwoSubdirectProduct">
+<#Include Label="ConstructIndexTwoSubdirectProduct">
+<#Include Label="ConstructIndexTwoSubdirectProductInfo">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:preg">
+<Heading>Brauer Tables of Extensions by <M>p</M>-regular Automorphisms
+</Heading>
+
+<#Include Label="construc:preg">
+
+<#Include Label="IBrOfExtensionBySingularAutomorphism">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:cenex">
+<Heading>Character Tables of Coprime Central Extensions</Heading>
+
+<#Include Label="CharacterTableOfCommonCentralExtension">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:construc:functions">
+<Heading>Construction Functions used in the Character Table Library</Heading>
+
+<#Include Label="construc:functions">
+
+<#Include Label="ConstructMGA">
+<#Include Label="ConstructMGAInfo">
+<#Include Label="ConstructGS3">
+<#Include Label="ConstructV4G">
+<#Include Label="ConstructProj">
+<#Include Label="ConstructDirectProduct">
+<#Include Label="ConstructSubdirect">
+<#Include Label="ConstructWreathSymmetric">
+<#Include Label="ConstructIsoclinic">
+<#Include Label="ConstructPermuted">
+<#Include Label="ConstructFactor">
+<!-- ConstructClifford -->
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!--
+<Section Label="sec:construc:misc">
+<Heading>Miscellaneous</Heading>
+
+%FileHeader[8]{construc}
+
+%Declaration{PossibleActionsForTypeGA}
+
+</Section>  -->
+
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+

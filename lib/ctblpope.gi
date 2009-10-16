@@ -3,7 +3,7 @@
 #W  ctblpope.gi                 GAP library                     Thomas Breuer
 #W                                                           & Goetz Pfeiffer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblpope.gi,v 4.26 2008/07/11 22:06:59 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  compute and test possible permutation characters.
 ##
 Revision.ctblpope_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblpope.gi,v 4.26 2008/07/11 22:06:59 gap Exp $";
 
 
 #############################################################################
@@ -397,8 +397,10 @@ end );
 
 #############################################################################
 ##
-#M  Inequalities( <tbl>, <chars>[, <option>] )
+#M  Inequalities( <tbl>, <chars>[, <option>] ) . . .
 #M                                           projected system of inequalities
+##
+##  Supported for <option>: `"small"'
 ##
 InstallMethod( Inequalities,
     [ IsOrdinaryTable, IsList ],
@@ -618,7 +620,6 @@ InstallMethod( Inequalities,
 ##  and the properties (f) and (i) are consequences of (b) and (e).
 ##
 InstallGlobalFunction( Permut, function( tbl, arec )
-
     local tbl_size, permel, sortedchars,
           a, amin, amax, c, ncha, len, i, j, k, l, permch,
           Conditor, comb, cond, X, divs, pm, minR, maxR,
@@ -634,14 +635,10 @@ InstallGlobalFunction( Permut, function( tbl, arec )
     tbl_size:= Size( tbl );
 
     if IsBound(arec.ineq) then
-
       permel:= arec.ineq;
-
     else
-
       sortedchars:= SortedCharacters( tbl, Irr( tbl ), "degree" );
       permel:= Inequalities( tbl, sortedchars );
-
     fi;
 
     # local functions
@@ -2498,7 +2495,6 @@ end );
 #F  PermCharInfo( <tbl>, <permchars>[, \"HTML\" ] )
 ##
 InstallGlobalFunction( PermCharInfo, function( arg )
-
     local tbl,                # character table, first argument
           permchars,          # list of characters, second argument
           supopen,            # opening tag for exponentiation
@@ -2631,7 +2627,6 @@ end );
 #F  PermCharInfoRelative( <tbl>, <tbl2>, <permchars> )
 ##
 InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
-
     local tblfustbl2,     # fusion of `tbl' in `tbl2'
           size2,          # order of `tbl2'
           cont,
@@ -2661,6 +2656,7 @@ InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
           ATLAS,
           error,
           scprs,
+          ATL1,
           nam,
           mult;
 
@@ -2794,6 +2790,7 @@ InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
               Add( ATL, '+' );
             fi;
             Append( ATL, String( degreeset[i] ) );
+            ATL1:= [];
             for j in [ 1 .. Length( scprs ) ] do
               nam:= false;
               if scprs[j] <> 0 then
@@ -2826,28 +2823,34 @@ InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
 
               # Deal with the `\pm' constituents.
               if nam <> false then
-                if mult = 1 then
-                  Append( ATL, nam );
-                else
-                  Add( ATL, '(' );
-                  Append( ATL, nam );
-                  Append( ATL, ")^{" );
-                  Append( ATL, String( mult ) );
-                  Add( ATL, '}' );
-                fi;
+                Add( ATL1, [ nam, mult ] );
               fi;
 
               # Deal with the ordinary constituents.
-              if   scprs[j] = 1 then
-                Append( ATL, irrnam2[i][j] );
-              elif scprs[j] > 1 then
-                Add( ATL, '(' );
-                Append( ATL, irrnam2[i][j] );
-                Append( ATL, ")^{" );
-                Append( ATL, String( scprs[j] ) );
-                Add( ATL, '}' );
+              if scprs[j] <> 0 then
+                if Length( irrnam2[i][j] ) = 2 then
+                  Add( ATL1, [ [ irrnam2[i][j][1] ], scprs[j] ] );
+                  Add( ATL1, [ [ irrnam2[i][j][2] ], scprs[j] ] );
+                else
+                  Add( ATL1, [ irrnam2[i][j], scprs[j] ] );
+                fi;
               fi;
 
+            od;
+
+            # It may happen that constituents "ad" and "bc" occur.
+            # Here we want to write "abcd" not "adbc", that's why we sort.
+            Sort( ATL1 );
+            for j in ATL1 do
+              if j[2] = 1 then
+                Append( ATL, j[1] );
+              else
+                Add( ATL, '(' );
+                Append( ATL, j[1] );
+                Append( ATL, ")^{" );
+                Append( ATL, String( j[2] ) );
+                Add( ATL, '}' );
+              fi;
             od;
 
           fi;

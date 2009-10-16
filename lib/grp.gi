@@ -12,7 +12,7 @@
 ##  This file contains generic methods for groups.
 ##
 Revision.grp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grp.gi,v 4.252 2009/06/19 15:41:06 gap Exp $";
 
 
 #############################################################################
@@ -65,16 +65,11 @@ InstallMethod( IsCyclic,
     end );
 
 InstallOtherMethod( MinimalGeneratingSet,"cyclic groups",true,
-    [ IsGroup ],0,
+    [ IsGroup and IsCyclic and IsFinite ],
+    SIZE_FLAGS(WITH_IMPS_FLAGS(FLAGS_FILTER(IsFinite and IsPcGroup))),
 function ( G )
 local g;
-  if not IsAbelian(G) and IsCyclic(G) then
-    TryNextMethod();
-  fi;
-  if HasMinimalGeneratingSet(G) then
-    # cyclic test might set min gen set
-    return MinimalGeneratingSet(G);
-  fi;
+  if Size(G)=1 then return [One(G)];fi;
   g:=Product(IndependentGeneratorsOfAbelianGroup(G),One(G));
   if Index(G,Subgroup(G,[g]))>1 then
     Error("not cyclic");
@@ -349,6 +344,47 @@ InstallMethod( IsSimpleGroup,
 
 #############################################################################
 ##
+#P  IsAlmostSimpleGroup( <G> )
+##
+##  Since the outer automorphism groups of finite simple groups are solvable,
+##  a finite group <A>G</A> is almost simple if and only if the last member
+##  in the derived series of <A>G</A> is a simple group <M>S</M> (which is
+##  then necessarily nonabelian) such that the centralizer of <M>S</M> in
+##  <A>G</A> is trivial.
+##
+##  (We could detect whether the given group is an extension of a group of
+##  prime order by some automorphisms, as follows.
+##  If the derived series ends with the trivial group then take the previous
+##  member of the series, and check whether it has prime order and is
+##  self-centralizing.)
+##
+InstallMethod( IsAlmostSimpleGroup,
+    "for a group",
+    [ IsGroup ],
+    function( G )
+    local der;
+
+    if IsAbelian( G ) then
+      # Exclude simple groups of prime order.
+      return false;
+    elif IsSimpleGroup( G ) then
+      # Nonabelian simple groups are almost simple.
+      return true;
+    elif not IsFinite( G ) then
+      TryNextMethod();
+    fi;
+
+    der:= DerivedSeriesOfGroup( G );
+    der:= der[ Length( der ) ];
+    if IsTrivial( der ) then
+      return false;
+    fi;
+    return IsSimpleGroup( der ) and IsTrivial( Centralizer( G, der ) );
+    end );
+
+
+#############################################################################
+##
 #M  IsSolvableGroup( <G> )  . . . . . . . . . . . test if a group is solvable
 ##
 ##  For finite groups, supersolvability implies monomiality, and this implies
@@ -489,6 +525,13 @@ InstallMethod( AbelianInvariants,
     return inv;
     end );
 
+#############################################################################
+##
+#M  IsInfiniteAbelianizationGroup( <G> ) 
+##
+InstallMethod( IsInfiniteAbelianizationGroup,"generic method for groups",
+[ IsGroup ], G->0 in AbelianInvariants(G));
+
 
 #############################################################################
 ##
@@ -550,7 +593,7 @@ InstallMethod( AsGroup,
 #M  ChiefSeries( <G> )  . . . . . . . .  delegate to `ChiefSeriesUnderAction'
 ##
 InstallMethod( ChiefSeries,
-    "method for a group (delegate to `ChiefSeriesUnderAction'",
+    "method for a group (delegate to `ChiefSeriesUnderAction')",
     [ IsGroup ],
     G -> ChiefSeriesUnderAction( G, G ) );
 
@@ -562,19 +605,30 @@ InstallMethod( ChiefSeries,
 InstallMethod( CommutatorFactorGroup,
     "generic method for groups",
     [ IsGroup ],
-    G -> FactorGroupNC( G, DerivedSubgroup( G ) ) );
+    function( G )
+    G:= FactorGroupNC( G, DerivedSubgroup( G ) );
+    SetIsAbelian( G, true );
+    return G;
+    end );
+
 
 ############################################################################
 ##
 #M MaximalAbelianQuotient(<group>)
 ##
-InstallMethod(MaximalAbelianQuotient,"not fp group", true, [IsGroup], 0,
-function(G)
-  if IsSubgroupFpGroup(G) then
-    TryNextMethod();
-  fi;
-  return NaturalHomomorphismByNormalSubgroupNC(G,DerivedSubgroup(G));
-end);
+InstallMethod(MaximalAbelianQuotient,
+    "not fp group",
+    [ IsGroup ],
+    function( G )
+    if IsSubgroupFpGroup( G ) then
+      TryNextMethod();
+    fi;
+    return NaturalHomomorphismByNormalSubgroupNC(G,DerivedSubgroup(G));
+#T Here we know that the image is abelian, and this information may be
+#T useful later on.
+#T However, the image group of the homomorphism may be not stored yet,
+#T so we do not attempt to set the `IsAbelian' flag for it.
+end );
 
 
 #############################################################################
@@ -719,6 +773,12 @@ InstallMethod( DerivedSubgroup,
     if D = G  then D := G;  fi;
     return D;
     end );
+
+InstallMethod( DerivedSubgroup,
+    "for a group that knows it is perfect",
+    [ IsGroup and IsPerfectGroup ],
+    SUM_FLAGS, # this is better than everything else
+    IdFunc );
 
 
 ##########################################################################
@@ -1001,29 +1061,8 @@ InstallMethod( NrConjugacyClasses,
 
 #############################################################################
 ##
-#M  Omega( <G>, <p> [, <n> ] )  . . . . . . . . . .  omega of a <p>-group <G>
+#A  IndependentGeneratorsOfAbelianGroup( <A> )
 ##
-InstallGlobalFunction( Omega, function( arg )
-    local   G,  p,  n,  known;
-
-    G := arg[1];
-    p := arg[2];
-
-    # <G> must be a <p>-group
-    if Size( G ) <> p ^ LogInt( Size( G ), p )  then
-        Error( "Omega: <G> must be a p-group" );
-    fi;
-
-    if Length( arg ) = 3  then  n := arg[3];
-                          else  n := 1;       fi;
-
-    known := ComputedOmegas( G );
-    if not IsBound( known[ n ] )  then
-        known[ n ] := OmegaOp( G, p, n );
-    fi;
-    return known[ n ];
-end );
-
 # to catch some trivial cases.
 InstallMethod(IndependentGeneratorsOfAbelianGroup,"finite abelian group", 
   true,[IsGroup and IsAbelian],0,
@@ -1037,95 +1076,75 @@ local hom,gens;
   return List(gens,i->PreImagesRepresentative(hom,i));
 end);
 
+
 #############################################################################
 ##
-#M  OmegaOp( <G>, <p>, <n> )  . . . . . . . . .  for an abelian <p>-group <G>
+#O  IndependentGeneratorExponents( <G>, <g> )
 ##
-#T the code should be cleaned,
-#T especially one should avoid the many unnecessary calls of `Difference'
-InstallMethod( OmegaOp,
-    "method for a p-group (abelian)",
+InstallMethod(IndependentGeneratorExponents,IsCollsElms,
+  [IsGroup and IsAbelian, IsMultiplicativeElementWithInverse],0,
+function(G,elm)
+local ind, pcgs, primes, pos, p, i, e, f, a, j;
+  if not IsBound(G!.indgenpcgs) then
+    ind:=IndependentGeneratorsOfAbelianGroup(G);
+    pcgs:=[];
+    primes:=[];
+    pos:=[];
+    for i in ind do
+      p:=Factors(Order(i))[1];
+      Add(primes,p);
+      Add(pos,Length(pcgs)+1);
+      while not IsOne(i) do
+	Add(pcgs,i);
+	i:=i^p;
+      od;
+    od;
+    Add(pos,Length(pcgs)+1);
+    pcgs:=PcgsByPcSequence(FamilyObj(One(G)),pcgs);
+    G!.indgenpcgs:=rec(pcgs:=pcgs,primes:=primes,pos:=pos,gens:=ind);
+  else
+    pcgs:=G!.indgenpcgs.pcgs;
+    primes:=G!.indgenpcgs.primes;
+    pos:=G!.indgenpcgs.pos;
+    ind:=G!.indgenpcgs.gens;
+  fi;
+  e:=ExponentsOfPcElement(pcgs,elm);
+  f:=[];
+  for i in [1..Length(ind)] do
+    a:=0;
+    for j in [pos[i+1]-1,pos[i+1]-2..pos[i]] do
+      a:=a*primes[i]+e[j];
+    od;
+    Add(f,a);
+  od;
+  return f;
+end);
+
+#############################################################################
+##
+#M  Omega( <G>, <p>[, <n>] )  . . . . . . . . . . .  omega of a <p>-group <G>
+##
+InstallMethod( Omega,
+    [ IsGroup, IsPosInt ],
+    function( G, p )
+    return Omega( G, p, 1 );
+    end );
+
+InstallMethod( Omega,
     [ IsGroup, IsPosInt, IsPosInt ],
     function( G, p, n )
+    local known;
 
-    local pcgs,   # PCGS of `G'
-          i, j, rel, rl, rc, ng, ml, mc, m, q,
-          one;    # identity of `G'
-
-    if not IsAbelian( G ) or n <> 1  then
-      TryNextMethod();
+    # <G> must be a <p>-group
+    if not IsPGroup(G) or PrimePGroup(G)<>p then
+      Error( "Omega: <G> must be a p-group" );
     fi;
-#T should be changed as soon as a generic method for p-groups is available.
 
-#T what about `IndependentGeneratorsOfAbelianGroup'?
-#T (at the moment exists only for permutation groups)
-
-    pcgs:= Pcgs( G );
-    ng:= ShallowCopy( pcgs );
-
-    # `rel' is the relation matrix of `G'.
-    rel:= List( ng, x -> ShallowCopy( AdditiveInverse(
-                             ExponentsOfPcElement( pcgs, x^p ) ) ) );
-    for i in [ 1 .. Length( rel ) ] do
-      rel[i][i]:= rel[i][i] + p;
-    od;
-    # rel:= List( ng, x -> List( ng, function(y) if x=y then return p;
-    #           else return 0; fi; end)-ExponentsOfPcElement( ng, x^p ) );
-
-    # rl, rc are the remaining lines and columns of rel to be used
-    rl:= [ 1 .. Length( ng ) ];
-    rc:= [ 1 .. Length( ng ) ];
-    while 1 < Length( rl ) do
-
-      # find empty column, find min entry
-      m:= Maximum( List( rel[rl[1]], AbsInt ) ) + 1;
-      for i in rl do
-        for j in rc do
-          if rel[i][j] <> 0 and AbsInt( rel[i][j] ) < m then
-            # `rel[ml][mc]' is minimal entry of `rel'
-            ml:= i;
-            mc:= j;
-            m:= AbsInt( rel[i][j] );
-          fi;
-        od;
-      od;
-      while Maximum(List(Difference(rl,[ml]),x->AbsInt(rel[x][mc])))>0 do
-        for i in Difference(rl,[ml]) do
-          AddRowVector( rel[i], rel[ml], -QuoInt(rel[i][mc],rel[ml][mc]) );
-          # rel[i]:=rel[i]-QuoInt(rel[i][mc],rel[ml][mc])*rel[ml];
-        od;
-        # find min entry
-        m:=AbsInt(Maximum(rel[rl[1]]))+1;
-        for i in rl do
-          for j in rc do
-            if rel[i][j] <> 0 and AbsInt(rel[i][j]) < m then
-              # rel[ml][mc] is minimal entry of rel
-              ml:=i; mc:=j; m:=AbsInt(rel[i][j]);
-            fi;
-          od;
-        od;
-      od;
-      for i in Difference(rc,[mc]) do
-        q:= QuoInt(rel[ml][i],rel[ml][mc]);
-        rel[ml][i]:= rel[ml][i] - q*rel[ml][mc];
-        ng[mc]:=ng[mc]*ng[i]^q;
-      od;
-      if Maximum(List(Difference(rc,[mc]),x->AbsInt(rel[ml][x])))=0 then
-        RemoveSet( rl, ml );
-        RemoveSet( rc, mc );
-      fi;
-    od;
-
-    # Construct the generators.
-    m:= [];
-    one:= One( G );
-    for i in ng do
-      if i <> one then
-        Add( m, i^(Order(i)/p) );
-      fi;
-    od;
-
-    return SubgroupNC( G, m );
+    known := ComputedOmegas( G );
+    if not IsBound( known[ n ] )  then
+        known[ n ] := OmegaOp( G, p, n );
+    fi;
+    return known[ n ];
     end );
 
 InstallMethod( ComputedOmegas, [ IsGroup ], 0, G -> [  ] );
@@ -1308,7 +1327,7 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
 
         if Size( ssr ) < Size( oldssr ) then
 
-          dh:= NaturalHomomorphismByNormalSubgroup( oldssr, ssr );
+          dh:= NaturalHomomorphismByNormalSubgroupNC( oldssr, ssr );
 
           # `df' is the commutator factor group `oldssr / ssr'.
           df:= Range( dh );
@@ -1331,7 +1350,7 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
             # Add the agemo_1 of the Sylow subgroup to the generators list.
             tmp:= List( GeneratorsOfGroup( pu ), x -> x^p );
             Append( gen, tmp );
-            ph:= NaturalHomomorphismByNormalSubgroup( pu,
+            ph:= NaturalHomomorphismByNormalSubgroupNC( pu,
                                                   SubgroupNC( df, tmp ) );
 
             # `ff' is the `p'-part of the Frattini factor group of `pu'.
@@ -1561,7 +1580,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
     while C <> S[ Length(S) ]  do
         Add( S, C );
         Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
-        hom := NaturalHomomorphismByNormalSubgroup( G, C );
+        hom := NaturalHomomorphismByNormalSubgroupNC( G, C );
         C := PreImages( hom, Centre( Image( hom ) ) );
     od;
 
@@ -1583,7 +1602,7 @@ InstallGlobalFunction( Agemo, function( arg )
     p := arg[2];
 
     # <G> must be a <p>-group
-    if Size( G ) <> p ^ LogInt( Size( G ), p )  then
+    if not IsPGroup(G) or PrimePGroup(G)<>p then
         Error( "Agemo: <G> must be a p-group" );
     fi;
 
@@ -1595,26 +1614,6 @@ InstallGlobalFunction( Agemo, function( arg )
         known[ n ] := AgemoOp( G, p, n );
     fi;
     return known[ n ];
-end );
-
-InstallMethod( AgemoOp,
-    "generic method for groups",
-    [ IsGroup, IsPosInt, IsPosInt ],
-    function( G, p, n )
-
-    local   C,  q;
-
-    q := p ^ n;
-    # if <G> is abelian,  raise the generators to the q.th power
-    if IsAbelian(G)  then
-        return SubgroupNC( G,Filtered( List( GeneratorsOfGroup( G ), x ->
-	x^q ),i->Order(i)>1) );
-
-    # otherwise compute the conjugacy classes of elements
-    else
-        C := Set( List( ConjugacyClasses(G), x -> Representative(x)^q ) );
-        return NormalClosure( G, SubgroupNC( G, C ) );
-    fi;
 end );
 
 InstallMethod( ComputedAgemos, [ IsGroup ], 0, G -> [  ] );
@@ -1694,7 +1693,11 @@ InstallGlobalFunction( ClosureGroupDefault, function( G, elm )
     fi;
 
     # make the closure group
-    C:= GroupWithGenerators( Concatenation( gens, [ elm ] ) );
+    if HasOne( G ) and One( G ) * elm = elm and elm * One( G ) = elm  then
+        C := GroupWithGenerators( Concatenation( gens, [ elm ] ), One( G ) );
+    else
+        C := GroupWithGenerators( Concatenation( gens, [ elm ] ) );
+    fi;
     UseSubsetRelation( C, G );
 
     # if the elements of <G> are known then extend this list
@@ -2101,10 +2104,29 @@ InstallMethod( IndexOp,
 ##
 #M  IndexNC( <G>, <H> )
 ##
+##  We install the method that returns the quotient of the group orders
+##  twice, once as the generic method and once for the situation that the
+##  group orders are known;
+##  in the latter case, we choose a high enough rank, in order to avoid the
+##  unnecessary computation of nice monomorphisms, images of the groups, and
+##  orders of these images.
+##
 InstallMethod( IndexNC,
-    "generic method for two groups",
+    "generic method for two groups (the second one being finite)",
     IsIdenticalObj,
     [ IsGroup, IsGroup ],
+    function( G, H )
+    if IsFinite( H ) then
+      return Size( G ) / Size( H );
+    fi;
+    TryNextMethod();
+    end );
+
+InstallMethod( IndexNC,
+    "for two groups with known Size value",
+    IsIdenticalObj,
+    [ IsGroup and HasSize, IsGroup and HasSize and IsFinite ],
+    2 * RankFilter( IsHandledByNiceMonomorphism ),
     function( G, H )
     return Size( G ) / Size( H );
     end );
@@ -2248,6 +2270,19 @@ InstallMethod( Length,
     [ IsList and IsRightTransversalRep ],
     t -> Index( t!.group, t!.subgroup ) );
 
+InstallMethod( Position, "right transversal: Use PositionCanonical",
+  IsCollsElmsX,
+    [ IsList and
+    IsRightTransversalRep,IsMultiplicativeElementWithInverse,IsInt ],
+function(t,e,p)
+local a;
+  a:=PositionCanonical(t,e);
+  if a<p or t[a]<>e then 
+    return fail;
+  else
+    return a;
+  fi;
+end);
 
 #############################################################################
 ##
@@ -2577,6 +2612,66 @@ InstallMethod( SylowSubgroupOp,
     end );
 
 
+############################################################################
+##
+#M  HallSubgroupOp (<grp>, <pi>)
+##
+InstallMethod (HallSubgroupOp, "test trivial cases", true,
+    [IsGroup and IsFinite and HasSize, IsList], SUM_FLAGS,
+    function (grp, pi)
+    
+        local size, p;
+
+        size := Size (grp);
+        pi := Filtered (pi, p -> size mod p = 0);
+        if IsEmpty (pi) then
+            return TrivialSubgroup (grp);
+        elif Length (pi) = 1 then
+            return SylowSubgroup (grp, pi[1]);
+        else
+        # try if grp is a pi-group, but avoid factoring size
+            for p in pi do
+                repeat
+                    size := size / p;
+                until size mod p <> 0;
+            od;
+            if size = 1 then
+                return grp;
+            else
+                TryNextMethod();
+            fi;
+        fi;
+    end);
+
+
+############################################################################
+##
+#M  SylowComplementOp (<grp>, <p>)
+##
+InstallMethod (SylowComplementOp, "test trivial case", true,
+    [IsGroup and IsFinite and HasSize, IsPosInt], SUM_FLAGS,
+    function (grp, p)
+        local size, q;
+        size := Size (grp);
+        if size mod p <> 0 then
+            return grp;
+        else
+            repeat
+                size := size / p;
+            until size mod p <> 0;
+            if size = 1 then
+                return TrivialSubgroup (grp);
+            else
+                q := SmallestRootInt (size);
+                if IsPrimeInt (q) then
+                    return SylowSubgroup (grp, q);
+                fi;
+            fi;
+         fi;
+         TryNextMethod();
+    end);
+
+
 #############################################################################
 ##
 #M  \=( <G>, <H> )  . . . . . . . . . . . . . .  test if two groups are equal
@@ -2650,7 +2745,7 @@ InstallMethod( IsSubset,
       return true;
     elif IsFinite( G ) then
       if IsFinite( H ) then
-        return     Size( G ) >= Size( H )
+	return     (not HasSize(G) or not HasSize(H) or Size(G) mod Size(H) = 0)
                and ForAll( GeneratorsOfGroup( H ), gen -> gen in G );
       else
         return false;
@@ -2753,7 +2848,7 @@ InstallMethod( CentralizerOp,
 ##
 #F  IsomorphismTypeInfoFiniteSimpleGroup( <G> ) . . . . isomorphism type info
 ##
-InstallGlobalFunction( IsomorphismTypeInfoFiniteSimpleGroup, function( G )
+IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     local   size,       # size of <G>
             size2,      # size of simple group
             p,          # dominant prime of <size>
@@ -2781,7 +2876,7 @@ InstallGlobalFunction( IsomorphismTypeInfoFiniteSimpleGroup, function( G )
     fi;
 
     # test if <G> is a cyclic group of prime size
-    if IsPrime( size )  then
+    if IsPrimeInt( size )  then
         return rec(series:="Z",parameter:=size,
 	           name:=Concatenation( "Z(", String(size), ")" ));
     fi;
@@ -3066,7 +3161,8 @@ InstallGlobalFunction( IsomorphismTypeInfoFiniteSimpleGroup, function( G )
 
         # check that <G> is a group
         if not IsGroup( G )  then
-            return rec(name:=Concatenation( "cannot decide from size alone between ",
+            return rec(parameter:= [ n, q ],
+                       name:=Concatenation( "cannot decide from size alone between ",
                                   "B(", String(n),     ",", String(q), ") ",
                                 "= O(", String(2*n+1), ",", String(q), ") ",
                                 "and ",
@@ -3311,7 +3407,83 @@ InstallGlobalFunction( IsomorphismTypeInfoFiniteSimpleGroup, function( G )
     else
       return fail;
     fi;
-end );
+end;
+
+InstallMethod( IsomorphismTypeInfoFiniteSimpleGroup,
+    [ IsGroup ], IsomorphismTypeInfoFiniteSimpleGroup_fun );
+
+InstallMethod( IsomorphismTypeInfoFiniteSimpleGroup,
+    [ IsPosInt ], IsomorphismTypeInfoFiniteSimpleGroup_fun );
+
+Unbind( IsomorphismTypeInfoFiniteSimpleGroup_fun );
+
+
+#############################################################################
+##
+#F  SmallSimpleGroup( <order>, <i> )
+#F  SmallSimpleGroup( <order> )
+##
+InstallGlobalFunction( SmallSimpleGroup,
+
+  function ( arg )
+
+    local  order, i, grps;
+
+    if   not Length(arg) in [1,2] or not ForAll(arg,IsPosInt)
+    then Error("usage: SmallSimpleGroup( <order> [, <i> ] )"); fi;
+
+    order := arg[1];
+    if Length(arg) = 2 then i := arg[2]; else i := 1; fi;
+
+    if IsPrime(order) then
+      if i = 1 then return CyclicGroup(order); else return fail; fi;
+    fi;
+
+    if order < 60 then return fail; fi;
+
+    if   order > 1000000
+    then Error("simple groups of order > 1000000 are currently\n",
+               "not available via this function.");
+    fi;
+
+    if   not IsReadOnlyGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS")
+    then ReadLib("simplegroupslist.g"); fi;
+
+    grps := Filtered(ValueGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS"),
+                     G -> Size(G) = order);
+
+    if Length(grps) < i then return fail; fi;
+
+    return grps[i];
+  end );
+
+
+#############################################################################
+##
+#F  AllSmallNonabelianSimpleGroups( <orders> )
+##
+InstallGlobalFunction( AllSmallNonabelianSimpleGroups,
+
+  function ( orders )
+
+    local  grps;
+
+    if   not IsList(orders) or not ForAll(orders,IsPosInt)
+    then Error("usage: AllSmallNonabelianSimpleGroups( <orders> )"); fi;
+
+    if   not IsSubset([1..1000000],orders)
+    then Error("simple groups of order > 1000000 are currently\n",
+               "not available via this function.");
+    fi;
+
+    if   not IsReadOnlyGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS")
+    then ReadLib("simplegroupslist.g"); fi;
+
+    grps := Filtered(ValueGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS"),
+                     G -> Size(G) in orders);
+
+    return grps;
+  end );
 
 
 #############################################################################
@@ -3614,6 +3786,22 @@ InstallGlobalFunction( Group, function( arg )
     Error("usage: Group(<gen>,...), Group(<gens>), Group(<gens>,<id>)");
 end );
 
+#############################################################################
+##
+#M  \in( <g>, <G> ) . for groups, checking for <g> being among the generators
+##
+InstallMethod(\in,
+              "default method, checking for <g> being among the generators",
+              ReturnTrue,
+              [ IsMultiplicativeElementWithInverse,
+                IsGroup and HasGeneratorsOfGroup ], 0,
+
+  function ( g, G )
+    if   g = One(G)
+      or (IsFinite(GeneratorsOfGroup(G)) and g in GeneratorsOfGroup(G))
+    then return true;
+    else TryNextMethod(); fi;
+  end );
 
 #############################################################################
 ##
@@ -3632,14 +3820,14 @@ local K, S;
 end );
 
 InstallMethod( PrintObj, "subgroup by property",
-    [ IsGroup and HasElementTestFunction ],0,
+    [ IsGroup and HasElementTestFunction ],100,
 function( G )
   Print( "SubgroupByProperty( ", Parent( G ), ",",
 	  ElementTestFunction(G)," )" );
 end );
 
 InstallMethod( ViewObj, "subgroup by property",
-    [ IsGroup and HasElementTestFunction ],0,
+    [ IsGroup and HasElementTestFunction ],100,
 function( G )
   Print( "<subgrp of ");
   View(Parent(G));
@@ -3647,7 +3835,7 @@ function( G )
 end );
 
 InstallMethod( \in, "subgroup by property",
-    [ IsObject, IsGroup and HasElementTestFunction ],0,
+    [ IsObject, IsGroup and HasElementTestFunction ],100,
 function( e,G )
   return e in Parent(G) and ElementTestFunction(G)(e);
 end );
@@ -4165,7 +4353,7 @@ BindGlobal("Group_InitPseudoRandom",function( grp, len, scramble )
         gens := GeneratorsOfGroup(grp);
     fi;
     if 0 = Length(gens)  then
-        SetPseudoRandomSeed( grp, [[]] );
+        SetPseudoRandomSeed( grp, [[],One(grp),One(grp)] );
         return;
     fi;
     len := Maximum( len, Length(gens), 2 );
@@ -4175,7 +4363,7 @@ BindGlobal("Group_InitPseudoRandom",function( grp, len, scramble )
     for i  in [ Length(gens)+1 .. len ]  do
         seed[i] := Random(gens);
     od;
-    SetPseudoRandomSeed( grp, [seed] );
+    SetPseudoRandomSeed( grp, [seed,One(grp),One(grp)] );
 
     # scramble seed
     for i  in [ 1 .. scramble ]  do
@@ -4187,7 +4375,7 @@ end);
 
 InstallGlobalFunction(Group_PseudoRandom,
 function( grp )
-    local   seed,  i,  j;
+    local   seed,  i,  j, k;
 
     # set up the seed
     if not HasPseudoRandomSeed(grp)  then
@@ -4201,18 +4389,14 @@ function( grp )
 
     # construct the next element
     i := Random([ 1 .. Length(seed[1]) ]);
-
-    repeat
-        j := Random([ 1 .. Length(seed[1]) ]);
-    until i <> j;
-
-    if Random([true,false])  then
-        seed[1][j] := seed[1][i] * seed[1][j];
-    else
-        seed[1][j] := seed[1][j] * seed[1][i];
-    fi;
-
-    return seed[1][j];
+    j := Random([ 1 .. Length(seed[1]) ]);
+    k := Random([ 1 .. Length(seed[1]) ]);
+    
+    seed[3] := seed[3]*seed[1][i];
+    seed[1][j] := seed[1][j]*seed[3];
+    seed[2] := seed[2]*seed[1][k];
+    
+    return seed[2];
 
 end );
 
@@ -4274,14 +4458,16 @@ InstallSubsetMaintenance( CanComputeSizeAnySubgroup,
 
 #############################################################################
 ##
-#F  Factorization( <G>, <elm> )
+#F  Factorization( <G>, <elm> ) . . . . . . . . . . . . . . .  generic method
 ##
-InstallGlobalFunction(Factorization,function(G,elm)
+InstallMethod( Factorization,"generic method", true,
+               [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
 # code based on work by N. Rohrbacher
-  local one, maxlist, rvalue, setrvalue, hom, names, F, gens, letters, info,
-  e, cnt, S, i, p, objelm, objnum, numobj, actobj, l, rs, idword, aim, ll,
-  from, to, diam, write, count, cont, ri, old, new, stop, pool, newpool, a,
-  w, na, rna, num, hold, nword, g,SC,olens,stblst,total,dist;
+function(G,elm)
+  local maxlist, rvalue, setrvalue, one, hom, names, F, gens, letters, info,
+  iso, e, objelm, objnum, numobj, actobj, S, cnt, SC, i, p, olens, stblst,
+  l, rs, idword, dist, aim, ll, from, to, total, diam, write, count, cont,
+  ri, old, new, a, rna, w, stop, num, hold, g,OG;
 
   # A list can have length at most 2^27
   maxlist:=2^27;
@@ -4329,14 +4515,30 @@ InstallGlobalFunction(Factorization,function(G,elm)
 
   one:=One(G);
 
+  OG:=G;
   if not IsBound(G!.factorinfo) then
     hom:=EpimorphismFromFreeGroup(G:names:="x");
     G!.factFreeMap:=hom; # compatibility
     F:=Source(hom);
     gens:=ShallowCopy(MappingGeneratorsImages(hom)[2]);
-    letters:=ShallowCopy(MappingGeneratorsImages(hom)[1]);
-    info:=rec();
+    letters:=List(MappingGeneratorsImages(hom)[1],UnderlyingElement);
+    info:=rec(hom:=hom);
 
+    iso:=fail;
+    if not (IsPermGroup(G) or IsPcGroup(G)) then
+      # the group likely does not have a good enumerator
+      iso:=IsomorphismPermGroup(G);
+      G:=Image(iso,G);
+      one:=One(G);
+      gens:=List(gens,i->Image(iso,i));
+      hom:=GroupHomomorphismByImagesNC(F,G,
+	       MappingGeneratorsImages(hom)[1],gens);
+      if not HasEpimorphismFromFreeGroup(G) then
+	SetEpimorphismFromFreeGroup(G,hom);
+	G!.factFreeMap:=hom; # compatibility
+      fi;
+    fi;
+    info.iso:=iso;
     e:= Enumerator(G);
     objelm:=x->x;
     objnum:=x->e[x];
@@ -4457,6 +4659,7 @@ InstallGlobalFunction(Factorization,function(G,elm)
 
     info.mygens:=gens;
     info.mylett:=letters;
+    info.fam:=FamilyObj(One(Source(hom)));
 
     # initialize all lists
     rs:=List([1..QuoInt(2*Size(G),maxlist)],i->BlistList([1..maxlist],[]));
@@ -4470,14 +4673,21 @@ InstallGlobalFunction(Factorization,function(G,elm)
     info.to:=1;
 
     info.diam:=0;
-    G!.factorinfo:=info;
+    OG!.factorinfo:=info;
 
   else
     info:=G!.factorinfo;
     rs:=info.prodlist;
+    if info.iso<>fail then
+      G:=Image(info.iso);
+    fi;
   fi;
 
-  hom:=EpimorphismFromFreeGroup(G);
+  hom:=info.hom;
+  if info.iso<>fail then
+    elm:=Image(info.iso,elm);
+  fi;
+
   F:=Source(hom);
   idword:=One(F);
   if IsOne(elm) then return idword;fi; # special treatment length 0
@@ -4574,43 +4784,36 @@ InstallGlobalFunction(Factorization,function(G,elm)
     info.diam:=diam;
   fi;
 
-  stop:=false;
 
-  one:=objelm(one);
-  pool:=[];
-  pool[1]:=[objelm(elm), idword];
+  # no pool needed: If the length of w is n, and g is a generator, the
+  # length of w/g can not be less than n-1 (otherwise (w/g)*g is a shorter
+  # word) and cannot be more than n+1 (otherwise w/g is a shorter word for
+  # it). Thus, if the length of w/g is OK mod 3, it is the right path.
 
-  repeat
-    newpool:=[];
-    for p in pool do
-      a:=p[1];
-      w:=p[2];
-      na:=numobj(a);
-      rna:=rvalue(na);
-
-      num:=1;
-      while num<=Length(gens) and stop=false do
-	old:=actobj(a,gens[num]^-1);
-	hold:=numobj(old);
-
-	if rvalue(hold)= (rna - 1) mod 3 then
-	  nword:=w/letters[num];
-
-	  if one = old then 
-	    stop :=true;
-	  else
-	    Add(newpool, [old,nword]);
-	  fi;
-	fi;
-	num:=num+1;
-      od;
+  one:=objelm(One(G));
+  a:=objelm(elm);
+  rna:=rvalue(numobj(a));
+  w:=UnderlyingElement(idword);
+  while a<>one do
+    stop:=false;
+    num:=1;
+    while num<=Length(gens) and stop=false do
+      old:=actobj(a,gens[num]^-1);
+      hold:=numobj(old);
+      if rvalue(hold)= (rna - 1) mod 3 then
+	# reduced to shorter
+	a:=old;
+	w:=w/letters[num];
+	rna:=rna-1;
+	stop:=true;
+      fi;
+      num:=num+1;
     od;
+  od;
+  return ElementOfFpGroup(info.fam,w^-1);
 
-    pool:=newpool;
-
-  until stop;
-  return nword^-1;
 end);
+
 
 
 #############################################################################
@@ -4633,4 +4836,3 @@ InstallOtherMethod( Order,
 #############################################################################
 ##
 #E
-

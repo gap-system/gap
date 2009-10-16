@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- $Id: manual.xml,v 1.8 2008/01/18 15:54:39 alexk Exp $ -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+[<!ENTITY Circle "<Package>Circle</Package>">] >
+
+<Book Name="Circle">
+
+<TitlePage>
+  <Title>&Circle;</Title>
+  <Subtitle>Adjoint groups of finite rings</Subtitle>
+  <Version>Version 1.3.1</Version>
+
+  <Author>Alexander Konovalov
+          <Email>konovalov@member.ams.org</Email>
+	      <Homepage>http://www.cs.st-andrews.ac.uk/&tilde;alexk/</Homepage>
+          <Address>
+            School of Computer Science<Br/>
+            University of St Andrews<Br/>
+            Jack Cole Building, North Haugh,<Br/>
+            St Andrews, Fife, KY16 9SX, Scotland
+          </Address> 
+  </Author>
+
+  <Author>Panagiotis Soules
+          <Email>psoules@math.uoa.gr</Email>
+          <Address>
+            Department of Mathematics<Br/>
+            National and Capodistrian University of Athens<Br/>
+            Panepistimioupolis, GR-15784, Athens, Greece
+          </Address>        
+  </Author>
+
+  <Date>January 2008</Date>
+
+<Abstract>
+
+<Index Key="Circle package">&Circle; package</Index> 
+The &GAP;4 package &Circle; extends the &GAP; functionality 
+for computations in adjoint groups of associative rings.
+It provides functionality to construct circle objects that will 
+respect the circle multiplication <M> r \cdot s = r + s + rs </M>, 
+and to compute adjoint semigroups and adjoint groups of finite rings.
+<P/>
+
+</Abstract>
+
+<Copyright>
+
+&copyright; 2006-2008 by Alexander Konovalov and Panagiotis Soules
+<P/>
+
+&Circle; is free software; you can redistribute it and/or modify it 
+under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version. For details, see the FSF's own site
+<URL>http://www.gnu.org/licenses/gpl.html</URL>.
+<P/>
+
+If you obtained &Circle;, we would be grateful for a short notification
+sent to one of the authors.
+<P/>
+
+If you publish a result which was partially obtained with the usage of
+&Circle;, please cite it in the following form:
+<P/>
+
+A. Konovalov, P. Soules. 
+<E>Circle --- Adjoint groups of finite rings, Version 1.3.1;</E> 2008 
+(<URL>http://www.cs.st-andrews.ac.uk/&tilde;alexk/circle.htm</URL>).
+</Copyright>
+  
+<Acknowledgements>
+
+We acknowledge very much Alexander Hulpke and James Mitchell 
+for their helpful comments and advices, and the referee for 
+testing the package and useful suggestions.
+<P/> 
+
+</Acknowledgements>
+
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+<#Include SYSTEM "intro.xml">
+<#Include SYSTEM "objects.xml">
+<#Include SYSTEM "funct.xml">
+<#Include SYSTEM "example.xml">
+</Body>
+
+<Bibliography Databases="manual"/>
+
+<TheIndex/>
+
+</Book>

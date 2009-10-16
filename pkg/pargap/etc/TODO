@@ -1,0 +1,59 @@
+1.  Clean up mpinu library;  Maybe experiment with variants of
+    setsockopt(SO_KEEPALIVE) (and catching the SIGPIPE in case of temporary
+    socket failure).  Also, setsockopt(SO_REUSEPORT), could allow use
+    of a single well-known port instead of having to tell client at what
+    port to find the master.
+2.  Better diagnostics by MPINU if:   rsh host gapmpi
+      fails.  Should mention procgroup file in error message.
+3.  Should hook -p4pg command line into gapmpi.sh;  Does it hurt slave side?
+       Arrange for mpinu to work with ./gapmpi.sh on command line.
+      e.g.:  gapmpi.sh -p4pg pkg/gapmpi/bin/procgroup
+        and remote ./gapmpi.sh will come from pkg/gapmpi/bin/./gapmpi.sh
+        but should really start up in $PWD ??
+      One idea is to add:   PROCGROUP=-p4pg ...     to gapmpi.sh
+        and then use it on command line for gapmpi, if it doesn't
+	interfere with slave.
+4.  Maybe a SendRecvMsg() should flush old messages from that source first.
+5.  MasterSlave() should use tags to verify still talking to slave().
+    (So, if Slave() executes error, and comes back to top level, master
+     will recognize it.)  To do this, when the slave is in MasterSlave mode,
+     it can send back a tag with TOPCtagBase := 1100 added to original tag
+     value.  The slave logic is mostly unchanged then, and the master logic
+     converts the tag back down, and alerts user if it tag is already
+     below 1100.
+       If slave not in MasterSlave mode, master should exec Error()
+    to go into break loop.
+6.  Add more examples (and tutorial?), such as GAP coset enumeration
+      and CILK-style 8 queeens problem.
+7.  masslave.g:  MPI_Comm_rank() = 0 -> IsMaster()  & <> 0 -> not IsMaster()
+8.  implement taskAgglomCount for RawSetTaskInput()
+9.  Better error report from slave executing error.  Something like:
+gapmpi.c:
+    { "READ_EVAL_ERROR", 0, "",
+        ReadEvalError, "src/gapmpi.c:ReadEvalError" },
+    [ And don't modify GAP setting of BreakOnError ]
+
+slavelist.g:
+  SlaveListenr := function()
+    local result;
+    OnBreak := function()
+      Print("\n\nERROR ON SLAVE ", MPI_Comm_rank(), "\n");
+      Where();
+      READ_EVAL_ERROR();
+    end;
+    ...
+
+But the slave GAP gets weird syntax error:
+Syntax error: ; expected in *errin* line 1
+^
+>
+
+causing master to stay in ">" mode until:
+> quit;
+"<no_return_val>"
+gap> 
+
+Does it have to do with embedded char in return string (^A/^B/^C)?
+Or does it have to do with something returning a <null> with no ';'
+
+Also, it causes problems for ParReset() (which sends SIGINT);

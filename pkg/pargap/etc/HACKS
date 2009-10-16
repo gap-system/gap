@@ -1,0 +1,18 @@
+These are hacks that can be removed when GAP is updated to better accomodate
+GAP/MPI.
+
+1.  src/gap.c  has an incomplete conditionalization.  One conditionalization
+  adds the comment
+  /* GAPMPI module   */
+  but no actual C code.
+2. src/streams.c:  This has been fixed in GAP.  I need to adapt GAP/MPI now.
+  Thanks.  I had set up a variable:  GAPMPI_Last   inside READ().
+  But now there's an official variable:  LastReadValueGVar
+3. sysinfo.gap lacks a  CC=... declaration.
+   I hack it up from GAParch=...-gcc.
+   This would be easy to add into gap4b5/sysinfo.in
+4. GAP's bin/@GAParch@/Makefile
+  lacks certain make variables that GAPMPI needs to pass in
+  (to say where libmpi.a is, where include library is, etc.
+  I hacked up pkg/gapmpi/Makefile.in to get around this,
+    but this would be more easily added by changing gap4b5/cnf/Makegap.in

@@ -2,8 +2,6 @@
 ##
 #W  ctblgrp.gi                   GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
-##
 #Y  Copyright (C) 1993, 1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -11,7 +9,8 @@
 ##  This file contains the implementation of the Dixon-Schneider algorithm
 ##
 Revision.ctblgrp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblgrp.gi,v 4.58 2009/02/24 04:11:06 gap Exp $";
+
 
 #############################################################################
 ##
@@ -25,7 +24,7 @@ USECTPGROUP := false;
 #V  DXLARGEGROUPORDER
 ##
 ##  If a group is small,we may use enumerations of the elements to speed up
-##  the computations. The criterion is the size,compared to the global
+##  the computations. The criterion is the size, compared to the global
 ##  variable DXLARGEGROUPORDER.
 ##
 if not IsBound(DXLARGEGROUPORDER) then
@@ -2417,7 +2416,7 @@ InstallGlobalFunction(IrreducibleRepresentationsDixon,function(arg)
 local G,chi,reps,r,i,gensp;
   G:=arg[1];
   if Length(arg)=1 then
-    chi:=Irr(G);
+    chi:=Irr(G); 
   elif IsClassFunction(arg[2]) and IsCharacter(arg[2]) then
     chi:=[arg[2]];
   elif IsList(arg[2]) and ForAll(arg[2],IsCharacter) then
@@ -2446,7 +2445,8 @@ local G,chi,reps,r,i,gensp;
     fi;
     Add(reps,r);
   od;
-  if Length(reps)=1 and Length(arg)>1 and IsCharacter(arg[2]) then
+  if Length(reps)=1 and Length(arg)>1 and (not IsList(arg[2][1]))
+    and IsCharacter(arg[2]) then
     return r;
   fi;
   return reps;
@@ -2460,6 +2460,70 @@ end);
 InstallMethod( IrreducibleRepresentations, "Dixon's method",
     true, [ IsGroup and IsFinite], 0,IrreducibleRepresentationsDixon);
 
+InstallGlobalFunction(RepresentationsPermutationIrreducibleCharacters,
+function(G,chars,reps)
+local n, imgs, cl, d, cands, j, t, i;
+  if Length(chars)<>Length(reps) or
+    Length(chars)<>Length(ConjugacyClasses(G)) then
+    Error("inconsistency");
+  fi;
+  n:=Length(chars);
+  imgs:=[];
+  cl:=ConjugacyClasses(G);
+  for i in reps do
+    d:=Length(One(Range(i)));
+    cands:=Filtered([1..Length(chars)],i->chars[i][1]=d);
+    j:=2;
+    while Length(cands)>1 do
+      if Length(Set(chars{cands}[j]))>1 then
+	# characters differ on this class
+	t:=TraceMat(Image(i,Representative(cl[j])));
+	cands:=Filtered(cands,i->chars[i][j]=t);
+      fi;
+      j:=j+1;
+    od;
+    if Length(cands)=0 then
+      Error("No character for particular representation found");
+    fi;
+    Add(imgs,cands[1]);
+  od;
+  return PermList(imgs);
+end);
+
+
+# the following function is in this file only for dependency reasons.
+#############################################################################
+##
+#F  NthRootsInGroup( <G>, <e>, <n> )
+##
+##  Takes the <n>th root of element <e> in <G>. This function returns a
+##  list of elements <a> of <G> such that $a^n=e$.
+##
+InstallGlobalFunction(NthRootsInGroup,function(G,elm,n)
+local c,cl,k,p,cand,x,rep,conj,i,rc,roots,cen;
+  # based on an idea by Mathieu Dutour. AH
+  c:=CharacterTable(G);
+  cl:=ConjugacyClasses(c);
+  k:=Length(cl);
+  p:=PowerMap(c,n);
+
+  cand:=Filtered([1..k],i->Order(Representative(cl[i]))=Order(elm));
+  x:=First(cand,i->elm in cl[i]);
+  #root classes
+  rc:=Filtered([1..k],i->p[i]=x);
+  if Length(rc)=0 then return rc;fi;
+
+  roots:=[];
+  cen:=Centralizer(G,elm);
+  # now for each root class map rep^n to our element
+  for i in rc do
+    rep:=Representative(cl[i]);
+    conj:=RepresentativeAction(G,rep^n,elm);
+    # the roots in this class form one orbit under the centralizer of elm
+    Append(roots,Orbit(cen,rep^conj));
+  od;
+  return roots;
+end);
 
 #############################################################################
 ##

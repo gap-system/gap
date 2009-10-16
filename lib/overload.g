@@ -2,7 +2,7 @@
 ##
 #W  overload.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: overload.g,v 4.28 2008/09/15 07:56:11 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -49,7 +49,7 @@
 #T Shall we print warnings when the shorthands are used?
 ##
 Revision.overload_g :=
-    "@(#)$Id$";
+    "@(#)$Id: overload.g,v 4.28 2008/09/15 07:56:11 gap Exp $";
 
 
 #############################################################################
@@ -218,6 +218,20 @@ InstallMethod( IsSimple, [ IsOrdinaryTable ], IsSimpleCharacterTable );
 
 #############################################################################
 ##
+#O  IsAlmostSimple( <obj> )
+##
+##  is `true' if <obj> is an almost simple group
+##  or an almost simple character table or ...
+##
+DeclareOperation( "IsAlmostSimple", [ IsObject ] );
+
+InstallMethod( IsAlmostSimple, [ IsGroup   ], IsAlmostSimpleGroup   );
+InstallMethod( IsAlmostSimple, [ IsOrdinaryTable ],
+    IsAlmostSimpleCharacterTable );
+
+
+#############################################################################
+##
 #O  IsSolvable( <obj> )
 ##
 ##  is `true' if <obj> is a solvable group or ...
@@ -357,6 +371,14 @@ InstallMethod( UpperCentralSeries, [ IsAlgebra ],
 
 InstallMethod( UpperCentralSeries, [ IsGroup ], UpperCentralSeriesOfGroup );
 
+
+DeclareGlobalFunction( "InsertElmList" );
+
+InstallGlobalFunction(InsertElmList, function (list, pos, elm)
+    Add(list,elm,pos);
+end);
+
+DeclareSynonym( "RemoveElmList", Remove);
 
 #############################################################################
 ##

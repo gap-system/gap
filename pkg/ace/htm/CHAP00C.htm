@@ -1,0 +1,1002 @@
+<html><head><title>[ACE] C Finer Points with Examples</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP00B.htm">Previous</a>] [<a href ="CHAP00D.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>C Finer Points with Examples</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP00C.htm#SECT001">Getting Started</a>
+<li> <A HREF="CHAP00C.htm#SECT002">Emulating Sims</a>
+</ol><p>
+<p>
+The examples in this chapter  are  intended  to  provide  the  nearest
+<font face="Gill Sans,Helvetica,Arial">GAP</font> equivalent of the similarly named  sections  in  Appendix&nbsp;A  of
+<code>ace3001.ps</code> (the standalone manual  in  directory  <code>standalone-doc</code>).
+There is a <strong>lot</strong> of detail here, which the novice <font face="Gill Sans,Helvetica,Arial">ACE</font> Package  user
+won't want to know about.  Please,  despite  the  name  of  the  first
+section of this chapter,  read  the  examples  in  Appendix&nbsp;<a href="CHAP00B.htm">Examples</a>
+first.
+<p>
+<p>
+<h2><a name="SECT001">C.1 Getting Started</a></h2>
+<p><p>
+Each     of     the      functions      <code>ACECosetTableFromGensAndRels</code>
+(see&nbsp;<a href="CHAP001.htm#SSEC002.1">ACECosetTableFromGensAndRels</a>), <code>ACEStats</code>  (see&nbsp;<a href="CHAP001.htm#SSEC003.1">ACEStats</a>  ---
+non-interactive  version)  and  <code>ACEStart</code>  (see&nbsp;<a href="CHAP006.htm#SSEC001.1">ACEStart</a>),  may  be
+called with three arguments: <var>fgens</var> (the  group  generators),  <var>rels</var>
+(the group relators), and <var>sgens</var> (the subgroup generators). While  it
+is legal for the arguments <var>rels</var> and <var>sgens</var> to be empty lists, it is
+always an error for <var>fgens</var> to be empty, e.g.
+<p>
+<pre>
+gap&gt; ACEStats([],[],[]);
+Error, fgens (arg[1]) must be a non-empty list of group generators ...
+ called from
+CALL_ACE( "ACEStats", arg[1], arg[2], arg[3] ) called from
+&lt;function&gt;( &lt;arguments&gt; ) called from read-eval-loop
+Entering break read-eval-print loop ...
+ type: 'quit;' to quit to outer loop, or
+ type: 'fgens := &lt;val&gt;; return;' to assign &lt;val&gt; to fgens to continue.
+brk&gt; fgens := FreeGeneratorsOfFpGroup(FreeGroup("a"));
+[ a ]
+brk&gt; return;
+rec( index := 0, cputime := 13, cputimeUnits := "10^-2 seconds", 
+  activecosets := 499998, maxcosets := 499998, totcosets := 499998 )
+</pre>
+<p>
+The example shows that the <font face="Gill Sans,Helvetica,Arial">ACE</font> package does allow  you  to  recover
+from the <code>break</code>-loop. However, the definition  of  <code>fgens</code>  above  is
+local to  the  <code>break</code>-loop,  and  in  any  case  we  shall  want  two
+generators for the examples we wish to consider and raise  some  other
+points; so let us re-define <code>fgens</code> and start again:
+<p>
+<pre>
+gap&gt; F := FreeGroup("a", "b");; fgens := FreeGeneratorsOfFpGroup(F);;
+</pre>
+<p>
+<a name = "I0"></a>
+
+<strong>An <code>ACEStats</code> example</strong>
+<p>
+By  default,  the  presentation  is  not  echoed;   use   the   <code>echo</code>
+(see&nbsp;<a href="CHAP004.htm#SSEC011.12">option echo</a>) option if you want that.  Also,  by  default,  the
+<font face="Gill Sans,Helvetica,Arial">ACE</font> binary only prints a <strong>results message</strong>, but we won't  see  that
+unless   we   set   <code>InfoACE</code>   to   a   level   of   at    least    2
+(see&nbsp;<a href="CHAP001.htm#SSEC009.3">SetInfoACELevel</a>):
+<p>
+<pre>
+gap&gt; SetInfoACELevel(2);
+</pre>
+<p>
+Calling <code>ACEStats</code> with arguments <code>fgens</code>, <code>[]</code>, <code>[]</code>, defines a  free
+froup with 2 generators, since the second argument  defines  an  empty
+relator list; and since  the  third  argument  is  an  empty  list  of
+generators, the  subgroup  defined  is  trivial.  So  the  enumeration
+overflows:
+<p>
+<pre>
+gap&gt; ACEStats(fgens, [], []);
+#I  OVERFLOW (a=249998 r=83333 h=83333 n=249999; l=337 c=0.10; m=249998 t=2499\
+98)
+rec( index := 0, cputime := 10, cputimeUnits := "10^-2 seconds", 
+  activecosets := 249998, maxcosets := 249998, totcosets := 249998 )
+</pre>
+<p>
+The  line  starting  with   ``<code>#I  </code>''.  is  the  <code>Info</code>-ed  <strong>results
+message</strong> from <font face="Gill Sans,Helvetica,Arial">ACE</font>;  see  Appendix&nbsp;<a href="CHAP00A.htm">The  Meanings  of  ACE's  Output Messages</a> for details  on  what  it  means.  Observe  that  since  the
+enumeration overflowed, <font face="Gill Sans,Helvetica,Arial">ACE</font>'s result message  has  been  translated
+into a <font face="Gill Sans,Helvetica,Arial">GAP</font> record with <code>index</code> field 0.
+<p>
+To dump  out  the  presentation  and  parameters  associated  with  an
+enumeration,  <font face="Gill Sans,Helvetica,Arial">ACE</font>  provides  the  <code>sr</code>  (see&nbsp;<a href="CHAP00D.htm#SSEC005.7">option  sr</a>)  option.
+However, you won't see output of this  command,  unless  you  set  the
+<code>InfoACELevel</code> to at least 3. Also, to ensure the reliability  of  the
+output of the <code>sr</code> option, an enumeration  should  <strong>precede</strong>  it;  for
+<code>ACEStats</code> (and <code>ACECosetTableFromGensAndRels</code>) the directive  <code>start</code>
+(see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option start</a>) required to initiate an enumeration  is  inserted
+(automatically) after all the  user's  options,  except  if  the  user
+herself supplies an option that initiates an enumeration (namely,  one
+of <code>start</code> or <code>begin</code> (see&nbsp;<a href="CHAP00D.htm#SSEC003.2">option start</a>), <code>aep</code>  (see&nbsp;<a href="CHAP00D.htm#SSEC001.1">option  aep</a>)
+or <code>rep</code> (see&nbsp;<a href="CHAP00D.htm#SSEC001.2">option rep</a>)). Interactively,  the  equivalent  of  the
+<code>sr</code> command is <code>ACEParameters</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.10">ACEParameters</a>), which gives  an
+output record that is immediately <font face="Gill Sans,Helvetica,Arial">GAP</font>-usable.  With  the  above  in
+mind let's  rerun  the  enumeration  and  get  <font face="Gill Sans,Helvetica,Arial">ACE</font>'s  dump  of  the
+presentation and parameters:
+<p>
+<pre>
+gap&gt; SetInfoACELevel(3);
+gap&gt; ACEStats(fgens, [], [] : start, sr := 1);
+#I  ACE 3.001        Wed Oct 31 09:36:39 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  OVERFLOW (a=249998 r=83333 h=83333 n=249999; l=337 c=0.09; m=249998 t=2499\
+98)
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: G;
+#I  Group Generators: ab;
+#I  Group Relators: ;
+#I  Subgroup Name: H;
+#I  Subgroup Generators: ;
+#I  Wo:1000000; Max:249998; Mess:0; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:0; No:0; Look:0; Com:10;
+#I  C:0; R:0; Fi:7; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+rec( index := 0, cputime := 9, cputimeUnits := "10^-2 seconds", 
+  activecosets := 249998, maxcosets := 249998, totcosets := 249998 )
+</pre>
+<p>
+Observe that at <code>InfoACE</code> level 3, one also gets <font face="Gill Sans,Helvetica,Arial">ACE</font>'s  banner.  We
+could have printed out the first few lines of the coset  table  if  we
+had wished, using the <code>print</code> (see&nbsp;<a href="CHAP00D.htm#SSEC005.8">option print</a>) option, but note as
+with the <code>sr</code> option, an enumeration should <strong>precede</strong> it. Here's  what
+happens if you disregard this (recall, we  still  have  the  <code>InfoACE</code>
+level set to 3):
+<p>
+<pre>
+gap&gt; ACEStats(fgens, [], [] : print := [-1, 12]);
+#I  ACE 3.001        Wed Oct 31 09:37:37 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  ** ERROR (continuing with next line)
+#I     no information in table
+#I  ***
+#I  ***
+#I  OVERFLOW (a=249998 r=83333 h=83333 n=249999; l=337 c=0.09; m=249998 t=2499\
+98)
+rec( index := 0, cputime := 9, cputimeUnits := "10^-2 seconds", 
+  activecosets := 249998, maxcosets := 249998, totcosets := 249998 )
+</pre>
+<p>
+Essentially, because <font face="Gill Sans,Helvetica,Arial">ACE</font> had  not  done  an  enumeration  prior  to
+getting the <code>print</code> directive, it complained with an  ``<code>**  ERROR</code>'',
+recovered  and  went  on  with  the  <code>start</code>  directive  automatically
+inserted by the <code>ACEStats</code> command:  no  ill  effects  at  the  <font face="Gill Sans,Helvetica,Arial">GAP</font>
+level, but also no table.
+<p>
+Now, let's do what we should have done (to get those first  few  lines
+of the coset table), namely, insert  the  <code>start</code>  option  before  the
+<code>print</code> option (the <code>InfoACE</code> level is still 3):
+<p>
+<pre>
+gap&gt; ACEStats(fgens, [], [] : start, print := [-1, 12]);
+#I  ACE 3.001        Wed Oct 31 09:38:28 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  OVERFLOW (a=249998 r=83333 h=83333 n=249999; l=337 c=0.10; m=249998 t=2499\
+98)
+#I  co: a=249998 r=83333 h=83333 n=249999; c=+0.00
+#I   coset |      a      A      b      B   order   rep've
+#I  -------+---------------------------------------------
+#I       1 |      2      3      4      5
+#I       2 |      6      1      7      8       0   a
+#I       3 |      1      9     10     11       0   A
+#I       4 |     12     13     14      1       0   b
+#I       5 |     15     16      1     17       0   B
+#I       6 |     18      2     19     20       0   aa
+#I       7 |     21     22     23      2       0   ab
+#I       8 |     24     25      2     26       0   aB
+#I       9 |      3     27     28     29       0   AA
+#I      10 |     30     31     32      3       0   Ab
+#I      11 |     33     34      3     35       0   AB
+#I      12 |     36      4     37     38       0   ba
+#I  ***
+rec( index := 0, cputime := 10, cputimeUnits := "10^-2 seconds", 
+  activecosets := 249998, maxcosets := 249998, totcosets := 249998 )
+</pre>
+<p>
+The values we gave to the <code>print</code> option, told  <font face="Gill Sans,Helvetica,Arial">ACE</font>  to  print  the
+first 12 lines and include coset  representatives.  Note  that,  since
+there are no relators, the table has separate  columns  for  generator
+inverses. So the default workspace of 1000000 words allows  a  table
+of 249998 = 1000000/4 <font face="symbol">-</font> 2 cosets. Since row  <code>fill</code>ing  (see&nbsp;<a href="CHAP004.htm#SSEC014.1">option fill</a>) is on by default, the table is simply  filled  with  cosets  in
+order. Note that a compaction phase is done before printing the table,
+but that this does nothing here (the lowercase <code>co:</code> tag), since there
+are no dead cosets. The coset representatives are simply all  possible
+freely reduced words, in length plus lexicographic (i.e. <code>lenlex</code>; see
+Section&nbsp;<a href="CHAP003.htm#SECT004">Coset Table Standardisation Schemes</a>) order.
+<p>
+<a name = "I1"></a>
+
+<strong>Using <code>ACECosetTableFromGensAndRels</code></strong>
+<p>
+The  essential  difference  between  the  functions   <code>ACEStats</code>   and
+<code>ACECosetTableFromGensAndRels</code> is that <code>ACEStats</code> parses the  <strong>results
+message</strong> from the <font face="Gill Sans,Helvetica,Arial">ACE</font> binary and outputs a <font face="Gill Sans,Helvetica,Arial">GAP</font> record containing
+statistics  of  the  enumeration,  and  <code>ACECosetTableFromGensAndRels</code>
+after parsing the <strong>results message</strong>, goes on to parse  <font face="Gill Sans,Helvetica,Arial">ACE</font>'s  coset
+table, if it can, and outputs a <font face="Gill Sans,Helvetica,Arial">GAP</font> list of lists version  of  that
+table. So, if we had used  <code>ACECosetTableFromGensAndRels</code>  instead  of
+<code>ACEStats</code> in our examples  above,  we  would  have  observed  similar
+output, except that we would have ended up in a <code>break</code>-loop  (because
+the enumeration overflows) instead of obtaining  a  record  containing
+enumeration statistics. We have already seen an  example  of  that  in
+Section&nbsp;<a href="CHAP001.htm#SECT002">Using ACE Directly to Generate a Coset Table</a>.  So,  here  we
+will consider two options that prevent one  entering  a  <code>break</code>-loop,
+namely   the   <code>silent</code>   (see&nbsp;<a href="CHAP004.htm#SSEC011.3">option   silent</a>)   and   <code>incomplete</code>
+(see&nbsp;<a href="CHAP004.htm#SSEC011.6">option  incomplete</a>)  options.  Firstly,  let's  take  the  last
+<code>ACEStats</code> example, but use <code>ACECosetTableFromGensAndRels</code> instead and
+include the <code>silent</code> option. (We still have the <code>InfoACE</code> level set at
+3.)
+<p>
+<pre>
+gap&gt; ACECosetTableFromGensAndRels(fgens, [], [] : start, print := [-1, 12],
+&gt;                                                 silent);
+#I  ACE 3.001        Wed Oct 31 09:40:18 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  OVERFLOW (a=249998 r=83333 h=83333 n=249999; l=337 c=0.09; m=249998 t=2499\
+98)
+#I  co: a=249998 r=83333 h=83333 n=249999; c=+0.00
+#I   coset |      a      A      b      B   order   rep've
+#I  -------+---------------------------------------------
+#I       1 |      2      3      4      5
+#I       2 |      6      1      7      8       0   a
+#I       3 |      1      9     10     11       0   A
+#I       4 |     12     13     14      1       0   b
+#I       5 |     15     16      1     17       0   B
+#I       6 |     18      2     19     20       0   aa
+#I       7 |     21     22     23      2       0   ab
+#I       8 |     24     25      2     26       0   aB
+#I       9 |      3     27     28     29       0   AA
+#I      10 |     30     31     32      3       0   Ab
+#I      11 |     33     34      3     35       0   AB
+#I      12 |     36      4     37     38       0   ba
+#I  ***
+fail
+</pre>
+<p>
+Since, the enumeration overflowed and the  <code>silent</code>  option  was  set,
+<code>ACECosetTableFromGensAndRels</code> simply returned <code>fail</code>.  But  hang  on,
+<font face="Gill Sans,Helvetica,Arial">ACE</font> at least has a partial table; we should be able to obtain it in
+<font face="Gill Sans,Helvetica,Arial">GAP</font> format, in a situation like this. We can.  We  simply  use  the
+<code>incomplete</code> option, instead of the <code>silent</code> option.  However,  if  we
+did that with the example above, the result would be an enormous table
+(the number of <strong>active cosets</strong> is 249998); so  let  us  also  set  the
+<code>max</code> (see&nbsp;<a href="CHAP004.htm#SSEC017.6">option max</a>) option, in order that we should  get  a  more
+modestly sized partial table. Finally, we  will  use  <code>print  :=  -12</code>
+since it is a shorter equivalent alternative to <code>print :=  [-1,  12]</code>.
+Note that the output here was obtained with <font face="Gill Sans,Helvetica,Arial">GAP</font>  4.3  (and  is  the
+same with <font face="Gill Sans,Helvetica,Arial">GAP</font> 4.4). With <font face="Gill Sans,Helvetica,Arial">GAP</font> 4.2 the output was  similar  except
+that the last <code>Info</code>-ed message (before the final output) states  that
+the coset table result is incomplete only, since no standardisation is
+done. It turns out that the table displayed via the <code>print</code> option  is
+already in <code>lenlex</code> standard form; so despite the differences  in  the
+<font face="Gill Sans,Helvetica,Arial">GAP</font> versions, each version of <font face="Gill Sans,Helvetica,Arial">GAP</font> since <font face="Gill Sans,Helvetica,Arial">GAP</font>  4.2  has  output
+the same table.
+<p>
+<pre>
+gap&gt; ACECosetTableFromGensAndRels(fgens, [], [] : max := 12,
+&gt;                                                 start, print := -12,
+&gt;                                                 incomplete);
+#I  ACE 3.001        Wed Oct 31 09:41:14 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  OVERFLOW (a=12 r=4 h=4 n=13; l=5 c=0.00; m=12 t=12)
+#I  co: a=12 r=4 h=4 n=13; c=+0.00
+#I   coset |      a      A      b      B   order   rep've
+#I  -------+---------------------------------------------
+#I       1 |      2      3      4      5
+#I       2 |      6      1      7      8       0   a
+#I       3 |      1      9     10     11       0   A
+#I       4 |     12      0      0      1       0   b
+#I       5 |      0      0      1      0       0   B
+#I       6 |      0      2      0      0       0   aa
+#I       7 |      0      0      0      2       0   ab
+#I       8 |      0      0      2      0       0   aB
+#I       9 |      3      0      0      0       0   AA
+#I      10 |      0      0      0      3       0   Ab
+#I      11 |      0      0      3      0       0   AB
+#I      12 |      0      4      0      0       0   ba
+#I  ***
+#I  co: a=12 r=4 h=4 n=13; c=+0.00
+#I   coset |      a      A      b      B
+#I  -------+----------------------------
+#I       1 |      2      3      4      5
+#I       2 |      6      1      7      8
+#I       3 |      1      9     10     11
+#I       4 |     12      0      0      1
+#I       5 |      0      0      1      0
+#I       6 |      0      2      0      0
+#I       7 |      0      0      0      2
+#I       8 |      0      0      2      0
+#I       9 |      3      0      0      0
+#I      10 |      0      0      0      3
+#I      11 |      0      0      3      0
+#I      12 |      0      4      0      0
+#I  ACECosetTable: Coset table is incomplete, reduced &amp; lenlex standardised.
+[ [ 2, 6, 1, 12, 0, 0, 0, 0, 3, 0, 0, 0 ], 
+  [ 3, 1, 9, 0, 0, 2, 0, 0, 0, 0, 0, 4 ], 
+  [ 4, 7, 10, 0, 1, 0, 0, 2, 0, 0, 3, 0 ], 
+  [ 5, 8, 11, 1, 0, 0, 2, 0, 0, 3, 0, 0 ] ]
+</pre>
+<p>
+Observe, that despite the fact that <font face="Gill Sans,Helvetica,Arial">ACE</font> is  able  to  define  coset
+representatives for all 12 coset numbers  defined,  the  body  of  the
+coset table now contains a 0 at each  place  formerly  occupied  by  a
+coset number larger than 12 (0 essentially represents ``don't know'').
+To get a table that is the same in the first  12  rows  as  before  we
+would have had to set <code>max</code> to 38, since that was  the  largest  coset
+number that appeared in the body of  the  12-line  table,  previously.
+Also, note that the <code>max</code> option <strong>preceded</strong> the <code>start</code> option;  since
+the interface respects the order in which options are put by the user,
+the enumeration invoked by <code>start</code>  would  otherwise  have  only  been
+restricted by the size of <code>workspace</code>  (see&nbsp;<a href="CHAP004.htm#SSEC017.1">option  workspace</a>).  The
+warning that the coset table is incomplete is emitted at <code>InfoACE</code>  or
+<code>InfoWarning</code> level 1, i.e.&nbsp;by default, you will see it.
+<p>
+<a name = "I2"></a>
+
+<strong>Using <code>ACEStart</code></strong>
+<p>
+The     limitation     of     the     functions     <code>ACEStats</code>     and
+<code>ACECosetTableFromGensAndRels</code> (on three arguments) is  that  they  do
+not <strong>interact</strong> with <font face="Gill Sans,Helvetica,Arial">ACE</font>; they call <font face="Gill Sans,Helvetica,Arial">ACE</font> with user-defined  input,
+and collect and parse the output for  either  statistics  or  a  coset
+table. On the other hand,  the  <code>ACEStart</code>  (see&nbsp;<a href="CHAP006.htm#SSEC001.1">ACEStart</a>)  function
+allows one to start up an <font face="Gill Sans,Helvetica,Arial">ACE</font> process and maintain a dialogue  with
+it. Moreover, via the functions <code>ACEStats</code> and <code>ACECosetTable</code>  (on  1
+or no arguments), one is able to extract the same information that  we
+could with the non-interactive versions of these  functions.  However,
+we can also do a lot more. Each <font face="Gill Sans,Helvetica,Arial">ACE</font>  option  that  provides  output
+that can be used from within <font face="Gill Sans,Helvetica,Arial">GAP</font> has  a  corresponding  interactive
+interface function that parses and translates that output into a  form
+usable from within <font face="Gill Sans,Helvetica,Arial">GAP</font>.
+<p>
+Now we emulate our  (successful)  <code>ACEStats</code>  exchanges  above,  using
+interactive  <font face="Gill Sans,Helvetica,Arial">ACE</font>  interface  functions.  We  could  do  this  with:
+<code>ACEStart(0, fgens, [], [] : start, sr := 1);</code>  where  the  <code>0</code>  first
+argument tells <code>ACEStart</code> not to  insert  <code>start</code>  after  the  options
+explicitly listed. Alternatively, we may do the following  (note  that
+the <code>InfoACE</code> level is still 3):
+<p>
+<pre>
+gap&gt; ACEStart(fgens, [], []);
+#I  ACE 3.001        Wed Oct 31 09:42:49 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  ***
+#I  OVERFLOW (a=249998 r=83333 h=83333 n=249999; l=337 c=0.10; m=249998 t=2499\
+98)
+1
+gap&gt; ACEParameters(1);
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: G;
+#I  Group Generators: ab;
+#I  Group Relators: ;
+#I  Subgroup Name: H;
+#I  Subgroup Generators: ;
+#I  Wo:1000000; Max:249998; Mess:0; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:0; No:0; Look:0; Com:10;
+#I  C:0; R:0; Fi:7; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+rec( enumeration := "G", subgroup := "H", workspace := 1000000, 
+  max := 249998, messages := 0, time := -1, hole := -1, loop := 0, asis := 0, 
+  path := 0, row := 1, mendelsohn := 0, no := 0, lookahead := 0, 
+  compaction := 10, ct := 0, rt := 0, fill := 7, pmode := 3, psize := 256, 
+  dmode := 4, dsize := 1000 )
+</pre>
+<p>
+Observe that the <code>ACEStart</code> call returned an integer (1, here). All  8
+forms of the <code>ACEStart</code> function, return an  integer  that  identifies
+the interactive <font face="Gill Sans,Helvetica,Arial">ACE</font> interface function  initiated  or  communicated
+with. We may use this integer to tell any interactive <font face="Gill Sans,Helvetica,Arial">ACE</font> interface
+function which interactive <font face="Gill Sans,Helvetica,Arial">ACE</font> process we wish to communicate with.
+Above we passed <code>1</code> to the <code>ACEParameters</code> command which caused <code>sr :=
+1</code> (see&nbsp;<a href="CHAP00D.htm#SSEC005.7">option sr</a>) to be passed to the  interactive  <font face="Gill Sans,Helvetica,Arial">ACE</font>  process
+indexed by 1 (the process we just started), and  a  record  containing
+the parameter options (see&nbsp;<a href="CHAP004.htm#SSEC012.1">ACEParameterOptions</a>)  is  returned.  Note
+that the ``Run Parameters'': <code>Group Generators</code>, <code>Group Relators</code>  and
+<code>Subgroup Generators</code> are considered ``args'' (i.e.&nbsp;arguments)  and  a
+record   containing   these   is   returned   by   the    <code>GetACEArgs</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC005.5">GetACEArgs</a>) command; or they may be obtained  individually  via
+the   commands:    <code>ACEGroupGenerators</code>    (see&nbsp;<a href="CHAP006.htm#SSEC005.1">ACEGroupGenerators</a>),
+<code>ACERelators</code>    (see&nbsp;<a href="CHAP006.htm#SSEC005.2">ACERelators</a>),    or    <code>ACESubgroupGenerators</code>
+(see&nbsp;<a href="CHAP006.htm#SSEC005.3">ACESubgroupGenerators</a>).
+<p>
+We can obtain the enumeration statistics record, via  the  interactive
+version of <code>ACEStats</code> (see&nbsp;<a href="CHAP006.htm#SSEC006.2">ACEStats!interactive</a>) :
+<p>
+<pre>
+gap&gt; ACEStats(1); # The interactive version of ACEStats takes 1 or no arg'ts
+rec( index := 0, cputime := 10, cputimeUnits := "10^-2 seconds", 
+  activecosets := 249998, maxcosets := 249998, totcosets := 249998 )
+</pre>
+<p>
+To display 12 lines of the  coset  table  with  coset  representatives
+without invoking a further enumeration we could do: <code>ACEStart(0,  1  :
+print   :=   [-1,   12]);</code>.   Alternatively,   we    may    use    the
+<code>ACEDisplayCosetTable</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.12">ACEDisplayCosetTable</a>) (the table  itself
+is emitted at <code>InfoACE</code> level 1, since by default we  presumably  want
+to see it):
+<p>
+<pre>
+gap&gt; ACEDisplayCosetTable(1, [-1, 12]);
+#I  co: a=249998 r=83333 h=83333 n=249999; c=+0.00
+#I   coset |      a      A      b      B   order   rep've
+#I  -------+---------------------------------------------
+#I       1 |      2      3      4      5
+#I       2 |      6      1      7      8       0   a
+#I       3 |      1      9     10     11       0   A
+#I       4 |     12     13     14      1       0   b
+#I       5 |     15     16      1     17       0   B
+#I       6 |     18      2     19     20       0   aa
+#I       7 |     21     22     23      2       0   ab
+#I       8 |     24     25      2     26       0   aB
+#I       9 |      3     27     28     29       0   AA
+#I      10 |     30     31     32      3       0   Ab
+#I      11 |     33     34      3     35       0   AB
+#I      12 |     36      4     37     38       0   ba
+#I  ------------------------------------------------------------
+</pre>
+<p>
+Still with the same interactive <font face="Gill Sans,Helvetica,Arial">ACE</font> process we can now emulate  the
+<code>ACECosetTableFromGensAndRels</code> exchange that  gave  us  an  incomplete
+coset table. Note that it is still necessary to invoke an  enumeration
+after setting the <code>max</code> (see&nbsp;<a href="CHAP004.htm#SSEC017.6">option max</a>) option. We could just  call
+<code>ACECosetTable</code> with the argument 1 and the same 4 options we used for
+<code>ACECosetTableFromGensAndRels</code>.   Alternatively,   we   can   do   the
+equivalent of the 4  options  one  (or  two)  at  a  time,  via  their
+equivalent interactive commands.  Note  that  the  <code>ACEStart</code>  command
+(without <code>0</code> as first argument) inserts a <code>start</code> directive after  the
+user option <code>max</code>:
+<p>
+<pre>
+gap&gt; ACEStart(1 : max := 12);
+#I  ***
+#I  OVERFLOW (a=12 r=4 h=4 n=13; l=5 c=0.00; m=12 t=12)
+1
+</pre>
+<p>
+Now the following <code>ACEDisplayCosetTable</code> command does  the  equivalent
+of the <code>print := [-1, 12]</code> option.
+<p>
+<pre>
+gap&gt; ACEDisplayCosetTable(1, [-1, 12]);
+#I  co: a=12 r=4 h=4 n=13; c=+0.00
+#I   coset |      a      A      b      B   order   rep've
+#I  -------+---------------------------------------------
+#I       1 |      2      3      4      5
+#I       2 |      6      1      7      8       0   a
+#I       3 |      1      9     10     11       0   A
+#I       4 |     12      0      0      1       0   b
+#I       5 |      0      0      1      0       0   B
+#I       6 |      0      2      0      0       0   aa
+#I       7 |      0      0      0      2       0   ab
+#I       8 |      0      0      2      0       0   aB
+#I       9 |      3      0      0      0       0   AA
+#I      10 |      0      0      0      3       0   Ab
+#I      11 |      0      0      3      0       0   AB
+#I      12 |      0      4      0      0       0   ba
+#I  ------------------------------------------------------------
+</pre>
+<p>
+Finally, we call <code>ACECosetTable</code> with 1 argument  (which  invokes  the
+interactive version of <code>ACECosetTableFromGensAndRels</code>) with the option
+<code>incomplete</code>.
+<p>
+<pre>
+gap&gt; ACECosetTable(1 : incomplete);
+#I  start = yes, continue = yes, redo = yes
+#I  ***
+#I  OVERFLOW (a=12 r=4 h=4 n=13; l=4 c=0.00; m=12 t=12)
+#I  co: a=12 r=4 h=4 n=13; c=+0.00
+#I   coset |      a      A      b      B
+#I  -------+----------------------------
+#I       1 |      2      3      4      5
+#I       2 |      6      1      7      8
+#I       3 |      1      9     10     11
+#I       4 |     12      0      0      1
+#I       5 |      0      0      1      0
+#I       6 |      0      2      0      0
+#I       7 |      0      0      0      2
+#I       8 |      0      0      2      0
+#I       9 |      3      0      0      0
+#I      10 |      0      0      0      3
+#I      11 |      0      0      3      0
+#I      12 |      0      4      0      0
+#I  ACECosetTable: Coset table is incomplete, reduced &amp; lenlex standardised.
+[ [ 2, 6, 1, 12, 0, 0, 0, 0, 3, 0, 0, 0 ], 
+  [ 3, 1, 9, 0, 0, 2, 0, 0, 0, 0, 0, 4 ], 
+  [ 4, 7, 10, 0, 1, 0, 0, 2, 0, 0, 3, 0 ], 
+  [ 5, 8, 11, 1, 0, 0, 2, 0, 0, 3, 0, 0 ] ]
+</pre>
+<p>
+Observe the line beginning ``<code>#I start = yes,</code>''  (the  first line in
+the output of <code>ACECosetTable</code>). This line appears in response  to  the
+option <code>mode</code> (see&nbsp;<a href="CHAP00D.htm#SSEC003.1">option mode</a>) inserted  by  <code>ACECosetTable</code>  after
+any user options; it is inserted  in  order  to  check  that  no  user
+options  (possibly  made  before  the   <code>ACECosetTable</code>   call)   have
+invalidated <font face="Gill Sans,Helvetica,Arial">ACE</font>'s coset table. Since the line also says <code>continue =
+yes</code>, the mode <code>continue</code> (the least expensive  of  the  three  modes;
+see&nbsp;<a href="CHAP00D.htm#SSEC003.4">option continu</a>) is directed at <font face="Gill Sans,Helvetica,Arial">ACE</font> which  evokes  a  <strong>results
+message</strong>. Then <code>ACECosetTable</code> extracts the  incomplete  table  via  a
+<code>print</code> (see <a href="CHAP00D.htm#SSEC005.8">option print</a>) directive. If you wish  to  see  all  the
+options that are directed to <font face="Gill Sans,Helvetica,Arial">ACE</font>, set  the  <code>InfoACE</code>  level  to  4
+(then all such commands are <code>Info</code>-ed behind a ``<code>ToACE&gt;  </code>''  prompt;
+see&nbsp;<a href="CHAP001.htm#SSEC009.3">SetInfoACELevel</a>).
+<p>
+Following the standalone manual, we  now  set  things  up  to  do  the
+alternating group <i>A</i><sub>5</sub>, of order 60. (We saw the group  <i>A</i><sub>5</sub>  with
+subgroup <i>C</i><sub>5</sub> earlier in Section&nbsp;<a href="CHAP00B.htm#SECT003">Example of Using ACE  Interactively (Using ACEStart)</a>; here we are concerned with observing and  remarking
+on the output from the <font face="Gill Sans,Helvetica,Arial">ACE</font> binary.) We turn messaging  on  via  the
+<code>messages</code> (see&nbsp;<a href="CHAP004.htm#SSEC018.1">option messages</a>) option;  setting  <code>messages</code>  to  1
+tells <font face="Gill Sans,Helvetica,Arial">ACE</font> to emit a <strong>progress message</strong> on each  pass  of  its  main
+loop. In the example following we set <code>messages := 1000</code>,  which,  for
+our example, sets the interval between messages so high that  we  only
+get the ``Run Parameters'' block (the same as that obtained  with  <code>sr
+:= 1</code>), no progress messages and the final <strong>results  message</strong>.  Recall
+<code>F</code> is the free group we defined  on  generators  <code>fgens</code>:  <code>"a"</code>  and
+<code>"b"</code>. Here we will be interested in seeing what is transmitted to the
+<font face="Gill Sans,Helvetica,Arial">ACE</font> binary; so we will set  the  <code>InfoACE</code>  level  to  4  (what  is
+transmitted to <font face="Gill Sans,Helvetica,Arial">ACE</font> will now appear behind a  ``<code>ToACE&gt; </code>''  prompt,
+and we will still see the messages <strong>from</strong>  <font face="Gill Sans,Helvetica,Arial">ACE</font>).  Note,  that  when
+<font face="Gill Sans,Helvetica,Arial">GAP</font>  prints  <code>F.1</code>  (=  <code>fgens[1]</code>)  it  displays  <code>a</code>,  but  the
+<strong>variable</strong> <code>a</code> is (at the moment) unassigned; so for  convenience  (in
+defining relators, for example) we first assign the variable <code>a</code> to be
+<code>F.1</code> (and <code>b</code> to be <code>F.2</code>).
+<p>
+<pre>
+gap&gt; SetInfoACELevel(4);
+gap&gt; a := F.1;; b := F.2;;
+gap&gt; # Enumerating A_5 = &lt; a, b | a^2, b^3, (a*b)^5 &gt;
+gap&gt; # over Id (trivial subgp)
+gap&gt; ACEStart(1, fgens, [a^2, b^3, (a*b)^5], []
+&gt;                                     # 4th arg empty (to define Id)
+&gt;             : enumeration := "A_5", # Define the Group Name
+&gt;               subgroup := "Id",     # Define the Subgroup Name
+&gt;               max := 0,             # Set `max' back to default (no limit)
+&gt;               messages := 1000);    # Progress messages every 1000 iter'ns
+#I  ToACE&gt; group:ab;
+#I  ToACE&gt; relators:a^2,b^3,a*b*a*b*a*b*a*b*a*b;
+#I  ToACE&gt; generators;
+#I  ToACE&gt; enumeration:A_5;
+#I  ToACE&gt; subgroup:Id;
+#I  ToACE&gt; max:0;
+#I  ToACE&gt; messages:1000;
+#I  ToACE&gt; text:***;
+#I  ***
+#I  ToACE&gt; text:***;
+#I  ***
+#I  ToACE&gt; Start;
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: A_5;
+#I  Group Generators: ab;
+#I  Group Relators: (a)^2, (b)^3, (ab)^5;
+#I  Subgroup Name: Id;
+#I  Subgroup Generators: ;
+#I  Wo:1000000; Max:333331; Mess:1000; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:0; No:3; Look:0; Com:10;
+#I  C:0; R:0; Fi:6; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+#I  INDEX = 60 (a=60 r=77 h=1 n=77; l=3 c=0.00; m=66 t=76)
+1
+</pre>
+<p>
+Observe that the <code>fgens</code> and  subgroup  generators  (the  empty  list)
+arguments are transmitted to <font face="Gill Sans,Helvetica,Arial">ACE</font> via the  <font face="Gill Sans,Helvetica,Arial">ACE</font>  binary's  <code>group</code>
+and <code>generators</code> options, respectively. Observe also, that the relator
+<code>(a*b)^5</code>  is  expanded  by  <font face="Gill Sans,Helvetica,Arial">GAP</font>  to   <code>a*b*a*b*a*b*a*b*a*b</code>   when
+transmitted to <font face="Gill Sans,Helvetica,Arial">ACE</font> and then  <font face="Gill Sans,Helvetica,Arial">ACE</font>  correctly  deduces  that  it's
+<code>(a*b)^5</code>.
+<p>
+Since we  did  not  specify  a  strategy  the  <code>default</code>  (see&nbsp;<a href="CHAP005.htm#SSEC001.1">option default</a>) strategy was followed and  hence  coset  number  definitions
+were R (i.e.&nbsp;HLT) style, and a total of 76  coset  numbers  (<code>t=76</code>)
+were defined (if we had tried <code>felsch</code> we would have achieved the best
+possible: <code>t=60</code>).  Note,  that  <font face="Gill Sans,Helvetica,Arial">ACE</font>  already  ``knew''  the  group
+generators  and  subgroup  generators;  so,  we  could  have   avoided
+re-transmitting that information by using the <code>relators</code>  (see&nbsp;<a href="CHAP00D.htm#SSEC002.2">option relators</a>) option:
+<p>
+<pre>
+gap&gt; ACEStart(1 : relators := ToACEWords(fgens, [a^2, b^3, (a*b)^5]),
+&gt;                 enumeration := "A_5",
+&gt;                 subgroup := "Id",
+&gt;                 max := 0,
+&gt;                 messages := 1000);
+#I  Detected usage of a synonym of one (or more) of the options:
+#I      `group', `relators', `generators'.
+#I  Discarding current values of args.
+#I  (The new args will be extracted from ACE, later).
+#I  ToACE&gt; relators:a^2,b^3,a*b*a*b*a*b*a*b*a*b;
+#I  ToACE&gt; enumeration:A_5;
+#I  ToACE&gt; subgroup:Id;
+#I  ToACE&gt; max:0;
+#I  ToACE&gt; messages:1000;
+#I  No group generators saved. Setting value(s) from ACE ...
+#I  ToACE&gt; sr:1;
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: A_5;
+#I  Group Generators: ab;
+#I  Group Relators: (a)^2, bbb, ababababab;
+#I  Subgroup Name: Id;
+#I  Subgroup Generators: ;
+#I  Wo:1000000; Max:333331; Mess:1000; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:0; No:3; Look:0; Com:10;
+#I  C:0; R:0; Fi:6; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+#I  ToACE&gt; text:***;
+#I  ***
+#I  ToACE&gt; Start;
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: A_5;
+#I  Group Generators: ab;
+#I  Group Relators: (a)^2, (b)^3, (ab)^5;
+#I  Subgroup Name: Id;
+#I  Subgroup Generators: ;
+#I  Wo:1000000; Max:333331; Mess:1000; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:0; No:3; Look:0; Com:10;
+#I  C:0; R:0; Fi:6; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+#I  INDEX = 60 (a=60 r=77 h=1 n=77; l=3 c=0.00; m=66 t=76)
+1
+</pre>
+<p>
+Note the usage  of  <code>ToACEWords</code>  (see&nbsp;<a href="CHAP006.htm#SSEC003.6">ToACEWords</a>)  to  provide  the
+appropriate string value of the <code>relators</code> option. Also,  observe  the
+<code>Info</code>-ed warning of the action  triggered  by  using  the  <code>relators</code>
+option, that says that the current values of the  ``args''  (i.e.&nbsp;what
+would be returned by <code>GetACEArgs</code>; see&nbsp;<a href="CHAP006.htm#SSEC005.5">GetACEArgs</a>)  were  discarded,
+which immediately triggered the action of reinstantiating the value of
+<code>ACEData.io[1].args</code> (which is what the <code>Info</code>:
+<p>
+<pre>
+#I  No group generators saved. Setting value(s) from ACE ...
+</pre>
+<p>
+was all about). Also observe that the  ``Run  Parameters''  block  was
+<code>Info</code>-ed twice; the first time was due to  <code>ACEStart</code>  emitting  <code>sr</code>
+with  value  <code>1</code>  to  <font face="Gill Sans,Helvetica,Arial">ACE</font>,  the  response  of  which  is  used   to
+re-instantiate <code>ACEData.io[1].args</code>, and the second is in response  to
+transmitting <code>Start</code> to <font face="Gill Sans,Helvetica,Arial">ACE</font>.
+<p>
+In  particular,  <font face="Gill Sans,Helvetica,Arial">GAP</font>  no  longer  thinks  <code>fgens</code>  are  the   group
+generators:
+<p>
+<pre>
+gap&gt; ACEGroupGenerators(1) = fgens;
+false
+</pre>
+<p>
+Groan! We will just have to re-instantiate everything:
+<p>
+<pre>
+gap&gt; fgens := ACEGroupGenerators(1);;
+gap&gt; F := GroupWithGenerators(fgens);; a := F.1;; b := F.2;;
+</pre>
+<p>
+We now define a non-trivial subgroup, of small enough index,  to  make
+the observation of all progress messages, by setting <code>messages :=  1</code>,
+a not too onerous proposition. As for defining the relators, we  could
+use the 1-argument version of <code>ACEStart</code>, in which case we  would  use
+the  <code>subgroup</code>  (see&nbsp;<a href="CHAP004.htm#SSEC019.2">option  subgroup</a>)  option   with   the   value
+<code>ToACEWords(fgens, [ a*b ])</code>. However, as we saw, in the end we  don't
+save anything by doing this, since afterwards the  variables  <code>fgens</code>,
+<code>a</code>, <code>b</code> and <code>F</code> would no longer be associated with <code>ACEStart</code> process
+1. Instead, we will use the more convenient 4-argument form, and  also
+switch the <code>InfoACELevel</code> back to 3:
+<p>
+<pre>
+gap&gt; SetInfoACELevel(3);
+gap&gt; ACEStart(1, ACEGroupGenerators(1), ACERelators(1), [ a*b ]
+&gt;             : messages := 1);
+#I  ***
+#I  ***
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: A_5;
+#I  Group Generators: ab;
+#I  Group Relators: (a)^2, (b)^3, (ab)^5;
+#I  Subgroup Name: Id;
+#I  Subgroup Generators: ab;
+#I  Wo:1000000; Max:333331; Mess:1; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:0; No:3; Look:0; Com:10;
+#I  C:0; R:0; Fi:6; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+#I  AD: a=2 r=1 h=1 n=3; l=1 c=+0.00; m=2 t=2
+#I  SG: a=2 r=1 h=1 n=3; l=1 c=+0.00; m=2 t=2
+#I  RD: a=3 r=1 h=1 n=4; l=2 c=+0.00; m=3 t=3
+#I  RD: a=4 r=2 h=1 n=5; l=2 c=+0.00; m=4 t=4
+#I  RD: a=5 r=2 h=1 n=6; l=2 c=+0.00; m=5 t=5
+#I  RD: a=6 r=2 h=1 n=7; l=2 c=+0.00; m=6 t=6
+#I  RD: a=7 r=2 h=1 n=8; l=2 c=+0.00; m=7 t=7
+#I  RD: a=8 r=2 h=1 n=9; l=2 c=+0.00; m=8 t=8
+#I  RD: a=9 r=2 h=1 n=10; l=2 c=+0.00; m=9 t=9
+#I  CC: a=8 r=2 h=1 n=10; l=2 c=+0.00; d=0
+#I  RD: a=9 r=5 h=1 n=11; l=2 c=+0.00; m=9 t=10
+#I  RD: a=10 r=5 h=1 n=12; l=2 c=+0.00; m=10 t=11
+#I  RD: a=11 r=5 h=1 n=13; l=2 c=+0.00; m=11 t=12
+#I  RD: a=12 r=5 h=1 n=14; l=2 c=+0.00; m=12 t=13
+#I  RD: a=13 r=5 h=1 n=15; l=2 c=+0.00; m=13 t=14
+#I  RD: a=14 r=5 h=1 n=16; l=2 c=+0.00; m=14 t=15
+#I  CC: a=13 r=6 h=1 n=16; l=2 c=+0.00; d=0
+#I  CC: a=12 r=6 h=1 n=16; l=2 c=+0.00; d=0
+#I  INDEX = 12 (a=12 r=16 h=1 n=16; l=3 c=0.00; m=14 t=15)
+1
+</pre>
+<p>
+Observe that we used <code>ACERelators(1)</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.2">ACERelators</a>) to grab  the
+value  of  the  relators  we  had  defined  earlier.  We   also   used
+<code>ACEGroupGenerators(1)</code> (see&nbsp;<a href="CHAP006.htm#SSEC005.1">ACEGroupGenerators</a>) to  get  the  group
+generators.
+<p>
+The  run  ended  with  12  active   (see   Section&nbsp;<a href="CHAP003.htm#SECT005">Coset   Statistics Terminology</a>) coset numbers (<code>a=12</code>) after defining a total number  of
+15 coset numbers (<code>t=15</code>); the definitions occurred at the steps  with
+progress messages tagged by <code>AD:</code> (coset 1 application definition) and
+<code>SG:</code> (subgroup generator phase), and the 13 tagged by <code>RD:</code> (R  style
+definition). So there must have  been  3  coincidences:  observe  that
+there were 3 progress messages with a <code>CC:</code>  tag.  (See  Appendix&nbsp;<a href="CHAP00A.htm">The Meanings of ACE's Output Messages</a>.)
+<p>
+We can dump out the  statistics  accumulated  during  the  run,  using
+<code>ACEDumpStatistics</code>  (see&nbsp;<a href="CHAP006.htm#SSEC005.24">ACEDumpStatistics</a>),  which   <code>Info</code>s   the
+<font face="Gill Sans,Helvetica,Arial">ACE</font>  output  of  the  <code>statistics</code>  (see&nbsp;<a href="CHAP00D.htm#SSEC005.10">option  statistics</a>)   at
+<code>InfoACE</code> level 1.
+<p>
+<pre>
+gap&gt; ACEDumpStatistics();
+#I    #- ACE 3.001: Level 0 Statistics -
+#I  cdcoinc=0 rdcoinc=2 apcoinc=0 rlcoinc=0 clcoinc=0
+#I    xcoinc=2 xcols12=4 qcoinc=3
+#I    xsave12=0 s12dup=0 s12new=0
+#I    xcrep=6 crepred=0 crepwrk=0 xcomp=0 compwrk=0
+#I  xsaved=0 sdmax=0 sdoflow=0
+#I  xapply=1 apdedn=1 apdefn=1
+#I  rldedn=0 cldedn=0
+#I  xrdefn=1 rddedn=5 rddefn=13 rdfill=0
+#I  xcdefn=0 cddproc=0 cdddedn=0 cddedn=0
+#I    cdgap=0 cdidefn=0 cdidedn=0 cdpdl=0 cdpof=0
+#I    cdpdead=0 cdpdefn=0 cddefn=0
+#I    #---------------------------------
+</pre>
+<p>
+The statistic <code>qcoinc=3</code> states what we had already observed,  namely,
+that there  were  three  coincidences.  Of  these,  two  were  primary
+coincidences  (<code>rdcoinc=2</code>).  Since  <code>t=15</code>,   there   were   fourteen
+non-trivial coset number definitions; one was during  the  application
+of coset 1 to the subgroup generator (<code>apdefn=1</code>), and  the  remainder
+occurred during applications of the  coset  numbers  to  the  relators
+(<code>rddefn=13</code>). For more details on the meanings of the  variables  you
+will need to read the C code comments.
+<p>
+Now let us display  all  12  lines  of  the  coset  table  with  coset
+representatives.
+<p>
+<pre>
+gap&gt; ACEDisplayCosetTable([-12]);
+#I  CO: a=12 r=13 h=1 n=13; c=+0.00
+#I   coset |      b      B      a   order   rep've
+#I  -------+--------------------------------------
+#I       1 |      3      2      2
+#I       2 |      1      3      1       3   B
+#I       3 |      2      1      4       3   b
+#I       4 |      8      5      3       5   ba
+#I       5 |      4      8      6       2   baB
+#I       6 |      9      7      5       5   baBa
+#I       7 |      6      9      8       3   baBaB
+#I       8 |      5      4      7       5   bab
+#I       9 |      7      6     10       5   baBab
+#I      10 |     12     11      9       3   baBaba
+#I      11 |     10     12     12       2   baBabaB
+#I      12 |     11     10     11       3   baBabab
+#I  ------------------------------------------------------------
+</pre>
+<p>
+Note  how  the  pre-printout  compaction  phase  now  does  some  work
+(indicated  by  the  upper-case   <code>CO:</code>   tag),   since   there   were
+coincidences, and hence dead coset numbers. Note how <code>b</code> and <code>B</code>  head
+the first two columns,  since  <font face="Gill Sans,Helvetica,Arial">ACE</font>  requires  that  the  first  two
+columns  be  occupied  by  a  generator/inverse  pair  or  a  pair  of
+involutions. The <code>a</code> column is also the  <code>A</code>  column,  as  <code>a</code>  is  an
+involution.
+<p>
+We now use <code>ACEStandardCosetNumbering</code> to produce a <code>lenlex</code>  standard
+table within <font face="Gill Sans,Helvetica,Arial">ACE</font>, but note that this is only <code>lenlex</code> with  respect
+to  the  ordering   <code>b, a</code>   of   the   generators.   Then   we   call
+<code>ACEDisplayCosetTable</code> again to see  it.  Observe  that  at  both  the
+standardisation and coset table display steps a  compaction  phase  is
+invoked but on both occasions the lowercase <code>co:</code> tag  indicates  that
+nothing is done (all the recovery of dead coset numbers that could  be
+done was done earlier).
+<p>
+<pre>
+gap&gt; ACEStandardCosetNumbering();
+#I  co/ST: a=12 r=13 h=1 n=13; c=+0.00
+gap&gt; ACEDisplayCosetTable([-12]);
+#I  co: a=12 r=13 h=1 n=13; c=+0.00
+#I   coset |      b      B      a   order   rep've
+#I  -------+--------------------------------------
+#I       1 |      2      3      3
+#I       2 |      3      1      4       3   b
+#I       3 |      1      2      1       3   B
+#I       4 |      5      6      2       5   ba
+#I       5 |      6      4      7       5   bab
+#I       6 |      4      5      8       2   baB
+#I       7 |      8      9      5       5   baba
+#I       8 |      9      7      6       5   baBa
+#I       9 |      7      8     10       3   babaB
+#I      10 |     11     12      9       3   babaBa
+#I      11 |     12     10     12       3   babaBab
+#I      12 |     10     11     11       2   babaBaB
+#I  ------------------------------------------------------------
+</pre>
+<p>
+Of course, the table above is not <code>lenlex</code> with respect to  the  order
+of the generators we had originally given to <font face="Gill Sans,Helvetica,Arial">ACE</font>; to get  that,  we
+would have needed to specify <code>lenlex</code>  (see&nbsp;<a href="CHAP004.htm#SSEC011.4">option  lenlex</a>)  at  the
+enumeration  stage.  The  effect  of  the  <code>lenlex</code>  option   at   the
+enumeration stage is the following: behind the scenes it ensures  that
+the relator <code>a^2</code> is passed to <font face="Gill Sans,Helvetica,Arial">ACE</font> as <code>aa</code> and  then  it  sets  the
+option <code>asis</code> to 1; this bit of skulduggery stops <font face="Gill Sans,Helvetica,Arial">ACE</font> treating  <code>a</code>
+as an involution, allowing <code>a</code> and <code>A</code> (the inverse of <code>a</code>) to take up
+the first two columns of the coset table, effectively stopping  <font face="Gill Sans,Helvetica,Arial">ACE</font>
+from reordering the generators. To see what is passed  to  <font face="Gill Sans,Helvetica,Arial">ACE</font>,  at
+the enumeration stage, we set the <code>InfoACELevel</code> to 4,  but  since  we
+don't really want to see messages this time we set <code>messages := 0</code>.
+<p>
+<pre>
+gap&gt; SetInfoACELevel(4);
+gap&gt; ACEStart(1, ACEGroupGenerators(1), ACERelators(1), [ a*b ]
+&gt;             : messages := 0, lenlex);
+#I  ToACE&gt; group:ab;
+#I  ToACE&gt; relators:aa, b^3,a*b*a*b*a*b*a*b*a*b;
+#I  ToACE&gt; generators:a*b;
+#I  ToACE&gt; asis:1;
+#I  ToACE&gt; messages:0;
+#I  ToACE&gt; text:***;
+#I  ***
+#I  ToACE&gt; text:***;
+#I  ***
+#I  ToACE&gt; Start;
+#I  INDEX = 12 (a=12 r=17 h=1 n=17; l=3 c=0.00; m=15 t=16)
+1
+gap&gt; ACEStandardCosetNumbering();
+#I  ToACE&gt; standard;
+#I  CO/ST: a=12 r=13 h=1 n=13; c=+0.00
+gap&gt; # The capitalised `CO' indicates space was recovered during compaction
+gap&gt; ACEDisplayCosetTable([-12]);
+#I  ToACE&gt; print:-12;
+#I  ToACE&gt; text:------------------------------------------------------------;
+#I  co: a=12 r=13 h=1 n=13; c=+0.00
+#I   coset |      a      A      b      B   order   rep've
+#I  -------+---------------------------------------------
+#I       1 |      2      2      3      2
+#I       2 |      1      1      1      3       2   a
+#I       3 |      4      4      2      1       3   b
+#I       4 |      3      3      5      6       5   ba
+#I       5 |      7      7      6      4       5   bab
+#I       6 |      8      8      4      5       2   baB
+#I       7 |      5      5      8      9       5   baba
+#I       8 |      6      6      9      7       5   baBa
+#I       9 |     10     10      7      8       3   babaB
+#I      10 |      9      9     11     12       3   babaBa
+#I      11 |     12     12     12     10       3   babaBab
+#I      12 |     11     11     10     11       2   babaBaB
+#I  ------------------------------------------------------------
+</pre>
+<p>
+You may have noticed the use of <font face="Gill Sans,Helvetica,Arial">ACE</font>'s <code>text</code> option  several  times
+above; this just tells <font face="Gill Sans,Helvetica,Arial">ACE</font> to print the argument  given  to  <code>text</code>
+(as a comment). This is used by the <font face="Gill Sans,Helvetica,Arial">GAP</font> interface  as  a  sentinel;
+when the string appears in the <font face="Gill Sans,Helvetica,Arial">ACE</font>  output,  the  <font face="Gill Sans,Helvetica,Arial">GAP</font>  interface
+knows not to expect anything else.
+<p>
+<p>
+<h2><a name="SECT002">C.2 Emulating Sims</a></h2>
+<p><p>
+Here we consider the various <code>sims</code>  strategies  (see&nbsp;<a href="CHAP005.htm#SSEC001.8">option  sims</a>),
+with respect to duplicating Sims' example statistics of his strategies
+given in Section 5.5 of <a href="biblio.htm#Sim94"><cite>Sim94</cite></a>, and giving approximations of his
+even-numbered strategies.
+<p>
+In order to duplicate Sims' maximum active  coset  numbers  and  total
+coset numbers statistics, one needs to work with the  formal  inverses
+of the relators  and  subgroup  generators  from  <a href="biblio.htm#Sim94"><cite>Sim94</cite></a>,  since
+definitions are made from the front in Sims'  routines  and  from  the
+rear      in      <font face="Gill Sans,Helvetica,Arial">ACE</font>.      Also,      in      instances      where
+<code>IsACEGeneratorsInPreferredOrder(</code><var>gens</var><code>, </code><var>rels</var><code>)</code> returns <code>false</code>, for
+group generators <var>fgens</var> and relators <var>rels</var>, one will need  to  apply
+the <code>lenlex</code> option to stop <font face="Gill Sans,Helvetica,Arial">ACE</font> from re-ordering the generators and
+relators (see&nbsp;<a href="CHAP001.htm#SSEC002.3">IsACEGeneratorsInPreferredOrder</a> and&nbsp;<a href="CHAP004.htm#SSEC011.4">option  lenlex</a>).
+In general, we can match Sims' values for the <code>sims := 1</code> and <code>sims :=
+3</code> strategies  (the  R  style  and  R*  style  Sims  strategies  with
+<code>mendelsohn</code> off) and for the <code>sims :=  9</code>  (C  style)  strategy,  but
+sometimes we may not exactly match Sims' statistics for the  <code>sims  :=
+5</code> and <code>sims :=  7</code>  strategies  (the  R  style  and  R*  style  Sims
+strategies with <code>mendelsohn</code> on); Sims does not specify an  order  for
+the (Mendelsohn) processing of cycled relators and evidently  <font face="Gill Sans,Helvetica,Arial">ACE</font>'s
+processing order is different  to  the  one  Sims  used  in  his  CHLT
+algorithm to get his statistics (see&nbsp;<a href="CHAP004.htm#SSEC013.5">option mendelsohn</a>).
+<p>
+<strong>Note:</strong> 
+HLT as it appears in Table 5.5.1 of <a href="biblio.htm#Sim94"><cite>Sim94</cite></a> is achieved in <font face="Gill Sans,Helvetica,Arial">ACE</font>
+with the sequence ``<code>hlt, lookahead  :=  0</code>''  and  CHLT  is  (nearly)
+equivalent to  ``<code>hlt,  lookahead  :=  0,  mendelsohn</code>'';  also  Sims'
+<code></code><var>save</var><code> = false</code> equates to R style (<code>rt</code>  positive,  <code>ct  :=  0</code>)  in
+<font face="Gill Sans,Helvetica,Arial">ACE</font>, and <code></code><var>save</var><code> = true</code>, for Sims' HLT and CHLT,  equates  to  R*
+style (<code>rt</code> negative, <code>ct := 0</code>)  in  <font face="Gill Sans,Helvetica,Arial">ACE</font>.  Sims'  Felsch  strategy
+coincides with <font face="Gill Sans,Helvetica,Arial">ACE</font>'s <code>felsch := 0</code> strategy, i.e.&nbsp;<code>sims  :=  9</code>  is
+identical to <code>felsch := 0</code>. (See  the  options&nbsp;<a href="CHAP005.htm#SSEC001.5">option  hlt</a>,  <a href="CHAP004.htm#SSEC015.2">option lookahead</a>, <a href="CHAP004.htm#SSEC013.5">option mendelsohn</a>, <a href="CHAP004.htm#SSEC013.2">option ct</a>, <a href="CHAP004.htm#SSEC013.3">option rt</a>  and&nbsp;<a href="CHAP005.htm#SSEC001.3">option felsch</a>.)
+<p>
+The following duplicates the ``Total''  (<code>totcosets</code>  in  <font face="Gill Sans,Helvetica,Arial">ACE</font>)  and
+``Max.&nbsp;Active'' (<code>maxcosets</code> in <font face="Gill Sans,Helvetica,Arial">ACE</font>) statistics for Example&nbsp;5.2  of
+<a href="biblio.htm#Sim94"><cite>Sim94</cite></a>,  found  in  Sims'  Table&nbsp;5.5.3,  for  the  <code>sims  :=  3</code>
+strategy.
+<p>
+<pre>
+gap&gt; SetInfoACELevel(1); # No behind-the-scenes info. please
+gap&gt; F := FreeGroup("r", "s", "t");; r := F.1;; s := F.2;; t := F.3;;
+gap&gt; ACEStats([r, s, t], [(r^t*r^-2)^-1, (s^r*s^-2)^-1, (t^s*t^-2)^-1], []
+&gt;             : sims := 3);
+rec( index := 1, cputime := 0, cputimeUnits := "10^-2 seconds", 
+  activecosets := 1, maxcosets := 673, totcosets := 673 )
+</pre>
+<p>
+By replacing <code>sims := 3</code> with <code>sims := </code><var>i</var><code></code> for <var>i</var> equal to&nbsp;1,  5,  7
+or&nbsp;9, one may verify that for <var>i</var> equal to&nbsp;1  or&nbsp;9,  Sims'  statistics
+are again  duplicated,  and  observe  a  slight  variance  with  Sims'
+statistics for <var>i</var> equal to&nbsp;5 or&nbsp;7.
+<p>
+Now, we show how one can approximate any one of  Sims'  even-numbered
+strategies. Essentially, the idea is to start  an  interactive  <font face="Gill Sans,Helvetica,Arial">ACE</font>
+process using <code>ACEStart</code> (see&nbsp;<a href="CHAP006.htm#SSEC001.1">ACEStart</a>) with <code>sims := </code><var>i</var><code></code>, for  <var>i</var>
+equal to&nbsp;1, 3, 5, 7 or&nbsp;9, and <code>max</code> set to some low  value  <var>maxstart</var>
+so that the enumeration stops after only completing a few rows of  the
+coset table. Then, to  approximate  Sims'  strategy  <code></code><var>i</var><code>  +  1</code>,  one
+alternately  applies  <code>ACEStandardCosetNumbering</code>  and  <code>ACEContinue</code>,
+progressively increasing the value of <code>max</code> by some  value  <var>maxstep</var>.
+The general  algorithm  is  provided  by  the  <code>ACEEvenSims</code>  function
+following.
+<p>
+<pre>
+gap&gt; ACEEvenSims := function(fgens, rels, sgens, i, maxstart, maxstep)
+&gt;      local j;
+&gt;      j := ACEStart(fgens, rels, sgens : sims := i, max := maxstart);
+&gt;      while ACEStats(j).index = 0 do
+&gt;        ACEStandardCosetNumbering(j);
+&gt;        ACEContinue(j : max := ACEParameters(j).max + maxstep);
+&gt;      od;
+&gt;      return ACEStats(j);
+&gt;    end;;
+</pre>
+<p>
+It turns out that one can duplicate the Sims' strategy 4 statistics in
+Table&nbsp;5.5.3 of <a href="biblio.htm#Sim94"><cite>Sim94</cite></a>, with <code></code><var>i</var><code> = 3</code> (so that <code></code><var>i</var><code> + 1  =  4</code>),
+<code></code><var>maxstart</var><code> = 14</code> and <code></code><var>maxstep</var><code> = 50</code>:
+<p>
+<pre>
+gap&gt; ACEEvenSims([r, s, t], [(r^t*r^-2)^-1, (s^r*s^-2)^-1, (t^s*t^-2)^-1],
+&gt;                [], 3, 14, 50);
+rec( index := 1, cputime := 0, cputimeUnits := "10^-2 seconds", 
+  activecosets := 1, maxcosets := 393, totcosets := 393 )
+</pre>
+<p>
+Setting <code></code><var>maxstep</var><code> = 60</code> (and leaving the other parameters  the  same)
+also gives Sims' statistics, but <code></code><var>maxstart</var><code> = 64</code> with  <code></code><var>maxstep</var><code>  =
+80</code> does better:
+<p>
+<pre>
+gap&gt; ACEEvenSims([r, s, t], [(r^t*r^-2)^-1, (s^r*s^-2)^-1, (t^s*t^-2)^-1],
+&gt;                [], 3, 64, 80);
+rec( index := 1, cputime := 0, cputimeUnits := "10^-2 seconds", 
+  activecosets := 1, maxcosets := 352, totcosets := 352 )
+</pre>
+<p>
+Even though the (<code>lenlex</code>) standardisation steps in the above examples
+produce a significant improvement over the  <code>sims  :=  3</code>  statistics,
+this  does  not  happen  universally.  Sims  <a href="biblio.htm#Sim94"><cite>Sim94</cite></a>  gives  many
+examples  where  the  even-numbered  strategies  fail  to   show   any
+significant improvement over  the  odd-numbered  strategies,  and  one
+example (see&nbsp;Table&nbsp;5.5.7) where <code>sims := 2</code> gives a  performance  that
+is very much worse than any of the other Sims strategies. As with  any
+of the strategies, what works well for some groups may not work at all
+well with other groups. There are <strong>no</strong> general rules. It's a bit of  a
+game. Let's hope you win most of the time.
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP00B.htm">Previous</a>] [<a href ="CHAP00D.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>ACE manual<br>Januar 2006
+</address></body></html>

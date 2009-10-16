@@ -1,0 +1,20 @@
+#!/bin/sh
+#########################################################################
+##
+#W  make_doc        make IPCQ Package documentation
+##
+##  This shell script uses TeX, BibTeX and MakeIndex to  build  the .dvi,
+##  PostScript (commented out), PDF, and  HTML  (provided  you  have  tth
+##  and etc/convert.pl) documentation for the Package.
+##
+
+echo "TeXing documentation"
+tex manual
+bibtex manual
+tex manual; ../../../doc/manualindex manual
+tex manual
+pdftex manual; pdftex manual
+mkdir -p ../htm
+echo "Creating HTML documentation"
+../../../etc/convert.pl -t -c -n IPCQ . ../htm
+

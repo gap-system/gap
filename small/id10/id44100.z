@@ -3,7 +3,7 @@
 #W  id44100.z              GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id44100_z :=
-    "@(#)$Id$";
+    "@(#)$Id: id44100.z,v 1.1 2005/04/02 09:34:37 gap Exp $";
 
 ID_GROUP_TREE.next[44100]:=
 rec(

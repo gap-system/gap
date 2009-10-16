@@ -1,0 +1,15 @@
+.cvsignore
+gapmacro.tex
+manual.log
+manual.toc
+manual.lab
+manual.idx
+manual.aux
+manual.bbl
+manual.blg
+manual.ilg
+manual.ind
+manual.six
+manual.ps
+manual.pdf
+manual.dvi

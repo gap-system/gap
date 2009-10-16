@@ -2,14 +2,14 @@
 ##
 #W  xgap.tst                   GAP-4 library                  Max Neunhoeffer 
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: xgap.tst,v 4.9 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright 1999,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: xgap.tst,v 4.9 2005/05/05 15:04:16 gap Exp $");
 
 gap> f := FreeGroup(2); 
 <free group on the generators [ f1, f2 ]>
@@ -66,7 +66,7 @@ gap> g:=f/[f.1^2,f.2^3];;
 gap> g.1^5=g.1;
 true
 
-gap> STOP_TEST( "xgap.tst", 533900000 );
+gap> STOP_TEST( "xgap.tst",562000888);
 
 
 #############################################################################

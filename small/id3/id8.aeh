@@ -3,7 +3,7 @@
 #W  id8.aeh                GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id8_aeh :=
-    "@(#)$Id$";
+    "@(#)$Id: id8.aeh,v 1.1 1998/07/18 16:03:38 gap Exp $";
 
 ID_GROUP_TREE.next[8].next[1].next[138]:=
 rec(

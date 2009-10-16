@@ -2,7 +2,7 @@
 ##
 #W  magma.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: magma.gi,v 4.62 2005/08/24 14:01:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for magmas.
 ##
 Revision.magma_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: magma.gi,v 4.62 2005/08/24 14:01:29 gap Exp $";
 
 
 #############################################################################
@@ -519,11 +519,22 @@ end );
 #F  SubmagmaWithInverses( <M>, <gens> )
 #F                    . . . . . . .  submagma-with-inv. of <M> gen. by <gens>
 ##
-InstallGlobalFunction( SubmagmaWithInverses, function( M, gens )
-
+InstallGlobalFunction( SubmagmaWithInverses, function(arg)
+local M,gens,S;
+    M:=arg[1];
     if not IsMagmaWithInverses( M ) then
         Error( "<M> must be a magma-with-inverses" );
-    elif IsEmpty( gens ) then
+    fi;
+    if Length(arg)=1 then
+      S:=Objectify(NewType( FamilyObj(M),
+			    IsMagmaWithInverses
+			    and IsAttributeStoringRep), rec() );
+      SetParent(S,M);
+      return S;
+    else
+      gens:=arg[2];
+    fi;
+    if IsEmpty( gens ) then
         return SubmagmaWithInversesNC( M, gens );
     elif not IsHomogeneousList(gens)  then
         Error( "<gens> must be a homogeneous list of elements" );

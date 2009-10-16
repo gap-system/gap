@@ -2,7 +2,7 @@
 ##
 #W  wordlett.gi                  GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: wordlett.gi,v 4.17 2008/05/07 14:02:24 gap Exp $
 ##
 #Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -10,7 +10,7 @@
 ##  This  file contains  methods for   associative words  in letter
 ##  representation
 Revision.wordlett_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: wordlett.gi,v 4.17 2008/05/07 14:02:24 gap Exp $";
 
 LIB_CHAR_SINT:=function(n)
   if n<0 then n:=n+256;fi;
@@ -97,11 +97,29 @@ local n,t,i,l;
   return LetterRepAssocWord(w);
 end);
 
+# Earlier, seemingly slower method:
+# InstallMethod( ObjByExtRep, "letter rep family", true,
+#     [ IsAssocWordFamily and IsLetterWordsFamily, IsHomogeneousList ], 0,
+# function( F, e )
+# local n,i,l,g;
+#   l:=[];
+#   for i in [1,3..Length(e)-1] do
+#     g:=e[i];
+#     n:=e[i+1];
+#     if n<0 then
+#       g:=-g;
+#       n:=-n;
+#     fi;
+#     Append(l,ListWithIdenticalEntries(n,g));
+#   od;
+#   return AssocWordByLetterRep(F,l);
+# end);
+
 InstallMethod( ObjByExtRep, "letter rep family", true,
     [ IsAssocWordFamily and IsLetterWordsFamily, IsHomogeneousList ], 0,
 function( F, e )
 local n,i,l,g;
-  l:=[];
+  l:=AssocWordByLetterRep(F,[]);
   for i in [1,3..Length(e)-1] do
     g:=e[i];
     n:=e[i+1];
@@ -109,9 +127,9 @@ local n,i,l,g;
       g:=-g;
       n:=-n;
     fi;
-    Append(l,ListWithIdenticalEntries(n,g));
+    l := l * AssocWordByLetterRep(F,[g])^n;
   od;
-  return AssocWordByLetterRep(F,l);
+  return l;
 end);
 
 InstallOtherMethod( ObjByExtRep, "letter rep family,integers (ignored)", true,

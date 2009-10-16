@@ -2,7 +2,7 @@
 ##
 #W  semiquo.gi           GAP library          Andrew Solomon and Isabel Araujo
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: semiquo.gi,v 4.13 2002/04/15 10:05:22 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the implementation for quotient semigroups.
 ##
 Revision.semiquo_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: semiquo.gi,v 4.13 2002/04/15 10:05:22 sal Exp $";
 
 
 

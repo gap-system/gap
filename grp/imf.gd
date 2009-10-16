@@ -2,7 +2,7 @@
 ##
 #W  imf.gd                    GAP group library                Volkmar Felsch
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: imf.gd,v 1.1 2000/02/16 14:20:21 gap Exp $
 ##
 #Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  irreducible maximal finite integral matrix groups.
 ##
 Revision.imf_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: imf.gd,v 1.1 2000/02/16 14:20:21 gap Exp $";
 
 
 #############################################################################

@@ -1,0 +1,28 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  transemi.msk                GAP documentation                Andrew Solomon
+%%
+%A  @(#)$Id: transemi.msk,v 1.2 1999/08/25 15:58:09 andrews Exp $
+%%
+%Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+%%  to build the .tex file:
+%%  .../4.0/etc/buildman.pe -f config.transemi
+
+\PreliminaryChapter{Algorithms for Transformation Semigroups}
+
+TranSemi is the GAP 4 version of the GAP 3 package Monoid. 
+It is still under development.
+
+This package provides many specific methods for calculating 
+with transformation semigroups. Most of the methods
+occlude the generic methods in the GAP 4.1 library, with notable
+exceptions listed below, which are only available in TranSemi.
+
+
+\Declaration{DisplayTransformationSemigroup}
+\Declaration{GenSchutzenbergerGroup}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

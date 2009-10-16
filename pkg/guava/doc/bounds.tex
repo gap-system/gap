@@ -1,0 +1,744 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%A  bounds.tex               GUAVA documentation                Reinald Baart
+%A                                                       & Jasper Cramwinckel
+%A                                                          & Erik Roijackers
+%
+%H  $Id: bounds.tex,v 1.4 2004/12/20 21:26:05 gap Exp $
+%
+%Y  Copyright (C)  1995,  Vakgroep Algemene Wiskunde,  T.U. Delft,  Nederland
+%
+\Chapter{Bounds on Codes, Special Matrices and Miscellaneous Functions}
+
+In this chapter we describe functions that determine bounds on  the  size
+and minimum distance of codes (Section~"Bounds on codes"), functions that
+work  with  special  matrices  {\GUAVA}  needs  for  several  codes  (see
+Section~"Special  matrices  in  GUAVA"),  and   constructing   codes   or
+performing   calculations   with   codes   (see    Section~"Miscellaneous
+functions").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Bounds on codes}
+
+This  section describes the functions  that calculate estimates for upper
+bounds on the size and minimum distance  of codes. Several algorithms are
+known to compute a largest  number of words a   code can have with  given
+length and  minimum distance. It is important  however to understand that
+in some cases the true  upper bound is unknown.  A code which has a  size
+equal to  the calculated upper bound may  not  have been found.  However,
+codes that have a larger size do not exist.
+
+A second way to obtain bounds is a table. In {\GUAVA}, an extensive table
+is implemented for linear codes over  GF(2), GF(3) and GF(4). It contains
+bounds on the minimum distance for given  word length and dimension.  For
+binary codes, it contains  entries for word  length less than or equal to
+257. For  codes over $GF(3)$  and  $GF(4)$, it contains entries  for word
+length less than or equal to 130.
+
+Firstly, we describe functions that compute specific upper bounds on  the
+code    size     (see     "UpperBoundSingleton",     "UpperBoundHamming",
+"UpperBoundJohnson",    "UpperBoundPlotkin",    "UpperBoundElias"     and
+"UpperBoundGriesmer").
+
+Next we describe a function that computes {\GUAVA}'s best upper bound  on
+the code size (see "UpperBound").
+
+Then we describe two functions that compute a lower and  upper  bound  on
+the minimum distance  of  a  code  (see  "LowerBoundMinimumDistance"  and
+"UpperBoundMinimumDistance").
+
+Finally, we describe a function that returns a lower and upper  bound  on
+the minimum distance with given parameters and a description of  how  the
+bounds were obtained (see "BoundsMinimumDistance").
+
+\atindex{Bounds!Singleton}{@bounds!Singleton}
+\>UpperBoundSingleton( <n>, <d>, <q> )
+
+`UpperBoundSingleton' returns the  Singleton bound for  a code of  length
+<n>, minimum distance <d> over  a field of size  <q>. This bound is based
+on  the  shortening of codes.  By  shortening an $(n,  M, d)$  code $d-1$
+times,  an $(n-d+1,M,1)$   code results, with   $M  \leq  q^{n-d+1}$ (see
+"ShortenedCode"). Thus
+$$M \leq <q>^{<n>-<d>+1}$$
+
+\index{maximum distance separable}
+Codes that  meet this bound  are called *maximum distance separable* (see
+"IsMDSCode").
+
+\beginexample
+gap> UpperBoundSingleton(4, 3, 5);
+25
+gap> C := ReedSolomonCode(4,3);; Size(C);
+25
+gap> IsMDSCode(C);
+true 
+\endexample
+
+\atindex{Bounds!Hamming}{@bounds!Hamming}
+\index{Bounds!Sphere packing bound}
+\>UpperBoundHamming( <n>, <d>, <q> )
+
+The Hamming bound (also known as *sphere packing bound*) returns an upper
+bound on the size of a code  of length <n>, minimum  distance <d>, over a
+field of size <q>. The Hamming bound is obtained by dividing the contents
+of the entire space $GF(<q>) ^<n>$ by the contents  of a ball with radius
+$\lfloor(<d>-1) / 2\rfloor$.  As all  these balls are disjoint, they  can
+never contain more than the whole vector  space.  $$M \leq {<q>^<n> \over
+V(<n>,e)}$$ where $M$ is the maxmimum number  of codewords and $V(<n>,e)$
+is   equal  to   the   contents   of   a  ball     of radius  $e$    (see
+"SphereContent").  This bound is  useful for small  values of <d>.  Codes
+for which equality holds are called *perfect* (see "IsPerfectCode").
+
+\beginexample
+gap> UpperBoundHamming( 15, 3, 2 );
+2048
+gap> C := HammingCode( 4, GF(2) );
+a linear [15,11,3]1 Hamming (4,2) code over GF(2)
+gap> Size( C );
+2048 
+\endexample
+
+\atindex{Bounds!Johnson}{@bounds!Johnson}
+\>UpperBoundJohnson( <n>, <d> )
+
+The Johnson bound  is  an improved   version  of the Hamming  bound  (see
+"UpperBoundHamming").   In addition to the   Hamming bound, it takes into
+account the elements of the space outside the  balls of radius $e$ around
+the elements of the code. The Johnson bound only works for binary codes.
+
+\beginexample
+gap> UpperBoundJohnson( 13, 5 );
+77
+gap> UpperBoundHamming( 13, 5, 2);
+89   # in this case the Johnson bound is better 
+\endexample
+
+\atindex{Bounds!Plotkin}{@bounds!Plotkin}
+\>UpperBoundPlotkin( <n>, <d>, <q> )
+
+The function `UpperBoundPlotkin' calculates  the sum of the  distances of
+all ordered pairs of  different codewords. It  is based on the  fact that
+the  minimum distance is  at most equal to  the average distance. It is a
+good bound if the weights of the codewords do not differ much. It results
+in: $$M \leq {<d> \over {<d>-(1-1/<q>)<n>}}$$  $M$ is the maximum number
+of codewords.  In this case, <d>  must be larger than $(1-1/<q>)<n>$, but
+by shortening the code, the case $<d> \< (1-1/<q>)<n>$ is covered.
+
+\beginexample
+gap> UpperBoundPlotkin( 15, 7, 2 );
+32
+gap> C := BCHCode( 15, 7, GF(2) );
+a cyclic [15,5,7]5 BCH code, delta=7, b=1 over GF(2)
+gap> Size(C);
+32
+gap> WeightDistribution(C);
+[ 1, 0, 0, 0, 0, 0, 0, 15, 15, 0, 0, 0, 0, 0, 0, 1 ] 
+\endexample
+
+\atindex{Bounds!Elias}{@bounds!Elias}
+\>UpperBoundElias( <n>, <d>, <q> )
+
+The  Elias    bound  is   an  improvement  of   the  Plotkin   bound (see
+"UpperBoundPlotkin") for large codes. Subcodes  are used to decrease  the
+size  of the code, in this  case  the subcode of   all codewords within a
+certain ball. This bound is useful  for large codes with relatively small
+minimum distances.
+
+\beginexample
+gap> UpperBoundPlotkin( 16, 3, 2 );
+12288
+gap> UpperBoundElias( 16, 3, 2 );
+10280 
+\endexample
+
+\atindex{Bounds!Griesmer}{@bounds!Griesmer}
+\>UpperBoundGriesmer( <n>, <d>, <q> )
+
+The Griesmer  bound is valid only   for linear codes.  It is  obtained by
+counting the number of equal symbols in  each row of the generator matrix
+of the code. By omitting the coordinates in which all rows have a zero, a
+smaller code  results.  The Griesmer bound  is obtained by repeating this
+proces until a trivial code is left in the end.
+
+\beginexample
+gap> UpperBoundGriesmer( 13, 5, 2 );
+64
+gap> UpperBoundGriesmer( 18, 9, 2 );
+8        # the maximum number of words for a linear code is 8
+gap> Size( PuncturedCode( HadamardCode( 20, 1 ) ) );
+20       # this non-linear code has 20 elements 
+\endexample
+
+\index{Bounds!Upper Bound}
+\>UpperBound( <n>, <d>, <q> )
+
+`UpperBound' returns the best known upper bound $A(<n>,<d>)$ for the size
+of a code of length <n>, minimum  distance <d> over a  field of size <q>.
+The function `UpperBound' first checks for trivial cases (like $<d>=1$ or
+$<n>=<d>$) and if the value is in the  built-in table. Then it calculates
+the minimum value of the upper bound using the  methods of Singleton (see
+"UpperBoundSingleton"),  Hamming (see "UpperBoundHamming"), Johnson  (see
+"UpperBoundJohnson"), Plotkin  (see  "UpperBoundPlotkin")  and Elias (see
+"UpperBoundElias").  If the code is   binary, $A(<n>, 2*l-1) =  A(<n>+1,
+2*l)$, so the `UpperBound' takes the minimum of the values obtained from
+all methods for the parameters $(<n>, 2*l-1)$ and $(<n>+1, 2*l)$.
+
+\beginexample
+gap> UpperBound( 10, 3, 2 );
+85
+gap> UpperBound( 25, 9, 8 );
+1211778792827540 
+\endexample
+
+\>LowerBoundMinimumDistance( <C> )
+
+In this form, `LowerBoundMinimumDistance'  returns a lower bound for  the
+minimum distance of code <C>.
+
+\beginexample
+gap> C := BCHCode( 45, 7 );
+a cyclic [45,23,7..9]6..16 BCH code, delta=7, b=1 over GF(2)
+gap> LowerBoundMinimumDistance( C );
+7     # designed distance is lower bound for minimum distance 
+\endexample
+
+\>LowerBoundMinimumDistance( <n>, <k>, <F> )!{of codes over a field}
+
+In this  form, `LowerBoundMinimumDistance' returns a  lower bound for the
+minimum distance of  the best known linear  code of length <n>, dimension
+<k>   over  field <F>.   It  uses the   mechanism   explained in  section
+"BoundsMinimumDistance".
+
+\beginexample
+gap> LowerBoundMinimumDistance( 45, 23, GF(2) );
+10 
+\endexample
+
+\>UpperBoundMinimumDistance( <C> )
+
+In this form, `UpperBoundMinimumDistance'  returns an upper bound for the
+minimum distance of code <C>. For unrestricted codes, it just returns the
+word length. For linear codes, it takes the minimum of the possibly known
+value from the method of construction,  the weight of the generators, and
+the value from the table (see "BoundsMinimumDistance").
+
+\beginexample
+gap> C := BCHCode( 45, 7 );;
+gap> UpperBoundMinimumDistance( C );
+9 
+\endexample
+
+\>UpperBoundMinimumDistance( <n>, <k>, <F> )!{of codes over a field}
+
+In this form, `UpperBoundMinimumDistance' returns  an upper bound for the
+minimum distance of the  best known linear  code of length <n>, dimension
+<k>  over  field   <F>.  It  uses the    mechanism explained  in  section
+"BoundsMinimumDistance".
+
+\beginexample
+gap> UpperBoundMinimumDistance( 45, 23, GF(2) );
+11 
+\endexample
+
+\>BoundsMinimumDistance( <n>, <k>, <F> )
+
+The function  `BoundsMinimumDistance' calculates a  lower and upper bound
+for the minimum distance of an optimal  linear code with word length <n>,
+dimension <k> over field <F>. The function  returns a record with the two
+bounds and an explenation for  each bound. The  function `Display' can be
+used to show the explanations.
+
+The  values   for the  lower   and  upper   bound  are  obtained from   a
+table. {\GUAVA} has tables containing lower and upper bounds for $q=2 (n
+\leq 257), 3$ and $4 (n \leq 130)$.  These tables were derived from the
+table of Brouwer \& Verhoeff. For codes over  other fields and for larger
+word lengths, trivial bounds are used.
+
+The  resulting record can  be  used in the function `BestKnownLinearCode'
+(see "BestKnownLinearCode") to   construct a code  with minimum  distance
+equal to the lower bound.
+
+\beginexample
+gap> bounds := BoundsMinimumDistance( 7, 3 );; DisplayBoundsInfo( bounds );
+an optimal linear [7,3,d] code over GF(2) has d=4
+------------------------------------------------------------------------------
+Lb(7,3)=4, by shortening of:
+Lb(8,4)=4, u u+v construction of C1 and C2:
+Lb(4,3)=2, dual of the repetition code
+Lb(4,1)=4, repetition code
+------------------------------------------------------------------------------
+Ub(7,3)=4, Griesmer bound
+# The lower bound is equal to the upper bound, so a code with
+# these parameters is optimal.
+gap> C := BestKnownLinearCode( bounds );; Display( C );
+a linear [7,3,4]2..3 shortened code of
+a linear [8,4,4]2 U U+V construction code of
+U: a cyclic [4,3,2]1 dual code of
+   a cyclic [4,1,4]2 repetition code over GF(2)
+V: a cyclic [4,1,4]2 repetition code over GF(2)
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special matrices in GUAVA}
+
+This section explains functions  that work with special matrices {\GUAVA}
+needs for several codes.
+
+Firstly,   we   describe   some   matrix   generating   functions    (see
+"KrawtchoukMat", "GrayMat", "SylvesterMat", "HadamardMat" and "MOLS").
+
+Next we describe two functions regarding a standard form of matrices (see
+"PutStandardForm" and "IsInStandardForm").
+
+Then we describe functions that return a matrix after a manipulation (see
+"PermutedCols",             "VerticalConversionFieldMat"              and
+"HorizontalConversionFieldMat").
+
+Finally, we describe functions  that  do  some  tests  on  matrices  (see
+"IsLatinSquare" and "AreMOLS").
+
+\>KrawtchoukMat( <n> , <q> )
+
+`KrawtchoukMat' returns  the   $<n>+1$  by $<n>+1$   matrix  $K=(k_{ij})$
+defined by $k_{ij}=K_i(j)$ for $i,j=0,...,n$.  $K_i(j)$ is the Krawtchouk
+number (see "Krawtchouk"). <n> must be a positive integer and <q> a prime
+power.  The Krawtchouk  matrix is used  in  the *MacWilliams identities*,
+defining the relation between the weight distribution of a code of length
+<n>  over  a  field  of  size <q>,  and  its  dual code.    Each call  to
+`KrawtchoukMat' returns a new matrix, so it is safe to modify the result.
+
+\beginexample
+gap> PrintArray( KrawtchoukMat( 3, 2 ) );
+[ [   1,   1,   1,   1 ],
+  [   3,   1,  -1,  -3 ],
+  [   3,  -1,  -1,   3 ],
+  [   1,  -1,   1,  -1 ] ]
+gap> C := HammingCode( 3 );; a := WeightDistribution( C );
+[ 1, 0, 0, 7, 7, 0, 0, 1 ]
+gap> n := WordLength( C );; q := Size( LeftActingDomain( C ) );;
+gap> k := Dimension( C );;
+gap> q^( -k ) * KrawtchoukMat( n, q ) * a;
+[ 1, 0, 0, 0, 7, 0, 0, 0 ]
+gap> WeightDistribution( DualCode( C ) );
+[ 1, 0, 0, 0, 7, 0, 0, 0 ] 
+\endexample
+
+\>GrayMat( <n>, <F> )
+
+`GrayMat'  returns a list   of all different  vectors  (see `Vectors') of
+length <n>  over the   field <F>,  using  Gray ordening.  <n> must   be a
+positive integer.   This order has  the property that  subsequent vectors
+differ in exactly one  coordinate. The first  vector  is always the  null
+vector. Each  call to `GrayMat' returns  a new matrix, so  it  is safe to
+modify the result.
+
+\beginexample
+gap> GrayMat(3);
+[ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), Z(2)^0 ],
+  [ 0*Z(2), Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0, 0*Z(2) ],
+  [ Z(2)^0, Z(2)^0, 0*Z(2) ], [ Z(2)^0, Z(2)^0, Z(2)^0 ],
+  [ Z(2)^0, 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2), 0*Z(2) ] ]
+gap> G := GrayMat( 4, GF(4) );; Length(G);
+256          # the length of a GrayMat is always $q^n$
+gap> G[101] - G[100];
+[ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ] 
+\endexample
+
+\>SylvesterMat( <n> )
+
+`SylvesterMat' returns the <n> by <n> Sylvester matrix of order <n>. This
+is a special case of the  Hadamard matrices (see "HadamardMat"). For this
+construction, <n>  must be  a power of  $2$. Each  call to `SylvesterMat'
+returns a new matrix, so it is safe to modify the result.
+
+\beginexample
+gap> PrintArray(SylvesterMat(2));
+[ [   1,   1 ],
+  [   1,  -1 ] ]
+gap> PrintArray( SylvesterMat(4) );
+[ [   1,   1,   1,   1 ],
+  [   1,  -1,   1,  -1 ],
+  [   1,   1,  -1,  -1 ],
+  [   1,  -1,  -1,   1 ] ] 
+\endexample
+
+\>HadamardMat( <n> )
+
+`HadamardMat' returns a Hadamard matrix  of order <n>. This  is an <n> by
+<n> matrix with the property that the matrix  multiplied by its transpose
+returns <n> times the identity matrix. This is  only possible for $<n>=1,
+<n>=2$ or in cases where <n> is a multiple of $4$. If the matrix does not
+exist or is not known, `HadamardMat' returns  an error. A large number of
+construction methods  is known  to create  these  matrices for  different
+orders. `HadamardMat' makes use of  two construction methods (among which
+the Sylvester   construction (see "SylvesterMat")).   These methods cover
+most of the possible  Hadamard matrices, although some special algorithms
+have not been implemented yet. The following orders less  than 100 do not
+have an implementation for a Hadamard  matrix in {\GUAVA}:$ 28, 36, 52,
+76, 92.$
+
+\beginexample
+gap> C := HadamardMat(8);; PrintArray(C);
+[ [   1,   1,   1,   1,   1,   1,   1,   1 ],
+  [   1,  -1,   1,  -1,   1,  -1,   1,  -1 ],
+  [   1,   1,  -1,  -1,   1,   1,  -1,  -1 ],
+  [   1,  -1,  -1,   1,   1,  -1,  -1,   1 ],
+  [   1,   1,   1,   1,  -1,  -1,  -1,  -1 ],
+  [   1,  -1,   1,  -1,  -1,   1,  -1,   1 ],
+  [   1,   1,  -1,  -1,  -1,  -1,   1,   1 ],
+  [   1,  -1,  -1,   1,  -1,   1,   1,  -1 ] ]
+gap> C * TransposedMat(C) = 8 * IdentityMat( 8, 8 );
+true 
+\endexample
+
+\atindex{Mutually Orthogonal Latin Squares}{@mutually orthogonal Latin squares}
+\>MOLS( <q> )
+\>MOLS( <q>, <n> )
+
+`MOLS'   returns a   list of  <n>    *Mutually Orthogonal Latin  Squares*
+(*MOLS*). A *Latin   square* of order <q> is   a <q> by <q>  matrix whose
+entries are from a  set $F_{<q>}$ of <q>  distinct symbols ({\GUAVA} uses
+the integers from 0  to <q>) such that each   row and each column  of the
+matrix contains each symbol exactly once.
+
+A set of Latin squares is a set of MOLS  if and only  if for each pair of
+Latin squares in this set, every ordered pair of elements that are in the
+same position in these matrices occurs exactly once.
+
+<n> must be less than <q>.  If <n> is omitted, two  MOLS are returned. If
+<q> is not a prime power,  at most 2 MOLS  can be created. For all values
+of  <q> with  $<q>   > 2$ and $<q>    \neq 6$, a   list  of  MOLS can  be
+constructed. {\GUAVA} however  does not yet  construct MOLS for $<q>$ mod
+$4 = 2$.  If  it  is not possible   to construct <n> MOLS,  the  function
+returns `false'.
+
+MOLS are used to create <q>-ary codes (see "MOLSCode").
+
+\beginexample
+gap> M := MOLS( 4, 3 );;PrintArray( M[1] );
+[ [  0,  1,  2,  3 ],
+  [  1,  0,  3,  2 ],
+  [  2,  3,  0,  1 ],
+  [  3,  2,  1,  0 ] ]
+gap> PrintArray( M[2] );
+[ [  0,  2,  3,  1 ],
+  [  1,  3,  2,  0 ],
+  [  2,  0,  1,  3 ],
+  [  3,  1,  0,  2 ] ]
+gap> PrintArray( M[3] );
+[ [  0,  3,  1,  2 ],
+  [  1,  2,  0,  3 ],
+  [  2,  1,  3,  0 ],
+  [  3,  0,  2,  1 ] ]
+gap> MOLS( 12, 3 );
+false 
+\endexample
+
+\>PutStandardForm( <M> )
+\>PutStandardForm( <M>, <idleft> )
+
+`PutStandardForm' puts   a matrix <M>  in standard  form, and returns the
+permutation needed to do so. <idleft> is a boolean that sets the position
+of the identity matrix in <M>. If <idleft> is set to `true', the identity
+matrix is put in the left side of <M>. Otherwise,  it is put at the right
+side. The default for <idleft> is `true'.
+
+The function `BaseMat' also returns a similar standard form, but does not
+apply column  permutations. The  rows of the  matrix  still span the same
+vector space after `BaseMat',  but after calling `PutStandardForm',  this
+is not necessarily true.
+
+\beginexample
+gap> M := Z(2)*[[1,0,0,1],[0,0,1,1]];; PrintArray(M);
+[ [    Z(2),  0*Z(2),  0*Z(2),    Z(2) ],
+  [  0*Z(2),  0*Z(2),    Z(2),    Z(2) ] ]
+gap> PutStandardForm(M);                   # identity at the left side
+(2,3)
+gap> PrintArray(M);
+[ [    Z(2),  0*Z(2),  0*Z(2),    Z(2) ],
+  [  0*Z(2),    Z(2),  0*Z(2),    Z(2) ] ]
+gap> PutStandardForm(M, false);            # identity at the right side
+(1,4,3)
+gap> PrintArray(M);
+[ [  0*Z(2),    Z(2),    Z(2),  0*Z(2) ],
+  [  0*Z(2),    Z(2),  0*Z(2),    Z(2) ] ]
+\endexample
+
+\>IsInStandardForm( <M> )
+\>IsInStandardForm( <M>, <idleft> )
+
+`IsInStandardForm' determines if  <M> is in  standard form. <idleft> is a
+boolean that indicates  the position of the  identity  matrix in  <M>. If
+<idleft> is `true', `IsInStandardForm'  checks if the identity matrix  is
+at  the  left side of  <M>, otherwise  if it  is  at  the right side. The
+default for <idleft>  is `true'. The elements  of <M> may be elements  of
+any field.  To put a matrix  in standard form, use `PutStandardForm' (see
+"PutStandardForm").
+
+\beginexample
+gap> IsInStandardForm(IdentityMat(7, GF(2)));
+true
+gap> IsInStandardForm([[1, 1, 0], [1, 0, 1]], false);
+true
+gap> IsInStandardForm([[1, 3, 2, 7]]);
+true
+gap> IsInStandardForm(HadamardMat(4));
+false 
+\endexample
+
+\>PermutedCols( <M>, <P> )
+
+`PermutedCols' returns a matrix <M> with a permutation <P> applied to its
+columns.
+
+\beginexample
+gap> M := [[1,2,3,4],[1,2,3,4]];; PrintArray(M);
+[ [  1,  2,  3,  4 ],
+  [  1,  2,  3,  4 ] ]
+gap> PrintArray(PermutedCols(M, (1,2,3)));
+[ [  3,  1,  2,  4 ],
+  [  3,  1,  2,  4 ] ] 
+\endexample
+
+\>VerticalConversionFieldMat( <M>, <F> )
+
+`VerticalConversionFieldMat'  returns the matrix   <M> with  its elements
+converted from a field $<F>=GF(q^m)$, $q$ prime, to a field $GF(q)$. Each
+element is  replaced by its  representation over the latter field, placed
+vertically in the matrix.
+
+If <M>  is a $k$ by  $n$ matrix, the result is   a $k*m$ by  $n$ matrix,
+since each element of $GF(q^m)$  can be represented  in $GF(q)$ using $m$
+elements.
+
+\beginexample
+gap> M := Z(9)*[[1,2],[2,1]];; PrintArray(M);
+[ [    Z(3^2),  Z(3^2)^5 ],
+  [  Z(3^2)^5,    Z(3^2) ] ]
+gap> DefaultField( Flat(M) );
+GF(3^2)
+gap> VCFM := VerticalConversionFieldMat( M, GF(9) );; PrintArray(VCFM);
+[ [  0*Z(3),  0*Z(3) ],
+  [  Z(3)^0,    Z(3) ],
+  [  0*Z(3),  0*Z(3) ],
+  [    Z(3),  Z(3)^0 ] ]
+gap> DefaultField( Flat(VCFM) );
+GF(3) 
+\endexample
+
+A similar function is `HorizontalConversionFieldMat' (see
+"HorizontalConversionFieldMat").
+
+\>HorizontalConversionFieldMat( <M>, <F> )
+
+`HorizontalConversionFieldMat'  returns the matrix  <M> with its elements
+converted from a field $<F>=GF(q^m)$, $q$ prime, to a field $GF(q)$. Each
+element  is replaced by its  representation over the latter field, placed
+horizontally in the matrix.
+
+If <M>  is  a  $k$ by  $n$   matrix, the  result is a   $k*m$ by  $n*m$
+matrix.  The new word length  of the resulting   code is equal to $n*m$,
+because each element of $GF(q^m)$ can be represented in $GF(q)$ using $m$
+elements. The new dimension  is equal  to $k*m$  because the new  matrix
+should be a basis for the same number of vectors as the old one.
+
+`ConversionFieldCode' uses horizontal conversion  to convert a code  (see
+"ConversionFieldCode").
+
+\beginexample
+gap> M := Z(9)*[[1,2],[2,1]];; PrintArray(M);
+[ [    Z(3^2),  Z(3^2)^5 ],
+  [  Z(3^2)^5,    Z(3^2) ] ]
+gap> DefaultField( Flat(M) );
+GF(3^2)
+gap> HCFM := HorizontalConversionFieldMat(M, GF(9));; PrintArray(HCFM);
+[ [  0*Z(3),  Z(3)^0,  0*Z(3),    Z(3) ],
+  [  Z(3)^0,  Z(3)^0,    Z(3),    Z(3) ],
+  [  0*Z(3),    Z(3),  0*Z(3),  Z(3)^0 ],
+  [    Z(3),    Z(3),  Z(3)^0,  Z(3)^0 ] ]
+gap> DefaultField( Flat(HCFM) );
+GF(3) 
+\endexample
+
+A similar function is `VerticalConversionFieldMat' (see
+"VerticalConversionFieldMat").
+
+\>IsLatinSquare( <M> )
+
+`IsLatinSquare' determines if a matrix <M> is a latin square. For a latin
+square of size  $n$ by $n$,  each row  and  each column contains  all the
+integers $1,\dots,n$ exactly once.
+
+\beginexample
+gap> IsLatinSquare([[1,2],[2,1]]);
+true
+gap> IsLatinSquare([[1,2,3],[2,3,1],[1,3,2]]);
+false 
+\endexample
+
+\>AreMOLS( <L> )
+
+`AreMOLS' determines  if <L>   is a list    of mutually orthogonal  latin
+squares (MOLS). For each pair of latin squares in this list, the function
+checks if each ordered pair of elements that  are in the same position in
+these matrices occurs exactly once. The function `MOLS' creates MOLS (see
+"MOLS").
+
+\beginexample
+gap> M := MOLS(4,2);
+[ [ [ 0, 1, 2, 3 ], [ 1, 0, 3, 2 ], [ 2, 3, 0, 1 ], [ 3, 2, 1, 0 ] ],
+  [ [ 0, 2, 3, 1 ], [ 1, 3, 2, 0 ], [ 2, 0, 1, 3 ], [ 3, 1, 0, 2 ] ] ]
+gap> AreMOLS(M);
+true 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Miscellaneous functions}
+
+In  this  section  we  describe  several  functions  {\GUAVA}  uses   for
+constructing codes or performing calculations with codes.
+
+\>SphereContent( <n>, <t>, <F> )
+
+`SphereContent' returns the  content of a   ball of radius <t>  around an
+arbitrary  element of the vectorspace $<F>^<n>$.  This is the cardinality
+of  the set of    all elements of  $<F>^<n>$   that are at  distance (see
+"DistanceCodeword")  less  than  or   equal to <t>   from  an  element of
+$<F>^<n>$.
+
+In the context of codes, the function  is used to  determine if a code is
+perfect. A code is perfect if spheres  of radius $t$ around all codewords
+contain exactly the whole vectorspace, where  $t$ is the number of errors
+the code can correct.
+
+\beginexample
+gap> SphereContent( 15, 0, GF(2) );
+1    # Only one word with distance 0, which is the word itself
+gap> SphereContent( 11, 3, GF(4) );
+4984
+gap> C := HammingCode(5);
+a linear [31,26,3]1 Hamming (5,2) code over GF(2)
+#the minimum distance is 3, so the code can correct one error
+gap> ( SphereContent( 31, 1, GF(2) ) * Size(C) ) = 2 ^ 31;
+true 
+\endexample
+
+\>Krawtchouk( <k>, <i>, <n>, <q> )
+
+`Krawtchouk' returns the Krawtchouk number $K_{<k>}(<i>)$.  <q> must be a
+primepower, <n> must  be a positive integer,  <k> must  be a non-negative
+integer less  then  or equal to   <n> and <i> can   be any  integer. (See
+"KrawtchoukMat"). This number is the value at $x=i$ of the 
+polynomial 
+$$
+K_k^{n,q}(x)
+=\sum_{j=0}^n (-1)^j(q-1)^{k-j}b(x,j)b(n-x,k-j),
+$$
+where $b(v,u)=u!/(v!(v-u)!)$ is the binomial coefficient if $u,v$ are
+integers. For more properties of these polynomials,
+see \cite{MS83}.
+
+\beginexample
+gap> Krawtchouk( 2, 0, 3, 2);
+3 
+\endexample
+
+\>PrimitiveUnityRoot( <F>, <n> )
+
+`PrimitiveUnityRoot'  returns a *primitive  <n>th  root of  unity* in  an
+extension  field  of <F>. This  is a  finite  field element  <a> with the
+property $<a>^<n>=1 $ in <F>, and <n> is the smallest integer such that
+this equality holds.
+
+\beginexample
+gap> PrimitiveUnityRoot( GF(2), 15 );
+Z(2^4)
+gap> last^15;
+Z(2)^0
+gap> PrimitiveUnityRoot( GF(8), 21 );
+Z(2^6)^3 
+\endexample
+
+\>ReciprocalPolynomial( <P> )
+
+`ReciprocalPolynomial' returns the  *reciprocal* of  polynomial <P>. This
+is a polynomial   with coefficients of <P>   in the reverse  order. So if
+$<P>=a_0 + a_1 X +  ... + a_{<n>}  X^{<n>}$, the reciprocal polynomial is
+$<P>'=a_{<n>} + a_{<n>-1} X + ... + a_0 X^{<n>}$.
+
+\beginexample
+gap> P := UnivariatePolynomial( GF(3), Z(3)^0 * [1,0,1,2] );
+Z(3)^0+x_1^2-x_1^3
+gap> RecP := ReciprocalPolynomial( P );
+-Z(3)^0+x_1+x_1^3
+gap> ReciprocalPolynomial( RecP ) = P;
+true 
+\endexample
+
+\>ReciprocalPolynomial( <P> , <n> )
+
+In  this form, the number  of coefficients of  <P> is 
+assumed to be less than or equal to <n>+1  
+(with   zero  coefficients  added in the  highest
+degrees, if necessary). 
+Therefore, the  reciprocal polynomialalso has  degree
+<n>+1.
+
+\beginexample
+gap> P := UnivariatePolynomial( GF(3), Z(3)^0 * [1,0,1,2] );
+Z(3)^0+x_1^2-x_1^3
+gap> ReciprocalPolynomial( P, 6 );
+-x_1^3+x_1^4+x_1^6
+\endexample
+
+
+\>CyclotomicCosets( <q>, <n> )
+
+`CyclotomicCosets'  returns the cyclotomic cosets  of <q> modulo <n>. <q>
+and <n> must  be relatively prime. Each  of the elements  of the returned
+list is a list of integers that belong  to  one  cyclotomic  coset.  
+A $q$-cyclotomic coset of $s$ mod $n$ is a set of the
+form $\{s,sq,sq^2,...,sq^{r-1}\}$, where $r>0$ is the smallest
+integer such that $sq^r-s$ is $0$ mod $n$. In other words, each
+coset contains all multiplications of the *coset representative* by  <q>,
+modulo <n>. The coset representative is the smallest integer  that  isn't
+in the previous cosets.
+
+\beginexample
+gap> CyclotomicCosets( 2, 15 );
+[ [ 0 ], [ 1, 2, 4, 8 ], [ 3, 6, 12, 9 ], [ 5, 10 ],
+  [ 7, 14, 13, 11 ] ]
+gap> CyclotomicCosets( 7, 6 );
+[ [ 0 ], [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ] ] 
+\endexample
+
+\>WeightHistogram( <C> )
+\>WeightHistogram( <C>, <h> )
+
+The   function `WeightHistogram'  plots  a histogram   of weights in code
+<C>. The maximum   length of a column  is  <h>. Default value  for <h> is
+$1/3$ of the  size of the  screen. The number  that appears at the top of
+the histogram is the maximum value of the list of weights.
+
+\beginexample
+gap> H := HammingCode(2, GF(5));
+a linear [6,4,3]1 Hamming (2,5) code over GF(5)
+gap> WeightDistribution(H);
+[ 1, 0, 0, 80, 120, 264, 160 ]
+gap> WeightHistogram(H);
+264----------------
+               *
+               *
+               *
+               *
+               *  *
+            *  *  *
+         *  *  *  *
+         *  *  *  *
++--------+--+--+--+--
+0  1  2  3  4  5  6 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

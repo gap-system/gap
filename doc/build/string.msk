@@ -3,7 +3,7 @@
 %A  string.msk                  GAP documentation            Martin Schoenert
 %A                                                           Alexander Hulpke
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: string.msk,v 1.36 2006/08/16 10:21:03 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -271,26 +271,6 @@ gap> ll;  IsStringRep( ll );
 true
 \endexample
 
-\>EmptyString( <len> ) F
-
-\>ShrinkAllocationString( <str> )
-
-The function `EmptyString' returns an empty string in
-internal representation which
-has enough memory allocated for <len> characters. This can be useful
-for creating and filling a string with a known number of entries.
-
-The function `ShrinkAllocationString' gives back to {\GAP}s
-memory manager the physical memory which is allocated for the string
-<str> in internal representation but not needed by its current
-number of characters.
-
-These functions are intended for saving some of {\GAP}s memory in certain
-situations, see the explanations and the example for the analogeous
-functions `EmptyPlist' and `ShrinkAllocationPlist'
-for plain lists.
-
-
 \Declaration{CharsFamily}
 
 
@@ -421,19 +401,6 @@ gap> s;
 \endexample
 
 \Declaration{NormalizedWhitespace}
-
-\>RemoveCharacters( <string>, <chars> )
-
-Both arguments must be strings. This function efficiently removes all 
-characters given in <chars> from <string>.
-
-\beginexample
-gap> s := "ab c\ndef\n\ng    h i .\n";
-"ab c\ndef\n\ng    h i .\n"
-gap> RemoveCharacters(s, " \n\t\r"); # remove all whitespace characters
-gap> s;
-"abcdefghi."
-\endexample
 
 For the possibility to print {\GAP} objects to strings, see~"String Streams".
 
@@ -601,6 +568,36 @@ gap> SecondsDMYhms([ 9, 9, 2001, 1, 46, 40 ]);
 gap> DMYhmsSeconds(-1000000000);
 [ 24, 4, 1938, 22, 13, 20 ]
 \endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Obtaining LaTeX Representations of Objects}
+
+\>LaTeX( <obj1>, <obj2>... ) F
+
+Returns a LaTeX string describing the objects <obj1>, <obj2>, ... .
+This string can for example be pasted to a LaTeX file, or one can use
+it in composing a temporary LaTeX file, which is intended for being LaTeX'ed
+afterwards from within {\GAP}.
+
+\beginexample
+gap> LaTeX(355/113);
+"\\frac{355}{113}%\n"
+gap> LaTeX(Z(9)^5);
+"Z(3^{2})^{5}%\n"
+gap> Print(LaTeX([[1,2,3],[4,5,6],[7,8,9]]));
+\left(\begin{array}{rrr}%
+1&2&3\\%
+4&5&6\\%
+7&8&9\\%
+\end{array}\right)%
+\endexample
+
+\>LaTeXObj( <obj> ) O
+
+The function `LaTeX' actually calls the operation `LaTeXObj' for each
+argument. By installing special methods for this operation, it is possible
+to achieve special LaTeX'ing behavior for certain objects
+(see chapter~"prg:Method Selection" in the Programmer's Manual).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

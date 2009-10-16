@@ -1,0 +1,53 @@
+\begin{thebibliography}{O{\accent19{}B}r95}
+
+\bibitem[HN80]{HN80}
+George Havas and M[ichael]~F. Newman.
+\newblock Application of computers to questions like those of {Burnside}.
+\newblock In J[ens]~L. Mennicke, editor, {\em Burnside groups, Proceedings of a
+  workshop, Bielefeld, Germany, 1977}, volume 806 of {\em Lecture Notes in
+  Math.}, pages 211--230. Springer, Berlin, Heidelberg and New York, 1980.
+
+\bibitem[New77]{New77}
+M[ichael]~F. Newman.
+\newblock Determination of groups of prime-power order.
+\newblock In R.~A. Bryce, J.~Cossey, and M[ichael]~F. Newman, editors, {\em
+  Group theory, Proc. Miniconf., Austral. Nat. Univ., Canberra, 1975}, volume
+  573 of {\em Lecture Notes in Math.}, pages 73--84. Springer, Berlin,
+  Heidelberg and New York, 1977.
+
+\bibitem[O{\accent19{}B}r90]{OBr90}
+E[amonn]~A. O{\accent19{}B}rien.
+\newblock The $p$-group generation algorithm.
+\newblock {\em J. Symbolic Comput.}, 9:677--698, 1990.
+
+\bibitem[O{\accent19{}B}r94]{OBr94}
+E[amonn]~A. O{\accent19{}B}rien.
+\newblock Isomorphism testing for $p$-groups.
+\newblock {\em J. Symbolic Comput.}, 17 (1):133--147, 1994.
+
+\bibitem[O{\accent19{}B}r95]{OBr95}
+E[amonn]~A. O{\accent19{}B}rien.
+\newblock Computing automorphism groups of $p$-groups.
+\newblock In Wieb Bosma and Alf van~der Poorten, editors, {\em Computational
+  Algebra Number and Number Theory}, pages 83--90. (Sydney, 1992), Kluwer
+  Academic Publishers, Dordrecht, 1995.
+
+\bibitem[VL84]{Vau84}
+M[ichael]~R. Vaughan-Lee.
+\newblock An aspect of the {Nilpotent Quotient Algorithm}.
+\newblock In Michael~D. Atkinson, editor, {\em Computational Group Theory,
+  Proceedings LMS Symposium on Computational Group Theory, Durham 1982}, pages
+  75--84. Academic Press, 1984.
+
+\bibitem[VL90a]{Vau90b}
+M[ichael]~R. Vaughan-Lee.
+\newblock Collection from the left.
+\newblock {\em J. Symbolic Comput.}, 9:725--733, 1990.
+
+\bibitem[VL90b]{Vau90a}
+M[ichael]~R. Vaughan-Lee.
+\newblock {\em The restricted {Burnside} problem}, volume~5 of {\em London
+  Math. Soc. Monographs}.
+\newblock Oxford University Press, 1990.
+
+\end{thebibliography}

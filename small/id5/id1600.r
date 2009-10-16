@@ -3,7 +3,7 @@
 #W  id1600.r               GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id1600_r :=
-    "@(#)$Id$";
+    "@(#)$Id: id1600.r,v 1.1 2000/01/23 21:55:20 gap Exp $";
 
 ID_GROUP_TREE.next[1600].next[18]:=
 rec(

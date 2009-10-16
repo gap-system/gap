@@ -1,0 +1,404 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  hints.tex              GAP documentation                  Greg Gamble
+%%
+%H  $Id: hints.tex,v 4.7 2006/01/31 11:18:12 gap Exp $
+%%
+%Y  Copyright (C) 2001, School of Math & Comp. Sci., St Andrews, Scotland
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Hints for writing a GAP Package}
+
+The {\Example} package is intended to be a prototype for a package.  Here
+we describe just what features one should emulate when writing one's  own
+{\GAP} package for popular consumption, and a few pointers as to where to
+go for more information. Much of what is written here is amplified in the
+section "ext:Writing a GAP Package" in the Extending {\GAP} Manual.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Structure of a GAP Package}
+
+This  section  is  intended  to  amplify  the  recommendations  made   in
+Section~"ext:The Files of a GAP Package" of the Extending {\GAP} Manual.
+
+A {\GAP} package should have an alphanumeric name (<package-name>,  say);
+mixed case is fine, but there should  be  no  whitespace.  The  directory
+<package-dir> containing the files of package  <package-name>  should  be
+just  <package-name>  converted  to  lowercase  (the   restriction   that
+<package-dir> must contain only lowercase characters may  change  in  the
+future).
+
+The directory  <package-dir>  should  be  a  subdirectory  of  `pkg'  and
+preferably should have the following structure  (below,  a  trailing  `/'
+distinguishes directories from ordinary files):
+
+\){\kernttindent}<package-dir>/
+\){\kernttindent}\ \ README
+\){\kernttindent}\ \ configure
+\){\kernttindent}\ \ Makefile.in
+\){\kernttindent}\ \ PackageInfo.g
+\){\kernttindent}\ \ init.g
+\){\kernttindent}\ \ read.g
+\){\kernttindent}\ \ doc/
+\){\kernttindent}\ \ lib/
+\){\kernttindent}\ \ src/
+
+We now describe the above files and directories:
+
+\beginitems
+
+`README'&
+This should contain ``how  to  get  it''  (from  the  {\GAP}  `ftp'-  and
+web-sites) instructions, as well as installation instructions  and  names
+of the package  authors  and  their  email  addresses.  The  installation
+instructions and authors' names and addresses should be repeated  in  the
+package's documentation (which should be in the `doc' directory).
+
+`configure', `Makefile.in'&
+These files are only necessary if the package has a non-{\GAP} component,
+e.g.~some C code (the files of which should be in the  `src'  directory).
+The `configure' and `Makefile.in' files of the {\Example} package provide
+prototypes. The `configure' file typically takes a  path  <path>  to  the
+{\GAP} root  directory  as  argument  and  uses  the  value  assigned  to
+`GAParch' in the file `sysinfo.gap' (created when {\GAP} was compiled) to
+determine the compilation architecture, inserts  this  in  place  of  the
+string `@GAPARCH@' in `Makefile.in' and creates a file  `Makefile'.  When
+`make' is run (which, of course, reads  the  constructed  `Makefile'),  a
+directory `bin' (if necessary) and a  subdirectory  of  `bin'  with  name
+equal to the string assigned  to  `GAParch'  in  the  file  `sysinfo.gap'
+should be created; any binaries constructed  by  compiling  the  code  in
+`src' should end up in this subdirectory of `bin'.
+
+`PackageInfo.g'&
+Since {\GAP}~4.4, a {\GAP} package *must* have  a  `PackageInfo.g'  file.
+The {\Example}  package's  `PackageInfo.g'  file  is  well-commented  and
+should be used as a prototype.
+
+`init.g', `read.g'&
+A {\GAP} package *must* have a file `init.g' (see Section~"ext:The  Files
+of a GAP Package" in the Extending {\GAP} Manual). As of {\GAP}~4.4,  the
+typical `init.g' and `read.g' files should normally consist  entirely  of
+`ReadPackage' (see~"ref:ReadPackage" in the  {\GAP}~4  Reference  Manual)
+commands (and possibly also `Read' commands). If the ``declaration''  and
+``implementation'' parts of  the  package  are  separated  (and  this  is
+recommended), there should be a `read.g' file. The  ``declaration''  part
+of a package consists of function and variable  *name*  declarations  and
+these go in files with `.gd' extensions; these  files  are  read  in  via
+`ReadPackage' commands in the `init.g' file. The ``implementation''  part
+of a package consists of the actual  definitions  of  the  functions  and
+variables whose names were declared  in  the  ``declaration''  part,  and
+these go in files with `.gi' extensions; these  files  are  read  in  via
+`ReadPackage' commands in the `read.g' file. The reason for following the
+above dichotomy is that the `read.g' file is read  *after*  the  `init.g'
+file, thus enabling the possibility of  a  function's  implementation  to
+refer to another function whose name is known but is not actually defined
+yet. The {\GAP} code (whether or not it is split into ``declaration'' and
+``implementation'' parts) should go in the package's `lib' directory (see
+below).
+
+`doc'&
+This directory should contain the package's documentation. Traditionally,
+a {\TeX}-based system has been used for {\GAP}  documentation,  which  is
+thoroughly described in Section~"ext:The gapmacro.tex Manual  Format"  of
+the Extending {\GAP} Manual. There is now an alternative XML-based system
+provided    by    the    {\GAP}     package     \package{GAPDoc}     (see
+Chapter~"gapdoc:Introduction  and  Example"   of   the   \package{GAPDoc}
+Manual). Please spend some time reading the documentation  for  whichever
+system you decide to use for writing your  package's  documentation.  The
+{\Example} package's documentation  was  written  using  the  traditional
+{\TeX}-based system. If you plan on using this, please use the {\Example}
+package's `doc' directory as a prototype, which you will observe contains
+the following files:
+
+\){\kernttindent}manual.tex\ \# master file
+\){\kernttindent}<chapi>.tex\ \# chapter file(s) ... 1 for each chapter
+\){\kernttindent}manual.mst\ \# MakeIndex style file
+\){\kernttindent}make_doc\ \ \ \# script that generates the manuals
+
+&
+Generally, one should also provide a `manual.bib' Bib{\TeX} database file
+(or write one's  own  bibliography  `manual.bbl'  file).  Generating  the
+various formats of the manuals requires various software tools which  are
+called directly or indirectly by  `make_doc'  and  these  are  listed  in
+Section~"Documentation Software Tools Needed". The file  `manual.mst'  is
+needed for generating a manual index; it should be  a  copy  of  the  one
+provided in the {\Example} package. The only adjustments that  a  package
+writer should need to make to `make_doc' is to replace occurrences of the
+word `Example' with <package-name>.
+
+`lib'&
+This is the preferred place for the {\GAP} code, i.e.~the `.g', `.gd' and
+`.gi' files (other than `PackageInfo.g', `init.g' and `read.g'). For some
+packages (the {\Example} package included), the directory `gap' has  been
+used instead of `lib'; `lib' has the slight  advantage  that  it  is  the
+default  subdirectory  of  a  package  directory  searched  for  by   the
+`DirectoriesPackageLibrary' command  (see~"ref:DirectoriesPackageLibrary"
+in the {\GAP}~4 Reference Manual).
+
+`src'&
+If the package has non-{\GAP} code, e.g.~C  code,  then  this  ``source''
+code should go in the `src' directory.  If  there  are  `.h'  ``include''
+files you may prefer to put these all together in  a  separate  `include'
+directory.
+
+\enditems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Documentation Software Tools Needed}
+
+Whether you use the traditional  `gapmacro.tex'  {\TeX}-based  system  or
+\package{GAPDoc} you will need to have the various following {\TeX} tools
+installed:
+
+\beginitems
+
+`tex' (or `latex' for \package{GAPDoc}), `bibtex' and `makeindex'&
+for generating `.dvi';
+
+`dvips'&
+for generating `.ps'; and
+
+`pdftex' or `gs' and `ps2pdf' (or `pdflatex' for \package{GAPDoc})&
+for generating `.pdf';
+
+\enditems
+
+Note that using `gs' and `ps2pdf' in lieu of `pdftex' or `pdflatex' is  a
+poor substitute unless your `gs' is at  least  version  6.<xx>  for  some
+<xx>.
+
+The rest of this section describes the various  additional  tools  needed
+for the `gapmacro.tex' documentation system.
+
+To produce the `.dvi', `.ps' and `.pdf'  manual  formats,  the  following
+{\GAP} tools (usually located  in  {\GAP}'s  main  `doc'  directory)  are
+needed (provided by `tools<XXX>.zoo' for some version number <XXX> at the
+{\GAP}  `ftp'-  or  web-sites,   or   can   be   obtained   by   emailing
+\Mailto{support@gap-system.org}).
+
+\beginitems
+
+`gapmacro.tex'&
+The macros file that dictates the style and mark-up for  the  traditional
+{\TeX}-based system of {\GAP} documentation.
+
+`manualindex'&
+This is an `awk' script that adjusts the  {\TeX}-produced  index  entries
+and calls `makeindex' to process them.
+
+`mrabbrev.bib'&
+This is usually supplied with your {\TeX} tools but nevertheless  a  copy
+of `mrabbrev.bib' should be located in {\GAP}'s main `doc' directory.  To
+find it on your system, try:
+
+\begintt
+kpsewhich mrabbrev.bib
+\endtt
+
+&
+or if that doesn't work and you can't otherwise find it check out a  CTAN
+site, e.g.~search for it at:
+\URL{http://www.dante.de/cgi-bin/ctan-index}
+
+\enditems
+
+If your manual cross-refers to other `gapmacro.tex'-produced manuals (and
+so  has  `\\UseReferences'  commands  in  its   `manual.tex'),   then   a
+`manual.lab' file (generated by running `tex manual') for each such other
+manual is needed (this includes the ``main'' manuals, e.g.~those  in  the
+`doc/ref', `doc/ext' etc.~directories).
+
+If your manual cross-refers to \package{GAPDoc}-produced manuals (and  so
+has  `\\UseGapDocReferences'  commands   in   its   `manual.tex'),   then
+`manual.lab' files need to be generated for these too. Since  {\GAP}~4.3,
+this is done by starting {\GAP} and running:
+
+\){\kernttindent}gap> GapDocManualLab( "<package>" );
+
+for each <package> whose manual is cross-referred to.
+
+To produce an HTML version of the manual one needs  the  Perl  5  program
+`convert.pl' which is usually located in the subdirectory  `etc'  of  the
+{\GAP} root directory. The `etc' directory  is  not  part  of  the  usual
+{\GAP}  distribution.  The  `etc'  directory  files  are  obtained   from
+`tools<XXX>.zoo' for some version number <XXX> at the  {\GAP}  `ftp'-  or
+web-sites,      or      can      be      obtained       by       emailing
+\Mailto{support@gap-system.org}.
+
+Finally, to ensure the mathematics formulae are rendered as well as  they
+can be in the HTML version,  one  should  also  have  the  program  `tth'
+({\TeX}  to  HTML  converter);  `convert.pl'  calls  `tth'  to  translate
+mathmode formulae to HTML (if it's available). The `tth' program is  easy
+to compile and can be obtained from
+\URL{http://hutchinson.belmont.ma.us/tth/tth-noncom/download.html}
+
+As a package author, you are not obliged to provide an  HTML  version  of
+your  package  manual,  but  if  you  have  kept  to  the  guidelines  in
+Section~"ext:The gapmacro.tex Manual  Format"  of  the  Extending  {\GAP}
+Manual, you should have no trouble in producing one. A prototype  of  the
+command to execute is in the file `make_doc'; note that the  HTML  manual
+is produced in files with `.htm' extensions in a directory `htm'  outside
+the `doc' directory. The beginning  of  the  file  `convert.pl'  contains
+instructions on its usage should you need them.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Functions and Variables and Choices of Their Names}
+
+In writing the {\GAP} code for your package  you  need  to  be  a  little
+careful on just how you define your functions and variables.
+
+*Firstly*, in general one should avoid defining functions  and  variables
+via assignment statements in the way you would interactively, e.g.
+
+\beginexample
+gap> Cubed := function(x) return x^3; end;
+\endexample
+
+The reason for this is that such  functions  and  variables  are  *easily
+overwritten* and what's more you are not warned about it when it happens.
+
+To protect a function  or  variable  against  overwriting  there  is  the
+command  `BindGlobal'  (see~"ref:BindGlobal"  in  the  {\GAP}   Reference
+Manual), or alternatively (and equivalently)  you  may  define  a  global
+function via a `DeclareGlobalFunction' and  `InstallGlobalFunction'  pair
+or a global variable via  a  `DeclareGlobalVariable'  and  `InstallValue'
+pair. There are also operations and their methods,  and  related  objects
+like attributes and filters which also have `Declare...' and `Install...'
+pairs.
+
+*Secondly*,  it's  a  good  idea  to  reduce  the  chance  of  accidental
+overwriting by choosing names for your functions and variables that begin
+with a string that identifies it  with  the  package,  e.g.~some  of  the
+undocumented functions in the {\Example} package begin with `Eg'. This is
+especially important in cases where you actually want the user to be able
+to change the value of a function or variable defined  by  your  package,
+for which you haved used direct assignments  (for  which  the  user  will
+receive no warning  if  she  accidentally  overwrites  them).  It's  also
+important  for  functions  and  variables   defined   via   `BindGlobal',
+`DeclareGlobalFunction'/`InstallGlobalFunction'                       and
+`DeclareGlobalVariable'/`InstallValue', in order to  avoid  name  clashes
+that may  occur  with  (extensions  of)  the  {\GAP}  library  and  other
+packages. On the other hand, operations and their  methods  (defined  via
+`DeclareOperation', `InstallMethod' etc.~pairs) and  their  relatives  do
+not need this consideration, as they avoid name clashes by  allowing  for
+more than one ``method'' for the same-named object.
+
+The method `Recipe' was included in the {\Example} package to demonstrate
+the definition of a  function  via  a  `DeclareOperation'/`InstallMethod'
+pair; `Recipe( FruitCake );' gives a ``method'' for making a  fruit  cake
+(forgive the pun).
+
+*Thirdly*, functions or variables with  `Set<XXX>'  or  `Has<XXX>'  names
+(even if they are defined as operations) should be avoided as  these  may
+clash with objects associated with attributes or  properties  (attributes
+and  properties   <XXX>   declared   via   the   `DeclareAttribute'   and
+`DeclareProperty' commands have associated  with  them  testers  of  form
+`Has<XXX>' and setters of form `Set<XXX>').
+
+*Fourthly*, it is a good  idea  to  have  some  convention  for  internal
+functions and variables  (i.e.~the  functions  and  variables  you  don't
+intend for the  user  to  use).  For  example,  they  might  be  entirely
+capitalised.
+
+*Finally*,        note        the        advantage        of        using
+`DeclareGlobalFunction'/`InstallGlobalFunction',
+`DeclareGlobalVariable'/`InstallValue',    etc.~pairs    (rather     than
+`BindGlobal') to define functions and variables, which allow the  package
+author to organise her function- and variable- definitions in  any  order
+without worrying about any interdependence. The  `Declare...'  statements
+should go in files with `.gd' extensions and be loaded  by  `ReadPackage'
+statements in the package `init.g' file, and the `Install...' definitions
+should go in files with `.gi' extensions and be loaded  by  `ReadPackage'
+statements in the package `read.g' file;  this  ensures  that  the  `.gi'
+files are read *after* the `.gd' files. All other package code should  go
+in `.g' files (other than the `init.g' and `read.g' files themselves) and
+be loaded via `ReadPackage' statements in the `init.g' file.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Having an InfoClass}
+
+It is a good idea to declare an `InfoClass' for your package. This  gives
+the package user the opportunity  to  control  the  verbosity  of  output
+and/or the possibility of receiving debugging information  (see~"ref:Info
+functions" in the {\GAP}  Reference  Manual).  Below,  we  give  a  quick
+overview of its utility.
+
+An `InfoClass' is defined with  a  `DeclareInfoClass(  <InfoPkgname>  );'
+statement and may be set to have an initial `InfoLevel'  other  than  the
+zero default (which means no `Info' statement is to  output  information)
+via a `SetInfoLevel( <InfoPkgname>, <level>  );'  statement.  An  initial
+`InfoLevel' of 1 is typical.
+
+`Info' statements have the form: `Info( <InfoPkgname>, <level>,  <expr1>,
+<expr2>, ... );'  where  the  expression  list  `<expr1>,  <expr2>,  ...'
+appears just like it would in a `Print' statement. The only difference is
+that the expression list is  only  printed  (or  even  executed)  if  the
+`InfoLevel' of <InfoPkgname> is at least <level>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Banner}
+
+Since {\GAP}~4.4, the package  banner,  if  one  is  desired,  should  be
+provided by assigning a string to the `BannerString' field of the  record
+argument of `SetPackageInfo' in the `PackageInfo.g' file.
+
+It is a good idea to have a hook into  your  package  documentation  from
+your banner. The {\Example} package suggests to the {\GAP} user:
+
+\begintt
+For help, type: ?Example package
+\endtt
+
+In order for this to display the introduction of the  {\Example}  package
+an `\\atindex' equivalent of the following index-entry:
+
+\)\kernttindent\\index\{Example package\}
+
+was added just before the first paragraph of the introductory section  in
+the file `example.tex'. The {\Example} package  uses  the  `gapmacro.tex'
+system  (see   Section~"Documentation   Software   Tools   Needed")   for
+documentation (you will need some different scheme to achieve this  using
+\package{GAPDoc}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Packing up your GAP Package}
+
+In the past, it was recommended that your {\GAP} package should be packed
+via the `zoo' program, but now any of four different archive formats  are
+accepted (see Section "ext:Wrapping Up a GAP Package"  in  the  Extending
+{\GAP} Manual for the details). The {\Example}  package  file  `make_zoo'
+provides  a  template  packing-up  script  that  uses  `zoo'.  The  `etc'
+directory obtained from `tools<XXX>.zoo' for some  version  number  <XXX>
+(this  is  described  above  in  Section~"Documentation  Software   Tools
+Needed") contains a file  `packpack'  which  provides  a  more  versatile
+packing-up script.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{New versions of your GAP Package}
+
+You will notice that there is a file `VERSION' which contains the current
+version of the {\Example} package. Such a file is entirely optional. Note
+that this file is *not* read at all when {\GAP} loads the package. {\GAP}
+establishes the package version by reading the `PackageInfo.g' file.  The
+current maintainer of the {\Example} package finds it convenient to  have
+a file `VERSION' that is read both by `doc/manual.tex' and `make_zoo'. It
+is however important that each new version of a package has a new  number
+and  that  version  numbers  of  successive  package  versions   increase
+(see~"ext:Version  Numbers"  in  the  Extending  {\GAP}  Manual  for  the
+details).
+
+It's also useful to have a `CHANGES' file that records the  main  changes
+between versions of your package.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{CVS}
+
+When your package is ready to be refereed and/or  made  available  as  an
+``accepted'' {\GAP} package, it may be of benefit to obtain CVS access to
+{\GAP}; as a first step towards this you should make  a  request  to  the
+{\GAP} team via an email to \Mailto{support@gap-system.org}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

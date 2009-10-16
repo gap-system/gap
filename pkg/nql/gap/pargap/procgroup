@@ -1,0 +1,20 @@
+# This is a comment.
+
+local 0
+# localhost 1 /home/y0019492/programs/gap4r4/pkg/pargap/bin/pargap.sh
+# localhost 1 /home/y0019492/programs/gap4r4/pkg/pargap/bin/pargap.sh
+# localhost 1 pargap
+
+# The general format is that "local 0" implies creation of a master.
+# Otherwise there is one line per slave.  The "1" is obligatory.
+# The first field is the hostname or localhost (in a form valid for "rsh")
+# The second field, 1, is obligatory.
+# The format is inherited from MPICH, which grew from P4.
+
+#Example:
+# procyon.ccs.neu.edu 1 ./mygap4beta/bin/pargap.sh
+
+localhost 1 /home/y0019492/programs/gap4r4/pkg/pargap/bin/pargap.sh
+localhost 1 /home/y0019492/programs/gap4r4/pkg/pargap/bin/pargap.sh
+localhost 1 /home/y0019492/programs/gap4r4/pkg/pargap/bin/pargap.sh
+localhost 1 /home/y0019492/programs/gap4r4/pkg/pargap/bin/pargap.sh

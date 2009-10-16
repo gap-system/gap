@@ -1,0 +1,77 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  grpconst.tex          GrpConst documentation             Bettina Eick
+%%
+%H  $Id: preface.tex,v 1.8 2004/11/01 13:21:31 gap Exp $
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Preface}
+
+The determination of all groups of a given order up to isomorphism
+is a central problem in finite group theory. It has been initiated
+in 1854 by A. Cayley who constructed the groups of order 4 and 6.
+
+A large number of publications followed Cayley's work. For example,
+Hall and Senior determined the groups of order $2^n$ for $n \leq 6$,
+Neub{\accent127 u}ser listed the groups of order at most 100 except 64 and 96
+and Laue added the groups of order 96, see \cite{HS64}, \cite{Neu67}
+and \cite{Lau82}. These determinations partially relied on the
+help of computers, but a general algorithm to construct groups had
+not been used. The resulting catalogue of groups of order at most
+100 has been available in GAP 3.
+
+Then Newman and O'Brien introduced an algorithm to determine
+groups of prime-power order, see \cite{OBr90}. An implementation 
+of this method is available in the ANUPQ share package of GAP. 
+This method has been used to compute the groups of order $2^n$ for 
+$n \leq 8$ and the groups of order $3^n$ for $n \leq 6$, see
+\cite{OBr88}, and the resulting groups are available in GAP.
+Moreover, the large number of groups of order $2^8$ shows that
+algorithmic methods are the only sensible way for group determinations
+in this range.
+
+In this share package we introduce practical methods to determine
+up to isomorphism all groups of a given order. The algorithms 
+are described in \cite{BE99}. These methods have been used to 
+construct the non-nilpotent groups of order at most 1000, see 
+\cite{BE1000}. The resulting catalogue of groups is available within
+the small groups library of GAP 4. 
+
+Our methods are not limited to groups of order at most 1000
+and thus may be used to determine all or certain groups of 
+higher order as well. However, it is not easy to say for 
+which orders our methods are still practical and for which
+not. As a rule of thump one can say that the number of 
+primes and the size of the prime-powers contained in the 
+factorisation of the given order determine the practicability 
+of the algorithm; that is, the more primes are contained in
+the factorisation the more difficult the determination gets. 
+
+As an example, the construction of all non-nilpotent groups of order 
+$192 = 2^6 \cdot 3$ takes 17 minutes on an PC 400 Mhz. This is a medium 
+sized application of our methods.  However, the construction of the groups
+of order $768 = 2^8 \cdot 3$ takes already rather long (a few days) and 
+can be considered as a limit of our methods. On the other hand, the 
+groups of order $5425 = 5^2 \cdot 7 \cdot 31$ can be determined in 5 sec.
+Moreover, if the determination of groups is restricted to groups
+with certain properties, then this might increase the efficiency
+of the construction process considerably. We include some example
+applications of our methods to illustrate this at the end of the
+manual.
+
+Finally, we mention that the correctness of our algorithms is very
+hard to check for a user; in particular, since there are no other
+algorithms for the same purpose available, it might be difficult to
+verify that our methods compute all desired groups. Thus we note here 
+that methods implemented in this share package have been used to compute 
+large parts of the Small Groups library and this, in turn, has been 
+checked by the authors as described in \cite{BE99} and \cite{BE1000}.
+
+Comments and suggestions on this share package are very welcome.
+Please send them to 
+
+\centerline{ beick@tu-bs.de or hubesche@tu-bs.de.}
+
+Bug reports should also be e-mailed to either of these addresses.
+

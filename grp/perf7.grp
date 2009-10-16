@@ -3,7 +3,7 @@
 #W  perf7.grp              GAP Groups Library                 Volkmar Felsch
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: perf7.grp,v 4.3 2005/09/16 15:42:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -11,7 +11,7 @@
 ##  All data is based on Holt/Plesken: Perfect Groups, OUP 1989
 ##
 Revision.perf7_grp :=
-    "@(#)$Id$";
+    "@(#)$Id: perf7.grp,v 4.3 2005/09/16 15:42:16 gap Exp $";
 
   PERFGRP[114]:=[# 92160.1
   [[1,"abcstuvSTUV",

@@ -3,7 +3,7 @@
 %A  combinat.msk                GAP documentation            Martin Schoenert
 %A                                                           Alexander Hulpke
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: combinat.msk,v 1.20 2007/01/31 19:02:11 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -148,6 +148,8 @@ The   function `Arrangements'   (see  "Arrangements")   computes  ordered
 selections without repetitions, `UnorderedTuples' (see "UnorderedTuples")
 computes  unordered  selections  with   repetitions  and `Tuples'    (see
 "Tuples") computes ordered selections with repetitions.
+
+\Declaration{CombinationsIterator}
 
 \Declaration{Arrangements}
 \Declaration{NrArrangements}
@@ -314,6 +316,8 @@ gap> NrPartitions( 100 );
 
 The function `OrderedPartitions' (see "OrderedPartitions") is the ordered
 counterpart of `Partitions'.
+
+\Declaration{PartitionsIterator}
 
 \Declaration{OrderedPartitions}
 \Declaration{NrOrderedPartitions}

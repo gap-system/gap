@@ -3,7 +3,7 @@
 %W  intrfc.msk              GAP manual                   Alexander Hulpke
 %W                                                       Andrew Solomon
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: intrfc.msk,v 1.13 2007/01/05 17:40:30 gap Exp $
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -420,8 +420,11 @@ attribute would not give any advantage.
 
 Resource-wise, attributes need more memory (the attribute setter and
 tester are implicitly declared, and two filter bits are required), the
+%T why two??
 attribute access is one further function call in the kernel, thus components
 might be an immeasurable bit faster.
+
+%T and what about the aspect that attributes are used by the method selection?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Adding new Concepts}
@@ -437,6 +440,7 @@ as a property or as a category. Both are eventually filter and in this way
 indistinguishable for the method selection. The distinction is rather
 conceptual and mainly reflects whether we want existing objects to be part
 of our new concept or not.
+%T The above statement is not correct!
 
 \beginitems
 Property:&

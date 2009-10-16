@@ -2,7 +2,7 @@
 ##
 #W  rws.gi                      GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rws.gi,v 4.29 2002/04/15 10:05:15 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for rewriting systems.
 ##
 Revision.rws_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rws.gi,v 4.29 2002/04/15 10:05:15 sal Exp $";
 
 
 #############################################################################

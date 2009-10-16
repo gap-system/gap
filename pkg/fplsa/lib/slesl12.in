@@ -1,0 +1,13 @@
+Generators sl(1|2): -X -U Y;
+Relations:
+
+[Y,[X,Y]];
+[[X,[X,Y]],Y] - 2 Y;
+[[X,[X,Y]],X] + X;
+
+[Y,U];
+[U,U] + 2 Y;
+[U,[X,Y]];
+[[X,X],[X,U]];
+[[X,[X,Y]],U] - U;
+

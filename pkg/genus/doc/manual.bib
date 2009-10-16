@@ -1,0 +1,865 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  rie.bib                                                     Thomas Breuer
+%%
+%H  (#)$Id: manual.bib,v 1.6 2002/03/13 08:32:39 gap Exp $
+%%
+@PREAMBLE{ "\newcommand{\noopsort}[1]{} " }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%S  Publishers  . . . . . . . . . . . . . . . .  abbreviations for publishers
+%%
+%%  The following strings are abbreviations for publishers, which are used in
+%%  *books*, *inbooks*, and *proceedings*.
+%%
+@string{ AcaPress   = "Academic Press"                                      }
+@string{ AddWes     = "Addison-Wesley"                                      }
+@string{ Birkhaeus  = "Birkh{\accent127 a}user, Basel"                      }
+@string{ BIWissV    = "BI-Wis\-sen\-schafts\-ver\-lag, Mannheim"            }
+@string{ CamUPress  = "Cambridge University Press"                          }
+@string{ Clarendon  = "Clarendon, Oxford"                                   }
+@string{ Dover      = "Dover Publications, New York"                        }
+@string{ Gruyter    = "Walter de Gruyter, Berlin, New York"                 }
+@string{ HDeutsch   = "Verlag Harri Deutsch, Frankfurt/Main"                }
+@string{ Macmillan  = "The Macmillan Company, New York"                     }
+@string{ OxUnPress  = "Oxford University Press"                             }
+@string{ Pergamon   = "Pergamon Press, Oxford"                              }
+@string{ SpringerB  = "Springer, Berlin"                                    }
+@string{ SpringerBN = "Springer-Verlag, Berlin-New York"                    }
+@string{ SpringerBH = "Springer-Verlag, Berlin Heidelberg"                  }
+@string{ SpringerBHNY = "Springer-Verlag, Berlin Heidelberg New York"       }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%S  Journals  . . . . . . . . . . . . . . . . . .  abbreviations for journals
+%%
+%%  The following strings are abbreviations for  journals,  which are used in
+%%  *articles*.
+%%
+@string{ ActaArith = "Acta Arithmetica"                                     }
+@string{ ActaMath  = "Acta Math."                                           }
+@string{ AdvMath   = "Adv. in Math."                                        }
+@string{ AdvMBeij  = "Adv. in Math. (Beijing)"                              }
+@string{ AFPorto   = "An. Fac. Ci\^enc. Univ. Porto"                        }
+@string{ AliLo     = "Algebra i Logika"                                     }
+@string{ AmMathJ   = "Amer. J. Math."                                       }
+@string{ AmMathM   = "Amer. Math. Monthly"                                  }
+@string{ AnnMath   = "Annals of Mathematics"                                }
+@string{ AnnMath2  = "Ann. of Math. (2)"                                    }
+@string{ ArchMath  = "Arch. Math."                                          }
+@string{ ArchBasel = "Arch. Math. (Basel)"                                  }
+@string{ ArchBrno  = "Arch. Math. (Brno)"                                   }
+@string{ AttiLinc  = "Atti Accad. Naz. Lincei Rend. Cl. Sci. Fis. Mat. Natur.
+                      (8)"                                                  }
+@string{ BayreuMS  = "Bay\-reu\-ther Math. Schr."                           }
+@string{ BullFuku  = "Bull. Central Res. Inst. Fukuoka Univ."               }
+@string{ BullLond  = "Bull. London Math. Soc."                              }
+@string{ BullBelB  = "Bull. Soc. Math. Belg. S\'er. B"                      }
+@string{ CRAcad    = "C. R. Acad. Sci. S\'er. G\'en. Vie Sci."              }
+@string{ CRBulgar  = "C. R. Acad. Bulgare Sci."                             }
+@string{ CommAlg   = "Comm. Algebra"                                        }
+@string{ EuJComb   = "European J. Combin."                                  }
+@string{ Fukuoka   = "Fukuoka Univ. Sci. Rep."                              }
+@string{ GlasgowMJ = "Glasgow Math. J."                                     }
+@string{ GeomDedi  = "Geom. Dedicata"                                       }
+@string{ IsrJMath  = "Israel J. Math."                                      }
+@string{ IllJMath  = "Illinois J. Math."                                    }
+@string{ InvMath   = "Invent. Math."                                        }
+@string{ IstLombA  = "Istit. Lombardo Accad. Sci. Lett. Rend. A"            }
+@string{ JSC       = "J. Symbolic Computation"                              }
+@string{ JAlg      = "J. Algebra"                                           }
+@string{ JAustA    = "J. Austral. Math. Soc. Ser. A"                        }
+@string{ JCombA    = "J. Combin. Theory Ser. A"                             }
+@string{ JCombB    = "J. Combin. Theory Ser. B"                             }
+@string{ JTokyo    = "J. Fac. Sci. Univ. Tokyo Sect. IA Math"               }
+@string{ JLond     = "J. London Math. Soc. (2)"                             }
+@string{ JWuhan    = "J. Math. (Wuhan)"                                     }
+@string{ JJapan    = "J. Math. Soc. Japan"                                  }
+@string{ JNumTh    = "J. Number Theory"                                     }
+@string{ JPuApAlg  = "J. Pure Appl. Algebra"                                }
+@string{ ManMath   = "manuscripta math."                                    }
+@string{ MathAnn   = "Math. Ann."                                           }
+@string{ MathComp  = "Math. Comput."                                        }
+@string{ MathInt   = "Math. Intelligencer"                                  }
+@string{ MathPhil  = "Math. Proc. Cambridge Philos. Soc."                   }
+@string{ MathZ     = "Math. Z."                                             }
+@string{ MatZam    = "Mat. Zametki"                                         }
+@string{ MatSb     = "Mat. Sb. (N.S.)"                                      }
+@string{ NagJ      = "Nagoya Math. J."                                      }
+@string{ NumMath   = "Num. Math."                                           }
+@string{ ProcAmer  = "Proc. Amer. Math. Soc."                               }
+@string{ ProcEdin  = "Proc. Edinburgh Math. Soc. (2)"                       }
+@string{ ProcLond  = "Proc. London Math. Soc. (3)"                          }
+@string{ ProcNat   = "Proc. Nat. Acad. Sci. U. S. A."                       }
+@string{ QuartJ    = "Quart. J. Math. Oxford Ser. (2)"                      }
+@string{ RendAcc   = "Rend. Accad. Naz. Sci. XL Mem. Mat. (5)"              }
+@string{ RendSem   = "Rend. Sem. Mat. Univ. Padova"                         }
+@string{ RockyMJ   = "Rocky Mountain J. Math."                              }
+@string{ SimonSt   = "Simon Stevin"                                         }
+@string{ SCPTokyo  = "Sci. Papers College Gen. Edu. Univ. Tokyo"            }
+@string{ TrAmMaSo  = "Trans. Amer. Math. Soc."                              }
+@string{ Uspekhi   = "Uspekhi Mat. Nauk"                                    }
+@string{ Vestnik   = "Vestnik Moskov. Univ. Ser. I Mat. Mekh."              }
+
+@string{ LNM       = "Lecture Notes in Mathematics"                         }
+@string{ GTM       = "Graduate texts in mathematics"                        }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%R  References  . . . . . . . . . . . . . . . . . . . . . . . . .  references
+%%
+%%  The following are the references.  They are  ordered with respect to  the
+%%  last name of the first author.
+%%
+
+@book{Acc94,
+author       = "R.~D.~M.~Accola",
+title        = "Topics in the Theory of {R}iemann Surfaces",
+series       = LNM,
+volume       = 1595,
+year         = 1994,
+publisher    = SpringerBH,
+note         = "ix+105 pp., ISBN 3-540-58721-7",
+}
+
+@article{Acc68,
+author       = "R.~D.~M.~Accola",
+title        = "On the {N}umber of {A}utomorphisms of a {C}losed
+                {R}iemann {S}urface",
+journal      = TrAmMaSo,
+volume       = "131",
+year         = "1968",
+pages        = "398--408",
+}
+
+@article{Ahl54,
+author       = "L.~V.~Ahlfors",
+title        = "On quasiconformal mappings",
+journal      = "L. Analyse Math.",
+volume       = "3",
+year         = "1954",
+pages        = "1--58",
+}
+
+@article{BE99,
+author       = "H.-U.~Besche and
+                B.~Eick",
+title        = "The groups of order at most 1000 except 512 and 768",
+journal      = JSC,
+volume       = "27",
+number       = "4",
+year         = "1999",
+pages        = "405--413",
+}
+
+@phdthesis{Bon93,
+author       = "O.~Bonten",
+title        = "{\accent127 U}ber {K}ommutatoren in endlichen einfachen
+                {G}ruppen",
+school       = "Lehrstuhl D f{\accent127 u}r Mathematik,
+                Rheinisch-Westf{\accent127 a}lische Technische Hochschule
+                Aachen",
+type         = "Dissertation",
+year         = "1993",
+}
+
+@article{Bro90,
+author       = "A.~J.~Broughton",
+title        = "Classifying finite group actions on surfaces of low genus",
+journal      = JPuApAlg,
+volume       = "69",
+year         = "1990",
+pages        = "233--270",
+}
+
+@book{BEGG90,
+author       = "E.~Bujalance and
+                J.~J.~Etayo and
+                J.~M.~Gamboa and
+                G.~Gromadzki",
+title        = "Automorphism {G}roups of {C}ompact {B}ordered
+                {K}lein {S}urfaces",
+series       = LNM,
+volume       = 1439,
+year         = 1990,
+publisher    = SpringerBHNY,
+note         = "xiii+201 pp., ISBN 3-540-52941-1",
+}
+
+@book{Bre00,
+author       = "Thomas Breuer",
+title        = "Characters and {A}utomorphism {G}roups
+                of {C}ompact {R}iemann {S}urfaces",
+series       = "London Mathematical Society Lecture Notes Series",
+volume       = "280",
+year         = "2000",
+publisher    = "Cambridge University press",
+note         = "xii+199 pp., ISBN 0-52179809-4",
+}
+
+@article{BP98,
+author       = "Thomas Breuer and
+                G{\accent127 o}tz Pfeiffer",
+title        = "Finding {P}ossible {P}ermutation {C}haracters",
+journal      = JSC,
+volume       = "26",
+pages        = "343--354",
+year         = "1998",
+}
+
+@article{Bur79,
+author       = "R.~Burkhardt",
+title        = "{\accent127 U}ber die {Z}erlegungszahlen
+                der {S}uzukigruppen ${S}z(q)$",
+journal      = JAlg,
+volume       = "59",
+pages        = "421--433",
+year         = "1979",
+}
+
+@article{CO55,
+author       = "L.~Carlitz and
+                F.~R.~Olson",
+title        = "Maillet's {D}eterminant",
+journal      = ProcAmer,
+volume       = "6",
+pages        = "265--269",
+year         = "1955",
+note         = "MR 16, 999"
+}
+
+@article{CW34,
+author       = "C.~Chevalley and
+                A.~Weil",
+title        = "{\accent127 U}ber das {V}erhalten der {I}ntegrale 1.
+                {G}attung bei {A}utomorphismen des
+                {F}unktionenk{\accent127 o}rpers",
+journal      = "Abh. Math. Sem. Univ. Hamburg",
+volume       = "10",
+pages        = "358--361",
+year         = "1934",
+}
+
+@article{Con85,
+author       = "M.~D.~E.~Conder",
+title        = "The symmetric genus of alternating and symmetric groups",
+journal      = JCombB,
+number       = "39",
+pages        = "179--186",
+year         = "1985",
+}
+
+@article{Con87,
+author       = "M.~D.~E.~Conder",
+title        = "The {G}enus of {C}ompact {R}iemann {S}urfaces with
+                {M}aximal {A}utomorphism {G}roup",
+journal      = JAlg,
+number       = "108",
+pages        = "204--247",
+year         = "1987",
+}
+
+@article{Con91,
+author       = "M.~D.~E.~Conder",
+title        = "The symmetric genus of the {M}athieu groups",
+journal      = BullLond,
+number       = "23",
+pages        = "445--453",
+year         = "1991",
+}
+
+@article{CWW92,
+author       = "M.~D.~E.~Conder and
+                R.~A.~Wilson and
+                A.~J.~Woldar",
+title        = "The symmetric genus of sporadic groups",
+journal      = ProcAmer,
+volume       = "116",
+number       = "3",
+pages        = "653--663",
+year         = "1992",
+}
+
+@book{ATLAS,
+author        = "J.~H.~Conway and R.~S.~Curtis and S.~P.~Norton
+                 and R.~A.~Parker and R.~A.~Wilson",
+title         = "{A}n {A}tlas of {F}inite {G}roups",
+publisher     = "Clarendon Press, Oxford",
+year          = "1985",
+}
+
+@book{FK92,
+author       = "H.~M.~Farkas and I.~Kra",
+title        = "{R}iemann {S}urfaces",
+series       = GTM,
+volume       = 71,
+edition      = "2nd",
+year         = 1992,
+publisher    = SpringerBHNY,
+note         = "xvi+363 pp., ISBN 3-540-97703-1",
+}
+
+@book{For77,
+author       = "O.~Forster",
+title        = "Riemannsche {F}l{\accent127 a}chen",
+series       = "Heidelberger Taschenb{\accent127 u}cher",
+volume       = "184",
+year         = 1977,
+publisher    = SpringerBH,
+note         = "x+223 pp., ISBN 3-540-08034-1",
+}
+
+@article{Gre63,
+author       = "L.~Greenberg",
+title        = "Maximal {F}uchsian {G}roups",
+journal      = "Bull. Amer. Math. Soc.",
+volume       = "69",
+pages        = "569--573",
+year         = "1963",
+note         = "MR 26, 6127",
+}
+
+@article{Gue82,
+author       = "I.~Guerrero",
+title        = "Holomorphic {F}amilies of {C}ompact {R}iemann {S}urfaces
+                with {A}utomorphisms",
+journal      = IllJMath,
+volume       = "26",
+number       = "2",
+pages        = "212--225",
+year         = "1982",
+}
+
+@article{Har66,
+author       = "W.~J.~Harvey",
+title        = "Cyclic groups of automorphisms of a compact {R}iemann
+                surface",
+journal      = QuartJ,
+volume       = "17",
+pages        = "86--97",
+year         = "1966",
+}
+
+@article{Har71,
+author       = "W.~J.~Harvey",
+title        = "On branch loci in {T}eichm{\accent127 u}ller space",
+journal      = TrAmMaSo,
+volume       = "153",
+pages        = "387--399",
+year         = "1971",
+}
+
+@book{HP89,
+author       = "D.~F.~Holt
+                and W.~Plesken",
+title        = "{P}erfect {G}roups",
+publisher    = OxUnPress,
+year         = "1989",
+note         = "xii+364 pp., ISBN 0-19-853559-7",
+}
+
+@book{Hup83,
+author       = "B.~Huppert",
+title        = "Endliche {G}ruppen {I}",
+series       = "Grundlehren der mathematischen Wissenschaften",
+volume       = 134,
+year         = 1983,
+publisher    = SpringerBH,
+note         = "xvi+796 pp., ISBN 3-540-03825-6",
+}
+
+@article{Hur93,
+author       = "A.~Hurwitz",
+title        = "{\accent127 U}ber algebraische {G}ebilde mit eindeutigen
+                {T}ransformationen in sich",
+journal      = MathAnn,
+volume       = "41",
+pages        = "403--442",
+year         = "1893",
+}
+
+@book{Isa76,
+author       = "I.~M.~Isaacs",
+title        = "{C}haracter theory of finite groups",
+series       = "Pure and applied mathematics",
+volume       = 69,
+year         = 1976,
+publisher    = "Academic Press, New York",
+note         = "xii+303 pp., ISBN 0-12-374550-0",
+}
+
+@article{Isa77,
+author       = "I.~M.~Isaacs",
+title        = "Commutators and the Commutator Subgroup",
+journal      = AmMathM,
+volume       = "84",
+pages        = "720--722",
+year         = "1977",
+}
+
+@article{Ito51,
+author       = "N.~It{\v{o}}",
+title        = "A theorem on the alternating group ${A}_n$ ($n\geq 5$)",
+journal      = "Math. Japon.",
+volume       = "2",
+pages        = "59--60",
+year         = "1951",
+}
+
+@book{JK81,
+author       = "G.~D.~James and A.~Kerber",
+title        = "The representation theory of the symmetric group",
+series       = "Encyclopedia of mathematics and its applications",
+volume       = 16,
+year         = 1981,
+publisher    = AddWes,
+note         = "xxviii+510 pp., ISBN 0-201-13515-9",
+}
+
+@book{JS87,
+author       = "G.~A.~Jones and D.~Singerman",
+title        = "{C}omplex functions: {A}n algebraic and geometric viewpoint",
+year         = 1987,
+publisher    = "Cambridge University press",
+note         = "xiv+342 pp., ISBN 0-521-31366-X",
+}
+
+@article{Jon95,
+author       = "G.~A.~Jones",
+title        = "Enumeration of {H}omomorphisms and {S}urface-{C}overings",
+journal      = QuartJ,
+volume       = "46",
+pages        = "485-507",
+year         = 1995,
+}
+
+@article{Kim93,
+author       = "H.~Kimura",
+title        = "Automorphism groups, isomorphic to ${D}_8$ or ${Q}_8$,
+                of compact {R}iemann surfaces",
+journal      = JPuApAlg,
+volume       = "87",
+pages        = "23--36",
+year         = "1993",
+}
+
+@article{KPW87,
+author       = "P.~B.~Kleidman and
+                R.~A.~Parker and
+                R.~A.~Wilson",
+title        = "The maximal subgroups of the {F}ischer group ${F}i_{23}$",
+journal      = JLond,
+volume       = "39",
+pages        = "89--101",
+year         = "1987",
+}
+
+@article{Kuc92a,
+author       = "R.~Ku{\v{c}}era",
+title        = "On {B}ases of {O}dd and {E}ven {U}niversal
+                {O}rdinary {D}istributions",
+journal      = JNumTh,
+volume       = "40",
+pages        = "264--283",
+year         = "1992",
+}
+
+@article{Kuc92b,
+author       = "R.~Ku{\v{c}}era",
+title        = "On {B}ases of the {S}tickelberger {I}deal and of the {G}roup
+                of {C}ircular {U}nits of a {C}yclotomic {F}ield",
+journal      = JNumTh,
+volume       = "40",
+pages        = "264--283",
+year         = "1992",
+}
+
+@article{Kuh79,
+author       = "J.~K{\accent127 u}hnov{\'a}",
+title        = "Maillet's {D}eterminant ${D}_{p^{n+1}}$",
+journal      = ArchBrno,
+volume       = "15",
+number       = "4",
+pages        = "209--212",
+year         = "1979",
+note         = "MR 82e: 12003",
+}
+
+@article{Kur66,
+author       = "A.~Kuribayashi",
+title        = "On analytic families of compact {R}iemann surfaces with
+                non-trivial automorphisms",
+journal      = NagJ,
+volume       = "28",
+pages        = "119--165",
+year         = "1966",
+}
+
+@article{Kur83,
+author       = "I.~Kuribayashi",
+title        = "On automorphisms of prime order of a {R}iemann surface
+                as matrices",
+journal      = ManMath,
+volume       = "44",
+pages        = "103--108",
+year         = "1983",
+}
+
+@article{Kur84,
+author       = "I.~Kuribayashi",
+title        = "On an algebraization of the {R}iemann-{H}urwitz relation",
+journal      = "Kodai Math. J.",
+volume       = "7",
+pages        = "222-237",
+year         = "1984",
+}
+
+@article{Kur86,
+author       = "I.~Kuribayashi",
+title        = "Classification of automorphism groups of
+                compact {R}iemann surfaces of genus two",
+journal      = "preprint, Tsukuba",
+pages        = "25--39",
+year         = "1986",
+}
+
+@article{Kur87,
+author       = "I.~Kuribayashi",
+title        = "On automorphism groups of a curve as linear groups",
+journal      = JJapan,
+volume       = "39",
+number       = "2",
+pages        = "51--77",
+year         = "1987",
+}
+
+@article{KK90a,
+author       = "A.~Kuribayashi and
+                H.~Kimura",
+title        = "Automorphism groups of compact {R}iemann surfaces
+                of genus five",
+journal      = JAlg,
+volume       = "134",
+pages        = "80--103",
+year         = "1990",
+}
+
+@article{KK90b,
+author       = "I.~Kuribayashi and
+                A.~Kuribayashi",
+title        = "Automorphism groups of compact {R}iemann surfaces
+                of genera three and four",
+journal      = JPuApAlg,
+volume       = "65",
+pages        = "277--292",
+year         = "1990",
+}
+
+@article{KK91,
+author       = "A.~Kuribayashi and
+                H.~Kimura",
+title        = "Automorphism groups, isomorphic to
+                ${G}{L}(3,\textbf{F}_2)$, of compact {R}iemann surfaces",
+journal      = "T\^{o}hoku Math. J.",
+volume       = "43",
+pages        = "337--353",
+year         = "1991",
+}
+
+@book{Lan70,
+author       = "S.~Lang",
+title        = "Algebraic {N}umber {T}heory",
+year         = 1970,
+publisher    = AddWes,
+}
+
+@book{Leh64,
+author       = "J.~Lehner",
+title        = "Discontinuous groups and automorphic functions",
+series       = "Mathematical Surveys and Monographs",
+number       = "8",
+year         = 1964,
+publisher    = "American Mathematical Society, Providence, Rhode Island",
+note         = "xi+425 pp., ISBN 0-8218-1508-3",
+}
+
+@article{Lew63,
+author       = "J.~Lewittes",
+title        = "Automorphisms of compact {R}iemann surfaces",
+journal      = AmMathJ,
+volume       = "85",
+pages        = "734--752",
+year         = "1963",
+}
+
+@article{Mac65,
+author       = "C.~Maclachlan",
+title        = "Abelian groups of automorphisms of compact {R}iemann
+                surfaces",
+journal      = ProcLond,
+volume       = "15",
+pages        = "699--712",
+year         = "1965",
+}
+
+@article{Mac69,
+author       = "C.~Maclachlan",
+title        = "A bound for the number of automorphisms of a
+                compact {R}iemann surface",
+journal      = JLond,
+volume       = "44",
+pages        = "265--272",
+year         = "1969",
+}
+
+@article{Mas71,
+author       = "B.~Maskit",
+title        = "On {P}oincar\'e's theorem for fundamental polygons",
+journal      = AdvMath,
+volume       = "7",
+pages        = "219--230",
+year         = "1971",
+}
+
+@book{Mat87,
+author       = "B.~H.~Matzat",
+title        = "Konstruktive {G}aloistheorie",
+series       = LNM,
+volume       = 1284,
+year         = 1987,
+publisher    = SpringerBHNY,
+note         = "x+286 pp., ISBN 3-540-18444-9",
+}
+
+@book{Mas91,
+author       = "W.~S.~Massey",
+title        = "A {B}asic {C}ourse in {A}lgebraic {T}opology",
+series       = GTM,
+volume       = 127,
+year         = 1991,
+publisher    = SpringerBHNY,
+note         = "xvi+428 pp., ISBN 0-387-97430-X",
+}
+
+@book{Mir95,
+author       = "R.~Miranda",
+title        = "Algebraic {C}urves and {R}iemann {S}urfaces",
+series       = "Graduate Studies in Mathematics",
+volume       = 5,
+year         = 1995,
+publisher    = "American Mathematical Society",
+note         = "xxi+390 pp., ISBN 0-8218-0268-2",
+}
+
+@inproceedings{NO89,
+author       = "M.~F. Newman and
+                E.~A. O{\accent19{}B}rien",
+title        = "A {CAYLEY} library for the groups of order dividing 128",
+crossref     = "Singapore87",
+pages        = "437--442"
+}
+
+@article{OBr91,
+author       = "E.~A. O{\accent19{}B}rien",
+title        = "The groups of order $256$",
+journal      = JAlg,
+volume       = 143,
+pages        = "219--235",
+year         = 1991,
+}
+
+@unpublished{Rin94,
+author       = "M.~Ringe",
+title        = "The {C}-{M}eat{A}xe, {V}ersion 2.04a",
+year         = 1994,
+note         = "Manual",
+}
+
+@article{Sah69,
+author       = "C.-H.~Sah",
+title        = "Groups related to compact {R}iemann surfaces",
+journal      = ActaMath,
+volume       = "123",
+pages        = "13--42",
+year         = "1969",
+}
+
+@manual{Sch94,
+author        = "M.~Sch{\accent127 o}nert and others",
+title         = "{GAP} -- {G}roups, {A}lgorithms and {P}rogramming",
+organization  = "{L}ehrstuhl D f{\accent127 u}r {M}athematik",
+address       = "RWTH Aachen",
+edition       = "3.4",
+year          = "1994",
+}
+
+@article{Sch07,
+author       = "I.~Schur",
+title        = "Untersuchungen {\accent127 u}ber die {D}arstellung
+                der endlichen {G}ruppen durch gebrochene lineare
+                {S}ubstitutionen",
+journal      = "J. Math.",
+volume       = "132",
+pages        = "85--137",
+year         = "1907",
+}
+
+@article{Sco77,
+author       = "L.~L.~Scott",
+title        = "Matrices and cohomology",
+journal      = AnnMath,
+volume       = "105",
+pages        = "473--492",
+year         = "1977",
+}
+
+@article{Sin72,
+author       = "D.~Singerman",
+title        = "Finitely maximal {F}uchsian groups",
+journal      = JLond,
+volume       = "6",
+pages        = "29--38",
+year         = "1972",
+}
+
+@article{Sku81,
+author       = "L.~Skula",
+title        = "Another proof of {I}wasawa's class number formula",
+journal      = ActaArith,
+volume       = "39",
+pages        = "1--6",
+year         = "1981",
+}
+
+@article{Tat82,
+author       = "K.~Tateyama",
+title        = "Maillet's {D}eterminant",
+journal      = SCPTokyo,
+volume       = "32",
+pages        = "97--100",
+year         = "1982",
+note         = "MR 85c: 11095",
+}
+
+@article{Tuc83,
+author       = "T.~W.~Tucker",
+title        = "Finite groups acting on surfaces and the genus of a group",
+journal      = JCombB,
+volume       = "34",
+pages        = "82--98",
+year         = "1983",
+}
+
+@book{Was96,
+author       = "L.~C.~Washington",
+title        = "Introduction to {C}yclotomic {F}ields",
+series       = GTM,
+volume       = 83,
+year         = 1996,
+edition      = "Second",
+publisher    = SpringerBHNY,
+note         = "xiv+487 pp., ISBN 0-387-94762-0",
+}
+
+@article{Wil93,
+author       = "R.~A.~Wilson",
+title        = "The {S}ymmetric {G}enus of the {B}aby {M}onster",
+journal      = QuartJ,
+volume       = "44",
+pages        = "513--516",
+year         = "1993",
+}
+
+@article{Wil97,
+author       = "R.~A.~Wilson",
+title        = "The {S}ymmetric {G}enus of the {F}ischer group ${F}i_{23}$",
+journal      = "Topology",
+volume       = "36",
+pages        = "379--380",
+year         = "1997",
+}
+
+@article{Wil01,
+author       = "R.~A.~Wilson",
+title        = "The {M}onster is a {H}urwitz group",
+journal      = "J. Group Theory",
+volume       = "4",
+pages        = "367--374",
+year         = "2001",
+}
+
+@article{Wim95,
+author       = "A.~Wiman",
+title        = "{\accent127 U}ber die hyperelliptischen {C}urven
+                und diejenigen vom {G}eschlechte $p = 3$,
+                welche eindeutige {T}ransformationen in sich zulassen",
+journal      = "Bihang Kongl. Svenska Vetenskaps--Akademiens Handlingar",
+number       = "21 (1)",
+pages        = "1--23",
+year         = "1895",
+}
+
+@article{Wol89a,
+author       = "A.~J.~Woldar",
+title        = "On {H}urwitz generation and genus actions
+                of sporadic groups",
+journal      = IllJMath,
+volume       = "33",
+number       = "3",
+pages        = "416--437",
+year         = "1989",
+}
+
+@article{Wol89b,
+author       = "A.~J.~Woldar",
+title        = "Genus actions of finite simple groups",
+journal      = IllJMath,
+volume       = "33",
+number       = "3",
+pages        = "438--450",
+year         = "1989",
+}
+
+@proceedings{Singapore87,
+title        = "Group Theory,
+                Proceedings of the 1987 Singapore Conference,
+                Singapore 1987",
+booktitle    = "Group Theory,
+                Proceedings of the 1987 Singapore Conference,
+                Singapore 1987",
+year         = 1989,
+publisher    = Gruyter,
+}
+
+%%  article
+%%  book
+%%  inbook
+%%  inproceedings
+%%  proceedings
+%%  techreport
+%%
+%%  address      
+%%  author       
+%%  booktitle    
+%%  chapter      
+%%  crossref     
+%%  editor       
+%%  institution  
+%%  journal      
+%%  note         
+%%  number       
+%%  organization 
+%%  pages        
+%%  publisher    
+%%  reviews      
+%%  series       
+%%  title        
+%%  type         
+%%  volume       
+%%  year         
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

@@ -2,7 +2,7 @@
 ##
 #W  pcgsind.gi                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: pcgsind.gi,v 4.70 2002/04/15 10:05:12 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  systems.
 ##
 Revision.pcgsind_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: pcgsind.gi,v 4.70 2002/04/15 10:05:12 sal Exp $";
 
 
 #############################################################################

@@ -1,0 +1,69 @@
+TODO                    GAP character table library             Thomas Breuer
+
+TODO now
+========
+
+- add CommonIrrationalityInfo (irrats.g),
+  add a corresponding database!
+
+- add the files from the decomposition database!
+
+- add the files from the construction process (~cjansen/modatlas)
+
+- how to use dehist before/when packing the archive?
+
+- extend the database functionality of AllCharacterTableNames,
+  i.e., make orders, nccl (all attributes?) accessible;
+  store the info somewhere?
+  user dependent?
+
+- implement etc/periphery:
+  check whether for each MBT, there are decomposition matrices,
+  there is a Cambridge file, ...
+
+- store the history of all files since GAP 3 times !
+
+- in README, doc/index.html and ~/temp/WWW/Share/ctbllib.input:
+  add statement about using with GAP 3
+
+- document ctoc stuff!
+
+- standard tests for library tables (ordinary and Brauer)
+  in a function in a file of its own;
+  then the function can store its version number!
+
+  (Brauer checks as in the Cambridge conversion!)
+  (TENStest is in gap4/test ...)
+
+- sorting of tables according to Galois conjugates!
+
+- formula to *compute* extInfo data for simple groups!
+
+- class parameters for 2.Sn?
+
+- omit irredinfo from data files?
+
+- as soon as names are dealt with via isom. types:
+  ALN becomes obsolete; how is this handled for GAP 3?
+
+- CharacterTableCentralProduct, ConstructCentralProduct
+
+- differences ctadmin.tbl between 3.4.4 and 3.5 (I took the file from 3.5)
+  (ConstructV4G, ConstructFactor, clms-handling, ...)
+  (Are other 3.5-functions needed in 3.4.4?)
+
+- also ctbldiff.dvi should be put on the web!
+
+- in ClassPositionsOfDirectProductDecomposition: call ConvertToRangeRep!
+
+-------------------------------------------------------------------------
+
+for the next release
+====================
+
+- evaluate the file `discussion'
+
+- add new feature `mindeg' (put the HTML file on the Web)
+
+- move ctblj4.xpl from tst to pkg/ctbllib/xpl
+

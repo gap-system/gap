@@ -2,7 +2,7 @@
 ##
 #W  gaussian.gi                 GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gaussian.gi,v 4.13 2002/04/15 10:04:40 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -20,7 +20,7 @@
 ##  It follows that this ring is a Unique Factorization Domain.
 ##
 Revision.gaussian_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: gaussian.gi,v 4.13 2002/04/15 10:04:40 sal Exp $";
 
 
 #############################################################################

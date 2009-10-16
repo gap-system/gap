@@ -2,7 +2,7 @@
 ##
 #W  global.g                    GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: global.g,v 4.10 2002/04/15 10:04:42 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -24,7 +24,7 @@
 ##  etc are there)
 ##
 Revision.global_g :=
-    "@(#)$Id$";
+    "@(#)$Id: global.g,v 4.10 2002/04/15 10:04:42 sal Exp $";
 
 
 #############################################################################

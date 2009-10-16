@@ -1,0 +1,42 @@
+#!/usr/bin/env perl
+
+#A  Greg Gamble ... based in part on Frank Lübeck's packpack
+## 
+##  Usage: make_zoo
+##
+##  Uses perl and zoo to create just the <pname>-<version>.zoo
+##  and copies the README to README.<pname> (both are placed in
+##  the pkg directory).
+##
+
+#set values of <pname> and <version>
+$pname = "lag";
+$version = `cat VERSION`;
+chomp $version;
+
+#remove old .zoo file
+system( "rm -f ../$pname-$version.zoo" );
+
+#copy README in pkg directory 
+system( "cp -f README.$pname .." );
+
+### Create new .zoo file in pkg directory ###################################
+chdir "..";
+
+# substrings (mainly suffixes) that determine files we want to exclude
+$prune = "[._]cvs|[.]bbl|[.]aux|[.]toc|[.][ib]lg|[.]log|[.]lab|[.]ind|[.]idx".
+         "|zoo|make_|[.]sw[op]|[.-]bak|~|[.][#]";
+
+# Create the .zoo file
+system( "find $pname -path '*/CVS' -prune -o -print | egrep -v '$prune' |".
+        "zoo ahI $pname-$version.zoo" );
+
+@files = `find $pname -path '*/CVS' -prune -o -print | egrep -v '$prune'`;
+# Mark some files as text files
+for $file ( @files ) {
+  chomp $file;
+  if ($file =~ /[.](txt|g(|[id])|htm(|l)|[ch]|xml|tex|bib|bbl|six|tst|ms[kt])$/       || $file =~ /(VERSION|README|INSTALL|Makefile|config|make[.])/ ||
+      $file =~ /[Cc](hange|HANGE)/) {
+    system( "(echo '!TEXT!'; echo '/END') | zoo c $pname-$version.zoo $file" );
+  }
+}

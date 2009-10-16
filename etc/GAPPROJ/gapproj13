@@ -1,5 +1,5 @@
 @Name
-Maximal subgroups
+Maximality tests
 @Contact
 AH
 @Date
@@ -9,7 +9,7 @@ AH
 @Public
 Yes
 @Need
-4
+0
 @NeedA
 5
 @Math
@@ -19,9 +19,9 @@ Yes
 @Component
 Generic groups/Permutation groups
 @Descr
-The maximal subgroups of a group can be calculated by a mixture of
-complement calculations (for solvable chief factors) and a ``reversed''
-O'Nan-Scott theorem. The procedure is described, but not implemented.
+The ideas of algorithms to find maximal subgroups can be used as well to test
+whether a subgroup is maximal, and if not to find a subgroup it is contained
+in. Such routines would be of use for (double) coset computations.
 @Ref
 <UL>
 <LI>

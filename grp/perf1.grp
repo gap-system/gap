@@ -3,15 +3,15 @@
 #W  perf1.grp              GAP Groups Library                 Volkmar Felsch
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: perf1.grp,v 4.4 2004/07/22 17:31:36 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file contains the perfect groups of sizes 1-7680
+##  This file contains the perfect groups of sizes 2-7680
 ##  All data is based on Holt/Plesken: Perfect Groups, OUP 1989
 ##
 Revision.perf1_grp :=
-    "@(#)$Id$";
+    "@(#)$Id: perf1.grp,v 4.4 2004/07/22 17:31:36 gap Exp $";
 
   PERFGRP[1]:=[];
   PERFGRP[2]:=[# 60.1

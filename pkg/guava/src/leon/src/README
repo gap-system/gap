@@ -1,0 +1,7 @@
+This directory contains the source code for the partition backtrack 
+programs.  A make file is included, as is a shell script for installing
+the programs after they are compiled.  The directory also include shell
+scripts needed for some of the partition backtrack programs.  Please
+see Section XI of the User's Manual (provided in file manual.tex in
+the subdirectory doc) for information about compiling, installing, and
+testing the programs.

@@ -1,0 +1,30 @@
+#!/bin/sh
+# usage: configure gappath
+# this script creates a `Makefile' from `Makefile.in' 
+if [ "x$1" = "x" ]; then 
+  GAPPATH=../..; echo "Using ../.. as default GAP path";
+else 
+  GAPPATH=$1;
+fi
+if [ -f "$GAPPATH/sysinfo.gap" ]; then
+  echo "$GAPPATH/sysinfo.gap found" 
+else
+  echo "Please give correct GAP path as argument (and make sure that GAP"
+  echo "is already properly installed)."
+  exit
+fi
+rm -f Makefile sedfile
+cat $GAPPATH/sysinfo.gap > Makefile
+echo "echo s/@GAPARCH@/\$GAParch/g >sedfile" >> Makefile
+chmod +x Makefile
+./Makefile
+rm -f Makefile
+sed -f sedfile Makefile.in >Makefile
+echo "Makefile successfully created."
+sed -f sedfile testPq.in >testPq
+chmod +x testPq
+echo "testPq successfully created."
+rm -f sedfile
+echo "Done."
+make unknown
+

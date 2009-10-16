@@ -1,0 +1,22 @@
+#!/bin/sh
+# $Id: writePackageWebInfos,v 1.2 2004/10/18 15:44:01 gapchron Exp $    (C) Frank Lübeck
+
+
+mypath=`dirname  $0`/
+
+source ${mypath}setup
+
+$GAP -r -b -q  ${mypath}PackageInfoTools.g  << EOI
+ANSI_COLORS := false;;
+Unbind(PrintPromptHook);
+Print("\n");
+
+ReadAllPackageInfos("${PkgCacheDir}");
+WritePackageWebPageInfos("${PkgWebFtpDir}", 
+                            "${PkgWebFtpDir}/Packages/pkgconf.py");
+
+quit;
+EOI
+
+${mypath}currentPackageInfoURLs
+

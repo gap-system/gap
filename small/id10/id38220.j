@@ -3,7 +3,7 @@
 #W  id38220.j              GAP library of id's             Hans Ulrich Besche
 ##
 Revision.id38220_j :=
-    "@(#)$Id$";
+    "@(#)$Id: id38220.j,v 1.1 2005/04/02 09:34:37 gap Exp $";
 
 ID_GROUP_TREE.next[38220].next[10]:=
 rec(

@@ -2,7 +2,7 @@
 ##
 #W  basismut.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: basismut.gi,v 4.23 2003/07/04 15:26:23 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  - mutable bases that use immutable bases for nicer modules
 ##
 Revision.basismut_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: basismut.gi,v 4.23 2003/07/04 15:26:23 gap Exp $";
 
 
 #############################################################################

@@ -52,14 +52,18 @@ ReadLib( "algrep.gd"   );
 ReadLib( "lierep.gd"   );
 ReadLib( "integer.gd"  );
 ReadLib( "numtheor.gd" );
+ReadLib( "primality.gd");
 ReadLib( "contfrac.gd" );
+ReadLib( "ringsc.gd"    );
+ReadLib( "ringhom.gd"    );
 
-ReadLib( "string.gd"   );
+ReadLib( "combinat.gd" );
 
 ReadLib( "ratfun.gd"   );
 
 ReadLib( "field.gd"    );
 ReadLib( "zmodnz.gd"   );
+ReadLib( "zmodnze.gd"  );
 ReadLib( "cyclotom.gd" );
 ReadLib( "fldabnum.gd" );
 ReadLib( "padics.gd"   );
@@ -76,6 +80,8 @@ ReadLib( "unknown.gd"  );
 ReadLib( "word.gd"     );
 ReadLib( "wordass.gd"  );
 
+ReadLib( "matobj2.gd"  );
+ReadLib( "matobjplist.gd" );
 
 # files dealing with rewriting systems
 ReadLib( "rws.gd"      );
@@ -126,6 +132,7 @@ ReadLib( "partitio.gd" );
 ReadLib( "stbc.gd"     );
 ReadLib( "clas.gd"     );
 ReadLib( "clashom.gd"  );
+ReadLib( "permdeco.gd"  );
 ReadLib( "csetgrp.gd"  );
 ReadLib( "factgrp.gd"  );
 ReadLib( "grpreps.gd" );
@@ -135,9 +142,9 @@ ReadLib( "onecohom.gd" );
 ReadLib( "grppccom.gd" );
 
 ReadLib( "twocohom.gd" );
-ReadLib( "grppcext.gd");
-ReadLib( "grppcfp.gd");
-ReadLib( "randiso.gd");
+ReadLib( "grppcext.gd" );
+ReadLib( "grppcfp.gd" );
+ReadLib( "randiso.gd" );
 
 ReadLib( "schur.gd" );
 
@@ -169,6 +176,9 @@ ReadLib( "integer.gi"  ); # needed for CoefficientsQadic
 ReadLib( "list.gi"     ); # was too early
 ReadLib( "set.gi"      );
 ReadLib( "wpobj.gi"    );
+##  ReadLib( "random.gd"   );
+##  ReadLib( "random.gi"   );
+##  ReadLib( "random.g"    );
 
 # files dealing with nice monomorphism
 # grpnice uses some family predicates, so fampred.g must be known
@@ -204,7 +214,7 @@ ReadLib( "adjoin.gd");
 ReadLib( "semirel.gd");
 ReadLib( "semitran.gd");
 ReadLib( "reesmat.gd");
-ReadLib("semiquo.gd");
+ReadLib( "semiquo.gd");
 
 # the help system
 ReadLib( "pager.gd"    );

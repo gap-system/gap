@@ -3,7 +3,7 @@
 %A  grpoper.msk                GAP documentation            Alexander Hulpke
 %A                                                          Heiko Theissen
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: grpoper.msk,v 1.47 2005/04/30 23:58:53 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -199,28 +199,34 @@ Note that this function *must* implement an action from the *right*. This is
 not verified by {\GAP} and results are unpredicatble otherwise.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Action on canonical representatives}
+
+A variety of action functions assumes that the objects on which it acts are
+given in a particular form, for example canonical representatives.
+Affected actions are for example `OnSetsSets', `OnSetsDisjointSets',
+`OnSetsTuples', `OnTuplesSets', `OnLines' and `OnSubspacesByCanonicalBasis'.
+
+If orbit seeds or domain elements are not given in the required form {\GAP}
+will issue an error message:
+\begintt
+gap> Orbit(SymmetricGroup(5),[[2,4],[1,3]],OnSetsSets);
+Error, Action not well-defined. See the manual section
+``Action on canonical representatives''.
+\endtt
+In this case the affected domain elements have to be brought in canonical
+form, as documented for the respective action function.
+For interactive use this is most easily done by acting with the identity
+element of the group.
+
+(A similar error could arise if a user-defined action function is used which
+actually does not implement an action from the right.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Orbits}
 
 If <G> acts on <Omega> the set of all images of $\omega\in<Omega>$ under
 elements of <G> is called the *orbit* of $\omega$. The set of orbits of <G>
 is a partition of <Omega>.
-
-Note that currently {\GAP} does *not* check whether a given point really
-belongs to $\Omega$.
-For example, consider the following example where the projective action
-of a matrix group on a finite vector space shall be computed.
-
-\beginexample
-gap> Orbit( GL(2,3), [ -1, 0 ] * Z(3)^0, OnLines );
-[ [ Z(3), 0*Z(3) ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3) ], [ Z(3)^0, Z(3)^0 ], 
-  [ 0*Z(3), Z(3)^0 ] ]
-gap> Size( GL(2,3) ) / Length( last );
-48/5
-\endexample
-
-The error is that `OnLines' (see~"OnLines") acts on the set of normed row
-vectors (see~"NormedRowVectors") of the vector space in question,
-but that the seed vector is itself not such a vector.
 
 \Declaration{Orbit}
 \beginexample

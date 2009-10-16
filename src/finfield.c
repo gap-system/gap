@@ -3,7 +3,7 @@
 *W  finfield.c                  GAP source                      Werner Nickel
 *W                                                         & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: finfield.c,v 4.51 2009/10/06 02:19:29 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -53,7 +53,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_finfield_c =
-   "@(#)$Id$";
+   "@(#)$Id: finfield.c,v 4.51 2009/10/06 02:19:29 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1672,7 +1672,7 @@ Obj FuncLOG_FFE_DEFAULT (
     FFV                 vZ, vR;         /* value of left, right            */
     FF                  fZ, fR, fX;     /* field of left, right, common    */
     UInt                qZ, qR, qX;     /* size  of left, right, common    */
-    UInt                a, b, c, d, t;  /* temporaries                     */
+    Int                 a, b, c, d, t;  /* temporaries                     */
 
     /* check the arguments                                                 */
     if ( ! IS_FFE(opZ) || VAL_FFE(opZ) == 0 ) {
@@ -1727,18 +1727,18 @@ Obj FuncLOG_FFE_DEFAULT (
 
     /* now solve <l> * (<vR>-1) = (<vZ>-1) % (<qX>-1)                      */
     /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
-    a = 1;     b = 0;
-    c = vR-1;  d = qX-1;
+    a = 1;             b = 0;
+    c = (Int) (vR-1);  d = (Int) (qX-1);
     while ( d != 0 ) {
         t = b;  b = a - (c/d) * b;  a = t;
         t = d;  d = c - (c/d) * d;  c = t;
     }
-    if ( (vZ-1) % c != 0 ) {
+    if ( ((Int) (vZ-1)) % c != 0 ) {
       return Fail;
     }
 
     /* return the logarithm                                                */
-    return INTOBJ_INT( (vZ-1) / c * a );
+    return INTOBJ_INT( (((Int) (vZ-1) / c) * a) % ((Int) (qX-1)) );
 
 }
 

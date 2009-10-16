@@ -1,0 +1,39 @@
+#Example: "5gp-SP-Rel-i" . . . based on: isom/5gp
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, StandardPresentationFile
+F := FreeGroup("a", "b");
+rels := ["a^25", "[b, a, a, a]", "b^5*[b, a, a]^-1"];
+procId := PqStart(F : Prime := 5, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+#add <OutputLevel> for <value> if set and ok
+#PqSetOutputLevel(procId, value);;
+PqSPComputePcpAndPCover(procId : ClassBound := 2);;
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also save the presentation to a file by supplying <StandardPresentationFile>
+PqSPStandardPresentation(procId, [ [[1,0,0,1],
+                                    [0,1,0,0]],
+
+                                   [[1,0,0,0],
+                                    [0,1,0,1]],
+
+                                   [[1,3,0,0],
+                                    [0,1,0,0]],
+
+                                   [[1,3,0,0],
+                                    [0,4,0,0]],
+
+                                   [[1,2,0,0],
+                                    [0,3,0,0]],
+
+                                   [[4,0,0,0],
+                                    [0,1,0,0]],
+
+                                   [[3,0,0,0],
+                                    [0,1,0,0]] ]
+
+                         : # options
+#add <StandardPresentationFile> for <value> if set and ok
+#                          StandardPresentationFile := value,
+#sub <ClassBound> for <10> if set
+                           ClassBound := 10,
+                           PcgsAutomorphisms);;

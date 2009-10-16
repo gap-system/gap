@@ -1,0 +1,44 @@
+
+1
+c11xc11xc11
+11
+1
+1
+{a, b, c}
+{}
+0
+
+7         #compute 11-covering group
+
+9
+
+1         #supply automorphisms 
+2         #number of automorphisms 
+  2  0  0  
+  0  1  0  
+  0  0  1  
+
+ 10  0  1  
+ 10  0  0  
+  0 10  0  
+
+0         #number of soluble automorphisms
+
+
+5         #iteration 
+2         #class bound
+0         #construct all descendants?
+1         #step size  
+0         #PAG-generating sequence 
+
+0         #default algorithm?
+3         #rank of subgroup
+0         #completely process terminal descendants?
+0         #exponent law
+0         #metabelian law 
+
+1         #default output 
+
+0         
+0
+

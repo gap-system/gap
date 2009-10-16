@@ -1,0 +1,10 @@
+Generators A_1: e f h;
+
+Weights:        1 1 1;
+
+Limiting weight: 3;
+
+Relations, N = 3:
+[e,f]-h;
+[h,e]-2 e;
+[h,f]+2 f.

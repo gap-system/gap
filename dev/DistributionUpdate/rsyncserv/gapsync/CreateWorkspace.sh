@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #
-#  $Id$   Frank Lübeck
+#  $Id: CreateWorkspace.sh,v 1.7 2007/10/04 15:01:50 gap Exp $   Frank Lübeck
 #
 # Use this script inside the $GAPHOME directory (the top directory
 # containing 'bin', 'lib', 'pkg' and so on as subdirectories) to 
@@ -8,13 +8,31 @@
 #     bin/wsgap4
 #
 
+arch=$1
+if [ $arch'X' = 'X' ]; then
+  arch=i686
+fi
+if [ $arch'X' = 'i686X' ]; then
+  wsname=wsgap4
+else
+  wsname=ws64gap4
+fi
+
 # the -N option is to really load the code, not completion files
-bin/i686-pc-linux-gnu-gcc/gap -l `pwd` -N -r > /dev/null <<EOF
+bin/$arch*/gap -l `pwd`"/local;"`pwd` -N -r > /dev/null <<EOF
+
+##  comment this if you don't want colors to be used by default, e.g. when
+##  GAPDoc produced manual pages are displayed on screen.
 ANSI_COLORS := true;
+
+##  uncomment these two lines, if you want a colored prompt as default
+#ReadLib("colorprompt.g");
+
+
 # load here all packages you want to include in the standard workspace
 for nam in [ "atlasrep", "autpgrp", "carat", "cohomolo", "crisp", "cryst", 
       "crystcat", "ctbllib", "edim", "factint", "format", "gapdoc", "grape", 
-      "grpconst", "kbmag", "laguna", "quagroup" ]do
+      "grpconst", "guava", "kbmag", "laguna", "quagroup" ] do
   LoadPackage(nam);
 od;
 Unbind(nam);
@@ -28,7 +46,7 @@ VAL_GVAR(a); fi;od;end;
 last();
 
 # save the workspace
-SaveWorkspace("bin/wsgap4");
+SaveWorkspace("bin/$wsname");
 
 quit;
 EOF

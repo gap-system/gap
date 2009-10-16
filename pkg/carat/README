@@ -1,0 +1,93 @@
+
+The GAP 4 package "Interface to CARAT", briefly called just Carat, 
+provides GAP interface routines to some of the stand-alone programs 
+in the package CARAT, developed by J. Opgenorth, W. Plesken, and 
+T. Schulz at Lehrstuhl B f\"ur Mathematik, RWTH Aachen. CARAT is a 
+package for the computation with crystallographic groups. It is 
+implemented in C, and thus needs to be compiled. It runs on Unix 
+systems only.
+
+CARAT is to a large extent complementary to the GAP 4 package
+Cryst. In particular, it provides routines for the computation 
+of normalizers and conjugators of finite unimodular groups in GL(n,Z),
+and routines for the computation of Bravais groups, which are all 
+missing in Cryst.  Furthermore, it provides also a catalogue of 
+Bravais groups up to dimension 6. Cryst automatically loads Carat
+when it is available, and makes use of its functions where necessary. 
+The Carat package thereby extends the functionality of the package 
+Cryst considerably.
+
+Please note that the Carat package consists of the GAP interface
+routines to CARAT, even though a copy of CARAT itself is included in
+the distribution. All rights and responsibilities regarding CARAT
+remain with its authors. The most recent version of CARAT can be
+obtained at the CARAT Home Page
+
+    http://wwwb.math.rwth-aachen.de/carat/
+
+Questions and bug reports regarding CARAT itself should be addressed 
+to the CARAT authors at
+
+    carat@momo.math.rwth-aachen.de.
+
+The GAP interface routines to CARAT have been written by
+
+    Franz G\"ahler
+    Institut f\"ur Theoretische und Angewandte Physik 
+    Universit\"at Stuttgart, Pfaffenwaldring 57
+    D-70550 Stuttgart
+
+    gaehler@itap.physik.uni-stuttgart.de
+
+to whom bug reports regarding these interface routines should be
+addressed.
+
+
+INSTALLATION
+
+This package must be installed in the pkg subdirectory of any of
+the GAP 4 root directories. We assume here that this is /gap4/pkg.
+
+    cd /gap4/pkg
+    unzoo -x carat-2.0.1.zoo
+
+This creates a subdirectory carat, the home directory of this interface
+package. CARAT itself can be installed anywhere on your system. 
+You only have to make sure GAP finds the CARAT binaries, by making 
+a symbolic link from the bin subdirectory in the home directory
+of this interface package to the bin subdirectory of CARAT itself. 
+In our example, we install Carat in /gap4/pkg/carat (the CARAT tar 
+file should already be there):
+
+    cd /gap4/pkg/carat
+    zcat carat-2.0.tar.gz | tar xf -
+    ln -s carat/bin bin
+    cd carat
+
+This creates a subdirectory /gap4/pkg/carat/carat, the CARAT top level
+directory. You have to edit the Makefile in that directory. In particular,
+you have to set the variables TOPDIR (to /gap4/pkg/carat/carat), CC, and
+CFLAGS (to your favourite set of compiler options). Then do 
+
+    make
+
+If you build for more than one architecture, make sure to do a 
+'make clean' in between.
+
+Like any other GAP 4 package, Carat is then loaded in GAP with
+
+    RequirePackage("carat");
+
+This package, together with CARAT itself, takes some 130Mb of disk space,
+or more, depending on the system. Some 100Mb is taken by the catalog
+of Q-classes of integer matrix groups up to dimension 6. If you want
+to avoid unpacking this catalog, you can create empty subdirectories
+
+    cd /gap4/pkg/carat/carat
+    mkdir tables
+    mkdir tables/qcatalog
+
+before making CARAT. If you want to unpack the catalog later, just
+remove the empty directory tables/qcatalog, and do
+
+    make Qcatalog

@@ -5,7 +5,7 @@
 ##
 ##	Installed in GAP4 by Andrew Solomon for Semigroups instead of Monoids.
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: tcsemi.gi,v 4.8 2002/04/15 10:05:24 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  based on the thesis of T. Walker.
 ##
 Revision.tcsemi_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: tcsemi.gi,v 4.8 2002/04/15 10:05:24 sal Exp $";
 
 
 #############################################################################

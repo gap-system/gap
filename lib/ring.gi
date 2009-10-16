@@ -2,7 +2,7 @@
 ##
 #W  ring.gi                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ring.gi,v 4.50 2008/07/03 01:04:34 gap Exp $
 ##
 #Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for rings.
 ##
 Revision.ring_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ring.gi,v 4.50 2008/07/03 01:04:34 gap Exp $";
 
 
 #############################################################################
@@ -639,7 +639,8 @@ InstallMethod( Enumerator,
 InstallMethod( Size, "characteristic zero ring is infinite",
     true, [ IsRing and HasGeneratorsOfRing], 0,
 function(R)
-  if Characteristic(R)=0 and ForAny(GeneratorsOfRing(R),i->not IsZero(i))
+  if HasCharacteristic(R) 
+    and Characteristic(R)=0 and ForAny(GeneratorsOfRing(R),i->not IsZero(i))
     then
     return infinity;
   fi;

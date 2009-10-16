@@ -2,7 +2,7 @@
 ##
 #W  clashom.gd                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: clashom.gd,v 4.4 2004/11/15 21:23:24 gap Exp $
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -13,7 +13,7 @@
 ##  homomorphic images, MathComp, to appear.
 ##
 Revision.clashom_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: clashom.gd,v 4.4 2004/11/15 21:23:24 gap Exp $";
 
 #############################################################################
 ##

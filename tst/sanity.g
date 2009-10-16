@@ -2,7 +2,7 @@
 ##
 #W  sanity.g                   GAP tests                     Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: sanity.g,v 4.6 1998/07/16 14:16:32 ahulpke Exp $
 ##
 #Y  Copyright (C)  1997,  St. Andrews
 ##

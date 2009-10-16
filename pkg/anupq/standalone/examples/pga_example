@@ -1,0 +1,53 @@
+#construct all class 3 descendants of c2 x c2 with extensive output 
+
+1      #option
+c2c2   #group identifier
+2      #prime 
+1      #maximum class 
+1      #output level
+2      #number of generators 
+0      #nmr of relations 
+0      #exponent law (if any)
+
+7      #compute p-cover
+
+9     #pgp generation menu
+1     #supply auts 
+2     #number of auts 
+
+0 1
+1 1
+
+0 1
+1 0
+
+0    #number of soluble automorphisms
+
+5    #option to construct 
+3    #max class of descendants 
+1    #all descendants?
+0    #set order bound?
+1    #PAG-generating sequence for aut gp?
+1    #default algorithm?
+
+0    #default output? 
+1    #default permutation group output?
+1    #default orbit output?
+0    #default group output?
+
+0    #print standard matrix?
+0    #presentation of reduced cover groups?
+1    #presentation of immediate des?
+0    #print nuclear rank?
+0    #print multiplicator rank?
+
+0    #default aut gp info?
+0    #print commutator matrix?
+1    #print aut gp description of descendants?
+1    #print aut gp order of descendants?
+
+0    #trace info for algorithm?
+
+0    #exit from pgp menu
+
+0    #exit from program 

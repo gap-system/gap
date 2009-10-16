@@ -2,14 +2,14 @@
 ##
 #W  ctblmoli.tst               GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblmoli.tst,v 4.13 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: ctblmoli.tst,v 4.13 2005/05/05 15:04:16 gap Exp $");
 
 gap> G:= AlternatingGroup( 5 );;
 gap> psi:= First( Irr( G ), x -> Degree( x ) = 3 );;
@@ -39,7 +39,7 @@ gap> MolienSeries( NaturalCharacter( G ) );
 ( 1 ) / ( (1-z^12)*(1-z^9)*(1-z^6)*(1-z^5)*(1-z^3)*(1-z) )
 
 
-gap> STOP_TEST( "ctblmoli.tst", 512400000 );
+gap> STOP_TEST( "ctblmoli.tst",416003661);
 
 
 #############################################################################

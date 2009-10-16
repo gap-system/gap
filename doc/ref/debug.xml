@@ -1,0 +1,583 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  debug.msk                 GAP manual                    Thomas Breuer -->
+<!-- %W                                                       Alexander Hulpke -->
+<!-- %W                                                       Martin Schoenert -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: debug.msk,v 1.26 2006/03/07 22:05:56 jjm Exp </M> -->
+<!-- %% -->
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Debugging and Profiling Facilities">
+<Heading>Debugging and Profiling Facilities</Heading>
+
+This chapter describes some functions that are useful mainly for
+debugging and profiling purposes.
+<P/>
+The sections&nbsp;<Ref Sect="sect:ApplicableMethod"/>
+and&nbsp;<Ref Sect="Tracing Methods"/> show how to get
+information about the methods chosen by the method selection mechanism
+(see chapter&nbsp;<Ref Chap="Method Selection"/>).
+<P/>
+The final sections describe functions for collecting statistics about
+computations (see <Ref Func="Runtime"/>, <Ref Sect="Profiling"/>).
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Recovery from NoMethodFound-Errors">
+<Heading>Recovery from NoMethodFound-Errors</Heading>
+
+When the method selection fails because there is no applicable method, an
+error as in the following example occurs and a break loop is entered:
+<P/>
+<Log><![CDATA[
+gap> IsNormal(2,2);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `IsNormal' on 2 arguments called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> 
+]]></Log>
+<P/>
+This only says, that the method selection tried to find a method for 
+<C>IsNormal</C> on two arguments and failed. In this situation it is
+crucial to find out, why this happened. Therefore there are a few functions
+which can display further information.
+Note that you can leave the break loop by the <K>quit</K> command
+(see&nbsp;<Ref Subsect="quit"/>)
+and that the information about the incident is no longer accessible
+afterwards.
+<P/>
+<!-- %If you use <K>return</K> you have to supply a method -->
+<!-- %which matches. -->
+<#Include Label="ShowArguments">
+<#Include Label="ShowArgument">
+<#Include Label="ShowDetails">
+<#Include Label="ShowMethods">
+<#Include Label="ShowOtherMethods">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:ApplicableMethod">
+<Heading>Inspecting Applicable Methods</Heading>
+
+<#Include Label="ApplicableMethod">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Tracing Methods">
+<Heading>Tracing Methods</Heading>
+
+<#Include Label="TraceMethods">
+<#Include Label="UntraceMethods">
+<#Include Label="TraceImmediateMethods">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Info Functions">
+<Heading>Info Functions</Heading>
+
+The <Ref Func="Info"/> mechanism permits operations to display intermediate results or
+information about the progress of the algorithms.
+Information is always given according to one or more <E>info classes</E>. Each of the
+info classes defined in the &GAP; library usually covers a certain range
+of algorithms, so for example <C>InfoLattice</C> covers all the cyclic extension
+algorithms for the computation of a subgroup lattice.
+<P/>
+The amount of information to be displayed can be specified by the user for
+each info class separately by a <E>level</E>, the higher the level the more
+information will be displayed.
+Ab initio all info classes have level zero except
+<Ref Func="InfoWarning"/> which initially has level 1.
+<P/>
+<ManSection>
+<Oper Name="NewInfoClass" Arg='name'/>
+
+<Description>
+creates a new info class with name <A>name</A>.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Func Name="DeclareInfoClass" Arg='name'/>
+
+<Description>
+creates a new info class with name <A>name</A> and binds it to the global
+variable <A>name</A>. The variable must previously be writable, and is made 
+readonly by this function.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Oper Name="SetInfoLevel" Arg='infoclass, level'/>
+
+<Description>
+Sets the info level for <A>infoclass</A> to <A>level</A>.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Oper Name="InfoLevel" Arg='infoclass'/>
+
+<Description>
+returns the info level of <A>infoclass</A>.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Func Name="Info" Arg='infoclass, level, info[, moreinfo ...]'/>
+
+<Description>
+If the info level of <A>infoclass</A> is at least <A>level</A> the remaining
+arguments, <A>info</A> and possibly <A>moreinfo</A> and so on, are evaluated.
+(Technically, <Ref Func="Info"/> is a keyword and not a function.)
+<P/>
+By default, they are 
+viewed, preceded by the string <C>"#I  "</C> and followed by a newline.
+Otherwise the third and subsequent arguments are not evaluated.
+(The latter can save substantial time when displaying difficult results.)
+<P/>
+The behaviour can be customized with <Ref Func="SetInfoHandler"/>.
+<P/>
+<Example><![CDATA[
+gap> InfoExample:=NewInfoClass("InfoExample");;
+gap> Info(InfoExample,1,"one");Info(InfoExample,2,"two");
+gap> SetInfoLevel(InfoExample,1);
+gap> Info(InfoExample,1,"one");Info(InfoExample,2,"two");
+#I  one
+gap> SetInfoLevel(InfoExample,2);
+gap> Info(InfoExample,1,"one");Info(InfoExample,2,"two");
+#I  one
+#I  two
+gap> InfoLevel(InfoExample);
+2
+gap> Info(InfoExample,3,Length(Combinations([1..9999])));
+]]></Example>
+<P/>
+Note that the last <Ref Func="Info"/> call is executed without problems,
+since the actual level <C>2</C> of <C>InfoExample</C> causes <Ref Func="Info"/> to ignore
+the last argument, which prevents <C>Length(Combinations([1..9999]))</C>
+from being evaluated;
+note that an evaluation would be impossible due to memory restrictions.
+<P/>
+
+A set of info classes (called an <E>info selector</E>) may be passed to a
+single <Ref Func="Info"/> statement. As a shorthand, info classes and selectors
+may be combined with <C>+</C> rather than <Ref Func="Union" Label="for a list"/>.
+In this case, the
+message is triggered if the level of <E>any</E> of the classes is high enough.
+<P/>
+<Example><![CDATA[
+gap> InfoExample:=NewInfoClass("InfoExample");;
+gap> SetInfoLevel(InfoExample,0);
+gap> Info(InfoExample + InfoWarning, 1, "hello");
+#I  hello
+gap> Info(InfoExample + InfoWarning, 2, "hello");
+gap> SetInfoLevel(InfoExample,2);
+gap> Info(InfoExample + InfoWarning, 2, "hello");
+#I  hello
+gap> InfoLevel(InfoWarning);
+1
+]]></Example>
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Arg="infoclass, handler" Name="SetInfoHandler" />
+<Returns>nothing</Returns>
+<Description>
+This allows to customize what happens in an
+<C>Info(<A>infoclass</A>, <A>level</A>, ...)</C> statement. 
+Here <A>handler</A>
+must be a function with three arguments <A>infoclass</A>, <A>level</A>,
+<A>list</A>. Here <A>list</A> is the list containing the third to last
+argument of the <Ref Func="Info"/> call.
+<P/>
+For example, using <C>function(cl, lev, l) CallFuncList(Print, l); end;</C>
+would print the arguments without the default <C>"#I  "</C> 
+and <C>"\n"</C> around it.
+<P/>
+If the first argument of an <Ref Func="Info"/> statement is a sum of
+Info classes, the handler of the first summand is used.
+</Description>
+</ManSection>
+
+<ManSection>
+<Var Name="InfoWarning"/>
+
+<Description>
+is an info class to which general warnings are sent at level 1,
+which is its default level.
+More specialised warnings are shown via calls of <Ref Func="Info"/> at
+<Ref Func="InfoWarning"/> level 2,
+e.g.&nbsp;information about the autoloading of &GAP; packages and the
+initial line matched when displaying an on-line help topic.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Assertions">
+<Heading>Assertions</Heading>
+
+Assertions are used to find errors in algorithms.
+They test whether intermediate results conform to required conditions
+and issue an error if not.
+<P/>
+<ManSection>
+<Func Name="SetAssertionLevel" Arg='lev'/>
+
+<Description>
+assigns the global assertion level to <A>lev</A>. By default it is zero.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Func Name="AssertionLevel" Arg=''/>
+
+<Description>
+returns the current assertion level.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Func Name="Assert" Arg='lev, cond[, message]'/>
+
+<Description>
+With two arguments, if the global assertion level is at least <A>lev</A>,
+condition <A>cond</A> is tested and if it does not return <K>true</K> an
+error is raised.
+Thus <C>Assert(lev, <A>cond</A>)</C> is equivalent to the code
+<Log><![CDATA[
+if AssertionLevel() >= lev and not <cond> then
+  Error("Assertion failure");
+fi;
+]]></Log>
+<P/>
+With the <A>message</A> argument form of the <Ref Func="Assert"/> statement,
+if the global assertion level is at least <A>lev</A>, condition <A>cond</A>
+is tested and if it does not return <K>true</K> then <A>message</A> is
+evaluated and printed.
+<P/>
+Assertions are used at various places in the library.
+Thus turning assertions on can slow code execution significantly.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Timing">
+<Heading>Timing</Heading>
+
+<ManSection>
+<Func Name="Runtimes" Arg=''/>
+
+<Description>
+<Ref Func="Runtimes"/> returns a record with components bound to integers
+or <K>fail</K>. 
+Each integer is the cpu time (processor time) in milliseconds spent by &GAP;
+in a certain status:
+<P/>
+<List>
+<Mark><C>user_time</C></Mark>
+<Item>
+   cpu time spent with &GAP; functions (without child processes).
+</Item>
+<Mark><C>system_time</C></Mark>
+<Item>
+   cpu time spent in system calls, e.g., file access 
+   (<K>fail</K> if not available).
+</Item>
+<Mark><C>user_time_children</C></Mark>
+<Item>
+   cpu time spent in child processes (<K>fail</K> if not available).
+</Item>
+<Mark><C>system_time_children</C></Mark>
+<Item>
+   cpu time spent in system calls by child processes
+   (<K>fail</K> if not available).
+</Item>
+</List>
+<P/>
+Note that this function is not fully supported on all systems. Only the
+<C>user_time</C> component is (and may on some systems include the system
+time). 
+<P/>
+The following example demonstrates tasks which contribute to the different
+time components:
+<P/>
+<Log><![CDATA[
+gap> Runtimes(); # after startup
+rec( user_time := 3980, system_time := 60, user_time_children := 0, 
+  system_time_children := 0 )
+gap> Exec("cat /usr/bin/*||wc"); # child process with a lot of file access
+ 893799 7551659 200928302
+gap> Runtimes();
+rec( user_time := 3990, system_time := 60, user_time_children := 1590, 
+  system_time_children := 600 )
+gap> a:=0;;for i in [1..100000000] do a:=a+1; od; # GAP user time
+gap> Runtimes();  
+rec( user_time := 12980, system_time := 70, user_time_children := 1590, 
+  system_time_children := 600 )
+gap> ?blabla  # first call of help, a lot of file access
+Help: no matching entry found
+gap> Runtimes();
+rec( user_time := 13500, system_time := 440, user_time_children := 1590, 
+  system_time_children := 600 )
+]]></Log>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="Runtime" Arg=''/>
+
+<Description>
+<Ref Func="Runtime"/> returns the time spent by &GAP;
+in milliseconds as an integer.
+It is the same as the value of the <C>user_time</C> component given by
+<Ref Func="Runtimes"/>, as explained above.
+<P/>
+See <Ref Func="StringTime"/> for a translation from milliseconds into
+hour/minute format.
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Var Name="time"/>
+
+<Description>
+In the read-eval-print loop,
+<Ref Var="time"/> stores the time the last command took.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Profiling">
+<Heading>Profiling</Heading>
+
+Profiling of code can be used to determine in which parts of a program how
+much time has been spent during runtime.
+
+<#Include Label="ProfileOperations">
+<#Include Label="ProfileOperationsAndMethods">
+<#Include Label="ProfileMethods">
+<#Include Label="UnprofileMethods">
+<#Include Label="ProfileFunctions">
+<#Include Label="UnprofileFunctions">
+<#Include Label="ProfileGlobalFunctions">
+<#Include Label="DisplayProfile">
+<#Include Label="PROFILETHRESHOLD">
+<#Include Label="ClearProfile">
+<#Include Label="DisplayCacheStats">
+<#Include Label="ClearCacheStats">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Information about the version used">
+<Heading>Information about the version used</Heading>
+
+<#Include Label="DisplayRevision">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Test Files">
+<Heading>Test Files</Heading>
+
+Test files are used to check that &GAP; produces correct results in
+certain computations. A selection of test files for the library can be
+found in the <F>tst</F> directory of the &GAP; distribution.
+
+<ManSection>
+<Oper Name="ReadTest" Arg='name-file'/>
+
+<Description>
+reads a test file.
+A test file starts with a line
+<P/>
+<Log><![CDATA[
+gap> START_TEST("arbitrary identifier string");
+]]></Log>
+<P/>
+(Note that the <C>gap></C> prompt is part of the line!)
+It continues by lines of &GAP; input and corresponding output.
+The input lines again start with the <C>gap></C> prompt (or the <C>></C> prompt if
+commands exceed one line). The output is exactly as would result from typing
+in the input interactively to a &GAP; session
+(on a screen with 80 characters per line).
+<P/>
+The test file stops with a line
+<P/>
+<Log><![CDATA[
+gap> STOP_TEST( "filename", 10000 );
+]]></Log>
+<P/>
+Here the string <C>"filename"</C> should give the name of the test file. The
+number is a proportionality factor that is used to output a <Q>&GAP;stone</Q>
+speed ranking after the file has been completely processed. For the files
+provided with the distribution this scaling is roughly equalized to yield
+the same numbers as produced by <F>combinat.tst</F>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Debugging Recursion">
+<Heading>Debugging Recursion</Heading>
+
+The &GAP; interpreter monitors the level of nesting of &GAP;
+functions during execution.
+By default, whenever this nesting reaches a multiple of <M>5000</M>,
+&GAP; enters a break loop (<Ref Sect="Break Loops"/>) allowing you
+to terminate the calculation, or enter <B>Return</B><C>;</C> to continue it. 
+<P/>
+<Log><![CDATA[
+gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;
+function( depth ) ... end
+gap> dive(100);
+gap> OnBreak:= function() Where(1); end; # shorter traceback
+function(  ) ... end
+gap> dive(6000);
+recursion depth trap (5000)
+ at
+dive( depth - 1 );
+ called from
+dive( depth - 1 ); called from
+...
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
+brk> return;
+gap> dive(11000);
+recursion depth trap (5000)
+ at
+dive( depth - 1 );
+ called from
+dive( depth - 1 ); called from
+...
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
+brk> return;
+recursion depth trap (10000)
+ at
+dive( depth - 1 );
+ called from
+dive( depth - 1 ); called from
+...
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
+brk> return;
+gap> 
+]]></Log>
+<P/>
+This behaviour can be controlled using the following procedure.
+
+<ManSection>
+<Func Name="SetRecursionTrapInterval" Arg='interval'/>
+
+<Description>
+<A>interval</A> must be a non-negative small integer (between 0 and
+<M>2^{28}</M>). An <A>interval</A> of 0 suppresses the monitoring of recursion
+altogether. In this case excessive recursion may cause &GAP; to crash.
+<P/>
+<Log><![CDATA[
+gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;
+function( depth ) ... end
+gap> SetRecursionTrapInterval(1000);
+gap> dive(2500);
+recursion depth trap (1000)
+ at
+dive( depth - 1 );
+ called from
+dive( depth - 1 ); called from
+...
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
+brk> return;
+recursion depth trap (2000)
+ at
+dive( depth - 1 );
+ called from
+dive( depth - 1 ); called from
+...
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
+brk> return;
+gap> SetRecursionTrapInterval(-1);
+SetRecursionTrapInterval( <interval> ): <interval> must be a non-negative smal\
+l integer
+not in any function
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can replace <interval> via 'return <interval>;' to continue
+brk> return ();
+SetRecursionTrapInterval( <interval> ): <interval> must be a non-negative smal\
+l integer
+not in any function
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can replace <interval> via 'return <interval>;' to continue
+brk> return 0;
+gap> dive(20000);
+gap> dive(2000000);
+Segmentation fault
+]]></Log>
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Global Memory Information">
+<Heading>Global Memory Information</Heading>
+
+The &GAP; environment provides automatic memory management, so that
+the programmer does not need to concern themselves with allocating
+space for objects, or recovering space when objects are no longer
+needed. The component of the kernel which provides this is called
+<C>GASMAN</C> (&GAP; Storage MANager).  Messages reporting garbage
+collections performed by <C>GASMAN</C> can be switched on
+by the <C>-g</C> command
+line option (see section <Ref Sect="Command Line Options"/>).
+There are also some
+facilities to access information from <C>GASMAN</C> from &GAP; programs.
+
+<#Include Label="GasmanStatistics">
+<#Include Label="GasmanMessageStatus">
+<#Include Label="GasmanLimits">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

@@ -2,7 +2,7 @@
 ##
 #W  ringsc.gi                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ringsc.gi,v 1.5 2009/06/15 15:28:55 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,7 +10,7 @@
 ##  structure constants for multiplication. It is based on algsc.gi
 ##
 Revision.ringsc_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ringsc.gi,v 1.5 2009/06/15 15:28:55 gap Exp $";
 
 
 BindGlobal("SCRingReducedModuli",function(moduli,l)
@@ -1019,7 +1019,7 @@ local ids, tup, first, i, G, gens, g, new, D, prop;
     for g in gens do
       new := ShallowCopy( ids );
       new[i] := g;
-      new := Tuple( new );
+      new := DirectProductElement( new );
       Add( tup, new );
     od;
     Add( first, Length( tup )+1 );

@@ -1,7 +1,7 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
+##  $Id: zooandtag,v 1.12 2006/11/30 10:37:47 gap Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'
@@ -13,19 +13,22 @@ echo $line
 $line 
 
 pre=${DISTNAME}
-zooarchive=gap${RBVERSION}.zoo
+zooarchive=${ARCHNAME}.zoo
 rm -f $zooarchive
 
 echo 'Adding and tagging text files to archive '${DISTROOT}/$zooarchive
 
 find \
-   README \
-   $pre/{lib,grp,tst,src,cnf} \
-   $pre/doc/{gapmacro.tex,manual.bib,manualindex} \
-   $pre/doc/{ref,tut,ext,prg,new}/*.{tex,six,mst,lab,toc} \
+   $pre/README \
+   $pre/descript* \
+   $pre/{lib,grp,tst,src} \
+   $pre/doc/{gapmacro.tex,manual.bib,manualindex,fullindex.tex} \
+   $pre/doc/{ref,tut,ext,prg,new}/*.{tex,six,mst,lab,toc,ind} \
+   $pre/doc/test/{mk}* \
+   $pre/doc/test/README \
    $pre/doc/htm/*.htm \
    $pre/doc/htm/{ref,tut,ext,prg,new} \
-   $pre/etc/{*.vim,emacs,GPL,xrmtcmd.c} \
+   $pre/etc/{*vim*,emacs,GPL,xrmtcmd.c} \
    $pre/pkg/PKGDIR \
    $pre/bin/*.bat \
        -type f -exec sh -c \
@@ -33,7 +36,7 @@ find \
              
 
 find \
-   $pre/{gap.shi,Makefile.in,sysinfo.in,configure} \
+   $pre/{gap.shi,Makefile.in,sysinfo.in,configure,cnf} \
    $pre/doc/{ref,tut,ext,prg,new}/*.{dvi,pdf} \
    $pre/doc/fullindex.{dvi,pdf} \
    $pre/bin/*.{exe,dll,bmp,pif} \
@@ -47,6 +50,9 @@ rm -f $zootools
 find \
    $pre/doc/{allmanualsindex,gapmacro.tex,make_doc,mrabbrev.bib} \
    $pre/doc/{manualindex,htm/Makefile,htm/allhtmlindex,htm/onehtmlindex} \
+   $pre/doc/{fullindex.mst,build/Makefile} \
+   $pre/doc/build/config.* \
+   $pre/doc/build/*.msk \
    $pre/etc/{buildman.pe,convert.pl,packpack,unzoo.c,README.tools} \
        -type f -exec sh -c \
        '(echo "!TEXT!"; echo "/end") |  zoo ahc '${zootools}' '{} ";"

@@ -1,0 +1,26 @@
+
+# F(3,5)
+
+Gr: a,b,c,d,e;
+Rel: abc=d, bcd=e, cde=a, dea=b, eab=c;
+Gen:c;
+
+Mess:10000;
+Pure C;
+End;
+
+Felsch:1;
+End;
+
+Max:200;
+Com:100;
+Aep:7;
+
+# Results (did ALL 3932160 runs, in 4h14m) ...
+# Group Relators: bAED, DCaE, AEcB, DCBe, bcDa;
+# INDEX = 1 (a=1 r=2 h=2 n=2; l=4 c=0.00; m=73 t=85)
+# Group Relators: CaED, BAEc, Ebcd, aBde, bcDa;
+# INDEX = 1 (a=1 r=2 h=2 n=2; l=4 c=0.01; m=72 t=84)
+# Group Relators: CBeD, BAEc, eAcd, AdCB, aBde;
+# INDEX = 1 (a=1 r=2 h=2 n=2; l=4 c=0.00; m=70 t=78)
+

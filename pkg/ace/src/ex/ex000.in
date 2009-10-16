@@ -1,0 +1,26 @@
+
+# ex000.in - Colin Ramsay - 8 May 99
+# + sr:2;  - Greg Gamble  - 1 Apr 01
+
+end;
+
+gr:ab;		# A stupid comment
+Begin
+sr:1;
+sr:2;
+pr:-1,12;
+
+Enum: A_5;
+rel: a^2, b^3, ababababab;
+subgr: trivial;
+mess: 1000;    start;
+
+Subgroup Name: C_5 ;
+gen:ab;
+Monit :1
+END;
+STATistics;
+  print  TABLE : -1, 12 ;
+st;
+pr:-1,12;
+

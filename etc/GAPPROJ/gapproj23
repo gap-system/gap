@@ -3,7 +3,7 @@ Rational function fields
 @Contact
 WDJ
 @Date
-2001/9/28
+2006/8/14
 @Time
 3
 @Public
@@ -19,7 +19,9 @@ Yes
 @Component
 Fields, Rational functions
 @Descr
-Implement code for rational function fields.
+Implement functionality for rational function fields to enable for example
+polynomial rings or linear algebra over such fields. This might require
+modifications to the polynomial arithmetic.
 @Manual
 @Ref
 @Rem

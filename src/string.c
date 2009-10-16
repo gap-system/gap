@@ -3,7 +3,7 @@
 *W  string.c                    GAP source                     Frank Luebeck,
 *W                                            Frank Celler & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: string.c,v 4.77 2009/06/23 09:42:25 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -54,7 +54,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_string_c =
-   "@(#)$Id$";
+   "@(#)$Id: string.c,v 4.77 2009/06/23 09:42:25 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -511,6 +511,10 @@ Obj FuncREVNEG_STRING (
 Obj NEW_STRING ( Int len )
 {
   Obj res;
+  if (len < 0)
+       ErrorQuit(
+           "NEW_STRING: Cannot create string of negative length %d",
+           (Int)len, 0L);
   res = NewBag( T_STRING, SIZEBAG_STRINGLEN(len)  ); 
   SET_LEN_STRING(res, len);
   /* it may be sometimes useful to have trailing zero characters */
@@ -1978,6 +1982,20 @@ Obj FuncSplitString (
 
 /****************************************************************************
 **
+*F FuncSMALLINT_STR( <self>, <string> )
+**
+** Kernel function to extract parse small integers from strings. Needed before
+** we can conveniently have Int working for things like parsing command line
+** options
+*/
+
+Obj FuncSMALLINT_STR( Obj self, Obj string )
+{
+  return INTOBJ_INT(SyIntString(CSTR_STRING(string)));
+}
+
+/****************************************************************************
+**
 *F  UnbString( <string>, <pos> ) . . . . . Unbind function for strings
 **  
 **  This is to avoid unpacking of string to plain list when <pos> is 
@@ -2371,6 +2389,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SplitStringInternal", 3, "string, seps, wspace",
       FuncSplitString, "src/string.c:SplitStringInternal" },
+
+    { "SMALLINT_STR", 1, "string",
+      FuncSMALLINT_STR, "src/string.c:SMALLINT_STR" },
 
     { 0 }
 

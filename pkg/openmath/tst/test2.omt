@@ -1,0 +1,14 @@
+<OMOBJ>
+		<OMATTR>
+      <OMATP>
+        <OMS cd="presentation" name="font"/>
+        <OMSTR>helvetica</OMSTR>
+        <OMS cd="fonts" name="outline"/>
+        <OMB>AAECAwQFBgcICQoLDA0=
+        </OMB>
+      </OMATP>
+      <OMV name="y"/>
+    </OMATTR>
+</OMOBJ>
+
+

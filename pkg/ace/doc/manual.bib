@@ -1,0 +1,435 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.bib                ACE documentation              Colin Ramsay
+%W                                                      Joachim Neub"user
+%W                                                            Greg Gamble
+%%
+%H  $Id: manual.bib,v 1.15 2006/02/14 17:49:27 gap Exp $
+%%
+%%  manual.bib - BibTeX database file of ACE references
+
+%%  In previous versions, years were not attached to the keys in the true
+%%  `alpha' style; and BCP became Magma etc. (this change seemed sensible
+%%  since updates that change both the authors and year seemed probable).
+%%  Here is a list of the changes to the keys:
+%%
+%%    Lee4 -> Lee70   CDHW -> CDHW73   Dok  -> Dok88   Lee  -> Lee84
+%%    War  -> War77   BCP  -> Magma    Sch  -> GAP     AHT  -> AHT84
+%%    HKRR -> HKRR84  Bee  -> Bee84    Hav  -> Hav91   Pla  -> Pla92
+%%    HR   -> HR99a   KB   -> KB70     Lee2 -> Lee77   Hav2 -> Hav76   
+%%    Ede  -> Ede89   Fel  -> Fel98    Moo  -> Moo97   TC   -> TC36
+%%    Lee3 -> Lee63   Sim  -> Sim94    Neu  -> Neu82   Men  -> Men64
+%%    Can  -> Con65   Dic  -> Dic01    HR1  -> HR01    HR2  -> HR00
+%%    Hig  -> Hig51   Neu1 -> Neu54    Neu2 -> Neu79   CH   -> CH97
+%%    CLR  -> CLR90   MKS  -> MKS76    CM   -> CM72
+
+@INCOLLECTION{Lee70,
+  AUTHOR        = {John Leech},
+  TITLE         = {Coset enumeration},
+  BOOKTITLE     = {Computational Problems in Abstract Algebra},
+  }PUBLISHER     = {Pergamon Press, Oxford},
+  YEAR          = {1970},
+  PAGES         = {21--35},
+}
+
+@ARTICLE{CDHW73,
+  AUTHOR        = {John J. Cannon and Lucien A. Dimino and George Havas
+                        and Jane M. Watson},
+  TITLE         = {Implementation and analysis of the {Todd-Coxeter}
+                        algorithm},
+  JOURNAL       = {Mathematics of Computation},
+  YEAR          = {1973},
+  VOLUME        = {27},
+  NUMBER        = {123},
+  PAGES         = {463--490},
+  MONTH         = {July}
+}
+
+@ARTICLE{Dok88,
+  AUTHOR        = {Dragomir Z. Dokovic},
+  TITLE         = {Presentations of some finite simple groups},
+  JOURNAL       = {Journal of the Australian Mathematical Society 
+                        (Series A)},
+  YEAR          = {1988},
+  VOLUME        = {45},
+  NUMBER        = {2},
+  PAGES         = {143--168},
+  MONTH         = {October}
+}
+
+@INCOLLECTION{Lee84,
+  AUTHOR        = {John Leech},
+  TITLE         = {Coset enumeration},
+  BOOKTITLE     = {Computational Group Theory},
+  PUBLISHER     = {Academic Press},
+  YEAR          = {1984},
+  EDITOR        = {Michael D. Atkinson},
+  PAGES         = {3--18}
+}
+
+@INCOLLECTION{War77,
+  AUTHOR        = {J.N. Ward},
+  TITLE         = {A note on the {Todd-Coxeter} algorithm},
+  BOOKTITLE     = {Group Theory (Canberra, 1975)},
+  PUBLISHER     = {Springer-{\kern-1.5pt}Verlag},
+  YEAR          = {1977},
+  EDITOR        = {R.A. Bryce and J. Cossey and M.F. Newman},
+  NUMBER        = {573},
+  SERIES        = {Lecture Notes in Mathematics},
+  PAGES         = {126--129}
+}
+
+@ARTICLE{Magma,
+  AUTHOR        = {W. Bosma and J. Cannon and C. Playoust},
+  TITLE         = {The \textsc{Magma} algebra system {I}: 
+                        the user language},
+  JOURNAL       = {Journal of Symbolic Computation},
+  YEAR          = {1997},
+  VOLUME        = {24},
+  PAGES         = {235--265}
+}
+
+@MANUAL{GAP,
+  TITLE         = {\textsf{GAP} -- Groups, Algorithms and Programming},
+  AUTHOR        = {M. {Sch\"onert et al.}},
+  ORGANIZATION  = {Lehrstuhl D f\"ur Mathematik},
+  ADDRESS       = {Rheinisch-Westf\"alische Technische Hochschule,
+                        Aachen},
+  YEAR          = {1995}
+}
+
+@INCOLLECTION{AHT84,
+  AUTHOR        = {M.D. Atkinson and R.A. Hassan and M.P. Thorne},
+  TITLE         = {Group theory on a micro-computer},
+  BOOKTITLE     = {Computational Group Theory},
+  PUBLISHER     = {Academic Press},
+  YEAR          = {1984},
+  EDITOR        = {Michael D. Atkinson},
+  PAGES         = {275--280}
+}
+
+@INCOLLECTION{HKRR84,
+  AUTHOR        = {George Havas and P.E. Kenne and J.S. Richardson and
+                        E.F. Robertson},
+  TITLE         = {A {Tietze} transformation program},
+
+  BOOKTITLE     = {Computational Group Theory},
+  PUBLISHER     = {Academic Press},
+  YEAR          = {1984},
+  EDITOR        = {Michael D. Atkinson},
+  PAGES         = {69--73}
+}
+
+@INCOLLECTION{Bee84,
+  AUTHOR        = {M.J. Beetham},
+  TITLE         = {Space saving in coset enumeration},
+  BOOKTITLE     = {Computational Group Theory},
+  PUBLISHER     = {Academic Press},
+  YEAR          = {1984},
+  EDITOR        = {Michael D. Atkinson},
+  PAGES         = {19--25}
+}
+
+%% Already included in ../../../doc/manual.bib}
+%% ... by removing the `at' symbol BibTeX sees the following as comments:
+%%
+%% INPROCEEDINGS{Hav91,
+%%   AUTHOR        = {George Havas},
+%%   TITLE         = {Coset enumeration strategies},
+%%   BOOKTITLE     = {ISSAC'91 (Proceedings of the 1991 International
+%%                         Symposium on Symbolic and Algebraic Computation)},
+%%   YEAR          = {1991},
+%%   EDITOR        = {Stephen M. Watt},
+%%   PAGES         = {191--199},
+%%   PUBLISHER     = {ACM Press}
+%% }
+
+@BOOK{Pla92,
+  AUTHOR        = {P.J. Plauger},
+  TITLE         = {The Standard {C} Library},
+  PUBLISHER     = {Prentice Hall},
+  YEAR          = {1992}
+}
+
+@MISC{C11,
+  KEY           = {Group-pub-forum},
+  NOTE          = {Group-pub-forum e-mail list
+                     (\Mailto{group-pub-forum@maths.bath.ac.uk}),
+                   Problem 11, 1996.
+                   See
+                   {\URL{http://www2.bath.ac.uk/~masgcs/problem/problem11.htm}}}
+}
+
+@MISC{HHKR,
+  AUTHOR        = {George Havas and Derek F. Holt and P.E. Kenne and
+                        Sarah Rees},
+  TITLE         = {Some challenging group presentations},
+  YEAR          = {1999 (preprint)}
+}
+
+@MISC{HR99a,
+  AUTHOR        = {George Havas and Colin Ramsay},
+  TITLE         = {Coset enumeration: {\sf ACE} version 3},
+  YEAR          = {1999},
+  NOTE          = {{\sf ACE} version 3.001 is available from
+                   {\URL{http://www.csee.uq.edu.au/~cram/ce.html}}}
+}
+
+@INCOLLECTION{KB70,
+  AUTHOR        = {D.E. Knuth and P.B. Bendix},
+  TITLE         = {Simple word problems in universal algebras},
+  BOOKTITLE     = {Computational Problems in Abstract Algebra},
+  PUBLISHER     = {Pergamon Press, Oxford},
+  YEAR          = {1970},
+  PAGES         = {263--297},
+}
+
+@INCOLLECTION{Lee77,
+  AUTHOR        = {John Leech},
+  TITLE         = {Computer proof of relations in groups},
+  BOOKTITLE     = {Topics in Group Theory and Computation},
+  PUBLISHER     = {Academic Press},
+  YEAR          = {1977},
+  EDITOR        = {Michael P.J. Curran},
+  PAGES         = {38--61}
+}
+
+@ARTICLE{Hav76,
+  AUTHOR        = {George Havas},
+  TITLE         = {Computer aided determination of a {Fibonacci} group},
+  JOURNAL       = {Bulletin of the Australian Mathematical Society},
+  YEAR          = {1976},
+  VOLUME        = {15},
+  PAGES         = {297--305}
+}
+
+@MASTERSTHESIS{Ede89,
+  AUTHOR        = {Margaret Edeson},
+  TITLE         = {Investigations in coset enumeration},
+  SCHOOL        = {Canberra College of Advanced Education},
+  YEAR          = {1989}
+}
+
+@MISC{Fel98,
+  AUTHOR        = {V. Felsch},
+  NOTE          = {E-mail to Havas, 1998}
+}
+
+@ARTICLE{Moo97,
+  AUTHOR        = {E.H. Moore},
+  TITLE         = {Concerning the abstract groups of order $k!$ and
+                   $\frac{1}{2}k!$ holohedrically isomorphic with the
+                   symmetric and the alternating substitution-groups
+                   on $k$ letters},
+  JOURNAL       = {Proceedings of the London Mathematical Society (1)},
+  YEAR          = {1897},
+  VOLUME        = {28},
+  PAGES         = {357--366}
+}
+
+@ARTICLE{TC36,
+  AUTHOR        = {J.A. Todd and H.S.M. Coxeter},
+  TITLE         = {A practical method for enumerating cosets of finite
+                        abstract groups},
+  JOURNAL       = {Proceedings of the Edinburgh Mathematical Society},
+  YEAR          = {1936},
+  VOLUME        = {5},
+  PAGES         = {26--34}
+}
+
+@ARTICLE{Lee63,
+  AUTHOR        = {J. Leech},
+  TITLE         = {Coset enumeration on digital computers},
+  JOURNAL       = {Proceedings of the Cambridge Philosophical Society},
+  YEAR          = {1963},
+  VOLUME        = {59},
+  PAGES         = {257--267}
+}
+
+@BOOK{Sim94,
+  AUTHOR        = {Charles C. Sims},
+  TITLE         = {Computation with finitely presented groups},
+  PUBLISHER     = {Cambridge University Press},
+  YEAR          = {1994}
+}
+
+%% Already included in ../../../doc/manual.bib}
+%% ... by removing the `at' symbol BibTeX sees the following as comments:
+%%
+%% INCOLLECTION{Neu82,
+%%   AUTHOR        = {J. Neub\"{u}ser},
+%%   TITLE         = {An elementary introduction to coset table methods in
+%%                         computational group theory},
+%%   BOOKTITLE     = {Groups -- St. Andrews 1981},
+%%   SERIES        = {London Mathematical Society Lecture Note Series 71},
+%%   PUBLISHER     = {Cambridge University Press},
+%%   YEAR          = {1982},
+%%   PAGES         = {1--45}
+%% }
+
+@ARTICLE{Men64,
+  AUTHOR        = {N.S. Mendelsohn},
+  TITLE         = {An algorithmic solution for a word problem in group
+                        theory},
+  JOURNAL       = {Canadian Journal of Mathematics},
+  YEAR          = {1964},
+  VOLUME        = {16},
+  PAGES         = {509--516},
+  NOTE          = {Corrigendum: \textit{Ibid.} 17:505, 1965.}
+}
+
+@ARTICLE{Con65,
+  AUTHOR        = {J.H. Conway},
+  TITLE         = {Problem \#5327},
+  JOURNAL       = {American Mathematical Monthly},
+  YEAR          = {1965},
+  VOLUME        = {72},
+  PAGES         = {915},
+  NOTE          = {Solutions, by various authors, given in: 
+                   Generators and relations for cyclic groups,
+                   \textit{Ibid.}, 74:91--93, 1965.}
+}
+
+@BOOK{Dic01,
+  AUTHOR        = {L.E. Dickson},
+  TITLE         = {Linear Groups, with an exposition of the Galois field
+                        theory},
+  PUBLISHER     = {B.G. Teubner, Leipzig},
+  YEAR          = {1901}
+}
+
+@ARTICLE{HR00,
+  AUTHOR        = {George Havas and Colin Ramsay},
+  TITLE         = {Proving a group trivial made easy: 
+                   a case study in coset enumeration},
+  JOURNAL       = {Bulletin of the Australian Mathematical Society},
+  YEAR          = {2000},
+  VOLUME        = {62},
+  NUMBER        = {1},
+  PAGES         = {105--118}
+}
+
+@INCOLLECTION{HR01,
+  AUTHOR        = {George Havas and Colin Ramsay},
+  TITLE         = {Groups and Computation {III}},
+  BOOKTITLE     = {Ohio State University Mathematical Research Institute
+                   Publications},
+  VOLUME        = {8},
+  PUBLISHER     = {de Gruyter},
+  YEAR          = {2001},
+  PAGES         = {183--192},
+}
+
+@ARTICLE{CHHR01,
+  AUTHOR        = {Colin M. Campbell and George Havas and Alexander Hulpke
+                   and Edmund F. Robertson},
+  TITLE         = {Efficient simple groups},
+  JOURNAL       = {Communications in Algebra},
+  VOLUME        = {30},
+  NUMBER        = {9},
+  YEAR          = {2002},
+  PAGES         = {4613--4619},
+}
+
+@ARTICLE{CMY79,
+  AUTHOR        = {Cannon, John J. and McKay, John and Young, Kiang Chuen},
+  TITLE         = {The non-abelian Simple groups {$G$}, 
+                   {$|G| \< 10^5$} --- presentations},
+  JOURNAL       = {Communications in Algebra},
+  VOLUME        = {7},
+  NUMBER        = {13},
+  YEAR          = {1979},
+  PAGES         = {1397--1406},
+}
+
+@ARTICLE{CR84,
+  AUTHOR        = {Colin M. Campbell and Edmund F. Robertson},
+  TITLE         = {Presentations for the Simple groups {$G$}, 
+                   {$10^5 \< |G| \< 10^6$}},
+  JOURNAL       = {Communications in Algebra},
+  VOLUME        = {12},
+  NUMBER        = {21},
+  YEAR          = {1984},
+  PAGES         = {2643--2663},
+}
+
+@ARTICLE{Hig51,
+  AUTHOR        = {G. Higman},
+  TITLE         = {A finitely generated infinite simple group},
+  JOURNAL       = {Journal of the London Mathematical Society},
+  YEAR          = {1951},
+  VOLUME        = {26},
+  PAGES         = {61--64}
+}
+
+@ARTICLE{Neu54,
+  AUTHOR        = {B.H. Neumann},
+  TITLE         = {An essay on free products of groups with
+                        amalgamations},
+  JOURNAL       = {Philosophical Transactions of the Royal Society of
+                        London (A)},
+  YEAR          = {1954},
+  VOLUME        = {246},
+  PAGES         = {503--554}
+}
+
+@ARTICLE{Neu79,
+  AUTHOR        = {B.H. Neumann},
+  TITLE         = {Proofs},
+  JOURNAL       = {The Mathematical Intelligencer},
+  YEAR          = {1979},
+  VOLUME        = {2},
+  ISSUE         = {1},
+  PAGES         = {18--19}
+}
+
+@INCOLLECTION{CH97,
+  AUTHOR        = {Gene Cooperman and George Havas},
+  TITLE         = {Practical parallel coset enumeration},
+  BOOKTITLE     = {Workshop on High Performance Computing and Gigabit 
+                        Local Area Networks},
+  PUBLISHER     = {Springer-{\kern-1.5pt}Verlag},
+  YEAR          = {1997},
+  EDITOR        = {G. Cooperman and G. Michler and H. Vinck},
+  NUMBER        = {226},
+  SERIES        = {Lecture Notes in Control and Information Sciences},
+  PAGES         = {15--27}
+}
+
+@BOOK{CLR90,
+  AUTHOR        = {Thomas H. Cormen and Charles E. Leiserson and Ronald
+                        L. Rivest},
+  TITLE         = {Introduction to Algorithms},
+  PUBLISHER     = {The MIT Press},
+  YEAR          = {1990}
+}
+
+@BOOK{MKS76,
+  AUTHOR        = {Wilhelm Magnus and Abraham Karrass and Daniel Solitar},
+  TITLE         = {Combinatorial Group Theory},
+  PUBLISHER     = {Dover},
+  EDITION       = {2nd},
+  YEAR          = {1976}
+}
+
+@BOOK{CM72,
+  AUTHOR        = {H.S.M. Coxeter and W.O.J. Moser},
+  TITLE         = {Generators and Relations for Discrete Groups},
+  PUBLISHER     = {Springer-Verlag},
+  EDITION       = {3rd},
+  YEAR          = {1972}
+}
+
+@TECHREPORT{Ram99,
+  AUTHOR        = {Colin Ramsay},
+  TITLE         = {{\sf ACE} for Amateurs (Version 3.001)},
+  INSTITUTION   = {Centre for Discrete Mathematics and Computing,
+                   The University of Queensland},
+  YEAR          = {1999},
+  NUMBER        = {14},
+  ADDRESS       = {St.~Lucia 4072, Australia}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

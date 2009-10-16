@@ -3,7 +3,7 @@
 #W  solmxgrp.gd			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: solmxgrp.gd,v 4.7 2002/04/15 10:05:22 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  groups) and should be considered experimental.
 ##
 Revision.solmxgrp_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: solmxgrp.gd,v 4.7 2002/04/15 10:05:22 sal Exp $";
 
 
 #############################################################################

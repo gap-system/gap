@@ -2,7 +2,7 @@
 ##
 #W  onecohom.tst                GAP tests                    Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: onecohom.tst,v 1.11 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -11,7 +11,7 @@
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: onecohom.tst,v 1.11 2005/05/05 15:04:16 gap Exp $");
 
 gap> g:=Group((16,18,17),(14,15)(17,18),(17,18),(13,14,15),
 > (11,12)(13,15)(16,18,17),
@@ -61,7 +61,7 @@ gap> List(com,i->Number(com,j->RepresentativeAction(g,i,j)<>fail));
 [ 1, 1, 1, 1 ]
 
 # that's all, folks
-gap> STOP_TEST( "onecohom.tst", 303400000 );
+gap> STOP_TEST( "onecohom.tst",332001351);
 
 
 #############################################################################

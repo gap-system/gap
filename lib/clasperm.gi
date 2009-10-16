@@ -2,7 +2,7 @@
 ##
 #W  clasperm.gi                 GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: clasperm.gi,v 4.38 2005/08/06 12:55:14 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  classes for permutation groups.
 ##
 Revision.clasperm_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: clasperm.gi,v 4.38 2005/08/06 12:55:14 gap Exp $";
 
 
 #############################################################################
@@ -427,6 +427,7 @@ InstallGlobalFunction( RationalClassesPElements, function( arg )
            power,  gal,     # power and Galois group of current class
            i, j, cl, Scl;   # loop variables
 
+    Error("`RationalClassesPElements' is not guaranteed to work");
     # Get the arguments.
     G := arg[ 1 ];
     p := arg[ 2 ];
@@ -712,34 +713,34 @@ InstallGlobalFunction( RationalClassesPermGroup, function( G, primes )
     return rationalClasses;
 end );
 
-#############################################################################
-##
-#M  RationalClasses( <G> )  . . . . . . . . . . . . . . . . . . of perm group
-##
-InstallMethod( RationalClasses, "perm group", [ IsPermGroup ],
-    function( G )
-    local   cl;
+# #############################################################################
+# ##
+# #M  RationalClasses( <G> )  . . . . . . . . . . . . . . . . . . of perm group
+# ##
+# InstallMethod( RationalClasses, "perm group", [ IsPermGroup ],
+#     function( G )
+#     local   cl;
+# 
+#     if IsPrimePowerInt( Size( G ) ) and not HasIsNilpotentGroup(G) then
+#         SetIsNilpotentGroup( G, true );
+#         return RationalClasses(G);
+#     else
+#         cl := RationalClass( G, One( G ) );
+#         SetStabilizerOfExternalSet( cl, G );
+#         SetGaloisGroup( cl, GroupByPrimeResidues( [  ], 1 ) );
+#         return Concatenation( [ cl ], RationalClassesPermGroup
+#                        ( G, Reversed( Set( FactorsInt( Size( G ) ) ) ) ) );
+#     fi;
+# end );
 
-    if IsPrimePowerInt( Size( G ) ) and not HasIsNilpotentGroup(G) then
-        SetIsNilpotentGroup( G, true );
-        return RationalClasses(G);
-    else
-        cl := RationalClass( G, One( G ) );
-        SetStabilizerOfExternalSet( cl, G );
-        SetGaloisGroup( cl, GroupByPrimeResidues( [  ], 1 ) );
-        return Concatenation( [ cl ], RationalClassesPermGroup
-                       ( G, Reversed( Set( FactorsInt( Size( G ) ) ) ) ) );
-    fi;
-end );
-
-#############################################################################
-##
-#M  ConjugacyClasses( <G> )
-##
-InstallMethod( ConjugacyClasses, "perm group",
-    [ IsPermGroup and HasRationalClasses ],
-    G -> Concatenation( List( RationalClasses( G ),
-		        DecomposedRationalClass ) ) );
+# #############################################################################
+# ##
+# #M  ConjugacyClasses( <G> )
+# ##
+# InstallMethod( ConjugacyClasses, "perm group",
+#     [ IsPermGroup and HasRationalClasses ],
+#     G -> Concatenation( List( RationalClasses( G ),
+# 		        DecomposedRationalClass ) ) );
 
 
 #############################################################################

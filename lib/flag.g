@@ -3,7 +3,7 @@
 #W  flag.g                       GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: flag.g,v 4.4 2002/04/15 10:04:40 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file deals with flags.
 ##
 Revision.flag_g :=
-    "@(#)$Id$";
+    "@(#)$Id: flag.g,v 4.4 2002/04/15 10:04:40 sal Exp $";
 
 
 #############################################################################

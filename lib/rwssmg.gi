@@ -2,7 +2,7 @@
 ##
 #W  rwssmg.gi           GAP library                             Isabel Araujo
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rwssmg.gi,v 4.22 2005/12/15 15:40:00 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the declarations for semigroups defined by rws.
 ## JDM
 Revision.rwssmg_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rwssmg.gi,v 4.22 2005/12/15 15:40:00 sal Exp $";
 
 ############################################################################
 ##

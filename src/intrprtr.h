@@ -2,7 +2,7 @@
 **
 *W  intrprtr.h                  GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: intrprtr.h,v 4.23 2005/10/17 09:31:34 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -18,7 +18,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_intrprtr_h =
-   "@(#)$Id$";
+   "@(#)$Id: intrprtr.h,v 4.23 2005/10/17 09:31:34 gap Exp $";
 #endif
 
 
@@ -641,10 +641,12 @@ extern  void            IntrIsbHVar (
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
 extern  void            IntrAssDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 extern  void            IntrUnbDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 
 /****************************************************************************
@@ -652,10 +654,12 @@ extern  void            IntrUnbDVar (
 *F  IntrRefDVar(<dvar>) . . . . . . . . . . . .  interpret reference to debug
 */
 extern  void            IntrRefDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 extern  void            IntrIsbDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 
 /****************************************************************************

@@ -1,0 +1,40 @@
+
+# Some examples of `big' collapses.
+
+# An example from GH (related to B(2,6)?).  Index is 157464.  Performed
+# very poorly on the old ACE (ie, `dmod:2'), and was an example of the
+# use of the `adaptive' mode.
+
+Enumeration: x11
+Group Generators: ab;
+Group Relators: (a)^2, (b)^6, ababababbbbabababbbbbababAbbbbb;
+Subgroup name: h
+Subgroup Generators: b;
+
+Wo:5M;
+Mess:50000;
+Hard;
+
+# Running on flute (sun4m/sparc) gives:
+# INDEX = 157464 (a=157464 r=1440 h=1411026 n=1411026; 
+#                                 l=2824 c=95.47; m=1333303 t=1411025)
+
+DMod:0;
+
+#INDEX = 157464 (a=157464 r=1411080 h=1411080 n=1411080; 
+#                                   l=2826 c=77.47; m=1333303 t=1411079)
+
+# Actually, Fel:1 seems better.  Fel:0 overflows, and it seems to be
+# that fill is good.   No is not necessary, but helps.  Using Fel:1, the
+# running times (secs) on flute are:
+# 
+# dmod \ dsiz |    250 500 750    1000    10000   100000
+# ------------+-----------------------------------------
+#  0          |                   76.97    77.95   94.48
+#  1          |                   77.07    77.92   94.44
+#  2          |                   84.49   173.55  741.42
+#  3          |                   77.23    77.10   79.69
+#  4          |                   94.20    93.44   93.41
+# 
+# Really need the m= & t= figures as well.
+# Monitoring hole % is interesting!

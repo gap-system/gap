@@ -1,0 +1,15 @@
+#Example: "5gp-Rel-i" . . . based on: examples/5gp
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, OutputFile
+F := FreeGroup("a", "b", "c");
+rels := ["a^25 * c", "[a,  b] * c^-4", "[a, c]^25"];
+procId := PqStart(F : Prime := 5, Relators := rels);
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also set a different print level by supplying <OutputLevel>
+#sub <ClassBound> for <27> if set and ok
+PqPcPresentation(procId : ClassBound := 27, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+#comment: save the presentation to a different file by supplying <OutputFile>
+#sub <OutputFile> for <ANUPQData.outfile> if set and ok
+PqSavePcPresentation(procId, ANUPQData.outfile);;

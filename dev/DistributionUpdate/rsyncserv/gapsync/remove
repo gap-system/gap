@@ -1,15 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 ##
-##  $Id$    Frank Lübeck
+##  $Id: remove,v 1.5 2007/10/04 11:38:54 gap Exp $    Frank Lübeck
 ##
 ##  Throw away the whole installation.
 ##
+
+cd `dirname $0`
+
+if [ ! -f ./gapsync ]; then
+  echo "Doesn't look like being in a <GAPRoot>/gapsync directory ... bye."
+  exit 2
+fi
 
 echo "Do you really want to remove this GAP installation? (y/n)"
 read -e YES
 if [ $YES'X' == 'yX' ]; then
   binpath=`cat ../local/bin/binpath`
-  line="rm -f "$binpath"/gap "$binpath"/gapsync "$binpath"/gapL "$binpath"/gac"
+  line="rm -f "$binpath"/gap "$binpath"/gapsync "$binpath"/gapL "$binpath"/gac "$binpath"/pargap "$binpath"/xgap "$binpath"/gap64 "$binpath"/gap64L "$binpath"/pargap64"
   echo $line
   $line
   cd ..

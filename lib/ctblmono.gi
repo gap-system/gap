@@ -3,7 +3,7 @@
 #W  ctblmono.gi                 GAP library                     Thomas Breuer
 #W                                                         & Erzsebet Horvath
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblmono.gi,v 4.20 2003/06/10 15:40:09 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -18,7 +18,7 @@
 ##  4. Minimal Nonmonomial Groups
 ##
 Revision.ctblmono_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblmono.gi,v 4.20 2003/06/10 15:40:09 gap Exp $";
 
 
 #############################################################################

@@ -2,14 +2,14 @@
 ##
 #W  fldabnum.tst                GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: fldabnum.tst,v 4.13 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: fldabnum.tst,v 4.13 2005/05/05 15:04:16 gap Exp $");
 
 gap> CF( 1 ); CF( 6 ); CF( 4 ); CF( 5 ); CF( 36 );
 Rationals
@@ -321,7 +321,8 @@ gap> Size( g );
 gap> IsAbelian( g );
 true
 
-gap> STOP_TEST( "fldabnum.tst", 67500000 );
+gap> STOP_TEST( "fldabnum.tst",74000378);
+
 
 
 #############################################################################

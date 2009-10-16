@@ -1,0 +1,35 @@
+#!/bin/sh
+##########################################################################
+##
+#W  make_doc        make ParGAP package documentation       Gene Cooperman
+#W                                                             Greg Gamble
+##
+#H  $Id: make_doc,v 1.2 2002/03/02 14:37:27 gap Exp $
+##
+##  This shell script uses TeX, BibTeX and MakeIndex (via doc/manualindex) 
+##  to build the .dvi, PostScript, PDF and HTML  (provided  you  have  tth 
+##  and etc/convert.pl) documentation for the ParGAP Package.
+##
+
+echo "TeXing documentation"
+# TeX the manual and build its bibliography
+tex manual;bibtex manual
+# TeX the manual again to incorporate the ToC ... and build the index
+tex manual; ../../../doc/manualindex manual
+# Finally TeX the manual again to get cross-references right
+tex manual
+
+# Create the PostScript version (uncomment next line, if needed)
+#dvips -D300 manual -o
+
+# Create the PDF version (uncomment next line, if needed)
+#pdftex manual; pdftex manual
+
+# Create the HTML version of the manual (uncomment next 3 lines, if needed)
+#mkdir -p ../htm
+#echo "Creating HTML documentation"
+#../../../etc/convert.pl -t -c -n ParGAP . ../htm
+
+##########################################################################
+##
+#E

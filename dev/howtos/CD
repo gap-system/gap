@@ -1,0 +1,23 @@
+To make a CD image for GAP
+
+Copy the whole of the FTP site.
+
+Delete the deposit and old subdirectories
+
+Delete all but the most recent version of each archive in the tar.bz2, tar.gz, 
+zoo and win.zip directories.
+
+Under 4.4.6 this gets you down to abou 878M. 
+
+Now go through the four */packages/ directories, 
+removing all but the latest copy of each package. This gets down to about 650MB,
+which should fit on a CD.
+
+Use xcdroast, or other favourite tool to make a CD image. 
+
+Leave it on /pub/gappre on the FTP site.
+
+Lots more could be done -- nice CD specific README files, covers,
+live CDs, etc.
+
+	SL Sep 2005.

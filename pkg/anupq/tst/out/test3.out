@@ -1,0 +1,138 @@
+
+Select option: 1 
+Input group identifier: c5c5
+Input prime: 5 
+Input maximum class: 1 
+Input print level (0-3): 1 
+Input generating set (in { }): 
+Input defining set of relations (in { }): 
+Input exponent law (0 if none): 0 
+
+Lower exponent-5 central series for c5c5
+
+Group: c5c5 to lower exponent-5 central class 1 has order 5^2
+
+Select option: 7 
+
+Group: c5c5 to lower exponent-5 central class 2 has order 5^5
+
+Select option: 9 
+
+Menu for p-Group Generation
+-----------------------------
+1. Read automorphism information for starting group
+2. Extend and display automorphisms
+3. Specify input file and group number
+4. List group presentation
+5. Construct descendants
+6. Advanced p-group generation menu
+7. Exit to basic menu
+
+Select option: 1 
+Input the number of automorphisms: 2 
+Now enter the data for automorphism 1
+Input 2 exponents for image of pcp generator 1: 2 0 
+Input 2 exponents for image of pcp generator 2: 0 1 
+Now enter the data for automorphism 2
+Input 2 exponents for image of pcp generator 1: 4 1 
+Input 2 exponents for image of pcp generator 2: 4 0 
+Input number of soluble generators for automorphism group: 0 
+
+Select option: 5 
+Input class bound on descendants: 5 
+Construct all descendants? 1 
+Set an order bound on the descendants? 0 
+PAG-generating sequence for automorphism group? 0 
+Do you want default algorithm? 0 
+Rank of the initial segment subgroup? 0 
+Completely process terminal descendants? 0 
+Input exponent law (0 if none): 5 
+Enforce metabelian law? 0 
+Do you want default output? 1 
+
+**************************************************
+Starting group: c5c5
+Order: 5^2
+Nuclear rank: 1
+5-multiplicator rank: 1
+# of immediate descendants of order 5^3 is 1
+# of capable immediate descendants is 1
+
+**************************************************
+1 capable group saved on file c5c5_class2
+
+**************************************************
+Starting group: c5c5 #1;1
+Order: 5^3
+Nuclear rank: 2
+5-multiplicator rank: 2
+true
+#I  Order of GL subgroup is 480
+#I  No. of soluble autos is 0
+#I    dim U = 1  dim N = 2  dim M = 2
+#I    nice stabilizer with perm rep
+# of immediate descendants of order 5^4 is 1
+# of capable immediate descendants is 1
+# of immediate descendants of order 5^5 is 1
+# of capable immediate descendants is 1
+
+**************************************************
+2 capable groups saved on file c5c5_class3
+
+**************************************************
+Starting group: c5c5 #1;1 #1;1
+Order: 5^4
+Nuclear rank: 1
+5-multiplicator rank: 2
+# of immediate descendants of order 5^5 is 2
+
+**************************************************
+Starting group: c5c5 #1;1 #2;2
+Order: 5^5
+Nuclear rank: 3
+5-multiplicator rank: 3
+# of immediate descendants of order 5^6 is 3
+true
+#I  Order of GL subgroup is 480
+#I  No. of soluble autos is 3
+#I    dim U = 1  dim N = 3  dim M = 3
+#I    nice stabilizer with perm rep
+# of immediate descendants of order 5^7 is 3
+# of capable immediate descendants is 1
+# of immediate descendants of order 5^8 is 1
+# of capable immediate descendants is 1
+
+**************************************************
+2 capable groups saved on file c5c5_class4
+
+**************************************************
+Starting group: c5c5 #1;1 #2;2 #4;2
+Order: 5^7
+Nuclear rank: 1
+5-multiplicator rank: 2
+# of immediate descendants of order 5^8 is 2
+# of capable immediate descendants is 2
+
+**************************************************
+Starting group: c5c5 #1;1 #2;2 #7;3
+Order: 5^8
+Nuclear rank: 2
+5-multiplicator rank: 2
+true
+#I  Order of GL subgroup is 480
+#I  No. of soluble autos is 7
+#I    dim U = 1  dim N = 2  dim M = 2
+#I    nice stabilizer with perm rep
+# of immediate descendants of order 5^9 is 1
+# of capable immediate descendants is 1
+# of immediate descendants of order 5^10 is 1
+# of capable immediate descendants is 1
+
+**************************************************
+4 capable groups saved on file c5c5_class5
+
+Select option: 0 
+Exiting from p-group generation
+
+Select option: 0 
+Exiting from ANU p-Quotient Program

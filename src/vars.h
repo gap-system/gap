@@ -2,7 +2,7 @@
 **
 *W  vars.h                      GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: vars.h,v 4.15 2007/03/01 00:02:40 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -19,19 +19,18 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vars_h =
-   "@(#)$Id$";
+   "@(#)$Id: vars.h,v 4.15 2007/03/01 00:02:40 sal Exp $";
 #endif
 
 
 /****************************************************************************
 **
-
 *S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
 **
 **  'T_LVARS' is the type of bags used to store values of local variables.
-*/
-#define T_LVARS                 174
 
+#define T_LVARS                 174
+*/
 
 /****************************************************************************
 **

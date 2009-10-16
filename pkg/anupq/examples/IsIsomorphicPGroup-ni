@@ -1,0 +1,12 @@
+#Example: "IsIsomorphicPGroup-ni" . . . based on manual example
+#(demonstrates `IsIsomorphicPGroup' usage)
+#vars: G, P1, P2, P3, P4;
+#options: 
+G := Group( (1,2,3,4), (1,3) );
+P1 := Image( IsomorphismPcGroup( G ) );
+P2 := SmallGroup( 8, 5 );
+IsIsomorphicPGroup( P1, P2 );
+P3 := SmallGroup( 8, 4 );
+IsIsomorphicPGroup( P1, P3 );
+P4 := SmallGroup( 8, 3 );
+IsIsomorphicPGroup( P1, P4 );

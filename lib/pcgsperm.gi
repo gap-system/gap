@@ -2,7 +2,7 @@
 ##
 #W  pcgsperm.gi                 GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: pcgsperm.gi,v 4.125 2008/09/18 19:54:02 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  systems of solvable permutation groups.
 ##
 Revision.pcgsperm_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: pcgsperm.gi,v 4.125 2008/09/18 19:54:02 gap Exp $";
 
 #############################################################################
 ##
@@ -84,10 +84,10 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
             f := 1;
             for p  in FactorsInt( m )  do
                 if relord <> false  then
-                    InsertElmList( relord, pos, p );
+                    Add( relord, p, pos );
                 fi;
                 pos := pos + 1;
-                InsertElmList( S.labels, pos, z );
+                Add( S.labels, z, pos );
                 edg := ListWithIdenticalEntries( l, -pos );
                 for i  in f * [ 1 .. m / f - 1 ]  do
                     S.translabels{ orb{ i * l + [ 1 .. l ] } } := edg;
@@ -272,11 +272,11 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
     if desc  then
         series[ lev + 1 ] := M0;
         if IsEmpty( X )  then
-            RemoveElmList( series, lev + 2 );
+            Remove( series, lev + 2 );
         fi;
     else
         if not IsEmpty( X )  then
-            InsertElmList( series, 1, M0 );
+            Add( series, M0, 1 );
         fi;
     fi;
     

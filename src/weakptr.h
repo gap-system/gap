@@ -2,7 +2,7 @@
 **
 *W  weakptr.h                   GAP source                       Steve Linton
 **
-*H  @(#)$Id$
+*H  @(#)$Id: weakptr.h,v 4.6 2002/04/15 10:04:03 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -19,7 +19,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_weakptr_h =
-   "@(#)$Id$";
+   "@(#)$Id: weakptr.h,v 4.6 2002/04/15 10:04:03 sal Exp $";
 #endif
 
 

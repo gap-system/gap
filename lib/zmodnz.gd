@@ -2,7 +2,7 @@
 ##
 #W  zmodnz.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: zmodnz.gd,v 4.43 2008/10/07 15:56:00 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,7 +17,7 @@
 ##  again the ordering of representatives is chosen.
 ##
 Revision.zmodnz_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: zmodnz.gd,v 4.43 2008/10/07 15:56:00 gap Exp $";
 
 
 #############################################################################
@@ -28,46 +28,75 @@ Revision.zmodnz_gd :=
 #C  IsZmodpZObjSmall( <obj> )
 #C  IsZmodpZObjLarge( <obj> )
 ##
-##  The elements in the rings $Z / n Z$ are in the category `IsZmodnZObj'.
-##  If $n$ is a prime then the elements are of course also in the category
-##  `IsFFE' (see~"IsFFE"), otherwise they are in `IsZmodnZObjNonprime'.
-##  `IsZmodpZObj' is an abbreviation of `IsZmodnZObj and IsFFE'.  This
-##  category is the disjoint union of `IsZmodpZObjSmall' and
-##  `IsZmodpZObjLarge', the former containing all elements with $n$ at most
-##  `MAXSIZE_GF_INTERNAL'.
+##  <#GAPDoc Label="IsZmodnZObj">
+##  <ManSection>
+##  <Filt Name="IsZmodnZObj" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZmodnZObjNonprime" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZmodpZObj" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZmodpZObjSmall" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZmodpZObjLarge" Arg='obj' Type='Category'/>
 ##
+##  <Description>
+##  The elements in the rings <M>Z / n Z</M> are in the category
+##  <Ref Filt="IsZmodnZObj"/>.
+##  If <M>n</M> is a prime then the elements are of course also in the
+##  category <Ref Func="IsFFE"/>,
+##  otherwise they are in <Ref Filt="IsZmodnZObjNonprime"/>.
+##  <Ref Filt="IsZmodpZObj"/> is an abbreviation of
+##  <C>IsZmodnZObj and IsFFE</C>.
+##  This category is the disjoint union of <Ref Filt="IsZmodpZObjSmall"/> and
+##  <Ref Filt="IsZmodpZObjLarge"/>, the former containing all elements with
+##  <M>n</M> at most <C>MAXSIZE_GF_INTERNAL</C>.
+##  <P/>
 ##  The reasons to distinguish the prime case from the nonprime case are
-##  \beginlist%unordered
-##  \item{--}
-##    that objects in `IsZmodnZObjNonprime' have an external representation
-##    (namely the residue in the range $[ 0, 1, \ldots, n-1 ]$),
-##  \item{--}
+##  <List>
+##  <Item>
+##    that objects in <Ref Filt="IsZmodnZObjNonprime"/> have an external
+##    representation (namely the residue in the range
+##    <M>[ 0, 1, \ldots, n-1 ]</M>),
+##  </Item>
+##  <Item>
 ##    that the comparison of elements can be defined as comparison of the
 ##    residues, and
-##  \item{--}
-##    that the elements lie in a family of type `IsZmodnZObjNonprimeFamily'
-##    (note that for prime $n$, the family must be an `IsFFEFamily').
-##  \endlist
-##
+##  </Item>
+##  <Item>
+##    that the elements lie in a family of type
+##    <C>IsZmodnZObjNonprimeFamily</C>
+##    (note that for prime <M>n</M>, the family must be an
+##    <C>IsFFEFamily</C>).
+##  </Item>
+##  </List>
+##  <P/>
 ##  The reasons to distinguish the small and the large case are
-##  that for small $n$ the elements must be compatible with the internal
+##  that for small <M>n</M> the elements must be compatible with the internal
 ##  representation of finite field elements, whereas we are free to define
-##  comparison as comparison of residues for large $n$.
+##  comparison as comparison of residues for large <M>n</M>.
+##  <P/>
+##  Note that we <E>cannot</E> claim that every finite field element of
+##  degree 1 is in <Ref Filt="IsZmodnZObj"/>, since finite field elements in
+##  internal representation may not know that they lie in the prime field.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  Note that we *cannot* claim that every finite field element of degree 1
-##  is in `IsZmodnZObj', since finite field elements in internal
-##  representation may not know that they lie in the prime field.
-##
-DeclareCategory( "IsZmodnZObj", IsScalar );
+DeclareCategory( "IsZmodnZObj", IsScalar and IsAssociativeElement 
+    and IsCommutativeElement and IsAdditivelyCommutativeElement );
 DeclareCategory( "IsZmodnZObjNonprime", IsZmodnZObj );
 DeclareSynonym( "IsZmodpZObj", IsZmodnZObj and IsFFE );
-DeclareCategory( "IsZmodpZObjSmall", IsZmodpZObj );
-DeclareCategory( "IsZmodpZObjLarge", IsZmodpZObj );
+DeclareSynonym( "IsZmodpZObjSmall", IsZmodpZObj and IsLogOrderedFFE );
+DeclareSynonym( "IsZmodpZObjLarge", IsZmodpZObj and IsLexOrderedFFE );
 
 
 #############################################################################
 ##
 #C  IsZmodnZObjNonprimeFamily( <obj> )
+##
+##  <ManSection>
+##  <Filt Name="IsZmodnZObjNonprimeFamily" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategoryFamily( "IsZmodnZObjNonprime" );
 
@@ -77,6 +106,15 @@ DeclareCategoryFamily( "IsZmodnZObjNonprime" );
 #C  IsZmodnZObjNonprimeCollection( <obj> )
 #C  IsZmodnZObjNonprimeCollColl( <obj> )
 #C  IsZmodnZObjNonprimeCollCollColl( <obj> )
+##
+##  <ManSection>
+##  <Filt Name="IsZmodnZObjNonprimeCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZmodnZObjNonprimeCollColl" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZmodnZObjNonprimeCollCollColl" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategoryCollections( "IsZmodnZObjNonprime" );
 DeclareCategoryCollections( "IsZmodnZObjNonprimeCollection" );
@@ -95,9 +133,15 @@ InstallTrueMethod( IsFinite,
 ##
 #V  Z_MOD_NZ
 ##
-##  is a list of length 2, the first containing at position <i> the <i>-th
-##  value <n> for that `ZmodnZ( <n> )' is stored, and the second containing
-##  this ring at position <i>.
+##  <ManSection>
+##  <Var Name="Z_MOD_NZ"/>
+##
+##  <Description>
+##  is a list of length 2, the first containing at position <A>i</A> the
+##  <A>i</A>-th value <A>n</A> for that <C>ZmodnZ( <A>n</A> )</C> is stored,
+##  and the second containing this ring at position <A>i</A>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalVariable( "Z_MOD_NZ",
     "list of lists, at position [1][i] is n s.t. [2][i] is ZmodnZ(n)" );
@@ -110,24 +154,34 @@ InstallFlushableValue( Z_MOD_NZ, [ [], [] ] );
 #F  ZmodpZ( <p> )
 #F  ZmodpZNC( <p> )
 ##
-##  `ZmodnZ' returns a ring $R$ isomorphic to the residue class ring of the
-##  integers modulo the positive integer <n>.
-##  The element corresponding to the residue class of the integer $i$ in this
-##  ring can be obtained by $i \* `One'( R )$, and a representative of the
-##  residue class corresponding to the element $x \in R$ can be computed by
-##  $`Int'( x )$.
+##  <#GAPDoc Label="ZmodnZ">
+##  <ManSection>
+##  <Func Name="ZmodnZ" Arg='n'/>
+##  <Func Name="ZmodpZ" Arg='p'/>
+##  <Func Name="ZmodpZNC" Arg='p'/>
 ##
-##  \index{mod!Integers}
-##  `ZmodnZ( <n> )' is equivalent to `Integers mod <n>'.
-##
-##  `ZmodpZ' does the same if the argument <p> is a prime integer,
-##  additionally the result is a field.
-##  `ZmodpZNC' omits the check whether <p> is a prime.
-##
+##  <Description>
+##  <Ref Func="ZmodnZ"/> returns a ring <M>R</M> isomorphic to the residue
+##  class ring of the integers modulo the positive integer <A>n</A>.
+##  The element corresponding to the residue class of the integer <M>i</M>
+##  in this ring can be obtained by <C>i * One( R )</C>,
+##  and a representative of the residue class corresponding to the element
+##  <M>x \in R</M> can be computed by <C>Int</C><M>( x )</M>.
+##  <P/>
+##  <Index Subkey="Integers">mod</Index>
+##  <C>ZmodnZ( <A>n</A> )</C> is equal to <C>Integers mod <A>n</A></C>.
+##  <P/>
+##  <Ref Func="ZmodpZ"/> does the same if the argument <A>p</A> is a prime
+##  integer, additionally the result is a field.
+##  <Ref Func="ZmodpZNC"/> omits the check whether <A>p</A> is a prime.
+##  <P/>
 ##  Each ring returned by these functions contains the whole family of its
 ##  elements
-##  if $n$ is not a prime, and is embedded into the family of finite field
-##  elements of characteristic $n$ if $n$ is a prime.
+##  if <A>n</A> is not a prime, and is embedded into the family of finite
+##  field elements of characteristic <A>n</A> if <A>n</A> is a prime.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ZmodnZ" );
 DeclareGlobalFunction( "ZmodpZ" );
@@ -139,12 +193,38 @@ DeclareGlobalFunction( "ZmodpZNC" );
 #O  ZmodnZObj( <Fam>, <r> )
 #O  ZmodnZObj( <r>, <n> )
 ##
-##  If the first argument is a residue class family <Fam> then `ZmodnZObj'
-##  returns the element in <Fam> whose coset is represented by the integer
-##  <r>.
-##  If the two arguments are an integer <r> and a positive integer <n> then
-##  `ZmodnZObj' returns the element in `ZmodnZ( <n> )' (see~"ZmodnZ")
-##  whose coset is represented by the integer <r>.
+##  <#GAPDoc Label="ZmodnZObj">
+##  <ManSection>
+##  <Oper Name="ZmodnZObj"
+##   Arg='Fam, r' Label="for a residue class family and integer"/>
+##  <Oper Name="ZmodnZObj" Arg='r, n' Label="for two integers"/>
+##
+##  <Description>
+##  If the first argument is a residue class family <A>Fam</A> then
+##  <Ref Oper="ZmodnZObj" Label="for a residue class family and integer"/>
+##  returns the element in <A>Fam</A> whose coset is represented by the
+##  integer <A>r</A>.
+##  <P/>
+##  If the two arguments are an integer <A>r</A> and a positive integer
+##  <A>n</A> then <Ref Oper="ZmodnZObj" Label="for two integers"/>
+##  returns the element in <C>ZmodnZ( <A>n</A> )</C>
+##  (see&nbsp;<Ref Func="ZmodnZ"/>) whose coset is represented by the integer
+##  <A>r</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> r:= ZmodnZ(15);
+##  (Integers mod 15)
+##  gap> fam:=ElementsFamily(FamilyObj(r));;
+##  gap> a:= ZmodnZObj(fam,9);
+##  ZmodnZObj( 9, 15 )
+##  gap> a+a;
+##  ZmodnZObj( 3, 15 )
+##  gap> Int(a+a);
+##  3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ZmodnZObj", [ IsZmodnZObjNonprimeFamily, IsInt ] );
 DeclareOperation( "ZmodnZObj", [ IsInt, IsPosInt ] );
@@ -155,9 +235,15 @@ DeclareSynonym( "ZmodpZObj", ZmodnZObj );
 ##
 #A  ModulusOfZmodnZObj( <obj> )
 ##
-##  For an element <obj> in a residue class ring of integers modulo $n$
-##  (see~"IsZmodnZObj"), `ModulusOfZmodnZObj' returns the positive integer
-##  $n$.
+##  <ManSection>
+##  <Attr Name="ModulusOfZmodnZObj" Arg='obj'/>
+##
+##  <Description>
+##  For an element <A>obj</A> in a residue class ring of integers modulo
+##  <M>n</M> (see&nbsp;<Ref Func="IsZmodnZObj"/>),
+##  <Ref Attr="ModulusOfZmodnZObj"/> returns the positive integer <M>n</M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "ModulusOfZmodnZObj", IsZmodnZObj );
 
@@ -165,6 +251,13 @@ DeclareAttribute( "ModulusOfZmodnZObj", IsZmodnZObj );
 #############################################################################
 ##
 #F  EnumeratorOfZmodnZ( <R> ). . . . . . . . . . . . . enumerator for Z / n Z
+##
+##  <ManSection>
+##  <Func Name="EnumeratorOfZmodnZ" Arg='R'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "EnumeratorOfZmodnZ" );
 

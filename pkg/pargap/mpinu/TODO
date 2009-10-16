@@ -1,0 +1,111 @@
+What if connecting to self for first time?  Deadlock?
+  send -> receive
+
+0.  Implement rest of point-to-point layer
+1.  Implement all environment inquiries
+2.  Worry about making MPI internal routines static or otherwise
+    invisible to end-user.
+3.  Allow communication between two slaves.
+4.  MPI_Comm_dup, But have to take messages out of order for that
+5.  Use execlp instead of system:  rsh host -n exec process .. -p4amslave
+6.  Right now, can't select MPI_Recv according to specific tag, and
+    take messages out of order.
+7.  When close(socket), get msg:  non-socket operation on socket,
+				connection reset by peer
+8.  Collective communication:  Is MPI_Send/MPI_Receive blocking?
+ 	Also, do we broadcast to ourselves? (Probably not)
+9.  /* Add long double and long long for ANSI C version ( #+ansi ) */
+10.  Should examine addresses to check if other process is part of club,
+    or have a special int to send in header.  (What does MPICH do?)
+11.  Make sure to wait on defunct processes.
+12.  Replace int by size_t where appropriate.
+13.  Test socket (select) before writing to see if it's alive.
+     If not, re-create.
+14.  Send rank highpoint port -p4amslave, so that slave doesn't have
+     to ask rank.  Then can reuse list_connect/accept_new_socket()
+     in master.c and slave.c.
+15.  Change _mpi_my_list_sd to _mpi_mylist_sd (and in INTERNALS)
+16.  Allow redirection to be specified on command line of procgroup file
+17.  MPI_Send() should return failure if socket died and can't
+    set up new socket.
+18. In mipiimpl.h, it allocates static ... MPI_TMP_BUF1, .._BUF2;
+	Do it better.  Use EXTERN trick?
+19. If can't exec program, error statement should say something like:
+	procgroup: stat: command not found: command
+20.  Catch EPIPE signals, so process can live on after attempting to
+   write to broken pipe, or else do select first?. (maybe not
+   necessary if getsockopt() doesn't allow SO_KEEPALIVE
+   (Can the socket die if not used for a while under these circumstances?
+    Yes.)
+21.  Clean up mpinu library;  Maybe experiment with variants of
+    setsockopt(SO_KEEPALIVE) (and catching the SIGPIPE in case of temporary
+    socket failure).  Also, setsockopt(SO_REUSEPORT), could allow use
+    of a single well-known port instead of having to tell client at what
+    port to find the master.
+ENOTTY: ioctl
+tcgetpgrp.3v:.SM ENOTTY
+termios.3v:.SM ENOTTY
+EPIPE: write (send)
+speculation:  ENOTTY (Not a typewriter) associated with select() before recv(),
+              EPIPE with master (broken pipe)
+apparently, a SIGPIPE is sent by kernel during select()
+Could use signal() to catch it, and then restore signal()
+What does MPICH do?
+send()/recv():
+     EWOULDBLOCK         The socket is  marked  non-blocking  and
+                         the requested operation would block.
+ A process attempting to write
+     to the socket receives a SIGPIPE signal and the write opera-
+     tion returns an error.  By default, a process exits when  it
+     receives SIGPIPE.  A read operation on the socket returns an
+     error but does not generate  SIGPIPE.   If  the  process  is
+     waiting in select(2) when the connection is broken, select()
+     returns true for any read or write events selected  for  the
+     socket.
+So, should we try select() once more?
+  man getsockname says:
+            SO_KEEPALIVE
+                      Reports whether connections are kept active with
+                      periodic transmission of messages.  If the connected
+                      socket fails to respond to these messages, the connec-
+                      tion is broken and processes using that socket are
+                      notified with a SIGPIPE signal.  This option returns an
+                      int value.
+ioctl(FIONBIO) or fcntl(FNDELAY) (read/write non-blocking possible) => EWOULDBLICK
+fcntl(O_NONBLOCK) => EAGAIN
+   Note that Digital allows:  getsockname(SO_SNDTIMED | SO_RCVTIMED, ...)
+for timeout info.
+                   same  file  pointer.   It  is also associated
+                    with a FD_CLOEXEC (close-on-exec) flag set to
+                    remain open across execve(2V) system calls.
+     F_GETFD        Get the FD_CLOEXEC (close-on-exec) flag asso-
+                    ciated  with  fd.  If the low-order bit is 0,
+                    the  file  remains   open   after   executing
+                    execve(), otherwise it is closed.
+     F_SETFD        Set the FD_CLOEXEC (close-on-exec) flag asso-
+                    ciated with fd to the low order bit of arg (0
+                    or 1 as above).
+                    Note:  this  is  a   per-process   and   per-
+                    descriptor  flag.  Setting or clearing it for
+                    a particular descriptor does not  affect  the
+                    flag on descriptors copied from it by dup(2V)
+                    or F_DUPFD, nor does it affect  the  flag  on
+                    other processes of that descriptor.
+
+  #include <sys/socket.h>
+  int getsockopt (
+          int socket,
+          int level,  ( SOL_SOCKET )
+          int option_nam, (SO_SNDTIMED)
+          void *option_value, (struct timeval *)
+          size_t *option_len );  sizeof(struct timeval)
+
+  #include <sys/socket.h>
+  int setsockopt (
+          int socket,
+          int level,
+          int option_name,
+          const void *option_value,
+          size_t option_len );
+
+

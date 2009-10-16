@@ -3,7 +3,7 @@
 #W  utils.gd			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: utils.gd,v 4.6 2005/08/12 20:41:38 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This is a temporary file containing utilities for group chains.
 ##
 Revision.utils_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: utils.gd,v 4.6 2005/08/12 20:41:38 gap Exp $";
 
 #############################################################################
 #############################################################################
@@ -45,8 +45,6 @@ DeclareOperation( "ImageUnderWord", [ IsList, IsWordWithInverse, IsList, IsGroup
 ##
 DeclareOperation( "ImageUnderWord", [ IsInt, IsWordWithInverse, IsList, IsGroupHomomorphism ] );
 
-DeclareSynonym( "PrimeOfPGroup", PrimePGroup );
-
 #############################################################################
 #############################################################################
 ##
@@ -54,38 +52,6 @@ DeclareSynonym( "PrimeOfPGroup", PrimePGroup );
 ##
 #############################################################################
 #############################################################################
-
-#############################################################################
-##
-#A  UnderlyingField( <A> )
-##
-##  Underlying field of a vector space or algebra.
-##
-DeclareAttribute( "UnderlyingField", IsVectorSpace ); #includes algebras
-
-#############################################################################
-##
-#A  UnderlyingField( <G> )
-##
-##  Underlying field of a matrix group
-##
-DeclareAttribute( "UnderlyingField", IsFFEMatrixGroup );
-
-#############################################################################
-##
-#A  MatrixDimension( <A> )
-##
-##  Dimension of matrices in an algebra.
-##
-DeclareAttribute( "MatrixDimension", IsAlgebra );
-
-#############################################################################
-##
-#A  MatrixDimension( <G> )
-##
-##  Dimension of matrices in a matrix group.
-##
-DeclareAttribute( "MatrixDimension", IsFFEMatrixGroup );
 
 #############################################################################
 ##

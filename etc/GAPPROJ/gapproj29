@@ -17,7 +17,8 @@ No
 @Prog
 5
 @Descr
-At the moment GAP only provides finite fields up to size 2^16. This should
+At the moment GAP only provides nonprime finite fields up to size 2^16.
+This should
 be extended.
 
 It might be necessary to distinguish fields up to another limited size and

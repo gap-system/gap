@@ -1,0 +1,9 @@
+#Example: "PqEpimorphism" . . . based on `PqEpimorphism' manual example
+#vars: F, procId, phi;
+#options: 
+F := FreeGroup (2, "F");
+#alt: do
+#procId := PqStart( F );
+#alt: sub <procId> for <F>
+phi := PqEpimorphism( F : Prime := 5, ClassBound := 2 );
+Image( phi );

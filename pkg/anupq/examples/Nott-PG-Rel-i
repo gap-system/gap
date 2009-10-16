@@ -1,0 +1,37 @@
+#Example: "Nott-PG-Rel-i" . . . based on: examples/pga_nott
+#Start point for Nottingham group
+#vars: F, rels, procId;
+#options: OutputLevel, OutputFile
+F := FreeGroup("a", "b");
+rels := ["a^5", "b^5", "[b, a, b]"];
+procId := PqStart(F : Prime := 5, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+PqPcPresentation(procId : ClassBound := 3, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqComputePCover(procId);;
+#comment: save the presentation to a different file by supplying <OutputFile>
+#sub <OutputFile> for <ANUPQData.outfile> if set and ok
+PqSavePcPresentation(procId, ANUPQData.outfile);;
+PqPGSupplyAutomorphisms(procId, [ [[1,0,0,0],
+                                   [0,1,0,1]],
+
+                                  [[1,1,0,0],
+                                   [0,1,0,1]],
+
+                                  [[1,0,0,0],
+                                   [0,4,0,0]],
+
+                                  [[1,0,0,0],
+                                   [0,2,0,0]],
+
+                                  [[4,0,0,0],
+                                   [0,1,0,0]],
+
+                                  [[2,0,0,0],
+                                   [0,1,0,0]] ]);;
+PqPGConstructDescendants(procId : ClassBound := 4,
+                                  CapableDescendants,
+                                  StepSize := 1,
+                                  PcgsAutomorphisms,
+                                  RankInitialSegmentSubgroups := 4);;

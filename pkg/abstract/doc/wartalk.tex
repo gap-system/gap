@@ -1,0 +1,345 @@
+\documentclass[12pt]{article}
+\usepackage{lslide}
+\usepackage{a4wide}
+\usepackage{times}
+\usepackage{helvetic}
+\usepackage{epsf}
+\landscape
+\vertgroup
+\parskip 1ex plus 1ex minus 0.2ex
+\def\bs{\begin{slide}}
+\def\es{\end{slide}}
+\def\bi{\begin{itemize}}
+\def\ei{\end{itemize}}
+\def\GAP{\textsf{GAP}}
+\begin{document}
+\sf
+\title[Knowledge-based Approach]{A Knowledge Based Approach to Algebraic Computation}
+\author{Steve Linton}
+\organization{Division of Computer Science, St.~Andrews}
+\date{June 2000}
+\titlepage
+\bs
+\subsection{Algorithms}
+
+An algorithm is usually presented as:
+\bi
+\item Input specification 
+\bi
+\item As simple as possible eg a set $A$ of $s$ permutations of degree $n$ and one more permutation $x$
+\ei
+\item Output specification -- 
+\bi
+\item Again simple eg true iff $x$ lies in $\langle A\rangle$
+\ei
+\item Performance guarantees or expectations
+\ei
+
+Although this format is a good match for software engineering and
+publishing papers, it may not be such a good match with applications
+in mathematical problem-solving.
+\es
+\bs
+\subsection{Knowledge and Problem Solving}
+\bi
+
+\item In many situations, a mathematician has a lot of knowledge about
+the structure of interest, and the problem is to fill in a small gap
+in it, or to make concrete some abstractly known structure
+
+\bi
+\item Knowing that some subgroup
+of a well-known group has structure $2S_5$, which of the two isoclinic
+groups of this shape is it?
+
+\item Find generators for the centraliser of an
+element, given that we know the conjugacy class of the element and the
+abstract structure of the centraliser
+\ei
+\item Also, any useful results we compute along the way should not be discarded
+\ei
+\es
+\bs
+\subsection{The Art and Science}
+
+\bi
+\item In 1992, ``The Art and Science of Computing in Large Groups''
+discussed approaches and techniques for solving this kind of problem
+by hand in groups too large for general-purpose automated methods to
+be effective.
+
+\item I am (funded by the Royal Society of
+Edinburgh -- thanks!)  looking at the issues involved in automating
+these ideas
+
+
+\item Thomas Breuer is looking at related issues in the context of
+linking Rob Wilson's ``ATLAS of Group Representations'' to \GAP.
+\ei
+\es
+
+\bs
+\subsection{The Art and Science -- Principles}
+\begin{enumerate}
+\item Know your group
+\item Use what you know
+\item Do no more than you have to
+\item Work in subgroups whenever possible
+\end{enumerate}
+\es
+\bs
+\subsection{Issues in Automating the Art and Science}
+\begin{enumerate}
+\item Knowledge representation
+\item Computational building blocks
+\item Algorithm synthesis
+\item Recognition and constructive recognition
+\end{enumerate}
+\es
+\bs
+\subsection{Knowledge Representation}
+\bi
+\item Knowledge is intended to be central in this approach
+\item Both ``old'' knowledge, found from databases, etc. and ``new''
+knowledge, computed by the user
+\item {\GAP} 4 already makes more use of new knowledge than previous
+systems
+\item Many new algorithms depend on CFSG in the explicit form of 
+``old knowledge'' --  databases of element order distributions, 
+presentations or recognition algorithms.
+\ei
+\es
+\bs
+\subsection{Old Knowledge}
+\bi
+\item A great deal is known about a great many groups (and also Lie
+algebras, Hecke algebras, etc.)
+\item Quite a lot of it is machine-readable in one or another way
+\item There are a lot of problems in putting it together,
+\bi
+\item Variety of data formats and storage conventions
+\item Variety of choices of generating set, basis or representation
+\item Subtle inter-dependencies -- for example generality issues in
+modular character tables
+\item Actual errors and their propagation
+\ei
+\item Recent work is improving the situation considerably -- The ATLAS 
+of Group Representations; The \GAP\ databases
+\ei
+\es
+\bs
+\subsection{New Knowledge}
+\bi
+\item Even {\GAP} does not make as much use as it could of new
+knowledge
+\item Even if I recognize two groups as the same simple group, results 
+of computation about one will not pass to the other.
+\item The problem is that {\GAP} deals almost entirely with
+``concrete'' groups, while much knowledge is applicable to
+``abstract'' groups (isomorphism classes).
+\ei
+\es
+\bs
+\subsection{A Framework for Knowledge}
+\bi
+\item When we have a matrix or permutation ``group'' in a program, we really have five
+things
+\begin{description}
+\item[Abstract Group --] An isomorphism class of groups
+\item[Generated Group --] A group with an explicit generating set,
+defined up to isomorphism of such
+\item[Abstract Representation -- ] A matrix or permutation representation
+of the abstract group, defined up to equivalence 
+\item[Concrete Representation -- ] A matrix or permutation representation
+with a fixed basis (or point ordering)
+\item[Concrete Group -- ] The combination of a Concrete Representation and 
+a Generated Group
+\end{description}
+\ei
+\es
+\bs
+\subsection{A Framework for Knowledge 2}
+\bi
+\item Examples of Information that are naturally stored with each:
+\begin{description}
+\item[Abstract Group:] Size; name; abstract composition factors;
+standard generator specification; character table
+\item[Generated Group:] Words [SLP] to reach standard generators; words for
+generators of subgroups
+\item[Abstract Representation:] character; abstract decomposition
+\item[Concrete Representation:] orbit representatives; block systems;
+irreducible subspaces; quadratic forms
+\item[Concrete Group:] explicit generators (matrices or permutations)
+not much more
+\end{description}
+\ei
+\es
+\bs
+\subsection{Knowledge Representation -- Picture}
+\begin{center}
+\epsfbox{Knowledge.eps}
+\end{center}
+\es
+\bs
+\subsection{Physical Knowledge Representation}
+\bi
+\item the ``old'' data behind this abstract picture needs to be stored somewhere, and accessed on demand. 
+\item The data is mixed:
+\bi
+\item Detailed and bulky data about a few large groups
+\item Parametrised data about families of groups
+\item Compact data about many small groups, where almost everything can be recomputed quickly on demand
+\ei
+\item Need a uniform interface layer, on top of a variety of storage methods
+\item Also want storage to be future-proof and portable
+\ei
+\es
+\bs
+\subsection{Other Knowledge Issues 1}
+\bi
+\item Origin and dependency tracking 
+\bi
+\item Mistakes do happen, and we need an audit trail for our results 
+\item Needs to be intelligent -- when we can check something directly,
+we can prune off much of the audit trail
+\item this might also be useful technology 
+for managing uncertainty in Monte Carlo/ Las Vegas computations.
+\ei
+\item Publishing and Sharing
+\bi
+\item Artificial distinction between ``new'' and ``old'' knowledge -- if you've found something, why not add it to the database
+\item Internet access to large databases or to get latest versions
+\ei
+\ei
+\es
+\bs
+\subsection{Other Knowledge Issues 2}
+\bi
+\item Partial Information
+\bi
+\item The ATLAS has the concept of the ``shape'' of a group -- an expression like $3^{1+4}.[2^7.3]$ or $2\cdot 2^{4+6} : S_5$
+\item This typically gives a composition series, but only partial information about actions, splitting, isoclinism, etc.
+\item This kind of information is useful, and we want to represent and use it
+\ei
+\ei
+\es
+\bs
+\subsection{Automating Computations}
+\bi
+\item Writing down algorithms to solve high-level problems efficiently 
+in every possible state of knowledge would be impossible
+\item instead we resort to an idea from the theorem proving and AI
+communities -- planning
+\item We build up collection of ``mini-algorithms'' each with inputs,
+outputs, requirements and time and space consumption 
+\item The planner combines them to solve the users problem
+\item The planner might be guided by a library of ``tactics''
+\item As a first step, the user might produce a plan and the system
+just check it and estimate the resources required. 
+\ei
+\es
+\bs
+\subsection{Some Possible Mini-algorithms 1}
+\bi
+\item Finding an element in a conjugacy class by random search
+\item Finding an element in a conjugacy class by powering
+\item Finding an element in a conjugacy class by conjugating one you already have
+\item Techniques for showing tht an element is not in a conjugacy  class
+\item Techniques for showing that a relation between elements does NOT hold
+\item Finding an element in the centraliser of an involution using the dihedral groups trick
+\ei
+\es
+\bs
+\subsection{Some Possible Mini-algorithms 2}
+\bi
+\item Finding an element conjugating one involution to another
+\item Finding a non-cyclic proper subgroup containing a given element
+\item Various ways of showing that two elements do not generate a group isomorphic to a given abstract group
+\item Generating elements of a point stabilizer from coincidences in the orbit algorithm
+\ei
+\es
+\bs
+\subsection{Some Tactics for Finding Subgroups}
+\bi
+\item If the subgroups is cyclic, see finding elements in conjugacy classes
+\item If the subgroup is not maximal, find a maximal subgroup containing it
+
+\item If you can find a plan for generating elements in the subgroup, then do 
+so, until you can prove that they cannot all lie in a smaller subgroup
+
+\item First find its preimage in some proper quotient 
+(eg an action on an orbit) then look in there for the actual group.
+\ei
+\es
+\bs
+\subsection{Computation -- Other Issues}
+\bi
+\item When to Give Up Being Clever?
+\bi
+\item We refine hard questions about big groups into easier ones or ones about smaller groups
+\item At some point the overhead of being clever and using the knowledge-base exceeds the gains from doing so
+\item At that point it is better to just hand the problem to general-purpose algorithms
+\ei
+\ei
+\es
+\bs
+\subsection{Passing from Concrete to Abstract}
+\bi
+\item We want to apply these techniques not only to groups originating from the databases
+\item Our techniques will also give us ``known'' subgroups with random generating sets 
+\item This means that we need to take concrete groups however arising and attach them to our abstract model
+\item This is the problem of group recognition, which has had much recent attention
+\ei
+\es
+\bs
+\subsection{Recognition}
+\bi
+\item Non-constructive recognition simply establishes the correct Abstract Group
+\item Further steps fill in the other parts of the Knowledge model and establish more detailed links between concrete and abstract
+\item For example, it is often quite easy to link concrete and abstract conjugacy classses by cycle or eigenspace structure
+
+\ei
+
+\es
+\bs
+\subsection{Recognition Continued}
+\bi
+\item Ultimate goal is  constructive recognition of both the group and the representation
+\item Ideally this wanted not just for simple groups or irreducible representations
+\item But, many partial results can still be useful -- eg conjugacy classes above
+\item We need to codify, represent and use partial information nicely.
+\ei
+\es
+\bs
+\subsection{Summary}
+\bi
+\item Attempting to automate the approach of ``Art and Science''
+\item In this scheme a knowledge base lies at the heart of the system
+\item Interesting issues in designing and implementing the knowledge-base -- could be useful in its own right
+\item Synthesise ``bespoke'' algorithms from a toolkit of simple components
+\item Need to codify these components -- requirements, outputs, resources
+\item Recognition algorithms of various degrees of constructivity become very important
+\ei
+
+\es
+\bs
+\subsection{Conclusions}
+
+\bi
+\item Much too early to have conclusions.
+\ei
+\es
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+

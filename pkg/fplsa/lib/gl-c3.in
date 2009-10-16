@@ -1,0 +1,19 @@
+Generators: x y z;
+Parameter: t;
+Limiting weight: 26;
+Relations:
+
+[[x,y],x] - 2 x;
+[[x,y],y] + 2 y;
+
+[y,z];
+[[x,y],z] + 6 z;
+[x,[x,[x,[x,[x,[x,[x,z]]]]]]];
+
+2 [[x,z],[x,[x,z]]] - [z,[x,[x,[x,z]]]] - 1224 t z;
+9 [[x,[x,z]],[x,[x,[x,z]]]] - 5 [[x,z], [x,[x,[x,[x,z]]]]] -
+ 3672 t [x,[x,z]] - 373248 t^2 y;
+[z,[z,[x,z]]];
+7 [[x,[x,[x,z]]],[z,[x,z]]] - 6 [[x,[x,z]],[z,[x,[x,z]]]] +
+ 9360 t [z,[x,z]];
+[[x,z],[[x,z],z]];

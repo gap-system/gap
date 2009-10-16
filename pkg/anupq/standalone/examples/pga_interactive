@@ -1,0 +1,122 @@
+#Call pq with flag: '-b'
+#start point for Nottingham group 
+#interactive construction of 40/5 groups of order 5^7
+
+1
+Nott
+5
+3
+1
+2
+3
+0
+5 1;
+0;
+5 2;
+0;
+1 [2 1 2];
+0;
+
+7        #compute 5-covering group
+
+2
+Nott
+
+9
+
+1
+6
+1 0 0 0
+0 1 0 1
+
+1 1 0 0
+0 1 0 0
+
+1 0 0 0 
+0 4 0 0 
+
+1 0 0 0
+0 2 0 0 
+
+4 0 0 0 
+0 1 0 0 
+
+2 0 0 0 
+0 1 0 0 
+
+0         #number of soluble automorphisms
+
+5         #iteration 
+4         #class bound
+0         #construct all descendants?
+1         #step size  
+1         #PAG-generating sequence 
+
+0         #default algorithm?
+4         #rank of subgroup
+0         #space efficient?
+0         #completely process terminal descendants?
+0         #exponent law
+0         #metabelian law
+
+1         #default output 
+
+
+3            #restore group 
+Nott_class4
+1
+
+6            #interactive pga 
+
+6            #degree 
+2              #step size
+3              #rank of initial segment subgp
+0              #no exponent law
+
+7           #permutations  
+1              #PAG-generating seq.
+0              #not space efficient
+0              #don't print aut. matrices
+0              #don't print perms
+
+8           #orbits 
+1              #PAG-generating seq.
+0              #not space efficient
+1              #print summary
+0              #don't print complete listing
+
+
+9          #stabilisers 
+1              #PAG-generating seq.
+0              #not space efficient
+0              #don't process terminal descendants
+0              #exponent law
+0              #don't set metabelian
+0              #don't print allowable subgp stand. mat.
+0              #don't print reduced p-covering gps pres'ns
+0              #don't print immediate descendants pres'ns
+0              #don't print nuclear rank of descendants
+0              #don't print p-mult'r rank of descendants
+0              #don't print commutator matrix
+0              #don't print aut. gp descrip. of descendants
+0              #don't print aut. gp order of descendants
+X              #output file name
+
+
+3          #restore reduced p-covering group 
+X
+1
+
+4          #display presentation 
+
+5          #intermediate stage computation 
+2              #step size 
+1              #PAG-generating sequence?
+1              #default algorithm? 
+1              #default output?
+XX
+
+
+0         #exit 
+0
+0

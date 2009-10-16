@@ -1,0 +1,286 @@
+\Chapter{Graphic Posets}
+
+This chapter describes the part of {\XGAP} that allows the user to
+conveniently display posets graphically.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Introduction}
+
+A poset is just a partially ordered set. To display posets
+reasonably in a generic way we need additional structure. So for {\XGAP} a
+poset comes in so called levels. At all times in the life of a graphic
+poset there are only finitely many levels and they are totally ordered,
+that is for two levels we can always say, which one is ``higher''. The
+position within the graphic sheet reflects this ordering.
+
+The levels are parametrized by ``level parameters'', which can be any
+{\GAP} object but must be unique within a graphic poset. A level is always
+accessed by its level parameter and *not* by its number!
+
+The vertices in each level are grouped into classes. For example for 
+graphic subgroup lattices vertices in the same class correspond to conjugate
+subgroups, vertices in the same level have the same size or index in the
+whole group. The classes within each level are parametrized by ``class
+parameters'', which can be any {\GAP} object but must be unique within a
+level. A class within a level is always accessed by its class parameter and 
+*not* by its number!
+
+The user must supply a *partial order* for all of his levels. The mechanism 
+to achieve this is the operation `CompareLevels', which compares two level
+parameters. The current *total order* of the levels is always a refinement
+of the partial order. The user can permute levels, if that does not
+contradict the partial order defined by `CompareLevels'.
+
+A vertex in the poset that is ``contained in'' another vertex in the poset
+order (we speak of ``inclusion'' like in the case of subgroup lattices)
+must always be in a level that is lower on the screen, because there 
+is only a connecting line representing the inclusion. This is achieved by
+the fact, that inclusions of vertices are communicated to {\XGAP} just by
+creating an ``edge'' between them. This means, that the vertex in the
+``lower'' level lies in the vertex in the ``higher'' level. There must not
+be edges between vertices in the same level!
+
+The terminology ``vertices'' and ``edges'' comes from the fact, that a
+graphic poset is just a special case of a graphic graph, where vertices can 
+be placed anywhere in the sheet and edges have nothing to do with
+inclusion. It is planned that also a graphic graph library is implemented
+in {\XGAP} but it is not yet operational. However everything which could be 
+done not only for posets but at the same time for graphs is implemented
+already within the poset package. This explains the usage of ``graph'' in
+many places where you would otherwise expect ``poset''.
+
+What you have to do to use the graphic poset package is create a graphic
+poset (a special instance of a graphic sheet), create some levels and
+perhaps classes within them. Then you can create vertices and edges, to
+encode the ordering. Everything else is done by the library. See the next
+section for details about the available operations.
+
+Note that we chose a functional approach for certain decision
+procedures. This means that for example if you create a vertex and do not
+specify a position, an operation (`ChoosePosition') is called to determine
+the actual position. You can use the generic routines or install your own
+methods for all of those decisions. In this case you just set a new filter
+for your posets and overload the generic methods by special routines for
+objects with your new filter set. You can see this approach in the example
+in "An Example".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations}
+
+*Constructors:*
+
+\medskip%
+\Declaration{GraphicPoset}
+\Declaration{CreateLevel}
+\Declaration{CreateClass}
+\Declaration{Vertex}[poset]
+\Declaration{Edge}
+
+*Destructors:*
+
+\medskip%
+\>Delete( <poset>, <vertex1>, <vertex2> )!{for edge in poset}
+\>Delete( <poset>, <vertex1>)!{for vertex in poset}
+\>Delete( <poset>, <levelparam>, <classparam> )!{for class in poset}
+
+These three variants of the `Delete' operation delete an edge, a vertex and 
+a class respectively.
+
+\Declaration{DeleteLevel}
+
+\medskip%
+*Operations to change a poset:*
+\medskip%
+\Declaration{ResizeLevel}
+\Declaration{MoveLevel}
+\Declaration{Relabel}[poset]
+\Declaration{Move}[poset]
+\Declaration{Reshape}[poset]
+\Declaration{Recolor}[poset]
+\Declaration{SetWidth}[poset]
+\Declaration{Highlight}[poset]
+\Declaration{Select}
+\Declaration{DeselectAll}
+\Declaration{Selected}
+
+\medskip%
+*Operations for decisions:*
+\medskip%
+\Declaration{ChooseLabel}
+\Declaration{ChooseLevel}
+\Declaration{ChooseClass}
+\Declaration{ChooseColor}
+\Declaration{ChooseHighlight}
+\Declaration{ChoosePosition}
+\Declaration{ChooseShape}
+\Declaration{ChooseWidth}
+\Declaration{CompareLevels}
+
+\medskip%
+*Operations to get information:*
+\medskip%
+\Declaration{WhichLevel}
+\Declaration{WhichClass}
+\Declaration{WhichVertex}
+\Declaration{WhichVertices}
+\Declaration{Levels}
+\Declaration{Classes}
+\Declaration{Vertices}
+\Declaration{Maximals}
+\Declaration{MaximalIn}
+\Declaration{PositionLevel}
+
+\medskip%
+*Operations for user communication:*
+\medskip%
+\Declaration{Menu}[poset]
+\Declaration{ModifyEnabled}
+\Declaration{InstallPopup}
+\Declaration{PosetLeftClick}
+\Declaration{PosetCtrlLeftClick}
+\Declaration{PosetRightClick}
+
+\medskip%
+*Operations for user actions:*
+\medskip%
+\Declaration{UserDeleteVerticesOp}
+\Declaration{UserDeleteEdgeOp}
+\Declaration{UserMergeClassesOp}
+\Declaration{UserMagnifyLattice}
+\Declaration{UserShrinkLattice}
+\Declaration{UserResizeLattice}
+\Declaration{UserResizeSheet}
+\Declaration{UserMoveLattice}
+\Declaration{UserChangeLabels}
+\Declaration{UserAverageY}
+\Declaration{UserAverageX}
+\Declaration{UserRearrangeClasses}
+\Declaration{UserUseBlackWhite}
+\Declaration{PosetShowLevels}
+\Declaration{PosetShowLevelparams}
+\Declaration{DoRedraw}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{An Example}
+
+This section shows how to use the poset package to display posets. The code
+presented here is actually part of the {\XGAP} library and makes up the
+link to the C MeatAxe.
+
+This is the declaration part:
+
+\begintt
+#############################################################################
+##
+#W  meataxe.gd                  XGAP library                  Max Neunhoeffer
+##
+#Y  Copyright 1998,       Max Neunhoeffer,              Aachen,       Germany
+##
+##  This file contains declarations for MeatAxe posets
+##
+
+DeclareFilter("IsMeatAxeLattice");
+
+#############################################################################
+##
+#O  GraphicMeatAxeLattice(<name>, <width>, <height>)  . creates graphic poset
+##
+##  creates a new graphic MeatAxe lattice which is a specialization of a
+##  graphic poset. Those posets have a new filter for method selection.
+##
+DeclareOperation("GraphicMeatAxeLattice",[IsString, IsInt, IsInt]);
+\endtt
+
+The code only declares a new filter and declares a constructor operation
+for posets that lie in this new filter.
+
+The implementation:
+
+\begintt
+#############################################################################
+##
+#W  meataxe.gi                  XGAP library                  Max Neunhoeffer
+##
+#Y  Copyright 1998,       Max Neunhoeffer,              Aachen,       Germany
+##
+##  This file contains code for MeatAxe posets
+##
+
+#############################################################################
+##
+#M  GraphicMeatAxeLattice(<name>, <width>, <height>)  . creates graphic poset
+##
+##  creates a new graphic MeatAxe lattice which is a specialization of a
+##  graphic poset. Those posets have a new filter for method selection.
+##
+InstallMethod( GraphicMeatAxeLattice,
+    "for a string, and two integers",
+    true,
+    [ IsString,
+      IsInt,
+      IsInt ],
+    0,
+
+function( name, width, height )
+  local P;
+
+  P := GraphicPoset(name,width,height);
+  SetFilterObj(P,IsMeatAxeLattice);
+  return P;
+end);
+
+#############################################################################
+##
+#M  CompareLevels(<poset>,<levelparam1>,<levelparam2>)  . . . . . . . . . . .
+##  . . . . . . . . . . . . . . . . . . . . . . . .  compares two levelparams
+##
+##  Compare two level parameters. -1 means that <levelparam1> is "higher", 
+##  1 means that <levelparam2> is "higher", 0 means that they are equal. 
+##  fail means that they are not comparable. This method is for the case 
+##  if level parameters are integers and lower values mean lower levels 
+##  like in the case of MeatAxe lattices of Michael Ringe.
+##
+InstallMethod( CompareLevels,
+    "for a graphic MeatAxe lattice, and two integers",
+    true,
+    [ IsGraphicPosetRep and IsMeatAxeLattice, IsInt, IsInt ],
+    0,
+function( poset, l1, l2 )
+  if l1 < l2 then
+    return 1;
+  elif l1 > l2 then
+    return -1;
+  else
+    return 0;
+  fi;
+end);
+\endtt
+
+Besides the new constructor (which only adds a new filter) we only have to
+supply a new method for comparison of level parameters for such posets. The 
+levels are numbered with integer numbers such that lower numbers are lower
+in the lattice.
+
+There is a C program in the MeatAxe that exports a poset to a {\GAP}
+program which generates the lattice in a graphic poset sheet. The user can
+then interactively move around vertices and shrink or magnify levels. He
+can then export the resulting lattice to an encapsulated postscript file.
+Note that you need a full installation of the C MeatAxe apart from
+{\GAP} to use this feature.
+
+Another nice little example is in the `examples' subdirectory in the
+{\XGAP} distribution. It was written by Thomas Breuer (Aachen) to
+demonstrate the features of {\XGAP}. The user gets a small window with a
+puzzle and can solve it using the mouse. You can test this example by
+starting {\XGAP} and `Read'ing the file `pkg/xgap/examples/puzzle.g'.
+You can do this by using
+
+\begintt
+gap> ReadPkg("xgap","examples/puzzle.g");
+gap> p := Puzzle(4,4);
+\endtt
+
+
+
+

@@ -1,0 +1,601 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  ctbldiff.tex          GAP 4 package `ctbllib'               Thomas Breuer
+%%
+%H  @(#)$Id: ctbldiff.tex,v 1.50 2004/03/30 09:02:12 gap Exp $
+%%
+%Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  Plain TeX file, format copied from Simon Norton's famous lists of
+%%  ATLAS Improvements
+%%
+
+\parskip 1ex plus 0.5ex minus 0.5ex
+\parindent0pt
+
+\font\sf=cmss10
+\def\CAS{{\sf CAS}}
+\def\GAP{{\sf GAP}}
+\def\MOC{{\sf MOC}}
+
+\def\contrib#1{(contributed #1)}
+
+\def\tthdump#1{#1}
+%%tth: \def\strut{}
+%%tth: \def\colon{:}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tthdump{\centerline{\bf Changes in the {\GAP} Character Table Library}}
+%%tth: \title{Changes in the GAP Character Table Library}
+
+\bigbreak
+
+%%tth: \begin{html} <body bgcolor="FFFFFF"> \end{html}
+
+This list contains the changes in the {\GAP} character table library
+since the official upgrade for {\GAP}~3.4 in October 1996.
+We denote mathematical errors by {\bf ***} and new information
+by {\bf NEW}\null.
+We use {\bf C} to denote changes that are not obviously corrections;
+the number of these changes is kept small.
+
+\bigbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf Release of {\GAP}~4.1 in July 1999}
+
+\bigbreak
+
+{\bf Brauer Tables}
+
+Changes are assigned to the simple group involved,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+***&^2E_6(2)&:&The faithful characters of $2.{}^2E_6(2)$ and
+$2.{}^2E_6(2).2$ mod $19$ were corrected
+\contrib{by J\"urgen M\"uller}.\cr
+NEW&A_{13}&:&Indicators of $A_{13}$ and $S_{13}$ mod $2$ are now known.\cr
+NEW&A_{14}&:&The tables of $A_{14}$ mod $2$, $11$, $13$ and
+tables of $S_{14}$ mod $3$, $5$, $7$ are now known.\cr
+NEW&A_{15}&:&All Brauer tables of $S_{15}$ are now known
+\contrib{by J\"urgen M\"uller}.\cr
+NEW&A_{16}&:&All Brauer tables of $S_{16}$ are now known
+\contrib{by J\"urgen M\"uller}.\cr
+NEW&A_{17}&:&All Brauer tables except the $3$-modular one of $S_{17}$
+are now known
+\contrib{by J\"urgen M\"uller}.\cr
+NEW&Co_2&:&The degree $156\,538$ character of $Co_2$ mod $2$ is now
+proved.\cr
+NEW&Co_3&:&One more indicator of $Co_3$ mod $2$ is now known.\cr
+***&Fi_{22}&:&The faithful characters of $6.Fi_{22}$ and $6.Fi_{22}.2$
+mod $5$
+were corrected.\cr
+***&L_3(4)&:&The faithful characters of $12_2.L_3(4)$ mod $7$ were
+corrected.\cr
+NEW&O_8^+(3)&:&The degree $50\,596$ characters of $O_8^+(3)$ mod $2$
+are now proved.
+Consequently, also the degree $101\,192$ of $O_8^+(3).2_1$ mod $2$,
+the degrees $50\,596$ and $101\,192$ of $O_8^+(3).2_2$ mod $2$,
+the degrees $50\,596$ and $151\,288$ of $O_8^+(3).3$ mod $2$,
+and the degree $202\,384$ of $O_8^+(3).4$ mod $2$ are now proved.\cr
+C&ON&:&The tables of $ON$ and $ON.2$ mod $19$ were changed
+in order to respect the choice of classes in Robert Wilson's
+``Atlas of Group Representations''.\cr
+NEW&ON&:&The tables of $ON$ mod $11$ and mod $31$ are now known
+\contrib{by Markus Ottensmann},
+as well as two new indicator values for $ON$ mod $2$.\cr
+C&Ru&:&The tables of $Ru$ and $2.Ru$ mod $5$ and mod $7$ were changed
+in order to respect the choice of classes in Robert Wilson's
+``Atlas of Group Representations''.\cr
+NEW&Ru&:&The tables of $Ru$ and $2.Ru$ mod $13$ and $29$ are now known
+\contrib{by Frank R\"ohr},
+as well as all indicator values of $Ru$ mod $2$.\cr
+***&S_6(3)&:&The characters of $S_6(3)$ and $2.S_6(3)$ mod $7$ were
+corrected;
+these changes do not affect the tables of $S_6(3).2$ and $2.S_6(3).2$
+mod $7$
+\contrib{by J\"urgen M\"uller}.\cr
+***&Suz&:&The faithful characters of $6.Suz$ and $6.Suz.2$ mod $7$ were
+corrected
+% (bug reported by William Husen, correction by J\"urgen M\"uller)
+\contrib{by J\"urgen M\"uller}.\cr
+NEW&Th&:&The table of $Th$ mod $19$ is now known.\cr}
+
+\bigbreak
+
+{\bf Ordinary Tables}
+
+The following changes affect several ordinary tables.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad
+ \vtop{\parindent0pt\hsize=43em\strut#\strut}\cr
+C&Whitespace at the end of {\tt InfoText} strings was removed.\cr
+NEW&Various class fusions were added.\cr
+NEW&Components {\tt tomidentifier} and {\tt tomfusion} were added
+in order to provide a (preliminary) interface to
+the library of tables of marks.\cr
+C&In the library tables of alternating and symmetric groups,
+the {\tt classtext} components
+(partitions parametrizing the conjugacy classes;
+in some cases, this had been hidden inside the {\tt CAS}
+component of the table)
+were replaced by values of the attribute {\tt ClassParameters}.\cr
+NEW&The tables of $L_2(q)$ were added for those values of $q$ for which
+the table of marks of $L_2(q)$ is now contained in the {\GAP} library.\cr
+NEW&In the library tables of symmetric groups,
+the partitions parametrizing the irreducible characters
+are stored on the tables,
+as value of the attribute {\tt CharacterParameters}.\cr
+C&The {\tt Identifier} values of a few tables have been changed.
+For example, the table of {\tt L4(3).2\^{}2} was previously known only as
+{\tt psl(4,3).v4}.
+The old names are still valid.\cr
+***&The character tables with identifiers {\tt iu332}, {\tt D2MJ4},
+and {\tt P4L82} were removed.
+The former two tables were incomplete, the latter one was wrong.\cr
+NEW&The ordinary tables of all maximal subgroups
+(and their class fusions)
+are now available for the groups $G_2(3)$, $J_3.2$, $2.M_{12}$,
+$M_{12}.2$, $M_{22}.2$, and $O_8^+(3)$.\cr}
+
+\medbreak
+
+The following changes are assigned to specific simple groups,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+***&A_6&:&The table automorphisms of $4.A_6.2_3$ were corrected.\cr
+NEW&Fi_{22}&:&The table of the maximal subgroup $2^7\!:\!S_6(2)$
+of $Fi_{22}.2$ was added
+\contrib{by E. Mpono}.\cr
+NEW&Fi_{22}&:&The table of the maximal subgroup $2^6\!:\!U_4(2).2$
+of the maximal subgroup $2^6\!:\!S_6(2)$ of $Fi_{22}$ was added
+\contrib{by E. Mpono}.\cr
+NEW&HS&:&The tables (and fusions) of several normalizers of chains of
+$p$-subgroups were added.\cr
+C&J_4&:&The classes and the characters of the maximal subgroup of type
+$2^{10}\!:\!L_5(2)$ were reordered,
+and the identifier was changed from {\tt l52m10} (from the {\CAS} library)
+to {\tt 2\^{}10:L5(2)}.\cr
+% Make the old table available again, with the old name! (ctomaxi6.tbl)
+NEW&McL&:&The table of the seventh maximal subgroup of $McL.2$ was added.\cr
+C&O_8^+(2)&:&The classes and the characters of the maximal subgroup of
+type $2^6\!:\!A_8$ were reordered,
+and the identifier was changed from {\tt mo81p} (from the {\CAS} library) to
+{\tt 2\^{}6:A8}.\cr
+% Make the old table available again, with the old name! (ctomisc2.tbl)
+% The same holds for the table with name `y' ! (ctomisc6.tbl)
+C&O_8^+(3)&:&The fusions from $O_7(3)$ and $3^6\!:\!L_4(3)$ were changed
+to the ones listed in the Atlas of Finite Groups.\cr
+NEW&O_{10}^+(2)&:&The table of the maximal subgroup $2^8\!:\!O_8^+(2)$
+was added.\cr
+NEW&S_{10}(2)&:&The table of the subgroup $2^8\!:\!S_8(2)$ was added.\cr
+NEW&U_4(3)&:&The tables of $2.U_4(3).(2^2)_{122}$ and $6_2.U_4(3).2_3'$
+were added.\cr}
+
+\bigbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf Release of {\GAP}~4.2 in March 2000}
+
+\bigbreak
+
+{\bf Brauer Tables}
+
+Changes are assigned to the simple group involved,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+NEW&A_{14}&:&Table of $S_{14}$ mod $2$ is now known
+\contrib{by Dave Benson, added by J\"urgen M\"uller}.\cr
+***&A_{16}&:&Corrected principal block of the table of $S_{16}$ mod $2$.\cr
+NEW&ON&:&The tables of $3.ON$ mod $11$ and $31$ are now known.\cr
+C&ON&:&The tables of $3.ON$ and $3.ON.2$ mod $19$ were changed
+in order to respect the choice of classes in Robert Wilson's
+``Atlas of Group Representations''.
+(This affects only the irreducibles of $3.ON$ of degrees $45090$ and $77670$.)
+\cr}
+
+\bigbreak
+
+{\bf Ordinary Tables}
+
+The following changes affect several ordinary tables.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad
+ \vtop{\parindent0pt\hsize=43em\strut#\strut}\cr
+NEW&Various class fusions were added.\cr
+C&The {\tt galomorphisms} components which had been contained in only a few
+tables were removed.\cr
+***&The {\tt tomfusion} values of $L_2(25)$ and $2^5:S_6$ were corrected.\cr
+***&Element orders and power maps in the table with identifier
+{\tt s61p} were corrected.\cr
+***&The table with identifier {\tt 2.cenc1} was removed because it was
+inconsistent.\cr
+% no power maps possible ...
+C&Two instances of the table of $(A_6 \times A_6):2^2$ were unified.\cr
+C&The tables with identifiers {\tt J2.2M4}, {\tt 2\^{}(2+4):(3x3):2\^{}2},
+and {\tt 2\^{}(2+4):(S3xS3)} were unified;
+the identifiers {\tt J2.2M5} and {\tt 2\^{}(2+4):(S3xS3)} can be used to
+access the table.\cr
+NEW&The ordinary tables of all maximal subgroups
+(and their class fusions)
+are now available for the groups $S_6$, $J_2.2$, $McL.2$, $Suz.2$,
+$3.Suz$, $3.Suz.2$, $Sz(32)$.\cr}
+
+\medbreak
+
+The following changes are assigned to specific simple groups,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+NEW&A_6&:&The table of $12.A_6.2_3$ is now available.\cr
+***&Fi_{22}&:&The name of the table of the $7$-th maximal subgroup
+of $Fi_{22}$ was corrected from {\tt (2x2\^{}(1+8):U4(2)):2} to
+{\tt (2x2\^{}(1+8)):U4(2):2};
+similarly, {\tt (2x2\^{}(1+8):U4(2):2):2} was corrected to
+{\tt (2x2\^{}(1+8)):(U4(2):2x2)}.\cr
+NEW&Fi_{22}&:&The tables of the maximal subgroups $2^{10}:M_{22}:2$ of
+$Fi_{22}.2$ and $2^{11}.M_{22}$ of $2.Fi_{22}$ are now available
+via the names {\tt Fi22.2M4} and {\tt 2.Fi22M5}, respectively.\cr
+C&U_3(5)&:&The table with identifier {\tt U3(5).S3} was removed;
+it is replaced by the table with identifier {\tt U3(5).3.2}
+whose cosets of the outer automorphism group are ordered as in the
+Atlas of Finite Groups.
+The identifier {\tt U3(5).S3} is now admissible for the table with
+identifier {\tt U3(5).3.2}.\cr
+***&U_4(3)&:&The table with identifier {\tt u4q3c} was removed;
+characters and power maps of this table were erroneous.
+Apparently the table was thought to be that of $3_2.U_4(3).2_3^{\prime}$,
+which can be accessed with the name {\tt 3\_2.U4(3).2\_3'}.\cr
+NEW&U_4(3)&:&The tables of $3_2.U_4(3).(2^2)_{133}$ and $U_4(3).(2^2)_{133}$
+are now available.\cr}
+
+\bigbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf Release of CTblLib~1.0 in January 2002}
+
+\bigbreak
+
+{\bf Brauer Tables}
+
+Changes are assigned to the simple group involved,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+NEW&A_{14}&:&The tables of $A_{14}$ mod $3, 5, 7$
+and of $S_{14}$ mod $11, 13$ are now known
+\contrib{by J\"urgen M\"uller, using {\MOC} and the {\GAP} package
+{\tt specht}}.\cr
+NEW&A_{17}&:&The table of $A_{17}$ mod $3$ is now known
+\contrib{by J\"urgen M\"uller}.\cr
+NEW&F_{3+}&:&All Brauer tables of the maximal subgroup $3^7.O_7(3)$,
+and the $2$-modular table of the maximal subgroup
+$(3 \times O_8^+(3)\colon 3)\colon 2$ are available
+\contrib{by Gerhard Hi\ss{}}.\cr
+NEW&L_4(4)&:&The tables of $L_4(4)$ mod $3, 5, 7, 17$ are now known
+\contrib{by Gerhard Hi\ss{}}.\cr
+NEW&Ly&:&The tables of $Ly$ mod $37$ and $67$ are now known
+\contrib{by J\"urgen M\"uller, Max Neunh\"offer, Frank R\"ohr,
+Robert Wilson}.\cr
+NEW&O_8^+(3)&:&The table of $O_8^+(3).S_3$ mod $2$ is available.\cr
+NEW&&&The table of $O_8^+(3).S_3$ mod $2$ is available.\cr
+NEW&S_{10}(2)&:&The tables of $S_{10}(2)$ mod $7, 11, 17, 31$ are now known
+\contrib{by Gerhard Hi\ss{}}.\cr}
+
+\bigbreak
+
+{\bf Ordinary Tables}
+
+The following changes affect several ordinary tables.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad
+ \vtop{\parindent0pt\hsize=43em\strut#\strut}\cr
+NEW&The ordinary tables of the Schur covers of the symmetric groups
+$S_{14}$, $S_{15}$, $S_{16}$, $S_{17}$, and $S_{18}$ are now available
+\contrib{by Gunter Malle}.\cr
+NEW&The ordinary tables of all maximal subgroups
+(and their class fusions)
+are now available for the group $2.HS$
+\contrib{by Ulrike Muthmann, Markus Ottensmann, and Frank R\"ohr}.\cr
+NEW&The ordinary tables of all maximal subgroups
+(and their class fusions)
+are now available for the groups $2.Suz$ and $6.Suz$
+\contrib{by Thomas Breuer and Frank Himstedt}.\cr
+NEW&The ordinary tables of all maximal subgroups (and their class fusions)
+are now available for the group $S_6(3)$.\cr}
+
+\medbreak
+
+The following changes are assigned to specific simple groups,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+NEW&E_6(2)&:&The table of the Chevalley group $E_6(2)$ is now available
+\contrib{by B. Fischer}.\cr
+NEW&F_{3+}&:&The table of the maximal subgroup
+$2^{1+12}.3_1.U_4(3).2_2^{\prime}$ of $F_{3+}$ is now available
+via the names {\tt 2\^{}(1+12).3\_1.U4(3).2\_2'}, {\tt F3+M9},
+and {\tt F3+C2B}.\cr
+&&&The table of the maximal subgroup
+$3^3.[3^{10}].GL3(3)$ of $F_{3+}$ is now available
+via the name {\tt 3\^{}3.[3\^{}10].GL3(3)}.\cr
+NEW&F_{3+}.2&:&The table of the maximal subgroup
+$3^7.O_7(3):2$ of $F_{3+}.2$ is now available
+\contrib{by Faryad Ali}.\cr
+***&HS&:&The earlier (since {\CAS} times) stored fusion of
+$2 \times A_6.2^2$ into $HS$ did not lift to $2.HS$
+and therefore was replaced by a compatible map.\cr
+NEW&L_3(4)&:&The table of $2^2.L_3(4).2_2$ is now available.\cr
+NEW&L_4(9)&:&The table of $L_4(9)$ is now available.\cr
+NEW&M&:&The table of the maximal subgroup $2^{1+24}.Co_1$ is now available
+\contrib{by Simon Norton}.\cr
+NEW&S_4(7)&:&The tables of $S_4(7)$ and $S_4(7).2$ are now available.\cr
+NEW&S_6(2)&:&The table of the maximal subgroup $2^6\colon S_8$
+of $2^6\colon S_6(2)$ (which is maximal in $Fi_{22}$) is now available
+\contrib{by Faryad Ali}.\cr
+NEW&S_6(5)&:&The table of $S_6(4)$ is now available.\cr
+NEW&S_6(5)&:&The table of $S_6(5)$ is now available.\cr
+NEW&S_{12}(2)&:&The table of $S_{12}(2)$ is now available
+\contrib{by Christoph K\"ohler}.\cr
+***&Suz&:&The earlier (since {\CAS} times) stored fusion of
+$(3^2 \colon 4 \times A_6).2$ into $Suz$ did not lift to $3.Suz$
+and therefore was replaced by a compatible map.\cr
+NEW&U_4(3)&:&The table of $3_1.U_4(3).2_2^{\prime}$ was added.\cr
+NEW&U_4(4)&:&The table of $U_4(4)$ is now available.\cr
+NEW&U_6(2)&:&The table of the Schur cover $(2^2 \times 3).U_6(2)$
+is now available.\cr}
+
+\bigbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf Release of CTblLib~1.1 in February 2004}
+
+\bigbreak
+
+{\bf Brauer Tables}
+
+The following changes affect several Brauer tables.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad
+ \vtop{\parindent0pt\hsize=43em\strut#\strut}\cr
+NEW&The $p$-modular tables of $G.S_3$ are available for all prime divisors
+$p$ of $|G|$, for $G$ one of $L_3(7)$, $3.L_3(7)$, $U_3(5)$, $3.U_3(5)$,
+$U_3(8)$, $3.U_3(8)$, $U_3(11)$, and $3.U_3(11)$.\cr}
+
+The following changes are assigned to the simple group involved,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+NEW&Co_2&:&The indicators of the $36938$ and $83948$ in $Co_2$ mod $2$ are $+$
+\contrib{by Jon Thackray}.\cr
+NEW&Co_3&:&The indicator of the $88000$ in $Co_3$ mod $2$ is $+$
+\contrib{by Jon Thackray}.\cr
+NEW&J_4&:&The tables of $J_4M1$ mod $3$ and $11$ are available
+\contrib{by Christoph Jansen}.\cr
+NEW&O_8^+(3)&:&The tables of $O_8^+(3).S_4$ mod $2$, $5$, and $7$ are
+available
+\contrib{by Christoph Jansen}.\cr
+NEW&ON&:&The tables of $ON.2$ and $3.ON.2$ mod $11$ and $31$ are available
+\contrib{by J\"urgen M\"uller}.\cr
+NEW&ON&:&The indicator of the $25916$ in $ON$ mod $2$ is $+$
+\contrib{by Jon Thackray}.\cr
+NEW&Suz&:&The indicators of $10504$ in $Suz$ mod $2$ and $Suz.2$ mod $2$
+are $+$
+\contrib{by Jon Thackray}.\cr}
+
+\bigbreak
+
+{\bf Ordinary Tables}
+
+The following changes affect several ordinary tables.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad
+ \vtop{\parindent0pt\hsize=43em\strut#\strut}\cr
+***&The table automorphisms were corrected for the tables with the identifiers
+{\tt A17}, {\tt 2.A4xS3}, {\tt 4.M22M6}, {\tt 3.2\^{}(2+4):(3x3):2},
+{\tt 3\^{}(1+6):2\^{}(3+4):3\^{}2:2}, {\tt 5:4x2.A5}, {\tt D8xV4},
+{\tt 3.3\^{}5.U4(2)}, {\tt 3\^{}5.U4(2)}, {\tt group3}, {\tt s61p},
+{\tt 2.(A4xA4)}, {\tt 3\^{}3:A4}, {\tt 3\^{}7.O7(3)}, {\tt ThN2}, and
+{\tt 2\^{}2.2E6(2).2};
+one reason for these errors were missing power maps.\cr
+C&The formerly admissible names {\tt c1}, {\tt c2}, {\tt c3} for the groups
+$Co_1$, $Co_2$, $Co_3$ have been removed, because these names are now
+admissible names of cyclic groups.
+The names {\tt c1m1}, {\tt c1m4}, {\tt c1m5}, {\tt c1m24},
+{\tt c1n3}, {\tt c2m1}, {\tt c2m2}, {\tt c2m3}, {\tt c2m4}, {\tt c2m5}, 
+{\tt c2m6}, {\tt c2m7}, {\tt c2m8}, {\tt c2m9}, {\tt c2m10}, {\tt c2m11},
+{\tt c2m22}, (now called {\tt M22C2A}), {\tt c2m24} (now called {\tt M24C2B}),
+{\tt c3m1}, {\tt c3m2}, {\tt c3m3}, {\tt c3m4},
+{\tt c3m5}, {\tt c3m6}, {\tt c3m7}, {\tt c3m8}, {\tt c3m9}, {\tt c3m10},
+{\tt c3m11}, {\tt c3m12}, {\tt c3m13}, {\tt c3m14}, {\tt c3n2}, {\tt c3n3},
+{\tt c3n5}, {\tt mcn2}, {\tt mcn3}, {\tt mcn5}, {\tt om83}, {\tt o8m2},
+{\tt o8m2.2}, {\tt o10m2}, {\tt o10m2c}, {\tt o12m2}, {\tt rvn2},
+{\tt s2m11}, {\tt s2m12},
+{\tt s2m21}, {\tt s2m23}, and {\tt s2m24} (now called {\tt M24C2A})
+were removed because they would refer to maximal subgroups of other groups
+or of groups with nonadmissible names.
+The names {\tt u4q3.s3} and {\tt f22u3} were removed, the table is now
+available with the name {\tt S3xU4(3)}.\cr
+C&The ordering of maximal subgroups was changed for $A_5.2$, $A_6.2_1$,
+$J_3.2$, $M_{12}.2$, and $McL.2$, in order to be compatible with the
+{\sf ATLAS} of Group Representations.\cr
+***&The following class fusions were corrected.
+$2^7\!:\!S_6(2)$ onto $S_6(2)$ and into $Fi_{22}.2$;
+$3.3^{1+4}\!:\!4S_5$ into $3.McL.2$;
+$D_8 \times V_4$ into $HS$;
+$3.2^{2+4}\!:\!(3 \times 3)\!:\!2$ into $3.McL$, $3.2^4\!:\!A_7$,
+and $3.McLM10$;
+$4.M_{22}M6$ into $4.M_{22}$;
+$G_2(3)M6$ into $G_2(3)$;
+$A_5.2$ into $M_{12}.2$;
+$A_{11}Syl2$ into $A_{11}$.\cr
+NEW&Missing power maps were added for the tables
+{\tt suzs2}, {\tt Fi22N3}, {\tt RuN2}, {\tt SuzN2}, {\tt ThN2},
+for $L_2(q)$, for various values of $q$,
+and for {\tt 7:3}, {\tt 23:11}, {\tt 11:10},
+due to the availability of power maps in the underlying generic character
+tables.\cr
+NEW&The tables of all maximal subgroups are available for
+$A_5$, $A_6$, $A_7$, $A_7.2$, $G_2(4)$, $L_2(11)$, $L_2(11).2$, $U_3(3).2$,
+$U_5(2)$.\cr
+NEW&Several ordinary tables were added for which the tables of marks of the
+underlying groups are available in the {\GAP} Library of Tables of Marks;
+this includes direct products and tables of small groups that can be computed
+easily with standard methods.
+The other way round, each ordinary table in the library for which the table
+of marks is contained in the {\GAP} Library of Tables of Marks stores a
+class fusion into the table of marks.\cr
+NEW&Several ordinary tables of Sylow normalizers in sporadic simple
+groups are available, including the normalizers of cyclic Sylow subgroups.\cr
+% not yet all ...
+NEW&The ordinary tables of $G.S_3$ are available for $G$ one of
+$2^2.L_3(4)$, $L_3(7)$, $3.L_3(7)$, $2^2.O_8^+(2)$, $3.U_3(5)$, $U_3(8)$,
+$3.U_3(8)$, $U_3(11)$, $3.U_3(11)$.\cr
+NEW&The ordinary tables of $L_4(5)$, $O_7(5)$, $O_7(5).2$, $O_9(3)$, $S_4(8)$,
+$S_8(3)$, $U_4(5)$ are available.\cr
+NEW&Generic character tables are available for the double covers of
+alternating and symmetric groups
+\contrib{by Felix Noeske}.\cr}
+
+\medbreak
+
+The following changes are assigned to specific simple groups,
+and shown in alphabetical order.
+
+\medbreak
+
+\halign{\hfil{\bf #}&\quad$#$\hfil&\quad#\hfil$\;\>$&
+ \vtop{\parindent0pt\hsize=38em\strut#\strut}\cr
+C&A_6&:&The fusions of $A_6$, $A_6.2_1$, $2.A_6$ into the tables of marks
+were changed in order to make diagrams of fusions commutative.\cr
+NEW&B&:&The tables of the maximal subgroups of the types
+$3^{1+8}.2^{1+6}.U_4(2).2$ and $(2^2 \times F_4(2))\!:\!2$,
+and the table of the Sylow $7$ normalizer are available,
+as well as the table of the maximal subgroup of the type
+$(S_3 \times 2.Fi_{22}).2$ in $2.B$.\cr
+NEW&Co_1&:&The table of the Sylow $5$ normalizer is available.\cr
+NEW&Co_2&:&The table of the Sylow $2$, $3$, and $7$ normalizers are available.
+\cr
+NEW&Fi_{24}^{\prime}&:&The tables of the maximal subgroups
+$3^2.3^4.3^8.(A_5 \times 2A_4).2$, $2^{3+12}.(L_3(2) \times A_6)$, and
+$2^{6+8}.(S_3 \times A_8)$ and their class fusions are now available
+\contrib{by Alexander Hulpke}.\cr
+NEW&&&The tables of the Sylow $5$ and $7$ normalizer are available.\cr
+NEW&HN&:&The table of the maximal subgroup $4.HS.2$ of $HN.2$ is available.\cr
+C&HS&:&The class fusion of $HS$ into $Co_3$ was replaced by one
+that is compatible with the Brauer tables available.\cr
+C&J_2&:&The class fusion of $2.J_2.2$ into $2.Suz$ was replaced by one
+that is compatible with the Brauer tables available.\cr
+***&&&The class fusion of $2.HS.2$ into $HN$ was corrected.\cr
+***&J_4&:&The table with identifier {\tt (3\^{}(1+2)x2).SD16} is {\bf not}
+that of the Sylow $3$ normalizer in $J_4$; the name {\tt J4N3} is no longer
+admissible for this table (reported by G.~Navarro and A.~Moreto).\cr
+NEW&&&The table of the Sylow $3$ normalizer in $J_4$ is available,
+via the names {\tt (2x3\^{}(1+2)\_+:8):2} and {\tt J4N3}.\cr
+C&L_2(11)&:&The class fusion of $L_2(11)$ into $J_1$ was replaced by one
+that is compatible with the Brauer tables available.\cr
+C&L_2(16)&:&The class fusions of $L_2(16).2$ into $J_3$ and of $L_2(16).4$
+into $J_3.2$ were replaced by maps
+that are compatible with the Brauer tables available.\cr
+C&L_2(19)&:&The class fusion of $L_2(19)$ into $J_3$ was replaced by
+one that is compatible with the Brauer tables available.\cr
+C&L_2(27)&:&The class fusion of $L_2(27).3$ into $S_6(3)$ was replaced by
+one that is compatible with the Brauer tables available.\cr
+C&L_3(3)&:&The class fusions of $L_3(3).2$ into $G_2(3)$
+and $S_6(3)$ were replaced by
+maps that are compatible with the Brauer tables available.\cr
+C&L_3(4)&:&The class fusions of $4_2.L_3(4).2_1$ into $ON$
+and of $4_2.L_3(4).2_3$ into $4.U_4(3).2_3$ were replaced by
+maps that are compatible with the Brauer tables available.\cr
+NEW&&&The tables of $2^2.L_3(4).2_3$ and $2^2.L_3(4).3$ are available.\cr
+NEW&L_3(11)&:&The table of $L_3(11)$ is available
+\contrib{by Frank L\"ubeck,
+computed with a program written by Boris Hemkemeier and Ulf J\"urgens}.\cr
+C&L_4(3)&:&The class fusion of $L_4(3).2_2$ into $O_7(3)$ was replaced by
+one that is compatible with the Brauer tables available.\cr
+NEW&L_8(2)&:&The table of $L_8(2)$ is available
+\contrib{by Frank L\"ubeck,
+computed with a program written by Boris Hemkemeier and Ulf J\"urgens}.\cr
+NEW&M&:&The tables of the Sylow $11$ and $13$ normalizer in $M$ are available,
+via the names {\tt MN11} and {\tt MN13}.\cr
+NEW&&&The tables with the names {\tt 4.2\^{}2}, {\tt (2\^{}2x3).2},
+{\tt 1/2(8xS3)}, {\tt M12C4}, {\tt 7\^{}1+2.6}, {\tt 2x3.A6},
+{\tt 5\^{}1+2.2A4}, {\tt (4xA6).2\^{}2}, {\tt 13\^{}1+2.2A4},
+{\tt 7\^{}1+4.2A7} are available
+\contrib{by Simon Norton}.\cr
+C&M_{23}&:&The class fusion of $M_{23}$ into $Co_3$ was replaced by
+one that is compatible with the Brauer tables available.\cr
+C&M_{24}&:&The class fusion of $2^4\!:\!A_8$ into $M_{24}$ was replaced by
+one that is compatible with the Brauer tables available.\cr
+C&McL&:&The class fusion of $McL.2$ into $Co_3$ was replaced by one
+that is compatible with the Brauer tables available.\cr
+***&&&The $2$nd power map of the table of the maximal subgroup of type
+$3.3^{1+4}\!:\!4S_5$ of $3.McL.2$ was corrected.\cr
+C&O_8^-(2)&:&The class fusion of $O_8^-(2).2$ into $S_8(2)$ was replaced
+by one that is compatible with the Brauer tables available.\cr
+NEW&O_8^+(2)&:&The tables of $2^2.O_8^+(2).2$ and $2^2.O_8^+(2).3$
+are available, as well as the table of the maximal subgroup of the type
+$2^{1+6}_+.A_8$ of $2.O_8^+(2)$.\cr
+NEW&O_8^+(3)&:&The table of $O_8^+(3).D_8$ is available.\cr
+NEW&&&The tables of the maximal subgroup $2^2.(U_3(3).2 \times S_4)$
+of $O_8^+(3).S_4$ and of the maximal subgroups
+$3^{3+6}\!:\!(L_3(3) \times D_8)$ and $3^6.L_4(3).D_8$ of $O_8^+(3).D_8$
+are available.\cr
+NEW&O_8^-(3)&:&The table of $O_8^-(3).2_1$ is available.\cr
+NeW&O_9(3)&:&The table of the maximal subgroup of type $2^8.A_9$
+is available.\cr
+C&S_4(4)&:&The class fusion of $S_4(4).2$ into $S_8(2)$ was replaced by one
+that is compatible with the Brauer tables available.\cr
+C&S_6(3)&:&The class fusion of $3^6\!:\!L_3(3)$ into $S_6(3)$ was replaced
+by one that is compatible with the Brauer tables available.\cr
+C&U_3(5)&:&The class fusion of $3.U_3(5)$ into $3.McL$ was replaced by one
+that is compatible with the Brauer tables available.\cr
+NEW&U_4(3)&:&The table of $2^2.U4(3).(2^2)_{122}$ is available.\cr}
+
+\bigbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%{\bf Since the Release of CTblLib~1.1}
+
+Last update November~12th, 2003.
+
+\bye
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

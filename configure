@@ -614,6 +614,9 @@ LIBS
 build_alias
 host_alias
 target_alias
+GMP_CFLAGS
+GMP_LIBS
+MAKE_GMP
 gp_configure_options
 build
 build_cpu
@@ -1218,6 +1221,17 @@ if test -n "$ac_init_help"; then
 
   cat <<\_ACEOF
 
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-gmp= <path>|yes
+    Use GMP library.
+    If argument is yes or <empty> that means the library is reachable with the standard
+    search path "/usr" or "/usr/local".
+    Otherwise you give the <path> to the directory which contains the library.
+    If argument is no, use original GAP large integers.
+
+
 Some influential environment variables:
   CC          C compiler command
   CFLAGS      C compiler flags
@@ -1653,6 +1667,44 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 if test "x$CFLAGS" = "x" ;  then
   CFLAGS=${COPTS}
 fi
+
+
+# Check whether --with-gmp was given.
+if test "${with_gmp+set}" = set; then
+  withval=$with_gmp; if test "$withval" = yes ; then
+   GMP_HOME="`pwd`/extern"
+   GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+   GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
+   MAKE_GMP="all_gmp"
+  elif test "$withval" = system ; then
+   GMP_CFLAGS="-DUSE_GMP"
+   GMP_LIBS="-lgmp"
+   MAKE_GMP="all"
+  elif test "$withval" != no ; then
+   GMP_HOME="$withval"
+   GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+   GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
+   MAKE_GMP="all_gmp"
+  else
+   GMP_CFLAGS=""
+   GMP_LIBS=""
+   MAKE_GMP="all"
+  fi
+
+else
+  GMP_HOME="`pwd`/extern"
+  GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+  GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
+  MAKE_GMP="all_gmp"
+
+
+fi
+
+
+
+
+
+
 gp_configure_options=$ac_configure_args
 
 ac_aux_dir=
@@ -3435,6 +3487,9 @@ LIBS!$LIBS$ac_delim
 build_alias!$build_alias$ac_delim
 host_alias!$host_alias$ac_delim
 target_alias!$target_alias$ac_delim
+GMP_CFLAGS!$GMP_CFLAGS$ac_delim
+GMP_LIBS!$GMP_LIBS$ac_delim
+MAKE_GMP!$MAKE_GMP$ac_delim
 gp_configure_options!$gp_configure_options$ac_delim
 build!$build$ac_delim
 build_cpu!$build_cpu$ac_delim
@@ -3462,7 +3517,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 62; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 65; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -3788,6 +3843,5 @@ if test "$no_create" != yes; then
   # would make configure fail if this is the last instruction.
   $ac_cs_success || { (exit 1); exit 1; }
 fi
-
 
 

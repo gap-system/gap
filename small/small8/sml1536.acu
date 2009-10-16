@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.sml1536_acu :=
-    "@(#)$Id$";
+    "@(#)$Id: sml1536.acu,v 1.1 1999/12/08 18:58:00 gap Exp $";
 
 SMALL_GROUP_LIB[ 1536 ].2nil[ 99 ] := rec( ops :=
 [ 2, 174,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

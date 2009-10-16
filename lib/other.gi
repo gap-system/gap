@@ -2,7 +2,7 @@
 ##
 #W  other.gi                    GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: other.gi,v 4.1 2000/08/17 10:58:08 ahulpke Exp $
 ##                                                     
 #Y  (C) 2000 School Mathematical Sciences, University of St Andrews, Scotland
 ##
@@ -10,7 +10,7 @@
 ##  systems.
 
 Revision.other_gi :=
-    "@(#)$Id$";                 
+    "@(#)$Id: other.gi,v 4.1 2000/08/17 10:58:08 ahulpke Exp $";                 
 
 InstallMethod(MagmaInputString,"perm group",true,
   [IsPermGroup,IsString],0,

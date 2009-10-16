@@ -1,0 +1,9 @@
+
+etc:
+
+This directory contains a Makefile for preparing releases of polycyclic.
+
+     Makefile -- check out export versions from the repository and
+                 pack them into archives
+
+                 Type 'make' for a list of targets.

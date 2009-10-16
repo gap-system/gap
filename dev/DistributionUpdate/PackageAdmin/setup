@@ -1,0 +1,32 @@
+#!/bin/sh
+# $Id: setup,v 1.4 2008/09/26 13:59:39 gapchron Exp $    (C) Frank Lübeck
+
+export PREFIX="/gap/PackageAdmin/"
+
+
+#  how to call GAP
+export GAP="/gap/bin/gapL"
+
+
+#  path to directory for caching PackageInfo.g, archive and unpacked
+#  package documentation
+export PkgCacheDir=${PREFIX}"/pkgcache"
+
+#  path to directory for files for export to ftp/web site
+export PkgWebFtpDir=${PREFIX}"/webftp"
+
+#  path to directory for collecting merged archives (will
+#  contain the current packages-... files and subdirectory 
+#  'old' holding the older versions
+export PkgMergedArchiveDir=${PREFIX}"/mergedarchives"
+
+# temporary directory for merging the package archives
+export PkgMergeTmpDir=${PREFIX}"/tmp"
+
+# directory with a CVS checkout of WWW2 (only subdir 'Packages' is needed)
+export WWW2Dir=${PREFIX}"/WWW2"
+
+# destination of the ftp server directory (can be remote), the one
+# containing the directories 'tar.gz', 'tar.bz2', 'zoo' and 'win.zip'
+export FtpServer="/ftp/pub/gap/gap44"
+

@@ -1,0 +1,30 @@
+<!-- #################################################################### -->
+<!-- ##                                                                ## -->
+<!-- ##  abstract.xml      ResClasses documentation       Stefan Kohl  ## -->
+<!-- ##                                                                ## -->
+<!-- ##  $Id: abstract.xml,v 1.13 2007/01/29 12:00:53 stefan Exp $     ## -->
+<!-- ##                                                                ## -->
+<!-- #################################################################### -->
+
+<Abstract>
+
+  &ResClasses; is a package for &GAP; 4, which provides a fully-featured
+  and easy-to-use implementation of set-theoretic unions of residue classes
+  of the integers and of a few other rings. <P/>
+
+  The class of sets which &ResClasses; can deal with includes the open and
+  the closed sets in the topology on the respective ring which is induced by
+  taking the set of all residue classes as a basis, as far as the usual
+  restrictions imposed by the finiteness of computing resources permit this.
+  <P/>
+
+  The package further provides slightly more specialized functionality
+  for unions of residue classes with distinguished representatives and
+  signed moduli. <P/>
+
+  The &ResClasses; package is used in a group theoretical context by the
+  &RCWA; package&nbsp;<Cite Key="RCWA"/>.
+
+</Abstract>
+
+<!-- #################################################################### -->

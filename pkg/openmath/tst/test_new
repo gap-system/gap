@@ -1,0 +1,783 @@
+gap> START_TEST( "Test of the 'openmath' package" );
+gap> SizeScreen([80]);;
+gap> ValidatePackageInfo( Filename( DirectoriesPackageLibrary( "openmath", "" ), "PackageInfo.g" ) );
+true
+gap> LoadPackage("openmath");
+true
+gap> 
+gap> ### Some examples from file openmath/examples
+gap> 
+gap> stream := InputTextFile(Filename(
+>         DirectoriesPackageLibrary("openmath","tst"),"test3.omt"));;
+gap> OMGetObject(stream);
+912873912381273891
+gap> OMGetObject(stream);
+E(4)
+gap> OMGetObject(stream);
+true
+gap> OMGetObject(stream);
+false
+gap> OMGetObject(stream);
+"LAMBDA"
+gap> OMGetObject(stream);
+"dummy1"
+gap> OMGetObject(stream);
+"string1"
+gap> OMGetObject(stream);
+(1,2,3)
+gap> OMGetObject(stream);
+Group([ (1,2,3) ])
+gap> OMGetObject(stream);
+(1,2,3)
+gap> CloseStream( stream );
+gap> 
+gap> # similar, for file tst/test3.bin: binary encoding
+gap> 
+gap> stream := InputTextFile(Filename(
+>         DirectoriesPackageLibrary("openmath","tst"),"test3.bin"));;
+gap> OMGetObject(stream);
+912873912381273891
+gap> OMGetObject(stream);
+E(4)
+gap> OMGetObject(stream);
+true
+gap> OMGetObject(stream);
+false
+gap> OMGetObject(stream);
+"LAMBDA"
+gap> OMGetObject(stream);
+"dummy1"
+gap> OMGetObject(stream);
+"string1"
+gap> OMGetObject(stream);
+(1,2,3)
+gap> OMGetObject(stream);
+Group([ (1,2,3) ])
+gap> OMGetObject(stream);
+(1,2,3)
+gap> CloseStream( stream );
+gap> 
+gap> # similar, for file tst/test4.out: gpipe encoding
+gap> 
+gap> stream := InputTextFile(Filename(
+>         DirectoriesPackageLibrary("openmath","tst"),"test4.out"));;
+gap> OMgetObjectByteStream(stream);
+912873912381273891
+gap> OMgetObjectByteStream(stream);
+E(4)
+gap> CloseStream( stream );
+gap> 
+gap> # similar, for file tst/test5.omt
+gap> 
+gap> stream := InputTextFile(Filename(DirectoriesPackageLibrary("openmath","tst"),"test5.omt"));;
+gap> OMGetObject(stream);
+CharacterTable( Alt( [ 1 .. 3 ] ) )
+gap> CloseStream( stream );
+gap> 
+gap> # similar, for file tst/test6.omt
+gap> 
+gap> stream := InputTextFile(Filename(DirectoriesPackageLibrary("openmath","tst"),"test6.omt"));;
+gap> OMGetObject(stream); OM_GAP_OUTPUT_STR; OM_GAP_ERROR_STR;
+""
+""
+""
+gap> a;
+1
+gap> OMGetObject(stream); OM_GAP_OUTPUT_STR; OM_GAP_ERROR_STR;
+1
+""
+""
+gap> OMGetObject(stream); OM_GAP_OUTPUT_STR; OM_GAP_ERROR_STR; OM_GAP_OUTPUT_STR := "";;
+true
+"3"
+""
+gap> a;
+3
+gap> OMGetObject(stream); OM_GAP_OUTPUT_STR; OM_GAP_ERROR_STR;
+true
+"3"
+""
+gap> OMGetObject(stream); OM_GAP_OUTPUT_STR; OM_GAP_ERROR_STR; OM_GAP_OUTPUT_STR := "";; OM_GAP_ERROR_STR := "";;
+true
+"SuPeRfail"
+""
+gap> OMGetObject(stream); OM_GAP_OUTPUT_STR; OM_GAP_ERROR_STR;
+""
+""
+""
+gap> OMGetObject(stream); OM_GAP_OUTPUT_STR; OM_GAP_ERROR_STR;
+""
+""
+""
+gap> # there are some objects left on stream, but they are character table examples
+gap> CloseStream( stream );
+gap> 
+gap> # similar, for file tst/test_new.omt
+gap> 
+gap> stream := InputTextFile(Filename(DirectoriesPackageLibrary("openmath","tst"),"test_new.omt"));;
+gap> OMGetObject(stream);
+true
+gap> OMGetObject(stream);
+[ [ 19, 22 ], [ 43, 50 ] ]
+gap> OMGetObject(stream);
+6
+gap> OMGetObject(stream);
+9
+gap> OMGetObject(stream);
+1
+gap> OMGetObject(stream);
+E(4)
+gap> OMGetObject(stream);
+infinity
+gap> OMGetObject(stream);
+[ 3, 6, 9 ]
+gap> OMGetObject(stream);
+[ 3, 6, 9 ]
+gap> OMGetObject(stream);
+[ 3, 6, 9 ]
+gap> OMGetObject(stream);
+0
+gap> OMGetObject(stream);
+true
+gap> OMGetObject(stream);
+true
+gap> OMGetObject(stream);
+10/9
+gap> CloseStream( stream );
+gap> 
+gap> ## Tests of conversion from GAP to OpenMath
+gap> 
+gap> g := SymmetricGroup(5);
+Sym( [ 1 .. 5 ] )
+gap> t := "";
+""
+gap> s := OutputTextString(t, true);
+OutputTextString(0)
+gap> OMPutObject(s, g);
+gap> CloseStream(s);
+gap> 
+gap> s := InputTextString(t);
+InputTextString(0,345)
+gap> g2 := OMGetObject(s);
+Group([ (1,2,3,4,5), (1,2) ])
+gap> CloseStream(s);
+gap> g2 = g;
+true
+gap> 
+gap> g := SymmetricGroup(5);
+Sym( [ 1 .. 5 ] )
+gap> OMPrint(g);
+<OMOBJ>
+	<OMA>
+		<OMS cd="permgp1" name="group"/>
+		<OMS cd="permutation1" name="right_compose"/>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI>2</OMI>
+			<OMI>3</OMI>
+			<OMI>4</OMI>
+			<OMI>5</OMI>
+			<OMI>1</OMI>
+		</OMA>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI>2</OMI>
+			<OMI>1</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+gap> 
+gap> 
+gap> ### test with the different kinds of stream
+gap> 
+gap> ## OutputTextFile, InputTextFile
+gap> 
+gap> s := OutputTextFile( Filename( OMDirectoryTemporary, "test" ), false );;
+gap> OMPutObject( s, 123 );
+gap> OMPutObject( s, false );
+gap> OMPutObject( s, "OutputTextFile, InputTextFile" );
+gap> CloseStream( s );
+gap> 
+gap> s := InputTextFile( Filename( OMDirectoryTemporary, "test" ) );;
+gap> OMGetObject( s );
+123
+gap> OMGetObject( s );
+false
+gap> OMGetObject( s );
+"OutputTextFile, InputTextFile"
+gap> CloseStream( s );
+gap> 
+gap> RemoveFile( Filename( OMDirectoryTemporary, "test" ) );
+true
+gap> 
+gap> ## OutputTextUser,  InputTextUser
+gap> 
+gap> # how do one tests OutputTextUser?
+gap> 
+gap> # how do one tests InputTextUser?
+gap> 
+gap> ## OutputTextString, InputTextString
+gap> 
+gap> test_string := "";
+""
+gap> 
+gap> s := OutputTextString( test_string, false );
+OutputTextString(0)
+gap> OMPutObject( s, 123 );
+gap> OMPutObject( s, false );
+gap> OMPutObject( s, "OutputTextString, InputTextString" );
+gap> CloseStream( s );
+gap> 
+gap> test_string;
+"<OMOBJ>\n\t<OMI>123</OMI>\n</OMOBJ>\n<OMOBJ>\n\t<OMS cd=\"logic1\" name=\"fal\
+se\"/>\n</OMOBJ>\n<OMOBJ>\n\t<OMSTR>OutputTextString, InputTextString</OMSTR>\
+\n</OMOBJ>\n"
+gap> 
+gap> s := InputTextString( test_string );
+InputTextString(0,150)
+gap> OMGetObject( s );
+123
+gap> OMGetObject( s );
+false
+gap> OMGetObject( s );
+"OutputTextString, InputTextString"
+gap> CloseStream( s );
+gap> 
+gap> ## OutputTextNone
+gap> 
+gap> s := OutputTextNone(  );
+OutputTextNone()
+gap> OMPutObject( s, 123 );
+gap> OMPutObject( s, false );
+gap> OMPutObject( s, "OutputTextNone" );
+gap> CloseStream( s );
+gap> 
+gap> ## InputOutputLocalProcess (doesn't work with Gap 4.2 or earlier)
+gap> 
+gap> # stream returns XML encoding
+gap> 
+gap> tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
+gap> s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ux", "-", "-", ] );
+< input/output stream to tpipe >
+gap> 
+gap> OMPutObject( s, 123 );
+gap> OMPutObject( s, false );
+gap> OMPutObject( s, "InputOutputLocalProcess, XML encoding" );
+gap> 
+gap> OMGetObject( s );
+123
+gap> OMGetObject( s );
+false
+gap> OMGetObject( s );
+"InputOutputLocalProcess, XML encoding"
+gap> CloseStream( s );
+gap> 
+gap> # stream returns binary encoding
+gap> 
+gap> tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
+gap> s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ub", "-", "-", ] );
+< input/output stream to tpipe >
+gap> 
+gap> OMPutObject( s, 123 );
+gap> OMPutObject( s, false );
+gap> OMPutObject( s, "InputOutputLocalProcess, binary encoding" );
+gap> 
+gap> OMGetObject( s );
+123
+gap> OMGetObject( s );
+false
+gap> OMGetObject( s );
+"InputOutputLocalProcess, binary encoding"
+gap> CloseStream( s );
+gap> 
+gap> ### miscellaneous tests
+gap> 
+gap> # test with binary encoding and InputTextString
+gap> 
+gap> s := InputTextString( "\030\020\b\007\cminmax1max\020\b\004\cset1set\>\>\>\t\>\005\021\021\031" );
+InputTextString(0,35)
+gap> OMGetObject(s);
+9
+gap> CloseStream(s);
+gap> 
+gap> # test with gpipe encoding and InputTextString
+gap> 
+gap> gpipe_string := List( [ 24, 16, 8, 109, 105, 110, 109, 97, 120, 49, 255, 109, 97, 120, 255, 16, 8, 115, 
+> 101, 116, 49, 255, 115, 101, 116, 255, 2, 49, 255, 2, 57, 255, 2, 53, 255, 17, 17, 25 ], CHAR_INT );;
+gap> s := InputTextString( gpipe_string );
+InputTextString(0,38)
+gap> OMgetObjectByteStream(s);
+9
+gap> CloseStream(s);
+gap> 
+gap> # test of a long object
+gap> 
+gap> OMTest(10^4000);
+true
+gap> 
+gap> # test of a hexadecimal encoded integer
+gap> 
+gap> s := InputTextString( "<OMOBJ><OMI>x10ab2937fed2837a028374</OMI></OMOBJ>" );
+InputTextString(0,49)
+gap> OMGetObject(s);
+20151098133805576518534004
+gap> CloseStream(s);
+gap> 
+gap> # test of escaped XML chars
+gap> 
+gap> s := InputTextString( "<OMOBJ> <OMSTR>&lt;&amp;&gt;&quot;&apos;</OMSTR> </OMOBJ>" );
+InputTextString(0,57)
+gap> OMGetObject(s);
+"<&>\"'"
+gap> CloseStream(s);
+gap> 
+gap> # test of a strings with all the chars
+gap> 
+gap> OMTest( List( [4..127], CHAR_INT ) );
+true
+gap> 
+gap> # test that the strings are returned in string representation
+gap> 
+gap> stream := InputTextString( "<OMOBJ><OMSTR></OMSTR></OMOBJ> <OMOBJ><OMSTR>ciao</OMSTR></OMOBJ>" );;
+gap> IsStringRep( OMGetObject( stream ) );
+true
+gap> IsStringRep( OMGetObject( stream ) );
+true
+gap> CloseStream(stream);
+gap> 
+gap> ### test of Hasse (there was a bug)
+gap> 
+gap> d := Domain(["0","a","b","c","1"]);
+<object>
+gap> Elements(d);
+[ "0", "1", "a", "b", "c" ]
+gap> Size(d);
+5
+gap> 
+gap> r := BinaryRelationByElements(d,
+> [ Tuple(["0","a"]),
+> Tuple(["0","b"]),
+> Tuple(["0","c"]),
+> Tuple(["a","1"]),
+> Tuple(["b","1"]),
+> Tuple(["c","1"])]);
+<general mapping: <object> -> <object> >
+gap> 
+gap> p := TransitiveClosureBinaryRelation(ReflexiveClosureBinaryRelation(r));
+<general mapping: <object> -> <object> >
+gap> IsPartialOrderBinaryRelation(p);
+true
+gap> 
+gap> h := HasseDiagram(p);
+<general mapping: <object> -> <object> >
+gap> 
+gap> # the bug was here.
+gap> Elements(UnderlyingRelation(h));
+[ Tuple( [ 0, a ] ), Tuple( [ 0, b ] ), Tuple( [ 0, c ] ), Tuple( [ a, 1 ] ), 
+  Tuple( [ b, 1 ] ), Tuple( [ c, 1 ] ) ]
+gap> 
+gap> ### test for the various supported objects
+gap> 
+gap> #I  Searching Method for OMPut with 2 arguments:
+gap> #I  Total: 18 entries
+gap> #I  Method 1: ``OMPut: for Rationals'', value: 65
+gap> 
+gap> OMPrint(Rationals);
+<OMOBJ>
+	<OMS cd="setname1" name="Q"/>
+</OMOBJ>
+gap> OMTest(Rationals);
+true
+gap> 
+gap> #I  Method 2: ``OMPut: for Integers'', value: 42
+gap> 
+gap> OMPrint(Integers);
+<OMOBJ>
+	<OMS cd="setname1" name="Z"/>
+</OMOBJ>
+gap> OMTest(Integers);
+true
+gap> 
+gap> #I  Method 3: ``OMPut: for a range'', value: 40
+gap> 
+gap> OMPrint([3..10]);
+<OMOBJ>
+	<OMA>
+		<OMS cd="interval1" name="integer_interval"/>
+		<OMI>3</OMI>
+		<OMI>10</OMI>
+	</OMA>
+</OMOBJ>
+gap> OMTest([3..10]);
+true
+gap> 
+gap> #I  Method 4: ``OMPut: for a matrix'', value: 32
+gap> 
+gap> OMPrint([[11,12],[21,22]]);
+<OMOBJ>
+	<OMA>
+		<OMS cd="linalg2" name="matrix"/>
+		<OMA>
+			<OMS cd="linalg2" name="matrixrow"/>
+			<OMI>11</OMI>
+			<OMI>12</OMI>
+		</OMA>
+		<OMA>
+			<OMS cd="linalg2" name="matrixrow"/>
+			<OMI>21</OMI>
+			<OMI>22</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+gap> OMTest([[11,12],[21,22]]);
+true
+gap> 
+gap> #I  Method 5: ``OMPut: for NonnegativeIntegers'', value: 31
+gap> 
+gap> OMPrint(NonnegativeIntegers);
+<OMOBJ>
+	<OMS cd="setname1" name="N"/>
+</OMOBJ>
+gap> OMTest(NonnegativeIntegers);
+true
+gap> 
+gap> #I  Method 6: ``OMPut: for a character table'', value: 23
+gap> #I  Method 7: ``OMPut: for a permutation group'', value: 23
+gap> 
+gap> OMPrint(AlternatingGroup(6));
+<OMOBJ>
+	<OMA>
+		<OMS cd="permgp1" name="group"/>
+		<OMS cd="permutation1" name="right_compose"/>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI>2</OMI>
+			<OMI>3</OMI>
+			<OMI>4</OMI>
+			<OMI>5</OMI>
+			<OMI>1</OMI>
+		</OMA>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI>1</OMI>
+			<OMI>2</OMI>
+			<OMI>3</OMI>
+			<OMI>5</OMI>
+			<OMI>6</OMI>
+			<OMI>4</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+gap> OMTest(AlternatingGroup(6));
+true
+gap> 
+gap> #I  Method: ``OMPut: for a group''
+gap> 
+gap> OMPrint( Group( [[0,1],[-1,0]],[[1,1],[0,1]] ) );
+<OMOBJ>
+	<OMA>
+		<OMS cd="group1" name="group_by_generators"/>
+		<OMA>
+			<OMS cd="linalg2" name="matrix"/>
+			<OMA>
+				<OMS cd="linalg2" name="matrixrow"/>
+				<OMI>0</OMI>
+				<OMI>1</OMI>
+			</OMA>
+			<OMA>
+				<OMS cd="linalg2" name="matrixrow"/>
+				<OMI>-1</OMI>
+				<OMI>0</OMI>
+			</OMA>
+		</OMA>
+		<OMA>
+			<OMS cd="linalg2" name="matrix"/>
+			<OMA>
+				<OMS cd="linalg2" name="matrixrow"/>
+				<OMI>1</OMI>
+				<OMI>1</OMI>
+			</OMA>
+			<OMA>
+				<OMS cd="linalg2" name="matrixrow"/>
+				<OMI>0</OMI>
+				<OMI>1</OMI>
+			</OMA>
+		</OMA>
+	</OMA>
+</OMOBJ>
+gap> OMTest( Group( [[0,1],[-1,0]],[[1,1],[0,1]] ) );
+true
+gap> 
+gap> #I  Method 8: ``OMPut: for an integer'', value: 20
+gap> 
+gap> OMPrint(10^72);
+<OMOBJ>
+	<OMI>100000000000000000000000000000000000000000000000000000000000000000000000\
+0</OMI>
+</OMOBJ>
+gap> OMTest(10^72);
+true
+gap> 
+gap> #I  Method 9: ``OMPut: for a rational'', value: 19
+gap> 
+gap> OMPrint(10/72);
+<OMOBJ>
+	<OMA>
+		<OMS cd="nums1" name="rational"/>
+		<OMI>5</OMI>
+		<OMI>36</OMI>
+	</OMA>
+</OMOBJ>
+gap> OMTest(10/72);
+true
+gap> 
+gap> #I  Method 10: ``OMPut: for infinity'', value: 18
+gap> 
+gap> OMPrint(infinity);
+<OMOBJ>
+	<OMS cd="nums1" name="infinity"/>
+</OMOBJ>
+gap> OMTest(infinity);
+true
+gap> 
+gap> #I  Method 11: ``OMPut: for a proper cyclotomic'', value: 18
+gap> 
+gap> OMPrint(2/3+5/4*E(4));
+<OMOBJ>
+	<OMA>
+		<OMS cd="complex1" name="complex_cartesian"/>
+		<OMA>
+			<OMS cd="nums1" name="rational"/>
+			<OMI>2</OMI>
+			<OMI>3</OMI>
+		</OMA>
+		<OMA>
+			<OMS cd="nums1" name="rational"/>
+			<OMI>5</OMI>
+			<OMI>4</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+gap> OMTest(2/3+5/4*E(4));
+true
+gap> 
+gap> #I  Method 12: ``OMPut: for a row vector'', value: 14
+gap> 
+gap> OMPrint([1,2,3]);
+<OMOBJ>
+	<OMA>
+		<OMS cd="list1" name="list"/>
+		<OMI>1</OMI>
+		<OMI>2</OMI>
+		<OMI>3</OMI>
+	</OMA>
+</OMOBJ>
+gap> OMTest([1,2,3]);
+true
+gap> 
+gap> #I  Method 13: ``OMPut: for a Hasse diagram'', value: 13
+gap> 
+gap> OMPrint(h);
+<OMOBJ>
+	<OMBIND>
+		<OMS cd="fns2" name="constant"/>
+		<OMBVAR>
+			<OMV name="0"/>
+			<OMV name="a"/>
+			<OMV name="b"/>
+			<OMV name="c"/>
+			<OMV name="1"/>
+		</OMBVAR>
+		<OMA>
+			<OMS cd="relation2" name="hasse_diagram"/>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMV name="0"/>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="a"/>
+					<OMV name="b"/>
+					<OMV name="c"/>
+				</OMA>
+			</OMA>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMV name="a"/>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="1"/>
+				</OMA>
+			</OMA>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMV name="b"/>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="1"/>
+				</OMA>
+			</OMA>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMV name="c"/>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="1"/>
+				</OMA>
+			</OMA>
+			<OMA>
+				<OMS cd="list1" name="list"/>
+				<OMV name="1"/>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+				</OMA>
+			</OMA>
+		</OMA>
+	</OMBIND>
+</OMOBJ>
+gap> 
+gap> #I  Method 14: ``OMPut: for a finite set'', value: 11
+gap> 
+gap> OMPrint([]);
+<OMOBJ>
+	<OMS cd="set1" name="emptyset"/>
+</OMOBJ>
+gap> OMTest([]);
+true
+gap> OMPrint(Set([true,false]));
+<OMOBJ>
+	<OMA>
+		<OMS cd="set1" name="set"/>
+		<OMS cd="logic1" name="true"/>
+		<OMS cd="logic1" name="false"/>
+	</OMA>
+</OMOBJ>
+gap> OMTest(Set([true,false]));
+true
+gap> 
+gap> #I  Method 15: ``OMPut: for a permutation'', value: 10
+gap> 
+gap> OMPrint((1,3,5));
+<OMOBJ>
+	<OMA>
+		<OMS cd="permut1" name="permutation"/>
+		<OMI>3</OMI>
+		<OMI>2</OMI>
+		<OMI>5</OMI>
+		<OMI>4</OMI>
+		<OMI>1</OMI>
+	</OMA>
+</OMOBJ>
+gap> OMTest((1,3,5));
+true
+gap> 
+gap> #I  Method 16: ``OMPut: for a string'', value: 7
+gap> 
+gap> OMPrint("OMPut: for a string");
+<OMOBJ>
+	<OMSTR>OMPut: for a string</OMSTR>
+</OMOBJ>
+gap> OMTest("OMPut: for a string");
+true
+gap> OMPrint(Set(['a','b']));
+<OMOBJ>
+	<OMSTR>ab</OMSTR>
+</OMOBJ>
+gap> OMTest(Set(['a','b']));
+true
+gap> OMPrint("");
+<OMOBJ>
+	<OMSTR></OMSTR>
+</OMOBJ>
+gap> OMTest("");
+true
+gap> # also the escaped XML chars
+gap> OMPrint("&");
+<OMOBJ>
+	<OMSTR>&amp;</OMSTR>
+</OMOBJ>
+gap> OMTest("&");
+true
+gap> OMPrint("<");
+<OMOBJ>
+	<OMSTR>&lt;</OMSTR>
+</OMOBJ>
+gap> OMTest("<");
+true
+gap> OMPrint("<&>\"'");
+<OMOBJ>
+	<OMSTR>&lt;&amp;>"'</OMSTR>
+</OMOBJ>
+gap> OMTest("<&>\"'");
+true
+gap> OMPrint("&lt;&amp;");
+<OMOBJ>
+	<OMSTR>&amp;lt;&amp;amp;</OMSTR>
+</OMOBJ>
+gap> OMTest("&lt;&amp;");
+true
+gap> 
+gap> #I  Method 17: ``OMPut: for a finite list or collection'', value: 6
+gap> 
+gap> OMPrint([ [ 1 .. 10 ], Rationals, false, true, infinity, 1, 0 ]);
+<OMOBJ>
+	<OMA>
+		<OMS cd="list1" name="list"/>
+		<OMA>
+			<OMS cd="interval1" name="integer_interval"/>
+			<OMI>1</OMI>
+			<OMI>10</OMI>
+		</OMA>
+		<OMS cd="setname1" name="Q"/>
+		<OMS cd="logic1" name="false"/>
+		<OMS cd="logic1" name="true"/>
+		<OMS cd="nums1" name="infinity"/>
+		<OMI>1</OMI>
+		<OMI>0</OMI>
+	</OMA>
+</OMOBJ>
+gap> OMTest([ [ 1 .. 10 ], Rationals, false, true, infinity, 1, 0 ]);
+true
+gap> 
+gap> #I  Method 18: ``OMPut: for a boolean'', value: 3
+gap> 
+gap> OMPrint(false);
+<OMOBJ>
+	<OMS cd="logic1" name="false"/>
+</OMOBJ>
+gap> OMTest(false);
+true
+gap> 
+gap> #I  Method 19: ``OMPut: for a float'', value: 3
+gap> 
+gap> floats := List( [ 0, "-0", 1, 1/2, -1, "inf", "-inf" ], Float );
+[ 0, 0, 1, 0.5, -1, inf, -inf ]
+gap> OMPrint(floats);
+<OMOBJ>
+	<OMA>
+		<OMS cd="list1" name="list"/>
+		<OMF dec="0"/>
+		<OMF dec="0"/>
+		<OMF dec="1"/>
+		<OMF dec="0.5"/>
+		<OMF dec="-1"/>
+		<OMF dec="INF"/>
+		<OMF dec="-INF"/>
+	</OMA>
+</OMOBJ>
+gap> OMTest(floats);
+true
+gap> floats := List( [ 11^7, 11^-7, -11^7, -11^-7, "nan" ], Float );
+[ 1.94872e+07, 5.13158e-08, -1.94872e+07, -5.13158e-08, nan ]
+gap> OMPrint(floats);
+<OMOBJ>
+	<OMA>
+		<OMS cd="list1" name="list"/>
+		<OMF dec="1.94872e07"/>
+		<OMF dec="5.13158e-08"/>
+		<OMF dec="-1.94872e07"/>
+		<OMF dec="-5.13158e-08"/>
+		<OMF dec="NaN"/>
+	</OMA>
+</OMOBJ>
+gap> 
+gap> STOP_TEST( "test", 10000 );

@@ -1,0 +1,214 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  errata.tex             GAP 4 package `genus'                Thomas Breuer
+%%
+%H  $Id: errata.tex,v 1.4 2002/08/21 15:03:34 gap Exp $
+%%
+%Y  Copyright (C) 2001,  Lehrstuhl D fuer Mathematik,   RWTH Aachen,  Germany
+%%
+%%  Errata et Addenda for the book.
+%%
+%%  Construct an HTML format file from this file using
+%%  `tth -t -Lerrata < errata.tex > ../htm/errata.htm'.
+%%
+\documentclass[12pt,twoside]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% from the file `rie.tex'
+\textwidth138truemm
+\textheight215truemm
+\def\tthdump#1{#1}
+\tthdump{\setlength{\evensidemargin}{\the\paperwidth}%
+      \addtolength{\evensidemargin}{-2truein}%
+      \addtolength{\evensidemargin}{-2\the\hoffset}%
+      \addtolength{\evensidemargin}{-\the\oddsidemargin}%
+      \addtolength{\evensidemargin}{-\the\textwidth}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\refname{\centerline{\large\bf References}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Miscellaneous macros.
+\def\GAP{\textsf{GAP}}
+\def\ATLAS{\textsf{ATLAS}}
+%%tth: \font\Bbb=msbm10
+\def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
+\def\C{{\Bbb C}} \def\F{{\Bbb F}}
+\def\Span#1{\langle #1 \rangle}
+\def\Spur{\textrm{Tr}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tthdump{\vfuzz=2pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\parskip3mm
+\parindent0pt
+
+%%tth: \begin{html} <body bgcolor="FFFFFF"> \end{html}
+\tthdump{\vspace*{-2cm}}
+
+\begin{center}
+%%tth: \title{Errata et Addenda}
+\tthdump{\large Errata et Addenda} \\[0.5cm]
+{\normalsize for} \\[0.5cm]
+%%tth: \begin{html} <br /> \end{html}
+{\large Characters and Automorphism Groups \\
+of Compact Riemann Surfaces} \\[0.5cm]
+%%tth: \begin{html} <br /> \end{html}
+{\normalsize by} \\[0.5cm]
+%%tth: \begin{html} <br /> \end{html}
+{\large Thomas Breuer \\[0.5cm]
+%%tth: \begin{html} <br /> \end{html}
+{\normalsize
+\textit{Lehrstuhl D f{\"u}r Mathematik} \\
+\textit{RWTH, 52056 Aachen, Germany} \\
+E-mail: sam@math.rwth-aachen.de}}
+%E-mail: sam@math.rwth-aachen.de \\[0.5cm]
+%%%tth: \begin{html} <br /> \end{html}
+%September 9th, 2001}}
+\end{center}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace*{1cm}
+\centerline{\large\bf Errata}
+
+\begin{description}
+\item[p.~20, l.~-4 to -1:]
+    Theorems~3A and~3B in~\cite{Gre63} are not correct,
+    so replace the theorem by the following:
+
+    {\scshape Theorem}~5.1 (\cite{Sin72}, Theorems~1~and~2]).
+    {\itshape 
+    No Fuchsian group with signature $(g;m_1,m_2,\ldots,m_r)$ is finitely
+    maximal if and only if the signature is one of
+    \[
+       (0;2,n,2n), (0;3,n,3n), (0;m,m,n), (0;m,m,n,n), (1;n,n), (1;n),
+       (2;-) .
+    \]}
+    %\vspace*{-1cm}
+    % (found by myself on August 19th, 2001)
+    (The error does not affect the material in the rest of the book.)
+    % (added in March 2002, after a question of G. Gromadzki)
+
+\item[p.~52, l.~6:]
+    Insert ``at least'' after ``has''.
+    % (found by myself in 2000)
+
+\item[p.~66, l.~-9 to -6:]
+    The formulation of Lemma~17.6 may be misleading,
+    so replace it by the following:
+
+    {\scshape Lemma}~17.6.
+    {\itshape 
+    Let $\Gamma$ be a Fuchsian group, and $m$ a positive integer such that
+    no group of order $m$ is perfect.
+    If $\Gamma$ has a surface kernel factor of order $m$ then there is
+    a prime $p$ dividing} gcd$(m, [\Gamma : \Gamma^{\prime}])$
+    {\itshape
+    and a normal subgroup of index $p$ in $\Gamma$ whose signature
+    is admissible for $m/p$.}
+    % (brought up by A. Wootton in Dec. 2001)
+
+\item[p.~80, l.~-11:]
+    Add a closing bracket after {\tt 9E}.
+    % (found by myself in 2000)
+
+\item[p.~100, l.~-1 and p.~112, l.~3:]
+    $\textrm{Write } \Spur(\Phi) + \overline{\Spur(\Phi)}
+    \textrm{ instead of } \Phi + \overline{\Phi}$.
+    % (found by myself on August 19th, 2001)
+
+\item[p.~118, l.~-11 to -9:]
+    Remove this paragraph.
+    % (found by myself in 2000)
+
+\item[p.~169, l.~7:]
+    Add that $p \geq 7$ is required,
+    since for $p = 3$, $\chi$ is not a proper character.
+    (Note that Lemma~34.8 holds also for $p=3$.)
+    % (found by myself on August 20th, 2001)
+
+\item[p.~189, l.~-1:]
+    $\textrm{Write det}( D_m ) = 0$.
+    % (found by myself on May 25th, 2002)
+
+\item[p.~194, l.~-14:]
+    Add the reference~\cite{Sin72},
+    which (after the above correction) is referred to on p.~20.
+    % (found by myself on August 19th, 2001)
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace*{1cm}
+\tthdump{\newpage}
+\centerline{\large\bf Addenda}
+
+\begin{description}
+\item[p.~62 f.:]
+    The $({\tt 2C}, {\tt 3D}, {\tt 8C})$-generation of the group $Fi_{23}$
+    established in Section~16 with character-theoretic methods
+    has been proved by Robert A.~Wilson,
+    via explicit computations with the group $Fi_{23}$.
+
+    He has computed also the (strong) symmetric genera of the Baby Monster
+    and the Monster.
+    For the Baby Monster, it arises from $(2,3,8)$-generation.
+    The Monster is a Hurwitz group.
+
+    For details, see~\cite{Wil93,Wil97,Wil01}.
+    % (found by myself in 2000)
+
+\item[p.~98, l.~5 to 7:]
+    For a character that comes from a Riemann surface,
+    the representation of the sum with its complex conjugate
+    in terms of permutation characters
+    has been derived also by A.~J.~Broughton;
+    in~\cite{Bro90}, this is used to prove Corollary~15.10 in an
+    alternative way,
+    which can be rephrased in our terminology, as follows.
+
+    Suppose that the elements $x_1$, $x_2$, \ldots, $x_r$ with the
+    property $x_1 x_2 \cdots x_r = 1$ generate the group $G$.
+    This gives rise to a surface kernel epimorphism
+    $\Phi : \Gamma(0;|x_1|, |x_2|, \ldots, |x_r|) \rightarrow G$,
+    with induced character $\Spur(\Phi)$.
+    By Corollary~22.5, we have
+    $$\Spur(\Phi) + \overline{\Spur(\Phi)} = 2 \cdot 1_G - 2 \cdot \rho_G
+    + \sum_{i=1}^r ( \rho_G - 1_{\Span{x_i}}^G ) .$$
+    For any character $\chi$ of $G$, the scalar product with this character
+    is clearly nonnegative, thus
+    $$2 \cdot [ \chi , \rho_G - 1_G ]
+    \leq \sum_{i=1}^r [ \chi , \rho_G - 1_{\Span{x_i}}^G ] .$$
+    Because of $[ \chi , \rho_G ] = \chi(1)$ and together with
+    Frobenius reciprocity, this implies
+    $$2 \cdot ( \chi(1) - [ \chi , 1_G ] )
+    \leq \sum_{i=1}^r ( \chi(1) - [ \chi_{\Span{x_i}} , 1_{\Span{x_i}} ] ) .$$
+
+    (In~\cite{Bro90}, this is in fact stated also for the case that
+    the preimage of $\Phi$ has positive orbit genus.
+    But then the analogon of the above condition is trivially satisfied.)
+    % (this fact from the paper noticed by myself on August 13th, 2002)
+\end{description}
+
+% add a note on A. J. Broughton's paper!~\cite{Bro90}
+% chapter 4: "finer" classification than characters,
+% loop up to conjugacy
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{amsalpha}
+\bibliography{../../../doc/mrabbrev,../../../doc/manual,manual}
+
+%%tth: \begin{html} <hr> \end{html}
+Last update August~20th, 2002.
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

@@ -2,7 +2,7 @@
 ##
 #W  mgmadj.gi                    GAP library                  Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mgmadj.gi,v 4.9 2006/05/18 15:41:31 jamesm Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for magmas with zero adjoined.
 ##
 Revision.mgmadj_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: mgmadj.gi,v 4.9 2006/05/18 15:41:31 jamesm Exp $";
 
 
 #############################################################################
@@ -73,6 +73,7 @@ end);
 DeclareRepresentation("IsMagmaWithMultiplicativeZeroAdjoinedElementRep", 
 	IsComponentObjectRep and IsMultiplicativeElementWithZero,
 	["IsTheZero", "UnderlyingElement"]);
+
 
 #############################################################################
 ##

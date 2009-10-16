@@ -2,7 +2,7 @@
 **
 *W  set.c                       GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: set.c,v 4.48 2009/06/23 09:41:09 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -24,7 +24,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_set_c =
-   "@(#)$Id$";
+   "@(#)$Id: set.c,v 4.48 2009/06/23 09:41:09 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -141,8 +141,7 @@ Int IsSet (
 *F  SetList( <list> ) . . . . . . . . . . . . . . . .  make a set from a list
 **
 **  'SetList' returns  a new set that contains  the elements of <list>.  Note
-**  that 'SetList' returns a  new list even if <list>  was already a set.  In
-**  this case 'SetList' is equal to 'ShallowCopy'.
+**  that 'SetList' returns a new plain list even if <list> was already a set.
 **
 **  'SetList' makes a copy  of the list  <list>, removes the holes, sorts the
 **  copy and finally removes duplicates, which must appear next to each other
@@ -358,6 +357,7 @@ Obj             FuncIS_SUBSET_SET (
             "you can replace <set2> via 'return <set2>;'" );
     }
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
+    if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
 
     /* special case if the second argument is a set                        */
     if ( IsSet( set2 ) ) {

@@ -1,0 +1,27 @@
+#Example: "EpimorphismStandardPresentation" . . . based on manual example
+#(demonstrates `EpimorphismStandardPresentation' usage)
+#vars: F, x, y, z, w, a, b, R, Q, procId, G, f1, f2, f3, f4, f5, f6, phi;
+#options: 
+F := FreeGroup(6, "F");
+## For printing GAP uses the symbols F1, ... for the generators of F
+x := F.1; y := F.2; z := F.3; w := F.4; a := F.5; b := F.6;
+R := [x^3 / w, y^3 / w * a^2 * b^2, w^3 / b,
+      Comm (y, x) / z, Comm (z, x), Comm (z, y) / a, z^3 ];
+Q := F / R;
+## For printing GAP also uses the symbols F1, ... for the generators of Q
+## (the same as used for F) ... but the gen'rs of Q and F are different:
+GeneratorsOfGroup(F) = GeneratorsOfGroup(Q);
+#alt: do
+#procId := PqStart( Q );
+#alt: sub <procId> for <Q>
+G := Pq( Q : Prime := 3, ClassBound := 3 );
+#alt: sub <procId> for <Q>
+phi := EpimorphismStandardPresentation( Q : Prime := 3,
+                                            ClassBound := 3 );
+NamesOfComponents(phi);
+phi!.Source; # This is the group Q (GAP uses F1, ... for gen'r symbols)
+phi!.Range;  # This is the group G (GAP uses f1, ... for gen'r symbols)
+AssignGeneratorVariables(G);; # so f1, ... are now variables
+## Just to see that the images of [F1, ..., F6] do generate G
+Group([ f1*f2^2*f3, f1*f2*f3*f4*f5^2*f6^2, f3^2, f4, f5, f6 ]) = G;
+Size( Image(phi) );

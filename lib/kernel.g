@@ -2,7 +2,7 @@
 ##
 #W  kernel.g                    GAP library                  Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: kernel.g,v 4.44 2007/10/23 07:46:51 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,12 +13,19 @@
 ##  the bootstrap.
 ##
 Revision.kernel_g :=
-    "@(#)$Id$";
+    "@(#)$Id: kernel.g,v 4.44 2007/10/23 07:46:51 gap Exp $";
 
 
 #############################################################################
 ##
 #F  ADD_LIST_DEFAULT( <list>, <obj> ) . . . . . .  add an element to the list
+##
+##  <ManSection>
+##  <Func Name="ADD_LIST_DEFAULT" Arg='list, obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 ADD_LIST_DEFAULT := function ( list, obj )
     list[ LEN_LIST(list)+1 ] := obj;
@@ -29,6 +36,13 @@ end;
 #############################################################################
 ##
 #F  AS_LIST_SORTED_LIST( <list> ) . . . . . . . . . . . . . . setify the list
+##
+##  <ManSection>
+##  <Func Name="AS_LIST_SORTED_LIST" Arg='list'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 AS_LIST_SORTED_LIST := function ( list )
     local   new;
@@ -44,7 +58,23 @@ end;
 ##
 #F  Ordinal( <n> )  . . . . . . . . . . . . . ordinal of an integer as string
 ##
-##  returns the ordinal of the integer <n> as a string.
+##  <#GAPDoc Label="Ordinal">
+##  <ManSection>
+##  <Func Name="Ordinal" Arg='n'/>
+##
+##  <Description>
+##  returns the ordinal of the integer <A>n</A> as a string.
+##  <Example><![CDATA[
+##  gap> Ordinal(2);  Ordinal(21);  Ordinal(33);  Ordinal(-33);
+##  "2nd"
+##  "21st"
+##  "33rd"
+##  "-33rd"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 Ordinal := function ( n )
     local   str;
 
@@ -67,6 +97,13 @@ end;
 ##
 #F  IS_SUBSTRING( <str>, <sub> )  . . . . . . . . .  check if <sub> is prefix
 ##
+##  <ManSection>
+##  <Func Name="IS_SUBSTRING" Arg='str, sub'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 IS_SUBSTRING := function( str, sub )
   if LEN_LIST(sub) > 0 and POSITION_SUBSTRING(str, sub, 0) = fail then
     return false;
@@ -80,7 +117,14 @@ end;
 ##
 #F  STRING_LOWER( <str> ) . . . . . . . . . convert to lower, remove specials
 ##
-# seems obsolete now? (FL)
+##  <ManSection>
+##  <Func Name="STRING_LOWER" Arg='str'/>
+##
+##  <Description>
+##  <!-- seems obsolete now? (FL) -->
+##  </Description>
+##  </ManSection>
+##
 STRING_LOWER_TRANS := 0;
 
 STRING_LOWER := function( str )
@@ -102,6 +146,13 @@ end;
 #############################################################################
 ##
 #F  POSITION_NOT( <list>, <val> [,<from-minus-one>] ) . . . .  find not <val>
+##
+##  <ManSection>
+##  <Func Name="POSITION_NOT" Arg='list, val [,from-minus-one]'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 POSITION_NOT := function( arg )
     local i;
@@ -132,6 +183,13 @@ end;
 ##
 #F  Runtimes() . . . . . . . . self-explaining version of result of RUNTIMES()
 ##
+##  <ManSection>
+##  <Func Name="Runtimes" Arg=''/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 Runtimes := function()
   local res, rt, cmp, a, i;
   res := rec();
@@ -155,7 +213,15 @@ end;
 ##
 #V  POST_RESTORE_FUNCS
 ##
+##  <ManSection>
+##  <Var Name="POST_RESTORE_FUNCS"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 POST_RESTORE_FUNCS := [];
+
 
 
 #############################################################################

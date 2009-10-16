@@ -1,0 +1,50 @@
+#Example: "3gp-PG-x-i" . . . based on example from Werner
+#Iterated descendants example
+#vars: F, procId;
+#options: OutputLevel
+F := FreeGroup("a", "b");
+procId := PqStart(F : Prime := 3);
+#comment: set a different print level by supplying <OutputLevel>
+PqPcPresentation(procId : ClassBound := 1, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqComputePCover(procId);;
+PqPGSupplyAutomorphisms(procId, [ [[1,1],
+                                   [0,1]],
+
+                                  [[0,1],
+                                   [1,0]] ]);;
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 2,
+                                  CapableDescendants,
+                                  BasicAlgorithm);
+PqPGSetDescendantToPcp(procId, 2, 5);
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 3,
+                                  CapableDescendants,
+                                  BasicAlgorithm);
+PqPGSetDescendantToPcp(procId, 3, 2);
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 4,
+                                  CapableDescendants,
+                                  BasicAlgorithm);
+PqPGSetDescendantToPcp(procId, 4, 2);
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 5,
+                                  CapableDescendants,
+                                  BasicAlgorithm);
+PqPGSetDescendantToPcp(procId, 5, 1);
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 6,
+                                  CapableDescendants,
+                                  BasicAlgorithm);
+PqPGSetDescendantToPcp(procId, 6, 1);
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 7,
+                                  CapableDescendants,
+                                  BasicAlgorithm);
+PqPGSetDescendantToPcp(procId, 7, 1);
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 8,
+                                  CapableDescendants,
+                                  BasicAlgorithm);

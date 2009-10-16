@@ -2,7 +2,7 @@
 ##
 #W  alghom.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: alghom.gi,v 4.26 2009/01/27 17:10:18 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -21,7 +21,7 @@
 ##  5. methods for isomorphisms to f.p. algebras
 ##
 Revision.alghom_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: alghom.gi,v 4.26 2009/01/27 17:10:18 gap Exp $";
 
 
 #############################################################################
@@ -1333,6 +1333,34 @@ InstallOtherMethod( RepresentativeLinearOperation,
 #############################################################################
 ##
 ##  3. methods for natural homomorphisms from algebras
+##
+#M  NaturalHomomorphismByIdeal( <A>, <I> )  . . . . . map onto factor algebra
+##
+##  <#GAPDoc Label="NaturalHomomorphismByIdeal_algebras">
+##  <ManSection>
+##  <Meth Name="NaturalHomomorphismByIdeal" Arg='A, I'
+##   Label="for an algebra and an ideal"/>
+##
+##  <Description>
+##  For an algebra <A>A</A> and an ideal <A>I</A> in <A>A</A>,
+##  the return value of <Ref Func="NaturalHomomorphismByIdeal"/>
+##  is a homomorphism of algebras, in particular the range of this mapping
+##  is also an algebra.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
+##  gap> C:= LieCentre( L );
+##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (dimension 1
+##   )>
+##  gap> hom:= NaturalHomomorphismByIdeal( L, C );
+##  <linear mapping by matrix, <Lie algebra of dimension 
+##  9 over Rationals> -> <Lie algebra of dimension 8 over Rationals>>
+##  gap> ImagesSource( hom );
+##  <Lie algebra of dimension 8 over Rationals>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 
 

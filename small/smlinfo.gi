@@ -6,7 +6,7 @@
 ##  This file contains the ...
 ##
 Revision.smlinfo_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: smlinfo.gi,v 4.16 2008/06/01 16:02:04 gap Exp $";
 
 #############################################################################
 ##
@@ -412,3 +412,33 @@ SMALL_GROUPS_INFORMATION[ 25 ] := function( size, smav, num )
       i := i + set.number;
     od;
 end;
+
+#############################################################################
+##
+#F SMALL_GROUPS_INFORMATION[ 26 ]( size, smav, num )
+##
+SMALL_GROUPS_INFORMATION[ 26 ] := function( size, smav, num )
+
+   Print( " \n");
+   Print( "      E.A. O'Brien and M.R. Vaughan-Lee determined presentations\n");
+   Print( "      of the groups with order p^7. A preprint of their paper is\n");
+   Print( "      available at\n" );
+   Print( "      http://www.math.auckland.ac.nz/%7Eobrien/research/p7/paper-p7.pdf\n\n" ); 
+   Print( "      For p in { 3, 5, 7, 11 } explicit lists of groups of order\n");
+   Print( "      p^7 have been produced and stored into the database.\n\n");
+   Print( "      Giving the power commutator presentations of any of these\n");
+   Print( "      groups using a standard notation they might be reduced to 35\n");
+   Print( "      elements of the group or a 245 p-digit number.\n\n");
+   Print( "      Only 56 of these digits may be unlike 0 for any group and\n");
+   Print( "      even these 56 digits are mostly like 0. Further on these\n");
+   Print( "      digits are often quite likely for sequences of subsequent\n");
+   Print( "      groups. Thus storage of groups was done by finding a so\n");
+   Print( "      called head group and a so called tail. Along the tail\n");
+   Print( "      only the different digits compared to the head are relevant.\n");
+   Print( "      Even the tails occur more or less often and this is used\n");
+   Print( "      to improve storage too. Since p^7 is too big the data is\n");
+   Print( "      stored into some remaing holes of SMALL_GROUP_LIB at\n");
+   Print( "      Primes[ p + 10 ].\n");
+
+end;
+

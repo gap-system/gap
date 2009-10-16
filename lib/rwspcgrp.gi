@@ -2,7 +2,7 @@
 ##
 #W  rwspcgrp.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rwspcgrp.gi,v 4.46 2003/07/04 15:26:23 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  collector.
 ##
 Revision.rwspcgrp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: rwspcgrp.gi,v 4.46 2003/07/04 15:26:23 gap Exp $";
 
 
 #############################################################################

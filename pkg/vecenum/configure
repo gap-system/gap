@@ -1,0 +1,3 @@
+#!/bin/sh
+# usage: configure gappath
+# this script creates a `Makefile' from `Makefile.in' 

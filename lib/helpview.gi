@@ -2,7 +2,7 @@
 ##  
 #W  helpview.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id$
+#H  @(#)$Id: helpview.gi,v 1.13 2008/07/22 14:27:30 alexk Exp $
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  different help viewer.
 ##  
 Revision.helpview_gi := 
-  "@(#)$Id$";
+  "@(#)$Id: helpview.gi,v 1.13 2008/07/22 14:27:30 alexk Exp $";
 
 #############################################################################
 ##  
@@ -65,6 +65,24 @@ if ARCH_IS_MAC() then
   # old name for for backward compatibility
   HELP_VIEWER_INFO.("internet config") :=
   	HELP_VIEWER_INFO.("mac default browser"); 
+
+elif ARCH_IS_WINDOWS() then
+  # html version on Windows
+  HELP_VIEWER_INFO.browser := rec(
+  type := "url",
+  show := function( filename )
+    Print( "Opening help page in default windows browser ... \c" );
+    Process( DirectoryCurrent(),
+             Filename( Directory( Concatenation( GAPInfo.KernelInfo.GAP_ROOT_PATHS[1], 
+                                                 "bin" ) ),
+                       "cygstart.exe" ),
+             InputTextNone(),
+             OutputTextNone(),
+             [ , Concatenation( "file:///", filename ) ] );
+    Print( "done! \n" );         
+  end
+  );
+  	
 else
   # html version with netscape
   HELP_VIEWER_INFO.netscape := rec(
@@ -245,13 +263,17 @@ show := function(file)
   local   page;
   page := 1;
   if IsRecord(file) then
-    if IsBound(file.page) then
-      page := file.page;
+    if IsBound(file.label) then
+      page := Concatenation("+", file.label);
+    elif IsBound(file.page) then
+      page := String(file.page);
+    else
+      page := "";
     fi;
     file := file.file;
   fi;
   Exec(Concatenation("xpdf -remote gap4 -raise ", XPDF_OPTIONS, 
-                        " ", file, " ", String(page), " 2>/dev/null &"));
+                        " ", file, " ", page, " 2>/dev/null &"));
 end
 );
 

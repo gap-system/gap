@@ -1,5 +1,0 @@
-#!/bin/sh
-while true; do
-   echo "!BINARY!"
-   echo "/END"
-done

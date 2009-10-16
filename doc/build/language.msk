@@ -2,7 +2,7 @@
 %%
 %W  language.msk           GAP documentation                Martin Schoenert
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: language.msk,v 1.41 2006/09/27 21:40:31 gap Exp $
 %%
 %Y  Copyright 1990-1992, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
 %%
@@ -811,7 +811,7 @@ to clarify your intention.
 
 \index{operators!associativity}
 The *associativity* of the arithmetic operators is as follows.
-`^' is not associative, i.e., it is illegal to write `2^3^4',
+`^' is not associative, i.e., it is invalid to write `2^3^4',
 use parentheses to clarify whether you mean `(2^3)^4' or `2^(3^4)'.
 The unary operators `+' and `-' are right associative,
 because they are written to the left of their operands.

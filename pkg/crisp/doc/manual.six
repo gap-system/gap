@@ -1,0 +1,203 @@
+C intro.tex 1. Introduction
+I 1.0. CRISP
+I 1.0. FORMAT package
+C classes.tex 2. Set theoretical classes
+S 2.1. Creating set theoretical classes
+I 2.1. classes!creating
+F 2.1. IsClass
+F 2.1. Class
+F 2.1. Class
+F 2.1. View!for classes
+F 2.1. Print!for classes
+F 2.1. Display!for classes
+F 2.1. element test!for classes
+I 2.1. in!for classes
+I 2.1. membership test!for classes
+F 2.1. equality!for classes
+F 2.1. comparison!for classes
+S 2.2. Properties of classes
+I 2.2. classes!properties of
+I 2.2. properties!of classes
+F 2.2. IsEmpty!for classes
+F 2.2. MemberFunction
+S 2.3. Lattice operations for classes
+I 2.3. lattice operations!for classes
+F 2.3. Complement
+F 2.3. Intersection!of classes
+F 2.3. Intersection!of classes
+I 2.3. INTERSECTION_LIMIT
+F 2.3. Union
+F 2.3. Difference
+C grpclass.tex 3. Generic group classes
+S 3.1. Creating group classes
+I 3.1. group classes!creation
+F 3.1. GroupClass
+F 3.1. GroupClass
+F 3.1. GroupClass
+F 3.1. GroupClass
+F 3.1. Intersection!of group classes
+F 3.1. Intersection!of group classes
+S 3.2. Properties of group classes
+I 3.2. closure properties!of group classes
+I 3.2. group classes!closure properties of
+F 3.2. IsGroupClass
+F 3.2. ContainsTrivialGroup
+F 3.2. IsSubgroupClosed
+F 3.2. IsNormalSubgroupClosed
+F 3.2. IsQuotientClosed
+F 3.2. IsResiduallyClosed
+F 3.2. IsNormalProductClosed
+F 3.2. IsDirectProductClosed
+F 3.2. IsSchunckClass
+F 3.2. IsSaturated
+S 3.3. Additional properties of group classes
+I 3.3. group classes!properties of
+I 3.3. properties!of group classes
+F 3.3. HasIsFittingClass
+F 3.3. IsFittingClass
+F 3.3. SetIsFittingClass
+F 3.3. HasIsOrdinaryFormation
+I 3.3. HasIsFormation
+F 3.3. IsOrdinaryFormation
+I 3.3. IsFormation
+F 3.3. SetIsOrdinaryFormation
+I 3.3. SetIsFormation
+F 3.3. HasIsSaturatedFormation
+F 3.3. IsSaturatedFormation
+F 3.3. SetIsSaturatedFormation
+F 3.3. HasIsFittingFormation
+F 3.3. IsFittingFormation
+F 3.3. SetIsFittingFormation
+F 3.3. HasIsSaturatedFittingFormation
+F 3.3. IsSaturatedFittingFormation
+F 3.3. SetIsSaturatedFittingFormation
+S 3.4. Attributes of group classes
+I 3.4. group classes!attributes for
+I 3.4. attributes!of group classes
+F 3.4. Characteristic
+C schunck.tex 4. Schunck classes and formations
+S 4.1. Creating Schunck classes
+I 4.1. Schunck class!creating
+F 4.1. SchunckClass
+S 4.2. Attributes and operations for Schunck classes
+I 4.2. Schunck class!attributes of
+I 4.2. Schunck class!operations for
+I 4.2. attributes!of Schunck class
+I 4.2. operations!for Schunck class!
+F 4.2. Boundary
+F 4.2. Basis
+F 4.2. Projector
+F 4.2. CoveringSubgroup
+F 4.2. BoundaryFunction
+F 4.2. ProjectorFunction
+S 4.3. Additional attributes for primitive solvable groups
+I 4.3. primitive solvable group!attributes of
+I 4.3. attributes!of primitive solvable group
+F 4.3. IsPrimitiveSolvable
+F 4.3. SocleComplement
+S 4.4. Creating formations
+I 4.4. formations!creating
+F 4.4. OrdinaryFormation
+F 4.4. SaturatedFormation
+F 4.4. FormationProduct
+F 4.4. FittingFormationProduct
+S 4.5. Attributes and operations for formations
+I 4.5. formations!attributes for
+I 4.5. formations!operations for
+I 4.5. attributes!of formation
+I 4.5. operations!for formation
+F 4.5. Residual
+F 4.5. Residuum
+F 4.5. ResidualFunction
+F 4.5. LocalDefinitionFunction
+S 4.6. Functions for normal and characteristic subgroups
+F 4.6. NormalSubgroups
+F 4.6. CharacteristicSubgroups
+S 4.7. Low level functions for normal subgroups related to residuals
+I 4.7. normal subgroups!with properties inherited by normal subgroups above
+I 4.7. invariant normal subgroups!with properties inherited by normal subgroups above
+I 4.7. factor groups!with properties inherited by factor groups
+I 4.7. quotient groups!with properties inherited by quotients
+F 4.7. OneInvariantSubgroupMinWrtQProperty
+F 4.7. AllInvariantSubgroupsWithQProperty
+F 4.7. OneNormalSubgroupMinWrtQProperty
+F 4.7. AllNormalSubgroupsWithQProperty
+C fitting.tex 5. Fitting classes and Fitting sets
+S 5.1. Creating Fitting classes
+I 5.1. Fitting classes!creating
+F 5.1. FittingClass
+F 5.1. FittingProduct
+I 5.1. FittingFormationProduct
+S 5.2. Creating Fitting formations
+I 5.2. Fitting formations!creating
+I 5.2. formations!creating Fitting formations
+I 5.2. Fitting classes!creating Fitting formations
+F 5.2. FittingFormation
+F 5.2. SaturatedFittingFormation
+S 5.3. Creating Fitting sets
+I 5.3. Fitting sets!creating
+F 5.3. IsFittingSet
+F 5.3. FittingSet
+F 5.3. ImageFittingSet
+F 5.3. PreImageFittingSet
+F 5.3. Intersection!of Fitting sets
+S 5.4. Attributes and operations for Fitting classes and Fitting sets
+I 5.4. attributes!of Fitting sets
+I 5.4. attributes!of Fitting classes
+I 5.4. operations!for Fitting sets
+I 5.4. operations!for Fitting classes
+I 5.4. Fitting sets!operations for
+I 5.4. Fitting classes!operations for
+I 5.4. Fitting sets!attributes of
+I 5.4. Fitting classes!attributes of
+F 5.4. Radical
+F 5.4. Injector
+F 5.4. RadicalFunction
+F 5.4. InjectorFunction
+S 5.5. Functions for minimal normal subgroups and the socle
+F 5.5. Socle
+F 5.5. AbelianSocle
+F 5.5. SolvableSocle
+F 5.5. SocleComponents
+F 5.5. AbelianSocleComponents
+F 5.5. SolvableSocleComponents
+F 5.5. PSocle
+F 5.5. PSocleComponents
+F 5.5. AbelianMinimalNormalSubgroups
+I 5.5. minimal normal subgroups
+S 5.6. Low level functions for normal subgroups related to radicals
+I 5.6. normal subgroups!with properties inherited by normal subgroups
+I 5.6. invariant normal subgroups!with properties inherited by normal subgroups
+F 5.6. OneInvariantSubgroupMaxWrtNProperty
+F 5.6. AllInvariantSubgroupsWithNProperty
+F 5.6. OneNormalSubgroupWithNProperty
+F 5.6. AllNormalSubgroupsWithNProperty
+C examples.tex 6. Examples of group classes
+S 6.1. Pre-defined group classes
+F 6.1. class!of all trivial groups
+I 6.1. trivial groups!class of
+I 6.1. class!of all trivial groups
+F 6.1. class!of all nilpotent groups
+I 6.1. nilpotent groups!class of
+I 6.1. class!of all nilpotent groups
+F 6.1. class!of all supersolvable groups
+I 6.1. supersolvable groups!class of
+I 6.1. class!of all supersolvable groups
+F 6.1. class!of all abelian groups
+I 6.1. AbelianGroups
+I 6.1. abelian groups!class of
+I 6.1. class!of all abelian groups
+F 6.1. AbelianGroupsOfExponent
+I 6.1. class!of all abelian groups of bounded exponent
+I 6.1. abelian groups of bounded exponent!class of
+F 6.1. PiGroups
+I 6.1. class!of all $\pi $-groups
+F 6.1. PGroups
+I 6.1. class!of all $p$-groups
+S 6.2. Pre-defined projector functions
+F 6.2. NilpotentProjector
+I 6.2. Carter subgroup
+F 6.2. SupersolvableProjector
+S 6.3. Pre-defined sets of primes
+F 6.3. set!of all primes
+I 6.3. primes!set of all

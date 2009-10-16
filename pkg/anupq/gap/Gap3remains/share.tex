@@ -1,0 +1,386 @@
+\Section{ANU pq Package}
+
+The   ANU  pq  provides  access  to  implementations   of  the  following
+algorithms\:
+
+1.  A $p$-quotient algorithm  to compute  a power-commutator presentation
+for a group  of  prime power order.  The  algorithm implemented  here  is
+based on that described in Newman and O\'Brien (1996), Havas and Newman 
+(1980), and papers referred to there.   Another  description  of  the  
+algorithm appears in  Vaughan-Lee (1990).  A FORTRAN implementation  of 
+this algorithm  was  programmed  by Alford and Havas.  The basic  data 
+structures  of that implementation are retained.
+
+2. A $p$-group generation algorithm to generate descriptions of groups of
+prime  power  order.   The  algorithm  implemented here is based  on  the
+algorithms described in Newman  (1977)  and O\'Brien  (1990).  A  FORTRAN
+implementation of  this  algorithm  was  earlier  developed by Newman and
+O\'Brien.
+
+3.   A  standard presentation   algorithm  used  to compute  a  canonical
+power-commutator presentation  of a $p$-group. The  algorithm implemented
+here is described in O\'Brien (1994).
+
+4. An algorithm which can be used to compute  the automorphism group of a
+$p$-group. The algorithm implemented here is described in O\'Brien (1994).
+
+The following section describes the installation of the ANU pq package, a
+description of the functions available in the  ANU pq package is given in
+chapter "ANU Pq".
+
+A reader interested  in details  of the  algorithms  and explanations  of
+terms  used  is  referred  to  \cite{NOBr96}, \cite{HN80},  \cite{OBr90},  
+\cite{OBr94}, \cite{OBr95},    \cite{New77},    \cite{Vau84},     
+\cite{Vau90a},  and \cite{Vau90b}.
+
+For  details about  the implementation and the standalone version see the
+README. This implementation was developed in C by
+
+Eamonn O\'Brien\\
+Lehrstuhl D fuer Mathematik\\
+RWTH Aachen
+
+e-mail obrien@math.rwth-aachen.de
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing the ANU pq Package}
+
+The ANU  pq is written  in C and the  package can only be installed under
+UNIX.  It has been tested on DECstation running Ultrix, a HP 9000/700 and
+HP 9000/800 running HP-UX, a MIPS running RISC/os Berkeley, a NeXTstation
+running NeXTSTEP 3.0, and SUNs running SunOS.
+
+If you got  a complete binary  and source distribution for your  machine,
+nothing has   to be done if  you  want to use   the ANU  pq for  a single
+architecture. If  you want to use the  ANU pq for machines with different
+architectures skip  the extraction and compilation  part of  this section
+and proceed with the creation of shell scripts described below.
+
+If you  got a complete source distribution,  skip the  extraction part of
+this section and proceed with the compilation part below.
+
+In the example we will assume that you, as user 'gap', are installing the
+ANU pq package for use by several users on a network  of two DECstations,
+called 'bert' and 'tiffy', and a NeXTstation,  called 'bjerun'. We assume
+that  {\GAP}  is   also  installed  on   these  machines   following  the
+instructions given in "Installation of GAP for UNIX".
+
+Note that certain parts  of  the  output  in the examples should  only be
+taken as rough outline, especially file sizes and file dates are *not* to
+be taken literally.
+
+First of  all you have to  get the file  'anupq.zoo' (see "Getting GAP").
+Then you  must locate the {\GAP} directory  containing 'lib/' and 'doc/',
+this is usually  'gap3r4p0' where '0'  is to be  replaced by  the current
+patch level.
+
+|    gap@tiffy:~ > ls -l
+    drwxr-xr-x  11 gap     1024 Nov  8  1991 gap3r4p0
+    -rw-r--r--   1 gap   360891 Dec 27 15:16 anupq.zoo
+    gap@tiffy:~ > ls -l gap3r4p0
+    drwxr-xr-x   2 gap     3072 Nov 26 11:53 doc
+    drwxr-xr-x   2 gap     1024 Nov  8  1991 grp
+    drwxr-xr-x   2 gap     2048 Nov 26 09:42 lib
+    drwxr-xr-x   2 gap     2048 Nov 26 09:42 pkg
+    drwxr-xr-x   2 gap     2048 Nov 26 09:42 src
+    drwxr-xr-x   2 gap     1024 Nov 26 09:42 tst|
+
+Unpack the package using 'unzoo'  (see "Installation  of GAP for  UNIX").
+Note that  you must be in the  directory containing 'gap3r4p0'  to unpack
+the files.    After you have  unpacked   the source  you may  remove  the
+*archive-file*.
+
+|    gap@tiffy:~ > unzoo x anupq
+    gap@tiffy:~ > cd gap3r4p0/pkg/anupq
+    gap@tiffy:../anupq> ls -l
+    drwxr-xr-x  5 gap       512 Feb 24 11:17 MakeLibrary
+    -rw-r--r--  1 gap     28926 Jun  8 14:21 Makefile
+    -rw-r--r--  1 gap      8818 Jun  8 14:21 README
+    -rw-r--r--  1 gap       753 Jun 23 18:59 StandardPres
+    drwxr-xr-x  2 gap      1024 Jun  8 14:15 TEST
+    drwxr-xr-x  2 gap       512 Jun 16 16:03 bin
+    drwxr-xr-x  2 gap       512 May 16 06:58 cayley
+    drwxr-xr-x  2 gap       512 Jun  8 08:48 doc
+    drwxr-xr-x  2 gap      1024 Mar  5 04:01 examples
+    drwxr-xr-x  2 gap       512 Jun 23 16:37 gap
+    drwxr-xr-x  2 gap       512 Jun 24 10:51 include
+    -rw-rw-rw-  1 gap       867 Jun  9 16:12 init.g
+    drwxr-xr-x  2 gap      1024 May 21 02:28 isom
+    drwxr-xr-x  2 gap       512 May 16 07:58 magma
+    drwxr-xr-x  2 gap      6656 Jun 24 11:10 src |
+
+Typing 'make' will produce a list of possible target.
+
+|gap@tiffy:../anupq > make
+usage: 'make <target> EXT=<ext>'  where <target> is one of
+'dec-mips-ultrix-gcc2-gmp' for DECstations under Ultrix with gcc/gmp
+'dec-mips-ultrix-cc-gmp'   for DECstations under Ultrix with cc/gmp
+'dec-mips-ultrix-gcc2'     for DECstations under Ultrix with gcc
+'dec-mips-ultrix-cc'       for DECstations under Ultrix with cc
+'hp-hppa1.1-hpux-cc-gmp'   for HP 9000/700 under HP-UX with cc/gmp
+'hp-hppa1.1-hpux-cc'       for HP 9000/700 under HP-UX with cc
+'hp-hppa1.0-hpux-cc-gmp'   for HP 9000/800 under HP-UX with cc/gmp
+'hp-hppa1.0-hpux-cc'       for HP 9000/800 under HP-UX with cc
+'ibm-i386-386bsd-gcc2-gmp' for IBM PCs under 386BSD with gcc/gmp
+'ibm-i386-386bsd-cc-gmp'   for IBM PCs under 386BSD with cc/gmp
+'ibm-i386-386bsd-gcc2'     for IBM PCs under 386BSD with gcc2
+'ibm-i386-386bsd-cc'       for IBM PCs under 386BSD with cc
+'mips-mips-bsd-cc-gmp'     for MIPS under RISC/os Berkeley with cc/gmp
+'mips-mips-bsd-cc'         for MIPS under RISC/os Berkeley with cc
+'next-m68k-mach-gcc2-gmp'  for NeXT under Mach with gcc/gmp
+'next-m68k-mach-cc-gmp'    for NeXT under Mach with cc/gmp
+'next-m68k-mach-gcc2'      for NeXT under Mach with gcc
+'next-m68k-mach-cc'        for NeXT under Mach with cc
+'sun-sparc-sunos-gcc2-gmp' for SUN 4 under SunOs with gcc/gmp
+'sun-sparc-sunos-cc-gmp'   for SUN 4 under SunOs with cc/gmp
+'sun-sparc-sunos-gcc2'     for SUN 4 under SunOs with gcc2
+'sun-sparc-sunos-cc'       for SUN 4 under SunOs with cc
+'unix-gmp'                 for a generic unix system with cc/gmp
+'unix'                     for a generic unix system with cc
+'clean'                    remove all created files
+
+   where <ext> should be a sensible extension, i.e.,
+   'EXT=-sun-sparc-sunos' for SUN 4 or 'EXT=' if the PQ only
+   runs on a single architecture
+
+   targets are listed according to preference,
+   i.e., 'sun-sparc-sunos-gcc2' is better than 'sun-sparc-sunos-cc'.
+   additional C compiler and linker flags can be passed with
+   'make <target> COPTS=<compiler-opts> LOPTS=<linker-opts>',
+   i.e., 'make sun-sparc-sunos-cc COPTS=-g LOPTS=-g'.
+
+   set GAP if gap 3.4 is not started with the command 'gap',
+   i.e., 'make sun-sparc-sunos-cc GAP=/home/gap/bin/gap-3.4'.
+
+   in order to use the GNU multiple precision (gmp) set
+   'GNUINC' (default '/usr/local/include') and 
+   'GNULIB' (default '/usr/local/lib')|
+
+Select the  target you need.  If  you  have the *GNU*  multiple precision
+arithmetic (gmp)  installed on your  system, select the target  ending in
+'-gmp'. Note that  the  gmp is  *not  required*.   In our  case we  first
+compile   the DECstation version.   We assume  that  the command to start
+{\GAP}    is  '/usr/local/bin/gap'   for   'tiffy'    and  'bjerun'   and
+'/rem/tiffy/usr/local/bin/gap' for 'bert'.
+
+|    gap@tiffy:../anupq > make dec-mips-ultric-cc \
+                               GAP=/usr/local/bin/gap \
+			       EXT=-dec-mips-ultrix
+    # you will see a lot of messages and a few warnings |
+
+Now repeat the compilation  for the NeXTstation. *Do not* forget to clean
+up.
+
+|    gap@tiffy:../anupq > rlogin bjerun
+    gap@bjerun:~ > cd gap3r4p0/pkg/anupq
+    gap@bjerun:../anupq > make clean
+    gap@bjerun:../src > make next-m68k-mach-cc \
+                             GAP=/usr/local/bin/gap \
+			     EXT=-next-m68k-mach
+    # you will see a lot of messages and a few warnings
+    gap@bjerun:../anupq > exit
+    gap@tiffy:../anupq > |
+
+Switch into the subdirectory 'bin/'  and create a  script which will call
+the correct binary for each machine. A skeleton  shell script is provided
+in 'bin/pq.sh'.
+
+|    gap@tiffy:../anupq > cd bin
+    gap@tiffy:../bin > cat > pq
+    |\#|!/bin/csh
+    switch ( `hostname` )
+      case 'tiffy':
+        exec $0-dec-mips-ultrix $* ;
+        breaksw ;
+      case 'bert':
+        setenv ANUPQ_GAP_EXEC /rem/tiffy/usr/local/bin/gap ;
+        exec $0-dec-mips-ultrix $* ;
+        breaksw ;
+      case 'bjerun':
+        limit stacksize 2048 ;
+        exec $0-next-m68k-mach $* ;
+        breaksw ;
+      default:
+        echo "pq: sorry, no executable exists for this machine" ;
+        breaksw ;
+    endsw
+    |<ctr>-'D'|
+    gap@tiffy:../bin > chmod 755 pq
+    gap@tiffy:../bin > cd .. |
+
+Note that the  NeXTstation requires you to raise the stacksize.   If your
+default limit on any other machine for the stack size  is less than  1024
+you might need to add the 'limit stacksize 2048' line.
+     
+If the documentation is  not  already installed  or an older  version  is
+installed, copy  the file 'gap/anupq.tex' into  the  'doc/' directory and
+run latex  again (see "Installation  of  GAP for  UNIX").  In general the
+documentation will   already  be installed  so  you   can  just skip  the
+following step.
+
+|    gap@tiffy:../anupq > cp gap/anupq.tex ../../doc
+    gap@tiffy:../anupq > cd ../../doc
+    gap@tiffy:../doc > latex manual
+    # a few messages about undefined references
+    gap@tiffy:../doc > latex manual
+    # a few messages about undefined references
+    gap@tiffy:../doc > makeindex manual
+    # 'makeindex' prints some diagnostic output
+    gap@tiffy:../doc > latex manual
+    # there should be no warnings this time
+    gap@tiffy:../doc cd ../pkg/anupq |
+
+Now it is time to test  the installation.  The  first test will only test
+the ANU pq.
+
+|    gap@tiffy:../anupq > bin/pq < gap/test1.pga
+    # a lot of messages ending in
+    **************************************************
+    Starting group: c3c3 |\#|2;2 |\#|4;3
+    Order: 3^7
+    Nuclear rank: 3
+    3-multiplicator rank: 4
+    |\#| of immediate descendants of order 3^8 is 7
+    |\#| of capable immediate descendants is 5
+
+    **************************************************
+    34 capable groups saved on file c3c3_class4
+    Construction of descendants took 1.92 seconds
+
+    Select option: 0 
+    Exiting from p-group generation
+
+    Select option: 0 
+    Exiting from ANU p-Quotient Program
+    Total user time in seconds is 1.97
+    gap@tiffy:../anupq > ls -l c3c3*
+    total 89
+    -rw-r--r--    1 gap    3320 Jun 24 11:24 c3c3_class2
+    -rw-r--r--    1 gap    5912 Jun 24 11:24 c3c3_class3
+    -rw-r--r--    1 gap   56184 Jun 24 11:24 c3c3_class4
+    gap:../anupq > rm c3c3_class* |
+
+The second test will test the stacksize. If it is too small you will  get
+a memory fault, try to raise the stacksize as described above.
+
+|    gap@tiffy:../anupq > bin/pq < gap/test2.pga
+    # a lot of messages ending in
+    **************************************************
+    Starting group: c2c2 |\#|1;1 |\#|1;1 |\#|1;1
+    Order: 2^5
+    Nuclear rank: 1
+    2-multiplicator rank: 3
+    Group c2c2 |\#|1;1 |\#|1;1 |\#|1;1 is an invalid starting group
+
+    **************************************************
+    Starting group: c2c2 |\#|2;1 |\#|1;1 |\#|1;1
+    Order: 2^5
+    Nuclear rank: 1
+    2-multiplicator rank: 3
+    Group c2c2 |\#|2;1 |\#|1;1 |\#|1;1 is an invalid starting group
+    Construction of descendants took 0.47 seconds
+
+    Select option: 0 
+    Exiting from p-group generation
+
+    Select option: 0 
+    Exiting from ANU p-Quotient Program
+    Total user time in seconds is 0.50
+    gap@tiffy:../anupq > ls -l c2c2*
+    total 45
+    -rw-r--r--    1 gap   6228 Jun 24 11:25 c2c2_class2
+    -rw-r--r--    1 gap  11156 Jun 24 11:25 c2c2_class3
+    -rw-r--r--    1 gap   2248 Jun 24 11:25 c2c2_class4
+    -rw-r--r--    1 gap      0 Jun 24 11:25 c2c2_class5
+    gap:../anupq > rm c2c2_class* |
+
+The third example tests the link between the ANU pq and {\GAP}.  If there
+is a problem you will get a error message saying
+'Error in  system  call  to GAP';  if this happens, check the environment
+variable 'ANUPQ\_GAP\_EXEC'.
+
+|    gap@tiffy:../anupq > bin/pq < gap/test3.pga
+    # a lot of messages ending in
+    **************************************************
+    Starting group: c5c5 |\#|1;1 |\#|1;1
+    Order: 5^4
+    Nuclear rank: 1
+    5-multiplicator rank: 2
+    |\#| of immediate descendants of order 5^5 is 2
+
+    **************************************************
+    Starting group: c5c5 |\#|1;1 |\#|2;2
+    Order: 5^5
+    Nuclear rank: 3
+    5-multiplicator rank: 3
+    |\#| of immediate descendants of order 5^6 is 3
+    |\#| of immediate descendants of order 5^7 is 3
+    |\#| of capable immediate descendants is 1
+    |\#| of immediate descendants of order 5^8 is 1
+    |\#| of capable immediate descendants is 1
+
+    **************************************************
+    2 capable groups saved on file c5c5_class4
+
+    **************************************************
+    Starting group: c5c5 |\#|1;1 |\#|2;2 |\#|4;2
+    Order: 5^7
+    Nuclear rank: 1
+    5-multiplicator rank: 2
+    |\#| of immediate descendants of order 5^8 is 2
+    |\#| of capable immediate descendants is 2
+
+    **************************************************
+    Starting group: c5c5 |\#|1;1 |\#|2;2 |\#|7;3
+    Order: 5^8
+    Nuclear rank: 2
+    |\#| of immediate descendants of order 5^9 is 1
+    |\#| of capable immediate descendants is 1
+    |\#| of immediate descendants of order 5^10 is 1
+    |\#| of capable immediate descendants is 1
+
+    **************************************************
+    4 capable groups saved on file c5c5_class5
+    Construction of descendants took 0.62 seconds
+
+    Select option: 0 
+    Exiting from p-group generation
+
+    Select option: 0 
+    Exiting from ANU p-Quotient Program
+    Total user time in seconds is 0.68
+    gap@tiffy:../anupq > ls -l c5c5*
+    total 41
+    -rw-r--r--    1 gap     924 Jun 24 11:27 c5c5_class2
+    -rw-r--r--    1 gap    2220 Jun 24 11:28 c5c5_class3
+    -rw-r--r--    1 gap    3192 Jun 24 11:30 c5c5_class4
+    -rw-r--r--    1 gap    7476 Jun 24 11:32 c5c5_class5
+    gap:../anupq > rm c5c5_class* |
+
+The fourth test will test the standard presentation part of the pq.
+
+|    gap@tiffy:../anupq > bin/pq -i -k < gap/test4.sp
+    # a lot of messages ending in
+    Computing standard presentation for class 9 took 0.43 seconds
+    The largest 5-quotient of the group has class 9
+
+    Select option: 0 
+    Exiting from ANU p-Quotient Program
+    Total user time in seconds is 2.17
+    gap@tiffy:../anupq > ls -l SPRES
+    -rw-r--r--  1 gap     768 Jun 24 11:33 SPRES
+    gap@tiffy:../anupq > diff SPRES gap/out4.sp
+    # there should be no difference if compiled with '-gmp'
+    156250000
+    gap@tiffy:../anupq > rm SPRES |
+
+The last  test  will test the  link  between {\GAP} and   the ANU pq.  If
+everything goes well you should not see any message.
+
+|    gap@tiffy:../anupq > gap -b
+    gap> RequirePackage( "anupq" );
+    gap> ReadTest( "gap/anupga.tst" );
+    gap> |
+
+You may now repeat the tests for the other machines.
+

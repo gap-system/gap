@@ -2,14 +2,14 @@
 ##
 #W  grpprmcs.tst                GAP library                       Akos Seress
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpprmcs.tst,v 1.10 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: grpprmcs.tst,v 1.10 2005/05/05 15:04:16 gap Exp $");
 
 # we don't want `GroupString' to display the number of generators as this
 # may differ. We get the sizes anyhow from the composition factors. Thus
@@ -1855,7 +1855,7 @@ gap> CompositionSeries( h );
   <permutation group of size 60 with 2 generators>, Group(()) ]
 
 
-gap> STOP_TEST( "grpprmcs.tst", 14208100000 );
+gap> STOP_TEST( "grpprmcs.tst",12735051238);
 
 
 #############################################################################

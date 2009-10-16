@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE file SYSTEM "bibxmlext.dtd">
+<file>
+
+<entry id="Art57"><book>
+  <author>
+    <name><first>E.</first><last>Artin</last></name>
+  </author>  
+  <title>Geometric algebra</title>
+  <publisher>Interscience Publishers, Inc., New York-London</publisher>
+  <year>1957</year>
+  <mrnumber>MR0082463 (18,553e)</mrnumber>
+  <mrclass>15.0X</mrclass>
+  <mrreviewer>J. Dieudonné</mrreviewer>
+  <other type="pages">x+214</other>
+</book></entry>
+
+<entry id="Art88"><book>
+  <author>
+    <name><first>E.</first><last>Artin</last></name>
+  </author>  
+  <title>Geometric algebra</title>
+  <publisher>John Wiley &amp; Sons Inc.</publisher>
+  <year>1988</year>
+  <series>Wiley Classics Library</series>
+  <address>New York</address>
+  <note>Reprint of <Wrap Name="IntRef">the 1957 original</Wrap>,
+      A Wiley-Interscience Publication</note>
+  <isbn>0-471-60839-4</isbn>
+  <mrnumber>MR1009557 (90h:51003)</mrnumber>
+  <mrclass>51-02 (11Exx)</mrclass>
+  <other type="pages">x+214</other>
+  <other type="intref">Art57</other>
+</book></entry>
+
+<entry id="Car72"><book>
+  <author>
+    <name><first>Roger W.</first><last>Carter</last></name>
+  </author>  
+  <title>Simple groups of <C>L</C>ie type</title>
+  <publisher>John Wiley &amp; Sons, London-New York-Sydney</publisher>
+  <year>1972</year>
+  <note>Pure and Applied Mathematics, Vol. 28</note>
+  <mrnumber>MR0407163 (53 #10946)</mrnumber>
+  <mrclass>20G15 (20D05 22E20)</mrclass>
+  <mrreviewer>Louis Solomon</mrreviewer>
+  <other type="pages">viii+331</other>
+</book></entry>
+
+<entry id="Car89"><book>
+  <author>
+    <name><first>Roger W.</first><last>Carter</last></name>
+  </author>  
+  <title>Simple groups of <C>L</C>ie type</title>
+  <publisher>John Wiley &amp; Sons Inc.</publisher>
+  <year>1989</year>
+  <series>Wiley Classics Library</series>
+  <address>New York</address>
+  <note>Reprint of <Wrap Name="IntRef">the 1972 original</Wrap>,
+      A Wiley-Interscience Publication</note>
+  <isbn>0-471-50683-4</isbn>
+  <mrnumber>MR1013112 (90g:20001)</mrnumber>
+  <mrclass>20-02 (20D05 20E32 20G15 20G40 22-02)</mrclass>
+  <other type="pages">x+335</other>
+  <other type="intref">Car72</other>
+</book></entry>
+
+<entry id="Car85"><book>
+  <author>
+    <name><first>Roger W.</first><last>Carter</last></name>
+  </author>  
+  <title>Finite groups of <C>L</C>ie type</title>
+  <publisher>John Wiley &amp; Sons Inc.</publisher>
+  <year>1985</year>
+  <series>Pure and Applied Mathematics (New York)</series>
+  <address>New York</address>
+  <note>Conjugacy classes and complex characters,
+      A Wiley-Interscience Publication</note>
+  <isbn>0-471-90554-2</isbn>
+  <mrnumber>MR794307 (87d:20060)</mrnumber>
+  <mrclass>20G40 (20-02 20C15)</mrclass>
+  <mrreviewer>David B. Surowski</mrreviewer>
+  <other type="pages">xii+544</other>
+</book></entry>
+
+<entry id="Car93"><book>
+  <author>
+    <name><first>Roger W.</first><last>Carter</last></name>
+  </author>  
+  <title>Finite groups of <C>L</C>ie type</title>
+  <publisher>John Wiley &amp; Sons Ltd.</publisher>
+  <year>1993</year>
+  <series>Wiley Classics Library</series>
+  <address>Chichester</address>
+  <note>Conjugacy classes and complex characters,
+      Reprint of <Wrap Name="IntRef">the 1985 original</Wrap>,
+      A Wiley-Interscience Publication</note>
+  <isbn>0-471-94109-3</isbn>
+  <mrnumber>MR1266626 (94k:20020)</mrnumber>
+  <mrclass>20C33 (20-02 20G40)</mrclass>
+  <other type="pages">xii+544</other>
+  <other type="intref">Car85</other>
+</book></entry>
+
+<entry id="Che55"><article>
+  <author>
+    <name><first>C.</first><last>Chevalley</last></name>
+  </author>  
+  <title>Sur certains groupes simples</title>
+  <journal>Tôhoku Math. J. (2)</journal>
+  <year>1955</year>
+  <volume>7</volume>
+  <pages>14&ndash;66</pages>
+  <issn>0040-8735</issn>
+  <mrnumber>MR0073602 (17,457c)</mrnumber>
+  <mrclass>20.0X</mrclass>
+  <mrreviewer>F. I. Mautner</mrreviewer>
+  <other type="fjournal">The Tohoku Mathematical Journal. Second
+      Series</other>
+</article></entry>
+
+<entry id="CM65"><book>
+  <author>
+    <name><first>H. S. M.</first><last>Coxeter</last></name>
+    <name><first>W. O. J.</first><last>Moser</last></name>
+  </author>  
+  <title>Generators and relations for discrete groups</title>
+  <publisher>Springer-Verlag</publisher>
+  <year>1965</year>
+  <series>Second edition. Ergebnisse der Mathematik und ihrer
+      Grenzgebiete, Neue Folge, Band 14</series>
+  <address>Berlin</address>
+  <mrnumber>MR0174618 (30 #4818)</mrnumber>
+  <mrclass>20.10</mrclass>
+  <other type="pages">ix+161</other>
+</book></entry>
+
+<entry id="CM72"><book>
+  <author>
+    <name><first>H. S. M.</first><last>Coxeter</last></name>
+    <name><first>W. O. J.</first><last>Moser</last></name>
+  </author>  
+  <title>Generators and relations for discrete groups</title>
+  <publisher>Springer-Verlag</publisher>
+  <year>1972</year>
+  <address>New York</address>
+  <edition>Third</edition>
+  <note>Ergebnisse der Mathematik und ihrer Grenzgebiete, Band 14</note>
+  <mrnumber>MR0349820 (50 #2313)</mrnumber>
+  <mrclass>20-02 (05-02)</mrclass>
+  <other type="pages">ix+161</other>
+</book></entry>
+
+<entry id="CM80a"><book>
+  <author>
+    <name><first>H. S. M.</first><last>Coxeter</last></name>
+    <name><first>W. O. J.</first><last>Moser</last></name>
+  </author>  
+  <title>Generators and relations for discrete groups</title>
+  <publisher>Springer-Verlag</publisher>
+  <year>1980</year>
+  <volume>14</volume>
+  <series>Ergebnisse der Mathematik und ihrer Grenzgebiete [Results in
+      Mathematics and Related Areas]</series>
+  <address>Berlin</address>
+  <edition>Fourth</edition>
+  <isbn>3-540-09212-9</isbn>
+  <mrnumber>MR562913 (81a:20001)</mrnumber>
+  <mrclass>20-01</mrclass>
+  <other type="pages">ix+169</other>
+</book></entry>
+
+<entry id="Dav69"><book>
+  <author>
+    <name><first>Constance</first><last>Davis</last></name>
+  </author>  
+  <title>A bibliographical survey of simple groups of finite order,
+      1900&ndash;1965</title>
+  <publisher>Courant Institute of Mathematical Sciences, New York Univ.,
+      New York</publisher>
+  <year>1969</year>
+  <mrnumber>MR0248203 (40 #1457)</mrnumber>
+  <mrclass>20.00</mrclass>
+  <mrreviewer>A. P. Street</mrreviewer>
+  <other type="pages">xxi+209</other>
+</book></entry>
+
+<entry id="Dic58"><book>
+  <author>
+    <name><first>Leonard Eugene</first><last>Dickson</last></name>
+  </author>  
+  <title>Linear groups: <C>W</C>ith an exposition of the <C>G</C>alois field
+      theory</title>
+  <publisher>Dover Publications Inc.</publisher>
+  <year>1958</year>
+  <series>with an introduction by W. Magnus</series>
+  <address>New York</address>
+  <mrnumber>MR0104735 (21 #3488)</mrnumber>
+  <mrclass>20.00</mrclass>
+  <other type="pages">xvi+312</other>
+</book></entry>
+
+<entry id="Die63"><book>
+  <author>
+    <name><first>Jean</first><last>Dieudonné</last></name>
+  </author>  
+  <title>La géométrie des groupes classiques</title>
+  <publisher>Springer-Verlag</publisher>
+  <year>1963</year>
+  <series>Seconde édition, revue et corrigée</series>
+  <address>Berlin</address>
+  <mrnumber>MR0158011 (28 #1239)</mrnumber>
+  <mrclass>20.70</mrclass>
+  <other type="pages">viii+125</other>
+</book></entry>
+
+<entry id="Die71"><book>
+  <author>
+    <name><first>Jean A.</first><last>Dieudonné</last></name>
+  </author>  
+  <title>La géométrie des groupes classiques</title>
+  <publisher>Springer-Verlag</publisher>
+  <year>1971</year>
+  <address>Berlin</address>
+  <note>Troisième édition,
+  Ergebnisse der Mathematik und ihrer Grenzgebiete, Band 5</note>
+  <mrnumber>MR0310083 (46 #9186)</mrnumber>
+  <mrclass>20G15 (15A63 15A66)</mrclass>
+  <mrreviewer>J. Burlak</mrreviewer>
+  <other type="pages">viii+129</other>
+</book></entry>
+
+<entry id="Gor74"><book>
+  <editor>
+    <name><first>D.</first><last>Gorenstein</last></name>
+  </editor>  
+  <title>Reviews on finite groups</title>
+  <publisher>American Mathematical Society</publisher>
+  <year>1974</year>
+  <address>Providence, R.I.</address>
+  <note>Reviews reprinted from Mathematical Reviews, Vols. 1-40,
+      published during 1940&ndash;1970, Classified by Daniel Gorenstein</note>
+  <mrnumber>MR0349819 (50 #2312)</mrnumber>
+  <mrclass>20-XX (00A15)</mrclass>
+  <other type="pages">xi+706</other>
+  <other type="zblnumber">0282.00024</other>
+</book></entry>
+
+<entry id="Gor82"><book>
+  <author>
+    <name><first>Daniel</first><last>Gorenstein</last></name>
+  </author>  
+  <title>Finite simple groups</title>
+  <publisher>Plenum Publishing Corp.</publisher>
+  <year>1982</year>
+  <series>University Series in Mathematics</series>
+  <address>New York</address>
+  <note>An introduction to their classification</note>
+  <isbn>0-306-40779-5</isbn>
+  <mrnumber>MR698782 (84j:20002)</mrnumber>
+  <mrclass>20-02 (20D05)</mrclass>
+  <mrreviewer>R. Solomon</mrreviewer>
+  <other type="pages">x+333</other>
+</book></entry>
+
+<entry id="Sri79"><book>
+  <author>
+    <name><first>Bhama</first><last>Srinivasan</last></name>
+  </author>  
+  <title>Representations of finite <C>C</C>hevalley groups</title>
+  <publisher>Springer-Verlag</publisher>
+  <year>1979</year>
+  <volume>764</volume>
+  <series>Lecture Notes in Mathematics</series>
+  <address>Berlin</address>
+  <note>A survey</note>
+  <isbn>3-540-09716-3</isbn>
+  <mrnumber>MR551499 (83a:20054)</mrnumber>
+  <mrclass>20G05 (14L30 20C15 20G40)</mrclass>
+  <mrreviewer>G. I. Lehrer</mrreviewer>
+  <other type="pages">x+177</other>
+</book></entry>
+
+<entry id="Ste59"><article>
+  <author>
+    <name><first>Robert</first><last>Steinberg</last></name>
+  </author>  
+  <title>Variations on a theme of <C>C</C>hevalley</title>
+  <journal>Pacific J. Math.</journal>
+  <year>1959</year>
+  <volume>9</volume>
+  <pages>875&ndash;891</pages>
+  <issn>0030-8730</issn>
+  <mrnumber>MR0109191 (22 #79)</mrnumber>
+  <mrclass>22.00 (20.00)</mrclass>
+  <mrreviewer>Rimhak Ree</mrreviewer>
+  <other type="fjournal">Pacific Journal of Mathematics</other>
+</article></entry>
+
+</file>
+

@@ -10,7 +10,7 @@
 ##  and Darstellungsgruppen.
 ##  
 Revision.schur_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: schur.gi,v 4.26 2006/08/17 14:11:33 gap Exp $";
 
 ##    Take a finite presentation F/R for a group G and compute a presentation
 ##    of one of G's representation groups (Darstellungsgruppen, Schur covers).

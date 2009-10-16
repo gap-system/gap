@@ -2,7 +2,7 @@
 ##
 #A  imf16.grp                   GAP group library              Volkmar Felsch
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: imf16.grp,v 1.1 2000/02/16 14:20:22 gap Exp $
 ##
 #Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,7 +13,7 @@
 ##  [2]  a list of matrix generators.
 ##
 Revision.imf16_grp :=
-    "@(#)$Id$";
+    "@(#)$Id: imf16.grp,v 1.1 2000/02/16 14:20:22 gap Exp $";
 
 
 #############################################################################

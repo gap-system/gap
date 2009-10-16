@@ -1,0 +1,34 @@
+#Example: "3gp-SP-4-Rel-i" . . . based on: isom/3gp.test
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, StandardPresentationFile
+F := FreeGroup("a", "b");
+rels := ["(b * [b, a] * [b, a, b])^3", "([b, a] * [b, a, b]^2)^3",
+         "[b, a, a]"];
+procId := PqStart(F : Prime := 3, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+#add <OutputLevel> for <value> if set and ok
+#PqSetOutputLevel(procId, value);;
+PqSPComputePcpAndPCover(procId : ClassBound := 1);;
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also save the presentation to a file by supplying <StandardPresentationFile>
+PqSPStandardPresentation(procId, [ [[2,0],
+                                    [0,2]],
+
+                                   [[0,2],
+                                    [1,0]],
+
+                                   [[1,2],
+                                    [2,2]],
+
+                                   [[1,0],
+                                    [2,1]],
+
+                                   [[2,0],
+                                    [0,1]] ]
+
+                         : # options
+#add <StandardPresentationFile> for <value> if set and ok
+#                          StandardPresentationFile := value,
+#sub <ClassBound> for <7> if set
+                           ClassBound := 7,
+                           PcgsAutomorphisms);;

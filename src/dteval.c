@@ -2,7 +2,7 @@
 **
 *W  dteval.c                    GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id$
+*H  @(#)$Id: dteval.c,v 4.26 2002/04/15 10:03:47 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -27,7 +27,7 @@
 #include       "system.h"
 
 const char * Revision_dteval_c =
-   "@(#)$Id$";
+   "@(#)$Id: dteval.c,v 4.26 2002/04/15 10:03:47 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

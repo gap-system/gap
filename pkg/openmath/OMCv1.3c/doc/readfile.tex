@@ -1,0 +1,35 @@
+% Remember to use the lgrind style
+
+\File{readfile.c},{15:16},{Nov 25 1998}
+\L{\LB{}}
+\L{\LB{\K{int}}}
+\L{\LB{\Proc{main}\V{main}(\K{int}_\V{argc},_\K{char}_\*\V{argv}[\,])}}
+\L{\LB{\{}}
+\L{\LB{__\V{FILE}_\*\V{inFile},_\*\V{outFile};}}
+\L{\LB{__\V{OMdev}_\V{inDev},_\V{outDev};}}
+\L{\LB{__\V{OMstatus}_\V{status};}}
+\L{\LB{}}
+\L{\LB{__.\,.\,.}}
+\L{\LB{}}
+\L{\LB{__\V{inDev}_=_\V{OMmakeDevice}(\V{OMencodingUnknown},_\V{OMmakeIOFile}(\V{inFile}));}}
+\L{\LB{__\V{outDev}_=_\V{OMmakeDevice}(\V{OMencodingXML},_\V{OMmakeIOFile}(\V{outFile}));}}
+\L{\LB{}}
+\L{\LB{__\C{}\1\*_Consider_comments_as_plain_tokens_(thus_pipe_them)._\*\1\CE{}}}
+\L{\LB{__\V{OMignoreComment}(\V{inDev},_\V{OMfalse});}}
+\L{\LB{}}
+\L{\LB{__\C{}\1\*_Endless_pipe_of_OpenMath_objects_\*\1\CE{}}}
+\L{\LB{__\K{while}_(\N{1})_\{}}
+\L{\LB{____\V{checkStatus}(\V{OMbeginObject}(\V{outDev}));}}
+\L{\LB{____\K{if}_(\V{status}_=_\V{pipeObj}(\V{inDev},_\V{outDev}))_\{}}
+\L{\LB{______\K{if}_(\V{status}_==_\V{OMnoMoreToken})}}
+\L{\LB{}\Tab{8}{\K{break};}\Tab{32}{\C{}\1\*_OK_that\4s_a_normal_exit_condition_\*\1\CE{}}}
+\L{\LB{______\V{checkStatus}(\V{status});}\Tab{32}{\C{}\1\*_there_is_something_realy_wrong_\*\1\CE{}}}
+\L{\LB{____\}}}
+\L{\LB{____\V{checkStatus}(\V{OMendObject}(\V{outDev}));}}
+\L{\LB{__\}}}
+\L{\LB{}}
+\L{\LB{__\V{OMcloseDevice}(\V{inDev});}}
+\L{\LB{__\V{OMcloseDevice}(\V{outDev});}}
+\L{\LB{}}
+\L{\LB{__\K{return}_\N{0};}}
+\L{\LB{\}}}

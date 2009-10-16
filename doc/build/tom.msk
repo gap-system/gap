@@ -3,7 +3,7 @@
 %W  tom.msk                     GAP documentation              Goetz Pfeiffer
 %W                                                            Thomas Merkwitz
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: tom.msk,v 1.26 2007/01/31 19:02:12 gap Exp $
 %%
 %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -29,6 +29,7 @@
 \Section{Table of Marks Objects in GAP}
 
 \FileHeader[3]{tom}
+
 Several examples in this chapter require
 the {\GAP} Library of Tables of Marks to be available.
 If it is not yet loaded then we load it now.
@@ -546,8 +547,8 @@ gap> repeat
 > until Order( y ) = 3 and Order( x*y ) = 5;
 gap> # Compute a representative w.r.t. these generators.
 gap> RepresentativeTomByGenerators( a5, 4, [ x, y ] );
-Group([ [ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ],
-  [ [ Z(2)^0, Z(2^2)^2 ], [ 0*Z(2), Z(2)^0 ] ] ])
+Group([ [ [ Z(2)^0, Z(2^2)^2 ], [ 0*Z(2), Z(2)^0 ] ], 
+  [ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ] ])
 gap> # Show that the new generators are really good.
 gap> grp:= UnderlyingGroup( a5 );;
 gap> iso:= GroupGeneralMappingByImages( grp, g,

@@ -2,7 +2,7 @@
 ##
 #W  cyclotom.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: cyclotom.gi,v 4.55 2008/11/21 11:00:01 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  This file contains methods for cyclotomics.
 ##
 Revision.cyclotom_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: cyclotom.gi,v 4.55 2008/11/21 11:00:01 gap Exp $";
 
 
 #############################################################################
@@ -61,15 +61,11 @@ InstallMethod( RoundCyc, "general cyclotomic", [ IsCyclotomic],
     return int;
 end );
 
-#T operation `Round' ?
-#T made RoundCyc an operation at least 7/12/98 SL
-
-
 
 #############################################################################
 ##
-#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
-##				rounding halves down
+#M  RoundCycDown( <cyc> ) . . . . . . . . .  cyclotomic integer near to <cyc>
+##                                                       rounding halves down
 ##
 InstallMethod( RoundCycDown, "general cyclotomic", [ IsCyclotomic],
         function ( x )
@@ -83,6 +79,7 @@ InstallMethod( RoundCycDown, "general cyclotomic", [ IsCyclotomic],
     od;
     return int;
 end );
+
 
 #############################################################################
 ##
@@ -166,9 +163,26 @@ InstallMethod( ImaginaryPart,
 ##
 #M  ExtRepOfObj( <cyc> )
 ##
-#+  Let <cyc> be a cyclotomic with conductor <n>.
-#+  The external representation of <cyc> is defined as
-#+  `CoeffsCyc( <cyc>, <n> )'.
+##  <#GAPDoc Label="ExtRepOfObj:cyclotomics">
+##  <ManSection>
+##  <Meth Name="ExtRepOfObj" Arg='cyc' Label="for a cyclotomic"/>
+##  
+##  <Description>
+##  The external representation of a cyclotomic <A>cyc</A> with conductor
+##  <M>n</M> (see <Ref Func="Conductor" Label="for a cyclotomic"/> is
+##  the list returned by <Ref Func="CoeffsCyc"/>,
+##  called with <A>cyc</A> and <M>n</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ExtRepOfObj( E(5) ); CoeffsCyc( E(5), 5 );
+##  [ 0, 1, 0, 0, 0 ]
+##  [ 0, 1, 0, 0, 0 ]
+##  gap> CoeffsCyc( E(5), 15 );
+##  [ 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 InstallMethod( ExtRepOfObj,
     "for an internal cyclotomic",
@@ -1079,10 +1093,13 @@ end );
 
 #############################################################################
 ##
-#F  Quadratic( <cyc> ) . . . . .  information about quadratic irrationalities
+#F  Quadratic( <cyc>[, <rat>] ) . information about quadratic irrationalities
 ##
-InstallGlobalFunction( Quadratic, function( cyc )
-    local coeffs,     # Zumbroich basis coefficients of `cyc'
+InstallGlobalFunction( Quadratic, function( arg )
+    local cyc,
+          rat,
+          denom,
+          coeffs,     # Zumbroich basis coefficients of `cyc'
           facts,      # factors of conductor of `cyc'
           factsset,   # set of `facts'
           two_part,   # 2-part of the conductor of `cyc'
@@ -1094,17 +1111,28 @@ InstallGlobalFunction( Quadratic, function( cyc )
           ATLAS2,     # another string, maybe shorter ...
           display;    # string that shows a way to input `cyc'
 
-    if not IsCycInt( cyc ) then
+    cyc:= arg[1];
+    rat:= Length( arg ) = 2 and arg[2] = true;
+
+    if not IsCyc( cyc ) then
       return fail;
-    elif IsInt( cyc ) then
+    fi;
+    denom:= DenominatorCyc( cyc );
+    if not ( rat or denom = 1 ) then
+      return fail;
+    fi;
+    if IsRat( cyc ) then
       return rec(
-                  a       := cyc,
+                  a       := NumeratorRat( cyc ),
                   b       := 0,
                   root    := 1,
-                  d       := 1,
+                  d       := denom,
                   ATLAS   := String( cyc ),
                   display := String( cyc )
                  );
+    fi;
+    if denom <> 1 then
+      cyc:= cyc * denom;
     fi;
 
     coeffs:= ExtRepOfObj( cyc );
@@ -1261,6 +1289,10 @@ InstallGlobalFunction( Quadratic, function( cyc )
       fi;
 
     fi;
+    if denom <> 1 then
+      ATLAS:= Concatenation( "(", ATLAS, ")/", String( denom ) );
+    fi;
+    ConvertToStringRep( ATLAS );
 
     # Compute a string used by the `Display' function for character tables.
     if a = 0 then
@@ -1280,12 +1312,14 @@ InstallGlobalFunction( Quadratic, function( cyc )
     else
       display:= Concatenation( String( a ), String( b ), "*" );
     fi;
-    Append( display, Concatenation( "ER(", String( root ), ")" ) );
+    Append( display, Concatenation( "Sqrt(", String( root ), ")" ) );
+    d:= d * denom;
     if d <> 1 then
-      display:= Concatenation( "(", display, ")/", String( d ) );
+      if a <> 0 then
+        display:= Concatenation( "(", display, ")" );
+      fi;
+      display:= Concatenation( display, "/", String( d ) );
     fi;
-
-    ConvertToStringRep( ATLAS );
     ConvertToStringRep( display );
 
     # Return the result.
@@ -1749,7 +1783,7 @@ InstallMethod( Factors,
 
       # The polynomial is a linear polynomial times a power of the indet.
       factors[1]:= coeffs[2] * factors[1];
-      factors[ val+1 ]:= LaurentPolynomialByExtRep( FamilyObj( pol ),
+      factors[ val+1 ]:= LaurentPolynomialByExtRepNC( FamilyObj( pol ),
                              [ coeffs[1] / coeffs[2], 1 ], 0, ind );
       StoreFactorsPol( coeffring, pol, factors );
       return factors;
@@ -1765,7 +1799,7 @@ InstallMethod( Factors,
     if val = 0 then
       pol:= pol / lc;
     else
-      pol:= LaurentPolynomialByExtRep( FamilyObj( pol ), coeffs, 0, ind );
+      pol:= LaurentPolynomialByExtRepNC( FamilyObj( pol ), coeffs, 0, ind );
     fi;
 
     # Now compute the quotient of `pol' by the g.c.d. with its derivative,

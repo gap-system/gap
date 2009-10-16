@@ -1,0 +1,21 @@
+#!/bin/sh
+# $Id: CopyToWWW2,v 1.1 2004/07/15 10:14:59 gapchron Exp $    (C) Frank Lübeckk 
+
+mypath=`dirname  $0`/
+
+source ${mypath}setup
+
+cd ${PkgWebFtpDir}/Packages
+
+echo "Dry run:"
+rsync -av -c -n *.mixer pkgconf.py currentPackageInfoURLList ${WWW2Dir}/Packages/
+read -n 1 -p "Shall I copy? (y/n)> " ANSWER
+echo
+
+if [ $ANSWER = "y" ]; then
+  echo "Ok, I'll copy ..."
+  rsync -av -c *.mixer pkgconf.py currentPackageInfoURLList ${WWW2Dir}/Packages/
+else
+  echo "Don't copy, bye."
+fi
+

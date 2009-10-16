@@ -1,0 +1,78 @@
+Do soonish:
+
+Soonest:
+
+ - PCGS with memory: Luks, Murray, Cooperman implementation
+ - Hash functions for vectors over finite fields 257 <= q <= 65536 
+   -> NumberFFVector
+ - GenSS: Handle "small" cases quick
+ - Quick stabchain access for small cases
+ - ?At the same time use found normal subgroup to find action if possible
+ - Finish derived case for only one homogeneous component (-> tensor)
+ - Finish semilinear by looking for field automorphisms in derived
+ - Make NaturalSL a projective method -> polish l(2,q), use bb-l(2,q)
+ - Make TwoLargeElOrds a projective method, polish databases setup
+ - Implement constructive classical in natural rep ->O'Brien/Leedham-Green
+ - TwoElementOrds: Ignore degree bound if in defining characteristic
+
+Sooner:
+ - Get ActionHomomorphism behaviour fixed -> gap-dev
+ - more Tests for tensor decomposable
+ - O'Brien/Malle recognition?
+ - Make two separate packages recog and recogmeth using each other
+ - SGS Matrix verification
+
+Soon:
+ - Involution centralizer method
+ - Pete Sp
+ - Play with tensor induced
+ - MinBlocks from Steve?
+ - Lowindex using derived subgroup?
+ - Do something if LowIndex stumbles on non-Absolute irreducible restriction
+ - Find Tiep's paper with exception lists
+ - Change message to something about "defining characteristic".
+--> Akos: See what we can do about bad statistics for p=7 and such (bug!)
+ - add Steve's Simple recognition
+ - do more C9 cases by collecting hints
+ - do more C9 cases
+ - do more C9 cases
+
+========================================================================
+
+Future: 
+
+Think whether the changing of gensN after creation might hurt other
+places than LowerLeftPGroup.
+
+Cleanup and complete the code for using blackbox and gensift
+
+SLPforElement methods without evaluation --> like in SiftAsWord ???
+
+Do we have something better for diagonal matrices???
+
+make New...StraightLineProgram official, throw old stuff out
+slp code into main library
+
+improvements of library in library
+
+ - Replace PseudoRandom with product replacer objects  --> eigenes
+
+========================================================================
+
+to talk ???:
+
+  Convention: SLPforElement guarantees that a returned slp does the job
+    ==> \in is easier, does not have to evaluate the slp
+    ==> in StabChain code we divide up labels
+    ==> in Hom code we divide up preimage of the image, go to kernel
+    ==> doable everywhere (in fact done everywhere)
+
+  FindKernelFastNormalClosure always?
+
+
+========================================================================
+
+to change once the new vector/matrix interface is in place:
+
+  FieldOfMatrixGroup/DefaultFieldOfMatrixGroup
+  

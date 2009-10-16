@@ -2,14 +2,14 @@
 ##
 #W  oprtpcgs.gi                 GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: oprtpcgs.gi,v 4.48 2006/09/13 13:05:20 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprtpcgs_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: oprtpcgs.gi,v 4.48 2006/09/13 13:05:20 gap Exp $";
 
 InstallGlobalFunction(Pcs_OrbitStabilizer,function(pcgs,D,pnt,acts,act)
 local   orb,             # orbit

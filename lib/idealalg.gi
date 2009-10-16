@@ -2,7 +2,7 @@
 ##
 #W  idealalg.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: idealalg.gi,v 4.7 2002/04/15 10:04:53 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  in algebras and algebras-with-one.
 ##
 Revision.idealalg_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: idealalg.gi,v 4.7 2002/04/15 10:04:53 sal Exp $";
 
 
 #############################################################################

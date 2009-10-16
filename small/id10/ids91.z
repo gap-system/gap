@@ -3,7 +3,7 @@
 #W  ids91.z                GAP library of id's             Hans Ulrich Besche
 ##
 Revision.ids91_z :=
-    "@(#)$Id$";
+    "@(#)$Id: ids91.z,v 1.1 2005/04/02 09:34:38 gap Exp $";
 
 
 ID_GROUP_TREE.next[45012]:=

@@ -2,7 +2,7 @@
 ##
 #W  relation.gd                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: relation.gd,v 4.41 2008/11/17 17:31:27 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,38 +16,44 @@
 ##  Andrew Solomon
 ##
 Revision.relation_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: relation.gd,v 4.41 2008/11/17 17:31:27 gap Exp $";
 
 
 #############################################################################
-#1 
-##  \index{binary relation}
-##  \atindex{IsBinaryRelation!same as IsEndoGeneralMapping}%
-##  {@\noexpand`IsBinaryRelation'!same as \noexpand`IsEndoGeneralMapping'}
-##  \atindex{IsEndoGeneralMapping!same as IsBinaryRelation}%
-##  {@\noexpand`IsEndoGeneralMapping'!same as \noexpand`IsBinaryRelation'}
-##  A *binary relation* <R> on a set <X> is a subset of $X \times X$. 
+##
+##  <#GAPDoc Label="[1]{relation}">
+##  <Index>binary relation</Index>
+##  <Index Key="IsBinaryRelation" Subkey="same as IsEndoGeneralMapping">
+##  <C>IsBinaryRelation</C></Index>
+##  <Index Key="IsEndoGeneralMapping" Subkey="same as IsBinaryRelation">
+##  <C>IsEndoGeneralMapping</C></Index>
+##  A <E>binary relation</E> <M>R</M> on a set <M>X</M> is a subset of
+##  <M>X \times X</M>.
 ##  A binary relation can also be thought of as a (general) mapping
-##  from <X> to itself or as a directed graph where each edge 
-##  represents a tuple of <R>. 
-##
-##  In {\GAP}, a relation is conceptually represented as  a  general  mapping
-##  from <X> to itself. The category `IsBinaryRelation' is the  same  as  the
-##  category `IsEndoGeneralMapping' (see~"IsEndoGeneralMapping").  Attributes
-##  and properties of relations in {\GAP} are supported  for  relations,  via
-##  considering relations as a subset of $X\times X$, or as a directed graph;
+##  from <M>X</M> to itself or as a directed graph where each edge
+##  represents an element of <M>R</M>.
+##  <P/>
+##  In &GAP;, a relation is conceptually represented as a general mapping
+##  from <M>X</M> to itself.
+##  The category <Ref Func="IsBinaryRelation"/> is a synonym for
+##  <Ref Func="IsEndoGeneralMapping"/>.
+##  Attributes and properties of relations in &GAP; are supported for
+##  relations, via considering relations as a subset of <M>X \times X</M>,
+##  or as a directed graph;
 ##  examples include finding the strongly connected components of a relation,
-##  via `StronglyConnectedComponents' (see~"StronglyConnectedComponents"), or
-##  enumerating the tuples of the relation.
+##  via <Ref Func="StronglyConnectedComponents"/>,
+##  or enumerating the tuples of the relation.
+##  <#/GAPDoc>
 ##
+
 
 ##  The hierarchy of concepts around binary relations on a set are:
 ##
-##  IsGeneralMapping > 
-## 
+##  IsGeneralMapping >
+##
 ##  IsEndoGeneralMapping [ = IsBinaryRelation] >
 ##
-##  [IsEquivalenceRelation] 
+##  [IsEquivalenceRelation]
 ##
 ##
 #############################################################################
@@ -62,22 +68,40 @@ Revision.relation_gd :=
 ##
 #C  IsBinaryRelation( <R> )
 ##
+##  <#GAPDoc Label="IsBinaryRelation">
+##  <ManSection>
+##  <Filt Name="IsBinaryRelation" Arg='R' Type='Category'/>
+##
+##  <Description>
 ##  is   exactly   the   same   category   as   (i.e.    a    synonym    for)
-##  `IsEndoGeneralMapping' (see~"IsEndoGeneralMapping").
+##  <Ref Func="IsEndoGeneralMapping"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym("IsBinaryRelation",IsEndoGeneralMapping);
+
 
 #############################################################################
 ##
 #F  BinaryRelationOnPoints( <list> )
 #F  BinaryRelationOnPointsNC( <list> )
 ##
-##  Given a list of <n> lists, each containing elements from 
-##  the set $\{1,\dots,n\}$,
-##  this function constructs a binary relation such that $1$ is related
-##  to <list>`[1]', $2$ to <list>`[2]' and so on.
-##  The first version checks whether the list supplied is valid. The
-##  the `NC' version skips this check.
+##  <#GAPDoc Label="BinaryRelationOnPoints">
+##  <ManSection>
+##  <Func Name="BinaryRelationOnPoints" Arg='list'/>
+##  <Func Name="BinaryRelationOnPointsNC" Arg='list'/>
+##
+##  <Description>
+##  Given a list of <M>n</M> lists,
+##  each containing elements from the set <M>\{ 1, \ldots, n \}</M>,
+##  this function constructs a binary relation such that <M>1</M> is related
+##  to <A>list</A><C>[1]</C>, <M>2</M> to <A>list</A><C>[2]</C> and so on.
+##  The first version checks whether the list supplied is valid.
+##  The the <C>NC</C> version skips this check.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("BinaryRelationOnPoints");
 DeclareGlobalFunction("BinaryRelationOnPointsNC");
@@ -86,8 +110,16 @@ DeclareGlobalFunction("BinaryRelationOnPointsNC");
 ##
 #F  RandomBinaryRelationOnPoints( <degree> )
 ##
-##  creates a relation on points with degree <degree>.
-##  
+##  <#GAPDoc Label="RandomBinaryRelationOnPoints">
+##  <ManSection>
+##  <Func Name="RandomBinaryRelationOnPoints" Arg='degree'/>
+##
+##  <Description>
+##  creates a relation on points with degree <A>degree</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("RandomBinaryRelationOnPoints");
 
 #############################################################################
@@ -95,21 +127,41 @@ DeclareGlobalFunction("RandomBinaryRelationOnPoints");
 #F  IdentityBinaryRelation( <degree> )
 #F  IdentityBinaryRelation( <domain> )
 ##
-##  is the binary relation which consists of diagonal tuples i.e.  tuples  of
-##  the form $(x,x)$. In the first form if a  positive  integer  <degree>  is
-##  given then the domain is  the  integers  $\{1,\dots,<degree>\}$.  In  the
-##  second form, the tuples are from the domain <domain>.
+##  <#GAPDoc Label="IdentityBinaryRelation">
+##  <ManSection>
+##  <Heading>IdentityBinaryRelation</Heading>
+##  <Func Name="IdentityBinaryRelation" Arg='degree' Label="for a degree"/>
+##  <Func Name="IdentityBinaryRelation" Arg='domain' Label="for a domain"/>
+##
+##  <Description>
+##  is the binary relation which consists of diagonal pairs, i.e., pairs of
+##  the form <M>(x,x)</M>.
+##  In the first form if a positive integer <A>degree</A> is given then
+##  the domain is the set of the integers
+##  <M>\{ 1, \ldots, <A>degree</A> \}</M>.
+##  In the second form, the pairs are from the domain <A>domain</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("IdentityBinaryRelation");
 
 #############################################################################
 ##
-#F  BinaryRelationByElements(<domain>,<elms>)
+#F  BinaryRelationByElements( <domain>, <elms> )
 ##
-##  is  the  binary  relation  on  <domain>  and  with  underlying   relation
-##  consisting of the tuples collection <elms>. This construction is  similar
-##  to `GeneralMappingByElements' (see~"GeneralMappingByElements") where  the
-##  source and range are the same set.
+##  <#GAPDoc Label="BinaryRelationByElements">
+##  <ManSection>
+##  <Func Name="BinaryRelationByElements" Arg='domain, elms'/>
+##
+##  <Description>
+##  is the binary relation on <A>domain</A> and with underlying relation
+##  consisting of the tuples collection <A>elms</A>.
+##  This construction is similar to <Ref Func="GeneralMappingByElements"/>
+##  where the source and range are the same set.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("BinaryRelationByElements");
 
@@ -118,9 +170,20 @@ DeclareGlobalFunction("BinaryRelationByElements");
 #F  EmptyBinaryRelation( <degree> )
 #F  EmptyBinaryRelation( <domain> )
 ##
-##  is the relation with <R> empty. In the first form  of  the  command  with
-##  <degree> an integer, the domain is the points $\{1,\dots, <degree>\}$. In
-##  the second form, the domain is that given by the argument <domain>.
+##  <#GAPDoc Label="EmptyBinaryRelation">
+##  <ManSection>
+##  <Func Name="EmptyBinaryRelation" Arg='degree' Label="for a degree"/>
+##  <Func Name="EmptyBinaryRelation" Arg='domain' Label="for a domain"/>
+##
+##  <Description>
+##  is the relation with <A>R</A> empty.
+##  In the first form of the command with <A>degree</A> an integer,
+##  the domain is the set of points <M>\{ 1, \ldots, <A>degree</A> \}</M>.
+##  In the second form, the domain is that given by the argument
+##  <A>domain</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("EmptyBinaryRelation");
 
@@ -130,17 +193,33 @@ DeclareGlobalFunction("EmptyBinaryRelation");
 #F  AsBinaryRelationOnPoints( <perm> )
 #F  AsBinaryRelationOnPoints( <rel> )
 ##
-##  return the relation on points  represented  by  general  relation  <rel>,
-##  transformation <trans> or permutation  <perm>.  If  <rel>  is  already  a
-##  binary relation on points then <rel> is returned.
+##  <#GAPDoc Label="AsBinaryRelationOnPoints">
+##  <ManSection>
+##  <Heading>AsBinaryRelationOnPoints</Heading>
+##  <Heading>AsBinaryRelationOnPoints</Heading>
+##  <Func Name="AsBinaryRelationOnPoints" Arg='trans'
+##   Label="for a transformation"/>
+##  <Func Name="AsBinaryRelationOnPoints" Arg='perm'
+##   Label="for a permutation"/>
+##  <Func Name="AsBinaryRelationOnPoints" Arg='rel'
+##   Label="for a binary relation"/>
 ##
-##  Transformations and permutations are special general endomorphic 
+##  <Description>
+##  return the relation on points represented by general relation <A>rel</A>,
+##  transformation <A>trans</A> or permutation <A>perm</A>.
+##  If <A>rel</A> is already a binary relation on points then <A>rel</A> is
+##  returned.
+##  <P/>
+##  Transformations and permutations are special general endomorphic
 ##  mappings and have a natural representation as a binary relation on
-##  points. 
-##  
+##  points.
+##  <P/>
 ##  In the last form, an isomorphic relation on points is constructed
 ##  where the points are indices of the elements of the underlying domain
 ##  in sorted order.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("AsBinaryRelationOnPoints");
 
@@ -148,25 +227,44 @@ DeclareGlobalFunction("AsBinaryRelationOnPoints");
 ##
 #A  Successors( <R> )
 ##
-##  returns the list of images of a binary relation <R>.  If  the  underlying
-##  domain of the relation is not `[1..<n>]' for some positive  integer  <n>,
-##  then an error is signalled.
+##  <#GAPDoc Label="Successors">
+##  <ManSection>
+##  <Attr Name="Successors" Arg='R'/>
 ##
-##  The returned value of `Successors' is a list of lists where the lists are
-##  ordered as the elements according to the sorted order of  the  underlying
-##  set of <R>. Each list consists of the images of the element  whose  index
-##  is the same as the list with the underlying set in sorted order.
-##
-##  The `Successors' of a relation is the adjacency list representation
-##  of the relation. 
+##  <Description>
+##  returns the list of images of a binary relation <A>R</A>.
+##  If the underlying domain of the relation is not <M>\{ 1, \ldots, n \}</M>,
+##  for some positive integer <M>n</M>, then an error is signalled.
+##  <P/>
+##  The returned value of <Ref Func="Successors"/> is a list of lists where
+##  the lists are ordered as the elements according to the sorted order of
+##  the underlying set of <A>R</A>.
+##  Each list consists of the images of the element whose index is the same
+##  as the list with the underlying set in sorted order.
+##  <P/>
+##  The <Ref Func="Successors"/> of a relation is the adjacency list
+##  representation of the relation.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("Successors", IsBinaryRelation);
 
 ###############################################################################
+##
 #A  DegreeOfBinaryRelation(<R>)
 ##
-##  returns the size of the underlying domain of  the  binary  relation  <R>.
+##  <#GAPDoc Label="DegreeOfBinaryRelation">
+##  <ManSection>
+##  <Attr Name="DegreeOfBinaryRelation" Arg='R'/>
+##
+##  <Description>
+##  returns the size of the underlying domain of the binary relation
+##  <A>R</A>.
 ##  This is most natural when working with a binary relation on points.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("DegreeOfBinaryRelation", IsBinaryRelation);
 
@@ -174,32 +272,46 @@ DeclareAttribute("DegreeOfBinaryRelation", IsBinaryRelation);
 ##
 #A  UnderlyingDomainOfBinaryRelation(<R>)
 ##
-##  is a synonym for the `Source' (see~"Source") of the relation <R> when
-##  considered as a general mapping.
+##  <ManSection>
+##  <Attr Name="UnderlyingDomainOfBinaryRelation" Arg='R'/>
+##
+##  <Description>
+##  is a synonym for <Ref Func="Source"/>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonym("UnderlyingDomainOfBinaryRelation",Source);
 
 #############################################################################
 ##
-##  Properties of binary relations.  
+##  Properties of binary relations.
 ##
 #############################################################################
 
 #############################################################################
 ##
 #P  IsReflexiveBinaryRelation(<R>)
-##  
-##  returns `true' if the binary relation <R> is reflexive, and `false'
-##  otherwise.
 ##
-##  \index{reflexive relation}
-##  A binary relation <R> (as tuples) on a set <X> is *reflexive* if
-##  for all $x\in X$, $(x,x)\in R$. Alternatively, <R> as a mapping
-##  is reflexive if for all $x\in X$, $x$ is an element of the image set
-##  $R(x)$.   
+##  <#GAPDoc Label="IsReflexiveBinaryRelation">
+##  <ManSection>
+##  <Prop Name="IsReflexiveBinaryRelation" Arg='R'/>
 ##
-##  A reflexive binary relation is necessarily a total endomorphic 
-##  mapping (tested via `IsTotal'; see~"IsTotal").
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>R</A> is reflexive,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>reflexive relation</Index>
+##  A binary relation <M>R</M> (as a set of pairs) on a set <M>X</M> is
+##  <E>reflexive</E> if for all <M>x \in X</M>, <M>(x,x) \in R</M>.
+##  Alternatively, <M>R</M> as a mapping
+##  is reflexive if for all <M>x \in X</M>,
+##  <M>x</M> is an element of the image set <M>R(x)</M>.
+##  <P/>
+##  A reflexive binary relation is necessarily a total endomorphic
+##  mapping (tested via <Ref Func="IsTotal"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsReflexiveBinaryRelation", IsBinaryRelation);
 
@@ -207,14 +319,23 @@ DeclareProperty("IsReflexiveBinaryRelation", IsBinaryRelation);
 ##
 #P  IsSymmetricBinaryRelation(<R>)
 ##
-##  returns `true' if the binary relation <R> is symmetric, and `false'
-##  otherwise.
+##  <#GAPDoc Label="IsSymmetricBinaryRelation">
+##  <ManSection>
+##  <Prop Name="IsSymmetricBinaryRelation" Arg='R'/>
 ##
-##  \index{symmetric relation}
-##  A binary relation <R> (as tuples) on a set <X> is *symmetric* if
-##  $(x,y)\in R$ then $(y,x)\in R$. Alternatively, <R> as a mapping
-##  is symmetric if for all $x\in X$, the preimage set of $x$ under $R$ equals
-##  the image set $R(x)$.
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>R</A> is symmetric,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>symmetric relation</Index>
+##  A binary relation <M>R</M> (as a set of pairs) on a set <M>X</M> is
+##  <E>symmetric</E> if <M>(x,y) \in R</M> then <M>(y,x) \in R</M>.
+##  Alternatively, <M>R</M> as a mapping is symmetric
+##  if for all <M>x \in X</M>, the preimage set of <M>x</M> under <M>R</M>
+##  equals the image set <M>R(x)</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsSymmetricBinaryRelation", IsBinaryRelation);
 
@@ -222,30 +343,48 @@ DeclareProperty("IsSymmetricBinaryRelation", IsBinaryRelation);
 ##
 #P  IsTransitiveBinaryRelation(<R>)
 ##
-##  returns `true' if the binary relation <R> is transitive, and `false'
-##  otherwise.
+##  <#GAPDoc Label="IsTransitiveBinaryRelation">
+##  <ManSection>
+##  <Prop Name="IsTransitiveBinaryRelation" Arg='R'/>
 ##
-##  \index{transitive relation}
-##  A binary relation <R> (as tuples) on a set <X> is *transitive* if
-##  $(x,y), (y,z)\in R$ then $(x,z)\in R$. Alternatively, <R> as a mapping
-##  is transitive if for all $x\in X$, the image set $R(R(x))$ of the image 
-##  set $R(x)$ of $x$ is a subset of $R(x)$.
-##   
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>R</A> is transitive,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>transitive relation</Index>
+##  A binary relation <A>R</A> (as a set of pairs) on a set <M>X</M> is
+##  <E>transitive</E> if <M>(x,y), (y,z) \in R</M> implies
+##  <M>(x,z) \in R</M>.
+##  Alternatively, <M>R</M> as a mapping is transitive if for all
+##  <M>x \in X</M>, the image set <M>R(R(x))</M> of the image
+##  set <M>R(x)</M> of <M>x</M> is a subset of <M>R(x)</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty("IsTransitiveBinaryRelation", IsBinaryRelation);
 
 #############################################################################
 ##
 #P  IsAntisymmetricBinaryRelation(<rel>)
 ##
-##  returns `true' if the binary relation <rel> is antisymmetric, and `false'
-##  otherwise.
+##  <#GAPDoc Label="IsAntisymmetricBinaryRelation">
+##  <ManSection>
+##  <Prop Name="IsAntisymmetricBinaryRelation" Arg='rel'/>
 ##
-##  \index{antisymmetric relation}
-##  A binary relation <R> (as tuples) on a set <X> is *antisymmetric* if
-##  $(x,y), (y,x)\in R$ implies $x = y$. Alternatively, <R> as a mapping
-##  is antisymmetric if for all $x\in X$, the intersection of the
-##  preimage set of $x$ under $R$ and
-##  the image set $R(x)$ is $\{x\}$.
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>rel</A> is antisymmetric,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>antisymmetric relation</Index>
+##  A binary relation <A>R</A> (as a set of pairs) on a set <M>X</M> is
+##  <E>antisymmetric</E> if <M>(x,y), (y,x) \in R</M> implies <M>x = y</M>.
+##  Alternatively, <M>R</M> as a mapping is antisymmetric if for all
+##  <M>x \in X</M>, the intersection of the preimage set of <M>x</M>
+##  under <M>R</M> and the image set <M>R(x)</M> is <M>\{ x \}</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsAntisymmetricBinaryRelation",IsBinaryRelation);
 
@@ -253,11 +392,20 @@ DeclareProperty("IsAntisymmetricBinaryRelation",IsBinaryRelation);
 ##
 #P  IsPreOrderBinaryRelation(<rel>)
 ##
-##  returns `true' if the binary relation <rel> is a preorder, and `false'
-##  otherwise.
+##  <#GAPDoc Label="IsPreOrderBinaryRelation">
+##  <ManSection>
+##  <Prop Name="IsPreOrderBinaryRelation" Arg='rel'/>
 ##
-##  \index{preorder}
-##  A *preorder* is a binary relation that is both reflexive and transitive.
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>rel</A> is a preorder,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>preorder</Index>
+##  A <E>preorder</E> is a binary relation that is both reflexive and
+##  transitive.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsPreOrderBinaryRelation",IsBinaryRelation);
 
@@ -265,15 +413,23 @@ DeclareProperty("IsPreOrderBinaryRelation",IsBinaryRelation);
 ##
 #P  IsPartialOrderBinaryRelation(<rel>)
 ##
-##  returns `true' if the binary relation  <rel>  is  a  partial  order,  and
-##  `false' otherwise.
+##  <#GAPDoc Label="IsPartialOrderBinaryRelation">
+##  <ManSection>
+##  <Prop Name="IsPartialOrderBinaryRelation" Arg='rel'/>
 ##
-##  \index{partial order}
-##  A *partial order* is a preorder which is also antisymmetric.
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>rel</A> is a partial order,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>partial order</Index>
+##  A <E>partial order</E> is a preorder which is also antisymmetric.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsPartialOrderBinaryRelation",IsBinaryRelation);
-##
-InstallTrueMethod(IsPreOrderBinaryRelation, IsReflexiveBinaryRelation and 
+
+InstallTrueMethod(IsPreOrderBinaryRelation, IsReflexiveBinaryRelation and
     IsTransitiveBinaryRelation);
 InstallTrueMethod(IsPartialOrderBinaryRelation, IsPreOrderBinaryRelation and
     IsAntisymmetricBinaryRelation);
@@ -283,15 +439,21 @@ InstallTrueMethod(IsTotal, IsReflexiveBinaryRelation);
 ##
 #P  IsLatticeOrderBinaryRelation(<rel>)
 ##
-##  return 'true' if the binary relation is a lattice order, and false
-##  otherwise.
+##  <ManSection>
+##  <Prop Name="IsLatticeOrderBinaryRelation" Arg='rel'/>
 ##
-##  \index{lattice order}
-##  A *lattice order* is a partial order in which each pair of elements
+##  <Description>
+##  return <K>true</K> if the binary relation is a lattice order,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>lattice order</Index>
+##  A <E>lattice order</E> is a partial order in which each pair of elements
 ##  has a greatest lower bound and a least upper bound.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty("IsLatticeOrderBinaryRelation",IsBinaryRelation);
-##
+
 InstallTrueMethod(IsPartialOrderBinaryRelation, IsLatticeOrderBinaryRelation);
 
 ############################################################################
@@ -304,21 +466,29 @@ InstallTrueMethod(IsPartialOrderBinaryRelation, IsLatticeOrderBinaryRelation);
 ##
 #P  IsEquivalenceRelation( <R> )
 ##
-##  returns `true' if the binary relation <R> is an equivalence relation, and
-##  `false' otherwise.
+##  <#GAPDoc Label="IsEquivalenceRelation">
+##  <ManSection>
+##  <Prop Name="IsEquivalenceRelation" Arg='R'/>
 ##
-##  \index{equivalence relation}
-##  Recall, that a relation <R> on the set <X> is an  *equivalence  relation*
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>R</A> is an equivalence
+##  relation, and <K>false</K> otherwise.
+##  <P/>
+##  <Index>equivalence relation</Index>
+##  Recall, that a relation <A>R</A> is an <E>equivalence relation</E>
 ##  if it is symmetric, transitive, and reflexive.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareProperty("IsEquivalenceRelation", IsBinaryRelation); 
+DeclareProperty("IsEquivalenceRelation", IsBinaryRelation);
 
 InstallTrueMethod(IsBinaryRelation, IsEquivalenceRelation);
 InstallTrueMethod(IsReflexiveBinaryRelation, IsEquivalenceRelation);
 InstallTrueMethod(IsTransitiveBinaryRelation, IsEquivalenceRelation);
 InstallTrueMethod(IsSymmetricBinaryRelation, IsEquivalenceRelation);
-InstallTrueMethod(IsEquivalenceRelation, 
-    IsReflexiveBinaryRelation and 
+InstallTrueMethod(IsEquivalenceRelation,
+    IsReflexiveBinaryRelation and
     IsTransitiveBinaryRelation and IsSymmetricBinaryRelation);
 
 #############################################################################
@@ -329,12 +499,22 @@ InstallTrueMethod(IsEquivalenceRelation,
 
 #############################################################################
 ##
-#O  ReflexiveClosureBinaryRelation( <R> )                      
+#O  ReflexiveClosureBinaryRelation( <R> )
 ##
-##  is the smallest binary relation containing the binary relation <R>  which
-##  is  reflexive.  This  closure  inherents  the  properties  symmetric  and
-##  transitive from <R>. E.g. if <R> is symmetric then its reflexive  closure
+##  <#GAPDoc Label="ReflexiveClosureBinaryRelation">
+##  <ManSection>
+##  <Oper Name="ReflexiveClosureBinaryRelation" Arg='R'/>
+##
+##  <Description>
+##  is the smallest binary relation containing the binary relation <A>R</A>
+##  which is reflexive.
+##  This closure inherents the properties symmetric and transitive from
+##  <A>R</A>.
+##  E.g., if <A>R</A> is symmetric then its reflexive closure
 ##  is also.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("ReflexiveClosureBinaryRelation", [IsBinaryRelation]);
 
@@ -342,10 +522,19 @@ DeclareOperation("ReflexiveClosureBinaryRelation", [IsBinaryRelation]);
 ##
 #O  SymmetricClosureBinaryRelation( <R> )
 ##
-##  is the smallest binary relation containing the binary relation <R>  which
-##  is  symmetric.  This  closure  inherents  the  properties  reflexive  and
-##  transitive from <R>. E.g. if <R> is reflexive then its symmetric  closure
-##  is also.
+##  <#GAPDoc Label="SymmetricClosureBinaryRelation">
+##  <ManSection>
+##  <Oper Name="SymmetricClosureBinaryRelation" Arg='R'/>
+##
+##  <Description>
+##  is the smallest binary relation containing the binary relation <A>R</A>
+##  which is symmetric.
+##  This closure inherents the properties reflexive and transitive from
+##  <A>R</A>.
+##  E.g., if <A>R</A> is reflexive then its symmetric closure is also.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("SymmetricClosureBinaryRelation", [IsBinaryRelation]);
 
@@ -353,16 +542,27 @@ DeclareOperation("SymmetricClosureBinaryRelation", [IsBinaryRelation]);
 ##
 #O  TransitiveClosureBinaryRelation( <rel> )
 ##
-##  is the smallest binary relation containing the binary relation <R>  which
-##  is  transitive.  This  closure  inerents  the  properties  reflexive  and
-##  symmetric from <R>. E.g. if <R> is symmetric then its transitive  closure
-##  is also.
+##  <#GAPDoc Label="TransitiveClosureBinaryRelation">
+##  <ManSection>
+##  <Oper Name="TransitiveClosureBinaryRelation" Arg='rel'/>
 ##
-##  `TransitiveClosureBinaryRelation' is a modified version of the 
-##  Floyd-Warshall method of solving the all-pairs shortest-paths problem 
-##  on a directed graph. Its asymptotic runtime is $O(n^3)$ where n is 
-##  the size of the vertex set. It only assumes there is an arbitrary 
-##  (but fixed) ordering of the vertex set. 
+##  <Description>
+##  is the smallest binary relation containing the binary relation <A>R</A>
+##  which is transitive.
+##  This closure inherents the properties reflexive and symmetric from
+##  <A>R</A>.
+##  E.g., if <A>R</A> is symmetric then its transitive closure is also.
+##  <P/>
+##  <Ref Func="TransitiveClosureBinaryRelation"/> is a modified version of
+##  the Floyd-Warshall method of solving the all-pairs shortest-paths problem
+##  on a directed graph.
+##  Its asymptotic runtime is <M>O(n^3)</M> where <M>n</M> is the size of the
+##  vertex set.
+##  It only assumes there is an arbitrary (but fixed) ordering of the vertex
+##  set.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("TransitiveClosureBinaryRelation", [IsBinaryRelation]);
 
@@ -370,8 +570,17 @@ DeclareOperation("TransitiveClosureBinaryRelation", [IsBinaryRelation]);
 ##
 #O  HasseDiagramBinaryRelation(<partial-order>)
 ##
-##  is the smallest relation contained in the partial  order  <partial-order>
-##  whose reflexive and transitive closure is equal to <partial-order>.
+##  <#GAPDoc Label="HasseDiagramBinaryRelation">
+##  <ManSection>
+##  <Oper Name="HasseDiagramBinaryRelation" Arg='partial-order'/>
+##
+##  <Description>
+##  is the smallest relation contained in the partial order
+##  <A>partial-order</A> whose reflexive and transitive closure is equal to
+##  <A>partial-order</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("HasseDiagramBinaryRelation", [IsBinaryRelation]);
 
@@ -379,9 +588,17 @@ DeclareOperation("HasseDiagramBinaryRelation", [IsBinaryRelation]);
 ##
 #P  IsHasseDiagram(<rel>)
 ##
-##  returns `true' if the binary relation <rel>  is  a  Hasse  Diagram  of  a
-##  partial  order,  i.e.  was  computed   via   `HasseDiagramBinaryRelation'
-##  (see~"HasseDiagramBinaryRelation").
+##  <#GAPDoc Label="IsHasseDiagram">
+##  <ManSection>
+##  <Prop Name="IsHasseDiagram" Arg='rel'/>
+##
+##  <Description>
+##  returns <K>true</K> if the binary relation <A>rel</A> is a Hasse Diagram
+##  of a partial order, i.e., was computed via
+##  <Ref Func="HasseDiagramBinaryRelation"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsHasseDiagram", IsBinaryRelation);
 
@@ -389,9 +606,17 @@ DeclareProperty("IsHasseDiagram", IsBinaryRelation);
 ##
 #A  PartialOrderOfHasseDiagram(<HD>)
 ##
-##  is the partial order associated with the Hasse Diagram <HD> 
-##  i.e. the partial order generated by the reflexive and 
-##  transitive closure of <HD>. 
+##  <#GAPDoc Label="PartialOrderOfHasseDiagram">
+##  <ManSection>
+##  <Attr Name="PartialOrderOfHasseDiagram" Arg='HD'/>
+##
+##  <Description>
+##  is the partial order associated with the Hasse Diagram <A>HD</A>
+##  i.e. the partial order generated by the reflexive and
+##  transitive closure of <A>HD</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("PartialOrderOfHasseDiagram",IsBinaryRelation);
 
@@ -399,11 +624,20 @@ DeclareAttribute("PartialOrderOfHasseDiagram",IsBinaryRelation);
 ##
 #F  PartialOrderByOrderingFunction(<dom>, <orderfunc>)
 ##
-##  constructs a partial order whose elements are from the domain <dom>
-##  and are ordered using the ordering function <orderfunc>. The ordering
-##  function must be a binary function returning a boolean value. If the 
-##  ordering function does not describe a partial order then `fail' is
-##  returned.
+##  <#GAPDoc Label="PartialOrderByOrderingFunction">
+##  <ManSection>
+##  <Func Name="PartialOrderByOrderingFunction" Arg='dom, orderfunc'/>
+##
+##  <Description>
+##  constructs a partial order whose elements are from the domain <A>dom</A>
+##  and are ordered using the ordering function <A>orderfunc</A>.
+##  The ordering function must be a binary function returning a boolean
+##  value.
+##  If the ordering function does not describe a partial order then
+##  <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("PartialOrderByOrderingFunction");
 
@@ -411,8 +645,16 @@ DeclareGlobalFunction("PartialOrderByOrderingFunction");
 ##
 #O  StronglyConnectedComponents(<R>)
 ##
-##  returns an equivalence relation on the vertices of  the  binary  relation
-##  <R>.
+##  <#GAPDoc Label="StronglyConnectedComponents">
+##  <ManSection>
+##  <Oper Name="StronglyConnectedComponents" Arg='R'/>
+##
+##  <Description>
+##  returns an equivalence relation on the vertices of the binary relation
+##  <A>R</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("StronglyConnectedComponents", [IsBinaryRelation]);
 
@@ -428,21 +670,38 @@ DeclareOperation("\-", [IsBinaryRelation, IsBinaryRelation]);
 ##
 #A  EquivalenceRelationPartition(<equiv>)
 ##
-##  returns a list of lists of elements 
-##  of the underlying set of the equivalence relation <equiv>.
+##  <#GAPDoc Label="EquivalenceRelationPartition">
+##  <ManSection>
+##  <Attr Name="EquivalenceRelationPartition" Arg='equiv'/>
+##
+##  <Description>
+##  returns a list of lists of elements
+##  of the underlying set of the equivalence relation <A>equiv</A>.
 ##  The lists are precisely the nonsingleton equivalence classes of the
 ##  equivalence.
-##  This allows us to describe ``small'' equivalences on infinite sets.
+##  This allows us to describe <Q>small</Q> equivalences on infinite sets.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("EquivalenceRelationPartition", IsEquivalenceRelation);
 
 #############################################################################
 ##
 #A  GeneratorsOfEquivalenceRelationPartition(<equiv>)
-##  
-##  is a set of generating pairs for the equivalence relation  <equiv>.  This
-##  set is not unique. The equivalence <equiv> is  the  smallest  equivalence
-##  relation over the underlying set <X> which contains the generating pairs.
+##
+##  <#GAPDoc Label="GeneratorsOfEquivalenceRelationPartition">
+##  <ManSection>
+##  <Attr Name="GeneratorsOfEquivalenceRelationPartition" Arg='equiv'/>
+##
+##  <Description>
+##  is a set of generating pairs for the equivalence relation <A>equiv</A>.
+##  This set is not unique.
+##  The equivalence <A>equiv</A> is the smallest equivalence relation over
+##  the underlying set which contains the generating pairs.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("GeneratorsOfEquivalenceRelationPartition",
     IsEquivalenceRelation);
@@ -452,27 +711,37 @@ DeclareAttribute("GeneratorsOfEquivalenceRelationPartition",
 #F  EquivalenceRelationByPartition( <domain>, <list> )
 #F  EquivalenceRelationByPartitionNC( <domain>, <list> )
 ##
-##  constructs the equivalence relation over the set <domain>
-##  which induces the partition represented by <list>. 
-##  This representation includes only the non-trivial blocks 
-##  (or equivalent classes). <list> is a list of lists,
-##  each of these lists contain elements of <domain> and are 
-##  pairwise mutually exclusive.
+##  <#GAPDoc Label="EquivalenceRelationByPartition">
+##  <ManSection>
+##  <Func Name="EquivalenceRelationByPartition" Arg='domain, list'/>
+##  <Func Name="EquivalenceRelationByPartitionNC" Arg='domain, list'/>
 ##
-##  The list of lists do not need to be in any order nor do the 
-##  elements in the blocks (see `EquivalenceRelationPartition').
-##  a list of elements of <domain>
-##  The partition <list> is a 
-##  list of lists, each of these is a list of elements of <domain>
-##  that makes up a block (or equivalent class). The 
-##  <domain> is the domain over which the relation is defined, and 
-##  <list> is a list of lists, each of these is a list of elements
-##  of <domain> which are related to each other.
-##  <list> need only contain the nontrivial blocks 
-##  and singletons will be ignored. The NC version will not check
+##  <Description>
+##  constructs the equivalence relation over the set <A>domain</A>
+##  which induces the partition represented by <A>list</A>.
+##  This representation includes only the non-trivial blocks
+##  (or equivalent classes). <A>list</A> is a list of lists,
+##  each of these lists contain elements of <A>domain</A> and are
+##  pairwise mutually exclusive.
+##  <P/>
+##  The list of lists do not need to be in any order nor do the
+##  elements in the blocks
+##  (see <Ref Func="EquivalenceRelationPartition"/>).
+##  a list of elements of <A>domain</A>
+##  The partition <A>list</A> is a
+##  list of lists, each of these is a list of elements of <A>domain</A>
+##  that makes up a block (or equivalent class). The
+##  <A>domain</A> is the domain over which the relation is defined, and
+##  <A>list</A> is a list of lists, each of these is a list of elements
+##  of <A>domain</A> which are related to each other.
+##  <A>list</A> need only contain the nontrivial blocks
+##  and singletons will be ignored. The <C>NC</C> version will not check
 ##  to see if the lists are pairwise mutually exclusive or that
 ##  they contain only elements of the domain.
-## 
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("EquivalenceRelationByPartition");
 DeclareGlobalFunction("EquivalenceRelationByPartitionNC");
 
@@ -480,17 +749,33 @@ DeclareGlobalFunction("EquivalenceRelationByPartitionNC");
 ##
 #F  EquivalenceRelationByProperty( <domain>, <property> )
 ##
-##  creates an equivalence relation on <domain> whose only defining
-##  datum is that of having the property <property>.
-## 
+##  <#GAPDoc Label="EquivalenceRelationByProperty">
+##  <ManSection>
+##  <Func Name="EquivalenceRelationByProperty" Arg='domain, property'/>
+##
+##  <Description>
+##  creates an equivalence relation on <A>domain</A> whose only defining
+##  datum is that of having the property <A>property</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("EquivalenceRelationByProperty");
 
 #############################################################################
 ##
 #F  EquivalenceRelationByRelation( <rel> )
 ##
-##  returns the smallest equivalence 
-##  relation containing the binary relation <rel>.
+##  <#GAPDoc Label="EquivalenceRelationByRelation">
+##  <ManSection>
+##  <Func Name="EquivalenceRelationByRelation" Arg='rel'/>
+##
+##  <Description>
+##  returns the smallest equivalence
+##  relation containing the binary relation <A>rel</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("EquivalenceRelationByRelation");
 
@@ -500,74 +785,121 @@ DeclareGlobalFunction("EquivalenceRelationByRelation");
 ##
 ##  EquivalenceRelationByFunction( <X>, <function> )
 ##
-##  EquivalenceRelationByFunction - the function goes from 
+##  EquivalenceRelationByFunction - the function goes from
 ##  $X  \times X \rightarrow $ {<true>, <false>}.
 
 #############################################################################
 ##
-#O  JoinEquivalenceRelations( <equiv1>,<equiv2> )
-#O  MeetEquivalenceRelations( <equiv1>,<equiv2> )
+#O  JoinEquivalenceRelations( <equiv1>, <equiv2> )
+#O  MeetEquivalenceRelations( <equiv1>, <equiv2> )
 ##
-##  `JoinEquivalenceRelations(<equiv1>,<equiv2>)' returns the smallest
+##  <#GAPDoc Label="JoinEquivalenceRelations">
+##  <ManSection>
+##  <Oper Name="JoinEquivalenceRelations" Arg='equiv1, equiv2'/>
+##  <Oper Name="MeetEquivalenceRelations" Arg='equiv1, equiv2'/>
+##
+##  <Description>
+##  <Ref Func="JoinEquivalenceRelations"/> returns the smallest
 ##  equivalence relation containing both the equivalence relations
-##  <equiv1> and <equiv2>.
+##  <A>equiv1</A> and <A>equiv2</A>.
+##  <P/>
+##  <Ref Func="MeetEquivalenceRelations"/> returns the
+##  intersection of the two equivalence relations
+##  <A>equiv1</A> and <A>equiv2</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  `MeetEquivalenceRelations( <equiv1>,<equiv2> )' returns the 
-##  intersection of the two equivalence relations <equiv1> and <equiv2>.
-##
-DeclareOperation("JoinEquivalenceRelations", 
+DeclareOperation("JoinEquivalenceRelations",
     [IsEquivalenceRelation,IsEquivalenceRelation]);
-DeclareOperation("MeetEquivalenceRelations", 
+DeclareOperation("MeetEquivalenceRelations",
     [IsEquivalenceRelation,IsEquivalenceRelation]);
 
 #############################################################################
 ##
-#C  IsEquivalenceClass( <O> ) 
+#C  IsEquivalenceClass( <obj> )
 ##
-##  returns `true' if the object <O> is an equivalence class, and `false'
-##  otherwise.
+##  <#GAPDoc Label="IsEquivalenceClass">
+##  <ManSection>
+##  <Filt Name="IsEquivalenceClass" Arg='obj' Type='Category'/>
 ##
-##  \index{equivalence class}
-##  An *equivalence class* is a collection of elements which are mutually
-##  related to each other in the associated equivalence relation. Note,
-##  this is a special category of object and not just a list of elements.
+##  <Description>
+##  returns <K>true</K> if the object <A>obj</A> is an equivalence class,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  <Index>equivalence class</Index>
+##  An <E>equivalence class</E> is a collection of elements which are mutually
+##  related to each other in the associated equivalence relation.
+##  Note, this is a special category of objects
+##  and not just a list of elements.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareCategory("IsEquivalenceClass",IsDomain and IsDuplicateFreeCollection); 
+DeclareCategory("IsEquivalenceClass",IsDomain and IsDuplicateFreeCollection);
 
 #############################################################################
 ##
-#A  EquivalenceClassRelation(<C>) 
+#A  EquivalenceClassRelation(<C>)
 ##
-##  returns the equivalence relation of which <C> is a class.
+##  <#GAPDoc Label="EquivalenceClassRelation">
+##  <ManSection>
+##  <Attr Name="EquivalenceClassRelation" Arg='C'/>
+##
+##  <Description>
+##  returns the equivalence relation of which <A>C</A> is a class.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("EquivalenceClassRelation", IsEquivalenceClass);
 
 #############################################################################
 ##
-#A  EquivalenceClasses(<rel>) 
+#A  EquivalenceClasses(<rel>)
 ##
-##  returns a list of all equivalence classes of the equivalence relation <rel>.
+##  <#GAPDoc Label="EquivalenceClasses">
+##  <ManSection>
+##  <Attr Name="EquivalenceClasses" Arg='rel' Label="attribute"/>
+##
+##  <Description>
+##  returns a list of all equivalence classes of the equivalence relation
+##  <A>rel</A>.
 ##  Note that it is possible for different methods to yield the list
 ##  in different orders, so that for two equivalence relations
-##  $c1$ and $c2$ we may have $c1 = c2$ without having
-##  $`EquivalenceClasses'( c1 ) = `EquivalenceClasses'( c2 )$.
+##  <M>c1</M> and <M>c2</M> we may have <M>c1 = c2</M> without having
+##  <C>EquivalenceClasses</C><M>( c1 ) =
+##  </M><C>EquivalenceClasses</C><M>( c2 )</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("EquivalenceClasses", IsEquivalenceRelation);
 
 #############################################################################
 ##
-#O  EquivalenceClassOfElement(<rel>,<elt>)
-#O  EquivalenceClassOfElementNC(<rel>,<elt>)
+#O  EquivalenceClassOfElement( <rel>, <elt> )
+#O  EquivalenceClassOfElementNC( <rel>, <elt> )
 ##
-##  return the equivalence class of <elt> in the binary relation <rel>,
-##  where <elt> is an element (i.e. a pair) of the domain of <rel>. 
-##  In the second form, it is not checked that <elt> is in the domain 
-##  over which <rel> is defined.
+##  <#GAPDoc Label="EquivalenceClassOfElement">
+##  <ManSection>
+##  <Oper Name="EquivalenceClassOfElement" Arg='rel, elt'/>
+##  <Oper Name="EquivalenceClassOfElementNC" Arg='rel, elt'/>
 ##
-DeclareOperation("EquivalenceClassOfElement", 
+##  <Description>
+##  return the equivalence class of <A>elt</A> in the binary relation
+##  <A>rel</A>,
+##  where <A>elt</A> is an element (i.e. a pair) of the domain of <A>rel</A>.
+##  In the <C>NC</C> form, it is not checked that <A>elt</A> is in the domain
+##  over which <A>rel</A> is defined.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("EquivalenceClassOfElement",
     [IsEquivalenceRelation, IsObject]);
 
-DeclareOperation("EquivalenceClassOfElementNC", 
+DeclareOperation("EquivalenceClassOfElementNC",
     [IsEquivalenceRelation, IsObject]);
 
 #############################################################################
@@ -575,15 +907,27 @@ DeclareOperation("EquivalenceClassOfElementNC",
 #F  EquivalenceRelationByPairs( <D>, <elms> )
 #F  EquivalenceRelationByPairsNC( <D>, <elms> )
 ##
-##  return the smallest equivalence relation
-##  on the domain <D> such that every pair in <elms>
-##  is in the relation.
+##  <#GAPDoc Label="EquivalenceRelationByPairs">
+##  <ManSection>
+##  <Func Name="EquivalenceRelationByPairs" Arg='D, elms'/>
+##  <Func Name="EquivalenceRelationByPairsNC" Arg='D, elms'/>
 ##
-##  In the second form, it is not checked that <elms> are in the domain <D>.
+##  <Description>
+##  return the smallest equivalence relation
+##  on the domain <A>D</A> such that every pair in <A>elms</A>
+##  is in the relation.
+##  <P/>
+##  In the <C>NC</C> form, it is not checked that <A>elms</A> are in the
+##  domain <A>D</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("EquivalenceRelationByPairs");
 DeclareGlobalFunction("EquivalenceRelationByPairsNC");
 
+
 #############################################################################
-#E
 ##
+#E
+

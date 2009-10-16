@@ -3,7 +3,7 @@
 #W  rss.gd			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rss.gd,v 4.4 2002/04/15 10:05:15 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  Exports: functions RandomSchreierSims and ChangedBaseGroup
 ##
 Revision.rss_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: rss.gd,v 4.4 2002/04/15 10:05:15 sal Exp $";
 
 DeclareInfoClass( "InfoRSS" );
 

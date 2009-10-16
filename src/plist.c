@@ -2,7 +2,7 @@
 **
 *W  plist.c                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: plist.c,v 4.82 2007/12/05 16:05:44 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -38,7 +38,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_plist_c =
-   "@(#)$Id$";
+   "@(#)$Id: plist.c,v 4.82 2007/12/05 16:05:44 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -2336,6 +2336,12 @@ Int             IsSSortPlistYes (
     return 2L;
 }
 
+Obj FuncSetIsSSortedPlist (Obj self, Obj list)
+{
+  SET_FILT_LIST(list, FN_IS_SSORT);
+  return (Obj)0;
+}
+
 
 /****************************************************************************
 **
@@ -4382,6 +4388,9 @@ static StructGVarFunc GVarFuncs [] = {
     
     { "IsRectangularTablePlist", 1, "plist",
       FuncIsRectangularTablePlist, "src/lists.c:IsRectangularTablePlist" },
+
+    { "SET_IS_SSORTED_PLIST", 1, "list",
+      FuncSetIsSSortedPlist, "src/lists.c:SET_IS_SSORTED_PLIST" },
     
     { "EmptyPlist", 1, "len",
       FuncEmptyPlist, "src/lists.c:FuncEmptyPlist" },

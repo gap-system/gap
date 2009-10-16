@@ -1,0 +1,1 @@
+desauto -matrix $*

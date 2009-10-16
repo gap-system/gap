@@ -1,0 +1,287 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  messages.tex        ACE appendix - messages          Alexander Hulpke
+%W                                                      Joachim Neub"user
+%W                                                            Greg Gamble
+%%
+%H  $Id: messages.tex,v 1.12 2006/01/26 16:15:05 gap Exp $
+%%
+%Y  Copyright (C) 2000  Centre for Discrete Mathematics and Computing
+%Y                      Department of Information Tech. & Electrical Eng.
+%Y                      University of Queensland, Australia.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The Meanings of ACE's output messages}
+
+In this chapter, we discuss the meanings of the messages  that  appear
+in output from the {\ACE} binary, the verbosity of which is determined
+by the `messages' option (see~"option  messages").  Actually  our  aim
+here is to concentrate  on  describing  those  ``messages''  that  are
+controlled  by  the  `messages'  option,  namely  the  *progress*  and
+*results   messages*;   other   output   from   {\ACE}    is    fairly
+self-explanatory. (We describe some other output  to  give  points  of
+reference.)
+
+Both interactively and non-interactively, {\ACE} output  is  `Info'-ed
+at `InfoACE' level 3. To see the  `Info'-ed  {\ACE}  output,  set  the
+`InfoLevel' of `InfoACE' to at least 3, e.g.
+
+\beginexample
+gap> SetInfoACELevel(3);
+\endexample
+
+This  causes  each  line  of  {\ACE}  output  to  be  prepended   with
+```\#I  '''.  Below,  we describe the `Info'-ed output  observed  when
+each of `ACECosetTableFromGensAndRels', `ACECosetTable', `ACEStats' or
+`ACEStart' is called with three arguments, and presume that users will
+be able to extend the description  to  explain  output  observed  from
+other  {\ACE}  interface  functions.  The  first-observed  (`Info'-ed)
+output from {\ACE}, is {\ACE}'s banner, e.g.
+
+\begintt
+#I  ACE 3.001        Sun Sep 30 21:45:39 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+\endtt
+
+If there were any errors in the directives put to  {\ACE},  or  output
+from the options described in Appendix~"Other ACE Options", they  will
+appear next. Then,  the  next  observed  output  is  a  row  of  three
+asterisks:
+
+\begintt
+#I  ***
+\endtt
+
+*Guru note:*
+The three asterisks are generated  by  a  ```text:***'''  (see~"option
+text") directive, emitted to {\ACE}, so that {\ACE}'s response can  be
+used as a sentinel to flush out any user errors, or any output from  a
+user's use of Appendix~"Other ACE Options" options.
+
+Next, if the `messages' option (see~"option messages")  is  set  to  a
+non-zero value, what is observed is a heading like:
+
+\begintt
+#I    #--- ACE 3.001: Run Parameters ---
+\endtt
+
+(where `3.001' may be replaced be some later  version  number  of  the
+{\ACE} binary) followed by the ``input parameters'' developed from the
+arguments  and  options  passed   to   `ACECosetTableFromGensAndRels',
+`ACEStats' or `ACEStart'. After these appears a separator:
+
+\begintt
+#I    #---------------------------------
+\endtt
+
+followed by any *progress messages* (progress messages only  occur  if
+`messages' is non-zero;  recall  that  by  default  `messages'  =  0),
+followed by a *results message*.
+
+In the case of `ACECosetTableFromGensAndRels', the  *results  message*
+is followed by a compaction (`CO' or  `co')  progress  message  and  a
+coset table.
+
+{\ACE}'s exit banner which should look something like:
+
+\begintt
+=========================================
+ACE 3.001        Sun Sep 30 22:03:36 2001
+\endtt
+
+is only seen when running {\ACE} as a standalone.
+
+Both *progress messages* and  the  *results  message*  consist  of  an
+initial tag followed by a list of statistics. All messages have values
+for the statistics `a', `r', `h', `n', `h',  `l'  and  `c'  (excepting
+that the second `h', the one following  the  `n'  statistic,  is  only
+given if hole monitoring has been turned on by setting `messages'  $\<
+0$, which as noted above is expensive and  should  be  avoided  unless
+really needed). Additionally, there may appear the statistics: `m' and
+`t' (as for the results message); `d'; or `s', `d' and `c' (as for the
+`DS' progress message). The meanings of  the  various  statistics  and
+tags will follow later. The following is a sample progress message:
+
+\begintt
+#I  AD: a=2 r=1 h=1 n=3; h=66.67% l=1 c=+0.00; m=2 t=2
+\endtt
+
+with tag `AD' and values for the statistics `a', `r',  `h',  `n',  `h'
+(appears because `messages' $\<  0$),  `l',  `c',  `m'  and  `t'.  The
+following is a sample results message:
+
+\begintt
+#I  INDEX = 12 (a=12 r=16 h=1 n=16; l=3 c=0.01; m=14 t=15)
+\endtt
+
+which, in this case, declares a successful enumeration  of  the  coset
+numbers of a subgroup of index 12 within a group,  and,  as  it  turns
+out, values for the same statistics as the sample progress message.
+
+You should see all the above (and a little  more),  except  that  your
+dates and host information will no doubt differ, by running:
+
+\beginexample
+gap> ACEExample("A5-C5" : echo:=0, messages:=-1);
+\endexample
+
+In the following table we  list  the  statistics  that  can  follow  a
+progress or results message tag, in order:
+
+\begintt
+--------------------------------------------------------------------
+statistic   meaning
+--------------------------------------------------------------------
+a           number of active coset numbers
+r           number of applied coset numbers
+h           first (potentially) incomplete row
+n           next coset number definition
+h           percentage of holes in the table (if `messages'$ \< 0$) 
+l           number of main loop passes
+c           total CPU time
+m           maximum number of active coset numbers
+t           total number of coset numbers defined
+s           new deduction stack size (with DS tag)
+d           current deduction stack size, or
+              no. of non-redundant deductions retained (with DS tag)
+c           no. of redundant deductions discarded (with DS tag)
+--------------------------------------------------------------------
+\endtt
+
+Now that we have discussed the various  meanings  of  the  statistics,
+it's time to  discuss  the  various  types  of  progress  and  results
+messages possible. First we describe progress messages.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Progress Messages}
+
+A progress message (and its tag) indicates the function just completed
+by the enumerator. In the following table, the possible message `tag's
+appear in the first column. In the `action' column,  a  `y'  indicates
+the function is aggregated and counted. Every time this count  reaches
+the value of `messages', a message line is printed and  the  count  is
+zeroed. Those tags flagged  with  a  `y*'  are  only  present  if  the
+appropriate option was included when the {\ACE} binary was compiled (a
+default compilation includes the appropriate options; so normally read
+`y*' as `y'). Tags with an `n' in the  `action'  column  indicate  the
+function is not counted, and cause a message line to be  output  every
+time they occur. They also cause the action count to be reset.
+
+\begintt
+------------------------------------------------------------------
+tag   action      meaning
+------------------------------------------------------------------
+AD         y      coset 1 application definition (`SG'/`RS' phase)
+RD         y      R-style definition
+RF         y      row-filling definition
+CG         y      immediate gap-filling definition
+CC         y*     coincidence processed
+DD         y*     deduction processed
+CP         y      preferred list gap-filling definition
+CD         y      C-style definition
+Lx         n      lookahead performed (type `x')
+CO         n      table compacted
+co         n      compaction routine called, but nothing recovered
+CL         n      complete lookahead (table as deduction stack)
+UH         n      updated completed-row counter
+RA         n      remaining coset numbers applied to relators
+SG         n      subgroup generator phase
+RS         n      relators in subgroup phase
+DS         n      stack overflowed (compacted and doubled)
+------------------------------------------------------------------
+\endtt
+
+% \begin{table}
+% \hrule
+% \caption{Possible progress messages}
+% \label{tab:prog}
+% \smallskip
+% \renewcommand{\arraystretch}{0.875}
+% \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lll} 
+% \hline\hline
+% message & action & meaning \\
+% \hline
+% \ttt{AD} & y  & coset \#1 application definition 
+% 			(\ttt{SG}/\ttt{RS} phase) \\
+% \ttt{RD} & y  & R-style definition \\
+% \ttt{RF} & y  & row-filling definition \\
+% \ttt{CG} & y  & immediate gap-filling definition \\
+% \ttt{CC} & y* & coincidence processed \\
+% \ttt{DD} & y* & deduction processed \\
+% \ttt{CP} & y  & preferred list gap-filling definition \\
+% \ttt{CD} & y  & C-style definition \\
+% \ttt{Lx} & n  & lookahead performed (type \ttt{x}) \\
+% \ttt{CO} & n  & table compacted \\
+% \ttt{CL} & n  & complete lookahead (table as deduction stack) \\
+% \ttt{UH} & n  & updated completed-row counter \\
+% \ttt{RA} & n  & remaining cosets applied to relators \\
+% \ttt{SG} & n  & subgroup generator phase \\
+% \ttt{RS} & n  & relators in subgroup phase \\
+% \ttt{DS} & n  & stack overflowed (compacted and doubled) \\
+% \hline\hline
+% \end{tabular*}
+% \end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Results Messages}
+
+The possible results are given in the following table; any result  not
+listed represents an internal error and  should  be  reported  to  the
+{\ACE} authors.
+
+% The level column is omitted ... since it won't mean anything to a
+% GAP user
+\begintt
+result tag           meaning 
+-------------------------------------------------------------------
+INDEX = x            finite index of `x' obtained
+OVERFLOW             out of table space
+SG PHASE OVERFLOW    out of space (processing subgroup generators)
+ITERATION LIMIT      `loop' limit triggered
+TIME LIMT            `ti' limit triggered
+HOLE LIMIT           `ho' limit triggered
+INCOMPLETE TABLE     all coset numbers applied, but table has holes
+MEMORY PROBLEM       out of memory (building data structures)
+-------------------------------------------------------------------
+\endtt
+
+% \begin{table}
+% \hrule
+% \caption{Possible enumeration results}
+% \label{tab:rslts}
+% \smallskip
+% \renewcommand{\arraystretch}{0.875}
+% \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lll} 
+% \hline\hline
+% result & level & meaning \\
+% \hline
+% \ttt{INDEX = x}         & 0 & finite index of \ttt{x} obtained \\
+% \ttt{OVERFLOW}          & 0 & out of table space \\
+% \ttt{SG PHASE OVERFLOW} & 0 & out of space (processing subgroup
+% 				generators) \\
+% \ttt{ITERATION LIMIT}   & 0 & \ttt{loop} limit triggered \\
+% \ttt{TIME LIMT}         & 0 & \ttt{ti} limit triggered \\
+% \ttt{HOLE LIMIT}        & 0 & \ttt{ho} limit triggered \\
+% \ttt{INCOMPLETE TABLE}  & 0 & all cosets applied, but table has holes \\
+% \ttt{MEMORY PROBLEM}    & 1 & out of memory (building data structures) \\
+% \hline\hline
+% \end{tabular*}
+% \end{table}
+
+*Notes:*
+Recall that hole monitoring is switched on by setting a negative value
+for the `messages' (see~"option messages") option, but note that  hole
+monitoring is expensive, so don't turn it on unless  you  really  need
+it. If you wish to print out the presentation and the options, but not
+the progress messages, then set `messages' non-zero, but  very  large.
+(You'll still get the `SG', `DS', etc. messages,  but  not  the  `RD',
+`DD', etc. ones.) You can  set  `messages'  to  $1$,  to  monitor  all
+enumerator actions, but be warned  that  this  can  yield  very  large
+output files.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

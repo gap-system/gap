@@ -1,0 +1,22 @@
+#Example: "3gp-PG-4-i" . . . based on: examples/pga_4-3.com
+#All descendants of C3 x C3 x C3 x C3
+#vars: F, procId;
+#options: OutputLevel
+F := FreeGroup("a", "b", "c", "d");
+procId := PqStart(F : Prime := 3);
+#comment: set a different print level by supplying <OutputLevel>
+PqPcPresentation(procId : ClassBound := 1, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqComputePCover(procId);;
+PqPGSupplyAutomorphisms(procId, [ [[2,0,0,0],
+                                   [0,1,0,0],
+                                   [0,0,1,0],
+                                   [0,0,0,1]],
+
+                                  [[2,0,0,1],
+                                   [2,0,0,0],
+                                   [0,2,0,0],
+                                   [0,0,2,0]] ]);;
+PqPGConstructDescendants(procId : ClassBound := 2,
+                                  OrderBound := 5);;

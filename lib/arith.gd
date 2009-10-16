@@ -2,7 +2,7 @@
 ##
 #W  arith.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: arith.gd,v 4.84 2008/10/27 08:56:55 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -22,15 +22,24 @@
 ##  mean that the the product of *any* two elements in the family is defined,
 ##
 Revision.arith_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: arith.gd,v 4.84 2008/10/27 08:56:55 gap Exp $";
 
 
 #############################################################################
 ##
 #C  IsExtAElement( <obj> )
 ##
-##  An *external additive element* is an object that can be added via `+'
-##  with other elements (not necessarily in the same family, see~"Families").
+##  <#GAPDoc Label="IsExtAElement">
+##  <ManSection>
+##  <Filt Name="IsExtAElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An <E>external additive element</E> is an object that can be added via
+##  <C>+</C> with other elements
+##  (not necessarily in the same family, see&nbsp;<Ref Sect="Families"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsExtAElement", IsObject );
 DeclareCategoryCollections( "IsExtAElement" );
@@ -47,9 +56,17 @@ InstallTrueMethod( IsExtAElement,
 ##
 #C  IsNearAdditiveElement( <obj> )
 ##
-##  A *near-additive element* is an object that can be added via `+'
-##  with elements in its family (see~"Families");
+##  <#GAPDoc Label="IsNearAdditiveElement">
+##  <ManSection>
+##  <Filt Name="IsNearAdditiveElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>near-additive element</E> is an object that can be added via
+##  <C>+</C> with elements in its family (see&nbsp;<Ref Sect="Families"/>);
 ##  this addition is not necessarily commutative.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsNearAdditiveElement", IsExtAElement );
 DeclareCategoryCollections( "IsNearAdditiveElement" );
@@ -69,10 +86,19 @@ InstallTrueMethod( IsNearAdditiveElementList,
 ##
 #C  IsNearAdditiveElementWithZero( <obj> )
 ##
-##  A *near-additive element-with-zero* is an object that can be added
-##  via `+' with elements in its family (see~"Families"),
-##  and that is an admissible argument for the operation `Zero' (see~"Zero");
+##  <#GAPDoc Label="IsNearAdditiveElementWithZero">
+##  <ManSection>
+##  <Filt Name="IsNearAdditiveElementWithZero" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>near-additive element-with-zero</E> is an object that can be added
+##  via <C>+</C> with elements in its family
+##  (see&nbsp;<Ref Sect="Families"/>),
+##  and that is an admissible argument for the operation <Ref Func="Zero"/>;
 ##  this addition is not necessarily commutative.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsNearAdditiveElementWithZero", IsNearAdditiveElement );
 DeclareCategoryCollections( "IsNearAdditiveElementWithZero" );
@@ -94,11 +120,20 @@ InstallTrueMethod(
 ##
 #C  IsNearAdditiveElementWithInverse( <obj> )
 ##
-##  A *near-additive element-with-inverse* is an object that can be
-##  added via `+' with elements in its family (see~"Families"),
-##  and that is an admissible argument for the operations `Zero' (see~"Zero")
-##  and `AdditiveInverse' (see~"AdditiveInverse");
+##  <#GAPDoc Label="IsNearAdditiveElementWithInverse">
+##  <ManSection>
+##  <Filt Name="IsNearAdditiveElementWithInverse" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>near-additive element-with-inverse</E> is an object that can be
+##  added via <C>+</C> with elements in its family
+##  (see&nbsp;<Ref Sect="Families"/>),
+##  and that is an admissible argument for the operations <Ref Func="Zero"/>
+##  and <Ref Func="AdditiveInverse"/>;
 ##  this addition is not necessarily commutative.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsNearAdditiveElementWithInverse",
     IsNearAdditiveElementWithZero );
@@ -121,9 +156,17 @@ InstallTrueMethod(
 ##
 #C  IsAdditiveElement( <obj> )
 ##
-##  An *additive element* is an object that can be added via `+'
-##  with elements in its family (see~"Families");
+##  <#GAPDoc Label="IsAdditiveElement">
+##  <ManSection>
+##  <Filt Name="IsAdditiveElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An <E>additive element</E> is an object that can be added via <C>+</C>
+##  with elements in its family (see&nbsp;<Ref Sect="Families"/>);
 ##  this addition is commutative.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsAdditiveElement", IsNearAdditiveElement );
 DeclareCategoryCollections( "IsAdditiveElement" );
@@ -143,10 +186,19 @@ InstallTrueMethod( IsAdditiveElementList,
 ##
 #C  IsAdditiveElementWithZero( <obj> )
 ##
-##  An *additive element-with-zero* is an object that can be added
-##  via `+' with elements in its family (see~"Families"),
-##  and that is an admissible argument for the operation `Zero' (see~"Zero");
+##  <#GAPDoc Label="IsAdditiveElementWithZero">
+##  <ManSection>
+##  <Filt Name="IsAdditiveElementWithZero" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An <E>additive element-with-zero</E> is an object that can be added
+##  via <C>+</C> with elements in its family
+##  (see&nbsp;<Ref Sect="Families"/>),
+##  and that is an admissible argument for the operation <Ref Func="Zero"/>;
 ##  this addition is commutative.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsAdditiveElementWithZero",
     IsNearAdditiveElementWithZero and IsAdditiveElement );
@@ -176,11 +228,20 @@ InstallTrueMethod(
 ##
 #C  IsAdditiveElementWithInverse( <obj> )
 ##
-##  An *additive element-with-inverse* is an object that can be
-##  added via `+' with elements in its family (see~"Families"),
-##  and that is an admissible argument for the operations `Zero' (see~"Zero")
-##  and `AdditiveInverse' (see~"AdditiveInverse");
+##  <#GAPDoc Label="IsAdditiveElementWithInverse">
+##  <ManSection>
+##  <Filt Name="IsAdditiveElementWithInverse" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An <E>additive element-with-inverse</E> is an object that can be
+##  added via <C>+</C> with elements in its family
+##  (see&nbsp;<Ref Sect="Families"/>),
+##  and that is an admissible argument for the operations <Ref Func="Zero"/>
+##  and <Ref Func="AdditiveInverse"/>;
 ##  this addition is commutative.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsAdditiveElementWithInverse",
     IsNearAdditiveElementWithInverse and IsAdditiveElement );
@@ -210,9 +271,17 @@ InstallTrueMethod(
 ##
 #C  IsExtLElement( <obj> )
 ##
-##  An *external left element* is an object that can be multiplied from the
-##  left, via `\*', with other elements (not necessarily in the same family,
-##  see~"Families").
+##  <#GAPDoc Label="IsExtLElement">
+##  <ManSection>
+##  <Filt Name="IsExtLElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An <E>external left element</E> is an object that can be multiplied
+##  from the left, via <C>*</C>, with other elements
+##  (not necessarily in the same family, see&nbsp;<Ref Sect="Families"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsExtLElement", IsObject );
 DeclareCategoryCollections( "IsExtLElement" );
@@ -230,9 +299,17 @@ InstallTrueMethod(
 ##
 #C  IsExtRElement( <obj> )
 ##
-##  An *external right element* is an object that can be multiplied from the
-##  right, via `\*', with other elements (not necessarily in the same family,
-##  see~"Families").
+##  <#GAPDoc Label="IsExtRElement">
+##  <ManSection>
+##  <Filt Name="IsExtRElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An <E>external right element</E> is an object that can be multiplied
+##  from the right, via <C>*</C>, with other elements
+##  (not necessarily in the same family, see&nbsp;<Ref Sect="Families"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsExtRElement", IsObject );
 DeclareCategoryCollections( "IsExtRElement" );
@@ -250,8 +327,16 @@ InstallTrueMethod(
 ##
 #C  IsMultiplicativeElement( <obj> )
 ##
-##  A *multiplicative element* is an object that can be multiplied via `\*'
-##  with elements in its family (see~"Families").
+##  <#GAPDoc Label="IsMultiplicativeElement">
+##  <ManSection>
+##  <Filt Name="IsMultiplicativeElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>multiplicative element</E> is an object that can be multiplied via
+##  <C>*</C> with elements in its family (see&nbsp;<Ref Sect="Families"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsMultiplicativeElement",
         IsExtLElement and IsExtRElement );
@@ -268,9 +353,18 @@ DeclareSynonym( "IsMultiplicativeElementTable",
 ##
 #C  IsMultiplicativeElementWithOne( <obj> )
 ##
-##  A *multiplicative element-with-one* is an object that can be multiplied
-##  via `\*' with elements in its family (see~"Families"),
-##  and that is an admissible argument for the operation `One' (see~"One").
+##  <#GAPDoc Label="IsMultiplicativeElementWithOne">
+##  <ManSection>
+##  <Filt Name="IsMultiplicativeElementWithOne" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>multiplicative element-with-one</E> is an object that can be
+##  multiplied via <C>*</C> with elements in its family
+##  (see&nbsp;<Ref Sect="Families"/>),
+##  and that is an admissible argument for the operation <Ref Func="One"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsMultiplicativeElementWithOne",
         IsMultiplicativeElement );
@@ -287,12 +381,22 @@ DeclareSynonym( "IsMultiplicativeElementWithOneTable",
 ##
 #C  IsMultiplicativeElementWithInverse( <obj> )
 ##
-##  A *multiplicative element-with-inverse* is an object that can be
-##  multiplied via `\*' with elements in its family (see~"Families"),
-##  and that is an admissible argument for the operations `One' (see~"One")
-##  and `Inverse' (see~"Inverse"). (Note the word ``admissible'': an
-##  object in this category does not necessarily have an inverse, `Inverse'
-##  may return `fail'.)
+##  <#GAPDoc Label="IsMultiplicativeElementWithInverse">
+##  <ManSection>
+##  <Filt Name="IsMultiplicativeElementWithInverse" Arg='obj'
+##   Type='Category'/>
+##
+##  <Description>
+##  A <E>multiplicative element-with-inverse</E> is an object that can be
+##  multiplied via <C>*</C> with elements in its family
+##  (see&nbsp;<Ref Sect="Families"/>),
+##  and that is an admissible argument for the operations <Ref Func="One"/>
+##  and <Ref Func="Inverse"/>. (Note the word <Q>admissible</Q>: an
+##  object in this category does not necessarily have an inverse,
+##  <Ref Func="Inverse"/> may return <K>fail</K>.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsMultiplicativeElementWithInverse",
         IsMultiplicativeElementWithOne );
@@ -309,18 +413,27 @@ DeclareSynonym( "IsMultiplicativeElementWithInverseTable",
 ##
 #C  IsVector( <obj> )
 ##
-##  A *vector* is an additive-element-with-inverse that can be multiplied
-##  from the left and right with other objects (not necessarily of the same
-##  type).
+##  <#GAPDoc Label="IsVector">
+##  <ManSection>
+##  <Filt Name="IsVector" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>vector</E> is an additive-element-with-inverse that can be
+##  multiplied from the left and right with other objects
+##  (not necessarily of the same type).
 ##  Examples are cyclotomics, finite field elements,
 ##  and of course row vectors (see below).
-##
+##  <P/>
 ##  Note that not all lists of ring elements are regarded as vectors,
 ##  for example lists of matrices are not vectors.
-##  This is because although the category `IsAdditiveElementWithInverse' is
-##  implied by the join of its collections category and `IsList',
-##  the family of a list entry may not imply `IsAdditiveElementWithInverse'
-##  for all its elements.
+##  This is because although the category
+##  <Ref Func="IsAdditiveElementWithInverse"/> is
+##  implied by the join of its collections category and <Ref Func="IsList"/>,
+##  the family of a list entry may not imply
+##  <Ref Func="IsAdditiveElementWithInverse"/> for all its elements.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsVector",
         IsAdditiveElementWithInverse
@@ -349,6 +462,14 @@ DeclareSynonym( "IsVectorTable",
 #F  IsOddAdditiveNestingDepthFamily( <Fam> )
 #F  IsOddAdditiveNestingDepthObject( <Fam> )
 ##
+##  <ManSection>
+##  <Filt Name="IsOddAdditiveNestingDepthFamily" Arg='Fam'/>
+##  <Filt Name="IsOddAdditiveNestingDepthObject" Arg='Fam'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareFilter( "IsOddAdditiveNestingDepthFamily" );
 DeclareFilter( "IsOddAdditiveNestingDepthObject" );
 
@@ -357,33 +478,61 @@ DeclareFilter( "IsOddAdditiveNestingDepthObject" );
 ##
 #C  IsRowVector( <obj> )
 ##
-##  A *row vector* is a vector (see~"IsVector") that is also a homogeneous
-##  list of odd additive nesting depth
-##  (see~"Filters Controlling the Arithmetic Behaviour of Lists").
+##  <#GAPDoc Label="IsRowVector">
+##  <ManSection>
+##  <Filt Name="IsRowVector" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>row vector</E> is a vector (see&nbsp;<Ref Func="IsVector"/>)
+##  that is also a homogeneous list of odd additive nesting depth
+##  (see&nbsp;<Ref Sect="Filters Controlling the Arithmetic Behaviour of Lists"/>).
 ##  Typical examples are lists of integers and rationals,
 ##  lists of finite field elements of the same characteristic,
 ##  and lists of polynomials from a common polynomial ring.
-##  Note that matrices are *not* regarded as row vectors, because they have
+##  Note that matrices are <E>not</E> regarded as row vectors, because they have
 ##  even additive nesting depth.
-##
+##  <P/>
 ##  The additive operations of the vector must thus be compatible with
 ##  that for lists, implying that the list entries are the
 ##  coefficients of the vector with respect to some basis.
-##
-##  Note that not all row vectors admit a multiplication via `\*'
+##  <P/>
+##  Note that not all row vectors admit a multiplication via <C>*</C>
 ##  (which is to be understood as a scalar product);
 ##  for example, class functions are row vectors but the product of two
 ##  class functions is defined in a different way.
 ##  For the installation of a scalar product of row vectors, the entries of
 ##  the vector must be ring elements; note that the default method expects
-##  the row vectors to lie in `IsRingElementList', and this category may not
-##  be implied by `IsRingElement' for all entries of the row vector
-##  (see the comment for `IsVector' in~"IsVector").
-##
+##  the row vectors to lie in <C>IsRingElementList</C>,
+##  and this category may not be implied by <Ref Func="IsRingElement"/>
+##  for all entries of the row vector
+##  (see the comment in <Ref Func="IsVector"/>).
+##  <P/>
 ##  Note that methods for special types of row vectors really must be
-##  installed with the requirement `IsRowVector',
-##  since `IsVector' may lead to a rank of the method below
-##  that of the default method for row vectors (see file `lib/vecmat.gi').
+##  installed with the requirement <Ref Func="IsRowVector"/>,
+##  since <Ref Func="IsVector"/> may lead to a rank of the method below
+##  that of the default method for row vectors (see file <F>lib/vecmat.gi</F>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsRowVector([1,2,3]);
+##  true
+##  ]]></Example>
+##  <P/>
+##  Because row vectors are just a special case of lists, all operations
+##  and functions for lists are applicable to row vectors as well (see
+##  Chapter&nbsp;<Ref Chap="Lists"/>).
+##  This especially includes accessing elements of a row vector
+##  (see <Ref Sect="List Elements"/>), changing elements of a mutable row
+##  vector (see <Ref Sect="List Assignment"/>),
+##  and comparing row vectors (see <Ref Sect="Comparisons of Lists"/>).
+##  <P/>
+##  Note that, unless your algorithms specifically require you to be able
+##  to change entries of your vectors, it is generally better and faster
+##  to work with immutable row vectors.
+##  See Section&nbsp;<Ref Sect="Mutability and Copyability"/> for more
+##  details.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsRowVector",
     IsVector and IsHomogeneousList and IsOddAdditiveNestingDepthObject );
@@ -392,13 +541,14 @@ DeclareSynonym( "IsRowVector",
 #############################################################################
 ##
 ##  Filters Controlling the Arithmetic Behaviour of Lists
-#1
+##  <#GAPDoc Label="[1]{arith}">
 ##  The arithmetic behaviour of lists is controlled by their types.
 ##  The following categories and attributes are used for that.
-##  
+##  <P/>
 ##  Note that we distinguish additive and multiplicative behaviour.
 ##  For example, Lie matrices have the usual additive behaviour but not the
 ##  usual multiplicative behaviour.
+##  <#/GAPDoc>
 ##
 
 
@@ -407,13 +557,33 @@ DeclareSynonym( "IsRowVector",
 #C  IsGeneralizedRowVector( <list> )  . . . objects that comply with new list
 ##                                            addition rules
 ##
-##  For a list <list>, the value `true' for `IsGeneralizedRowVector'
-##  indicates that the additive arithmetic behaviour of <list> is
-##  as defined in~"Additive Arithmetic for Lists",
-##  and that the attribute `NestingDepthA' (see~"NestingDepthA")
-##  will return a nonzero value when called with <list>.
+##  <#GAPDoc Label="IsGeneralizedRowVector">
+##  <ManSection>
+##  <Filt Name="IsGeneralizedRowVector" Arg='list' Type='Category'/>
 ##
-DeclareCategory( "IsGeneralizedRowVector", IsList );
+##  <Description>
+##  For a list <A>list</A>, the value <K>true</K> for
+##  <Ref Func="IsGeneralizedRowVector"/>
+##  indicates that the additive arithmetic behaviour of <A>list</A> is
+##  as defined in <Ref Sect="Additive Arithmetic for Lists"/>,
+##  and that the attribute <Ref Func="NestingDepthA"/>
+##  will return a nonzero value when called with <A>list</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsList( "abc" ); IsGeneralizedRowVector( "abc" );
+##  true
+##  false
+##  gap> liemat:= LieObject( [ [ 1, 2 ], [ 3, 4 ] ] );
+##  LieObject( [ [ 1, 2 ], [ 3, 4 ] ] )
+##  gap> IsGeneralizedRowVector( liemat );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory( "IsGeneralizedRowVector",
+    IsList and IsAdditiveElementWithInverse );
 
 
 #############################################################################
@@ -421,12 +591,35 @@ DeclareCategory( "IsGeneralizedRowVector", IsList );
 #C  IsMultiplicativeGeneralizedRowVector( <list> )  . . . . 
 ##          objects that comply with new list multiplication rules
 ##
-##  For a list <list>, the value `true' for
-##  `IsMultiplicativeGeneralizedRowVector' indicates that the multiplicative
-##  arithmetic behaviour of <list> is as defined
-##  in~"Multiplicative Arithmetic for Lists",
-##  and that the attribute `NestingDepthM' (see~"NestingDepthM")
-##  will return a nonzero value when called with <list>.
+##  <#GAPDoc Label="IsMultiplicativeGeneralizedRowVector">
+##  <ManSection>
+##  <Filt Name="IsMultiplicativeGeneralizedRowVector" Arg='list'
+##   Type='Category'/>
+##
+##  <Description>
+##  For a list <A>list</A>, the value <K>true</K> for
+##  <Ref Func="IsMultiplicativeGeneralizedRowVector"/> indicates that the
+##  multiplicative arithmetic behaviour of <A>list</A> is as defined
+##  in <Ref Sect="Multiplicative Arithmetic for Lists"/>,
+##  and that the attribute <Ref Func="NestingDepthM"/>
+##  will return a nonzero value when called with <A>list</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsMultiplicativeGeneralizedRowVector( liemat );
+##  false
+##  gap> bas:= CanonicalBasis( FullRowSpace( Rationals, 3 ) );
+##  CanonicalBasis( ( Rationals^3 ) )
+##  gap> IsMultiplicativeGeneralizedRowVector( bas );
+##  true
+##  ]]></Example>
+##  <P/>
+##  Note that the filters <Ref Func="IsGeneralizedRowVector"/>,
+##  <Ref Func="IsMultiplicativeGeneralizedRowVector"/>
+##  do <E>not</E> enable default methods for addition or multiplication
+##  (cf.&nbsp;<Ref Func="IsListDefault"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsMultiplicativeGeneralizedRowVector",
     IsGeneralizedRowVector );
@@ -436,13 +629,24 @@ DeclareCategory( "IsMultiplicativeGeneralizedRowVector",
 ##
 #A  NestingDepthA( <obj> )
 ##
-##  For a {\GAP} object <obj>,
-##  `NestingDepthA' returns the *additive nesting depth* of <obj>.
+##  <#GAPDoc Label="NestingDepthA">
+##  <ManSection>
+##  <Attr Name="NestingDepthA" Arg='obj'/>
+##
+##  <Description>
+##  For a &GAP; object <A>obj</A>,
+##  <Ref Func="NestingDepthA"/> returns the <E>additive nesting depth</E>
+##  of <A>obj</A>.
 ##  This is defined recursively
-##  as the integer $0$ if <obj> is not in `IsGeneralizedRowVector',
-##  as the integer $1$ if <obj> is an empty list in `IsGeneralizedRowVector',
-##  and as $1$ plus the additive nesting depth of the first bound entry in
-##  <obj> otherwise.
+##  as the integer <M>0</M> if <A>obj</A> is not in
+##  <Ref Func="IsGeneralizedRowVector"/>,
+##  as the integer <M>1</M> if <A>obj</A> is an empty list in
+##  <Ref Func="IsGeneralizedRowVector"/>,
+##  and as <M>1</M> plus the additive nesting depth of the first bound entry
+##  in <A>obj</A> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "NestingDepthA", IsObject );
 
@@ -451,14 +655,42 @@ DeclareAttribute( "NestingDepthA", IsObject );
 ##
 #A  NestingDepthM( <obj> )
 ##
-##  For a {\GAP} object <obj>,
-##  `NestingDepthM' returns the *multiplicative nesting depth* of <obj>.
+##  <#GAPDoc Label="NestingDepthM">
+##  <ManSection>
+##  <Attr Name="NestingDepthM" Arg='obj'/>
+##
+##  <Description>
+##  For a &GAP; object <A>obj</A>,
+##  <Ref Attr="NestingDepthM"/> returns the
+##  <E>multiplicative nesting depth</E> of <A>obj</A>.
 ##  This is defined recursively as the
-##  integer $0$ if <obj> is not in `IsMultiplicativeGeneralizedRowVector',
-##  as the integer $1$ if <obj> is an empty list in
-##  `IsMultiplicativeGeneralizedRowVector',
-##  and as $1$ plus the multiplicative nesting depth of the first bound entry
-##  in <obj> otherwise.
+##  integer <M>0</M> if <A>obj</A> is not in
+##  <Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+##  as the integer <M>1</M> if <A>obj</A> is an empty list in
+##  <Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+##  and as <M>1</M> plus the multiplicative nesting depth of the first bound
+##  entry in <A>obj</A> otherwise.
+##  <Example><![CDATA[
+##  gap> NestingDepthA( v );  NestingDepthM( v );
+##  1
+##  1
+##  gap> NestingDepthA( m );  NestingDepthM( m );
+##  2
+##  2
+##  gap> NestingDepthA( liemat );  NestingDepthM( liemat );
+##  2
+##  0
+##  gap> l1:= [ [ 1, 2 ], 3 ];;  l2:= [ 1, [ 2, 3 ] ];;
+##  gap> NestingDepthA( l1 );  NestingDepthM( l1 );
+##  2
+##  2
+##  gap> NestingDepthA( l2 );  NestingDepthM( l2 );
+##  1
+##  1
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "NestingDepthM", IsObject );
 
@@ -467,8 +699,17 @@ DeclareAttribute( "NestingDepthM", IsObject );
 ##
 #C  IsNearRingElement( <obj> )
 ##
-##  `IsNearRingElement' is just a synonym for the join of
-##  `IsNearAdditiveElementWithInverse' and `IsMultiplicativeElement'.
+##  <#GAPDoc Label="IsNearRingElement">
+##  <ManSection>
+##  <Filt Name="IsNearRingElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  <Ref Func="IsNearRingElement"/> is just a synonym for the join of
+##  <Ref Func="IsNearAdditiveElementWithInverse"/> and
+##  <Ref Func="IsMultiplicativeElement"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsNearRingElement",
         IsNearAdditiveElementWithInverse
@@ -499,8 +740,17 @@ DeclareCategoryFamily( "IsNearRingElement" );
 ##
 #C  IsNearRingElementWithOne( <obj> )
 ##
-##  `IsNearRingElementWithOne' is just a synonym for the join of
-##  `IsNearAdditiveElementWithInverse' and `IsMultiplicativeElementWithOne'.
+##  <#GAPDoc Label="IsNearRingElementWithOne">
+##  <ManSection>
+##  <Filt Name="IsNearRingElementWithOne" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  <Ref Func="IsNearRingElementWithOne"/> is just a synonym for the join of
+##  <Ref Func="IsNearAdditiveElementWithInverse"/> and
+##  <Ref Func="IsMultiplicativeElementWithOne"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsNearRingElementWithOne",
         IsNearAdditiveElementWithInverse
@@ -529,6 +779,15 @@ InstallTrueMethod(
 ##
 #C  IsNearRingElementWithInverse( <obj> )
 ##
+##  <#GAPDoc Label="IsNearRingElementWithInverse">
+##  <ManSection>
+##  <Filt Name="IsNearRingElementWithInverse" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareSynonym( "IsNearRingElementWithInverse",
         IsNearAdditiveElementWithInverse
     and IsMultiplicativeElementWithInverse );
@@ -556,8 +815,17 @@ InstallTrueMethod(
 ##
 #C  IsRingElement( <obj> )
 ##
-##  `IsRingElement' is just a synonym for the join of
-##  `IsAdditiveElementWithInverse' and `IsMultiplicativeElement'.
+##  <#GAPDoc Label="IsRingElement">
+##  <ManSection>
+##  <Filt Name="IsRingElement" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  <Ref Func="IsRingElement"/> is just a synonym for the join of
+##  <Ref Func="IsAdditiveElementWithInverse"/> and
+##  <Ref Func="IsMultiplicativeElement"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsRingElement",
         IsAdditiveElementWithInverse
@@ -588,8 +856,17 @@ DeclareCategoryFamily( "IsRingElement" );
 ##
 #C  IsRingElementWithOne( <obj> )
 ##
-##  `IsRingElementWithOne' is just a synonym for the join of
-##  `IsAdditiveElementWithInverse' and `IsMultiplicativeElementWithOne'.
+##  <#GAPDoc Label="IsRingElementWithOne">
+##  <ManSection>
+##  <Filt Name="IsRingElementWithOne" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  <Ref Func="IsRingElementWithOne"/> is just a synonym for the join of
+##  <Ref Func="IsAdditiveElementWithInverse"/> and
+##  <Ref Func="IsMultiplicativeElementWithOne"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsRingElementWithOne",
         IsAdditiveElementWithInverse
@@ -619,9 +896,19 @@ InstallTrueMethod(
 #C  IsRingElementWithInverse( <obj> )
 #C  IsScalar( <obj> )
 ##
-##  `IsRingElementWithInverse' and `IsScalar' are just synonyms for the join
-##  of
-##  `IsAdditiveElementWithInverse' and `IsMultiplicativeElementWithInverse'.
+##  <#GAPDoc Label="IsRingElementWithInverse">
+##  <ManSection>
+##  <Filt Name="IsRingElementWithInverse" Arg='obj' Type='Category'/>
+##  <Filt Name="IsScalar" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  <Ref Func="IsRingElementWithInverse"/> and <Ref Func="IsScalar"/>
+##  are just synonyms for the join of
+##  <Ref Func="IsAdditiveElementWithInverse"/> and
+##  <Ref Func="IsMultiplicativeElementWithInverse"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsRingElementWithInverse",
         IsAdditiveElementWithInverse
@@ -655,9 +942,15 @@ DeclareSynonym( "IsScalarTable",      IsRingElementWithInverseTable );
 ##
 #C  IsZDFRE( <obj> )
 ##
-##  This category (``is zero divisor free ring element'') indicates elements
+##  <ManSection>
+##  <Filt Name="IsZDFRE" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  This category (<Q>is zero divisor free ring element</Q>) indicates elements
 ##  from a ring which contains no zero divisors. For matrix operations over
 ##  this ring, a standard Gauss algorithm can be used.
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategory("IsZDFRE",IsRingElementWithInverse);
 DeclareCategoryCollections("IsZDFRE");
@@ -668,19 +961,50 @@ DeclareCategoryCollections("IsZDFRECollection");
 ##
 #C  IsMatrix( <obj> )
 ##
-##  A *matrix* is a list of lists of equal length whose entries lie in a
-##  common ring.
+##  <#GAPDoc Label="IsMatrix">
+##  <ManSection>
+##  <Filt Name="IsMatrix" Arg='obj' Type='Category'/>
 ##
+##  <Description>
+##  A <E>matrix</E> is a list of lists of equal length whose entries lie in a
+##  common ring.
+##  <P/>
 ##  Note that matrices may have different multiplications,
 ##  besides the usual matrix product there is for example the Lie product.
-##  So there are categories such as `IsOrdinaryMatrix' and `IsLieMatrix'
-##  (see~"IsOrdinaryMatrix", "IsLieMatrix")
+##  So there are categories such as
+##  <Ref Func="IsOrdinaryMatrix"/> and <Ref Func="IsLieMatrix"/>
 ##  that describe the matrix multiplication.
 ##  One can form the product of two matrices only if they support the same
 ##  multiplication.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];
+##  [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ]
+##  gap> IsMatrix(mat);
+##  true
+##  ]]></Example>
+##  <P/>
+##  Note also the filter <Ref Func="IsTable"/>
+##  which may be more appropriate than <Ref Filt="IsMatrix"/>
+##  for some purposes.
+##  <P/>
+##  Note that the empty list <C>[]</C> and more complex
+##  <Q>empty</Q> structures such as <C>[[]]</C> are <E>not</E> matrices,
+##  although special methods allow them be used in place of matrices in some
+##  situations. See <Ref Func="EmptyMatrix"/> below.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> [[0]]*[[]];
+##  [ [  ] ]
+##  gap> IsMatrix([[]]);
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 #T
 #T  In order to avoid that a matrix supports more than one multiplication,
-#T  appropriate immediate methods are installed (see~`arith.gi').
+#T  appropriate immediate methods are installed (see~arith.gi).
 ##
 DeclareSynonym( "IsMatrix", IsRingElementTable );
 DeclareCategoryCollections( "IsMatrix" );
@@ -690,21 +1014,30 @@ DeclareCategoryCollections( "IsMatrix" );
 ##
 #C  IsOrdinaryMatrix( <obj> )
 ##
-##  An *ordinary matrix* is a matrix whose multiplication is the ordinary
+##  <#GAPDoc Label="IsOrdinaryMatrix">
+##  <ManSection>
+##  <Filt Name="IsOrdinaryMatrix" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An <E>ordinary matrix</E> is a matrix whose multiplication is the ordinary
 ##  matrix multiplication.
-##
+##  <P/>
 ##  Each matrix in internal representation is in the category
-##  `IsOrdinaryMatrix',
-##  and arithmetic operations with objects in `IsOrdinaryMatrix' produce
-##  again matrices in `IsOrdinaryMatrix'.
-##
+##  <Ref Func="IsOrdinaryMatrix"/>,
+##  and arithmetic operations with objects in <Ref Func="IsOrdinaryMatrix"/>
+##  produce again matrices in <Ref Func="IsOrdinaryMatrix"/>.
+##  <P/>
 ##  Note that we want that Lie matrices shall be matrices that behave in the
 ##  same way as ordinary matrices, except that they have a different
 ##  multiplication.
 ##  So we must distinguish the different matrix multiplications,
 ##  in order to be able to describe the applicability of multiplication,
 ##  and also in order to form a matrix of the appropriate type as the
-##  sum, difference etc.~of two matrices which have the same multiplication.
+##  sum, difference etc.&nbsp;of two matrices
+##  which have the same multiplication.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsOrdinaryMatrix", IsMatrix );
 DeclareCategoryCollections( "IsOrdinaryMatrix" );
@@ -721,19 +1054,28 @@ InstallTrueMethod( IsMultiplicativeGeneralizedRowVector,
 ##
 #C  IsLieMatrix( <mat> )
 ##
-##  A *Lie matrix* is a matrix whose multiplication is given by the
+##  <#GAPDoc Label="IsLieMatrix">
+##  <ManSection>
+##  <Filt Name="IsLieMatrix" Arg='mat' Type='Category'/>
+##
+##  <Description>
+##  A <E>Lie matrix</E> is a matrix whose multiplication is given by the
 ##  Lie bracket.
 ##  (Note that a matrix with ordinary matrix multiplication is in the
-##  category `IsOrdinaryMatrix', see~"IsOrdinaryMatrix".)
-##
-##  Each matrix created by `LieObject' is in the category `IsLieMatrix',
-##  and arithmetic operations with objects in `IsLieMatrix' produce
-##  again matrices in `IsLieMatrix'.
-##
-#T  (We do not claim that every object in `IsLieMatrix' is also contained in
-#T  `IsLieObject', since the former describes the containment in a certain
-#T  family and the latter describes a certain matrix multiplication;
-#T  probably this distinction is unnecessary.)
+##  category <Ref Func="IsOrdinaryMatrix"/>.)
+##  <P/>
+##  Each matrix created by <Ref Func="LieObject"/> is in the category
+##  <Ref Func="IsLieMatrix"/>,
+##  and arithmetic operations with objects in <Ref Func="IsLieMatrix"/>
+##  produce again matrices in <Ref Func="IsLieMatrix"/>.
+##  <!--  We do not claim that every object in <Ref Func="IsLieMatrix"/>
+##        is also contained in <Ref Func="IsLieObject"/>,
+##        since the former describes the containment in a certain
+##        family and the latter describes a certain matrix multiplication;
+##        probably this distinction is unnecessary.  -->
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsLieMatrix", IsGeneralizedRowVector and IsMatrix );
 
@@ -744,12 +1086,22 @@ DeclareCategory( "IsLieMatrix", IsGeneralizedRowVector and IsMatrix );
 #C  IsAssociativeElementCollection( <obj> )
 #C  IsAssociativeElementCollColl( <obj> )
 ##
-##  An element <obj> in the category `IsAssociativeElement' knows
-##  that the multiplication of any elements in the family of <obj>
+##  <#GAPDoc Label="IsAssociativeElement">
+##  <ManSection>
+##  <Filt Name="IsAssociativeElement" Arg='obj' Type='Category'/>
+##  <Filt Name="IsAssociativeElementCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsAssociativeElementCollColl" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An element <A>obj</A> in the category <Ref Func="IsAssociativeElement"/>
+##  knows that the multiplication of any elements in the family of <A>obj</A>
 ##  is associative.
 ##  For example, all permutations lie in this category, as well as those
-##  ordinary matrices (see~"IsOrdinaryMatrix") whose entries are also in
-##  `IsAssociativeElement'.
+##  ordinary matrices (see&nbsp;<Ref Func="IsOrdinaryMatrix"/>)
+##  whose entries are also in <Ref Func="IsAssociativeElement"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsAssociativeElement", IsMultiplicativeElement );
 DeclareCategoryCollections( "IsAssociativeElement" );
@@ -775,11 +1127,26 @@ InstallTrueMethod( IsAssociativeElement,
 #C  IsAdditivelyCommutativeElementCollColl( <obj> )
 #C  IsAdditivelyCommutativeElementFamily( <obj> )
 ##
-##  An element <obj> in the category `IsAdditivelyCommutativeElement' knows
-##  that the addition of any elements in the family of <obj>
+##  <#GAPDoc Label="IsAdditivelyCommutativeElement">
+##  <ManSection>
+##  <Filt Name="IsAdditivelyCommutativeElement" Arg='obj' Type='Category'/>
+##  <Filt Name="IsAdditivelyCommutativeElementCollection" Arg='obj'
+##   Type='Category'/>
+##  <Filt Name="IsAdditivelyCommutativeElementCollColl" Arg='obj'
+##   Type='Category'/>
+##  <Filt Name="IsAdditivelyCommutativeElementFamily" Arg='obj'
+##   Type='Category'/>
+##
+##  <Description>
+##  An element <A>obj</A> in the category
+##  <Ref Func="IsAdditivelyCommutativeElement"/> knows
+##  that the addition of any elements in the family of <A>obj</A>
 ##  is commutative.
 ##  For example, each finite field element and each rational number lies in
 ##  this category.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsAdditivelyCommutativeElement", IsNearAdditiveElement );
 DeclareCategoryCollections( "IsAdditivelyCommutativeElement" );
@@ -816,11 +1183,21 @@ InstallTrueMethod( IsAdditivelyCommutativeElement,
 #C  IsCommutativeElementCollection( <obj> )
 #C  IsCommutativeElementCollColl( <obj> )
 ##
-##  An element <obj> in the category `IsCommutativeElement' knows
-##  that the multiplication of any elements in the family of <obj>
+##  <#GAPDoc Label="IsCommutativeElement">
+##  <ManSection>
+##  <Filt Name="IsCommutativeElement" Arg='obj' Type='Category'/>
+##  <Filt Name="IsCommutativeElementCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsCommutativeElementCollColl" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An element <A>obj</A> in the category <Ref Func="IsCommutativeElement"/>
+##  knows that the multiplication of any elements in the family of <A>obj</A>
 ##  is commutative.
 ##  For example, each finite field element and each rational number lies in
 ##  this category.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsCommutativeElement", IsMultiplicativeElement );
 DeclareCategoryCollections( "IsCommutativeElement" );
@@ -833,16 +1210,26 @@ DeclareCategoryCollections( "IsCommutativeElementCollection" );
 #C  IsFiniteOrderElementCollection( <obj> )
 #C  IsFiniteOrderElementCollColl( <obj> )
 ##
-##  An element <obj> in the category `IsFiniteOrderElement' knows
-##  that it has finite multiplicative order.
+##  <#GAPDoc Label="IsFiniteOrderElement">
+##  <ManSection>
+##  <Filt Name="IsFiniteOrderElement" Arg='obj' Type='Category'/>
+##  <Filt Name="IsFiniteOrderElementCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsFiniteOrderElementCollColl" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An element <A>obj</A> in the category <Ref Func="IsFiniteOrderElement"/>
+##  knows that it has finite multiplicative order.
 ##  For example, each finite field element and each permutation lies in
 ##  this category.
-##  However the value may be `false' even if <obj> has finite order,
-##  but if this was not known when <obj> was constructed.
-##
+##  However the value may be <K>false</K> even if <A>obj</A> has finite
+##  order, but if this was not known when <A>obj</A> was constructed.
+##  <P/>
 ##  Although it is legal to set this filter for any object with finite order,
 ##  this is really useful only in the case that all elements of a family are
 ##  known to have finite order.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsFiniteOrderElement",
     IsMultiplicativeElementWithInverse );
@@ -856,13 +1243,24 @@ DeclareCategoryCollections( "IsFiniteOrderElementCollection" );
 #C  IsJacobianElementCollection( <obj> )
 #C  IsJacobianElementCollColl( <obj> )
 ##
-##  An element <obj> in the category `IsJacobianElement' knows
-##  that the multiplication of any elements in the family $F$ of <obj>
-##  satisfies the Jacobi identity, that is,
-##  $x \* y \* z + z \* x \* y + y \* z \* x$ is zero
-##  for all $x$, $y$, $z$ in $F$.
+##  <#GAPDoc Label="IsJacobianElement">
+##  <ManSection>
+##  <Filt Name="IsJacobianElement" Arg='obj' Type='Category'/>
+##  <Filt Name="IsJacobianElementCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsJacobianElementCollColl" Arg='obj' Type='Category'/>
 ##
-##  For example, each Lie matrix (see~"IsLieMatrix") lies in this category.
+##  <Description>
+##  An element <A>obj</A> in the category <Ref Func="IsJacobianElement"/>
+##  knows that the multiplication of any elements in the family <M>F</M>
+##  of <A>obj</A> satisfies the Jacobi identity, that is,
+##  <M>x * y * z + z * x * y + y * z * x</M> is zero
+##  for all <M>x</M>, <M>y</M>, <M>z</M> in <M>F</M>.
+##  <P/>
+##  For example, each Lie matrix (see&nbsp;<Ref Func="IsLieMatrix"/>)
+##  lies in this category.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsJacobianElement", IsRingElement );
 DeclareCategoryCollections( "IsJacobianElement" );
@@ -875,13 +1273,24 @@ DeclareCategoryCollections( "IsJacobianElementCollection" );
 #C  IsZeroSquaredElementCollection( <obj> )
 #C  IsZeroSquaredElementCollColl( <obj> )
 ##
-##  An element <obj> in the category `IsZeroSquaredElement' knows
-##  that `<obj>^2 = Zero( <obj> )'.
-##  For example, each Lie matrix (see~"IsLieMatrix") lies in this category.
+##  <#GAPDoc Label="IsZeroSquaredElement">
+##  <ManSection>
+##  <Filt Name="IsZeroSquaredElement" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZeroSquaredElementCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsZeroSquaredElementCollColl" Arg='obj' Type='Category'/>
 ##
+##  <Description>
+##  An element <A>obj</A> in the category <Ref Func="IsZeroSquaredElement"/>
+##  knows that <C><A>obj</A>^2 = Zero( <A>obj</A> )</C>.
+##  For example, each Lie matrix (see&nbsp;<Ref Func="IsLieMatrix"/>)
+##  lies in this category.
+##  <P/>
 ##  Although it is legal to set this filter for any zero squared object,
 ##  this is really useful only in the case that all elements of a family are
 ##  known to have square zero.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsZeroSquaredElement", IsRingElement );
 DeclareCategoryCollections( "IsZeroSquaredElement" );
@@ -892,7 +1301,16 @@ DeclareCategoryCollections( "IsZeroSquaredElementCollection" );
 ##
 #P  IsZero( <elm> ) . . . . . . . . . . . . . . . . . . test for zero element
 ##
-##  is `true' if `<elm> = Zero( <elm> )', and `false' otherwise.
+##  <#GAPDoc Label="IsZero">
+##  <ManSection>
+##  <Prop Name="IsZero" Arg='elm'/>
+##
+##  <Description>
+##  is <K>true</K> if <C><A>elm</A> = Zero( <A>elm</A> )</C>,
+##  and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsZero", IsAdditiveElementWithZero );
 
@@ -901,7 +1319,16 @@ DeclareProperty( "IsZero", IsAdditiveElementWithZero );
 ##
 #P  IsOne( <elm> )  . . . . . . . . . . . . . . . . test for identity element
 ##
-##  is `true' if `<elm> = One( <elm> )', and `false' otherwise.
+##  <#GAPDoc Label="IsOne">
+##  <ManSection>
+##  <Prop Name="IsOne" Arg='elm'/>
+##
+##  <Description>
+##  is <K>true</K> if <C><A>elm</A> = One( <A>elm</A> )</C>,
+##  and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 
@@ -916,44 +1343,68 @@ DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 #O  ZeroSameMutability( <obj> )  mutability preserving zero (0*<obj>)
 #O  ZeroSM( <obj> )              synonym of ZeroSameMutability
 ##
-##  `ZeroImmutable', `ZeroMutable', and `ZeroSameMutability' all
-##  return the additive neutral element of the additive element <obj>.
+##  <#GAPDoc Label="ZeroImmutable">
+##  <ManSection>
+##  <Attr Name="ZeroImmutable" Arg='obj'/>
+##  <Attr Name="ZeroAttr" Arg='obj'/>
+##  <Attr Name="Zero" Arg='obj'/>
+##  <Oper Name="ZeroMutable" Arg='obj'/>
+##  <Oper Name="ZeroOp" Arg='obj'/>
+##  <Oper Name="ZeroSameMutability" Arg='obj'/>
+##  <Oper Name="ZeroSM" Arg='obj'/>
 ##
+##  <Description>
+##  <Ref Func="ZeroImmutable"/>, <Ref Func="ZeroMutable"/>,
+##  and <Ref Func="ZeroSameMutability"/> all
+##  return the additive neutral element of the additive element <A>obj</A>.
+##  <P/>
 ##  They differ only w.r.t. the mutability of the result.
-##  `ZeroImmutable' is an attribute and hence returns an immutable result.
-##  `ZeroMutable' is guaranteed to return a new *mutable* object whenever
-##  a mutable version of the required element exists in {\GAP}
-##  (see~"IsCopyable").
-##  `ZeroSameMutability' returns a result that is mutable if <obj> is mutable
-##  and if a mutable version of the required element exists in {\GAP};
+##  <Ref Func="ZeroImmutable"/> is an attribute and hence returns an
+##  immutable result.
+##  <Ref Func="ZeroMutable"/> is guaranteed to return a new <E>mutable</E>
+##  object whenever a mutable version of the required element exists in &GAP;
+##  (see&nbsp;<Ref Func="IsCopyable"/>).
+##  <Ref Func="ZeroSameMutability"/> returns a result that is mutable if
+##  <A>obj</A> is mutable and if a mutable version of the required element
+##  exists in &GAP;;
 ##  for lists, it returns a result of the same immutability level as
 ##  the argument. For instance, if the argument is a mutable matrix
 ##  with immutable rows, it returns a similar object.
-##
-##  `ZeroSameMutability( <obj> )' is equivalent to `0 \* <obj>'.
-##
-##  `ZeroAttr' and `Zero' are synonyms of `ZeroImmutable'.
-##  `ZeroSM' is a synonym of `ZeroSameMutability'.
-##  `ZeroOp' is a synonym of `ZeroMutable'.
-##
-##  If <obj> is a domain or a family then `Zero' is defined as the zero
-##  element of all elements in <obj>,
+##  <P/>
+##  <C>ZeroSameMutability( <A>obj</A> )</C> is equivalent to
+##  <C>0 * <A>obj</A></C>.
+##  <P/>
+##  <Ref Attr="ZeroAttr"/> and <Ref Func="Zero"/> are synonyms of
+##  <Ref Func="ZeroImmutable"/>.
+##  <Ref Func="ZeroSM"/> is a synonym of <Ref Func="ZeroSameMutability"/>.
+##  <Ref Func="ZeroOp"/> is a synonym of <Ref Func="ZeroMutable"/>.
+##  <P/>
+##  If <A>obj</A> is a domain or a family then <Ref Func="Zero"/> is defined
+##  as the zero element of all elements in <A>obj</A>,
 ##  provided that all these elements have the same zero.
-##  For example, the family of all cyclotomics has the zero element `0',
-##  but a collections family (see~"CollectionsFamily") may contain
-##  matrices of all dimensions and then it cannot have a unique zero element.
-##  Note that `Zero' is applicable to a domain only if it is an
-##  additive magma-with-zero (see~"IsAdditiveMagmaWithZero");
-##  use `AdditiveNeutralElement' (see~"AdditiveNeutralElement") otherwise.
-##
-##  The default method of `Zero' for additive elements calls `ZeroMutable'
-##  (note that methods for `ZeroMutable' must *not* delegate to `Zero');
+##  For example, the family of all cyclotomics has the zero element <C>0</C>,
+##  but a collections family (see&nbsp;<Ref Func="CollectionsFamily"/>) may
+##  contain matrices of all dimensions and then it cannot have a unique
+##  zero element.
+##  Note that <Ref Func="Zero"/> is applicable to a domain only if it is an
+##  additive magma-with-zero
+##  (see&nbsp;<Ref Func="IsAdditiveMagmaWithZero"/>);
+##  use <Ref Func="AdditiveNeutralElement"/> otherwise.
+##  <P/>
+##  The default method of <Ref Func="Zero"/> for additive elements calls
+##  <Ref Func="ZeroMutable"/>
+##  (note that methods for <Ref Func="ZeroMutable"/> must <E>not</E> delegate
+##  to <Ref Func="Zero"/>);
 ##  so other methods to compute zero elements need to be installed only for
-##  `ZeroMutable' and (in the case of copyable objects) `ZeroSameMutability'.
-##
-##  For domains, `Zero' may call `Representative' (see~"Representative"),
-##  but `Representative' is allowed to fetch the zero of a domain <D>
-##  only if `HasZero( <D> )' is `true'.
+##  <Ref Func="ZeroMutable"/> and (in the case of copyable objects)
+##  <Ref Func="ZeroSameMutability"/>.
+##  <P/>
+##  For domains, <Ref Func="Zero"/> may call <Ref Attr="Representative"/>,
+##  but <Ref Attr="Representative"/> is allowed to fetch the zero of a domain
+##  <A>D</A> only if <C>HasZero( <A>D</A> )</C> is <K>true</K>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ZeroImmutable", IsAdditiveElementWithZero );
 DeclareAttribute( "ZeroImmutable", IsFamily );
@@ -972,10 +1423,8 @@ DeclareSynonym( "ZeroSM", ZeroSameMutability );
 
 #############################################################################
 ##
-#o  `<elm1>+<elm2>' . . . . . . . . . . . . . . . . . . . sum of two elements
+#O  `<elm1>+<elm2>' . . . . . . . . . . . . . . . . . . . sum of two elements
 ##
-
-#DeclareOperation( "+", [ IsExtAElement, IsExtAElement ] );
 DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 
 
@@ -989,34 +1438,55 @@ DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 #O  AdditiveInverseSameMutability( <elm> )  .  additive inverse of an element
 #O  AdditiveInverseSM( <elm> )              .  additive inverse of an element
 ##
-##  `AdditiveInverseImmutable', `AdditiveInverseMutable', and 
-##  `AdditiveInverseSameMutability' all return the
-##  additive inverse of <elm>.
+##  <#GAPDoc Label="AdditiveInverseImmutable">
+##  <ManSection>
+##  <Attr Name="AdditiveInverseImmutable" Arg='elm'/>
+##  <Attr Name="AdditiveInverseAttr" Arg='elm'/>
+##  <Attr Name="AdditiveInverse" Arg='elm'/>
+##  <Oper Name="AdditiveInverseMutable" Arg='elm'/>
+##  <Oper Name="AdditiveInverseOp" Arg='elm'/>
+##  <Oper Name="AdditiveInverseSameMutability" Arg='elm'/>
+##  <Oper Name="AdditiveInverseSM" Arg='elm'/>
 ##
+##  <Description>
+##  <Ref Attr="AdditiveInverseImmutable"/>,
+##  <Ref Oper="AdditiveInverseMutable"/>, and 
+##  <Ref Oper="AdditiveInverseSameMutability"/> all return the
+##  additive inverse of <A>elm</A>.
+##  <P/>
 ##  They differ only w.r.t. the mutability of the result.
-##  `AdditiveInverseImmutable' is an attribute and hence returns an
-##  immutable result.  `AdditiveInverseMutable' is guaranteed to
-##  return a new *mutable* object whenever a mutable version of the
-##  required element exists in {\GAP} (see~"IsCopyable").
-##  `AdditiveInverseSameMutability' returns a result that is mutable
-##  if <elm> is mutable and if a mutable version of the required
-##  element exists in {\GAP};
+##  <Ref Attr="AdditiveInverseImmutable"/> is an attribute and hence returns
+##  an immutable result.
+##  <Ref Oper="AdditiveInverseMutable"/> is guaranteed to return a new
+##  <E>mutable</E> object whenever a mutable version of the required element
+##  exists in &GAP; (see&nbsp;<Ref Func="IsCopyable"/>).
+##  <Ref Oper="AdditiveInverseSameMutability"/> returns a result that is
+##  mutable if <A>elm</A> is mutable and if a mutable version of the required
+##  element exists in &GAP;;
 ##  for lists, it returns a result of the same immutability level as
 ##  the argument. For instance, if the argument is a mutable matrix
 ##  with immutable rows, it returns a similar object.
-##
-##  `AdditiveInverseSameMutability( <elm> )' is equivalent to `-<elm>'.
-##
-##  `AdditiveInverseAttr' and `AdditiveInverse' are synonyms of `AdditiveInverseImmutable'.
-##  `AdditiveInverseSM' is a synonym of `AdditiveInverseSameMutability'.
-##  `AdditiveInverseOp' is a synonym of `AdditiveInverseMutable'.
-##
-##  The default method of `AdditiveInverse' calls `AdditiveInverseMutable'
-##  (note that methods for `AdditiveInverseMutable' must *not* delegate to
-##  `AdditiveInverse');
+##  <P/>
+##  <C>AdditiveInverseSameMutability( <A>elm</A> )</C> is equivalent to
+##  <C>-<A>elm</A></C>.
+##  <P/>
+##  <Ref Attr="AdditiveInverseAttr"/> and <Ref Attr="AdditiveInverse"/> are
+##  synonyms of <Ref Attr="AdditiveInverseImmutable"/>.
+##  <Ref Oper="AdditiveInverseSM"/> is a synonym of
+##  <Ref Oper="AdditiveInverseSameMutability"/>.
+##  <Ref Oper="AdditiveInverseOp"/> is a synonym of
+##  <Ref Oper="AdditiveInverseMutable"/>.
+##  <P/>
+##  The default method of <Ref Attr="AdditiveInverse"/> calls
+##  <Ref Oper="AdditiveInverseMutable"/>
+##  (note that methods for <Ref Oper="AdditiveInverseMutable"/>
+##  must <E>not</E> delegate to <Ref Attr="AdditiveInverse"/>);
 ##  so other methods to compute additive inverses need to be installed only
-##  for `AdditiveInverseMutable' and (in the case of copyable objects)
-##  `AdditiveInverseSameMutability'.
+##  for <Ref Oper="AdditiveInverseMutable"/> and (in the case of copyable
+##  objects) <Ref Oper="AdditiveInverseSameMutability"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "AdditiveInverseImmutable", IsAdditiveElementWithInverse );
 DeclareSynonymAttr( "AdditiveInverseAttr", AdditiveInverseImmutable );
@@ -1033,20 +1503,16 @@ DeclareSynonym( "AdditiveInverseSM", AdditiveInverseSameMutability);
 
 #############################################################################
 ##
-#o  `<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
+#O  `<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
 ##
-
-#DeclareOperation( "-", [ IsExtAElement, IsAdditiveElementWithInverse ] );
 DeclareOperationKernel( "-", 
 	[ IsExtAElement, IsNearAdditiveElementWithInverse ], DIFF );
 
 
 #############################################################################
 ##
-#o  `<elm1>*<elm2>' . . . . . . . . . . . . . . . . . product of two elements
+#O  `<elm1>*<elm2>' . . . . . . . . . . . . . . . . . product of two elements
 ##
-
-#DeclareOperation( "*", [ IsExtRElement, IsExtLElement ] );
 DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 
 
@@ -1061,55 +1527,76 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 #O  OneSameMutability( <obj> )
 #O  OneSM( <obj> )
 ##
-##  `OneImmutable', `OneMutable', and `OneSameMutability' return the
-##  multiplicative neutral element of the multiplicative element <obj>.
+##  <#GAPDoc Label="OneImmutable">
+##  <ManSection>
+##  <Attr Name="OneImmutable" Arg='obj'/>
+##  <Attr Name="OneAttr" Arg='obj'/>
+##  <Attr Name="One" Arg='obj'/>
+##  <Attr Name="Identity" Arg='obj'/>
+##  <Oper Name="OneMutable" Arg='obj'/>
+##  <Oper Name="OneOp" Arg='obj'/>
+##  <Oper Name="OneSameMutability" Arg='obj'/>
+##  <Oper Name="OneSM" Arg='obj'/>
 ##
+##  <Description>
+##  <Ref Attr="OneImmutable"/>, <Ref Oper="OneMutable"/>,
+##  and <Ref Oper="OneSameMutability"/> return the multiplicative neutral
+##  element of the multiplicative element <A>obj</A>.
+##  <P/>
 ##  They differ only w.r.t. the mutability of the result.
-##  `OneImmutable' is an attribute and hence returns an immutable result.
-##  `OneMutable' is guaranteed to return a new *mutable* object whenever
-##  a mutable version of the required element exists in {\GAP}
-##  (see~"IsCopyable").
-##  `OneSameMutability' returns a result that is mutable if <obj> is mutable
-##  and if a mutable version of the required element exists in {\GAP};
+##  <Ref Attr="OneImmutable"/> is an attribute and hence returns an immutable
+##  result.
+##  <Ref Oper="OneMutable"/> is guaranteed to return a new <E>mutable</E>
+##  object whenever a mutable version of the required element exists in &GAP;
+##  (see&nbsp;<Ref Func="IsCopyable"/>).
+##  <Ref Oper="OneSameMutability"/> returns a result that is mutable if
+##  <A>obj</A> is mutable
+##  and if a mutable version of the required element exists in &GAP;;
 ##  for lists, it returns a result of the same immutability level as
 ##  the argument. For instance, if the argument is a mutable matrix
 ##  with immutable rows, it returns a similar object.
-##
-##  If <obj> is a multiplicative element then `OneSameMutability( <obj> )'
-##  is equivalent to `<obj>^0'.
-##
-##  `OneAttr', `One' and `Identity' are synonyms of `OneImmutable'.
-##  `OneSM' is a synonym of `OneSameMutability'.
-##  `OneOp' is a synonym of `OneMutable'.
-##
-##  If <obj> is a domain or a family then `One' is defined as the identity
-##  element of all elements in <obj>, 
+##  <P/>
+##  If <A>obj</A> is a multiplicative element then
+##  <C>OneSameMutability( <A>obj</A> )</C>
+##  is equivalent to <C><A>obj</A>^0</C>.
+##  <P/>
+##  <Ref Attr="OneAttr"/>, <Ref Attr="One"/> and <Ref Attr="Identity"/> are
+##  synonyms of <C>OneImmutable</C>.
+##  <Ref Oper="OneSM"/> is a synonym of <Ref Oper="OneSameMutability"/>.
+##  <Ref Oper="OneOp"/> is a synonym of <Ref Oper="OneMutable"/>.
+##  <P/>
+##  If <A>obj</A> is a domain or a family then <Ref Attr="One"/> is defined
+##  as the identity element of all elements in <A>obj</A>, 
 ##  provided that all these elements have the same identity.
-##  For example, the family of all cyclotomics has the identity element `1',
-##  but a collections family (see~"CollectionsFamily") may contain
-##  matrices of all dimensions and then it cannot have a unique identity
-##  element.
-##  Note that `One' is applicable to a domain only if it is a
-##  magma-with-one (see~"IsMagmaWithOne");
-##  use `MultiplicativeNeutralElement' (see~"MultiplicativeNeutralElement")
-##  otherwise.
-##
+##  For example, the family of all cyclotomics has the identity element
+##  <C>1</C>,
+##  but a collections family (see&nbsp;<Ref Func="CollectionsFamily"/>)
+##  may contain matrices of all dimensions and then it cannot have a unique
+##  identity element.
+##  Note that <Ref Oper="One"/> is applicable to a domain only if it is a
+##  magma-with-one (see&nbsp;<Ref Func="IsMagmaWithOne"/>);
+##  use <Ref Func="MultiplicativeNeutralElement"/> otherwise.
+##  <P/>
 ##  The identity of an object need not be distinct from its zero,
 ##  so for example a ring consisting of a single element can be regarded as a
-##  ring-with-one (see~"Rings").
+##  ring-with-one (see&nbsp;<Ref Chap="Rings"/>).
 ##  This is particularly useful in the case of finitely presented algebras,
 ##  where any factor of a free algebra-with-one is again an algebra-with-one,
 ##  no matter whether or not it is a zero algebra.
-##
-##  The default method of `One' for multiplicative elements calls
-##  `OneMutable' (note that methods for `OneMutable' must *not* delegate to
-##  `One');
+##  <P/>
+##  The default method of <Ref Attr="One"/> for multiplicative elements calls
+##  <Ref Oper="OneMutable"/> (note that methods for <Ref Oper="OneMutable"/>
+##  must <E>not</E> delegate to <Ref Attr="One"/>);
 ##  so other methods to compute identity elements need to be installed only
-##  for `OneOp' and (in the case of copyable objects) `OneSameMutability'.
-##
-##  For domains, `One' may call `Representative' (see~"Representative"),
-##  but `Representative' is allowed to fetch the identity of a domain <D>
-##  only if `HasOne( <D> )' is `true'.
+##  for <Ref Oper="OneOp"/> and (in the case of copyable objects)
+##  <Ref Oper="OneSameMutability"/>.
+##  <P/>
+##  For domains, <Ref Attr="One"/> may call <Ref Attr="Representative"/>,
+##  but <Ref Attr="Representative"/> is allowed to fetch the identity of a
+##  domain <A>D</A> only if <C>HasOne( <A>D</A> )</C> is <K>true</K>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "OneImmutable", IsMultiplicativeElementWithOne );
 DeclareAttribute( "OneImmutable", IsFamily );
@@ -1137,42 +1624,68 @@ DeclareSynonym( "OneSM", OneSameMutability);
 #O  InverseSameMutability( <elm> )  . .  multiplicative inverse of an element
 #O  InverseSM( <elm> )
 ##
-##  `InverseImmutable', `InverseMutable', and `InverseSameMutability'
-##  all return the multiplicative inverse of an element <elm>,
-##  that is, an element <inv> such that
-##  `<elm> * <inv> = <inv> * <elm> = One( <elm> )' holds;
-##  if <elm> is not invertible then `fail' (see~"Fail") is returned.
+##  <#GAPDoc Label="InverseImmutable">
+##  <ManSection>
+##  <Attr Name="InverseImmutable" Arg='elm'/>
+##  <Attr Name="InverseAttr" Arg='elm'/>
+##  <Attr Name="Inverse" Arg='elm'/>
+##  <Oper Name="InverseMutable" Arg='elm'/>
+##  <Oper Name="InverseOp" Arg='elm'/>
+##  <Oper Name="InverseSameMutability" Arg='elm'/>
+##  <Oper Name="InverseSM" Arg='elm'/>
 ##
+##  <Description>
+##  <Ref Attr="InverseImmutable"/>, <Ref Oper="InverseMutable"/>, and
+##  <Ref Oper="InverseSameMutability"/>
+##  all return the multiplicative inverse of an element <A>elm</A>,
+##  that is, an element <A>inv</A> such that
+##  <C><A>elm</A> * <A>inv</A> = <A>inv</A> * <A>elm</A>
+##   = One( <A>elm</A> )</C> holds;
+##  if <A>elm</A> is not invertible then <K>fail</K>
+##  (see&nbsp;<Ref Sect="Fail"/>) is returned.
+##  <P/>
 ##  Note that the above definition implies that a (general) mapping
-##  is invertible in the sense of `Inverse' only if its source equals its
-##  range (see~"Technical Matters Concerning General Mappings").
-##  For a bijective mapping $f$ whose source and range differ,
-##  `InverseGeneralMapping' (see~"InverseGeneralMapping") can be used
-##  to construct a mapping $g$ with the property
-##  that $f `*' g$ is the identity mapping on the source of $f$
-##  and $g `*' f$ is the identity mapping on the range of $f$.
-##
+##  is invertible in the sense of <Ref Attr="Inverse"/> only if its source
+##  equals its range
+##  (see&nbsp;<Ref Sect="Technical Matters Concerning General Mappings"/>).
+##  For a bijective mapping <M>f</M> whose source and range differ,
+##  <Ref Func="InverseGeneralMapping"/> can be used
+##  to construct a mapping <M>g</M> with the property
+##  that <M>f</M> <C>*</C> <M>g</M> is the identity mapping on the source of
+##  <M>f</M> and <M>g</M> <C>*</C> <M>f</M> is the identity mapping on the
+##  range of <M>f</M>.
+##  <P/>
 ##  The operations differ only w.r.t. the mutability of the result.
-##  `InverseImmutable' is an attribute and hence returns an immutable result.
-##  `InverseMutable' is guaranteed to return a new *mutable* object whenever
-##  a mutable version of the required element exists in {\GAP}.
-##  `InverseSameMutability' returns a result that is mutable if <elm> is
-##  mutable and if a mutable version of the required element exists in
-##  {\GAP}; for lists, it returns a result of the same immutability level as
+##  <Ref Attr="InverseImmutable"/> is an attribute and hence returns an
+##  immutable result.
+##  <Ref Oper="InverseMutable"/> is guaranteed to return a new <E>mutable</E>
+##  object whenever a mutable version of the required element exists in &GAP;.
+##  <Ref Oper="InverseSameMutability"/> returns a result that is mutable if
+##  <A>elm</A> is mutable and if a mutable version of the required element
+##  exists in &GAP;;
+##  for lists, it returns a result of the same immutability level as
 ##  the argument. For instance, if the argument is a mutable matrix
 ##  with immutable rows, it returns a similar object.
-##
-##  `InverseSameMutability( <elm> )' is equivalent to `<elm>^-1'.
-##
-##  `InverseAttr' and `Inverse' are synonyms of `InverseImmutable'.
-##  `InverseSM' is a synonym of `InverseSameMutability'.
-##  `InverseOp' is a synonym of `InverseMutable'.
-##
-##  The default method of `InverseImmutable' calls `InverseMutable' (note that methods
-##  for `InverseMutable' must *not* delegate to `InverseImmutable');
+##  <P/>
+##  <C>InverseSameMutability( <A>elm</A> )</C> is equivalent to
+##  <C><A>elm</A>^-1</C>.
+##  <P/>
+##  <Ref Attr="InverseAttr"/> and <Ref Attr="Inverse"/> are synonyms of
+##  <Ref Attr="InverseImmutable"/>.
+##  <Ref Oper="InverseSM"/> is a synonym of
+##  <Ref Oper="InverseSameMutability"/>.
+##  <Ref Oper="InverseOp"/> is a synonym of <Ref Oper="InverseMutable"/>.
+##  <P/>
+##  The default method of <Ref Attr="InverseImmutable"/> calls
+##  <Ref Oper="InverseMutable"/> (note that methods
+##  for <Ref Oper="InverseMutable"/> must <E>not</E> delegate to
+##  <Ref Attr="InverseImmutable"/>);
 ##  other methods to compute inverses need to be installed only for
-##  `InverseMutable' and (in the case of copyable objects)
-##  `InverseSameMutability'.
+##  <Ref Oper="InverseMutable"/> and (in the case of copyable objects)
+##  <Ref Oper="InverseSameMutability"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "InverseImmutable", IsMultiplicativeElementWithInverse );
 DeclareSynonymAttr( "InverseAttr", InverseImmutable );
@@ -1189,11 +1702,8 @@ DeclareSynonym( "InverseSM", InverseSameMutability );
 
 #############################################################################
 ##
-#o  `<elm1>/<elm2>' . . . . . . . . . . . . . . . .  quotient of two elements
+#O  `<elm1>/<elm2>' . . . . . . . . . . . . . . . .  quotient of two elements
 ##
-
-#DeclareOperation( "/",
-#    [ IsExtRElement, IsMultiplicativeElementWithInverse ] );
 DeclareOperationKernel( "/",
     [ IsExtRElement, IsMultiplicativeElementWithInverse ],
     QUO );
@@ -1203,14 +1713,19 @@ DeclareOperationKernel( "/",
 ##
 #O  LeftQuotient( <elm1>, <elm2> )  . . . . . . left quotient of two elements
 ##
-##  returns the product `<elm1>^(-1) \* <elm2>'.
-##  For some types of objects (for example permutations) this product can be
-##  evaluated more efficiently than by first inverting <elm1>
-##  and then forming the product with <elm2>.
+##  <#GAPDoc Label="LeftQuotient">
+##  <ManSection>
+##  <Oper Name="LeftQuotient" Arg='elm1, elm2'/>
 ##
-
-#DeclareOperation( "LeftQuotient",
-#    [ IsMultiplicativeElementWithInverse, IsExtLElement ] );
+##  <Description>
+##  returns the product <C><A>elm1</A>^(-1) * <A>elm2</A></C>.
+##  For some types of objects (for example permutations) this product can be
+##  evaluated more efficiently than by first inverting <A>elm1</A>
+##  and then forming the product with <A>elm2</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperationKernel( "LeftQuotient",
     [ IsMultiplicativeElementWithInverse, IsExtLElement ],
     LQUO );
@@ -1218,11 +1733,8 @@ DeclareOperationKernel( "LeftQuotient",
 
 #############################################################################
 ##
-#o  `<elm1>^<elm2>' . . . . . . . . .  . . . . . . . .  power of two elements
+#O  `<elm1>^<elm2>' . . . . . . . . .  . . . . . . . .  power of two elements
 ##
-
-#DeclareOperation( "^",
-#    [ IsMultiplicativeElement, IsMultiplicativeElement ] );
 DeclareOperationKernel( "^",
     [ IsMultiplicativeElement, IsMultiplicativeElement ],
     POW );
@@ -1233,13 +1745,26 @@ DeclareOperationKernel( "^",
 ##
 #O  Comm( <elm1>, <elm2> )  . . . . . . . . . . .  commutator of two elements
 ##
-##  returns the *commutator* of <elm1> and <elm2>. The commutator is defined
-##  as the product $<elm1>^{-1} \* <elm2>^{-1} \* <elm1> \* <elm2>$.
+##  <#GAPDoc Label="Comm">
+##  <ManSection>
+##  <Oper Name="Comm" Arg='elm1, elm2'/>
 ##
-
-#DeclareOperation( "Comm",
-#    [ IsMultiplicativeElementWithInverse,
-#      IsMultiplicativeElementWithInverse ] );
+##  <Description>
+##  returns the <E>commutator</E> of <A>elm1</A> and <A>elm2</A>.
+##  The commutator is defined as the product
+##  <M><A>elm1</A>^{{-1}} * <A>elm2</A>^{{-1}} * <A>elm1</A> * <A>elm2</A></M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> a:= (1,3)(4,6);; b:= (1,6,5,4,3,2);;
+##  gap> Comm( a, b );
+##  (1,5,3)(2,6,4)
+##  gap> LeftQuotient( a, b );
+##  (1,2)(3,6)(4,5)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperationKernel( "Comm",
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -1250,17 +1775,31 @@ DeclareOperationKernel( "Comm",
 ##
 #O  LieBracket( <elm1>, <elm2> )  . . . . . . . . Lie bracket of two elements
 ##
-##  returns the element `<elm1> \* <elm2> - <elm2> \* <elm1>'.
+##  <#GAPDoc Label="LieBracket">
+##  <ManSection>
+##  <Oper Name="LieBracket" Arg='elm1, elm2'/>
+##
+##  <Description>
+##  returns the element
+##  <C><A>elm1</A> * <A>elm2</A> - <A>elm2</A> * <A>elm1</A></C>.
+##  <P/>
+##  The addition <Ref Oper="\+"/> is assumed to be associative
+##  but <E>not</E> assumed to be commutative
+##  (see&nbsp;<Ref Func="IsAdditivelyCommutative"/>).
+##  The multiplication <Ref Oper="\*"/> is <E>not</E> assumed to be
+##  commutative or associative
+##  (see&nbsp;<Ref Func="IsCommutative"/>, <Ref Func="IsAssociative"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "LieBracket", [ IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#o  `<elm1> mod <elm2>' . . . . . . . . . . . . . . . modulus of two elements
+#O  `<elm1> mod <elm2>' . . . . . . . . . . . . . . . modulus of two elements
 ##
-
-#DeclareOperation( "mod", [ IsObject, IsObject ] );
 DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 
 
@@ -1268,25 +1807,33 @@ DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 ##
 #A  Int( <elm> )  . . . . . . . . . . . . . . . . . .  integer value of <elm>
 ##
-##  `Int' returns an integer <int> whose meaning depends on the type
-##  of <elm>.
+##  <#GAPDoc Label="Int">
+##  <ManSection>
+##  <Attr Name="Int" Arg='elm'/>
 ##
-##  If <elm> is a rational number (see~"Rational Numbers") then <int> is the
-##  integer part of the quotient of numerator and denominator of <elm>
-##  (see~"QuoInt").
-##
-##  If <elm> is an element of a finite prime field
-##  (see Chapter~"Finite Fields") then <int> is the smallest
-##  nonnegative integer such that `<elm> = <int> \* One( <elm> )'.
-##
-##  If <elm> is a string (see Chapter~"Strings and Characters") consisting of
-##  digits `{'0'}', `{'1'}', $\ldots$, `{'9'}'
-##  and `{'-'}' (at the first position) then <int> is the integer
+##  <Description>
+##  <Ref Attr="Int"/> returns an integer <C>int</C> whose meaning depends
+##  on the type of <A>elm</A>.
+##  <P/>
+##  If <A>elm</A> is a rational number
+##  (see Chapter&nbsp;<Ref Chap="Rational Numbers"/>) then <C>int</C> is the
+##  integer part of the quotient of numerator and denominator of <A>elm</A>
+##  (see&nbsp;<Ref Func="QuoInt"/>).
+##  <P/>
+##  If <A>elm</A> is an element of a finite prime field
+##  (see Chapter&nbsp;<Ref Chap="Finite Fields"/>) then <C>int</C> is the
+##  smallest nonnegative integer such that
+##  <C><A>elm</A> = int * One( <A>elm</A> )</C>.
+##  <P/>
+##  If <A>elm</A> is a string
+##  (see Chapter&nbsp;<Ref Chap="Strings and Characters"/>) consisting of
+##  digits <C>'0'</C>, <C>'1'</C>, <M>\ldots</M>, <C>'9'</C>
+##  and <C>'-'</C> (at the first position) then <C>int</C> is the integer
 ##  described by this string.
-##  The operation `String' (see~"String") can be used to compute a string for
+##  The operation <Ref Func="String"/> can be used to compute a string for
 ##  rational integers, in fact for all cyclotomics.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> Int( 4/3 );  Int( -2/3 );
 ##  1
 ##  0
@@ -1297,7 +1844,10 @@ DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 ##  12345
 ##  -27
 ##  fail
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "Int", IsObject );
 
@@ -1306,22 +1856,31 @@ DeclareAttribute( "Int", IsObject );
 ##
 #A  Rat( <elm> )  . . . . . . . . . . . . . . . . . . rational value of <elm>
 ##
-##  `Rat' returns a rational number <rat> whose meaning depends on the type
-##  of <elm>.
+##  <#GAPDoc Label="Rat">
+##  <ManSection>
+##  <Attr Name="Rat" Arg='elm'/>
 ##
-##  If <elm> is a string consisting of digits `{'0'}', `{'1'}', $\ldots$,
-##  `{'9'}' and `{'-'}' (at the first position), `{'/'}' and the decimal dot
-##  `{'.'}' then <rat> is the rational described by this string.
-##  The operation `String' (see~"String") can be used to compute a string for
+##  <Description>
+##  <Ref Attr="Rat"/> returns a rational number <A>rat</A> whose meaning
+##  depends on the type of <A>elm</A>.
+##  <P/>
+##  If <A>elm</A> is a string consisting of digits <C>'0'</C>, <C>'1'</C>,
+##  <M>\ldots</M>, <C>'9'</C> and <C>'-'</C> (at the first position),
+##  <C>'/'</C> and the decimal dot <C>'.'</C> then <A>rat</A> is the rational
+##  described by this string.
+##  The operation <Ref Func="String"/> can be used to compute a string for
 ##  rational numbers, in fact for all cyclotomics.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> Rat( "1/2" );  Rat( "35/14" );  Rat( "35/-27" );  Rat( "3.14159" );
 ##  1/2
 ##  5/2
 ##  -35/27
 ##  314159/100000
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "Rat", IsObject );
 
@@ -1330,12 +1889,21 @@ DeclareAttribute( "Rat", IsObject );
 ##
 #O  Sqrt( <obj> )
 ##
-##  `Sqrt' returns a square root of <obj>, that is, an object $x$ with the
-##  property that $x \cdot x = <obj>$ holds.
-##  If such an $x$ is not unique then the choice of $x$ depends on the type
-##  of <obj>.
-##  For example, `ER' (see~"ER") is the `Sqrt' method for rationals
-##  (see~"IsRat").
+##  <#GAPDoc Label="Sqrt">
+##  <ManSection>
+##  <Oper Name="Sqrt" Arg='obj'/>
+##
+##  <Description>
+##  <Ref Oper="Sqrt"/> returns a square root of <A>obj</A>, that is,
+##  an object <M>x</M> with the property that <M>x \cdot x = <A>obj</A></M>
+##  holds.
+##  If such an <M>x</M> is not unique then the choice of <M>x</M> depends
+##  on the type of <A>obj</A>.
+##  For example, <Ref Func="ER"/> is the <Ref Oper="Sqrt"/> method for
+##  rationals (see&nbsp;<Ref Func="IsRat"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "Sqrt", [ IsMultiplicativeElement ] );
 
@@ -1345,12 +1913,27 @@ DeclareOperation( "Sqrt", [ IsMultiplicativeElement ] );
 #O  Root( <n>, <k> )
 #O  Root( <n> )
 ##
+##  <ManSection>
+##  <Oper Name="Root" Arg='n, k'/>
+##  <Oper Name="Root" Arg='n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation( "Root", [ IsMultiplicativeElement, IS_INT ] );
 
 
 #############################################################################
 ##
 #O  Log( <elm>, <base> )
+##
+##  <ManSection>
+##  <Oper Name="Log" Arg='elm, base'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "Log",
     [ IsMultiplicativeElement, IsMultiplicativeElement ] );
@@ -1360,21 +1943,33 @@ DeclareOperation( "Log",
 ##
 #A  Characteristic( <obj> ) . . .  characteristic of an element/domain/family
 ##
-##  `Characteristic' returns the *characteristic* of <obj>,
-##  where <obj> must either be an additive element, a domain or a family.
+##  <#GAPDoc Label="Characteristic">
+##  <ManSection>
+##  <Attr Name="Characteristic" Arg='obj'/>
 ##
-##  For a domain <D>, the characteristic is defined if <D> is closed under
-##  addition and has a zero element `<z> = Zero( <D> )' (see~"Zero");
-##  in this case, `Characteristic( <D> )' is the smallest positive integer
-##  <p> such that `<p> * <x> = <z>' for all elements <x> in <D>,
-##  if such an integer exists, and the integer zero `0' otherwise.
-##
+##  <Description>
+##  <Ref Attr="Characteristic"/> returns the <E>characteristic</E> of
+##  <A>obj</A>, where <A>obj</A> must either be an additive element,
+##  a domain or a family.
+##  <P/>
+##  For a domain <M>D</M>, the characteristic is defined if <M>D</M> is
+##  closed under addition and has a zero element
+##  <M>z</M> <C>= Zero</C><M>( D )</M> (see&nbsp;<Ref Func="Zero"/>);
+##  in this case, <Ref Attr="Characteristic"/> returns the smallest positive
+##  integer <M>p</M> such that <M>p</M> <C>*</C> <M>x = z</M>
+##  for all elements <M>x</M> in <M>D</M>,
+##  if such an integer exists, and the integer zero <C>0</C> otherwise.
+##  <P/>
 ##  If a family has a characteristic then this means
 ##  that all domains of elements in this family have this characteristic.
 ##  In this case, also each element in the family has this characteristic.
-##  (Note that also the zero element $z$ of a finite field in characteristic
-##  $p$ has characteristic $p$, although $n \* z = z$ for any integer $n$.)
-##  
+##  (Note that also the zero element <M>z</M> of a finite field in
+##  characteristic <M>p</M> has characteristic <M>p</M>,
+##  although <M>n</M> <C>*</C> <M>z = z</M> for any integer <M>n</M>.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "Characteristic", IsObject );
 
 
@@ -1382,11 +1977,20 @@ DeclareAttribute( "Characteristic", IsObject );
 ##
 #A  Order( <elm> )
 ##
-##  is the multiplicative order of <elm>.
-##  This is the smallest positive integer <n> such that
-##  `<elm>^<n> = One( <elm> )' if such an integer exists. If the order is
-##  infinite, `Order' may return the value `infinity', but it also might run
-##  into an infinite loop trying to test the order.
+##  <#GAPDoc Label="Order">
+##  <ManSection>
+##  <Attr Name="Order" Arg='elm'/>
+##
+##  <Description>
+##  is the multiplicative order of <A>elm</A>.
+##  This is the smallest positive integer <M>n</M> such that
+##  <A>elm</A> <C>^</C> <M>n</M> <C>= One( <A>elm</A> )</C>
+##  if such an integer exists. If the order is
+##  infinite, <Ref Attr="Order"/> may return the value <Ref Var="infinity"/>,
+##  but it also might run into an infinite loop trying to test the order.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "Order", IsMultiplicativeElementWithOne );
 
@@ -1395,16 +1999,29 @@ DeclareAttribute( "Order", IsMultiplicativeElementWithOne );
 ##
 #A  NormedRowVector( <v> )
 ##
-##  returns a scalar multiple `<w> = <c> \* <v>' of the row vector <v>
-##  with the property that the first nonzero entry of <w> is an identity
-##  element in the sense of `IsOne'.
+##  <#GAPDoc Label="NormedRowVector">
+##  <ManSection>
+##  <Attr Name="NormedRowVector" Arg='v'/>
+##
+##  <Description>
+##  returns a scalar multiple <C><A>w</A> = <A>c</A> * <A>v</A></C>
+##  of the row vector <A>v</A>
+##  with the property that the first nonzero entry of <A>w</A> is an identity
+##  element in the sense of <Ref Func="IsOne"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NormedRowVector( [ 5, 2, 3 ] );
+##  [ 1, 2/5, 3/5 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "NormedRowVector", IsRowVector and IsScalarCollection );
 
 
 #############################################################################
 ##
-
 #P  IsCommutativeFamily
 ##
 DeclareProperty( "IsCommutativeFamily", IsFamily );
@@ -1414,6 +2031,13 @@ DeclareProperty( "IsCommutativeFamily", IsFamily );
 ##
 #P  IsSkewFieldFamily
 ##
+##  <ManSection>
+##  <Prop Name="IsSkewFieldFamily" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareProperty( "IsSkewFieldFamily", IsFamily );
 
 
@@ -1421,9 +2045,15 @@ DeclareProperty( "IsSkewFieldFamily", IsFamily );
 ##
 #P  IsUFDFamily( <family> )
 ##
-##  the family <family> is at least a commutative ring-with-one,
+##  <ManSection>
+##  <Prop Name="IsUFDFamily" Arg='family'/>
+##
+##  <Description>
+##  the family <A>family</A> is at least a commutative ring-with-one,
 ##  without zero divisors, and the factorisation of each element into
-##  elements of <family> is unique (up to units and ordering).
+##  elements of <A>family</A> is unique (up to units and ordering).
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "IsUFDFamily", IsFamily );
 
@@ -1431,6 +2061,13 @@ DeclareProperty( "IsUFDFamily", IsFamily );
 #############################################################################
 ##
 #R  IsAdditiveElementAsMultiplicativeElementRep( <obj> )
+##
+##  <ManSection>
+##  <Filt Name="IsAdditiveElementAsMultiplicativeElementRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareRepresentation("IsAdditiveElementAsMultiplicativeElementRep",
   IsPositionalObjectRep and IsMultiplicativeElement,[]);
@@ -1440,6 +2077,13 @@ DeclareRepresentation("IsAdditiveElementAsMultiplicativeElementRep",
 ##
 #A  AdditiveElementsAsMultiplicativeElementsFamily( <fam> )
 ##
+##  <ManSection>
+##  <Attr Name="AdditiveElementsAsMultiplicativeElementsFamily" Arg='fam'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute("AdditiveElementsAsMultiplicativeElementsFamily", IsFamily);
 
 
@@ -1447,10 +2091,16 @@ DeclareAttribute("AdditiveElementsAsMultiplicativeElementsFamily", IsFamily);
 ##
 #A  AdditiveElementAsMultiplicativeElement( <obj> )
 ##
-##  for an additive element <obj>, this attribute returns a *multiplicative*
+##  <ManSection>
+##  <Attr Name="AdditiveElementAsMultiplicativeElement" Arg='obj'/>
+##
+##  <Description>
+##  for an additive element <A>obj</A>, this attribute returns a <E>multiplicative</E>
 ##  element, for which multiplication is done via addition of the original
-##  element. The original element of such a ``wrapped'' multiplicative
-##  element can be obtained as the `UnderlyingElement'.
+##  element. The original element of such a <Q>wrapped</Q> multiplicative
+##  element can be obtained as the <C>UnderlyingElement</C>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute("AdditiveElementAsMultiplicativeElement",
   IsAdditiveElement );
@@ -1460,8 +2110,14 @@ DeclareAttribute("AdditiveElementAsMultiplicativeElement",
 ##
 #O  UnderlyingElement( <elm> )
 ##
-##  Let <elm> be an object which builds on elements of another domain and
+##  <ManSection>
+##  <Oper Name="UnderlyingElement" Arg='elm'/>
+##
+##  <Description>
+##  Let <A>elm</A> be an object which builds on elements of another domain and
 ##  just wraps these up to provide another arithmetic.
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "UnderlyingElement", [ IsObject ] );
 
@@ -1470,8 +2126,16 @@ DeclareOperation( "UnderlyingElement", [ IsObject ] );
 ##
 #P  IsIdempotent( <elt> )
 ##
-##  true iff <elt> is its own square. 
-##  (Even if IsZero(<elt>) is also true.)
+##  <#GAPDoc Label="IsIdempotent">
+##  <ManSection>
+##  <Prop Name="IsIdempotent" Arg='elt'/>
+##
+##  <Description>
+##  returns <K>true</K> iff <A>elt</A> is its own square. 
+##  (Even if <Ref Func="IsZero"/> returns <K>true</K> for <A>elt</A>.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsIdempotent", IsMultiplicativeElement);
 

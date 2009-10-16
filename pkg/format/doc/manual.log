@@ -1,0 +1,87 @@
+This is pdfTeX, Version 3.14159-13d (Web2C 7.3.1) (format=pdftex 1999.7.23)  20 AUG 2003 16:13
+**manual
+(manual.tex[/usr/local/teTeX/texmf/pdftex/config/pdftex.cfg]
+Babel <v3.6x> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(gapmacro.tex (/usr/local/teTeX/texmf/tex/plain/amsfonts/amssym.tex
+(/usr/local/teTeX/texmf/tex/plain/amsfonts/amssym.def
+\msafam=\fam8
+\msbfam=\fam9
+\eufmfam=\fam10
+))
+Running PDFTeX
+\pagewidth=\dimen16
+\pageheight=\dimen17
+\colwidth=\dimen18
+\partialpage=\box16
+\origvsize=\dimen19
+\manindent=\dimen20
+\smallmanindent=\dimen21
+\msbfam=\fam11
+\labelout=\write0
+\indexout=\write1
+\secindout=\write2
+\tocout=\write3
+\citeout=\write4
+\ans=\write5
+\labelin=\read0
+\indexin=\read1
+\tocin=\read2
+\citein=\read3
+\secno=\count26
+\subsecno=\count27
+\exno=\count28
+\indentno=\count29
+\chapnum=\count30
+\ortoks=\toks12
+) [1[/usr/local/teTeX/texmf/dvips/config/pdftex.map]]
+\makelabel{format:}{{\setbox 0=\hbox {1}\vrule width 0pt height\ht 0}}
+Chapter `' .
+[2.1
+\chapcontents {\tocstrut }{}{2}
+]
+\makelabel{format:Contents}{{\setbox 0=\hbox {1}\vrule width 0pt height\ht 0}}
+Chapter `Contents' .
+(manual.toc) [3.2
+\chapcontents {\tocstrut }{Contents}{3}
+] (manual.lab)
+\openout3 = `manual.toc'.
+
+\openout0 = `manual.lab'.
+
+\openout1 = `manual.idx'.
+
+\openout2 = `manual.six'.
+
+\openout4 = `manual.aux'.
+
+ [4.2] (intro.tex
+Chapter `Introduction to FORMAT' .
+) (forms.tex [5.1]
+Chapter `Formations in GAP' .
+[6.2]) (resid.tex [7.2] [8.2]
+Chapter `Residual Functions' .
+) (norm.tex [9.3]
+Chapter `FNormalizers' .
+) (cover.tex [10.4]
+Chapter `Covering Subgroups' .
+) (examples.tex [11.5]
+Chapter `Formation Examples' .
+[12.6] [13.6] [14.6]) (others.tex [15.6]
+Chapter `Other Applications' .
+) [16.7]
+Chapter `Bibliography' .
+(manual.bbl) [17.8]
+Chapter `Index' .
+(manual.ind) [18.9]
+##
+## Citations for BibTeX written on manual.aux.
+## Index entries for makeindex written on manual.idx.
+## Section index entries written on manual.six.
+## Label definitions written on manual.lab.
+## Table of contents written on manual.toc.
+##
+ )<cmsl10.pfb><cmmi7.pfb><cmex10.pfb><cmtt10.pfb><msam7.pfb><cmr8.pfb><cmr7.pfb
+><cmmi10.pfb><cmsy7.pfb><cmti10.pfb><cmss10.pfb><cminch.pfb><cmbx10.pfb><cmsy10
+.pfb><cmr10.pfb><cmssdc10.pfb>
+Output written on manual.pdf (18 pages, 162726 bytes).

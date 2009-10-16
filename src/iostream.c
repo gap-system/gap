@@ -2,7 +2,7 @@
 **
 *W  iostream.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id$
+*H  @(#)$Id: iostream.c,v 4.35 2007/03/05 15:35:33 sal Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -27,7 +27,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_iostream_c =
-   "@(#)$Id$";
+   "@(#)$Id: iostream.c,v 4.35 2007/03/05 15:35:33 sal Exp $";
 
 #define INCLUDE_DECLARATION_PART
 #include        "iostream.h"            /* file input/output               */
@@ -515,13 +515,6 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 
 	/* set input to non blocking operation */
 	/* Not any more */
-#if 0
-	if ( fcntl( PtyIOStreams[stream].ptyFD, F_SETFL, O_NDELAY ) < 0 )
-	  {
-	    Pr( "Panic: cannot set non blocking operation.\n", 0, 0);
-	    goto cleanup;
-	  }
-#endif
 
 	PtyIOStreams[stream].inuse = 1;
 	PtyIOStreams[stream].alive = 1;

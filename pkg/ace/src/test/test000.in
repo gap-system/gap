@@ -1,0 +1,100 @@
+
+# test000.in - Colin Ramsay - 15 Mar 99
+#
+# An example of the trivial group from p18 of Coxeter & Moser (3rd edn).
+
+Mess:10000;
+
+Gr: r,s;
+Rel: rs^2=s^3r, sr^2=r^3s;
+
+# The book does this in 6; we manage 7!
+
+Gen: r;
+Fel:1;  No:0;
+End;
+
+# This (ie, 27) is the best I can find over the trivial subgroup.
+
+Gen: ;
+Fel:1;
+Aep:7;
+
+# A winning presentation is ...
+
+Rel: srrSRRR, RSSSrss;
+Diagnostics:2;
+End;
+
+# An explicit defn sequence; pri coincs are 9=5 & 18=26.
+# We seem to need these, but we can shave it down to t=23.
+
+Gr: r,s;
+Rel: rs^2=s^3r, sr^2=r^3s;
+Gen:
+ r R,  			# 2
+ rr RR,  		# 3
+ rrr RRR,  		# 4
+ rrrs SRRR,  		# 5
+ rrrsR rSRRR,  		# 6
+ rrrsRR rrSRRR,		# 7
+ S s,  			# 8
+ SS ss,  		# 9
+ SSR rss,  		# 10
+ SSRs Srss,  		# 11
+ SSRss SSrss,  		# 12
+ SSRsss SSSrss,		# 13
+ rs SR,  		# 14
+ rS sR,  		# 15
+# rrs SRR,  		# 16
+# rrS sRR,  		# 17
+ rrrr RRRR,  		# 18
+ rrrS sRRR,  		# 19
+# rrrsr RSRRR, 		# 20
+# rrrss SSRRR,  	# 21
+ rrrsRs SrSRRR,  	# 22
+ rrrsRS srSRRR,  	# 23
+ rrrsRSS ssrSRRR,	# 24
+ rrrSR rsRRR,  		# 25
+ rSr RsR,  		# 26
+ SSRS srss;  		# 27
+
+AsIs:1;
+No:0;       		# Since done _before_ first DD!
+Di:0;
+End;
+
+# Looking at the coinc words, and `priming' the system to look for them,
+#   shows that rrr & rS are good (aep gives t=25).
+# This yields the run (with 16=8, 14=19 & 22=23), which we can take down
+#   to t=22.
+
+Gen:
+ r R,  		# 2
+ rr RR,  	# 3
+ rrr RRR,  	# 4
+ rS sR,  	# 5
+ R r,  		# 6
+ RS sr,  	# 7
+ RSr Rsr,  	# 8
+ RSrr RRsr,  	# 9
+ s S,  		# 10
+ sr RS,  	# 11
+ srS sRS,  	# 12
+ srSS ssRS,  	# 13
+ srSSR rssRS,  	# 14
+ srSSRs SrssRS,	# 15
+# rs SR,  	# 16 !
+# rrs SRR,  	# 17
+# rrS sRR,  	# 18
+ rrrs SRRR,  	# 19
+ rrrS sRRR,  	# 20
+ rrrSR rsRRR,  	# 21
+ rrrr RRRR,  	# 22
+ rSr RsR,  	# 23
+ srSSRR rrssRS,	# 24
+ srSSRRs SrrssRS; # 25
+
+End;
+Stat;
+

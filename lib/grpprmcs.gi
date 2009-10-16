@@ -2,14 +2,14 @@
 ##
 #W  grpprmcs.gi                 GAP library                       Akos Seress
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpprmcs.gi,v 4.54 2008/10/14 21:02:48 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpprmcs_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpprmcs.gi,v 4.54 2008/10/14 21:02:48 gap Exp $";
 
 
 #############################################################################
@@ -152,6 +152,7 @@ InstallMethod( CompositionSeries,
     # composition series for Gr/workgroup is already computed.
     # Try to get a factor group of workgroup
     while (Size(workgroup) > 1) or (Length(homlist) > 0) do
+#Print(List(normals,Length)," ",Size(workgroup),"\n");
         if Size(workgroup) > 1  then
             lastpt := LargestMovedPoint(workgroup);
 
@@ -159,7 +160,7 @@ InstallMethod( CompositionSeries,
             workgrouporbit:= StabChainMutable( workgroup ).orbit;
             if Length(workgrouporbit) < lastpt   then
                 tchom :=
-		ActionHomomorphism(workgroup,workgrouporbit,"surjective");
+		  ActionHomomorphism(workgroup,workgrouporbit,"surjective");
                 Add(homlist,tchom);
                 workgroup := Image(tchom,workgroup);
             else
@@ -197,6 +198,10 @@ InstallMethod( CompositionSeries,
         # if the workgroup was trivial
         else
             lenhomlist := Length(homlist);
+
+	    # pull back natural homs
+	    PullBackNaturalHomomorphismsPool(homlist[lenhomlist]);
+
             workgroup := KernelOfMultiplicativeGeneralMapping(
                              homlist[lenhomlist] );
 
@@ -227,17 +232,15 @@ InstallMethod( CompositionSeries,
         SetIsSimpleGroup( fac, true );
 	fahom:=GroupHomomorphismByImagesNC( s, fac,
                         normals[i-1], factors[i-1] );
-	if IsIdenticalObj(Parent(t),s) then
-	  Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
-	fi;
+	#if IsIdenticalObj(Parent(t),s) then
+	#  Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+	#fi;
         AddNaturalHomomorphismsPool(s, t,fahom);
         Add( list, t );
         s := t;
     od;
     t := TrivialSubgroup( s );
-    if Size( s ) / factorsize[Length(normals)] <> 1  then
-        Error("this shouldn't happen");
-    fi;
+    Assert(1,Size( s )=factorsize[Length(normals)]);
     fac := GroupByGenerators( factors[Length(normals)] );
     SetSize( fac, factorsize[Length(normals)] );
     SetIsSimpleGroup( fac, true );
@@ -287,10 +290,8 @@ InstallGlobalFunction( NonPerfectCSPG,
     for g in StabChainMutable( workgroup ).generators do
         if not (g in oldworkup)  then
             # check for error in random computation of derived subgroup
-            if ForAny ( StabChainMutable( oldworkup ).generators,
-                        x->not(x^g in oldworkup) ) then
-               Error("this shouldn't happen");
-            fi;
+	    Assert(1, ForAll ( StabChainMutable( oldworkup ).generators, 
+	                      x->(x^g in oldworkup) )); 
             workup := ClosureGroup(oldworkup, g);
             order := Size(workup)/Size(oldworkup);
             orderlist := FactorsInt(order);
@@ -425,7 +426,7 @@ InstallGlobalFunction( PerfectCSPG,
                   L := Orbit( H, StabChainMutable( H ).orbit[1] );
                   tchom := ActionHomomorphism(H,L,"surjective");
                   op := Image( tchom );
-                  H := PreImages(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
+                  H := PreImage(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
                   H := Centre(H);
                   SetIsAbelian( H, true );
               fi;
@@ -1135,6 +1136,8 @@ InstallGlobalFunction( PullbackKernelCSPG,
             i, j,       # loop variables
             gens,       # list of generators in kernels
                         # of homomorphisms in homlist
+            k,		# kernel
+	    kg,		# kernel generators
             g;          # a member of gens
 
     # for each kernel, compute preimages of the kernel generators in the
@@ -1142,13 +1145,22 @@ InstallGlobalFunction( PullbackKernelCSPG,
     # in the composition series
     lenhomlist := Length(homlist);
     for i in [1..lenhomlist] do
+       k:=KernelOfMultiplicativeGeneralMapping(homlist[i]);
+       kg:=GeneratorsOfGroup(k);
        if IsBound(auxiliary[i])  then
-           gens := Union( GeneratorsOfGroup(
-                       KernelOfMultiplicativeGeneralMapping(homlist[i]) ),
+           gens := Union( GeneratorsOfGroup( k ),
                          StabChainMutable( auxiliary[i] ).generators);
+           if Length(gens)>6 then
+	     g:=Group(gens,());
+	     SetSize(g,Size(k)*Size(auxiliary[i]));
+	     gens:=SmallGeneratingSet(g);
+	   fi;
        else
-           gens := GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
-                                          homlist[i] ) );
+         if Length(kg)>5 then
+	   gens:=SmallGeneratingSet(k);
+	 else
+           gens := kg;
+	 fi;
        fi;
        for g in gens do
            for j in [1..i-1] do
@@ -2551,7 +2563,7 @@ end );
 ##
 InstallGlobalFunction( ChiefSeriesOfGroup, function(arg)
 local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
-      through;
+      through,ocs;
   G:=arg[1];
   H:=G;
   through:=[];
@@ -2571,10 +2583,24 @@ local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
   U:=G;
   while Size(U)>1 do
     # get maximal normal subgroup
-    cs:=CompositionSeries(U);
+    if Size(U)<Size(G) and Size(ocs[1])/Size(U)<1000 then
+      n:=List(ocs,i->Intersection(U,i));
+      cs:=[U];
+      for i in [2..Length(n)] do
+        if Size(cs[Length(cs)])>Size(n[i]) then
+	  Add(cs,n[i]);
+	fi;
+      od;
+    else
+      cs:=CompositionSeries(U);
+    fi;
+    ocs:=cs;
     # add composition factors which are normal
     n:=2;
-    while n<=Length(cs) and Length(through)=0 and IsNormal(H,cs[n]) do
+    while n<=Length(cs) and Length(through)=0 and 
+      # IsNormal(H,cs[n]) do
+      ForAll(GeneratorsOfGroup(H),x->ForAll(GeneratorsOfGroup(cs[n]),
+                                       y->y^x in cs[n])) do
       U:=cs[n];
       Add(nser,U);
       n:=n+1;
@@ -2597,7 +2623,23 @@ local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
 	fi;
       fi;
 
-      n:=Core(H,cs);
+      #n:=Core(H,cs);
+      n:=cs;
+      i:=1;
+      gens:=GeneratorsOfGroup(H);
+      while i<=Length(gens) do
+        if not ForAll(GeneratorsOfGroup(n), x->x^gens[i] in n) then
+	  if IsIdenticalObj(FamilyObj(One(n)),FamilyObj(gens[i])) then
+	    n:=Intersection(n,n^gens[i]);
+	  else
+	    n:=Intersection(n,Image(gens[i],n));
+	  fi;
+	  i:=1;
+	else
+	  i:=i+1;
+	fi;
+      od;
+
       #o:=GroupOnSubgroupsOrbit(H,cs);
       #Info(InfoGroup,1,"orblen=",Length(o));
       #n:=Intersection(o);

@@ -1,0 +1,275 @@
+\makelabel{guava:The GAP error-correcting codes package GUAVA}{1}
+\makelabel{guava:Acknowledgements}{1.1}
+\makelabel{guava:Installing GUAVA}{1.2}
+\makelabel{guava:Loading GUAVA}{1.3}
+\makelabel{guava:Codewords}{2}
+\makelabel{guava:Construction of Codewords}{2.1}
+\makelabel{guava:Codeword}{2.1.1}
+\makelabel{guava:Codeword}{2.1.2}
+\makelabel{guava:IsCodeword}{2.1.3}
+\makelabel{guava:Comparisons of Codewords}{2.2}
+\makelabel{guava:codewords!equality}{2.2.1}
+\makelabel{guava:codewords!inequality}{2.2.1}
+\makelabel{guava:Arithmetic Operations for Codewords}{2.3}
+\makelabel{guava:codewords!addition}{2.3.1}
+\makelabel{guava:codewords!subtraction}{2.3.2}
+\makelabel{guava:code!cosets}{2.3.3}
+\makelabel{guava:code!cosets}{2.3.3}
+\makelabel{guava:Functions that Convert Codewords to Vectors or Polynomials}{2.4}
+\makelabel{guava:VectorCodeword}{2.4.1}
+\makelabel{guava:PolyCodeword}{2.4.2}
+\makelabel{guava:Functions that Change the Display Form of a Codeword}{2.5}
+\makelabel{guava:TreatAsVector}{2.5.1}
+\makelabel{guava:TreatAsPoly}{2.5.2}
+\makelabel{guava:Other Codeword Functions}{2.6}
+\makelabel{guava:NullWord}{2.6.1}
+\makelabel{guava:NullWord}{2.6.1}
+\makelabel{guava:NullWord}{2.6.1}
+\makelabel{guava:DistanceCodeword}{2.6.2}
+\makelabel{guava:Support}{2.6.3}
+\makelabel{guava:WeightCodeword}{2.6.4}
+\makelabel{guava:Codes}{3}
+\makelabel{guava:Comparisons of Codes}{3.1}
+\makelabel{guava:codes!equality}{3.1.1}
+\makelabel{guava:codes!inequality}{3.1.1}
+\makelabel{guava:Operations for Codes}{3.2}
+\makelabel{guava:codes!adition}{3.2.1}
+\makelabel{guava:codes!coset}{3.2.2}
+\makelabel{guava:codes!coset}{3.2.2}
+\makelabel{guava:codes!product}{3.2.3}
+\makelabel{guava:code!evaluation}{3.2.4}
+\makelabel{guava:code!element test}{3.2.5}
+\makelabel{guava:code!subcode}{3.2.6}
+\makelabel{guava:Boolean Functions for Codes}{3.3}
+\makelabel{guava:IsCode}{3.3.1}
+\makelabel{guava:IsLinearCode}{3.3.2}
+\makelabel{guava:IsCyclicCode}{3.3.3}
+\makelabel{guava:IsPerfectCode}{3.3.4}
+\makelabel{guava:IsMDSCode}{3.3.5}
+\makelabel{guava:IsSelfDualCode}{3.3.6}
+\makelabel{guava:IsSelfOrthogonalCode}{3.3.7}
+\makelabel{guava:Equivalence and Isomorphism of Codes}{3.4}
+\makelabel{guava:IsEquivalent}{3.4.1}
+\makelabel{guava:CodeIsomorphism}{3.4.2}
+\makelabel{guava:AutomorphismGroup}{3.4.3}
+\makelabel{guava:PermutationGroup}{3.4.4}
+\makelabel{guava:Domain Functions for Codes}{3.5}
+\makelabel{guava:IsFinite}{3.5.1}
+\makelabel{guava:Size}{3.5.2}
+\makelabel{guava:LeftActingDomain}{3.5.3}
+\makelabel{guava:Dimension}{3.5.4}
+\makelabel{guava:AsSSortedList}{3.5.5}
+\makelabel{guava:CodewordNr}{3.5.6}
+\makelabel{guava:Printing and Displaying Codes}{3.6}
+\makelabel{guava:Print}{3.6.1}
+\makelabel{guava:String}{3.6.2}
+\makelabel{guava:Display}{3.6.3}
+\makelabel{guava:Generating (Check) Matrices and Polynomials}{3.7}
+\makelabel{guava:GeneratorMat}{3.7.1}
+\makelabel{guava:CheckMat}{3.7.2}
+\makelabel{guava:GeneratorPol}{3.7.3}
+\makelabel{guava:CheckPol}{3.7.4}
+\makelabel{guava:RootsOfCode}{3.7.5}
+\makelabel{guava:Parameters of Codes}{3.8}
+\makelabel{guava:WordLength}{3.8.1}
+\makelabel{guava:Redundancy}{3.8.2}
+\makelabel{guava:MinimumDistance}{3.8.3}
+\makelabel{guava:MinimumDistance}{3.8.4}
+\makelabel{guava:MinimumDistanceLeon}{3.8.5}
+\makelabel{guava:Distributions}{3.9}
+\makelabel{guava:WeightDistribution}{3.9.1}
+\makelabel{guava:InnerDistribution}{3.9.2}
+\makelabel{guava:OuterDistribution}{3.9.3}
+\makelabel{guava:DistancesDistribution}{3.9.4}
+\makelabel{guava:Decoding Functions}{3.10}
+\makelabel{guava:Decode}{3.10.1}
+\makelabel{guava:Syndrome}{3.10.2}
+\makelabel{guava:SyndromeTable}{3.10.3}
+\makelabel{guava:StandardArray}{3.10.4}
+\makelabel{guava:PermutationDecode}{3.10.5}
+\makelabel{guava:Generating Codes}{4}
+\makelabel{guava:Generating Unrestricted Codes}{4.1}
+\makelabel{guava:ElementsCode}{4.1.1}
+\makelabel{guava:HadamardCode}{4.1.2}
+\makelabel{guava:HadamardCode}{4.1.2}
+\makelabel{guava:HadamardCode}{4.1.3}
+\makelabel{guava:HadamardCode}{4.1.3}
+\makelabel{guava:ConferenceCode!from a matrix}{4.1.4}
+\makelabel{guava:ConferenceCode!from an integer}{4.1.5}
+\makelabel{guava:MOLSCode}{4.1.6}
+\makelabel{guava:MOLSCode}{4.1.6}
+\makelabel{guava:RandomCode}{4.1.7}
+\makelabel{guava:NordstromRobinsonCode}{4.1.8}
+\makelabel{guava:GreedyCode}{4.1.9}
+\makelabel{guava:LexiCode}{4.1.10}
+\makelabel{guava:LexiCode!using a basis}{4.1.11}
+\makelabel{guava:Generating Linear Codes}{4.2}
+\makelabel{guava:GeneratorMatCode}{4.2.1}
+\makelabel{guava:CheckMatCode}{4.2.2}
+\makelabel{guava:HammingCode}{4.2.3}
+\makelabel{guava:ReedMullerCode}{4.2.4}
+\makelabel{guava:AlternantCode}{4.2.5}
+\makelabel{guava:AlternantCode}{4.2.5}
+\makelabel{guava:GoppaCode!with list of field elements parameter}{4.2.6}
+\makelabel{guava:GoppaCode!with integer parameter}{4.2.7}
+\makelabel{guava:GeneralizedSrivastavaCode}{4.2.8}
+\makelabel{guava:GeneralizedSrivastavaCode}{4.2.8}
+\makelabel{guava:SrivastavaCode}{4.2.9}
+\makelabel{guava:SrivastavaCode}{4.2.9}
+\makelabel{guava:CordaroWagnerCode}{4.2.10}
+\makelabel{guava:RandomLinearCode}{4.2.11}
+\makelabel{guava:BestKnownLinearCode}{4.2.12}
+\makelabel{guava:BestKnownLinearCode!of a record}{4.2.13}
+\makelabel{guava:Golay Codes}{4.3}
+\makelabel{guava:BinaryGolayCode}{4.3.1}
+\makelabel{guava:ExtendedBinaryGolayCode}{4.3.2}
+\makelabel{guava:TernaryGolayCode}{4.3.3}
+\makelabel{guava:ExtendedTernaryGolayCode}{4.3.4}
+\makelabel{guava:Generating Cyclic Codes}{4.4}
+\makelabel{guava:GeneratorPolCode}{4.4.1}
+\makelabel{guava:CheckPolCode}{4.4.2}
+\makelabel{guava:RootsCode}{4.4.3}
+\makelabel{guava:RootsCode!with field}{4.4.4}
+\makelabel{guava:BCHCode}{4.4.5}
+\makelabel{guava:BCHCode}{4.4.5}
+\makelabel{guava:ReedSolomonCode}{4.4.6}
+\makelabel{guava:QRCode}{4.4.7}
+\makelabel{guava:FireCode}{4.4.8}
+\makelabel{guava:WholeSpaceCode}{4.4.9}
+\makelabel{guava:NullCode}{4.4.10}
+\makelabel{guava:RepetitionCode}{4.4.11}
+\makelabel{guava:CyclicCodes}{4.4.12}
+\makelabel{guava:NrCyclicCodes}{4.4.13}
+\makelabel{guava:Toric codes}{4.5}
+\makelabel{guava:ToricCode}{4.5.1}
+\makelabel{guava:ToricPoints}{4.5.2}
+\makelabel{guava:Manipulating Codes}{5}
+\makelabel{guava:Functions that Generate a New Code from a Given Code}{5.1}
+\makelabel{guava:ExtendedCode}{5.1.1}
+\makelabel{guava:PuncturedCode}{5.1.2}
+\makelabel{guava:PuncturedCode!with list of punctures}{5.1.3}
+\makelabel{guava:EvenWeightSubcode}{5.1.4}
+\makelabel{guava:PermutedCode}{5.1.5}
+\makelabel{guava:ExpurgatedCode}{5.1.6}
+\makelabel{guava:AugmentedCode}{5.1.7}
+\makelabel{guava:AugmentedCode!without a list of codewords}{5.1.8}
+\makelabel{guava:RemovedElementsCode}{5.1.9}
+\makelabel{guava:AddedElementsCode}{5.1.10}
+\makelabel{guava:ShortenedCode}{5.1.11}
+\makelabel{guava:ShortenedCode!with list of columns}{5.1.12}
+\makelabel{guava:LengthenedCode}{5.1.13}
+\makelabel{guava:ResidueCode}{5.1.14}
+\makelabel{guava:ConstructionBCode}{5.1.15}
+\makelabel{guava:DualCode}{5.1.16}
+\makelabel{guava:ConversionFieldCode}{5.1.17}
+\makelabel{guava:CosetCode}{5.1.18}
+\makelabel{guava:ConstantWeightSubcode}{5.1.19}
+\makelabel{guava:ConstantWeightSubcode!for all minimum weight codewords}{5.1.20}
+\makelabel{guava:StandardFormCode}{5.1.21}
+\makelabel{guava:Functions that Generate a New Code from Two Given Codes}{5.2}
+\makelabel{guava:DirectSumCode}{5.2.1}
+\makelabel{guava:UUVCode}{5.2.2}
+\makelabel{guava:DirectProductCode}{5.2.3}
+\makelabel{guava:IntersectionCode}{5.2.4}
+\makelabel{guava:UnionCode}{5.2.5}
+\makelabel{guava:Bounds on Codes, Special Matrices and Miscellaneous Functions}{6}
+\makelabel{guava:Bounds on codes}{6.1}
+\makelabel{guava:UpperBoundSingleton}{6.1.1}
+\makelabel{guava:UpperBoundHamming}{6.1.2}
+\makelabel{guava:UpperBoundJohnson}{6.1.3}
+\makelabel{guava:UpperBoundPlotkin}{6.1.4}
+\makelabel{guava:UpperBoundElias}{6.1.5}
+\makelabel{guava:UpperBoundGriesmer}{6.1.6}
+\makelabel{guava:UpperBound}{6.1.7}
+\makelabel{guava:LowerBoundMinimumDistance}{6.1.8}
+\makelabel{guava:LowerBoundMinimumDistance!of codes over a field}{6.1.9}
+\makelabel{guava:UpperBoundMinimumDistance}{6.1.10}
+\makelabel{guava:UpperBoundMinimumDistance!of codes over a field}{6.1.11}
+\makelabel{guava:BoundsMinimumDistance}{6.1.12}
+\makelabel{guava:Special matrices in GUAVA}{6.2}
+\makelabel{guava:KrawtchoukMat}{6.2.1}
+\makelabel{guava:GrayMat}{6.2.2}
+\makelabel{guava:SylvesterMat}{6.2.3}
+\makelabel{guava:HadamardMat}{6.2.4}
+\makelabel{guava:MOLS}{6.2.5}
+\makelabel{guava:MOLS}{6.2.5}
+\makelabel{guava:PutStandardForm}{6.2.6}
+\makelabel{guava:PutStandardForm}{6.2.6}
+\makelabel{guava:IsInStandardForm}{6.2.7}
+\makelabel{guava:IsInStandardForm}{6.2.7}
+\makelabel{guava:PermutedCols}{6.2.8}
+\makelabel{guava:VerticalConversionFieldMat}{6.2.9}
+\makelabel{guava:HorizontalConversionFieldMat}{6.2.10}
+\makelabel{guava:IsLatinSquare}{6.2.11}
+\makelabel{guava:AreMOLS}{6.2.12}
+\makelabel{guava:Miscellaneous functions}{6.3}
+\makelabel{guava:SphereContent}{6.3.1}
+\makelabel{guava:Krawtchouk}{6.3.2}
+\makelabel{guava:PrimitiveUnityRoot}{6.3.3}
+\makelabel{guava:ReciprocalPolynomial}{6.3.4}
+\makelabel{guava:ReciprocalPolynomial}{6.3.5}
+\makelabel{guava:CyclotomicCosets}{6.3.6}
+\makelabel{guava:WeightHistogram}{6.3.7}
+\makelabel{guava:WeightHistogram}{6.3.7}
+\makelabel{guava:Extensions to GUAVA}{7}
+\makelabel{guava:Some functions for the covering radius}{7.1}
+\makelabel{guava:CoveringRadius}{7.1.1}
+\makelabel{guava:BoundsCoveringRadius}{7.1.2}
+\makelabel{guava:SetCoveringRadius}{7.1.3}
+\makelabel{guava:IncreaseCoveringRadiusLowerBound}{7.1.4}
+\makelabel{guava:ExhaustiveSearchCoveringRadius}{7.1.5}
+\makelabel{guava:GeneralLowerBoundCoveringRadius}{7.1.6}
+\makelabel{guava:GeneralUpperBoundCoveringRadius}{7.1.7}
+\makelabel{guava:LowerBoundCoveringRadiusSphereCovering}{7.1.8}
+\makelabel{guava:LowerBoundCoveringRadiusSphereCovering}{7.1.8}
+\makelabel{guava:LowerBoundCoveringRadiusVanWee1}{7.1.9}
+\makelabel{guava:LowerBoundCoveringRadiusVanWee1}{7.1.9}
+\makelabel{guava:LowerBoundCoveringRadiusVanWee2}{7.1.10}
+\makelabel{guava:LowerBoundCoveringRadiusVanWee2}{7.1.10}
+\makelabel{guava:LowerBoundCoveringRadiusCountingExcess}{7.1.11}
+\makelabel{guava:LowerBoundCoveringRadiusCountingExcess}{7.1.11}
+\makelabel{guava:LowerBoundCoveringRadiusEmbedded1}{7.1.12}
+\makelabel{guava:LowerBoundCoveringRadiusEmbedded1}{7.1.12}
+\makelabel{guava:LowerBoundCoveringRadiusEmbedded2}{7.1.13}
+\makelabel{guava:LowerBoundCoveringRadiusEmbedded2}{7.1.13}
+\makelabel{guava:LowerBoundCoveringRadiusInduction}{7.1.14}
+\makelabel{guava:UpperBoundCoveringRadiusRedundancy}{7.1.15}
+\makelabel{guava:UpperBoundCoveringRadiusDelsarte}{7.1.16}
+\makelabel{guava:UpperBoundCoveringRadiusStrength}{7.1.17}
+\makelabel{guava:UpperBoundCoveringRadiusGriesmerLike}{7.1.18}
+\makelabel{guava:UpperBoundCoveringRadiusCyclicCode}{7.1.19}
+\makelabel{guava:New code constructions}{7.2}
+\makelabel{guava:ExtendedDirectSumCode}{7.2.1}
+\makelabel{guava:AmalgamatedDirectSumCode}{7.2.2}
+\makelabel{guava:BlockwiseDirectSumCode}{7.2.3}
+\makelabel{guava:PiecewiseConstantCode}{7.2.4}
+\makelabel{guava:Gabidulin codes}{7.3}
+\makelabel{guava:GabidulinCode}{7.3.1}
+\makelabel{guava:EnlargedGabidulinCode}{7.3.2}
+\makelabel{guava:DavydovCode}{7.3.3}
+\makelabel{guava:TombakCode}{7.3.4}
+\makelabel{guava:EnlargedTombakCode}{7.3.5}
+\makelabel{guava:Some functions related to the norm of a code}{7.4}
+\makelabel{guava:CoordinateNorm}{7.4.1}
+\makelabel{guava:CodeNorm}{7.4.2}
+\makelabel{guava:IsCoordinateAcceptable}{7.4.3}
+\makelabel{guava:GeneralizedCodeNorm}{7.4.4}
+\makelabel{guava:IsNormalCode}{7.4.5}
+\makelabel{guava:DecreaseMinimumDistanceLowerBound}{7.4.6}
+\makelabel{guava:New miscellaneous functions}{7.5}
+\makelabel{guava:CodeWeightEnumerator}{7.5.1}
+\makelabel{guava:CodeDistanceEnumerator}{7.5.2}
+\makelabel{guava:CodeMacWilliamsTransform}{7.5.3}
+\makelabel{guava:IsSelfComplementaryCode}{7.5.4}
+\makelabel{guava:IsAffineCode}{7.5.5}
+\makelabel{guava:IsAlmostAffineCode}{7.5.6}
+\makelabel{guava:IsGriesmerCode}{7.5.7}
+\makelabel{guava:CodeDensity}{7.5.8}
+\makelabel{guava:Bibliography}{}
+\setcitlab {GDT91}{GDT91}
+\setcitlab {Han99}{Han99}
+\setcitlab {HP03}{HP03}
+\setcitlab {Leon88}{Leo88}
+\setcitlab {Leon91}{Leo91}
+\setcitlab {MS83}{MS83}
+\makelabel{guava:Index}{}

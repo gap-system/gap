@@ -2,7 +2,7 @@
 **
 *W  scanner.h                   GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: scanner.h,v 4.34 2009/03/07 13:12:44 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -28,7 +28,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_scanner_h =
-   "@(#)$Id$";
+   "@(#)$Id: scanner.h,v 4.34 2009/03/07 13:12:44 sal Exp $";
 #endif
 
 
@@ -51,9 +51,6 @@ const char * Revision_scanner_h =
 #define S_TRYNEXT       ((1UL<< 3)+3)
 #define S_INFO          ((1UL<< 3)+4)
 #define S_ASSERT        ((1UL<< 3)+5)
-#define S_SAVEWS        ((1UL<< 3)+6)
-#define S_LOADWS        ((1UL<< 3)+7)
-
 #define S_LBRACK        ((1UL<< 4)+0)
 #define S_LBRACE        ((1UL<< 4)+1)
 #define S_BLBRACK       ((1UL<< 4)+2)
@@ -365,10 +362,25 @@ extern void Match (
 
 /****************************************************************************
 **
-
 *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
 */
 extern void ClearError ( void );
+
+/****************************************************************************
+**
+*F  BreakLoopPending()  . . . . . .report whether a break loop is pending due
+**                               to Ctrl-C, memory overflow, or similar cause
+**
+**  return  values 0 -- no break loop
+**                 BLP_CTRLC -- break loop due to ctrl-C
+**                 BLP_MEMORY -- due to -o 
+**
+*/
+
+
+extern Int BreakLoopPending( void );
+#define BLP_CTRLC 1
+#define BLP_MEMORY 2
 
 
 /****************************************************************************
@@ -783,18 +795,19 @@ extern UInt CloseAppend ( void );
 **
 */
 typedef struct {
-    UInt        isstream;
-    Int         file;
-    Char        name [256];
-    Char        line [32768];
-    Char *      ptr;
-    UInt        symbol;
-    Int         number;
-    Obj         stream;
-    UInt        isstringstream;
-    Obj         sline;
-    Int         spos;
-    UInt        echo;
+  UInt        isstream;
+  Int         file;
+  Char        name [256];
+  Obj         gapname;
+  Char        line [32768];
+  Char *      ptr;
+  UInt        symbol;
+  Int         number;
+  Obj         stream;
+  UInt        isstringstream;
+  Obj         sline;
+  Int         spos;
+  UInt        echo;
 } TypInputFile;
 
 
@@ -893,6 +906,13 @@ extern  void            Pr (
 
 extern  void            PrTo (
             KOutputStream   stream,			      
+            const Char *    format,
+            Int                 arg1,
+            Int                 arg2 );
+
+extern  void            SPrTo (
+			       Char * buffer,
+			       UInt maxlen,
             const Char *    format,
             Int                 arg1,
             Int                 arg2 );

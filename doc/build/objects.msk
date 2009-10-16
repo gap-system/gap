@@ -3,7 +3,7 @@
 %W  objects.msk              GAP manual                     Thomas Breuer
 %W                                                       Martin Schoenert
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: objects.msk,v 1.29 2007/09/05 15:06:07 gap Exp $
 %%
 
 %T modify and use the text in `object.gd' for the discussion of
@@ -377,13 +377,13 @@ string).
 \Declaration{Name}
 
 \beginexample
-gap> g := Group((1,2,3),(1,2));
-Group([ (1,2,3), (1,2) ])
-gap> SetName(g, "S3");
-gap> g;
-S3
-gap> Name(g);
-"S3"
+gap> R := PolynomialRing(Integers,2);
+Integers[x_1,x_2]
+gap> SetName(R,"Z[x,y]");
+gap> R;
+Z[x,y]
+gap> Name(R);
+"Z[x,y]"
 \endexample
 
 \Declaration{IsInternallyConsistent}

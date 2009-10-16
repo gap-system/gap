@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.prop1944_z :=
-    "@(#)$Id$";
+    "@(#)$Id: prop1944.z,v 1.1 1999/12/08 18:54:24 gap Exp $";
 
 PROPERTIES_SMALL_GROUPS[ 1944 ] := rec(
 isNilpotent := [ 2, 9, -11, 71, -99, 103, 586, -672, 772, -801, 1087, -1115,

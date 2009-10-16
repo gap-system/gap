@@ -1,0 +1,90 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Libraries and examples of pcp-groups}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Libraries of various types of polycyclic groups}
+
+There are the following generic pcp-groups available.
+
+\>AbelianPcpGroup( <n>, <rels> )
+
+      constructs the   abelian  group  on  <n>  generators  such  that
+      generator $i$ has  order $rels[i]$. If  this  order is infinite,
+      then $rels[i]$ should be either unbound or 0.
+
+\>DihedralPcpGroup( <n> )
+
+      constructs the dihedral  group of order <n>. If <n>  is an odd
+      integer, then 'fail' is returned.  If  <n> is zero or not an 
+      integer, then the infinite dihedral group is returned.
+
+\>UnitriangularPcpGroup( <n>, <c> )
+
+      returns a pcp-group isomorphic  to the group of upper triangular
+      in $GL(n, R)$ where $R = \Z$ if $c = 0$ and $R = \F_p$ if $c = p$.
+      The natural unitriangular matrix representation of the returned 
+      pcp-group $G$ can be obtained as $G!.isomorphism$.
+
+\>SubgroupUnitriangularPcpGroup( <mats> )
+
+      <mats> should be a list of upper unitriangular $n \times n$ 
+      matrices over $\Z$ or over $\F_p$. This function returns the 
+      subgroup of the corresponding 'UnitriangularPcpGroup' generated 
+      by the matrices in <mats>.
+
+\>InfiniteMetacyclicPcpGroup( <n>, <m>, <r> )
+
+      Infinite metacyclic groups are classified in \cite{B-K00}. Every 
+      infinite metacyclic group $G$ is isomorphic to a finitely presented 
+      group $G(m,n,r)$ with two generators $a$ and $b$ and relations of the 
+      form $a^n = b^m = 1$ and $[a,b] = a^{1-r}$, where $m,n,r$ are three
+      non-negative integers with $mn=0$ and $r$ relatively prime to $m$. 
+      If $r \equiv -1$ mod $m$ then $n$ is even, and if $r \equiv 1$ mod 
+      $m$ then $m=0$. Also $m$ and $n$ must not be $1$.
+
+      Moreover, $G(m,n,r)\cong G(m',n',s)$ if and only if $m=m'$, $n=n'$, 
+      and either $r \equiv s$ or $r \equiv s^{-1}$ mod $m$. 
+
+      This function returns the metacyclic group with parameters <n>,
+      <m> and <r> as a pcp-group with the pc-presentation $\langle
+      x,y | x^n, y^m, y^x = y^r\rangle$.  This presentation is easily
+      transformed into the one above via the mapping $x \mapsto b^{-1},
+      y \mapsto a$. 
+
+\>HeisenbergPcpGroup( <n> )
+
+      returns the Heisenberg group on 2*<n> generators as pcp-group.
+      This gives a group of Hirsch length 3*<n>.
+
+\>MaximalOrderByUnitsPcpGroup( <f> )
+
+      takes as input a normed, irreducible polynomial over the integers.
+      Thus <f> defines a field extension <F> over the rationals. This 
+      function returns the split extension of the maximal order <O> of <F> 
+      by the unit group <U> of <O>, where <U> acts by right multiplication
+      on <O>.
+
+\>BurdeGrunewaldPcpGroup( <s>, <t> )
+   
+      returns a nilpotent group of Hirsch length 11 which has been 
+      constructed by Burde und Grunewald. If <s> is not 0, then this 
+      group has no faithful 12-dimensional linear representation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Some asorted example groups}
+
+The functions in this section provide some more example groups to play
+with. They come with no further description and their investigation is
+left to the interested user.
+
+\>ExampleOfMetabelianPcpGroup( <a>, <k> )
+
+      returns an example of a metabelian group. The input parameters must
+      be two positive integers greater than 1.
+
+\>ExamplesOfSomePcpGroups( <n> )
+
+      this function takes values <n> in 1 up to 16 and returns for each 
+      input an example of a pcp-group. The groups in this example list 
+      have been used as test groups for the functions in this package.
+

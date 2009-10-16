@@ -2,7 +2,7 @@
 **
 *W  bool.c                      GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: bool.c,v 4.28 2002/04/15 10:03:43 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,7 +17,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_bool_c =
-   "@(#)$Id$";
+   "@(#)$Id: bool.c,v 4.28 2002/04/15 10:03:43 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

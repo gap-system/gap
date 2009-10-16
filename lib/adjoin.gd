@@ -1,7 +1,7 @@
 #############################################################################
 #W  adjoin.gd                  GAP library                Steve Linton 
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: adjoin.gd,v 4.3 2006/03/02 22:14:31 jamesm Exp $
 ##
 ##
 ##  This file contains the declarations for functions pertaining to 
@@ -9,7 +9,7 @@
 ##
 
 Revision.adjoin_gd :=
-  "@(#)$Id$";
+  "@(#)$Id: adjoin.gd,v 4.3 2006/03/02 22:14:31 jamesm Exp $";
 
 DeclareCategory("IsMonoidByAdjoiningIdentityElt", IsMultiplicativeElementWithOne and IsAssociativeElement);
 DeclareCategory("IsMonoidByAdjoiningIdentity", IsMonoid);

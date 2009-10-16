@@ -1,0 +1,170 @@
+<!-- $Id: farey.xml,v 1.4 2008/05/28 23:58:03 alexk Exp $ -->
+
+<Chapter Label="Farey">
+<Heading>Farey symbols and their properties</Heading>
+
+<Index Key="IsFareySymbol"><C>IsFareySymbol</C></Index>
+<Index Key="IsFareySymbolDefaultRep"><C>IsFareySymbolDefaultRep</C></Index>
+
+A Farey symbol is a compact and useful way to represent a subgroup 
+of finite index in <M>SL_2(&ZZ;)</M> from which one can deduce 
+independent generators for this subgroup. It consists of two 
+components, namely a so-called generalised Farey sequence 
+(<A>gfs</A>) and an ordered list of labels, giving additional 
+structure to the <A>gfs</A>.<P/>
+
+
+A generalised Farey sequence (g.F.S.) is an ordered list of the form 
+<M>{ -infinity, x_0, x_1, ... , x_n, infinity }</M>, where<P/> 
+1. the <M>x_i = a_i/b_i</M> are rational 
+numbers in reduced form arranged in increasing order for 
+<M>i = 0, ... , n</M>;<P/> 
+2. <M>x_0, ... , x_n \in Z</M>, and some <M>x_i = 0</M>;<P/> 
+3. we define <M>x_{-1}=-infinity=-1/0</M> and <M>x_{n+1}=infinity=1/0</M>;<P/> 
+4. <M>a_{i+1}b_{i}-a_{i}b_{i+1}=1</M> for <M>i=-1, ... ,n</M>.<P/>
+
+
+The ordered list of labels of a Farey symbol gives an additional 
+structure to the <A>gfs</A>. The labels correspond to each 
+consecutive pair of <M>x_i</M>'s and are of the following types:<P/> 
+1. even,<P/> 
+2. odd,<P/> 
+3. a natural number, which occurs in the list 
+of labels exactly twice or not at all.<P/>
+
+Note that the actual values of numerical labels are not important;
+it is the pairing of two intervals that matters.<P/>
+
+
+The package &Congruence; provides functions to construct Farey symbols
+by the given generalised Farey sequence and corresponding list of
+labels. The returned Farey symbol will belong to the category
+<C>IsFareySymbol</C> and will have the representation
+<C>IsFareySymbolDefaultRep</C>.
+ 
+<Section Label="FareyConstr">
+<Heading>Construction of Farey symbols</Heading>
+            
+<ManSection>
+  <Func Name="FareySymbolByData" 
+         Arg="gfs labels"/>
+  <Description>
+This constructor creates the Farey symbol with the given generalized 
+Farey sequence and list of labels. It also checks conditions from 
+the definition of Farey symbol and returns an error if they are not 
+satisfied. The data used to create the Farey symbol are stored as 
+its attributes <Ref Attr="GeneralizedFareySequence"/> and <Ref 
+Attr="LabelsOfFareySymbol"/>.
+  </Description>
+</ManSection>    
+
+<Example>
+<![CDATA[
+gap> fs:=FareySymbolByData([infinity,0,1,2,infinity],[1,2,2,1]);                         
+[ infinity, 0, 1, 2, infinity ]
+[ 1, 2, 2, 1 ]
+]]>
+</Example>
+
+
+<ManSection>
+  <Func Name="IsValidFareySymbol" 
+         Arg="fs"/>
+  <Description>
+This function is used in  <Ref Func="FareySymbolByData"/> to validate its output.
+  </Description>
+</ManSection>
+
+<Example>
+<![CDATA[
+gap> IsValidFareySymbol(fs);
+true
+]]>
+</Example>
+
+</Section>
+
+<!-- ********************************************************* -->
+
+<Section Label="FareyProperties">
+<Heading>Properties of Farey symbols</Heading>
+
+<ManSection>
+  <Attr Name="GeneralizedFareySequence" 
+         Arg="fs"/>
+  <Description>
+Returns the generalized Farey sequence <A>gfs</A> of the Farey 
+symbol.
+  </Description>
+</ManSection> 
+
+<Example>
+<![CDATA[
+gap> GeneralizedFareySequence(fs);
+[ infinity, 0, 1, 2, infinity ]
+]]>
+</Example>
+
+
+<ManSection>
+  <Func Name="NumeratorOfGFSElement" 
+         Arg="gfs i"/>
+  <Returns>
+    integer
+  </Returns>         
+  <Description>
+Returns the numerator of the i-th term of the generalised Farey 
+sequence <A>gfs</A>: for the 1st infinite entry returns -1, for the 
+last one returns 1, for all other entries returns the usual 
+numerator.
+  </Description>
+</ManSection>
+
+<Example>
+<![CDATA[
+gap> List([1..5], i -> NumeratorOfGFSElement(GeneralizedFareySequence(fs),i));
+[ -1, 0, 1, 2, 1 ]
+]]>
+</Example>
+
+
+<ManSection>
+  <Func Name="DenominatorOfGFSElement" 
+         Arg="gfs i"/>
+  <Returns>
+    integer
+  </Returns>
+  <Description>
+Returns the denominator of the i-th term of the generalised Farey 
+sequence <A>gfs</A>: for both infinite entries returns 0, for the 
+other ones returns the usual denominator.
+  </Description>
+</ManSection>
+
+<Example>
+<![CDATA[
+gap> List([1..5], i -> DenominatorOfGFSElement(GeneralizedFareySequence(fs),i));         
+[ 0, 1, 1, 1, 0 ]
+]]>
+</Example>
+
+
+<ManSection>
+  <Attr Name="LabelsOfFareySymbol" 
+         Arg="fs"/>
+  <Description>
+Returns the list of labels of the Farey symbol. This list has "odd", 
+"even" and paired integers as entries.
+  </Description>
+</ManSection> 
+
+<Example>
+<![CDATA[
+gap> LabelsOfFareySymbol(fs);
+[ 1, 2, 2, 1 ]
+]]>
+</Example>
+
+</Section>
+
+</Chapter>

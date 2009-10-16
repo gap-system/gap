@@ -1,0 +1,40 @@
+# Used by ExponentsOfUnitsDescriptionKant
+# part of the code coincides with units.kt3, see more comments there
+#
+# INPUT:
+# - polynomial 'f' with integer coefficients
+# - list 'elms'
+#
+# compute orders
+#
+om := MaximalOrder( f ); # was 'OrderMaximal'
+#
+os := OptimisedRepresentation( om ); # was 'OrderShort'
+if os then
+    os:=os.ext1;
+else
+    os:=om; 
+fi;
+os := Simplify(LLL(os)); # 'LLL' was 'Order LLL', 'Simplify' was 'OrderSimplify'
+#
+# compute units
+#
+un := UnitGroup( os );
+un1 := Apply( x->un.ext1(x), List( Generators(un) ) );
+un2 := List( un1, x -> ElementToSequence( Element( om, x ) ) );
+# OUTPUT : the first part of output is un2, the rest is below.
+# 
+# TODO BELOW
+#
+# now print exponents of elements of the 2nd input parameter 'elms'
+AppendTo(outt," KANTVart := [ \n");
+for i in [1..Length(elms)] do
+   a := Elt( oe, elms[i] );
+   b := EltMove( a, os );
+   c := EltUnitDecompose( b, "expons" );
+   AppendTo(outt,c,",\n");
+od;
+AppendTo(outt,"]; \n \n");
+#
+# OUTPUT: list consisting of two lists, the first is 'un'
+# and the second is the list of 'c' obtained from 'elms' as above

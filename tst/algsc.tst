@@ -2,14 +2,14 @@
 ##
 #W  algsc.tst                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: algsc.tst,v 4.29 2009/10/05 15:12:02 gap Exp $
 ##
 #Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: algsc.tst,v 4.29 2009/10/05 15:12:02 gap Exp $");
 
 
 #############################################################################
@@ -87,13 +87,13 @@ gap> Dimension( v );
 ##
 ##  Expl. 1: $2.A6$, gen. by 20 quaternionic reflections over $H(\sqrt{3})$
 ##
-gap> q:= QuaternionAlgebra( FieldByGenerators( Rationals, [ ER(3) ] ) );
+gap> q:= QuaternionAlgebra( FieldByGenerators( Rationals, [ Sqrt(3) ] ) );
 <algebra-with-one of dimension 4 over NF(12,[ 1, 11 ])>
 gap> gens:= GeneratorsOfAlgebra( q );
 [ e, i, j, k ]
 gap> z:= Zero( q );;
 gap> e:= gens[1];; i:= gens[2];; j:= gens[3];; k:= gens[4];;
-gap> theta:= ER(3) * j;
+gap> theta:= Sqrt(3) * j;
 (-E(12)^7+E(12)^11)*j
 gap> w:= ( -e + theta ) / 2;
 (-1/2)*e+(-1/2*E(12)^7+1/2*E(12)^11)*j
@@ -733,7 +733,7 @@ true
 
 
 #############################################################################
-gap> STOP_TEST( "algsc.tst", 265600000 );
+gap> STOP_TEST( "algsc.tst",296002170);
 
 
 #############################################################################

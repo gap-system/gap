@@ -2,7 +2,7 @@
 ##
 #W  sparselistsorted.gi             GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: sparselistsorted.gi,v 4.3 2002/04/15 10:05:23 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##
 
 Revision.sparselistsorted_gi :=
-  "@(#)$Id$";
+  "@(#)$Id: sparselistsorted.gi,v 4.3 2002/04/15 10:05:23 sal Exp $";
 
 #############################################################################
 ##

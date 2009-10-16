@@ -1,0 +1,72 @@
+<Section Label="simple">
+<Heading>Description of the simple Lie algebras</Heading>  
+
+If <A>F</A> is a finite field, then, up to isomorphism, 
+there is precisely one simple Lie algebra with
+dimension 3, and another one with dimension 6;
+these can be accessed by calling <A>NonSolvableLieAlgebra(F,[3,1])</A> and
+<A>NonSolvableLieAlgebra(F,[6,2])</A> (see <A>NonSolvableLieAlgebra</A> for
+the details).
+Over a field of characteristic 5, there is an additional simple Lie algebra with
+dimension 5, namely <A>NonSolvableLieAlgebra(F,[5,3])</A>. These are the only
+isomorphism types of simple Lie algebras over finite fields up to dimension 6.
+
+<P/>
+In addition to the algebras above the package contains the simple Lie algebras
+of dimension between 7 and 9 over <A>GF(2)</A>. These Lie algebras were
+determined by <Cite Key="VL"/> and can be described as follows.
+
+<P/>
+There are two isomorphism classes of 7-dimensional Lie algebras over
+<A>GF(2)</A>. In a basis <M>b1,\ldots,b7</M> the non-trivial products 
+in the first algebra are
+
+<Verb>
+[b1,b2]=b3, [b1,b3]=b4, [b1,b4]=b5, [b1,b5]=b6
+[b1,b6]=b7, [b1,b7]=b1, [b2,b7]=b2, [b3,b6]=b2, 
+[b4,b5]=b2, [b4,b6]=b3, [b4,b7]=b4, [b6,b7]=b6;
+</Verb>
+
+and those in the second are
+<Verb>
+[b1,b2]=b3, [b1,b3]=b1+b4, [b1,b4]=b5, [b1,b5]=b6, 
+[b1,b6]=b7, [b2,b3]=b2, [b2,b5]=b2+b4, [b2,b6]=b5, 
+[b2,b7]=b1+b4, [b3,b4]=b2+b4, [b3,b5]=b3, [b3,b6]=b1+b4+b6, 
+[b3,b7]=b5, [b4,b7]=b6, [b5,b6]=b6, [b5,b7]=b7.
+</Verb>
+
+<P/>Over <A>GF(2)</A> there are two isomorphism types of simple Lie algebras with
+dimension 8. In the basis <M>b1,\ldots,b8</M>  the non-trivial products for
+the first one are 
+
+<Verb>
+[b1,b3]=b5, [b1,b4]=b6, [b1,b7]=b2, [b1,b8]=b1, [b2,b3]=b7, [b2,b4]=b5+b8, 
+[b2,b5]=b2, [b2,b6]=b1, [b2,b8]=b2, [b3,b6]=b4, [b3,b8]=b3, [b4,b5]=b4, 
+[b4,b7]=b3, [b4,b8]=b4, [b5,b6]=b6, [b5,b7]=b7, [b6,b7]=b8;
+</Verb>
+
+and for the second one they are
+<Verb>
+[b1,b2]=b3, [b1,b3]=b2+b5, [b1,b4]=b6, [b1,b5]=b2, [b1,b6]=b1+b4+b8, 
+[b1,b8]=b4, [b2,b3]=b4, [b2,b4]=b1, [b2,b5]=b6, [b2,b6]=b2+b7, 
+[b2,b7]=b2+b5, [b3,b4]=b2+b7, [b3,b5]=b1+b4+b8, [b3,b6]=b1, [b3,b7]=b2+b3, 
+[b3,b8]=b1, [b4,b5]=b3, [b4,b6]=b2+b4, [b4,b7]=b1+b4+b8, [b4,b8]=b3, 
+[b5,b6]=b1+b2+b5, [b5,b7]=b3, [b5,b8]=b2+b7, [b6,b7]=b4+b6, [b6,b8]=b2+b5, 
+[b7,b8]=b6.
+</Verb>
+
+<P/>The non-trivial products for the unique simple Lie algebra with dimension 9
+over <A>GF(2)</A> are as follows:
+
+<Verb>
+[b1,b2]=b3, [b1,b3]=b5, [b1,b5]=b6, [b1,b6]=b7, [b1,b7]=b6+b9, 
+[b1,b9]=b2, [b2,b3]=b4, [b2,b4]=b6, [b2,b6]=b8, [b2,b8]=b6+b9, 
+[b2,b9]=b1, [b3,b4]=b7, [b3,b5]=b8, [b3,b7]=b1+b8, [b3,b8]=b2+b7, 
+[b4,b5]=b6+b9, [b4,b6]=b2+b7, [b4,b7]=b3+b6+b9, [b4,b9]=b5, 
+[b5,b6]=b1+b8, [b5,b8]=b3+b6+b9, [b5,b9]=b4, [b6,b7]=b1+b4+b8, 
+[b6,b8]=b2+b5+b7, [b7,b8]=b3+b9, [b7,b9]=b8, [b8,b9]=b7.
+</Verb>
+
+
+</Section>
+

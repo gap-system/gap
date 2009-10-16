@@ -3,14 +3,14 @@
 #W  gptransv.gd			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gptransv.gd,v 4.7 2002/04/15 10:04:43 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gptransv_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: gptransv.gd,v 4.7 2002/04/15 10:04:43 sal Exp $";
 
 #############################################################################
 ##

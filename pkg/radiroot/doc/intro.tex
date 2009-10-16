@@ -1,0 +1,83 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intro.tex          Radiroot documentation             Andreas Distler
+%%
+%H  $Id: intro.tex,v 1.3 2007/05/09 14:50:07 gap Exp $
+%%
+%Y  2005
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Introduction}
+
+This package provides functionality to deal with one of the fundamental
+problems in algebra. The roots of a rational polynomial shall be
+expressed by radicals. This means one is only allowed to use the four
+basic operations $(+, -, \cdot \,,\div)$ and to extract roots. For
+example, a radical expression for the roots of the polynomial $x^4 -
+x^3 - x^2 + x + 1$ is 
+$$
+\matrix{
+\frac{1}{4} + \frac{1}{4}\sqrt{-3} + \frac{1}{2}\sqrt{\frac{7}{2} +
+  \frac{1}{2}\sqrt{-3}}.
+}
+$$
+
+There are formulas to solve the general equation $x^n+
+a_{n-1}x^{n-1}+ \dots + a_1x+a_0 = 0$ up to degree 4. For higher
+degrees such formulae do not exist (\cite{Abel26}). It was \'Evariste Galois
+(1811 -- 1832) who discovered that there exists a radical expression
+for the roots if and only if the Galois group of the polynomial - initially a
+permutation group on the roots - is solvable \cite{Galois97}. But the task
+itself was impractical in his days. This package is the first public tool
+which provides a practical method for solving a polynomial algebraically. The
+implementation is based on Galois' ideas and the algorithm is described in
+\cite{Distler05}. 
+
+The package can provide the result in various forms. As a default an
+expression is given in a similar way as in the example
+above. Alternatively, a file containing the roots might be created
+which is readable by Maple \cite{Maple10}. In {\GAP} itself some
+information deduced during the computation is available.
+
+The user should be aware that radical expressions can get very complicated
+even for polynomials of small degree. Especially because the algorithm
+will find an irreducible radical expression. That means one gets a
+root of the given polynomial for every choice of a value of the radicals in
+the expression. Moreover it is not the aim of this package to give a
+simplest expression, in any sense.
+
+In Chapter 2 the methods provided by this package are listed and
+explained.
+
+Chapter 3 gives details about the info class of this package. See
+Section ~"ref:Info Functions" in the {\GAP} reference manual for
+general information about info classes.
+
+While the installation of the package follows standard {\GAP} rules
+the Chapter 4 contains information about external programs required by
+{\Radiroot} in its default setup.
+
+% In its default use the package creates a LaTex file for the radical
+%expression and displays the according dvi-file. Therefore you need a Latex
+%compiler and the dvi viewer xdvi, to use the main functionality.  
+
+This package uses the interface to KANT \cite{KANT}, in the package \Alnuth, to
+factorise polynomials over algebraic number fields. This functionality must
+be available to use the functions in {\Radiroot}.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{License}
+
+This package is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

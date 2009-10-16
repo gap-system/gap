@@ -1,0 +1,50 @@
+C intro.tex 1. Introduction
+C fields.tex 2. Methods for number fields
+S 2.1. Creation of number fields
+F 2.1. FieldByMatricesNC
+F 2.1. FieldByMatrices
+F 2.1. FieldByMatrixBasisNC
+F 2.1. FieldByMatrixBasis
+F 2.1. FieldByPolynomialNC
+F 2.1. FieldByPolynomial
+S 2.2. Methods for number fields
+F 2.2. PrimitiveElement
+F 2.2. DefiningPolynomial
+F 2.2. IsPrimitiveElement
+F 2.2. DegreeOverPrimeField
+F 2.2. EquationOrderBasis
+F 2.2. MaximalOrderBasis
+F 2.2. IsIntegerOfNumberField
+F 2.2. UnitGroup
+F 2.2. IsomorphismPcpGroup
+F 2.2. IsUnitOfNumberField
+F 2.2. ExponentsOfUnits
+F 2.2. IsCyclotomicField
+F 2.2. NormCosetsOfNumberField
+S 2.3. Presentations of multiplicative subgroups
+F 2.3. PcpPresentationOfMultiplicativeSubgroup
+F 2.3. IsomorphismPcpGroup
+F 2.3. Kernel
+F 2.3. ImagesSet
+F 2.3. ImageElm
+F 2.3. PreImagesRepresentative
+F 2.3. RelationLattice
+S 2.4. Methods to compute with subgroups of the unit group
+F 2.4. RelationLatticeOfUnits
+F 2.4. IntersectionOfUnitSubgroups
+S 2.5. Factorisation of polynomials over a number field
+F 2.5. FactorsPolynomialAlgExt
+F 2.5. FactorsPolynomialKant
+S 2.6. Examples
+F 2.6. ExampleMatField
+C example.tex 3. An example application
+S 3.1. Number fields defined by matrices
+S 3.2. Number fields defined by a polynomial
+C install.tex 4. Installation
+S 4.1. Getting and installing KASH
+S 4.2. Installing this package
+S 4.3. Adjust the path of the executable for KASH
+F 4.3. SetKantExecutable
+F 4.3. SetKantExecutablePermanently
+S 4.4. How to write a shell script which executes KASH
+S 4.5. Loading and testing the package

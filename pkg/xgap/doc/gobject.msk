@@ -1,0 +1,166 @@
+\Chapter{Graphic Sheets - Basic graphic operations}
+
+This chapter describes how graphics are accessed in {\XGAP} via the lowest
+library functions for graphic sheets. These functions are used in all other 
+parts of {\XGAP} and you normally only need to know them if you want to
+display other things than graphic posets and subgroup lattices.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Graphic Sheet Objects}
+
+\FileHeader[1]{sheet}
+
+\Declaration{GraphicSheet}
+
+Here is the documentation for the operations to control the callback 
+functions:
+
+\Declaration{InstallCallback}
+\Declaration{RemoveCallback}
+\Declaration{Callback}
+
+\FileHeader[2]{sheet}
+
+\Declaration{IsAlive}
+
+The following operations apply to graphic sheets:
+
+\Declaration{Close}
+\Declaration{Resize}
+\Declaration{WindowId}
+\Declaration{SetTitle}
+\Declaration{SaveAsPS}
+\Declaration{FastUpdate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Graphic Objects in Sheets}
+
+\FileHeader[1]{gobject}
+
+\Declaration{IsGraphicObject}
+
+\bigskip%
+
+*Constructors:*
+
+\Declaration{Box}
+\Declaration{Circle}
+\Declaration{Disc}
+\Declaration{Diamond}
+\Declaration{Rectangle}
+\Declaration{Line}
+\Declaration{Text}
+
+
+\bigskip%
+
+*Operations for graphic objects:*
+
+\Declaration{Connection}
+\Declaration{Disconnect}
+
+\Declaration{Draw}
+\Declaration{Delete}[gobject]
+\Declaration{Destroy}
+\Declaration{Revive}
+\Declaration{Move}[gobject]
+\Declaration{MoveDelta}
+\Declaration{PSString}
+\Declaration{PrintInfo}
+\Declaration{Recolor}[gobject]
+\Declaration{Reshape}[gobject]
+\>`\\in'{in!for graphic objects}@{`in'!for graphic objects}
+
+This infix operation needs a vector of two integers to its left and a graphic
+object to its right (``vector of two integers'' means a list of two
+integers e.g. `[15,9]'). It determines, if the position given by the two
+integer coordinates is inside (e.g. for boxes) or on (e.g. for lines) the
+graphic objects. Returns a boolean value.
+\Declaration{Change}
+\Declaration{Relabel}[gobject]
+\Declaration{SetWidth}[gobject]
+\Declaration{Highlight}[gobject]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Colors in XGAP}
+
+\label{Color Models}
+
+\FileHeader[1]{color}
+
+\Declaration{COLORS}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Graphic Objects}
+
+The following table gives an overview over the supported graphic objects and 
+the functions which are applicable respectively:
+
+Here are the supported graphic object types: `Box', `Circle', `Disc', 
+`Diamond', `Rectangle', `Line', `Text', `Vertex'.
+
+These functions apply to all graphic object types:
+`Draw', `Delete', `Destroy', `Revive', `Move', `MoveDelta', `PSString',
+`PrintInfo', `ViewObj', `Recolor', `Reshape', `\\in', `WindowId'
+
+In addition, the operation `Relabel' applies to objects of types `Line',
+`Text', and `Vertex'; the operation `SetWidth' applies to objects of types
+`Diamond', `Rectangle', `Circle', and `Line'. There is also `Change' for a
+`Line' and `Highlight' for a `Vertex'.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Global Information}
+
+There are some global data structures which can and should be consulted if 
+certain information is needed. The first (about color handling) was already 
+described in section "Color Models". The second is for vertices:
+
+\>`VERTEX'{VERTEX!record}@{`VERTEX'!record} V
+
+  This globally bound record contains the following components:
+
+\beginitems
+`circle' & integer value for the vertex type ``circle''
+
+`diamond' & integer value for the vertex type ``diamond''
+
+`rectangle' & integer value for the vertex type ``rectangle''
+
+`radius' & radius in pixels of a vertex on the screen
+
+`diameter' & diameter in pixels of a vertex on the screen
+\enditems
+
+\bigskip%
+
+The third structure is about the available fonts. 
+
+\>`FONTS' V
+
+This globally bound record has the following components: `tiny', `small', 
+`normal', `large', `huge' and `fonts'. The first 5 are itself records each
+for one available font. They have components `name' for the name of the font
+and `fontInfo', which is a list of 3 integers. The first is the maximal size
+of a character above the baseline in pixels, the second is the maximal size
+of a character below the baseline in pixels, and the third is the width
+in pixels of *all* characters, because it is always assumed, that the
+fonts are non-proportional.
+
+\Declaration{FontInfo}
+
+\bigskip%
+
+There is another global structure:
+
+\>`BUTTONS' V
+
+This record contains the following components: `left' and `right' contain a
+number for the left resp. right mouse button. `shift' and `ctrl' contain
+codes for the respective keys on the keyboard.
+
+\bigskip%
+
+You should always use these global data instead of hardwiring any integers into
+your code.

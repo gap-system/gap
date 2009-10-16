@@ -1,0 +1,46 @@
+;======================================================================
+The following files are provided.
+
+README
+CONTENTS
+COPYING
+configure
+Makefile.in
+init.g
+read.g
+src/pargapmpi.c
+src/pargapmpi.o
+src/pargapmpi.h
+src/gapmpi.h        For backward compatibility
+lib/slavelist.g
+lib/masslave.g
+mpinu/*             Distribution to make libmpi.a  (MPI subset library,
+			used in building GAP/MPI kernel))
+doc/*		    Documentation of GAP/MPI, including doc/INTERNALS
+examples/*          Examples of usage of GAP/MPI
+bin/procgroup.in    A copy of this must be in your current directory
+		        when you execute GAP
+
+;======================================================================
+Created by GAP/MPI:
+
+GAP_ROOT/bin/@GAParch@/pargapmpi   Symbolic link to gap binary
+GAP_ROOT/bin/@GAParch@/pargapmpi.o module for pargapmpi.c
+Makefile			   Derived from Makefile.in
+bin/pargapmpi.sh		   Script derived from gap.sh
+bin/procgroup			   Derived from /bin/procgroupin
+
+;======================================================================
+Modified by GAP/MPI:
+
+GAP_ROOT/pkg/ALLPKG		Entry for 'pargapmpi' must be added to function.
+GAP_ROOT/bin/@GAParch@/gap.o
+GAP_ROOT/src/pargapmpi.[ch]	New files copied into main src directory
+
+;======================================================================
+Old scripts that copy directory trees and other miscellaneous:
+Old scripts no longer needed now that GAP and GAP/MPI are more
+   tightly integrated.
+
+/etc/*
+

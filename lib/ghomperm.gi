@@ -2,14 +2,59 @@
 ##
 #W  ghomperm.gi                 GAP library       Akos Seress, Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ghomperm.gi,v 4.106 2007/02/22 17:24:03 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomperm_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ghomperm.gi,v 4.106 2007/02/22 17:24:03 gap Exp $";
+
+#############################################################################
+##
+#M  PreImagesSet( <map>, <elms> ) .  for s.p. gen. mapping resp. mult. & inv.
+##
+InstallMethod( PreImagesSet,
+    "method for permgroup homs",
+    CollFamRangeEqFamElms,
+    [ IsPermGroupHomomorphism, IsGroup ],
+function( map, elms )
+local genpreimages,  pre,kg,sz;
+  genpreimages:=GeneratorsOfMagmaWithInverses( elms );
+  if Length(genpreimages)>0 and CanEasilyCompareElements(genpreimages[1]) then
+    # remove identities
+    genpreimages:=Filtered(genpreimages,i->i<>One(i));
+  fi;
+
+  genpreimages:= List(genpreimages,
+		    gen -> PreImagesRepresentative( map, gen ) );
+  if fail in genpreimages then
+    TryNextMethod();
+  fi;
+  if HasSize( elms ) then
+    sz:=Size( KernelOfMultiplicativeGeneralMapping( map ) ) * Size( elms );
+    kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping( map ) );
+    if Length(kg)>2 then Add(genpreimages,Random(kg));fi;
+    pre:=SubgroupNC(Source(map),genpreimages);
+    StabChainOptions(pre).limit:=sz;
+    while Size(pre)<sz do
+      pre:=ClosureSubgroupNC(pre,First(kg,i->not i in pre));
+    od;
+  else
+    pre := SubgroupNC( Source( map ), Concatenation(
+	      GeneratorsOfMagmaWithInverses(
+		  KernelOfMultiplicativeGeneralMapping( map ) ),
+	      genpreimages ) );
+
+    if     HasSize( KernelOfMultiplicativeGeneralMapping( map ) )
+      and HasSize( elms )  then
+	SetSize( pre, Size( KernelOfMultiplicativeGeneralMapping( map ) )
+		* Size( elms ) );
+    fi;
+  fi;
+  return pre;
+end );
 
 #############################################################################
 ##
@@ -536,25 +581,57 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
 end );
 
 DoShortwordBasepoint:=function(shorb)
-local dom, l, n, i, j,o;
-  l:=List(shorb,i->i[1]);
-  dom:=MovedPointsPerms(l);
-  if Length(l)>500 then
-    l:=l{Set(List([1..200],i->Random([1..Length(l)])))};
+local dom, l, n, i, j,o,ld,mp,lp,x;
+  # do not take all elements but a sampler
+  if Length(shorb)>1000 then
+    mp:=[1..Length(shorb)];
+    shorb:=shorb{Set(List([1..500],i->Random(mp)))};
   fi;
-  o:=Orbits(Group(l),dom);
+  if Length(shorb)>300 then
+    mp:=[1..Length(shorb)];
+    l:=List([1..100],i->shorb[Random(mp)][1]);
+  else
+    l:=List(shorb,i->i[1]);
+  fi;
+  dom:=MovedPointsPerms(l);
+  o:=OrbitsPerms(l,dom);
   l:=[];
-  for i in dom do
-    n:=0;
+  if Length(dom)>Length(shorb)*2 then
+    n:=ListWithIdenticalEntries(Maximum(dom),0);
     for j in shorb do
-      if i^j[1]=i then
-	n:=n+1/(1+Length(j[2]));
+      x:=j[1];
+      if LargestMovedPointPerm(x)>0 then
+	mp:=[];
+	lp:=1/(1+Length(j[2]));
+	for i in dom do
+	  if i^x=i then
+	    n[i]:=n[i]+lp;
+	  fi;
+	od;
       fi;
     od;
-    j:=PositionProperty(o,k->i in k);
-    n:=n*Length(o[j]);
-    Add(l,[n,i]);
-  od;
+    for j in o do
+      lp:=Length(j);
+      for i in j do
+	if n[i]>0 then
+	  Add(l,[n[i]*lp,i]);
+	fi;
+      od;
+    od;
+  else
+    for i in dom do
+      n:=0;
+      for j in shorb do
+	if i^j[1]=i then
+	  n:=n+1/(1+Length(j[2]));
+	fi;
+      od;
+      j:=PositionProperty(o,k->i in k);
+      n:=n*Length(o[j]);
+      Add(l,[n,i]);
+    od;
+  fi;
+
   Sort(l);
   if Length(l)=0 then
     return fail;
@@ -684,7 +761,8 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
       # This is similar to Minkwitz' approach and produces much shorter
       # words when decoding.
       FillTransversalShort:=function(stb,size)
-      local l,i,bpt,m,elm,wrd,z,j,dict,fc;
+      local l,i,bpt,m,elm,wrd,z,j,dict,fc,mfc;
+	mfc:=Minimum(maxstor*10,gsize/size);
 	bpt:=stb.orbit[1];
 	stb.norbit:=ShallowCopy(stb.orbit);
 	# fill transversal with short words
@@ -715,7 +793,7 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 	fi;
 	#Print(maxstor," ",gsize/size,"<\n");
 	while Length(stb.stabilizer.orb)*5<maxstor and l<=Length(stb.orb)
-	  and fc<100000 do
+	  and fc<mfc do
 	  # add schreier gens
 	  elm:=stb.orb[l][1];
 	  wrd:=stb.orb[l][2];
@@ -984,6 +1062,28 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
     return prd;
 end );
 
+# this method is better if hom2 maps to an fp group -- otherwise for
+# computing preimages we need to do an MTC.
+InstallMethod( CompositionMapping2, "fp hom. with perm group hom.",
+  FamSource1EqFamRange2, 
+  [ IsGroupHomomorphism and IsToFpGroupGeneralMappingByImages and IsSurjective,
+          IsPermGroupGeneralMappingByImages and IsGroupHomomorphism ], 0,
+function( hom1, hom2 )
+local r, fgens, gens, kg;
+  r:=Range(hom1);
+  if (not KnowsHowToDecompose(Source(hom2))) or not IsWholeFamily(r) then
+    TryNextMethod();
+  fi;
+  fgens:=ShallowCopy(GeneratorsOfGroup(r));
+  gens:=List(fgens,
+	     i->PreImagesRepresentative(hom2,PreImagesRepresentative(hom1,i)));
+  kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping(hom2));
+  Append(gens,kg);
+  Append(fgens,List(kg,i->One(r)));
+  return GroupHomomorphismByImagesNC(Source(hom2),r,gens,fgens);
+end);
+
+
 #############################################################################
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . .  for perm group range
@@ -1167,9 +1267,10 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
            CoKernelOfMultiplicativeGeneralMapping );
     
     if  NrMovedPoints(longgroup)<=10000 and
-	(not HasInverseGeneralMapping( hom )
+       (not HasInverseGeneralMapping( hom )
        or not HasStabChainMutable( InverseGeneralMapping( hom ) )
-       or not HasKernelOfMultiplicativeGeneralMapping( hom ))  then
+       or not HasKernelOfMultiplicativeGeneralMapping( hom ) 
+       )then
         MakeStabChainLong( InverseGeneralMapping( hom ),
                 StabChainOp( longgroup, [ n + 1 .. n + k ] ),
                 [ n + 1 .. n + k ], conperminv, One( Source( hom ) ), hom,
@@ -1239,6 +1340,7 @@ InstallGlobalFunction( MakeStabChainLong,
         if not Tester( cokername )( cohom )  then
             S := EmptyStabChain( [  ], idimage );
             ConjugateStabChain( stb, S, c2, c2 );
+	    TrimStabChain(S,LargestMovedPoint(Range(hom)));
             Setter( cokername )
               ( cohom, GroupStabChain( Range( hom ), S, true ) );
         fi;
@@ -1553,6 +1655,7 @@ end);
 
 RanImgSrcSurjBloho:=function(hom)
 local gens,imgs,ran,dom;
+# using stabchain info will produce just too many generators
   if ValueOption("onlyimage")=fail and HasStabChainMutable(Source(hom)) 
     and NrMovedPoints(Source(hom))<20000 then
     # transfer stabchain information if not too expensive

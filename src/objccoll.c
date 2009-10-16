@@ -2,7 +2,7 @@
 **
 *W  objccoll.c                  GAP source                      Werner Nickel
 **
-*H  @(#)$Id$
+*H  @(#)$Id: objccoll.c,v 4.5 2002/04/15 10:03:52 sal Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -17,7 +17,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_objccoll_c =
-   "@(#)$Id$";
+   "@(#)$Id: objccoll.c,v 4.5 2002/04/15 10:03:52 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

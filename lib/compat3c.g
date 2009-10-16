@@ -2,7 +2,7 @@
 ##
 #W  compat3c.g                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: compat3c.g,v 4.13 2002/04/15 10:04:30 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  `operations' component in {\GAP} 3.
 ##
 Revision.compat3c_g :=
-    "@(#)$Id$";
+    "@(#)$Id: compat3c.g,v 4.13 2002/04/15 10:04:30 sal Exp $";
 
 
 #############################################################################

@@ -2,7 +2,7 @@
 ##
 #W  primsan.tst                 GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: primsan.tst,v 4.2 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1999,  School of Computer Science, St Andrews
 ##
@@ -13,7 +13,7 @@
 ##  is big and fast enough.
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: primsan.tst,v 4.2 2005/05/05 15:04:16 gap Exp $");
 
 
 #############################################################################
@@ -34,7 +34,7 @@ gap> for n in [2..999] do
 >     checkdegree(n);
 > od;
 
-gap> STOP_TEST( "primsan.tst", 456577700000 );
+gap> STOP_TEST( "primsan.tst", 105797500 );
 
 
 #############################################################################

@@ -3,14 +3,14 @@
 #W  ctblmono.tst               GAP Library                      Thomas Breuer
 #W                                                         & Erzsebet Horvath
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblmono.tst,v 4.16 2009/09/24 14:02:36 alexk Exp $
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: ctblmono.tst,v 4.16 2009/09/24 14:02:36 alexk Exp $");
 
 gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4");
 gap> Sl23:= SL( 2, 3 );;
@@ -48,7 +48,7 @@ gap> TestHomogeneous( chi, cln );
 rec( isHomogeneous := true, comment := "restricts irreducibly" )
 gap> chi:= Irr( Sl23 )[4];;
 gap> TestQuasiPrimitive( chi );
-rec( isQuasiPrimitive := true, comment := "all restrictions checked" )
+rec( comment := "all restrictions checked", isQuasiPrimitive := true )
 gap> chi:= Irr( Sl23 )[7];;
 gap> test:= TestQuasiPrimitive( chi );;
 gap> test.isQuasiPrimitive;  test.comment;
@@ -62,38 +62,38 @@ gap> List( Irr( Sl23 ), IsInducedFromNormalSubgroup );
 [ false, false, false, false, false, false, true ]
 gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 >          TestInducedFromNormalSubgroup );
-[ rec( isInduced := false, comment := "linear character" ), 
-  rec( isInduced := true, comment := "induced from component '.character'", 
-      character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
-        [ 1, 1, E(3)^2, E(3) ] ) ), 
-  rec( isInduced := false, comment := "all maximal normal subgroups checked" 
+[ rec( comment := "linear character", isInduced := false ),
+  rec( comment := "induced from component '.character'",
+      character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
+        [ 1, 1, E(3)^2, E(3) ] ), isInduced := true ),
+  rec( comment := "all maximal normal subgroups checked", isInduced := false
      ) ]
 gap> TestMonomial( S4 );
-rec( isMonomial := true, comment := "abelian by supersolvable group" )
+rec( comment := "abelian by supersolvable group", isMonomial := true )
 gap> TestMonomial( Sl23 );
-rec( isMonomial := false, comment := "list Delta( G ) contains entry > 1" )
+rec( comment := "list Delta( G ) contains entry > 1", isMonomial := false )
 gap> Filtered( [ 1 .. 111 ], x -> not IsMonomial( x ) );
 [ 24, 48, 72, 96, 108 ]
 gap> TestMonomialQuick( Irr( S4 )[3] );
-rec( isMonomial := true, comment := "whole group is monomial" )
+rec( comment := "whole group is monomial", isMonomial := true )
 gap> TestMonomialQuick( S4 );
-rec( isMonomial := true, comment := "abelian by supersolvable group" )
+rec( comment := "abelian by supersolvable group", isMonomial := true )
 gap> TestMonomialQuick( Sl23 );
-rec( isMonomial := "?", comment := "no decision by cheap tests" )
+rec( comment := "no decision by cheap tests", isMonomial := "?" )
 gap> TestSubnormallyMonomial( S4 );
-rec( isSubnormallyMonomial := false, 
-  character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
-  comment := "found non-SM character" )
+rec( comment := "found non-SM character",
+  character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ),
+  isSubnormallyMonomial := false )
 gap> TestSubnormallyMonomial( Irr( S4 )[4] );
-rec( isSubnormallyMonomial := false, 
-  comment := "all subnormal subgroups checked" )
+rec( comment := "all subnormal subgroups checked",
+  isSubnormallyMonomial := false )
 gap> TestSubnormallyMonomial( DerivedSubgroup( S4 ) );
-rec( isSubnormallyMonomial := true, comment := "all irreducibles checked" )
+rec( comment := "all irreducibles checked", isSubnormallyMonomial := true )
 gap> IsSubnormallyMonomial( DerivedSubgroup( S4 ) );
 true
 gap> TestRelativelySM( DerivedSubgroup( S4 ) );
-rec( isRelativelySM := true, 
-  comment := "normal subgroups are abelian or have nilpotent factor group" )
+rec( comment := "normal subgroups are abelian or have nilpotent factor group",
+  isRelativelySM := true )
 
 gap> IsMinimalNonmonomial( Sl23 );                  
 true
@@ -113,7 +113,7 @@ gap> MinimalNonmonomialGroup(  1, 14 );
 gap> MinimalNonmonomialGroup(  2, 14 );
 (2^(1+6)Y4):D14
 
-gap> STOP_TEST( "ctblmono.tst", 259000000 );
+gap> STOP_TEST( "ctblmono.tst",274001908);
 
 
 #############################################################################

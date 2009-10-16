@@ -2,7 +2,7 @@
 ##
 #W  mgmadj.gd                    GAP library                  Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mgmadj.gd,v 4.9 2008/10/27 08:56:56 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,14 +11,22 @@
 ##  This file contains declarations for magmas with zero adjoined.
 ##
 Revision.mgmadj_gd:=
-    "@(#)$Id$";
+    "@(#)$Id: mgmadj.gd,v 4.9 2008/10/27 08:56:56 gap Exp $";
 
 #############################################################################
 ##
 #C  IsMultiplicativeElementWithZero( <elt>)
 ##
+##  <#GAPDoc Label="IsMultiplicativeElementWithZero">
+##  <ManSection>
+##  <Filt Name="IsMultiplicativeElementWithZero" Arg='elt' Type='Category'/>
+##
+##  <Description>
 ##  Elements in a family which can be the operands of the 
-##  `\*' and the operation MultiplicativeZero.
+##  <C>*</C> and the operation MultiplicativeZero.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory("IsMultiplicativeElementWithZero",IsMultiplicativeElement);
 DeclareCategoryCollections("IsMultiplicativeElementWithZero");
@@ -28,14 +36,23 @@ DeclareCategoryCollections("IsMultiplicativeElementWithZero");
 ##
 #O  MultiplicativeZeroOp( <elt> ) 
 ##
-##  returns the element $z$ in the family <F> of <elt> with the 
-##  property that $z * m = z = m * z$ holds for all $m \in F$,
-##  if such an element is known.
+##  <#GAPDoc Label="MultiplicativeZeroOp">
+##  <ManSection>
+##  <Oper Name="MultiplicativeZeroOp" Arg='elt'/>
 ##
-##  Families of elements in the category IsMultiplicativeElementWithZero
+##  <Description>
+##  returns the element <M>z</M> in the family <M>F</M> of <A>elt</A>
+##  with the property that <M>z * m = z = m * z</M> holds for all
+##  <M>m \in F</M>, if such an element is known.
+##  <P/>
+##  Families of elements in the category
+##  <Ref Func="IsMultiplicativeElementWithZero"/>
 ##  often arise from adjoining a new zero to an existing magma. 
-##  See~"InjectionZeroMagma" for details.
-##  
+##  See&nbsp;<Ref Func="InjectionZeroMagma"/> for details.
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "MultiplicativeZeroOp", [IsMultiplicativeElementWithZero] );
 
@@ -44,9 +61,16 @@ DeclareOperation( "MultiplicativeZeroOp", [IsMultiplicativeElementWithZero] );
 ##
 #A  MultiplicativeZero( <M> ) 
 ##
-##  Returns the multiplicative zero of the magma which is the element
-##  <z> such that for all <m> in <M>, `<z> \* <m> = <m> \* <z> = <z>'.
+##  <#GAPDoc Label="MultiplicativeZero">
+##  <ManSection>
+##  <Attr Name="MultiplicativeZero" Arg='M'/>
 ##
+##  <Description>
+##  Returns the multiplicative zero of the magma which is the element
+##  <A>z</A> such that for all <A>m</A> in <A>M</A>, <C><A>z</A> * <A>m</A> = <A>m</A> * <A>z</A> = <A>z</A></C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MultiplicativeZero", IsMultiplicativeElementWithZero );
 
@@ -55,7 +79,15 @@ DeclareAttribute( "MultiplicativeZero", IsMultiplicativeElementWithZero );
 ##
 #O  IsMultiplicativeZero( <M>, <z> ) 
 ##
-##  returns true iff `<z> \* <m> = <m> \* <z> = <z>' for all <m> in <M>.
+##  <#GAPDoc Label="IsMultiplicativeZero">
+##  <ManSection>
+##  <Oper Name="IsMultiplicativeZero" Arg='M, z'/>
+##
+##  <Description>
+##  returns true iff <C><A>z</A> * <A>m</A> = <A>m</A> * <A>z</A> = <A>z</A></C> for all <A>m</A> in <A>M</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsMultiplicativeZero", [ IsMagma, IsMultiplicativeElement ] );
 
@@ -64,13 +96,21 @@ DeclareOperation( "IsMultiplicativeZero", [ IsMagma, IsMultiplicativeElement ] )
 ##
 #A  InjectionZeroMagma( <M> )
 ##
-##  The canonical homomorphism <i> from the  magma
-##  <M> into the magma formed from <M> with a single new element 
-##  which is a multiplicative zero for the resulting magma.
+##  <#GAPDoc Label="InjectionZeroMagma">
+##  <ManSection>
+##  <Attr Name="InjectionZeroMagma" Arg='M'/>
 ##
+##  <Description>
+##  The canonical homomorphism <A>i</A> from the  magma
+##  <A>M</A> into the magma formed from <A>M</A> with a single new element 
+##  which is a multiplicative zero for the resulting magma.
+##  <P/>
 ##  The elements of the new magma form a family of elements in the 
 ##  category IsMultiplicativeElementWithZero, and the
-##  new magma is obtained as Range(<i>).
+##  new magma is obtained as Range(<A>i</A>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "InjectionZeroMagma", IsMagma );
 

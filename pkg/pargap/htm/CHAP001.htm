@@ -1,0 +1,938 @@
+<html><head><title>[ParGAP] 1 Writing Parallel Programs in GAP Easily</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>1 Writing Parallel Programs in GAP Easily</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP001.htm#SECT001">Overview of ParGAP</a>
+<li> <A HREF="CHAP001.htm#SECT002">Installing ParGAP</a>
+<li> <A HREF="CHAP001.htm#SECT003">Running ParGAP</a>
+<li> <A HREF="CHAP001.htm#SECT004">Extended Example</a>
+<li> <A HREF="CHAP001.htm#SECT005">Author</a>
+<li> <A HREF="CHAP001.htm#SECT006">Invoking ParGAP with Remote Slaves</a>
+<li> <A HREF="CHAP001.htm#SECT007">Problems with Installation</a>
+<li> <A HREF="CHAP001.htm#SECT008">Problems with Hosts on Multiple Networks</a>
+<li> <A HREF="CHAP001.htm#SECT009">Problems with Passwords (Getting Around Security)</a>
+<li> <A HREF="CHAP001.htm#SECT010">Modifying the GAP kernel</a>
+</ol><p>
+<p>
+<a name = "I0"></a>
+
+The <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  (Parallel  <font face="Gill Sans,Helvetica,Arial">GAP</font>)  package  provides  a  way  of  writing
+parallel programs using the <font face="Gill Sans,Helvetica,Arial">GAP</font> language. Former names of the  package
+were <font face="Gill Sans,Helvetica,Arial">ParGAP/MPI</font> and <font face="Gill Sans,Helvetica,Arial">GAP/MPI</font>; the word <var>MPI</var> refers to
+<var>Message Passing  Interface</var>,  a  well-known  standard  for  parallelism.
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> is based on the MPI standard, and this distribution includes  a
+subset implementation of MPI, to provide a portable  layer  with  a  high
+level interface to BSD sockets. Since knowledge of MPI  is  not  required
+for use of  this  software,  we  now  refer  to  the  package  as  simply
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>. For more information visit the author's  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  home  page
+at:
+<a href="http://www.ccs.neu.edu/home/gene/pargap.html">http://www.ccs.neu.edu/home/gene/pargap.html</a>
+<p>
+For some background reading, see&nbsp;<a href="biblio.htm#Coo95"><cite>Coo95</cite></a> and <a href="biblio.htm#Coo97"><cite>Coo97</cite></a>.
+<p>
+This first chapter is intended to help a new user set  up  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  and
+run through some quick examples: see
+<p>
+<ul>
+<p>
+<li>
+Section&nbsp;<a href="CHAP001.htm#SECT001">Overview of ParGAP</a> for an overview of the features of <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+and a general discussion of how it's implemented;
+<p>
+<li>
+Section&nbsp;<a href="CHAP001.htm#SECT002">Installing ParGAP</a> for how to install <font face="Gill Sans,Helvetica,Arial">ParGAP</font>;
+<p>
+<li>
+Section&nbsp;<a href="CHAP001.htm#SECT003">Running ParGAP</a>  for  how  to  run  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  (<strong>not</strong>  by  using
+<code>RequirePackage</code>); and
+<p>
+<li>
+Section&nbsp;<a href="CHAP001.htm#SECT004">Extended Example</a>  for  some introductory <font face="Gill Sans,Helvetica,Arial">ParGAP</font> examples.
+<p>
+</ul>
+<p>
+The later chapters present detailed explanations  of  the  facilities  of
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>. Because parallel programming is  sufficiently  different  from
+sequential programming, this author  recommends  printing  out  at  least
+Chapters&nbsp;1 through&nbsp;<a href="CHAP005.htm">MasterSlave Tutorial</a>,  and  skimming  through  those
+chapters for areas of interest, before returning to the terminal  to  try
+out   some   of   the   ideas.   This   document   can   be   found    in
+<code>.../pkg/pargap/doc/manual.dvi</code> of the  software  distribution.  You  may
+also want to print the index at the end of <code>manual.dvi</code>.  In  particular,
+the heading <code>example</code> in the index, or <code>??example</code>  from  within  <font face="Gill Sans,Helvetica,Arial">GAP</font>,
+should be useful. If you prefer postscript, the UNIX command <code>dvips</code> will
+convert that file to postscript form.
+<p>
+The development of <font face="Gill Sans,Helvetica,Arial">ParGAP</font> was partially supported by National  Science
+Foundation grants CCR-9509783 and CCR-9732330.
+<p>
+<p>
+<a name="SECT001"><h2>1.1 Overview of ParGAP</h2></a>
+<p><p>
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> is currently functional only on UNIX installations. (Cygwin for
+Windows is also an option, if you would like to port it.)  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  can
+be  installed  on  top  of   an   existing   <font face="Gill Sans,Helvetica,Arial">GAP</font>   installation.   See
+Section&nbsp;<a href="CHAP001.htm#SECT002">Installing  ParGAP</a>  for   instructions   on   installation   of
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>. At the time that <font face="Gill Sans,Helvetica,Arial">ParGAP</font> is invoked, a special ``procgroup''
+file must be available to tell <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  which  processors  to  use  for
+slave processors. See sections&nbsp;<a href="CHAP001.htm#SECT002">Installing ParGAP</a> and&nbsp;<a href="CHAP001.htm#SECT004">Extended Example</a>
+for instructions on invoking <font face="Gill Sans,Helvetica,Arial">ParGAP</font>. If there are  questions  or  bugs
+concerning <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, please write to: <a href="mailto:gene@ccs.neu.edu">gene@ccs.neu.edu</a>
+<p>
+If one wishes only to try out the parallel features, the first five pages
+of this manual (through the section on the slave listener)  will  suffice
+for installation, and using it. For the more advanced user who wishes  to
+design new parallel algorithms or port old sequential code to a  parallel
+environment, it  is  strongly  recommended  to  also  read  the  sections
+following  on  from  Section&nbsp;<a href="CHAP003.htm">Basic  Concepts   for   the   TOP-C   model (MasterSlave)</a>.
+<p>
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> should be invoked via the script <code>bin/pargap.sh</code> created by the
+installation process which invokes <code></code><var>GAP_ROOT_DIR</var><code>/bin/</code><var>ARCH</var><code>/pargapmpi</code>,
+where <var>ARCH</var> depends on your system but is the same  directory  in  which
+the <code>gap</code> binary is  found.  MPI  and  the  higher  layers  will  not  be
+available if the binary is invoked in the standard way as <code>gap</code>. This  is
+a feature, since a single binary and source distribution serves both  for
+the standard <font face="Gill Sans,Helvetica,Arial">GAP</font> and for <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.
+<p>
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> is implemented in three layers: 1)&nbsp;MPI, 2)&nbsp;Slave&nbsp;Listener,  and
+3)&nbsp;Master&nbsp;Slave (TOP-C abstraction). Most users will find  that  the  two
+highest layers (Slave Listener and Master Slave) meet all their needs.
+<p>
+<p>
+<dl compact>
+<dt><code>1) MPI:</code><dd>
+    The lowest layer is MPI. Most users can ignore this layer. MPI  is  a
+    standard for message-based parallel  computation.  A  subset  of  the
+    original MPI commands is provided. The syntax is  modified  from  the
+    original C binding  to  make  a  <font face="Gill Sans,Helvetica,Arial">GAP</font>  binding  in  an  interpreted
+    environment more convenient. This includes default arguments,  useful
+    return  values,  and  <code>Error</code>  break  in  the  presence  of   errors.
+    <code>MPI_Init()</code>       (see&nbsp;<a href="CHAP007.htm#SSEC002.2">MPI_Init</a>)       and        <code>MPI_Finalize()</code>
+    (see&nbsp;<a href="CHAP007.htm#SSEC002.2">MPI_Finalize</a>) are invoked automatically by <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.
+<p>
+<dt><code></code><dd> The MPI layer is not documented, since most users will not  be  using
+    it. From <font face="Gill Sans,Helvetica,Arial">GAP</font> level, you can  type:  <code>MPI_</code><var>tab</var><code></code><var>tab</var><code></code>  to  see  all
+    implemented MPI functions and variables. However, typing  the  symbol
+    name alone (e.g.: <code>MPI_Send;</code> ) will cause it to display the  calling
+    syntax. The same information is displayed after  an  incorrect  call.
+    The  return  value  is  typically  obvious.  MPI  is  implemented  in
+    <code>src/pargap.c</code>. The  standard  distribution  uses  a  simple,  subset
+    implementation of MPI in <code>pkg/gapmpi/mpinu/</code>, which is implemented on
+    top of a standard sockets interface. It  is  possible  to  substitute
+    other implementations of MPI.
+<p>
+<a name = "I1"></a>
+
+<dt><code></code><dd> For those who wish to directly use the MPI interface, the meanings of
+    the MPI calls are best found from the standard MPI documentation:
+<p>
+<dt><code></code><dd>MPI Forum: <a href="http://www.mpi-forum.org/">http://www.mpi-forum.org/</a>
+<p>
+<dt><code></code><dd>MPI Standard (version 1.1):
+   <a href="http://www.mpi-forum.org/docs/mpi-11-html/mpi-report.html">http://www.mpi-forum.org/docs/mpi-11-html/mpi-report.html</a>
+<p>
+<dt><code></code><dd>UNIX style man pages: <a href="http://www-c.mcs.anl.gov/mpi/www/">http://www-c.mcs.anl.gov/mpi/www/</a>
+<p>
+<dt><code>2) Slave Listener:</code><dd>
+    This  layer   provides   basic   message   passing   facilities   for
+    communication among multiple <font face="Gill Sans,Helvetica,Arial">ParGAP</font> processes in a  form  that  is
+    more convenient for programming than the lower MPI layer.  This  will
+    be the most useful entry point to <font face="Gill Sans,Helvetica,Arial">ParGAP</font> for most users.  This  is
+    the default mode for <font face="Gill Sans,Helvetica,Arial">ParGAP</font>. Each remote (slave) process is  in  a
+    receive-eval-send loop, in which the slave receives a <font face="Gill Sans,Helvetica,Arial">GAP</font>  command
+    from the local or master, the slave evaluates the <font face="Gill Sans,Helvetica,Arial">GAP</font> command, and
+    the slave then sends the result  back  to  the  master  as  a  <font face="Gill Sans,Helvetica,Arial">GAP</font>
+    object.
+<p>
+<dt><code></code><dd>
+    Almost all commands in the slave listener are  of  the  form  <code>*Msg*</code>
+    e.g.  <code>SendMsg()</code>   (see&nbsp;<a href="CHAP002.htm#SSEC001.1">SendMsg</a>),   <code>RecvMsg()</code>   (see&nbsp;<a href="CHAP002.htm#SSEC001.2">RecvMsg</a>),
+    <code>ProbeMsg()</code>   (see&nbsp;<a href="CHAP002.htm#SSEC001.14">ProbeMsg</a>).   Since   the   slave   is   in    a
+    receive-eval-send loop, every <code>SendMsg(</code><var>cmd</var><code>)</code> on the master must  be
+    balanced by a later <code>RecvMsg()</code>. <code>SendRecvMsg()</code>  (see&nbsp;<a href="CHAP002.htm#SSEC001.5">SendRecvMsg</a>)
+    is provided to combine these steps. A few parallel utilities are also
+    included, such as <code>ParRead()</code> (<a href="CHAP002.htm#SSEC001.12">ParRead</a>),  <code>ParList()</code>  (<a href="CHAP002.htm#SSEC001.13">ParList</a>),
+    <code>ParEval()</code> (<a href="CHAP002.htm#SSEC001.10">ParEval</a>), etc.
+<p>
+<dt><code></code><dd> Messages are arbitrary <font face="Gill Sans,Helvetica,Arial">GAP</font> objects. Note  that  arguments  to  any
+    <font face="Gill Sans,Helvetica,Arial">GAP</font> function are evaluated before being passed  to  the  function.
+    Hence, any argument to <code>SendMsg()</code> or <code>ParEval()</code> would be  evaluated
+    locally before being  sent  across  the  network.  For  this  reason,
+    arguments can also be given as strings,  to  delay  evaluation  until
+    reaching the destination process. Hence, real strings must be quoted:
+    <code>ParEval("x:="abc";");</code> Additionally, multiple commands are  valid,
+    and the final ``<code>;</code>'' of the string is optional. So, one can write:
+<p>
+<pre>
+BroadcastMsg("x:=\"abc\"; Print(Length(x), \"\\n\")");;
+</pre>
+<p>
+<dt><code></code><dd> A full description is contained in Chapter&nbsp;<a href="CHAP002.htm">Slave Listener</a>.
+<p>
+<dt><code>3) Master Slave:</code><dd>
+    The Master Slave  facility  is  provided  both  for  writing  complex
+    parallel software, and as an easier way to  parallelize  previous  or
+    ``legacy''  sequential  code.  While  the  Slave  Listener   may   be
+    sufficient for simple parallel requirements,  more  complex  software
+    requires a higher level abstraction. The fundamental abstractions  of
+    the master slave layer are the <strong>task</strong> and the <strong>shared data</strong>.
+<p>
+<dl compact>
+<dl compact>
+<dt><code>1)</code><dd>
+    The task typically corresponds to the procedure or inner  body  of  a
+    loop in  a  sequential  program.  This  is  the  part  that  must  be
+    repetitively computed in parallel.
+<p>
+<dt><code>2)</code><dd>
+    The shared data typically corresponds to the  data  of  a  sequential
+    program that is not within the local scope of the task. Often this is
+    a global data structure. In the case that the task is the inner  body
+    of a loop, the shared data may be a  local  data  structure  that  is
+    outside the local scope of the loop.
+</dl></dl>
+<p>
+<dt><code></code><dd> It is usually quite easy to identify the task and the shared data  of
+    a sequential program  or  algorithm,  which  is  the  first  step  in
+    parallelizing an algorithm.
+<p>
+<dt><code></code><dd> The  Master  Slave  parallel  model  described  here  has  also  been
+    successfully used in&nbsp;C  and  in  LISP.  It  has  been  used  both  in
+    distributed memory and  shared  memory  environments,  although  this
+    version in <font face="Gill Sans,Helvetica,Arial">GAP</font> currently works only in a distributed  environment.
+    In the C&nbsp;language, this  parallel  model  is  known  as  TOP-C  (Task
+    Oriented Parallel&nbsp;C). For examples of the use of the TOP-C model  see
+    <a href="biblio.htm#Coo98"><cite>Coo98</cite></a>,     <a href="biblio.htm#CFTY94"><cite>CFTY94</cite></a>,     <a href="biblio.htm#CH97"><cite>CH97</cite></a>,      <a href="biblio.htm#CHLM97"><cite>CHLM97</cite></a>,
+    <a href="biblio.htm#CLMW96"><cite>CLMW96</cite></a>, and <a href="biblio.htm#CT96"><cite>CT96</cite></a>.
+<p>
+<dt><code></code><dd> While no parallel software can eliminate the problem of designing  an
+    algorithm that is efficient in  a  parallel  environment,  the  TOP-C
+    abstraction eases the job by eliminating  programmer  concerns  about
+    lower  level  details,  such  as  message  passing,   migration   and
+    replication of data, load balancing, etc. This leaves the  programmer
+    to concentrate on the primary goal:  maximizing  the  concurrency  or
+    parallelism.
+<p>
+</dl>
+<p>
+<p>
+<a name="SECT002"><h2>1.2 Installing ParGAP</h2></a>
+<p><p>
+<a name = "I2"></a>
+
+Installing <font face="Gill Sans,Helvetica,Arial">ParGAP</font> should be relatively simple.  However,  since  there
+are many interactions both with the  <font face="Gill Sans,Helvetica,Arial">GAP</font>  kernel  and  with  the  UNIX
+operating system, in a minority of cases,  manual  intervention  will  be
+necessary. If you are part of  this  minority,  please  see  the  section
+<a href="CHAP001.htm#SECT007">Problems with Installation</a>.  The  most  common  problem  is  the  local
+security policy; <font face="Gill Sans,Helvetica,Arial">ParGAP</font> is more pleasant to use when you don't have to
+manually provide the password for each slave. See section <a href="CHAP001.htm#SECT009">Problems  with Passwords (Getting Around Security)</a> for suggestions in this respect.
+<p>
+To install the <font face="Gill Sans,Helvetica,Arial">ParGAP</font> package, move  the  file  <code>pargap-</code><var>XXX</var><code>.zoo</code>  or
+<code>pargap-</code><var>XXX</var><code>.tar.gz</code> (for some version number <var>XXX</var> of  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>)  into
+the <code>pkg</code> directory in which you plan to install <font face="Gill Sans,Helvetica,Arial">ParGAP</font>. Usually, this
+will be the directory <code>pkg</code> in the hierarchy of your version of  <font face="Gill Sans,Helvetica,Arial">GAP</font>&nbsp;4
+(in fact, currently it is  not  possible  to  have  the  <code>pkg</code>  directory
+separate from <font face="Gill Sans,Helvetica,Arial">GAP</font>'s <code>pkg</code> directory; we hope to remedy this in  future
+versions of <font face="Gill Sans,Helvetica,Arial">ParGAP</font> so that it will also possible to keep an additional
+<code>pkg</code> directory in your private directories; section <a href="../../../doc/htm/ref/CHAP074.htm#SECT001">Installing  GAP Packages</a> of the GAP 4 reference manual gives details on how to do  this,
+when it's possible.)
+<p>
+Now change into  the  <code>pkg</code>  directory  in  which  you  plan  to  install
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>. If you got a <code>.zoo</code> file, unpack it with:
+<p>
+<code>unzoo -x pargap-</code><var>XXX</var><code></code>
+<p>
+If you got a <code>.tar.gz</code> file and  your  <code>tar</code>  command  supports  the  <code>z</code>
+option, unpack it with:
+<p>
+<code>tar zxf pargap-</code><var>XXX</var><code>.tar.gz</code>
+<p>
+or otherwise unpack in two steps with:
+<p>
+<code>gunzip pargap-</code><var>XXX</var><code>.tar</code>
+<br><code>tar xvf pargap-</code><var>XXX</var><code>.tar</code>
+<p>
+Whether you got the <code>.zoo</code> or <code>.tar.gz</code> archive you should now have a new
+directory <code>pargap</code>. As for a generic <font face="Gill Sans,Helvetica,Arial">GAP</font> package, do:
+<p>
+<pre>
+cd pargap
+./configure ../..
+make
+</pre>
+<p>
+If your version of <font face="Gill Sans,Helvetica,Arial">GAP</font> is earlier than <font face="Gill Sans,Helvetica,Arial">GAP</font>&nbsp;4.3 you will first  need
+to adjust <font face="Gill Sans,Helvetica,Arial">GAP</font>'s <code>lib/init.g</code> file; see item&nbsp;0.  of  Section&nbsp;<a href="CHAP001.htm#SECT007">Problems with Installation</a>.
+<p>
+Your <font face="Gill Sans,Helvetica,Arial">ParGAP</font> should now be ready to use.  Now  read  the  next  section
+which decribes how to  run  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  (if  you  are  reading  this  from
+<font face="Gill Sans,Helvetica,Arial">GAP</font>'s on-line help, type: <code>?&gt;</code>).
+<p>
+<p>
+<a name="SECT003"><h2>1.3 Running ParGAP</h2></a>
+<p><p>
+After doing the <code>configure</code> and <code>make</code> steps of <font face="Gill Sans,Helvetica,Arial">ParGAP</font>'s  installation
+process (see Section&nbsp;<a href="CHAP001.htm#SECT002">Installing ParGAP</a>), you should find in <font face="Gill Sans,Helvetica,Arial">ParGAP</font>'s
+<code>bin</code> subdirectory a script
+<p>
+<pre>
+pargap.sh
+</pre>
+<p>
+which you should use to start <font face="Gill Sans,Helvetica,Arial">ParGAP</font>. (<font face="Gill Sans,Helvetica,Arial">ParGAP</font> can <strong>not</strong> be  started
+by starting <font face="Gill Sans,Helvetica,Arial">GAP</font>&nbsp;4 in the usual way, and using <code>RequirePackage</code>;  doing
+so will result in <code>Info</code>-ed  advice  to  read  this  section.)  Edit  the
+<code>pargap.sh</code> script if necessary, copy it to a standard path and rename it
+according to how you intend to call <font face="Gill Sans,Helvetica,Arial">ParGAP</font> (e.g. rename it: <code>pargap</code>).
+Also, in the <code>bin</code>  subdirectory  is  a  sample  <code>procgroup</code>  file  which
+defines the master and slave processes that will be  used  by  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.
+When <font face="Gill Sans,Helvetica,Arial">ParGAP</font> is started it looks for a file called <code>procgroup</code>  in  the
+current directory, unless the <code>-p4pg</code> option is used. Thus if you renamed
+your shell script <code>pargap</code>, the following  are  valid  ways  of  starting
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>:
+<p>
+<pre>
+pargap
+</pre>
+<p>
+(if current directory contains the file: <code>procgroup</code>), or
+<p>
+<code>pargap -p4pg </code><var>myprocgroupfile</var><code></code>
+<p>
+(where <var>myprocgroupfile</var> is the complete path of your  procgroup  file --
+there is no restriction on how you name it).
+<p>
+If you had trouble installing <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, see the  section&nbsp;<a href="CHAP001.htm#SECT007">Problems  with Installation</a>. Otherwise continue onto Section&nbsp;<a href="CHAP001.htm#SECT004">Extended Example</a> and try
+out <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.
+<p>
+<strong>Note:</strong>
+The script  <code>pargap.sh</code>  defines  the  program  that  runs  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  as
+<code>pargapmpi</code>. In fact, after installation <code>pargapmpi</code> is a  symbolic  link
+to the <font face="Gill Sans,Helvetica,Arial">GAP</font> binary named <code>gap</code>. The same binary runs  both  <font face="Gill Sans,Helvetica,Arial">GAP</font>  and
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>; when the binary is invoked as <code>gap</code> <font face="Gill Sans,Helvetica,Arial">GAP</font> runs in  the  usual
+way without any parallel features; only when the  binary  is  invoked  as
+<code>pargapmpi</code>    are    the    parallel    features    incorporated.    See
+Section&nbsp;<a href="CHAP001.htm#SECT010">Modifying the GAP kernel</a> for more details.
+<p>
+Now you are ready to test your  installation,  try  the  example  in  the
+following section (if you are reading this from  <font face="Gill Sans,Helvetica,Arial">GAP</font>'s  on-line  help,
+type: <code>?&gt;</code>).
+<p>
+<p>
+<a name="SECT004"><h2>1.4 Extended Example</h2></a>
+<p><p>
+After  installation,  try  it  out.  Invoke  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  as  described  in
+Section&nbsp;<a href="CHAP001.htm#SECT003">Running ParGAP</a> and try the example below (but  substitute  your
+own program where you see <code>"/home/gene/myprogram.g"</code>).  The  commands  in
+this first example are also found in the <code>README</code> file. So, you may  wish
+to copy text from the <code>README</code> file and paste it into a <code>ParGAP</code> session.
+If you are using the unmodified <code>procgroup</code> file,  your  <strong>remote  slaves</strong>
+will be other processes on your local machine. It is a good idea  to  run
+only on your local machine for your first experiments and while  you  are
+debugging parallel programs. When  you  wish  to  experiment  with  using
+remote machines, you can then proceed to the following section, <a href="CHAP001.htm#SECT006">Invoking ParGAP with Remote Slaves</a>.
+<p>
+<a name = "I3"></a>
+
+<a name = "I4"></a>
+
+<pre>
+gap&gt; # This assumes your procgroup file includes two slave processes.
+gap&gt; PingSlave(1); #a `true' response indicates Slave 1 is alive
+true
+gap&gt; # Print() on slave appears on standard output 
+gap&gt; # i.e. after the master's prompt.
+gap&gt; SendMsg( "Print(3+4)" );
+gap&gt; 7
+gap&gt; # A &lt;return&gt; was input above to get a fresh prompt.
+gap&gt; #
+gap&gt; # To get special characters (including newline: `\n')
+gap&gt; # into a string, escape them with a `\'.
+gap&gt; SendMsg( "Print(3+4,\"\\n\")" );
+gap&gt; 7
+
+gap&gt; # Again, a &lt;return&gt; was input above after the 7 and new-line
+gap&gt; # were printed to get a fresh prompt.
+gap&gt; #
+gap&gt; # Each SendMsg() is normally balanced by a RecvMsg().
+gap&gt; SendMsg( "3+4", 2);
+gap&gt; RecvMsg( 2 );
+7
+gap&gt; # The following is equivalent to the two previous commands.
+gap&gt; SendRecvMsg( "3+4", 2);
+7
+gap&gt; # Flush any messages that are pending. The response is
+gap&gt; # the number of messages flushed. (Above, the two
+gap&gt; # SendMsg("Print...") (to the default slave: 1) did not
+gap&gt; # have a corresponding RecvMsg() command.)
+gap&gt; FlushAllMsgs();
+2
+gap&gt; # As with Print() the result of Exec() appears on standard
+gap&gt; # output. Print() and Exec() are each `no-value' functions,
+gap&gt; # and so the result of a RecvMsg() in these cases
+gap&gt; # is "&lt;no_return_val&gt;".
+gap&gt; SendRecvMsg( "Exec(\"pwd\")" ); # Your pwd will differ :-)
+/home/gene
+"&lt;no_return_val&gt;"
+gap&gt; # Put default slave into an infinite loop.
+gap&gt; SendMsg("while true do od");
+gap&gt; # Default slave can't execute the next command until it's 
+gap&gt; # finished with the previous command.
+gap&gt; SendMsg("Print(\"WAKE UP\\n\")");
+gap&gt; # Check to see if a message is waiting to be collected but
+gap&gt; # return immediately (i.e. don't get blocked by waiting for
+gap&gt; # a message to appear). A `false' response indicates the
+gap&gt; # infinite loop hasn't terminated and produced a value yet!
+gap&gt; ProbeMsgNonBlocking();
+false
+gap&gt; # Send an interrupt to each slave, slave 1 will see the
+gap&gt; # following command and print `WAKE UP', and then all
+gap&gt; # pending messages are flushed.
+gap&gt; ParReset();
+... resetting ...
+WAKE UP
+0
+gap&gt; # The return value, 0, from ParReset() indicates there
+gap&gt; # were 0 pending messages flushed, confirming correctness
+gap&gt; # of ProbeMsgNonBlocking() when it returned "false"
+gap&gt; SendRecvMsg( "a:=45; 3+4", 1 );
+7
+gap&gt; # Note "a" is defined on slave 1, not slave 2.
+gap&gt; SendMsg( "a", 2 ); # Slave prints error, output on master
+gap&gt;  Variable: 'a' must have a value
+gap&gt; # &lt;return&gt; entered to get fresh prompt.
+gap&gt; RecvMsg( 2 ); # No value for last SendMsg() command
+"&lt;no_return_val&gt;"
+gap&gt; RecvMsg( 1 );
+45
+gap&gt; myfnc := function() return 42; end;;
+gap&gt; # Use PrintToString() to define myfnc on all slave processes
+gap&gt; BroadcastMsg( PrintToString( "myfnc := ", myfnc ) );
+gap&gt; SendRecvMsg( "myfnc()", 1 );
+42
+gap&gt; FlushAllMsgs(); # There are no messages pending.
+0
+gap&gt; # Execute analogue of GAP's List() in parallel on slaves.
+gap&gt; squares := ParList( [1..100], x-&gt;x^2 );
+[ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 
+  289, 324, 361, 400, 441, 484, 529, 576, 625, 676, 729, 784, 841, 
+  900, 961, 1024, 1089, 1156, 1225, 1296, 1369, 1444, 1521, 1600, 
+  1681, 1764, 1849, 1936, 2025, 2116, 2209, 2304, 2401, 2500, 2601, 
+  2704, 2809, 2916, 3025, 3136, 3249, 3364, 3481, 3600, 3721, 3844, 
+  3969, 4096, 4225, 4356, 4489, 4624, 4761, 4900, 5041, 5184, 5329, 
+  5476, 5625, 5776, 5929, 6084, 6241, 6400, 6561, 6724, 6889, 7056, 
+  7225, 7396, 7569, 7744, 7921, 8100, 8281, 8464, 8649, 8836, 9025, 
+  9216, 9409, 9604, 9801, 10000 ]
+gap&gt; # Ensure problem shared data is read into master and slaves.
+gap&gt; # Try one of your GAP program files instead.
+gap&gt; ParRead( "/home/gene/myprogram.g");
+</pre>
+<p>
+Now that you have done a fairly rudimentary test of <font face="Gill Sans,Helvetica,Arial">ParGAP</font> you  should
+be ready to do something a little bit more interesting:
+<p>
+<pre>
+gap&gt; ParInstallTOPCGlobalFunction( "MyParList",
+&gt; function( list, fnc )
+&gt;   local result, iter;
+&gt;   result := [];
+&gt;   iter := Iterator(list);
+&gt;   MasterSlave( function() if IsDoneIterator(iter) then return NOTASK;
+&gt;                           else return NextIterator(iter); fi; end,
+&gt;                fnc,
+&gt;                function(input,output) result[input] := output;
+&gt;                                       return NO_ACTION; end,
+&gt;                Error
+&gt;              );
+&gt;   return result;
+&gt; end );
+gap&gt; MyParList( [1..25], x-&gt;x^3 );
+master -&gt; 1:  1
+master -&gt; 2:  2
+2 -&gt; master: 8
+1 -&gt; master: 1
+master -&gt; 1:  3
+master -&gt; 2:  4
+2 -&gt; master: 64
+1 -&gt; master: 27
+master -&gt; 1:  5
+master -&gt; 2:  6
+2 -&gt; master: 216
+1 -&gt; master: 125
+master -&gt; 1:  7
+master -&gt; 2:  8
+2 -&gt; master: 512
+1 -&gt; master: 343
+master -&gt; 1:  9
+master -&gt; 2:  10
+2 -&gt; master: 1000
+1 -&gt; master: 729
+master -&gt; 1:  11
+master -&gt; 2:  12
+2 -&gt; master: 1728
+1 -&gt; master: 1331
+master -&gt; 1:  13
+master -&gt; 2:  14
+2 -&gt; master: 2744
+1 -&gt; master: 2197
+master -&gt; 1:  15
+master -&gt; 2:  16
+2 -&gt; master: 4096
+1 -&gt; master: 3375
+master -&gt; 1:  17
+master -&gt; 2:  18
+2 -&gt; master: 5832
+1 -&gt; master: 4913
+master -&gt; 1:  19
+master -&gt; 2:  20
+2 -&gt; master: 8000
+1 -&gt; master: 6859
+master -&gt; 1:  21
+master -&gt; 2:  22
+2 -&gt; master: 10648
+1 -&gt; master: 9261
+master -&gt; 1:  23
+master -&gt; 2:  24
+2 -&gt; master: 13824
+1 -&gt; master: 12167
+master -&gt; 1:  25
+1 -&gt; master: 15625
+[ 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375, 
+  4096, 4913, 5832, 6859, 8000, 9261, 10648, 12167, 13824, 15625 ]
+gap&gt; ParInstallTOPCGlobalFunction( "MyParListWithAglom",
+&gt; function( list, fnc, aglomCount )
+&gt;   local result, iter;
+&gt;   result := [];
+&gt;   iter := Iterator(list);
+&gt;   MasterSlave( function() if IsDoneIterator(iter) then return NOTASK;
+&gt;                           else return NextIterator(iter); fi; end,
+&gt;                fnc,
+&gt;                function(input,output)
+&gt;                  local i;
+&gt;                  for i in [1..Length(input)] do
+&gt;                    result[input[i]] := output[i];
+&gt;                  od;
+&gt;                  return NO_ACTION;
+&gt;                end,
+&gt;                Error,  # Never called, can specify anything
+&gt;                aglomCount
+&gt;              );
+&gt;   return result;
+&gt; end );
+gap&gt; MyParListWithAglom( [1..25], x-&gt;x^3, 4 );
+master -&gt; 1: (AGGLOM_TASK): [ 1, 2, 3, 4 ]
+master -&gt; 2: (AGGLOM_TASK): [ 5, 6, 7, 8 ]
+1 -&gt; master: [ 1, 8, 27, 64 ]
+2 -&gt; master: [ 125, 216, 343, 512 ]
+master -&gt; 1: (AGGLOM_TASK): [ 9, 10, 11, 12 ]
+master -&gt; 2: (AGGLOM_TASK): [ 13, 14, 15, 16 ]
+1 -&gt; master: [ 729, 1000, 1331, 1728 ]
+2 -&gt; master: [ 2197, 2744, 3375, 4096 ]
+master -&gt; 1: (AGGLOM_TASK): [ 17, 18, 19, 20 ]
+master -&gt; 2: (AGGLOM_TASK): [ 21, 22, 23, 24 ]
+1 -&gt; master: [ 4913, 5832, 6859, 8000 ]
+2 -&gt; master: [ 9261, 10648, 12167, 13824 ]
+master -&gt; 1: (AGGLOM_TASK): [ 25 ]
+1 -&gt; master: [ 15625 ]
+[ 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375, 
+  4096, 4913, 5832, 6859, 8000, 9261, 10648, 12167, 13824, 15625 ]
+</pre>
+<p>
+If you wish  an  accelerated  introduction  to  the  models  of  parallel
+programming provided here, you  might  wish  to  read  the  beginning  of
+Chapter&nbsp;<a href="CHAP002.htm">Slave Listener</a> through section&nbsp;<a href="CHAP002.htm#SECT001">Slave Listener  Commands</a>,  and
+then proceed immediately to Chapter&nbsp;<a href="CHAP003.htm">Basic Concepts for the  TOP-C  model (MasterSlave)</a>.
+<p>
+<p>
+<a name="SECT005"><h2>1.5 Author</h2></a>
+<p><p>
+The <font face="Gill Sans,Helvetica,Arial">ParGAP</font> package was designed and written by Gene Cooperman, College
+of Computer Science, Northeastern University, Boston, MA, U.S.A.
+<p>
+If you use <font face="Gill Sans,Helvetica,Arial">ParGAP</font> to solve a problem then please send a short email to
+<a href="mailto:gene@ccs.neu.edu">gene@ccs.neu.edu</a> about it, and cite  the  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  package  as
+follows:
+<p>
+<pre>
+\bibitem[Coo99]{Coo99}
+      Cooperman, Gene,
+      {\sl Parallel GAP/MPI (ParGAP/MPI)}, Version 1,
+      College of Computer Science, Northeastern University, 1999,
+      \verb+http://www.ccs.neu.edu/home/gene/pargap.html+.
+</pre>
+<p>
+<p>
+<a name="SECT006"><h2>1.6 Invoking ParGAP with Remote Slaves</h2></a>
+<p><p>
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>, unlike <font face="Gill Sans,Helvetica,Arial">GAP</font>, must be invoked under a  separate  name.  After
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font> has been installed, a script  <code>bin/pargap.sh</code>  will  have  been
+created  which   (after   any   changes   you   needed   to   make;   see
+Section&nbsp;<a href="CHAP001.htm#SECT002">Installing ParGAP</a>) you should use to invoke <font face="Gill Sans,Helvetica,Arial">ParGAP</font>. This  is
+similar  to  <code></code><var>GAP_ROOT_DIR</var><code>/bin/gap.sh</code>  that  is  used  to  invoke  the
+non-parallel <font face="Gill Sans,Helvetica,Arial">GAP</font>. Installers are encouraged to  treat  <code>pargap.sh</code>  in
+analogy to <code>gap.sh</code>. For example, if your site  has  copied  <code>gap.sh</code>  to
+<code>/usr/local/bin/gap</code>, then you  should  also  look  for  the  <code>pargap.sh</code>
+script as <code>/usr/local/bin/pargap</code>.
+<p>
+In addition, when <code>pargap</code> (we'll assume that's how <font face="Gill Sans,Helvetica,Arial">ParGAP</font> is  invoked
+at your site) is called, there  must  be  a  file,  <code>procgroup</code>,  in  the
+current directory,  or  alternatively,  if  you  wish  to  use  a  single
+procgroup file for all jobs, and that procgroup file is  in  <code>/home/joe</code>,
+then you can alias <code>pargap</code> to <code>pargap -p4pg /home/joe/procgroup</code>.
+<p>
+The  procgroup  file  has  a  simple  syntax,  taken   from   the   MPICH
+implementation of MPI (inherited from P4). A <code>#</code> in column&nbsp;1  introduces
+a comment line. The first non-comment line should be <code>local 0</code>, verbatim.
+This line declares the master process as the local process.  Other  lines
+are of the form:
+<p>
+<code></code><var>host-machine</var><code> 1 </code><var>pargap-script</var><code></code>
+<p>
+e.g.
+<p>
+<pre>
+regulus.ccs.neu.edu 1 /usr/local/bin/pargap
+</pre>
+<p>
+The first field is the hostname for a remote process.  The  second  field
+specifies one thread per process. (<font face="Gill Sans,Helvetica,Arial">ParGAP</font> recognizes only the  value&nbsp;1
+for the second field.) The  third  field  is  an  absolute  pathname  for
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>, as it would be called on the remote process. Note that you can
+repeat the same line twice if you want two remote <font face="Gill Sans,Helvetica,Arial">ParGAP</font> processes  on
+the same processor. The default <code>procgroup</code> provided in the  distribution
+will have lines of form:
+<p>
+<code>localhost 1 </code><var>path-of-provided-pargap.sh</var><code></code>
+<p>
+If you change <var>path-of-provided-pargap.sh</var> to just, say,  <code>pargap</code>,  this
+will work only if <code>pargap</code> is in your path on the  remote  machine  shell
+(<code>localhost</code> in this case), using your default shell. On  most  machines,
+<code>localhost</code> is an alias for the local processor. This is a  good  default
+for debugging, so that you don't disturb users on other machines.
+<p>
+MPI will use a line
+<p>
+<code></code><var>host-machine</var><code> 1 </code><var>pargap-script</var><code></code>
+<p>
+to create a UNIX subprocess executing:
+<p>
+<code>rsh </code><var>host-machine</var><code> </code><var>pargap-script</var><code></code>
+<p>
+Suppose <var>host-machine</var> is <code>regulus.ccs.neu.edu</code>  and  <var>pargap-script</var>  is
+<code>/usr/local/bin/pargap</code> as in the above example,  and  we  were  to  have
+trouble invoking <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, then it would be a good idea to try  invoking
+<code>rsh regulus.ccs.neu.edu</code> from a UNIX prompt and  if  that  succeeds,  to
+then try executing the full <code>rsh</code> command.
+<p>
+A typical problem is that the remote processor  requires  a  password  to
+login.   MPI   requires   a   login   without    passwords.    Typically,
+<code>/etc/hosts.equiv</code> has not been set up to remove the password requirement
+for your remote host. Sometimes this can  be  solved  by  an  appropriate
+<code>.rhosts</code> file in your home directory on the remote host. Sometimes,  PAM
+is also used for user authentication (see <code>/etc/pam.conf</code>). <code>man in.rshd</code>
+also has helpful information.  Consult  your  system  staff  for  further
+analysis. In these days of hyper-security, <code>rsh</code> may be disabled at  your
+site and you may have to use <code>ssh</code> instead; if so, there  is  a  solution
+here: add the lines
+<p>
+<pre>
+#############################################################################
+##
+##  RSH . . . .. . . . . . . . . . . . . . . . .  remote shell used by ParGAP
+##
+##
+RSH=ssh
+export RSH
+</pre>
+<p>
+before the <code>GAP</code> block with the <code>exec</code> line. (Of course, the  <code>#</code>  lines
+are not needed; they are comments.)
+<p>
+Note that the remote <font face="Gill Sans,Helvetica,Arial">ParGAP</font> process will not read from standard input,
+although signals such as SIGINT (<code>^C</code>) may be received by  the  remote
+process. However, the remote <font face="Gill Sans,Helvetica,Arial">ParGAP</font> process  will  write  to  standard
+output, which is relayed to the local process. So,
+<p>
+<pre>
+gap&gt; SendMsg("Exec(\"hostname\")", 2);
+</pre>
+<p>
+will execute and print from the remote process.
+<p>
+<p>
+<a name="SECT007"><h2>1.7 Problems with Installation</h2></a>
+<p><p>
+If you still have problems, here is a list of things to check.
+<p>
+<dl compact>
+<dt>0.<dd>
+    In  versions  of  <font face="Gill Sans,Helvetica,Arial">GAP</font>  earlier  than  <font face="Gill Sans,Helvetica,Arial">GAP</font>&nbsp;4.3  some   <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+    ``hooks'' need to be added to <font face="Gill Sans,Helvetica,Arial">GAP</font>'s <code>lib/init.g</code> file. Please add:
+<p>
+<pre>
+PAR_GAP_SLAVE_START := fail;
+</pre>
+<p>
+<dt><dd>
+    before the line:
+<p>
+<pre>
+       READ(GAP_RC_FILE);
+</pre>
+<p>
+<dt><dd>
+    and add:
+<p>
+<pre>
+if PAR_GAP_SLAVE_START &lt;&gt; fail then PAR_GAP_SLAVE_START(); fi;
+</pre>
+<p>
+<dt><dd>
+    at the end of the file.
+<p>
+<dt>1.<dd>
+    Do you have enough swap space to support multiple <font face="Gill Sans,Helvetica,Arial">GAP</font> processes? A
+    simple way to check this is with the UNIX command, <code>top</code>.  The  Linux
+    version of <code>top</code> sorts by memory usage if you type <code>M</code>.
+<p>
+<dt>2.<dd>
+   <code>make</code> tries to automatically create:
+<p>
+<pre>
+pkg/pargap/bin/pargap.sh
+</pre>
+<p>
+<dt><dd>
+    and copy the parameters from <code></code><var>GAP_ROOT</var><code>/bin/gap.sh</code>. <var>GAP_ROOT</var>  was
+    specified when  you  executed  <code>./configure  </code><var>GAP_ROOT</var><code></code>  to  install
+    ParGAP. This can be error-prone if your site has an unusual setup. If
+    you execute <code></code><var>GAP_ROOT</var><code>/bin/gap.sh</code>, does gap come up? If so, compare
+    it   with   <code>pargap.sh</code>   and   check   for   correct   settings   in
+    <code>.../pkg/pargap/bin/pargap.sh</code>?
+<p>
+<dt>3.<dd>
+    Did <font face="Gill Sans,Helvetica,Arial">ParGAP</font> find your <code>procgroup</code> file?
+    [It looks in the current directory for <code>procgroup</code>, or for:
+<p>
+<code>... -p4pg </code><var>PATH</var><code>/procgroup</code>
+<p>
+<dt><dd>
+    on the command line.]
+<p>
+<dt>4.<dd>
+    Were the remote slave processes able to start up? If so,  could  they
+    connect back to  the  master?  To  test  connectivity  problems,  try
+    manually starting a remote slave by executing a line in  the  script.
+    Try a simple <code>rsh </code><var>remote-hostname</var><code></code> to see  if  the  issue  is  with
+    security. If your site uses <code>ssh</code> instead of <code>rsh</code>, then there  is  a
+    security issue. Read Section&nbsp;<a href="CHAP001.htm#SECT009">Problems with Passwords (Getting Around     Security)</a>, and possibly <code>man sshd</code>.
+<p>
+<dt>5.<dd>
+    If  the  previous  step  failed  due  to  security  issues,  such  as
+    requesting a password, you have several options. <code>man rshd</code> tells you
+    the security model at your site (or possibly <code>man  ssh</code>  if  you  use
+    that). Then read Section&nbsp;<a href="CHAP001.htm#SECT009">Problems  with  Passwords  (Getting  Around     Security)</a>.
+<p>
+<dt>6.<dd>
+    Is the <code>procgroup</code> file in your current directory set correctly?
+    Test it.  If you are calling it on a remote host, manually type:
+<p>
+<code>rsh </code><var>HOSTNAME</var><code> </code><var>ParGAP</var><code></code>
+<p>
+<dt><dd>
+    where <var>HOSTNAME</var> and <var>ParGAP</var> appear exactly as in <code>procgroup</code>, e.g.
+<p>
+<code>rsh denali.ccs.neu.edu /usr/local/gap4r3/bin/pargap.sh</code>
+<p>
+<dt><dd>
+    In some cases, <code>exec</code> is used to save process overhead. Also try:
+<p>
+<code>rsh </code><var>HOSTNAME</var><code> exec </code><var>ParGAP</var><code></code>
+<p>
+<dt><dd>
+    If you plan to call it on localhost, try just:   <var>ParGAP</var>
+<p>
+<dt><dd>
+    Note that if not all the slave processes succeed in connecting
+    to the master, then <font face="Gill Sans,Helvetica,Arial">ParGAP</font> writes out a file:
+<p>
+<pre>
+/tmp/pargapmpi--rsh.$$
+</pre>
+<p>
+<dt><dd>
+    where <code>$$</code> is replaced by the  the  process  id  of  the  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+    process.
+<p>
+<dt>7.<dd>
+    Is <code>pargap</code> listed in <code>.../pkg/ALLPKG</code>?
+    [It's needed to autostart slaves.]
+<p>
+<dt>8.<dd>
+    Inside <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, has MPI been successfully initialized?
+    Try:  
+<p>
+<pre>
+gap&gt; MPI_Initialized();
+</pre>
+<p>
+<dt>9.<dd>
+    A remote (slave) <font face="Gill Sans,Helvetica,Arial">ParGAP</font> process starts in your home directory  and
+    tries to <code>cd</code>  to  a  directory  of  the  same  name  as  your  local
+    directory. Check your assumptions about the remote machine. Try:
+<p>
+<pre>
+gap&gt; SendRecvMsg("Exec(pwd)"); SendRecvMsg("UNIX_Hostname()");
+gap&gt; SendRecvMsg("UNIX_Getpid()");
+</pre>
+<p>
+<dt>10.<dd>
+    If the connection dies at random, after some period of time:
+    You can experiment with <code>SO_KEEPALIVE</code> and variants.  
+    (See <code>man setsockopt</code>.)
+    This periodically sends <strong>null messages</strong> so the  remote  machine  does
+    not think that the originating  machine  is  dead.  However,  if  the
+    remote machine fails to reply, the  local  process  sends  a  SIGPIPE
+    signal to notify current processes of a broken  socket,  even  though
+    there might have been only a temporary lapse in connectivity.
+    <code>ssh</code> specifies <code>KeepAlive yes</code> by default, but setting <code>KeepAlive no</code>
+    might get you through some transient lapses in  connectivity  due  to
+    high congestion. 
+    You may also want to experiment with: <code>setenv RSH "rsh -n"</code>
+<p>
+<dt>11.<dd>
+    Read the documentation for further possible problems.
+<p>
+</dl>
+<p>
+<p>
+<a name="SECT008"><h2>1.8 Problems with Hosts on Multiple Networks</h2></a>
+<p><p>
+If a host is on multiple networks, it will have multiple IP addresses and
+usually multiple hostnames. In  this  case,  the  master  process  cannot
+always guess correctly which IP address (which internet  address)  should
+be passed to the slave process, so that the slave process can  call  back
+to the master. In such cases,  you  may  need  to  tell  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  which
+hostname or IP address to use for the callback. This is done  by  setting
+the UNIX environment variable, <code>CALLBACK_HOST</code>, as in the example below.
+<p>
+<pre>
+# [ in sh/bash/... ]
+CALLBACK_HOST=denali.ccs.neu.edu; export CALLBACK_HOST
+# [ in csh/tcsh/... ]
+setenv CALLBACK_HOST=denali.ccs.neu.edu
+</pre>
+<p>
+The appropriate  line  for  your  shell  can  be  placed  in  your  shell
+initialization file. Alternatively, you can set this up for all users  by
+placing the Bourne shell version (for <code>sh</code>) somewhere between  the  first
+and last line of <code>.../pkg/pargap/bin/pargap.sh</code>.
+<p>
+<p>
+<a name="SECT009"><h2>1.9 Problems with Passwords (Getting Around Security)</h2></a>
+<p><p>
+There is a simple test to see if you need to read this  section.  Pick  a
+remote machine, <var>HOSTNAME</var>, that you wish to execute on, and  type:  <code>rsh
+</code><var>HOSTNAME</var><code></code>. If this did not work, also try <code>ssh </code><var>HOSTNAME</var><code></code>. If you were
+asked for your password, then you and your system administrator may  need
+to talk about security policy. If you were successful with <code>ssh</code> and  not
+with <code>rsh</code> then set the environment variable, <code>RSH</code>, to the value  <code>ssh</code>,
+as described in item&nbsp;3 below.
+<p>
+<dl compact>
+<dt>(1)<dd>
+    Ask your systems administrator to put the machines in a <code>hosts.equiv</code>
+    file, so that logging in from one to the other  does  not  require  a
+    password. (<code>man hosts.equiv</code>)
+<p>
+<dt>(2)<dd>
+    Add a <code>.rhosts</code> file to your home directory (or <code>.shosts</code> for <code>ssh</code>).
+<p>
+<dt>(3)<dd>
+    Hack around the problem: By default, the startup script uses <code>rsh</code> to
+    start remote processes. However, if the  environment  variable  <code>RSH</code>
+    was set, the script  uses  the  value  of  the  environment  variable
+    instead of <code>rsh</code>. This may be useful, if you have  your  own  script,
+    <code>myrsh</code>, that automatically gets around  the  security  issues.  Then
+    just type:
+<p>
+<pre>
+RSH=myrsh; export RSH  # [ in sh/bash/... ]
+setenv RSH myrsh       # [ in csh/tcsh/... ]
+</pre>
+<p>
+<dt><dd>
+    The appropriate line for your shell  can  be  placed  in  your  shell
+    initialization file. Alternatively, you can set this up for all users
+    by placing the Bourne shell version (for <code>sh</code>) somewhere between  the
+    first and last line of <code>.../pkg/pargap/bin/pargap.sh</code>.  (The  example
+    for <code>ssh</code> was given earlier.)
+<p>
+<dt>(4)<dd>
+    <code>ssh</code>: <code>man ssh</code> mentions some possibilities for giving the  password
+    the first time, and then having ssh remember that  future  logins  to
+    that machine are authorized for the duration of  the  session.  Don't
+    overlook the use of <code>$HOME/.ssh/config</code> to set  special  parameters,
+    such as specifying a different login name on the remote machine. Some
+    parameters of interest  might  be  <code>KeepAlive</code>,  <code>RSAAuthentication</code>,
+    <code>UseRsh</code>. You may also find useful information in <code>man sshd</code>.
+<p>
+<dt>(5)<dd>
+     After starting <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, manually call
+<p>
+<pre>
+/tmp/pargapmpi--rsh.$$
+</pre>
+<p>
+<dt><dd>
+    and repeatedly type in the password for each slave  process.  If  you
+    find yourself doing this, you may  want  to  talk  with  your  system
+    administrator, since it actually hurts system security  to  have  you
+    repeatedly typing passwords with a  concommitant  risk  that  someone
+    else will find out your password.
+<p>
+</dl>
+<p>
+<p>
+<a name="SECT010"><h2>1.10 Modifying the GAP kernel</h2></a>
+<p><p>
+Note that this package modifies the <font face="Gill Sans,Helvetica,Arial">GAP</font> <code>src</code>  and  <code>bin</code>  files,  and
+creates a new <font face="Gill Sans,Helvetica,Arial">GAP</font> kernel. This new <font face="Gill Sans,Helvetica,Arial">GAP</font>  kernel  can  be  shared  by
+traditional users of the old, sequential  <font face="Gill Sans,Helvetica,Arial">GAP</font>  kernel,  and  by  those
+doing parallel processing.
+<p>
+The <font face="Gill Sans,Helvetica,Arial">GAP</font> kernel will have identical behavior to the old  <font face="Gill Sans,Helvetica,Arial">GAP</font>  kernel
+when invoked through  the  <code>gap.sh</code>  script  or  the  <code>bin/@GAParch@/gap</code>
+binary. The new <font face="Gill Sans,Helvetica,Arial">ParGAP</font> variables will appear to the end user <strong>ONLY</strong> if
+the <font face="Gill Sans,Helvetica,Arial">GAP</font> binary was invoked as <code>pargapmpi</code>:  a  symbolic  link  to  the
+actual <font face="Gill Sans,Helvetica,Arial">GAP</font> binary. The script, <code>pargap.sh</code>, does this.
+<p>
+So, in a multi-user environment, traditional users can  continue  to  use
+<code>gap.sh</code>  without  noticing  any  difference.  Only  an   invocation   of
+<code>pargap.sh</code> will add the new features.
+<p>
+In a future version of <font face="Gill Sans,Helvetica,Arial">GAP</font>, it is hoped that the  <font face="Gill Sans,Helvetica,Arial">GAP</font>  kernel  will
+have enough ``hooks'', so that no modification of the  <font face="Gill Sans,Helvetica,Arial">GAP</font>  kernel  is
+required. At that time, it will also be possible to speed up the  startup
+time for <font face="Gill Sans,Helvetica,Arial">ParGAP</font>. Much of the startup time is  caused  by  waiting  for
+<font face="Gill Sans,Helvetica,Arial">GAP</font> to read its library files. It will be possible to use  the  <font face="Gill Sans,Helvetica,Arial">GAP</font>
+function, <code>SaveWorkspace()</code> to save a version  with  the  <font face="Gill Sans,Helvetica,Arial">GAP</font>  library
+pre-loaded. That saved version can then be used to  start  up  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.
+This is not currently possible, because <font face="Gill Sans,Helvetica,Arial">ParGAP</font> needs  to  get  at  the
+command line of <font face="Gill Sans,Helvetica,Arial">GAP</font> before the <font face="Gill Sans,Helvetica,Arial">GAP</font> kernel sees it.
+<p>
+Comments and contributions to a <font face="Gill Sans,Helvetica,Arial">ParGAP</font> user library, or any other type
+of assistance, are gratefully accepted.
+<p>
+Gene Cooperman
+<a href="mailto:gene@ccs.neu.edu">gene@ccs.neu.edu</a>
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>ParGAP manual<br>November 2001
+</address></body></html>

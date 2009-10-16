@@ -1,0 +1,40 @@
+
+# ex002.in - Colin Ramsay - 14 May 99
+
+echo:1;
+
+enum:infinite cyclic group;
+gr:xy;
+rel:yxyxY;
+subgr:self (index 1);
+gen:x;
+
+asis:1;
+mess:1000000;
+pure r;  end;
+pr:-1,12;
+
+mess:0;
+pure r;  row:1;   end;
+pure r;  mend:1;  end;
+asis:0;
+mess:1000000;
+pure r;  end;
+
+enum:C_3;
+rel:x^3yxyX^3,y^3xyxY^3;
+subgr:trivial (index 3);
+gen:;
+
+asis:1;
+mess:1000000;
+pure r;  end;
+pr:-1,16;
+
+mess:0;
+pure r;  row:1;   end;
+pure r;  mend:1;  end;
+asis:0;
+mess:1000000;
+pure r;  end;
+

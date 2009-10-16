@@ -1,0 +1,1 @@
+orblist -ptstab $* 

@@ -1,0 +1,20 @@
+
+# This is the (8,7|2,3) / <aa,Ab> enumeration discussed in George's & my
+# paper and the ITC manual.  This is the T=662 enumeration which we found,
+# and we want to generate ITC input to see if we can prune it.
+
+Group Name: E8723;
+Group Generators: ab;
+Group Relators: (A)^8, (aB)^3, (ba)^2, (b)^7;
+Subgroup Name: Index 448;
+Subgroup Generators: (a)^2, Ab;
+
+AsIs:1;
+Hard;  PMod:2;  Ct:15;  Rt:3;
+
+Mess:1;
+
+#End;
+#Defn;
+Defn:1;
+

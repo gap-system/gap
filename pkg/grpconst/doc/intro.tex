@@ -1,0 +1,59 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intro.tex             GrpConst documentation             Bettina Eick
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Introduction to GrpConst}
+
+\index{GrpConst}
+
+This package contains three methods to construct the groups of a 
+certain type up to isomorphism. 
+
+
+*The Frattini Extension Method*:
+
+This method can be used to determine all soluble groups of a given 
+order. The practicability of the method depends clearly on the 
+chosen order. Furthermore, the efficiency of the method might be
+increased by restricting the construction to groups with certain 
+properties. This is easily possible for a number of properties;
+for example, it is useful and straightforward to compute non-nilpotent
+groups only. 
+(See Chapter "The Frattini Extension Method".)
+
+
+*The Cyclic Split Extension Method*:
+
+The cyclic split extension method can be used to list all groups of 
+order $p^n \cdot q$ for different primes $p$ and $q$ which have a 
+normal Sylow subgroup. These groups are also soluble, and hence might
+also be obtained by the Frattini extension method. However, the cyclic 
+split extension method is more effective on this case. Note that this
+method relies on a list of groups of order $p^n$. Moreover, the 
+efficiency of this method depends on an effective method to compute 
+automorphism groups of $p$-groups. (See Chapter "The Cyclic Split Extension 
+Method".)
+
+
+*The Upwards Extension Method*:
+
+The upwards extension method is the most general of the three methods.
+It can be used to construct all groups of a given order.  However, it 
+is the least efficient of the three methods and hence should only be
+used to construct non-soluble groups. Note that this method needs
+a list of perfect groups of order dividing the given one. 
+(See Chapter "The Upwards Extension Method".)
+
+
+Furthermore, the package contains a wrap up function which combines
+the three methods to a general algorithm to construct the groups of
+a given order. (See Chapter "Construction of All Groups".) Finally,
+there is an info class `InfoGrpCon' available for the functions of
+this share package with possible levels 1 up to 4.
+
+
+
+
+

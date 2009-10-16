@@ -3,7 +3,7 @@
 #W  grplatt.gi                GAP library                   Martin Sch"onert,
 #W                                                          Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grplatt.gi,v 4.87 2009/02/26 22:57:10 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This  file  contains declarations for subgroup latices
 ##
 Revision.grplatt_gi:=
-  "@(#)$Id$";
+  "@(#)$Id: grplatt.gi,v 4.87 2009/02/26 22:57:10 gap Exp $";
 
 #############################################################################
 ##
@@ -167,6 +167,25 @@ InstallOtherMethod(ConjugacyClassesSubgroups,"lattice",true,
 function(L)
   return L!.conjugacyClassesSubgroups;
 end);
+
+BindGlobal("LatticeFromClasses",function(G,classes)
+local lattice;
+  # sort the classes
+  Sort(classes,
+	function (c,d)
+	  return Size(Representative(c)) < Size(Representative(d))
+	    or (Size(Representative(c)) = Size(Representative(d))
+		and Size(c) < Size(d));
+	end);
+
+  # create the lattice
+  lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
+    rec(conjugacyClassesSubgroups:=classes,
+        group:=G));
+
+  # return the lattice
+  return lattice;
+end );
 
 #############################################################################
 ##
@@ -629,34 +648,428 @@ local   G,		   # group
     Info(InfoLattice,1,"<G> has ",nrClasses," classes,",
                   " and ",Sum(classes,Size)," subgroups");
 
-    # sort the classes
-    Sort(classes,
-	 function (c,d)
-	    return Size(Representative(c)) < Size(Representative(d))
-	      or (Size(Representative(c)) = Size(Representative(d))
-		  and Size(c) < Size(d));
-	 end);
+  lattice:=LatticeFromClasses(G,classes);
+  if func<>false then
+    lattice!.func:=func;
+  fi;
+  return lattice;
+end);
 
-    # create the lattice
-    lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
-                       rec());
-    lattice!.conjugacyClassesSubgroups:=classes;
-    lattice!.group     :=G;
+BindGlobal("VectorspaceComplementOrbitsLattice",function(n,a,c,ker)
+local s, m, dim, p, field, one, bas, I, l, avoid, li, gens, act, actfun,
+      rep, max, baselist, ve, new, lb, newbase, e, orb, stb, tr, di,
+      cont, j, img, idx, stabilizer, i, base, d, gn;
+  m:=ModuloPcgs(a,ker);
+  dim:=Length(m);
+  p:=RelativeOrders(m)[1];
+  field:=GF(p);
+  one:=One(field);
+  bas:=List(GeneratorsOfGroup(c),i->ExponentsOfPcElement(m,i)*one);
+  TriangulizeMat(bas);
+  bas:=Filtered(bas,i->not IsZero(i));
+  I := IdentityMat(dim, field);
+  l:=BaseSteinitzVectors(I,bas);
+  avoid:=Length(l.subspace);
+  l:=Concatenation(l.factorspace,l.subspace);
+  l:=ImmutableMatrix(field,l);
+  li:=l^-1;
+  gens:=GeneratorsOfGroup(n);
+  act:=LinearActionLayer(n,m);
+  act:=List(act,i->l*i*li);
+  if p=2 then
+    actfun:=OnSubspacesByCanonicalBasisGF2;
+  else
+    actfun:=OnSubspacesByCanonicalBasis;
+  fi;
+  rep:=[];
+  max:=dim-avoid;
+  baselist := [[]];
+  ve:=AsList(field);
+  for i in [1..dim] do
+    Info(InfoLattice,5,"starting dim :",i," bases found :",Length(baselist));
+    new := [];
+    for base in baselist do
 
-    if func<>false then
-      lattice!.func:=func;
+      #subspaces of equal dimension
+      lb:=Length(base);
+      for d in [0..p^lb-1] do
+	if d=0 then
+	  # special case for subspace of higher dimension
+	  if Length(base) < max and i<=max then
+	    newbase:=Concatenation(List(base,ShallowCopy), [I[i]]);
+	  else
+	    newbase:=[];
+	  fi;
+	else
+	  # possible extension number d
+	  newbase := List(base,ShallowCopy);
+	  e:=d;
+	  for j in [1..lb] do
+	    newbase[j][i]:=ve[(e mod p)+1];
+	    e:=QuoInt(e,p);
+	  od;
+	  #for j in [1..Length(vec)] do
+	  #  newbase[j][i] := vec[j];
+	  #od;
+	fi;
+	if i<dim and Length(newbase)>0 then
+	  # we will need the space for the next level
+	  Add(new, newbase);
+	fi;
+
+	if Length(newbase)=max then
+	  # compute orbit
+	  orb:=[newbase];
+	  stb:=a;
+	  tr:=[One(a)];
+	  di:=NewDictionary(newbase,true,
+			# fake entry to simulate a ``grassmannian'' object
+	                    1);
+	  AddDictionary(di,newbase,1);
+	  cont:=true;
+	  j:=1;
+	  while cont and j<=Length(orb) do
+	    for gn in [1..Length(gens)] do
+	      img:=actfun(orb[j],act[gn]);
+	      idx:=LookupDictionary(di,img);
+	      if idx=fail then
+		if img<newbase then
+		  # element is not minimal -- discard
+		  cont:=false;
+		fi;
+		Add(orb,img);
+		AddDictionary(di,img,Length(orb));
+		Add(tr,tr[j]*gens[gn]);
+	      else
+		idx:=tr[j]*gens[gn]/tr[idx];
+		stb:=ClosureGroup(stb,idx);
+	      fi;
+	    od;
+	    j:=j+1;
+	  od;
+
+	  if cont then
+	    Info(InfoLattice,5,"orbitlength=",Length(orb));
+	    newbase:=List(newbase*l,i->PcElementByExponents(m,i));
+	    s:=Group(Concatenation(GeneratorsOfGroup(ker),newbase));
+	    SetSize(s,Size(ker)*p^Length(newbase));
+	    j:=Size(stb);
+	    if IsAbelian(stb) and
+	      p^Length(GeneratorsOfGroup(stb))=j then
+	      # don't waste too much time
+	      stb:=Group(GeneratorsOfGroup(stb),());
+	    else
+	      stb:=Group(SmallGeneratingSet(stb),());
+	    fi;
+	    SetSize(stb,j);
+	    Add(rep,rec(representative:=s,normalizer:=stb));
+	  fi;
+	fi;
+      od;
+    od;
+
+    # book keeping for the next level
+    Append(baselist, new);
+
+  od;
+  return rep;
+end);
+
+
+#############################################################################
+##
+#M  LatticeViaRadical(<G>[,<H>])  . . . . . . . . . .  lattice of subgroups
+##
+InstallGlobalFunction(LatticeViaRadical,function(arg)
+  local G,H,HN,HNI,ser, pcgs, u, hom, f, c, nu, nn, nf, a, k, ohom, mpcgs, gf,
+  act, nts, orbs, n, ns, nim, fphom, as, p, isn, isns, lmpc, npcgs, ocr, v,
+  com, cg, i, j, w, ii,first,cgs,cs,presmpcgs,select;
+
+  G:=arg[1];
+  H:=fail;
+  select:=fail;
+  if Length(arg)>1 then
+    if IsGroup(arg[2]) then
+      H:=arg[2];
+      if not (IsSubgroup(G,H) and IsNormal(G,H)) then
+	Error("H must be normal in G");
+      fi;
+    elif IsFunction(arg[2]) then
+      select:=arg[2];
+
+    fi;
+  fi;
+
+  ser:=PermliftSeries(G:limit:=300); # do not form too large spaces as they
+                                     # clog up memory
+  pcgs:=ser[2];
+  ser:=ser[1];
+  if Index(G,ser[1])=1 then
+    Info(InfoWarning,1,"group is solvable");
+    hom:=NaturalHomomorphismByNormalSubgroup(G,G);
+    hom:=hom*IsomorphismFpGroup(Image(hom));
+    u:=[[G],[G],[hom]];
+  elif Size(ser[1])=1 then
+    if H<>fail then
+      return LatticeByCyclicExtension(G,u->IsSubset(H,u));
+    else
+      return LatticeByCyclicExtension(G);
+    fi;
+  else
+    hom:=NaturalHomomorphismByNormalSubgroupNC(G,ser[1]);
+    f:=Image(hom,G);
+    if H<>fail then
+      HN:=Image(hom,H);
+      c:=LatticeByCyclicExtension(f,u->IsSubset(HN,u))!.conjugacyClassesSubgroups;
+    elif select<>fail and (select=IsPerfectGroup  or select=IsSimpleGroup) then
+      c:=ConjugacyClassesPerfectSubgroups(f);
+    else
+      c:=LatticeByCyclicExtension(f)!.conjugacyClassesSubgroups;
+    fi;
+    if select<>fail then
+      nu:=Filtered(c,i->select(Representative(i)));
+      Info(InfoLattice,1,"Selection reduced ",Length(c)," to ",Length(nu));
+      c:=nu;
+    fi;
+    nu:=[];
+    nn:=[];
+    nf:=[];
+    for i in c do
+      a:=Representative(i);
+      k:=PreImage(hom,a);
+      Add(nu,k);
+      Add(nn,PreImage(hom,Stabilizer(i)));
+      Add(nf,RestrictedMapping(hom,k)*IsomorphismFpGroup(a));
+    od;
+    u:=[nu,nn,nf];
+  fi;
+  for i in [2..Length(ser)] do
+    Info(InfoLattice,1,"Step ",i," : ",Index(ser[i-1],ser[i]));
+    #ohom:=hom;
+    #hom:=NaturalHomomorphismByNormalSubgroupNC(G,ser[i]);
+    if H<>fail then
+      HN:=ClosureGroup(H,ser[i]);
+      HNI:=Intersection(ClosureGroup(H,ser[i]),ser[i-1]);
+#      if pcgs=false then
+	mpcgs:=ModuloPcgs(HNI,ser[i]);
+#      else
+#	mpcgs:=pcgs[i-1] mod pcgs[i];
+#      fi;
+      presmpcgs:=ModuloPcgs(ser[i-1],ser[i]);
+    else
+      if pcgs=false then
+	mpcgs:=ModuloPcgs(ser[i-1],ser[i]);
+      else
+	mpcgs:=pcgs[i-1] mod pcgs[i];
+      fi;
+      presmpcgs:=mpcgs;
     fi;
 
-    # return the lattice
-    return lattice;
-end );
+    if Length(mpcgs)>0 then
+      gf:=GF(RelativeOrders(mpcgs)[1]);
+      act:=ActionSubspacesElementaryAbelianGroup(G,mpcgs);
+    else
+      gf:=GF(Factors(Index(ser[i-1],ser[i]))[1]);
+      act:=[[ser[i]],GroupHomomorphismByImagesNC(G,Group(()),
+           GeneratorsOfGroup(G),
+           List(GeneratorsOfGroup(G),i->()))];
+    fi;
+    nts:=act[1];
+    act:=act[2];
+    nu:=[];
+    nn:=[];
+    nf:=[];
+    # Determine which ones we need and keep old ones
+    orbs:=[];
+    for j in [1..Length(u[1])] do
+      a:=u[1][j];
+#if ForAny(GeneratorsOfGroup(a),i->SIZE_OBJ(i)>maxsz) then Error("1");fi;
+      n:=u[2][j];
+#if ForAny(GeneratorsOfGroup(n),i->SIZE_OBJ(i)>maxsz) then Error("2");fi;
+      ns:=Difference([1..Length(nts)],MovedPoints(Image(act,a)));
+      nim:=Image(act,n);
+      ns:=Orbits(nim,ns);
+      if Size(a)>Size(ser[i-1]) then
+	# keep old groups
+	if H=fail or IsSubset(HN,a) then
+	  Add(nu,a);Add(nn,n);
+	  if Size(ser[i])>1 then
+	    fphom:=LiftFactorFpHom(u[3][j],a,ser[i-1],ser[i],presmpcgs);
+	    Add(nf,fphom);
+	  fi;
+	fi;
+	orbs[j]:=ns;
+      else
+	orbs[j]:=[];
+	# previous kernel -- there the orbits are classes of subgroups in G
+	for k in ns do
+	  Add(nu,nts[k[1]]);
+	  Add(nn,PreImage(act,Stabilizer(nim,k[1])));
+	  if Size(ser[i])>1 then
+	    fphom:=IsomorphismFpGroupByChiefSeriesFactor(nts[k[1]],"x",ser[i]);
+	    Add(nf,fphom);
+	  fi;
+	od;
+      fi;
+    od;
+
+    # run through nontrivial subspaces (greedy test whether they are needed)
+    for j in [1..Length(nts)] do
+      if Size(nts[j])<Size(ser[i-1]) then
+	as:=[];
+	for k in [1..Length(orbs)] do
+	  p:=PositionProperty(orbs[k],z->j in z);
+	  if p<>fail then
+	    # remove orbit
+	    orbs[k]:=orbs[k]{Difference([1..Length(orbs[k])],[p])};
+	    Add(as,k);
+	  fi;
+	od;
+	if Length(as)>0 then
+	  Info(InfoLattice,2,"Normal subgroup ",j,", ",Length(as),
+	       " subgroups to consider");
+	  # there are subgroups that will complement with this kernel.
+	  # Construct the modulo pcgs and the action of the largest subgroup
+	  # (which must be the normalizer)
+	  isn:=fail;
+	  isns:=1;
+	  for k in as do
+	    if Size(u[1][k])>isns then
+	      isns:=Size(u[1][k]);
+	      isn:=k;
+	    fi;
+	  od;
+
+	  if pcgs=false then
+	    lmpc:=ModuloPcgs(ser[i-1],nts[j]);
+	    npcgs:=ModuloPcgs(nts[j],ser[i]);
+	  else
+	    if IsTrivial(nts[j]) then
+	      lmpc:=pcgs[i-1];
+	      npcgs:="not used";
+	    else
+	      c:=InducedPcgs(pcgs[i-1],nts[j]);
+	      lmpc:=pcgs[i-1] mod c;
+	      npcgs:=c mod pcgs[i];
+	    fi;
+	  fi;
+
+	  for k in as do
+	    a:=u[1][k];
+	    if IsNormal(u[2][k],nts[j]) then
+	      n:=u[2][k];
+	    else
+	      n:=Normalizer(u[2][k],nts[j]);
+#if ForAny(GeneratorsOfGroup(n),i->SIZE_OBJ(i)>maxsz) then Error("2a");fi;
+	    fi;
+	    if Length(GeneratorsOfGroup(n))>3 then
+	      w:=Size(n);
+	      n:=Group(SmallGeneratingSet(n));
+	      SetSize(n,w);
+	    fi;
+	    ocr:=rec(group:=a,
+		    modulePcgs:=lmpc);
+	    #fphom:=RestrictedMapping(ohom,a)*IsomorphismFpGroup(Image(ohom,a));
+	    #ocr.factorfphom:=fphom;
+	    ocr.factorfphom:=u[3][k];
+	    OCOneCocycles(ocr,true);
+	    if IsBound(ocr.complement) then
+#if ForAny(ocr.complementGens,i->SIZE_OBJ(i)>maxsz) then Error("3");fi;
+	      v:=BaseSteinitzVectors(
+		BasisVectors(Basis(ocr.oneCocycles)),
+		BasisVectors(Basis(ocr.oneCoboundaries)));
+	      v:=VectorSpace(gf,v.factorspace,Zero(ocr.oneCocycles));
+	      com:=[];
+	      cgs:=[];
+	      first:=false;
+	      if Size(v)>100 and Size(ser[i])=1
+		 and HasElementaryAbelianFactorGroup(a,nts[j]) then
+		com:=VectorspaceComplementOrbitsLattice(n,a,ser[i-1],nts[j]);
+		Info(InfoLattice,4,"Subgroup ",Position(as,k),"/",Length(as),
+		      ", ",Size(v)," local complements, ",Length(com)," orbits");
+		for c in com do
+		  if H=fail or IsSubset(HN,c.representative) then
+		    Add(nu,c.representative);
+		    Add(nn,c.normalizer);
+		  fi;
+		od;
+	      else
+		for w in Enumerator(v) do
+		  cg:=ocr.cocycleToList(w);
+  #if ForAny(cg,i->SIZE_OBJ(i)>maxsz) then Error("3");fi;
+		  for ii in [1..Length(cg)] do
+		    cg[ii]:=ocr.complementGens[ii]*cg[ii];
+		  od;
+		  if first then
+		    # this is clearly kept -- so calculate a stabchain
+		    c:=ClosureSubgroup(nts[j],cg);
+		  first:=false;
+		  else
+		    c:=SubgroupNC(G,Concatenation(SmallGeneratingSet(nts[j]),cg));
+		  fi;
+		  Assert(1,Size(c)=Index(a,ser[i-1])*Size(nts[j]));
+		  if H=fail or IsSubset(HN,c) then
+		    SetSize(c,Index(a,ser[i-1])*Size(nts[j]));
+		    Add(cgs,cg);
+		    #c!.comgens:=cg;
+		    Add(com,c);
+		  fi;
+		od;
+		w:=Length(com);
+		com:=SubgroupsOrbitsAndNormalizers(n,com,false:savemem:=true);
+		Info(InfoLattice,3,"Subgroup ",Position(as,k),"/",Length(as),
+		      ", ",w," local complements, ",Length(com)," orbits");
+		for w in com do
+		  c:=w.representative;
+		  Add(nu,c);
+		  Add(nn,w.normalizer);
+		  if Size(ser[i])>1 then
+		    # need to lift presentation
+		    fphom:=ComplementFactorFpHom(ocr.factorfphom,
+		    a,ser[i-1],nts[j],c,
+		    ocr.generators,cgs[w.pos]);
+
+		    Assert(1,KernelOfMultiplicativeGeneralMapping(fphom)=nts[j]);
+		    if Size(nts[j])>Size(ser[i]) then
+		      fphom:=LiftFactorFpHom(fphom,c,nts[j],ser[i],npcgs);
+		      Assert(1,
+			KernelOfMultiplicativeGeneralMapping(fphom)=ser[i]);
+		    fi;
+		    Add(nf,fphom);
+		  fi;
+		od;
+	      fi;
+
+	      ocr:=false;
+	      cgs:=false;
+	      com:=false;
+	    fi;
+	  od;
+	fi;
+      fi;
+    od;
+
+    u:=[nu,nn,nf];
+
+  od;
+  nn:=[];
+  for i in [1..Length(u[1])] do
+    a:=ConjugacyClassSubgroups(G,u[1][i]);
+    n:=u[2][i];
+    SetSize(a,Size(G)/Size(n));
+    SetStabilizerOfExternalSet(a,n);
+    Add(nn,a);
+  od;
+  return LatticeFromClasses(G,nn);
+end);
+
 
 #############################################################################
 ##
 #M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
 ##
-InstallMethod(LatticeSubgroups,"cyclic extension",true,[IsGroup],0,
-  LatticeByCyclicExtension);
+InstallMethod(LatticeSubgroups,"via radical",true,[IsGroup],0,
+  LatticeViaRadical);
 
 #############################################################################
 ##
@@ -727,6 +1140,15 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       D,params,might,bo;
   if IsSolvableGroup(G) then
     return [TrivialSubgroup(G)];
+  elif Size(RadicalGroup(G))>1 then
+    D:=LatticeViaRadical(G,IsPerfectGroup);
+    D:=List(D!.conjugacyClassesSubgroups,Representative);
+    if simple then
+      D:=Filtered(D,IsSimpleGroup);
+    else
+      D:=Filtered(D,IsPerfectGroup);
+    fi;
+    return D;
   else
     PerfGrpLoad(0);
     badsizes := Union(PERFRec.notAvailable,PERFRec.notKnown);
@@ -884,60 +1306,91 @@ InstallMethod(MaximalSubgroupsLattice,"cyclic extension",true,
   [IsLatticeSubgroupsRep],0,
 function (L)
     local   maximals,          # maximals as pair <class>,<conj> (result)
-            maximalsZups,      # their zuppos blist
+            maximalsConjs,     # corresponding conjugator element inverses
             cnt,               # count for information messages
-            zuppos,            # generators of prime power order
             classes,           # list of all classes
-            classesZups,       # zuppos blist of classes
             I,                 # representative of a class
             Ielms,             # elements of <I>
             Izups,             # zuppos blist of <I>
             N,                 # normalizer of <I>
-            Jzups,             # zuppos of a conjugate of <I>
-            Kzups,             # zuppos of a representative in <classes>
+            Jgens,             # zuppos of a conjugate of <I>
+            Kgroup,             # zuppos of a representative in <classes>
             reps,              # transversal of <N> in <G>
 	    grp,	       # the group
-            i,k,r;         # loop variables
+	    lcl,	       # length(lcasses);
+	    clsz,
+	    notinmax,
+	    maxsz,
+	    mkk,
+	    ppow,
+	    primes,
+	    notperm,
+	    dom,
+	    orbs,
+	    Iorbs,Jorbs,
+            i,k,kk,r;         # loop variables
 
     if IsBound(L!.func) then
       Error("cannot compute maximality inclusions for partial lattice");
     fi;
 
     grp:=L!.group;
-    # compute the lattice,fetch the classes,zuppos,and representatives
+    # relevant prime powers
+    primes:=Set(Factors(Size(grp)));
+    ppow:=Collected(Factors(Size(grp)));
+    ppow:=Union(List(ppow,i->List([1..i[2]],j->i[1]^j)));
+
+    # compute the lattice,fetch the classes,and representatives
     classes:=L!.conjugacyClassesSubgroups;
-    classesZups:=[];
+    lcl:=Length(classes);
+    clsz:=List(classes,i->Size(Representative(i)));
+    if IsPermGroup(grp) then
+      notperm:=false;
+      dom:=[1..LargestMovedPoint(grp)];
+      orbs:=List(classes,i->Set(List(Orbits(Representative(i),dom),Set)));
+      orbs:=List(orbs,i->List([1..Maximum(dom)],p->Length(First(i,j->p in j))));
+    else
+      notperm:=true;
+    fi;
 
     # compute a system of generators for the cyclic sgr. of prime power size
-    zuppos:=Zuppos(grp);
 
     # initialize the maximals list
     Info(InfoLattice,1,"computing maximal relationship");
     maximals:=List(classes,c -> []);
-    maximalsZups:=List(classes,c -> []);
+    maximalsConjs:=List(classes,c -> []);
+    maxsz:=[];
+    if IsSolvableGroup(grp) then
+      # maxes of grp
+      maxsz[lcl]:=Set(List(MaximalSubgroupClassReps(grp),Size));
+    else
+      maxsz[lcl]:=fail; # don't know about group
+    fi;
 
     # find the minimal supergroups of the whole group
-    Info(InfoLattice,2,"testing class ",Length(classes),", size = ",
+    Info(InfoLattice,2,"testing class ",lcl,", size = ",
          Size(grp),", length = 1, included in 0 minimal subs");
-    classesZups[Length(classes)]:=BlistList(zuppos,zuppos);
 
     # loop over all classes
-    for i  in [Length(classes)-1,Length(classes)-2..1]  do
+    for i  in [lcl-1,lcl-2..1]  do
 
         # take the subgroup <I>
         I:=Representative(classes[i]);
+	if not notperm then
+	  Iorbs:=orbs[i];
+	fi;
         Info(InfoLattice,2," testing class ",i);
 
-        # compute the zuppos blist of <I>
-        Ielms:=AsSSortedListNonstored(I);
-        Izups:=BlistList(zuppos,Ielms);
-        classesZups[i]:=Izups;
+	if IsSolvableGroup(I) then
+	  maxsz[i]:=Set(List(MaximalSubgroupClassReps(I),Size));
+	else
+	  maxsz[i]:=fail;
+	fi;
 
         # compute the normalizer of <I>
-        N:=Normalizer(grp,I);
+        N:=StabilizerOfExternalSet(classes[i]);
 
-	# compute the right transversal
-	# (but don't store it in the parent)
+	# compute the right transversal (but don't store it in the parent)
 	reps:=RightTransversalOp(grp,N);
 
         # initialize the counter
@@ -946,34 +1399,59 @@ function (L)
         # loop over the conjugates of <I>
         for r  in [1..Length(reps)]  do
 
-            # compute the zuppos blist of the conjugate
+            # compute the generators of the conjugate
             if reps[r] = One(grp)  then
-                Jzups:=Izups;
+                Jgens:=SmallGeneratingSet(I);
+		if not notperm then
+		  Jorbs:=Iorbs;
+		fi;
             else
-                Jzups:=BlistList(zuppos,OnTuples(Ielms,reps[r]));
+                Jgens:=OnTuples(SmallGeneratingSet(I),reps[r]);
+		if not notperm then
+		  Jorbs:=Permuted(Iorbs,reps[r]);
+		fi;
             fi;
 
-            # loop over all other (larger classes)
-            for k  in [i+1..Length(classes)]  do
-                Kzups:=classesZups[k];
-
+            # loop over all other (larger) classes
+            for k  in [i+1..lcl]  do
+	      Kgroup:=Representative(classes[k]);
+	      kk:=clsz[k]/clsz[i];
+	      if IsInt(kk) and kk>1 and
+		# maximal sizes known?
+		(maxsz[k]=fail or clsz[i] in maxsz[k]) and
+		(notperm or ForAll(dom,x->Jorbs[x]<=orbs[k][x])) then
                 # test if the <K> is a minimal supergroup of <J>
-                if    IsSubsetBlist(Kzups,Jzups)
-                  and ForAll(maximalsZups[k],
-                              zups -> not IsSubsetBlist(zups,Jzups))
-                then
-                    Add(maximals[k],[ i,r ]);
-                    Add(maximalsZups[k],Jzups);
+                if  ForAll(Jgens,i->i in Kgroup) then
+		  # at this point we know all maximals of k of larger order
+		  notinmax:=true;
+		  kk:=1;
+		  while notinmax and kk<=Length(maximals[k]) do
+		    mkk:=maximals[k][kk];
+		    if IsInt(clsz[mkk[1]]/clsz[i]) # could be in by order
+	             and ForAll(Jgens,i->i^maximalsConjs[k][kk] in
+				    Representative(classes[mkk[1]])) then
+                      notinmax:=false;
+		    fi;
+                    kk:=kk+1;
+		  od;
+
+		  if notinmax then
+                    Add(maximals[k],[i,r]);
+		    # rep of x-th class ^r is contained in k-th class rep,
+		    # so to remove nonmax inclusions we need to test whether
+		    # conjugate of putative max by r^-1 is rep of x-th
+		    # class.
+		    Add(maximalsConjs[k],reps[r]^-1);
                     cnt:=cnt + 1;
+		  fi;
                 fi;
+	      fi;
 
             od;
-
         od;
 
-        # inform about the count
-        Unbind(Ielms);
         Unbind(reps);
+        # inform about the count
         Info(InfoLattice,2,"size = ",Size(I),", length = ",
 	  Size(grp) / Size(N),", included in ",cnt," minimal sups");
 
@@ -1034,7 +1512,7 @@ function (L)
         classesZups[i]:=Izups;
 
         # compute the normalizer of <I>
-        N:=Normalizer(grp,I);
+        N:=StabilizerOfExternalSet(classes[i]);
 
         # compute the right transversal (but don't store it in the parent)
         reps:=RightTransversalOp(grp,N);
@@ -1152,32 +1630,47 @@ local G,	# group
       hom,	# homomorphism
       jg,	# generator images
       auts,	# factor automorphisms
+      comp,
+      firsts,
+      still,
+      ab,
       T,S,C,A,ji,orb,orbi,cllen,r,o,c,inv,cnt,
-      i,j,k;	# loop
+      ii,i,j,k;	# loop
 
   G:=arg[1];
   onlysimple:=false;
   if Length(arg)>1 and arg[2]=true then
     onlysimple:=true;
   fi;
-  nt:=[G];
+  if IsElementaryAbelian(G) then
+    # we need to do this separately as the inductive process misses its
+    # start if the chies series has only one step
+    return InvariantSubgroupsElementaryAbelianGroup(G,[]);
+  fi;
+
   cs:=ChiefSeries(G);
+  G!.lattfpres:=IsomorphismFpGroupByChiefSeriesFactor(G,"x",G);
+  nt:=[G];
+
 
   for i in [2..Length(cs)] do
+    still:=i<Length(cs);
     # we assume that nt contains all normal subgroups above cs[i-1]
     # we want to lift to G/cs[i]
     M:=cs[i-1];
     N:=cs[i];
+    ab:=HasAbelianFactorGroup(M,N);
 
     # the normal subgroups already known
-    if (not onlysimple) or (not HasAbelianFactorGroup(M,N)) then
+    if (not onlysimple) or (not ab) then
       nnt:=ShallowCopy(nt);
     else
       nnt:=[];
     fi;
+    firsts:=Length(nnt);
 
-    Info(InfoLattice,1,i,":",Index(M,N));
-    if HasAbelianFactorGroup(M,N) then
+    Info(InfoLattice,1,i,":",Index(M,N)," ",ab);
+    if ab then
       # the modulo pcgs
       mpcgs:=ModuloPcgs(M,N);
 
@@ -1194,6 +1687,7 @@ local G,	# group
 	  if (HasAbelianFactorGroup(j,N) and
 	    p^(Length(mpcgs)*LogInt(Index(j,M),p))>100)
 	    then
+            Info(InfoLattice,3,"Set l to fail");
 	    l:=fail;  # we will compute the subgroups later
 	  else
 
@@ -1201,6 +1695,12 @@ local G,	# group
 		   group:=j,
 		   modulePcgs:=mpcgs
 		 );
+            if not IsBound(j!.lattfpres) then
+	      Info(InfoLattice,2,"Compute new factorfp");
+	      j!.lattfpres:=IsomorphismFpGroupByChiefSeriesFactor(j,"x",M);
+	    fi;
+	    ocr.factorfphom:=j!.lattfpres;
+	    Assert(2,KernelOfMultiplicativeGeneralMapping(ocr.factorfphom)=M);
 
 	    # we want only normal complements. Therefore the 1-Coboundaries must
 	    # be trivial. We compute these first.
@@ -1221,8 +1721,21 @@ local G,	# group
 		else
 		  l:=[];
 		  for k in vs do
-		    k:=ClosureGroup(N,ocr.cocycleToComplement(k));
+		    comp:=ocr.cocycleToList(k);
+		    for ii in [1..Length(comp)] do
+		      comp[ii]:=ocr.complementGens[ii]*comp[ii];
+		    od;
+		    k:=ClosureGroup(N,comp);
 		    if IsNormal(G,k) then
+		      if still then
+			# transfer a known presentation
+			if not IsPcGroup(k) then
+			  k!.lattfpres:=ComplementFactorFpHom(
+			    ocr.factorfphom,l,M,N,k,ocr.generators,comp);
+	    Assert(1,KernelOfMultiplicativeGeneralMapping(k!.lattfpres)=N);
+			fi;
+                        k!.obtain:="compl";
+		      fi;
 		      Add(l,k);
 		    fi;
 		  od;
@@ -1233,6 +1746,7 @@ local G,	# group
 	      fi;
 	    fi;
           fi;
+	  Info(InfoLattice,3,"Set l to ",l);
 
           if l=fail then
 	    if onlysimple then
@@ -1260,6 +1774,7 @@ local G,	# group
 	      l:=List(l,i->PreImage(hom,i));
 	      l:=Filtered(l,i->IsNormal(G,i));
 	      Info(InfoLattice,1,Length(l)," of these normal");
+
 	      nnt:=Concatenation(nnt,l);
 	    fi;
           fi;
@@ -1270,6 +1785,10 @@ local G,	# group
       
     else
       # nonabelian factor.
+      if still then
+	# fp isom for decomposition
+	mpcgs:=IsomorphismFpGroupByChiefSeriesFactor(M,"x",N);
+      fi;
 
       # 1) compute the action for the factor
 
@@ -1370,6 +1889,7 @@ local G,	# group
 	for j in Filtered(nt,i->Size(i)>Size(M)) do
 	  j:=Intersection(C,j);
 	  if Size(j)>Size(N) and not j in nnt then
+	    j!.obtain:="nonab";
 	    Add(nnt,j);
 	  fi;
 	od;
@@ -1378,6 +1898,8 @@ local G,	# group
     fi; # else nonabelian
 
     # the kernel itself
+    N!.lattfpres:=IsomorphismFpGroupByChiefSeriesFactor(N,"x",N);
+    N!.obtain:="kernel";
     Add(nnt,N);
     if onlysimple then
       c:=Length(nnt);
@@ -1388,6 +1910,26 @@ local G,	# group
     Info(InfoLattice,1,Length(nnt)-Length(nt),
           " new normal subgroups (",Length(nnt)," total)");
     nt:=nnt;
+
+    # modify hohomorphisms
+    if still then
+      for i in [1..firsts] do
+	l:=nt[i];
+	if IsBound(l!.lattfpres) then
+	  Assert(1,KernelOfMultiplicativeGeneralMapping(l!.lattfpres)=M);
+	  # lift presentation
+	  # note: if notabelian mpcgs is an fp hom
+	  l!.lattfpres:=LiftFactorFpHom(l!.lattfpres,l,M,N,mpcgs);
+	  l!.obtain:="lift";
+	fi;
+      od;
+    fi;
+
+  od;
+
+  # remove partial presentation info
+  for i in nt do
+    Unbind(i!.lattfpres);
   od;
 
   return Reversed(nt); # to stay ascending
@@ -1520,6 +2062,68 @@ local hom,F,cl,cls,lcl,sub,sel,unsel,i,j;
     od;
   od;
   return rec(subgroups:=List(cl,i->PreImage(hom,i)),inclusions:=sel);
+end);
+
+#############################################################################
+##
+#F  DotFileLatticeSubgroups(<L>,<file>)
+##
+InstallGlobalFunction(DotFileLatticeSubgroups,function(L,file)
+local cls, len, sz, max, rep, z, t, i, j, k;
+  cls:=ConjugacyClassesSubgroups(L);
+  len:=[];
+  sz:=[];
+  for i in cls do
+    Add(len,Size(i));
+    AddSet(sz,Size(Representative(i)));
+  od;
+
+  PrintTo(file,"digraph lattice {\nsize = \"6,6\";\n");
+  # sizes and arrangement
+  for i in sz do
+    AppendTo(file,"\"s",i,"\" [label=\"",i,"\", color=white];\n");
+  od;
+  sz:=Reversed(sz);
+  for i in [2..Length(sz)] do
+    AppendTo(file,"\"s",sz[i-1],"\"->\"s",sz[i],
+      "\" [color=white,arrowhead=none];\n");
+  od;
+
+  # subgroup nodes, also acccording to size
+  for i in [1..Length(cls)] do
+    for j in [1..len[i]] do
+      if len[i]=1 then
+	AppendTo(file,"\"",i,"x",j,"\" [label=\"",i,"\", shape=box];\n");
+      else
+	AppendTo(file,"\"",i,"x",j,"\" [label=\"",i,"-",j,"\", shape=circle];\n");
+      fi;
+    od;
+    AppendTo(file,"{ rank=same; \"s",Size(Representative(cls[i])),"\"");
+    for j in [1..len[i]] do
+      AppendTo(file," \"",i,"x",j,"\"");
+    od;
+    AppendTo(file,";}\n");
+  od;
+
+  max:=MaximalSubgroupsLattice(L);
+  for i in [1..Length(cls)] do
+    for j in max[i] do
+      rep:=ClassElementLattice(cls[i],1);
+      for k in [1..len[i]] do
+	if k=1 then
+	  z:=j[2];
+	else
+	  t:=cls[i]!.normalizerTransversal[k];
+	  z:=ClassElementLattice(cls[j[1]],1); # force computation of transv.
+	  z:=cls[j[1]]!.normalizerTransversal[j[2]]*t;
+	  z:=PositionCanonical(cls[j[1]]!.normalizerTransversal,z);
+	fi;
+	AppendTo(file,"\"",i,"x",k,"\" -> \"",j[1],"x",z,
+	         "\" [arrowhead=none];\n");
+      od;
+    od;
+  od;
+  AppendTo(file,"}\n");
 end);
 
 #############################################################################

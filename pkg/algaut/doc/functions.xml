@@ -1,0 +1,82 @@
+<Chapter Label="functions">
+<Heading>The functions</Heading>  
+
+<Section><Heading>Functions</Heading>
+<ManSection>
+<Meth Name="AlgebraBimoduleByIdeal" 
+         Arg="A, I, J"/>
+   <Description>
+We suppose that 
+<Math>I</Math> and <Math>J</Math> are ideals in the algebra <Math>A</Math>. 
+Returns the algebra bimodule in which the algebra <Math>A/I</Math> acts on the
+         bimodule <Math>I/J</Math>.
+   </Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="AActingAlgebra" 
+         Arg="M"/>
+   <Description>
+Returns the acting algebra of the algebra bimodule <Math>M</Math>.
+   </Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="Bimodule" 
+         Arg="M"/>
+   <Description>
+Returns the algebra that is acted upon in the algebra bimodule <Math>M</Math>.
+   </Description>
+</ManSection>
+
+
+<ManSection>
+<Meth Name="LLeftAction" 
+         Arg="M"/>
+   <Description>
+Returns the left action in the algebra bimodule <Math>M</Math>.
+   </Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="RRightAction" 
+         Arg="M"/>
+   <Description>
+Returns the right action of the algebra bimodule <Math>M</Math>.
+   </Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="AutomorphismGroup" 
+         Arg="A"/>
+   <Description>
+<Math>A</Math> is an algebra. Returns the automorphism group of
+         <Math>A</Math>. Note that this function is only for experimenting and
+         only computes the automorphism group if either <Math>A</Math> is very
+         small (in this case it checks all linear transformations) or
+         <Math>A</Math> is the trivial algebra in which all products are zero
+         (in this case the automorphism group is <Math>GL(A)</Math>).
+   </Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="CompatiblePairsOfAlgebraBimodule" 
+         Arg="M"/>
+   <Description>
+<Math>M</Math> is an algebra bimodule. Returns the group of compatible pairs.
+   </Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="IsCompatiblePair" 
+         Arg="M, x"/>
+   <Description>
+<Math>M</Math> is an algebra bimodule. Returns true if <Math>x</Math> is a
+         compatible pair of the algebra bimodule <Math>M</Math>.
+   </Description>
+</ManSection>
+
+
+</Section>
+</Chapter>
+

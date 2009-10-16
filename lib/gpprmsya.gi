@@ -4,7 +4,7 @@
 #W                                                           Alexander Hulpke
 #W                                                           Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: gpprmsya.gi,v 4.54 2008/06/11 18:33:26 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  This file contains the methods for symmetric and alternating groups
 ##
 Revision.gpprmsya_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: gpprmsya.gi,v 4.54 2008/06/11 18:33:26 gap Exp $";
 
 # xref to transgrp library
 if not IsBound(TRANSDEGREES) then
@@ -913,8 +913,7 @@ local b, bl;
 end);
 
 BindGlobal("NormalizerParentSA",function(s,u)
-local dom, issym, o, b, w, perm, pg, l, is, ie, ll, syll, act, typ, sel,
-      bas, wdom, comp, lperm, other, away, i, j;
+  local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll, syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j;
 
   dom:=Set(MovedPoints(s));
   if not IsSubset(dom,MovedPoints(u)) then
@@ -933,9 +932,27 @@ local dom, issym, o, b, w, perm, pg, l, is, ie, ll, syll, act, typ, sel,
       return s;
     fi;
     # the normalizer must fix this block system
-    w:=WreathProduct(SymmetricGroup(Length(b[1])),SymmetricGroup(Length(b)));
-    perm:=MappingPermListList([1..Length(o[1])],Concatenation(b));
-    pg:=w^perm;
+
+    beta:=ActionHomomorphism(u,b,OnSets,"surjective");
+    alpha:=ActionHomomorphism(Stabilizer(u,b[1],OnSets),b[1],"surjective");
+    emb:=KuKGenerators(u,beta,alpha);
+    nb:=Normalizer(SymmetricGroup(Length(b)),Image(beta));
+    na:=Normalizer(SymmetricGroup(Length(b[1])),Image(alpha));
+    w:=WreathProduct(na,nb);
+    if issym then
+      perm:=s;
+    else
+      perm:=SymmetricGroup(MovedPoints(s));
+    fi;
+    perm:=RepresentativeAction(perm,emb,GeneratorsOfGroup(u),OnTuples);
+    if perm<>fail then
+      pg:=w^perm;
+    else
+      #Print("Embedding Problem!\n");
+      w:=WreathProduct(SymmetricGroup(Length(b[1])),SymmetricGroup(Length(b)));
+      perm:=MappingPermListList([1..Length(o[1])],Concatenation(b));
+      pg:=w^perm;
+    fi;
   else
 
     # first sort by Length
@@ -1006,6 +1023,10 @@ local dom, issym, o, b, w, perm, pg, l, is, ie, ll, syll, act, typ, sel,
   fi;
   if not issym then 
     pg:=AlternatingSubgroup(pg);
+  fi;
+  if IsSolvableGroup(pg) then
+    perm:=IsomorphismPcGroup(pg);
+    pg:=PreImage(perm,Normalizer(Image(perm,pg),Image(perm,u)));
   fi;
   return pg;
 end);

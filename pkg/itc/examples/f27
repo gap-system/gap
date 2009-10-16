@@ -1,0 +1,16 @@
+local F, a, b, c, d, e, f, g, rels, G, H;
+F := FreeGroup( "a", "b", "c", "d", "e", "f", "g" );
+a := F.1; b := F.2; c := F.3; d := F.4; e := F.5; f := F.6; g := F.7;
+rels := [
+ a*b*c^-1,
+ b*c*d^-1,
+ c*d*e^-1,
+ d*e*f^-1,
+ e*f*g^-1,
+ f*g*a^-1,
+ g*a*b^-1
+];
+G := F / rels;
+c := G.3;
+H := Subgroup( G, [ c ] );
+InteractiveTC( G, H );

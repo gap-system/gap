@@ -1,0 +1,690 @@
+<html><head><title>[GUAVA] 5 Manipulating Codes</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP004.htm">Previous</a>] [<a href ="CHAP006.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>5 Manipulating Codes</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP005.htm#SECT001">Functions that Generate a New Code from a Given Code</a>
+<li> <A HREF="CHAP005.htm#SECT002">Functions that Generate a New Code from Two Given Codes</a>
+</ol><p>
+<p>
+In this chapter we describe several functions <font face="Gill Sans,Helvetica,Arial">GUAVA</font> uses to manipulate
+codes. Some of the best codes are obtained by starting with for example a
+BCH code, and manipulating it.
+<p>
+In some  cases, it is  faster to perform  calculations with a manipulated
+code than to use the original code. For  example, if the dimension of the
+code  is larger than  half  the word length,  it  is generally  faster to
+compute  the   weight  distribution  by  first   calculating   the weight
+distribution of the  dual code than   by directly calculating  the weight
+distribution of the original code.  The size of the  dual code is smaller
+in these cases.
+<p>
+Because <font face="Gill Sans,Helvetica,Arial">GUAVA</font>  keeps all information  in a code  record, in some cases
+the   information can  be   preserved   after manipulations.   Therefore,
+computations do not always have to start from scratch.
+<p>
+In Section&nbsp;<a href="CHAP005.htm#SECT001">Functions that Generate a New Code from  a  Given  Code</a>,  we
+describe functions that take a code with certain parameters, modify it in
+some   way   and   return   a   different   code   (see   <a href="CHAP005.htm#SSEC001.1">ExtendedCode</a>,
+<a href="CHAP005.htm#SSEC001.2">PuncturedCode</a>, <a href="CHAP005.htm#SSEC001.4">EvenWeightSubcode</a>,  <a href="CHAP005.htm#SSEC001.5">PermutedCode</a>,  <a href="CHAP005.htm#SSEC001.6">ExpurgatedCode</a>,
+<a href="CHAP005.htm#SSEC001.7">AugmentedCode</a>,       <a href="CHAP005.htm#SSEC001.9">RemovedElementsCode</a>,        <a href="CHAP005.htm#SSEC001.10">AddedElementsCode</a>,
+<a href="CHAP005.htm#SSEC001.11">ShortenedCode</a>,  <a href="CHAP005.htm#SSEC001.13">LengthenedCode</a>,  <a href="CHAP005.htm#SSEC001.14">ResidueCode</a>,  <a href="CHAP005.htm#SSEC001.15">ConstructionBCode</a>,
+<a href="CHAP005.htm#SSEC001.16">DualCode</a>,        <a href="CHAP005.htm#SSEC001.17">ConversionFieldCode</a>,        <a href="CHAP005.htm#SSEC001.19">ConstantWeightSubcode</a>,
+<a href="CHAP005.htm#SSEC001.21">StandardFormCode</a> and <a href="CHAP005.htm#SSEC001.18">CosetCode</a>).
+<p>
+In Section&nbsp;<a href="CHAP005.htm#SECT002">Functions that Generate a New Code from Two Given Codes</a>,  we
+describe functions that generate  a  new  code  out  of  two  codes  (see
+<a href="CHAP005.htm#SSEC002.1">DirectSumCode</a>, <a href="CHAP005.htm#SSEC002.2">UUVCode</a>, <a href="CHAP005.htm#SSEC002.3">DirectProductCode</a>,  <a href="CHAP005.htm#SSEC002.4">IntersectionCode</a>  and
+<a href="CHAP005.htm#SSEC002.5">UnionCode</a>).
+<p>
+<p>
+<h2><a name="SECT001">5.1 Functions that Generate a New Code from a Given Code</a></h2>
+<p><p>
+<a name = "I0"></a>
+
+<a name = "SSEC001.1"></a>
+<li><code>ExtendedCode( </code><var>C</var><code> [, </code><var>i</var><code> ] )</code>
+<p>
+<code>ExtendedCode</code>  <strong>extends</strong> the    code <var>C</var>   <var>i</var> times   and  returns  the
+result. <var>i</var> is  equal to 1 by default.  Extending is  done by adding  a
+parity check bit  after  the  last coordinate.  The coordinates   of  all
+codewords now add up to zero. In the binary case,  each codeword has even
+weight.
+<p>
+The word  length increases  by  <var>i</var>. The   size of the  code remains  the
+same. In the binary case, the minimum distance increases by one if it was
+odd. In other cases, that is not always true.
+<p>
+A cyclic code in general is no longer cyclic after extending.
+<p>
+<pre>
+gap&gt; C1 := HammingCode( 3, GF(2) );
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap&gt; C2 := ExtendedCode( C1 );
+a linear [8,4,4]2 extended code
+gap&gt; IsEquivalent( C2, ReedMullerCode( 1, 3 ) );
+true
+gap&gt; List( AsSSortedList( C2 ), WeightCodeword );
+[ 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8 ]
+gap&gt; C3 := EvenWeightSubcode( C1 );
+a linear [7,3,4]2..3 even weight subcode 
+</pre>
+<p>
+To  undo  extending,  call   <code>PuncturedCode</code> (see  <a href="CHAP005.htm#SSEC001.2">PuncturedCode</a>).  The
+function <code>EvenWeightSubcode</code> (see  <a href="CHAP005.htm#SSEC001.4">EvenWeightSubcode</a>)  also  returns  a
+related  code with   only even  weights, but  without   changing its word
+length.
+<p>
+<a name = "SSEC001.2"></a>
+<li><code>PuncturedCode( </code><var>C</var><code> )</code>
+<p>
+<code>PuncturedCode</code>  <strong>punctures</strong>  <var>C</var> in  the  last column,   and returns the
+result. Puncturing  is done simply  by cutting  off the last  column from
+each codeword. This means  the word length  decreases by one. The minimum
+distance in general also decrease by one.
+<p>
+<a name = "SSEC001.3"></a>
+<li><code>PuncturedCode( </code><var>C</var><code>, </code><var>L</var><code> )</code>
+<p>
+<code>PuncturedCode</code> punctures <var>C</var> in the columns specified  by <var>L</var>, a list of
+integers.  All columns specified by  <var>L</var> are  omitted from each codeword.
+If <i>l</i> is the length of <var>L</var> (so the number of  removed columns), the word
+length decreases by <i>l</i>. The minimum distance can also decrease by <i>l</i> or
+less.
+<p>
+Puncturing a cyclic code in general results in  a non-cyclic code. If the
+code is  punctured in all the  columns where a  word of minimal weight is
+unequal to zero, the dimension of the resulting code decreases.
+<p>
+<pre>
+gap&gt; C1 := BCHCode( 15, 5, GF(2) );
+a cyclic [15,7,5]3..5 BCH code, delta=5, b=1 over GF(2)
+gap&gt; C2 := PuncturedCode( C1 );
+a linear [14,7,4]3..5 punctured code
+gap&gt; ExtendedCode( C2 ) = C1;
+false
+gap&gt; PuncturedCode( C1, [1,2,3,4,5,6,7] );
+a linear [8,7,1]1 punctured code
+gap&gt; PuncturedCode( WholeSpaceCode( 4, GF(5) ) );
+a linear [3,3,1]0 punctured code  # The dimension decreased from 4 to 3 
+</pre>
+<p>
+<code>ExtendedCode</code> extends the  code  again (see <a href="CHAP005.htm#SSEC001.1">ExtendedCode</a>)  although in
+general this does not result in the old code.
+<p>
+<a name = "SSEC001.4"></a>
+<li><code>EvenWeightSubcode( </code><var>C</var><code> )</code>
+<p>
+<code>EvenWeightSubcode</code> returns the <strong>even  weight subcode</strong> of <var>C</var>, consisting
+of all  codewords of <var>C</var> with even  weight. If <var>C</var>  is  a linear code and
+contains words of  odd weight, the resulting code  has a dimension of one
+less.  The minimum distance  always increases with one  if it was odd. If
+<var>C</var> is a binary cyclic code, and <i>g</i>(<i>x</i>)  is its generator polynomial, the
+even weight subcode either has  generator polynomial <i>g</i>(<i>x</i>) (if <i>g</i>(<i>x</i>) is
+divisible by  <i>x</i><font face="symbol">-</font>1) or <i>g</i>(<i>x</i>)*(<i>x</i><font face="symbol">-</font>1) (if no  factor <i>x</i><font face="symbol">-</font>1 was present in
+<i>g</i>(<i>x</i>)). So the even weight subcode is again cyclic.
+<p>
+Of course,  if all codewords  of  <var>C</var>  are already   of even weight,  the
+returned code is equal to <var>C</var>.
+<p>
+<pre>
+gap&gt; C1 := EvenWeightSubcode( BCHCode( 8, 4, GF(3) ) );
+an (8,33,4..8)3..8 even weight subcode
+gap&gt; List( AsSSortedList( C1 ), WeightCodeword );
+[ 0, 4, 4, 4, 4, 4, 4, 6, 4, 4, 4, 4, 6, 4, 4, 6, 4, 4, 8, 6, 4, 6, 8, 4, 4, 
+  4, 6, 4, 6, 8, 4, 6, 8 ]
+gap&gt; EvenWeightSubcode( ReedMullerCode( 1, 3 ) );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2) 
+</pre>
+<p>
+<code>ExtendedCode</code> also  returns  a related  code of  only even  weights, but
+without reducing its dimension (see <a href="CHAP005.htm#SSEC001.1">ExtendedCode</a>).
+<p>
+<a name = "SSEC001.5"></a>
+<li><code>PermutedCode( </code><var>C</var><code>, </code><var>L</var><code> )</code>
+<p>
+<code>PermutedCode</code>     returns <var>C</var> after     column  permutations. <var>L</var> is the
+permutation to be executed  on the columns of  <var>C</var>. If <var>C</var> is cyclic, the
+result  in general is  no longer cyclic. If  a permutation results in the
+same code as <var>C</var>, this permutation belongs to the <strong>automorphism group</strong> of
+<var>C</var>  (see <a href="CHAP003.htm#SSEC004.3">AutomorphismGroup</a>). In   any   case,  the returned code    is
+<strong>equivalent</strong> to <var>C</var> (see <a href="CHAP003.htm#SSEC004.1">IsEquivalent</a>).
+<p>
+<pre>
+gap&gt; C1 := PuncturedCode( ReedMullerCode( 1, 4 ) );
+a linear [15,5,7]5 punctured code
+gap&gt; C2 := BCHCode( 15, 7, GF(2) );
+a cyclic [15,5,7]5 BCH code, delta=7, b=1 over GF(2)
+gap&gt; C2 = C1;
+false
+gap&gt; p := CodeIsomorphism( C1, C2 );
+( 2, 4,14, 9,13, 7,11,10, 6, 8,12, 5)
+gap&gt; C3 := PermutedCode( C1, p );
+a linear [15,5,7]5 permuted code
+gap&gt; C2 = C3;
+true 
+</pre>
+<p>
+<a name = "SSEC001.6"></a>
+<li><code>ExpurgatedCode( </code><var>C</var><code>, </code><var>L</var><code> )</code>
+<p>
+<code>ExpurgatedCode</code> <strong>expurgates</strong> code <var>C</var> by throwing away codewords in list
+<var>L</var>.  <var>C</var> must be    a linear code. <var>L</var>   must   be a list  of   codeword
+input. The generator matrix of the new code no  longer is a basis for the
+codewords specified by <var>L</var>.  Since the  returned code is still linear, it
+is very likely that, besides the words of <var>L</var>, more  codewords of <var>C</var> are
+no longer in the new code.
+<p>
+<pre>
+gap&gt; C1 := HammingCode( 4 );; WeightDistribution( C1 );
+[ 1, 0, 0, 35, 105, 168, 280, 435, 435, 280, 168, 105, 35, 0, 0, 1 ]
+gap&gt; L := Filtered( AsSSortedList(C1), i -&gt; WeightCodeword(i) = 3 );;
+gap&gt; C2 := ExpurgatedCode( C1, L );
+a linear [15,4,3..4]5..11 code, expurgated with 7 word(s)
+gap&gt; WeightDistribution( C2 );
+[ 1, 0, 0, 0, 14, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ] 
+</pre>
+<p>
+This function does not work on non-linear codes.  For removing words from
+a        non-linear      code,     use    <code>RemovedElementsCode</code>      (see
+<a href="CHAP005.htm#SSEC001.9">RemovedElementsCode</a>).  For  expurgating  a  code of  all words   of odd
+weight, use <code>EvenWeightSubcode</code> (see <a href="CHAP005.htm#SSEC001.4">EvenWeightSubcode</a>).
+<p>
+<a name = "SSEC001.7"></a>
+<li><code>AugmentedCode( </code><var>C</var><code>, </code><var>L</var><code> )</code>
+<p>
+<code>AugmentedCode</code>  returns <var>C</var> after  <strong>augmenting</strong>.  <var>C</var>  must be a  linear
+code, <var>L</var> must be a list  of codeword input.  The generator matrix of the
+new  code is a basis  for the codewords specified by  <var>L</var> as  well as the
+words that were already in  code <var>C</var>. Note  that the new code in  general
+will consist of  more words than only the  codewords of <var>C</var> and the words
+<var>L</var>. The returned code is also a linear code.
+<p>
+<pre>
+gap&gt; C31 := ReedMullerCode( 1, 3 );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2)
+gap&gt; C32 := AugmentedCode(C31,["00000011","00000101","00010001"]);
+a linear [8,7,1..2]1 code, augmented with 3 word(s)
+gap&gt; C32 = ReedMullerCode( 2, 3 );
+true 
+</pre>
+<p>
+<a name = "SSEC001.8"></a>
+<li><code>AugmentedCode( </code><var>C</var><code> )</code>
+<p>
+When  called without a  list   of codewords, <code>AugmentedCode</code> returns  <var>C</var>
+after adding the all-ones vector  to the generator  matrix. <var>C</var> must be a
+linear code.   If the  all-ones vector  was already in  the code, nothing
+happens and a copy of the argument  is returned. If  <var>C</var> is a binary code
+which does  not   contain the all-ones  vector,   the complement  of  all
+codewords is added.
+<p>
+<pre>
+gap&gt; C1 := CordaroWagnerCode(6);
+a linear [6,2,4]2..3 Cordaro-Wagner code over GF(2)
+gap&gt; Codeword( [0,0,1,1,1,1] ) in C1;
+true
+gap&gt; C2 := AugmentedCode( C1 );
+a linear [6,3,1..2]2..3 code, augmented with 1 word(s)
+gap&gt; Codeword( [1,1,0,0,0,0] ) in C2;
+true
+</pre>
+<p>
+The function  <code>AddedElementsCode</code> adds elements  to the codewords instead
+of adding them to the basis (see <a href="CHAP005.htm#SSEC001.10">AddedElementsCode</a>).
+<p>
+<a name = "SSEC001.9"></a>
+<li><code>RemovedElementsCode( </code><var>C</var><code>, </code><var>L</var><code> )</code>
+<p>
+<code>RemovedElementsCode</code> returns code <var>C</var> after removing a list of codewords
+<var>L</var> from its elements. <var>L</var> must be a  list of codeword input.  The result
+is an unrestricted code.
+<p>
+<pre>
+gap&gt; C1 := HammingCode( 4 );; WeightDistribution( C1 );
+[ 1, 0, 0, 35, 105, 168, 280, 435, 435, 280, 168, 105, 35, 0, 0, 1 ]
+gap&gt; L := Filtered( AsSSortedList(C1), i -&gt; WeightCodeword(i) = 3 );;
+gap&gt; C2 := RemovedElementsCode( C1, L );
+a (15,2013,3..15)2..15 code with 35 word(s) removed
+gap&gt; WeightDistribution( C2 );
+[ 1, 0, 0, 0, 105, 168, 280, 435, 435, 280, 168, 105, 35, 0, 0, 1 ]
+gap&gt; MinimumDistance( C2 );
+3        # C2 is not linear, so the minimum weight does not have to
+         # be equal to the minimum distance 
+</pre>
+<p>
+Adding elements  to a  code is  done by  the function <code>AddedElementsCode</code>
+(see <a href="CHAP005.htm#SSEC001.10">AddedElementsCode</a>). To remove codewords from the  base of a linear
+code, use <code>ExpurgatedCode</code> (see <a href="CHAP005.htm#SSEC001.6">ExpurgatedCode</a>).
+<p>
+<a name = "SSEC001.10"></a>
+<li><code>AddedElementsCode( </code><var>C</var><code>, </code><var>L</var><code> )</code>
+<p>
+<code>AddedElementsCode</code> returns code <var>C</var> after adding a list of codewords <var>L</var>
+to its elements. <var>L</var> must be  a list of codeword  input. The result is an
+unrestricted code.
+<p>
+<pre>
+gap&gt; C1 := NullCode( 6, GF(2) );
+a cyclic [6,0,6]6 nullcode over GF(2)
+gap&gt; C2 := AddedElementsCode( C1, [ "111111" ] );
+a (6,2,1..6)3 code with 1 word(s) added
+gap&gt; IsCyclicCode( C2 );
+true
+gap&gt; C3 := AddedElementsCode( C2, [ "101010", "010101" ] );
+a (6,4,1..6)2 code with 2 word(s) added
+gap&gt; IsCyclicCode( C3 );
+true 
+</pre>
+<p>
+To remove   elements from a     code, use   <code>RemovedElementsCode</code>    (see
+<a href="CHAP005.htm#SSEC001.9">RemovedElementsCode</a>). To add elements to the base of a linear code, use
+<code>AugmentedCode</code> (see <a href="CHAP005.htm#SSEC001.7">AugmentedCode</a>).
+<p>
+<a name = "SSEC001.11"></a>
+<li><code>ShortenedCode( </code><var>C</var><code> )</code>
+<p>
+<code>ShortenedCode</code> returns code <var>C</var> shortened by taking a cross section.  If
+<var>C</var> is a  linear code, this is done  by removing all codewords that start
+with a non-zero entry, after which  the first column  is cut off.  If <var>C</var>
+was a  [<i>n</i>,<i>k</i>,<i>d</i>] code, the  shortened  code generally  is a [<i>n</i><font face="symbol">-</font>1,<i>k</i><font face="symbol">-</font>1,<i>d</i>]
+code. It  is possible that  the dimension  remains the  same; it  is also
+possible that the minimum distance increases.
+<p>
+<pre>
+gap&gt; C1 := HammingCode( 4 );
+a linear [15,11,3]1 Hamming (4,2) code over GF(2)
+gap&gt; C2 := ShortenedCode( C1 );
+a linear [14,10,3]2 shortened code 
+</pre>
+<p>
+If  <var>C</var> is a non-linear  code,  <code>ShortenedCode</code> first checks which finite
+field element occurs most often in the first column of the codewords. The
+codewords not starting with this element are removed from the code, after
+which the first  column is cut off. The  resulting shortened code  has at
+least the same minimum distance as <var>C</var>.
+<p>
+<pre>
+gap&gt; C1 := ElementsCode( ["1000", "1101", "0011" ], GF(2) );
+a (4,3,1..4)2 user defined unrestricted code over GF(2)
+gap&gt; MinimumDistance( C1 );
+2
+gap&gt; C2 := ShortenedCode( C1 );
+a (3,2,2..3)1..2 shortened code
+gap&gt; AsSSortedList( C2 );
+[ [ 0 0 0 ], [ 1 0 1 ] ] 
+</pre>
+<p>
+<a name = "SSEC001.12"></a>
+<li><code>ShortenedCode( </code><var>C</var><code>, </code><var>L</var><code> )</code>
+<p>
+When called  in    this format, <code>ShortenedCode</code>  repeats  the  shortening
+process on each of the columns specified by  <var>L</var>. <var>L</var> therefore is a list
+of integers. The   column numbers in  <var>L</var>  are  the numbers as   they are
+<strong>before</strong> the shortening  process. If  <var>L</var> has  <i>l</i> entries, the  returned
+code has a word length of <i>l</i> positions shorter than <var>C</var>.
+<p>
+<pre>
+gap&gt; C1 := HammingCode( 5, GF(2) );
+a linear [31,26,3]1 Hamming (5,2) code over GF(2)
+gap&gt; C2 := ShortenedCode( C1, [ 1, 2, 3 ] );
+a linear [28,23,3]2 shortened code
+gap&gt; OptimalityLinearCode( C2 );
+0 
+</pre>
+<p>
+The function <code>LengthenedCode</code>  lengthens the code  again (only for linear
+codes), see <a href="CHAP005.htm#SSEC001.13">LengthenedCode</a>. In general, this is not exactly the inverse
+function.
+<p>
+<a name = "SSEC001.13"></a>
+<li><code>LengthenedCode( </code><var>C</var><code> [, </code><var>i</var><code> ] )</code>
+<p>
+<code>LengthenedCode</code> returns  code  <var>C</var>  lengthened.  <var>C</var>  must  be a   linear
+code. First,  the all-ones vector is added  to the  generator matrix (see
+<a href="CHAP005.htm#SSEC001.7">AugmentedCode</a>). If the all-ones vector  was already a codeword, nothing
+happens   to the  code.  Then,   the code is     extended <var>i</var> times  (see
+<a href="CHAP005.htm#SSEC001.1">ExtendedCode</a>). <var>i</var> is  equal to 1 by  default. If <var>C</var> was  an [<i>n</i>,<i>k</i>]
+code, the new code generally is a [<i>n</i>+<i>i</i>,<i>k</i>+1] code.
+<p>
+<pre>
+gap&gt; C1 := CordaroWagnerCode( 5 );
+a linear [5,2,3]2 Cordaro-Wagner code over GF(2)
+gap&gt; C2 := LengthenedCode( C1 );
+a linear [6,3,2]2..3 code, lengthened with 1 column(s) 
+</pre>
+<p>
+<code>ShortenedCode</code> shortens the code,  see <a href="CHAP005.htm#SSEC001.11">ShortenedCode</a>. In general, this
+is not exactly the inverse function.
+<p>
+<a name = "SSEC001.14"></a>
+<li><code>ResidueCode( </code><var>C</var><code> [, </code><var>w</var><code> ] )</code>
+<p>
+The function <code>ResidueCode</code> takes a codeword <i>c</i>  of <var>C</var> of weight <var>w</var> (if
+<var>w</var> is  omitted, a codeword  of minimal weight is  used).  <var>C</var> must  be a
+linear code and <var>w</var>  must be greater than zero.  It removes this word and
+all its linear combinations from the code and then  punctures the code in
+the coordinates where <var>c</var> is unequal  to zero.  The  resulting code is an
+[<i>n</i><font face="symbol">-</font><i>w</i>, <i>k</i><font face="symbol">-</font>1, <i>d</i><font face="symbol">-</font><font face="symbol">ë</font><i>w</i>*(<i>q</i><font face="symbol">-</font>1)/<i>q</i> <font face="symbol">û</font>] code.
+<p>
+<pre>
+gap&gt; C1 := BCHCode( 15, 7 );
+a cyclic [15,5,7]5 BCH code, delta=7, b=1 over GF(2)
+gap&gt; C2 := ResidueCode( C1 );
+a linear [8,4,4]2 residue code
+gap&gt; c := Codeword( [ 0,0,0,1,0,0,1,1,0,1,0,1,1,1,1 ], C1);;
+gap&gt; C3 := ResidueCode( C1, c );
+a linear [7,4,3]1 residue code 
+</pre>
+<p>
+<a name = "SSEC001.15"></a>
+<li><code>ConstructionBCode( </code><var>C</var><code> )</code>
+<p>
+The function  <code>ConstructionBCode</code> takes  a   binary linear code   <var>C</var> and
+calculates the minimum  distance of the dual  of <var>C</var> (see <a href="CHAP005.htm#SSEC001.16">DualCode</a>). It
+then  removes the  columns  of the  parity  check  matrix of <var>C</var>  where a
+codeword of  the dual code of minimal  weight  has coordinates unequal to
+zero. the resulting matrix   is a  parity  check  matrix for   an [<i>n</i><font face="symbol">-</font><i>dd</i>, <i>k</i><font face="symbol">-</font><i>dd</i>+1,  <font face="symbol">³</font> <i>d</i>] code, where <i>dd</i> is the minimum distance  of the dual of
+<var>C</var>.
+<p>
+<pre>
+gap&gt; C1 := ReedMullerCode( 2, 5 );
+a linear [32,16,8]6 Reed-Muller (2,5) code over GF(2)
+gap&gt; C2 := ConstructionBCode( C1 );
+a linear [24,9,8]5..10 Construction B (8 coordinates)
+gap&gt; BoundsMinimumDistance( 24, 9, GF(2) );
+rec( n := 24, k := 9, q := 2, references := rec(  ), 
+  construction := [ &lt;Operation "UUVCode"&gt;, 
+      [ [ &lt;Operation "UUVCode"&gt;, [ [ &lt;Operation "DualCode"&gt;, 
+                      [ [ &lt;Operation "RepetitionCode"&gt;, [ 6, 2 ] ] ] ], 
+                  [ &lt;Operation "CordaroWagnerCode"&gt;, [ 6 ] ] ] ], 
+          [ &lt;Operation "CordaroWagnerCode"&gt;, [ 12 ] ] ] ], lowerBound := 8, 
+  lowerBoundExplanation := [ "Lb(24,9)=8, u u+v construction of C1 and C2:", 
+      "Lb(12,7)=4, u u+v construction of C1 and C2:", 
+      "Lb(6,5)=2, dual of the repetition code", 
+      "Lb(6,2)=4, Cordaro-Wagner code", "Lb(12,2)=8, Cordaro-Wagner code" ], 
+  upperBound := 8, 
+  upperBoundExplanation := [ "Ub(24,9)=8, otherwise construction B would contr\
+adict:", "Ub(18,4)=8, Griesmer bound" ] )
+# so C2 is optimal
+</pre>
+<p>
+<a name = "SSEC001.16"></a>
+<li><code>DualCode( </code><var>C</var><code> )</code>
+<p>
+<code>DualCode</code> returns the  dual code of  <var>C</var>. The dual  code consists of all
+codewords that are orthogonal to the codewords of <var>C</var>. If <var>C</var> is a linear
+code with generator matrix <i>G</i>, the dual code has parity check matrix <i>G</i>
+(or  if  <var>C</var> has  parity  check matrix <i>H</i>,  the  dual code has generator
+matrix <i>H</i>). So if <var>C</var> is a linear [n, k] code, the dual code of <var>C</var> is a
+linear [n,  n-k] code. If <var>C</var> is  a cyclic code with generator polynomial
+<i>g</i>(<i>x</i>), the dual code  has the reciprocal  polynomial of <i>g</i>(<i>x</i>) as  check
+polynomial.
+<p>
+The dual code is always a linear code, even if <var>C</var> is non-linear.
+<p>
+If a code <var>C</var> is equal to its dual code, it is called <strong>self-dual</strong>.
+<p>
+<pre>
+gap&gt; R := ReedMullerCode( 1, 3 );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2)
+gap&gt; RD := DualCode( R );
+a linear [8,4,4]2 Reed-Muller (1,3) code over GF(2)
+gap&gt; R = RD;
+true
+gap&gt; N := WholeSpaceCode( 7, GF(4) );
+a cyclic [7,7,1]0 whole space code over GF(4)
+gap&gt; DualCode( N ) = NullCode( 7, GF(4) );
+true 
+</pre>
+<p>
+<a name = "SSEC001.17"></a>
+<li><code>ConversionFieldCode( </code><var>C</var><code> )</code>
+<p>
+<code>ConversionFieldCode</code> returns code <var>C</var> after converting its field. If the
+field of <var>C</var> is <code>GF(<i>q</i><sup><i>m</i></sup>)</code>, the returned code  has field <code>GF(<i>q</i>)</code>. Each
+symbol of every  codeword is replaced by  a concatenation of <i>m</i>  symbols
+from <code>GF(<i>q</i>)</code>. If <var>C</var> is  an (<i>n</i>, <i>M</i>, <i>d</i><sub>1</sub>) code,  the returned code is a
+(<i>n</i>*<i>m</i>, <i>M</i>, <i>d</i><sub>2</sub>) code, where <i>d</i><sub>2</sub>  &gt;  <i>d</i><sub>1</sub>.
+<p>
+See also <a href="CHAP006.htm#SSEC002.10">HorizontalConversionFieldMat</a>.
+<p>
+<pre>
+gap&gt; R := RepetitionCode( 4, GF(4) );
+a cyclic [4,1,4]3 repetition code over GF(4)
+gap&gt; R2 := ConversionFieldCode( R );
+a linear [8,2,4]3..4 code, converted to basefield GF(2)
+gap&gt; Size( R ) = Size( R2 );
+true
+gap&gt; GeneratorMat( R );
+[ [ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ] ]
+gap&gt; GeneratorMat( R2 );
+[ [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2) ],
+  [ 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ] ] 
+</pre>
+<p>
+<a name = "SSEC001.18"></a>
+<li><code>CosetCode( </code><var>C</var><code>, </code><var>w</var><code> )</code>
+<p>
+<code>CosetCode</code> returns the coset of  a code  <var>C</var>  with respect to word  <var>w</var>.
+<var>w</var> must be of the codeword type. Then, <var>w</var> is  added to each codeword of
+<var>C</var>, yielding the elements of  the new code. If <var>C</var>  is linear and <var>w</var> is
+an element of <var>C</var>, the new  code is equal  to <var>C</var>, otherwise the new code
+is an unrestricted code.
+<p>
+Generating a coset  is  also possible by  simply  adding the word  <var>w</var> to
+<var>C</var>. See <a href="CHAP003.htm#SECT002">Operations for Codes</a>.
+<p>
+<pre>
+gap&gt; H := HammingCode(3, GF(2));
+a linear [7,4,3]1 Hamming (3,2) code over GF(2)
+gap&gt; c := Codeword("1011011");; c in H;
+false
+gap&gt; C := CosetCode(H, c);
+a (7,16,3)1 coset code
+gap&gt; List(AsSSortedList(C), el-&gt; Syndrome(H, el));
+[ [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ],
+  [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ],
+  [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ], [ 1 1 1 ] ]
+# All elements of the coset have the same syndrome in H 
+</pre>
+<p>
+<a name = "SSEC001.19"></a>
+<li><code>ConstantWeightSubcode( </code><var>C</var><code>, </code><var>w</var><code> )</code>
+<p>
+<code>ConstantWeightSubcode</code>   returns  the subcode  of   <var>C</var>   that only  has
+codewords of weight <var>w</var>. The resulting code is a non-linear code, because
+it does not contain the all-zero vector.
+<p>
+<pre>
+gap&gt; N := NordstromRobinsonCode();; WeightDistribution(N);
+[ 1, 0, 0, 0, 0, 0, 112, 0, 30, 0, 112, 0, 0, 0, 0, 0, 1 ]
+gap&gt; C := ConstantWeightSubcode(N, 8);
+a (16,30,6..16)5..8 code with codewords of weight 8
+gap&gt; WeightDistribution(C);
+[ 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0 ] 
+</pre>
+<p>
+<a name = "SSEC001.20"></a>
+<li><code>ConstantWeightSubcode( </code><var>C</var><code> )</code>
+<p>
+In this   format, <code>ConstantWeightSubcode</code>  returns   the  subcode of  <var>C</var>
+consisting of all minimum weight codewords of <var>C</var>.
+<p>
+<pre>
+gap&gt; eg := ExtendedTernaryGolayCode();; WeightDistribution(eg);
+[ 1, 0, 0, 0, 0, 0, 264, 0, 0, 440, 0, 0, 24 ]
+gap&gt; C := ConstantWeightSubcode(eg);
+a (12,264,6..12)3..6 code with codewords of weight 6
+gap&gt; WeightDistribution(C);
+[ 0, 0, 0, 0, 0, 0, 264, 0, 0, 0, 0, 0, 0 ] 
+</pre>
+<p>
+<a name = "SSEC001.21"></a>
+<li><code>StandardFormCode( </code><var>C</var><code> )</code>
+<p>
+<code>StandardFormCode</code> returns <var>C</var> after putting it  in standard form. If <var>C</var>
+is a  non-linear  code, this  means   the elements  are  organized  using
+lexicographical order. This means they form a legal <font face="Gill Sans,Helvetica,Arial">GAP</font> <code>Set</code>.
+<p>
+If <var>C</var> is a linear code, the generator matrix and parity check matrix are
+put in standard form. The generator matrix then has an identity matrix in
+its left  part, the  parity check  matrix has an  identity matrix  in its
+right  part. Although <font face="Gill Sans,Helvetica,Arial">GUAVA</font>  always puts both  matrices  in a standard
+form using <code>BaseMat</code>, this never alters the code. <code>StandardFormCode</code> even
+applies column permutations  if   unavoidable, and thereby   changes  the
+code. The column permutations are recorded in the construction history of
+the  new  code (see  <a href="CHAP003.htm#SSEC006.3">Display</a>).  <var>C</var> and  the   new code are  of  course
+equivalent.
+<p>
+If <var>C</var> is a cyclic code, its generator matrix cannot be  put in the usual
+upper   triangular form, because then  it  would be inconsistent with the
+generator polynomial. The reason is that generating the elements from the
+generator matrix  would result in a different  order than  generating the
+elements from the generator polynomial.  This is an unwanted effect,  and
+therefore <code>StandardFormCode</code> just returns a copy of <var>C</var> for cyclic codes.
+<p>
+<pre>
+gap&gt; G := GeneratorMatCode( Z(2) * [ [0,1,1,0], [0,1,0,1], [0,0,1,1] ],
+&gt; "random form code", GF(2) );
+a linear [4,2,1..2]1..2 random form code over GF(2)
+gap&gt; Codeword( GeneratorMat( G ) );
+[ [ 0 1 0 1 ], [ 0 0 1 1 ] ]
+gap&gt; Codeword( GeneratorMat( StandardFormCode( G ) ) );
+[ [ 1 0 0 1 ], [ 0 1 0 1 ] ] 
+</pre>
+<p>
+<p>
+<h2><a name="SECT002">5.2 Functions that Generate a New Code from Two Given Codes</a></h2>
+<p><p>
+<a name = "SSEC002.1"></a>
+<li><code>DirectSumCode( </code><var><i>C</i><sub>1</sub></var><code>, </code><var><i>C</i><sub>2</sub></var><code> )</code>
+<p>
+<code>DirectSumCode</code> returns the direct sum  of codes <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var>. The
+direct sum  code  consists of every codeword   of <var><i>C</i><sub>1</sub></var> concatenated by
+every codeword  of <var><i>C</i><sub>2</sub></var>. Therefore, if  <var><i>C</i><sub><i>i</i></sub></var> was  a (<i>n</i><sub><i>i</i></sub>,<i>M</i><sub><i>i</i></sub>,<i>d</i><sub><i>i</i></sub>)
+code, the result is a (<i>n</i><sub>1</sub>+<i>n</i><sub>2</sub>,<i>M</i><sub>1</sub>*<i>M</i><sub>2</sub>,<i>min</i>(<i>d</i><sub>1</sub>,<i>d</i><sub>2</sub>)) code.
+<p>
+If both <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var> are linear codes, the result is also a linear
+code. If one of them is non-linear, the  direct sum is non-linear too. In
+general, a direct sum code is not cyclic.
+<p>
+Performing  a direct   sum can also  be done   by adding two   codes (see
+Section&nbsp;<a href="CHAP003.htm#SECT002">Operations for Codes</a>). Another often used method is  the  ``u,
+u+v''-construction, described in <a href="CHAP005.htm#SSEC002.2">UUVCode</a>.
+<p>
+<pre>
+gap&gt; C1 := ElementsCode( [ [1,0], [4,5] ], GF(7) );;
+gap&gt; C2 := ElementsCode( [ [0,0,0], [3,3,3] ], GF(7) );;
+gap&gt; D := DirectSumCode(C1, C2);;
+gap&gt; AsSSortedList(D);
+[ [ 1 0 0 0 0 ], [ 1 0 3 3 3 ], [ 4 5 0 0 0 ], [ 4 5 3 3 3 ] ]
+gap&gt; D = C1 + C2;   # addition = direct sum
+true 
+</pre>
+<p>
+<a name = "SSEC002.2"></a>
+<li><code>UUVCode( </code><var><i>C</i><sub>1</sub></var><code>, </code><var><i>C</i><sub>2</sub></var><code> )</code>
+<p>
+<code>UUVCode</code>  returns  the  so-called  (<i>u</i><font face="symbol">||</font><i>u</i>+<i>v</i>) construction   applied  to
+<var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var>. The resulting code consists of every codeword <i>u</i> of
+<var><i>C</i><sub>1</sub></var> concatenated   by  the sum   of  <i>u</i> and  every   codeword <i>v</i> of
+<var><i>C</i><sub>2</sub></var>.  If <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var> have  different word lengths, sufficient
+zeros are added to the shorter code to make this sum possible. If <var><i>C</i><sub><i>i</i></sub></var>
+is  a        (<i>n</i><sub><i>i</i></sub>,<i>M</i><sub><i>i</i></sub>,<i>d</i><sub><i>i</i></sub>)   code,          the  result    is         a
+(<i>n</i><sub>1</sub>+<i>max</i>(<i>n</i><sub>1</sub>,<i>n</i><sub>2</sub>),<i>M</i><sub>1</sub>*<i>M</i><sub>2</sub>,<i>min</i>(2*<i>d</i><sub>1</sub>,<i>d</i><sub>2</sub>)) code.
+<p>
+If both <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var> are linear codes, the result is also a linear
+code. If one  of them is non-linear, the  UUV  sum is non-linear too.  In
+general, a UUV sum code is not cyclic.
+<p>
+The function    <code>DirectSumCode</code>   returns another   sum   of  codes  (see
+<a href="CHAP005.htm#SSEC002.1">DirectSumCode</a>).
+<p>
+<pre>
+gap&gt; C1 := EvenWeightSubcode(WholeSpaceCode(4, GF(2)));
+a cyclic [4,3,2]1 even weight subcode
+gap&gt; C2 := RepetitionCode(4, GF(2));
+a cyclic [4,1,4]2 repetition code over GF(2)
+gap&gt; R := UUVCode(C1, C2);
+a linear [8,4,4]2 U U+V construction code
+gap&gt; R = ReedMullerCode(1,3);
+true 
+</pre>
+<p>
+<a name = "SSEC002.3"></a>
+<li><code>DirectProductCode( </code><var><i>C</i><sub>1</sub></var><code>, </code><var><i>C</i><sub>2</sub></var><code> )</code>
+<p>
+<code>DirectProductCode</code> returns the   direct  product of codes   <var><i>C</i><sub>1</sub></var>  and
+<var><i>C</i><sub>2</sub></var>. Both must be linear codes.  Suppose <var><i>C</i><sub><i>i</i></sub></var> has generator matrix
+<i>G</i><sub><i>i</i></sub>. The direct product of  <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var>  then has the Kronecker
+product   of    <i>G</i><sub>1</sub>   and   <i>G</i><sub>2</sub>  as   the    generator    matrix (see
+<code>KroneckerProduct</code>).
+<p>
+If <var><i>C</i><sub><i>i</i></sub></var> is a [<i>n</i><sub><i>i</i></sub>, <i>k</i><sub><i>i</i></sub>, <i>d</i><sub><i>i</i></sub>] code, the direct product then is a
+[<i>n</i><sub>1</sub>*<i>n</i><sub>2</sub>,<i>k</i><sub>1</sub>*<i>k</i><sub>2</sub>,<i>d</i><sub>1</sub>*<i>d</i><sub>2</sub>] code.
+<p>
+<pre>
+gap&gt; L1 := LexiCode(10, 4, GF(2));
+a linear [10,5,4]2..4 lexicode over GF(2)
+gap&gt; L2 := LexiCode(8, 3, GF(2));
+a linear [8,4,3]2..3 lexicode over GF(2)
+gap&gt; D := DirectProductCode(L1, L2);
+a linear [80,20,12]20..45 direct product code 
+</pre>
+<p>
+<a name = "SSEC002.4"></a>
+<li><code>IntersectionCode( </code><var><i>C</i><sub>1</sub></var><code>, </code><var><i>C</i><sub>2</sub></var><code> )</code>
+<p>
+<code>IntersectionCode</code> returns the intersection of codes <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var>.
+This code consists of all codewords that are both in <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var>.
+If both codes are linear, the result is also  linear. If both are cyclic,
+the result is also cyclic.
+<p>
+<pre>
+gap&gt; C := CyclicCodes(7, GF(2));
+[ a cyclic [7,7,1]0 enumerated code over GF(2),
+  a cyclic [7,6,1..2]1 enumerated code over GF(2),
+  a cyclic [7,3,1..4]2..3 enumerated code over GF(2),
+  a cyclic [7,0,7]7 enumerated code over GF(2),
+  a cyclic [7,3,1..4]2..3 enumerated code over GF(2),
+  a cyclic [7,4,1..3]1 enumerated code over GF(2),
+  a cyclic [7,1,7]3 enumerated code over GF(2),
+  a cyclic [7,4,1..3]1 enumerated code over GF(2) ]
+gap&gt; IntersectionCode(C[6], C[8]) = C[7];
+true 
+</pre>
+<p>
+<a name = "SSEC002.5"></a>
+<li><code>UnionCode( </code><var><i>C</i><sub>1</sub></var><code>, </code><var><i>C</i><sub>2</sub></var><code> )</code>
+<p>
+<code>UnionCode</code> returns  the union of codes   <var><i>C</i><sub>1</sub></var> and <var><i>C</i><sub>2</sub></var>.  This code
+consists of  the union of  all codewords of <var><i>C</i><sub>1</sub></var>  and  <var><i>C</i><sub>2</sub></var> and all
+linear combinations. Therefore   this   function works only  for   linear
+codes. The function <code>AddedElementsCode</code> can be used for non-linear codes,
+or if  the  resulting code should not   include linear combinations.  See
+<a href="CHAP005.htm#SSEC001.10">AddedElementsCode</a>.  If both arguments  are  cyclic, the result  is also
+cyclic.
+<p>
+<pre>
+gap&gt; G := GeneratorMatCode([[1,0,1],[0,1,1]]*Z(2)^0, GF(2));
+a linear [3,2,1..2]1 code defined by generator matrix over GF(2)
+gap&gt; H := GeneratorMatCode([[1,1,1]]*Z(2)^0, GF(2));
+a linear [3,1,3]1 code defined by generator matrix over GF(2)
+gap&gt; U := UnionCode(G, H);
+a linear [3,3,1]0 union code
+gap&gt; c := Codeword("010");; c in G;
+false
+gap&gt; c in H;
+false
+gap&gt; c in U;
+true 
+</pre>
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP004.htm">Previous</a>] [<a href ="CHAP006.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>GUAVA manual<br>April 2004
+</address></body></html>

@@ -2,7 +2,7 @@
 ##
 #W  vec8bit.gd                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: vec8bit.gd,v 4.7 2007/08/24 09:40:32 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,13 +12,14 @@
 ##  It provides some things that the kernel needs from the library 
 ##
 Revision.vec8bit_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: vec8bit.gd,v 4.7 2007/08/24 09:40:32 gap Exp $";
 
 #############################################################################
 ##
 #R  Is8BitVectorRep( <obj> ) . . . compressed vector over GFQ (3 <= q <= 256)
 ##
-DeclareRepresentation( "Is8BitVectorRep",  IsDataObjectRep,[],
+DeclareRepresentation( "Is8BitVectorRep", 
+        IsDataObjectRep and IsRowVectorObj,[],
         IsRowVector and IsSmallList );
 
 #############################################################################

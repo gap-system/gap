@@ -2,7 +2,7 @@
 ##
 #W  ctblfuns.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctblfuns.gd,v 4.70 2008/09/15 07:56:11 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -27,56 +27,67 @@
 ##  14. Auxiliary operations
 ##
 Revision.ctblfuns_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: ctblfuns.gd,v 4.70 2008/09/15 07:56:11 gap Exp $";
 
 
 #############################################################################
 ##
 #C  IsClassFunction( <obj> )
 ##
-##  \index{class function}\index{class function objects}
-##  A *class function* (in characteristic $p$) of a finite group $G$ is a map
-##  from the set of ($p$-regular) elements in $G$ to the cyclotomics that is
-##  constant on conjugacy classes of $G$.
+##  <#GAPDoc Label="IsClassFunction">
+##  <ManSection>
+##  <Filt Name="IsClassFunction" Arg='obj' Type='Category'/>
 ##
-##  Each class function in {\GAP} is represented by an *immutable list*,
-##  where at the $i$-th position the value on the $i$-th conjugacy class of
-##  the character table of $G$ is stored.
+##  <Description>
+##  <Index>class function</Index><Index>class function objects</Index>
+##  A <E>class function</E> (in characteristic <M>p</M>) of a finite group
+##  <M>G</M> is a map from the set of (<M>p</M>-regular) elements in <M>G</M>
+##  to the field of cyclotomics
+##  that is constant on conjugacy classes of <M>G</M>.
+##  <P/>
+##  Each class function in &GAP; is represented by an <E>immutable list</E>,
+##  where at the <M>i</M>-th position the value on the <M>i</M>-th conjugacy
+##  class of the character table of <M>G</M> is stored.
 ##  The ordering of the conjugacy classes is the one used in the underlying
 ##  character table.
 ##  Note that if the character table has access to its underlying group then
 ##  the ordering of conjugacy classes in the group and in the character table
-##  may differ (see~"The Interface between Character Tables and Groups");
+##  may differ
+##  (see <Ref Sect="The Interface between Character Tables and Groups"/>);
 ##  class functions always refer to the ordering of classes in the character
 ##  table.
-##
-##  *Class function objects* in {\GAP} are not just plain lists,
-##  they store the character table of the group $G$ as value of the attribute
-##  `UnderlyingCharacterTable' (see~"UnderlyingCharacterTable").
-##  The group $G$ itself is accessible only via the character table
+##  <P/>
+##  <E>Class function objects</E> in &GAP; are not just plain lists,
+##  they store the character table of the group <M>G</M> as value of the
+##  attribute <Ref Func="UnderlyingCharacterTable"/>.
+##  The group <M>G</M> itself is accessible only via the character table
 ##  and thus only if the character table stores its group, as value of the
-##  attribute `UnderlyingGroup'.
+##  attribute <Ref Attr="UnderlyingGroup" Label="for character tables"/>.
 ##  The reason for this is that many computations with class functions are
 ##  possible without using their groups,
-##  for example class functions of character tables in the {\GAP}
+##  for example class functions of character tables in the &GAP;
 ##  character table library do in general not have access to their
 ##  underlying groups.
-##
-##  There are (at least) two reasons why class functions in {\GAP} are *not*
-##  implemented as mappings.
+##  <P/>
+##  There are (at least) two reasons why class functions in &GAP; are
+##  <E>not</E> implemented as mappings.
 ##  First, we want to distinguish class functions in different
 ##  characteristics, for example to be able to define the Frobenius character
 ##  of a given Brauer character;
 ##  viewed as mappings, the trivial characters in all characteristics coprime
-##  to the order of $G$ are equal.
+##  to the order of <M>G</M> are equal.
 ##  Second, the product of two class functions shall be again a class
 ##  function, whereas the product of general mappings is defined as
 ##  composition.
-##
+##  <P/>
 ##  A further argument is that the typical operations for mappings such as
-##  `Image' (see~"Image") and `PreImage' (see~"PreImage") play no important
-##  role for class functions.
-##
+##  <Ref Func="Image" Label="set of images of the source of a general mapping"/>
+##  and
+##  <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>
+##  play no important role for class functions.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsClassFunction",
     IsScalar and IsCommutativeElement and IsAssociativeElement
@@ -88,19 +99,27 @@ DeclareCategory( "IsClassFunction",
 ##
 #F  CharacterString( <char>, <str> )
 ##
+##  <ManSection>
+##  <Func Name="CharacterString" Arg='char, str'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "CharacterString" );
 
 
 #############################################################################
 ##
 ##  1. Why Class Functions?
-#1
+##
+##  <#GAPDoc Label="[1]{ctblfuns}">
 ##  In principle it is possible to represent group characters or more general
 ##  class functions by the plain lists of their values,
 ##  and in fact many operations for class functions work with plain lists of
 ##  class function values.
 ##  But this has two disadvantages.
-##
+##  <P/>
 ##  First, it is then necessary to regard a values list explicitly as a class
 ##  function of a particular character table, by supplying this character
 ##  table as an argument.
@@ -112,96 +131,98 @@ DeclareGlobalFunction( "CharacterString" );
 ##  this is particularly inconvenient in cases where infix operations cannot
 ##  be used because of the additional argument, as for tensor products and
 ##  induced class functions.
-##
-##  Second, when one says that ``$\chi$ is a character of a group $G$''
-##  then this object $\chi$ carries a lot of information.
-##  $\chi$ has certain properties such as being irreducible or not.
-##  Several subgroups of $G$ are related to $\chi$,
-##  such as the kernel and the centre of $\chi$.
+##  <P/>
+##  Second, when one says that
+##  <Q><M>\chi</M> is a character of a group <M>G</M></Q>
+##  then this object <M>\chi</M> carries a lot of information.
+##  <M>\chi</M> has certain properties such as being irreducible or not.
+##  Several subgroups of <M>G</M> are related to <M>\chi</M>,
+##  such as the kernel and the centre of <M>\chi</M>.
 ##  Other attributes of characters are the determinant and the central
 ##  character.
 ##  This knowledge cannot be stored in a plain list.
-##
+##  <P/>
 ##  For dealing with a group together with its characters, and maybe also
-##  subgroups and their characters, it is desirable that {\GAP} keeps track
+##  subgroups and their characters, it is desirable that &GAP; keeps track
 ##  of the interpretation of characters.
 ##  On the other hand, for using characters without accessing their groups,
-##  such as characters of tables from the {\GAP} table library,
+##  such as characters of tables from the &GAP; table library,
 ##  dealing just with values lists is often sufficient.
 ##  In particular, if one deals with incomplete character tables then it is
 ##  often necessary to specify the arguments explicitly,
 ##  for example one has to choose a fusion map or power map from a set of
 ##  possibilities.
-##
+##  <P/>
 ##  The main idea behind class function objects is that a class function
-##  object is equal to its values list in the sense of `\\=',
+##  object is equal to its values list in the sense of <Ref Func="\="/>,
 ##  so class function objects can be used wherever their values lists
 ##  can be used,
 ##  but there are operations for class function objects that do not work
 ##  just with values lists.
-#T Note that a class function object lies in the same family as its list of
-#T values.
-#T As a consequence, there is no filter `IsClassFunctionCollection',
-#T so we have no special treatment of spaces and algebras without hacks.
-##  {\GAP} library functions prefer to return class function objects
+##  <!-- Note that a class function object lies in the same family as its list of-->
+##  <!-- values.-->
+##  <!-- As a consequence, there is no filter <C>IsClassFunctionCollection</C>,-->
+##  <!-- so we have no special treatment of spaces and algebras without hacks.-->
+##  &GAP; library functions prefer to return class function objects
 ##  rather than returning just values lists,
-##  for example `Irr' lists (see~"Irr") consist of class function objects,
-##  and `TrivialCharacter' (see~"TrivialCharacter") returns a class function
-##  object.
-##
-##  Here is an *example* that shows both approaches.
+##  for example <Ref Attr="Irr" Label="for a group"/> lists
+##  consist of class function objects,
+##  and <Ref Func="TrivialCharacter" Label="for a group"/>
+##  returns a class function object.
+##  <P/>
+##  Here is an <E>example</E> that shows both approaches.
 ##  First we define some groups.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4" );
 ##  gap> D8:= SylowSubgroup( S4, 2 );; SetName( D8, "D8" );
-##  \endexample
-##
+##  ]]></Example>
+##  <P/>
 ##  We do some computations using the functions described later in this
 ##  Chapter, first with class function objects.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> irrS4:= Irr( S4 );;
 ##  gap> irrD8:= Irr( D8 );;
 ##  gap> chi:= irrD8[4];
-##  Character( CharacterTable( D8 ), [ 1, -1, 1, -1, 1 ] )
+##  Character( CharacterTable( D8 ), [ 1, 1, 1, -1, -1 ] )
 ##  gap> chi * chi;
 ##  Character( CharacterTable( D8 ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> ind:= chi ^ S4;
-##  Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] )
+##  Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] )
 ##  gap> List( irrS4, x -> ScalarProduct( x, ind ) );
-##  [ 0, 1, 0, 0, 0 ]
+##  [ 0, 0, 0, 1, 0 ]
 ##  gap> det:= Determinant( ind );
-##  Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] )
+##  Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
 ##  gap> cent:= CentralCharacter( ind );
-##  ClassFunction( CharacterTable( S4 ), [ 1, -2, -1, 0, 2 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 1, 2, -1, 0, -2 ] )
 ##  gap> rest:= Restricted( cent, D8 );
-##  ClassFunction( CharacterTable( D8 ), [ 1, -2, -1, -1, 2 ] )
-##  \endexample
-##
+##  ClassFunction( CharacterTable( D8 ), [ 1, 2, -1, -1, -2 ] )
+##  ]]></Example>
+##  <P/>
 ##  Now we repeat these calculations with plain lists of character values.
 ##  Here we need the character tables in some places.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> tS4:= CharacterTable( S4 );;
 ##  gap> tD8:= CharacterTable( D8 );;
 ##  gap> chi:= ValuesOfClassFunction( irrD8[4] );
-##  [ 1, -1, 1, -1, 1 ]
+##  [ 1, 1, 1, -1, -1 ]
 ##  gap> Tensored( [ chi ], [ chi ] )[1];
 ##  [ 1, 1, 1, 1, 1 ]
 ##  gap> ind:= InducedClassFunction( tD8, chi, tS4 );
-##  ClassFunction( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] )
 ##  gap> List( Irr( tS4 ), x -> ScalarProduct( tS4, x, ind ) );
-##  [ 0, 1, 0, 0, 0 ]
+##  [ 0, 0, 0, 1, 0 ]
 ##  gap> det:= DeterminantOfCharacter( tS4, ind );
-##  ClassFunction( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
 ##  gap> cent:= CentralCharacter( tS4, ind );
-##  ClassFunction( CharacterTable( S4 ), [ 1, -2, -1, 0, 2 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 1, 2, -1, 0, -2 ] )
 ##  gap> rest:= Restricted( tS4, cent, tD8 );
-##  ClassFunction( CharacterTable( D8 ), [ 1, -2, -1, -1, 2 ] )
-##  \endexample
-##
-##  If one deals with character tables from the {\GAP} table library then
+##  ClassFunction( CharacterTable( D8 ), [ 1, 2, -1, -1, -2 ] )
+##  ]]></Example>
+##  <P/>
+##  If one deals with character tables from the &GAP; table library then
 ##  one has no access to their groups,
 ##  but often the tables provide enough information for computing induced or
 ##  restricted class functions, symmetrizations etc.,
@@ -211,8 +232,8 @@ DeclareGlobalFunction( "CharacterString" );
 ##  as arguments.
 ##  (If necessary information is not uniquely determined by the tables then
 ##  an error is signalled.)
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> s5 := CharacterTable( "A5.2" );; irrs5 := Irr( s5  );;
 ##  gap> m11:= CharacterTable( "M11"  );; irrm11:= Irr( m11 );;
 ##  gap> chi:= TrivialCharacter( s5 );
@@ -221,33 +242,38 @@ DeclareGlobalFunction( "CharacterString" );
 ##  Character( CharacterTable( "M11" ), [ 66, 10, 3, 2, 1, 1, 0, 0, 0, 0 ] )
 ##  gap> Determinant( irrs5[4] );
 ##  Character( CharacterTable( "A5.2" ), [ 1, 1, 1, 1, -1, -1, -1 ] )
-##  \endexample
-##
-##  Functions that compute *normal* subgroups related to characters
+##  ]]></Example>
+##  <P/>
+##  Functions that compute <E>normal</E> subgroups related to characters
 ##  have counterparts that return the list of class positions corresponding
 ##  to these groups.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> ClassPositionsOfKernel( irrs5[2] );
 ##  [ 1, 2, 3, 4 ]
 ##  gap> ClassPositionsOfCentre( irrs5[2] );
 ##  [ 1, 2, 3, 4, 5, 6, 7 ]
-##  \endexample
-##
+##  ]]></Example>
+##  <P/>
 ##  Non-normal subgroups cannot be described this way,
-##  so for example inertia subgroups (see~"InertiaSubgroup") can in general
-##  not be computed from character tables without access to their groups.
+##  so for example inertia subgroups (see&nbsp;<Ref Func="InertiaSubgroup"/>)
+##  can in general not be computed from character tables without access to
+##  their groups.
+##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
 ##  2. Basic Operations for Class Functions
-#2
+##
+##  <#GAPDoc Label="[2]{ctblfuns}">
 ##  Basic operations for class functions are
-##  `UnderlyingCharacterTable' (see~"UnderlyingCharacterTable"),
-##  `ValuesOfClassFunction' (see~"ValuesOfClassFunction"),
-##  and the basic operations for lists (see~"Basic Operations for Lists").
+##  <Ref Func="UnderlyingCharacterTable"/>,
+##  <Ref Func="ValuesOfClassFunction"/>,
+##  and the basic operations for lists
+##  (see&nbsp;<Ref Sect="Basic Operations for Lists"/>).
+##  <#/GAPDoc>
 ##
 
 
@@ -255,19 +281,31 @@ DeclareGlobalFunction( "CharacterString" );
 ##
 #A  UnderlyingCharacterTable( <psi> )
 ##
-##  For a class function <psi> of the group $G$, say, the character table of
-##  $G$ is stored as value of `UnderlyingCharacterTable'.
-##  The ordering of entries in the list <psi> (see~"ValuesOfClassFunction")
-##  refers to the ordering of conjugacy classes in this character table.
+##  <#GAPDoc Label="UnderlyingCharacterTable">
+##  <ManSection>
+##  <Attr Name="UnderlyingCharacterTable" Arg='psi'/>
 ##
-##  If <psi> is an ordinary class function then the underlying character
-##  table is the ordinary character table of $G$
-##  (see~"OrdinaryCharacterTable"),
-##  if <psi> is a class function in characteristic $p \not= 0$ then the
-##  underlying character table is the $p$-modular Brauer table of $G$
-##  (see~"BrauerTable").
-##  So the underlying characteristic of <psi> can be read off from the
+##  <Description>
+##  For a class function <A>psi</A> of the group <M>G</M>, say,
+##  the character table of <M>G</M> is stored as value of
+##  <Ref Attr="UnderlyingCharacterTable"/>.
+##  The ordering of entries in the list <A>psi</A>
+##  (see&nbsp;<Ref Func="ValuesOfClassFunction"/>)
+##  refers to the ordering of conjugacy classes in this character table.
+##  <P/>
+##  If <A>psi</A> is an ordinary class function then the underlying character
+##  table is the ordinary character table of <M>G</M>
+##  (see&nbsp;<Ref Func="OrdinaryCharacterTable" Label="for a group"/>),
+##  if <A>psi</A> is a class function in characteristic <M>p \neq 0</M> then
+##  the underlying character table is the <M>p</M>-modular Brauer table of
+##  <M>G</M>
+##  (see&nbsp;<Ref Func="BrauerTable"
+##  Label="for a group, and a prime integer"/>).
+##  So the underlying characteristic of <A>psi</A> can be read off from the
 ##  underlying character table.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "UnderlyingCharacterTable", IsClassFunction );
 
@@ -276,9 +314,39 @@ DeclareAttribute( "UnderlyingCharacterTable", IsClassFunction );
 ##
 #A  ValuesOfClassFunction( <psi> ) . . . . . . . . . . . . . . list of values
 ##
-##  is the list of values of the class function <psi>, the $i$-th entry
-##  being the value on the $i$-th conjugacy class of the underlying
-##  character table (see~"UnderlyingCharacterTable").
+##  <#GAPDoc Label="ValuesOfClassFunction">
+##  <ManSection>
+##  <Attr Name="ValuesOfClassFunction" Arg='psi'/>
+##
+##  <Description>
+##  is the list of values of the class function <A>psi</A>,
+##  the <M>i</M>-th entry being the value on the <M>i</M>-th conjugacy class
+##  of the underlying character table
+##  (see&nbsp;<Ref Func="UnderlyingCharacterTable"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:= SymmetricGroup( 4 );
+##  Sym( [ 1 .. 4 ] )
+##  gap> psi:= TrivialCharacter( g );
+##  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] )
+##  gap> UnderlyingCharacterTable( psi );
+##  CharacterTable( Sym( [ 1 .. 4 ] ) )
+##  gap> ValuesOfClassFunction( psi );
+##  [ 1, 1, 1, 1, 1 ]
+##  gap> IsList( psi );
+##  true
+##  gap> psi[1];
+##  1
+##  gap> Length( psi );
+##  5
+##  gap> IsBound( psi[6] );
+##  false
+##  gap> Concatenation( psi, [ 2, 3 ] );
+##  [ 1, 1, 1, 1, 1, 2, 3 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 
@@ -286,47 +354,78 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 #############################################################################
 ##
 ##  3. Comparison of Class Functions
-#3
-##  With respect to `\\=' and `\\\<', class functions behave equally to their
-##  lists of values (see~"ValuesOfClassFunction").
+##
+##  <#GAPDoc Label="[3]{ctblfuns}">
+##  With respect to <Ref Func="\="/> and <Ref Func="\&lt;"/>,
+##  class functions behave equally to their lists of values
+##  (see&nbsp;<Ref Func="ValuesOfClassFunction"/>).
 ##  So two class functions are equal if and only if their lists of values are
 ##  equal, no matter whether they are class functions of the same character
-##  table, of the same group but w.r.t.~different class ordering,
+##  table, of the same group but w.r.t.&nbsp;different class ordering,
 ##  or of different groups.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> grps:= Filtered( AllSmallGroups( 8 ), g -> not IsAbelian( g ) );
+##  [ <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators> ]
+##  gap> t1:= CharacterTable( grps[1] );  SetName( t1, "t1" );
+##  CharacterTable( <pc group of size 8 with 3 generators> )
+##  gap> t2:= CharacterTable( grps[2] );  SetName( t2, "t2" );
+##  CharacterTable( <pc group of size 8 with 3 generators> )
+##  gap> irr1:= Irr( grps[1] );
+##  [ Character( t1, [ 1, 1, 1, 1, 1 ] ), Character( t1, [ 1, -1, -1, 1, 1 ] ),
+##    Character( t1, [ 1, -1, 1, 1, -1 ] ), Character( t1, [ 1, 1, -1, 1, -1 ] ),
+##    Character( t1, [ 2, 0, 0, -2, 0 ] ) ]
+##  gap> irr2:= Irr( grps[2] );
+##  [ Character( t2, [ 1, 1, 1, 1, 1 ] ), Character( t2, [ 1, -1, -1, 1, 1 ] ),
+##    Character( t2, [ 1, -1, 1, 1, -1 ] ), Character( t2, [ 1, 1, -1, 1, -1 ] ),
+##    Character( t2, [ 2, 0, 0, -2, 0 ] ) ]
+##  gap> irr1 = irr2;
+##  true
+##  gap> IsSSortedList( irr1 );
+##  false
+##  gap> irr1[1] < irr1[2];
+##  false
+##  gap> irr1[2] < irr1[3];
+##  true
+##  ]]></Example>
+##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
 ##  4. Arithmetic Operations for Class Functions
-#4
-##  Class functions are *row vectors* of cyclotomics.
-##  The *additive* behaviour of class functions is defined such that they are
-##  equal to the plain lists of class function values except that the results
-##  are represented again as class functions whenever this makes sense.
-##  The *multiplicative* behaviour, however, is different.
+##
+##  <#GAPDoc Label="[4]{ctblfuns}">
+##  Class functions are <E>row vectors</E> of cyclotomics.
+##  The <E>additive</E> behaviour of class functions is defined such that
+##  they are equal to the plain lists of class function values except that
+##  the results are represented again as class functions whenever this makes
+##  sense.
+##  The <E>multiplicative</E> behaviour, however, is different.
 ##  This is motivated by the fact that the tensor product of class functions
 ##  is a more interesting operation than the vector product of plain lists.
 ##  (Another candidate for a multiplication of compatible class functions
 ##  would have been the inner product, which is implemented via the function
-##  `ScalarProduct', see~"ScalarProduct!for characters".)
+##  <Ref Func="ScalarProduct" Label="for characters"/>.
 ##  In terms of filters, the arithmetic of class functions is based on the
-##  decision that they lie in `IsGeneralizedRowVector',
-##  with additive nesting depth $1$,
-##  but they do *not* lie in `IsMultiplicativeGeneralizedRowVector'
-##  (see~"Filters Controlling the Arithmetic Behaviour of Lists").
-##
+##  decision that they lie in <Ref Func="IsGeneralizedRowVector"/>,
+##  with additive nesting depth <M>1</M>, but they do <E>not</E> lie in
+##  <Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+##  <P/>
 ##  More specifically, the scalar multiple of a class function with a
 ##  cyclotomic is a class function,
 ##  and the sum and the difference of two class functions
-##  of the same underlying character table (see~"UnderlyingCharacterTable")
+##  of the same underlying character table
+##  (see&nbsp;<Ref Func="UnderlyingCharacterTable"/>)
 ##  are again class functions of this table.
-##  The sum and the difference of a class function and a list that is *not*
-##  a class function are plain lists,
+##  The sum and the difference of a class function and a list that is
+##  <E>not</E> a class function are plain lists,
 ##  as well as the sum and the difference of two class functions of different
 ##  character tables.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> g:= SymmetricGroup( 4 );;  tbl:= CharacterTable( g );;
 ##  gap> SetName( tbl, "S4" );  irr:= Irr( g );
 ##  [ Character( S4, [ 1, -1, 1, 1, -1 ] ), Character( S4, [ 3, -1, -1, 0, 1 ] ), 
@@ -354,89 +453,91 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  [ Z(3), Z(3), Z(3), Z(3), Z(3) ]
 ##  gap> irr[5] + TrivialCharacter( DihedralGroup( 8 ) );
 ##  [ 2, 2, 2, 2, 2 ]
-##  \endexample
-##
-##  \index{class functions!as ring elements}
+##  ]]></Example>
+##  <P/>
+##  <Index Subkey="as ring elements">class functions</Index>
 ##  The product of two class functions of the same character table is the
 ##  tensor product (pointwise product) of these class functions.
 ##  Thus the set of all class functions of a fixed group forms a ring,
-##  and for any field $F$ of cyclotomics, the $F$-span of a given set of
-##  class functions forms an algebra.
-##
-##  The product of two class functions of *different* tables and the product
-##  of a class function and a list that is *not* a class function are not
-##  defined, an error is signalled in these cases.
+##  and for any field <M>F</M> of cyclotomics, the <M>F</M>-span of a given
+##  set of class functions forms an algebra.
+##  <P/>
+##  The product of two class functions of <E>different</E> tables and the
+##  product of a class function and a list that is <E>not</E> a class
+##  function are not defined, an error is signalled in these cases.
 ##  Note that in this respect, class functions behave differently from their
 ##  values lists, for which the product is defined as the standard scalar
 ##  product.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> tens:= irr[3] * irr[4];
 ##  Character( S4, [ 6, 0, -2, 0, 0 ] )
 ##  gap> ValuesOfClassFunction( irr[3] ) * ValuesOfClassFunction( irr[4] );
 ##  4
-##  \endexample
-##
-##  \index{inverse!of class function}
+##  ]]></Example>
+##  <P/>
+##  <Index Subkey="of class function">inverse</Index>
 ##  Class functions without zero values are invertible,
-##  the *inverse* is defined pointwise.
+##  the <E>inverse</E> is defined pointwise.
 ##  As a consequence, for example groups of linear characters can be formed.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> tens / irr[1];
 ##  Character( S4, [ 6, 0, -2, 0, 0 ] )
-##  \endexample
-##
+##  ]]></Example>
+##  <P/>
 ##  Other (somewhat strange) implications of the definition of arithmetic
 ##  operations for class functions, together with the general rules of list
-##  arithmetic (see~"Arithmetic for Lists"),
-##  apply to the case of products involving *lists* of class functions.
+##  arithmetic (see&nbsp;<Ref Sect="Arithmetic for Lists"/>),
+##  apply to the case of products involving <E>lists</E> of class functions.
 ##  No inverse of the list of irreducible characters as a matrix is defined;
 ##  if one is interested in the inverse matrix then one can compute it from
 ##  the matrix of class function values.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> Inverse( List( irr, ValuesOfClassFunction ) );
 ##  [ [ 1/24, 1/8, 1/12, 1/8, 1/24 ], [ -1/4, -1/4, 0, 1/4, 1/4 ], 
 ##    [ 1/8, -1/8, 1/4, -1/8, 1/8 ], [ 1/3, 0, -1/3, 0, 1/3 ], 
 ##    [ -1/4, 1/4, 0, -1/4, 1/4 ] ]
-##  \endexample
-##
+##  ]]></Example>
+##  <P/>
 ##  Also the product of a class function with a list of class functions is
-##  *not* a vector-matrix product but the list of pointwise products.
-##
-##  \beginexample
+##  <E>not</E> a vector-matrix product but the list of pointwise products.
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> irr[1] * irr{ [ 1 .. 3 ] };
 ##  [ Character( S4, [ 1, 1, 1, 1, 1 ] ), Character( S4, [ 3, 1, -1, 0, -1 ] ), 
 ##    Character( S4, [ 2, 0, 2, -1, 0 ] ) ]
-##  \endexample
-##
-##  And the product of two lists of class functions is *not* the matrix
+##  ]]></Example>
+##  <P/>
+##  And the product of two lists of class functions is <E>not</E> the matrix
 ##  product but the sum of the pointwise products.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> irr * irr;
 ##  Character( S4, [ 24, 4, 8, 3, 4 ] )
-##  \endexample
-##
-##  \index{character value!of group element using powering operator}
-##  \index{power!meaning for class functions}
-##  \indextt{\^{}!for class functions}
-##  The *powering* operator `\\^' has several meanings for class functions.
+##  ]]></Example>
+##  <P/>
+##  <Index Subkey="of group element using powering operator">character value</Index>
+##  <Index Subkey="meaning for class functions">power</Index>
+##  <Index Subkey="for class functions"><C>^</C></Index>
+##  The <E>powering</E> operator <Ref Func="\^"/> has several meanings
+##  for class functions.
 ##  The power of a class function by a nonnegative integer is clearly the
 ##  tensor power.
 ##  The power of a class function by an element that normalizes the
 ##  underlying group or by a Galois automorphism is the conjugate class
 ##  function.
 ##  (As a consequence, the application of the permutation induced by such an
-##  action cannot be denoted by `\\^'; instead one can use `Permuted',
-##  see~"Permuted".)
+##  action cannot be denoted by <Ref Func="\^"/>; instead one can use
+##  <Ref Func="Permuted"/>.)
 ##  The power of a class function by a group or a character table is the
-##  induced class function (see~"InducedClassFunction").
+##  induced class function (see&nbsp;<Ref Func="InducedClassFunction"
+##  Label="for the character table of a supergroup"/>).
 ##  The power of a group element by a class function is the class function
 ##  value at (the conjugacy class containing) this element.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> irr[3] ^ 3;
 ##  Character( S4, [ 8, 0, 8, -1, 0 ] )
 ##  gap> lin:= LinearCharacters( DerivedSubgroup( g ) );
@@ -454,17 +555,20 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  Character( S4, [ 2, 0, 2, 2, 0 ] )
 ##  gap> (1,2,3)^lin[2];
 ##  E(3)^2
-##  \endexample
+##  ]]></Example>
 ##
-##  \index{characteristic!for class functions}
-##  The *characteristic* of class functions is zero,
+##  <ManSection>
+##  <Func Name="Characteristic" Arg='chi' Label="for a class function"/>
+##
+##  <Description>
+##  The <E>characteristic</E> of class functions is zero,
 ##  as for all list of cyclotomics.
-##  For class functions of a $p$-modular character table, such as Brauer
-##  characters, the prime $p$ is given by the
-##  `UnderlyingCharacteristic' (see~"UnderlyingCharacteristic") value of
-##  the character table.
-##
-##  \beginexample
+##  For class functions of a <M>p</M>-modular character table, such as Brauer
+##  characters, the prime <M>p</M> is given by the
+##  <Ref Attr="UnderlyingCharacteristic" Label="for a character table"/>
+##  value of the character table.
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> Characteristic( irr[1] );
 ##  0
 ##  gap> irrmod2:= Irr( g, 2 );
@@ -474,40 +578,57 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  0
 ##  gap> UnderlyingCharacteristic( UnderlyingCharacterTable( irrmod2[1] ) );
 ##  2
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##
-##  \indextt{ComplexConjugate!for class functions}
-##  \indextt{GaloisCyc!for class functions}
-##  \indextt{Permuted!for class functions}
-##  The operations `ComplexConjugate', `GaloisCyc', and `Permuted' return
+##  <ManSection>
+##  <Func Name="ComplexConjugate" Arg='chi' Label="for a class function"/>
+##  <Func Name="GaloisCyc" Arg='chi' Label="for a class function"/>
+##  <Func Name="Permuted" Arg='chi' Label="for a class function"/>
+##
+##  <Description>
+##  The operations
+##  <Ref Func="ComplexConjugate" Label="for a class function"/>,
+##  <Ref Func="GaloisCyc" Label="for a class function"/>,
+##  and <Ref Func="Permuted" Label="for a class function"/> return
 ##  a class function when they are called with a class function;
 ##  The complex conjugate of a class function that is known to be a (virtual)
 ##  character is again known to be a (virtual) character, and applying an
 ##  arbitrary Galois automorphism to an ordinary (virtual) character yields
 ##  a (virtual) character.
-##
-##  \beginexample
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> ComplexConjugate( lin[2] );
 ##  Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] )
 ##  gap> GaloisCyc( lin[2], 5 );
 ##  Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, E(3), E(3)^2 ] )
 ##  gap> Permuted( lin[2], (2,3,4) );
 ##  ClassFunction( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, E(3), 1, E(3)^2 ] )
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <P/>
+##  <ManSection>
+##  <Func Name="Order" Arg='chi' Label="for a class function"/>
 ##
-##  \indextt{Order!of a class function}
-##  By definition of `Order' for arbitrary monoid elements,
-##  the determinantal order (see~"DeterminantOfCharacter") of characters
-##  cannot be the return value of `Order' for characters.
-##  One can use `Order( Determinant( <chi> ) )' to compute the determinantal
-##  order of the class function <chi>.
-##
-##  \beginexample
+##  <Description>
+##  By definition of <Ref Func="Order"/> for arbitrary monoid elements,
+##  the return value of <Ref Func="Order"/> for a character must be its
+##  multiplicative order.
+##  The <E>determinantal order</E>
+##  (see&nbsp;<Ref Func="DeterminantOfCharacter"/>) of a character <A>chi</A>
+##  can be computed as <C>Order( Determinant( <A>chi</A> ) )</C>.
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> det:= Determinant( irr[3] );
 ##  Character( S4, [ 1, -1, 1, 1, -1 ] )
 ##  gap> Order( det );
 ##  2
-##  \endexample
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 
 
@@ -515,51 +636,67 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 #A  GlobalPartitionOfClasses( <tbl> )
 ##
-##  Let <n> be the number of conjugacy classes of the character table <tbl>.
-##  `GlobalPartitionOfClasses( <tbl> )' is a list of subsets of the range
-##  `[ 1 .. <n> ]' that forms a partition of `[ 1 .. <n> ]'.
-##  This partition is respected by each table automorphism of <tbl>
-##  (see~"AutomorphismsOfTable");
-##  *note* that also fixed points occur.
+##  <ManSection>
+##  <Attr Name="GlobalPartitionOfClasses" Arg='tbl'/>
 ##
+##  <Description>
+##  Let <M>n</M> be the number of conjugacy classes of the character table
+##  <A>tbl</A>.
+##  <Ref Func="GlobalPartitionOfClasses"/> returns a list of subsets of the
+##  range <M>[ 1 .. n ]</M> that forms a partition of <M>[ 1 .. n ]</M>.
+##  This partition is respected by each table automorphism of <A>tbl</A>
+##  (see&nbsp;<Ref Func="AutomorphismsOfTable"/>);
+##  <E>note</E> that also fixed points occur.
+##  <P/>
 ##  This is useful for the computation of table automorphisms
 ##  and of conjugate class functions.
-##
+##  <P/>
 ##  Since group automorphisms induce table automorphisms, the partition is
 ##  also respected by the permutation group that occurs in the computation
 ##  of inertia groups and conjugate class functions.
-##
+##  <P/>
 ##  If the group of table automorphisms is already known then its orbits
 ##  form the finest possible global partition.
-##
+##  <P/>
 ##  Otherwise the subsets in the partition are the sets of classes with
-##  same centralizer order and same element order,
-##  and --if more about the character table is known-- also with the same
-##  number of $p$-th root classes, for all $p$ for which the power maps
-##  are stored.
+##  same centralizer order and same element order, and
+##  &ndash;if more about the character table is known&ndash;
+##  also with the same number of <M>p</M>-th root classes,
+##  for all <M>p</M> for which the power maps are stored.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "GlobalPartitionOfClasses", IsNearlyCharacterTable );
 
 
 #############################################################################
 ##
-#O  CorrespondingPermutations( <tbl>, <elms> )
-#O  CorrespondingPermutations( <tbl>, <chi>, <elms> )
+#O  CorrespondingPermutations( <tbl>[, <chi>], <elms> )
 ##
-##  In the first form, `CorrespondingPermutations' returns the list of those
-##  permutations of conjugacy classes of the character table <tbl>
-##  that are induced by the action of the group elements in the list <elms>.
-##  If an element of <elms> does *not* act on the classes of <tbl> then
-##  either `fail' or a (meaningless) permutation is returned.
+##  <ManSection>
+##  <Oper Name="CorrespondingPermutations" Arg='tbl[, chi], elms'/>
 ##
-##  In the second form, <chi> must be (the values list of) a class function
-##  of <tbl>, and the returned permutations will at least yield the same
+##  <Description>
+##  Called with two arguments <A>tbl</A> and <A>elms</A>,
+##  <Ref Oper="CorrespondingPermutations"/> returns the list of those
+##  permutations of conjugacy classes of the character table <A>tbl</A>
+##  that are induced by the action of the group elements in the list
+##  <A>elms</A>.
+##  If an element of <A>elms</A> does <E>not</E> act on the classes of
+##  <A>tbl</A> then either <K>fail</K> or a (meaningless) permutation
+##  is returned.
+##  <P/>
+##  In the call with three arguments, the second argument <A>chi</A> must be
+##  (the values list of) a class function of <A>tbl</A>,
+##  and the returned permutations will at least yield the same
 ##  conjugate class functions as the permutations of classes that are induced
-##  by <elms>,
+##  by <A>elms</A>,
 ##  that is, the images are not necessarily the same for orbits on which
-##  <chi> is constant.
-##
+##  <A>chi</A> is constant.
+##  <P/>
 ##  This function is used for computing conjugate class functions.
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "CorrespondingPermutations",
     [ IsOrdinaryTable, IsHomogeneousList ] );
@@ -570,37 +707,76 @@ DeclareOperation( "CorrespondingPermutations",
 #############################################################################
 ##
 ##  5. Printing Class Functions
-#5
-##  \indextt{ViewObj!for class functions}
-##  The default `ViewObj' (see~"ViewObj") methods for class functions
-##  print one of the strings `\"ClassFunction\"', `\"VirtualCharacter\"',
-##  `\"Character\"' (depending on whether the class function is known to be a
-##  character or virtual character, see~"IsCharacter", "IsVirtualCharacter"),
-##  followed by the `ViewObj' output for the underlying character table
-##  (see~"Printing Character Tables"), and the list of values.
+##
+##  <#GAPDoc Label="[5]{ctblfuns}">
+##  <ManSection>
+##  <Meth Name="ViewObj" Arg='chi' Label="for class functions"/>
+##
+##  <Description>
+##  The default <Ref Func="ViewObj"/> methods for class functions
+##  print one of the strings <C>"ClassFunction"</C>,
+##  <C>"VirtualCharacter"</C>, <C>"Character"</C> (depending on whether the
+##  class function is known to be a character or virtual character,
+##  see&nbsp;<Ref Func="IsCharacter"/>, <Ref Func="IsVirtualCharacter"/>),
+##  followed by the <Ref Func="ViewObj"/> output for the underlying character
+##  table (see&nbsp;<Ref Sect="Printing Character Tables"/>),
+##  and the list of values.
 ##  The table is chosen (and not the group) in order to distinguish class
 ##  functions of different underlying characteristic
-##  (see~"UnderlyingCharacteristic").
+##  (see&nbsp;<Ref Attr="UnderlyingCharacteristic" Label="for a character"/>).
+##  </Description>
+##  </ManSection>
 ##
-##  \indextt{PrintObj!for character tables}
-##  The default `PrintObj' (see~"PrintObj") method for class functions
-##  does the same as `ViewObj',
-##  except that the character table is is `Print'-ed instead of `View'-ed.
+##  <ManSection>
+##  <Meth Name="PrintObj" Arg='chi' Label="for class functions"/>
 ##
-##  *Note* that if a class function is shown only with one of the strings
-##  `\"ClassFunction\"', `\"VirtualCharacter\"',
+##  <Description>
+##  The default <Ref Func="PrintObj"/> method for class functions
+##  does the same as <Ref Func="ViewObj"/>,
+##  except that the character table is is <Ref Func="Print"/>-ed instead of
+##  <Ref Func="View"/>-ed.
+##  <P/>
+##  <E>Note</E> that if a class function is shown only with one of the
+##  strings <C>"ClassFunction"</C>, <C>"VirtualCharacter"</C>,
 ##  it may still be that it is in fact a character;
 ##  just this was not known at the time when the class function was printed.
-##
+##  <P/>
 ##  In order to reduce the space that is needed to print a class function,
-##  it may be useful to give a name (see~"Name") to the underlying character
-##  table.
+##  it may be useful to give a name (see&nbsp;<Ref Func="Name"/>) to the
+##  underlying character table.
+##  </Description>
+##  </ManSection>
 ##
-##  \indextt{Display!for character tables}
-##  The default `Display' (see~"Display") method for a class function <chi>
-##  calls `Display' for its underlying character table
-##  (see~"Printing Character Tables"), with <chi> as the only entry in the
-##  `chars' list of the options record.
+##  <ManSection>
+##  <Meth Name="Display" Arg='chi' Label="for class functions"/>
+##
+##  <Description>
+##  The default <Ref Func="Display"/> method for a class function <A>chi</A>
+##  calls <Ref Func="Display"/> for its underlying character table
+##  (see&nbsp;<Ref Sect="Printing Character Tables"/>),
+##  with <A>chi</A> as the only entry in the <C>chars</C> list of the options
+##  record.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> chi:= TrivialCharacter( CharacterTable( "A5" ) );
+##  Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] )
+##  gap> Display( chi );
+##  A5
+##  
+##       2  2  2  .  .  .
+##       3  1  .  1  .  .
+##       5  1  .  .  1  1
+##  
+##         1a 2a 3a 5a 5b
+##      2P 1a 1a 3a 5b 5a
+##      3P 1a 2a 1a 5b 5a
+##      5P 1a 2a 3a 1a 1a
+##  
+##  Y.1     1  1  1  1  1
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 
 
@@ -615,14 +791,27 @@ DeclareOperation( "CorrespondingPermutations",
 #O  ClassFunction( <tbl>, <values> )
 #O  ClassFunction( <G>, <values> )
 ##
-##  In the first form, `ClassFunction' returns the class function of the
-##  character table <tbl> with values given by the list <values> of
-##  cyclotomics.
-##  In the second form, <G> must be a group, and the class function of its
-##  ordinary character table is returned.
+##  <#GAPDoc Label="ClassFunction">
+##  <ManSection>
+##  <Oper Name="ClassFunction" Arg='tbl, values'
+##   Label="for a character table and a list"/>
+##  <Oper Name="ClassFunction" Arg='G, values'
+##   Label="for a group and a list"/>
 ##
-##  Note that <tbl> determines the underying characteristic of the returned
-##  class function (see~"UnderlyingCharacteristic").
+##  <Description>
+##  In the first form,
+##  <Ref Oper="ClassFunction" Label="for a character table and a list"/>
+##  returns the class function of the character table <A>tbl</A> with values
+##  given by the list <A>values</A> of cyclotomics.
+##  In the second form, <A>G</A> must be a group,
+##  and the class function of its ordinary character table is returned.
+##  <P/>
+##  Note that <A>tbl</A> determines the underlying characteristic of the
+##  returned class function
+##  (see&nbsp;<Ref Attr="UnderlyingCharacteristic" Label="for a character"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ClassFunction", [ IsNearlyCharacterTable, IsDenseList ] );
 DeclareOperation( "ClassFunction", [ IsGroup, IsDenseList ] );
@@ -633,12 +822,25 @@ DeclareOperation( "ClassFunction", [ IsGroup, IsDenseList ] );
 #O  VirtualCharacter( <tbl>, <values> )
 #O  VirtualCharacter( <G>, <values> )
 ##
-##  `VirtualCharacter' returns the virtual character
-##  (see~"IsVirtualCharacter") of the character table <tbl> or the group <G>,
-##  respectively, with values given by the list <values>.
+##  <#GAPDoc Label="VirtualCharacter">
+##  <ManSection>
+##  <Oper Name="VirtualCharacter" Arg='tbl, values'
+##   Label="for a character table and a list"/>
+##  <Oper Name="VirtualCharacter" Arg='G, values'
+##   Label="for a group and a list"/>
 ##
-##  It is *not* checked whether the given values really describe a
+##  <Description>
+##  <Ref Oper="VirtualCharacter" Label="for a character table and a list"/>
+##  returns the virtual character
+##  (see&nbsp;<Ref Func="IsVirtualCharacter"/>)
+##  of the character table <A>tbl</A> or the group <A>G</A>,
+##  respectively, with values given by the list <A>values</A>.
+##  <P/>
+##  It is <E>not</E> checked whether the given values really describe a
 ##  virtual character.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "VirtualCharacter",
     [ IsNearlyCharacterTable, IsDenseList ] );
@@ -649,11 +851,39 @@ DeclareOperation( "VirtualCharacter", [ IsGroup, IsDenseList ] );
 ##
 #O  Character( <tbl>, <values> )
 ##
-##  `Character' returns the character (see~"IsCharacter")
-##  of the character table <tbl> or the group <G>, respectively,
-##  with values given by the list <values>.
+##  <#GAPDoc Label="Character">
+##  <ManSection>
+##  <Oper Name="Character" Arg='tbl, values'
+##   Label="for a character table and a list"/>
+##  <Oper Name="Character" Arg='G, values'
+##   Label="for a group and a list"/>
 ##
-##  It is *not* checked whether the given values really describe a character.
+##  <Description>
+##  <Ref Oper="Character" Label="for a character table and a list"/>
+##  returns the character (see&nbsp;<Ref Func="IsCharacter"/>)
+##  of the character table <A>tbl</A> or the group <A>G</A>,
+##  respectively, with values given by the list <A>values</A>.
+##  <P/>
+##  It is <E>not</E> checked whether the given values really describe a
+##  character.
+##  <Example><![CDATA[
+##  gap> g:= DihedralGroup( 8 );  tbl:= CharacterTable( g );
+##  <pc group of size 8 with 3 generators>
+##  CharacterTable( <pc group of size 8 with 3 generators> )
+##  gap> SetName( tbl, "D8" );
+##  gap> phi:= ClassFunction( g, [ 1, -1, 0, 2, -2 ] );
+##  ClassFunction( D8, [ 1, -1, 0, 2, -2 ] )
+##  gap> psi:= ClassFunction( tbl,
+##  >              List( Irr( g ), chi -> ScalarProduct( chi, phi ) ) );
+##  ClassFunction( D8, [ -3/8, 1/8, 9/8, 5/8, -1/4 ] )
+##  gap> chi:= VirtualCharacter( g, [ 0, 0, 8, 0, 0 ] );
+##  VirtualCharacter( D8, [ 0, 0, 8, 0, 0 ] )
+##  gap> reg:= Character( tbl, [ 8, 0, 0, 0, 0 ] );
+##  Character( D8, [ 8, 0, 0, 0, 0 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "Character", [ IsNearlyCharacterTable, IsDenseList ] );
 DeclareOperation( "Character", [ IsGroup, IsDenseList ] );
@@ -663,15 +893,35 @@ DeclareOperation( "Character", [ IsGroup, IsDenseList ] );
 ##
 #F  ClassFunctionSameType( <tbl>, <chi>, <values> )
 ##
-##  Let <tbl> be a character table, <chi> a class function object
-##  (*not* necessarily a class function of <tbl>),
-##  and <values> a list of cyclotomics.
-##  `ClassFunctionSameType' returns the class function $\psi$ of <tbl> with
-##  values list <values>, constructed with `ClassFunction'
-##  (see~"ClassFunction").
+##  <#GAPDoc Label="ClassFunctionSameType">
+##  <ManSection>
+##  <Func Name="ClassFunctionSameType" Arg='tbl, chi, values'/>
 ##
-##  If <chi> is known to be a (virtual) character then $\psi$ is also known
-##  to be a (virtual) character.
+##  <Description>
+##  Let <A>tbl</A> be a character table, <A>chi</A> a class function object
+##  (<E>not</E> necessarily a class function of <A>tbl</A>),
+##  and <A>values</A> a list of cyclotomics.
+##  <Ref Func="ClassFunctionSameType"/> returns the class function
+##  <M>\psi</M> of <A>tbl</A> with values list <A>values</A>,
+##  constructed with
+##  <Ref Func="ClassFunction" Label="for a character table and a list"/>.
+##  <P/>
+##  If <A>chi</A> is known to be a (virtual) character then <M>\psi</M>
+##  is also known to be a (virtual) character.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> h:= Centre( g );;
+##  gap> centbl:= CharacterTable( h );;  SetName( centbl, "C2" );
+##  gap> ClassFunctionSameType( centbl, phi, [ 1, 1 ] );
+##  ClassFunction( C2, [ 1, 1 ] )
+##  gap> ClassFunctionSameType( centbl, chi, [ 1, 1 ] );
+##  VirtualCharacter( C2, [ 1, 1 ] )
+##  gap> ClassFunctionSameType( centbl, reg, [ 1, 1 ] );
+##  Character( C2, [ 1, 1 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ClassFunctionSameType" );
 
@@ -687,9 +937,26 @@ DeclareGlobalFunction( "ClassFunctionSameType" );
 #A  TrivialCharacter( <tbl> )
 #A  TrivialCharacter( <G> )
 ##
-##  is the *trivial character* of the group <G> or its character table <tbl>,
-##  respectively.
-##  This is the class function with value equal to $1$ for each class.
+##  <#GAPDoc Label="TrivialCharacter">
+##  <ManSection>
+##  <Heading>TrivialCharacter</Heading>
+##  <Attr Name="TrivialCharacter" Arg='tbl' Label="for a character table"/>
+##  <Attr Name="TrivialCharacter" Arg='G' Label="for a group"/>
+##
+##  <Description>
+##  is the <E>trivial character</E> of the group <A>G</A>
+##  or its character table <A>tbl</A>, respectively.
+##  This is the class function with value equal to <M>1</M> for each class.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> TrivialCharacter( CharacterTable( "A5" ) );
+##  Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] )
+##  gap> TrivialCharacter( SymmetricGroup( 3 ) );
+##  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 1, 1, 1 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "TrivialCharacter", IsNearlyCharacterTable );
 DeclareAttribute( "TrivialCharacter", IsGroup );
@@ -700,21 +967,45 @@ DeclareAttribute( "TrivialCharacter", IsGroup );
 #A  NaturalCharacter( <G> )
 #A  NaturalCharacter( <hom> )
 ##
-##  If the argument is a permutation group <G> then `NaturalCharacter'
+##  <#GAPDoc Label="NaturalCharacter">
+##  <ManSection>
+##  <Attr Name="NaturalCharacter" Arg='G' Label="for a group"/>
+##  <Attr Name="NaturalCharacter" Arg='hom' Label="for a homomorphism"/>
+##
+##  <Description>
+##  If the argument is a permutation group <A>G</A> then
+##  <Ref Attr="NaturalCharacter" Label="for a group"/>
 ##  returns the (ordinary) character of the natural permutation
-##  representation of <G> on the set of moved points (see~"MovedPoints"),
+##  representation of <A>G</A> on the set of moved points (see
+##  <Ref Func="MovedPoints" Label="for a list or collection of permutations"/>),
 ##  that is, the value on each class is the number of points among the moved
-##  points of <G> that are fixed by any permutation in that class.
-##
-##  If the argument is a matrix group <G> in characteristic zero then
-##  `NaturalCharacter' returns the (ordinary) character of the natural matrix
-##  representation of <G>, that is, the value on each class is the trace of
-##  any matrix in that class.
-##
-##  If the argument is a group homomorphism <hom> whose image is a
-##  permutation group or a matrix group then `NaturalCharacter' returns the
-##  restriction of the natural character of the image of <hom> to the
-##  preimage of <hom>.
+##  points of <A>G</A> that are fixed by any permutation in that class.
+##  <P/>
+##  If the argument is a matrix group <A>G</A> in characteristic zero then
+##  <Ref Attr="NaturalCharacter" Label="for a group"/> returns the
+##  (ordinary) character of the natural matrix representation of <A>G</A>,
+##  that is, the value on each class is the trace of any matrix in that class.
+##  <P/>
+##  If the argument is a group homomorphism <A>hom</A> whose image is a
+##  permutation group or a matrix group then
+##  <Ref Attr="NaturalCharacter" Label="for a homomorphism"/> returns the
+##  restriction of the natural character of the image of <A>hom</A> to the
+##  preimage of <A>hom</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NaturalCharacter( SymmetricGroup( 3 ) );
+##  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 3, 1, 0 ] )
+##  gap> NaturalCharacter( Group( [ [ 0, -1 ], [ 1, -1 ] ] ) );
+##  Character( CharacterTable( Group([ [ [ 0, -1 ], [ 1, -1 ] ] ]) ), 
+##  [ 2, -1, -1 ] )
+##  gap> d8:= DihedralGroup( 8 );;  hom:= IsomorphismPermGroup( d8 );;
+##  gap> NaturalCharacter( hom );
+##  Character( CharacterTable( <pc group of size 8 with 3 generators> ), 
+##  [ 8, 0, 0, 0, 0 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "NaturalCharacter", IsGroup );
 DeclareAttribute( "NaturalCharacter", IsGeneralMapping );
@@ -725,27 +1016,52 @@ DeclareAttribute( "NaturalCharacter", IsGeneralMapping );
 #O  PermutationCharacter( <G>, <D>, <opr> )
 #O  PermutationCharacter( <G>, <U> )
 ##
-##  Called with a group <G>, an action domain or proper set <D>, and an
-##  action function <opr> (see Chapter~"Group Actions"),
-##  `PermutationCharacter' returns the *permutation character* of the action
-##  of <G> on <D> via <opr>,
-##  that is, the value on each class is the number of points in <D> that are
-##  fixed by an element in this class under the action <opr>.
+##  <#GAPDoc Label="PermutationCharacter">
+##  <ManSection>
+##  <Heading>PermutationCharacter</Heading>
+##  <Oper Name="PermutationCharacter" Arg='G, D, opr'
+##   Label="for a group, an action domain, and a function"/>
+##  <Oper Name="PermutationCharacter" Arg='G, U' Label="for two groups"/>
 ##
-##  If the arguments are a group <G> and a subgroup <U> of <G> then
-##  `PermutationCharacter' returns the permutation character of the action
-##  of <G> on the right cosets of <U> via right multiplication.
-##
-##  To compute the permutation character of a *transitive permutation group*
-##  <G> on the cosets of a point stabilizer <U>,
-##  the attribute `NaturalCharacter( <G> )' can be used instead of
-##  `PermutationCharacter( <G>, <U> )'.
-##
+##  <Description>
+##  Called with a group <A>G</A>, an action domain or proper set <A>D</A>,
+##  and an action function <A>opr</A>
+##  (see Chapter&nbsp;<Ref Chap="Group Actions"/>),
+##  <Ref Oper="PermutationCharacter"
+##  Label="for a group, an action domain, and a function"/>
+##  returns the <E>permutation character</E> of the action
+##  of <A>G</A> on <A>D</A> via <A>opr</A>,
+##  that is, the value on each class is the number of points in <A>D</A>
+##  that are fixed by an element in this class under the action <A>opr</A>.
+##  <P/>
+##  If the arguments are a group <A>G</A> and a subgroup <A>U</A> of <A>G</A>
+##  then <Ref Oper="PermutationCharacter" Label="for two groups"/> returns
+##  the permutation character of the action of <A>G</A> on the right cosets
+##  of <A>U</A> via right multiplication.
+##  <P/>
+##  To compute the permutation character of a
+##  <E>transitive permutation group</E>
+##  <A>G</A> on the cosets of a point stabilizer <A>U</A>,
+##  the attribute <Ref Func="NaturalCharacter" Label="for a group"/>
+##  of <A>G</A> can be used instead of
+##  <C>PermutationCharacter( <A>G</A>, <A>U</A> )</C>.
+##  <P/>
 ##  More facilities concerning permutation characters are the transitivity
-##  test (see Section~"Operations for Class Functions") and several tools for
-##  computing possible permutation characters
-##  (see~"Possible Permutation Characters",
-##  "Computing Possible Permutation Characters").
+##  test (see Section&nbsp;<Ref Sect="Operations for Class Functions"/>)
+##  and several tools for computing possible permutation characters
+##  (see&nbsp;<Ref Sect="Possible Permutation Characters"/>,
+##  <Ref Sect="Computing Possible Permutation Characters"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PermutationCharacter( GL(2,2), AsSSortedList( GF(2)^2 ), OnRight );
+##  Character( CharacterTable( SL(2,2) ), [ 4, 2, 1 ] )
+##  gap> s3:= SymmetricGroup( 3 );;  a3:= DerivedSubgroup( s3 );;
+##  gap> PermutationCharacter( s3, a3 );
+##  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 2, 0, 2 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "PermutationCharacter",
     [ IsGroup, IsCollection, IsFunction ] );
@@ -755,12 +1071,14 @@ DeclareOperation( "PermutationCharacter", [ IsGroup, IsGroup ] );
 #############################################################################
 ##
 ##  8. Operations for Class Functions
-#6
+##
+##  <#GAPDoc Label="[6]{ctblfuns}">
 ##  In the description of the following operations,
-##  the optional first argument <tbl> is needed only if the argument <chi> is
-##  a plain list and not a class function object.
-##  In this case, <tbl> must always be the character table of which <chi>
-##  shall be regarded as a class function.
+##  the optional first argument <A>tbl</A> is needed only if the argument
+##  <A>chi</A> is a plain list and not a class function object.
+##  In this case, <A>tbl</A> must always be the character table of which
+##  <A>chi</A> shall be regarded as a class function.
+##  <#/GAPDoc>
 ##
 
 
@@ -768,14 +1086,24 @@ DeclareOperation( "PermutationCharacter", [ IsGroup, IsGroup ] );
 ##
 #P  IsCharacter( [<tbl>, ]<chi> )
 ##
-##  \index{ordinary character}
-##  An *ordinary character* of a group $G$ is a class function of $G$ whose
-##  values are the traces of a complex matrix representation of $G$.
+##  <#GAPDoc Label="IsCharacter">
+##  <ManSection>
+##  <Prop Name="IsCharacter" Arg='[tbl, ]chi'/>
 ##
-##  \atindex{Brauer character}{@Brauer character}
-##  A *Brauer character* of $G$ in characteristic $p$ is a class function of
-##  $G$ whose values are the complex lifts of a matrix representation of $G$
-##  with image a finite field of characteristic $p$.
+##  <Description>
+##  <Index>ordinary character</Index>
+##  An <E>ordinary character</E> of a group <M>G</M> is a class function of
+##  <M>G</M> whose values are the traces of a complex matrix representation
+##  of <M>G</M>.
+##  <P/>
+##  <Index>Brauer character</Index>
+##  A <E>Brauer character</E> of <M>G</M> in characteristic <M>p</M> is
+##  a class function of <M>G</M> whose values are the complex lifts of a
+##  matrix representation of <M>G</M> with image a finite field of
+##  characteristic <M>p</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsCharacter", IsClassFunction );
 DeclareOperation( "IsCharacter", [ IsCharacterTable, IsHomogeneousList ] );
@@ -785,9 +1113,17 @@ DeclareOperation( "IsCharacter", [ IsCharacterTable, IsHomogeneousList ] );
 ##
 #P  IsVirtualCharacter( [<tbl>, ]<chi> )
 ##
-##  \index{virtual character}
-##  A *virtual character* is a class function that can be written as the
-##  difference of two proper characters (see~"IsCharacter").
+##  <#GAPDoc Label="IsVirtualCharacter">
+##  <ManSection>
+##  <Prop Name="IsVirtualCharacter" Arg='[tbl, ]chi'/>
+##
+##  <Description>
+##  <Index>virtual character</Index>
+##  A <E>virtual character</E> is a class function that can be written as the
+##  difference of two proper characters (see&nbsp;<Ref Func="IsCharacter"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsVirtualCharacter", IsClassFunction );
 DeclareOperation( "IsVirtualCharacter",
@@ -807,13 +1143,40 @@ InstallTrueMethod( IsVirtualCharacter, IsCharacter and IsClassFunction );
 ##
 #P  IsIrreducibleCharacter( [<tbl>, ]<chi> )
 ##
-##  \index{irreducible character}
-##  A character is *irreducible* if it cannot be written as the sum of two
-##  characters.
+##  <#GAPDoc Label="IsIrreducibleCharacter">
+##  <ManSection>
+##  <Prop Name="IsIrreducibleCharacter" Arg='[tbl, ]chi'/>
+##
+##  <Description>
+##  <Index>irreducible character</Index>
+##  A character is <E>irreducible</E> if it cannot be written as the sum of
+##  two characters.
 ##  For ordinary characters this can be checked using the scalar product
-##  of class functions (see~"ScalarProduct!for characters").
+##  of class functions
+##  (see&nbsp;<Ref Func="ScalarProduct" Label="for characters"/>).
 ##  For Brauer characters there is no generic method for checking
 ##  irreducibility.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4" );
+##  gap> psi:= ClassFunction( S4, [ 1, 1, 1, -2, 1 ] );
+##  ClassFunction( CharacterTable( S4 ), [ 1, 1, 1, -2, 1 ] )
+##  gap> IsVirtualCharacter( psi );
+##  true
+##  gap> IsCharacter( psi );
+##  false
+##  gap> chi:= ClassFunction( S4, SizesCentralizers( CharacterTable( S4 ) ) );
+##  ClassFunction( CharacterTable( S4 ), [ 24, 4, 8, 3, 4 ] )
+##  gap> IsCharacter( chi );
+##  true
+##  gap> IsIrreducibleCharacter( chi );
+##  false
+##  gap> IsIrreducibleCharacter( TrivialCharacter( S4 ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsIrreducibleCharacter", IsClassFunction );
 DeclareOperation( "IsIrreducibleCharacter",
@@ -824,22 +1187,36 @@ DeclareOperation( "IsIrreducibleCharacter",
 ##
 #O  ScalarProduct( [<tbl>, ]<chi>, <psi> )
 ##
-##  For two class functions <chi> and <psi> which belong to the same
-##  character table <tbl>, `ScalarProduct' returns their scalar product.
+##  <#GAPDoc Label="ScalarProduct:ctblfuns">
+##  <ManSection>
+##  <Oper Name="ScalarProduct" Arg='[tbl, ]chi, psi' Label="for characters"/>
 ##
-##  If <chi> and <psi> are class function objects,
-##  the argument <tbl> is not needed,
-##  but <tbl> is necessary if at least one of <chi>, <psi>
+##  <Returns>
+##  the scalar product of the class functions <A>chi</A> and <A>psi</A>,
+##  which belong to the same character table <A>tbl</A>.
+##  </Returns>
+##  <Description>
+##  <Index Subkey="of a group character">constituent</Index>
+##  <Index Subkey="a group character">decompose</Index>
+##  <Index Subkey="of constituents of a group character">multiplicity</Index>
+##  <Index Subkey="of group characters">inner product</Index>
+##  If <A>chi</A> and <A>psi</A> are class function objects,
+##  the argument <A>tbl</A> is not needed,
+##  but <A>tbl</A> is necessary if at least one of <A>chi</A>, <A>psi</A>
 ##  is just a plain list.
-##
-##  The scalar product of two *ordinary* class functions $\chi$, 
-##  $\psi$ of a group $G$ is defined as
-##  $\frac{1}{|G|} \sum_{g \in G} \chi(g) \psi(g^{-1})$.
-##
-##  For two *$p$-modular* class functions,
+##  <P/>
+##  The scalar product of two <E>ordinary</E> class functions <M>\chi</M>,
+##  <M>\psi</M> of a group <M>G</M> is defined as
+##  <P/>
+##  <M>( \sum_{{g \in G}} \chi(g) \psi(g^{{-1}}) ) / |G|</M>.
+##  <P/>
+##  For two <E><M>p</M>-modular</E> class functions,
 ##  the scalar product is defined as
-##  $\frac{1}{|G|} \sum_{g \in S} \chi(g) \psi(g^{-1})$.
-##  where $S$ is the set of $p$-regular elements in $G$.
+##  <M>( \sum_{{g \in S}} \chi(g) \psi(g^{{-1}}) ) / |G|</M>,
+##  where <M>S</M> is the set of <M>p</M>-regular elements in <M>G</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ScalarProduct",
     [ IsCharacterTable, IsRowVector, IsRowVector ] );
@@ -847,18 +1224,29 @@ DeclareOperation( "ScalarProduct",
 
 #############################################################################
 ##
-#O  MatScalarProducts( [<tbl>, ]<list1>, <list2> )
-#O  MatScalarProducts( [<tbl>, ]<list> )
+#O  MatScalarProducts( [<tbl>, ]<list>[, <list2>] )
 ##
-##  The first form returns the matrix of scalar products (see above) of the
-##  class functions in the list <list1> with the class functions in the list
-##  <list2>.
-##  More precisely, the matrix contains in the $i$-th row the list of scalar
-##  products of $<list2>[i]$ with the entries of <list1>.
+##  <#GAPDoc Label="MatScalarProducts">
+##  <ManSection>
+##  <Oper Name="MatScalarProducts" Arg='[tbl, ]list[, list2]'/>
 ##
-##  The second form returns a lower triangular matrix of scalar products,
-##  containing for ($j \leq i$) in the $i$-th row in column $j$ the value
-##  $`ScalarProduct'( <tbl>, <list>[j], <list>[i] )$.
+##  <Description>
+##  Called with two lists <A>list</A>, <A>list2</A> of class functions of the
+##  same character table (which may be given as the argument <A>tbl</A>),
+##  <Ref Oper="MatScalarProducts"/> returns the matrix of scalar products
+##  (see <Ref Oper="ScalarProduct" Label="for characters"/>)
+##  More precisely, this matrix contains in the <M>i</M>-th row the list of
+##  scalar products of <M><A>list2</A>[i]</M>
+##  with the entries of <A>list</A>.
+##  <P/>
+##  If only one list <A>list</A> of class functions is given then
+##  a lower triangular matrix of scalar products is returned,
+##  containing (for <M>j \leq i</M>) in the <M>i</M>-th row in column
+##  <M>j</M> the value
+##  <C>ScalarProduct</C><M>( <A>tbl</A>, <A>list</A>[j], <A>list</A>[i] )</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "MatScalarProducts",
     [ IsHomogeneousList, IsHomogeneousList ] );
@@ -873,11 +1261,46 @@ DeclareOperation( "MatScalarProducts",
 ##
 #A  Norm( [<tbl>, ]<chi> )
 ##
-##  For an ordinary class function <chi> of the group $G$, say, we have
-##  $<chi> = \sum_{\chi \in Irr(G)} a_{\chi} \chi$,
-##  with complex coefficients $a_{\chi}$.
-##  The *norm* of <chi> is defined as
-##  $\sum_{\chi \in Irr(G)} a_{\chi} \overline{a_{\chi}}$.
+##  <#GAPDoc Label="Norm:ctblfuns">
+##  <ManSection>
+##  <Attr Name="Norm" Arg='[tbl, ]chi' Label="for a class function"/>
+##
+##  <Description>
+##  <Index Subkey="of character" Key="Norm"><C>Norm</C></Index>
+##  For an ordinary class function <A>chi</A> of the group <M>G</M>, say,
+##  we have <M><A>chi</A> = \sum_{{\chi \in Irr(G)}} a_{\chi} \chi</M>,
+##  with complex coefficients <M>a_{\chi}</M>.
+##  The <E>norm</E> of <A>chi</A> is defined as
+##  <M>\sum_{{\chi \in Irr(G)}} a_{\chi} \overline{{a_{\chi}}}</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tbl:= CharacterTable( "A5" );;
+##  gap> ScalarProduct( TrivialCharacter( tbl ), Sum( Irr( tbl ) ) );
+##  1
+##  gap> ScalarProduct( tbl, [ 1, 1, 1, 1, 1 ], Sum( Irr( tbl ) ) );
+##  1
+##  gap> tbl2:= tbl mod 2;  
+##  BrauerTable( "A5", 2 )
+##  gap> chi:= Irr( tbl2 )[1];
+##  Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] )
+##  gap> ScalarProduct( chi, chi );
+##  3/4
+##  gap> ScalarProduct( tbl2, [ 1, 1, 1, 1 ], [ 1, 1, 1, 1 ] );
+##  3/4
+##  gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
+##  gap> chars:= Set( Tensored( chars, chars ) );;
+##  gap> MatScalarProducts( Irr( tbl ), chars );
+##  [ [ 0, 0, 0, 1, 1 ], [ 1, 1, 0, 0, 1 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 1 ], 
+##    [ 0, 0, 1, 1, 1 ], [ 1, 1, 1, 1, 1 ] ]
+##  gap> MatScalarProducts( tbl, chars );
+##  [ [ 2 ], [ 1, 3 ], [ 1, 2, 3 ], [ 2, 2, 1, 3 ], [ 2, 1, 2, 2, 3 ], 
+##    [ 2, 3, 3, 3, 3, 5 ] ]
+##  gap> List( chars, Norm );
+##  [ 2, 3, 3, 3, 3, 5 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "Norm", IsClassFunction );
 DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
@@ -887,16 +1310,33 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##
 #A  CentreOfCharacter( [<tbl>, ]<chi> )
 ##
-##  \index{centre!of a character}
-##  For a character <chi> of the group $G$, say, `CentreOfCharacter' returns
-##  the *centre* of <chi>, that is,
-##  the normal subgroup of all those elements of $G$ for which the quotient
-##  of the value of <chi> by the degree of <chi> is a root of unity.
+##  <#GAPDoc Label="CentreOfCharacter">
+##  <ManSection>
+##  <Attr Name="CentreOfCharacter" Arg='[tbl, ]chi'/>
 ##
-##  If the underlying character table of <psi> does not store the group $G$
-##  then an error is signalled.
-##  (See~"ClassPositionsOfCentre!for characters" for a way to handle the centre
-##  implicitly, by listing the positions of conjugacy classes in the centre.)
+##  <Description>
+##  <Index Subkey="of a character">centre</Index>
+##  For a character <A>chi</A> of the group <M>G</M>, say,
+##  <Ref Func="CentreOfCharacter"/> returns the <E>centre</E> of <A>chi</A>,
+##  that is, the normal subgroup of all those elements of <M>G</M> for which
+##  the quotient of the value of <A>chi</A> by the degree of <A>chi</A> is
+##  a root of unity.
+##  <P/>
+##  If the underlying character table of <A>psi</A> does not store the group
+##  <M>G</M> then an error is signalled.
+##  (See&nbsp;<Ref Attr="ClassPositionsOfCentre" Label="for a character"/>
+##  for a way to handle the centre implicitly,
+##  by listing the positions of conjugacy classes in the centre.)
+##  <P/>
+##  <Example><![CDATA[
+##  gap> List( Irr( S4 ), CentreOfCharacter );
+##  [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()), 
+##    Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), 
+##    Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "CentreOfCharacter", IsClassFunction );
 DeclareOperation( "CentreOfCharacter",
@@ -909,8 +1349,21 @@ DeclareSynonym( "CenterOfCharacter", CentreOfCharacter );
 ##
 #A  ClassPositionsOfCentre( <chi> )
 ##
+##  <#GAPDoc Label="ClassPositionsOfCentre:ctblfuns">
+##  <ManSection>
+##  <Attr Name="ClassPositionsOfCentre" Arg='chi' Label="for a character"/>
+##
+##  <Description>
 ##  is the list of positions of classes forming the centre of the character
-##  <chi> (see~"CentreOfCharacter").
+##  <A>chi</A> (see&nbsp;<Ref Func="CentreOfCharacter"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> List( Irr( S4 ), ClassPositionsOfCentre );
+##  [ [ 1, 2, 3, 4, 5 ], [ 1 ], [ 1, 3 ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ClassPositionsOfCentre", IsHomogeneousList );
 
@@ -919,8 +1372,24 @@ DeclareAttribute( "ClassPositionsOfCentre", IsHomogeneousList );
 ##
 #A  ConstituentsOfCharacter( [<tbl>, ]<chi> )
 ##
+##  <#GAPDoc Label="ConstituentsOfCharacter">
+##  <ManSection>
+##  <Attr Name="ConstituentsOfCharacter" Arg='[tbl, ]chi'/>
+##
+##  <Description>
 ##  is the set of irreducible characters that occur in the decomposition of
-##  the (virtual) character <chi> with nonzero coefficient.
+##  the (virtual) character <A>chi</A> with nonzero coefficient.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> nat:= NaturalCharacter( S4 );
+##  Character( CharacterTable( S4 ), [ 4, 2, 0, 1, 0 ] )
+##  gap> ConstituentsOfCharacter( nat );
+##  [ Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ConstituentsOfCharacter", IsClassFunction );
 DeclareOperation( "ConstituentsOfCharacter",
@@ -931,8 +1400,25 @@ DeclareOperation( "ConstituentsOfCharacter",
 ##
 #A  DegreeOfCharacter( <chi> )
 ##
-##  is the value of the character <chi> on the identity element.
-##  This can also be obtained as `<chi>[1]'.
+##  <#GAPDoc Label="DegreeOfCharacter">
+##  <ManSection>
+##  <Attr Name="DegreeOfCharacter" Arg='chi'/>
+##
+##  <Description>
+##  is the value of the character <A>chi</A> on the identity element.
+##  This can also be obtained as <A>chi</A><C>[1]</C>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> List( Irr( S4 ), DegreeOfCharacter );
+##  [ 1, 3, 2, 3, 1 ]
+##  gap> nat:= NaturalCharacter( S4 );
+##  Character( CharacterTable( S4 ), [ 4, 2, 0, 1, 0 ] )
+##  gap> nat[1];
+##  4
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "DegreeOfCharacter", IsClassFunction );
 
@@ -941,16 +1427,35 @@ DeclareAttribute( "DegreeOfCharacter", IsClassFunction );
 ##
 #O  InertiaSubgroup( [<tbl>, ]<G>, <chi> )
 ##
-##  Let <chi> be a character of the group $H$, say,
-##  and <tbl> the character table of $H$;
-##  if the argument <tbl> is not given then the underlying character table of
-##  <chi> (see~"UnderlyingCharacterTable") is used instead.
-##  Furthermore, let <G> be a group that contains $H$ as a normal subgroup.
+##  <#GAPDoc Label="InertiaSubgroup">
+##  <ManSection>
+##  <Oper Name="InertiaSubgroup" Arg='[tbl, ]G, chi'/>
 ##
-##  `InertiaSubgroup' returns the stabilizer in <G> of <chi>,
-##  w.r.t.~the action of <G> on the classes of $H$ via conjugation.
-##  In other words, `InertiaSubgroup' returns the group of all those elements
-##  $g \in <G>$ that satisfy $<chi>^g = <chi>$.
+##  <Description>
+##  Let <A>chi</A> be a character of the group <M>H</M>, say,
+##  and <A>tbl</A> the character table of <M>H</M>;
+##  if the argument <A>tbl</A> is not given then the underlying character
+##  table of <A>chi</A> (see&nbsp;<Ref Func="UnderlyingCharacterTable"/>) is
+##  used instead.
+##  Furthermore, let <A>G</A> be a group that contains <M>H</M> as a normal
+##  subgroup.
+##  <P/>
+##  <Ref Func="InertiaSubgroup"/> returns the stabilizer in <A>G</A> of
+##  <A>chi</A>, w.r.t.&nbsp;the action of <A>G</A> on the classes of <M>H</M>
+##  via conjugation.
+##  In other words, <Ref Func="InertiaSubgroup"/> returns the group of all
+##  those elements <M>g \in <A>G</A></M> that satisfy
+##  <M><A>chi</A>^g = <A>chi</A></M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> der:= DerivedSubgroup( S4 );
+##  Group([ (1,3,2), (2,4,3) ])
+##  gap> List( Irr( der ), chi -> InertiaSubgroup( S4, chi ) );
+##  [ S4, Alt( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), S4 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "InertiaSubgroup", [ IsGroup, IsClassFunction ] );
 DeclareOperation( "InertiaSubgroup",
@@ -961,17 +1466,33 @@ DeclareOperation( "InertiaSubgroup",
 ##
 #A  KernelOfCharacter( [<tbl>, ]<chi> )
 ##
-##  For a class function <chi> of the group $G$, say,
-##  `KernelOfCharacter' returns the normal subgroup of $G$ that is formed by
-##  those conjugacy classes for which the value of <chi> equals the degree of
-##  <chi>.
-##  If the underlying character table of <chi> does not store the group $G$
-##  then an error is signalled.
-##  (See~"ClassPositionsOfKernel" for a way to handle the kernel implicitly,
-##  by listing the positions of conjugacy classes in the kernel.)
+##  <#GAPDoc Label="KernelOfCharacter">
+##  <ManSection>
+##  <Attr Name="KernelOfCharacter" Arg='[tbl, ]chi'/>
 ##
-##  The returned group is the kernel of any representation of $G$ that
-##  affords <chi>.
+##  <Description>
+##  For a class function <A>chi</A> of the group <M>G</M>, say,
+##  <Ref Func="KernelOfCharacter"/> returns the normal subgroup of <M>G</M>
+##  that is formed by those conjugacy classes for which the value of
+##  <A>chi</A> equals the degree of <A>chi</A>.
+##  If the underlying character table of <A>chi</A> does not store the group
+##  <M>G</M> then an error is signalled.
+##  (See&nbsp;<Ref Func="ClassPositionsOfKernel"/> for a way to handle the
+##  kernel implicitly,
+##  by listing the positions of conjugacy classes in the kernel.)
+##  <P/>
+##  The returned group is the kernel of any representation of <M>G</M> that
+##  affords <A>chi</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> List( Irr( S4 ), KernelOfCharacter );
+##  [ Group([ (), (1,2)(3,4), (1,2,3) ]), Group(()), 
+##    Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), 
+##    Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "KernelOfCharacter", IsClassFunction );
 DeclareOperation( "KernelOfCharacter",
@@ -982,9 +1503,22 @@ DeclareOperation( "KernelOfCharacter",
 ##
 #A  ClassPositionsOfKernel( <chi> )
 ##
+##  <#GAPDoc Label="ClassPositionsOfKernel">
+##  <ManSection>
+##  <Attr Name="ClassPositionsOfKernel" Arg='chi'/>
+##
+##  <Description>
 ##  is the list of positions of those conjugacy classes that form the kernel
-##  of the character <chi>, that is, those positions with character value
-##  equal to the character degree.
+##  of the character <A>chi</A>, that is, those positions with character
+##  value equal to the character degree.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> List( Irr( S4 ), ClassPositionsOfKernel );
+##  [ [ 1, 3, 4 ], [ 1 ], [ 1, 3 ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ClassPositionsOfKernel", IsHomogeneousList );
 
@@ -993,12 +1527,27 @@ DeclareAttribute( "ClassPositionsOfKernel", IsHomogeneousList );
 ##
 #O  CycleStructureClass( [<tbl>, ]<chi>, <class> )
 ##
-##  Let <permchar> be a permutation character, and <class> the position of a
-##  conjugacy class of the character table of <permchar>.
-##  `CycleStructureClass' returns a list describing the cycle structure of
-##  each element in class <class> in the underlying permutation
-##  representation, in the same format as the result of `CycleStructurePerm'
-##  (see~"CycleStructurePerm").
+##  <#GAPDoc Label="CycleStructureClass">
+##  <ManSection>
+##  <Oper Name="CycleStructureClass" Arg='[tbl, ]chi, class'/>
+##
+##  <Description>
+##  Let <A>permchar</A> be a permutation character, and <A>class</A> be the
+##  position of a conjugacy class of the character table of <A>permchar</A>.
+##  <Ref Oper="CycleStructureClass"/> returns a list describing
+##  the cycle structure of each element in class <A>class</A> in the
+##  underlying permutation representation, in the same format as the result
+##  of <Ref Func="CycleStructurePerm"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> nat:= NaturalCharacter( S4 );
+##  Character( CharacterTable( S4 ), [ 4, 2, 0, 1, 0 ] )
+##  gap> List( [ 1 .. 5 ], i -> CycleStructureClass( nat, i ) );
+##  [ [  ], [ 1 ], [ 2 ], [ , 1 ], [ ,, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "CycleStructureClass",
     [ IsOrdinaryTable, IsHomogeneousList, IsPosInt ] );
@@ -1009,11 +1558,21 @@ DeclareOperation( "CycleStructureClass", [ IsClassFunction, IsPosInt ] );
 ##
 #P  IsTransitive( [<tbl>, ]<chi> )
 ##
-##  \indextt{IsTransitive!for class functions}
-##  For a permutation character <chi> of the group $G$ that corresponds
-##  to an action on the $G$-set $\Omega$ (see~"PermutationCharacter"),
-##  `IsTransitive' returns `true' if the action of $G$ on $\Omega$ is
-##  transitive, and `false' otherwise.
+##  <#GAPDoc Label="IsTransitive:ctblfuns">
+##  <ManSection>
+##  <Prop Name="IsTransitive" Arg='[tbl, ]chi' Label="for a character"/>
+##
+##  <Description>
+##  For a permutation character <A>chi</A> of the group <M>G</M> that
+##  corresponds to an action on the <M>G</M>-set <M>\Omega</M>
+##  (see&nbsp;<Ref Func="PermutationCharacter"
+##  Label="for a group, an action domain, and a function"/>),
+##  <Ref Prop="IsTransitive" Label="for a group, an action domain, etc."/>
+##  returns <K>true</K> if the action of <M>G</M> on <M>\Omega</M> is
+##  transitive, and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsTransitive", IsClassFunction );
 DeclareOperation( "IsTransitive", [ IsCharacterTable, IsHomogeneousList ] );
@@ -1023,11 +1582,29 @@ DeclareOperation( "IsTransitive", [ IsCharacterTable, IsHomogeneousList ] );
 ##
 #A  Transitivity( [<tbl>, ]<chi> )
 ##
-##  \indextt{Transitivity!for class functions}
-##  For a permutation character <chi> of the group $G$ that corresponds
-##  to an action on the $G$-set $\Omega$ (see~"PermutationCharacter"),
-##  `Transitivity' returns the maximal nonnegative integer $k$ such that
-##  the action of $G$ on $\Omega$ is $k$-transitive.
+##  <#GAPDoc Label="Transitivity:ctblfuns">
+##  <ManSection>
+##  <Attr Name="Transitivity" Arg='[tbl, ]chi' Label="for a character"/>
+##
+##  <Description>
+##  For a permutation character <A>chi</A> of the group <M>G</M>
+##  that corresponds to an action on the <M>G</M>-set <M>\Omega</M>
+##  (see&nbsp;<Ref Func="PermutationCharacter"
+##  Label="for a group, an action domain, and a function"/>),
+##  <Ref Attr="Transitivity" Label="for a character"/> returns the maximal
+##  nonnegative integer <M>k</M> such that the action of <M>G</M> on
+##  <M>\Omega</M> is <M>k</M>-transitive.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsTransitive( nat );  Transitivity( nat );
+##  true
+##  4
+##  gap> Transitivity( 2 * TrivialCharacter( S4 ) );
+##  0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "Transitivity", IsClassFunction );
 DeclareOperation( "Transitivity", [ IsOrdinaryTable, IsHomogeneousList ] );
@@ -1037,13 +1614,23 @@ DeclareOperation( "Transitivity", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##
 #A  CentralCharacter( [<tbl>, ]<chi> )
 ##
-##  \index{central character}
-##  For a character <chi> of the group $G$, say, `CentralCharacter' returns
-##  the *central character* of <chi>.
+##  <#GAPDoc Label="CentralCharacter">
+##  <ManSection>
+##  <Attr Name="CentralCharacter" Arg='[tbl, ]chi'/>
 ##
-##  The central character of $\chi$ is the class function $\omega_{\chi}$
-##  defined by $\omega_{\chi}(g) = |g^G| \cdot \chi(g)/\chi(1)$ for each
-##  $g \in G$.
+##  <Description>
+##  <Index>central character</Index>
+##  For a character <A>chi</A> of the group <M>G</M>, say,
+##  <Ref Func="CentralCharacter"/> returns
+##  the <E>central character</E> of <A>chi</A>.
+##  <P/>
+##  The central character of <M>\chi</M> is the class function
+##  <M>\omega_{\chi}</M> defined by
+##  <M>\omega_{\chi}(g) = |g^G| \cdot \chi(g)/\chi(1)</M> for each
+##  <M>g \in G</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "CentralCharacter", IsClassFunction );
 DeclareOperation( "CentralCharacter",
@@ -1054,19 +1641,33 @@ DeclareOperation( "CentralCharacter",
 ##
 #A  DeterminantOfCharacter( [<tbl>, ]<chi> )
 ##
-##  \index{determinant character}
-##  `DeterminantOfCharacter' returns the *determinant character* of the
-##  character <chi>.
+##  <#GAPDoc Label="DeterminantOfCharacter">
+##  <ManSection>
+##  <Attr Name="DeterminantOfCharacter" Arg='[tbl, ]chi'/>
+##
+##  <Description>
+##  <Index>determinant character</Index>
+##  <Ref Func="DeterminantOfCharacter"/> returns the
+##  <E>determinant character</E> of the character <A>chi</A>.
 ##  This is defined to be the character obtained by taking the determinant of
-##  representing matrices of any representation affording <chi>;
-##  the determinant can be computed using `EigenvaluesChar'
-##  (see~"EigenvaluesChar").
-##
-##  It is also possible to call `Determinant' instead of
-##  `DeterminantOfCharacter'.
-##
+##  representing matrices of any representation affording <A>chi</A>;
+##  the determinant can be computed using <Ref Func="EigenvaluesChar"/>.
+##  <P/>
+##  It is also possible to call <Ref Func="Determinant"/> instead of
+##  <Ref Func="DeterminantOfCharacter"/>.
+##  <P/>
 ##  Note that the determinant character is well-defined for virtual
 ##  characters.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> CentralCharacter( TrivialCharacter( S4 ) );
+##  ClassFunction( CharacterTable( S4 ), [ 1, 6, 3, 8, 6 ] )
+##  gap> DeterminantOfCharacter( Irr( S4 )[3] );
+##  Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "DeterminantOfCharacter", IsClassFunction );
 DeclareOperation( "DeterminantOfCharacter",
@@ -1077,20 +1678,38 @@ DeclareOperation( "DeterminantOfCharacter",
 ##
 #O  EigenvaluesChar( [<tbl>, ]<chi>, <class> )
 ##
-##  Let <chi> be a character of the group $G$, say.
-##  For an element $g \in G$ in the <class>-th conjugacy class, of order $n$,
-##  let $M$ be a matrix of a representation affording <chi>.
+##  <#GAPDoc Label="EigenvaluesChar">
+##  <ManSection>
+##  <Oper Name="EigenvaluesChar" Arg='[tbl, ]chi, class'/>
 ##
-##  `EigenvaluesChar( <tbl>, <chi>, <class> )' is the list of length $n$
-##  where at position $k$ the multiplicity
-##  of $`E(<n>)^<k>' = \exp(\frac{2\pi i k}{n})$ as an eigenvalue of $M$
-##  is stored.
-##
-##  We have `<chi>[ <class> ] = List( [ 1 .. <n> ], k -> E(n)^k )
-##                               * EigenvaluesChar( <tbl>, <chi>, <class> )'.
-##
-##  It is also possible to call `Eigenvalues' instead of
-##  `EigenvaluesChar'.
+##  <Description>
+##  Let <A>chi</A> be a character of the group <M>G</M>, say.
+##  For an element <M>g \in G</M> in the <A>class</A>-th conjugacy class,
+##  of order <M>n</M>, let <M>M</M> be a matrix of a representation affording
+##  <A>chi</A>.
+##  <P/>
+##  <Ref Func="EigenvaluesChar"/> returns the list of length <M>n</M>
+##  where at position <M>k</M> the multiplicity
+##  of <C>E</C><M>(n)^k = \exp(2 \pi i k / n)</M>
+##  as an eigenvalue of <M>M</M> is stored.
+##  <P/>
+##  We have
+##  <C><A>chi</A>[ <A>class</A> ] = List( [ 1 .. n ], k -> E(n)^k )
+##           * EigenvaluesChar( <A>tbl</A>, <A>chi</A>, <A>class</A> )</C>.
+##  <P/>
+##  It is also possible to call <Ref Func="Eigenvalues"/> instead of
+##  <Ref Func="EigenvaluesChar"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> chi:= Irr( CharacterTable( "A5" ) )[2];
+##  Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 
+##   ] )
+##  gap> List( [ 1 .. 5 ], i -> Eigenvalues( chi, i ) );
+##  [ [ 3 ], [ 2, 1 ], [ 1, 1, 1 ], [ 0, 1, 1, 0, 1 ], [ 1, 0, 0, 1, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "EigenvaluesChar", [ IsClassFunction, IsPosInt ] );
 DeclareOperation( "EigenvaluesChar",
@@ -1101,10 +1720,34 @@ DeclareOperation( "EigenvaluesChar",
 ##
 #O  Tensored( <chars1>, <chars2> )
 ##
-##  Let <chars1> and <chars2> be lists of (values lists of) class functions
-##  of the same character table.
-##  `Tensored' returns the list of tensor products of all entries in <chars1>
-##  with all entries in <chars2>.
+##  <#GAPDoc Label="Tensored">
+##  <ManSection>
+##  <Oper Name="Tensored" Arg='chars1, chars2'/>
+##
+##  <Description>
+##  Let <A>chars1</A> and <A>chars2</A> be lists of (values lists of) class
+##  functions of the same character table.
+##  <Ref Func="Tensored"/> returns the list of tensor products of all entries
+##  in <A>chars1</A> with all entries in <A>chars2</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> irra5:= Irr( CharacterTable( "A5" ) );;
+##  gap> chars1:= irra5{ [ 1 .. 3 ] };;  chars2:= irra5{ [ 2, 3 ] };;
+##  gap> Tensored( chars1, chars2 );
+##  [ Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 
+##       ] ), Character( CharacterTable( "A5" ), 
+##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
+##    Character( CharacterTable( "A5" ), 
+##      [ 9, 1, 0, -2*E(5)-E(5)^2-E(5)^3-2*E(5)^4, -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4 
+##       ] ), Character( CharacterTable( "A5" ), [ 9, 1, 0, -1, -1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 9, 1, 0, -1, -1 ] ), 
+##    Character( CharacterTable( "A5" ), 
+##      [ 9, 1, 0, -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4, -2*E(5)-E(5)^2-E(5)^3-2*E(5)^4 
+##       ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "Tensored", [ IsHomogeneousList, IsHomogeneousList ] );
 
@@ -1112,31 +1755,34 @@ DeclareOperation( "Tensored", [ IsHomogeneousList, IsHomogeneousList ] );
 #############################################################################
 ##
 ##  9. Restricted and Induced Class Functions
-#7
-##  For restricting a class function of a group $G$ to a subgroup $H$
-##  and for inducing a class function of $H$ to $G$,
-##  the *class fusion* from $H$ to $G$ must be known
-##  (see~"Class Fusions between Character Tables").
 ##
-##  \index{inflated class functions}
-##  If $F$ is the factor group of $G$ by the normal subgroup $N$ then each
-##  class function of $F$ can be naturally regarded as a class function of
-##  $G$, with $N$ in its kernel.
-##  For a class function of $F$, the corresponding class function of $G$ is
-##  called the *inflated* class function.
+##  <#GAPDoc Label="[7]{ctblfuns}">
+##  For restricting a class function of a group <M>G</M> to a subgroup
+##  <M>H</M> and for inducing a class function of <M>H</M> to <M>G</M>,
+##  the <E>class fusion</E> from <M>H</M> to <M>G</M> must be known
+##  (see&nbsp;<Ref Sect="Class Fusions between Character Tables"/>).
+##  <P/>
+##  <Index>inflated class functions</Index>
+##  If <M>F</M> is the factor group of <M>G</M> by the normal subgroup
+##  <M>N</M> then each class function of <M>F</M> can be naturally regarded
+##  as a class function of <M>G</M>, with <M>N</M> in its kernel.
+##  For a class function of <M>F</M>, the corresponding class function of
+##  <M>G</M> is called the <E>inflated</E> class function.
 ##  Restriction and inflation are in principle the same,
 ##  namely indirection of a class function by the appropriate fusion map,
 ##  and thus no extra operation is needed for this process.
 ##  But note that contrary to the case of a subgroup fusion, the factor
-##  fusion can in general not be computed from the groups $G$ and $F$;
-##  either one needs the natural homomorphism or the factor fusion to the
-##  character table of $F$ must be stored on the table of $G$.
+##  fusion can in general not be computed from the groups <M>G</M> and
+##  <M>F</M>;
+##  either one needs the natural homomorphism, or the factor fusion to the
+##  character table of <M>F</M> must be stored on the table of <M>G</M>.
 ##  This explains the different syntax for computing restricted and inflated
 ##  class functions.
-##
+##  <P/>
 ##  In the following,
-##  the meaning of the optional first argument <tbl> is the same as in
-##  Section~"Operations for Class Functions".
+##  the meaning of the optional first argument <A>tbl</A> is the same as in
+##  Section&nbsp;<Ref Sect="Operations for Class Functions"/>.
+##  <#/GAPDoc>
 ##
 
 
@@ -1146,17 +1792,28 @@ DeclareOperation( "Tensored", [ IsHomogeneousList, IsHomogeneousList ] );
 #O  RestrictedClassFunction( [<tbl>, ]<chi>, <hom> )
 #O  RestrictedClassFunction( [<tbl>, ]<chi>, <subtbl> )
 ##
-##  For a class function <chi> of the group $G$, say,
-##  and either a subgroup <H> of $G$
-##  or a homomorphism from <H> to $G$
-##  or the character table <subtbl> of this subgroup,
-##  `RestrictedClassFunction' returns the class function of <H> obtained by
-##  restricting <chi> to <H>.
+##  <#GAPDoc Label="RestrictedClassFunction">
+##  <ManSection>
+##  <Oper Name="RestrictedClassFunction" Arg='[tbl, ]chi, target'/>
 ##
-##  In the situation that <chi> is a class function of a factor group $F$ of
-##  <H>, the variant where <hom> is a homomorphism can be always used,
-##  the calls with argument <H> or <subtbl> work only if the factor fusion
-##  is stored on the character table.
+##  <Description>
+##  Let <A>chi</A> be a class function of the group <M>G</M>, say,
+##  and let <A>target</A> be either a subgroup <M>H</M> of <M>G</M>
+##  or an injective homomorphism from <M>H</M> to <M>G</M>
+##  or the character table of <A>H</A>.
+##  Then <Ref Oper="RestrictedClassFunction"/> returns the class function of
+##  <M>H</M> obtained by restricting <A>chi</A> to <M>H</M>.
+##  <P/>
+##  If <A>chi</A> is a class function of a <E>factor group</E> <M>G</M>of
+##  <M>H</M>, where <A>target</A> is either the group <M>H</M>
+##  or a homomorphism from <M>H</M> to <M>G</M>
+##  or the character table of <M>H</M>
+##  then the restriction can be computed in the case of the homomorphism;
+##  in the other cases, this is possible only if the factor fusion from
+##  <M>H</M> to <M>G</M> is stored on the character table of <M>H</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "RestrictedClassFunction", [ IsClassFunction, IsGroup ] );
 DeclareOperation( "RestrictedClassFunction",
@@ -1177,11 +1834,37 @@ DeclareOperation( "RestrictedClassFunction",
 #O  RestrictedClassFunctions( [<tbl>, ]<chars>, <hom> )
 #O  RestrictedClassFunctions( [<tbl>, ]<chars>, <subtbl> )
 ##
-##  `RestrictedClassFunctions' is similar to `RestrictedClassFunction'
-##  (see~"RestrictedClassFunction"),
-##  the only difference is that it takes a list <chars> of class functions
-##  instead of one class function, and returns the list of restricted class
-##  functions.
+##  <#GAPDoc Label="RestrictedClassFunctions">
+##  <ManSection>
+##  <Oper Name="RestrictedClassFunctions" Arg='[tbl, ]chars, target'/>
+##
+##  <Description>
+##  <Ref Oper="RestrictedClassFunctions"/> is similar to
+##  <Ref Oper="RestrictedClassFunction"/>,
+##  the only difference is that it takes a list <A>chars</A> of class
+##  functions instead of one class function,
+##  and returns the list of restricted class functions.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> a5:= CharacterTable( "A5" );;  s5:= CharacterTable( "S5" );;
+##  gap> RestrictedClassFunction( Irr( s5 )[2], a5 );
+##  Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] )
+##  gap> RestrictedClassFunctions( Irr( s5 ), a5 );
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 6, -2, 0, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ]
+##  gap> hom:= NaturalHomomorphismByNormalSubgroup( S4, der );;
+##  gap> RestrictedClassFunctions( Irr( Image( hom ) ), hom );
+##  [ Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "RestrictedClassFunctions", [ IsList, IsGroup ] );
 DeclareOperation( "RestrictedClassFunctions",
@@ -1207,7 +1890,21 @@ DeclareOperation( "RestrictedClassFunctions",
 #O  Restricted( [<tbl>, ]<chars>, <hom> )
 #O  Restricted( [<tbl>, ]<chars>, <subtbl> )
 ##
-##  This is mainly for convenience and compatibility with {\GAP}~3.
+##  <ManSection>
+##  <Oper Name="Restricted" Arg='tbl, subtbl, chars'/>
+##  <Oper Name="Restricted" Arg='tbl, subtbl, chars, specification'/>
+##  <Oper Name="Restricted" Arg='chars, fusionmap'/>
+##  <Oper Name="Restricted" Arg='[tbl, ]chi, H'/>
+##  <Oper Name="Restricted" Arg='[tbl, ]chi, hom'/>
+##  <Oper Name="Restricted" Arg='[tbl, ]chi, subtbl'/>
+##  <Oper Name="Restricted" Arg='[tbl, ]chars, H'/>
+##  <Oper Name="Restricted" Arg='[tbl, ]chars, hom'/>
+##  <Oper Name="Restricted" Arg='[tbl, ]chars, subtbl'/>
+##
+##  <Description>
+##  This is mainly for convenience and compatibility with &GAP;&nbsp;3.
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "Restricted", [ IsObject, IsObject ] );
 DeclareOperation( "Restricted", [ IsObject, IsObject, IsObject ] );
@@ -1221,12 +1918,27 @@ DeclareSynonym( "Inflated", Restricted );
 #O  InducedClassFunction( [<tbl>, ]<chi>, <hom> )
 #O  InducedClassFunction( [<tbl>, ]<chi>, <suptbl> )
 ##
-##  For a class function <chi> of the group $G$, say,
-##  and either a supergroup <H> of $G$
-##  or a homomorphism from $G$ to <H>
-##  or the character table <suptbl> of this supergroup,
-##  `InducedClassFunction' returns the class function of <H> obtained by
-##  inducing <chi> to <H>.
+##  <#GAPDoc Label="InducedClassFunction">
+##  <ManSection>
+##  <Heading>InducedClassFunction</Heading>
+##  <Oper Name="InducedClassFunction" Arg='[tbl, ]chi, H'
+##   Label="for a supergroup"/>
+##  <Oper Name="InducedClassFunction" Arg='[tbl, ]chi, hom'
+##   Label="for a given monomorphism"/>
+##  <Oper Name="InducedClassFunction" Arg='[tbl, ]chi, suptbl'
+##   Label="for the character table of a supergroup"/>
+##
+##  <Description>
+##  Let <A>chi</A> be a class function of the group <M>G</M>, say,
+##  and let <A>target</A> be either a supergroup <M>H</M> of <M>G</M>
+##  or an injective homomorphism from <M>H</M> to <M>G</M>
+##  or the character table of <A>H</A>.
+##  Then <Ref Oper="InducedClassFunction" Label="for a supergroup"/>
+##  returns the class function of <M>H</M> obtained by inducing <A>chi</A>
+##  to <M>H</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "InducedClassFunction", [ IsClassFunction, IsGroup ] );
 DeclareOperation( "InducedClassFunction",
@@ -1247,11 +1959,28 @@ DeclareOperation( "InducedClassFunction",
 #O  InducedClassFunctions( [<tbl>, ]<chars>, <hom> )
 #O  InducedClassFunctions( [<tbl>, ]<chars>, <suptbl> )
 ##
-##  `InducedClassFunctions' is similar to `InducedClassFunction'
-##  (see~"InducedClassFunction"),
-##  the only difference is that it takes a list <chars> of class functions
-##  instead of one class function, and returns the list of induced class
-##  functions.
+##  <#GAPDoc Label="InducedClassFunctions">
+##  <ManSection>
+##  <Oper Name="InducedClassFunctions" Arg='[tbl, ]chars, target'/>
+##
+##  <Description>
+##  <Ref Oper="InducedClassFunctions"/> is similar to
+##  <Ref Oper="InducedClassFunction" Label="for a supergroup"/>,
+##  the only difference is that it takes a list <A>chars</A> of class
+##  functions instead of one class function,
+##  and returns the list of induced class functions.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> InducedClassFunctions( Irr( a5 ), s5 );
+##  [ Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 8, 0, 2, -2, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 10, 2, -2, 0, 0, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "InducedClassFunctions", [ IsList, IsGroup ] );
 DeclareOperation( "InducedClassFunctions",
@@ -1270,16 +1999,37 @@ DeclareOperation( "InducedClassFunctions",
 ##
 #F  InducedClassFunctionsByFusionMap( <subtbl>, <tbl>, <chars>, <fusionmap> )
 ##
-##  Let <subtbl> and <tbl> be two character tables of groups
-##  $H$ and $G$, such that $H$ is a subgroup of $G$,
-##  let <chars> be a list of class functions of <subtbl>, and
-##  let <fusionmap> be a fusion map from <subtbl> to <tbl>.
-##  The function returns the list of induced class functions of <tbl>
-##  that correspond to <chars>, w.r.t. the given fusion map.
-##  
-##  `InducedClassFunctionsByFusionMap' is the function that does
-##  the work for `InducedClassFunction' and `InducedClassFunctions',
-##  see "InducedClassFunction" and "InducedClassFunctions".
+##  <#GAPDoc Label="InducedClassFunctionsByFusionMap">
+##  <ManSection>
+##  <Func Name="InducedClassFunctionsByFusionMap"
+##   Arg='subtbl, tbl, chars, fusionmap'/>
+##
+##  <Description>
+##  Let <A>subtbl</A> and <A>tbl</A> be two character tables of groups
+##  <M>H</M> and <M>G</M>, such that <M>H</M> is a subgroup of <M>G</M>,
+##  let <A>chars</A> be a list of class functions of <A>subtbl</A>, and
+##  let <A>fusionmap</A> be a fusion map from <A>subtbl</A> to <A>tbl</A>.
+##  The function returns the list of induced class functions of <A>tbl</A>
+##  that correspond to <A>chars</A>, w.r.t. the given fusion map.
+##  <P/>
+##  <Ref Func="InducedClassFunctionsByFusionMap"/> is the function that does
+##  the work for <Ref Oper="InducedClassFunction"
+##  Label="for the character table of a supergroup"/> and
+##  <Ref Oper="InducedClassFunctions"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> fus:= PossibleClassFusions( a5, s5 );
+##  [ [ 1, 2, 3, 4, 4 ] ]
+##  gap> InducedClassFunctionsByFusionMap( a5, s5, Irr( a5 ), fus[1] );
+##  [ Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 8, 0, 2, -2, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5.2" ), [ 10, 2, -2, 0, 0, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "InducedClassFunctionsByFusionMap" );
 
@@ -1296,7 +2046,21 @@ DeclareGlobalFunction( "InducedClassFunctionsByFusionMap" );
 #O  Induced( [<tbl>, ]<chars>, <hom> )
 #O  Induced( [<tbl>, ]<chars>, <suptbl> )
 ##
-##  This is mainly for convenience and compatibility with {\GAP}~3.
+##  <ManSection>
+##  <Oper Name="Induced" Arg='subtbl, tbl, chars'/>
+##  <Oper Name="Induced" Arg='subtbl, tbl, chars, specification'/>
+##  <Oper Name="Induced" Arg='subtbl, tbl, chars, fusionmap'/>
+##  <Oper Name="Induced" Arg='[tbl, ]chi, H'/>
+##  <Oper Name="Induced" Arg='[tbl, ]chi, hom'/>
+##  <Oper Name="Induced" Arg='[tbl, ]chi, suptbl'/>
+##  <Oper Name="Induced" Arg='[tbl, ]chars, H'/>
+##  <Oper Name="Induced" Arg='[tbl, ]chars, hom'/>
+##  <Oper Name="Induced" Arg='[tbl, ]chars, suptbl'/>
+##
+##  <Description>
+##  This is mainly for convenience and compatibility with &GAP;&nbsp;3.
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "Induced", [ IsObject, IsObject ] );
 DeclareOperation( "Induced", [ IsObject, IsObject, IsObject ] );
@@ -1305,22 +2069,41 @@ DeclareOperation( "Induced", [ IsObject, IsObject, IsObject, IsObject ] );
 
 #############################################################################
 ##
-#O  InducedCyclic( <tbl> )
-#O  InducedCyclic( <tbl>, \"all\" )
-#O  InducedCyclic( <tbl>, <classes> )
-#O  InducedCyclic( <tbl>, <classes>, \"all\" )
+#O  InducedCyclic( <tbl>[, <classes>][, "all"] )
 ##
-##  `InducedCyclic' calculates characters induced up from cyclic subgroups
-##  of the ordinary character table <tbl> to <tbl>,
-##  and returns the strictly sorted list of the induced characters.
+##  <#GAPDoc Label="InducedCyclic">
+##  <ManSection>
+##  <Oper Name="InducedCyclic" Arg='tbl[, classes][, "all"]'/>
 ##
-##  If `\"all\"' is specified then all irreducible characters of these
-##  subgroups are induced,
+##  <Description>
+##  <Ref Oper="InducedCyclic"/> calculates characters induced up from
+##  cyclic subgroups of the ordinary character table <A>tbl</A>
+##  to <A>tbl</A>, and returns the strictly sorted list of the induced
+##  characters.
+##  <P/>
+##  If the string <C>"all"</C> is specified then all irreducible characters
+##  of these subgroups are induced,
 ##  otherwise only the permutation characters are calculated.
-##
-##  If a list <classes> is specified then only those cyclic subgroups
+##  <P/>
+##  If a list <A>classes</A> is specified then only those cyclic subgroups
 ##  generated by these classes are considered,
-##  otherwise all classes of <tbl> are considered.
+##  otherwise all classes of <A>tbl</A> are considered.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> InducedCyclic( a5, "all" );
+##  [ Character( CharacterTable( "A5" ), [ 12, 0, 0, 2, 2 ] ), 
+##    Character( CharacterTable( "A5" ), [ 12, 0, 0, E(5)^2+E(5)^3, E(5)+E(5)^4 
+##       ] ), Character( CharacterTable( "A5" ), 
+##      [ 12, 0, 0, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ), 
+##    Character( CharacterTable( "A5" ), [ 20, 0, -1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 30, -2, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 30, 2, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 60, 0, 0, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "InducedCyclic", [ IsOrdinaryTable ] );
 DeclareOperation( "InducedCyclic", [ IsOrdinaryTable, IsList ] );
@@ -1330,45 +2113,58 @@ DeclareOperation( "InducedCyclic", [ IsOrdinaryTable, IsList, IsString ] );
 #############################################################################
 ##
 ##  10. Reducing Virtual Characters
-#8
+##
+##  <#GAPDoc Label="[8]{ctblfuns}">
 ##  The following operations are intended for the situation that one is
 ##  given a list of virtual characters of a character table and is interested
 ##  in the irreducible characters of this table.
 ##  The idea is to compute virtual characters of small norm from the given
-##  ones, hoping to get eventually virtual characters of norm $1$.
+##  ones, hoping to get eventually virtual characters of norm <M>1</M>.
+##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
-#O  ReducedClassFunctions( [<tbl>, ]<constituents>, <reducibles> )
-#O  ReducedClassFunctions( [<tbl>, ]<reducibles> )
+#O  ReducedClassFunctions( [<tbl>, ][<constituents>, ]<reducibles> )
 ##
-##  Let <reducibles> be a list of ordinary virtual characters of the group
-##  $G$, say.
-##  If <constituents> is given then it must also be a list of ordinary
-##  virtual characters of $G$,
-##  otherwise we have <constituents> equal to <reducibles> in the following.
+##  <#GAPDoc Label="ReducedClassFunctions">
+##  <ManSection>
+##  <Oper Name="ReducedClassFunctions"
+##   Arg='[tbl, ][constituents, ]reducibles'/>
 ##
-##  `ReducedClassFunctions' returns a record with components `remainders' and
-##  `irreducibles', both lists of virtual characters of $G$.
+##  <Description>
+##  Let <A>reducibles</A> be a list of ordinary virtual characters
+##  of the group <M>G</M>, say.
+##  If <A>constituents</A> is given then it must also be a list of ordinary
+##  virtual characters of <M>G</M>,
+##  otherwise we have <A>constituents</A> equal to <A>reducibles</A>
+##  in the following.
+##  <P/>
+##  <Ref Oper="ReducedClassFunctions"/> returns a record with the components
+##  <C>remainders</C> and <C>irreducibles</C>,
+##  both lists of virtual characters of <M>G</M>.
 ##  These virtual characters are computed as follows.
-##
-##  Let `rems' be the set of nonzero class functions obtained by subtraction
-##  of
-##  $$
-##  \sum_{\chi} \frac{[<reducibles>[i], \chi]}{[\chi,\chi]} . \chi
-##  $$
-##  from $<reducibles>[i]$,
-##  where the summation runs over <constituents> and $[\chi,\psi]$ denotes
-##  the scalar product of $G$-class functions.
-##  Let `irrs' be the list of irreducible characters in `rems'.
-##
-##  We project `rems' into the orthogonal space of `irrs' and all those
-##  irreducibles found this way until no new irreducibles arise.
-##  Then the `irreducibles' list is the set of all found irreducible
-##  characters, and the `remainders' list is the set of all nonzero
+##  <P/>
+##  Let <C>rems</C> be the set of nonzero class functions obtained by
+##  subtraction of
+##  <Display Mode="M">
+##  \sum_{\chi} ( [<A>reducibles</A>[i], \chi] / [\chi, \chi] ) \cdot \chi
+##  </Display>
+##  from <M><A>reducibles</A>[i]</M>,
+##  where the summation runs over <A>constituents</A>
+##  and <M>[\chi, \psi]</M> denotes the scalar product of <M>G</M>-class
+##  functions.
+##  Let <C>irrs</C> be the list of irreducible characters in <C>rems</C>.
+##  <P/>
+##  We project <C>rems</C> into the orthogonal space of <C>irrs</C> and
+##  all those irreducibles found this way until no new irreducibles arise.
+##  Then the <C>irreducibles</C> list is the set of all found irreducible
+##  characters, and the <C>remainders</C> list is the set of all nonzero
 ##  remainders.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ReducedClassFunctions",
     [ IsHomogeneousList, IsHomogeneousList ] );
@@ -1386,12 +2182,36 @@ DeclareSynonym( "Reduced", ReducedClassFunctions );
 ##
 #O  ReducedCharacters( [<tbl>, ]<constituents>, <reducibles> )
 ##
-##  `ReducedCharacters' is similar to `ReducedClassFunctions',
-##  the only difference is that <constituents> and <reducibles> are assumed
-##  to be lists of characters.
+##  <#GAPDoc Label="ReducedCharacters">
+##  <ManSection>
+##  <Oper Name="ReducedCharacters" Arg='[tbl, ]constituents, reducibles'/>
+##
+##  <Description>
+##  <Ref Oper="ReducedCharacters"/> is similar to
+##  <Ref Oper="ReducedClassFunctions"/>,
+##  the only difference is that <A>constituents</A> and <A>reducibles</A>
+##  are assumed to be lists of characters.
 ##  This means that only those scalar products must be formed where the
-##  degree of the character in <constituents> does not exceed the degree of
-##  the character in <reducibles>.
+##  degree of the character in <A>constituents</A> does not exceed the degree
+##  of the character in <A>reducibles</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tbl:= CharacterTable( "A5" );;
+##  gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
+##  gap> chars:= Set( Tensored( chars, chars ) );;
+##  gap> red:= ReducedClassFunctions( chars );
+##  rec( remainders := [  ], 
+##    irreducibles := [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##        Character( CharacterTable( "A5" ), 
+##          [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
+##        Character( CharacterTable( "A5" ), 
+##          [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
+##        Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##        Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ReducedCharacters",
     [ IsHomogeneousList, IsHomogeneousList ] );
@@ -1403,21 +2223,41 @@ DeclareSynonym( "ReducedOrdinary", ReducedCharacters );
 
 #############################################################################
 ##
-#F  IrreducibleDifferences( <tbl>, <reducibles>, <reducibles2> )
-#F  IrreducibleDifferences( <tbl>, <reducibles>, <reducibles2>, <scprmat> )
-#F  IrreducibleDifferences( <tbl>, <reducibles>, \"triangle\" )
-#F  IrreducibleDifferences( <tbl>, <reducibles>, \"triangle\", <scprmat> )
+#F  IrreducibleDifferences( <tbl>, <reducibles>, <reducibles2>[, <scprmat>] )
+#F  IrreducibleDifferences( <tbl>, <reducibles>, "triangle"[, <scprmat>] )
 ##
-##  `IrreducibleDifferences' returns the list of irreducible characters which
-##  occur as difference of two elements of <reducibles>
-##  (if `\"triangle\"' is specified)
-##  or of an element of <reducibles> and an element of <reducibles2>.
+##  <#GAPDoc Label="IrreducibleDifferences">
+##  <ManSection>
+##  <Func Name="IrreducibleDifferences"
+##   Arg='tbl, reducibles, reducibles2[, scprmat]'/>
 ##
-##  If <scprmat> is not specified then it will be calculated,
+##  <Description>
+##  <Ref Func="IrreducibleDifferences"/> returns the list of irreducible
+##  characters which occur as difference of an element of <A>reducibles</A>
+##  and an element of <A>reducibles2</A>,
+##  where these two arguments are lists of class functions of the character
+##  table <A>tbl</A>.
+##  <P/>
+##  If <A>reducibles2</A> is the string <C>"triangle"</C> then the
+##  differences of elements in <A>reducibles</A> are considered.
+##  <P/>
+##  If <A>scprmat</A> is not specified then it will be calculated,
 ##  otherwise we must have
-##  `<scprmat> = MatScalarProducts( <tbl>, <reducibles> )' or
-##  `<scprmat> = MatScalarProducts( <tbl>, <reducibles>, <reducibles2> )',
+##  <C><A>scprmat</A> =
+##  MatScalarProducts( <A>tbl</A>, <A>reducibles</A>, <A>reducibles2</A> )</C>
+##  or <C><A>scprmat</A> =
+##  MatScalarProducts( <A>tbl</A>, <A>reducibles</A> )</C>,
 ##  respectively.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IrreducibleDifferences( a5, chars, "triangle" );
+##  [ Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 
+##       ] ), Character( CharacterTable( "A5" ), 
+##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IrreducibleDifferences" );
 
@@ -1431,30 +2271,55 @@ DeclareGlobalFunction( "IrreducibleDifferences" );
 #############################################################################
 ##
 #O  Symmetrizations( [<tbl>, ]<characters>, <n> )
-#O  Symmetrizations( [<tbl>, ]<characters>, <Sn> )
 ##
-##  `Symmetrizations' returns the list of symmetrizations of the characters
-##  <characters> of the ordinary character table <tbl> with the ordinary
-##  irreducible characters of the symmetric group of degree <n>;
-##  instead of the integer <n>, the table of the symmetric group can be
-##  entered as <Sn>.
+##  <#GAPDoc Label="Symmetrizations">
+##  <ManSection>
+##  <Oper Name="Symmetrizations" Arg='[tbl, ]characters, n'/>
 ##
-##  The symmetrization $\chi^{[\lambda]}$ of the character $\chi$ of <tbl>
-##  with the character $\lambda$ of the symmetric group $S_n$ of degree $n$
-##  is defined by
-##  $$
-##  \chi^{[\lambda]}(g) = \frac{1}{n!} \sum_{\rho \in S_n}
-##                        \lambda(\rho) \prod_{k=1}^{n} \chi(g^k)^{a_k(\rho)},
-##  $$
-##  where $a_k(\rho)$ is the number of cycles of length $k$ in $\rho$.
-##
-##  For special kinds of symmetrizations, see~"SymmetricParts",
-##  "AntiSymmetricParts", "MinusCharacter" and "OrthogonalComponents",
-##  "SymplecticComponents".
-##
-##  *Note* that the returned list may contain zero class functions,
+##  <Description>
+##  <Index Subkey="symmetrizations of">characters</Index>
+##  <Ref Oper="Symmetrizations"/> returns the list of symmetrizations
+##  of the characters <A>characters</A> of the ordinary character table
+##  <A>tbl</A> with the ordinary irreducible characters of the symmetric
+##  group of degree <A>n</A>;
+##  instead of the integer <A>n</A>,
+##  the character table of the symmetric group can be entered.
+##  <P/>
+##  The symmetrization <M>\chi^{[\lambda]}</M> of the character <M>\chi</M>
+##  of <A>tbl</A> with the character <M>\lambda</M> of the symmetric group
+##  <M>S_n</M> of degree <M>n</M> is defined by
+##  <Display Mode="M">
+##  \chi^{[\lambda]}(g) = \left( \sum_{{\rho \in S_n}}
+##      \lambda(\rho) \prod_{{k=1}}^n \chi(g^k)^{{a_k(\rho)}} \right) / n! ,
+##  </Display>
+##  where <M>a_k(\rho)</M> is the number of cycles of length <M>k</M>
+##  in <M>\rho</M>.
+##  <P/>
+##  For special kinds of symmetrizations,
+##  see&nbsp;<Ref Func="SymmetricParts"/>, <Ref Func="AntiSymmetricParts"/>,
+##  <Ref Func="MinusCharacter"/> and <Ref Func="OrthogonalComponents"/>,
+##  <Ref Func="SymplecticComponents"/>.
+##  <P/>
+##  <E>Note</E> that the returned list may contain zero class functions,
 ##  and duplicates are not deleted.
-#T describe the succession!!
+##  <!-- describe the succession!!-->
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tbl:= CharacterTable( "A5" );;
+##  gap> Symmetrizations( Irr( tbl ){ [ 1 .. 3 ] }, 3 );
+##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
+##    VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 8, 0, -1, -E(5)-E(5)^4, -E(5)^2-E(5)^3 
+##       ] ), Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 8, 0, -1, -E(5)^2-E(5)^3, -E(5)-E(5)^4 
+##       ] ), Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "Symmetrizations",
     [ IsNearlyCharacterTable, IsHomogeneousList, IsInt ] );
@@ -1471,9 +2336,27 @@ DeclareSynonym( "Symmetrisations", Symmetrizations );
 ##
 #F  SymmetricParts( <tbl>, <characters>, <n> )
 ##
-##  is the list of symmetrizations of the characters <characters>
-##  of the character table <tbl> with the trivial character of
-##  the symmetric group of degree <n> (see~"Symmetrizations").
+##  <#GAPDoc Label="SymmetricParts">
+##  <ManSection>
+##  <Func Name="SymmetricParts" Arg='tbl, characters, n'/>
+##
+##  <Description>
+##  is the list of symmetrizations of the characters <A>characters</A>
+##  of the character table <A>tbl</A> with the trivial character of
+##  the symmetric group of degree <A>n</A>
+##  (see&nbsp;<Ref Oper="Symmetrizations"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SymmetricParts( tbl, Irr( tbl ), 3 );
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 35, 3, 2, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SymmetricParts" );
 
@@ -1482,9 +2365,27 @@ DeclareGlobalFunction( "SymmetricParts" );
 ##
 #F  AntiSymmetricParts( <tbl>, <characters>, <n> )
 ##
-##  is the list of symmetrizations of the characters <characters>
-##  of the character table <tbl> with the alternating character of
-##  the symmetric group of degree <n> (see~"Symmetrizations").
+##  <#GAPDoc Label="AntiSymmetricParts">
+##  <ManSection>
+##  <Func Name="AntiSymmetricParts" Arg='tbl, characters, n'/>
+##
+##  <Description>
+##  is the list of symmetrizations of the characters <A>characters</A>
+##  of the character table <A>tbl</A> with the alternating character of
+##  the symmetric group of degree <A>n</A>
+##  (see&nbsp;<Ref Oper="Symmetrizations"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> AntiSymmetricParts( tbl, Irr( tbl ), 3 );
+##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "AntiSymmetricParts" );
 
@@ -1493,10 +2394,17 @@ DeclareGlobalFunction( "AntiSymmetricParts" );
 ##
 #F  RefinedSymmetrizations( <tbl>, <chars>, <m>, <func> )
 ##
+##  <ManSection>
+##  <Func Name="RefinedSymmetrizations" Arg='tbl, chars, m, func'/>
+##
+##  <Description>
 ##  is the list of Murnaghan components for orthogonal
-##  ('<func>(x,y)=x', see~"OrthogonalComponents")
-##  or symplectic ('<func>(x,y)=x-y', see~"SymplecticComponents")
+##  ('<A>func</A>(x,y)=x', see&nbsp;<Ref Func="OrthogonalComponents"/>)
+##  or symplectic
+##  ('<A>func</A>(x,y)=x-y', see&nbsp;<Ref Func="SymplecticComponents"/>)
 ##  symmetrizations.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "RefinedSymmetrizations" );
 DeclareSynonym( "RefinedSymmetrisations", RefinedSymmetrizations );
@@ -1506,32 +2414,57 @@ DeclareSynonym( "RefinedSymmetrisations", RefinedSymmetrizations );
 ##
 #F  OrthogonalComponents( <tbl>, <chars>, <m> )
 ##
-##  \index{symmetrizations!orthogonal}%
-##  \index{Frame}%
-##  \atindex{Murnaghan components}{@Murnaghan components}
+##  <#GAPDoc Label="OrthogonalComponents">
+##  <ManSection>
+##  <Func Name="OrthogonalComponents" Arg='tbl, chars, m'/>
 ##
-##  If $\chi$ is a nonlinear character with indicator $+1$,
-##  a splitting of the tensor power $\chi^m$ is given by the so-called
-##  Murnaghan functions (see~\cite{Mur58}).
+##  <Description>
+##  <Index Subkey="orthogonal">symmetrizations</Index>
+##  <Index>Frame</Index>
+##  <Index>Murnaghan components</Index>
+##  If <M>\chi</M> is a nonlinear character with indicator <M>+1</M>,
+##  a splitting of the tensor power <M>\chi^m</M> is given by the so-called
+##  Murnaghan functions (see&nbsp;<Cite Key="Mur58"/>).
 ##  These components in general have fewer irreducible constituents
-##  than the symmetrizations with the symmetric group of degree <m>
-##  (see~"Symmetrizations").
-##
-##  `OrthogonalComponents' returns the Murnaghan components of the
-##  nonlinear characters of the character table <tbl> in the list <chars>
-##  up to the power <m>, where <m> is an integer between 2 and 6.
-##
-##  The Murnaghan functions are implemented as in~\cite{Fra82}.
-##
-##  *Note*:
-##  If <chars> is a list of character objects (see~"IsCharacter") then also
+##  than the symmetrizations with the symmetric group of degree <A>m</A>
+##  (see&nbsp;<Ref Oper="Symmetrizations"/>).
+##  <P/>
+##  <Ref Func="OrthogonalComponents"/> returns the Murnaghan components
+##  of the nonlinear characters of the character table <A>tbl</A>
+##  in the list <A>chars</A> up to the power <A>m</A>,
+##  where <A>m</A> is an integer between 2 and 6.
+##  <P/>
+##  The Murnaghan functions are implemented as in&nbsp;<Cite Key="Fra82"/>.
+##  <P/>
+##  <E>Note</E>:
+##  If <A>chars</A> is a list of character objects
+##  (see&nbsp;<Ref Func="IsCharacter"/>) then also
 ##  the result consists of class function objects.
-##  It is not checked whether all characters in <chars> do really have
-##  indicator $+1$; if there are characters with indicator $0$ or $-1$,
+##  It is not checked whether all characters in <A>chars</A> do really have
+##  indicator <M>+1</M>;
+##  if there are characters with indicator <M>0</M> or <M>-1</M>,
 ##  the result might contain virtual characters
-##  (see also~"SymplecticComponents"),
+##  (see also&nbsp;<Ref Func="SymplecticComponents"/>),
 ##  therefore the entries of the result do in general not know that they are
 ##  characters.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tbl:= CharacterTable( "A8" );;  chi:= Irr( tbl )[2];
+##  Character( CharacterTable( "A8" ), [ 7, -1, 3, 4, 1, -1, 1, 2, 0, -1, 0, 0,
+##    -1, -1 ] )
+##  gap> OrthogonalComponents( tbl, [ chi ], 3 );
+##  [ ClassFunction( CharacterTable( "A8" ), [ 21, -3, 1, 6, 0, 1, -1, 1, -2, 0,
+##        0, 0, 1, 1 ] ), ClassFunction( CharacterTable( "A8" ),
+##      [ 27, 3, 7, 9, 0, -1, 1, 2, 1, 0, -1, -1, -1, -1 ] ),
+##    ClassFunction( CharacterTable( "A8" ), [ 105, 1, 5, 15, -3, 1, -1, 0, -1,
+##        1, 0, 0, 0, 0 ] ), ClassFunction( CharacterTable( "A8" ),
+##      [ 35, 3, -5, 5, 2, -1, -1, 0, 1, 0, 0, 0, 0, 0 ] ),
+##    ClassFunction( CharacterTable( "A8" ), [ 77, -3, 13, 17, 2, 1, 1, 2, 1, 0,
+##        0, 0, 2, 2 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "OrthogonalComponents" );
 
@@ -1540,26 +2473,54 @@ DeclareGlobalFunction( "OrthogonalComponents" );
 ##
 #F  SymplecticComponents( <tbl>, <chars>, <m> )
 ##
-##  If $\chi$ is a (nonlinear) character with indicator $-1$,
-##  a splitting of the tensor power $\chi^m$ is given in terms of the
-##  so-called Murnaghan functions (see~\cite{Mur58}).
+##  <#GAPDoc Label="SymplecticComponents">
+##  <ManSection>
+##  <Func Name="SymplecticComponents" Arg='tbl, chars, m'/>
+##
+##  <Description>
+##  <Index Subkey="symplectic">symmetrizations</Index>
+##  <Index>Murnaghan components</Index>
+##  If <M>\chi</M> is a (nonlinear) character with indicator <M>-1</M>,
+##  a splitting of the tensor power <M>\chi^m</M> is given in terms of the
+##  so-called Murnaghan functions (see&nbsp;<Cite Key="Mur58"/>).
 ##  These components in general have fewer irreducible constituents
-##  than the symmetrizations with the symmetric group of degree <m>
-##  (see~"Symmetrizations").
-##
-##  `SymplecticComponents' returns the symplectic symmetrizations of the
-##  nonlinear characters of the character table <tbl> in the list <chars>
-##  up to the power <m>, where <m> is an integer between 2 and 5.
-##
-##  *Note*:
-##  If <chars> is a list of character objects (see~"IsCharacter") then also
+##  than the symmetrizations with the symmetric group of degree <A>m</A>
+##  (see&nbsp;<Ref Oper="Symmetrizations"/>).
+##  <P/>
+##  <Ref Func="SymplecticComponents"/> returns the symplectic symmetrizations
+##  of the nonlinear characters of the character table <A>tbl</A>
+##  in the list <A>chars</A> up to the power <A>m</A>,
+##  where <A>m</A> is an integer between <M>2</M> and <M>5</M>.
+##  <P/>
+##  <E>Note</E>:
+##  If <A>chars</A> is a list of character objects
+##  (see&nbsp;<Ref Func="IsCharacter"/>) then also
 ##  the result consists of class function objects.
-##  It is not checked whether all characters in <chars> do really have
-##  indicator $-1$; if there are characters with indicator $0$ or $+1$,
+##  It is not checked whether all characters in <A>chars</A> do really have
+##  indicator <M>-1</M>;
+##  if there are characters with indicator <M>0</M> or <M>+1</M>,
 ##  the result might contain virtual characters
-##  (see also~"OrthogonalComponents"),
+##  (see also&nbsp;<Ref Func="OrthogonalComponents"/>),
 ##  therefore the entries of the result do in general not know that they are
 ##  characters.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tbl:= CharacterTable( "U3(3)" );;  chi:= Irr( tbl )[2];
+##  Character( CharacterTable( "U3(3)" ), [ 6, -2, -3, 0, -2, -2, 2, 1, -1, -1,
+##    0, 0, 1, 1 ] )
+##  gap> SymplecticComponents( tbl, [ chi ], 3 );
+##  [ ClassFunction( CharacterTable( "U3(3)" ), [ 14, -2, 5, -1, 2, 2, 2, 1, 0,
+##        0, 0, 0, -1, -1 ] ), ClassFunction( CharacterTable( "U3(3)" ),
+##      [ 21, 5, 3, 0, 1, 1, 1, -1, 0, 0, -1, -1, 1, 1 ] ),
+##    ClassFunction( CharacterTable( "U3(3)" ), [ 64, 0, -8, -2, 0, 0, 0, 0, 1,
+##        1, 0, 0, 0, 0 ] ), ClassFunction( CharacterTable( "U3(3)" ),
+##      [ 14, 6, -4, 2, -2, -2, 2, 0, 0, 0, 0, 0, -2, -2 ] ),
+##    ClassFunction( CharacterTable( "U3(3)" ), [ 56, -8, 2, 2, 0, 0, 0, -2, 0,
+##        0, 0, 0, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SymplecticComponents" );
 
@@ -1574,31 +2535,42 @@ DeclareGlobalFunction( "SymplecticComponents" );
 ##
 #F  FrobeniusCharacterValue( <value>, <p> )
 ##
-##  Let <value> be a cyclotomic whose coefficients over the rationals are
-##  in the ring $\Z_{<p>}$ of <p>-local numbers,
-##  where <p> is a prime integer.
-##  Assume that <value> lies in $\Z_{<p>}[\zeta]$ for $\zeta = `E'(<p>^n-1)$,
-##  for some positive integer $n$.
+##  <#GAPDoc Label="FrobeniusCharacterValue">
+##  <ManSection>
+##  <Func Name="FrobeniusCharacterValue" Arg='value, p'/>
 ##
-##  `FrobeniusCharacterValue' returns the image of <value> under the ring
-##  homomorphism from $\Z_{<p>}[\zeta]$ to the field with $<p>^n$ elements
+##  <Description>
+##  Let <A>value</A> be a cyclotomic whose coefficients over the rationals
+##  are in the ring <M>&ZZ;_{<A>p</A>}</M> of <A>p</A>-local numbers,
+##  where <A>p</A> is a prime integer.
+##  Assume that <A>value</A> lies in <M>&ZZ;_{<A>p</A>}[\zeta]</M>
+##  for <M>\zeta = \exp(<A>p</A>^n-1)</M>,
+##  for some positive integer <M>n</M>.
+##  <P/>
+##  <Ref Func="FrobeniusCharacterValue"/> returns the image of <A>value</A>
+##  under the ring homomorphism from <M>&ZZ;_{<A>p</A>}[\zeta]</M>
+##  to the field with <M><A>p</A>^n</M> elements
 ##  that is defined with the help of Conway polynomials
-##  (see~"ConwayPolynomial"), more information can be found in Sections~2--5
-##  of~\cite{JLPW95}.
-##
-##  If <value> is a Brauer character value in characteristic <p> then
-##  the result can be described as the corresponding value of the Frobenius
-##  character, that is, as the trace of a representing matrix with the given
-##  Brauer character value.
-##
-##  If the result of `FrobeniusCharacterValue' cannot be expressed as an
-##  element of a finite field in {\GAP} (see Chapter~"Finite Fields")
-##  then `FrobeniusCharacterValue' returns `fail'.
-##
-##  If the Conway polynomial of degree $n$ is required for the computation
-##  then it is computed only if `IsCheapConwayPolynomial' returns `true'
-##  when it is called with <p> and $n$,
-##  otherwise `fail' is returned.
+##  (see&nbsp;<Ref Func="ConwayPolynomial"/>), more information can be found
+##  in <Cite Key="JLPW95" Where="Sections 2-5"/>.
+##  <P/>
+##  If <A>value</A> is a Brauer character value in characteristic <A>p</A>
+##  then the result can be described as the corresponding value of the
+##  Frobenius character, that is, as the trace of a representing matrix
+##  with the given Brauer character value.
+##  <P/>
+##  If the result of <Ref Func="FrobeniusCharacterValue"/> cannot be
+##  expressed as an element of a finite field in &GAP;
+##  (see Chapter&nbsp;<Ref Chap="Finite Fields"/>)
+##  then <Ref Func="FrobeniusCharacterValue"/> returns <K>fail</K>.
+##  <P/>
+##  If the Conway polynomial of degree <M>n</M> is required for the
+##  computation then it is computed only if <C>IsCheapConwayPolynomial</C>
+##  returns <K>true</K> when it is called with <A>p</A> and <M>n</M>,
+##  otherwise <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "FrobeniusCharacterValue" );
 
@@ -1607,13 +2579,35 @@ DeclareGlobalFunction( "FrobeniusCharacterValue" );
 ##
 #A  BrauerCharacterValue( <mat> )
 ##
-##  For an invertible matrix <mat> over a finite field $F$,
-##  `BrauerCharacterValue' returns the Brauer character value of <mat>
-##  if the order of <mat> is coprime to the characteristic of $F$,
-##  and `fail' otherwise.
+##  <#GAPDoc Label="BrauerCharacterValue">
+##  <ManSection>
+##  <Attr Name="BrauerCharacterValue" Arg='mat'/>
 ##
-##  The *Brauer character value* of a matrix is the sum of complex lifts of
-##  its eigenvalues.
+##  <Description>
+##  For an invertible matrix <A>mat</A> over a finite field <M>F</M>,
+##  <Ref Attr="BrauerCharacterValue"/> returns the Brauer character value
+##  of <A>mat</A> if the order of <A>mat</A> is coprime to the characteristic
+##  of <M>F</M>, and <K>fail</K> otherwise.
+##  <P/>
+##  The <E>Brauer character value</E> of a matrix is the sum of complex lifts
+##  of its eigenvalues.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:= SL(2,4);;           # 2-dim. irreducible representation of A5
+##  gap> ccl:= ConjugacyClasses( g );;
+##  gap> rep:= List( ccl, Representative );;
+##  gap> List( rep, Order );
+##  [ 1, 2, 5, 5, 3 ]
+##  gap> phi:= List( rep, BrauerCharacterValue );
+##  [ 2, fail, E(5)^2+E(5)^3, E(5)+E(5)^4, -1 ]
+##  gap> List( phi{ [ 1, 3, 4, 5 ] }, x -> FrobeniusCharacterValue( x, 2 ) );
+##  [ 0*Z(2), Z(2^2), Z(2^2)^2, Z(2)^0 ]
+##  gap> List( rep{ [ 1, 3, 4, 5 ] }, TraceMat );
+##  [ 0*Z(2), Z(2^2), Z(2^2)^2, Z(2)^0 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "BrauerCharacterValue", IsMatrix );
 
@@ -1621,39 +2615,46 @@ DeclareAttribute( "BrauerCharacterValue", IsMatrix );
 #############################################################################
 ##
 #V  ZEV_DATA
-#F  ZevData( <q>, <n> )
-#F  ZevData( <q>, <n>, <listofpairs> )
+#F  ZevData( <q>, <n>[, <listofpairs>] )
 #F  ZevDataValue( <q>, <n> )
 ##
+##  <ManSection>
+##  <Var Name="ZEV_DATA"/>
+##  <Func Name="ZevData" Arg='q, n[, listofpairs]'/>
+##  <Func Name="ZevDataValue" Arg='q, n'/>
+##
+##  <Description>
 ##  These variables are used for a database that speeds up the computation of
 ##  Brauer character values.
-##
-##  `ZEV_DATA' is a list of length $2$, at position $1$ storing a list of
-##  prime powers $q$, and at position $2$ a corresponding list of lists $l$.
-##  For given $q$, the list $l$ is again a list of length $2$,
-##  at position $1$ storing a list of positive integers $n$, at position $2$
-##  a corresponding list of lists, the entry for fixed ($q$ and) $n$ being
-##  a list of pairs $[ c, y ]$ as needed by `ZevData'.
-##
-##  For a prime power <q> and a positive integer <n>, `ZevData' returns
-##  a list of pairs $[ c, y ]$ where $c$ is the coefficient list of a
-##  polynomial $f$ over the field $F$ with <q> elements,
-##  and $y$ a complex value.
-##  These pairs are used to compute Brauer character values of matrices $M$
-##  over $F$, of order <n>;
-##  a $d$-dimensional nullspace of the matrix obtained by evaluating $f$ at
-##  $M$ contributes the summand $y$ with multiplicity $d / `Degree'( f )$.
-##
-##  `ZevData' checks whether the required data are already stored in the
-##  global list `ZEV_DATA';
-##  if not then `ZevDataValue' is called, which does the real work.
-##
-##  Called with three arguments, `ZevData' *stores* the third argument in the
-##  global list `ZEV_DATA', at the position where the call with the first two
+##  <P/>
+##  <C>ZEV_DATA</C> is a list of length <M>2</M>, at position <M>1</M> storing a list of
+##  prime powers <M>q</M>, and at position <M>2</M> a corresponding list of lists <M>l</M>.
+##  For given <M>q</M>, the list <M>l</M> is again a list of length <M>2</M>,
+##  at position <M>1</M> storing a list of positive integers <M>n</M>, at position <M>2</M>
+##  a corresponding list of lists, the entry for fixed (<M>q</M> and) <M>n</M> being
+##  a list of pairs <M>[ c, y ]</M> as needed by <C>ZevData</C>.
+##  <P/>
+##  For a prime power <A>q</A> and a positive integer <A>n</A>, <C>ZevData</C> returns
+##  a list of pairs <M>[ c, y ]</M> where <M>c</M> is the coefficient list of a
+##  polynomial <M>f</M> over the field <M>F</M> with <A>q</A> elements,
+##  and <M>y</M> a complex value.
+##  These pairs are used to compute Brauer character values of matrices <M>M</M>
+##  over <M>F</M>, of order <A>n</A>;
+##  a <M>d</M>-dimensional nullspace of the matrix obtained by evaluating <M>f</M> at
+##  <M>M</M> contributes the summand <M>y</M> with multiplicity <M>d / <C>Degree</C>( f )</M>.
+##  <P/>
+##  <C>ZevData</C> checks whether the required data are already stored in the
+##  global list <C>ZEV_DATA</C>;
+##  if not then <C>ZevDataValue</C> is called, which does the real work.
+##  <P/>
+##  Called with three arguments, <C>ZevData</C> <E>stores</E> the third argument in the
+##  global list <C>ZEV_DATA</C>, at the position where the call with the first two
 ##  arguments will fetch it.
-##
+##  <P/>
 ##  (The names of these functions reflect that the corresponding command in
-##  the C-{\MeatAxe} is `zev'.)
+##  the C-&MeatAxe; is <C>zev</C>.)
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalVariable( "ZEV_DATA", "nested list of length 2" );
 DeclareGlobalFunction( "ZevData" );
@@ -1664,19 +2665,30 @@ DeclareGlobalFunction( "ZevDataValue" );
 ##
 #F  SizeOfFieldOfDefinition( <val>, <p> )
 ##
-##  For a cyclotomic or a list of cyclotomics <val>, and a prime integer <p>,
-##  `SizeOfFieldOfDefinition' returns the size of the smallest finite field
-##  in characteristic <p> that contains the <p>-modular reduction of <val>.
+##  <#GAPDoc Label="SizeOfFieldOfDefinition">
+##  <ManSection>
+##  <Func Name="SizeOfFieldOfDefinition" Arg='val, p'/>
 ##
-##  The reduction map is defined as in~\cite{JLPW95},
-##  that is, the complex $(<p>^d-1)$-th root of unity `E'$(q^d-1)$ is mapped
-##  to the residue class of the indeterminate, modulo the ideal spanned by
-##  the Conway polynomial (see~"ConwayPolynomial") of degree $d$ over the
-##  field with $p$ elements.
-##
-##  If <val> is a Brauer character then the value returned is the size of the
-##  smallest finite field in characteristic <p> over which the corresponding
-##  representation lives.
+##  <Description>
+##  For a cyclotomic or a list of cyclotomics <A>val</A>,
+##  and a prime integer <A>p</A>, <Ref Func="SizeOfFieldOfDefinition"/>
+##  returns the size of the smallest finite field
+##  in characteristic <A>p</A> that contains the <A>p</A>-modular reduction
+##  of <A>val</A>.
+##  <P/>
+##  The reduction map is defined as in&nbsp;<Cite Key="JLPW95"/>,
+##  that is, the complex <M>(<A>p</A>^d-1)</M>-th root of unity
+##  <M>\exp(<A>p</A>^d-1)</M> is mapped to the residue class of the
+##  indeterminate, modulo the ideal spanned by the Conway polynomial
+##  (see&nbsp;<Ref Func="ConwayPolynomial"/>) of degree <M>d</M> over the
+##  field with <M>p</M> elements.
+##  <P/>
+##  If <A>val</A> is a Brauer character then the value returned is the size
+##  of the smallest finite field in characteristic <A>p</A> over which the
+##  corresponding representation lives.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SizeOfFieldOfDefinition" );
 
@@ -1685,11 +2697,33 @@ DeclareGlobalFunction( "SizeOfFieldOfDefinition" );
 ##
 #F  RealizableBrauerCharacters( <matrix>, <q> )
 ##
-##  For a list <matrix> of absolutely irreducible Brauer characters
-##  in characteristic $p$, and a power <q> of $p$,
-##  `RealizableBrauerCharacters' returns a duplicate-free list of sums of
-##  Frobenius conjugates of the rows of <matrix>,
-##  each irreducible over the field with <q> elements.
+##  <#GAPDoc Label="RealizableBrauerCharacters">
+##  <ManSection>
+##  <Func Name="RealizableBrauerCharacters" Arg='matrix, q'/>
+##
+##  <Description>
+##  For a list <A>matrix</A> of absolutely irreducible Brauer characters
+##  in characteristic <M>p</M>, and a power <A>q</A> of <M>p</M>,
+##  <Ref Func="RealizableBrauerCharacters"/> returns a duplicate-free list of
+##  sums of Frobenius conjugates of the rows of <A>matrix</A>,
+##  each irreducible over the field with <A>q</A> elements.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> irr:= Irr( CharacterTable( "A5" ) mod 2 );
+##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ), 
+##    Character( BrauerTable( "A5", 2 ), [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ), 
+##    Character( BrauerTable( "A5", 2 ), [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ), 
+##    Character( BrauerTable( "A5", 2 ), [ 4, 1, -1, -1 ] ) ]
+##  gap> List( irr, phi -> SizeOfFieldOfDefinition( phi, 2 ) );
+##  [ 2, 4, 4, 2 ]
+##  gap> RealizableBrauerCharacters( irr, 2 );
+##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ), 
+##    ClassFunction( BrauerTable( "A5", 2 ), [ 4, -2, -1, -1 ] ), 
+##    Character( BrauerTable( "A5", 2 ), [ 4, 1, -1, -1 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "RealizableBrauerCharacters" );
 
@@ -1697,9 +2731,46 @@ DeclareGlobalFunction( "RealizableBrauerCharacters" );
 #############################################################################
 ##
 ##  13. Domains Generated by Class Functions
-#9
-##  {\GAP} supports groups, vector spaces, and algebras generated by class
+##
+##  <#GAPDoc Label="[9]{ctblfuns}">
+##  &GAP; supports groups, vector spaces, and algebras generated by class
 ##  functions.
+##  <!-- add examples:
+##  gap> d8:= DihedralGroup( 8 );
+##  <pc group of size 8 with 3 generators>
+##  gap> lin:= LinearCharacters( d8 );;
+##  gap> irr:= Irr( d8 );;
+##  gap> g:= Group( lin, lin[1] );
+##  <group with 4 generators>
+##  gap> Size( g );
+##  4
+##  gap> IdGroup( g );
+##  [ 4, 2 ]
+##  gap> v:= VectorSpace( Rationals, lin );;
+##  gap> w:= VectorSpace( Rationals, irr );;
+##  gap> Dimension( v );
+##  4
+##  gap> Dimension( w );
+##  5
+##  \endexample
+##  
+##  Note that for generating a group of class functions,
+##  one should use the two-argument version of
+##  <Ref Func="Group" Label="for a list of generators (and an identity element)"/>,
+##  because a call of the one-argument version will return the cyclic matrix
+##  group generated by the matrix of the intended generating class functions
+##  if this matrix is invertible.
+##  % Otherwise it seems to work, but why?
+##  
+##  \beginexample
+##  gap> g:= CyclicGroup( 4 );;
+##  gap> irr:= Irr( g );;
+##  gap> Size( Group( irr ) );
+##  infinity
+##  gap> Size( Group( irr, TrivialCharacter( g ) ) );
+##  4
+##  -->
+##  <#/GAPDoc>
 ##
 
 
@@ -1707,13 +2778,21 @@ DeclareGlobalFunction( "RealizableBrauerCharacters" );
 ##
 #F  IsClassFunctionsSpace( <V> )
 ##
-##  If an $F$-vector space <V> is in the filter `IsClassFunctionsSpace' then
-##  this expresses that <V> consists of class functions, and that <V> is
-##  handled via the mechanism of nice bases (see~"...") in the following way.
-##  Let $T$ be the underlying character table of the elements of <V>.
-##  Then the `NiceFreeLeftModuleInfo' value of <V> is $T$,
-##  and the `NiceVector' value of $v \in <V>$ is defined as
-##  $`ValueOfclassFunction'( v )$.
+##  <ManSection>
+##  <Func Name="IsClassFunctionsSpace" Arg='V'/>
+##
+##  <Description>
+##  If an <M>F</M>-vector space <A>V</A> is in the filter
+##  <Ref Func="IsClassFunctionsSpace"/> then this expresses that <A>V</A>
+##  consists of class functions, and that <A>V</A> is
+##  handled via the mechanism of nice bases (see&nbsp;<Ref ???="..."/>),
+##  in the following way.
+##  Let <M>T</M> be the underlying character table of the elements of <A>V</A>.
+##  Then the <C>NiceFreeLeftModuleInfo</C> value of <A>V</A> is <M>T</M>,
+##  and the <C>NiceVector</C> value of <M>v \in <A>V</A></M> is defined as
+##  <C>ValueOfClassFunction</C><M>( v )</M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareHandlingByNiceBasis( "IsClassFunctionsSpace",
     "for free left modules of class functions" );
@@ -1729,14 +2808,20 @@ DeclareHandlingByNiceBasis( "IsClassFunctionsSpace",
 ##
 #F  OrbitChar( <chi>, <linear> )
 ##
-##  is the orbit of the character values list <chi> under the action of
-##  Galois automorphisms and multiplication with the linear characters in
-##  the list <linear>.
+##  <ManSection>
+##  <Func Name="OrbitChar" Arg='chi, linear'/>
 ##
-##  It is assumed that <linear> is closed under Galois automorphisms and
+##  <Description>
+##  is the orbit of the character values list <A>chi</A> under the action of
+##  Galois automorphisms and multiplication with the linear characters in
+##  the list <A>linear</A>.
+##  <P/>
+##  It is assumed that <A>linear</A> is closed under Galois automorphisms and
 ##  tensoring.
 ##  (This means that we can first form the orbit under Galois action, and
 ##  then apply the linear characters to all Galois conjugates.)
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "OrbitChar" );
 
@@ -1745,12 +2830,18 @@ DeclareGlobalFunction( "OrbitChar" );
 ##
 #F  OrbitsCharacters( <chars> )
 ##
-##  is a list of orbits of the characters in the list <chars>
-##  under the action of Galois automorphisms
-##  and multiplication with the linear characters in <chars>.
+##  <ManSection>
+##  <Func Name="OrbitsCharacters" Arg='chars'/>
 ##
+##  <Description>
+##  is a list of orbits of the characters in the list <A>chars</A>
+##  under the action of Galois automorphisms
+##  and multiplication with the linear characters in <A>chars</A>.
+##  <P/>
 ##  (Note that the image of an ordinary character under a Galois automorphism
 ##  is always a character; this is in general not true for Brauer characters.)
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "OrbitsCharacters" );
 
@@ -1759,9 +2850,15 @@ DeclareGlobalFunction( "OrbitsCharacters" );
 ##
 #F  OrbitRepresentativesCharacters( <irr> )
 ##
-##  is a list of representatives of the orbits of the characters <irr>
+##  <ManSection>
+##  <Func Name="OrbitRepresentativesCharacters" Arg='irr'/>
+##
+##  <Description>
+##  is a list of representatives of the orbits of the characters <A>irr</A>
 ##  under the action of Galois automorphisms and multiplication with linear
 ##  characters.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "OrbitRepresentativesCharacters" );
 
@@ -1771,16 +2868,39 @@ DeclareGlobalFunction( "OrbitRepresentativesCharacters" );
 ##
 #F  CollapsedMat( <mat>, <maps> )
 ##
-##  is a record with components
+##  <#GAPDoc Label="CollapsedMat">
+##  <ManSection>
+##  <Func Name="CollapsedMat" Arg='mat, maps'/>
 ##
-##  \beginitems
-##  `fusion'&
-##     fusion that collapses those columns of <mat> that are equal in <mat>
-##     and also for all maps in the list <maps>,
-##
-##  `mat'&
-##     the image of <mat> under that fusion.
-##  \enditems
+##  <Description>
+##  is a record with the components
+##  <P/>
+##  <List>
+##  <Mark><C>fusion</C></Mark>
+##  <Item>
+##     fusion that collapses those columns of <A>mat</A> that are equal in
+##     <A>mat</A> and also for all maps in the list <A>maps</A>,
+##  </Item>
+##  <Mark><C>mat</C></Mark>
+##  <Item>
+##     the image of <A>mat</A> under that fusion.
+##  </Item>
+##  </List>
+##  <P/>
+##  <Example><![CDATA[
+##  gap> mat:= [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ];;
+##  gap> coll:= CollapsedMat( mat, [] );
+##  rec( mat := [ [ 1, 1, 1 ], [ 2, -1, 0 ], [ 4, 4, 1 ] ], 
+##    fusion := [ 1, 2, 3, 3 ] )
+##  gap> List( last.mat, x -> x{ last.fusion } ) = mat;
+##  true
+##  gap> coll:= CollapsedMat( mat, [ [ 1, 1, 1, 2 ] ] );
+##  rec( mat := [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ], 
+##    fusion := [ 1, 2, 3, 4 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CollapsedMat" );
 
@@ -1789,8 +2909,14 @@ DeclareGlobalFunction( "CollapsedMat" );
 ##
 #F  CharacterTableQuaternionic( <4n> )
 ##
+##  <ManSection>
+##  <Func Name="CharacterTableQuaternionic" Arg='4n'/>
+##
+##  <Description>
 ##  is the ordinary character table of the generalized quaternion group
-##  of order <4n>.
+##  of order <A>4n</A>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "CharacterTableQuaternionic" );
 

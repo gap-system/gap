@@ -2,14 +2,14 @@
 ##
 #W  semicong.tst                 GAP library                Robert F. Morse
 ##
-#H  $Id$
+#H  $Id: semicong.tst,v 1.6 2005/05/06 16:42:44 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: semicong.tst,v 1.6 2005/05/06 16:42:44 gap Exp $");
 gap> #######################################################################
 gap> ##
 gap> ##  1. Testing infinite finitely presented commutative semigroups 
@@ -109,7 +109,7 @@ gap> Size(ec);
 1
 gap> Size(ec[1]);
 9
-gap> STOP_TEST( "semicong.tst", 39500000 );
+gap> STOP_TEST( "semicong.tst", 46000000 );
 
 #############################################################################
 ##

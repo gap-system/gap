@@ -7,6 +7,8 @@ static GVar G_IS__FUNCTION;
 static Obj  GF_IS__FUNCTION;
 static GVar G_ADD__LIST;
 static Obj  GF_ADD__LIST;
+static GVar G_Error;
+static Obj  GF_Error;
 static GVar G_IS__IDENTICAL__OBJ;
 static Obj  GF_IS__IDENTICAL__OBJ;
 static GVar G_AND__FLAGS;
@@ -21,8 +23,6 @@ static GVar G_FLAGS__FILTER;
 static Obj  GF_FLAGS__FILTER;
 static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
-static GVar G_Error;
-static Obj  GF_Error;
 static GVar G_Revision;
 static Obj  GC_Revision;
 static GVar G_HIDDEN__IMPS;
@@ -73,6 +73,7 @@ static Obj  NameFunc[9];
 static Obj  NamsFunc[9];
 static Int  NargFunc[9];
 static Obj  DefaultName;
+static Obj FileName;
 
 /* handler for function 2 */
 static Obj  HdlrFunc2 (
@@ -111,7 +112,7 @@ static Obj  HdlrFunc2 (
  CHECK_BOUND( t_8, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
  t_6 = CALL_1ARGS( t_7, t_8 );
  CHECK_FUNC_RESULT( t_6 )
- C_DIFF( t_5, t_6, INTOBJ_INT(1) )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
  t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(3), t_5 );
  if ( IS_SMALL_LIST(t_4) ) {
   t_3 = (Obj)(UInt)1;
@@ -146,7 +147,7 @@ static Obj  HdlrFunc2 (
    t_7 = GF_IS__SUBSET__FLAGS;
    t_9 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
    CHECK_BOUND( t_9, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
-   C_SUM( t_10, l_i, INTOBJ_INT(1) )
+   C_SUM_FIA( t_10, l_i, INTOBJ_INT(1) )
    CHECK_INT_POS( t_10 )
    C_ELM_LIST_FPL( t_8, t_9, t_10 )
    t_6 = CALL_2ARGS( t_7, t_8, l_flags );
@@ -163,7 +164,7 @@ static Obj  HdlrFunc2 (
     /* Unbind( WITH_HIDDEN_IMPS_FLAGS_CACHE[i + 1] ); */
     t_5 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
     CHECK_BOUND( t_5, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
-    C_SUM( t_6, l_i, INTOBJ_INT(1) )
+    C_SUM_FIA( t_6, l_i, INTOBJ_INT(1) )
     CHECK_INT_POS( t_6 )
     C_UNB_LIST( t_5, t_6 );
     
@@ -220,8 +221,8 @@ static Obj  HdlrFunc3 (
  t_4 = CALL_1ARGS( t_5, a_flags );
  CHECK_FUNC_RESULT( t_4 )
  t_3 = MOD( t_4, INTOBJ_INT(1009) );
- C_PROD( t_2, INTOBJ_INT(2), t_3 )
- C_SUM( t_1, t_2, INTOBJ_INT(1) )
+ C_PROD_FIA( t_2, INTOBJ_INT(2), t_3 )
+ C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  l_hash = t_1;
  
  /* if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash]) then */
@@ -246,13 +247,13 @@ static Obj  HdlrFunc3 (
    /* WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1; */
    t_2 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT;
    CHECK_BOUND( t_2, "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT" )
-   C_SUM( t_1, t_2, INTOBJ_INT(1) )
+   C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
    AssGVar( G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT, t_1 );
    
    /* return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1]; */
    t_2 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
    CHECK_BOUND( t_2, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
-   C_SUM( t_3, l_hash, INTOBJ_INT(1) )
+   C_SUM_FIA( t_3, l_hash, INTOBJ_INT(1) )
    CHECK_INT_POS( t_3 )
    C_ELM_LIST_FPL( t_1, t_2, t_3 )
    RES_BRK_CURR_STAT();
@@ -268,7 +269,7 @@ static Obj  HdlrFunc3 (
  /* WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS + 1; */
  t_2 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS;
  CHECK_BOUND( t_2, "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS" )
- C_SUM( t_1, t_2, INTOBJ_INT(1) )
+ C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  AssGVar( G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS, t_1 );
  
  /* with := flags; */
@@ -359,7 +360,7 @@ static Obj  HdlrFunc3 (
  /* WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1] := with; */
  t_1 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
  CHECK_BOUND( t_1, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
- C_SUM( t_2, l_hash, INTOBJ_INT(1) )
+ C_SUM_FIA( t_2, l_hash, INTOBJ_INT(1) )
  CHECK_INT_POS( t_2 )
  C_ASS_LIST_FPL( t_1, t_2, l_with )
  
@@ -448,10 +449,10 @@ static Obj  HdlrFunc5 (
   
   /* hash2 := 2 * ((hash + 31 * i) mod 11001) + 1; */
   C_PROD_INTOBJS( t_6, INTOBJ_INT(31), l_i )
-  C_SUM( t_5, l_hash, t_6 )
+  C_SUM_FIA( t_5, l_hash, t_6 )
   t_4 = MOD( t_5, INTOBJ_INT(11001) );
-  C_PROD( t_3, INTOBJ_INT(2), t_4 )
-  C_SUM( t_2, t_3, INTOBJ_INT(1) )
+  C_PROD_FIA( t_3, INTOBJ_INT(2), t_4 )
+  C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
   l_hash2 = t_2;
   
   /* if IsBound( WITH_IMPS_FLAGS_CACHE[hash2]) then */
@@ -476,13 +477,13 @@ static Obj  HdlrFunc5 (
     /* WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1; */
     t_3 = GC_WITH__IMPS__FLAGS__CACHE__HIT;
     CHECK_BOUND( t_3, "WITH_IMPS_FLAGS_CACHE_HIT" )
-    C_SUM( t_2, t_3, INTOBJ_INT(1) )
+    C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
     AssGVar( G_WITH__IMPS__FLAGS__CACHE__HIT, t_2 );
     
     /* return WITH_IMPS_FLAGS_CACHE[hash2 + 1]; */
     t_3 = GC_WITH__IMPS__FLAGS__CACHE;
     CHECK_BOUND( t_3, "WITH_IMPS_FLAGS_CACHE" )
-    C_SUM( t_4, l_hash2, INTOBJ_INT(1) )
+    C_SUM_FIA( t_4, l_hash2, INTOBJ_INT(1) )
     CHECK_INT_POS( t_4 )
     C_ELM_LIST_FPL( t_2, t_3, t_4 )
     RES_BRK_CURR_STAT();
@@ -513,7 +514,7 @@ static Obj  HdlrFunc5 (
   /* WITH_IMPS_FLAGS_COUNT := (WITH_IMPS_FLAGS_COUNT + 1) mod 4; */
   t_3 = GC_WITH__IMPS__FLAGS__COUNT;
   CHECK_BOUND( t_3, "WITH_IMPS_FLAGS_COUNT" )
-  C_SUM( t_2, t_3, INTOBJ_INT(1) )
+  C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
   t_1 = MOD( t_2, INTOBJ_INT(4) );
   AssGVar( G_WITH__IMPS__FLAGS__COUNT, t_1 );
   
@@ -523,11 +524,11 @@ static Obj  HdlrFunc5 (
   l_i = t_1;
   
   /* hash2 := 2 * ((hash + 31 * i) mod 11001) + 1; */
-  C_PROD( t_5, INTOBJ_INT(31), l_i )
-  C_SUM( t_4, l_hash, t_5 )
+  C_PROD_FIA( t_5, INTOBJ_INT(31), l_i )
+  C_SUM_FIA( t_4, l_hash, t_5 )
   t_3 = MOD( t_4, INTOBJ_INT(11001) );
-  C_PROD( t_2, INTOBJ_INT(2), t_3 )
-  C_SUM( t_1, t_2, INTOBJ_INT(1) )
+  C_PROD_FIA( t_2, INTOBJ_INT(2), t_3 )
+  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
   l_hash2 = t_1;
   
  }
@@ -536,7 +537,7 @@ static Obj  HdlrFunc5 (
  /* WITH_IMPS_FLAGS_CACHE_MISS := WITH_IMPS_FLAGS_CACHE_MISS + 1; */
  t_2 = GC_WITH__IMPS__FLAGS__CACHE__MISS;
  CHECK_BOUND( t_2, "WITH_IMPS_FLAGS_CACHE_MISS" )
- C_SUM( t_1, t_2, INTOBJ_INT(1) )
+ C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  AssGVar( G_WITH__IMPS__FLAGS__CACHE__MISS, t_1 );
  
  /* with := flags; */
@@ -628,7 +629,7 @@ static Obj  HdlrFunc5 (
  /* WITH_IMPS_FLAGS_CACHE[hash2 + 1] := with; */
  t_1 = GC_WITH__IMPS__FLAGS__CACHE;
  CHECK_BOUND( t_1, "WITH_IMPS_FLAGS_CACHE" )
- C_SUM( t_2, l_hash2, INTOBJ_INT(1) )
+ C_SUM_FIA( t_2, l_hash2, INTOBJ_INT(1) )
  CHECK_INT_POS( t_2 )
  C_ASS_LIST_FPL( t_1, t_2, l_with )
  
@@ -734,7 +735,7 @@ static Obj  HdlrFunc6 (
    t_7 = GC_RANK__FILTERS;
    CHECK_BOUND( t_7, "RANK_FILTERS" )
    C_ELM_LIST_FPL( t_6, t_7, l_i )
-   C_SUM( t_5, l_rank, t_6 )
+   C_SUM_FIA( t_5, l_rank, t_6 )
    l_rank = t_5;
    
   }
@@ -743,7 +744,7 @@ static Obj  HdlrFunc6 (
   else {
    
    /* rank := rank + 1; */
-   C_SUM( t_5, l_rank, INTOBJ_INT(1) )
+   C_SUM_FIA( t_5, l_rank, INTOBJ_INT(1) )
    l_rank = t_5;
    
   }
@@ -913,7 +914,7 @@ static Obj  HdlrFunc8 (
  /* RANK_FILTER_COUNT := RANK_FILTER_COUNT + 2; */
  t_2 = GC_RANK__FILTER__COUNT;
  CHECK_BOUND( t_2, "RANK_FILTER_COUNT" )
- C_SUM( t_1, t_2, INTOBJ_INT(2) )
+ C_SUM_FIA( t_1, t_2, INTOBJ_INT(2) )
  AssGVar( G_RANK__FILTER__COUNT, t_1 );
  
  /* return RANK_FILTER_LIST[RANK_FILTER_COUNT - 1]; */
@@ -921,7 +922,7 @@ static Obj  HdlrFunc8 (
  CHECK_BOUND( t_2, "RANK_FILTER_LIST" )
  t_4 = GC_RANK__FILTER__COUNT;
  CHECK_BOUND( t_4, "RANK_FILTER_COUNT" )
- C_DIFF( t_3, t_4, INTOBJ_INT(1) )
+ C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
  CHECK_INT_POS( t_3 )
  C_ELM_LIST_FPL( t_1, t_2, t_3 )
  RES_BRK_CURR_STAT();
@@ -950,10 +951,10 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.filter1_g := "@(#)$Id$"; */
+ /* Revision.filter1_g := "@(#)$Id: c_filt1.c,v 4.25 2009/03/25 11:42:46 gap Exp $"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 54, "@(#)$Id$" )
+ C_NEW_STRING( t_2, 54, "@(#)$Id: c_filt1.c,v 4.25 2009/03/25 11:42:46 gap Exp $" )
  ASS_REC( t_1, R_filter1__g, t_2 );
  
  /* HIDDEN_IMPS := [  ]; */
@@ -995,7 +996,10 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 22, "CLEAR_HIDDEN_IMP_CACHE" )
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = CurrLVars;
- t_4 = NewBag( T_BODY, 0 );
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(32);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(41);
+ FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -1029,7 +1033,10 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 22, "WITH_HIDDEN_IMPS_FLAGS" )
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = CurrLVars;
- t_4 = NewBag( T_BODY, 0 );
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(47);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(74);
+ FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -1064,7 +1071,10 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 15, "CLEAR_IMP_CACHE" )
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = CurrLVars;
- t_4 = NewBag( T_BODY, 0 );
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(90);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(91);
+ FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -1108,7 +1118,10 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 15, "WITH_IMPS_FLAGS" )
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
  ENVI_FUNC( t_3 ) = CurrLVars;
- t_4 = NewBag( T_BODY, 0 );
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(97);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(133);
+ FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -1139,7 +1152,10 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 11, "RANK_FILTER" )
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
  ENVI_FUNC( t_3 ) = CurrLVars;
- t_4 = NewBag( T_BODY, 0 );
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(150);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(164);
+ FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -1171,7 +1187,10 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 17, "RANK_FILTER_STORE" )
  t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_3 ) = CurrLVars;
- t_4 = NewBag( T_BODY, 0 );
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(172);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(183);
+ FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -1199,7 +1218,10 @@ static Obj  HdlrFunc1 (
  C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" )
  t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
  ENVI_FUNC( t_3 ) = CurrLVars;
- t_4 = NewBag( T_BODY, 0 );
+ t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ STARTLINE_BODY(t_4) = INTOBJ_INT(189);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(201);
+ FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -1222,6 +1244,7 @@ static Int InitKernel ( StructInitInfo * module )
  /* global variables used in handlers */
  InitFopyGVar( "IS_FUNCTION", &GF_IS__FUNCTION );
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
+ InitFopyGVar( "Error", &GF_Error );
  InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
  InitFopyGVar( "AND_FLAGS", &GF_AND__FLAGS );
  InitFopyGVar( "HASH_FLAGS", &GF_HASH__FLAGS );
@@ -1229,7 +1252,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
  InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
- InitFopyGVar( "Error", &GF_Error );
  InitCopyGVar( "Revision", &GC_Revision );
  InitCopyGVar( "HIDDEN_IMPS", &GC_HIDDEN__IMPS );
  InitCopyGVar( "WITH_HIDDEN_IMPS_FLAGS_CACHE", &GC_WITH__HIDDEN__IMPS__FLAGS__CACHE );
@@ -1252,6 +1274,7 @@ static Int InitKernel ( StructInitInfo * module )
  
  /* information for the functions */
  InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(16960121)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(16960121)" );
  InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(16960121)" );
  InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](16960121)" );
  InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(16960121)" );
@@ -1286,6 +1309,7 @@ static Int InitLibrary ( StructInitInfo * module )
  /* global variables used in handlers */
  G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
+ G_Error = GVarName( "Error" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
  G_AND__FLAGS = GVarName( "AND_FLAGS" );
  G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
@@ -1293,7 +1317,6 @@ static Int InitLibrary ( StructInitInfo * module )
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
- G_Error = GVarName( "Error" );
  G_Revision = GVarName( "Revision" );
  G_HIDDEN__IMPS = GVarName( "HIDDEN_IMPS" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE" );
@@ -1322,6 +1345,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" )
+ C_NEW_STRING( FileName, 21, "GAPROOT/lib/filter1.g" )
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
@@ -1351,7 +1375,7 @@ static Int InitLibrary ( StructInitInfo * module )
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
  ENVI_FUNC( func1 ) = CurrLVars;
  CHANGED_BAG( CurrLVars );
- body1 = NewBag( T_BODY, 0);
+ body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
  BODY_FUNC( func1 ) = body1;
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
@@ -1368,6 +1392,7 @@ static Int PostRestore ( StructInitInfo * module )
  /* global variables used in handlers */
  G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
+ G_Error = GVarName( "Error" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
  G_AND__FLAGS = GVarName( "AND_FLAGS" );
  G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
@@ -1375,7 +1400,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
- G_Error = GVarName( "Error" );
  G_Revision = GVarName( "Revision" );
  G_HIDDEN__IMPS = GVarName( "HIDDEN_IMPS" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE" );

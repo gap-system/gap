@@ -1,0 +1,13 @@
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.pdf
+*.toc
+manual.idx
+manual.ilg
+manual.ind
+manual.lab
+manual.six
+

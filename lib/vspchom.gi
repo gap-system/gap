@@ -2,7 +2,7 @@
 ##
 #W  vspchom.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: vspchom.gi,v 4.42 2008/08/18 16:05:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -33,7 +33,7 @@
 ##  5. methods for full hom spaces
 ##
 Revision.vspchom_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: vspchom.gi,v 4.42 2008/08/18 16:05:46 gap Exp $";
 
 #T TODO:
 #T
@@ -246,6 +246,7 @@ InstallMethod( ImagesSource,
       return UnderlyingLeftModule( map!.basisimage );
     else
       return SubmoduleNC( Range( map ), MappingGeneratorsImages(map)[2] );
+#T is it used that the second argument may be a basis object?
     fi;
     end );
 
@@ -262,6 +263,7 @@ InstallMethod( PreImagesRange,
       return UnderlyingLeftModule( map!.basispreimage );
     else
       return SubmoduleNC( Source( map ), MappingGeneratorsImages(map)[1] );
+#T is it used that the second argument may be a basis object?
     fi;
     end );
 
@@ -304,6 +306,7 @@ BindGlobal( "MakeImagesInfoLinearGeneralMappingByImages", function( map )
                                       preimage, ech.vectors );
       map!.corelations         := Immutable( ech.relations );
       map!.imagesbasispreimage := Immutable( ech.coeffs * mapi[2] );
+#T problem if mapi[2] is a basis and if this does not store that it is a small list!
 
     else
 
@@ -356,6 +359,7 @@ BindGlobal( "MakePreImagesInfoLinearGeneralMappingByImages", function( map )
       map!.basisimage          := SemiEchelonBasisNC( image, ech.vectors );
       map!.relations           := Immutable( ech.relations );
       map!.preimagesbasisimage := Immutable( ech.coeffs * mapi[1]);
+#T problem if mapi[1] is a basis and if this does not store that it is a small list!
 
     else
 

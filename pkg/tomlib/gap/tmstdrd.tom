@@ -1,0 +1,455 @@
+#############################################################################
+##
+#W  tmstdrd.tom          GAP table of marks library           Thomas Merkwitz
+#W                                                              Thomas Breuer
+##
+#H  @(#)$Id: tmstdrd.tom,v 1.2 2001/07/30 11:09:32 gap Exp $
+##
+#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the descriptions of standard generators of tables of
+##  marks in the {\GAP} library.
+##
+##  Each entry in the list `LIBTOMKNOWN.STDGEN' is a list of length $4$.
+##  \beginlist
+##  \item{-}
+##      At the first position the *identifier* value of the table of marks in
+##      the {\GAP} library is stored.
+##  \item{-}
+##      The value at the second position is one of the strings `\"Y\"',
+##      `\"N\"', the former meaning that the standard generators coincide
+##      with those defined in Rob Wilson's {\ATLAS} of Group Representations
+##      (see~`http://www.mat.bham.ac.uk/atlas').
+##      More precisely, this was true at least in March~1998.
+##  \item{-}
+##      The value at position three is a string of names of the standard
+##      generators, for example `\"a, b\"' means that a pair of generators
+##      with names `a' and `b' is dealt with.
+##  \item{-}
+##      Finally, the value at position four is a string that describes how
+##      standard generators for the group $G$ in question are defined,
+##      in terms of their names.
+##      The following terms occur, separated by commas.
+##      $|g|=q$ means that the element $g$ has order $q$,
+##      $|C(g)|=n$ means that the centralizer of $g$ in $G$ has order $n$,
+##      $|x|=q, x^m=g$ means that the $m$-th power of of any element of order
+##      $q$ in $G$ is conjugate to $g$.
+##      Additionally, if $G$ is a cyclic downward extension of another group
+##      $H$ then the definition of standard generators of $G$ may include
+##      that they are preimages of standard generators of $H$;
+##      This is then mentioned in the string at position three.
+##  \endlist
+##
+Revision.tmstdrd_tom :=
+    "@(#)$Id: tmstdrd.tom,v 1.2 2001/07/30 11:09:32 gap Exp $";
+
+
+LIBTOMKNOWN.STDGEN := [
+
+["A5",         "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=5" ],
+["S5",         "Y", "c, d",
+                    "|z|=6, z^3=c, |d|=4, |cd|=5" ],
+["2.A5",       "Y", "e, f",
+                    "|e|=4, |f|=3, |ef|=5" ],
+["2.S5",       "N", "g, h",
+                    "|g|=2, |C(g)|=12, |h|=5, |gh|=8" ],
+["2.S5'",      "N", "i, j",
+                    "|i|=10, |j|=12, |ij|=8, |ijj|=6" ],
+
+["L2(7)",      "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=7" ],
+["L2(7).2",    "N", "c, d",
+                    "|c|=2, |C(c)|=12, |d|=3, |cd|=8, |cdcdd|=7" ],
+
+["A6",         "Y", "a, b",
+                    "|a|=2, |b|=4, |ab|=5" ],
+["S6",         "Y", "c, d",
+                    "|z|=6, z^3=c, |d|=5, |cd|=6, |cdd|=6" ],
+["A6.2_2",     "N", "e, f",
+                    "|z|=10, z^5=e, |f|=3, |ef|=10" ],
+["A6.2_3",     "N", "g, h",
+                    "|g|=3, |h|=8, |gh|=4, |ghh|=4" ],
+["A6.2^2",     "N", "i, j",
+                    "|z|=6, z^3=i, |j|=10, |ij|=4" ],
+["2.A6",       "N", "k, l",
+                    "|k|=4, |l|=8, |kl|=10" ],
+["2.S6",       "N", "preimages m, n of c, d",
+                    "|m|=2, |n|=5" ],
+
+["L2(8)",      "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=7" ],
+["L2(8).3",    "Y", "c, d",
+                    "|c|=2, |d|=3, |cd|=9, |(cd)^3(dc)^2ddcdd|=7" ],
+
+["L2(11)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=11" ],
+["L2(11).2",   "N", "c, d",
+                    "|z|=10, z^5=c, |d|=3, |cd|=10, |cdcdd|=11" ],
+
+["L2(13)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=13" ],
+["L2(13).2",   "N", "c, d",
+                    "|z|=14, z^7=c, |d|=3, |cd|=14, |cdcdd|=6" ],
+
+["L2(17)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=17" ],
+
+["A7",         "Y", "a, b",
+                    "|z|=6, z^2=a, |b|=5, |ab|=7" ],
+["S7",         "N", "c, d",
+                    "|z|=10, z^5=c, |d|=7, |cd|=6" ],
+["2.A7",       "Y", "preimages e, f of a, b",
+                    "|e|=3, |f|=5, |ef|=7" ],
+["2.S7",       "N", "preimages g, h of c, d",
+                    "|h|=7" ],
+
+["L2(19)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=19" ],
+
+["L2(16)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=15" ],
+["L2(16).2",   "N", "c, d",
+                    "|c|=3, |d|=4, |cd|=10, |cd^3|=6" ],
+["L2(16).4",   "N", "e, f",
+                    "|e|=3, |f|=8, |ef|=12, |effeefef|=2" ],
+
+["L3(3)",      "Y", "a, b",
+                    "|a|=2, |b|=3, |C(b)|=9, |ab|=13, |ababb|=4" ],
+["L3(3).2",    "Y", "c, d",
+                    "|c|=2, |C(c)|=48, |z|=12, z^3=d, |cd|=13, |(cd)^3d|=12" ],
+
+["U3(3)",      "Y", "a, b",
+                    "|a|=2, |b|=6, |ab|=7" ],
+["U3(3).2",    "Y", "c, d",
+                    "|y|=6, y^3=c, |z|=12, z^3=d, |cd|=7" ],
+
+["L2(23)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=23" ],
+
+["L2(25)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=13, |ababb|=13" ],
+["L2(25).2_2", "N", "c, d",
+                    "|c|=4, |C(c)|=8, |d|=12, |cd|=4, |cdcdd|=3,\
+ |cdc^3d^-1|=10" ],
+
+["M11",        "Y", "a, b",
+                    "|a|=2, |b|=4, |ab|=11, |(ab)^4(ba)^2bbabb|=4" ],
+
+["L2(27)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=14" ],
+
+["L2(29)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=29" ],
+
+["L2(31)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=31" ],
+
+["A8",         "Y", "a, b",
+                    "|z|=15, z^5=a, |b|=7, |ab|=6, |abb|=15" ],
+["S8",         "Y", "c, d",
+                    "|z|=10, z^5=c, |d|=7, |cd|=8" ],
+["2.A8",       "N", "e, f",
+                    "|z|=15, z^5=e, |f|=7, |ef|=6, |ef^3|=30" ],
+["2.S8",       "N", "g, h",
+                    "|g|=2, |C(g)|=96, |h|=15, |hghhgh^-1g|=20" ],
+
+["L3(4)",      "Y", "a, b",
+                    "|a|=2, |b|=4, |ab|=7, |abb|=5" ],
+["L3(4).2_1",  "Y", "c, d",
+                    "|z|=6, z^3=c, |d|=4, |C(d)|=16, |cd|=7" ],
+["L3(4).2_2",  "Y", "e, f",
+                    "|z|=14, z^7=e, |f|=5, |ef|=14, |eff|=8" ],
+["L3(4).2_3",  "N", "g, h",
+                    "|z|=8, z^4=g, |h|=10, |gh|=6, |ghh|=3" ],
+["L3(4).3",    "N", "i, j",
+                    "|i|=2, |j|=21, |ij|=21, |ij^3|=7" ],
+["L3(4).2^2",  "N", "k, l",
+                    "|z|=10, z^5=k, |l|=6, |C(l)|=36, |kl|=8, |kllklkll|=14" ],
+["L3(4).6",     "Y", "m, n",
+                    "|m|=2, |C(m)|=432, |n|=6, |C(n)|=36, |mn|=21, |mnmnn|=4" ],
+["L3(4).3.2_2", "N", "p, q",
+                    "|z|=14, z^7=p, |q|=21, |pq|=6, |pqqpqpq^3|=4" ],
+["L3(4).3.2_3", "N", "r, s",
+                    "|z|=10, z^5=r, |s|=21, |rs|=8, |rss|=8,\
+ |srssrs^-1r|=8" ],
+["L3(4).D12",       "N", "t, u",
+                    "|z|=14, z^7=t, |u|=12, |tu|=8, |tuu|=14" ],
+["3.L3(4)",         "Y", "preimages A, B of a, b",
+                    "|A|=2, |B|=4" ],
+["3.L3(4).2_3",     "N", "preimages C, D of g, h",
+                    "|C|=2" ],
+["2^2.L3(4)",       "N", "E, F",
+                    "|z|=12, z^6=E, |F|=10, |EF|=6, |EFF|=3" ],
+["2^2.L3(4).3",     "N", "G, H",
+                    "|z|=15, z^5=G, |H|=7, |GH|=15, |GGHGHH|=6" ],
+["2^2.L3(4).2_2",   "N", "I, J",
+                    "|I|=3, |J|=28, |IJ|=8, |IJJ|=6, |IJ^3|=4" ],
+["2^2.L3(4).3.2_2", "N", "K, L",
+                    "|z|=15, z^5=K, |L|=28, |KL|=8, |KL^3|=28, |KL^4|=6,\
+ |KLKKLL|=4" ],
+
+["L2(37)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=31" ],
+
+["U4(2)",      "N", "a, b",
+                    "|z|=12, z^6=a, |b|=9, |ab|=5" ],
+["U4(2).2",    "N", "c, d",
+                    "|z|=10, z^5=c, |d|=9, |cd|=10" ],
+["2.U4(2)",    "N", "preimages e, f of a, b",
+                    "|f|=18, |ef|=5" ],
+["2.U4(2).2",  "N", "preimages g, h of c, d",
+                    "|h|=9" ],
+
+["Sz(8)",      "Y", "a, b",
+                    "|a|=2, |b|=4, |abb|=7, |(ab)^2bbabb|=7" ],
+
+["L2(32)",     "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=31, |ababb|=11" ],
+
+["L2(41)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=41" ],
+
+["L2(43)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=43" ],
+
+["L2(47)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=47" ],
+
+["L2(49)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=47, |ababb|=8" ],
+
+["U3(4)",      "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=13" ],
+["U3(4).2",    "N", "c, d",
+                    "|z|=6, z^3=c, |d|=5, |C(d)|=50, |cd|=6, |cdd|=6" ],
+
+["L2(53)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=53" ],
+
+["M12",        "Y", "a, b",
+                    "|z|=4, z^2=a, |b|=3, |C(b)|=36, |ab|=11" ],
+["M12.2",      "Y", "c, d",
+                    "|c|=2, |C(c)|=240, |d|=3, |C(d)|=108, |cd|=12" ],
+
+["L2(59)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=59" ],
+
+["L2(61)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=61" ],
+
+["U3(5)",      "Y", "a, b",
+                    "|a|=3, |z|=10, z^2=b, |ab|=7" ],
+["U3(5).2",    "Y", "c, d",
+                    "|c|=2, |C(c)|=240, |z|=8, z^2=d, |cd|=10,\
+ |(cd)^2ddcdd|=2" ],
+#["U3(5).3",    "N", "e, f",
+#                    "|e|=2, |f|=6, |C(f)|=24, |C(f^2)|=480, |ef|=21,\
+# |ef^3|=3" ],
+["U3(5).S3",   "N", "g, h",
+                    "|z|=24, z^8=g, |h|=12, |C(h)|=12, |gh|=6, |ghh|=30" ],
+
+["L2(67)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=67" ],
+
+["J1",         "Y", "a, b",
+                    "|a|=2, |b|=3, |ab|=7, |ababb|=19" ],
+
+["L2(71)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=71" ],
+
+["A9",         "Y", "a, b",
+                    "|z|=15, z^5=a, |b|=7, |ab|=9" ],
+["S9",         "N", "c, d",
+                    "|z|=14, z^7=c, |d|=8, |cd|=9" ],
+
+["L2(73)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=73" ],
+
+["L2(79)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=79" ],
+
+["L2(64)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=63, |ababb|=13" ],
+
+["L2(81)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=10, |ababb|=10" ],
+
+["L2(83)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=83" ],
+
+["L2(89)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=89" ],
+
+["L3(5)",      "Y", "a, b",
+                    "|z|=10, z^2=a, |b|=3, |ab|=20" ],
+
+["M22",        "Y", "a, b",
+                    "|a|=2, |z|=8, z^2=b, |ab|=11, |ababb|=11" ],
+["M22.2",      "Y", "c, d",
+                    "|z|=14, z^7=c, |d|=4, |C(d)|=96, |cd|=11" ],
+
+["L2(97)",     "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=97" ],
+
+["L2(101)",    "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=101" ],
+
+["L2(103)",    "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=103" ],
+
+["J2",         "Y", "a, b",
+                    "|z|=10, z^5=a, |b|=3, |C(b)|=36, |ab|=7" ],
+["J2.2",       "Y", "c, d",
+                    "|y|=14, y^2=c, |z|=15, z^3=d, |cd|=14" ],
+
+["L2(107)",    "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=107" ],
+
+["L2(109)",    "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=109" ],
+
+["L2(113)",    "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=113" ],
+
+["L2(121)",    "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=61, |ababb|=12" ],
+
+["L2(125)",    "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=63, |ababb|=7" ],
+
+["S4(4)",      "Y", "a, b",
+                    "|a|=2, |C(a)|=3840, |b|=5, |C(b)|=15, |ab|=17,\
+ |ababb|=15" ],
+["S4(4).2",    "Y", "c, d",
+                    "|c|=2, |C(c)|=1440, |d|=4, |C(d)|=96, |cd|=17, |cdd|=4" ],
+
+["S6(2)",      "Y", "a, b",
+                    "|z|=10, z^5=a, |b|=7, |ab|=9" ],
+["2.S6(2)",    "Y", "preimages c, d of a, b",
+                    "|d|=7, |cd|=9" ],
+
+["A10",        "Y", "a, b",
+                    "|z|=15, z^5=a, |b|=9, |ab|=8, |abb|=12" ],
+["S10",        "Y", "c, d",
+                    "|z|=14, z^7=c, |d|=9, |cd|=10" ],
+
+["L3(7)",      "N", "a, b",
+                    "|a|=2, |b|=7, |C(b)|=49, |ab|=4, |abb|=8" ],
+
+["U4(3)",      "Y", "a, b",
+                    "|a|=2, |b|=6, |C(b)|=72, |ab|=7, |(ab)^3(ba)^2bb|=5" ],
+["U4(3).2_1",  "N", "c, d",
+                    "|z|=8, z^4=c, |d|=10, |cd|=14, |cd^3|=10, |cd^4|=7,\
+ |cddcd^3cd|=5" ],
+["U4(3).2_3",  "N", "e, f",
+                    "|z|=12, z^6=e, |f|=6, |C(f)|=18, |ef|=24,\
+ |efef^3efeffef|=6" ],
+#["U4(3).(2^2)_133", "N", "a, b",
+#                     "|a|=4, |C(a)|=2304, |ab|=6, |abb|=14,\
+# |abbababbab^3ab|=10" ],
+
+["G2(3)",       "Y", "a, b",
+                     "|a|=2, |z|=9, z^3=b, |ab|=13" ],
+["G2(3).2",     "N", "c, d",
+                     "|z|=14, z^2=c, |d|=13, |cd|=18, |cdd|=12,\
+ |cd^3|=18, |cdcddcddcd^3|=6" ],
+
+["S4(5)",      "Y", "a, b",
+                    "|a|=2, |C(a)|=480, |b|=3, |C(b)|=360, |ab|=13,\
+ |ababb|=12" ],
+
+["U3(8)",      "N", "a, b",
+                    "|a|=2, |b|=19, |ab|=3" ],
+
+["U3(7)",      "N", "a, b",
+                    "|a|=2, |b|=3, |ab|=56, |ababb|=8" ],
+
+["L4(3)",      "Y", "a, b",
+                    "|y|=10, y^5=a, |z|=8, z^2=b, |ab|=13, |abb|=8" ],
+
+["L5(2)",      "Y", "a, b",
+                    "|z|=14, z^7=a, |b|=5, |ab|=21" ],
+
+["M23",        "Y", "a, b",
+                    "|a|=2, |b|=4, |ab|=23, |(ab)^4(ba)^2bbabb|=8" ],
+
+["U5(2)",      "Y", "a, b",
+                    "|z|=8, z^4=a, |b|=5, |ab|=11" ],
+
+["L3(8)",      "N", "a, b",
+                    "|a|=3, |z|=14, z^2=b, |ab|=73, |ab^3|=7, |aab|=73" ],
+
+["2F4(2)'",    "Y", "a, b",
+                    "|z|=10, z^5=a, |b|=3, |ab|=13" ],
+
+["A11",        "Y", "a, b",
+                    "|z|=21, z^7=a, |b|=9, |ab|=11" ],
+["S11",        "Y", "c, d",
+                    "|z|=18, z^9=c, |d|=10, |C(d)|=10, |cd|=11" ],
+
+["Sz(32)",     "Y", "a, b",
+                    "|a|=2, |b|=4, |ab|=5, |ababb|=25,\
+ |(ab)^3(bab)^2bbabb|=25" ],
+
+["L3(9)",      "N", "a, b",
+                    "|a|=2, |b|=5, |ab|=80, |abb|=16" ],
+
+["U3(9)",      "N", "a, b",
+                    "|a|=2, |b|=5, |C(b)|=100, |ab|=73, |abb|=15,\
+ |ab^3ab^3ab|=30" ],
+
+["HS",         "Y", "a, b",
+                    "|y|=20, y^10=a, |z|=20, z^4=b, |ab|=11" ],
+
+["J3",         "Y", "a, b",
+                    "|a|=2, |z|=6, z^2=b, |ab|=19, |ababb|=19" ],
+["J3.2",       "Y", "a, b",
+                    "|y|=18, y^9=a, |z|=24, z^8=b, |ab|=24, |ababb|=9" ],
+
+["U3(11)",     "N", "a, b",
+                    "|a|=3, |z|=44, z^4=b, |ab|=37, |baa|=20" ],
+
+#["O8+(2)",     "Y", "a, b",
+#                    "|a|=2, |C(a)|=3072, |b|=5, |C(b)|=300, |ab|=12,\
+# |C(ab)|=24, |abb|=15, |(ab)^4(ba)^2bbabb|=8" ],
+
+["O8-(2)",     "Y", "a, b",
+                    "|a|=2, |C(a)|=3072, |z|=9, z^3=b, |ab|=17,\
+ |ababb|=17, |(ab)^3b|=30" ],
+
+["3D4(2)",     "Y", "a, b",
+                    "|z|=8, z^4=a, |b|=9, |ab|=13, |abb|=8" ],
+
+["L3(11)",     "N", "a, b",
+                    "|a|=3, |z|=55, z^5=b, |ab|=7" ],
+
+["A12",        "Y", "a, b",
+                    "|z|=21, z^7=a, |b|=11, |ab|=10, |abb|=35" ],
+
+["M24",        "Y", "a, b",
+                    "|y|=10, y^5=a, |z|=15, z^5=b, |ab|=23,\
+ |(ab)^3(bab)^2bbabb|=4" ],
+
+["G2(4)",      "N", "a, b",
+                    "|z|=8, z^4=a, |b|=5, |ab|=13, |abbababb|=8" ],
+
+["McL",        "Y", "a, b",
+     "|y|=10, y^5=a, |z|=15, z^3=b, |ab|=11, |(ab)^4(ba)^2bbabb|=7" ],
+["McL.2",      "Y", "c, d",
+                    "|z|=22, z^11=c, |d|=3, |C(d)|=1944, |cd|=22,\
+ |(cd)^4(dc)^2ddcdd|=24" ],
+
+["HE",         "Y", "a, b",
+                    "|z|=10, z^5=a, |b|=7, |C(b)|=1029, |ab|=17" ],
+
+["Co3",        "Y", "a, b",
+                    "|y|=9, y^3=a, |z|=20, z^5=b, |ab|=14" ],
+
+];
+
+
+#############################################################################
+##
+#E
+

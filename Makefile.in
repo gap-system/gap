@@ -2,7 +2,7 @@
 ##
 #W  Makefile                    GAP source                       Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: Makefile.in,v 4.40 2009/10/02 21:57:29 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -17,7 +17,7 @@
 ##
 ##  to compile and link GAP.
 ##
-##  The "default" traget:
+##  The "default" target:
 ##    - creates a subdirectory CPU-VENDOR-OS in the directory `bin',
 ##    - copies the configuration script into this directory,
 ##    - it switches into this directory and executes the configure script,
@@ -52,35 +52,44 @@ SHELL=/bin/sh
 CC=@CC@
 BASECC=@BASECC@
 @SET_MAKE@
+GMP_CFLAGS=@GMP_CFLAGS@
+GMP_LIBS=@GMP_LIBS@
+MAKE_GMP=@MAKE_GMP@
 
 TESTGAP = ./bin/gap.sh -b -m 100m -o 500m -A -N -q -x 80 -r
 TESTGAPauto = ./bin/gap.sh -b -m 100m -o 500m -N -q -x 80 -r
 
-default: strip
+default: compile
 
-config: bin/@target@-@BASECC@/configure bin/@target@-@BASECC@/Makefile 
+config: bin/@target@-@BASECC@/configure  bin/@target@-@BASECC@/Makefile bin/@target@-@BASECC@/extern/Makefile 
 
-bin/@target@-@BASECC@/configure: cnf/configure.out
+bin/@target@-@BASECC@/configure: cnf/configure.out 
 	if test ! -d bin;  then mkdir bin;  fi
 	if test ! -d bin/@target@-@BASECC@;  then mkdir bin/@target@-@BASECC@;  fi
 	@rm -f bin/@target@-@BASECC@/configure
 	cp cnf/configure.out bin/@target@-@BASECC@/configure
 
-bin/@target@-@BASECC@/Makefile: bin/@target@-@BASECC@/configure cnf/config.hin cnf/gac.in
+
+bin/@target@-@BASECC@/Makefile bin/@target@-@BASECC@/extern/Makefile : bin/@target@-@BASECC@/configure cnf/config.hin \
+									cnf/gac.in extern/Makefile.in cnf/Makegap.in
+	if test ! -d bin/@target@-@BASECC@/extern; then mkdir bin/@target@-@BASECC@/extern; fi
 	( cd bin/@target@-@BASECC@ ; CC='$(CC)' ./configure --target=@target@ @gp_configure_options@ )
 
-compile: config
-	( cd bin/@target@-@BASECC@ ; $(MAKE) CC='$(CC)' )
+extern: config
+	( cd bin/@target@-@BASECC@/extern ; $(MAKE) CC='$(CC)' '$(MAKE_GMP)' )
+
+compile: extern
+	( cd bin/@target@-@BASECC@ ; $(MAKE) CC='$(CC)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' )
 	chmod +x bin/gap.sh
 
-static: config
+static: extern
 	( cd bin/@target@-@BASECC@ ; $(MAKE) static CC='$(CC)' )
 	chmod +x bin/gap.sh
 	( cd bin/@target@-@BASECC@ ; strip gap@EXEEXT@)
 
 strip: compile
 	if ! grep darwin sysinfo.gap ; then ( cd bin/@target@-@BASECC@ ; strip gap@EXEEXT@) ; fi
-       
+
 removewin: strip
 	( rm -f bin/*.exe bin/*.dll bin/*.bat bin/*.pif "bin/GAP 4 PPC")
 
@@ -88,10 +97,35 @@ rebuild:
 	rm -f config.cache config.log config.status
 	touch src/*
 
-clean: rebuild
+clean: clean_gmp clean_gap
+
+clean_no_gmp: clean_gap
+
+clean_gap: rebuild
 	rm Makefile
 	rm -rf bin/@target@-@BASECC@
 	rm -f bin/gap.sh
+
+clean_gmp:
+	if test -h extern/gmp; then \
+	 (cd extern/gmp; make clean); fi
+	if test -d extern/lib; then \
+	 (cd extern/lib; rm -f libgmp*); fi
+	if test -r extern/include; then \
+	 (cd extern/include; rm -f gmp.h); fi
+
+manuals:
+	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAP) )
+	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( rm doc/wsp.g )
+
 
 testinstall:
 	( if ! test -d dev/log; then mkdir -p dev/log; fi )
@@ -134,7 +168,7 @@ testall.g:
 
 testpackages:
 	( if ! test -d dev/log; then mkdir -p dev/log; fi )
-	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
 	( echo -e "CreatePackageTestsInput( \042testpackages.in\042, \
             [ \042`date -u +dev/log/testpackages1_%Y-%m-%d-%H-%M`\042, \
@@ -144,59 +178,56 @@ testpackages:
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
 	( rm wsp.g )
 
+testpackagesload:
+	( if ! test -d dev/log; then mkdir -p dev/log; fi )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo -e "CreatePackageLoadTestsInput( \042testpackagesload.in\042, \
+            \042`date -u +dev/log/testpackagesload1_%Y-%m-%d-%H-%M`\042, \
+            \042$(TESTGAP) -L wsp.g\042, false );"\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in; rm testpackagesload.in )
+	( rm wsp.g )	
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo -e "CreatePackageLoadTestsInput( \042testpackagesload.in\042, \
+            \042`date -u +dev/log/testpackagesloadA_%Y-%m-%d-%H-%M`\042, \
+            \042$(TESTGAPauto) -L wsp.g\042, true );"\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in; rm testpackagesload.in )
+	( rm wsp.g )
+
 testmanuals:
 	( if ! test -d dev/log; then mkdir -p dev/log; fi )
 	( if ! test -d doc/test/tut; then mkdir -p doc/test/tut; fi )
-	( if ! test -d doc/test/prg; then mkdir -p doc/test/prg; fi )
 	( if ! test -d doc/test/ref; then mkdir -p doc/test/ref; fi )
-	( if ! test -d doc/test/ext; then mkdir -p doc/test/ext; fi )
-	( if ! test -d doc/test/new; then mkdir -p doc/test/new; fi )
-	( echo 'SaveWorkspace( "doc/test/wsp.g" );' \
-            | $(TESTGAP) )
-	( cd doc/test/tut; \
-          ../mktest.sh -p ../../tut/ -L ../wsp.g; ../mkdiff.sh -p ../../tut/ )
-	( cd doc/test/prg; \
-          ../mktest.sh -p ../../prg/ -L ../wsp.g; ../mkdiff.sh -p ../../prg/ )
-	( cd doc/test/ref; \
-          ../mktest.sh -p ../../ref/ -L ../wsp.g; ../mkdiff.sh -p ../../ref/ )
-	( cd doc/test/ext; \
-          ../mktest.sh -p ../../ext/ -L ../wsp.g; ../mkdiff.sh -p ../../ext/ )
-	( cd doc/test/new; \
-          ../mktest.sh -p ../../new/ -L ../wsp.g; ../mkdiff.sh -p ../../new/ )
-	( cd doc/test; \
-          cat tut/diffs prg/diffs ref/diffs ext/diffs new/diffs \
-          > `date -u +../../dev/log/testmanuals1_%Y-%m-%d-%H-%M` )
-	( rm doc/test/wsp.g )
-	( echo 'SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAPauto) )
-	( cd doc/test/tut; \
-          ../mktest.sh -p ../../tut/ -L ../wsp.g; ../mkdiff.sh -p ../../tut/ )
-	( cd doc/test/prg; \
-          ../mktest.sh -p ../../prg/ -L ../wsp.g; ../mkdiff.sh -p ../../prg/ )
-	( cd doc/test/ref; \
-          ../mktest.sh -p ../../ref/ -L ../wsp.g; ../mkdiff.sh -p ../../ref/ )
-	( cd doc/test/ext; \
-          ../mktest.sh -p ../../ext/ -L ../wsp.g; ../mkdiff.sh -p ../../ext/ )
-	( cd doc/test/new; \
-          ../mktest.sh -p ../../new/ -L ../wsp.g; ../mkdiff.sh -p ../../new/ )
-	( cd doc/test; \
-          cat tut/diffs prg/diffs ref/diffs ext/diffs new/diffs \
-          > `date -u +../../dev/log/testmanualsA_%Y-%m-%d-%H-%M` )
-	( rm doc/test/wsp.g )
-	( echo 'LoadAllPackages(); \
-            SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
-	( cd doc/test/tut; \
-          ../mktest.sh -p ../../tut/ -L ../wsp.g; ../mkdiff.sh -p ../../tut/ )
-	( cd doc/test/prg; \
-          ../mktest.sh -p ../../prg/ -L ../wsp.g; ../mkdiff.sh -p ../../prg/ )
-	( cd doc/test/ref; \
-          ../mktest.sh -p ../../ref/ -L ../wsp.g; ../mkdiff.sh -p ../../ref/ )
-	( cd doc/test/ext; \
-          ../mktest.sh -p ../../ext/ -L ../wsp.g; ../mkdiff.sh -p ../../ext/ )
-	( cd doc/test/new; \
-          ../mktest.sh -p ../../new/ -L ../wsp.g; ../mkdiff.sh -p ../../new/ )
-	( cd doc/test; \
-          cat tut/diffs prg/diffs ref/diffs ext/diffs new/diffs \
-          > `date -u +../../dev/log/testmanuals2_%Y-%m-%d-%H-%M` )
+	( echo 'LoadPackage( "gapdoc" ); Read( "tst/testutil.g" ); \
+ 	  ExtractManualExamples( "tut" ); ExtractManualExamples( "ref" );' | $(TESTGAP) )
+	( echo 'SetAssertionLevel( 2 ); LoadPackage( "gapdoc" ); \
+ 	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
+	( cd doc/test/tut; ../mktestx.sh )
+	( cd doc/test/ref; ../mktestx.sh )
+	(  cd doc/test; \
+	  cat tut/diffs ref/diffs \
+	  > `date -u +../../dev/log/testmanuals1_%Y-%m-%d-%H-%M` )
+	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
+	( echo 'SetAssertionLevel( 2 );  \
+ 	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAPauto) )
+	( cd doc/test/tut; ../mktestx.sh )
+	( cd doc/test/ref; ../mktestx.sh )
+	(  cd doc/test; \
+	  cat tut/diffs ref/diffs \
+	  > `date -u +../../dev/log/testmanualsA_%Y-%m-%d-%H-%M` )
+	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
+	( echo 'SetAssertionLevel( 2 ); LoadAllPackages(); \
+ 	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
+	( cd doc/test/tut; ../mktestx.sh )
+	( cd doc/test/ref; ../mktestx.sh )
+	(  cd doc/test; \
+	  cat tut/diffs ref/diffs \
+	  > `date -u +../../dev/log/testmanuals2_%Y-%m-%d-%H-%M` )
+	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
+	( rm doc/test/tut/*.tst; rm doc/test/ref/*.tst )  
 	( rm doc/test/wsp.g )
 
 compilecygwindll:	config
@@ -206,10 +237,10 @@ compilecygwindll:	config
 	        ../../pkg/edim/src/ediv.c ../../pkg/Browse/src/ncurses.c ; \
 	  strip gapw95.exe ; \
 	  cp gapw95.exe .. ; \
-          gcc -c -o gap.o ../../src/gap.c -I. -I../.. -DCONFIG_H \
-              -DCOMPILECYGWINDLL ; \
+	  gcc -c -o gap.o ../../src/gap.c -I. -I../.. -DCONFIG_H \
+	      -DCOMPILECYGWINDLL ; \
 	  gcc -o gap.dll -shared *.o ; \
-          rm -f gap.o ; \
+	  rm -f gap.o ; \
 	  gcc -o gapw95p ../../src/gapw95.c gap.dll ; \
 	  strip gapw95p.exe ; \
 	  cp gapw95p.exe gap.dll .. ; \
@@ -224,7 +255,7 @@ compilecygwindll:	config
 	( cp /usr/share/terminfo/c/cygwin terminfo/c )
 	( cp /usr/share/terminfo/r/rxvt terminfo/r )
 	( cp /usr/share/terminfo/x/xterm terminfo/x )
-	
+
 winbinp:
 	( tar cfz ../winbin.tgz bin/cyg*dll bin/gap.dll \
 	  bin/gapw95.exe \

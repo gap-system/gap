@@ -1,0 +1,20 @@
+- The names and modules in doc/tut/authors.tex have to be brought up-to-date.
+
+- Run tests:
+  o The sanity test runs up to size 64 and degree 12 without problems.
+  o The transitive groups construction (Alexander) runs correctly for all
+    degrees.
+  o The manual files should produce no discrepancies under doc/test/testexample
+  o `testall' should produce no errors (also under Windows)
+  o The error list from the bugfixes for the previous release  should
+    produce no errors.
+
+- Edit
+    lib/version.g
+    src/system.c (SyKernelVersion,SyWindowsPath)
+    doc/build/config.{install,new},
+    WWW/Util/DEFAULTS
+    
+    to give the new version number
+
+See mkdistrib/HOWTO for how to do the actual wrapping

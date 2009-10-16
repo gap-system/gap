@@ -1,0 +1,1227 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  examples.tex        ACE appendix - examples          Alexander Hulpke
+%W                                                      Joachim Neub"user
+%W                                                            Greg Gamble
+%%
+%H  $Id: examples.tex,v 1.25 2006/01/26 16:15:05 gap Exp $
+%%
+%Y  Copyright (C) 2000  Centre for Discrete Mathematics and Computing
+%Y                      Department of Information Tech. & Electrical Eng.
+%Y                      University of Queensland, Australia.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Examples}
+
+In this chapter  we  collect  together  a  number  of  examples  which
+illustrate the various ways in which the {\ACE} Package may  be  used,
+and give some interactions with the `ACEExample' function. In a number
+of cases, we have set the `InfoLevel' of `InfoACE' to 3, so  that  all
+output from {\ACE} is displayed, prepended by ```\#I  '''. Recall that
+to also see the commands directed *to* {\ACE} (behind a  ```ToACE> '''
+prompt), you will need to set  the  `InfoACE'  level  to  4.  We  have
+omitted the line
+
+\beginexample
+gap> LoadPackage("ace");
+true
+\endexample
+
+which is,  of  course,  required  at  the  beginning  of  any  session
+requiring {\ACE}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example where ACE is made the Standard Coset Enumerator}
+
+If {\ACE} is made the standard coset enumerator, one simply  uses  the
+method of passing arguments normally used  with  those  commands  that
+invoke `CosetTableFromGensAndRels', but one is able to use all options
+available via the {\ACE} interface. As an example  we  use  {\ACE}  to
+compute the permutation representation of a  perfect  group  from  the
+data library ({\GAP}'s perfect group library stores for each  group  a
+presentation together with generators of a subgroup as  words  in  the
+group generators such  that  the  permutation  representation  on  the
+cosets  of  this  subgroup  will  be  a  (nice)  faithful  permutation
+representation for the perfect group). The example we have  chosen  is
+an extension of a group of order 16 by the  simple  alternating  group
+$A_5$.
+
+\beginexample
+gap> TCENUM:=ACETCENUM;; # Make ACE the standard coset enumerator
+gap> G := PerfectGroup(IsPermGroup, 16*60, 1   # Arguments ... as per usual
+>                      : max := 50, mess := 10 # ... but we use ACE options
+>                      );
+A5 2^4
+gap> GeneratorsOfGroup(G); # Just to show we indeed have a perm'n rep'n
+[ (2,4)(3,5)(7,15)(8,14)(10,13)(12,16), (2,6,7)(3,11,12)(4,14,5)(8,9,13)(10,
+    15,16), (1,2)(3,8)(4,9)(5,10)(6,7)(11,15)(12,14)(13,16), 
+  (1,3)(2,8)(4,13)(5,6)(7,10)(9,16)(11,12)(14,15), 
+  (1,4)(2,9)(3,13)(5,14)(6,15)(7,11)(8,16)(10,12), 
+  (1,5)(2,10)(3,6)(4,14)(7,8)(9,12)(11,16)(13,15) ]
+gap> Order(G);
+960
+\endexample
+
+The call to `PerfectGroup' produced an output string  that  identifies
+the group `G', but we didn't see  how  {\ACE}  became  involved  here.
+Let's redo that part of the above  example  after  first  setting  the
+`InfoLevel' of `InfoACE' to 3, so that we may get  to  glimpse  what's
+going on behind the scenes.
+
+\beginexample
+gap> SetInfoACELevel(3); # Just to see what's going on behind the scenes
+gap> # Recall that we did: TCENUM:=ACETCENUM;;
+gap> G := PerfectGroup(IsPermGroup, 16*60, 1   # Arguments ... as per usual
+>                      : max := 50, mess := 10 # ... but we use ACE options
+>                      );
+#I  ACE 3.001        Sun Sep 30 22:08:11 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  ***
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: G;
+#I  Group Generators: abstuv;
+#I  Group Relators: (a)^2, (s)^2, (t)^2, (u)^2, (v)^2, (b)^3, (st)^2, (uv)^2, 
+#I    (su)^2, (sv)^2, (tu)^2, (tv)^2, asau, atav, auas, avat, Bvbu, Bsbvt, 
+#I    Bubvu, Btbvuts, (ab)^5;
+#I  Subgroup Name: H;
+#I  Subgroup Generators: a, b;
+#I  Wo:1000000; Max:50; Mess:10; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:0; No:21; Look:0; Com:10;
+#I  C:0; R:0; Fi:11; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+#I  SG: a=1 r=1 h=1 n=2; l=1 c=+0.00; m=1 t=1
+#I  RD: a=11 r=1 h=1 n=12; l=2 c=+0.00; m=11 t=11
+#I  RD: a=21 r=2 h=1 n=22; l=2 c=+0.00; m=21 t=21
+#I  CC: a=29 r=4 h=1 n=31; l=2 c=+0.00; d=0
+#I  CC: a=19 r=4 h=1 n=31; l=2 c=+0.00; d=0
+#I  CC: a=19 r=6 h=1 n=36; l=2 c=+0.00; d=0
+#I  INDEX = 16 (a=16 r=36 h=1 n=36; l=3 c=0.00; m=30 t=35)
+#I  CO: a=16 r=17 h=1 n=17; c=+0.00
+#I   coset ||      b      B      a      s      t      u      v
+#I  -------+-------------------------------------------------
+#I       1 ||      1      1      1      2      3      4      5
+#I       2 ||     11     14      4      1      6      8      9
+#I       3 ||     13     15      5      6      1     10     11
+#I       4 ||      7      5      2      8     10      1      7
+#I       5 ||      4      7      3      9     11      7      1
+#I       6 ||      8     10      7      3      2     12     14
+#I       7 ||      5      4      6     15     16      5      4
+#I       8 ||     10      6      8      4     12      2     15
+#I       9 ||     16     12     10      5     14     15      2
+#I      10 ||      6      8      9     12      4      3     16
+#I      11 ||     14      2     11     14      5     16      3
+#I      12 ||      9     16     15     10      8      6     13
+#I      13 ||     15      3     13     16     15     14     12
+#I      14 ||      2     11     16     11      9     13      6
+#I      15 ||      3     13     12      7     13      9      8
+#I      16 ||     12      9     14     13      7     11     10
+A5 2^4
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example of Using ACECosetTableFromGensAndRels}
+
+The following example calls {\ACE} for up to 800 coset  numbers  (`max
+:= 800') using Mendelsohn style relator processing (`mendelsohn')  and
+sets progress messages to be printed every 500  iterations  (`messages
+:=500'); we do ```SetInfoACELevel(3);''' so  that  we  may  see  these
+messages.  The  value  of  `table',  i.e.~the  {\GAP}   coset   table,
+immediately follows the last {\ACE}  message  (```\#I ''')  line,  but
+both the coset table from {\ACE} and the {\GAP} coset table have  been
+abbreviated. A  slightly  modified  version  of  this  example,  which
+includes  the  `echo'  option  is  available  on-line  via  `table  :=
+ACEExample("perf602p5");'. You may wish to peruse  the  notes  in  the
+`ACEExample' index first, however, by executing `ACEExample();'. (Note
+that the final table output here is `lenlex'  standardised  (the  case
+since {\GAP} 4.3); with {\GAP} 4.2 the final  table  was  `semilenlex'
+standardised.)
+
+\beginexample
+gap> SetInfoACELevel(3);           # So we can see the progress messages
+gap> G := PerfectGroup(2^5*60, 2);;# See previous example:
+gap>                               # "Example where ACE is made the
+gap>                               #  Standard Coset Enumerator"
+gap> fgens := FreeGeneratorsOfFpGroup(G);;
+gap> table := ACECosetTableFromGensAndRels(
+>                 # arguments
+>                 fgens, RelatorsOfFpGroup(G), fgens{[1]}
+>                 # options
+>                 : mendelsohn, max:=800, mess:=500);
+#I  ACE 3.001        Sun Sep 30 22:10:10 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+#I  ***
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: G;
+#I  Group Generators: abstuvd;
+#I  Group Relators: (s)^2, (t)^2, (u)^2, (v)^2, (d)^2, aad, (b)^3, (st)^2, 
+#I    (uv)^2, (su)^2, (sv)^2, (tu)^2, (tv)^2, Asau, Atav, Auas, Avat, Bvbu, 
+#I    dAda, dBdb, (ds)^2, (dt)^2, (du)^2, (dv)^2, Bubvu, Bsbdvt, Btbvuts, 
+#I    (ab)^5;
+#I  Subgroup Name: H;
+#I  Subgroup Generators: a;
+#I  Wo:1000000; Max:800; Mess:500; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:1; Mend:1; No:28; Look:0; Com:10;
+#I  C:0; R:0; Fi:13; PMod:3; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+#I  SG: a=1 r=1 h=1 n=2; l=1 c=+0.00; m=1 t=1
+#I  RD: a=321 r=68 h=1 n=412; l=5 c=+0.00; m=327 t=411
+#I  CC: a=435 r=162 h=1 n=719; l=9 c=+0.00; d=0
+#I  CL: a=428 r=227 h=1 n=801; l=13 c=+0.00; m=473 t=800
+#I  DD: a=428 r=227 h=1 n=801; l=14 c=+0.00; d=33
+#I  CO: a=428 r=192 h=243 n=429; l=15 c=+0.00; m=473 t=800
+#I  INDEX = 480 (a=480 r=210 h=484 n=484; l=18 c=0.00; m=480 t=855)
+#I  CO: a=480 r=210 h=481 n=481; c=+0.00
+#I   coset ||      a      A      b      B      s      t      u      v      d
+#I  -------+---------------------------------------------------------------
+#I       1 ||      1      1      7      6      2      3      4      5      1
+#I       2 ||      4      4     22     36      1      8     10     11      2
+... 476 lines omitted here ...
+#I     479 ||    479    479    384    383    475    468    470    471    479
+#I     480 ||    480    480    421    420    470    469    475    476    480
+[ [ 1, 8, 13, 6, 7, 4, 5, 2, 34, 35, 32, 33, 3, 48, 49, 46, 47, 57, 59, 28, 
+      21, 25, 62, 64, 22, 26, 66, 20, 67, 69, 74, 11, 12, 9, 10, 89, 65, 87, 
+... 30 lines omitted here ...
+      477, 438, 478, 446, 475, 479, 471, 473, 476, 469 ], 
+  [ 1, 8, 13, 6, 7, 4, 5, 2, 34, 35, 32, 33, 3, 48, 49, 46, 47, 57, 59, 28, 
+      21, 25, 62, 64, 22, 26, 66, 20, 67, 69, 74, 11, 12, 9, 10, 89, 65, 87, 
+... 30 lines omitted here ...
+      477, 438, 478, 446, 475, 479, 471, 473, 476, 469 ], 
+... 363 lines omitted here ...
+  [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
+      21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 
+... 30 lines omitted here ...
+      472, 473, 474, 475, 476, 477, 478, 479, 480 ] ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example of Using ACE Interactively (Using ACEStart)}
+
+Now we illustrate a simple interactive process, with an enumeration of
+an index 12 subgroup (isomorphic to $C_5$) within $A_5$. Observe  that
+we  have  relied  on  the  default  level  of  messaging  from  {\ACE}
+(`messages' = 0) which gives a result line (the  ```\#I  INDEX''' line
+here) only, without parameter information. The result line is  visible
+in the `Info'-ed component of the output  below  because  we  set  the
+`InfoLevel' of `InfoACE' to a value of at least 2 (in fact we  set  it
+to 3; doing ```SetInfoACELevel(2);''' would  make  *only*  the  result
+line visible). We have however used the option `echo', so that we  can
+see how the interface handled the arguments and options. On-line  try:
+`SetInfoACELevel(3); ACEExample("A5-C5", ACEStart);' (this  is  nearly
+equivalent to the sequence following, but the variables `F', `a', `b',
+`G' are not accessible, being ``local'' to `ACEExample').
+
+\beginexample
+gap> SetInfoACELevel(3); # So we can see output from ACE binary
+gap> F := FreeGroup("a","b");; a := F.1;;  b := F.2;;
+gap> G := F / [a^2, b^3, (a*b)^5 ];
+<fp group on the generators [ a, b ]>
+gap> ACEStart(FreeGeneratorsOfFpGroup(G), RelatorsOfFpGroup(G), [a*b]
+>          # Options
+>          : echo, # Echo handled by GAP (not ACE)
+>            enum := "A_5",  # Give the group G a meaningful name
+>            subg := "C_5"); # Give the subgroup a meaningful name
+ACEStart called with the following arguments:
+ Group generators : [ a, b ]
+ Group relators : [ a^2, b^3, a*b*a*b*a*b*a*b*a*b ]
+ Subgroup generators : [ a*b ]
+#I  ACE 3.001        Sun Sep 30 22:11:42 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+ACEStart called with the following options:
+ echo := true (not passed to ACE)
+ enum := A_5
+ subg := C_5
+#I  ***
+#I  INDEX = 12 (a=12 r=16 h=1 n=16; l=3 c=0.00; m=14 t=15)
+1
+\endexample
+
+The return value on the last line is an ``index'' that identifies  the
+interactive process; we use this ``index'' with functions that need to
+interact with the interactive {\ACE} process; we now demonstrate  this
+with the interactive version of `ACEStats':
+
+\beginexample
+gap> ACEStats(1);
+rec( index := 12, cputime := 0, cputimeUnits := "10^-2 seconds", 
+  activecosets := 12, maxcosets := 14, totcosets := 15 )
+gap> # Actually, we didn't need to pass an argument to ACEStats()
+gap> # ... we could have relied on the default:
+gap> ACEStats();
+rec( index := 12, cputime := 0, cputimeUnits := "10^-2 seconds", 
+  activecosets := 12, maxcosets := 14, totcosets := 15 )
+\endexample
+
+Similarly, we may use `ACECosetTable' with 0 or 1 arguments, which  is
+the interactive version of `ACECosetTableFromGensAndRels',  and  which
+returns a standard table (since {\GAP} 4.3,  a  standard  table  is  a
+`lenlex' standard table;  with  {\GAP}  4.2,  it  was  a  `semilenlex'
+standard table).
+
+\beginexample
+gap> ACECosetTable(); # Interactive version of ACECosetTableFromGensAndRels()
+#I  CO: a=12 r=13 h=1 n=13; c=+0.00
+#I   coset ||      b      B      a
+#I  -------+---------------------
+#I       1 ||      3      2      2
+#I       2 ||      1      3      1
+#I       3 ||      2      1      4
+#I       4 ||      8      5      3
+#I       5 ||      4      8      6
+#I       6 ||      9      7      5
+#I       7 ||      6      9      8
+#I       8 ||      5      4      7
+#I       9 ||      7      6     10
+#I      10 ||     12     11      9
+#I      11 ||     10     12     12
+#I      12 ||     11     10     11
+[ [ 2, 1, 4, 3, 7, 8, 5, 6, 10, 9, 12, 11 ], 
+  [ 2, 1, 4, 3, 7, 8, 5, 6, 10, 9, 12, 11 ], 
+  [ 3, 1, 2, 5, 6, 4, 8, 9, 7, 11, 12, 10 ], 
+  [ 2, 3, 1, 6, 4, 5, 9, 7, 8, 12, 10, 11 ] ]
+gap> # To terminate the interactive process we do:
+gap> ACEQuit(1); # Again, we could have omitted the 1
+gap> # If we had more than one interactive process we could have
+gap> # terminated them all in one go with:
+gap> ACEQuitAll();
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Fun with ACEExample}
+
+First let's see the `ACEExample' index  (obtained  with  no  argument,
+with  `"index"'  as  argument,  or  with  a  non-existent  example  as
+argument):
+
+\beginexample
+gap> ACEExample();
+#I                   ACEExample Index (Table of Contents)
+#I                   ------------------------------------
+#I  This table of possible examples is displayed when calling ACEExample 
+#I  with no arguments, or with the argument: "index" (meant in the sense
+#I  of `list'), or with a non-existent example name.
+#I  
+#I  The following ACE examples are available (in each case, for a subgroup
+#I  H of a group G, the cosets of H in G are enumerated):
+#I  
+#I    Example          G                      H              strategy
+#I    -------          -                      -              --------
+#I    "A5"             A_5                    Id             default
+#I    "A5-C5"          A_5                    C_5            default
+#I    "C5-fel0"        C_5                    Id             felsch := 0
+#I    "F27-purec"      F(2,7) = C_29          Id             purec
+#I    "F27-fel0"       F(2,7) = C_29          Id             felsch := 0
+#I    "F27-fel1"       F(2,7) = C_29          Id             felsch := 1
+#I    "M12-hlt"        M_12 (Matthieu group)  Id             hlt
+#I    "M12-fel1"       M_12 (Matthieu group)  Id             felsch := 1
+#I    "SL219-hard"     SL(2,19)               ||G : H|| = 180  hard
+#I    "perf602p5"      PerfectGroup(60*2^5,2) ||G : H|| = 480  default
+#I  * "2p17-fel1"      ||G|| = 2^17             Id             felsch := 1
+#I    "2p17-fel1a"     ||G|| = 2^17             ||G : H|| = 1    felsch := 1
+#I    "2p17-2p3-fel1"  ||G|| = 2^17             ||G : H|| = 2^3  felsch := 1
+#I    "2p17-2p14-fel1" ||G|| = 2^17             ||G : H|| = 2^14 felsch := 1
+#I    "2p17-id-fel1"   ||G|| = 2^17             Id             felsch := 1
+#I  * "2p18-fel1"      ||G|| = 2^18             ||G : H|| = 2    felsch := 1
+#I  * "big-fel1"       ||G|| = 2^18.3           ||G : H|| = 6    felsch := 1
+#I  * "big-hard"       ||G|| = 2^18.3           ||G : H|| = 6    hard
+#I  
+#I  Notes
+#I  -----
+#I  1. The example (first) argument of ACEExample() is a string; each
+#I     example above is in double quotes to remind you to include them.
+#I  2. By default, ACEExample applies ACEStats to the chosen example. You 
+#I     may alter the ACE function used, by calling ACEExample with a 2nd 
+#I     argument; choose from: ACECosetTableFromGensAndRels (or, equival-
+#I     ently ACECosetTable), or ACEStart, e.g. `ACEExample("A5", ACEStart);'
+#I  3. You may call ACEExample with additional ACE options (entered after a
+#I     colon in the usual way for options), e.g. `ACEExample("A5" : hlt);' 
+#I  4. Try the *-ed examples to explore how to modify options when an
+#I     enumeration fails (just follow the instructions you get within the
+#I     break-loop, or see Notes 2. and 3.).
+#I  5. Try `SetInfoACELevel(3);' before calling ACEExample, to see the
+#I     effect of setting the "mess" (= "messages") option.
+#I  6. To suppress a long output, use a double semicolon (`;;') after the
+#I     ACEExample command. (However, this does not suppress Info-ed output.)
+#I  7. Also, try `SetInfoACELevel(2);' or `SetInfoACELevel(4);' before 
+#I     calling ACEExample.
+gap> 
+\endexample
+
+Notice that the example we first met in Section~"Using ACE Directly to
+Generate a Coset Table", the Fibonacci group F(2,7), is available  via
+examples  `"F27-purec"',  `"F27-fel0"',  and  `"F27-fel1"'  (with  2nd
+argument `ACECosetTableFromGensAndRels' to  produce  a  coset  table),
+except that each of these enumerate the cosets of its trivial subgroup
+(of index 29).  Let's  experiment  with  the  first  of  these  F(2,7)
+examples; since this example uses the `messages' option, we  ought  to
+set the `InfoLevel' of `InfoACE' to 3,  first,  but  since  the  coset
+table is quite long, we will be content for the moment  with  applying
+the default function `ACEStats' to the example.
+
+Before exhibiting the example we list a few observations  that  should
+be made. Observe that  the  first  group  of  `Info'  lines  list  the
+commands that are executed; these lines are followed by the result  of
+the `echo' option (see~"option echo"); which in turn are  followed  by
+`Info' messages from {\ACE} courtesy of  the  non-zero  value  of  the
+`messages'  option  (and  we  see  these  because  we  first  set  the
+`InfoLevel' of `InfoACE'  to  3);  and  finally,  we  get  the  output
+(record) of the `ACEStats' command.
+
+Observe also that {\ACE} uses the same generators as  are input;  this
+will always occur if you stick to single lowercase  letters  for  your
+generator names. Note, also that capitalisation is used by {\ACE} as a
+short-hand for inverses, e.g.~`C = c^-1' (see `Group Relators' in  the
+{\ACE} ``Run Parameters'' block).
+
+\beginexample
+gap> SetInfoACELevel(3);
+gap> ACEExample("F27-purec");
+#I  # ACEExample "F27-purec" : enumeration of cosets of H in G,
+#I  # where G = F(2,7) = C_29, H = Id, using purec strategy.
+#I  #
+#I  # F, G, a, b, c, d, e, x, y are local to ACEExample
+#I  # We define F(2,7) on 7 generators
+#I  F := FreeGroup("a","b","c","d","e", "x", "y"); 
+#I       a := F.1;  b := F.2;  c := F.3;  d := F.4; 
+#I       e := F.5;  x := F.6;  y := F.7;
+#I  G := F / [a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, 
+#I            e*x*y^-1, x*y*a^-1, y*a*b^-1];
+#I  ACEStats(
+#I      FreeGeneratorsOfFpGroup(G), 
+#I      RelatorsOfFpGroup(G), 
+#I      [] # Generators of identity subgroup (empty list)
+#I      # Options that don't affect the enumeration
+#I      : echo, enum := "F(2,7), aka C_29", subg := "Id", 
+#I      # Other options
+#I      wo := "2M", mess := 25000, purec);
+ACEStats called with the following arguments:
+ Group generators : [ a, b, c, d, e, x, y ]
+ Group relators : [ a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, e*x*y^-1, 
+  x*y*a^-1, y*a*b^-1 ]
+ Subgroup generators : [  ]
+#I  ACE 3.001        Sun Sep 30 22:16:08 2001
+#I  =========================================
+#I  Host information:
+#I    name = rigel
+ACEStats called with the following options:
+ echo := true (not passed to ACE)
+ enum := F(2,7), aka C_29
+ subg := Id
+ wo := 2M
+ mess := 25000
+ purec (no value, passed to ACE via option: pure c)
+#I  ***
+#I    #--- ACE 3.001: Run Parameters ---
+#I  Group Name: F(2,7), aka C_29;
+#I  Group Generators: abcdexy;
+#I  Group Relators: abC, bcD, cdE, deX, exY, xyA, yaB;
+#I  Subgroup Name: Id;
+#I  Subgroup Generators: ;
+#I  Wo:2M; Max:142855; Mess:25000; Ti:-1; Ho:-1; Loop:0;
+#I  As:0; Path:0; Row:0; Mend:0; No:0; Look:0; Com:100;
+#I  C:1000; R:0; Fi:1; PMod:0; PSiz:256; DMod:4; DSiz:1000;
+#I    #---------------------------------
+#I  DD: a=5290 r=1 h=1050 n=5291; l=8 c=+0.00; d=2
+#I  CD: a=10410 r=1 h=2149 n=10411; l=13 c=+0.01; m=10410 t=10410
+#I  DD: a=15428 r=1 h=3267 n=15429; l=18 c=+0.01; d=0
+#I  DD: a=20430 r=1 h=4386 n=20431; l=23 c=+0.02; d=1
+#I  DD: a=25397 r=1 h=5519 n=25399; l=28 c=+0.01; d=1
+#I  CD: a=30313 r=1 h=6648 n=30316; l=33 c=+0.01; m=30313 t=30315
+#I  DS: a=32517 r=1 h=7326 n=33240; l=36 c=+0.01; s=2000 d=997 c=4
+#I  DS: a=31872 r=1 h=7326 n=33240; l=36 c=+0.00; s=4000 d=1948 c=53
+#I  DS: a=29077 r=1 h=7326 n=33240; l=36 c=+0.00; s=8000 d=3460 c=541
+#I  DS: a=23433 r=1 h=7326 n=33240; l=36 c=+0.01; s=16000 d=5940 c=2061
+#I  DS: a=4163 r=1 h=7326 n=33240; l=36 c=+0.03; s=32000 d=447 c=15554
+#I  INDEX = 29 (a=29 r=1 h=33240 n=33240; l=37 c=0.15; m=33237 t=33239)
+rec( index := 29, cputime := 15, cputimeUnits := "10^-2 seconds", 
+  activecosets := 29, maxcosets := 33237, totcosets := 33239 )
+\endexample
+
+Now let's see that we  can  add  some  new  options,  even  ones  that
+over-ride the example's options; but first we'll reduce the  output  a
+bit by setting the `InfoLevel' of `InfoACE' to 2 and since we are  not
+going to observe any progress messages from {\ACE} with that `InfoACE'
+level  we'll  set  `messages  :=  0';  also  we'll  use  the  function
+`ACECosetTableFromGensAndRels' and so it's like  our  first  encounter
+with F(2,7) we'll add the subgroup generator `c'  via  `sg  :=  ["c"]'
+(see "option sg"). Observe that `"c"' is a string not a  {\GAP}  group
+generator; to convert a list of {\GAP}  words  <sgens>  in  generators
+<fgens>, suitable for  an  assignment  of  the  `sg'  option  use  the
+construction: `ToACEWords(<fgens>, <sgens>)' (see~"ToACEWords").  Note
+again that if  only  single  lowercase  letter  strings  are  used  to
+identify the {\GAP} group generators, the same  strings  are  used  to
+identify those generators in {\ACE}. (It's actually fortunate that  we
+could pass the value of `sg' as a string here, since the generators of
+each `ACEExample'  example  are  *local*  variables  and  so  are  not
+accessible, though  we  could  call  `ACEExample'  with  2nd  argument
+`ACEStart' and use `ACEGroupGenerators' to  get  at  them.)  For  good
+measure, we also change the string identifying the subgroup (since  it
+will no longer be the trivial group), via the `subgroup'  option  (see
+"option subgroup").
+
+In considering the example following, observe that in the `Info' block
+all the original example options are listed along with our new options
+`sg := [ "c" ], messages := 0' after the tag  ```\#  User  Options'''.
+Following the `Info' block there is a block  due  to  `echo';  in  its
+listing of the options first up there is `aceexampleoptions'  alerting
+us that we passed some `ACEExample' options; observe also that in this
+block `subg := Id' and `mess := 25000' disappear (they are over-ridden
+by `subgroup := "\< c >", messages := 0', but the quotes for the value
+of `subgroup' are not visible); note that we don't  have  to  use  the
+same abbreviations for options to over-ride them.  Also  observe  that
+our new options are *last*.
+
+\beginexample
+gap> SetInfoACELevel(2);
+gap> ACEExample("F27-purec", ACECosetTableFromGensAndRels
+>               : sg := ["c"], subgroup := "< c >", messages := 0);
+#I  # ACEExample "F27-purec" : enumeration of cosets of H in G,
+#I  # where G = F(2,7) = C_29, H = Id, using purec strategy.
+#I  #
+#I  # F, G, a, b, c, d, e, x, y are local to ACEExample
+#I  # We define F(2,7) on 7 generators
+#I  F := FreeGroup("a","b","c","d","e", "x", "y"); 
+#I       a := F.1;  b := F.2;  c := F.3;  d := F.4; 
+#I       e := F.5;  x := F.6;  y := F.7;
+#I  G := F / [a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, 
+#I            e*x*y^-1, x*y*a^-1, y*a*b^-1];
+#I  ACECosetTableFromGensAndRels(
+#I      FreeGeneratorsOfFpGroup(G), 
+#I      RelatorsOfFpGroup(G), 
+#I      [] # Generators of identity subgroup (empty list)
+#I      # Options that don't affect the enumeration
+#I      : echo, enum := "F(2,7), aka C_29", subg := "Id", 
+#I      # Other options
+#I      wo := "2M", mess := 25000, purec, 
+#I      # User Options
+#I        sg := [ "c" ],
+#I        subgroup := "< c >",
+#I        messages := 0);
+ACECosetTableFromGensAndRels called with the following arguments:
+ Group generators : [ a, b, c, d, e, x, y ]
+ Group relators : [ a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, e*x*y^-1, 
+  x*y*a^-1, y*a*b^-1 ]
+ Subgroup generators : [  ]
+ACECosetTableFromGensAndRels called with the following options:
+ aceexampleoptions := true (inserted by ACEExample, not passed to ACE)
+ echo := true (not passed to ACE)
+ enum := F(2,7), aka C_29
+ wo := 2M
+ purec (no value, passed to ACE via option: pure c)
+ sg := [ "c" ] (brackets are not passed to ACE)
+ subgroup := < c >
+ messages := 0
+#I  INDEX = 1 (a=1 r=2 h=2 n=2; l=4 c=0.00; m=332 t=332)
+[ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], 
+  [ 1 ], [ 1 ], [ 1 ], [ 1 ] ]
+\endexample
+
+\atindex{break-loop}{@\noexpand`break'-loop}\indextt{OnBreak}
+Now following on from our last example we shall  demonstrate  how  one
+can recover from a `break'-loop (see Section~"Using  ACE  Directly  to
+Generate a Coset Table"). To force the `break'-loop we pass `max := 2'
+(see~"option  max"),  while  using  the  {\ACE}   interface   function
+`ACECosetTableFromGensAndRels' with `ACEExample'; in this way,  {\ACE}
+will not be able to complete  the  enumeration,  and  hence  enters  a
+`break'-loop when it tries to provide a complete  coset  table.  While
+we're at it we'll pass the `hlt' (see~"option  hlt")  strategy  option
+(which will over-ride `purec'). (The `InfoACE' level is still  2.)  To
+avoid getting a trace-back during the `break'-loop (which can  look  a
+little   scary   to   the   unitiated)   we   will    set    `OnBreak'
+(see~"ref:OnBreak") as follows:
+
+\beginexample
+gap> NormalOnBreak := OnBreak;; # Save the old value to restore it later
+gap> OnBreak := function() Where(0); end;;
+\endexample
+
+Note that there are  some  ``user-input''  comments  inserted  at  the
+`brk>' prompt.
+
+\beginexample
+gap> ACEExample("F27-purec", ACECosetTableFromGensAndRels
+>               : sg := ["c"], subgroup := "< c >", max := 2, hlt);
+#I  # ACEExample "F27-purec" : enumeration of cosets of H in G,
+#I  # where G = F(2,7) = C_29, H = Id, using purec strategy.
+#I  #
+#I  # F, G, a, b, c, d, e, x, y are local to ACEExample
+#I  # We define F(2,7) on 7 generators
+#I  F := FreeGroup("a","b","c","d","e", "x", "y"); 
+#I       a := F.1;  b := F.2;  c := F.3;  d := F.4; 
+#I       e := F.5;  x := F.6;  y := F.7;
+#I  G := F / [a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, 
+#I            e*x*y^-1, x*y*a^-1, y*a*b^-1];
+#I  ACECosetTableFromGensAndRels(
+#I      FreeGeneratorsOfFpGroup(G), 
+#I      RelatorsOfFpGroup(G), 
+#I      [] # Generators of identity subgroup (empty list)
+#I      # Options that don't affect the enumeration
+#I      : echo, enum := "F(2,7), aka C_29", subg := "Id", 
+#I      # Other options
+#I      wo := "2M", mess := 25000, purec, 
+#I      # User Options
+#I        sg := [ "c" ],
+#I        subgroup := "< c >",
+#I        max := 2,
+#I        hlt := true);
+ACECosetTableFromGensAndRels called with the following arguments:
+ Group generators : [ a, b, c, d, e, x, y ]
+ Group relators : [ a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, e*x*y^-1, 
+  x*y*a^-1, y*a*b^-1 ]
+ Subgroup generators : [  ]
+ACECosetTableFromGensAndRels called with the following options:
+ aceexampleoptions := true (inserted by ACEExample, not passed to ACE)
+ echo := true (not passed to ACE)
+ enum := F(2,7), aka C_29
+ wo := 2M
+ mess := 25000
+ purec (no value, passed to ACE via option: pure c)
+ sg := [ "c" ] (brackets are not passed to ACE)
+ subgroup := < c >
+ max := 2
+ hlt (no value)
+#I  OVERFLOW (a=2 r=1 h=1 n=3; l=4 c=0.00; m=2 t=2)
+Error, no coset table ...
+ the `ACE' coset enumeration failed with the result:
+ OVERFLOW (a=2 r=1 h=1 n=3; l=4 c=0.00; m=2 t=2)
+Entering break read-eval-print loop ...
+ try relaxing any restrictive options
+ e.g. try the `hard' strategy or increasing `workspace'
+ type: '?strategy options' for info on strategies
+ type: '?options for ACE' for info on options
+ type: 'DisplayACEOptions();' to see current ACE options;
+ type: 'SetACEOptions(:<option1> := <value1>, ...);'
+ to set <option1> to <value1> etc.
+ (i.e. pass options after the ':' in the usual way)
+ ... and then, type: 'return;' to continue.
+ Otherwise, type: 'quit;' to quit to outer loop.
+brk> # Let's give ACE enough coset numbers to work with ...
+brk> # and while we're at it see the effect of 'echo := 2' :
+brk> SetACEOptions(: max := 0, echo := 2);
+brk> # Let's check what the options are now:
+brk> DisplayACEOptions();
+rec(
+  enum := "F(2,7), aka C_29",
+  wo := "2M",
+  mess := 25000,
+  purec := true,
+  sg := [ "c" ],
+  subgroup := "< c >",
+  hlt := true,
+  max := 0,
+  echo := 2 )
+
+brk> # That's ok ... so now we 'return;' to escape the break-loop
+brk> return;
+ACECosetTableFromGensAndRels called with the following arguments:
+ Group generators : [ a, b, c, d, e, x, y ]
+ Group relators : [ a*b*c^-1, b*c*d^-1, c*d*e^-1, d*e*x^-1, e*x*y^-1, 
+  x*y*a^-1, y*a*b^-1 ]
+ Subgroup generators : [  ]
+ACECosetTableFromGensAndRels called with the following options:
+ enum := F(2,7), aka C_29
+ wo := 2M
+ mess := 25000
+ purec (no value, passed to ACE via option: pure c)
+ sg := [ "c" ] (brackets are not passed to ACE)
+ subgroup := < c >
+ hlt (no value)
+ max := 0
+ echo := 2 (not passed to ACE)
+Other options set via ACE defaults:
+ asis := 0
+ compaction := 10
+ ct := 0
+ dmode := 0
+ dsize := 1000
+ fill := 1
+ hole := -1
+ lookahead := 1
+ loop := 0
+ mendelsohn := 0
+ no := 0
+ path := 0
+ pmode := 0
+ psize := 256
+ row := 1
+ rt := 1000
+ time := -1
+#I  INDEX = 1 (a=1 r=2 h=2 n=2; l=3 c=0.00; m=2049 t=3127)
+[ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], 
+  [ 1 ], [ 1 ], [ 1 ], [ 1 ] ]
+\endexample
+
+Observe that  `purec'  did  *not*  disappear  from  the  option  list;
+nevertheless, it *is* over-ridden by the `hlt' option (at  the  {\ACE}
+level). Observe the  ```Other options set via ACE defaults''' list  of
+options  that  has  resulted  from  having  the  `echo  :=  2'  option
+(see~"option echo"). Observe, also, that  `hlt'  is  nowhere  near  as
+good, here, as  `purec'  (refer  to  Section~"Using  ACE  Directly  to
+Generate  a  Coset  Table"):  whereas  `purec'  completed   the   same
+enumeration with a total number of coset numbers  of  332,  the  `hlt'
+strategy required 3127.
+
+Before we finish this section, let us say something about the examples
+listed when one calls `ACEExample' with no arguments that have  a  `*'
+beside them; these are examples for which  the  enumeration  fails  to
+complete. The first such example  listed  is  `"2p17-fel1"',  where  a
+group of order $2^{17}$ is enumerated over the identity subgroup  with
+the `felsch := 1' strategy. The enumeration  fails  after  defining  a
+total number of 416664 coset numbers. (In fact, the enumeration can be
+made to succeed by simply increasing `workspace' to `"4700k"', but  in
+doing so a total of  783255  coset  numbers  are  defined.)  With  the
+example `"2p17-fel1a"' the same group is again enumerated, again  with
+the `felsch := 1' strategy, but this time over the  group  itself  and
+after tweaking a few options, to see how well we  can  do.  The  other
+`"2p17-<XXX>"' examples are again enumerations of the same  group  but
+over smaller and smaller subgroups, until we once again enumerate over
+the identity subgroup but far more efficiently this time (only needing
+to define a total of 550659 coset numbers, which can be achieved  with
+`workspace' set to `"3300k"').
+
+The other `*'-ed examples enumerate overgroups of the group  of  order
+$2^{17}$ of the `"2p17-<XXX>"' examples. It's recommended that you try
+these with second argument `ACECosetTableFromGensAndRels' so that  you
+enter a `break'-loop, where you  can  experiment  with  modifying  the
+options using `SetACEOptions'. The example `"2p18-fel1"' can  be  made
+to succeed with `hard, mend, workspace := "10M"'; why don't you see if
+you can do better! There  are  no  hints  for  the  other  two  `*'-ed
+examples; they are exercises for you to try.
+
+Let's now restore the original value of `OnBreak':
+
+\beginexample
+gap> OnBreak := NormalOnBreak;;
+\endexample
+
+Of course, running `ACEExample' with  `ACEStart'  as  second  argument
+opens up far more flexibility. Try it! Have fun!  Play  with  as  many
+options as you can. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Using ACEReadResearchExample}
+
+\indextt{PGRelFind}
+Without an argument, the function `ACEReadResearchExample'  reads  the
+file `"pgrelfind.g"' in the  `res-examples'  directory  which  defines
+{\GAP} functions such as `PGRelFind', that were used in  \cite{CHHR01}
+to show that the group $L_3(5)$ has deficiency 0.
+%display{nonhtml}
+%
+%*Some background*
+%enddisplay
+
+The *deficiency* of a finite presentation $\{X \mid R\}$ of  a  finite
+group $G$ is $|R| - |X|$, and the *deficiency* of the group $G$ is the
+minimum of the deficiencies of all finite presentations of $G$.
+
+%display{nonhtml}
+%The following result (with a  constructive  proof)  is  Lemma  2.2  in
+%\cite{CHHR01}.
+%
+%*Lemma*
+%Let $G$ be a simple group with trivial Schur multiplier.  Suppose  $G$
+%has a presentation of the form
+%$$
+%P = \{ a, b \mid a^2=1, b^p=1, w(a,b)=1\}
+%$$
+%with $p$ prime. Then $G$ has deficiency zero.
+%
+%Prior to the paper \cite{CHHR01} there remained just two simple groups
+%with trivial Schur multiplier of order less than one  million,  namely
+%$L_3(5)$ and $PSp_4(4)$, that had not been shown  to  have  deficiency
+%zero. Using `TranslatePresentation' and `PGRelFind' the  question  for
+%$L_3(5)$ is now settled, but whether $PSp_4(4)$ has  deficiency  0  is
+%still open.
+%
+%We now sketch the method used in \cite{CHHR01} to show that  a  simple
+%group $G$ with trivial Schur multiplier (in particular, $L_3(5)$)  has
+%deficiency 0. We start with a known two-generator presentation of  the
+%group  $G$,  on   say   $x$   and   $y$.   Then   an   invocation   of
+%`TranslatePresentation' (which uses Tietze transformations) translates
+%the presentation into a presentation on two new generators $a$ and $b$
+%say, having several relators but for which the first two relators  are
+%of form $a^2$ and $b^p$ for some prime $p$.  Finally,  `PGRelFind'  is
+%invoked to find a presentation on the generators $a$ and $b$ found  by
+%`TranslatePresentation' that contains $a^2$ and  $b^p$  and  just  one
+%more relator. If the search by  `PGRelFind'  is  successful  then  the
+%Lemma shows the group has deficiency zero.
+%
+%*Some details (what the file `pgrelfind.g' defines)*
+%enddisplay
+
+Let us now invoke `ACEReadResearchExample' with no arguments:
+
+\beginexample
+gap> ACEReadResearchExample();
+#I  The following are now defined:
+#I  
+#I  Functions:
+#I    PGRelFind, ClassesGenPairs, TranslatePresentation,
+#I    IsACEResExampleOK
+#I  Variables:
+#I    ACEResExample, ALLRELS, newrels, F, a, b, newF, x, y,
+#I    L2_8, L2_16, L3_3s, U3_3s, M11, M12, L2_32,
+#I    U3_4s, J1s, L3_5s, PSp4_4s, presentations
+#I  
+#I  Also:
+#I  
+#I  TCENUM = ACETCENUM  (Todd-Coxeter Enumerator is now ACE)
+#I  
+#I  For an example of their application, you might like to try:
+#I  gap> ACEReadResearchExample("doL28.g" : optex := [1,2,4,5,8]);
+#I  (the output is 65 lines followed by a 'gap> ' prompt)
+#I  
+#I  For information type: ?Using ACEReadResearchExample
+gap> 
+\endexample
+
+%display{nontext}
+The output (`Info'-ed at `InfoACELevel' 1) states that a number of new
+functions are defined. During a  {\GAP}  session,  you  can  find  out
+details of these functions by typing:
+
+\begintt
+gap> ?Using ACEReadResearchExample
+\endtt
+
+%enddisplay
+%display{nonhtml}
+%The output (`Info'-ed at `InfoACELevel' 1) states  that  a  number  of
+%functions and variables have been defined, which we will now describe.
+%
+%\>PGRelFind( <fgens>, <rels>, <sgens> ) F
+%
+%For the perfect *simple*  group  $S  =  \langle  <fgens>  \mid  <rels>
+%\rangle$ with subgroup $\langle <sgens> \rangle$ where each element of
+%the list <sgens> is a word  in  the  generators  <fgens>,  `PGRelFind'
+%tries to find  a  third  relator  such  that  together  with  the  two
+%order-defining relators of <fgens> a presentation on three relators is
+%determined, and if successful returns a record with fields  `fgens  :=
+%<fgens>', `rels' set to the new 3-relator list found,  and  `sgens  :=
+%<sgens>'. <fgens> should be a list of two generators of a free  group,
+%say `[<a>, <b>]';  <rels>  should  contain  words  in  the  generators
+%<fgens>,  the  first  of  which  should  determine  that  <a>  is   an
+%involution, and the second should determine that <b> is of  order  <p>
+%for some prime <p>. The  subgroup  $\langle  <sgens>  \rangle$  should
+%ideally  be  a  maximal  subgroup  of  $\langle  <fgens>  \mid  <rels>
+%\rangle$. It turns out that one only needs to test for  relators  that
+%are the products of an odd number of bi-syllables of form  $<a><b>^k$,
+%for some integer $k$ in the range $1,\ldots,<p> - 1$. We will use  the
+%term *bi-syllabic length* to mean the number of bi-syllables  of  form
+%$<a><b>^k$ in such a relator. Furthermore, each relator we test can be
+%assumed to have the prefix (which we  subsequently  call  the  <head>)
+%$<a><b><a><b><a><b>^{-1}$ if <p> is 3, or $<a><b>$ otherwise.
+%
+%Each relator tested is of form `<head> *  <middle>  *  <tail>',  where
+%each of <head>, <middle>, <tail> is a  word  of  integral  bi-syllabic
+%length. Moreover,
+%
+%\beginlist%unordered
+%
+%\item{--} <head> is fixed (as mentioned above); 
+%
+%\item{--} all <tail>s of the opposite parity bi-syllabic length up  to
+%a  maximum  prescribed  length  are  pre-computed  (since  <head>   is
+%generally of odd bi-syllabic length, <tail>s  are  generally  of  even
+%bi-syllabic length); and
+%
+%\item{--} the bi-syllabic length of  the  <middle>s  is  always  even,
+%starting from an initial minimum <middle>  length  and  increasing  in
+%steps of `<granularity> + 2', where <granularity> is defined to be the
+%difference of the maximum and minimum bi-syllabic lengths of a  <tail>
+%(see below).
+%
+%\endlist
+%
+%Since the <tail>s in general are not all of the  same  length,  it  is
+%possible when a search is successful that the first relator  found  is
+%not the  shortest.  Hence  searching  continues  until  a  relator  of
+%shortest length can be guaranteed.
+%
+%To provide some user control  of  the  algorithm,  `PGRelFind'  has  a
+%number of options (entered after the arguments and after  a  colon  in
+%the usual way):
+%
+%\beginitems
+%
+%\quad`head := <head>' & 
+%Redefines <head> which by default is `<a>*<b>*<a>*<b>*<a>/<b>' if  the
+%order of <b> is 3, or `<a>*<b>' otherwise, where <a> and  <b>  are  as
+%defined above; <head> must  be  a  word  consisting  of  `<a>*<b>^<k>'
+%bi-syllables for integers <k>.
+%
+%\quad`Nrandom := <nOrFunc>' & 
+%Sets the number of <middle>s to be generated  for  each  length  of  a
+%<middle>; <nOrFunc> may be a non-negative integer or a single-argument
+%function that returns a positive integer.
+%
+%&
+%Each <middle> may be generated sequentially or randomly. If `<nOrFunc>
+%=  0'  then  <middle>s   are   generated   sequentially   (and   hence
+%exhaustively), as they are by default.  If  <nOrFunc>  is  a  positive
+%integer then, for each bi-syllabic length  of  a  <middle>,  <nOrFunc>
+%``random'' <middle>s are generated. If <nOrFunc> is a  single-argument
+%function then  for  each  bi-syllabic length  <len>  of  a  <middle>,
+%`<nOrFunc>(<len>)' ``random'' <middle>s are generated.
+%
+%\quad`ACEworkspace := <workspace>' & 
+%Sets the option `workspace' used by {\ACE} to <workspace> when running
+%the index check of the large subgroup. If the index is  right,  {\ACE}
+%is set to use  `2*<workspace>'  to  check  the  index  of  the  cyclic
+%subgroup $\langle <b> \rangle$. By  default,  <workspace>  is  set  to
+%`10^6', which is too small for many  of  the  `do<XXX>.g'  files  (see
+%below). Of course, groups for which {\ACE} overflows the workspace are
+%indistinguishable from infinite groups, and one can't easily  be  sure
+%whether a relator wasn't found because the workspace was too small  or
+%because there wasn't one to be found.
+%
+%\quad`Ntails := <Ntails>' & 
+%Sets the approximate number of <tail>s generated to  <Ntails>;  it  is
+%used to set `maxTailLength' (described next); <Ntails> must a positive
+%integer. The default behaviour is given by `<Ntails> = 2048'.
+%
+%\quad`maxTailLength := <len>' & 
+%Sets the *intended* maximum bi-syllabic length of a <tail>  to  <len>;
+%<len> must be a positive integer.
+%
+%&
+%The default behaviour is given by `<len> = LogInt(<Ntails>, <orderb> -
+%1)', where  <orderb>  is  the  order  of  <b>.  The  *actual*  maximum
+%bi-syllabic length of a <tail> may be set 1 less, in order that it has
+%the same parity as the minimum bi-syllabic length of a <tail>.
+%
+%\quad`minMiddleLength := <len>' & 
+%Sets the minimum bi-syllabic length of a <middle> (which,  by  default
+%is 0) to <len>; <len> should be a non-negative even integer.
+%
+%\quad`maxMiddleLength := <len>' & 
+%Sets the *intended* maximum bi-syllabic length of a <middle> to <len>;
+%<len> should be a positive integer.
+%
+%&
+%The default behaviour is given by `<len> = 30'. The  *actual*  maximum
+%bi-syllabic length of a <middle> is adjusted downwards  by  the  least
+%amount necessary to ensure that the  difference  of  the  minimum  and
+%maximum  bi-syllabic lengths  of   a   <middle>   is   divisible   by
+%`<granularity> + 2'. (Recall that <granularity> is the  difference  of
+%the maximum and minimum bi-syllabic lengths of a <tail>.)
+%
+%\enditems
+%
+%Please note that the relators tested are saved in the lists  `ALLRELS'
+%and `newrels' (see~"ALLRELS").
+%
+%\>ClassesGenPairs( <G>, <orderx>, <ordery> ) F
+%
+%finds, and returns as a list of 2-element lists,  generator  pairs  of
+%elements for the group <G> of  orders  <orderx>  and  <ordery>,  where
+%<orderx> and <ordery> are positive integers.
+%
+%\>TranslatePresentation( <fgens>, <rels>, <sgens>, <newgens> ) F
+%
+%finds a new presentation, in terms of the  generators  <newgens>,  for
+%the *simple* group $S = \langle <fgens>  \mid  <rels>  \rangle$,  with
+%subgroup generated by <sgens>; <fgens> should  be  a  *pair*  of  free
+%group generators; <rels>, <sgens> and <newgens>  should  be  lists  of
+%words in <fgens>. Furthermore, <newgens>  should  be  a  list  of  two
+%words, the first of which should be of even order and  the  second  of
+%odd prime order in the group $S$. The idea is that,  by  using  Tietze
+%transformations, the variables `x' and `y' (see~"x") are  assigned  to
+%the words of <newgens>, which make up the new <fgens>, and <rels>  and
+%<sgens>   are   written    in    terms    of    the    new    <fgens>,
+%`TranslatePresentation' returns a record with fields  `fgens',  `rels'
+%and `sgens' that are  the  new  values  of  <fgens>,  and  <rels>  and
+%<sgens>, respectively.
+%
+%\>IsACEResExampleOK() F
+%
+%does a number of integrity  checks  and  tries  to  give  an  accurate
+%diagnosis if something is wrong, returning  `true'  if  everything  is
+%``OK''   and   `false'    otherwise.    It    is    called    whenever
+%`ACEReadResearchExample' is executed and is not  intended  for  direct
+%usage by users.
+%
+%\>`ACEResExample' V
+%
+%is initially set to  a  record  with  one  field  `filename'  whenever
+%`ACEReadResearchExample' is executed and the value set to  that  field
+%is the name of the file read by `ACEReadResearchExample'; other fields
+%are set as the need arises. Essentially, it is  used  as  a  temporary
+%variable store when `ACEReadResearchExample' reads a `do<XXX>.g' file.
+%
+%\>`ALLRELS' V
+%\>`newrels' V
+%
+%are initially set to null lists. Each  time  `PGRelFind'  is  executed
+%these each ``third'' relator tested is appended to `ALLRELS' and  each
+%relator that is satisfied by the group  defined  by  the  <fgens>  and
+%<rels> arguments  of  `PGRelFind'  (see~"PGRelFind")  is  appended  to
+%`newrels'. The user should normally reset these  lists  back  to  null
+%lists between invocations of `PGRelFind'.
+%
+%\>`F' V
+%\>`a' V
+%\>`b' V
+%
+%are the free group `F' and its two generators `a' and `b', used in the
+%presentations described below.
+%
+%\>`newF' V
+%\>`x' V
+%\>`y' V
+%
+%are the free group `newF' and its two  generators  `x'  and  `y';  the
+%record field `fgens' returned by `TranslatePresentation' is  the  list
+%`[x, y]' (see~"TranslatePresentation").
+%
+%\>`L2_8' V
+%\>`L2_16' V
+%\>`L3_3s' V
+%\>`U3_3s' V
+%\>`M11' V
+%\>`M12' V
+%\>`L2_32' V
+%\>`U3_4s' V
+%\>`J1s' V
+%\>`L3_5s' V
+%\>`PSp4_4s' V
+%
+%contain  presentations  for  the  perfect  simple   groups   $L_2(8)$,
+%$L_2(16)$, $L_3(3)$, $U_3(3)$, $M_{11}$, $M_{12}$, $L_2(32)$, $U_3(4)$,
+%$J_1$, $L_3(5)$ and $PSp_4(4)$, respectively. Those with names  ending
+%in `s'contain lists of records (the `s' is meant to suggest ``plural''),
+%and those with no `s' are just single records, where each record has the
+%following fields:
+%
+%\beginitems
+%
+%\quad`source' & 
+%a citation giving the source from which the presentation was obtained,
+%where `CCN85', `CMY79' and `CR84' indicate \cite{CCN85},  \cite{CMY79}
+%and \cite{CR84}, respectively, and `Bray' indicates the website
+%\URL{http://www.cix.co.uk/~vicarage/};
+%
+%\quad`rels' & 
+%the relators of the group in terms  of  the  generators  `a'  and  `b'
+%defined above (see~"a"); and
+%
+%\quad`sgens' & 
+%the generators of a large (usually maximal) subgroup of the group,  in
+%terms of the generators `a' and `b'.
+%
+%\enditems
+%
+%\>`presentations' V
+%
+%is a record whose fields are the names of the  presentation  variables
+%of~"M11",     and     whose     values     are     the      variables,
+%e.g.~`presentations.L2_16' is the same object as `L2_16'.
+%
+%*The `do<XXX>.g' files*
+%
+%Each `do<XXX>.g' file (other than the generic `doGrp.g')  had  a  name
+%that is formed  by  taking  one  of  the  fields  of  `presentations',
+%removing any  underscore  or  `s',  prepending  `"do"'  and  appending
+%`".g"'; also, each requires that you run
+%
+%\beginexample
+%gap> ACEReadResearchExample();
+%\endexample
+%
+%first to define the functions described above. If  you  forget,  never
+%mind~\dots~you will be reminded.
+%
+%Many of the outputs are fairly lengthy and you may wish to use `LogTo'
+%(see~"ref:LogTo") in order to peruse the  output  at  leisure,  later.
+%Also, for many of the larger groups  one  needs  to  be  able  to  set
+%`ACEworkspace' larger than `10^6', but how  large?  The  investigation
+%showing that $L_3(5)$ has deficiency 0 was run on an SGI  Origin  2000
+%with 6.4 Gb of RAM and with `ACEworkspace' set to `10^8',  to  find  a
+%``third'' relator of 23 bisyllables. It turns  out  however  that  one
+%need  only  set  `ACEworkspace   :=   5   *   10^6'   to   find   that
+%relator~\dots~one can be very knowledgeable in hindsight! In the  list
+%below we give values for `ACEworkspace' that will succeed  in  finding
+%the  shortest  ``third''  relator  that  we  found,  when  the  method
+%succeeded. (Of course, `PGRelFind' runs a lot faster if the  workspace
+%given to {\ACE} is kept small.)
+%
+%Recall `ACEReadResearchExample' expects a filename (i.e.~a string), or
+%no argument; here are the *filenames* of the `do<XXX>.g' provided:
+%
+%\beginitems
+%
+%\quad`"doGrp.g"' &
+%This allows the user to experiment with any of the  groups  that  have
+%data in the `presentations' record. The user *must* supply a value for
+%the following option:
+%
+%\qquad`grp := <presField>' &
+%<presField> must be the  name  (i.e.~a  string)  of  a  field  in  the
+%`presentations' record (this selects the group  to  be  investigated);
+%and, possibly one or both of the following options:
+%
+%\qquad`n := <n>' &
+%If <presField>, above, ends in `s'  then  the  user  *must*  supply  a
+%positive integer <n> for `n', which indicates that the <n>th record of
+%`presentations.(<presField>)' is desired.
+%
+%\qquad`newgens := <wordlist>' &
+%<wordlist> must be a list of two words in the generators `a'  and  `b'
+%which are  to  be  the  words  used  for  the  <newgens>  argument  of
+%`TranslatePresentation'    (see~"TranslatePresentation"    for     the
+%conditions they must satisfy). If `newgens' is  not  supplied,  it  is
+%assumed that `TranslatePresentation'  is  not  needed,  i.e.~that  the
+%generators `a' and `b' are already an involution and an element of odd
+%prime order, respectively, and that  `PGRelFind'  may  be  immediately
+%applied.
+%
+%&
+%The user may also supply `PGRelFind' options, though unlike `grp'  and
+%`newgens', they will not be directly observable in the output. 
+%An example using both sets of options is given below.
+%
+%\quad`"doL28.g"' &
+%This provides a nice small example. You  may  supply  any  `PGRelFind'
+%options you wish, and/or you may use the following  option  which  has
+%been specifically  designed  to  help  you  get  acquainted  with  the
+%`PGRelFind' options (only the equivalent of the `optex'  options  will
+%be explicitly observable in the output).
+%
+%\qquad`optex := <val>' &
+%<val>  may  be  an  integer  or  a  list  of  integers  in  the  range
+%$1,\ldots,8$. The output  of  `ACEReadResearchExample();'  suggests  a
+%combination that is 65 lines long. Most of the  possible  choices  for
+%`optex' give an output of the order of 100 to 200 lines,  which  isn't
+%too bad if you have say an `xterm' window with the capacity to  scroll
+%back.
+%
+%\quad`"doL216.g"' &
+%As is the case with the remaining  `do<XXX>.g'  files,  there  are  no
+%options other than those for `PGRelFind'.  It  is  sufficient  to  set
+%`ACEworkspace := 2 * 10^4'.
+%
+%\quad`"doL33.g"' &
+%It is sufficient to set `ACEworkspace := 2 * 10^4'.
+%
+%\quad`"doU33.g"' &
+%Though   $U_3(3)$   is   known   to    have    deficiency    0,    the
+%`TranslatePresentation'-`PGRelFind' method does not appear to be  able
+%to demonstrate it.
+%
+%\quad`"doM11.g"' &
+%`ACEworkspace' needs to be set to at least `6 * 10^6'.
+%
+%\quad`"doL232.g"' &
+%It is sufficient to set `ACEworkspace := 5 * 10^4'.
+%
+%\quad`"doU34.g"' &
+%It is sufficient to set `ACEworkspace := 5 * 10^4'.
+%
+%\quad`"doJ1.g"' &
+%`ACEworkspace' needs to be set to at least `5 * 10^6'.
+%
+%\quad`"doL35.g"' &
+%`ACEworkspace' needs to be set to at least `5 * 10^6'.
+%
+%\quad`"doPSp44.g"' &
+%We were unable to determine whether $PSp_4(4)$ has deficiency  0,  via
+%the `TranslatePresentation'-`PGRelFind' method.
+%
+%\enditems
+%
+%The following example shows that you can use both the options peculiar
+%to  the  file  `doGrp.g'  and  the   options   of   `PGRelFind'   when
+%`ACEReadResearchExample'   is   called   with   argument    (filename)
+%`"doGrp.g"'.
+%
+%\beginexample
+%gap> ACEReadResearchExample("doGrp.g"
+%>                           : grp := "L2_8", newgens := [a^3*b, a^2*b],
+%>                             head := x*y*x*y*x*y^-1*x*y*x*y);
+%# IsACEResExampleOK() sets ACEResExample.grp     from options grp, n
+%#                          ACEResExample.newgens from option  newgens
+%gap> ACEResExample.G := TranslatePresentation([a, b],
+%>                                             ACEResExample.grp.rels,
+%>                                             ACEResExample.grp.sgens,
+%>                                             ACEResExample.newgens);
+%#I  there are 4 generators and 6 relators of total length 45
+%#I  there are 2 generators and 4 relators of total length 55
+%rec(
+%  fgens := [ x, y ],
+%  rels := [ x^2, y^3, y^-1*x*y^-1*x*y^-1*x*y^-1*x*y^-1*x*y^-1*x*y^-1*x, 
+%      x*y^-1*x*y*x*y^-1*x*y*x*y^-1*x*y*x*y^-1*x*y*x*y*x*y^-1*x*y*x*y^
+%        -1*x*y*x*y^-1*x*y*x*y^-1*x*y*x*y ],
+%  sgens := [ x*y^-1 ] )
+%gap> ACEResExample.Gn := PGRelFind(ACEResExample.G.fgens,
+%>                                  ACEResExample.G.rels,
+%>                                  ACEResExample.G.sgens);
+%GroupOrder=504 SubgroupIndex=72
+%#bisyllables in head = 5 head: x*y*x*y*x*y^-1*x*y*x*y
+%Max #bisyllables in tail = 10 (granularity = 10)
+%#bisyllables in middle = 0
+%Candidate relator: x*y*x*y*x*y^-1*x*y*x*y*x*y^-1*x*y^-1*x*y*x*y*x*y*x*y^
+%-1*x*y^-1*x*y^-1*x*y*x*y^-1
+% #bisyllables = 15 (#bisyllables in tail = 10) #words tested: 1
+%ACEStats:
+%  index=72 cputime=10 ms maxcosets=98 totcosets=121
+%Large subgroup index OK
+%ACEStats for cyclic subgroup:
+%  index=168 cputime=10 ms maxcosets=170 totcosets=232
+%Cyclic subgroup index OK
+%Success! ... new relator: 
+%   x*y*x*y*x*y^-1*x*y*x*y*x*y^-1*x*y^-1*x*y*x*y*x*y*x*y^-1*x*y^-1*x*y^
+%-1*x*y*x*y^-1
+%... continuing (there may be a shorter relator).
+%Candidate relator: x*y*x*y*x*y^-1*x*y*x*y*x*y^-1*x*y*x*y^-1*x*y^-1*x*y^
+%-1*x*y*x*y*x*y*x*y^-1*x*y^-1
+% #bisyllables = 15 (#bisyllables in tail = 10) #words tested: 1
+%ACEStats:
+%  index=72 cputime=10 ms maxcosets=102 totcosets=123
+%Large subgroup index OK
+%ACEStats for cyclic subgroup:
+%  index=168 cputime=0 ms maxcosets=170 totcosets=236
+%Cyclic subgroup index OK
+%Success! ... new relator: 
+%   x*y*x*y*x*y^-1*x*y*x*y*x*y^-1*x*y*x*y^-1*x*y^-1*x*y^-1*x*y*x*y*x*y*x*y^
+%-1*x*y^-1
+%... continuing (there may be a shorter relator).
+%Middles of length 0 exhausted.
+%Relator found of length 15, is shortest.
+%rec(
+%  gens := [ x, y ],
+%  rels := 
+%   [ x^2, y^3, x*y*x*y*x*y^-1*x*y*x*y*x*y^-1*x*y*x*y^-1*x*y^-1*x*y^-1*x*y*x*y*\
+%x*y*x*y^-1*x*y^-1 ],
+%  sgens := [ x*y^-1 ] )
+%gap> 
+%\endexample
+%
+%The following 
+%
+%\beginexample
+%gap> ACEReadResearchExample("doGrp.g" : grp := "L3_3s", n := 1);
+%\endexample
+%
+%is essentially equivalent to
+%
+%\beginexample
+%gap> ACEReadResearchExample("doL33.g");
+%\endexample
+%
+%Observe that the option `n' is needed because `grp' selects a list  of
+%records (as indicated by the trailing `s' of `"L3_3s"'). Also, observe
+%that the `newgens' option  was  not  used  since  we  already  have  a
+%presentation where the generators `a' and `b' are an involution and of
+%odd prime order, respectively. 
+%enddisplay
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

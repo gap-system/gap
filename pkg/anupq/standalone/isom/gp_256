@@ -1,0 +1,25 @@
+1
+
+prime 2
+class 1
+generators {a, b}
+relations {a^4 = [b, a, a, a, a, a],
+             b * a^2 * b^-1 * a^-2 = [b, a, a, a, a, a], 
+             b^2 = [b, a, a, a, a, a]}
+;
+
+2      #standardise
+CLASS8 #file 
+8      #class 
+
+2      #nmr of auts 
+0 1
+1 1
+0 1
+1 0
+
+
+1      #PAG-generating sequence
+
+0
+

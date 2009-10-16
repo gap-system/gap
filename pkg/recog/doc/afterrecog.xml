@@ -1,0 +1,72 @@
+<!-- 
+
+  afterrecog.xml          recog package documentation          Max Neunhoeffer
+                                                                   Ákos Seress
+
+         Copyright (C) 2005, Lehrstuhl D für Mathematik, RWTH-Aachen
+
+This chapter shows what one can do after a successfull recognition.
+
+-->
+
+<Chapter Label="afterrecog">
+<Heading>After successfull recognition</Heading>
+
+This chapter explains, what one can do with recognition info records
+after a successfull recognition (and possibly verification).<P/>
+
+Of course, one can inspect the whole tree of recognition info records
+just by looking at the stored attribute values. Moreover, constructive
+membership tests can be performed using the function 
+<Ref Func="SLPforElement"/>, thereby writing an arbitrary element
+in terms of the nice generators, which are stored in the attribute
+<Ref Attr="nicegens"/>. If <C>fail</C> is returned, then the
+element in question does not lie in the recognised group or
+the recognition made an error.<P/>
+
+<Section>
+    <Heading>Functions and methods for recognition info records</Heading>
+
+If you need an element explicitly written in terms of the original
+generators, you can use the following function:
+
+<ManSection>
+<Func Name="SLPforNiceGens" Arg="ri"/>
+<Returns>an SLP expressing the nice generators in the original ones</Returns>
+<Description>
+    This function assembles a possibly quite large straight line program
+    expressing the nice generators in terms of the original ones by using
+    the locally stored information in the recognition tree recursively.<P/>
+    You can concatenate straight line programs in the nice generators with
+    the result of this function to explicitly write an element in terms
+    of the original generators.
+</Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="Size" Arg="ri"/>
+<Returns>the size of the recognised group</Returns>
+<Description>
+    This method calculates the size of the recognised group
+    by multiplying the size of the factor and the kernel recursively.
+    It is assumed that leaf nodes know already or can calculate the
+    size of their group.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="DisplayCompositionFactors" Arg="ri"/>
+<Returns>nothing</Returns>
+<Description>
+    This function displays a composition series by using the recursive
+    recognition tree. It only works, if the usual operation
+    <Ref Oper="CompositionSeries" BookName="ref"/> works for all
+    leaves.
+</Description>
+</ManSection>
+
+</Section>
+
+<!-- ############################################################ -->
+
+</Chapter>

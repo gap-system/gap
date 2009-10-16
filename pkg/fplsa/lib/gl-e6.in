@@ -1,0 +1,25 @@
+Generators E_6 for Leites' relations: x y z;
+Parameter: t;
+Limiting weight: 62;
+Relations:
+
+[[x,y],x] - 2 x;
+[[x,y],y] + 2 y;
+
+[y,z];
+[[x,y],z] + 8 z;
+[x,[x,[x,[x,[x,[x,[x,[x,[x,z]]]]]]]]];
+
+50 [[x,[x,z]],[x,[x,[x,z]]]] + 14 [z,[x,[x,[x,[x,[x,z]]]]]]
+ - 35 [[x,z],[x,[x,[x,[x,z]]]]];
+20 [[x,[x,[x,z]]],[x,[x,[x,[x,z]]]]] - 15 [[x,[x,z]],[x,[x,[x,[x,[x,z]]]]]]
+ + 7 [[x,z],[x,[x,[x,[x,[x,[x,z]]]]]]] - 14 t^2 y;
+[[x,z],[z,[x,z]]];
+[[x,[x,z]],[z,[x,z]]];
+4 [[x,[x,[x,z]]],[z,[x,z]]] + 7 [[x,z],[[x,z],[x,[x,z]]]];
+5 [[x,[x,[x,z]]],[z,[x,[x,z]]]] + [[x,[x,[x,[x,z]]]],[z,[x,z]]];
+8 [[x,[x,[x,[x,z]]]],[z,[x,[x,z]]]] + 5 [[x,[x,[x,z]]],[[x,z],[x,[x,z]]]];
+3 [[x,[x,[x,[x,z]]]],[[x,z],[x,[x,z]]]]
+ + 4 [[x,[x,[x,[x,z]]]],[z,[x,[x,[x,z]]]]];
+51 [[x,[x,[x,[x,[x,z]]]]],[[x,z],[x,[x,z]]]]
+ + 4 [[x,[x,[x,[x,[x,z]]]]],[z,[x,[x,[x,z]]]]] + 384 t^2 z.

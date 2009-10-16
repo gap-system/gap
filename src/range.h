@@ -2,7 +2,7 @@
 **
 *W  range.h                     GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: range.h,v 4.10 2007/06/14 09:33:23 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -24,7 +24,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_range_h =
-   "@(#)$Id$";
+   "@(#)$Id: range.h,v 4.10 2007/06/14 09:33:23 gap Exp $";
 #endif
 
 

@@ -2,7 +2,7 @@
 ##
 #W  semitran.gi           GAP library         Isabel Araujo and Robert Arthur 
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: semitran.gi,v 4.12 2005/12/15 15:42:29 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##	semigroups 
 ##
 Revision.semitran_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: semitran.gi,v 4.12 2005/12/15 15:42:29 sal Exp $";
 
 #############################################################################
 ##

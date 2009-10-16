@@ -2,7 +2,7 @@
 ##
 #W  semigrp.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: semigrp.gi,v 4.47 2005/12/15 15:44:21 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains generic methods for semigroups.
 ##
 Revision.semigrp_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: semigrp.gi,v 4.47 2005/12/15 15:44:21 sal Exp $";
 
 
 #############################################################################

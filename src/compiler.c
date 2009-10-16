@@ -4,7 +4,7 @@
 *W                                                         & Ferencz Rakowczi
 *W                                                         & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: compiler.c,v 4.59 2009/04/06 12:00:49 gap Exp $
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_compiler_c =
-   "@(#)$Id$";
+   "@(#)$Id: compiler.c,v 4.59 2009/04/06 12:00:49 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -74,28 +74,28 @@ Int CompFastIntArith;
 **
 *V  CompFastPlainLists  . option to emit code that handles plain lists faster
 */
-Int CompFastPlainLists = 1;
+Int CompFastPlainLists ;
 
 
 /****************************************************************************
 **
 *V  CompFastListFuncs . . option to emit code that inlines calls to functions
 */
-Int CompFastListFuncs = 1;
+Int CompFastListFuncs;
 
 
 /****************************************************************************
 **
 *V  CompCheckTypes  . . . . option to emit code that assumes all types are ok.
 */
-Int CompCheckTypes = 1;
+Int CompCheckTypes ;
 
 
 /****************************************************************************
 **
 *V  CompCheckListElements .  option to emit code that assumes list elms exist
 */
-Int CompCheckListElements = 1;
+Int CompCheckListElements;
 
 /****************************************************************************
 **
@@ -155,7 +155,7 @@ void SetCompileOpts( Char *opts )
 **
 *V  CompCheckPosObjElements .  option to emit code that assumes pos elm exist
 */
-Int CompCheckPosObjElements = 0;
+Int CompCheckPosObjElements;
 
 
 /****************************************************************************
@@ -186,7 +186,7 @@ Int CompCheckPosObjElements = 0;
 **  unneccessary  computations during the first pass,  the  advantage is that
 **  the two passes are guaranteed to do exactely the same computations.
 */
-Int CompPass = 0;
+Int CompPass;
 
 
 /****************************************************************************
@@ -1251,6 +1251,7 @@ CVar CompFuncExpr (
 {
     CVar                func;           /* function, result                */
     CVar                tmp;            /* dummy body                      */
+
     Obj                 fexs;           /* function expressions list       */
     Obj                 fexp;           /* function expression             */
     Int                 nr;             /* number of the function          */
@@ -1271,7 +1272,10 @@ CVar CompFuncExpr (
     /* this should probably be done by 'NewFunction'                       */
     Emit( "ENVI_FUNC( %c ) = CurrLVars;\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
-    Emit( "%c = NewBag( T_BODY, 0 );\n", tmp );
+    Emit( "%c = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );\n", tmp );
+    Emit( "STARTLINE_BODY(%c) = INTOBJ_INT(%d);\n", tmp, INT_INTOBJ(STARTLINE_BODY(BODY_FUNC(fexp))));
+    Emit( "ENDLINE_BODY(%c) = INTOBJ_INT(%d);\n", tmp, INT_INTOBJ(ENDLINE_BODY(BODY_FUNC(fexp))));
+    Emit( "FILENAME_BODY(%c) = FileName;\n",tmp);
     Emit( "BODY_FUNC(%c) = %c;\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 
@@ -2368,6 +2372,12 @@ CVar CompPow (
 /****************************************************************************
 **
 *F  CompIntExpr( <expr> ) . . . . . . . . . . . . . . .  T_INTEXPR/T_INT_EXPR
+*
+* This is complicated by the need to produce code that will compile correctly
+* in 32 or 64 bit. 
+*
+* This will need attention for GMP.
+*
 */
 CVar CompIntExpr (
     Expr                expr )
@@ -2863,20 +2873,18 @@ void            CompRecExpr2 (
             sub = CompExpr( tmp );
             Emit( "%c = (Obj)RNamObj( %c );\n", rnam, sub );
         }
-        Emit( "SET_RNAM_PREC( %c, %d, (UInt)%c );\n", rec, i, rnam );
-        if ( IS_TEMP_CVAR( rnam ) )  FreeTemp( TEMP_CVAR( rnam ) );
 
         /* if the subexpression is empty (cannot happen for records)       */
         tmp = ADDR_EXPR(expr)[2*i-1];
         if ( tmp == 0 ) {
+            if ( IS_TEMP_CVAR( rnam ) )  FreeTemp( TEMP_CVAR( rnam ) );
             continue;
         }
 
         /* special case if subexpression is a list expression             */
         else if ( TNUM_EXPR( tmp ) == T_LIST_EXPR ) {
             sub = CompListExpr1( tmp );
-            Emit( "SET_ELM_PREC( %c, %d, %c );\n", rec, i, sub );
-            Emit( "CHANGED_BAG( %c );\n", rec );
+            Emit( "AssPRec( %c, (UInt)%c, %c );\n", rec, rnam, sub );
             CompListExpr2( sub, tmp );
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
@@ -2884,8 +2892,7 @@ void            CompRecExpr2 (
         /* special case if subexpression is a record expression            */
         else if ( TNUM_EXPR( tmp ) == T_REC_EXPR ) {
             sub = CompRecExpr1( tmp );
-            Emit( "SET_ELM_PREC( %c, %d, %c );\n", rec, i, sub );
-            Emit( "CHANGED_BAG( %c );\n", rec );
+            Emit( "AssPRec( %c, (UInt)%c, %c );\n", rec, rnam, sub );
             CompRecExpr2( sub, tmp );
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
@@ -2893,14 +2900,13 @@ void            CompRecExpr2 (
         /* general case                                                    */
         else {
             sub = CompExpr( tmp );
-            Emit( "SET_ELM_PREC( %c, %d, %c );\n", rec, i, sub );
-            if ( ! HasInfoCVar( sub, W_INT_SMALL ) ) {
-                Emit( "CHANGED_BAG( %c );\n", rec );
-            }
+            Emit( "AssPRec( %c, (UInt)%c, %c );\n", rec, rnam, sub );
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
 
+        if ( IS_TEMP_CVAR( rnam ) )  FreeTemp( TEMP_CVAR( rnam ) );
     }
+    Emit( "SortPRecRNam( %c, 0 );\n", rec );
 
 }
 
@@ -5636,6 +5642,8 @@ Int CompileFunc (
     Emit( "static Obj  NamsFunc[%d];\n", CompFunctionsNr+1 );
     Emit( "static Int  NargFunc[%d];\n", CompFunctionsNr+1 );
     Emit( "static Obj  DefaultName;\n" );
+    Emit( "static Obj FileName;\n" );
+
 
     /* now compile the handlers                                            */
     CompFunc( func );
@@ -5657,6 +5665,8 @@ Int CompileFunc (
     }
     Emit( "\n/* information for the functions */\n" );
     Emit( "InitGlobalBag( &DefaultName, \"%s:DefaultName(%d)\" );\n",
+          magic2, magic1 );
+    Emit( "InitGlobalBag( &FileName, \"%s:FileName(%d)\" );\n",
           magic2, magic1 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         Emit( "InitHandlerFunc( HdlrFunc%d, \"%s:HdlrFunc%d(%d)\" );\n",
@@ -5696,6 +5706,7 @@ Int CompileFunc (
     }
     Emit( "\n/* information for the functions */\n" );
     Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" )\n" );
+    Emit( "C_NEW_STRING( FileName, %d, \"%s\" )\n", SyStrlen(magic2), magic2 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
@@ -5712,7 +5723,7 @@ Int CompileFunc (
     Emit( "func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);\n" );
     Emit( "ENVI_FUNC( func1 ) = CurrLVars;\n" );
     Emit( "CHANGED_BAG( CurrLVars );\n" );
-    Emit( "body1 = NewBag( T_BODY, 0);\n" );
+    Emit( "body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));\n" );
     Emit( "BODY_FUNC( func1 ) = body1;\n" );
     Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
@@ -5754,7 +5765,7 @@ Int CompileFunc (
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
-    if (  SyStrcmp( "Init__Dynamic", name ) ) {
+    if ( ! SyStrcmp( "Init_Dynamic", name ) ) {
         Emit( "/* type        = */ %d,\n",     MODULE_DYNAMIC ); 
     }
     else {
@@ -5903,6 +5914,14 @@ static Int InitKernel (
 {
     Int                 i;              /* loop variable                   */
 
+    CompFastIntArith = 1;
+    CompFastListFuncs = 1;
+    CompFastPlainLists = 1;
+    CompCheckTypes = 1;
+    CompCheckListElements = 1;
+    CompCheckPosObjElements = 0;
+    CompPass = 0;
+    
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 

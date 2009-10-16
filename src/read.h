@@ -2,7 +2,9 @@
 **
 *W  read.h                      GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: read.h,v 4.18 2008/01/10 17:24:49 sal Exp $
+**
+*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
@@ -10,7 +12,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_read_h =
-   "@(#)$Id$";
+   "@(#)$Id: read.h,v 4.18 2008/01/10 17:24:49 sal Exp $";
 #endif
 
 
@@ -65,7 +67,7 @@ extern Obj ReadEvalResult;
 **  read the  first symbol of the  next  input.
 **
 */
-extern UInt ReadEvalCommand ( void );
+extern UInt ReadEvalCommand ( Obj context );
 
 
 /****************************************************************************
@@ -87,7 +89,7 @@ extern UInt ReadEvalFile ( void );
 */
 extern void ReadEvalError ( void );
 
-extern ExecStatus ReadEvalDebug ( void );
+/* extern ExecStatus ReadEvalDebug ( void ); */
 
 /****************************************************************************
 **

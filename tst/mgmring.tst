@@ -2,14 +2,14 @@
 ##
 #W  mgmring.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mgmring.tst,v 4.8 2005/05/05 15:04:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: mgmring.tst,v 4.8 2005/05/05 15:04:16 gap Exp $");
 
 gap> r:= GF(3);;
 gap> m:= Group( (1,2,3), (1,2) );;
@@ -40,7 +40,7 @@ gap> img:= Image( rembrm, Z(3) );
 gap> PreImagesRepresentative( rembrm, img );
 Z(3)
 
-gap> STOP_TEST( "mgmring.tst", 17400000 );
+gap> STOP_TEST( "mgmring.tst", 19000000 );
 
 
 #############################################################################

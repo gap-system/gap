@@ -1,31 +1,38 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
+##  $Id: setvar,v 1.13 2008/11/28 15:49:52 gapchron Exp $
 
 # where to put the temporary export tree and archives
-export DISTROOT=/scratch/gap4dist
+export DISTROOT=/scratch/gap4dist/4411/wrap
 
 # the cvs repository (login once, before using these scripts) 
-export CVSROOT=":pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS"
+export CVSROOT="gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS"
 
 # the version to wrap, "-D now" for current, for the release first tag
 # all files when the status of a release candidate is reached, say:
 #      cvs tag -b -D now GAP4r4
 # (the -b flag created a CVS branch such that (bugfix) changes can be
 # applied independently of the changes in the main branch.)
-export GAPCVSVERSION="-D now"
-#export GAPCVSVERSION="-r GAP4r4"
+#export GAPCVSVERSION="-D now"
+export GAPCVSVERSION="-r GAP4R4"
 
 # version to wrap
 export VERSION="4"
-FULLVERSION="4.0"
+export FULLVERSION="$VERSION.11"
 
-# related names
-export RBVERSION="4r$VERSION"
-export DISTNAME="gap$RBVERSION"
+# directory name
+export DISTNAME="gap4r$VERSION"
 
-export PKGLOC="ftp://beteigeuze.math.rwth-aachen.de/pub/gap/gap4/tar.gz/packages-\*.tar.gz"
+# archive name
+export RBVERSION="4r4p11"
+export ARCHNAME="gap$RBVERSION"
+
+# package archive URL
+export PKGLOC="ftp://ftp.gap-system.org/pub/gap/gap4/tar.gz/packages-2008_11_26-00_04_UTC.tar.gz"
+
+# version of tomlib to include
+export TOMLIBVER="1r1p4"
 
 #-----------------------------------------------------------------------------
 # everything below should be system independent.
@@ -33,9 +40,14 @@ export PKGLOC="ftp://beteigeuze.math.rwth-aachen.de/pub/gap/gap4/tar.gz/packages
 # binary directory
 export BINDIR=`pwd`
 
+# unset locale settings
+export LANG="C"
+export LC_ALL="C"
+
 # what is *this moment*
 export DATE=`date +"%d-%b-%Y"`
 
+umask 022
 
 echo "Environment set for creating Version GAP 4."${FULLVERSION}
 

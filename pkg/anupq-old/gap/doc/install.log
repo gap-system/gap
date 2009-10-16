@@ -1,0 +1,1144 @@
+This is TeX, Version 3.14159 (Web2C 7.3.1) (format=tex 2000.11.16)  7 APR 2001 17:06
+**\nonstopmode\input install.tex
+(install.tex
+! Undefined control sequence.
+l.2 \Chapter
+            {Installing the ANU PQ Package}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.15 ...running Linux.   It is  assumed that {\GAP
+                                                  }  4 is
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.16 ... installed on this  machine and  the {\GAP
+                                                  }  programme is  in the
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.24 ...to get the file 'anupq.zoo' from the {\GAP
+                                                  } 4 share
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.27 \begintt
+             
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.29 \endtt
+           
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.31 Then locate  the {\GAP
+                           }  directory of the  {\GAP} 4 installation  on your
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.31 ...ocate  the {\GAP}  directory of the  {\GAP
+                                                  } 4 installation  on your
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.33 'pkg/'.   The {\GAP
+                        } directory  itself is  usually called  'gap4r2'.  The
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.36 \begintt
+             
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.51 \endtt
+           
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.57 \begintt
+             
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.59 \endtt
+           
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.63 \begintt
+             
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.82 \endtt
+           
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.87 \begintt
+             
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (32.38368pt too wide) in paragraph at lines 110--112
+[]\tenrm set GAP if gap is not started with the com-mand 'gap', i.e., 'make sun
+-sparc-sunos-cc GAP=/home/gap/bin/gap-|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm s
+.\tenrm e
+.\tenrm t
+.\glue 3.33333 plus 1.66666 minus 1.11111
+.etc.
+
+! Undefined control sequence.
+l.116 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[1]
+! Undefined control sequence.
+l.122 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.125 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.132 where  the {\GAP
+                      }~4  mechanism  for loading  share  packages expects  the
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.135 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.140 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.142 The  {\GAP
+                } documentation  is  compiled  by running  {\TeX}  on the  file
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.145 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.152 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.158 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.161     #
+            a lot of messages ending in
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.163     Starting group: c3c3 #
+                                 2;2 # 4;3
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.163     Starting group: c3c3 # 2;2 #
+                                       4;3
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.164     Order: 3^
+                   7
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in math mode.
+l.167     #
+            of immediate descendants of order 3^8 is 7
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.168     #
+            of capable immediate descendants is 5
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.169 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (47.66014pt too wide) in paragraph at lines 159--169
+\tenrm 3$[]\teni Nuclearrank \tenrm : 33 \tensy ^^@ \teni multiplicatorrank \te
+nrm : 4\teni ofimmediatedescendantsoforder\tenrm 3[]\teni is\tenrm 7\teni ofcap
+ableimmediatedescendantsis\tenrm 5$ |
+
+\hbox(8.14003+1.94444)x469.75499, glue set - 1.0
+.\tenrm 3
+.\mathon
+.\hbox(4.51111+0.0)x4.48613, shifted -3.62892
+..\sevenrm 7
+.\teni N
+.\kern1.09026
+.etc.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.171     34 capable groups saved on file c3c3_
+                                               class4
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.173 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (176.2772pt too wide) in paragraph at lines 170--173
+[]\tenrm ************************************************** 34 ca-pa-ble groups
+ saved on file c3c3$[]\teni lass\tenrm 4\teni Constructionofdescendantstook\ten
+rm 1\teni :\tenrm 92\teni seconds$ |
+
+\hbox(7.5+1.94444)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm *
+.\tenrm *
+.\tenrm *
+.\tenrm *
+.etc.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.182 ...--r--    1 gap    3320 Jun 24 11:24 c3c3_
+                                                  class2
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Undefined control sequence.
+l.186 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.187 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (17.24481pt too wide) in paragraph at lines 177--187
+[]\tenrm Select op-tion: 0 Ex-it-ing from ANU p-Quotient Pro-gram To-tal user t
+ime in sec-onds is 1.97 me@mypc:../anupq|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm S
+.\tenrm e
+.\tenrm l
+.\tenrm e
+.etc.
+
+! Undefined control sequence.
+l.191 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.193     #
+            a lot of messages ending in
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.195     Starting group: c2c2 #
+                                 1;1 # 1;1 # 1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.195     Starting group: c2c2 # 1;1 #
+                                       1;1 # 1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.195     Starting group: c2c2 # 1;1 # 1;1 #
+                                             1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.196     Order: 2^
+                   5
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in math mode.
+l.199     Group c2c2 #
+                       1;1 # 1;1 # 1;1 is an invalid starting group
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.199     Group c2c2 # 1;1 #
+                             1;1 # 1;1 is an invalid starting group
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.199     Group c2c2 # 1;1 # 1;1 #
+                                   1;1 is an invalid starting group
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.200 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (184.13539pt too wide) in paragraph at lines 192--200
+[]\tenrm me@mypc > bin/i686-pc-linux-gnu-gcc/pq < gap/tst/test2.pga  a lot of m
+es-sages end-ing in **************************************************|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm m
+.\tenrm e
+.\tenrm @
+.\tenrm m
+.etc.
+
+
+Overfull \hbox (96.79305pt too wide) in paragraph at lines 192--200
+\tenrm Start-ing group: c2c2  1;1  1;1  1;1 Or-der: 2$[]\teni Nuclearrank \tenr
+m : 12 \tensy ^^@ \teni multiplicatorrank \tenrm : 3\teni Groupc\tenrm 2\teni c
+\tenrm 21; 11; 11; 1\teni isaninvalidstartinggroup$ |
+
+\hbox(8.14003+1.94444)x469.75499, glue set - 1.0
+.\tenrm S
+.\tenrm t
+.\tenrm a
+.\tenrm r
+.\tenrm t
+.etc.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.202     Starting group: c2c2 #
+                                 2;1 # 1;1 # 1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.202     Starting group: c2c2 # 2;1 #
+                                       1;1 # 1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.202     Starting group: c2c2 # 2;1 # 1;1 #
+                                             1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.203     Order: 2^
+                   5
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in math mode.
+l.206     Group c2c2 #
+                       2;1 # 1;1 # 1;1 is an invalid starting group
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.206     Group c2c2 # 2;1 #
+                             1;1 # 1;1 is an invalid starting group
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.206     Group c2c2 # 2;1 # 1;1 #
+                                   1;1 is an invalid starting group
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.208 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (118.15872pt too wide) in paragraph at lines 201--208
+\tenrm 2$[]\teni Nuclearrank \tenrm : 12 \tensy ^^@ \teni multiplicatorrank \te
+nrm : 3\teni Groupc\tenrm 2\teni c\tenrm 22; 11; 11; 1\teni isaninvalidstarting
+groupConstructionofdescendantstook\tenrm 0\teni :\tenrm 47\teni seconds$ |
+
+\hbox(8.14003+1.94444)x469.75499, glue set - 1.0
+.\tenrm 2
+.\mathon
+.\hbox(4.51111+0.0)x4.48613, shifted -3.62892
+..\sevenrm 5
+.\teni N
+.\kern1.09026
+.etc.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.217 ...r--r--    1 gap   6228 Jun 24 11:25 c2c2_
+                                                  class2
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Undefined control sequence.
+l.222 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.223 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (17.24481pt too wide) in paragraph at lines 212--223
+[]\tenrm Select op-tion: 0 Ex-it-ing from ANU p-Quotient Pro-gram To-tal user t
+ime in sec-onds is 0.50 me@mypc:../anupq|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm S
+.\tenrm e
+.\tenrm l
+.\tenrm e
+.etc.
+
+! Undefined control sequence.
+l.224 ...sts the link between the ANU pq and {\GAP
+                                                  }.  If there
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.229 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.233     Starting group: c5c5 #
+                                 1;1 # 1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.233     Starting group: c5c5 # 1;1 #
+                                       1;1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.234     Order: 5^
+                   4
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in math mode.
+l.237     #
+            of immediate descendants of order 5^5 is 2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.238 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (204.06955pt too wide) in paragraph at lines 230--238
+[]\tenrm me@mypc > bin/i686-pc-linux-gnu-gcc/pq < gap/tst/test3.pga [..mes-sage
+s from the ANU pq..] **************************************************|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm m
+.\tenrm e
+.\tenrm @
+.\tenrm m
+.etc.
+
+
+Overfull \hbox (46.79109pt too wide) in paragraph at lines 230--238
+\tenrm Start-ing group: c5c5  1;1  1;1 Or-der: 5$[]\teni Nuclearrank \tenrm : 1
+5 \tensy ^^@ \teni multiplicatorrank \tenrm : 2\teni ofimmediatedescendantsofor
+der\tenrm 5[]\teni is\tenrm 2$ |
+
+\hbox(8.14003+1.94444)x469.75499, glue set - 1.0
+.\tenrm S
+.\tenrm t
+.\tenrm a
+.\tenrm r
+.\tenrm t
+.etc.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.240     Starting group: c5c5 #
+                                 1;1 # 2;2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.240     Starting group: c5c5 # 1;1 #
+                                       2;2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.241     Order: 5^
+                   5
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in math mode.
+l.244     #
+            of immediate descendants of order 5^6 is 3
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.245     #
+            of immediate descendants of order 5^7 is 3
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.246     #
+            of capable immediate descendants is 1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.247     #
+            of immediate descendants of order 5^8 is 1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.248     #
+            of capable immediate descendants is 1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.249 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (33.5309pt too wide) in paragraph at lines 239--249
+[]\tenrm ************************************************** Start-ing group: c5
+c5  1;1  2;2 Or-der: 5$[]\teni Nuclearrank \tenrm :|
+
+\hbox(8.14003+1.94444)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm *
+.\tenrm *
+.\tenrm *
+.\tenrm *
+.etc.
+
+
+Overfull \hbox (470.82843pt too wide) in paragraph at lines 239--249
+\tenrm 35 \tensy ^^@ \teni multiplicatorrank \tenrm : 3\teni ofimmediatedescend
+antsoforder\tenrm 5[]\teni is\tenrm 3\teni ofimmediatedescendantsoforder\tenrm 
+5[]\teni is\tenrm 3\teni ofcapableimmediatedescendantsis\tenrm 1\teni ofimmedia
+tedescendantsoforder\tenrm 5[]\teni is\tenrm 1\teni ofcapableimmediatedescendan
+tsis\tenrm 1$ |
+
+\hbox(8.14003+1.94444)x469.75499, glue set - 1.0
+.\tenrm 3
+.\tenrm 5
+.\glue(\medmuskip) 2.22217 plus 1.11108 minus 2.22217
+.\tensy ^^@
+.\penalty 700
+.etc.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.251     2 capable groups saved on file c5c5_
+                                              class4
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.252 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.254     Starting group: c5c5 #
+                                 1;1 # 2;2 # 4;2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.254     Starting group: c5c5 # 1;1 #
+                                       2;2 # 4;2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.254     Starting group: c5c5 # 1;1 # 2;2 #
+                                             4;2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.255     Order: 5^
+                   7
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in math mode.
+l.258     #
+            of immediate descendants of order 5^8 is 2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.259     #
+            of capable immediate descendants is 2
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.260 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (47.66014pt too wide) in paragraph at lines 253--260
+\tenrm 5$[]\teni Nuclearrank \tenrm : 15 \tensy ^^@ \teni multiplicatorrank \te
+nrm : 2\teni ofimmediatedescendantsoforder\tenrm 5[]\teni is\tenrm 2\teni ofcap
+ableimmediatedescendantsis\tenrm 2$ |
+
+\hbox(8.14003+1.94444)x469.75499, glue set - 1.0
+.\tenrm 5
+.\mathon
+.\hbox(4.51111+0.0)x4.48613, shifted -3.62892
+..\sevenrm 7
+.\teni N
+.\kern1.09026
+.etc.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.262     Starting group: c5c5 #
+                                 1;1 # 2;2 # 7;3
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.262     Starting group: c5c5 # 1;1 #
+                                       2;2 # 7;3
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in horizontal mode.
+l.262     Starting group: c5c5 # 1;1 # 2;2 #
+                                             7;3
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.263     Order: 5^
+                   8
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! You can't use `macro parameter character #' in math mode.
+l.265     #
+            of immediate descendants of order 5^9 is 1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.266     #
+            of capable immediate descendants is 1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.267     #
+            of immediate descendants of order 5^10 is 1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! You can't use `macro parameter character #' in math mode.
+l.268     #
+            of capable immediate descendants is 1
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.269 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (274.63pt too wide) in paragraph at lines 261--269
+\tenrm 5$[]\teni Nuclearrank \tenrm : 2\teni ofimmediatedescendantsoforder\tenr
+m 5[]\teni is\tenrm 1\teni ofcapableimmediatedescendantsis\tenrm 1\teni ofimmed
+iatedescendantsoforder\tenrm 5[]0\teni is\tenrm 1\teni ofcapableimmediatedescen
+dantsis\tenrm 1$ |
+
+\hbox(8.14003+1.94444)x469.75499
+.\tenrm 5
+.\mathon
+.\hbox(4.51111+0.0)x4.48613, shifted -3.62892
+..\sevenrm 8
+.\teni N
+.\kern1.09026
+.etc.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.271     4 capable groups saved on file c5c5_
+                                              class5
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.273 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (171.27719pt too wide) in paragraph at lines 270--273
+[]\tenrm ************************************************** 4 ca-pa-ble groups 
+saved on file c5c5$[]\teni lass\tenrm 5\teni Constructionofdescendantstook\tenr
+m 0\teni :\tenrm 62\teni seconds$ |
+
+\hbox(7.5+1.94444)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm *
+.\tenrm *
+.\tenrm *
+.\tenrm *
+.etc.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.282 ...--r--    1 gap     924 Jun 24 11:27 c5c5_
+                                                  class2
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Undefined control sequence.
+l.287 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.288 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Undefined control sequence.
+l.291 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[2]
+! You can't use `macro parameter character #' in horizontal mode.
+l.302     #
+            there should be no difference if compiled with '-gmp'
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+! Undefined control sequence.
+l.305 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.307 ... test  will test the  link  between {\GAP
+                                                  } and   the ANU pq.  If
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.310 \begintt
+              
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.315 \endtt
+            
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+)
+! Emergency stop.
+<*> \nonstopmode\input install.tex
+                                  
+*** (job aborted, no legal \end found)
+
+Output written on install.dvi (2 pages, 12648 bytes).

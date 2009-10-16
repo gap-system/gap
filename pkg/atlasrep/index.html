@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>The GAP 4 Package AtlasRep</title>
+<link rel="stylesheet" type="text/css" href="atlasrep.css" />
+</head>
+<body>
+<h1 class="pcenter"><span class="Heading">AtlasRep</span></h1>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Description</span></h3>
+
+<p>
+This is Version 1.4.1 of the package <span class="pkg">AtlasRep</span>
+written for <span class="pkg">GAP&nbsp;4</span>,
+whose aim is to provide an interface between GAP and the
+<a href="http://brauer.maths.qmul.ac.uk/Atlas">Atlas of Group Representations</a>,
+a database that comprises representations of many almost simple groups
+and information about their maximal subgroups.
+This database is available independent of <span class="pkg">GAP</span>.
+</p>
+
+<p>
+The <span class="pkg">AtlasRep</span> package consists of this database
+and a <span class="pkg">GAP</span> interface.
+The latter allows the user to get an overview of the database,
+and to access the data in <span class="pkg">GAP</span> format.
+</p>
+
+<p>
+There is a manual (available in <a href="http://www.gap-system.org/Manuals/pkg/atlasrep/doc/chap0.html">HTML</a>
+and <a href="manual.pdf">pdf</a> format)
+that describes the available functions in detail.
+</p>
+
+<p>
+Up to now, the package has been developed and tested on Linux,
+it may or may not work on other platforms.
+</p>
+
+<p>
+The package requires <span class="pkg">GAP&nbsp;4.4.10</span>
+(or a newer version of <span class="pkg">GAP</span>).
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">News</span></h3>
+
+<p>
+An overview of new features in this version can be found in Section
+<a href="http://www.gap-system.org/Manuals/pkg/atlasrep/doc/chap1.html#sect:news">"What's New in <span class="pkg">AtlasRep</span>"</a>
+of the package manual.
+</p>
+
+<p>
+The bibliographies in the Atlas of Finite Groups
+and in the Atlas of Brauer Characters
+are available online, see <a href="bibl/index.html">here</a>.
+</p>
+
+<p>
+The following information will be updated regularly,
+also before the next release of the package.
+</p>
+
+<p>
+For updating the <b>table of contents</b> of the server data,
+one can copy the file <a href="atlasprm.g"><tt>atlasprm.g</tt></a> to
+the directory <tt>pkg/atlasrep/gap</tt> of the <span class="pkg">GAP</span>
+installation.
+</p>
+
+<p>
+An <b>overview of the Atlas data</b> currently available
+via the <span class="pkg">GAP</span> interface can be found
+<a href="htm/data/overview.htm">here</a>.
+</p>
+
+<p>
+A list of <a href="htm/data/changes.htm">changes of server data</a> describes
+which files have been changed in the meantime.
+It is thought mainly for documenting bugfixes in that part of the ATLAS of
+Group Representations that can be accessed via the
+<span class="pkg">GAP</span> interface.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Authors</span></h3>
+
+<p>
+The data files of the ATLAS of Group Representations have been prepared by
+<a href="http://www.maths.qmw.ac.uk/~raw">Robert Wilson</a>, 
+Peter Walsh,
+Jonathan Tripp,
+Ibrahim Suleiman,
+<a href="http://web.ukonline.co.uk/richard">Richard Parker</a>, 
+Simon Norton,
+<a href="http://web.mat.bham.ac.uk/S.Nickerson">Simon Nickerson</a>,
+<a href="http://www-theory.dcs.st-and.ac.uk/~sal/">Steve Linton</a>,
+<a href="http://www.maths.qmw.ac.uk/~jnb">John Bray</a>, and
+Rachel Abbott
+(in reverse alphabetical order).
+</p>
+
+<p>
+The <span class="pkg">GAP</span> interface was written by
+<a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/">Thomas Breuer</a>
+and
+<a href="http://web.mat.bham.ac.uk/S.Nickerson">Simon Nickerson</a>.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Feedback</span></h3>
+
+<p>
+If you have used the <span class="pkg">AtlasRep</span> package
+to solve a problem
+then please send a short email to
+<a href="mailto:R.A.Wilson@qmul.ac.uk">Robert Wilson</a>
+or
+<a href="mailto:sam@math.rwth-aachen.de">Thomas Breuer</a>
+about it.
+</p>
+
+<p>
+Any comments about the package are very welcome.
+If you have found important features missing or if there is a bug,
+let us know and we will try to address it in the next version of the package.
+Messages concerning the data of the package should be sent to
+<a href="mailto:R.A.Wilson@qmul.ac.uk">Robert Wilson</a>,
+messages concerning the <span class="pkg">GAP</span> interface to
+<a href="mailto:sam@math.rwth-aachen.de">Thomas Breuer</a>.
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Download</span></h3>
+
+<p>
+If you want to get Version 1.4.1 of the <span class="pkg">AtlasRep</span> package
+then download the most appropriate of a
+<a href="atlasrep1r4p1.tar.gz">gzipped tar archive</a> (ca. 920k),
+<a href="atlasrep1r4p1.zoo">zoo archive</a> (ca. 995k).
+Further information is contained in the
+<a href="README">README</a> file.
+</p>
+
+<p>
+(The README file and the archives are available also on the
+<a href="http://www.gap-system.org"><span class="pkg">GAP</span> servers</a>.)
+</p>
+
+<p>
+Note that the package archives do <b>NOT</b> contain the database part
+of the package;
+the <span class="pkg">GAP</span> interface accesses the data on demand
+via the internet.
+</p>
+
+<p>
+Here is a <a href="atlasrepdata.tar.gz">starter archive
+in gzipped tar format</a> (ca. 22M) containing
+many small representations and programs.
+(Copy it into the <code>pkg</code> directory of the
+<span class="pkg">GAP</span> installation, and unpack it there.)
+</p>
+
+<p>
+The current table of contents of the server data is contained in the file
+<a href="atlasprm.g"><code>atlasprm.g</code></a> (ca. 300k).
+The recommended way to download this file is described in 
+the manual section
+<a href="http://www.gap-system.org/Manuals/pkg/atlasrep/doc/chap1.html#sect:maintain">"Maintaining the Local Data of the <span class="pkg">AtlasRep</span> Package"</a>.
+</p>
+
+<p>
+For those who cannot use the <span class="pkg">GAP</span> package
+<a href="http://www.gap-system.org/Packages/io.html">
+<span class="pkg">IO</span></a> and therefore want to use
+<span class="code">wget</span> instead:
+For Windows users, <span class="code">wget</span> seems to be not available
+in a standard operating system.
+See <a href="http://www.interlog.com/~tcharron/wgetwin.html">
+WGET for Windows</a> for information about
+<span class="code">wget</span> for Windows (and executables).
+</p>
+
+<p>
+(In earlier times, <a href="http://wget.sunsite.dk">Wget's Website </a>
+provided useful information, but since an update of this site in 2005
+it is completely useless.)
+</p>
+
+
+<!-- =================================================================== -->
+<h3 class="pcenter"><span class="Heading">Related Links</span></h3>
+
+<p class="pcenter">
+<a href="http://brauer.maths.qmul.ac.uk/Atlas">[Atlas Home]</a>
+<a href="http://www.gap-system.org">[GAP Home]</a>
+<a href="bibl/index.html">[Atlas Bibliographies]</a>
+</p>
+
+
+<!-- =================================================================== -->
+<hr/>
+<p class="foot">File created on 11-Nov-2000 by Thomas Breuer.<br/>
+Last modified on 11-Nov-2008 by Thomas Breuer.</p>
+
+</body>
+</html>
+<!-- end -->
+

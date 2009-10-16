@@ -1,0 +1,283 @@
+\indexentry {guava}{0}
+\indexentry {Acknowledgements@Acknowledgements|indexit}{0}
+\indexentry {Installing GUAVA@Installing GUAVA|indexit}{0}
+\indexentry {Loading GUAVA@Loading GUAVA|indexit}{0}
+\indexentry {codeword}{0}
+\indexentry {Construction of Codewords@Construction of Codewords|indexit}{0}
+\indexentry {Codeword@`Codeword'}{0}
+\indexentry {Codeword@`Codeword'}{0}
+\indexentry {IsCodeword@`IsCodeword'}{0}
+\indexentry {Comparisons of Codewords@Comparisons of Codewords|indexit}{0}
+\indexentry {codewords!equality}{0}
+\indexentry {codewords!inequality}{0}
+\indexentry {Arithmetic Operations for Codewords@Arithmetic Operations for Codewords|indexit}{0}
+\indexentry {codewords!addition}{0}
+\indexentry {codewords!subtraction}{0}
+\indexentry {code!cosets}{0}
+\indexentry {code!cosets}{0}
+\indexentry {Functions that Convert Codewords to Vectors or Polynomials@Functions that Convert Codewords to Vectors or Polynomials|indexit}{0}
+\indexentry {VectorCodeword@`VectorCodeword'}{0}
+\indexentry {PolyCodeword@`PolyCodeword'}{0}
+\indexentry {Functions that Change the Display Form of a Codeword@Functions that Change the Display Form of a Codeword|indexit}{0}
+\indexentry {TreatAsVector@`TreatAsVector'}{0}
+\indexentry {TreatAsPoly@`TreatAsPoly'}{0}
+\indexentry {Other Codeword Functions@Other Codeword Functions|indexit}{0}
+\indexentry {NullWord@`NullWord'}{0}
+\indexentry {NullWord@`NullWord'}{0}
+\indexentry {NullWord@`NullWord'}{0}
+\indexentry {DistanceCodeword@`DistanceCodeword'}{0}
+\indexentry {Support@`Support'}{0}
+\indexentry {WeightCodeword@`WeightCodeword'}{0}
+\indexentry {code}{0}
+\indexentry {linear code}{0}
+\indexentry {code!linear}{0}
+\indexentry {unrestricted code}{0}
+\indexentry {code!unrestricted}{0}
+\indexentry {cyclic code}{0}
+\indexentry {code!cyclic}{0}
+\indexentry {Comparisons of Codes@Comparisons of Codes|indexit}{0}
+\indexentry {codes!equality}{0}
+\indexentry {codes!inequality}{0}
+\indexentry {Operations for Codes@Operations for Codes|indexit}{0}
+\indexentry {codes!adition}{0}
+\indexentry {codes!coset}{0}
+\indexentry {codes!coset}{0}
+\indexentry {codes!product}{0}
+\indexentry {code!evaluation}{0}
+\indexentry {code!element test}{0}
+\indexentry {code!subcode}{0}
+\indexentry {Boolean Functions for Codes@Boolean Functions for Codes|indexit}{0}
+\indexentry {IsCode@`IsCode'}{0}
+\indexentry {IsLinearCode@`IsLinearCode'}{0}
+\indexentry {IsCyclicCode@`IsCyclicCode'}{0}
+\indexentry {IsPerfectCode@`IsPerfectCode'}{0}
+\indexentry {IsMDSCode@`IsMDSCode'}{0}
+\indexentry {IsSelfDualCode@`IsSelfDualCode'}{0}
+\indexentry {IsSelfOrthogonalCode@`IsSelfOrthogonalCode'}{0}
+\indexentry {Equivalence and Isomorphism of Codes@Equivalence and Isomorphism of Codes|indexit}{0}
+\indexentry {IsEquivalent@`IsEquivalent'}{0}
+\indexentry {CodeIsomorphism@`CodeIsomorphism'}{0}
+\indexentry {AutomorphismGroup@`AutomorphismGroup'}{0}
+\indexentry {PermutationGroup@`PermutationGroup'}{0}
+\indexentry {Domain Functions for Codes@Domain Functions for Codes|indexit}{0}
+\indexentry {IsFinite@`IsFinite'}{0}
+\indexentry {Size@`Size'}{0}
+\indexentry {LeftActingDomain@`LeftActingDomain'}{0}
+\indexentry {Dimension@`Dimension'}{0}
+\indexentry {AsSSortedList@`AsSSortedList'}{0}
+\indexentry {CodewordNr@`CodewordNr'}{0}
+\indexentry {Printing and Displaying Codes@Printing and Displaying Codes|indexit}{0}
+\indexentry {Print@`Print'}{0}
+\indexentry {String@`String'}{0}
+\indexentry {Display@`Display'}{0}
+\indexentry {Generating (Check) Matrices and Polynomials@Generating (Check) Matrices and Polynomials|indexit}{0}
+\indexentry {GeneratorMat@`GeneratorMat'}{0}
+\indexentry {CheckMat@`CheckMat'}{0}
+\indexentry {GeneratorPol@`GeneratorPol'}{0}
+\indexentry {CheckPol@`CheckPol'}{0}
+\indexentry {RootsOfCode@`RootsOfCode'}{0}
+\indexentry {Parameters of Codes@Parameters of Codes|indexit}{0}
+\indexentry {WordLength@`WordLength'}{0}
+\indexentry {Redundancy@`Redundancy'}{0}
+\indexentry {MinimumDistance@`MinimumDistance'}{0}
+\indexentry {MinimumDistance@`MinimumDistance'}{0}
+\indexentry {MinimumDistanceLeon@`MinimumDistanceLeon'}{0}
+\indexentry {Distributions@Distributions|indexit}{0}
+\indexentry {WeightDistribution@`WeightDistribution'}{0}
+\indexentry {InnerDistribution@`InnerDistribution'}{0}
+\indexentry {OuterDistribution@`OuterDistribution'}{0}
+\indexentry {DistancesDistribution@`DistancesDistribution'}{0}
+\indexentry {Decoding Functions@Decoding Functions|indexit}{0}
+\indexentry {Decode@`Decode'}{0}
+\indexentry {Syndrome@`Syndrome'}{0}
+\indexentry {SyndromeTable@`SyndromeTable'}{0}
+\indexentry {StandardArray@`StandardArray'}{0}
+\indexentry {PermutationDecode@`PermutationDecode'}{0}
+\indexentry {Generating Unrestricted Codes@Generating Unrestricted Codes|indexit}{0}
+\indexentry {ElementsCode@`ElementsCode'}{0}
+\indexentry {HadamardCode@`HadamardCode'}{0}
+\indexentry {HadamardCode@`HadamardCode'}{0}
+\indexentry {HadamardCode@`HadamardCode'}{0}
+\indexentry {HadamardCode@`HadamardCode'}{0}
+\indexentry {ConferenceCode@`ConferenceCode'!from a matrix}{0}
+\indexentry {ConferenceCode@`ConferenceCode'!from an integer}{0}
+\indexentry {MOLSCode@`MOLSCode'}{0}
+\indexentry {MOLSCode@`MOLSCode'}{0}
+\indexentry {RandomCode@`RandomCode'}{0}
+\indexentry {NordstromRobinsonCode@`NordstromRobinsonCode'}{0}
+\indexentry {GreedyCode@`GreedyCode'}{0}
+\indexentry {LexiCode@`LexiCode'}{0}
+\indexentry {LexiCode@`LexiCode'!using a basis}{0}
+\indexentry {Generating Linear Codes@Generating Linear Codes|indexit}{0}
+\indexentry {GeneratorMatCode@`GeneratorMatCode'}{0}
+\indexentry {CheckMatCode@`CheckMatCode'}{0}
+\indexentry {HammingCode@`HammingCode'}{0}
+\indexentry {ReedMullerCode@`ReedMullerCode'}{0}
+\indexentry {AlternantCode@`AlternantCode'}{0}
+\indexentry {AlternantCode@`AlternantCode'}{0}
+\indexentry {GoppaCode@`GoppaCode'!with list of field elements parameter}{0}
+\indexentry {GoppaCode@`GoppaCode'!with integer parameter}{0}
+\indexentry {GeneralizedSrivastavaCode@`GeneralizedSrivastavaCode'}{0}
+\indexentry {GeneralizedSrivastavaCode@`GeneralizedSrivastavaCode'}{0}
+\indexentry {SrivastavaCode@`SrivastavaCode'}{0}
+\indexentry {SrivastavaCode@`SrivastavaCode'}{0}
+\indexentry {CordaroWagnerCode@`CordaroWagnerCode'}{0}
+\indexentry {RandomLinearCode@`RandomLinearCode'}{0}
+\indexentry {BestKnownLinearCode@`BestKnownLinearCode'}{0}
+\indexentry {BestKnownLinearCode@`BestKnownLinearCode'!of a record}{0}
+\indexentry {Golay Codes@Golay Codes|indexit}{0}
+\indexentry {BinaryGolayCode@`BinaryGolayCode'}{0}
+\indexentry {ExtendedBinaryGolayCode@`ExtendedBinaryGolayCode'}{0}
+\indexentry {TernaryGolayCode@`TernaryGolayCode'}{0}
+\indexentry {ExtendedTernaryGolayCode@`ExtendedTernaryGolayCode'}{0}
+\indexentry {Generating Cyclic Codes@Generating Cyclic Codes|indexit}{0}
+\indexentry {check polynomial}{0}
+\indexentry {GeneratorPolCode@`GeneratorPolCode'}{0}
+\indexentry {CheckPolCode@`CheckPolCode'}{0}
+\indexentry {RootsCode@`RootsCode'}{0}
+\indexentry {RootsCode@`RootsCode'!with field}{0}
+\indexentry {BCHCode@`BCHCode'}{0}
+\indexentry {BCHCode@`BCHCode'}{0}
+\indexentry {Bose distance}{0}
+\indexentry {ReedSolomonCode@`ReedSolomonCode'}{0}
+\indexentry {QRCode@`QRCode'}{0}
+\indexentry {FireCode@`FireCode'}{0}
+\indexentry {WholeSpaceCode@`WholeSpaceCode'}{0}
+\indexentry {NullCode@`NullCode'}{0}
+\indexentry {RepetitionCode@`RepetitionCode'}{0}
+\indexentry {CyclicCodes@`CyclicCodes'}{0}
+\indexentry {NrCyclicCodes@`NrCyclicCodes'}{0}
+\indexentry {Toric codes@Toric codes|indexit}{0}
+\indexentry {ToricCode@`ToricCode'}{0}
+\indexentry {ToricPoints@`ToricPoints'}{0}
+\indexentry {Functions that Generate a New Code from a Given Code@Functions that Generate a New Code from a Given Code|indexit}{0}
+\indexentry {Parity check}{0}
+\indexentry {ExtendedCode@`ExtendedCode'}{0}
+\indexentry {PuncturedCode@`PuncturedCode'}{0}
+\indexentry {PuncturedCode@`PuncturedCode'!with list of punctures}{0}
+\indexentry {EvenWeightSubcode@`EvenWeightSubcode'}{0}
+\indexentry {PermutedCode@`PermutedCode'}{0}
+\indexentry {ExpurgatedCode@`ExpurgatedCode'}{0}
+\indexentry {AugmentedCode@`AugmentedCode'}{0}
+\indexentry {AugmentedCode@`AugmentedCode'!without a list of codewords}{0}
+\indexentry {RemovedElementsCode@`RemovedElementsCode'}{0}
+\indexentry {AddedElementsCode@`AddedElementsCode'}{0}
+\indexentry {ShortenedCode@`ShortenedCode'}{0}
+\indexentry {ShortenedCode@`ShortenedCode'!with list of columns}{0}
+\indexentry {LengthenedCode@`LengthenedCode'}{0}
+\indexentry {ResidueCode@`ResidueCode'}{0}
+\indexentry {ConstructionBCode@`ConstructionBCode'}{0}
+\indexentry {DualCode@`DualCode'}{0}
+\indexentry {ConversionFieldCode@`ConversionFieldCode'}{0}
+\indexentry {CosetCode@`CosetCode'}{0}
+\indexentry {ConstantWeightSubcode@`ConstantWeightSubcode'}{0}
+\indexentry {ConstantWeightSubcode@`ConstantWeightSubcode'!for all minimum weight codewords}{0}
+\indexentry {StandardFormCode@`StandardFormCode'}{0}
+\indexentry {Functions that Generate a New Code from Two Given Codes@Functions that Generate a New Code from Two Given Codes|indexit}{0}
+\indexentry {DirectSumCode@`DirectSumCode'}{0}
+\indexentry {UUVCode@`UUVCode'}{0}
+\indexentry {DirectProductCode@`DirectProductCode'}{0}
+\indexentry {IntersectionCode@`IntersectionCode'}{0}
+\indexentry {UnionCode@`UnionCode'}{0}
+\indexentry {Bounds on codes@Bounds on codes|indexit}{0}
+\indexentry {Bounds@bounds!Singleton}{0}
+\indexentry {UpperBoundSingleton@`UpperBoundSingleton'}{0}
+\indexentry {maximum distance separable}{0}
+\indexentry {Bounds@bounds!Hamming}{0}
+\indexentry {Bounds!Sphere packing bound}{0}
+\indexentry {UpperBoundHamming@`UpperBoundHamming'}{0}
+\indexentry {Bounds@bounds!Johnson}{0}
+\indexentry {UpperBoundJohnson@`UpperBoundJohnson'}{0}
+\indexentry {Bounds@bounds!Plotkin}{0}
+\indexentry {UpperBoundPlotkin@`UpperBoundPlotkin'}{0}
+\indexentry {Bounds@bounds!Elias}{0}
+\indexentry {UpperBoundElias@`UpperBoundElias'}{0}
+\indexentry {Bounds@bounds!Griesmer}{0}
+\indexentry {UpperBoundGriesmer@`UpperBoundGriesmer'}{0}
+\indexentry {Bounds!Upper Bound}{0}
+\indexentry {UpperBound@`UpperBound'}{0}
+\indexentry {LowerBoundMinimumDistance@`LowerBoundMinimumDistance'}{0}
+\indexentry {LowerBoundMinimumDistance@`LowerBoundMinimumDistance'!of codes over a field}{0}
+\indexentry {UpperBoundMinimumDistance@`UpperBoundMinimumDistance'}{0}
+\indexentry {UpperBoundMinimumDistance@`UpperBoundMinimumDistance'!of codes over a field}{0}
+\indexentry {BoundsMinimumDistance@`BoundsMinimumDistance'}{0}
+\indexentry {Special matrices in GUAVA@Special matrices in GUAVA|indexit}{0}
+\indexentry {KrawtchoukMat@`KrawtchoukMat'}{0}
+\indexentry {GrayMat@`GrayMat'}{0}
+\indexentry {SylvesterMat@`SylvesterMat'}{0}
+\indexentry {HadamardMat@`HadamardMat'}{0}
+\indexentry {Mutually Orthogonal Latin Squares@mutually orthogonal Latin squares}{0}
+\indexentry {MOLS@`MOLS'}{0}
+\indexentry {MOLS@`MOLS'}{0}
+\indexentry {PutStandardForm@`PutStandardForm'}{0}
+\indexentry {PutStandardForm@`PutStandardForm'}{0}
+\indexentry {IsInStandardForm@`IsInStandardForm'}{0}
+\indexentry {IsInStandardForm@`IsInStandardForm'}{0}
+\indexentry {PermutedCols@`PermutedCols'}{0}
+\indexentry {VerticalConversionFieldMat@`VerticalConversionFieldMat'}{0}
+\indexentry {HorizontalConversionFieldMat@`HorizontalConversionFieldMat'}{0}
+\indexentry {IsLatinSquare@`IsLatinSquare'}{0}
+\indexentry {AreMOLS@`AreMOLS'}{0}
+\indexentry {Miscellaneous functions@Miscellaneous functions|indexit}{0}
+\indexentry {SphereContent@`SphereContent'}{0}
+\indexentry {Krawtchouk@`Krawtchouk'}{0}
+\indexentry {PrimitiveUnityRoot@`PrimitiveUnityRoot'}{0}
+\indexentry {ReciprocalPolynomial@`ReciprocalPolynomial'}{0}
+\indexentry {ReciprocalPolynomial@`ReciprocalPolynomial'}{0}
+\indexentry {CyclotomicCosets@`CyclotomicCosets'}{0}
+\indexentry {WeightHistogram@`WeightHistogram'}{0}
+\indexentry {WeightHistogram@`WeightHistogram'}{0}
+\indexentry {Some functions for the covering radius@Some functions for the covering radius|indexit}{0}
+\indexentry {CoveringRadius@`CoveringRadius'}{0}
+\indexentry {BoundsCoveringRadius@`BoundsCoveringRadius'}{0}
+\indexentry {SetCoveringRadius@`SetCoveringRadius'}{0}
+\indexentry {IncreaseCoveringRadiusLowerBound@`IncreaseCoveringRadiusLowerBound'}{0}
+\indexentry {ExhaustiveSearchCoveringRadius@`ExhaustiveSearchCoveringRadius'}{0}
+\indexentry {GeneralLowerBoundCoveringRadius@`GeneralLowerBoundCoveringRadius'}{0}
+\indexentry {GeneralUpperBoundCoveringRadius@`GeneralUpperBoundCoveringRadius'}{0}
+\indexentry {LowerBoundCoveringRadiusSphereCovering@`LowerBoundCoveringRadiusSphereCovering'}{0}
+\indexentry {LowerBoundCoveringRadiusSphereCovering@`LowerBoundCoveringRadiusSphereCovering'}{0}
+\indexentry {LowerBoundCoveringRadiusVanWee1@`LowerBoundCoveringRadiusVanWee1'}{0}
+\indexentry {LowerBoundCoveringRadiusVanWee1@`LowerBoundCoveringRadiusVanWee1'}{0}
+\indexentry {LowerBoundCoveringRadiusVanWee2@`LowerBoundCoveringRadiusVanWee2'}{0}
+\indexentry {LowerBoundCoveringRadiusVanWee2@`LowerBoundCoveringRadiusVanWee2'}{0}
+\indexentry {LowerBoundCoveringRadiusCountingExcess@`LowerBoundCoveringRadiusCountingExcess'}{0}
+\indexentry {LowerBoundCoveringRadiusCountingExcess@`LowerBoundCoveringRadiusCountingExcess'}{0}
+\indexentry {LowerBoundCoveringRadiusEmbedded1@`LowerBoundCoveringRadiusEmbedded1'}{0}
+\indexentry {LowerBoundCoveringRadiusEmbedded1@`LowerBoundCoveringRadiusEmbedded1'}{0}
+\indexentry {LowerBoundCoveringRadiusEmbedded2@`LowerBoundCoveringRadiusEmbedded2'}{0}
+\indexentry {LowerBoundCoveringRadiusEmbedded2@`LowerBoundCoveringRadiusEmbedded2'}{0}
+\indexentry {LowerBoundCoveringRadiusInduction@`LowerBoundCoveringRadiusInduction'}{0}
+\indexentry {UpperBoundCoveringRadiusRedundancy@`UpperBoundCoveringRadiusRedundancy'}{0}
+\indexentry {external distance}{0}
+\indexentry {UpperBoundCoveringRadiusDelsarte@`UpperBoundCoveringRadiusDelsarte'}{0}
+\indexentry {UpperBoundCoveringRadiusStrength@`UpperBoundCoveringRadiusStrength'}{0}
+\indexentry {UpperBoundCoveringRadiusGriesmerLike@`UpperBoundCoveringRadiusGriesmerLike'}{0}
+\indexentry {UpperBoundCoveringRadiusCyclicCode@`UpperBoundCoveringRadiusCyclicCode'}{0}
+\indexentry {New code constructions@New code constructions|indexit}{0}
+\indexentry {ExtendedDirectSumCode@`ExtendedDirectSumCode'}{0}
+\indexentry {AmalgamatedDirectSumCode@`AmalgamatedDirectSumCode'}{0}
+\indexentry {BlockwiseDirectSumCode@`BlockwiseDirectSumCode'}{0}
+\indexentry {PiecewiseConstantCode@`PiecewiseConstantCode'}{0}
+\indexentry {Gabidulin codes@Gabidulin codes|indexit}{0}
+\indexentry {GabidulinCode@`GabidulinCode'}{0}
+\indexentry {EnlargedGabidulinCode@`EnlargedGabidulinCode'}{0}
+\indexentry {DavydovCode@`DavydovCode'}{0}
+\indexentry {TombakCode@`TombakCode'}{0}
+\indexentry {EnlargedTombakCode@`EnlargedTombakCode'}{0}
+\indexentry {Some functions related to the norm of a code@Some functions related to the norm of a code|indexit}{0}
+\indexentry {CoordinateNorm@`CoordinateNorm'}{0}
+\indexentry {CodeNorm@`CodeNorm'}{0}
+\indexentry {IsCoordinateAcceptable@`IsCoordinateAcceptable'}{0}
+\indexentry {GeneralizedCodeNorm@`GeneralizedCodeNorm'}{0}
+\indexentry {IsNormalCode@`IsNormalCode'}{0}
+\indexentry {DecreaseMinimumDistanceLowerBound@`DecreaseMinimumDistanceLowerBound'}{0}
+\indexentry {New miscellaneous functions@New miscellaneous functions|indexit}{0}
+\indexentry {CodeWeightEnumerator@`CodeWeightEnumerator'}{0}
+\indexentry {CodeDistanceEnumerator@`CodeDistanceEnumerator'}{0}
+\indexentry {CodeMacWilliamsTransform@`CodeMacWilliamsTransform'}{0}
+\indexentry {IsSelfComplementaryCode@`IsSelfComplementaryCode'}{0}
+\indexentry {IsAffineCode@`IsAffineCode'}{0}
+\indexentry {IsAlmostAffineCode@`IsAlmostAffineCode'}{0}
+\indexentry {IsGriesmerCode@`IsGriesmerCode'}{0}
+\indexentry {CodeDensity@`CodeDensity'}{0}

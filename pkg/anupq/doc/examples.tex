@@ -1,0 +1,728 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  examples.tex       ANUPQ documentation - examples       Werner Nickel
+%W                                                            Greg Gamble
+%%
+%H  $Id: examples.tex,v 1.17 2005/07/05 10:01:09 werner Exp $
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Examples}
+
+There are a large number of  examples provided with the {\ANUPQ} package. 
+These  may  be  executed   or  displayed  via  the  function  `PqExample'
+(see~"PqExample"). Each example resides in a file of the same name in the
+directory `examples'. Most of the  examples are translations to {\GAP} of
+examples  provided  for  the  `pq'  standalone  by  Eamonn  O'Brien;  the
+standalone  examples  are   found  in  directories  `standalone/examples'
+($p$-quotient  and $p$-group  generation examples)  and `standalone/isom'
+(standard  presentation  examples).   The  first  line  of  each  example
+indicates its origin.  All the examples seen in  earlier chapters of this
+manual are also  available as examples, in a  slightly modified form (the
+example which  one can run  in order to  see something very close  to the
+text  example ``live'' is  always indicated  near --  usually immediately
+after -- the  text example). The format of  the (`PqExample') examples is
+such that they can be read by the standard `Read' function of {\GAP}, but
+certain features and comments are interpreted by the function `PqExample'
+to do somewhat more than `Read' does. In particular, any function without
+a `-i', `-ni'  or `.g' suffix has both  a non-interactive and interactive
+form; in these  cases, the default form is  the non-interactive form, and
+giving `PqStart' as second argument generates the interactive form.
+
+Running `PqExample' without an argument or with  a  non-existent  example
+`Info's the available examples and some hints on usage:
+
+\beginexample
+gap> PqExample();
+#I                   PqExample Index (Table of Contents)
+#I                   -----------------------------------
+#I  This table of possible examples is displayed when calling `PqExample'
+#I  with no arguments, or with the argument: "index" (meant in the  sense
+#I  of ``list''), or with a non-existent example name.
+#I  
+#I  Examples that have a name ending in `-ni' are  non-interactive  only.
+#I  Examples that have a  name  ending  in  `-i'  are  interactive  only.
+#I  Examples with names ending in `.g' also have  only  one  form.  Other
+#I  examples have both a non-interactive and an  interactive  form;  call
+#I  `PqExample' with 2nd argument `PqStart' to get the  interactive  form
+#I  of the example. The substring `PG' in an  example  name  indicates  a
+#I  p-Group Generation example, `SP' indicates  a  Standard  Presentation
+#I  example, `Rel' indicates it uses  the  `Relators'  option,  and  `Id'
+#I  indicates it uses the `Identities' option.
+#I  
+#I  The following ANUPQ examples are available:
+#I  
+#I   p-Quotient examples:
+#I    general:
+#I     "Pq"                   "Pq-ni"                "PqEpimorphism"        
+#I     "PqPCover"             "PqSupplementInnerAutomorphisms"
+#I    2-groups:
+#I     "2gp-Rel"              "2gp-Rel-i"            "2gp-a-Rel-i"
+#I     "B2-4"                 "B2-4-Id"              "B2-8-i"
+#I     "B4-4-i"               "B4-4-a-i"             "B5-4.g"
+#I    3-groups:
+#I     "3gp-Rel-i"            "3gp-a-Rel"            "3gp-a-Rel-i"
+#I     "3gp-a-x-Rel-i"        "3gp-maxoccur-Rel-i"
+#I    5-groups:
+#I     "5gp-Rel-i"            "5gp-a-Rel-i"          "5gp-b-Rel-i"
+#I     "5gp-c-Rel-i"          "5gp-metabelian-Rel-i" "5gp-maxoccur-Rel-i"
+#I     "F2-5-i"               "B2-5-i"               "R2-5-i"
+#I     "R2-5-x-i"             "B5-5-Engel3-Id"
+#I    7-groups:
+#I     "7gp-Rel-i"
+#I    11-groups:
+#I     "11gp-i"               "11gp-Rel-i"           "11gp-a-Rel-i"
+#I     "11gp-3-Engel-Id"      "11gp-3-Engel-Id-i"
+#I  
+#I   p-Group Generation examples:
+#I    general:
+#I     "PqDescendants-1"      "PqDescendants-2"      "PqDescendants-3"
+#I     "PqDescendants-1-i"
+#I    2-groups:
+#I     "2gp-PG-i"             "2gp-PG-2-i"           "2gp-PG-3-i"
+#I     "2gp-PG-4-i"           "2gp-PG-e4-i"
+#I     "PqDescendantsTreeCoclassOne-16-i"
+#I    3-groups:
+#I     "3gp-PG-i"             "3gp-PG-4-i"           "3gp-PG-x-i"
+#I     "3gp-PG-x-1-i"         "PqDescendants-treetraverse-i"
+#I     "PqDescendantsTreeCoclassOne-9-i"
+#I    5-groups:
+#I     "5gp-PG-i"             "Nott-PG-Rel-i"        "Nott-APG-Rel-i"
+#I     "PqDescendantsTreeCoclassOne-25-i"
+#I    7,11-groups:
+#I     "7gp-PG-i"             "11gp-PG-i"
+#I  
+#I   Standard Presentation examples:
+#I    general:
+#I     "StandardPresentation" "StandardPresentation-i"
+#I     "EpimorphismStandardPresentation"
+#I     "EpimorphismStandardPresentation-i"           "IsIsomorphicPGroup-ni"
+#I    2-groups:
+#I     "2gp-SP-Rel-i"         "2gp-SP-1-Rel-i"       "2gp-SP-2-Rel-i"
+#I     "2gp-SP-3-Rel-i"       "2gp-SP-4-Rel-i"       "2gp-SP-d-Rel-i"
+#I     "gp-256-SP-Rel-i"      "B2-4-SP-i"            "G2-SP-Rel-i"
+#I    3-groups:
+#I     "3gp-SP-Rel-i"         "3gp-SP-1-Rel-i"       "3gp-SP-2-Rel-i"
+#I     "3gp-SP-3-Rel-i"       "3gp-SP-4-Rel-i"       "G3-SP-Rel-i"
+#I    5-groups:
+#I     "5gp-SP-Rel-i"         "5gp-SP-a-Rel-i"       "5gp-SP-b-Rel-i"
+#I     "5gp-SP-big-Rel-i"     "5gp-SP-d-Rel-i"       "G5-SP-Rel-i"
+#I     "G5-SP-a-Rel-i"        "Nott-SP-Rel-i"
+#I    7-groups:
+#I     "7gp-SP-Rel-i"         "7gp-SP-a-Rel-i"       "7gp-SP-b-Rel-i"
+#I    11-groups:
+#I     "11gp-SP-a-i"          "11gp-SP-a-Rel-i"      "11gp-SP-a-Rel-1-i"
+#I     "11gp-SP-b-i"          "11gp-SP-b-Rel-i"      "11gp-SP-c-Rel-i"
+#I  
+#I  Notes
+#I  -----
+#I  1. The example (first) argument of  `PqExample'  is  a  string;  each
+#I     example above is in double quotes to remind you to include them.
+#I  2. Some examples accept options. To find  out  whether  a  particular
+#I     example accepts options, display it first (by including  `Display'
+#I     as  last  argument)  which  will  also  indicate  how  `PqExample'
+#I     interprets the options, e.g. `PqExample("11gp-SP-a-i", Display);'.
+#I  3. Try `SetInfoLevel(InfoANUPQ, <n>);' for  some  <n>  in  [2  ..  4]
+#I     before calling PqExample, to see what's going on behind the scenes.
+#I  
+\endexample
+
+If on your terminal you are unable to  scroll  back,  an  alternative  to
+typing `PqExample();' to see the displayed examples  is  to  use  on-line
+help, i.e.~ you may type:
+
+\begintt
+gap> ?anupq:examples
+\endtt
+
+which will display this appendix in a {\GAP}  session.  If  you  are  not
+fussed  about  the  order  in   which   the   examples   are   organised,
+`AllPqExamples();' lists  the  available  examples  relatively  compactly
+(see~"AllPqExamples").
+
+In the remainder of this appendix  we  will  discuss  particular  aspects
+related  to  the  `Relators'  (see~"option  Relators")  and  `Identities'
+(see~"option Identities") options, and the construction of  the  Burnside
+group $B(5, 4)$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Relators Option}
+
+The `Relators' option was included because computations  involving  words
+containing commutators that  are  pre-expanded  by  {\GAP}  before  being
+passed to the `pq' program may run considerably  more  slowly,  than  the
+same computations being  run  with  {\GAP}  pre-expansions  avoided.  The
+following examples demonstrate a case where the performance  hit  due  to
+pre-expansion of commutators by {\GAP} is a factor of order 100 (in order
+to see timing information from the `pq' program, we set  the  `InfoANUPQ'
+level to 2).
+
+Firstly, we run the example that allows pre-expansion of commutators (the
+function  `PqLeftNormComm'  is  provided   by   the   {\ANUPQ}   package;
+see~"PqLeftNormComm"). Note  that  since  the  two  commutators  of  this
+example are *very* long (taking more than an  page  to  print),  we  have
+edited the output at this point.
+
+\begintt
+gap> SetInfoLevel(InfoANUPQ, 2); #to see timing information
+gap> PqExample("11gp-i");
+#I  #Example: "11gp-i" . . . based on: examples/11gp
+#I  F, a, b, c, R, procId are local to `PqExample'
+gap> F := FreeGroup("a", "b", "c"); a := F.1; b := F.2; c := F.3;
+<free group on the generators [ a, b, c ]>
+a
+b
+c
+gap> R := [PqLeftNormComm([b, a, a, b, c])^11, 
+>          PqLeftNormComm([a, b, b, a, b, c])^11, (a * b)^11];
+[ b^-1*a^-2*b^-1*a*b*a*b^-1*a^-1*b*a*b*a^-1*b^-1*a*b*a^-1*b^-1*a^-1*b*a^2*c^
+    ... 22 lines deleted here ...
+    -1*a*b*a^-1*b^-1*a^-1*b*a^2*b*c, b^-1*a^-1*b^-2*a^-1*b*a*b*a^-1*b^
+    ... 43 lines deleted here ...
+    -1*b^-1*a^-1*b*a*b^-1*a^-1*b^-1*a*b^2*a*b*c, 
+  a*b*a*b*a*b*a*b*a*b*a*b*a*b*a*b*a*b*a*b*a*b ]
+gap> procId := PqStart(F/R : Prime := 11);
+1
+gap> PqPcPresentation(procId : ClassBound := 7, 
+>                              OutputLevel := 1);
+#I  Lower exponent-11 central series for [grp]
+#I  Group: [grp] to lower exponent-11 central class 1 has order 11^3
+#I  Group: [grp] to lower exponent-11 central class 2 has order 11^8
+#I  Group: [grp] to lower exponent-11 central class 3 has order 11^19
+#I  Group: [grp] to lower exponent-11 central class 4 has order 11^42
+#I  Group: [grp] to lower exponent-11 central class 5 has order 11^98
+#I  Group: [grp] to lower exponent-11 central class 6 has order 11^228
+#I  Group: [grp] to lower exponent-11 central class 7 has order 11^563
+#I  Computation of presentation took 27.04 seconds
+gap> PqSavePcPresentation(procId, ANUPQData.outfile);
+#I  Variables used in `PqExample' are saved in `ANUPQData.example.vars'.
+\endtt
+
+Now we do the same calculation using the `Relators' option. In this  way,
+the commutators are passed directly as strings to the  `pq'  program,  so
+that {\GAP} does not ``see'' them and pre-expand them.
+
+\begintt
+gap> PqExample("11gp-Rel-i");
+#I  #Example: "11gp-Rel-i" . . . based on: examples/11gp
+#I  #(equivalent to "11gp-i" example but uses `Relators' option)
+#I  F, rels, procId are local to `PqExample'
+gap> F := FreeGroup("a", "b", "c");
+<free group on the generators [ a, b, c ]>
+gap> rels := ["[b, a, a, b, c]^11", "[a, b, b, a, b, c]^11", "(a * b)^11"];
+[ "[b, a, a, b, c]^11", "[a, b, b, a, b, c]^11", "(a * b)^11" ]
+gap> procId := PqStart(F : Prime := 11, Relators := rels);
+2
+gap> PqPcPresentation(procId : ClassBound := 7, 
+>                              OutputLevel := 1);
+#I  Relators parsed ok.
+#I  Lower exponent-11 central series for [grp]
+#I  Group: [grp] to lower exponent-11 central class 1 has order 11^3
+#I  Group: [grp] to lower exponent-11 central class 2 has order 11^8
+#I  Group: [grp] to lower exponent-11 central class 3 has order 11^19
+#I  Group: [grp] to lower exponent-11 central class 4 has order 11^42
+#I  Group: [grp] to lower exponent-11 central class 5 has order 11^98
+#I  Group: [grp] to lower exponent-11 central class 6 has order 11^228
+#I  Group: [grp] to lower exponent-11 central class 7 has order 11^563
+#I  Computation of presentation took 0.27 seconds
+gap> PqSavePcPresentation(procId, ANUPQData.outfile);
+#I  Variables used in `PqExample' are saved in `ANUPQData.example.vars'.
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Identities Option and PqEvaluateIdentities Function}
+
+Please pay heed  to  the  warnings  given  for  the  `Identities'  option
+(see~"option Identities"); it is written mainly at the {\GAP}  level  and
+is not particularly optimised. The  `Identities'  option  allows  one  to
+compute $p$-quotients that satisfy an identity. A trivial example  better
+done using the `Exponent' option, but which nevertheless demonstrates the
+usage of the `Identities' option, is as follows:
+
+\begintt
+gap> SetInfoLevel(InfoANUPQ, 1);
+gap> PqExample("B2-4-Id");
+#I  #Example: "B2-4-Id" . . . alternative way to generate B(2, 4)
+#I  #Generates B(2, 4) by using the `Identities' option
+#I  #... this is not as efficient as using `Exponent' but
+#I  #demonstrates the usage of the `Identities' option.
+#I  F, f, procId are local to `PqExample'
+gap> F := FreeGroup("a", "b");
+<free group on the generators [ a, b ]>
+gap> # All words w in the pc generators of B(2, 4) satisfy f(w) = 1 
+gap> f := w -> w^4;
+function( w ) ... end
+gap> Pq( F : Prime := 2, Identities := [ f ] );
+#I  Class 1 with 2 generators.
+#I  Class 2 with 5 generators.
+#I  Class 3 with 7 generators.
+#I  Class 4 with 10 generators.
+#I  Class 5 with 12 generators.
+#I  Class 5 with 12 generators.
+<pc group of size 4096 with 12 generators>
+#I  Variables used in `PqExample' are saved in `ANUPQData.example.vars'.
+gap> time; 
+1400
+\endtt
+
+Note that the `time' statement gives the time in  milliseconds  spent  by
+{\GAP} in executing the `PqExample("B2-4-Id");' command  (i.e.~everything
+up to the `Info'-ing of the variables used), but over 90\% of  that  time
+is spent in the final `Pq' statement. The time spent by the `pq' program,
+which is negligible anyway (you can check this  by  running  the  example
+while the `InfoANUPQ' level is set to 2), is not counted by `time'.
+
+Since the identity used in the above construction of $B(2, 4)$ is just an
+exponent law, the ``right'' way to  compute  it  is  via  the  `Exponent'
+option (see~"option Exponent"), which is implemented at the C  level  and
+*is*  highly  optimised.   Consequently,   the   `Exponent'   option   is
+significantly faster, generally by several orders of magnitude:
+
+\begintt
+gap> SetInfoLevel(InfoANUPQ, 2); # to see time spent by the `pq' program
+gap> PqExample("B2-4");
+#I  #Example: "B2-4" . . . the ``right'' way to generate B(2, 4)
+#I  #Generates B(2, 4) by using the `Exponent' option
+#I  F, procId are local to `PqExample'
+gap> F := FreeGroup("a", "b");
+<free group on the generators [ a, b ]>
+gap> Pq( F : Prime := 2, Exponent := 4 );
+#I  Computation of presentation took 0.00 seconds
+<pc group of size 4096 with 12 generators>
+#I  Variables used in `PqExample' are saved in `ANUPQData.example.vars'.
+gap> time; # time spent by GAP in executing `PqExample("B2-4");' 
+50
+\endtt
+
+The following example uses the `Identities' option to compute  a  3-Engel
+group for the prime 11. As is the case for the example  `"B2-4-Id"',  the
+example has both a non-interactive and an  interactive  form;  below,  we
+demonstrate the interactive form.
+
+\begintt
+gap> SetInfoLevel(InfoANUPQ, 1); # reset InfoANUPQ to default level
+gap> PqExample("11gp-3-Engel-Id", PqStart);
+#I  #Example: "11gp-3-Engel-Id" . . . 3-Engel group for prime 11
+#I  #Non-trivial example of using the `Identities' option
+#I  F, a, b, G, f, procId, Q are local to `PqExample'
+gap> F := FreeGroup("a", "b"); a := F.1; b := F.2;
+<free group on the generators [ a, b ]>
+a
+b
+gap> G := F/[ a^11, b^11 ];
+<fp group on the generators [ a, b ]>
+gap> # All word pairs u, v in the pc generators of the 11-quotient Q of G 
+gap> # must satisfy the Engel identity: [u, v, v, v] = 1.
+gap> f := function(u, v) return PqLeftNormComm( [u, v, v, v] ); end;
+function( u, v ) ... end
+gap> procId := PqStart( G );
+3
+gap> Q := Pq( procId : Prime := 11, Identities := [ f ] );
+#I  Class 1 with 2 generators.
+#I  Class 2 with 3 generators.
+#I  Class 3 with 5 generators.
+#I  Class 3 with 5 generators.
+<pc group of size 161051 with 5 generators>
+gap> # We do a ``sample'' check that pairs of elements of Q do satisfy
+gap> # the given identity:
+gap> f( Random(Q), Random(Q) );
+<identity> of ...
+gap> f( Q.1, Q.2 );
+<identity> of ...
+#I  Variables used in `PqExample' are saved in `ANUPQData.example.vars'.
+\endtt
+
+The (interactive) call to `Pq'  above is essentially equivalent to a call
+to `PqPcPresentation' with  the same arguments and options  followed by a
+call to  `PqCurrentGroup'. Moreover,  the call to  `PqPcPresentation' (as
+described in~"PqPcPresentation")  is equivalent to a ``class  1'' call to
+`PqPcPresentation'  followed   by  the  requisite  number   of  calls  to
+`PqNextClass',   and    with   the   `Identities'    option   set,   both
+`PqPcPresentation' and  `PqNextClass' ``quietly'' perform  the equivalent
+of a `PqEvaluateIdentities' call. In  the following example we break down
+the  `Pq' call  into its  low-level equivalents,  and set  and  unset the
+`Identities' option  to show where `PqEvaluateIdentities'  fits into this
+scheme.
+
+\begintt
+gap> PqExample("11gp-3-Engel-Id-i");
+#I  #Example: "11gp-3-Engel-Id-i" . . . 3-Engel grp for prime 11
+#I  #Variation of "11gp-3-Engel-Id" broken down into its lower-level component
+#I  #command parts.
+#I  F, a, b, G, f, procId, Q are local to `PqExample'
+gap> F := FreeGroup("a", "b"); a := F.1; b := F.2;
+<free group on the generators [ a, b ]>
+a
+b
+gap> G := F/[ a^11, b^11 ];
+<fp group on the generators [ a, b ]>
+gap> # All word pairs u, v in the pc generators of the 11-quotient Q of G 
+gap> # must satisfy the Engel identity: [u, v, v, v] = 1.
+gap> f := function(u, v) return PqLeftNormComm( [u, v, v, v] ); end;
+function( u, v ) ... end
+gap> procId := PqStart( G : Prime := 11 );
+4
+gap> PqPcPresentation( procId : ClassBound := 1);
+gap> PqEvaluateIdentities( procId : Identities := [f] );
+#I  Class 1 with 2 generators.
+gap> for c in [2 .. 4] do
+>      PqNextClass( procId : Identities := [] ); #reset `Identities' option
+>      PqEvaluateIdentities( procId : Identities := [f] );
+>    od;
+#I  Class 2 with 3 generators.
+#I  Class 3 with 5 generators.
+#I  Class 3 with 5 generators.
+gap> Q := PqCurrentGroup( procId );
+<pc group of size 161051 with 5 generators>
+gap> # We do a ``sample'' check that pairs of elements of Q do satisfy
+gap> # the given identity:
+gap> f( Random(Q), Random(Q) );
+<identity> of ...
+gap> f( Q.1, Q.2 );
+<identity> of ...
+#I  Variables used in `PqExample' are saved in `ANUPQData.example.vars'.
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{A Large Example}
+
+\atindex{B(5,4)}{@$B(5, 4)$}
+An example demonstrating how a large computation can be organised with the
+{\ANUPQ} package  is the computation of the Burnside group $B(5, 4)$, the
+largest  group of  exponent  4 generated  by  5 elements.   It has  order
+$2^{2728}$  and   lower  exponent-$p$  central  class   13.  The  example
+`"B5-4.g"' computes  $B(5, 4)$;  it is based  on a `pq'  standalone input
+file written by M.~F.~Newman.
+
+To be able to do examples like this was part of the motivation to provide
+access to the  low-level functions of the standalone  program from within
+{\GAP}.
+
+Please note that the construction uses the knowledge gained by Newman and
+O'Brien in their  initial  construction  of  $B(5,  4)$,  in  particular,
+insight into the commutator structure of the group and the  knowledge  of
+the $p$-central  class  and  the  order  of  $B(5,  4)$.  Therefore,  the
+construction cannot be used to prove that $B(5, 4)$  has  the  order  and
+class mentioned above. It is merely a reconstruction of the  group.  More
+information is contained in the header of the file `examples/B5-4.g'.
+
+\goodbreak%
+\begintt
+procId := PqStart( FreeGroup(5) : Exponent := 4, Prime := 2 );
+Pq( procId : ClassBound := 2 );
+PqSupplyAutomorphisms( procId,
+      [
+        [ [ 1, 1, 0, 0, 0],      # first automorphism
+          [ 0, 1, 0, 0, 0],
+          [ 0, 0, 1, 0, 0],
+          [ 0, 0, 0, 1, 0],
+          [ 0, 0, 0, 0, 1] ],
+
+        [ [ 0, 0, 0, 0, 1],      # second automorphism
+          [ 1, 0, 0, 0, 0],
+          [ 0, 1, 0, 0, 0],
+          [ 0, 0, 1, 0, 0],
+          [ 0, 0, 0, 1, 0] ]
+                             ] );;
+
+Relations :=
+  [ [],          ## class 1
+    [],          ## class 2
+    [],          ## class 3
+    [],          ## class 4
+    [],          ## class 5
+    [],          ## class 6
+    ## class 7     
+    [ [ "x2","x1","x1","x3","x4","x4","x4" ] ],
+    ## class 8
+    [ [ "x2","x1","x1","x3","x4","x5","x5","x5" ] ],
+    ## class 9
+    [ [ "x2","x1","x1","x3","x4","x4","x5","x5","x5" ],
+      [ "x2","x1","x1","x2","x3","x4","x5","x5","x5" ],
+      [ "x2","x1","x1","x3","x3","x4","x5","x5","x5" ] ],
+    ## class 10
+    [ [ "x2","x1","x1","x2","x3","x3","x4","x5","x5","x5" ],
+      [ "x2","x1","x1","x3","x3","x4","x4","x5","x5","x5" ] ],
+    ## class 11
+    [ [ "x2","x1","x1","x2","x3","x3","x4","x4","x5","x5","x5" ],
+      [ "x2","x1","x1","x2","x3","x1","x3","x4","x2","x4","x3" ] ],
+    ## class 12
+    [ [ "x2","x1","x1","x2","x3","x1","x3","x4","x2","x5","x5","x5" ],
+      [ "x2","x1","x1","x3","x2","x4","x3","x5","x4","x5","x5","x5" ] ],
+    ## class 13
+    [ [ "x2","x1","x1","x2","x3","x1","x3","x4","x2","x4","x5","x5","x5" 
+        ] ]
+];
+
+for class in [ 3 .. 13 ] do
+    Print( "Computing class ", class, "\n" );
+    PqSetupTablesForNextClass( procId );
+
+    for w in [ class, class-1 .. 7 ] do
+
+        PqAddTails( procId, w );   
+        PqDisplayPcPresentation( procId );
+
+        if Relations[ w ] <> [] then
+            # recalculate automorphisms
+            PqExtendAutomorphisms( procId );
+
+            for r in Relations[ w ] do
+                Print( "Collecting ", r, "\n" );
+                PqCommutator( procId, r, 1 );
+                PqEchelonise( procId );
+                PqApplyAutomorphisms( procId, 15 ); #queue factor = 15
+            od;
+
+            PqEliminateRedundantGenerators( procId );
+        fi;   
+        PqComputeTails( procId, w );
+    od;
+    PqDisplayPcPresentation( procId );
+
+    smallclass := Minimum( class, 6 );
+    for w in [ smallclass, smallclass-1 .. 2 ] do
+        PqTails( procId, w );
+    od;
+    # recalculate automorphisms
+    PqExtendAutomorphisms( procId );
+    PqCollect( procId, "x5^4" );
+    PqEchelonise( procId );
+    PqApplyAutomorphisms( procId, 15 ); #queue factor = 15
+    PqEliminateRedundantGenerators( procId );
+    PqDisplayPcPresentation( procId );
+od;
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Developing descendants trees}
+
+In the following example we will explore  the  3-groups  of  rank  2  and
+3-coclass 1 up to 3-class 5.  This  will  be  done  using  the  $p$-group
+generation machinery of the package. We start with the elementary abelian
+3-group   of   rank   2.   From   within   {\GAP},   run   the    example
+`"PqDescendants-treetraverse-i"' via `PqExample' (see~"PqExample").
+
+\beginexample
+gap> G := ElementaryAbelianGroup( 9 );
+<pc group of size 9 with 2 generators>
+gap> procId := PqStart( G );
+5
+gap> #
+gap> #  Below, we use the option StepSize in order to construct descendants
+gap> #  of coclass 1. This is equivalent to setting the StepSize to 1 in
+gap> #  each descendant calculation.
+gap> #
+gap> #  The elementary abelian group of order 9 has 3 descendants of
+gap> #  3-class 2 and 3-coclass 1, as the result of the next command
+gap> #  shows. 
+gap> #
+gap> PqDescendants( procId : StepSize := 1 );
+[ <pc group of size 27 with 3 generators>, 
+  <pc group of size 27 with 3 generators>, 
+  <pc group of size 27 with 3 generators> ]
+gap> #
+gap> #  Now we will compute the descendants of coclass 1 for each of the
+gap> #  groups above. Then we will compute the descendants  of coclass 1
+gap> #  of each descendant and so  on.  Note  that the  pq program keeps
+gap> #  one file for each class at a time.  For example, the descendants
+gap> #  calculation for  the  second  group  of class  2  overwrites the
+gap> #  descendant file  obtained  from  the  first  group  of  class 2.
+gap> #  Hence,  we have to traverse the descendants tree  in depth first
+gap> #  order.
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 2, 1 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+2
+gap> PqPGSetDescendantToPcp( procId, 3, 1 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+2
+gap> PqPGSetDescendantToPcp( procId, 4, 1 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+2
+gap> #
+gap> #  At this point we stop traversing the ``left most'' branch of the
+gap> #  descendants tree and move upwards.
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 4, 2 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+gap> PqPGSetDescendantToPcp( procId, 3, 2 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+gap> #  
+gap> #  The computations above indicate that the descendants subtree under
+gap> #  the first descendant of the elementary abelian group of order 9
+gap> #  will have only one path of infinite length.
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 2, 2 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+4
+gap> #
+gap> #  We get four descendants here, three of which will turn out to be
+gap> #  incapable, i.e., they have no descendants and are terminal nodes
+gap> #  in the descendants tree.
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 2, 3 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+gap> #
+gap> #  The third descendant of class three is incapable.  Let us return
+gap> #  to the second descendant of class 2.
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 2, 2 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+4
+gap> PqPGSetDescendantToPcp( procId, 3, 1 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+gap> PqPGSetDescendantToPcp( procId, 3, 2 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+gap> #
+gap> #  We skip the third descendant for the moment ... 
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 3, 4 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+gap> #
+gap> #  ... and look at it now.
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 3, 3 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+6
+gap> #
+gap> #  In this branch of the descendant tree we get 6 descendants of class
+gap> #  three.  Of those 5 will turn out to be incapable and one will have
+gap> #  7 descendants.
+gap> #
+gap> PqPGSetDescendantToPcp( procId, 4, 1 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+gap> PqPGSetDescendantToPcp( procId, 4, 2 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+7
+gap> PqPGSetDescendantToPcp( procId, 4, 3 );
+gap> PqPGExtendAutomorphisms( procId );
+gap> PqPGConstructDescendants( procId : StepSize := 1 );
+#I  group restored from file is incapable
+0
+\endexample
+
+To automate the above procedure to some extent we provide:
+
+\>PqDescendantsTreeCoclassOne( <i> ) F
+\>PqDescendantsTreeCoclassOne() F
+
+for the  <i>th  or  default  interactive  {\ANUPQ}  process,  generate  a
+descendant tree for the  group  of  the  process  (which  must  be  a  pc
+$p$-group) consisting of descendants of $p$-coclass 1  and  extending  to
+the class determined by the option `TreeDepth' (or 6  if  the  option  is
+omitted). In an  {\XGAP}  session,  a  graphical  representation  of  the
+descendants tree appears  in  a  separate  window.  Subsequent  calls  to
+`PqDescendantsTreeCoclassOne' for the same process may be used to  extend
+the descendant tree from the last descendant  computed  that  itself  has
+more than one descendant. `PqDescendantsTreeCoclassOne' also accepts  the
+options  `CapableDescendants'  (or  `AllDescendants')  and  any   options
+accepted     by     the     interactive     `PqDescendants'      function
+(see~"PqDescendants!interactive").
+
+*Notes*
+
+\beginlist%ordered
+
+\item{1.}
+`PqDescendantsTreeCoclassOne'    first    calls    `PqDescendants'.    If
+`PqDescendants' has already been called for  the  process,  the  previous
+value computed is used and a warning is `Info'-ed at `InfoANUPQ' level 1.
+
+\item{2.}
+As each descendant is processed its unique  label  defined  by  the  `pq'
+program and number of descendants is `Info'-ed at `InfoANUPQ' level 1.
+
+\item{3.}
+`PqDescendantsTreeCoclassOne' is an  ``experimental''  function  that  is
+included to demonstrate the sort of things that  are  possible  with  the
+$p$-group generation machinery.
+
+\endlist
+
+Ignoring  the  extra  functionality  provided  in  an  {\XGAP}   session,
+`PqDescendantsTreeCoclassOne', with one argument that is the index of  an
+interactive {\ANUPQ} process, is approximately equivalent to:
+
+\begintt
+PqDescendantsTreeCoclassOne := function( procId )
+    local   des,  i;
+
+    des := PqDescendants( procId : StepSize := 1 );
+    RecurseDescendants( procId, 2, Length(des) );
+end;
+\endtt
+
+where `RecurseDescendants' is (approximately) defined as follows:
+
+\begintt
+RecurseDescendants := function( procId, class, n )
+    local   i,  nr;
+
+    if class > ValueOption("TreeDepth") then return; fi;
+
+    for i in [1..n] do
+        PqPGSetDescendantToPcp( procId, class, i );
+        PqPGExtendAutomorphisms( procId );
+        nr := PqPGConstructDescendants( procId : StepSize := 1 );
+        Print( "Number of descendants of group ", i,
+               " at class ", class, ": ", nr, "\n" );
+        RecurseDescendants( procId, class+1, nr );
+    od;
+    return;
+end;
+\endtt
+
+The  following  examples  (executed  via  `PqExample';  see~"PqExample"),
+demonstrate the use of `PqDescendantsTreeCoclassOne':
+
+\beginitems
+
+`"PqDescendantsTreeCoclassOne-9-i"'&
+approximately  redoes  example   `"PqDescendants-treetraverse-i"'   using
+`PqDescendantsTreeCoclassOne';
+
+`"PqDescendantsTreeCoclassOne-16-i"'&
+uses the option `CapableDescendants'; and
+
+`"PqDescendantsTreeCoclassOne-25-i"'&
+calculates all descendants by omitting the `CapableDescendants' option.
+
+\enditems
+
+The numbers `9', `16' and `25' respectively, indicate the  order  of  the
+elementary  abelian  group  to  which  `PqDescendantsTreeCoclassOne'   is
+applied for these examples.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

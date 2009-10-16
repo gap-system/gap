@@ -1,0 +1,13 @@
+Generators: x y z u v;
+Weights:    1 1 1 1 1;
+<Limiting weight: 3;>
+Relations:
+[x,y]-z;
+[z,x]-y;
+[y,z]-x;
+[x,u];
+[x,v];
+[y,u];
+[y,v];
+[z,u];
+[z,v].

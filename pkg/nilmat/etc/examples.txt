@@ -1,0 +1,89 @@
+#Constructing nilpotent matrix groups
+
+g1 := MaximalAbsolutelyIrreducibleNilpotentMatGroup(52,3,3);  
+#<matrix group with 7 generators> in GL(52, 3^3);
+
+g2 := MaximalAbsolutelyIrreducibleNilpotentMatGroup(180, 11, 2);
+#<matrix group with 41 generators> in GL(180, 11^2)
+
+MaximalAbsolutelyIrreducibleNilpotentMatGroup(210, 2, 10); 
+#fail; in GL(210, 2^10) absolutely irreducible nilpotent subgroups do not exist
+
+g3 := MonomialNilpotentMatGroup(450);
+#<matrix group with 24 generators> in GL(450, Q)
+
+g4 := ReducibleNilpotentMatGroupFF(3, 4*9*5,11,2);
+#<matrix group with 82 generators> in GL(540, 11^2)
+
+g5 := ReducibleNilpotentMatGroupRN(7, 36);
+#<matrix group with 72 generators> in GL(252, Q)
+
+#Nilpotency testings and other functions
+
+g6 := MaximalAbsolutelyIrreducibleNilpotentMatGroup(127, 2, 7); 
+#<matrix group with 3 generators> in GL(127, 2^7)
+IsNilpotentMatGroup(g6);                    
+#true
+
+g7 := MonomialNilpotentMatGroup(350);
+#<matrix group with 6 generators>
+IsNilpotentMatGroup(g7);
+#true
+IsFiniteNilpotentMatGroupRN(g7);
+#true
+
+g8 := ReducibleNilpotentMatGroupRN(6, 35);
+#<matrix group with 5 generators>
+IsNilpotentMatGroup(g8);                  
+#true
+IsFiniteNilpotentMatGroupRN(g8);          
+#false
+
+g9 := ReducibleNilpotentMatGroupFF(2, 4*9,5,2);   
+#<matrix group with 21 generators>
+SylowSubgroupsOfNilpotentMatGroupFF(g9);
+#[ <matrix group with 5 generators>, <matrix group with 6 generators>, 
+#  <matrix group with 1 generators> ]
+
+#Using library functions
+
+NilpotentPrimitiveMatGroups(2,3,1); 
+#[ Group([ [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ]), 
+#  Group([ [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ], 
+#      [ [ Z(3), Z(3)^0 ], [ Z(3), Z(3) ] ], 
+#      [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3) ] ] ]), 
+#  Group([ [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ], 
+#      [ [ 0*Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ], 
+#      [ [ Z(3), Z(3) ], [ Z(3), Z(3)^0 ] ] ]) ]
+SizesOfNilpotentPrimitiveMatGroups(2,3,1);  
+#[ 8, 8, 16 ]
+
+
+
+L1 := NilpotentPrimitiveMatGroups(2,2,10);;
+Length(L1);                     
+#40
+s := SizeOfNilpotentPrimitiveMatGroups(2,2,10);;  
+#[ 5, 15, 25, 41, 55, 75, 123, 155, 165, 205, 275, 451, 465, 615, 775, 825, 
+#  1025, 1271, 1353, 1705, 2255, 2325, 3075, 3813, 5115, 6355, 6765, 8525, 
+#  11275, 13981, 19065, 25575, 31775, 33825, 41943, 69905, 95325, 209715, 
+#  349525, 1048575 ]
+
+L2 := NilpotentPrimitiveMatGroups(55,3,1);; 
+Length(L2);                     
+#114
+
+L3 := NilpotentPrimitiveMatGroups(22,11,1);;
+Length(L3);                      
+#1002
+
+
+
+
+
+
+
+
+
+
+

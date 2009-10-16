@@ -1,0 +1,54 @@
+
+# This is the group $J$.
+# How does it do non-deterministically?
+
+Gr: a,b;
+Rel:
+  (a)^5, (b)^5, (ab)^5, (aab)^5, (abb)^5, (aabb)^5, (Abb)^5, (aB)^5,
+  (aaB)^5, (aaBB)^5, (aabaabb)^5, (aabaaB)^5, (aabaB)^5, (aabbaBB)^5,
+  (aabbAAB)^5, (aabAAb)^5, (aabAAbb)^5, (aabAB)^5, (aaBaaBB)^5,
+  (abaab)^5, (abaaB)^5, (ababb)^5, (abaB)^5, (abbaaBB)^5, (abbaBB)^5,
+  (abbAbb)^5, (abbAB)^5, (abbABB)^5, (abAb)^5, (abAbb)^5, (abAB)^5,
+  (AbaaB)^5, (Ababb)^5, (AbbaaBB)^5, (AbbaB)^5, (AbbAAbb)^5, (AbAbb)^5,
+  (AAbaabb)^5, (AAbbaaB)^5, 
+
+  [a,b,b,b,b], [A,b,b,b,b], [a,B,B,B,B], [A,B,B,B,B],
+  [b,a,a,a,a], [B,a,a,a,a], [b,A,A,A,A], [B,A,A,A,A],
+
+  [a,ab,ab,ab,ab], [a,AB,AB,AB,AB],
+  [b,ab,ab,ab,ab], [b,AB,AB,AB,AB]
+  ;
+Gen: a,a^b;
+
+Wo:16M;
+
+Hard;
+Rt:2;  Ct:1000;
+No:8;  PMod:0;  Fi:1;
+Com:100;
+
+Mess:100000;
+Beg;
+
+DMod:0;  DSiz:4000;
+Beg;
+
+Mess:0;
+DMod:5,100;  Beg;
+Text: ** 90%;
+DMod:5,90;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+Text: ** 80%;
+DMod:5,80;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+Text: ** 70%;
+DMod:5,70;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+Text: ** 60%;
+DMod:5,60;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+Text: ** 50%;
+DMod:5,50;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+Text: ** 40%;
+DMod:5,40;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+Text: ** 30%;
+DMod:5,30;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+Text: ** 20%;
+DMod:5,20;   Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg; Beg;
+

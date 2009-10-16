@@ -1,0 +1,19 @@
+#Example: "7gp-PG-i" . . . based on: examples/pga_7gp
+#Descendants of C7 x C7
+#vars: F, procId;
+#options: OutputLevel
+F := FreeGroup("a", "b");
+procId := PqStart(F : Prime := 7);
+#comment: set a different print level by supplying <OutputLevel>
+PqPcPresentation(procId : ClassBound := 1, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqComputePCover(procId);;
+PqPGSupplyAutomorphisms(procId, [ [[3,0],
+                                   [0,1]],
+
+                                  [[6,1],
+                                   [6,0]] ]);;
+PqPGConstructDescendants(procId : ClassBound := 2,
+                                  CapableDescendants,
+                                  StepSize := 1);;

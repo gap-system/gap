@@ -1,0 +1,1442 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Bibliography in the ATLAS of Brauer Characters (p. xv-xvii)
+%%
+%%  How did this file arise:
+%%  - Take the entries from the bibliography of the ABC.
+%%  - Fetch the corresponding entries in BibTeX format from MathSciNet
+%%    if available, take the entry also if it looks slightly differently.
+%%    (E.g., cited preprints may have appeared,
+%%    the types 'inproceedings' and 'incollection' seem to be used 
+%%    inconsistently,
+%%    LaTeX markup was clearly used differently, 
+%%    some articles in Russian are now cited with Russian titles.)
+%%  - If several sources are given (this happens in the bibliography in the
+%%    ATLAS of Finite Groups) then take both of them.
+%%  - If no MR number is available or if the MR entry does not conform the
+%%    BibTeX definitions then consult Zentralblatt MATH,
+%%    and add a component 'zblnumber' if the entry is found there.
+%%  - If several reprints of a book are found in MR then take all those
+%%    that are not older than the one referenced in the original list.
+%%  - Replace the label (MR number) by a combination of authors' names
+%%    and year.
+%%  - If applicable then add a 'collection' or 'proceedings' entry,
+%%    and add a 'crossref' component.
+%%  - If the printed MR data are available and contain a language information
+%%    that is not available in the BibTeX version from MathSciNet then add a
+%%    'note' component for this.
+%%  - Add a 'sorttag' component where necessary, in particular if several
+%%    publications of the same author(s) in the same year and journal are
+%%    logically dependent, 
+%%    for example such that errata appear after the article to be corrected
+%%    or simply because of the journal pages.
+%%    (This replaces the '\noopsort' comments in 'year' fields which are
+%%    recommended by BibTeX.)
+%%  - In case of the bibliography in the ATLAS of Finite Groups,
+%%    add a 'sporsimp' component that describes the assignment to sporadic
+%%    simple groups; 
+%%    entries that are assigned to several groups occur several times, 
+%%    once for each assignment.
+%%  - In any case, write component names not coming from MathSciNet in
+%%    small letters, whereas those coming from MathSciNet are always
+%%    capitalized.
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  
+%%  Errors in MR data (corrected in this file)
+%%  
+%%  [MR0346033]
+%%    no author/editor (also in the Zbl database), so omit this entry,
+%%    and omit the crossref to it in [Fon74]
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Changes compared to the printed Atlas of Brauer characters:
+%%
+%%  p. xv:  - changed title of Conway/Curtis/Norton/Parker/Wilson (1985)
+%%            from ``An Atlas of Finite Groups'' to ``Atlas of finite
+%%            groups'';
+%%          - pages in Gilkey/Seitz (1988) are ``407-416'' not ``405-416''.
+%%          - changed address in Goldschmidt (1980) from ``Berkeley'' to
+%%            ``Wilmington, Del.''.
+%%  p. xvi: - preprint Hiss/M"uller (1993) appeared in Comm. Algebra 23
+%%            (1995), p. 4633-4667;
+%%          - article Hiss/Lux/M"uller (in Press) appeared 1995 in vol. 19,
+%%            no. 6, pp. 585--600; the title is different:
+%%            ``The $2$-modular decomposition matrices of the non-principal
+%%            blocks of maximal defect of the triple cover of the sporadic
+%%            simple McLaughlin group''
+%%          - title of Hiss/Jansen/Lux/Parker (in Press) is ``Computational
+%%            Modular Character Theory'' not ``Computing with Modular
+%%            Characters'';
+%%          - journal in Humphreys (1982) is ``Proc. Roy. Soc. Edinburgh
+%%            Sect. A'' not ``Proc. Roy. Soc. Edinburgh, Series A'';
+%%          - preprint Jansen/Wilson (1994a) appeared in J. London Math.
+%%            Soc. (2) 56 (1997), p. 579--583;
+%%          - preprint Jansen/Wilson (1994b) appeared in J. London Math.
+%%            Soc. (2) 57 (1998), p. 71--90;
+%%          - preprint Jansen/Wilson (1994c) appeared in Comm. Algebra 24
+%%            (1996), p. 873-879;
+%%          - titles of Khosraviyani (1984) and Khosraviyani/Morris (1985)
+%%            are ``Decomposition numbers of exceptional Weyl groups. I''
+%%            and ``Decomposition numbers of exceptional Weyl groups. II'',
+%%            respectively;
+%%          - in Kondrat'ev (1988a) and Kondrat'ev (1988b),
+%%            cite ``Algebra i Logica'' not ``Algebra and Logic'';
+%%          - journal in Martineau (1972) is ``J. London Math. Soc. (2)''
+%%            not ``J. London. Math. Soc.''.
+%%
+%%  (Throughout the bibliography, Hi\3 was changed to Hiss.)
+%%
+
+@preamble{
+   "\def\cprime{$'$} "
+}
+@preamble{
+   "\def\Dbar{\leavevmode\lower.6ex\hbox to 0pt{\hskip-.23ex
+    \accent"16\hss}D} "
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@article {Ben85,
+    AUTHOR = {Benson, D. J.},
+     TITLE = {Brauer trees for {$12M\sb {22}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {95},
+      YEAR = {1985},
+    NUMBER = {2},
+     PAGES = {398--408},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C25 (20C20)},
+  MRNUMBER = {MR801275 (87c:20030)},
+MRREVIEWER = {John F. Humphreys},
+}
+
+@article {BC86,
+    AUTHOR = {Benson, D. J. and Carlson, J. F.},
+     TITLE = {Nilpotent elements in the {G}reen ring},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {104},
+      YEAR = {1986},
+    NUMBER = {2},
+     PAGES = {329--350},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C20 (20C11)},
+  MRNUMBER = {MR866779 (88b:20021)},
+MRREVIEWER = {S. B. Conlon},
+}
+		
+@techreport{BN37,
+     AUTHOR = "Brauer, R. and Nesbitt, C.",
+      TITLE = "{On the modular representations of groups of finite order. I.}",
+   LANGUAGE = "English",
+INSTITUTION = "{Univ. of Toronto Studies, Math. Ser. 4. Toronto:
+                Univ. of Toronto Press. 21 p. }",
+       YEAR = "1937",
+   KEYWORDS = "{Group theory}",
+  zblnumber = {0018.29504},
+}
+
+@article {BN41,
+    AUTHOR = {Brauer, R. and Nesbitt, C.},
+     TITLE = {On the modular characters of groups},
+   JOURNAL = {Ann. of Math. (2)},
+  FJOURNAL = {Annals of Mathematics. Second Series},
+    VOLUME = {42},
+      YEAR = {1941},
+     PAGES = {556--590},
+      ISSN = {0003-486X},
+   MRCLASS = {20.0X},
+  MRNUMBER = {MR0004042 (2,309c)},
+MRREVIEWER = {G. de B. Robinson},
+}
+
+@article {Bur76,
+    AUTHOR = {Burkhardt, R.},
+     TITLE = {Die {Z}erlegungsmatrizen der {G}ruppen {${\rm
+              PSL}(2,p\sp{f})$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {40},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {75--96},
+      ISSN = {0021-8693},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR0480710 (58 \#864)},
+MRREVIEWER = {P. Donovan},
+}
+		
+@article {Bur79a,
+    AUTHOR = {Burkhardt, R.},
+     TITLE = {\"{U}ber die {Z}erlegungszahlen der {S}uzukigruppen {${\rm
+              Sz}(q)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {59},
+      YEAR = {1979},
+    NUMBER = {2},
+     PAGES = {421--433},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C99},
+  MRNUMBER = {MR543261 (81a:20018)},
+MRREVIEWER = {Karin Erdmann},
+}
+		
+@article {Bur79b,
+    AUTHOR = {Burkhardt, R.},
+     TITLE = {\"{U}ber die {Z}erlegungszahlen der unit\"aren {G}ruppen
+              {${\rm PSU}(3,\,2\sp{2f})$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {61},
+      YEAR = {1979},
+    NUMBER = {2},
+     PAGES = {548--581},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20H05 (20C20 20C30)},
+  MRNUMBER = {MR559855 (81a:20055)},
+MRREVIEWER = {Ulrich Dempwolff},
+}
+
+@book {CCNPW85,
+    AUTHOR = {Conway, J. H. and Curtis, R. T. and Norton, S. P. and Parker,
+              R. A. and Wilson, R. A.},
+     TITLE = {Atlas of finite groups},
+      NOTE = {Maximal subgroups and ordinary characters for simple groups,
+              With computational assistance from J. G. Thackray},
+ PUBLISHER = {Oxford University Press},
+   ADDRESS = {Eynsham},
+      YEAR = {1985},
+     PAGES = {xxxiv+252},
+      ISBN = {0-19-853199-0},
+   MRCLASS = {20D05 (20-02)},
+  MRNUMBER = {MR827219 (88g:20025)},
+MRREVIEWER = {R. L. Griess},
+}
+
+@book {CR81,
+    AUTHOR = {Curtis, Charles W. and Reiner, Irving},
+     TITLE = {Methods of representation theory. {V}ol. {I}},
+      NOTE = {With applications to finite groups and orders,
+              Pure and Applied Mathematics,
+              A Wiley-Interscience Publication},
+ PUBLISHER = {John Wiley \& Sons Inc.},
+   ADDRESS = {New York},
+      YEAR = {1981},
+     PAGES = {xxi+819},
+      ISBN = {0-471-18994-4},
+   MRCLASS = {20-02 (10C30 12A57 20Cxx)},
+  MRNUMBER = {MR632548 (82i:20001)},
+MRREVIEWER = {J. L. Alperin},
+}
+
+@book {CR90,
+    AUTHOR = {Curtis, Charles W. and Reiner, Irving},
+     TITLE = {Methods of representation theory. {V}ol. {I}},
+    SERIES = {Wiley Classics Library},
+      NOTE = {With applications to finite groups and orders,
+              Reprint of the 1981 original,
+              A Wiley-Interscience Publication},
+ PUBLISHER = {John Wiley \& Sons Inc.},
+   ADDRESS = {New York},
+      YEAR = {1990},
+     PAGES = {xxiv+819},
+      ISBN = {0-471-52367-4},
+   MRCLASS = {20-02 (01A75 11R33 20Cxx)},
+  MRNUMBER = {MR1038525 (90k:20001)},
+}
+
+@article {Eva85,
+    AUTHOR = {Evans, David M.},
+     TITLE = {The {$7$}-modular representations of {J}anko's smallest simple
+              group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {96},
+      YEAR = {1985},
+    NUMBER = {1},
+     PAGES = {35--44},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C20 (20-04)},
+  MRNUMBER = {MR808838 (86m:20012)},
+MRREVIEWER = {P. Fong},
+}
+
+@book {Fei82,
+    AUTHOR = {Feit, Walter},
+     TITLE = {The representation theory of finite groups},
+    SERIES = {North-Holland Mathematical Library},
+    VOLUME = {25},
+ PUBLISHER = {North-Holland Publishing Co.},
+   ADDRESS = {Amsterdam},
+      YEAR = {1982},
+     PAGES = {xiv+502},
+      ISBN = {0-444-86155-6},
+   MRCLASS = {20-02 (20C20)},
+  MRNUMBER = {MR661045 (83g:20001)},
+MRREVIEWER = {J. L. Alperin},
+}
+
+%T booktitle =        {Representation Theory II, Groups and Orders},
+@incollection {Fei86,
+    AUTHOR = {Feit, Walter},
+     TITLE = {Blocks with cyclic defect groups for some sporadic groups},
+ BOOKTITLE = {Representation theory, II (Ottawa, Ont., 1984)},
+    SERIES = {Lecture Notes in Math.},
+    VOLUME = {1178},
+     PAGES = {25--63},
+ PUBLISHER = {Springer},
+   ADDRESS = {Berlin},
+      YEAR = {1986},
+   MRCLASS = {20C20 (20D08)},
+  MRNUMBER = {MR842477 (87e:20023)},
+MRREVIEWER = {J. L. Alperin},
+  crossref = {DGM86}
+}
+
+@incollection{Fon74,
+    AUTHOR = {Fong, Paul},
+     TITLE = {On decomposition numbers of {$J\sb{1}$} and {$R(q)$}},
+ BOOKTITLE = {Symposia Mathematica, Vol. XIII (Convegno di Gruppi e loro
+              Rappresentazioni, INDAM, Rome, 1972)},
+     PAGES = {415--422},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1974},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR0357578 (50 \#10046)},
+MRREVIEWER = {I. M. Isaacs},
+}
+% removed crossref because of missing author/editor
+% crossref = {MR0346033},
+
+@article {FS80,
+    AUTHOR = {Fong, Paul and Srinivasan, Bhama},
+     TITLE = {Blocks with cyclic defect groups in {${\rm GL}(n,\,q)$}},
+   JOURNAL = {Bull. Amer. Math. Soc. (N.S.)},
+  FJOURNAL = {American Mathematical Society. Bulletin. New Series},
+    VOLUME = {3},
+      YEAR = {1980},
+    NUMBER = {3},
+     PAGES = {1041--1044},
+      ISSN = {0002-9904},
+     CODEN = {BAMOAD},
+   MRCLASS = {20C20 (20G40)},
+  MRNUMBER = {MR585186 (81k:20019)},
+MRREVIEWER = {Karin Erdmann},
+}
+
+@article {FS82,
+    AUTHOR = {Fong, Paul and Srinivasan, Bhama},
+     TITLE = {The blocks of finite general linear and unitary groups},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {69},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {109--153},
+      ISSN = {0020-9910},
+     CODEN = {INVMBH},
+   MRCLASS = {20C20 (20G05)},
+  MRNUMBER = {MR671655 (83k:20013)},
+MRREVIEWER = {P. Donovan},
+}
+
+@article {FS90,
+    AUTHOR = {Fong, Paul and Srinivasan, Bhama},
+     TITLE = {Brauer trees in classical groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {131},
+      YEAR = {1990},
+    NUMBER = {1},
+     PAGES = {179--225},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C20 (20G40)},
+  MRNUMBER = {MR1055005 (91i:20008)},
+MRREVIEWER = {Gerhard Hiss},
+}
+
+@phdthesis{Gec93,
+    author = {Geck, M.},
+     title = {Beitr\"age  zur Darstellungstheorie von Iwahori--Hecke
+              Algebren},
+      type = {Habilitationsschrift},
+    school = {RWTH Aachen},
+      year = {1993},
+}
+
+@article {GS88,
+    AUTHOR = {Gilkey, Peter B. and Seitz, Gary M.},
+     TITLE = {Some representations of exceptional {L}ie algebras},
+      NOTE = {Geometries and groups (Noordwijkerhout, 1986)},
+   JOURNAL = {Geom. Dedicata},
+  FJOURNAL = {Geometriae Dedicata},
+    VOLUME = {25},
+      YEAR = {1988},
+    NUMBER = {1-3},
+     PAGES = {407--416},
+      ISSN = {0046-5755},
+     CODEN = {GEMDAT},
+   MRCLASS = {20G05 (17B25)},
+  MRNUMBER = {MR925845 (89h:20056)},
+MRREVIEWER = {G. E. Wall},
+}
+
+@book {Gol80,
+    AUTHOR = {Goldschmidt, David M.},
+     TITLE = {Lectures on character theory},
+ PUBLISHER = {Publish or Perish Inc.},
+   ADDRESS = {Wilmington, Del.},
+      YEAR = {1980},
+     PAGES = {249 pp. (not consecutively paged)},
+      ISBN = {0-914098-17-9},
+   MRCLASS = {20-02 (20C10 20C15)},
+  MRNUMBER = {MR575526 (81f:20001)},
+MRREVIEWER = {Stephen D. Smith},
+}
+
+@article {His86,
+    AUTHOR = {Hiss, Gerhard},
+     TITLE = {The modular characters of the {T}its simple group and its
+              automorphism group},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {14},
+      YEAR = {1986},
+    NUMBER = {1},
+     PAGES = {125--154},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR814141 (87c:20029)},
+MRREVIEWER = {Wolfgang Knapp},
+}
+
+@article {His89,
+    AUTHOR = {Hiss, Gerhard},
+     TITLE = {On the decomposition numbers of {$G\sb 2(q)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {120},
+      YEAR = {1989},
+    NUMBER = {2},
+     PAGES = {339--360},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C05 (16A26 20C20)},
+  MRNUMBER = {MR989902 (90j:20011)},
+MRREVIEWER = {Reiner Staszewski},
+}
+
+@phdthesis{His90,
+    author = {Hiss, G.},
+     title = {Zerlegungszahlen  endlicher  {G}ruppen vom {L}ie-{T}yp
+              in nicht-definierender {C}harakteristik.},
+      type = {Habilitationsschrift},
+    school = {RWTH Aachen},
+      year = {1990},
+}
+
+@article {His94,
+    AUTHOR = {Hiss, Gerhard},
+     TITLE = {The {$3$}-modular characters of the {R}udvalis sporadic simple
+              group and its covering group},
+   JOURNAL = {Math. Comp.},
+  FJOURNAL = {Mathematics of Computation},
+    VOLUME = {62},
+      YEAR = {1994},
+    NUMBER = {206},
+     PAGES = {851--863},
+      ISSN = {0025-5718},
+     CODEN = {MCMPAF},
+   MRCLASS = {20C20 (20C34 20D08)},
+  MRNUMBER = {MR1212267 (94g:20013)},
+MRREVIEWER = {P. Fong},
+}
+
+@article {HL88,
+    AUTHOR = {Hiss, Gerhard and Lux, Klaus},
+     TITLE = {The {B}rauer characters of the {H}all-{J}anko group},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {16},
+      YEAR = {1988},
+    NUMBER = {2},
+     PAGES = {357--398},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR929124 (89d:20011)},
+MRREVIEWER = {Karin Erdmann},
+}
+
+@book {HL89,
+    AUTHOR = {Hiss, G. and Lux, K.},
+     TITLE = {Brauer trees of sporadic groups},
+    SERIES = {Oxford Science Publications},
+ PUBLISHER = {The Clarendon Press Oxford University Press},
+   ADDRESS = {New York},
+      YEAR = {1989},
+     PAGES = {x+526},
+      ISBN = {0-19-853381-0},
+   MRCLASS = {20C20 (20-02 20D08)},
+  MRNUMBER = {MR1033265 (91k:20018)},
+MRREVIEWER = {Harvey Blau},
+}
+
+@article {HL94,
+    AUTHOR = {Hiss, Gerhard and Lux, Klaus},
+     TITLE = {The {$5$}-modular characters of the sporadic simple {F}ischer
+              groups {${\rm Fi}\sb {22}$} and {${\rm Fi}\sb {23}$}},
+      NOTE = {With an appendix by Thomas Breuer},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {22},
+      YEAR = {1994},
+    NUMBER = {9},
+     PAGES = {3563--3590},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C34 (20C40)},
+  MRNUMBER = {MR1278806 (95e:20020)},
+MRREVIEWER = {A. S. Kondrat{\cprime}ev},
+}
+
+@article {HM95,
+    AUTHOR = {Hiss, Gerhard and M{\"u}ller, J{\"u}rgen},
+     TITLE = {The {$5$}-modular characters of the sporadic simple {R}udvalis
+              group and its covering group},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {23},
+      YEAR = {1995},
+    NUMBER = {12},
+     PAGES = {4633--4667},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C34 (20C20)},
+  MRNUMBER = {MR1352561 (96h:20027)},
+MRREVIEWER = {Donald L. White},
+}
+
+@article {HW94,
+    AUTHOR = {Hiss, Gerhard and White, Donald L.},
+     TITLE = {The {$5$}-modular characters of the covering group of the
+              sporadic simple {F}ischer group {${\rm Fi}\sb {22}$} and its
+              automorphism group},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {22},
+      YEAR = {1994},
+    NUMBER = {9},
+     PAGES = {3591--3611},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C34 (20C40)},
+  MRNUMBER = {MR1278807 (95e:20021)},
+MRREVIEWER = {A. S. Kondrat{\cprime}ev},
+}
+
+@article {HLP91,
+    AUTHOR = {Hiss, Gerhard and Lux, Klaus and Parker, Richard},
+     TITLE = {The {$5$}-modular characters of the {M}c{L}aughlin group and
+              its covering group},
+   JOURNAL = {Manuscripta Math.},
+  FJOURNAL = {Manuscripta Mathematica},
+    VOLUME = {73},
+      YEAR = {1991},
+    NUMBER = {1},
+     PAGES = {91--114},
+      ISSN = {0025-2611},
+     CODEN = {MSMHB2},
+   MRCLASS = {20C20 (20D08)},
+  MRNUMBER = {MR1124313 (92g:20017)},
+MRREVIEWER = {David Benson},
+}
+		
+@article {HLM95,
+    AUTHOR = {Hiss, Gerhard and Lux, Klaus and M{\"u}ller, J{\"u}rgen},
+     TITLE = {The {$2$}-modular decomposition matrices of the non-principal
+              blocks of maximal defect of the triple cover of the sporadic
+              simple {M}c{L}aughlin group},
+   JOURNAL = {J. Symbolic Comput.},
+  FJOURNAL = {Journal of Symbolic Computation},
+    VOLUME = {19},
+      YEAR = {1995},
+    NUMBER = {6},
+     PAGES = {585--600},
+      ISSN = {0747-7171},
+   MRCLASS = {20C34 (20C40)},
+  MRNUMBER = {MR1370624 (96m:20023)},
+MRREVIEWER = {Peter Fleischmann},
+}
+
+@misc{HJLP,
+    author = {Hiss, G. and Jansen, C. and Lux, K. and Parker, R. A.},
+     title = {Computing with {M}odular {C}haracters},
+howpublished = {\href{http://www.math.rwth-aachen.de/LDFM/homes/MOC/CoMoChaT/}{http://www.math.rwth-aachen.de/LDFM/homes/MOC/CoMoChaT/}},
+}
+
+@article {Hum80,
+    AUTHOR = {Humphreys, J. F.},
+     TITLE = {The projective characters of the {M}athieu group {$M\sb{12}$}
+              and of its automorphism group},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {87},
+      YEAR = {1980},
+    NUMBER = {3},
+     PAGES = {401--412},
+      ISSN = {0305-0041},
+     CODEN = {MPCPCO},
+   MRCLASS = {20C25 (20C30)},
+  MRNUMBER = {MR556920 (81k:20021)},
+MRREVIEWER = {V. D. Mazurov},
+}
+		
+@article {Hum82a,
+    AUTHOR = {Humphreys, J. F.},
+     TITLE = {The modular characters of the {H}igman-{S}ims simple group},
+   JOURNAL = {Proc. Roy. Soc. Edinburgh Sect. A},
+  FJOURNAL = {Proceedings of the Royal Society of Edinburgh. Section A.
+              Mathematical and Physical Sciences},
+    VOLUME = {92},
+      YEAR = {1982},
+    NUMBER = {3-4},
+     PAGES = {319--335},
+      ISSN = {0308-2105},
+     CODEN = {PEAMDU},
+   MRCLASS = {20C20 (20D08)},
+  MRNUMBER = {MR677491 (83m:20017)},
+MRREVIEWER = {M. Herzog},
+}
+		
+@book {Isa76,
+    AUTHOR = {Isaacs, I. Martin},
+     TITLE = {Character theory of finite groups},
+      NOTE = {Pure and Applied Mathematics, No. 69},
+ PUBLISHER = {Academic Press [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {New York},
+      YEAR = {1976},
+     PAGES = {xii+303},
+   MRCLASS = {20-02},
+  MRNUMBER = {MR0460423 (57 \#417)},
+MRREVIEWER = {Stephen D. Smith},
+}
+		
+@book {Isa94,
+    AUTHOR = {Isaacs, I. Martin},
+     TITLE = {Character theory of finite groups},
+      NOTE = {Corrected reprint of the 1976 original [Academic Press, New
+              York;  MR0460423 (57 \#417)]},
+ PUBLISHER = {Dover Publications Inc.},
+   ADDRESS = {New York},
+      YEAR = {1994},
+     PAGES = {xii+303},
+      ISBN = {0-486-68014-2},
+   MRCLASS = {20C15},
+  MRNUMBER = {MR1280461},
+}
+
+@article {Jam73,
+    AUTHOR = {James, G. D.},
+     TITLE = {The modular characters of the {M}athieu groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {27},
+      YEAR = {1973},
+     PAGES = {57--111},
+      ISSN = {0021-8693},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR0330277 (48 \#8614)},
+MRREVIEWER = {J. S. Frame},
+}
+		
+@article {Jam76a,
+    AUTHOR = {James, G. D.},
+     TITLE = {Representations of the symmetric groups over the field of
+              order {$2$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {38},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {280--308},
+      ISSN = {0021-8693},
+   MRCLASS = {20C30},
+  MRNUMBER = {MR0396734 (53 \#595)},
+MRREVIEWER = {G. de B. Robinson},
+}
+
+@article {Jam76b,
+    AUTHOR = {James, G. D.},
+     TITLE = {On the decomposition matrices of the symmetric groups. {I}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {43},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {42--44},
+      ISSN = {0021-8693},
+   MRCLASS = {20C30},
+  MRNUMBER = {MR0430049 (55 \#3057a)},
+MRREVIEWER = {A. Kerber},
+}
+		
+@article {Jam76c,
+    AUTHOR = {James, G. D.},
+     TITLE = {On the decomposition matrices of the symmetric groups. {II}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {43},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {45--54},
+      ISSN = {0021-8693},
+   MRCLASS = {20C30},
+  MRNUMBER = {MR0430050 (55 \#3057b)},
+MRREVIEWER = {A. Kerber},
+}
+		
+@article {Jam78a,
+    AUTHOR = {James, G. D.},
+     TITLE = {A note on the decomposition matrices of {$S\sb{12}$}
+              and {$S\sb{13}$} for the prime {$3$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {53},
+      YEAR = {1978},
+    NUMBER = {2},
+     PAGES = {410--411},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20B10 (20C15)},
+  MRNUMBER = {MR502639 (80a:20005)},
+MRREVIEWER = {H. Nagao},
+}
+		
+@book {Jam78b,
+    AUTHOR = {James, G. D.},
+     TITLE = {The representation theory of the symmetric groups},
+    SERIES = {Lecture Notes in Mathematics},
+    VOLUME = {682},
+ PUBLISHER = {Springer},
+   ADDRESS = {Berlin},
+      YEAR = {1978},
+     PAGES = {v+156},
+      ISBN = {3-540-08948-9},
+   MRCLASS = {20C30 (20-02)},
+  MRNUMBER = {MR513828 (80g:20019)},
+MRREVIEWER = {Dragomir {\v{Z}}. {\Dbar}okovi{\'c}},
+}
+
+@book {JK81,
+    AUTHOR = {James, Gordon and Kerber, Adalbert},
+     TITLE = {The representation theory of the symmetric group},
+    SERIES = {Encyclopedia of Mathematics and its Applications},
+    VOLUME = {16},
+      NOTE = {With a foreword by P. M. Cohn,
+              With an introduction by Gilbert de B. Robinson},
+ PUBLISHER = {Addison-Wesley Publishing Co., Reading, Mass.},
+      YEAR = {1981},
+     PAGES = {xxviii+510},
+      ISBN = {0-201-13515-9},
+   MRCLASS = {20-02 (20C30)},
+  MRNUMBER = {MR644144 (83k:20003)},
+MRREVIEWER = {A. O. Morris},
+}
+
+@article {JW97,
+    AUTHOR = {Jansen, C. and Wilson, R. A.},
+     TITLE = {Two new constructions of the {O}'{N}an group},
+   JOURNAL = {J. London Math. Soc. (2)},
+  FJOURNAL = {Journal of the London Mathematical Society. Second Series},
+    VOLUME = {56},
+      YEAR = {1997},
+    NUMBER = {3},
+     PAGES = {579--583},
+      ISSN = {0024-6107},
+     CODEN = {JLMSAK},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR1610479 (98m:20022)},
+}
+
+@article {JW98,
+    AUTHOR = {Jansen, C. and Wilson, R. A.},
+     TITLE = {The {$2$}-modular and {$3$}-modular decomposition numbers for
+              the sporadic simple {O}'{N}an group and its triple cover},
+   JOURNAL = {J. London Math. Soc. (2)},
+  FJOURNAL = {Journal of the London Mathematical Society. Second Series},
+    VOLUME = {57},
+      YEAR = {1998},
+    NUMBER = {1},
+     PAGES = {71--90},
+      ISSN = {0024-6107},
+     CODEN = {JLMSAK},
+   MRCLASS = {20C34 (20C20 20C40)},
+  MRNUMBER = {MR1624797 (99g:20025)},
+MRREVIEWER = {Gerhard Hiss},
+}
+
+@article {JW96,
+    AUTHOR = {Jansen, C. and Wilson, R. A.},
+     TITLE = {The minimal faithful {$3$}-modular representation for the
+              {L}yons group},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {24},
+      YEAR = {1996},
+    NUMBER = {3},
+     PAGES = {873--879},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C34 (20C40 20D08)},
+  MRNUMBER = {MR1374641 (97a:20021)},
+MRREVIEWER = {Herbert Pahlings},
+}
+
+@article {Kho84,
+    AUTHOR = {Khosraviyani, Firooz},
+     TITLE = {Decomposition numbers of exceptional {W}eyl groups. {I}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {91},
+      YEAR = {1984},
+    NUMBER = {2},
+     PAGES = {390--409},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR769582 (86h:20011)},
+MRREVIEWER = {Richard Dipper},
+}
+		
+@article {KM85,
+    AUTHOR = {Khosraviyani, Firooz and Morris, Alun O.},
+     TITLE = {Decomposition numbers of exceptional {W}eyl groups. {II}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {92},
+      YEAR = {1985},
+    NUMBER = {2},
+     PAGES = {525--531},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR778465 (86m:20013)},
+MRREVIEWER = {Richard Dipper},
+}
+		
+@article {Kon88a,
+    AUTHOR = {Kondrat{\cprime}ev, A. S.},
+     TITLE = {Decomposition numbers of the group {${\scr J}\sb 2$}},
+   JOURNAL = {Algebra i Logika},
+  FJOURNAL = {Akademiya Nauk SSSR. Sibirskoe Otdelenie. Institut Matematiki.
+              Algebra i Logika},
+    VOLUME = {27},
+      YEAR = {1988},
+    NUMBER = {5},
+     PAGES = {535--561, 619},
+      ISSN = {0373-9252},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR1047503 (91g:20017)},
+MRREVIEWER = {{\`E}. M. Pal{\cprime}chik},
+      note = {Russian, translation  in Algebra and Logic {\bf 27} (1988), no.
+              5, 333--349 (1989).},
+}
+
+@article {Kon88b,
+    AUTHOR = {Kondrat{\cprime}ev, A. S.},
+     TITLE = {Decomposition numbers of the groups {$\hat{\scr J}\sb 2$} and
+              {${\rm Aut}(\scr J\sb 2)$}},
+   JOURNAL = {Algebra i Logika},
+  FJOURNAL = {Akademiya Nauk SSSR. Sibirskoe Otdelenie. Institut Matematiki.
+              Algebra i Logika},
+    VOLUME = {27},
+      YEAR = {1988},
+    NUMBER = {6},
+     PAGES = {690--710, 737},
+      ISSN = {0373-9252},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR1038106 (91b:20024)},
+MRREVIEWER = {{\`E}. M. Pal{\cprime}chik},
+      note = {Russian, translation  in Algebra and Logic {\bf 27} (1988), no.
+              6, 429--444 (1989).},
+}
+
+@book {Lan83,
+    AUTHOR = {Landrock, P.},
+     TITLE = {Finite group algebras and their modules},
+    SERIES = {London Mathematical Society Lecture Note Series},
+    VOLUME = {84},
+ PUBLISHER = {Cambridge University Press},
+   ADDRESS = {Cambridge},
+      YEAR = {1983},
+     PAGES = {x+274},
+      ISBN = {0-521-27487-7},
+   MRCLASS = {20-02 (16A26 20C05 20C20)},
+  MRNUMBER = {MR737910 (85h:20002)},
+MRREVIEWER = {J. L. Alperin},
+}
+
+@article {Lem93,
+    AUTHOR = {Lempken, W.},
+     TITLE = {Constructing {$J\sb 4$} in {${\rm GL}(1333,11)$}},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {21},
+      YEAR = {1993},
+    NUMBER = {12},
+     PAGES = {4311--4351},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR1242834 (94i:20032)},
+MRREVIEWER = {Jonathan I. Hall},
+}
+
+@article {LS93a,
+    AUTHOR = {Lempken, W. and Staszewski, R.},
+     TITLE = {Some {$5$}-modular representation theory for the simple group
+              {${\rm McL}$}},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {21},
+      YEAR = {1993},
+    NUMBER = {5},
+     PAGES = {1611--1629},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C34 (20D08)},
+  MRNUMBER = {MR1213977 (94a:20027)},
+MRREVIEWER = {P. Fong},
+}
+
+@article {LS93b,
+    AUTHOR = {Lempken, W. and Staszewski, R.},
+     TITLE = {A construction of {$\widehat{3}{\rm McL}$} and some
+              representation theory in characteristic {$5$}},
+      NOTE = {Computational linear algebra in algebraic and related problems
+              (Essen, 1992)},
+   JOURNAL = {Linear Algebra Appl.},
+  FJOURNAL = {Linear Algebra and its Applications},
+    VOLUME = {192},
+      YEAR = {1993},
+     PAGES = {205--234},
+      ISSN = {0024-3795},
+     CODEN = {LAAPAW},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR1236744 (94k:20015)},
+MRREVIEWER = {V. D. Mazurov},
+}
+
+@incollection {LP91,
+    AUTHOR = {Lux, K. and Pahlings, H.},
+     TITLE = {Computational aspects of representation theory of finite
+              groups},
+ BOOKTITLE = {Representation theory of finite groups and finite-dimensional
+              algebras (Bielefeld, 1991)},
+    SERIES = {Progr. Math.},
+    VOLUME = {95},
+     PAGES = {37--64},
+ PUBLISHER = {Birkh\"auser},
+   ADDRESS = {Basel},
+      YEAR = {1991},
+   MRCLASS = {20C40},
+  MRNUMBER = {MR1112157 (92g:20025)},
+MRREVIEWER = {Wolfgang Knapp},
+  crossref = {MR91}
+}
+
+@article {Mar72,
+    AUTHOR = {Martineau, R. Patrick},
+     TITLE = {On representations of the {S}uzuki groups over fields of odd
+              characteristic},
+   JOURNAL = {J. London Math. Soc. (2)},
+  FJOURNAL = {Journal of the London Mathematical Society. Second Series},
+    VOLUME = {6},
+      YEAR = {1972},
+     PAGES = {153--160},
+      ISSN = {0024-6107},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR0369498 (51 \#5731)},
+MRREVIEWER = {A. O. Morris},
+}
+		
+@article {MN84,
+    AUTHOR = {Meyer, Werner and Neutsch, Wolfram},
+     TITLE = {\"{U}ber {$5$}-{D}arstellungen der {L}yonsgruppe},
+   JOURNAL = {Math. Ann.},
+  FJOURNAL = {Mathematische Annalen},
+    VOLUME = {267},
+      YEAR = {1984},
+    NUMBER = {4},
+     PAGES = {519--535},
+      ISSN = {0025-5831},
+     CODEN = {MAANA},
+   MRCLASS = {20C20 (20D08 51E20)},
+  MRNUMBER = {MR742897 (85k:20038)},
+MRREVIEWER = {Stephen D. Smith},
+}
+		
+@article {MNP85,
+    AUTHOR = {Meyer, Werner and Neutsch, Wolfram and Parker, Richard},
+     TITLE = {The minimal {$5$}-representation of {L}yons' sporadic group},
+   JOURNAL = {Math. Ann.},
+  FJOURNAL = {Mathematische Annalen},
+    VOLUME = {272},
+      YEAR = {1985},
+    NUMBER = {1},
+     PAGES = {29--39},
+      ISSN = {0025-5831},
+     CODEN = {MAANA},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR794089 (86i:20025)},
+MRREVIEWER = {R. W. Carter},
+}
+
+@mastersthesis{Nic88,
+    author = {Nickel, W.},
+     title = {Endliche    {K}\"orper   in   dem   gruppentheoretischen
+              {P}rogrammsystem {GAP}},
+      type = {Diplomarbeit},
+    school = {RWTH Aachen},
+      year = {1988},
+}
+
+@incollection {Par84,
+    AUTHOR = {Parker, R. A.},
+     TITLE = {The computer calculation of modular characters (the meat-axe)},
+ BOOKTITLE = {Computational group theory (Durham, 1982)},
+     PAGES = {267--274},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1984},
+   MRCLASS = {20C20 (20-04)},
+  MRNUMBER = {MR760660 (85k:20041)},
+MRREVIEWER = {Leo J. Alex},
+  crossref = {Atk84},
+}
+
+@manual{Rin92,
+    author = {Ringe, M.},
+     title = {The {C}-{M}eat{A}xe, {D}ocumentation},
+organization = {RWTH Aachen},
+      year = {1992},
+}
+
+@article {Ryb88b,
+    AUTHOR = {Ryba, A. J. E.},
+     TITLE = {Calculation of the {$7$}-modular characters of the {H}eld
+              group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {117},
+      YEAR = {1988},
+    NUMBER = {1},
+     PAGES = {240--255},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C20 (20D08)},
+  MRNUMBER = {MR955602 (89g:20026)},
+MRREVIEWER = {David Benson},
+   sorttag = {b},
+}
+
+@article {RW94,
+    AUTHOR = {Ryba, Alexander J. E. and Wilson, Robert A.},
+     TITLE = {Matrix generators for the {H}arada-{N}orton group},
+   JOURNAL = {Experiment. Math.},
+  FJOURNAL = {Experimental Mathematics},
+    VOLUME = {3},
+      YEAR = {1994},
+    NUMBER = {2},
+     PAGES = {137--145},
+      ISSN = {1058-6458},
+   MRCLASS = {20C34 (20C40 20D08)},
+  MRNUMBER = {MR1313878 (95k:20017)},
+MRREVIEWER = {Wujie Shi},
+}
+		
+@book{Sch94,
+    editor = {Sch{\"o}nert, M.},
+     title = {Gap{\textendash}3.4, {M}anual},
+ publisher = {RWTH Aachen},
+      year = {1994},
+}
+
+@article {Ste63,
+    AUTHOR = {Steinberg, Robert},
+     TITLE = {Representations of algebraic groups},
+   JOURNAL = {Nagoya Math. J.},
+  FJOURNAL = {Nagoya Mathematical Journal},
+    VOLUME = {22},
+      YEAR = {1963},
+     PAGES = {33--56},
+      ISSN = {0027-7630},
+   MRCLASS = {22.90 (14.50)},
+  MRNUMBER = {MR0155937 (27 \#5870)},
+MRREVIEWER = {H. K. Farahat},
+}
+
+@phdthesis{Sul90,
+    author = {Suleiman, I. A. I.},
+     title = {Modular Representations of Finite Simple Groups},
+      type = {Ph. D. thesis},
+    school = {The University of Birmingham},
+      year = {1990},
+}
+
+@article {Sul94,
+    AUTHOR = {Suleiman, Ibrahim A. I.},
+     TITLE = {The modular characters of the twisted {C}hevalley group
+              {${}\sp 2D\sb 4(2)$} and {${}\sp 2D\sb 4(2).2$}},
+   JOURNAL = {Math. Japon.},
+  FJOURNAL = {Mathematica Japonica},
+    VOLUME = {39},
+      YEAR = {1994},
+    NUMBER = {1},
+     PAGES = {107--117},
+      ISSN = {0025-5513},
+     CODEN = {MAJAA9},
+   MRCLASS = {20C33 (20C20 20C40)},
+  MRNUMBER = {MR1261343 (94m:20038)},
+MRREVIEWER = {Donald L. White},
+}
+		
+@article {SW92b,
+    AUTHOR = {Suleiman, Ibrahim A. and Wilson, Robert A.},
+     TITLE = {Computer construction of matrix representations of the
+              covering group of the {H}igman-{S}ims group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {148},
+      YEAR = {1992},
+    NUMBER = {1},
+     PAGES = {219--224},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C34 (20C20 20C40)},
+  MRNUMBER = {MR1161573 (93d:20029)},
+MRREVIEWER = {Wolfgang Knapp},
+}
+
+@article {SW92c,
+    AUTHOR = {Suleiman, Ibrahim A. and Wilson, Robert A.},
+     TITLE = {The {$3$}- and {$5$}-modular characters of the covering and
+              the automorphism groups of the {H}igman-{S}ims group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {148},
+      YEAR = {1992},
+    NUMBER = {1},
+     PAGES = {225--242},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C34 (20C20 20C40)},
+  MRNUMBER = {MR1161574 (93d:20030)},
+MRREVIEWER = {Wolfgang Knapp},
+}
+
+@incollection {SW92d,
+    AUTHOR = {Suleiman, Ibrahim A. and Wilson, Robert A.},
+     TITLE = {The {$3$}-modular characters of the {M}c{L}aughlin group
+              {${\rm McL}$} and its automorphism group {${\rm McL}.2$}},
+ BOOKTITLE = {Groups, combinatorics \& geometry (Durham, 1990)},
+    SERIES = {London Math. Soc. Lecture Note Ser.},
+    VOLUME = {165},
+     PAGES = {422--437},
+ PUBLISHER = {Cambridge Univ. Press},
+   ADDRESS = {Cambridge},
+      YEAR = {1992},
+   MRCLASS = {20C34 (20C20)},
+  MRNUMBER = {MR1200279 (94c:20031)},
+MRREVIEWER = {Peter Fleischmann},
+  crossref = {LS92a}
+}
+
+@article {SW93,
+    AUTHOR = {Suleiman, Ibrahim A. I. and Wilson, Robert A.},
+     TITLE = {Construction of the fourfold cover of the {M}athieu group
+              {$M\sb {22}$}},
+   JOURNAL = {Experiment. Math.},
+  FJOURNAL = {Experimental Mathematics},
+    VOLUME = {2},
+      YEAR = {1993},
+    NUMBER = {1},
+     PAGES = {11--14},
+      ISSN = {1058-6458},
+   MRCLASS = {20C34},
+  MRNUMBER = {MR1246480 (94h:20022)},
+}
+
+@article {SW94,
+    AUTHOR = {Suleiman, Ibrahim A. I. and Wilson, Robert A.},
+     TITLE = {The {$2$}-modular characters of {C}onway's group {${\rm Co}\sb
+              2$}},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {116},
+      YEAR = {1994},
+    NUMBER = {2},
+     PAGES = {275--283},
+      ISSN = {0305-0041},
+     CODEN = {MPCPCO},
+   MRCLASS = {20C40 (20C34)},
+  MRNUMBER = {MR1281546 (95e:20024)},
+MRREVIEWER = {Herbert Pahlings},
+}
+
+@phdthesis{Tha81,
+    author = {Thackray, J. G.},
+     title = {Modular Representations of Some Finite Groups},
+      type = {Ph. D. thesis},
+    school = {University of Cambridge},
+      year = {1981},
+}
+
+@incollection {Tho86,
+    AUTHOR = {Thompson, John G.},
+     TITLE = {Some finite groups which appear as {${\rm Gal}\,L/K,$} where
+              {$K\subseteq {\bf Q}(\mu\sb n)$}},
+ BOOKTITLE = {Group theory, Beijing 1984},
+    SERIES = {Lecture Notes in Math.},
+    VOLUME = {1185},
+     PAGES = {210--230},
+ PUBLISHER = {Springer},
+   ADDRESS = {Berlin},
+      YEAR = {1986},
+   MRCLASS = {11R32 (12F10 20C99)},
+  MRNUMBER = {MR842445 (87i:11160)},
+MRREVIEWER = {Richard Massy},
+  crossref = {Dua86},
+}
+
+@article {Whi92,
+    AUTHOR = {White, Donald L.},
+     TITLE = {Brauer trees of {$2.F\sb 4(2)$}},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {20},
+      YEAR = {1992},
+    NUMBER = {11},
+     PAGES = {3353--3368},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C20 (20C33)},
+  MRNUMBER = {MR1186712 (93i:20009)},
+MRREVIEWER = {Stefan Heiss},
+}
+		
+@phdthesis{Wil76,
+    author = {Willems, W.},
+     title = {Metrische Moduln \"uber Gruppenringen},
+      type = {Dissertation},
+    school = {Mainz},
+      year = {1976},
+}
+
+@article {Wil90,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The {$2$}- and {$3$}-modular characters of {$J\sb 3,$} its
+              covering group and automorphism group},
+   JOURNAL = {J. Symbolic Comput.},
+  FJOURNAL = {Journal of Symbolic Computation},
+    VOLUME = {10},
+      YEAR = {1990},
+    NUMBER = {6},
+     PAGES = {647--656},
+      ISSN = {0747-7171},
+   MRCLASS = {20C20 (20C40 20D08)},
+  MRNUMBER = {MR1087984 (92b:20016)},
+MRREVIEWER = {Wolfgang Knapp},
+}
+		
+@article {Wil93b,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {Matrix generators for {F}ischer's group {${\rm Fi}\sb {24}$}},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {113},
+      YEAR = {1993},
+    NUMBER = {1},
+     PAGES = {5--8},
+      ISSN = {0305-0041},
+     CODEN = {MPCPCO},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR1188814 (93j:20042)},
+MRREVIEWER = {Ulrich Meierfrankenfeld},
+}
+
+@article {Wil93c,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {A new construction of the {B}aby {M}onster and its
+              applications},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {25},
+      YEAR = {1993},
+    NUMBER = {5},
+     PAGES = {431--437},
+      ISSN = {0024-6093},
+     CODEN = {LMSBBT},
+   MRCLASS = {20D08 (20C34 20C40)},
+  MRNUMBER = {MR1233405 (94k:20027)},
+MRREVIEWER = {Richard Lyons},
+}
+		
+@article {Wil93e,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The {B}rauer tree for {$J\sb 3$} in characteristic {$17$}},
+   JOURNAL = {J. Symbolic Comput.},
+  FJOURNAL = {Journal of Symbolic Computation},
+    VOLUME = {15},
+      YEAR = {1993},
+    NUMBER = {3},
+     PAGES = {325--330},
+      ISSN = {0747-7171},
+   MRCLASS = {20C34 (68Q40)},
+  MRNUMBER = {MR1229639 (94g:20021)},
+MRREVIEWER = {Jamshid Moori},
+}
+
+@article {Wol86,
+    AUTHOR = {Woldar, Andrew J.},
+     TITLE = {On the {$5$}-decomposition matrix for {M}c{L}aughlin's
+              sporadic simple group},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {14},
+      YEAR = {1986},
+    NUMBER = {2},
+     PAGES = {277--291},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20C20 (20D08)},
+  MRNUMBER = {MR817046 (87a:20007)},
+MRREVIEWER = {J. L. Alperin},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  entries needed by crossref
+%%
+
+@proceedings{ Atk84,
+     TITLE = {Computational group theory},
+ BOOKTITLE = {Proceedings of the London Mathematical Society symposium held
+              in Durham, July 30--August 9, 1982},
+    EDITOR = {Atkinson, Michael D.},
+ PUBLISHER = {Academic Press Inc. [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {London},
+      YEAR = {1984},
+     PAGES = {xii+375},
+      ISBN = {0-12-066270-1},
+   MRCLASS = {20-06 (68-06)},
+  MRNUMBER = {MR760641 (85g:20001)},
+}
+
+@proceedings {DGM86,
+     TITLE = {Representation theory. {II}},
+    SERIES = {Lecture Notes in Mathematics},
+    VOLUME = {1178},
+ BOOKTITLE = {Proceedings of the fourth international conference on
+              representations of algebras held at Carleton University,
+              Ottawa, Ont., August 16--25, 1984},
+    EDITOR = {Dlab, V. and Gabriel, P. and Michler, G.},
+      NOTE = {Groups and orders},
+ PUBLISHER = {Springer-Verlag},
+   ADDRESS = {Berlin},
+      YEAR = {1986},
+     PAGES = {xvi+370},
+      ISBN = {3-540-16433-2},
+   MRCLASS = {20-06 (16-06 20Cxx)},
+  MRNUMBER = {MR842475 (87b:20003)},
+}
+
+% removed the following entry because of missing author/editor
+% @book {MR0346033,
+%      TITLE = {Symposia {M}athematica. {V}ol. {XIII}},
+%       NOTE = {Convegno di Gruppi Abeliani (20--30 Novembre 1972). Convegno
+%               di Gruppi e loro Rappresentazioni (12--15 Dicembre 1972),
+%               Istituto Nazionale di Alta Matematica, Rome},
+%  PUBLISHER = {Academic Press},
+%    ADDRESS = {London},
+%       YEAR = {1974},
+%      PAGES = {558},
+%    MRCLASS = {20-06},
+%   MRNUMBER = {MR0346033 (49 \#10759)},
+%  zblnumber = {0283.00005},
+% }
+
+@proceedings {MR91,
+     TITLE = {Representation theory of finite groups and finite-dimensional
+              algebras},
+    SERIES = {Progress in Mathematics},
+    VOLUME = {95},
+ BOOKTITLE = {Proceedings of the conference held at the University of
+              Bielefeld, Bielefeld, May 15--17, 1991},
+    EDITOR = {Michler, G. O. and Ringel, C. M.},
+ PUBLISHER = {Birkh\"auser Verlag},
+   ADDRESS = {Basel},
+      YEAR = {1991},
+     PAGES = {x+520},
+      ISBN = {3-7643-2604-2},
+   MRCLASS = {20-06 (00B25 16-06 20Cxx)},
+  MRNUMBER = {MR1112154 (91m:20005)},
+}
+
+@proceedings {LS92a,
+     TITLE = {Groups, combinatorics \& geometry},
+    SERIES = {London Mathematical Society Lecture Note Series},
+    VOLUME = {165},
+ BOOKTITLE = {Proceedings of the L.M.S.\ Symposium on Groups and
+              Combinatorics held in Durham, July 5--15, 1990},
+    EDITOR = {Liebeck, Martin and Saxl, Jan},
+ PUBLISHER = {Cambridge University Press},
+   ADDRESS = {Cambridge},
+      YEAR = {1992},
+     PAGES = {xiv+489},
+      ISBN = {0-521-40685-4},
+   MRCLASS = {20-06 (00B25 20Dxx)},
+  MRNUMBER = {MR1200244 (93g:20001)},
+}
+
+@proceedings {Dua86,
+     TITLE = {Group theory, {B}eijing 1984},
+    SERIES = {Lecture Notes in Mathematics},
+    VOLUME = {1185},
+ BOOKTITLE = {Proceedings of an international symposium held at Beijing
+              University, Beijing, August 27--September 8, 1984},
+    EDITOR = {Tuan, Hsio-Fu},
+ PUBLISHER = {Springer-Verlag},
+   ADDRESS = {Berlin},
+      YEAR = {1986},
+     PAGES = {vi+403},
+      ISBN = {3-540-16456-1},
+   MRCLASS = {20-06},
+  MRNUMBER = {MR842438 (87d:20004)},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

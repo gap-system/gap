@@ -1,0 +1,372 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  Update                      GAP Maintenance
+%%
+%H  $Id: Update,v 1.319 2009/09/30 10:15:54 gap Exp $
+%%
+%Y  Copyright (C)  2005,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file is intended to list the changes that will be published with
+%%  the next update of GAP.
+%%  The information is used for producing the announcement of the update,
+%%  the additions to `tst/bugfix.tst', and an HTML page that lists the
+%%  known bugs and intended new features.
+%%
+%%  For adding a change, just copy one of the templates below to the end of the
+%%  file, and enter the relevant information.
+%%
+%%  Formal rules for this file, to allow simple parsing by a script:
+%%          - lines starting with `%' are comments and are ignored
+%%          - lines starting with `!' describe the type of information
+%%            in the following lines until the next `!'-line
+%%          - each entry must be finished with an `! End' line, otherwise
+%%            the order of entries is irrelevant
+%%          - the text behind the `!' is case and whitespace insensitive
+%%
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+
+! Changed by
+
+! Reported by
+
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+Fix: internal data corruption
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+! Description
+
+! Test Code
+
+! Prefetch
+
+! Changed Files
+
+! End
+
+
+
+%%%%%%%%%%%%  Template with explanatory comments    %%%%%%%%%%%%%%%%%%%%%%%%%%
+% When the change was checked in, format 'yyyy/mm/dd':
+! Date
+
+% Initials should suffice here:
+! Changed by
+
+% Only if applicable:
+! Reported by
+
+% Choose one or more entries and/or add new ones; but always use either
+% the 'Fix:' or the 'New:' prefix
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+% For the description use (X)HTML (preferred) or plain text:
+% For HTML use in particular the following markup:
+%     for package names: <span class="pkgname">...</span>
+%     for GAP names: <span class="code">...</span>
+! Description
+
+% If possible, provide some code in test file format which allows to check
+% if a change was applied to an installation. Provide input and output,
+% including prompts, exactly as in a GAP session.
+! Test Code
+
+% If possible, provide some information about a temporary fix, workaround,
+% ..., maybe with a link to some longer description or a file with some
+% code. Use (X)HTML here.
+! Prefetch
+
+% White space separated list of paths relative to the GAP root directory.
+% (This is implicitly contained in the data of the CVS repository, but in
+% case of problems after changes it may be convenient to have this
+% information here.)
+! Changed Files
+
+% Finish your entry with this:
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2008/12/15
+! Changed by
+TB
+! Reported by
+Anvita <anvita21@gmail.com>
+! Type of Change
+Fix: inappropriate error message
+! Description
+The membership test for a group of finite field elements
+ran into an error if the zero element of the field was given
+as the first argument.
+! Test Code
+gap> 0*Z(5) in Group( Z(5) );
+false
+! Changed Files
+lib/fieldfin.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/02/04
+! Changed by
+FL
+! Reported by
+AK
+! Type of Change
+Fix: crash
+! Description
+GAP crashed when the intersection of ranges became empty.
+! Test Code
+gap> Intersection([1..3],[4..5],[6,7]);
+[  ]
+! Changed Files
+src/range.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/02/23
+! Changed by
+AH
+! Reported by
+Volker Braun
+! Type of Change
+Fix: inappropriate error message
+! Description
+IrreducibleRepresentationsDixon did not accept a ist with one character as
+second argument.
+! Test Code
+gap> chi:=Irr(CyclicGroup(3))[2];;
+gap> IrreducibleRepresentationsDixon(UnderlyingGroup(chi),[chi]);;
+! Changed Files
+lib/ctblgrp.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/02/25
+! Changed by
+TB
+! Type of Change
+Fix: efficiency issue
+! Description
+A high rank method for the operation
+<mixer manual="Reference: IndexNC"><span class="code">IndexNC</span></mixer>
+is now installed for the situation that the
+<mixer manual="Reference: Size"><span class="code">Size</span></mixer>
+values of its arguments are known and the second argument is a finite group.
+! Test Code
+gap> # Without the new method, the following gets stuck in a
+gap> # `NiceMonomorphism' computation.
+gap> IndexNC( GL(30,17), SL(30,17) );
+16
+! Changed Files
+lib/grp.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/03/23
+! Changed by
+FL
+! Reported by
+Simone Ugolini
+! Type of Change
+Fix: crash
+! Description
+GAP crashed when started in a terminal with more than 256 columns. Now only
+the first 256 columns are used.
+! Test Code
+# no testing on GAP level since SizeScreen was correct
+! Changed Files
+src/sysfiles.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/05/10
+! Changed by
+AH
+! Reported by
+Philipp Schneider
+! Type of Change
+Fix: inappropriate error message
+! Description
+Constant polynomials need to be recognized as univariate in any variable.
+! Changed Files
+lib/ratfunul.gi
+lib/ringpoly.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/05/14
+! Changed by
+AH
+! Reported by
+Volker Braun
+! Type of Change
+Fix: inappropriate error message
+! Description
+Special treatment for element comparison in the trivial fp group.
+! Changed Files
+lib/grpfp.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/05/26
+! Changed by
+AH
+! Reported by
+Mark Dickinson
+! Type of Change
+Fix: missing error message
+! Description
+QuotientRemainder methods for the laurent polynomial representation only
+apply to proper polynomials
+! Changed Files
+lib/ratfunul.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/05/28
+! Changed by
+BH
+! Reported by
+Benjamin Sambale
+! Type of Change
+Fix: crash
+Fix: wrong result
+New: extended functionality
+! Description
+The semidirect product method for pcgs computable groups sometimes tried to use 
+finite presentations which weren't polycyclic. This usually happens when the
+groups are not pc groups. The risk for a wrong result is very low.
+! Test Code
+gap> G:=AlternatingGroup(4);;
+gap> N:=Subgroup(G,[(1,2)(3,4),(1,3)(2,4)]);;
+gap> H:=DirectProduct(CyclicGroup(2),CyclicGroup(2));;
+gap> A:=AutomorphismGroup(H);;
+gap> P:=SylowSubgroup(A,3);;
+gap> epi:=NaturalHomomorphismByNormalSubgroup(G,N);;
+gap> iso:=IsomorphismGroups(FactorGroup(G,N),P);;
+gap> f:=CompositionMapping(IsomorphismGroups(FactorGroup(G,N),P),epi);;
+gap> SemidirectProduct(G,f,H);
+<pc group of size 48 with 5 generators>
+! Changed Files
+lib/grppcext.gi
+lib/gprdpc.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/06/25
+! Changed by
+FL
+! Reported by
+Andries Brouwer
+! Type of Change
+Fix: missing error handling
+! Description
+With newer gcc versions the option -D_FORTIFY_SOURCE=2 is enabled by -Wall.
+This reveals that the return value of system 'write' commands was not
+checked in the GAP kernel. It is checked now and in case of an error a message
+is printed.
+! Changed Files
+src/saveload.c
+src/sysfiles.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/07/08
+! Changed by
+TB
+! Reported by
+Rene Hartung
+! Type of Change
+Fix: inappropriate error message
+! Description
+Redeclaring an operation with
+<mixer manual="Prg Tutorial: DeclareOperation"><span class="code">
+DeclareOperation</span></mixer>
+that had been created with
+<mixer manual="Prg Tutorial: DeclareAttribute"><span class="code">
+DeclareAttribute</span></mixer>
+shall cause an informative error message.
+Before this change, one got only a cryptic error message.
+! Test Code
+gap> # no test code, since one gets an error before and after the change
+gap> # DeclareAttribute( "test", IsObject );
+gap> # DeclareOperation( "test", [ IsObject ] );
+! Changed Files
+lib/oper.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/09/23
+! Changed by
+AH
+! Reported by
+Joe Bohanon
+! Type of Change
+Fix: wrong result
+! Description
+IsPSL (and in turn StructureDescription) erroneously recognize non-PSL
+groups of the right order as PSL.
+! Test Code
+gap> g:=DirectProduct(DihedralGroup(14),SmallGroup(1440,120));;
+gap> PositionSublist(StructureDescription(g),"PSL");
+fail
+! Changed Files
+lib/grpnames.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/09/25
+! Changed by
+TB
+! Type of Change
+Fix: inappropriate error message
+! Description
+The image of a class function under a Galois automorphism is defined
+by applying this automorphism pointwise.
+For the case of an identity mapping, no method was found.
+! Test Code
+lin:= LinearCharacters( CyclicGroup( 3 ) );;
+lin[2] ^ One( GaloisGroup( CF(3) ) );;
+! Changed Files
+lib/ctblfuns.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/09/30
+! Changed by
+TB
+! Reported by
+Laurent Bartholdi
+! Type of Change
+Fix: inappropriate error message
+! Description
+Comparing two trivial row or matrix spaces with
+<span class="code">\&lt;</span> ran into an error.
+! Test Code
+gap> v:= GF(2)^1;;
+gap> Subspace( v, [] ) < Subspace( v, [] );
+false
+gap> v:= GF(2)^[1,1];;
+gap> Subspace( v, [] ) < Subspace( v, [] );
+false
+! Changed Files
+lib/module.gi
+lib/vspcrow.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

@@ -4,13 +4,13 @@
 #W                                                           & Heiko Thei"sen
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: classic.gi,v 4.29 2009/04/09 15:22:34 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.classic_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: classic.gi,v 4.29 2009/04/09 15:22:34 gap Exp $";
 
 
 #############################################################################
@@ -47,7 +47,7 @@ InstallMethod( SymplecticGroupCons,
 
         # SP(d,q)
         else
-            mat1 := IdentityMat( d, o );
+            mat1 := IdentityMat( d, f );
             mat2 := List( 0 * mat1, ShallowCopy );
             for i  in [ 2 .. d/2 ]      do mat2[i][i-1]:= o;  od;
             for i  in [ d/2+1 .. d-1 ]  do mat2[i][i+1]:= o;  od;
@@ -80,8 +80,8 @@ InstallMethod( SymplecticGroupCons,
             fi;
         fi;
 
-	mat1:=ImmutableMatrix(f,mat1);
-	mat2:=ImmutableMatrix(f,mat2);
+	mat1:=ImmutableMatrix(f,mat1,true);
+	mat2:=ImmutableMatrix(f,mat2,true);
         # avoid to call 'Group' because this would check invertibility ...
         g := GroupWithGenerators( [ mat1, mat2 ] );
         SetName( g, Concatenation("Sp(",String(d),",",String(q),")") );
@@ -138,7 +138,7 @@ InstallMethod( GeneralUnitaryGroupCons,
      # Construct the generators.
      z:= PrimitiveRoot( f );
      o:= One( f );
-     mat1:= IdentityMat( n, o );
+     mat1:= IdentityMat( n, f );
      mat2:= List( 0 * mat1, ShallowCopy );
 
      if   n = 2 then
@@ -183,8 +183,8 @@ InstallMethod( GeneralUnitaryGroupCons,
        mat2[(n-1)/2+2][  1  ]:=  o;
      fi;
 
-     mat1:=ImmutableMatrix(f,mat1);
-     mat2:=ImmutableMatrix(f,mat2);
+     mat1:=ImmutableMatrix(f,mat1,true);
+     mat2:=ImmutableMatrix(f,mat2,true);
      # Avoid to call 'Group' because this would check invertibility ...
      g:= GroupWithGenerators( [ mat1, mat2 ] );
      SetName( g, Concatenation("GU(",String(n),",",String(q),")") );
@@ -244,7 +244,7 @@ InstallMethod( SpecialUnitaryGroupCons,
 
      else
 
-       mat1:= IdentityMat( n, o );
+       mat1:= IdentityMat( n, f );
        mat2:= List( 0 * mat1, ShallowCopy );
 
        if   n = 2 then
@@ -297,8 +297,8 @@ InstallMethod( SpecialUnitaryGroupCons,
 
      fi;
 
-     mat1:=ImmutableMatrix(f,mat1);
-     mat2:=ImmutableMatrix(f,mat2);
+     mat1:=ImmutableMatrix(f,mat1,true);
+     mat2:=ImmutableMatrix(f,mat2,true);
      # Avoid to call 'Group' because this would check invertibility ...
      g:= GroupWithGenerators( [ mat1, mat2 ] );
      SetName( g, Concatenation("SU(",String(n),",",String(q),")") );
@@ -392,7 +392,7 @@ BindGlobal( "Oplus45", function()
 
     # construct the group without calling 'Group'
     g := [ phi*tau2, tau*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i),true);
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
     SetFieldOfMatrixGroup( g, f );
@@ -415,7 +415,7 @@ end );
 
 #############################################################################
 ##
-#F  Opm3( <s>, <d>, <q> ) . . . . . . . . . . . . . . . . . . . .  O+-_<d>(3)
+#F  Opm3( <s>, <d> )  . . . . . . . . . . . . . . . . . . . . . .  O+-_<d>(3)
 ##
 ##  <q> must be 3, <d> at least 6,  beta is 2
 ##
@@ -457,7 +457,7 @@ BindGlobal( "Opm3", function( s, d )
 
     # construct the group without calling 'Group'
     g := [ phi*theta2, theta*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
     SetFieldOfMatrixGroup( g, f );
@@ -534,7 +534,7 @@ BindGlobal( "OpmSmall", function( s, d, q )
 
     # construct the group without calling 'Group'
     g := [ phi*theta2, theta*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
     SetFieldOfMatrixGroup( g, f );
@@ -681,7 +681,7 @@ BindGlobal( "OpmOdd", function( s, d, q )
 
     # construct the group without calling 'Group'
     g := [ phi, theta*tau*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
     SetFieldOfMatrixGroup( g, f );
@@ -733,7 +733,6 @@ BindGlobal( "Oplus2", function( q )
 
     m1:= ImmutableMatrix( f, m1, true );
     m2:= ImmutableMatrix( f, m2, true );
-
     # construct the group, set the order, and return
     g := GroupWithGenerators( [ m1, m2 ] );
     SetInvariantBilinearForm(g,
@@ -779,7 +778,7 @@ BindGlobal( "Oplus4Even", function( q )
 
     # construct the group without calling 'Group'
     g := [ phi*rho, rho*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
     SetFieldOfMatrixGroup( g, f );
@@ -808,7 +807,7 @@ BindGlobal( "OplusEven", function( d, q )
     local   f,  id,  k,  phi,  delta,  theta,  i,  delta2,  eichler,
             rho,  g;
 
-    # <d> and <q> must be odd
+    # <d> and <q> must be even
     if d mod 2 = 1  then
         Error( "<d> must be even" );
     fi;
@@ -896,7 +895,7 @@ BindGlobal( "OplusEven", function( d, q )
     fi;
 
     # construct the group without calling 'Group'
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
     SetFieldOfMatrixGroup( g, f );
@@ -964,8 +963,8 @@ BindGlobal( "Ominus2", function( q )
     m1 := bc^-1 * [[z,0*z],[0*z,z^-1]] * bc;
 
     # and return the group
-    m1:=ImmutableMatrix(GF(q),m1);
-    m2:=ImmutableMatrix(GF(q),m2);
+    m1:=ImmutableMatrix(GF(q),m1,true);
+    m2:=ImmutableMatrix(GF(q),m2,true);
     g := GroupWithGenerators( [ m1, m2 ] );
     SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
       [ [ 2, 1 ], [ 1, 2*t ] ] * z^0, true ) ) );
@@ -1021,7 +1020,7 @@ BindGlobal( "Ominus4Even", function( q )
 
     # construct the group without calling 'Group'
     g := [ phi*rho, rho*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
     SetFieldOfMatrixGroup( g, f );
@@ -1146,7 +1145,7 @@ BindGlobal( "OminusEven", function( d, q )
     fi;
 
     # construct the group without calling 'Group'
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
     SetFieldOfMatrixGroup( g, f );
@@ -1231,7 +1230,7 @@ BindGlobal( "OzeroOdd", function( d, q, b )
 
     # construct the group without calling 'Group'
     g := [ phi, rho*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i));
+    g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
     SetFieldOfMatrixGroup( g, f );
@@ -1309,24 +1308,24 @@ BindGlobal( "OzeroEven", function( d, q )
 
       # The isomorphic symplectic group is $SL(2,<q>)$.
       if q = 2 then
-        mat1:= ImmutableMatrix( f, [ [o,n,n], [o,o,o], [n,n,o] ] );
-        mat2:= ImmutableMatrix( f, [ [o,n,n], [n,n,o], [n,o,n] ] );
+        mat1:= ImmutableMatrix( f, [ [o,n,n], [o,o,o], [n,n,o] ],true );
+        mat2:= ImmutableMatrix( f, [ [o,n,n], [n,n,o], [n,o,n] ],true );
       else
-        mat1:= ImmutableMatrix( f, [ [o,n,n], [n,z,n], [n,n,z^-1] ] );
-        mat2:= ImmutableMatrix( f, [ [o,n,n], [o,o,o], [n,o,n] ] );
+        mat1:= ImmutableMatrix( f, [ [o,n,n], [n,z,n], [n,n,z^-1] ],true );
+        mat2:= ImmutableMatrix( f, [ [o,n,n], [o,o,o], [n,o,n] ],true );
       fi;
 
     elif d = 5 and q = 2  then
 
       # The isomorphic symplectic group is $SP(4,2)$.
       mat1:= ImmutableMatrix( f, [ [o,n,n,n,n], [o,n,o,n,o], [o,n,o,o,o],
-                                   [n,o,n,n,o], [n,o,o,o,o] ] );
+                                   [n,o,n,n,o], [n,o,o,o,o] ],true );
       mat2:= ImmutableMatrix( f, [ [o,n,n,n,n], [n,n,o,n,n], [n,n,n,o,n],
-                                   [n,n,n,n,o], [n,o,n,n,n] ] );
+                                   [n,n,n,n,o], [n,o,n,n,n] ],true );
 
     else
 
-      mat1:= IdentityMat( d, o );
+      mat1:= IdentityMat( d, f );
       mat2:= List( 0 * mat1, ShallowCopy );
       mat2[1][1]:= o;
       mat2[d][2]:= o;
@@ -1352,8 +1351,8 @@ BindGlobal( "OzeroEven", function( d, q )
 
     fi;
 
-    mat1:= ImmutableMatrix( f, mat1 );
-    mat2:= ImmutableMatrix( f, mat2 );
+    mat1:= ImmutableMatrix( f, mat1,true );
+    mat2:= ImmutableMatrix( f, mat2,true );
 
     # avoid to call 'Group' because this would check invertibility ...
     g:= GroupWithGenerators( [ mat1, mat2 ] );
@@ -1587,6 +1586,7 @@ end );
 #F  SpinorNorm( <form>, <m> ) . . . . . . . .  compute the spinor norm of <m>
 ##
 BindGlobal( "SpinorNorm", function( form, m )
+    if IsOne(m) then return One(m[1][1]); fi;
     return DeterminantMat( WallForm(form,m).form );
 end );
 
@@ -1697,6 +1697,24 @@ BindGlobal( "CentralProductOfMatrixGroups", function( M, N )
     fi;
     return G;
 end );
+
+# Permutation constructors by using `IsomorphismPermGroup'
+PermConstructor(GeneralLinearGroupCons,[IsPermGroup,IsInt,IsObject],
+  IsMatrixGroup and IsFinite);
+PermConstructor(GeneralOrthogonalGroupCons,[IsPermGroup,IsInt,IsInt,IsObject],
+  IsMatrixGroup and IsFinite);
+PermConstructor(GeneralUnitaryGroupCons,[IsPermGroup,IsInt,IsObject],
+  IsMatrixGroup and IsFinite);
+
+PermConstructor(SpecialLinearGroupCons,[IsPermGroup,IsInt,IsObject],
+  IsMatrixGroup and IsFinite);
+PermConstructor(SpecialOrthogonalGroupCons,[IsPermGroup,IsInt,IsInt,IsObject],
+  IsMatrixGroup and IsFinite);
+PermConstructor(SpecialUnitaryGroupCons,[IsPermGroup,IsInt,IsObject],
+  IsMatrixGroup and IsFinite);
+
+PermConstructor(SymplecticGroupCons,[IsPermGroup,IsInt,IsObject],
+  IsMatrixGroup and IsFinite);
 
 
 #############################################################################

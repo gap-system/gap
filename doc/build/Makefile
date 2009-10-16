@@ -2,7 +2,7 @@
 ##
 #W  Makefile                    GAP autodoc                  Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: Makefile,v 1.51 2005/08/06 13:09:06 gap Exp $
 ##
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
@@ -101,7 +101,7 @@ test:
 	$(BUILD) -f config.alg
 	touch ._alg
 
-._environ: config.environ language.msk debug.msk objects.msk types.msk mloop.msk function.msk process.msk
+._environ: config.environ language.msk debug.msk objects.msk types.msk mloop.msk function.msk process.msk hash2.msk
 	$(BUILD) -f config.environ
 	touch ._environ
 
@@ -137,7 +137,7 @@ test:
 	$(BUILD) -f config.ctbl
 	touch ._ctbl
 
-._grpchain: config.grpchain hash2.msk quogphom.msk gptransv.msk \
+._grpchain: config.grpchain quogphom.msk gptransv.msk \
         grpchain.msk
 	$(BUILD) -f config.grpchain
 	touch ._grpchain

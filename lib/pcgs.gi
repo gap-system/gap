@@ -2,7 +2,7 @@
 ##
 #W  pcgs.gi                     GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: pcgs.gi,v 4.104 2005/10/11 09:28:41 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the methods for polycylic generating systems.
 ##
 Revision.pcgs_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: pcgs.gi,v 4.104 2005/10/11 09:28:41 gap Exp $";
 
 #############################################################################
 ##

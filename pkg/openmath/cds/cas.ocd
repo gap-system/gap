@@ -1,0 +1,138 @@
+<CD>
+<CDName> cas </CDName>
+<CDURL> http://www.openmath.org/cd/cas.ocd </CDURL>
+<CDReviewDate> 2001-10-03 </CDReviewDate>
+<CDDate> 2000-10-03 </CDDate>
+<CDVersion> 1 </CDVersion>
+<CDRevision> 0 </CDRevision>
+<CDStatus> experimental </CDStatus>
+<CDUses>
+</CDUses>
+<Description> A CD for Computer Algebra Services </Description>
+
+<CDComment>
+Written by A. Solomon on 2000-10-03
+</CDComment>
+
+<CDDefinition>
+<Name>quit</Name>
+<Description>
+Causes the compute engine process to terminate.
+</Description>
+<Example>
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="quit"/>
+  </OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+<CDDefinition>
+<Name>assign </Name>
+<Description>
+Two arguments the first a string, the name of a variable in the 
+computer algebra engine (CAE). Assigns the second argument to the 
+variable denoted by the first arguement.
+</Description>
+<Example>
+<!-- a := 1; -->
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="assign"/>
+    <OMSTR>a</OMSTR>
+    <OMI> 1 </OMI>
+  </OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+<CDDefinition>
+<Name> retrieve </Name>
+<Description>
+The only argument is a string which is the name of a variable 
+in the CAE.  Get the object assigned to that variable.
+</Description>
+<Example>
+<!-- a; -->
+<OMOBJ>
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="retrieve"/>
+    <OMSTR>a</OMSTR>
+  </OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+<CDDefinition>
+<Name>native_statement</Name>
+<Description>
+Send the string argument to the CAE as a statement in its native syntax.
+</Description>
+<Example>
+<!-- a := 3; -->
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_statement"/>
+    <OMSTR>a := 3;</OMSTR>
+  </OMA>
+</OMOBJ>
+
+</Example>
+</CDDefinition>
+
+
+<CDDefinition>
+<Name> native_output </Name>
+<Description>
+No arguments. Retrieve the output from the CAE resulting from the last
+command.
+</Description>
+<Example>
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_output"/>
+  </OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+
+<CDDefinition>
+<Name> native_error </Name>
+<Description>
+No arguments. Retrieve any error string from the CAE resulting from the last
+statement.
+</Description>
+<Example>
+<OMOBJ>
+  <OMA>
+    <OMS cd="cas" name="native_error"/>
+  </OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+<CDDefinition>
+<Name> referent </Name>
+<Description>
+The first argument is either "some" or "all". 
+the second argument is an OpenMath object which qualifies as a *reference*.
+</Description>
+<Example>
+<OMOBJ>
+	<OMA>
+		<OMS cd="cas" name="referent"/>
+		<OMSTR all/>
+		<OMA>
+			<OMS cd="integer1" name="factorial"/>
+			<OMI 3/>
+		</OMA>
+	</OMA>
+</OMOBJ>
+</Example>
+</CDDefinition>
+
+</CD>
+

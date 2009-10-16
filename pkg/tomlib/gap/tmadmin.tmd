@@ -1,0 +1,312 @@
+#############################################################################
+##
+#W  tmadmin.tmd          GAP table of marks library           Thomas Merkwitz
+##
+#H  @(#)$Id: tmadmin.tmd,v 1.7 2007/10/23 07:52:30 gap Exp $
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the declarations of all functions and variables to
+##  handle the table of marks library.
+##
+Revision.( "tomlib/gap/tmadmin_tmd" ) :=
+    "@(#)$Id: tmadmin.tmd,v 1.7 2007/10/23 07:52:30 gap Exp $";
+
+
+#############################################################################
+##
+#V  LIBTOMKNOWN
+##
+##  <ManSection>
+##  <Var Name="LIBTOMKNOWN"/>
+##
+##  <Description>
+##  <C>LIBTOMKNOWN</C> is a record that controls the loading of data files of the
+##  &GAP; library of tables of marks.
+##  It has the following components.
+##  <List>
+##  <Mark><C>ACTUAL</C> </Mark>
+##  <Item>
+##      the name of the file to be read at the moment
+##      (is set by <C>SetActualLibFileName</C>),
+##  </Item>
+##  <Mark><C>LOADSTATUS</C> </Mark>
+##  <Item>
+##      a record whose components are names of files in the library of
+##      tables of marks,
+##      with value a list whose first entry is one of <C>"loaded"</C>,
+##      <C>"unloaded"</C>, <C>"userloaded"</C> and whose second entry is an integer
+##      that controls when the corresponding tables of marks can be removed
+##      from &GAP;,
+##  </Item>
+##  <Mark><C>MAX</C> </Mark>
+##  <Item>
+##      &GAP; remembers at most <C>MAX</C> of the previously loaded library
+##      files (the default value is <M>10</M>),
+##  </Item>
+##  <Mark><C>UNLOAD</C> </Mark>
+##  <Item>
+##      is it allowed to remove previously loaded library files
+##      (is set to <K>true</K> by default),
+##  </Item>
+##  <Mark><C>STDGEN</C> </Mark>
+##  <Item>
+##      a list describing standard generators of almost simple groups in the
+##      table of marks library.
+##  </Item>
+##  </List>
+##  <P/>
+##  Additionally the names of the files already loaded occur as components of
+##  <C>LIBTOMKNOWN</C>;
+##  the corresponding values are given by the data of the files.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalVariable( "LIBTOMKNOWN" );
+#T As soon as flushable records are supported, change the following lines!
+#T InstallFlushableValue( LIBTOMKNOWN, rec(
+InstallValue( LIBTOMKNOWN, rec(
+    LOADSTATUS := rec(),
+    UNLOAD := true,
+    MAX := 10,
+  ) );
+
+
+#############################################################################
+##
+#R  IsLibTomRep
+##
+##  <ManSection>
+##  <Filt Name="IsLibTomRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  Library tables of marks have their own representation.
+##  <!--  what does this mean?-->
+##  </Description>
+##  </ManSection>
+##
+DeclareRepresentation("IsLibTomRep", IsAttributeStoringRep,["sortperm"]);
+
+
+#############################################################################
+##
+##  We replace the library function `TableOfMarksFromLibrary' that just
+##  issues a warning about nonavailability of the Tables Of Marks Library.
+##
+MakeReadWriteGlobal( "TableOfMarksFromLibrary" );
+UNBIND_GLOBAL( "TableOfMarksFromLibrary" );
+
+
+#############################################################################
+##
+#F  TableOfMarksFromLibrary( <string> )
+##
+##  <ManSection>
+##  <Func Name="TableOfMarksFromLibrary" Arg='string'/>
+##
+##  <Description>
+##  returns the table of marks with name <A>string</A>.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "TableOfMarksFromLibrary" );
+
+
+#############################################################################
+##
+#F  ConvertToLibTom( <record> )
+##
+##  <ManSection>
+##  <Func Name="ConvertToLibTom" Arg='record'/>
+##
+##  <Description>
+##  <C>ConvertToLibTom</C> converts a record with components from
+##  <C>TableOfMarksComponents</C> into a library table of marks object with the
+##  corresponding attribute values set.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "ConvertToLibTom" );
+
+
+#############################################################################
+##
+#F  SetActualLibFileName( <filename> )
+##
+##  <ManSection>
+##  <Func Name="SetActualLibFileName" Arg='filename'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "SetActualLibFileName" );
+
+
+#############################################################################
+##
+#F  LIBTOM( <arg> )
+#F  AFLT( <source>, <destination>, <fusion> )
+#F  ACLT( <identifier>, <component>, <value> )
+##
+##  <ManSection>
+##  <Func Name="LIBTOM" Arg='arg'/>
+##  <Func Name="AFLT" Arg='source, destination, fusion'/>
+##  <Func Name="ACLT" Arg='identifier, component, value'/>
+##
+##  <Description>
+##  The library format of library table of marks is a call to the function
+##  <C>LIBTOM</C>, with the arguments sorted as in <C>TableOfMarksComponents</C>
+##  (see&nbsp;<Ref Func="TableOfMarksComponents"/>).
+##  <P/>
+##  <C>AFLT</C> adds a fusion map <A>value</A> from the table of marks with name
+##  <A>source</A> to the table of marks with name <A>destination</A>.
+##  The fusion map is a list of positive integers, storing at position <M>i</M>
+##  the position of the class in <A>destination</A> that contains the subgroups
+##  in the <M>i</M>-th class of <A>source</A>.
+##  <P/>
+##  <C>ACLT</C> adds the value <A>value</A> of a component with name <A>component</A> to the
+##  table of marks with identifier value <A>identifier</A> in the library of
+##  tables of marks.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "LIBTOM" );
+DeclareGlobalFunction( "AFLT" );
+DeclareGlobalFunction( "ACLT" );
+
+
+#############################################################################
+##
+#F  MakeLIBTOMLIST()
+##
+##  <ManSection>
+##  <Func Name="MakeLIBTOMLIST" Arg=''/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "MakeLIBTOMLIST" );
+
+
+#############################################################################
+##
+#F  AllLibTomNames()
+##
+##  <ManSection>
+##  <Func Name="AllLibTomNames" Arg=''/>
+##
+##  <Description>
+##  returns the list containing all names of available library tables of
+##  marks.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "AllLibTomNames" );
+
+
+#############################################################################
+##
+#A  NamesLibTom( <string> )
+#A  NamesLibTom( <tom> )
+##
+##  <ManSection>
+##  <Attr Name="NamesLibTom" Arg='string'/>
+##  <Attr Name="NamesLibTom" Arg='tom'/>
+##
+##  <Description>
+##  all names of the library table <A>tom</A> or of the library table with
+##  name <A>string</A>
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "NamesLibTom", IsTableOfMarks and IsLibTomRep );
+DeclareAttribute( "NamesLibTom", IsString );
+
+
+#############################################################################
+##
+#A  NotifiedFusionsOfLibTom( <tom> )
+#A  NotifiedFusionsOfLibTom( <string> )
+#A  FusionsOfLibTom( <tom> )
+#A  FusionsOfLibTom( <string> )
+##
+##  <ManSection>
+##  <Attr Name="NotifiedFusionsOfLibTom" Arg='tom'/>
+##  <Attr Name="NotifiedFusionsOfLibTom" Arg='string'/>
+##  <Attr Name="FusionsOfLibTom" Arg='tom'/>
+##  <Attr Name="FusionsOfLibTom" Arg='string'/>
+##
+##  <Description>
+##  Are there any fusions from the library table of marks <A>tom</A> or  the
+##  table of marks with name <A>string</A> into other liberary tables  marks?
+##  <P/>
+##  <C>NotifiedFusionsOfLibTom</C> returns the names of all such tables of marks.
+##  <C>FusionsOfLibTom</C> returns the complete fusion maps. Therefore the
+##  corresponding library file has to be loaded.
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "NotifiedFusionsOfLibTom",
+    IsTableOfMarks and IsLibTomRep );
+DeclareAttribute( "NotifiedFusionsOfLibTom", IsString );
+
+DeclareAttribute( "FusionsOfLibTom", IsTableOfMarks and IsLibTomRep );
+DeclareAttribute( "FusionsOfLibTom", IsString );
+#T what is the difference to `FusionsTom'?
+
+
+#############################################################################
+##
+#A  NotifiedFusionsToLibTom( <tom> )
+#A  NotifiedFusionsToLibTom( <string> )
+#A  FusionsToLibTom( <tom> )
+#A  FusionsToLibTom( <string> )
+##
+##  <ManSection>
+##  <Attr Name="NotifiedFusionsToLibTom" Arg='tom'/>
+##  <Attr Name="NotifiedFusionsToLibTom" Arg='string'/>
+##  <Attr Name="FusionsToLibTom" Arg='tom'/>
+##  <Attr Name="FusionsToLibTom" Arg='string'/>
+##
+##  <Description>
+##  Are there any fusions from other library table of marks to <A>tom</A> or the
+##  table of marks with name <A>string</A>.
+##  <P/>
+##  <C>NotifiedFusionsToLibTom</C> returns the names of all such tables of marks.
+##  <C>FusionsToLibTom</C> returns the complete fusion maps.
+##  For that, the correponding library files have to be loaded.
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "NotifiedFusionsToLibTom",
+    IsTableOfMarks and IsLibTomRep );
+DeclareAttribute( "NotifiedFusionsToLibTom", IsString );
+#T replace this by `NamesOfFusionSources'!!
+
+DeclareAttribute( "FusionsToLibTom", IsTableOfMarks and IsLibTomRep );
+DeclareAttribute( "FusionsToLibTom", IsString );
+
+
+#############################################################################
+##
+#F  UnloadTableOfMarksData()
+##
+##  <ManSection>
+##  <Func Name="UnloadTableOfMarksData" Arg=''/>
+##
+##  <Description>
+##  <C>UnloadTableOfMarksData</C> clears the cache of tables of marks.
+##  This can be used to free up to several hundred megabytes of space
+##  in the current &GAP; session.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "UnloadTableOfMarksData" );
+
+
+#############################################################################
+##
+#E
+

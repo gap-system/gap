@@ -1,0 +1,144 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%   Alnuth - The Kant interface 
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  gapmacro . . . . . . . . . . . . . . . . . read the GAP macro package
+%%
+\input ../../../doc/gapmacro
+\Package{Alnuth} 
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{Alnuth}
+%
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
+%%
+\UseReferences{../../../doc/ref}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{\titlefont ALNUTH}
+  \bigskip \bigskip
+  \centerline{\titlefont ---}
+  \bigskip \bigskip
+
+  \centerline{\subtitlefont ALgebraic NUmber THeory }
+  \bigskip \bigskip 
+  \centerline{\subtitlefont and an interface to the }
+  \bigskip \bigskip
+  \centerline{\subtitlefont KANT System }
+  \bigskip \bigskip
+  \centerline{\titlefont ---}
+  \bigskip \bigskip
+  \vfill
+
+  \centerline{\secfont Gap code is written by:} 
+  \bigskip \bigskip
+
+  \centerline{\secfont Bj\accent127orn Assmann, Andreas Distler, Bettina Eick}
+  \medskip
+  \centerline{Institut Computational Mathematics}
+  \medskip
+  \centerline{Fachbereich Mathematik und Informatik}
+  \medskip
+  \centerline{Technische Universit\accent127at Braunschweig}
+  \medskip
+  \centerline{Pockelsstr. 14, D-38106 Braunschweig}
+  \medskip
+  \centerline{\tt b.assmann@tu-bs.de, a.distler@tu-bs.de, b.eick@tu-bs.de}
+  \bigskip \bigskip
+  \centerline{\titlefont ---}
+  \bigskip \bigskip
+  \vfill
+
+  \centerline{\secfont Kant part}
+This package incorporates an interface to some functions of the computer 
+algebra system Kant. Kant is developed by Michael Pohst and his group at 
+the Technische Universit\accent127at Berlin. The Kant system itself is not 
+part of this interface. It can be obtained at 
+
+\centerline{
+\tt
+www.math.tu-berlin.de/$\sim$kant/kash.html
+\tt
+}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\OneColumnTableOfContents     %since it's very short
+%\TableOfContents             %use instead if ToC is longer than a column
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter 
+%%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{./manual}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters 
+%%
+\Chapters
+\Input{intro}   
+\Input{fields}  
+\Input{example}  
+\Input{install}  
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices 
+%%
+\Appendices
+\Bibliography
+\Index                        %to generate a proper index `manual.mst'
+%                             %must be present
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex  . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

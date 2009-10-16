@@ -2,7 +2,7 @@
 %%
 %A  coll.msk                    GAP documentation            Alexander Hulpke
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: coll.msk,v 1.24 2006/08/29 13:38:17 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -315,22 +315,22 @@ false
 \Declaration{Random}[coll]
 \beginexample
 gap> Random(Rationals);
-4
+-4
 gap> g:= Group( (1,2,3) );;  Random( g );  Random( g );
 (1,3,2)
-()
+(1,3,2)
 \endexample
 
 \Declaration{StateRandom}
 \beginexample
 gap> seed:=StateRandom();;
 gap> List([1..10],i->Random(Integers));
-[ -2, 1, -2, -1, 0, 1, 0, 1, -1, 0 ]
+[ -3, 2, 5, 1, 0, -2, 4, 3, 5, 3 ]
 gap> List([1..10],i->Random(Integers));
-[ 2, 0, 4, -1, -3, 1, -4, -1, 5, -2 ]
+[ 1, -2, 1, -1, -2, 4, -1, -3, -1, 1 ]
 gap> RestoreStateRandom(seed);
 gap> List([1..10],i->Random(Integers));
-[ -5, -2, 0, 1, -2, -1, -3, -2, 0, 0 ]
+[ -3, 2, 5, 1, 0, -2, 4, 3, 5, 3 ]
 \endexample
 
 \Declaration{PseudoRandom}

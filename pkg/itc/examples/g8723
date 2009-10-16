@@ -1,0 +1,8 @@
+local F, a, b, rels, G, H;
+F := FreeGroup( "a", "b" );
+a := F.1; b := F.2;
+rels := [ a^8, b^7, (a*b)^2, (a^-1*b)^3 ];
+G := F / rels;
+a := G.1; b := G.2;
+H := Subgroup( G, [ a^2, a^-1*b ] );
+InteractiveTC( G, H );

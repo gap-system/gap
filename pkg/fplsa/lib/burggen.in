@@ -1,0 +1,13 @@
+Generators: X Y T;
+Weights:    1 1 1;
+Limiting weight: 6;
+
+Parameters: c_1 c_2 c_3 c_4 c_5;
+
+Relations:
+
+2 [[Y,X],Y] + c_2 [Y, X] + 2 c_5 Y;
+
+[[Y,X],X] + c_1 [Y, X] + [T,Y] + c_4 Y;
+
+[T,X] + c_3 Y;

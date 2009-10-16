@@ -1,0 +1,12 @@
+#Example: "Pq-ni" . . . based on manual example illustrating `Pq' usage
+#(demonstrates the alternative ways of passing options non-interactively)
+#vars: F, a, b, R, H, rels;
+#options: 
+F := FreeGroup("a", "b"); a := F.1; b := F.2;
+rels := [ "a^25", "[b, a, a]", "b^5" ];
+R := PqGAPRelators(F, rels);
+H := F / R;
+## This demonstrates how the options may be passed as a record argument
+Pq( H, rec( Prime := 5, ClassBound := 5, Metabelian := true ) );
+## This demonstrates how the options may be passed as additional arguments
+Pq( H, "Prime", 5, "ClassBound", 5, "Metabelian" );

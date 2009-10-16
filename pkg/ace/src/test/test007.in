@@ -1,0 +1,41 @@
+
+# Lifted from the Moore & Dickson papers, with B_1, B_2, ... replaced
+#   by a, b, ...
+# Note that all generators are involutions so that, for example,
+#   "(ab)^3" & "aba=bab" are equivalent.
+
+Mess:10000;
+Fel;
+
+# S_3, a la Moore
+
+Gr: a,b;
+Rel: a^2,b^2, (ab)^3;
+End;
+
+# S_3, a la Dickson
+
+Gr: a,b;
+Rel: a^2,b^2,  aba=bab;
+End;
+
+# S_4, a la Moore
+
+Gr: a,b,c;
+Rel: a^2,b^2,c^2, (ab)^3,(bc)^3,  (ac)^2;
+End;
+Pr;
+
+# S_4/S_3
+
+Gen: a,b;
+End;
+Pr;
+
+# S_5/S_4, a la Dickson
+
+Gr: a,b,c,d;
+Rel: a^2,b^2,c^2,d^2, ac=ca,ad=da,bd=db, aba=bab,bcb=cbc,cdc=dcd;
+Gen: a,b,c;
+End;
+Pr;

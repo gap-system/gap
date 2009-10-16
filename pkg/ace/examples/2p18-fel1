@@ -1,0 +1,17 @@
+# ACEExample "2p18-fel1" : enumeration of cosets of H in G,
+# where |G| = 2^18, |G : H| = 2, using felsch := 1 strategy.
+#
+local F, G, a, b, c, x, A, B, C;
+# We define a group G of order 2^18 on 4 generators
+F := FreeGroup("a","b","c","x"); a := F.1;  b := F.2;  c := F.3;  x := F.4;
+                                 A := a^-1; B := b^-1; C := c^-1;
+G := F / [a*B*C*b*a*c, b*A*C*b*a*a*c*A, a*c*c*A*A*B*a*b,
+          x^2, Comm(a,x), Comm(b,x), Comm(c,x)];
+return ACEfunc(
+    FreeGeneratorsOfFpGroup(G), 
+    RelatorsOfFpGroup(G), 
+    [a*B*C*b*a*c, b*A*C*b*a*a*c*A, a*c*c*A*A*B*a*b] # |G : H| = 2
+    # Options that don't affect the enumeration
+    : echo, enum := "G (order 2^18)", subg := "H (index 2)", 
+    # Other options
+    mess := 50000, felsch := 1, wo := "2500k");

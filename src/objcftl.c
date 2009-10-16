@@ -9,7 +9,7 @@
 #include "system.h"
 
 const char * Revision_objcftl_c =
-   "@(#)$Id$";
+   "@(#)$Id: objcftl.c,v 4.23 2001/12/20 12:35:27 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- $Id: manual.xml,v 1.10 2003/02/13 11:03:36 gap Exp $ -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+[ <!ENTITY LAG "<B>LAG</B>">] [<!ENTITY LAGUNA "<B>LAGUNA</B>">]>
+
+
+
+
+<Book Name="LAGDoc">
+
+<TitlePage>
+  <Title>&LAGUNA; -- Lie AlGebras and UNits of group Algebras</Title>
+  <!-- <Subtitle></Subtitle> -->
+  <Version>Version 1.0</Version>
+  <!-- <TitleComment>
+  If the subtitle ist not sufficient, this &tlt;TitleComment&tgt; 
+  element can be used for a slightly longer text on the front page.
+  </TitleComment> -->
+
+  <Author>Victor Bovdi 
+          <Email>vbovdi@math.klte.hu</Email> 
+          <Address>
+	  Institute of Mathematics and Informatics<Br/>
+	  University of Debrecen<Br/>
+	  P.O.Box 12, Debrecen, H--4010 Hungary
+	  </Address>
+  </Author>
+
+  <Author>Alexander Konovalov
+          <Email>konovalov@member.ams.org</Email>
+          <Address>
+	  Department of Mathematics<Br/>
+	  Zaporozhye State University<Br/>
+	  P.O.Box 1317, Central Post Office<Br/>
+	  Zaporozhye, 69000 Ukraine
+	  </Address>
+  </Author>
+
+  <Author>Richard Rossmanith
+          <Email>richard.rossmanith@d-fine.de</Email>
+          <Address>
+                  d-fine GmbH<Br/>
+                  Mergenthalerallee 55
+                  65760 Eschborn/Frankfurt<Br/>
+                  Germany
+</Address>
+       
+  </Author>
+
+  <Author>
+  Csaba Schneider
+  <Email>csaba@maths.uwa.edu.au</Email>
+  <Address>
+  School of Mathematics and Statistics<Br/>
+  The University of Western Australia<Br/>
+  35 Stirling Highway <Br/>
+  6009 Crawley Western Australia
+  </Address>
+  </Author>
+
+  <Date>February 2003</Date>
+  <Abstract>
+   &LAGUNA; is a share package for &GAP;~4, which 
+is capable of computing with group
+algebras of finite <M>p</M>-groups over the field of <M>p</M> elements. 
+Besides computing some general properties and attributes, 
+the &LAGUNA; share package is able to carry out two main kinds 
+of computations. Namely, it  is capable of computing the structure
+of the normalised unit group, and it is capable of verifying whether some Lie
+property holds in such  a group algebra. 
+&LAGUNA; written in the &GAP;~4 computer algebra system, and it
+   runs within the same system. 
+  </Abstract>
+  <Copyright>&copyright; 2003 by Victor Bovdi, Alexander Konovalov, Richard
+Rossmanith, and Csaba Schneider
+  </Copyright>
+  <Acknowledgements>
+Some of the features of &LAGUNA; were already included in the first author's
+&LAG; package, which was ported to &GAP;4 by the first author
+during a visit to St Andrews. He is grateful to the members of the &GAP; team,
+in particular to Steve Linton, Willem de Graaf, Thomas Breuer, and Alexander
+Hulpke.<P/>
+
+The three other authors would first like to thank the first author, Richard,
+for allowing them to update and extend this package. We are also grateful to.......
+  </Acknowledgements>
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "ch1.xml">
+<#Include SYSTEM "example.xml">
+<#Include SYSTEM "ch3.xml"> 
+<#Include SYSTEM "ch2.xml">
+
+</Body>
+
+<Bibliography Databases="manual" />
+</Book>
+

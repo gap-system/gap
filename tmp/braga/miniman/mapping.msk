@@ -1,0 +1,56 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  mapping.msk                  GAP documentation              Thomas Breuer
+%%
+%A  @(#)$Id: mapping.msk,v 1.1 1999/05/14 20:20:36 andrews Exp $
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Mappings and Relations}
+
+A *general mapping* in gap is described by its source, its range and
+an underlying relation. A *mapping* is a general mapping whose
+underlying relation is total and single-valued. A *relation*
+is a general mapping whose source and range are equal.
+
+If $\alpha: R\rightarrow S$ and $\beta : S \rightarrow T$ are general
+mappings then we can compose them with the operation $*$:
+$\alpha * \beta : R \rightarrow T$.
+
+
+General mappings admit the following self explanatory 
+boolean valued operations:
+{\tt IsTotal, IsSingleValued, IsMapping, IsInjective, 
+IsSurjective} and {\tt IsBijective}.
+In addition, {\tt Source} and {\tt Range} return the domains which
+the general mapping  relates.
+
+
+\Section{Mappings}
+
+\Declaration{MappingByFunction}
+\Declaration{ImageElm}
+\Declaration{PreImagesElm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Homomorphisms}
+
+\Declaration{IsMagmaHomomorphism}
+\Declaration{MagmaHomomorphismByFunctionNC}
+\Declaration{NaturalHomomorphismByGenerators}
+
+
+\Section{Equivalence Relations}
+\Declaration{IsEquivalenceRelation}
+\Declaration{EquivalenceRelationPartition}
+\Declaration{EquivalenceRelationByPartition}
+\Declaration{IsEquivalenceClass}
+\Declaration{EquivalenceClassRelation}
+\Declaration{EquivalenceClasses}
+\Declaration{EquivalenceClassOfElement}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

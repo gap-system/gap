@@ -2,7 +2,7 @@
 ##
 #W  algsc.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: algsc.gi,v 4.38 2008/11/05 13:17:00 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -27,7 +27,7 @@
 ##  then it has the component `coefficientsDomain'.
 ##
 Revision.algsc_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: algsc.gi,v 4.38 2008/11/05 13:17:00 gap Exp $";
 
 
 #T need for the norm of a quaternion?
@@ -604,7 +604,7 @@ InstallFlushableValue( QuaternionAlgebraData, [] );
 InstallGlobalFunction( QuaternionAlgebra, function( arg )
     local F, a, b, e, stored, filter, A;
 
-    if Length( arg ) = 1 and IsRing( arg[1] ) then
+    if   Length( arg ) = 1 and IsRing( arg[1] ) then
       F:= arg[1];
       a:= AdditiveInverse( One( F ) );
       b:= a;
@@ -985,6 +985,73 @@ InstallMethod( IsCanonicalBasisFullSCAlgebra,
 #T change implementation: bases of their own right, as for Gaussian row spaces,
 #T if the algebra is Gaussian
 
+
+#############################################################################
+##
+#M  Intersection2( <V>, <W> )
+##
+##  Contrary to the generic case that is handled by `Intersection2Spaces',
+##  we know initially a (finite dimensional) common coefficient space,
+##  so we can avoid the intermediate construction of such a space.
+##
+InstallMethod( Intersection2,
+    "for two spaces in a common s.c. algebra",
+    IsIdenticalObj,
+    [ IsVectorSpace and IsSCAlgebraObjCollection,
+      IsVectorSpace and IsSCAlgebraObjCollection ],
+    function( V, W )
+    local F,       # coefficients field
+          gensV,   # list of generators of 'V'
+          gensW,   # list of generators of 'W'
+          Fam,     # family of an element
+          inters;  # intersection, result
+
+    F:= LeftActingDomain( V );
+    if F <> LeftActingDomain( W ) then
+      # The generic method is good enough for this.
+      TryNextMethod();
+    fi;
+
+    gensV:= GeneratorsOfLeftModule( V );
+    gensW:= GeneratorsOfLeftModule( W );
+    if IsEmpty( gensV ) or IsEmpty( gensW ) then
+      inters:= [];
+    else
+      gensV:= List( gensV, ExtRepOfObj );
+      gensW:= List( gensW, ExtRepOfObj );
+      if not (     ForAll( gensV, v -> IsSubset( F, v ) )
+               and ForAll( gensW, v -> IsSubset( F, v ) ) ) then
+        # We are not in a Gaussian situation.
+        TryNextMethod();
+      fi;
+      Fam:= ElementsFamily( FamilyObj( V ) );
+      inters:= List( SumIntersectionMat( gensV, gensW )[2],
+                     x -> ObjByExtRep( Fam, x ) );
+    fi;
+
+    # Construct the intersection space, if possible with a parent,
+    # and with as much structure as possible.
+    if IsEmpty( inters ) then
+      inters:= TrivialSubFLMLOR( V );
+    elif IsFLMLOR( V ) and IsFLMLOR( W ) then
+      inters:= FLMLOR( F, inters, "basis" );
+    else
+      inters:= VectorSpace( F, inters, "basis" );
+    fi;
+    if     HasParent( V ) and HasParent( W )
+       and IsIdenticalObj( Parent( V ), Parent( W ) ) then
+      SetParent( inters, Parent( V ) );
+    fi;
+
+    # Run implications by the subset relation.
+    UseSubsetRelation( V, inters );
+    UseSubsetRelation( W, inters );
+
+    # Return the result.
+    return inters;
+    end );
+
+# analogous for closure?
 
 #############################################################################
 ##

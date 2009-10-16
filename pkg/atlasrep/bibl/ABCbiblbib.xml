@@ -1,0 +1,1583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE file SYSTEM "bibxmlext.dtd">
+<file>
+<entry id="Ben85"><article>
+  <author>
+    <name><first>D. J.</first><last>Benson</last></name>
+  </author>  
+  <title>Brauer trees for <C><M>12M_{22}</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>1985</year>
+  <volume>95</volume>
+  <number>2</number>
+  <pages>398&ndash;408</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR801275 (87c:20030)</mrnumber>
+  <mrclass>20C25 (20C20)</mrclass>
+  <mrreviewer>John F. Humphreys</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="BC86"><article>
+  <author>
+    <name><first>D. J.</first><last>Benson</last></name>
+    <name><first>J. F.</first><last>Carlson</last></name>
+  </author>  
+  <title>Nilpotent elements in the <C>G</C>reen ring</title>
+  <journal>J. Algebra</journal>
+  <year>1986</year>
+  <volume>104</volume>
+  <number>2</number>
+  <pages>329&ndash;350</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR866779 (88b:20021)</mrnumber>
+  <mrclass>20C20 (20C11)</mrclass>
+  <mrreviewer>S. B. Conlon</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="BN37"><techreport>
+  <author>
+    <name><first>R.</first><last>Brauer</last></name>
+    <name><first>C.</first><last>Nesbitt</last></name>
+  </author>  
+  <title><C>On the modular representations of groups of finite order.
+      I.</C></title>
+  <institution>Univ. of Toronto Studies, Math. Ser. 4. Toronto:
+      Univ. of Toronto Press. 21 p.</institution>
+  <year>1937</year>
+  <keywords>{Group theory}</keywords>
+  <language>English</language>
+  <other type="zblnumber">0018.29504</other>
+</techreport></entry>
+
+<entry id="BN41"><article>
+  <author>
+    <name><first>R.</first><last>Brauer</last></name>
+    <name><first>C.</first><last>Nesbitt</last></name>
+  </author>  
+  <title>On the modular characters of groups</title>
+  <journal>Ann. of Math. (2)</journal>
+  <year>1941</year>
+  <volume>42</volume>
+  <pages>556&ndash;590</pages>
+  <issn>0003-486X</issn>
+  <mrnumber>MR0004042 (2,309c)</mrnumber>
+  <mrclass>20.0X</mrclass>
+  <mrreviewer>G. de B. Robinson</mrreviewer>
+  <other type="fjournal">Annals of Mathematics. Second Series</other>
+</article></entry>
+
+<entry id="Bur76"><article>
+  <author>
+    <name><first>R.</first><last>Burkhardt</last></name>
+  </author>  
+  <title>Die <C>Z</C>erlegungsmatrizen der <C>G</C>ruppen
+      <C><M>{\rm PSL}(2,p^f)</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>1976</year>
+  <volume>40</volume>
+  <number>1</number>
+  <pages>75&ndash;96</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR0480710 (58 #864)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>P. Donovan</mrreviewer>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Bur79a"><article>
+  <author>
+    <name><first>R.</first><last>Burkhardt</last></name>
+  </author>  
+  <title>Über die <C>Z</C>erlegungszahlen der <C>S</C>uzukigruppen
+      <C><M>{\rm Sz}(q)</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>1979</year>
+  <volume>59</volume>
+  <number>2</number>
+  <pages>421&ndash;433</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR543261 (81a:20018)</mrnumber>
+  <mrclass>20C99</mrclass>
+  <mrreviewer>Karin Erdmann</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Bur79b"><article>
+  <author>
+    <name><first>R.</first><last>Burkhardt</last></name>
+  </author>  
+  <title>Über die <C>Z</C>erlegungszahlen der unitären <C>G</C>ruppen
+      <C><M>{\rm PSU}(3,\,2^{2f})</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>1979</year>
+  <volume>61</volume>
+  <number>2</number>
+  <pages>548&ndash;581</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR559855 (81a:20055)</mrnumber>
+  <mrclass>20H05 (20C20 20C30)</mrclass>
+  <mrreviewer>Ulrich Dempwolff</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="CCNPW85"><book>
+  <author>
+    <name><first>J. H.</first><last>Conway</last></name>
+    <name><first>R. T.</first><last>Curtis</last></name>
+    <name><first>S. P.</first><last>Norton</last></name>
+    <name><first>R. A.</first><last>Parker</last></name>
+    <name><first>R. A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Atlas of finite groups</title>
+  <publisher>Oxford University Press</publisher>
+  <year>1985</year>
+  <address>Eynsham</address>
+  <note>Maximal subgroups and ordinary characters for simple groups,
+      With computational assistance from J. G. Thackray</note>
+  <isbn>0-19-853199-0</isbn>
+  <mrnumber>MR827219 (88g:20025)</mrnumber>
+  <mrclass>20D05 (20-02)</mrclass>
+  <mrreviewer>R. L. Griess</mrreviewer>
+  <other type="pages">xxxiv+252</other>
+</book></entry>
+
+<entry id="CR81"><book>
+  <author>
+    <name><first>Charles W.</first><last>Curtis</last></name>
+    <name><first>Irving</first><last>Reiner</last></name>
+  </author>  
+  <title>Methods of representation theory. <C>V</C>ol. <C>I</C></title>
+  <publisher>John Wiley &amp; Sons Inc.</publisher>
+  <year>1981</year>
+  <address>New York</address>
+  <note>With applications to finite groups and orders,
+      Pure and Applied Mathematics, A Wiley-Interscience Publication</note>
+  <isbn>0-471-18994-4</isbn>
+  <mrnumber>MR632548 (82i:20001)</mrnumber>
+  <mrclass>20-02 (10C30 12A57 20Cxx)</mrclass>
+  <mrreviewer>J. L. Alperin</mrreviewer>
+  <other type="pages">xxi+819</other>
+</book></entry>
+
+<entry id="CR90"><book>
+  <author>
+    <name><first>Charles W.</first><last>Curtis</last></name>
+    <name><first>Irving</first><last>Reiner</last></name>
+  </author>  
+  <title>Methods of representation theory. <C>V</C>ol. <C>I</C></title>
+  <publisher>John Wiley &amp; Sons Inc.</publisher>
+  <year>1990</year>
+  <series>Wiley Classics Library</series>
+  <address>New York</address>
+  <note>With applications to finite groups and orders,
+      Reprint of <Wrap Name="IntRef">the 1981 original</Wrap>,
+      A Wiley-Interscience Publication</note>
+  <isbn>0-471-52367-4</isbn>
+  <mrnumber>MR1038525 (90k:20001)</mrnumber>
+  <mrclass>20-02 (01A75 11R33 20Cxx)</mrclass>
+  <other type="pages">xxiv+819</other>
+  <other type="intref">CR81</other>
+</book></entry>
+
+<entry id="Eva85"><article>
+  <author>
+    <name><first>David M.</first><last>Evans</last></name>
+  </author>  
+  <title>The <C><M>7</M></C>-modular representations of <C>J</C>anko's
+      smallest simple group</title>
+  <journal>J. Algebra</journal>
+  <year>1985</year>
+  <volume>96</volume>
+  <number>1</number>
+  <pages>35&ndash;44</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR808838 (86m:20012)</mrnumber>
+  <mrclass>20C20 (20-04)</mrclass>
+  <mrreviewer>P. Fong</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Fei82"><book>
+  <author>
+    <name><first>Walter</first><last>Feit</last></name>
+  </author>  
+  <title>The representation theory of finite groups</title>
+  <publisher>North-Holland Publishing Co.</publisher>
+  <year>1982</year>
+  <volume>25</volume>
+  <series>North-Holland Mathematical Library</series>
+  <address>Amsterdam</address>
+  <isbn>0-444-86155-6</isbn>
+  <mrnumber>MR661045 (83g:20001)</mrnumber>
+  <mrclass>20-02 (20C20)</mrclass>
+  <mrreviewer>J. L. Alperin</mrreviewer>
+  <other type="pages">xiv+502</other>
+</book></entry>
+
+<entry id="Fei86"><incollection>
+  <author>
+    <name><first>Walter</first><last>Feit</last></name>
+  </author>  
+  <title>Blocks with cyclic defect groups for some sporadic groups</title>
+  <booktitle>Representation theory, II (Ottawa, Ont., 1984)</booktitle>
+  <publisher>Springer</publisher>
+  <year>1986</year>
+  <volume>1178</volume>
+  <series>Lecture Notes in Math.</series>
+  <pages>25&ndash;63</pages>
+  <address>Berlin</address>
+  <crossref>DGM86</crossref>
+  <mrnumber>MR842477 (87e:20023)</mrnumber>
+  <mrclass>20C20 (20D08)</mrclass>
+  <mrreviewer>J. L. Alperin</mrreviewer>
+</incollection></entry>
+
+<entry id="Fon74"><incollection>
+  <author>
+    <name><first>Paul</first><last>Fong</last></name>
+  </author>  
+  <title>On decomposition numbers of <C><M>J_1</M></C> and
+      <C><M>R(q)</M></C></title>
+  <booktitle>Symposia Mathematica, Vol. XIII (Convegno di Gruppi e loro
+      Rappresentazioni, INDAM, Rome, 1972)</booktitle>
+  <publisher>Academic Press</publisher>
+  <year>1974</year>
+  <pages>415&ndash;422</pages>
+  <address>London</address>
+  <mrnumber>MR0357578 (50 #10046)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>I. M. Isaacs</mrreviewer>
+</incollection></entry>
+
+<entry id="FS80"><article>
+  <author>
+    <name><first>Paul</first><last>Fong</last></name>
+    <name><first>Bhama</first><last>Srinivasan</last></name>
+  </author>  
+  <title>Blocks with cyclic defect groups in
+      <C><M>{\rm GL}(n,\,q)</M></C></title>
+  <journal>Bull. Amer. Math. Soc. (N.S.)</journal>
+  <year>1980</year>
+  <volume>3</volume>
+  <number>3</number>
+  <pages>1041&ndash;1044</pages>
+  <issn>0002-9904</issn>
+  <mrnumber>MR585186 (81k:20019)</mrnumber>
+  <mrclass>20C20 (20G40)</mrclass>
+  <mrreviewer>Karin Erdmann</mrreviewer>
+  <other type="coden">BAMOAD</other>
+  <other type="fjournal">American Mathematical Society. Bulletin. New
+      Series</other>
+</article></entry>
+
+<entry id="FS82"><article>
+  <author>
+    <name><first>Paul</first><last>Fong</last></name>
+    <name><first>Bhama</first><last>Srinivasan</last></name>
+  </author>  
+  <title>The blocks of finite general linear and unitary groups</title>
+  <journal>Invent. Math.</journal>
+  <year>1982</year>
+  <volume>69</volume>
+  <number>1</number>
+  <pages>109&ndash;153</pages>
+  <issn>0020-9910</issn>
+  <mrnumber>MR671655 (83k:20013)</mrnumber>
+  <mrclass>20C20 (20G05)</mrclass>
+  <mrreviewer>P. Donovan</mrreviewer>
+  <other type="coden">INVMBH</other>
+  <other type="fjournal">Inventiones Mathematicae</other>
+</article></entry>
+
+<entry id="FS90"><article>
+  <author>
+    <name><first>Paul</first><last>Fong</last></name>
+    <name><first>Bhama</first><last>Srinivasan</last></name>
+  </author>  
+  <title>Brauer trees in classical groups</title>
+  <journal>J. Algebra</journal>
+  <year>1990</year>
+  <volume>131</volume>
+  <number>1</number>
+  <pages>179&ndash;225</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR1055005 (91i:20008)</mrnumber>
+  <mrclass>20C20 (20G40)</mrclass>
+  <mrreviewer>Gerhard Hiss</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Gec93"><phdthesis>
+  <author>
+    <name><first>M.</first><last>Geck</last></name>
+  </author>  
+  <title>Beiträge  zur Darstellungstheorie von Iwahori&ndash;Hecke
+      Algebren</title>
+  <school>RWTH Aachen</school>
+  <year>1993</year>
+  <type>Habilitationsschrift</type>
+</phdthesis></entry>
+
+<entry id="GS88"><article>
+  <author>
+    <name><first>Peter B.</first><last>Gilkey</last></name>
+    <name><first>Gary M.</first><last>Seitz</last></name>
+  </author>  
+  <title>Some representations of exceptional <C>L</C>ie algebras</title>
+  <journal>Geom. Dedicata</journal>
+  <year>1988</year>
+  <volume>25</volume>
+  <number>1-3</number>
+  <pages>407&ndash;416</pages>
+  <note>Geometries and groups (Noordwijkerhout, 1986)</note>
+  <issn>0046-5755</issn>
+  <mrnumber>MR925845 (89h:20056)</mrnumber>
+  <mrclass>20G05 (17B25)</mrclass>
+  <mrreviewer>G. E. Wall</mrreviewer>
+  <other type="coden">GEMDAT</other>
+  <other type="fjournal">Geometriae Dedicata</other>
+</article></entry>
+
+<entry id="Gol80"><book>
+  <author>
+    <name><first>David M.</first><last>Goldschmidt</last></name>
+  </author>  
+  <title>Lectures on character theory</title>
+  <publisher>Publish or Perish Inc.</publisher>
+  <year>1980</year>
+  <address>Wilmington, Del.</address>
+  <isbn>0-914098-17-9</isbn>
+  <mrnumber>MR575526 (81f:20001)</mrnumber>
+  <mrclass>20-02 (20C10 20C15)</mrclass>
+  <mrreviewer>Stephen D. Smith</mrreviewer>
+  <other type="pages">249 pp. (not consecutively paged)</other>
+</book></entry>
+
+<entry id="His86"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+  </author>  
+  <title>The modular characters of the <C>T</C>its simple group and its
+      automorphism group</title>
+  <journal>Comm. Algebra</journal>
+  <year>1986</year>
+  <volume>14</volume>
+  <number>1</number>
+  <pages>125&ndash;154</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR814141 (87c:20029)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>Wolfgang Knapp</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="His89"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+  </author>  
+  <title>On the decomposition numbers of <C><M>G_2(q)</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>1989</year>
+  <volume>120</volume>
+  <number>2</number>
+  <pages>339&ndash;360</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR989902 (90j:20011)</mrnumber>
+  <mrclass>20C05 (16A26 20C20)</mrclass>
+  <mrreviewer>Reiner Staszewski</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="His90"><phdthesis>
+  <author>
+    <name><first>G.</first><last>Hiss</last></name>
+  </author>  
+  <title>Zerlegungszahlen endlicher <C>G</C>ruppen vom <C>L</C>ie-<C>T</C>yp
+      in nicht-definierender <C>C</C>harakteristik.</title>
+  <school>RWTH Aachen</school>
+  <year>1990</year>
+  <type>Habilitationsschrift</type>
+</phdthesis></entry>
+
+<entry id="His94"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+  </author>  
+  <title>The <C><M>3</M></C>-modular characters of the <C>R</C>udvalis
+      sporadic simple group and its covering group</title>
+  <journal>Math. Comp.</journal>
+  <year>1994</year>
+  <volume>62</volume>
+  <number>206</number>
+  <pages>851&ndash;863</pages>
+  <issn>0025-5718</issn>
+  <mrnumber>MR1212267 (94g:20013)</mrnumber>
+  <mrclass>20C20 (20C34 20D08)</mrclass>
+  <mrreviewer>P. Fong</mrreviewer>
+  <other type="coden">MCMPAF</other>
+  <other type="fjournal">Mathematics of Computation</other>
+</article></entry>
+
+<entry id="HL88"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+    <name><first>Klaus</first><last>Lux</last></name>
+  </author>  
+  <title>The <C>B</C>rauer characters of the <C>H</C>all-<C>J</C>anko
+      group</title>
+  <journal>Comm. Algebra</journal>
+  <year>1988</year>
+  <volume>16</volume>
+  <number>2</number>
+  <pages>357&ndash;398</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR929124 (89d:20011)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>Karin Erdmann</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="HL89"><book>
+  <author>
+    <name><first>G.</first><last>Hiss</last></name>
+    <name><first>K.</first><last>Lux</last></name>
+  </author>  
+  <title>Brauer trees of sporadic groups</title>
+  <publisher>The Clarendon Press Oxford University Press</publisher>
+  <year>1989</year>
+  <series>Oxford Science Publications</series>
+  <address>New York</address>
+  <isbn>0-19-853381-0</isbn>
+  <mrnumber>MR1033265 (91k:20018)</mrnumber>
+  <mrclass>20C20 (20-02 20D08)</mrclass>
+  <mrreviewer>Harvey Blau</mrreviewer>
+  <other type="pages">x+526</other>
+</book></entry>
+
+<entry id="HL94"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+    <name><first>Klaus</first><last>Lux</last></name>
+  </author>  
+  <title>The <C><M>5</M></C>-modular characters of the sporadic simple
+      <C>F</C>ischer groups <C><M>{\rm Fi}_{22}</M></C> and
+      <C><M>{\rm Fi}_{23}</M></C></title>
+  <journal>Comm. Algebra</journal>
+  <year>1994</year>
+  <volume>22</volume>
+  <number>9</number>
+  <pages>3563&ndash;3590</pages>
+  <note>With an appendix by Thomas Breuer</note>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1278806 (95e:20020)</mrnumber>
+  <mrclass>20C34 (20C40)</mrclass>
+  <mrreviewer>A. S. Kondratʹev</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="HM95"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+    <name><first>Jürgen</first><last>Müller</last></name>
+  </author>  
+  <title>The <C><M>5</M></C>-modular characters of the sporadic simple
+      <C>R</C>udvalis group and its covering group</title>
+  <journal>Comm. Algebra</journal>
+  <year>1995</year>
+  <volume>23</volume>
+  <number>12</number>
+  <pages>4633&ndash;4667</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1352561 (96h:20027)</mrnumber>
+  <mrclass>20C34 (20C20)</mrclass>
+  <mrreviewer>Donald L. White</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="HW94"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+    <name><first>Donald L.</first><last>White</last></name>
+  </author>  
+  <title>The <C><M>5</M></C>-modular characters of the covering group of the
+      sporadic simple <C>F</C>ischer group <C><M>{\rm Fi}_{22}</M></C> and its
+      automorphism group</title>
+  <journal>Comm. Algebra</journal>
+  <year>1994</year>
+  <volume>22</volume>
+  <number>9</number>
+  <pages>3591&ndash;3611</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1278807 (95e:20021)</mrnumber>
+  <mrclass>20C34 (20C40)</mrclass>
+  <mrreviewer>A. S. Kondratʹev</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="HLP91"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+    <name><first>Klaus</first><last>Lux</last></name>
+    <name><first>Richard</first><last>Parker</last></name>
+  </author>  
+  <title>The <C><M>5</M></C>-modular characters of the
+      <C>M</C>c<C>L</C>aughlin group and its covering group</title>
+  <journal>Manuscripta Math.</journal>
+  <year>1991</year>
+  <volume>73</volume>
+  <number>1</number>
+  <pages>91&ndash;114</pages>
+  <issn>0025-2611</issn>
+  <mrnumber>MR1124313 (92g:20017)</mrnumber>
+  <mrclass>20C20 (20D08)</mrclass>
+  <mrreviewer>David Benson</mrreviewer>
+  <other type="coden">MSMHB2</other>
+  <other type="fjournal">Manuscripta Mathematica</other>
+</article></entry>
+
+<entry id="HLM95"><article>
+  <author>
+    <name><first>Gerhard</first><last>Hiss</last></name>
+    <name><first>Klaus</first><last>Lux</last></name>
+    <name><first>Jürgen</first><last>Müller</last></name>
+  </author>  
+  <title>The <C><M>2</M></C>-modular decomposition matrices of the
+      non-principal blocks of maximal defect of the triple cover of the
+      sporadic simple <C>M</C>c<C>L</C>aughlin group</title>
+  <journal>J. Symbolic Comput.</journal>
+  <year>1995</year>
+  <volume>19</volume>
+  <number>6</number>
+  <pages>585&ndash;600</pages>
+  <issn>0747-7171</issn>
+  <mrnumber>MR1370624 (96m:20023)</mrnumber>
+  <mrclass>20C34 (20C40)</mrclass>
+  <mrreviewer>Peter Fleischmann</mrreviewer>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+</article></entry>
+
+<entry id="HJLP"><misc>
+  <author>
+    <name><first>G.</first><last>Hiss</last></name>
+    <name><first>C.</first><last>Jansen</last></name>
+    <name><first>K.</first><last>Lux</last></name>
+    <name><first>R. A.</first><last>Parker</last></name>
+  </author>  
+  <title>Computing with <C>M</C>odular <C>C</C>haracters</title>
+  <howpublished><URL>http://www.math.rwth-aachen.de/LDFM/homes/MOC/CoMoChaT/</URL></howpublished>
+</misc></entry>
+
+<entry id="Hum80"><article>
+  <author>
+    <name><first>J. F.</first><last>Humphreys</last></name>
+  </author>  
+  <title>The projective characters of the <C>M</C>athieu group
+      <C><M>M_{12}</M></C> and of its automorphism group</title>
+  <journal>Math. Proc. Cambridge Philos. Soc.</journal>
+  <year>1980</year>
+  <volume>87</volume>
+  <number>3</number>
+  <pages>401&ndash;412</pages>
+  <issn>0305-0041</issn>
+  <mrnumber>MR556920 (81k:20021)</mrnumber>
+  <mrclass>20C25 (20C30)</mrclass>
+  <mrreviewer>V. D. Mazurov</mrreviewer>
+  <other type="coden">MPCPCO</other>
+  <other type="fjournal">Mathematical Proceedings of the Cambridge
+      Philosophical Society</other>
+</article></entry>
+
+<entry id="Hum82a"><article>
+  <author>
+    <name><first>J. F.</first><last>Humphreys</last></name>
+  </author>  
+  <title>The modular characters of the <C>H</C>igman-<C>S</C>ims simple
+      group</title>
+  <journal>Proc. Roy. Soc. Edinburgh Sect. A</journal>
+  <year>1982</year>
+  <volume>92</volume>
+  <number>3-4</number>
+  <pages>319&ndash;335</pages>
+  <issn>0308-2105</issn>
+  <mrnumber>MR677491 (83m:20017)</mrnumber>
+  <mrclass>20C20 (20D08)</mrclass>
+  <mrreviewer>M. Herzog</mrreviewer>
+  <other type="coden">PEAMDU</other>
+  <other type="fjournal">Proceedings of the Royal Society of Edinburgh.
+      Section A. Mathematical and Physical Sciences</other>
+</article></entry>
+
+<entry id="Isa76"><book>
+  <author>
+    <name><first>I. Martin</first><last>Isaacs</last></name>
+  </author>  
+  <title>Character theory of finite groups</title>
+  <publisher>Academic Press [Harcourt Brace Jovanovich Publishers]</publisher>
+  <year>1976</year>
+  <address>New York</address>
+  <note>Pure and Applied Mathematics, No. 69</note>
+  <mrnumber>MR0460423 (57 #417)</mrnumber>
+  <mrclass>20-02</mrclass>
+  <mrreviewer>Stephen D. Smith</mrreviewer>
+  <other type="pages">xii+303</other>
+</book></entry>
+
+<entry id="Isa94"><book>
+  <author>
+    <name><first>I. Martin</first><last>Isaacs</last></name>
+  </author>  
+  <title>Character theory of finite groups</title>
+  <publisher>Dover Publications Inc.</publisher>
+  <year>1994</year>
+  <address>New York</address>
+  <note>Corrected reprint of <Wrap Name="IntRef">the 1976 original
+      [Academic Press, New York; MR0460423 (57 #417)]</Wrap></note>
+  <isbn>0-486-68014-2</isbn>
+  <mrnumber>MR1280461</mrnumber>
+  <mrclass>20C15</mrclass>
+  <other type="pages">xii+303</other>
+  <other type="intref">Isa76</other>
+</book></entry>
+
+<entry id="Isa06"><book>
+  <author>
+    <name><first>I. Martin</first><last>Isaacs</last></name>
+  </author>
+  <title>Character theory of finite groups</title>
+  <publisher>AMS Chelsea Publishing, Providence, RI</publisher>
+  <year>2006</year>
+  <note>Corrected reprint of <Wrap Name="IntRef">the 1976 original
+      [Academic Press, New York; MR0460423]</Wrap></note>
+  <isbn>978-0-8218-4229-4; 0-8218-4229-3</isbn>
+  <mrnumber>MR2270898</mrnumber>
+  <mrclass>20-02 (20C05 20C15 20C20 20C25)</mrclass>
+  <other type="pages">xii+310</other>
+  <other type="intref">Isa76</other>
+</book></entry>
+
+<entry id="Jam73"><article>
+  <author>
+    <name><first>G. D.</first><last>James</last></name>
+  </author>  
+  <title>The modular characters of the <C>M</C>athieu groups</title>
+  <journal>J. Algebra</journal>
+  <year>1973</year>
+  <volume>27</volume>
+  <pages>57&ndash;111</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR0330277 (48 #8614)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>J. S. Frame</mrreviewer>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Jam76a"><article>
+  <author>
+    <name><first>G. D.</first><last>James</last></name>
+  </author>  
+  <title>Representations of the symmetric groups over the field of
+      order <C><M>2</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>1976</year>
+  <volume>38</volume>
+  <number>2</number>
+  <pages>280&ndash;308</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR0396734 (53 #595)</mrnumber>
+  <mrclass>20C30</mrclass>
+  <mrreviewer>G. de B. Robinson</mrreviewer>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Jam76b"><article>
+  <author>
+    <name><first>G. D.</first><last>James</last></name>
+  </author>  
+  <title>On the decomposition matrices of the symmetric groups.
+      <C>I</C></title>
+  <journal>J. Algebra</journal>
+  <year>1976</year>
+  <volume>43</volume>
+  <number>1</number>
+  <pages>42&ndash;44</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR0430049 (55 #3057a)</mrnumber>
+  <mrclass>20C30</mrclass>
+  <mrreviewer>A. Kerber</mrreviewer>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Jam76c"><article>
+  <author>
+    <name><first>G. D.</first><last>James</last></name>
+  </author>  
+  <title>On the decomposition matrices of the symmetric groups.
+      <C>II</C></title>
+  <journal>J. Algebra</journal>
+  <year>1976</year>
+  <volume>43</volume>
+  <number>1</number>
+  <pages>45&ndash;54</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR0430050 (55 #3057b)</mrnumber>
+  <mrclass>20C30</mrclass>
+  <mrreviewer>A. Kerber</mrreviewer>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Jam78a"><article>
+  <author>
+    <name><first>G. D.</first><last>James</last></name>
+  </author>  
+  <title>A note on the decomposition matrices of <C><M>S_{12}</M></C>
+      and <C><M>S_{13}</M></C> for the prime <C><M>3</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>1978</year>
+  <volume>53</volume>
+  <number>2</number>
+  <pages>410&ndash;411</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR502639 (80a:20005)</mrnumber>
+  <mrclass>20B10 (20C15)</mrclass>
+  <mrreviewer>H. Nagao</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Jam78b"><book>
+  <author>
+    <name><first>G. D.</first><last>James</last></name>
+  </author>  
+  <title>The representation theory of the symmetric groups</title>
+  <publisher>Springer</publisher>
+  <year>1978</year>
+  <volume>682</volume>
+  <series>Lecture Notes in Mathematics</series>
+  <address>Berlin</address>
+  <isbn>3-540-08948-9</isbn>
+  <mrnumber>MR513828 (80g:20019)</mrnumber>
+  <mrclass>20C30 (20-02)</mrclass>
+  <mrreviewer>Dragomir Ž. Ðoković</mrreviewer>
+  <other type="pages">v+156</other>
+</book></entry>
+
+<entry id="JK81"><book>
+  <author>
+    <name><first>Gordon</first><last>James</last></name>
+    <name><first>Adalbert</first><last>Kerber</last></name>
+  </author>  
+  <title>The representation theory of the symmetric group</title>
+  <publisher>Addison-Wesley Publishing Co., Reading, Mass.</publisher>
+  <year>1981</year>
+  <volume>16</volume>
+  <series>Encyclopedia of Mathematics and its Applications</series>
+  <note>With a foreword by P. M. Cohn,
+              With an introduction by Gilbert de B. Robinson</note>
+  <isbn>0-201-13515-9</isbn>
+  <mrnumber>MR644144 (83k:20003)</mrnumber>
+  <mrclass>20-02 (20C30)</mrclass>
+  <mrreviewer>A. O. Morris</mrreviewer>
+  <other type="pages">xxviii+510</other>
+</book></entry>
+
+<entry id="JW97"><article>
+  <author>
+    <name><first>C.</first><last>Jansen</last></name>
+    <name><first>R. A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Two new constructions of the <C>O</C>'<C>N</C>an group</title>
+  <journal>J. London Math. Soc. (2)</journal>
+  <year>1997</year>
+  <volume>56</volume>
+  <number>3</number>
+  <pages>579&ndash;583</pages>
+  <issn>0024-6107</issn>
+  <mrnumber>MR1610479 (98m:20022)</mrnumber>
+  <mrclass>20D08</mrclass>
+  <other type="coden">JLMSAK</other>
+  <other type="fjournal">Journal of the London Mathematical Society. Second
+      Series</other>
+</article></entry>
+
+<entry id="JW98"><article>
+  <author>
+    <name><first>C.</first><last>Jansen</last></name>
+    <name><first>R. A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The <C><M>2</M></C>-modular and <C><M>3</M></C>-modular decomposition
+      numbers for
+  the sporadic simple <C>O</C>'<C>N</C>an group and its triple cover</title>
+  <journal>J. London Math. Soc. (2)</journal>
+  <year>1998</year>
+  <volume>57</volume>
+  <number>1</number>
+  <pages>71&ndash;90</pages>
+  <issn>0024-6107</issn>
+  <mrnumber>MR1624797 (99g:20025)</mrnumber>
+  <mrclass>20C34 (20C20 20C40)</mrclass>
+  <mrreviewer>Gerhard Hiss</mrreviewer>
+  <other type="coden">JLMSAK</other>
+  <other type="fjournal">Journal of the London Mathematical Society. Second
+      Series</other>
+</article></entry>
+
+<entry id="JW96"><article>
+  <author>
+    <name><first>C.</first><last>Jansen</last></name>
+    <name><first>R. A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The minimal faithful <C><M>3</M></C>-modular representation for the
+      <C>L</C>yons group</title>
+  <journal>Comm. Algebra</journal>
+  <year>1996</year>
+  <volume>24</volume>
+  <number>3</number>
+  <pages>873&ndash;879</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1374641 (97a:20021)</mrnumber>
+  <mrclass>20C34 (20C40 20D08)</mrclass>
+  <mrreviewer>Herbert Pahlings</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="Kho84"><article>
+  <author>
+    <name><first>Firooz</first><last>Khosraviyani</last></name>
+  </author>  
+  <title>Decomposition numbers of exceptional <C>W</C>eyl groups.
+      <C>I</C></title>
+  <journal>J. Algebra</journal>
+  <year>1984</year>
+  <volume>91</volume>
+  <number>2</number>
+  <pages>390&ndash;409</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR769582 (86h:20011)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>Richard Dipper</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="KM85"><article>
+  <author>
+    <name><first>Firooz</first><last>Khosraviyani</last></name>
+    <name><first>Alun O.</first><last>Morris</last></name>
+  </author>  
+  <title>Decomposition numbers of exceptional <C>W</C>eyl groups.
+      <C>II</C></title>
+  <journal>J. Algebra</journal>
+  <year>1985</year>
+  <volume>92</volume>
+  <number>2</number>
+  <pages>525&ndash;531</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR778465 (86m:20013)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>Richard Dipper</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Kon88a"><article>
+  <author>
+    <name><first>A. S.</first><last>Kondratʹev</last></name>
+  </author>  
+  <title>Decomposition numbers of the group <C><M>J_2</M></C></title>
+  <journal>Algebra i Logika</journal>
+  <year>1988</year>
+  <volume>27</volume>
+  <number>5</number>
+  <pages>535&ndash;561, 619</pages>
+  <note>Russian, translation in
+      <Wrap Name="Bib_journal">Algebra and Logic</Wrap>
+      <Wrap Name="Bib_volume">27</Wrap>
+      (<Wrap Name="Bib_year">1988</Wrap>),
+      <Wrap Name="Bib_number">no. 5</Wrap>,
+      <Wrap Name="Bib_pages">333&ndash;349</Wrap>
+      (<Wrap Name="Bib_year">1989</Wrap>)</note>
+  <issn>0373-9252</issn>
+  <mrnumber>MR1047503 (91g:20017)</mrnumber>
+  <mrclass>20D08</mrclass>
+  <mrreviewer>È. M. Palʹchik</mrreviewer>
+  <other type="fjournal">Akademiya Nauk SSSR. Sibirskoe Otdelenie. Institut
+      Matematiki. Algebra i Logika</other>
+</article></entry>
+
+<entry id="Kon88b"><article>
+  <author>
+    <name><first>A. S.</first><last>Kondratʹev</last></name>
+  </author>  
+  <title>Decomposition numbers of the groups <C><M>\hat{{J}}_2</M></C> and
+      <C><M>{\rm Aut}(J_2)</M></C></title>
+  <journal>Algebra i Logika</journal>
+  <year>1988</year>
+  <volume>27</volume>
+  <number>6</number>
+  <pages>690&ndash;710, 737</pages>
+  <note>Russian, translation in
+      <Wrap Name="Bib_journal">Algebra and Logic</Wrap>
+      <Wrap Name="Bib_volume">27</Wrap>
+      (<Wrap Name="Bib_year">1988</Wrap>),
+      <Wrap Name="Bib_number">no. 6</Wrap>,
+      <Wrap Name="Bib_pages">429&ndash;444</Wrap>
+      (<Wrap Name="Bib_year">1989</Wrap>)</note>
+  <issn>0373-9252</issn>
+  <mrnumber>MR1038106 (91b:20024)</mrnumber>
+  <mrclass>20D08</mrclass>
+  <mrreviewer>È. M. Palʹchik</mrreviewer>
+  <other type="fjournal">Akademiya Nauk SSSR. Sibirskoe Otdelenie. Institut
+      Matematiki. Algebra i Logika</other>
+</article></entry>
+
+<entry id="Lan83"><book>
+  <author>
+    <name><first>P.</first><last>Landrock</last></name>
+  </author>  
+  <title>Finite group algebras and their modules</title>
+  <publisher>Cambridge University Press</publisher>
+  <year>1983</year>
+  <volume>84</volume>
+  <series>London Mathematical Society Lecture Note Series</series>
+  <address>Cambridge</address>
+  <isbn>0-521-27487-7</isbn>
+  <mrnumber>MR737910 (85h:20002)</mrnumber>
+  <mrclass>20-02 (16A26 20C05 20C20)</mrclass>
+  <mrreviewer>J. L. Alperin</mrreviewer>
+  <other type="pages">x+274</other>
+</book></entry>
+
+<entry id="Lem93"><article>
+  <author>
+    <name><first>W.</first><last>Lempken</last></name>
+  </author>  
+  <title>Constructing <C><M>J_4</M></C> in
+      <C><M>{\rm GL}(1333,11)</M></C></title>
+  <journal>Comm. Algebra</journal>
+  <year>1993</year>
+  <volume>21</volume>
+  <number>12</number>
+  <pages>4311&ndash;4351</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1242834 (94i:20032)</mrnumber>
+  <mrclass>20D08</mrclass>
+  <mrreviewer>Jonathan I. Hall</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="LS93a"><article>
+  <author>
+    <name><first>W.</first><last>Lempken</last></name>
+    <name><first>R.</first><last>Staszewski</last></name>
+  </author>  
+  <title>Some <C><M>5</M></C>-modular representation theory for the simple
+      group <C><M>{\rm McL}</M></C></title>
+  <journal>Comm. Algebra</journal>
+  <year>1993</year>
+  <volume>21</volume>
+  <number>5</number>
+  <pages>1611&ndash;1629</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1213977 (94a:20027)</mrnumber>
+  <mrclass>20C34 (20D08)</mrclass>
+  <mrreviewer>P. Fong</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="LS93b"><article>
+  <author>
+    <name><first>W.</first><last>Lempken</last></name>
+    <name><first>R.</first><last>Staszewski</last></name>
+  </author>  
+  <title>A construction of <C><M>\widehat{{3}}{\rm McL}</M></C> and some
+  representation theory in characteristic <C><M>5</M></C></title>
+  <journal>Linear Algebra Appl.</journal>
+  <year>1993</year>
+  <volume>192</volume>
+  <pages>205&ndash;234</pages>
+  <note>Computational linear algebra in algebraic and related problems
+      (Essen, 1992)</note>
+  <issn>0024-3795</issn>
+  <mrnumber>MR1236744 (94k:20015)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>V. D. Mazurov</mrreviewer>
+  <other type="coden">LAAPAW</other>
+  <other type="fjournal">Linear Algebra and its Applications</other>
+</article></entry>
+
+<entry id="LP91"><incollection>
+  <author>
+    <name><first>K.</first><last>Lux</last></name>
+    <name><first>H.</first><last>Pahlings</last></name>
+  </author>  
+  <title>Computational aspects of representation theory of finite
+      groups</title>
+  <booktitle>Representation theory of finite groups and finite-dimensional
+      algebras (Bielefeld, 1991)</booktitle>
+  <publisher>Birkhäuser</publisher>
+  <year>1991</year>
+  <volume>95</volume>
+  <series>Progr. Math.</series>
+  <pages>37&ndash;64</pages>
+  <address>Basel</address>
+  <crossref>MR91</crossref>
+  <mrnumber>MR1112157 (92g:20025)</mrnumber>
+  <mrclass>20C40</mrclass>
+  <mrreviewer>Wolfgang Knapp</mrreviewer>
+</incollection></entry>
+
+<entry id="Mar72"><article>
+  <author>
+    <name><first>R. Patrick</first><last>Martineau</last></name>
+  </author>  
+  <title>On representations of the <C>S</C>uzuki groups over fields of odd
+      characteristic</title>
+  <journal>J. London Math. Soc. (2)</journal>
+  <year>1972</year>
+  <volume>6</volume>
+  <pages>153&ndash;160</pages>
+  <issn>0024-6107</issn>
+  <mrnumber>MR0369498 (51 #5731)</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>A. O. Morris</mrreviewer>
+  <other type="fjournal">Journal of the London Mathematical Society. Second
+      Series</other>
+</article></entry>
+
+<entry id="MN84"><article>
+  <author>
+    <name><first>Werner</first><last>Meyer</last></name>
+    <name><first>Wolfram</first><last>Neutsch</last></name>
+  </author>  
+  <title>Über <C><M>5</M></C>-<C>D</C>arstellungen der
+      <C>L</C>yonsgruppe</title>
+  <journal>Math. Ann.</journal>
+  <year>1984</year>
+  <volume>267</volume>
+  <number>4</number>
+  <pages>519&ndash;535</pages>
+  <issn>0025-5831</issn>
+  <mrnumber>MR742897 (85k:20038)</mrnumber>
+  <mrclass>20C20 (20D08 51E20)</mrclass>
+  <mrreviewer>Stephen D. Smith</mrreviewer>
+  <other type="coden">MAANA</other>
+  <other type="fjournal">Mathematische Annalen</other>
+</article></entry>
+
+<entry id="MNP85"><article>
+  <author>
+    <name><first>Werner</first><last>Meyer</last></name>
+    <name><first>Wolfram</first><last>Neutsch</last></name>
+    <name><first>Richard</first><last>Parker</last></name>
+  </author>  
+  <title>The minimal <C><M>5</M></C>-representation of <C>L</C>yons' sporadic
+      group</title>
+  <journal>Math. Ann.</journal>
+  <year>1985</year>
+  <volume>272</volume>
+  <number>1</number>
+  <pages>29&ndash;39</pages>
+  <issn>0025-5831</issn>
+  <mrnumber>MR794089 (86i:20025)</mrnumber>
+  <mrclass>20D08</mrclass>
+  <mrreviewer>R. W. Carter</mrreviewer>
+  <other type="coden">MAANA</other>
+  <other type="fjournal">Mathematische Annalen</other>
+</article></entry>
+
+<entry id="Nic88"><mastersthesis>
+  <author>
+    <name><first>W.</first><last>Nickel</last></name>
+  </author>  
+  <title>Endliche    <C>K</C>örper   in   dem   gruppentheoretischen
+      <C>P</C>rogrammsystem <C>GAP</C></title>
+  <school>RWTH Aachen</school>
+  <year>1988</year>
+  <type>Diplomarbeit</type>
+</mastersthesis></entry>
+
+<entry id="Par84"><incollection>
+  <author>
+    <name><first>R. A.</first><last>Parker</last></name>
+  </author>  
+  <title>The computer calculation of modular characters (the meat-axe)</title>
+  <booktitle>Computational group theory (Durham, 1982)</booktitle>
+  <publisher>Academic Press</publisher>
+  <year>1984</year>
+  <pages>267&ndash;274</pages>
+  <address>London</address>
+  <crossref>Atk84</crossref>
+  <mrnumber>MR760660 (85k:20041)</mrnumber>
+  <mrclass>20C20 (20-04)</mrclass>
+  <mrreviewer>Leo J. Alex</mrreviewer>
+</incollection></entry>
+
+<entry id="Rin92"><manual>
+  <author>
+    <name><first>M.</first><last>Ringe</last></name>
+  </author>  
+  <title>The <C>C</C>-<C>M</C>eat<C>A</C>xe, <C>D</C>ocumentation</title>
+  <organization>RWTH Aachen</organization>
+  <year>1992</year>
+</manual></entry>
+
+<entry id="Ryb88b"><article>
+  <author>
+    <name><first>A. J. E.</first><last>Ryba</last></name>
+  </author>  
+  <title>Calculation of the <C><M>7</M></C>-modular characters of the
+      <C>H</C>eld group</title>
+  <journal>J. Algebra</journal>
+  <year>1988</year>
+  <volume>117</volume>
+  <number>1</number>
+  <pages>240&ndash;255</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR955602 (89g:20026)</mrnumber>
+  <mrclass>20C20 (20D08)</mrclass>
+  <mrreviewer>David Benson</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+  <other type="sorttag">b</other>
+</article></entry>
+
+<entry id="RW94"><article>
+  <author>
+    <name><first>Alexander J. E.</first><last>Ryba</last></name>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Matrix generators for the <C>H</C>arada-<C>N</C>orton group</title>
+  <journal>Experiment. Math.</journal>
+  <year>1994</year>
+  <volume>3</volume>
+  <number>2</number>
+  <pages>137&ndash;145</pages>
+  <issn>1058-6458</issn>
+  <mrnumber>MR1313878 (95k:20017)</mrnumber>
+  <mrclass>20C34 (20C40 20D08)</mrclass>
+  <mrreviewer>Wujie Shi</mrreviewer>
+  <other type="fjournal">Experimental Mathematics</other>
+</article></entry>
+
+<entry id="Sch94"><book>
+  <editor>
+    <name><first>M.</first><last>Schönert</last></name>
+  </editor>
+  <title>Gap&ndash;3.4, <C>M</C>anual</title>
+  <publisher>RWTH Aachen</publisher>
+  <year>1994</year>
+</book></entry>
+
+<entry id="Ste63"><article>
+  <author>
+    <name><first>Robert</first><last>Steinberg</last></name>
+  </author>  
+  <title>Representations of algebraic groups</title>
+  <journal>Nagoya Math. J.</journal>
+  <year>1963</year>
+  <volume>22</volume>
+  <pages>33&ndash;56</pages>
+  <issn>0027-7630</issn>
+  <mrnumber>MR0155937 (27 #5870)</mrnumber>
+  <mrclass>22.90 (14.50)</mrclass>
+  <mrreviewer>H. K. Farahat</mrreviewer>
+  <other type="fjournal">Nagoya Mathematical Journal</other>
+</article></entry>
+
+<entry id="Sul90"><phdthesis>
+  <author>
+    <name><first>I. A. I.</first><last>Suleiman</last></name>
+  </author>  
+  <title>Modular Representations of Finite Simple Groups</title>
+  <school>The University of Birmingham</school>
+  <year>1990</year>
+  <type>Ph. D. thesis</type>
+</phdthesis></entry>
+
+<entry id="Sul94"><article>
+  <author>
+    <name><first>Ibrahim A. I.</first><last>Suleiman</last></name>
+  </author>  
+  <title>The modular characters of the twisted <C>C</C>hevalley group
+      <C><M>{}^2D_4(2)</M></C> and <C><M>{}^2D_4(2).2</M></C></title>
+  <journal>Math. Japon.</journal>
+  <year>1994</year>
+  <volume>39</volume>
+  <number>1</number>
+  <pages>107&ndash;117</pages>
+  <issn>0025-5513</issn>
+  <mrnumber>MR1261343 (94m:20038)</mrnumber>
+  <mrclass>20C33 (20C20 20C40)</mrclass>
+  <mrreviewer>Donald L. White</mrreviewer>
+  <other type="coden">MAJAA9</other>
+  <other type="fjournal">Mathematica Japonica</other>
+</article></entry>
+
+<entry id="SW92b"><article>
+  <author>
+    <name><first>Ibrahim A.</first><last>Suleiman</last></name>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Computer construction of matrix representations of the
+      covering group of the <C>H</C>igman-<C>S</C>ims group</title>
+  <journal>J. Algebra</journal>
+  <year>1992</year>
+  <volume>148</volume>
+  <number>1</number>
+  <pages>219&ndash;224</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR1161573 (93d:20029)</mrnumber>
+  <mrclass>20C34 (20C20 20C40)</mrclass>
+  <mrreviewer>Wolfgang Knapp</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="SW92c"><article>
+  <author>
+    <name><first>Ibrahim A.</first><last>Suleiman</last></name>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The <C><M>3</M></C>- and <C><M>5</M></C>-modular characters of the
+      covering and the automorphism groups of the <C>H</C>igman-<C>S</C>ims
+      group</title>
+  <journal>J. Algebra</journal>
+  <year>1992</year>
+  <volume>148</volume>
+  <number>1</number>
+  <pages>225&ndash;242</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR1161574 (93d:20030)</mrnumber>
+  <mrclass>20C34 (20C20 20C40)</mrclass>
+  <mrreviewer>Wolfgang Knapp</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="SW92d"><incollection>
+  <author>
+    <name><first>Ibrahim A.</first><last>Suleiman</last></name>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The <C><M>3</M></C>-modular characters of the
+      <C>M</C>c<C>L</C>aughlin group <C><M>{\rm McL}</M></C> and its
+      automorphism group <C><M>{\rm McL}.2</M></C></title>
+  <booktitle>Groups, combinatorics &amp; geometry (Durham, 1990)</booktitle>
+  <publisher>Cambridge Univ. Press</publisher>
+  <year>1992</year>
+  <volume>165</volume>
+  <series>London Math. Soc. Lecture Note Ser.</series>
+  <pages>422&ndash;437</pages>
+  <address>Cambridge</address>
+  <crossref>LS92a</crossref>
+  <mrnumber>MR1200279 (94c:20031)</mrnumber>
+  <mrclass>20C34 (20C20)</mrclass>
+  <mrreviewer>Peter Fleischmann</mrreviewer>
+</incollection></entry>
+
+<entry id="SW93"><article>
+  <author>
+    <name><first>Ibrahim A. I.</first><last>Suleiman</last></name>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Construction of the fourfold cover of the <C>M</C>athieu group
+      <C><M>M_{22}</M></C></title>
+  <journal>Experiment. Math.</journal>
+  <year>1993</year>
+  <volume>2</volume>
+  <number>1</number>
+  <pages>11&ndash;14</pages>
+  <issn>1058-6458</issn>
+  <mrnumber>MR1246480 (94h:20022)</mrnumber>
+  <mrclass>20C34</mrclass>
+  <other type="fjournal">Experimental Mathematics</other>
+</article></entry>
+
+<entry id="SW94"><article>
+  <author>
+    <name><first>Ibrahim A. I.</first><last>Suleiman</last></name>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The <C><M>2</M></C>-modular characters of <C>C</C>onway's group
+      <C><M>{\rm Co}_2</M></C></title>
+  <journal>Math. Proc. Cambridge Philos. Soc.</journal>
+  <year>1994</year>
+  <volume>116</volume>
+  <number>2</number>
+  <pages>275&ndash;283</pages>
+  <issn>0305-0041</issn>
+  <mrnumber>MR1281546 (95e:20024)</mrnumber>
+  <mrclass>20C40 (20C34)</mrclass>
+  <mrreviewer>Herbert Pahlings</mrreviewer>
+  <other type="coden">MPCPCO</other>
+  <other type="fjournal">Mathematical Proceedings of the Cambridge
+      Philosophical Society</other>
+</article></entry>
+
+<entry id="Tha81"><phdthesis>
+  <author>
+    <name><first>J. G.</first><last>Thackray</last></name>
+  </author>  
+  <title>Modular Representations of Some Finite Groups</title>
+  <school>University of Cambridge</school>
+  <year>1981</year>
+  <type>Ph. D. thesis</type>
+</phdthesis></entry>
+
+<entry id="Tho86"><incollection>
+  <author>
+    <name><first>John G.</first><last>Thompson</last></name>
+  </author>  
+  <title>Some finite groups which appear as <C><M>{\rm Gal}\,L/K</M></C>,
+      where <C><M>K \subseteq{\bf Q}(μ_n)</M></C></title>
+  <booktitle>Group theory, Beijing 1984</booktitle>
+  <publisher>Springer</publisher>
+  <year>1986</year>
+  <volume>1185</volume>
+  <series>Lecture Notes in Math.</series>
+  <pages>210&ndash;230</pages>
+  <address>Berlin</address>
+  <crossref>Dua86</crossref>
+  <mrnumber>MR842445 (87i:11160)</mrnumber>
+  <mrclass>11R32 (12F10 20C99)</mrclass>
+  <mrreviewer>Richard Massy</mrreviewer>
+</incollection></entry>
+
+<entry id="Whi92"><article>
+  <author>
+    <name><first>Donald L.</first><last>White</last></name>
+  </author>  
+  <title>Brauer trees of <C><M>2.F_4(2)</M></C></title>
+  <journal>Comm. Algebra</journal>
+  <year>1992</year>
+  <volume>20</volume>
+  <number>11</number>
+  <pages>3353&ndash;3368</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR1186712 (93i:20009)</mrnumber>
+  <mrclass>20C20 (20C33)</mrclass>
+  <mrreviewer>Stefan Heiss</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="Wil76"><phdthesis>
+  <author>
+    <name><first>W.</first><last>Willems</last></name>
+  </author>  
+  <title>Metrische Moduln über Gruppenringen</title>
+  <school>Mainz</school>
+  <year>1976</year>
+  <type>Dissertation</type>
+</phdthesis></entry>
+
+<entry id="Wil90"><article>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The <C><M>2</M></C>- and <C><M>3</M></C>-modular characters of
+      <C><M>J_3</M></C>, its covering group and automorphism group</title>
+  <journal>J. Symbolic Comput.</journal>
+  <year>1990</year>
+  <volume>10</volume>
+  <number>6</number>
+  <pages>647&ndash;656</pages>
+  <issn>0747-7171</issn>
+  <mrnumber>MR1087984 (92b:20016)</mrnumber>
+  <mrclass>20C20 (20C40 20D08)</mrclass>
+  <mrreviewer>Wolfgang Knapp</mrreviewer>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+</article></entry>
+
+<entry id="Wil93b"><article>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>Matrix generators for <C>F</C>ischer's group
+      <C><M>{\rm Fi}_{24}</M></C></title>
+  <journal>Math. Proc. Cambridge Philos. Soc.</journal>
+  <year>1993</year>
+  <volume>113</volume>
+  <number>1</number>
+  <pages>5&ndash;8</pages>
+  <issn>0305-0041</issn>
+  <mrnumber>MR1188814 (93j:20042)</mrnumber>
+  <mrclass>20D08</mrclass>
+  <mrreviewer>Ulrich Meierfrankenfeld</mrreviewer>
+  <other type="coden">MPCPCO</other>
+  <other type="fjournal">Mathematical Proceedings of the Cambridge
+      Philosophical Society</other>
+</article></entry>
+
+<entry id="Wil93c"><article>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>A new construction of the <C>B</C>aby <C>M</C>onster and its
+      applications</title>
+  <journal>Bull. London Math. Soc.</journal>
+  <year>1993</year>
+  <volume>25</volume>
+  <number>5</number>
+  <pages>431&ndash;437</pages>
+  <issn>0024-6093</issn>
+  <mrnumber>MR1233405 (94k:20027)</mrnumber>
+  <mrclass>20D08 (20C34 20C40)</mrclass>
+  <mrreviewer>Richard Lyons</mrreviewer>
+  <other type="coden">LMSBBT</other>
+  <other type="fjournal">The Bulletin of the London Mathematical
+      Society</other>
+</article></entry>
+
+<entry id="Wil93e"><article>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The <C>B</C>rauer tree for <C><M>J_3</M></C> in characteristic
+      <C><M>17</M></C></title>
+  <journal>J. Symbolic Comput.</journal>
+  <year>1993</year>
+  <volume>15</volume>
+  <number>3</number>
+  <pages>325&ndash;330</pages>
+  <issn>0747-7171</issn>
+  <mrnumber>MR1229639 (94g:20021)</mrnumber>
+  <mrclass>20C34 (68Q40)</mrclass>
+  <mrreviewer>Jamshid Moori</mrreviewer>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+</article></entry>
+
+<entry id="Wol86"><article>
+  <author>
+    <name><first>Andrew J.</first><last>Woldar</last></name>
+  </author>  
+  <title>On the <C><M>5</M></C>-decomposition matrix for
+      <C>M</C>c<C>L</C>aughlin's sporadic simple group</title>
+  <journal>Comm. Algebra</journal>
+  <year>1986</year>
+  <volume>14</volume>
+  <number>2</number>
+  <pages>277&ndash;291</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>MR817046 (87a:20007)</mrnumber>
+  <mrclass>20C20 (20D08)</mrclass>
+  <mrreviewer>J. L. Alperin</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
+<entry id="Atk84"><proceedings>
+  <editor>
+    <name><first>Michael D.</first><last>Atkinson</last></name>
+  </editor>  
+  <title>Computational group theory</title>
+  <year>1984</year>
+  <address>London</address>
+  <publisher>Academic Press Inc. [Harcourt Brace Jovanovich
+      Publishers]</publisher>
+  <isbn>0-12-066270-1</isbn>
+  <mrnumber>MR760641 (85g:20001)</mrnumber>
+  <mrclass>20-06 (68-06)</mrclass>
+  <other type="booktitle">Proceedings of the London Mathematical Society
+      symposium held in Durham, July 30&ndash;August 9, 1982</other>
+  <other type="pages">xii+375</other>
+</proceedings></entry>
+
+<entry id="DGM86"><proceedings>
+  <editor>
+    <name><first>V.</first><last>Dlab</last></name>
+    <name><first>P.</first><last>Gabriel</last></name>
+    <name><first>G.</first><last>Michler</last></name>
+  </editor>  
+  <title>Representation theory. <C>II</C></title>
+  <year>1986</year>
+  <volume>1178</volume>
+  <series>Lecture Notes in Mathematics</series>
+  <address>Berlin</address>
+  <publisher>Springer-Verlag</publisher>
+  <note>Groups and orders</note>
+  <isbn>3-540-16433-2</isbn>
+  <mrnumber>MR842475 (87b:20003)</mrnumber>
+  <mrclass>20-06 (16-06 20Cxx)</mrclass>
+  <other type="booktitle">Proceedings of the fourth international conference
+      on representations of algebras held at Carleton University,
+      Ottawa, Ont., August 16&ndash;25, 1984</other>
+  <other type="pages">xvi+370</other>
+</proceedings></entry>
+
+<entry id="MR91"><proceedings>
+  <editor>
+    <name><first>G. O.</first><last>Michler</last></name>
+    <name><first>C. M.</first><last>Ringel</last></name>
+  </editor>  
+  <title>Representation theory of finite groups and finite-dimensional
+      algebras</title>
+  <year>1991</year>
+  <volume>95</volume>
+  <series>Progress in Mathematics</series>
+  <address>Basel</address>
+  <publisher>Birkhäuser Verlag</publisher>
+  <isbn>3-7643-2604-2</isbn>
+  <mrnumber>MR1112154 (91m:20005)</mrnumber>
+  <mrclass>20-06 (00B25 16-06 20Cxx)</mrclass>
+  <other type="booktitle">Proceedings of the conference held at the University
+      of Bielefeld, Bielefeld, May 15&ndash;17, 1991</other>
+  <other type="pages">x+520</other>
+</proceedings></entry>
+
+<entry id="LS92a"><proceedings>
+  <editor>
+    <name><first>Martin</first><last>Liebeck</last></name>
+    <name><first>Jan</first><last>Saxl</last></name>
+  </editor>  
+  <title>Groups, combinatorics &amp; geometry</title>
+  <year>1992</year>
+  <volume>165</volume>
+  <series>London Mathematical Society Lecture Note Series</series>
+  <address>Cambridge</address>
+  <publisher>Cambridge University Press</publisher>
+  <isbn>0-521-40685-4</isbn>
+  <mrnumber>MR1200244 (93g:20001)</mrnumber>
+  <mrclass>20-06 (00B25 20Dxx)</mrclass>
+  <other type="booktitle">Proceedings of the L.M.S.  Symposium on Groups and
+  Combinatorics held in Durham, July 5&ndash;15, 1990</other>
+  <other type="pages">xiv+489</other>
+</proceedings></entry>
+
+<entry id="Dua86"><proceedings>
+  <editor>
+    <name><first>Hsio-Fu</first><last>Tuan</last></name>
+  </editor>  
+  <title>Group theory, <C>B</C>eijing 1984</title>
+  <year>1986</year>
+  <volume>1185</volume>
+  <series>Lecture Notes in Mathematics</series>
+  <address>Berlin</address>
+  <publisher>Springer-Verlag</publisher>
+  <isbn>3-540-16456-1</isbn>
+  <mrnumber>MR842438 (87d:20004)</mrnumber>
+  <mrclass>20-06</mrclass>
+  <other type="booktitle">Proceedings of an international symposium held at
+      Beijing University, Beijing, August 27&ndash;September 8, 1984</other>
+  <other type="pages">vi+403</other>
+</proceedings></entry>
+
+</file>
+

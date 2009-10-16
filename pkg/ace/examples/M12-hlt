@@ -1,0 +1,16 @@
+# ACEExample "M12-hlt" : enumeration of cosets of H in G,
+# where G = M_12, H = Id, using hlt strategy.
+#
+local F, M12, a, b, c;
+# We define the Matthieu group M_12 on 3 generators. |M_12| = 95040
+F := FreeGroup("a","b","c"); a := F.1; b := F.2; c := F.3;
+M12 := F / [a^11, b^2, c^2, (a*b)^3, (a*c)^3, (b*c)^10,
+            c*b*c*b*a*b*c*b*c*a^-5];
+return ACEfunc(
+    FreeGeneratorsOfFpGroup(M12), 
+    RelatorsOfFpGroup(M12), 
+    [] # Identity subgroup generators (empty list)
+    # Options that don't affect the enumeration
+    : echo, enum := "M_12", subg := "Id", 
+    # Other options
+    mess := 25000, hlt, wo := "1250k");

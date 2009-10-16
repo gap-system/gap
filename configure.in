@@ -1,13 +1,52 @@
-
 AC_INIT(configure)
 
 if test "x$CFLAGS" = "x" ;  then
   CFLAGS=${COPTS}
 fi
+
+AC_ARG_WITH(gmp,
+ [  --with-gmp= <path>|yes
+    Use GMP library.
+    If argument is yes or <empty> that means the library is reachable with the standard
+    search path "/usr" or "/usr/local".
+    Otherwise you give the <path> to the directory which contains the library. 
+    If argument is no, use original GAP large integers.
+ ],
+ [if test "$withval" = yes ; then
+   GMP_HOME="`pwd`/extern"
+   GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+   GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
+   MAKE_GMP="all_gmp"
+  elif test "$withval" = system ; then
+   GMP_CFLAGS="-DUSE_GMP"
+   GMP_LIBS="-lgmp"
+   MAKE_GMP="all"
+  elif test "$withval" != no ; then
+   GMP_HOME="$withval"
+   GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+   GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
+   MAKE_GMP="all_gmp"
+  else
+   GMP_CFLAGS=""
+   GMP_LIBS=""
+   MAKE_GMP="all"
+  fi
+ ],
+ [GMP_HOME="`pwd`/extern"
+  GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+  GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
+  MAKE_GMP="all_gmp"
+ ]
+)
+
+AC_SUBST(GMP_CFLAGS)
+AC_SUBST(GMP_LIBS)
+AC_SUBST(MAKE_GMP)
+
 gp_configure_options=$ac_configure_args
 AC_SUBST(gp_configure_options)
 AC_CONFIG_AUX_DIR(cnf)
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 AC_PROG_CC
 BASECC=`basename ${CC}`
 AC_SUBST(BASECC)
@@ -16,5 +55,4 @@ AC_SUBST(gapdir)
 gapdir=`pwd`
 mkdir -p bin
 AC_OUTPUT(Makefile sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi)
-
 

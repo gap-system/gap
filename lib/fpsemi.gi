@@ -2,7 +2,7 @@
 ##
 #W  fpsemi.gi           GAP library          Andrew Solomon and Isabel Araujo
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: fpsemi.gi,v 4.14 2002/04/15 10:04:40 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the declarations for finitely presented semigroups.
 ##
 Revision.fpsemi_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: fpsemi.gi,v 4.14 2002/04/15 10:04:40 sal Exp $";
 
 #############################################################################
 ##

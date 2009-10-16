@@ -1,0 +1,14 @@
+Generators of Roos' example: -x -y -z -u -v;
+Weights:                      1  1  1  1  1;
+<*Limiting weight: 10;*>
+Relations:
+[x,x];
+[x,y];
+[x,z];
+[y,z]-[x,u];
+[z,z]+2 [x,v];
+[y,u]-[v,x];
+[z,u]-[y,v];
+[z,v];
+[u,v];
+[v,v];

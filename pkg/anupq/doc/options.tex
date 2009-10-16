@@ -1,0 +1,458 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  options.tex    ANUPQ documentation - options                Werner Nickel
+%A                                                                Greg Gamble
+%%
+%A  @(#)$Id: options.tex,v 1.31 2005/07/20 19:38:36 werner Exp $
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{ANUPQ Options}
+
+In this chapter we describe in detail all the options used  by  functions
+of the {\ANUPQ} package. Note that by ``options'' we mean {\GAP}  options
+that are passed to functions after the arguments and separated  from  the
+arguments by a colon as described in Chapter~"ref:Function Calls" in  the
+Reference Manual. The user is strongly advised to read Section~"Hints and
+Warnings regarding the use of Options".
+
+\>AllANUPQoptions() F
+
+lists all the {\GAP}  options  defined  for  functions  of  the  {\ANUPQ}
+package:
+
+\beginexample
+gap> AllANUPQoptions();
+[ "AllDescendants", "BasicAlgorithm", "Bounds", "CapableDescendants", 
+  "ClassBound", "CustomiseOutput", "Exponent", "Filename", "GroupName", 
+  "Identities", "Metabelian", "NumberOfSolubleAutomorphisms", "OrderBound", 
+  "OutputLevel", "PcgsAutomorphisms", "PqWorkspace", "Prime", 
+  "PrintAutomorphisms", "PrintPermutations", "QueueFactor", 
+  "RankInitialSegmentSubgroups", "RedoPcp", "RelativeOrders", "Relators", 
+  "SetupFile", "SpaceEfficient", "StandardPresentationFile", "StepSize", 
+  "SubList", "TreeDepth", "pQuotient" ]
+\endexample
+
+The following global variable gives a  partial  breakdown  of  where  the
+above options are used.
+
+\>`ANUPQoptions' V
+
+is a record of lists of names of admissible {\ANUPQ} options, such  that
+each field is either the name of a ``key'' {\ANUPQ} function  or  `other'
+(for a miscellaneous list of functions) and the  corresponding  value  is
+the list of option  names  that  are  admissible  for  the  function  (or
+miscellaneous list of functions).
+
+Also, from within a {\GAP} session, you may  use  {\GAP}'s  help  browser
+(see Chapter~"ref:The Help System" in the {\GAP}  Reference  Manual);  to
+find out about any particular {\ANUPQ} option,  simply  type:  ```?option
+<option>''', where <option> is one of the options  listed  above  without
+any quotes, e.g.
+
+\begintt
+gap> ?option Prime
+\endtt
+
+will display the sections  in  this  manual  that  describe  the  `Prime'
+option. In fact the first 4 are for the functions that have `Prime' as an
+option and the last actually  describes  the  option.  So  follow  up  by
+choosing
+
+\begintt
+gap> ?5
+\endtt
+
+This is also the pattern for other options (the last section of the  list
+always describes the option; the other sections are  the  functions  with
+which the option may be used).
+
+In the section following we describe in detail all {\ANUPQ}  options.  To
+continue onto the next section on-line using {\GAP}'s help browser, type:
+
+\begintt
+gap> ?>
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Detailed descriptions of ANUPQ Options}
+
+\beginitems
+
+\>`Prime := <p>'{option Prime}@{option `Prime'|indexit}&
+Specifies that the $p$-quotient for the prime  <p>  should  be  computed.
+
+\>`ClassBound := <n>'{option  ClassBound}@{option  `ClassBound'|indexit}&
+Specifies that the $p$-quotient to be  computed  has  lower  exponent-$p$
+class at most <n>. If this option is omitted a default of  63  (which  is
+the  maximum  possible  for  the  `pq'  program)  is  taken,  except  for
+`PqDescendants' (see~"PqDescendants") and in a special case of `PqPCover'
+(see~"PqPCover"). Let <F> be the argument (or start group of the  process
+in the interactive case) for the function; then for  `PqDescendants'  the
+default  is  `PClassPGroup(<F>)  +  1',  and  for  the  special  case  of
+`PqPCover' the default is `PClassPGroup(<F>)'.
+
+\>`pQuotient := <Q>'{option pQuotient}@{option `pQuotient'|indexit}&
+This option is only available for the standard presentation functions. It
+specifies that a $p$-quotient of the group argument of  the  function  or
+group of the process is the pc <p>-group  <Q>,  where  <Q>  is  of  class
+*less  than*  the  provided  (or  default)  value  of  `ClassBound'.   If
+`pQuotient' is provided, then the option  `Prime'  if  also  provided, is
+ignored; the prime <p> is discovered by computing `PrimePGroup(<Q>)'.
+
+\>`Exponent := <n>'{option Exponent}@{option `Exponent'|indexit}&
+Specifies that the $p$-quotient to be computed has exponent <n>.  For  an
+interactive process, `Exponent' defaults to a previously  supplied  value
+for the process. Otherwise (and non-interactively),  the  default  is  0,
+which means that no exponent law is enforced.
+
+\>`Relators := <rels>'{option Relators}@{option `Relators'|indexit}&
+Specifies that the relators sent to the `pq'  program  should  be  <rels>
+instead of the relators of the argument group <F> (or start group in  the
+interactive case) of the calling function; <rels> should  be  a  list  of
+*strings* in the string representations of the generators of <F>, and <F>
+must be an *fp group* (even if the calling function accepts a pc  group).
+This option provides a way  of  giving  relators  to  the  `pq'  program,
+without having them pre-expanded by {\GAP}, which can sometimes effect  a
+performance loss of the order of 100 (see Section~"The Relators Option").
+
+*Notes*
+\beginlist%ordered
+
+\item{1.}
+The `pq' program does not  use  `/'  to  indicate  multiplication  by  an
+inverse and uses square brackets to represent (left normed)  commutators.
+Also, even though the `pq' program accepts  relations,  all  elements  of
+<rels> *must* be in relator form, i.e.~a relation of form `<w1>  =  <w2>'
+must  be  written  as  `<w1>*(<w2>)^-1'  and  then  put  in  a  pair   of
+double-quotes to make it a string. See the example below.
+
+\item{2.}
+To ensure there are no syntax errors in <rels>, each  relator  is  parsed
+for validity via `PqParseWord' (see~"PqParseWord"). If  they  are  ok,  a
+message to say so is `Info'-ed at `InfoANUPQ' level 2.
+
+\endlist
+
+\>`Metabelian'{option Metabelian}@{option `Metabelian'|indexit}&
+Specifies that the largest metabelian $p$-quotient subject to  any  other
+conditions specified by other options be  constructed.  By  default  this
+restriction is not enforced.
+
+\>`GroupName := <name>'{option GroupName}@{option `GroupName'|indexit}&
+Specifies that the `pq' program should refer to the  group  by  the  name
+<name> (a string). If `GroupName' is not  set  and  the  group  has  been
+assigned a name via `SetName' (see~"ref:SetName") it is set as  the  name
+the `pq' program should use. Otherwise, the ``generic''  name  `"[grp]"'
+is set as a default.
+
+\>`Identities := <funcs>'{option Identities}@{option `Identities'|indexit}&
+Specifies that the pc presentation should satisfy  the  laws  defined  by
+each function in the list <funcs>. This option may  be  called  by  `Pq',
+`PqEpimorphism', or `PqPCover' (see~"Pq").  Each  function  in  the  list
+<funcs> must return a word in its arguments (there may be any  number  of
+arguments). Let <identity> be one such function in <funcs>. Then as  each
+lower exponent <p>-class quotient is formed, instances  $<identity>(<w1>,
+\dots, <wn>)$ are added as relators to the pc presentation, where  $<w1>,
+\dots, <wn>$ are words in the pc generators  of  the  quotient.  At  each
+class the class and number of pc generators is `Info'-ed  at  `InfoANUPQ'
+level 1, the number of instances is `Info'-ed at `InfoANUPQ' level 2, and
+the instances that are evaluated are `Info'-ed at `InfoANUPQ' level 3. As
+usual timing information is `Info'-ed at `InfoANUPQ' level 2; and details
+of the processing of each instance from the `pq' program (which is  often
+quite *voluminous*) is `Info'-ed at `InfoANUPQ' level 3. Try the examples
+`"B2-4-Id"' and `"11gp-3-Engel-Id"' which demonstrate the  usage  of  the
+`Identities' option; these are run using  `PqExample'  (see~"PqExample").
+Take note of Note 1.~below in relation to the  example  `"B2-4-Id"';  the
+companion example `"B2-4"' generates the same group using the  `Exponent'
+option. These examples are discussed at length in Section~"The Identities
+Option and PqEvaluateIdentities Function".
+
+*Notes*
+
+\beginlist%ordered
+
+\item{1.}
+Setting the `InfoANUPQ' level to 3 or more when setting the  `Identities'
+option may slow down the computation considerably, by overloading  {\GAP}
+with io operations.
+
+\item{2.}
+The `Identities' option is implemented at the {\GAP} level.  An  identity
+that is just an exponent law should be  specified  using  the  `Exponent'
+option (see~"option Exponent"), which is implemented at the C  level  and
+is highly optimised and so is much more efficient.
+
+\item{3.}
+The  number  of   instances  of  each  identity   tends  to  grow
+combinatorially with the class. So *care* should be exercised in using
+the  `Identities'  option, by  including  other restrictions,  e.g.~by
+using the `ClassBound' option (see~"option ClassBound").
+
+\endlist
+
+\>`OutputLevel := <n>'{option OutputLevel}@{option `OutputLevel'|indexit}&
+Specifies the level of ``verbosity'' of the information output by the ANU
+`pq' program when computing a pc presentation; <n> must be an integer  in
+the range 0 to 3. `OutputLevel := 0' displays at most one line of  output
+and is the default; `OutputLevel := 1' displays (usually)  slightly  more
+output and `OutputLevel's of 2 and 3 are two levels of verbose output. To
+see these messages from the `pq' program, the `InfoANUPQ' level  must  be
+set to at least 1  (see~"InfoANUPQ").  See  Section~"Hints  and  Warnings
+regarding the use of Options" for an example of how `OutputLevel' can  be
+used as a troubleshooting tool.
+
+\>`RedoPcp'{option RedoPcp}@{option `RedoPcp'|indexit}&
+Specifies that the current pc presentation (for an  interactive  process)
+stored by the `pq' program be scrapped  and  clears  the  current  values
+stored for the options `Prime', `ClassBound', `Exponent' and `Metabelian'
+and also clears the `pQuotient', `pQepi' and `pCover' fields of the  data
+record of the process.
+
+\>`SetupFile := <filename>'{option SetupFile}@{option `SetupFile'|indexit}&
+Non-interactively, this option directs that `pq' should not be called and
+that an input file  with  name  <filename>  (a  string),  containing  the
+commands necessary for the  ANU  `pq'  standalone,  be  constructed.  The
+commands written to <filename> are also `Info'-ed behind  a  ```ToPQ> '''
+prompt at `InfoANUPQ' level  4  (see~"InfoANUPQ").  Except  in  the  case
+following, the calling function returns `true'. If the  calling  function
+is  the  non-interactive  version  of  one   of   `Pq',   `PqPCover'   or
+`PqEpimorphism' and the group provided as argument is trivial given  with
+an empty set of generators, then no setup file is written and  `fail'  is
+returned (the `pq' program cannot do anything useful with such a  group).
+Interactively, `SetupFile' is ignored.
+
+*Note:*
+Since commands emitted to the `pq' program may depend on knowing what the
+``current state'' is, to form a setup file some ``close enough  guesses''
+may sometimes be necessary; when this occurs a warning  is  `Info'-ed  at
+`InfoANUPQ' or `InfoWarning' level 1. To determine  whether  the  ``close
+enough guesses'' give an accurate setup file, it is necessary to run  the
+command  without  the  `SetupFile'  option,  after  either  setting   the
+`InfoANUPQ' level to at least 4  (the  setup  file  script  can  then  be
+compared with the ```ToPQ> ''' commands that are `Info'-ed) or setting  a
+`pq' command log file by using `ToPQLog' (see~"ToPQLog").
+
+\>`PqWorkspace := <workspace>'{option PqWorkspace}@{option `PqWorkspace'|indexit}&
+Non-interactively, this option sets the memory used by the `pq'  program.
+It sets the maximum number of integer-sized elements to allocate  in  its
+main storage array. By default, the `pq'  program  sets  this  figure  to
+10000000. Interactively, `PqWorkspace' is ignored;  the  memory  used  in
+this  case  may  be  set  by   giving   `PqStart'   a   second   argument
+(see~"PqStart").
+
+\>`PcgsAutomorphisms'{option PcgsAutomorphisms}%
+@{option `PcgsAutomorphisms'|indexit}
+\>`PcgsAutomorphisms := false'{option PcgsAutomorphisms}%
+@{option `PcgsAutomorphisms'|indexit}&
+Let <G> be the group associated with the calling function (or  associated
+interactive process). Passing the option  `PcgsAutomorphisms'  without  a
+value (or equivalently setting it to `true'), specifies that a polycyclic
+generating sequence for the automorphism group (which must be  *soluble*)
+of <G>, be computed and passed to the `pq'  program.  This  increases  the
+efficiency of the computation; it also prevents  the  `pq'  from  calling
+{\GAP} for orbit-stabilizer calculations. By default, `PcgsAutomorphisms'
+is set to the value returned by `IsSolvable( AutomorphismGroup( <G> ) )',
+and uses the package {\AutPGrp} to compute `AutomorphismGroup( <G> )'  if
+it is installed. This flag is set to `true' or `false' in the  background
+according  to  the  above  criterion  by  the  function   `PqDescendants'
+(see~"PqDescendants" and~"PqDescendants!interactive").
+
+*Note:*
+If `PcgsAutomorphisms' is used when the  automorphism  group  of  <G>  is
+insoluble, an error message occurs.
+
+\>`OrderBound := <n>'{option OrderBound}@{option `OrderBound'|indexit}&
+Specifies that only descendants of size at most $p^<n>$, where <n>  is  a
+non-negative integer,  be  generated.  Note  that  you  cannot  set  both
+`OrderBound' and `StepSize'.
+
+\>`StepSize := <n>'{option StepSize}@{option `StepSize'}
+\>`StepSize := <list>'{option StepSize}@{option `StepSize'|indexit}&
+For  a  positive  integer  <n>,  `StepSize'  specifies  that  only  those
+immediate descendants which are a factor $p^<n>$ bigger than their parent
+group be generated.
+
+&
+For a list <list> of positive integers such that the sum of the length of
+<list> and the exponent-$p$ class of <G> is  equal  to  the  class  bound
+defined  by  the  option  `ClassBound',  `StepSize'  specifies  that  the
+integers of <list> are the step sizes for each additional class.
+
+\>`RankInitialSegmentSubgroups := <n>'{option RankInitialSegmentSubgroups}%
+@{option `RankInitialSegmentSubgroups'|indexit}&
+Sets the rank of the initial  segment  subgroup  chosen  to  be  <n>.  By
+default, this has value 0.
+
+\>`SpaceEfficient'{option SpaceEfficient}@{option `SpaceEfficient'|indexit}&
+Specifies that the `pq' program performs certain calculations of $p$-group
+generation more slowly  but with greater space efficiency.   This flag is
+frequently  necessary for groups  of large  Frattini quotient  rank.  The
+space saving  occurs because  only one permutation  is stored at  any one
+time. This  option is only  available if the `PcgsAutomorphisms'  flag is
+set  to  `true'  (see~"option  PcgsAutomorphisms").  For  an  interactive
+process, `SpaceEfficient' defaults to a previously supplied value for the
+process.   Otherwise  (and  non-interactively),  `SpaceEfficient'  is  by
+default `false'.
+
+\>`CapableDescendants'{option CapableDescendants}@{option `CapableDescendants'|indexit}&
+By default, *all* (i.e.~capable and terminal) descendants  are  computed.
+If this flag is set, only capable descendants are computed. Setting  this
+option is equivalent to setting `AllDescendants  :=  false'  (see~"option
+AllDescendants"),    except    if    both    `CapableDescendants'     and
+`AllDescendants' are passed, `AllDescendants' is essentially ignored.
+\goodbreak%
+
+\>`AllDescendants := false'{option AllDescendants}@{option `AllDescendants'|indexit}&
+By default, *all* descendants are constructed. If this  flag  is  set  to
+`false', only capable descendants are computed. Passing  `AllDescendants'
+without a value  (which  is  equivalent  to  setting  it  to  `true')  is
+superfluous. This option is provided only for backward compatibility with
+the  {\GAP}  3  version  of  the  {\ANUPQ}  package,  where  by   default
+`AllDescendants'  was  set  to  `false'  (rather  than  `true').  It   is
+preferable to use `CapableDescendants' (see~"option CapableDescendants").
+
+\>`TreeDepth := <class>'{option TreeDepth}@{option `TreeDepth'|indexit}&
+Specifies     that     the     descendants     tree     developed      by
+`PqDescendantsTreeCoclassOne' (see~"PqDescendantsTreeCoclassOne")  should
+be extended to class <class>, where <class> is a positive integer.
+
+\>`SubList := <sub>'{option SubList}@{option `SubList'|indexit}&
+Suppose that <L> is the list of descendants generated, then  for  a  list
+<sub> of integers this option causes `PqDescendants' to return  `Sublist(
+<L>, <sub> )'. If an integer <n>  is  supplied,  `PqDescendants'  returns
+`<L>[<n>]'.
+
+\>`NumberOfSolubleAutomorphisms := <n>'{option NumberOfSolubleAutomorphisms}%
+@{option `NumberOfSolubleAutomorphisms'|indexit}&
+Specifies that the number of soluble automorphisms  of  the  automorphism
+group           supplied           by           `PqPGSupplyAutomorphisms'
+(see~"PqPGSupplyAutomorphisms") in a $p$-group generation calculation  is
+<n>. By default, <n> is taken to be  $0$;  <n>  must  be  a  non-negative
+integer. If $<n> \ge 0$ then a  value  for  the  option  `RelativeOrders'
+(see~"option RelativeOrders") must also be supplied.
+
+\>`RelativeOrders := <list>'{option RelativeOrders}%
+@{option `RelativeOrders'|indexit}&
+Specifies the  relative  orders  of  each  soluble  automorphism  of  the
+automorphism     group     supplied     by      `PqPGSupplyAutomorphisms'
+(see~"PqPGSupplyAutomorphisms") in a  $p$-group  generation  calculation.
+The list <list> must consist of <n> positive integers, where <n>  is  the
+value   of   the   option   `NumberOfSolubleAutomorphisms'   (see~"option
+NumberOfSolubleAutomorphisms"). By default <list> is empty.
+
+\>`BasicAlgorithm'{option BasicAlgorithm}@{option `BasicAlgorithm'|indexit}&
+Specifies that an  algorithm that the `pq' program  calls its ``default''
+algorithm be  used for $p$-group generation. By default this algorithm is
+*not*  used.   If  this  option  is  supplied  the  settings  of  options
+`RankInitialSegmentSubgroups',     `AllDescendants',    `Exponent'    and
+`Metabelian' are ignored.
+
+\>`CustomiseOutput := <rec>'{option CustomiseOutput}%
+@{option `CustomiseOutput'|indexit}&
+Specifies that fine tuning of the output is  desired.  The  record  <rec>
+should have any subset (or all) of the the following fields:
+
+\quad`perm := <list>' &
+where  <list>  is  a  list  of  booleans  which  determine  whether   the
+permutation group output for the automorphism group should  contain:  the
+degree, the extended automorphisms, the automorphism  matrices,  and  the
+permutations, respectively.
+
+\quad`orbit := <list>' &
+where <list> is a list of booleans  which  determine  whether  the  orbit
+output of the action of the automorphism group should contain: a summary,
+and a complete listing of orbits, respectively. (It's  possible  to  have
+*both* a summary and a complete listing.)
+
+\quad`group := <list>' &
+where <list> is a list of booleans  which  determine  whether  the  group
+output should contain: the standard matrix of  each  allowable  subgroup,
+the presentation of reduced  $p$-covering  groups,  the  presentation  of
+immediate  descendants,  the  nuclear  rank  of  descendants,   and   the
+$p$-multiplicator rank of descendants, respectively.
+
+\quad`autgroup := <list>' &
+where  <list>  is  a  list  of  booleans  which  determine  whether   the
+automorphism group output should  contain:  the  commutator  matrix,  the
+automorphism group description of descendants, and the automorphism group
+order of descendants, respectively.
+
+\quad`trace := <val>' &
+where <val> is a boolean which if `true' specifies algorithm  trace  data
+is desired. By default, one does not get algorithm trace data.
+
+Not providing a field (or mis-spelling it!), specifies that  the  default
+output is desired. As a convenience, `1' is also accepted as `true',  and
+any value that is neither `1' nor `true' is taken as  `false'.  Also  for
+each <list> above, an unbound list entry is taken as `false'.  Thus,  for
+example
+
+\begintt
+CustomiseOutput := rec(group := [,,1], autgroup := [,1])
+\endtt
+
+specifies for the group output that only the  presentation  of  immediate
+descendants is desired,  for  the  automorphism  group  output  only  the
+automorphism group description of descendants  should  be  printed,  that
+there should be no algorithm trace data,  and  that  the  default  output
+should be provided for the permutation group and orbit output.
+
+\>`StandardPresentationFile := <filename>'{option StandardPresentationFile}%
+@{option `StandardPresentationFile'|indexit}&
+Specifies that the file to which the standard presentation is written has
+name <filename>. If the first character of the string <filename>  is  not
+`/', <filename> is assumed to be the path of a writable file relative  to
+the directory in which {\GAP} was started. If this option is  omitted  it
+is written to the file with the name generated by the command  `Filename(
+ANUPQData.tmpdir, "SPres" );', i.e.~the file with name `"SPres"'  in  the
+temporary directory in which the `pq' program executes.
+
+\>`QueueFactor := <n>'{option QueueFactor}@{option `QueueFactor'|indexit}&
+Specifies a queue factor of <n>, where <n> should be a positive  integer.
+This option may be used with `PqNextClass' (see~"PqNextClass").
+
+The queue factor is used when the `pq' program uses automorphisms to close
+a set of elements of the $p$-multiplicator under their action.
+
+The algorithm used is a spinning algorithm:  it  starts  with  a  set  of
+vectors in echelonized  form  (elements  of  the  $p$-multiplicator)  and
+closes the span of these vectors under the action of  the  automorphisms.
+For this each automorphism is applied to each vector and it is checked if
+the result is contained in the span computed so far.  If  not,  the  span
+becomes bigger and the vector is put into a queue and  the  automorphisms
+are applied to this vector at a later stage. The process terminates  when
+the automorphisms have been applied to all vectors  and  no  new  vectors
+have been produced.
+
+For each new vector it is decided, if its processing should  be  delayed.
+If the vector contains too many non-zero entries, it is put into a second
+queue. The elements in this queue are processed only when  there  are  no
+elements in the first queue left.
+
+The queue factor is a percentage figure. A vector is put into the  second
+queue if the percentage of its non-zero entries exceeds the queue factor.
+
+\>`Bounds := <list>'{option Bounds}@{option `Bounds'|indexit}&
+Specifies a lower and upper bound on the indices of a list, where  <list>
+is a pair of positive non-decreasing  integers.  See~"PqDisplayStructure"
+and~"PqDisplayAutomorphisms" where this option may be used.
+
+\>`PrintAutomorphisms := <list>'{option PrintAutomorphisms}%
+@{option `PrintAutomorphisms'|indexit}&
+Specifies that automorphism matrices be printed.
+
+\>`PrintPermutations := <list>'{option PrintPermutations}%
+@{option `PrintPermutations'|indexit}&
+Specifies that permutations of the subgroups be printed.
+
+\>`Filename := <string>'{option Filename}@{option `Filename'|indexit}&
+Specifies that an output or input file to be written to or read  from  by
+the `pq' program should have the name <string>.
+
+\enditems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

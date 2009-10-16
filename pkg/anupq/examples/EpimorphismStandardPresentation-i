@@ -1,0 +1,27 @@
+#Example: "EpimorphismStandardPresentation-i" . . based on manual example
+#(demonstrates interactive `EpimorphismStandardPresentation' usage)
+#vars: F, x, y, z, w, a, b, R, Q, procId, G, phi, lev;
+#options: 
+F := FreeGroup(6, "F");
+## For printing GAP uses the symbols F1, ... for the generators of F
+x := F.1; y := F.2; z := F.3; w := F.4; a := F.5; b := F.6;
+R := [x^3 / w, y^3 / w * a^2 * b^2, w^3 / b,
+      Comm (y, x) / z, Comm (z, x), Comm (z, y) / a, z^3 ];
+Q := F / R;
+procId := PqStart( Q );
+G := Pq( procId : Prime := 3, ClassBound := 3 );
+lev := InfoLevel(InfoANUPQ); # Save current InfoANUPQ level
+SetInfoLevel(InfoANUPQ, 2);; # To see computation time data
+## It is not necessary to pass the `Prime' option to
+## `EpimorphismStandardPresentation' since it was previously
+## passed to `Pq':
+phi := EpimorphismStandardPresentation( procId : ClassBound := 3 );
+## Image of phi should be isomorphic to G ...
+## let's check the order is correct:
+Size( Image(phi) );
+## `StandardPresentation' and `EpimorphismStandardPresentation'
+## behave like attributes, so no computation is done when
+## either is called again for the same process ...
+StandardPresentation( procId : ClassBound := 3 );
+## No timing data was Info-ed since no computation was done
+SetInfoLevel(InfoANUPQ, lev);; # Restore previous InfoANUPQ level

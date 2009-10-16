@@ -1,0 +1,5787 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Bibliography in the ATLAS of Finite Groups (part 2)
+%%
+%%  How did this file arise:
+%%  - Take the entries from the ATLAS bibliography on pp. 244-251,
+%%    with assignments to sporadic simple groups.
+%%  - Fetch the corresponding entries in BibTeX format from MathSciNet
+%%    if available, take the entry also if it looks slightly differently.
+%%    (E.g., cited preprints may have appeared,
+%%    the types 'inproceedings' and 'incollection' seem to be used
+%%    inconsistently,
+%%    LaTeX markup was clearly used differently,
+%%    some articles in Russian are now cited with Russian titles.)
+%%  - If several sources are given (this happens in the bibliography in the
+%%    ATLAS of Finite Groups) then take both of them.
+%%  - If no MR number is available or if the MR entry does not conform the
+%%    BibTeX definitions then consult Zentralblatt MATH,
+%%    and add a component 'zblnumber' if the entry is found there.
+%%  - If several reprints of a book are found in MR then take all those
+%%    that are not older than the one referenced in the original list.
+%%  - Replace the label (MR number) by a combination of authors' names
+%%    and year.
+%%  - If applicable then add a 'collection' or 'proceedings' entry,
+%%    and add a 'crossref' component.
+%%  - If the printed MR data are available and contain a language information
+%%    that is not available in the BibTeX version from MathSciNet then add a
+%%    'note' component for this.
+%%  - Add a 'sorttag' component where necessary, in particular if several
+%%    publications of the same author(s) in the same year and journal are
+%%    logically dependent,
+%%    for example such that errata appear after the article to be corrected
+%%    or simply because of the journal pages.
+%%    (This replaces the '\noopsort' comments in 'year' fields which are
+%%    recommended by BibTeX.)
+%%  - In case of the bibliography in the ATLAS of Finite Groups,
+%%    add a 'sporsimp' component that describes the assignment to sporadic
+%%    simple groups;
+%%    entries that are assigned to several groups occur several times,
+%%    once for each assignment.
+%%  - In 'article' type entries, replace the 'NUMBER' field by a 'volume'
+%%    field if there is not yet a 'VOLUME' field.
+%%    ([Aki83], [Tit85a])
+%%  - In any case, write component names not coming from MathSciNet in
+%%    small letters, whereas those coming from MathSciNet are always
+%%    capitalized.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Errors in MR data (corrected in this file)
+%%
+%%  [Tit64]
+%%    misprint in the title of MR0183785, must be ``groupes'' not ``groups''
+%%  [Tit69]
+%%    no individual MR number for this article, which is o.k.;
+%%    however, it is also missing from the Contents list
+%%    shown in the MR info for the book MR0240186.
+%%  [Lin70a]
+%%    misprint in the title of MR0272888, must be ``group'' not ``oroup'';
+%%    also removed the trailing dot
+%%  [Jan76]
+%%    the group order shown in the title must not be written
+%%    ``{$86\cdot 775\cdot 571\cdot 046\cdot 077\cdot 562\cdot 880$}'';
+%%    in Zbl. 0344.20010, it is written ``86,775,571,046,077,562,880''
+%%  [Rei77c]
+%%    misprint in the title of MR0473000,
+%%    must be ``A remark on Conway's group .1''
+%%    not ``A remark on Conway's group. I'';
+%%    the entry Zbl. 0377.20011 says ``A remark on Conway's group.1.'',
+%%    which is better but still not correct
+%%  [TL65]
+%%    author field must be ``{Ts'eng, K'en-ch'eng and Li, Chiung-sheng}''
+%%    not ``{Ts'eng K'en-ch'eng and Li Chiung-sheng}''
+%%  [MR0215897]
+%%    no author/editor; in Zbl. 0158.00208, one finds L. G. Kovacs and
+%%    B. H. Neumann
+%%  [MR0240186]
+%%    no author/editor but `SERIES' entry ``Edited by Richard Brauer and
+%%    Chih-han Sah'' (moved this to `editor')
+%%  [MR0242614]
+%%    no author/editor (also in the Zbl database), so omit this entry,
+%%    and omit the crossref to it in [Jan69b]
+%%  [MR0346033]
+%%    no author/editor (also in the Zbl database), so omit this entry,
+%%    and omit the crossref to it in [Fon74]
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  [Gag67]: the proceedings article has no indiv. MR number,
+%%           take also the reference (mentioned in the proceedings, which is
+%%           MR0215897) to the Math. Z. article [Gag65]
+%%  [Jan67]: no individual MR number, crossref. found: different booktitle
+%%  [Jan69a]: no individual MR number, crossref. found: different booktitle
+%%  [Lin69]: no individual MR number, crossref. found: different booktitle
+%%  [Tit80b]: no individual MR number, crossref. found
+%%  [Par70a]: no MR number
+%%  [Sch79]: no MR number (master's thesis)
+
+
+%T TODO:
+
+%T - try again Tho76a: (fail in XML file!)
+%T   Thompson, J. G., A simple subgroup of $E_8(3)$, in Finite Groups,
+%T   ed. N. Iwahori, p. 113-116, Japan Society for the Promotion of Science,
+%T   Tokyo, 1976.
+
+%T gap> WriteBibXMLextFile( "Atlasbib.xml", atlas );
+%W WARNING: Must have 'publisher' in incollection-entry (Tho76a)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  The following entries could not be verified in Math. Reviews.
+%%  (Some of them occur more than once.)
+%%  Tho76a, Tit69 (also crossref missing), Fro04, Wit38a, Gri80, Mag70,
+%%  Cur72, Mat61, Mat73, Seg01, Wit38b, Dia84, Hal73, Rud73, Rud72, You74,
+%%  Soi84, And80, Ryb84, Fen70a, Mor81, Enr76, Hun70, Nor75, Smi75b, Pat72,
+%%  Ben80, Sta78, Nor, Kro77, Tod66b
+%T -> distinguish Ph. D. thesis from others!
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Changes compared to the printed Atlas of Finite Groups:
+%%
+%%  p. 244, M11:  title in Moser (1959) is slightly different;
+%%                pages in Ward (1975) are 340-361 not 340-351;
+%%                pages in Parrott (1970b) are 69-81 not 68-81,
+%%                and title is ``On the Mathieu groups $M\sb{22}$ and
+%%                $M\sb{11}$'' not ``On the Mathieu groups $M\sb{11}$ and
+%%                $M\sb{12}$''.
+%%          M12:  title in Moser (1959) is slightly different;
+%%                assignment of Parrott (1970b) to M12 is wrong.
+%%  p. 245, J1:   booktitle in Gagen (1967) is slightly different
+%%                (and the article appeared in Math. Z., for which there is
+%%                an MR number);
+%%                title in Shult (1972) is slightly different.
+%%          M22:  pages in Held (1968) are 436-449 not 436-439;
+%%                volume in Jonsson and McKay (1976) is 38 not 28;
+%%                assign Parrott (1970b) to this group instead of M12.
+%%          J2:   year in Gorenstein and Harada (1969) is 1969 not 1970;
+%%                booktitle in Hall and Wales (1969) is ``Theory of Finite
+%%                Groups'' not ``The Theory of Finite Groups''
+%%                (holds also for other articles from this collection).
+%%  p. 246, HS:   title in Sims (1969) is (still) slightly different;
+%%                title in Smith (1976b) is slightly different.
+%%          J3:   year in Gorenstein and Harada (1969) is 1969 not 1970;
+%%                title in Janko (1969b) is slightly different.
+%%  p. 247, M24:  year in Todd (1966) is 1966 also in the second source,
+%%                in Rend. Mat. e Appl.
+%%          McL:  title in Janko and Wong (1972) is slightly different.
+%%          He:   decapitalize ``PP'' in Held (1969)
+%%          Ru:   title and booktitle in Conway (1977b) are slightly
+%%                different;
+%%                title in Conway and Wales (1973) is slightly different;
+%%                journal and volume in Okuyama and Yoshida (1978) are
+%%                J. Math. Soc. Japan and 30 (not Comm. Algebra and 6).
+%%  p. 248, Suz:  year in Lindsey (1970b) is 1970 not 1976;
+%%                title in Wright (1974) is slightly different.
+%%  p. 249, Fi22: title in Conway (1973) is slightly different;
+%%                title in Flaass (1984) is slightly different;
+%%                title in Parrott (1981) is slightly different.
+%%          Fi23: year in Hunt (1973) is 1973 not 1972.
+%%  p. 250, Co1:  year in Conway (1968) is 1968 not 198;
+%%                title in Conway (1969b) is slightly different;
+%%                journal in Reifart (1977) is Arch. Math. (Basel) not
+%%                Arch. Math., and the title is slightly different.
+%%          J4:   journal in Lempken (1978a) and Mason (1977b)
+%%                is Arch. Math. (Basel) not Arch. Math.
+%%  p. 251, B:    pages in Higman (1976) are 277--283 not 277--284;
+%%                title in Stroth (1976b) is slightly different;
+%%          M:    number in Tits (1983/1984) is 121-122 not 620.
+%%
+
+@preamble{
+   "\def\cprime{$'$} "
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  M11
+%%
+
+@incollection {Hug82,
+    AUTHOR = {Hughes, D. R.},
+     TITLE = {A combinatorial construction of the small {M}athieu designs
+              and groups},
+ BOOKTITLE = {Algebraic and geometric combinatorics},
+    SERIES = {North-Holland Math. Stud.},
+    VOLUME = {65},
+     PAGES = {259--264},
+ PUBLISHER = {North-Holland},
+   ADDRESS = {Amsterdam},
+      YEAR = {1982},
+   MRCLASS = {05B05 (20D08)},
+  MRNUMBER = {MR772601 (86j:05028)},
+  crossref = {Men82},
+  sporsimp = {M11},
+}
+
+@article {Kel69,
+    AUTHOR = {Keller, Gordon},
+     TITLE = {A characterization of {$A\sb{6}$} and {$M\sb{11}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {13},
+      YEAR = {1969},
+     PAGES = {409--421},
+      ISSN = {0021-8693},
+   MRCLASS = {20.20},
+  MRNUMBER = {MR0249498 (40 \#2743)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {M11},
+}
+
+@article{Kim74,
+    AUTHOR = {Kimura, Hiroshi},
+     TITLE = {A characterization of {$A\sb{7}$} and {$M\sb{11}$}. {I}},
+   JOURNAL = {Hokkaido Math. J.},
+  FJOURNAL = {Hokkaido Mathematical Journal},
+    VOLUME = {3},
+      YEAR = {1974},
+     PAGES = {213--217},
+      ISSN = {0385-4035},
+   MRCLASS = {20B10},
+  MRNUMBER = {MR0354827 (50 \#7304)},
+MRREVIEWER = {David R. Mason},
+  sporsimp = {M11},
+}
+
+@article{Kim75a,
+    AUTHOR = {Kimura, Hiroshi},
+     TITLE = {A characterization of {$A\sb{7}$} and {$M\sb{11}$}. {II}},
+   JOURNAL = {Hokkaido Math. J.},
+  FJOURNAL = {Hokkaido Mathematical Journal},
+    VOLUME = {4},
+      YEAR = {1975},
+     PAGES = {39--44},
+      ISSN = {0385-4035},
+   MRCLASS = {20B10},
+  MRNUMBER = {MR0390028 (52 \#10855a)},
+MRREVIEWER = {David R. Mason},
+  sporsimp = {M11},
+}
+
+@article{Kim75b,
+    AUTHOR = {Kimura, Hiroshi},
+     TITLE = {A characterization of {$A\sb{7}$} and {$M\sb{11}$}. {III}},
+   JOURNAL = {Hokkaido Math. J.},
+  FJOURNAL = {Hokkaido Mathematical Journal},
+    VOLUME = {4},
+      YEAR = {1975},
+    NUMBER = {2},
+     PAGES = {273--277},
+      ISSN = {0385-4035},
+   MRCLASS = {20B10},
+  MRNUMBER = {MR0390029 (52 \#10855b)},
+MRREVIEWER = {David R. Mason},
+  sporsimp = {M11},
+}
+
+@article{Mos59,
+    AUTHOR = {Moser, W. O. J.},
+     TITLE = {Abstract definitions for the {M}athieu groups {$M\sb{11}$} and
+              {$M\sb{12}$}},
+   JOURNAL = {Canad. Math. Bull.},
+  FJOURNAL = {Canadian Mathematical Bulletin. Bulletin Canadien de
+              Math\'ematiques},
+    VOLUME = {2},
+      YEAR = {1959},
+     PAGES = {9--13},
+      ISSN = {0008-4395},
+   MRCLASS = {20.00},
+  MRNUMBER = {MR0101268 (21 \#81)},
+MRREVIEWER = {Graham Higman},
+  sporsimp = {M11},
+}
+
+@article{Nor68,
+    AUTHOR = {Norman, Christopher W.},
+     TITLE = {A characterization of the {M}athieu group {$M\sb{11}$}},
+   JOURNAL = {Math. Z.},
+  FJOURNAL = {Mathematische Zeitschrift},
+    VOLUME = {106},
+      YEAR = {1968},
+     PAGES = {162--166},
+      ISSN = {0025-5874},
+   MRCLASS = {05.20 (20.00)},
+  MRNUMBER = {MR0230637 (37 \#6197)},
+MRREVIEWER = {R. G. Stanton},
+  sporsimp = {M11},
+}
+
+@article{Par70a,
+    author = {Parrott, David},
+     title = {On the {M}athieu groups {$M\sb{22}$} and {$M\sb{11}$}},
+   journal = {Bull. Austral. Math. Soc.},
+    volume = {3},
+      year = {1970},
+     pages = {141--142},
+  sporsimp = {M11},
+}
+
+@article{Par70b,
+    AUTHOR = {Parrott, David},
+     TITLE = {On the {M}athieu groups {$M\sb{22}$} and {$M\sb{11}$}},
+   JOURNAL = {J. Austral. Math. Soc.},
+  FJOURNAL = {Australian Mathematical Society. Journal. Series A. Pure
+              Mathematics and Statistics},
+    VOLUME = {11},
+      YEAR = {1970},
+     PAGES = {69--81},
+      ISSN = {0263-6115},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0255669 (41 \#329)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {M11},
+}
+
+@mastersthesis{Sch79,
+    author = {Schneider, G. J. A.},
+     title = {The Mathieu group $M_{11}$},
+    school = {Oxford},
+      year = {1979},
+      type = {M. Sc. thesis},
+  sporsimp = {M11},
+}
+
+@article{TL65,
+    author = {Ts'eng, K'en-ch'eng and Li, Chiung-sheng},
+     TITLE = {On the commutators of the simple {M}athieu groups},
+   JOURNAL = {J. China Univ. Sci. Techn.},
+  FJOURNAL = {Journal of China University of Science and Technology.
+              Zhongguo Kexue Jishu Daxue Xuebao},
+    VOLUME = {1},
+      YEAR = {1965},
+    NUMBER = {1},
+     PAGES = {43--48},
+      ISSN = {0253-2778},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0217179 (36 \#270)},
+MRREVIEWER = {C. Y. Chao},
+  sporsimp = {M11},
+}
+
+@article{War75,
+    AUTHOR = {Ward, Harold N.},
+     TITLE = {A form for {$M\sb{11}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {37},
+      YEAR = {1975},
+    NUMBER = {2},
+     PAGES = {340--361},
+      ISSN = {0021-8693},
+   MRCLASS = {20B25},
+  MRNUMBER = {MR0384907 (52 \#5777)},
+MRREVIEWER = {Gareth A. Jones},
+  sporsimp = {M11},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  M12
+%%
+
+@article{Aki83,
+    AUTHOR = {Akiyama, Kenzi},
+     TITLE = {A note on the {M}athieu groups {$M\sb{12}$} and {$M\sb{23}$}},
+   JOURNAL = {Bull. Central Res. Inst. Fukuoka Univ.},
+  FJOURNAL = {Bulletin of Central Research Institute Fukuoka University},
+    volume = {66},
+      YEAR = {1983},
+     PAGES = {1--5},
+      ISSN = {0287-0002},
+   MRCLASS = {20B10 (20D08)},
+  MRNUMBER = {MR730316 (86m:20003a)},
+  sporsimp = {M12},
+}
+
+@article{BF66a,
+    AUTHOR = {Brauer, Richard and Fong, Paul},
+     TITLE = {A characterization of the {M}athieu group {${\germ
+              M}\sb{12}$}},
+   JOURNAL = {Trans. Amer. Math. Soc.},
+  FJOURNAL = {Transactions of the American Mathematical Society},
+    VOLUME = {122},
+      YEAR = {1966},
+     PAGES = {18--47},
+      ISSN = {0002-9947},
+   MRCLASS = {20.27 (20.80)},
+  MRNUMBER = {MR0207817 (34 \#7631)},
+MRREVIEWER = {Graham Higman},
+  sporsimp = {M12},
+}
+
+@incollection{Bue82,
+    AUTHOR = {Buekenhout, F.},
+     TITLE = {Geometries for the {M}athieu group {$M\sb{12}$}},
+ BOOKTITLE = {Combinatorial theory (Schloss Rauischholzhausen, 1982)},
+    SERIES = {Lecture Notes in Math.},
+    VOLUME = {969},
+     PAGES = {74--85},
+ PUBLISHER = {Springer},
+   ADDRESS = {Berlin},
+      YEAR = {1982},
+   MRCLASS = {51E25 (05B25 20D08)},
+  MRNUMBER = {MR692234 (84h:51034)},
+  crossref = {JV82},
+  sporsimp = {M12},
+}
+
+@incollection{Con84,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Hexacode and tetracode---{MOG} and {MINIMOG}},
+ BOOKTITLE = {Computational group theory (Durham, 1982)},
+     PAGES = {359--365},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1984},
+   MRCLASS = {94B25 (05B05)},
+  MRNUMBER = {MR760670 (86b:94020)},
+MRREVIEWER = {Wolfgang Knapp},
+  crossref = {Atk84},
+  sporsimp = {M12},
+}
+
+@incollection{Con71a,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Three lectures on exceptional groups},
+ BOOKTITLE = {Finite simple groups (Proc. Instructional Conf., Oxford,
+              1969)},
+     PAGES = {215--247},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1971},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0338152 (49 \#2918)},
+MRREVIEWER = {Thomas Laffey},
+  crossref = {PH71},
+  sporsimp = {M12},
+}
+
+@article{Cox58,
+    AUTHOR = {Coxeter, H. S. M.},
+     TITLE = {Twelve points in {${\rm PG}(5,\,3)$} with {$95040$}\
+              self-transformations},
+   JOURNAL = {Proc. Roy. Soc. London. Ser. A},
+  FJOURNAL = {Proceedings of the Royal Society. London. Series A.
+              Mathematical, Physical and Engineering Sciences},
+    VOLUME = {247},
+      YEAR = {1958},
+     PAGES = {279--293},
+      ISSN = {0962-8444},
+   MRCLASS = {20.00 (50.00)},
+  MRNUMBER = {MR0120289 (22 \#11044)},
+MRREVIEWER = {R. G. Stanton},
+  sporsimp = {M12},
+}
+
+@incollection{Cur84b,
+    AUTHOR = {Curtis, R. T.},
+     TITLE = {The {S}teiner system {$S(5,\,6,\,12)$}, the {M}athieu group
+              {$M\sb{12}$} and the ``kitten''},
+ BOOKTITLE = {Computational group theory (Durham, 1982)},
+     PAGES = {353--358},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1984},
+   MRCLASS = {05B05 (20B25)},
+  MRNUMBER = {MR760669 (86a:05011)},
+MRREVIEWER = {Peter M. Neumann},
+  crossref = {Atk84},
+  sporsimp = {M12},
+}
+
+@article{Fro04,
+    author = {Frobenius, G.},
+     title = {\"Uber die Charaktere der mehrfach transitiven Gruppen},
+   journal = {Berliner Berichte},
+      year = {1904},
+     pages = {558--571},
+  sporsimp = {M12},
+}
+
+@article{Hal62,
+    AUTHOR = {Hall, Jr., Marshall},
+     TITLE = {Note on the {M}athieu group {$M\sb{12}$}},
+   JOURNAL = {Arch. Math.},
+  FJOURNAL = {Archiv f\"ur Mathematische Logik und Grundlagenforschung},
+    VOLUME = {13},
+      YEAR = {1962},
+     PAGES = {334--340},
+      ISSN = {0003-9268},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0146245 (26 \#3767)},
+MRREVIEWER = {W. Moser},
+  sporsimp = {M12},
+}
+
+@incollection{Hug82,
+    AUTHOR = {Hughes, D. R.},
+     TITLE = {A combinatorial construction of the small {M}athieu designs
+              and groups},
+ BOOKTITLE = {Algebraic and geometric combinatorics},
+    SERIES = {North-Holland Math. Stud.},
+    VOLUME = {65},
+     PAGES = {259--264},
+ PUBLISHER = {North-Holland},
+   ADDRESS = {Amsterdam},
+      YEAR = {1982},
+   MRCLASS = {05B05 (20D08)},
+  MRNUMBER = {MR772601 (86j:05028)},
+  crossref = {Men82},
+  sporsimp = {M12},
+}
+
+@article{Hum80,
+    AUTHOR = {Humphreys, J. F.},
+     TITLE = {The projective characters of the {M}athieu group {$M\sb{12}$}
+              and of its automorphism group},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {87},
+      YEAR = {1980},
+    NUMBER = {3},
+     PAGES = {401--412},
+      ISSN = {0305-0041},
+     CODEN = {MPCPCO},
+   MRCLASS = {20C25 (20C30)},
+  MRNUMBER = {MR556920 (81k:20021)},
+MRREVIEWER = {V. D. Mazurov},
+  sporsimp = {M12},
+}
+
+@article{Mat83,
+    AUTHOR = {Matzat, B. Heinrich},
+     TITLE = {Konstruktion von {Z}ahlk\"orpern mit der {G}aloisgruppe
+              {$M\sb{12}$} \"uber {${\bf Q}(\sqrt{-5})$}},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik},
+    VOLUME = {40},
+      YEAR = {1983},
+    NUMBER = {3},
+     PAGES = {245--254},
+      ISSN = {0003-889X},
+     CODEN = {ACVMAL},
+   MRCLASS = {11R32},
+  MRNUMBER = {MR701271 (85g:11102)},
+MRREVIEWER = {Jack Sonn},
+  sporsimp = {M12},
+}
+
+@article{Mos59,
+    AUTHOR = {Moser, W. O. J.},
+     TITLE = {Abstract definitions for the {M}athieu groups {$M\sb{11}$} and
+              {$M\sb{12}$}},
+   JOURNAL = {Canad. Math. Bull.},
+  FJOURNAL = {Canadian Mathematical Bulletin. Bulletin Canadien de
+              Math\'ematiques},
+    VOLUME = {2},
+      YEAR = {1959},
+     PAGES = {9--13},
+      ISSN = {0008-4395},
+   MRCLASS = {20.00},
+  MRNUMBER = {MR0101268 (21 \#81)},
+MRREVIEWER = {Graham Higman},
+  sporsimp = {M12},
+}
+
+@incollection{Sch81,
+    AUTHOR = {Schneider, Gerhard J. A.},
+     TITLE = {On the {$2$}-modular representations of {$M\sb{12}$}},
+ BOOKTITLE = {Representations of algebras (Puebla, 1980)},
+    SERIES = {Lecture Notes in Math.},
+    VOLUME = {903},
+     PAGES = {302--314},
+ PUBLISHER = {Springer},
+   ADDRESS = {Berlin},
+      YEAR = {1981},
+   MRCLASS = {20C20 (20C30)},
+  MRNUMBER = {MR654719 (83g:20014)},
+MRREVIEWER = {A. V. Borovik},
+  crossref = {AL81},
+  sporsimp = {M12},
+}
+
+@article{Sch83,
+    AUTHOR = {Schneider, Gerhard J. A.},
+     TITLE = {The vertices of the simple modules of {$M\sb{12}$} over a
+              field of characteristic {$2$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {83},
+      YEAR = {1983},
+    NUMBER = {1},
+     PAGES = {189--200},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C20 (20D08)},
+  MRNUMBER = {MR710594 (84i:20013)},
+MRREVIEWER = {P. Donovan},
+  sporsimp = {M12},
+}
+
+@article{Sta51,
+    AUTHOR = {Stanton, R. G.},
+     TITLE = {The {M}athieu groups},
+   JOURNAL = {Canadian J. Math.},
+  FJOURNAL = {Canadian Journal of Mathematics. Journal Canadien de
+              Math\'ematiques},
+    VOLUME = {3},
+      YEAR = {1951},
+     PAGES = {164--174},
+      ISSN = {0008-414X},
+   MRCLASS = {20.0X},
+  MRNUMBER = {MR0040304 (12,672d)},
+MRREVIEWER = {J. S. Frame},
+  sporsimp = {M12},
+}
+
+@article{Thw73,
+   AUTHOR = {Thwaites, G. N.},
+     TITLE = {A characterization of {$M\sb{12}$} by centralizer of
+              involution},
+   JOURNAL = {Quart. J. Math. Oxford Ser. (2)},
+  FJOURNAL = {The Quarterly Journal of Mathematics. Oxford. Second Series},
+    VOLUME = {24},
+      YEAR = {1973},
+     PAGES = {537--557},
+      ISSN = {0033-5606},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0332955 (48 \#11280)},
+MRREVIEWER = {Mark P. Hale, Jr.},
+  sporsimp = {M12},
+}
+
+@article{Tod59,
+    AUTHOR = {Todd, J. A.},
+     TITLE = {On representations of the {M}athieu groups as collineation
+              groups},
+   JOURNAL = {J. London Math. Soc.},
+  FJOURNAL = {Journal of the London Mathematical Society. Second Series},
+    VOLUME = {34},
+      YEAR = {1959},
+     PAGES = {406--416},
+      ISSN = {0024-6107},
+   MRCLASS = {20.00 (50.00)},
+  MRNUMBER = {MR0120290 (22 \#11045)},
+MRREVIEWER = {T. G. Room},
+  sporsimp = {M12},
+}
+
+@article{Tod70,
+    AUTHOR = {Todd, J. A.},
+     TITLE = {Abstract definitions for the {M}athieu groups},
+   JOURNAL = {Quart. J. Math. Oxford Ser. (2)},
+  FJOURNAL = {The Quarterly Journal of Mathematics. Oxford. Second Series},
+    VOLUME = {21},
+      YEAR = {1970},
+     PAGES = {421--424},
+      ISSN = {0033-5606},
+   MRCLASS = {20.10},
+  MRNUMBER = {MR0272878 (42 \#7759)},
+MRREVIEWER = {A. P. Street},
+  sporsimp = {M12},
+}
+
+@article{Whi66,
+    AUTHOR = {Whitelaw, T. A.},
+     TITLE = {On the {M}athieu group of degree twelve},
+   JOURNAL = {Proc. Cambridge Philos. Soc.},
+    VOLUME = {62},
+      YEAR = {1966},
+     PAGES = {351--364},
+   MRCLASS = {20.72 (50.60)},
+  MRNUMBER = {MR0194520 (33 \#2730)},
+MRREVIEWER = {H. S. M. Coxeter},
+  sporsimp = {M12},
+}
+
+@article{Wit38a,
+    author = {Witt, E.},
+     title = {Die 5-fach transitiven Gruppen von Mathieu},
+   journal = {Abh. Math. Sem. Hamburg},
+    volume = {12},
+      year = {1938},
+     pages = {256--264},
+  sporsimp = {M12},
+}
+
+@article{Won64,
+    AUTHOR = {Wong, W. J.},
+     TITLE = {A characterization of the {M}athieu group {$M\sb{12}$}},
+   JOURNAL = {Math. Z.},
+  FJOURNAL = {Mathematische Zeitschrift},
+    VOLUME = {84},
+      YEAR = {1964},
+     PAGES = {378--388},
+      ISSN = {0025-5874},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0167522 (29 \#4794)},
+MRREVIEWER = {W. Moser},
+  sporsimp = {M12},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  J1
+%%
+
+@article{Cam73,
+    AUTHOR = {Cameron, Peter J.},
+     TITLE = {Another characterization of the small {J}anko group},
+   JOURNAL = {J. Math. Soc. Japan},
+    VOLUME = {25},
+      YEAR = {1973},
+     PAGES = {591--595},
+   MRCLASS = {20B20 (20D05)},
+  MRNUMBER = {MR0320124 (47 \#8665)},
+MRREVIEWER = {Peter M. Neumann},
+  sporsimp = {J1},
+}
+
+@incollection{Cha82,
+    AUTHOR = {Chapman, G. R.},
+     TITLE = {Generators and relations for the cohomology ring of {J}anko's
+              first group in the first twenty-one dimensions},
+ BOOKTITLE = {Groups---St. Andrews 1981 (St. Andrews, 1981)},
+    SERIES = {London Math. Soc. Lecture Note Ser.},
+    VOLUME = {71},
+     PAGES = {201--206},
+ PUBLISHER = {Cambridge Univ. Press},
+   ADDRESS = {Cambridge},
+      YEAR = {1982},
+   MRCLASS = {20J05},
+  MRNUMBER = {MR679161 (83m:20068)},
+  crossref = {CR82b},
+  sporsimp = {J1},
+}
+
+@incollection{Con71a,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Three lectures on exceptional groups},
+ BOOKTITLE = {Finite simple groups (Proc. Instructional Conf., Oxford,
+              1969)},
+     PAGES = {215--247},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1971},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0338152 (49 \#2918)},
+MRREVIEWER = {Thomas Laffey},
+  crossref = {PH71},
+  sporsimp = {J1},
+}
+
+@incollection{Fon74,
+    AUTHOR = {Fong, Paul},
+     TITLE = {On decomposition numbers of {$J\sb{1}$} and {$R(q)$}},
+ BOOKTITLE = {Symposia Mathematica, Vol. XIII (Convegno di Gruppi e loro
+              Rappresentazioni, INDAM, Rome, 1972)},
+     PAGES = {415--422},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1974},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR0357578 (50 \#10046)},
+MRREVIEWER = {I. M. Isaacs},
+  sporsimp = {J1},
+}
+% removed crossref because of missing author/editor
+% crossref = {MR0346033},
+
+@article {Gag65,
+    AUTHOR = {Gagen, Terence M.},
+     TITLE = {On groups with abelian {S}ylow {$2$}-groups},
+   JOURNAL = {Math. Z.},
+  FJOURNAL = {Mathematische Zeitschrift},
+    VOLUME = {90},
+      YEAR = {1965},
+     PAGES = {268--272},
+      ISSN = {0025-5874},
+   MRCLASS = {20.43},
+  MRNUMBER = {MR0191963 (33 \#190)},
+MRREVIEWER = {S. Lipschutz},
+      note = {see MR0215897, p. 99--100},
+  sporsimp = {J1},
+}
+
+@incollection{Gag67,
+    author = {Gagen, T. M.},
+     title = {On groups with Abelian 2-Sylow subgroups},
+ booktitle = {Proceedings of the {I}nternational {C}onference on the
+              {T}heory of {G}roups},
+ PUBLISHER = {Gordon and Breach Science Publishers},
+   ADDRESS = {New York},
+      YEAR = {1967},
+     pages = {99--100},
+  crossref = {KN67},
+  sporsimp = {J1},
+}
+
+@article{Gag68,
+    AUTHOR = {Gagen, T. M.},
+     TITLE = {A characterization of {J}anko's simple group},
+   JOURNAL = {Proc. Amer. Math. Soc.},
+  FJOURNAL = {Proceedings of the American Mathematical Society},
+    VOLUME = {19},
+      YEAR = {1968},
+     PAGES = {1393--1395},
+      ISSN = {0002-9939},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0236257 (38 \#4554)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {J1},
+}
+
+@incollection{Hig71,
+    AUTHOR = {Higman, G.},
+     TITLE = {Construction of simple groups from character tables},
+ BOOKTITLE = {Finite simple groups (Proc. Instructional Conf., Oxford,
+              1969)},
+     PAGES = {205--214},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1971},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0342603 (49 \#7349)},
+MRREVIEWER = {G. de B. Robinson},
+  crossref = {PH71},
+  sporsimp = {J1},
+}
+
+@article{Jan65,
+    AUTHOR = {Janko, Zvonimir},
+     TITLE = {A new finite simple group with abelian {$2$}-{S}ylow
+              subgroups},
+   JOURNAL = {Proc. Nat. Acad. Sci. U.S.A.},
+    VOLUME = {53},
+      YEAR = {1965},
+     PAGES = {657--658},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0173704 (30 \#3914)},
+MRREVIEWER = {W. E. Deskins},
+  sporsimp = {J1},
+}
+
+@article{Jan66,
+    AUTHOR = {Janko, Zvonimir},
+     TITLE = {A new finite simple group with abelian {S}ylow {$2$}-subgroups
+              and its characterization},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {3},
+      YEAR = {1966},
+     PAGES = {147--186},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0193138 (33 \#1359)},
+MRREVIEWER = {W. E. Deskins},
+  sporsimp = {J1},
+}
+
+@incollection{Jan67,
+    author = {Janko, Zvonimir},
+     title = {A characterization of a new simple group},
+ booktitle = {Proceedings of the {I}nternational {C}onference on the
+              {T}heory of {G}roups},
+ PUBLISHER = {Gordon and Breach Science Publishers},
+   ADDRESS = {New York},
+      YEAR = {1967},
+     pages = {205--208},
+  crossref = {KN67},
+  sporsimp = {J1},
+}
+
+@article{LM78,
+    AUTHOR = {Landrock, Peter and Michler, Gerhard O.},
+     TITLE = {Block structure of the smallest {J}anko group},
+   JOURNAL = {Math. Ann.},
+  FJOURNAL = {Mathematische Annalen},
+    VOLUME = {232},
+      YEAR = {1978},
+    NUMBER = {3},
+     PAGES = {205--238},
+      ISSN = {0025-5831},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0491929 (58 \#11100)},
+MRREVIEWER = {W. Feit},
+  sporsimp = {J1},
+}
+
+@article{Li81,
+    AUTHOR = {Li, Jiong Sheng},
+     TITLE = {The commutators of the small {J}anko group {$J\sb{1}$}},
+   JOURNAL = {J. Math. (Wuhan)},
+  FJOURNAL = {Journal of Mathematics. Shuxue Zazhi},
+    VOLUME = {1},
+      YEAR = {1981},
+    NUMBER = {2},
+     PAGES = {175--179},
+      ISSN = {0255-7797},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR647861 (83j:20029)},
+      note = {Chinese},
+  sporsimp = {J1},
+}
+
+@article{Liv67,
+    AUTHOR = {Livingstone, Donald},
+     TITLE = {On a permutation representation of the {J}anko group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {6},
+      YEAR = {1967},
+     PAGES = {43--55},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29 (20.80)},
+  MRNUMBER = {MR0207819 (34 \#7633)},
+MRREVIEWER = {F. C. Piper},
+  sporsimp = {J1},
+}
+
+@article{Mar69,
+    AUTHOR = {Martineau, R. P.},
+     TITLE = {A characterization of {J}anko's simple group of order
+              {$175,560$}},
+   JOURNAL = {Proc. London Math. Soc. (3)},
+  FJOURNAL = {Proceedings of the London Mathematical Society. Third Series},
+    VOLUME = {19},
+      YEAR = {1969},
+     PAGES = {709--729},
+      ISSN = {0024-6115},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0257215 (41 \#1866)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {J1},
+}
+
+@article{Per80,
+    AUTHOR = {Perkel, Manley},
+     TITLE = {A characterization of {$J\sb{1}$} in terms of its geometry},
+   JOURNAL = {Geom. Dedicata},
+  FJOURNAL = {Geometriae Dedicata},
+    VOLUME = {9},
+      YEAR = {1980},
+    NUMBER = {3},
+     PAGES = {291--298},
+      ISSN = {0304-4637},
+     CODEN = {GEMDAT},
+   MRCLASS = {05C25 (20B25 20D08)},
+  MRNUMBER = {MR585936 (81j:05066)},
+MRREVIEWER = {Hugo S. Sun},
+  sporsimp = {J1},
+}
+
+@article{Shu72,
+    AUTHOR = {Shult, E.},
+     TITLE = {A note on {J}anko's simple group of order {$175,560$}},
+   JOURNAL = {Proc. Amer. Math. Soc.},
+  FJOURNAL = {Proceedings of the American Mathematical Society},
+    VOLUME = {35},
+      YEAR = {1972},
+     PAGES = {342--348},
+      ISSN = {0002-9939},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0306303 (46 \#5429)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {J1},
+}
+
+@article{Whi67,
+    AUTHOR = {Whitelaw, T. A.},
+     TITLE = {Janko's group as a collineation group in {${\rm PG}(6,\,11)$}},
+   JOURNAL = {Proc. Cambridge Philos. Soc.},
+    VOLUME = {63},
+      YEAR = {1967},
+     PAGES = {663--677},
+   MRCLASS = {20.72},
+  MRNUMBER = {MR0214673 (35 \#5522)},
+MRREVIEWER = {P. Dembowski},
+  sporsimp = {J1},
+}
+
+@article{Yam72,
+    AUTHOR = {Yamaki, Hiroyoshi},
+     TITLE = {On the {J}anko's simple group of order {$175560$}},
+   JOURNAL = {Osaka J. Math.},
+  FJOURNAL = {Osaka Journal of Mathematics},
+    VOLUME = {9},
+      YEAR = {1972},
+     PAGES = {111--112},
+      ISSN = {0030-6126},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0302757 (46 \#1900)},
+MRREVIEWER = {R. W. Carter},
+  sporsimp = {J1},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  M22
+%%
+
+@article{GG82,
+    AUTHOR = {Gagola, Jr., Stephen M. and Garrison, III, Sidney C.},
+     TITLE = {Real characters, double covers, and the multiplier},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {74},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {20--51},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C25},
+  MRNUMBER = {MR644216 (83a:20016)},
+MRREVIEWER = {J. L. Alperin},
+  sporsimp = {M22},
+}
+
+@article{Gri80,
+    author = {Griess, R. L.},
+     title = {The covering group of $M_{22}$ and associated component
+              problems},
+   journal = {Abstracts Amer. Math. Soc.},
+    volume = {1},
+      year = {1980},
+     pages = {213},
+  sporsimp = {M22},
+}
+
+@article{Hel68,
+    AUTHOR = {Held, Dieter},
+     TITLE = {Eine {K}ennzeichnung der {M}athieu-{G}ruppe {$M\sb{22}$} und
+              der alternierenden {G}ruppe {$A\sb{10}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {8},
+      YEAR = {1968},
+     PAGES = {436--449},
+      ISSN = {0021-8693},
+   MRCLASS = {20.20},
+  MRNUMBER = {MR0229709 (37 \#5283)},
+MRREVIEWER = {D. A. Robinson},
+  sporsimp = {M22},
+}
+
+@article{Hum82b,
+    AUTHOR = {Humphreys, J. F.},
+     TITLE = {The projective characters of the {M}athieu group {$M\sb{22}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {76},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {1--24},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C25 (20D08)},
+  MRNUMBER = {MR659207 (83g:20015)},
+MRREVIEWER = {V. D. Mazurov},
+  sporsimp = {M22},
+}
+
+@article{Jan68a,
+    AUTHOR = {Janko, Zvonimir},
+     TITLE = {A characterization of the {M}athieu simple groups. {I}, {II}},
+   JOURNAL = {J. Algebra 9 (1968), 1-19; ibid.},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {9},
+      YEAR = {1968},
+     PAGES = {20--41},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0229710 (37 \#5284)},
+MRREVIEWER = {P. Fong},
+  sporsimp = {M22},
+}
+
+@article{JM76,
+    AUTHOR = {J{\'o}nsson, W. and McKay, J.},
+     TITLE = {More about the {M}athieu group {$M\sb{22}$}},
+   JOURNAL = {Canad. J. Math.},
+  FJOURNAL = {Canadian Journal of Mathematics. Journal Canadien de
+              Math\'ematiques},
+    VOLUME = {38},
+      YEAR = {1976},
+    NUMBER = {5},
+     PAGES = {929--937},
+      ISSN = {0008-414X},
+   MRCLASS = {05B25 (20D05)},
+  MRNUMBER = {MR0427103 (55 \#139)},
+MRREVIEWER = {Francis Buekenhout},
+  sporsimp = {M22},
+}
+
+@article{Maz79,
+    AUTHOR = {Mazet, Pierre},
+     TITLE = {Sur le multiplicateur de {S}chur du groupe de {M}athieu
+              {$M\sb{22}$}},
+   JOURNAL = {C. R. Acad. Sci. Paris S\'er. A-B},
+  FJOURNAL = {Comptes Rendus Hebdomadaires des S\'eances de l'Acad\'emie des
+              Sciences. S\'eries A et B},
+    VOLUME = {289},
+      YEAR = {1979},
+    NUMBER = {14},
+     PAGES = {A659--A661},
+      ISSN = {0151-0509},
+     CODEN = {CHASAP},
+   MRCLASS = {20E34 (20D05)},
+  MRNUMBER = {MR560327 (80m:20032)},
+  sporsimp = {M22},
+}
+
+@article{Par70a,
+    author = {Parrott, David},
+     title = {On the {M}athieu groups {$M\sb{22}$} and {$M\sb{11}$}},
+   journal = {Bull. Austral. Math. Soc.},
+    volume = {3},
+      year = {1970},
+     pages = {141--142},
+  sporsimp = {M22},
+}
+
+@article{Par70b,
+    AUTHOR = {Parrott, David},
+     TITLE = {On the {M}athieu groups {$M\sb{22}$} and {$M\sb{11}$}},
+   JOURNAL = {J. Austral. Math. Soc.},
+  FJOURNAL = {Australian Mathematical Society. Journal. Series A. Pure
+              Mathematics and Statistics},
+    VOLUME = {11},
+      YEAR = {1970},
+     PAGES = {69--81},
+      ISSN = {0263-6115},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0255669 (41 \#329)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {M22},
+}
+
+@article{Tit64,
+    AUTHOR = {Tits, J.},
+     TITLE = {Sur les syst\`emes de {S}teiner associ\'es aux trois
+              ``grands'' groupes de {M}athieu},
+   JOURNAL = {Rend. Mat. e Appl. (5)},
+    VOLUME = {23},
+      YEAR = {1964},
+     PAGES = {166--184},
+   MRCLASS = {05.20 (20.20)},
+  MRNUMBER = {MR0183785 (32 \#1262)},
+MRREVIEWER = {J. E. McLaughlin},
+ zblnumber = {0126.26303},
+  sporsimp = {M22},
+}
+
+@article{TL65,
+    author = {Ts'eng, K'en-ch'eng and Li, Chiung-sheng},
+     TITLE = {On the commutators of the simple {M}athieu groups},
+   JOURNAL = {J. China Univ. Sci. Techn.},
+  FJOURNAL = {Journal of China University of Science and Technology.
+              Zhongguo Kexue Jishu Daxue Xuebao},
+    VOLUME = {1},
+      YEAR = {1965},
+    NUMBER = {1},
+     PAGES = {43--48},
+      ISSN = {0253-2778},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0217179 (36 \#270)},
+MRREVIEWER = {C. Y. Chao},
+  sporsimp = {M22},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  J2
+%%
+
+@article{Coh80,
+    AUTHOR = {Cohen, Arjeh M.},
+     TITLE = {Finite quaternionic reflection groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {64},
+      YEAR = {1980},
+    NUMBER = {2},
+     PAGES = {293--324},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20H15},
+  MRNUMBER = {MR579063 (81g:20093)},
+MRREVIEWER = {J. D. Dixon},
+  sporsimp = {J2},
+}
+
+@article{FR73,
+    AUTHOR = {Finkelstein, L. and Rudvalis, A.},
+     TITLE = {Maximal subgroups of the {H}all-{J}anko-{W}ales group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {24},
+      YEAR = {1973},
+     PAGES = {486--493},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0323889 (48 \#2242)},
+MRREVIEWER = {B. Chang},
+  sporsimp = {J2},
+}
+
+@article{GG82,
+    AUTHOR = {Gagola, Jr., Stephen M. and Garrison, III, Sidney C.},
+     TITLE = {Real characters, double covers, and the multiplier},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {74},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {20--51},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C25},
+  MRNUMBER = {MR644216 (83a:20016)},
+MRREVIEWER = {J. L. Alperin},
+  sporsimp = {J2},
+}
+
+@article{GH69,
+    AUTHOR = {Gorenstein, Daniel and Harada, Koichiro},
+     TITLE = {A characterization of {J}anko's two new simple groups},
+   JOURNAL = {J. Fac. Sci. Univ. Tokyo Sect. I},
+  FJOURNAL = {Journal of the Faculty of Science. University of Tokyo.
+              Section IA. Mathematics},
+    VOLUME = {16},
+      YEAR = {1969},
+     PAGES = {331--406 (1970)},
+      ISSN = {0040-8980},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0283075 (44 \#308)},
+MRREVIEWER = {J. H. Walter},
+  sporsimp = {J2},
+}
+
+@article{HW68,
+    AUTHOR = {Hall, Jr., Marshall and Wales, David},
+     TITLE = {The simple group of order {$604,800$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {9},
+      YEAR = {1968},
+     PAGES = {417--450},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0240192 (39 \#1544)},
+MRREVIEWER = {A. Mann},
+  sporsimp = {J2},
+}
+
+@incollection {HW69,
+    AUTHOR = {Hall, Jr., Marshall and Wales, David},
+     TITLE = {The simple group of order {$604,800$}},
+ BOOKTITLE = {Theory of Finite Groups (Symposium, Harvard Univ., Cambridge,
+              Mass., 1968)},
+     PAGES = {79--90},
+ PUBLISHER = {Benjamin, New York},
+      YEAR = {1969},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0255668 (41 \#328)},
+MRREVIEWER = {H. Nagao},
+  crossref = {BS69},
+  sporsimp = {J2},
+}
+
+@article{Ili73,
+    AUTHOR = {Il{\cprime}inyh, A. P.},
+     TITLE = {A characterization of the {H}all-{J}anko finite simple group},
+   JOURNAL = {Mat. Zametki},
+  FJOURNAL = {Akademiya Nauk SSSR. Matematicheskie Zametki},
+    VOLUME = {14},
+      YEAR = {1973},
+     PAGES = {535--542},
+      ISSN = {0025-567X},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0325756 (48 \#4102)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {J2},
+}
+
+@incollection{Jan69a,
+    author = {Janko, Z.},
+     title = {Some new simple groups of finite order},
+ BOOKTITLE = {Theory of finite groups: {A} symposium},
+    SERIES = {Edited by Richard Brauer and Chih-han Sah},
+ PUBLISHER = {W. A. Benjamin, Inc., New York-Amsterdam},
+      YEAR = {1969},
+     pages = {63--64},
+  crossref = {BS69},
+  sporsimp = {J2},
+}
+
+@article{Lin68,
+    AUTHOR = {Lindsey, II, J. H.},
+     TITLE = {On a projective representation of the {H}all-{J}anko group},
+   JOURNAL = {Bull. Amer. Math. Soc.},
+    VOLUME = {74},
+      YEAR = {1968},
+     PAGES = {1094},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0230812 (37 \#6370)},
+MRREVIEWER = {D. Wales},
+  sporsimp = {J2},
+}
+
+@incollection{Lin69,
+    author = {Lindsey, J. H.},
+     title = {Linear groups of degree 6 and the Hall-Janko group},
+ BOOKTITLE = {Theory of finite groups: {A} symposium},
+    SERIES = {Edited by Richard Brauer and Chih-han Sah},
+ PUBLISHER = {W. A. Benjamin, Inc., New York-Amsterdam},
+      YEAR = {1969},
+     pages = {97--100},
+  crossref = {BS69},
+  sporsimp = {J2},
+}
+
+@article{Lin70a,
+    AUTHOR = {Lindsey, II, J. H.},
+     TITLE = {On a six dimensional projective representation of the
+              {H}all-{J}anko group},
+   JOURNAL = {Pacific J. Math.},
+  FJOURNAL = {Pacific Journal of Mathematics},
+    VOLUME = {35},
+      YEAR = {1970},
+     PAGES = {175--186},
+      ISSN = {0030-8730},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0272888 (42 \#7769)},
+MRREVIEWER = {J. D. Dixon},
+  sporsimp = {J2},
+}
+
+@article{MW71a,
+    AUTHOR = {McKay, John and Wales, David},
+     TITLE = {The multipliers of the simple groups of order {$604,800$} and
+              {$50,232,960$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {17},
+      YEAR = {1971},
+     PAGES = {262--272},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0274577 (43 \#340)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {J2},
+}
+
+@article{Smi74a,
+    AUTHOR = {Smith, Fredrick},
+     TITLE = {A general characterization of the {J}anko simple group
+              {$J\sb{2}$}},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik},
+    VOLUME = {25},
+      YEAR = {1974},
+     PAGES = {17--22},
+      ISSN = {0003-889X},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0357585 (50 \#10053)},
+MRREVIEWER = {Mark P. Hale, Jr.},
+  sporsimp = {J2},
+}
+
+@incollection{Tit69,
+    author = {Tits, J.},
+     title = {Le groupe de Janko d'ordre 604,800},
+ booktitle = {Theory of finite groups: {A} symposium},
+    series = {Edited by Richard Brauer and Chih-han Sah},
+ publisher = {W. A. Benjamin, Inc., New York-Amsterdam},
+      year = {1969},
+     pages = {91--95},
+  crossref = {BS69},
+  sporsimp = {J2},
+}
+
+@article{Wal69a,
+    AUTHOR = {Wales, D.},
+     TITLE = {The uniqueness of the simple group of order {$604800$} as a
+              subgroup of {${\rm SL}\sb{6}\,(4)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {11},
+      YEAR = {1969},
+     PAGES = {455--460},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0236259 (38 \#4556)},
+MRREVIEWER = {A. Mann},
+  sporsimp = {J2},
+}
+
+@article{Wal69b,
+    AUTHOR = {Wales, David B.},
+     TITLE = {Generators of the {H}all-{J}anko group as a subgroup of
+              {$G\sb{2}\,(4)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {13},
+      YEAR = {1969},
+     PAGES = {513--516},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0251133 (40 \#4364)},
+MRREVIEWER = {A. P. Street},
+  sporsimp = {J2},
+}
+
+@article{Wil86b,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The geometry of the {H}all-{J}anko group as a quaternionic
+              reflection group},
+   JOURNAL = {Geom. Dedicata},
+  FJOURNAL = {Geometriae Dedicata},
+    VOLUME = {20},
+      YEAR = {1986},
+    NUMBER = {2},
+     PAGES = {157--173},
+      ISSN = {0046-5755},
+     CODEN = {GEMDAT},
+   MRCLASS = {20D08 (20H15 51F15)},
+  MRNUMBER = {MR833844 (87i:20031)},
+MRREVIEWER = {Stephen D. Smith},
+   sorttag = {b},
+  sporsimp = {J2},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  M23
+%%
+
+@article{Aki83,
+    AUTHOR = {Akiyama, Kenzi},
+     TITLE = {A note on the {M}athieu groups {$M\sb{12}$} and {$M\sb{23}$}},
+   JOURNAL = {Bull. Central Res. Inst. Fukuoka Univ.},
+  FJOURNAL = {Bulletin of Central Research Institute Fukuoka University},
+    volume = {66},
+      YEAR = {1983},
+     PAGES = {1--5},
+      ISSN = {0287-0002},
+   MRCLASS = {20B10 (20D08)},
+  MRNUMBER = {MR730316 (86m:20003a)},
+  sporsimp = {M23},
+}
+
+@article{Bry71,
+    AUTHOR = {Bryce, N.},
+     TITLE = {On the {M}athieu group {$M\sb{23}$}},
+   JOURNAL = {J. Austral. Math. Soc.},
+  FJOURNAL = {Australian Mathematical Society. Journal. Series A. Pure
+              Mathematics and Statistics},
+    VOLUME = {12},
+      YEAR = {1971},
+     PAGES = {385--392},
+      ISSN = {0263-6115},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0291278 (45 \#372)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {M23},
+}
+
+@article{Dem72,
+    AUTHOR = {Dempwolff, Ulrich},
+     TITLE = {Eine {K}ennzeichnung der {G}ruppen {$A\sb{5}$} und
+              {$M\sb{23}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {23},
+      YEAR = {1972},
+     PAGES = {590--601},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0314961 (47 \#3510)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  sporsimp = {M23},
+}
+
+@article{Jan68b,
+    AUTHOR = {Janko, Zvonimir},
+     TITLE = {A characterization of the {M}athieu simple groups. {I}, {II}},
+   JOURNAL = {J. Algebra 9 (1968), 1-19; ibid.},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {9},
+      YEAR = {1968},
+     PAGES = {20--41},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0229710 (37 \#5284)},
+MRREVIEWER = {P. Fong},
+  sporsimp = {M23},
+}
+
+@article{Pai57,
+    AUTHOR = {Paige, Lowell J.},
+     TITLE = {A note on the {M}athieu groups},
+   JOURNAL = {Canad. J. Math.},
+  FJOURNAL = {Canadian Journal of Mathematics. Journal Canadien de
+              Math\'ematiques},
+    VOLUME = {9},
+      YEAR = {1957},
+     PAGES = {15--18},
+      ISSN = {0008-414X},
+   MRCLASS = {20.0X},
+  MRNUMBER = {MR0084506 (18,871f)},
+MRREVIEWER = {T. Nakayama},
+  sporsimp = {M23},
+}
+
+@article{Tit64,
+    AUTHOR = {Tits, J.},
+     TITLE = {Sur les syst\`emes de {S}teiner associ\'es aux trois
+              ``grands'' groupes de {M}athieu},
+   JOURNAL = {Rend. Mat. e Appl. (5)},
+    VOLUME = {23},
+      YEAR = {1964},
+     PAGES = {166--184},
+   MRCLASS = {05.20 (20.20)},
+  MRNUMBER = {MR0183785 (32 \#1262)},
+MRREVIEWER = {J. E. McLaughlin},
+ zblnumber = {0126.26303},
+  sporsimp = {M23},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  HS
+%%
+
+@article{Bro82,
+    AUTHOR = {Brouwer, A. E.},
+     TITLE = {Polarities of {G}. {H}igman's symmetric design and a strongly
+              regular graph on {$176$} vertices},
+   JOURNAL = {Aequationes Math.},
+  FJOURNAL = {Aequationes Mathematicae},
+    VOLUME = {25},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {77--82},
+      ISSN = {0001-9054},
+     CODEN = {AEMABN},
+   MRCLASS = {05C25 (20B25 20D60)},
+  MRNUMBER = {MR716379 (85e:05089)},
+MRREVIEWER = {W. M. Kantor},
+  sporsimp = {HS},
+}
+
+@article{CW82,
+    AUTHOR = {Calderbank, A. R. and Wales, David B.},
+     TITLE = {A global code invariant under the {H}igman-{S}ims group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {75},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {233--260},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08 (94B05)},
+  MRNUMBER = {MR650419 (83d:20011)},
+MRREVIEWER = {L. Dornhoff},
+  sporsimp = {HS},
+}
+
+@article{Fra72,
+    AUTHOR = {Frame, J. S.},
+     TITLE = {Computation of characters of the {H}igman-{S}ims group and its
+              automorphism group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {20},
+      YEAR = {1972},
+     PAGES = {320--349},
+      ISSN = {0021-8693},
+   MRCLASS = {20.80},
+  MRNUMBER = {MR0286902 (44 \#4109)},
+MRREVIEWER = {I. M. Isaacs},
+  sporsimp = {HS},
+}
+
+@article{GE73,
+    AUTHOR = {Gorenstein, Daniel and Harris, Morton E.},
+     TITLE = {A characterization of the {H}igman-{S}ims simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {24},
+      YEAR = {1973},
+     PAGES = {565--590},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0311756 (47 \#318)},
+MRREVIEWER = {Graham Higman},
+  sporsimp = {HS},
+}
+
+@article{HS68,
+    AUTHOR = {Higman, Donald G. and Sims, Charles C.},
+     TITLE = {A simple group of order {$44,352,000$}},
+   JOURNAL = {Math. Z.},
+  FJOURNAL = {Mathematische Zeitschrift},
+    VOLUME = {105},
+      YEAR = {1968},
+     PAGES = {110--113},
+      ISSN = {0025-5874},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0227269 (37 \#2854)},
+MRREVIEWER = {D. A. Robinson},
+  sporsimp = {HS},
+}
+
+@article{Hig69,
+    AUTHOR = {Higman, Graham},
+     TITLE = {On the simple group of {D}. {G}. {H}igman and {C}. {C}.
+              {S}ims},
+   JOURNAL = {Illinois J. Math.},
+  FJOURNAL = {Illinois Journal of Mathematics},
+    VOLUME = {13},
+      YEAR = {1969},
+     PAGES = {74--80},
+      ISSN = {0019-2082},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0240193 (39 \#1545)},
+MRREVIEWER = {A. Mann},
+  sporsimp = {HS},
+}
+
+@article{Hum82a,
+    AUTHOR = {Humphreys, J. F.},
+     TITLE = {The modular characters of the {H}igman-{S}ims simple group},
+   JOURNAL = {Proc. Roy. Soc. Edinburgh Sect. A},
+  FJOURNAL = {Proceedings of the Royal Society of Edinburgh. Section A.
+              Mathematical and Physical Sciences},
+    VOLUME = {92},
+      YEAR = {1982},
+    NUMBER = {3-4},
+     PAGES = {319--335},
+      ISSN = {0308-2105},
+     CODEN = {PEAMDU},
+   MRCLASS = {20C20 (20D08)},
+  MRNUMBER = {MR677491 (83m:20017)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {HS},
+}
+
+@article{JW69,
+    AUTHOR = {Janko, Zvonimir and Wong, S. K.},
+     TITLE = {A characterization of the {H}igman-{S}ims simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {13},
+      YEAR = {1969},
+     PAGES = {517--534},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0260866 (41 \#5486)},
+MRREVIEWER = {D. Gorenstein},
+  sporsimp = {HS},
+}
+
+@article{Kim78,
+    AUTHOR = {Kimura, Hiroshi},
+     TITLE = {On the {H}igman-{S}ims simple group of order {$44,353,000$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {52},
+      YEAR = {1978},
+    NUMBER = {1},
+     PAGES = {88--93},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0480721 (58 \#874)},
+MRREVIEWER = {George Glauberman},
+  sporsimp = {HS},
+}
+
+@phdthesis{Mag70,
+    author = {Magliveras, S. S.},
+     title = {The maximal subgroups of the Higman-Sims group},
+    school = {Birmingham},
+      year = {1970},
+  sporsimp = {HS},
+}
+
+@article{Mag71,
+    AUTHOR = {Magliveras, Spyros S.},
+     TITLE = {The subgroup structure of the {H}igman-{S}ims simple group},
+   JOURNAL = {Bull. Amer. Math. Soc.},
+    VOLUME = {77},
+      YEAR = {1971},
+     PAGES = {535--539},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0283077 (44 \#310)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {HS},
+}
+
+@article{MW71b,
+    AUTHOR = {McKay, John and Wales, David},
+     TITLE = {The multiplier of the {H}igman-{S}ims simple group},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {3},
+      YEAR = {1971},
+     PAGES = {283--285},
+      ISSN = {0024-6093},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0292931 (45 \#2012)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {HS},
+}
+
+@article{PW70,
+    AUTHOR = {Parrott, David and Wong, S. K.},
+     TITLE = {On the {H}igman-{S}ims simple group of order {$44,352,000$}},
+   JOURNAL = {Pacific J. Math.},
+  FJOURNAL = {Pacific Journal of Mathematics},
+    VOLUME = {32},
+      YEAR = {1970},
+     PAGES = {501--516},
+      ISSN = {0030-8730},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0257216 (41 \#1867)},
+MRREVIEWER = {D. A. Robinson},
+  sporsimp = {HS},
+}
+
+@article{Rud75,
+    AUTHOR = {Rudvalis, Arunas},
+     TITLE = {Characters of the covering group of the {H}igman-{S}ims group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {33},
+      YEAR = {1975},
+     PAGES = {135--143},
+      ISSN = {0021-8693},
+   MRCLASS = {20C15},
+  MRNUMBER = {MR0354834 (50 \#7311)},
+MRREVIEWER = {J. S. Frame},
+  sporsimp = {HS},
+}
+
+@incollection{Sim69,
+    AUTHOR = {Sims, Charles C.},
+     TITLE = {On the isomorphism of two groups of order {$44,352,000$}},
+ BOOKTITLE = {Theory of Finite Groups (Symposium, Harvard Univ., Cambridge,
+              Mass., 1968)},
+     PAGES = {101--108},
+ PUBLISHER = {Benjamin, New York},
+      YEAR = {1969},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0248215 (40 \#1469)},
+MRREVIEWER = {J. McKay},
+  crossref = {BS69},
+  sporsimp = {HS},
+}
+
+@article{Smi75a,
+    AUTHOR = {Smith, M. S.},
+     TITLE = {On rank {$3$} permutation groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {33},
+      YEAR = {1975},
+     PAGES = {22--42},
+      ISSN = {0021-8693},
+   MRCLASS = {20B15 (05C99)},
+  MRNUMBER = {MR0384905 (52 \#5775)},
+MRREVIEWER = {E. L. Spitznagel, Jr.},
+  sporsimp = {HS},
+}
+
+@article{Smi76a,
+    AUTHOR = {Smith, Margaret S.},
+     TITLE = {On the isomorphism of two simple groups of order
+              {$44,352,000$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {41},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {172--174},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0417275 (54 \#5332)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {HS},
+}
+
+@article{Smi76b,
+    AUTHOR = {Smith, Margaret S.},
+     TITLE = {A combinatorial configuration associated with the
+              {H}igman-{S}ims simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {41},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {175--195},
+      ISSN = {0021-8693},
+   MRCLASS = {20B25 (05B30)},
+  MRNUMBER = {MR0447384 (56 \#5696)},
+MRREVIEWER = {Spyros S. Magliveras},
+  sporsimp = {HS},
+}
+
+@article{Wal69c,
+    AUTHOR = {Wales, David},
+     TITLE = {Uniqueness of the graph of a rank three group},
+   JOURNAL = {Pacific J. Math.},
+  FJOURNAL = {Pacific Journal of Mathematics},
+    VOLUME = {30},
+      YEAR = {1969},
+     PAGES = {271--276},
+      ISSN = {0030-8730},
+   MRCLASS = {20.20},
+  MRNUMBER = {MR0246947 (40 \#216)},
+MRREVIEWER = {A. R. Camina},
+  sporsimp = {HS},
+}
+
+@article{Wil85c,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {Maximal subgroups of automorphism groups of simple groups},
+   JOURNAL = {J. London Math. Soc. (2)},
+  FJOURNAL = {Journal of the London Mathematical Society. Second Series},
+    VOLUME = {32},
+      YEAR = {1985},
+    NUMBER = {3},
+     PAGES = {460--466},
+      ISSN = {0024-6107},
+     CODEN = {JLMSAK},
+   MRCLASS = {20D08 (20D45)},
+  MRNUMBER = {MR825921 (87a:20017)},
+MRREVIEWER = {Koichiro Harada},
+   sorttag = {c},
+  sporsimp = {HS},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  J3
+%%
+
+@article{CW74,
+    AUTHOR = {Conway, J. H. and Wales, D. B.},
+     TITLE = {Matrix generators for {$J\sb{3}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {29},
+      YEAR = {1974},
+     PAGES = {474--476},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0344331 (49 \#9070)},
+MRREVIEWER = {Bhama Srinivasan},
+  sporsimp = {J3},
+}
+
+@article{FR74,
+    AUTHOR = {Finkelstein, L. and Rudvalis, A.},
+     TITLE = {The maximal subgroups of {J}anko's simple group of order
+              {$50,\,232,\,960$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {30},
+      YEAR = {1974},
+     PAGES = {122--143},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0354846 (50 \#7323)},
+MRREVIEWER = {David R. Mason},
+  sporsimp = {J3},
+}
+
+@article{Fro83,
+    AUTHOR = {Frohardt, Daniel},
+     TITLE = {A trilinear form for the third {J}anko group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {83},
+      YEAR = {1983},
+    NUMBER = {2},
+     PAGES = {349--379},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR714249 (84m:20023)},
+MRREVIEWER = {Michael Wester},
+  sporsimp = {J3},
+}
+
+@article{GH69,
+    AUTHOR = {Gorenstein, Daniel and Harada, Koichiro},
+     TITLE = {A characterization of {J}anko's two new simple groups},
+   JOURNAL = {J. Fac. Sci. Univ. Tokyo Sect. I},
+  FJOURNAL = {Journal of the Faculty of Science. University of Tokyo.
+              Section IA. Mathematics},
+    VOLUME = {16},
+      YEAR = {1969},
+     PAGES = {331--406 (1970)},
+      ISSN = {0040-8980},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0283075 (44 \#308)},
+MRREVIEWER = {J. H. Walter},
+  sporsimp = {J3},
+}
+
+@article{HM69a,
+    AUTHOR = {Higman, Graham and McKay, John},
+     TITLE = {On {J}anko's simple group of order {$50,232,960$}},
+   JOURNAL = {Bull. London Math. Soc. 1 (1969), 89--94; correction, ibid.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {1},
+      YEAR = {1969},
+     PAGES = {219},
+      ISSN = {0024-6093},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0246955 (40 \#224)},
+MRREVIEWER = {Charles C. Sims},
+  sporsimp = {J3},
+}
+
+@incollection {HM69b,
+    AUTHOR = {Higman, Graham and McKay, J.},
+     TITLE = {On {J}anko's simple group of order {$50,\,232,\,960$}},
+ BOOKTITLE = {Theory of Finite Groups (Symposium, Harvard Univ., Cambridge,
+              Mass., 1968)},
+     PAGES = {65--77},
+ PUBLISHER = {Benjamin, New York},
+      YEAR = {1969},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0245668 (39 \#6974)},
+MRREVIEWER = {A. P. Street},
+  crossref = {BS69},
+  sporsimp = {J3},
+}
+
+@incollection{Jan69a,
+    author = {Janko, Z.},
+     title = {Some new simple groups of finite order},
+ BOOKTITLE = {Theory of finite groups: {A} symposium},
+    SERIES = {Edited by Richard Brauer and Chih-han Sah},
+ PUBLISHER = {W. A. Benjamin, Inc., New York-Amsterdam},
+      YEAR = {1969},
+     pages = {63--64},
+  crossref = {BS69},
+  sporsimp = {J3},
+}
+
+@incollection{Jan69b,
+    AUTHOR = {Janko, Zvonimir},
+     TITLE = {Some new simple groups of finite order. {I}},
+ BOOKTITLE = {Symposia Mathematica (INDAM, Rome, 1967/68), Vol. 1},
+     PAGES = {25--64},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1969},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0244371 (39 \#5686)},
+MRREVIEWER = {A. P. Street},
+  sporsimp = {J3},
+}
+% removed crossref because of missing author/editor
+% crossref = {MR0242614},
+
+@article{MW71a,
+    AUTHOR = {McKay, John and Wales, David},
+     TITLE = {The multipliers of the simple groups of order {$604,800$} and
+              {$50,232,960$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {17},
+      YEAR = {1971},
+     PAGES = {262--272},
+      ISSN = {0021-8693},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0274577 (43 \#340)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {J3},
+}
+
+@article{Wei82b,
+    AUTHOR = {Weiss, Richard},
+     TITLE = {A geometric construction of {J}anko's group {$J\sb{3}$}},
+   JOURNAL = {Math. Z.},
+  FJOURNAL = {Mathematische Zeitschrift},
+    VOLUME = {179},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {91--95},
+      ISSN = {0025-5874},
+     CODEN = {MAZEAX},
+   MRCLASS = {05C25 (05B25 20D08)},
+  MRNUMBER = {MR643049 (84i:05062)},
+  sporsimp = {J3},
+}
+
+@article{Wei82a,
+    AUTHOR = {Weiss, Richard},
+     TITLE = {On the geometry of {J}anko's group {$J\sb{3}$}},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik. Archives of Mathematics. Archives
+              Math\'ematiques},
+    VOLUME = {38},
+      YEAR = {1982},
+    NUMBER = {5},
+     PAGES = {410--419},
+      ISSN = {0003-889X},
+     CODEN = {ACVMAL},
+   MRCLASS = {05C25 (20D08 20F32 51J05)},
+  MRNUMBER = {MR666912 (83k:05054)},
+MRREVIEWER = {J{\"u}rgen Bierbrauer},
+  sporsimp = {J3},
+}
+
+@article{Won69,
+    AUTHOR = {Wong, S. K.},
+     TITLE = {On a new finite non-abelian simple group of {J}anko},
+   JOURNAL = {Bull. Austral. Math. Soc.},
+  FJOURNAL = {Bulletin of the Australian Mathematical Society},
+    VOLUME = {1},
+      YEAR = {1969},
+     PAGES = {59--79},
+      ISSN = {0004-9727},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0269734 (42 \#4629)},
+MRREVIEWER = {A. Mann},
+  sporsimp = {J3},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  M24
+%%
+
+@article{AM66,
+    AUTHOR = {Assmus, Jr., E. F. and Mattson, H. F.},
+     TITLE = {Perfect codes and the {M}athieu groups},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik},
+    VOLUME = {17},
+      YEAR = {1966},
+     PAGES = {121--135},
+      ISSN = {0003-889X},
+   MRCLASS = {94.10},
+  MRNUMBER = {MR0204206 (34 \#4050)},
+MRREVIEWER = {E. Weiss},
+  sporsimp = {M24},
+}
+
+@article{BF66b,
+    AUTHOR = {Burgoyne, N. and Fong, P.},
+     TITLE = {The {S}chur multipliers of the {M}athieu groups},
+   JOURNAL = {Nagoya Math. J.},
+  FJOURNAL = {Nagoya Mathematical Journal},
+    VOLUME = {27},
+      YEAR = {1966},
+     PAGES = {733--745},
+      ISSN = {0027-7630},
+   MRCLASS = {20.25},
+  MRNUMBER = {MR0197542 (33 \#5707)},
+MRREVIEWER = {O. H. Kegel},
+  sporsimp = {M24},
+}
+
+@article {BF68,
+    AUTHOR = {Burgoyne, N. and Fong, P.},
+     TITLE = {A correction to: ``{T}he {S}chur multipliers of the {M}athieu
+              groups''},
+   JOURNAL = {Nagoya Math. J.},
+  FJOURNAL = {Nagoya Mathematical Journal},
+    VOLUME = {31},
+      YEAR = {1968},
+     PAGES = {297--304},
+      ISSN = {0027-7630},
+   MRCLASS = {20.48},
+  MRNUMBER = {MR0219626 (36 \#2705)},
+MRREVIEWER = {O. H. Kegel},
+  sporsimp = {M24},
+}
+
+@article{Cho72a,
+    AUTHOR = {Choi, Chang},
+     TITLE = {On subgroups of {$M\sb{24}$}. {I}. {S}tabilizers of subsets},
+   JOURNAL = {Trans. Amer. Math. Soc.},
+  FJOURNAL = {Transactions of the American Mathematical Society},
+    VOLUME = {167},
+      YEAR = {1972},
+     PAGES = {1--27},
+      ISSN = {0002-9947},
+   MRCLASS = {20B20},
+  MRNUMBER = {MR0294472 (45 \#3542)},
+MRREVIEWER = {Gary M. Seitz},
+  sporsimp = {M24},
+}
+
+@article{Cho72b,
+    AUTHOR = {Choi, Chang},
+     TITLE = {On subgroups of {$M\sb{24}$}. {II}. {T}he maximal subgroups of
+              {$M\sb{24}$}},
+   JOURNAL = {Trans. Amer. Math. Soc.},
+  FJOURNAL = {Transactions of the American Mathematical Society},
+    VOLUME = {167},
+      YEAR = {1972},
+     PAGES = {29--47},
+      ISSN = {0002-9947},
+   MRCLASS = {20B20},
+  MRNUMBER = {MR0294473 (45 \#3543)},
+MRREVIEWER = {Gary M. Seitz},
+  sporsimp = {M24},
+}
+
+@incollection{Con77a,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {The miracle octad generator},
+ BOOKTITLE = {Topics in group theory and computation (Proc. Summer School,
+              University Coll., Galway, 1973)},
+     PAGES = {62--68},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1977},
+   MRCLASS = {20C30 (05B05 05C25)},
+  MRNUMBER = {MR0472991 (57 \#12670)},
+MRREVIEWER = {Norman Biggs},
+  crossref = {Cur77b},
+   sorttag = {a},
+  sporsimp = {M24},
+}
+
+@incollection{Con84,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Hexacode and tetracode---{MOG} and {MINIMOG}},
+ BOOKTITLE = {Computational group theory (Durham, 1982)},
+     PAGES = {359--365},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1984},
+   MRCLASS = {94B25 (05B05)},
+  MRNUMBER = {MR760670 (86b:94020)},
+MRREVIEWER = {Wolfgang Knapp},
+  crossref = {Atk84},
+  sporsimp = {M24},
+}
+
+@incollection{Con71a,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Three lectures on exceptional groups},
+ BOOKTITLE = {Finite simple groups (Proc. Instructional Conf., Oxford,
+              1969)},
+     PAGES = {215--247},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1971},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0338152 (49 \#2918)},
+MRREVIEWER = {Thomas Laffey},
+  crossref = {PH71},
+  sporsimp = {M24},
+}
+
+@phdthesis{Cur72,
+    author = {Curtis, R. T.},
+     title = {On the Mathieu group $M_{24}$ and related topics},
+      year = {1972},
+    school = {Cambridge},
+  sporsimp = {M24},
+}
+
+@article{Cur76,
+    AUTHOR = {Curtis, R. T.},
+     TITLE = {A new combinatorial approach to {$M\sb{24}$}},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {79},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {25--42},
+      ISSN = {0305-0041},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0399247 (53 \#3098)},
+MRREVIEWER = {Robert A. Liebler},
+  sporsimp = {M24},
+}
+
+@article{Cur77a,
+    AUTHOR = {Curtis, R. T.},
+     TITLE = {The maximal subgroups of {$M\sb{24}$}},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {81},
+      YEAR = {1977},
+    NUMBER = {2},
+     PAGES = {185--192},
+      ISSN = {0305-0041},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0439926 (55 \#12807)},
+MRREVIEWER = {Robert A. Liebler},
+  sporsimp = {M24},
+}
+
+@article{Fro04,
+    author = {Frobenius, G.},
+     title = {\"Uber die Charaktere der mehrfach transitiven Gruppen},
+   journal = {Berliner Berichte},
+      year = {1904},
+     pages = {558--571},
+  sporsimp = {M24},
+}
+
+@article{GM64,
+    AUTHOR = {Garbe, Dietmar and Mennicke, Jens L.},
+     TITLE = {Some remarks on the {M}athieu groups},
+   JOURNAL = {Canad. Math. Bull.},
+  FJOURNAL = {Canadian Mathematical Bulletin. Bulletin Canadien de
+              Math\'ematiques},
+    VOLUME = {7},
+      YEAR = {1964},
+     PAGES = {201--212},
+      ISSN = {0008-4395},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0162846 (29 \#150)},
+MRREVIEWER = {J. A. Todd},
+  sporsimp = {M24},
+}
+
+@article{GM72,
+    AUTHOR = {Garbe, D. and Mennicke, J.},
+     TITLE = {Corrections: ``{S}ome remarks on the {M}athieu groups''},
+   JOURNAL = {Canad. Math. Bull.},
+  FJOURNAL = {Canadian Mathematical Bulletin. Bulletin Canadien de
+              Math\'ematiques},
+    VOLUME = {15},
+      YEAR = {1972},
+     PAGES = {147},
+      ISSN = {0008-4395},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0311755 (47 \#317)},
+  sporsimp = {M24},
+}
+
+@book{Gre73,
+    AUTHOR = {Greenberg, Philip J.},
+     TITLE = {Mathieu groups},
+ PUBLISHER = {Courant Institute of Mathematical Sciences New York
+              University},
+   ADDRESS = {New York},
+      YEAR = {1973},
+     PAGES = {iv+189},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0352244 (50 \#4731)},
+MRREVIEWER = {P. Fong},
+  sporsimp = {M24},
+}
+
+@article{Hel69b,
+    AUTHOR = {Held, Dieter},
+     TITLE = {The simple groups related to {$M\sb{24}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {13},
+      YEAR = {1969},
+     PAGES = {253--296},
+      ISSN = {0021-8693},
+   MRCLASS = {20.25},
+  MRNUMBER = {MR0249500 (40 \#2745)},
+MRREVIEWER = {J. H. Walter},
+  sporsimp = {M24},
+}
+
+@article{Jam73,
+    AUTHOR = {James, G. D.},
+     TITLE = {The modular characters of the {M}athieu groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {27},
+      YEAR = {1973},
+     PAGES = {57--111},
+      ISSN = {0021-8693},
+   MRCLASS = {20C20},
+  MRNUMBER = {MR0330277 (48 \#8614)},
+MRREVIEWER = {J. S. Frame},
+  sporsimp = {M24},
+}
+
+@incollection{Koi82,
+    author = {Koike, M.},
+     title = {Automorphic forms and Mathieu groups},
+ BOOKTITLE = {Topics in finite group theory},
+ PUBLISHER = {Kyoto University Research Institute for Mathematical Sciences},
+   ADDRESS = {Kyoto},
+      YEAR = {1982},
+     pages = {47--56},
+  crossref = {Kyo82},
+  sporsimp = {M24},
+}
+
+@article{Str76a,
+    AUTHOR = {Striko, Jelisaveta Kova{\v{c}}},
+     TITLE = {A characterization of the finite simple groups {$M\sb{24},He$}
+              and {$L\sb{5}(2).$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {43},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {375--397},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0422406 (54 \#10395)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {M24},
+}
+
+@article{Lis77,
+    AUTHOR = {List, Rudy J.},
+     TITLE = {On the maximal subgroups of the {M}athieu groups. {I}.
+              {$M\sb{24}$}},
+   JOURNAL = {Atti Accad. Naz. Lincei Rend. Cl. Sci. Fis. Mat. Natur. (8)},
+  FJOURNAL = {Atti della Accademia Nazionale dei Lincei. Rendiconti. Classe
+              di Scienze Fisiche, Matematiche e Naturali},
+    VOLUME = {62},
+      YEAR = {1977},
+    NUMBER = {4},
+     PAGES = {432--438},
+   MRCLASS = {20B20 (20D05)},
+  MRNUMBER = {MR0491909 (58 \#11086)},
+MRREVIEWER = {Ascher Wagner},
+  sporsimp = {M24},
+}
+
+@article{Lue68,
+    AUTHOR = {L{\"u}neburg, Heinz},
+     TITLE = {\"{U}ber die {G}ruppen von {M}athieu},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {10},
+      YEAR = {1968},
+     PAGES = {194--210},
+      ISSN = {0021-8693},
+   MRCLASS = {20.20 (50.00)},
+  MRNUMBER = {MR0231900 (38 \#226)},
+MRREVIEWER = {P. Dembowski},
+  sporsimp = {M24},
+}
+
+@article{Mas77a,
+    AUTHOR = {Mason, David R.},
+     TITLE = {On the construction of the {S}teiner system {$S(5,8, 24)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {47},
+      YEAR = {1977},
+    NUMBER = {1},
+     PAGES = {77--79},
+      ISSN = {0021-8693},
+   MRCLASS = {20B25 (05B05)},
+  MRNUMBER = {MR0444752 (56 \#3100)},
+MRREVIEWER = {Hugo S. Sun},
+  sporsimp = {M24},
+}
+
+@article{Mat61,
+    author = {Mathieu, E.},
+     title = {Memoire sur l'etude des fonctions de plusieurs quantites},
+   journal = {J. Math. Pures Appl.},
+    volume = {6},
+      year = {1861},
+     pages = {241--243},
+  sporsimp = {M24},
+}
+
+@article{Mat73,
+    author = {Mathieu, E.},
+     title = {Sur les fonctions cinq fois transitives de 24 quantites},
+   journal = {J. Math. Pures Appl.},
+    volume = {18},
+      year = {1873},
+     pages = {25--46},
+  sporsimp = {M24},
+}
+
+@article{Maz82a,
+    AUTHOR = {Mazet, Pierre},
+     TITLE = {Sur les multiplicateurs de {S}chur des groupes de {M}athieu},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {77},
+      YEAR = {1982},
+    NUMBER = {2},
+     PAGES = {552--576},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20C25},
+  MRNUMBER = {MR673133 (84b:20011)},
+MRREVIEWER = {P. Fong},
+  sporsimp = {M24},
+}
+
+@article{Mil00,
+    AUTHOR = {Miller, G. A.},
+     TITLE = {Sur plusieurs groupes simples},
+   JOURNAL = {Bull. Soc. Math. France},
+  FJOURNAL = {Bulletin de la Soci\'et\'e Math\'ematique de France},
+    VOLUME = {28},
+      YEAR = {1900},
+     PAGES = {266--267},
+      ISSN = {0037-9484},
+     CODEN = {BSMFAA},
+   MRCLASS = {Contributed Item},
+  MRNUMBER = {MR1504378},
+  sporsimp = {M24},
+}
+
+@article{Ple68,
+    AUTHOR = {Pless, Vera},
+     TITLE = {On the uniqueness of the {G}olay codes},
+   JOURNAL = {J. Combinatorial Theory},
+    VOLUME = {5},
+      YEAR = {1968},
+     PAGES = {215--228},
+   MRCLASS = {94.10},
+  MRNUMBER = {MR0242561 (39 \#3892)},
+MRREVIEWER = {P. Camion},
+  sporsimp = {M24},
+}
+
+@article{Ras76,
+    AUTHOR = {Rasala, Richard},
+     TITLE = {Split codes and the {M}athieu groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {42},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {422--471},
+      ISSN = {0021-8693},
+   MRCLASS = {94A10 (20B25)},
+  MRNUMBER = {MR0441544 (55 \#14407)},
+MRREVIEWER = {Harold N. Ward},
+  sporsimp = {M24},
+}
+
+@article{Ron82,
+    AUTHOR = {Ronan, Mark A.},
+     TITLE = {Locally truncated buildings and {$M\sb{24}$}},
+   JOURNAL = {Math. Z.},
+  FJOURNAL = {Mathematische Zeitschrift},
+    VOLUME = {180},
+      YEAR = {1982},
+    NUMBER = {4},
+     PAGES = {489--501},
+      ISSN = {0025-5874},
+     CODEN = {MAZEAX},
+   MRCLASS = {51E25 (05B25 20B25)},
+  MRNUMBER = {MR667004 (83i:51022)},
+MRREVIEWER = {Francis Buekenhout},
+  sporsimp = {M24},
+}
+
+@article{Sch74,
+    AUTHOR = {Schoenwaelder, U.},
+     TITLE = {Finite groups with a {S}ylow {$2$}-subgroup of type
+              {$M\sb{24}$}. {I}, {II}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {28},
+      YEAR = {1974},
+     PAGES = {20--45; ibid. 28 (1974), 46--56},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0369511 (51 \#5744)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {M24},
+}
+
+@article{Seg01,
+    author = {de S{\'e}guier, J.A.},
+     title = {Sur les equations de certains groupes},
+   journal = {C. R. Acad. Sci. Paris},
+    volume = {132},
+      year = {1901},
+     pages = {1030--1033},
+  sporsimp = {M24},
+}
+
+@article{Seg04,
+    AUTHOR = {de S{\'e}guier, J.A.},
+     TITLE = {Sur certains groupes de {M}athieu},
+   JOURNAL = {Bull. Soc. Math. France},
+  FJOURNAL = {Bulletin de la Soci\'et\'e Math\'ematique de France},
+    VOLUME = {32},
+      YEAR = {1904},
+     PAGES = {116--124},
+      ISSN = {0037-9484},
+     CODEN = {BSMFAA},
+   MRCLASS = {Contributed Item},
+  MRNUMBER = {MR1504474},
+  sporsimp = {M24},
+}
+
+@article{Sta51,
+    AUTHOR = {Stanton, R. G.},
+     TITLE = {The {M}athieu groups},
+   JOURNAL = {Canadian J. Math.},
+  FJOURNAL = {Canadian Journal of Mathematics. Journal Canadien de
+              Math\'ematiques},
+    VOLUME = {3},
+      YEAR = {1951},
+     PAGES = {164--174},
+      ISSN = {0008-414X},
+   MRCLASS = {20.0X},
+  MRNUMBER = {MR0040304 (12,672d)},
+MRREVIEWER = {J. S. Frame},
+  sporsimp = {M24},
+}
+
+@article{Tit64,
+    AUTHOR = {Tits, J.},
+     TITLE = {Sur les syst\`emes de {S}teiner associ\'es aux trois
+              ``grands'' groupes de {M}athieu},
+   JOURNAL = {Rend. Mat. e Appl. (5)},
+    VOLUME = {23},
+      YEAR = {1964},
+     PAGES = {166--184},
+   MRCLASS = {05.20 (20.20)},
+  MRNUMBER = {MR0183785 (32 \#1262)},
+MRREVIEWER = {J. E. McLaughlin},
+ zblnumber = {0126.26303},
+  sporsimp = {M24},
+}
+
+@article{Tod59,
+    AUTHOR = {Todd, J. A.},
+     TITLE = {On representations of the {M}athieu groups as collineation
+              groups},
+   JOURNAL = {J. London Math. Soc.},
+  FJOURNAL = {Journal of the London Mathematical Society. Second Series},
+    VOLUME = {34},
+      YEAR = {1959},
+     PAGES = {406--416},
+      ISSN = {0024-6107},
+   MRCLASS = {20.00 (50.00)},
+  MRNUMBER = {MR0120290 (22 \#11045)},
+MRREVIEWER = {T. G. Room},
+  sporsimp = {M24},
+}
+
+@article{Tod66a,
+    AUTHOR = {Todd, J. A.},
+     TITLE = {A representation of the {M}athieu group {$M\sb{24}$} as a
+              collineation group},
+   JOURNAL = {Ann. Mat. Pura Appl. (4)},
+  FJOURNAL = {Annali di Matematica Pura ed Applicata. Serie Quarta},
+    VOLUME = {71},
+      YEAR = {1966},
+     PAGES = {199--238},
+      ISSN = {0003-4622},
+   MRCLASS = {20.72 (20.80)},
+  MRNUMBER = {MR0202854 (34 \#2713)},
+MRREVIEWER = {T. G. Room},
+  sporsimp = {M24},
+}
+
+@article{Tod66b,
+    author = {Todd, J.A.},
+     title = {A representation of the {M}athieu group {$M\sb{24}$} as a
+              collineation group},
+  language = {English},
+   journal = {Rend. Mat. Appl., V. Ser.},
+    volume = {25},
+     pages = {29--32},
+      year = {1966},
+  keywords = {group theory},
+ zblnumber = {0156.03102},
+  sporsimp = {M24},
+}
+
+@article{Tod70,
+    AUTHOR = {Todd, J. A.},
+     TITLE = {Abstract definitions for the {M}athieu groups},
+   JOURNAL = {Quart. J. Math. Oxford Ser. (2)},
+  FJOURNAL = {The Quarterly Journal of Mathematics. Oxford. Second Series},
+    VOLUME = {21},
+      YEAR = {1970},
+     PAGES = {421--424},
+      ISSN = {0033-5606},
+   MRCLASS = {20.10},
+  MRNUMBER = {MR0272878 (42 \#7759)},
+MRREVIEWER = {A. P. Street},
+  sporsimp = {M24},
+}
+
+@article{Wit38a,
+    author = {Witt, E.},
+     title = {Die 5-fach transitiven Gruppen von Mathieu},
+   journal = {Abh. Math. Sem. Hamburg},
+    volume = {12},
+      year = {1938},
+     pages = {256--264},
+  sporsimp = {M24},
+}
+
+@article{Wit38b,
+    author = {Witt, E.},
+     title = {\"Uber Steinersche Systeme},
+   journal = {Abh. Math. Sem. Hamburg},
+    volume = {12},
+      year = {1938},
+     pages = {265--274},
+  sporsimp = {M24},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  McL
+%%
+
+@phdthesis{Dia84,
+    author = {Diawara, O.},
+     title = {Sur le groupe simple de J. McLaughlin},
+      year = {1984},
+    school = {Bruxelles},
+  sporsimp = {McL},
+}
+
+@article{Fin73,
+    AUTHOR = {Finkelstein, Larry},
+     TITLE = {The maximal subgroups of {C}onway's group {$C\sb{3}$} and
+              {M}c{L}aughlin's group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {25},
+      YEAR = {1973},
+     PAGES = {58--89},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0346046 (49 \#10772)},
+MRREVIEWER = {T. M. Gagen},
+  sporsimp = {McL},
+}
+
+@article{JW72,
+    AUTHOR = {Janko, Zvonimir and Wong, S. K.},
+     TITLE = {A characterization of the {M}c{L}aughlin's simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {20},
+      YEAR = {1972},
+     PAGES = {203--225},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0302756 (46 \#1899)},
+MRREVIEWER = {H. Nagao},
+  sporsimp = {McL},
+}
+
+@incollection{McL69,
+    AUTHOR = {McLaughlin, Jack},
+     TITLE = {A simple group of order {$898,128,000$}},
+ BOOKTITLE = {Theory of Finite Groups (Symposium, Harvard Univ., Cambridge,
+              Mass., 1968)},
+     PAGES = {109--111},
+ PUBLISHER = {Benjamin, New York},
+      YEAR = {1969},
+   MRCLASS = {20.29 (05.00)},
+  MRNUMBER = {MR0242941 (39 \#4268)},
+MRREVIEWER = {E. L. Spitznagel, Jr.},
+  crossref = {BS69},
+  sporsimp = {McL},
+}
+
+@article{Smi75a,
+    AUTHOR = {Smith, M. S.},
+     TITLE = {On rank {$3$} permutation groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {33},
+      YEAR = {1975},
+     PAGES = {22--42},
+      ISSN = {0021-8693},
+   MRCLASS = {20B15 (05C99)},
+  MRNUMBER = {MR0384905 (52 \#5775)},
+MRREVIEWER = {E. L. Spitznagel, Jr.},
+  sporsimp = {McL},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  He
+%%
+
+@article{Bor80,
+    AUTHOR = {Borovik, A. V.},
+     TITLE = {{$3$}-local characterization of the {H}eld group},
+   JOURNAL = {Algebra i Logika},
+  FJOURNAL = {Akademiya Nauk SSSR. Sibirskoe Otdelenie. Institut Matematiki.
+              Algebra i Logika},
+    VOLUME = {19},
+      YEAR = {1980},
+    NUMBER = {4},
+     PAGES = {387--404, 503},
+      ISSN = {0373-9252},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR609020 (82g:20040)},
+MRREVIEWER = {B. K. Durakov},
+      note = {\{Russian, English  translation:  Algebra  and  Logic  {\bf 19}
+              (1980), no.4, 255--266 (1981).\}},
+  sporsimp = {He},
+}
+
+@article{But81,
+    AUTHOR = {Butler, Gregory},
+     TITLE = {The maximal subgroups of the sporadic simple group of {H}eld},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {69},
+      YEAR = {1981},
+    NUMBER = {1},
+     PAGES = {67--81},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08 (20E28)},
+  MRNUMBER = {MR613857 (82e:20022)},
+MRREVIEWER = {Stephen D. Smith},
+  sporsimp = {He},
+}
+
+@article{CH74,
+    AUTHOR = {Cannon, John J. and Havas, George},
+     TITLE = {Defining relations for the {H}eld-{H}igman-{T}hompson simple
+              group},
+   JOURNAL = {Bull. Austral. Math. Soc.},
+  FJOURNAL = {Bulletin of the Australian Mathematical Society},
+    VOLUME = {11},
+      YEAR = {1974},
+     PAGES = {43--46},
+      ISSN = {0004-9727},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0360795 (50 \#13242)},
+MRREVIEWER = {F. A. Sherk},
+  sporsimp = {He},
+}
+
+@article{Dec74,
+    AUTHOR = {Deckers, Michael},
+     TITLE = {On groups related to {H}eld's simple group},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik},
+    VOLUME = {25},
+      YEAR = {1974},
+     PAGES = {23--28},
+      ISSN = {0003-889X},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0357581 (50 \#10049)},
+MRREVIEWER = {Mark P. Hale, Jr.},
+  sporsimp = {He},
+}
+
+@article{Gul79,
+    AUTHOR = {G{\"u}lo{\u{g}}lu, Ismail {\c{S}}uayip},
+     TITLE = {A characterization of the simple group {${\rm He}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {60},
+      YEAR = {1979},
+    NUMBER = {1},
+     PAGES = {261--281},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08 (20D05)},
+  MRNUMBER = {MR549111 (80k:20018)},
+MRREVIEWER = {Gary L. Walls},
+  sporsimp = {He},
+}
+
+@incollection{Hel69a,
+    AUTHOR = {Held, Dieter},
+     TITLE = {Some simple groups related to {$M\sb{24}$}},
+ BOOKTITLE = {Theory of Finite Groups (Symposium, Harvard Univ., Cambridge,
+              Mass., 1968)},
+     PAGES = {121--124},
+ PUBLISHER = {Benjamin, New York},
+      YEAR = {1969},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0241526 (39 \#2866)},
+  crossref = {BS69},
+  sporsimp = {He},
+}
+
+@article{Hel69b,
+    AUTHOR = {Held, Dieter},
+     TITLE = {The simple groups related to {$M\sb{24}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {13},
+      YEAR = {1969},
+     PAGES = {253--296},
+      ISSN = {0021-8693},
+   MRCLASS = {20.25},
+  MRNUMBER = {MR0249500 (40 \#2745)},
+MRREVIEWER = {J. H. Walter},
+  sporsimp = {He},
+}
+
+@article {Hel73,
+    AUTHOR = {Held, Dieter},
+     TITLE = {The simple groups related to {$M\sb{24}$}. {II}},
+      NOTE = {Collection of articles dedicated to the memory of Hanna
+              Neumann, I},
+   JOURNAL = {J. Austral. Math. Soc.},
+  FJOURNAL = {Australian Mathematical Society. Journal. Series A. Pure
+              Mathematics and Statistics},
+    VOLUME = {16},
+      YEAR = {1973},
+     PAGES = {24--28},
+      ISSN = {0263-6115},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0327890 (48 \#6232)},
+MRREVIEWER = {David R. Mason},
+  sporsimp = {He},
+}
+
+@article{Str76a,
+    AUTHOR = {Striko, Jelisaveta Kova{\v{c}}},
+     TITLE = {A characterization of the finite simple groups {$M\sb{24},He$}
+              and {$L\sb{5}(2).$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {43},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {375--397},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0422406 (54 \#10395)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {He},
+}
+
+@article{MS82,
+    AUTHOR = {Mason, Geoffrey and Smith, Stephen D.},
+     TITLE = {Minimal {$2$}-local geometries for the {H}eld and {R}udvalis
+              sporadic groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {79},
+      YEAR = {1982},
+    NUMBER = {2, part 1},
+     PAGES = {286--306},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20B25 (20D08 51E20)},
+  MRNUMBER = {MR682880 (85b:20004)},
+MRREVIEWER = {W. M. Kantor},
+  sporsimp = {He},
+}
+
+@inproceedings{McK74,
+    AUTHOR = {McKay, John},
+     TITLE = {Computing with finite simple groups},
+ BOOKTITLE = {Proceedings of the Second International Conference on the
+              Theory of Groups (Australian Nat. Univ., Canberra, 1973)},
+     PAGES = {448--452. Lecture Notes in Math., Vol. 372},
+ PUBLISHER = {Springer},
+   ADDRESS = {Berlin},
+      YEAR = {1974},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0364431 (51 \#685)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  crossref = {New74},
+  sporsimp = {He},
+}
+
+@article{Sch74,
+    AUTHOR = {Schoenwaelder, U.},
+     TITLE = {Finite groups with a {S}ylow {$2$}-subgroup of type
+              {$M\sb{24}$}. {I}, {II}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {28},
+      YEAR = {1974},
+     PAGES = {20--45; ibid. 28 (1974), 46--56},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0369511 (51 \#5744)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {He},
+}
+
+@article{Wil85c,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {Maximal subgroups of automorphism groups of simple groups},
+   JOURNAL = {J. London Math. Soc. (2)},
+  FJOURNAL = {Journal of the London Mathematical Society. Second Series},
+    VOLUME = {32},
+      YEAR = {1985},
+    NUMBER = {3},
+     PAGES = {460--466},
+      ISSN = {0024-6107},
+     CODEN = {JLMSAK},
+   MRCLASS = {20D08 (20D45)},
+  MRNUMBER = {MR825921 (87a:20017)},
+MRREVIEWER = {Koichiro Harada},
+   sorttag = {c},
+  sporsimp = {He},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Ru
+%%
+
+@article{Ass76,
+    AUTHOR = {Assa, Steven Brent},
+     TITLE = {A characterization of {${}\sp{2}F\sb{4}(2)'$} and the
+              {R}udvalis group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {41},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {473--495},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0414687 (54 \#2782)},
+MRREVIEWER = {Gernot Stroth},
+  sporsimp = {Ru},
+}
+
+@article{Bie79a,
+    AUTHOR = {Bierbrauer, J{\"u}rgen},
+     TITLE = {A {$2$}-local characterization of the {R}udvalis simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {58},
+      YEAR = {1979},
+    NUMBER = {2},
+     PAGES = {563--571},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR540658 (80h:20028)},
+MRREVIEWER = {Arthur Reifart},
+  sporsimp = {Ru},
+}
+
+@incollection{Con77b,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {A quaternionic construction for the {R}udvalis group},
+ BOOKTITLE = {Topics in group theory and computation (Proc. Summer School,
+              University Coll., Galway, 1973)},
+     PAGES = {69--81},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1977},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0472996 (57 \#12675)},
+MRREVIEWER = {Ulrich Dempwolff},
+  crossref = {Cur77b},
+   sorttag = {b},
+  sporsimp = {Ru},
+}
+
+@article{CW73,
+    AUTHOR = {Conway, J. H. and Wales, D. B.},
+     TITLE = {Construction of the {R}udvalis group of order
+              {$145,\,926,\,144,\,000$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {27},
+      YEAR = {1973},
+     PAGES = {538--548},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0335620 (49 \#400)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  sporsimp = {Ru},
+}
+
+@article{Dem74,
+    AUTHOR = {Dempwolff, Ulrich},
+     TITLE = {A characterization of the {R}udvalis simple group of order
+              {$2\sp{14}\cdot 3\sp{3}\cdot 5\sp{3}\cdot 7\cdot 13\cdot 29$}
+              by the centralizers of noncentral involutions},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {32},
+      YEAR = {1974},
+     PAGES = {53--88},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0352242 (50 \#4729)},
+MRREVIEWER = {U. Schoenwaelder},
+  sporsimp = {Ru},
+}
+
+@article{Hal73,
+    author = {Hall, M.},
+     title = {A representation of the Rudvalis group},
+   journal = {Notices Amer. Math. Soc.},
+    volume = {20},
+      year = {1973},
+     pages = {A-88},
+  sporsimp = {Ru},
+}
+
+@article{MS82,
+    AUTHOR = {Mason, Geoffrey and Smith, Stephen D.},
+     TITLE = {Minimal {$2$}-local geometries for the {H}eld and {R}udvalis
+              sporadic groups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {79},
+      YEAR = {1982},
+    NUMBER = {2, part 1},
+     PAGES = {286--306},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20B25 (20D08 51E20)},
+  MRNUMBER = {MR682880 (85b:20004)},
+MRREVIEWER = {W. M. Kantor},
+  sporsimp = {Ru},
+}
+
+@article{ Maz82b,
+    AUTHOR = {Mazurov, V. D.},
+     TITLE = {Characterization of the {R}udvalis group},
+   JOURNAL = {Mat. Zametki},
+  FJOURNAL = {Akademiya Nauk Soyuza SSR. Matematicheskie Zametki},
+    VOLUME = {31},
+      YEAR = {1982},
+    NUMBER = {3},
+     PAGES = {321--338, 473},
+      ISSN = {0025-567X},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR652837 (83f:20015)},
+MRREVIEWER = {J{\'o}zsef Pelik{\'a}n},
+      note = {\{Russian, English  translation:  Math.  Notes {\bf 31} (1982),
+              no. 3--4, 165--173.\}},
+  sporsimp = {Ru},
+}
+
+@article{OY78,
+    AUTHOR = {Okuyama, Tetsuro and Yoshida, Tomoyuki},
+     TITLE = {A characterization of the {R}udvalis group},
+   JOURNAL = {J. Math. Soc. Japan},
+    VOLUME = {30},
+      YEAR = {1978},
+    NUMBER = {3},
+     PAGES = {463--474},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0491930 (58 \#11101)},
+MRREVIEWER = {J. L. Alperin},
+  sporsimp = {Ru},
+}
+
+@article{ON78,
+    AUTHOR = {O'Nan, Michael E.},
+     TITLE = {A characterization of the {R}udvalis group},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {6},
+      YEAR = {1978},
+    NUMBER = {2},
+     PAGES = {107--147},
+      ISSN = {0092-7872},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0498834 (58 \#16870)},
+MRREVIEWER = {D. Wales},
+  sporsimp = {Ru},
+}
+
+@article{Par76,
+    AUTHOR = {Parrott, David},
+     TITLE = {A characterization of the {R}udvalis simple group},
+   JOURNAL = {Proc. London Math. Soc. (3)},
+  FJOURNAL = {Proceedings of the London Mathematical Society. Third Series},
+    VOLUME = {32},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {25--51},
+      ISSN = {0024-6115},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0390043 (52 \#10869)},
+MRREVIEWER = {Ulrich Dempwolff},
+  sporsimp = {Ru},
+}
+
+@article{Rud73,
+    author = {Rudvalis, A.},
+     title = {A new simple group of order $2^{14}.3^3.5^3.7.13.29$},
+   journal = {Notices Amer. Math. Soc.},
+    volume = {20},
+      year = {1973},
+     pages = {A-95},
+  sporsimp = {Ru},
+}
+
+@article{Rud72,
+    author = {Rudvalis, A.},
+     title = {The graph for a new group of order $2^{14}.3^3.5^3.7.13.29$},
+   journal = {Michigan},
+      year = {1972},
+      note = {preprint},
+  sporsimp = {Ru},
+}
+
+@article{Rud84a,
+    AUTHOR = {Rudvalis, Arunas},
+     TITLE = {A rank {$3$} simple group of order
+              {$2\sp{14}3\sp{3}5\sp{3}7\cdot 13\cdot 29$}. {I}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {86},
+      YEAR = {1984},
+    NUMBER = {1},
+     PAGES = {181--218},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08 (20E32)},
+  MRNUMBER = {MR727376 (86f:20018a)},
+MRREVIEWER = {D. Wales},
+  sporsimp = {Ru},
+}
+
+@article{Rud84b,
+    AUTHOR = {Rudvalis, Arunas},
+     TITLE = {A rank {$3$} simple group {$G$} of order
+              {$2\sp{14}3\sp{3}5\sp{3}7\cdot 13\cdot 29$}. {II}.
+              {C}haracters of {$G$} and {$\hat{G}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {86},
+      YEAR = {1984},
+    NUMBER = {1},
+     PAGES = {219--258},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08 (20E32)},
+  MRNUMBER = {MR727377 (86f:20018b)},
+MRREVIEWER = {D. Wales},
+  sporsimp = {Ru},
+}
+
+@article{Wil84b,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The geometry and maximal subgroups of the simple groups of
+              {A}. {R}udvalis and {J}. {T}its},
+   JOURNAL = {Proc. London Math. Soc. (3)},
+  FJOURNAL = {Proceedings of the London Mathematical Society. Third Series},
+    VOLUME = {48},
+      YEAR = {1984},
+    NUMBER = {3},
+     PAGES = {533--563},
+      ISSN = {0024-6115},
+     CODEN = {PLMTAL},
+   MRCLASS = {20E28 (20C30 20D08)},
+  MRNUMBER = {MR735227 (86e:20035)},
+MRREVIEWER = {David C. Hunt},
+   sorttag = {b},
+  sporsimp = {Ru},
+}
+
+@article{Yos91,
+    AUTHOR = {Yoshiara, Satoshi},
+     TITLE = {Maximal subgroups of the sporadic simple group of {R}udvalis},
+   JOURNAL = {Nihonkai Math. J.},
+  FJOURNAL = {Nihonkai Mathematical Journal},
+    VOLUME = {2},
+      YEAR = {1991},
+    NUMBER = {1},
+     PAGES = {1--24},
+      ISSN = {1341-9951},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR1120697 (93c:20035)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {Ru},
+}
+
+@article{You74,
+    author = {Young, K-C.},
+     title = {Some simple subgroups of the Rudvalis simple group},
+   journal = {Notices Amer. Math. Soc.},
+    volume = {21},
+      year = {1974},
+     pages = {A-481},
+  sporsimp = {Ru},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Suz
+%%
+
+@article{Lin71a,
+    AUTHOR = {Lindsey, II, J. H.},
+     TITLE = {A correlation between {${\rm PSU}\sb{4}\,(3)$}, the {S}uzuki
+              group, and the {C}onway group},
+   JOURNAL = {Trans. Amer. Math. Soc.},
+  FJOURNAL = {Transactions of the American Mathematical Society},
+    VOLUME = {157},
+      YEAR = {1971},
+     PAGES = {189--204},
+      ISSN = {0002-9947},
+   MRCLASS = {20.75},
+  MRNUMBER = {MR0283097 (44 \#330)},
+MRREVIEWER = {A. Rudvalis},
+  sporsimp = {Suz},
+}
+
+@article{Lin70b,
+    AUTHOR = {Lindsey, II, J. H.},
+     TITLE = {On the {S}uzuki and {C}onway groups},
+   JOURNAL = {Bull. Amer. Math. Soc.},
+    VOLUME = {76},
+      YEAR = {1970},
+     PAGES = {1088--1090},
+   MRCLASS = {20.80},
+  MRNUMBER = {MR0262388 (41 \#6996)},
+MRREVIEWER = {J. D. Dixon},
+  sporsimp = {Suz},
+}
+
+@incollection{Lin71b,
+    AUTHOR = {Lindsey, II, J. H.},
+     TITLE = {On the {S}uzuki and {C}onway groups},
+ BOOKTITLE = {Representation theory of finite groups and related topics
+              (Proc. Sympos. Pure Math., Vol. XXI, Univ. Wisconsin, Madison,
+              Wis., 1970)},
+     PAGES = {107--109},
+ PUBLISHER = {Amer. Math. Soc.},
+   ADDRESS = {Providence, R.I.},
+      YEAR = {1971},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0316552 (47 \#5099)},
+MRREVIEWER = {S. Oates Macdonald},
+  crossref = {Rei71},
+  sporsimp = {Suz},
+}
+
+@article{PW76,
+    AUTHOR = {Patterson, N. J. and Wong, S. K.},
+     TITLE = {A characterization of the {S}uzuki sporadic simple group of
+              order {$448, 345, 497, 600$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {39},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {277--286},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0399253 (53 \#3104)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {Suz},
+}
+
+@article{Rei75a,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {A characterization of {${\rm Sz}$} by the {S}ylow
+              {$2$}-subgroup},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {36},
+      YEAR = {1975},
+    NUMBER = {3},
+     PAGES = {348--363},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0387400 (52 \#8243)},
+MRREVIEWER = {Thomas Laffey},
+  sporsimp = {Suz},
+}
+
+@article{Rei75b,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {A characterization of the sporadic simple group of {S}uzuki},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {33},
+      YEAR = {1975},
+     PAGES = {288--305},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0374258 (51 \#10458)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  sporsimp = {Suz},
+}
+
+@misc{Soi84,
+    author = {Soicher, L. H.},
+     title = {A natural series of presentations for the Suzuki chain of
+              groups},
+      year = {1984},
+      note = {preprint},
+  sporsimp = {Suz},
+}
+
+@incollection{Suz69,
+    AUTHOR = {Suzuki, Michio},
+     TITLE = {A simple group of order {$448,345,497,600$}},
+ BOOKTITLE = {Theory of Finite Groups (Symposium, Harvard Univ., Cambridge,
+              Mass., 1968)},
+     PAGES = {113--119},
+ PUBLISHER = {Benjamin, New York},
+      YEAR = {1969},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0241527 (39 \#2867)},
+  crossref = {BS69},
+  sporsimp = {Suz},
+}
+
+@article{Wil83c,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The complex {L}eech lattice and maximal subgroups of the
+              {S}uzuki group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {84},
+      YEAR = {1983},
+    NUMBER = {1},
+     PAGES = {151--188},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20E28 (20D08)},
+  MRNUMBER = {MR716777 (86e:20034b)},
+MRREVIEWER = {Stephen D. Smith},
+   sorttag = {c},
+  sporsimp = {Suz},
+}
+
+@article{Wri74,
+    AUTHOR = {Wright, Donald},
+     TITLE = {The irreducible characters of the simple group of {M}.
+              {S}uzuki of order {$448$}, {$345$}, {$497$}, {$600$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {29},
+      YEAR = {1974},
+     PAGES = {303--323},
+      ISSN = {0021-8693},
+   MRCLASS = {20C15},
+  MRNUMBER = {MR0357576 (50 \#10044)},
+MRREVIEWER = {D. Wales},
+  sporsimp = {Suz},
+}
+
+@article{Yam76a,
+    AUTHOR = {Yamaki, Hiroyoshi},
+     TITLE = {A characterization of the {S}uzuki simple group of order
+              {$448, 345, 497,600$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {40},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {229--244},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0409632 (53 \#13384)},
+MRREVIEWER = {Geoffrey Mason},
+  sporsimp = {Suz},
+}
+
+@article{Yam76b,
+    AUTHOR = {Yamaki, Hiroyoshi},
+     TITLE = {Characterizing the sporadic simple group of {S}uzuki by a
+              {$2$}-local subgroup},
+   JOURNAL = {Math. Z.},
+  FJOURNAL = {Mathematische Zeitschrift},
+    VOLUME = {151},
+      YEAR = {1976},
+    NUMBER = {3},
+     PAGES = {239--242},
+      ISSN = {0025-5874},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0422407 (54 \#10396)},
+MRREVIEWER = {Geoffrey Mason},
+  sporsimp = {Suz},
+}
+
+@incollection{Yos82,
+    author = {Yoshiara, S.},
+     title = {The complex Leech lattice and sporadic Suzuki group},
+ BOOKTITLE = {Topics in finite group theory},
+ PUBLISHER = {Kyoto University Research Institute for Mathematical Sciences},
+   ADDRESS = {Kyoto},
+      YEAR = {1982},
+     pages = {26--46},
+  crossref = {Kyo82},
+  sporsimp = {Suz},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  O'N
+%%
+
+@phdthesis{And80,
+    author = {Andrilli, S.},
+     title = {On the uniqueness of O'Nan's sporadic simple group},
+      year = {1980},
+    school = {Rutgers},
+  sporsimp = {ON},
+}
+
+@article{Gul81b,
+    AUTHOR = {G{\"u}lo{\u{g}}lu, Ismail {\c{S}}uayip},
+     TITLE = {A characterization of the simple group {${\rm ON}$}},
+   JOURNAL = {Osaka J. Math.},
+  FJOURNAL = {Osaka Journal of Mathematics},
+    VOLUME = {18},
+      YEAR = {1981},
+    NUMBER = {1},
+     PAGES = {25--31},
+      ISSN = {0030-6126},
+     CODEN = {OJMAA7},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR609975 (82g:20034)},
+MRREVIEWER = {A. V. Borovik},
+   sorttag = {b},
+  sporsimp = {ON},
+}
+
+@article{Ili78,
+    AUTHOR = {Il{\cprime}inyh, A. P.},
+     TITLE = {Characterization of the simple {O}'{N}an-{S}ims group by the
+              centralizer of an element of order three},
+   JOURNAL = {Mat. Zametki},
+  FJOURNAL = {Akademiya Nauk Soyuza SSR. Matematicheskie Zametki},
+    VOLUME = {24},
+      YEAR = {1978},
+    NUMBER = {4},
+     PAGES = {487--497, 589},
+      ISSN = {0025-567X},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR513650 (80b:20016)},
+MRREVIEWER = {N. D. Podufalov},
+  sporsimp = {ON},
+}
+
+@article{ON76,
+    AUTHOR = {O'Nan, Michael E.},
+     TITLE = {Some evidence for the existence of a new simple group},
+   JOURNAL = {Proc. London Math. Soc. (3)},
+  FJOURNAL = {Proceedings of the London Mathematical Society. Third Series},
+    VOLUME = {32},
+      YEAR = {1976},
+    NUMBER = {3},
+     PAGES = {421--479},
+      ISSN = {0024-6115},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0401905 (53 \#5731)},
+MRREVIEWER = {Ulrich Dempwolff},
+  sporsimp = {ON},
+}
+
+@misc{Ryb84,
+    author = {Ryba, A. J. E.},
+     title = {The existence of a 45-dimensional 7-modular representation of
+              $3.O'N$},
+      year = {1984},
+      note = {preprint, Cambridge},
+  sporsimp = {ON},
+}
+
+@article{Soi87a,
+    AUTHOR = {Soicher, L. H.},
+     TITLE = {Presentations of some finite groups with applications to the
+              {O}'{N}an simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {108},
+      YEAR = {1987},
+    NUMBER = {2},
+     PAGES = {310--316},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20F05 (20D08)},
+  MRNUMBER = {MR892906 (88e:20036)},
+MRREVIEWER = {P. Fong},
+  sporsimp = {ON},
+}
+
+@article{Sys81,
+    AUTHOR = {Syskin, S. A.},
+     TITLE = {{$3$}-characterization of the {O}'{N}an-{S}ims group},
+   JOURNAL = {Mat. Sb. (N.S.)},
+  FJOURNAL = {Matematicheski\u\i\ Sbornik. Novaya Seriya},
+    VOLUME = {114(156)},
+      YEAR = {1981},
+    NUMBER = {3},
+     PAGES = {471--478, 480},
+      ISSN = {0368-8666},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR610210 (82f:20036)},
+MRREVIEWER = {M. Herzog},
+      note = {Russian},
+  sporsimp = {ON},
+}
+
+@article{Wil85b,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The maximal subgroups of the {O}'{N}an group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {97},
+      YEAR = {1985},
+    NUMBER = {2},
+     PAGES = {467--473},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR812997 (87d:20022)},
+MRREVIEWER = {J{\'o}zsef Pelik{\'a}n},
+   sorttag = {b},
+  sporsimp = {ON},
+}
+
+@article{Yos85,
+    AUTHOR = {Yoshiara, Satoshi},
+     TITLE = {The maximal subgroups of the sporadic simple group of
+              {O}'{N}an},
+   JOURNAL = {J. Fac. Sci. Univ. Tokyo Sect. IA Math.},
+  FJOURNAL = {Journal of the Faculty of Science. University of Tokyo.
+              Section IA. Mathematics},
+    VOLUME = {32},
+      YEAR = {1985},
+    NUMBER = {1},
+     PAGES = {105--141},
+      ISSN = {0040-8980},
+     CODEN = {JFTMAT},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR783183 (86m:20025)},
+MRREVIEWER = {Mark A. Ronan},
+  sporsimp = {ON},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Co3
+%%
+
+@phdthesis{Fen70a,
+    author = {Fendel, Daniel},
+     title = {A characterization of {C}onway's group {$.3$}},
+      year = {1970},
+    school = {Yale},
+  sporsimp = {Co3},
+}
+
+@article{Fen70b,
+    AUTHOR = {Fendel, Daniel},
+     TITLE = {A characterization of {C}onway's group {$.3$}},
+   JOURNAL = {Bull. Amer. Math. Soc.},
+    VOLUME = {76},
+      YEAR = {1970},
+     PAGES = {1024--1025},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0263915 (41 \#8514)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {Co3},
+}
+
+@article{Fen73,
+    AUTHOR = {Fendel, Daniel},
+     TITLE = {A characterization of {C}onway's group. 3},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {24},
+      YEAR = {1973},
+     PAGES = {159--196},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0314962 (47 \#3511)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {Co3},
+}
+
+@article{Fin73,
+    AUTHOR = {Finkelstein, Larry},
+     TITLE = {The maximal subgroups of {C}onway's group {$C\sb{3}$} and
+              {M}c{L}aughlin's group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {25},
+      YEAR = {1973},
+     PAGES = {58--89},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0346046 (49 \#10772)},
+MRREVIEWER = {T. M. Gagen},
+  sporsimp = {Co3},
+}
+
+@article{Mor81,
+    author = {Mortimer, B.},
+     title = {The modular permutation representations of Conway's third
+              group},
+   journal = {Carleton Math. Ser.},
+    volume = {172},
+      year = {1981},
+  sporsimp = {Co3},
+}
+
+@article{Wor82,
+    AUTHOR = {Worboys, M. F.},
+     TITLE = {Generators for the sporadic group {${\rm Co}\sb{3}$} as a
+              {$(2,\,3,\,7)$} group},
+   JOURNAL = {Proc. Edinburgh Math. Soc. (2)},
+  FJOURNAL = {Proceedings of the Edinburgh Mathematical Society. Series II},
+    VOLUME = {25},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {65--68},
+      ISSN = {0013-0915},
+     CODEN = {PEMSA3},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR648901 (83h:20023)},
+MRREVIEWER = {Gerard M. Enright},
+  sporsimp = {Co3},
+}
+
+@article{Yos74,
+    AUTHOR = {Yoshida, Tomoyuki},
+     TITLE = {A characterization of {C}onway's group {$C\sb{3}$}},
+   JOURNAL = {Hokkaido Math. J.},
+  FJOURNAL = {Hokkaido Mathematical Journal},
+    VOLUME = {3},
+      YEAR = {1974},
+     PAGES = {232--242},
+      ISSN = {0385-4035},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0369513 (51 \#5746)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {Co3},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Co2
+%%
+
+@article{Smi74b,
+    AUTHOR = {Smith, Fredrick L.},
+     TITLE = {A characterization of the {$.2$} {C}onway simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {31},
+      YEAR = {1974},
+     PAGES = {91--116},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0349832 (50 \#2325)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {Co2},
+}
+
+@article{Wil83b,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The maximal subgroups of {C}onway's group {$\bfcdot 2$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {84},
+      YEAR = {1983},
+    NUMBER = {1},
+     PAGES = {107--114},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20E28 (20D08)},
+  MRNUMBER = {MR716772 (86e:20034a)},
+MRREVIEWER = {Stephen D. Smith},
+   sorttag = {b},
+  sporsimp = {Co2},
+}
+
+@article{Yos77,
+    AUTHOR = {Yoshida, Tomoyuki},
+     TITLE = {A characterization of the {$.2$} {C}onway simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {46},
+      YEAR = {1977},
+    NUMBER = {2},
+     PAGES = {405--414},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0439930 (55 \#12811)},
+MRREVIEWER = {Arthur Reifart},
+  sporsimp = {Co2},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Fi22
+%%
+
+@article{Ass81,
+    AUTHOR = {Assa, Steven B.},
+     TITLE = {A characterization of {$M(22)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {69},
+      YEAR = {1981},
+    NUMBER = {2},
+     PAGES = {455--466},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D05 (20D08)},
+  MRNUMBER = {MR617089 (82g:20032)},
+MRREVIEWER = {Gerard M. Enright},
+  sporsimp = {Fi22},
+}
+
+@incollection{Con73,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {A construction for the smallest {F}ischer group {$F\sb{22}$}},
+ BOOKTITLE = {Finite groups '72 (Proc. Gainesville Conf., Univ. Florida,
+              Gainesville, Fla., 1972)},
+     PAGES = {27--35. North-Holland Math. Studies, Vol. 7},
+ PUBLISHER = {North-Holland},
+   ADDRESS = {Amsterdam},
+      YEAR = {1973},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0372016 (51 \#8233)},
+MRREVIEWER = {Ulrich Dempwolff},
+  crossref = {GHS73},
+  sporsimp = {Fi22},
+}
+
+@phdthesis{Enr76,
+    author = {Enright, G. M.},
+     title = {The structure and subgroups of the Fischer groups $F_{22}$ and
+              $F_{23}$},
+      year = {1976},
+    school = {Cambridge},
+  sporsimp = {Fi22},
+}
+
+@article{Enr77a,
+    AUTHOR = {Enright, Gerard M.},
+     TITLE = {A description of the {F}ischer group {$F\sb{22}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {46},
+      YEAR = {1977},
+    NUMBER = {2},
+     PAGES = {334--343},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0450389 (56 \#8684)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {Fi22},
+}
+
+@article{Enr78,
+    AUTHOR = {Enright, Gerard M.},
+     TITLE = {Subgroups generated by transpositions in {$F\sb{22}$} and
+              {$F\sb{23}$}},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {6},
+      YEAR = {1978},
+    NUMBER = {8},
+     PAGES = {823--837},
+      ISSN = {0092-7872},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0476844 (57 \#16395)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {Fi22},
+}
+
+@article{Fis71,
+    AUTHOR = {Fischer, Bernd},
+     TITLE = {Finite groups generated by {$3$}-transpositions. {I}},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {13},
+      YEAR = {1971},
+     PAGES = {232--246},
+      ISSN = {0020-9910},
+   MRCLASS = {20D99},
+  MRNUMBER = {MR0294487 (45 \#3557)},
+MRREVIEWER = {A. R. Camina},
+  sporsimp = {Fi22},
+}
+
+@article{Fla84,
+    AUTHOR = {Flaass, D. G.},
+     TITLE = {{$2$}-local subgroups of {F}ischer groups},
+   JOURNAL = {Mat. Zametki},
+  FJOURNAL = {Akademiya Nauk SSSR. Matematicheskie Zametki},
+    VOLUME = {35},
+      YEAR = {1984},
+    NUMBER = {3},
+     PAGES = {333--342},
+      ISSN = {0025-567X},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR741800 (86a:20014)},
+MRREVIEWER = {J{\'o}zsef Pelik{\'a}n},
+      note = {Russian},
+  sporsimp = {Fi22},
+}
+
+@phdthesis{Hun70,
+    author = {Hunt, D. C.},
+     title = {A sporadic simple group of B. Fischer of order
+              $64,561,751,654,400$},
+      year = {1970},
+    school = {Warwick},
+  sporsimp = {Fi22},
+}
+
+@article{Hun71,
+    AUTHOR = {Hunt, David C.},
+     TITLE = {Character tables of certain finite simple groups},
+   JOURNAL = {Bull. Austral. Math. Soc.},
+  FJOURNAL = {Bulletin of the Australian Mathematical Society},
+    VOLUME = {5},
+      YEAR = {1971},
+     PAGES = {1--42},
+      ISSN = {0004-9727},
+   MRCLASS = {20C15},
+  MRNUMBER = {MR0302753 (46 \#1896)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {Fi22},
+}
+
+@article{Hun72,
+    AUTHOR = {Hunt, David C.},
+     TITLE = {A characterization of the finite simple group {$M(22)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {21},
+      YEAR = {1972},
+     PAGES = {103--112},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0299673 (45 \#8721)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  sporsimp = {Fi22},
+}
+
+@article{Moo81,
+    AUTHOR = {Moori, Jamshid},
+     TITLE = {On certain groups associated with the smallest {F}ischer
+              group},
+   JOURNAL = {J. London Math. Soc. (2)},
+  FJOURNAL = {The Journal of the London Mathematical Society. Second Series},
+    VOLUME = {23},
+      YEAR = {1981},
+    NUMBER = {1},
+     PAGES = {61--67},
+      ISSN = {0024-6107},
+     CODEN = {JLMSAK},
+   MRCLASS = {20D08 (20C30)},
+  MRNUMBER = {MR602239 (82g:20041)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  sporsimp = {Fi22},
+}
+
+@article{Par81,
+    AUTHOR = {Parrott, David},
+     TITLE = {Characterizations of the {F}ischer groups. {I}, {II}, {III}},
+   JOURNAL = {Trans. Amer. Math. Soc.},
+  FJOURNAL = {Transactions of the American Mathematical Society},
+    VOLUME = {265},
+      YEAR = {1981},
+    NUMBER = {2},
+     PAGES = {303--347},
+      ISSN = {0002-9947},
+     CODEN = {TAMTAM},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR610952 (82d:20018)},
+MRREVIEWER = {Leo J. Alex},
+  sporsimp = {Fi22},
+}
+
+@article{Wil84a,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {On maximal subgroups of the {F}ischer group {${\rm
+              Fi}\sb{22}$}},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {95},
+      YEAR = {1984},
+    NUMBER = {2},
+     PAGES = {197--222},
+      ISSN = {0305-0041},
+     CODEN = {MPCPCO},
+   MRCLASS = {20E28 (20D08)},
+  MRNUMBER = {MR735364 (86e:20036)},
+MRREVIEWER = {Gerard M. Enright},
+   sorttag = {a},
+  sporsimp = {Fi22},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  HN
+%%
+
+@article{Bei77,
+    AUTHOR = {Beisiegel, Bert},
+     TITLE = {A note on {H}arada's simple group {$F$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {48},
+      YEAR = {1977},
+    NUMBER = {1},
+     PAGES = {142--149},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0450387 (56 \#8682)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {HN},
+}
+
+@inproceedings{Har76,
+    AUTHOR = {Harada, Koichiro},
+     TITLE = {On the simple group {$F$} of order {$2\sp{14}\cdot
+              3\sp{6}\cdot 5\sp{6}\cdot 7\cdot 11\cdot 19$}},
+ BOOKTITLE = {Proceedings of the Conference on Finite Groups (Univ. Utah,
+              Park City, Utah, 1975)},
+     PAGES = {119--276},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {New York},
+      YEAR = {1976},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0401904 (53 \#5730)},
+MRREVIEWER = {W. J. Wong},
+  crossref = {SG76},
+  sporsimp = {HN},
+}
+
+@article{Har78,
+    AUTHOR = {Harada, Koichiro},
+     TITLE = {The automorphism group and the {S}chur multiplier of the
+              simple group of order {$2\sp{14}\cdot 3\sp{6}\cdot 5$}
+              {$\sp{6}\cdot 7\cdot 11\cdot 19$}},
+   JOURNAL = {Osaka J. Math.},
+  FJOURNAL = {Osaka Journal of Mathematics},
+    VOLUME = {15},
+      YEAR = {1978},
+    NUMBER = {3},
+     PAGES = {633--635},
+      ISSN = {0030-6126},
+     CODEN = {OJMAA7},
+   MRCLASS = {20D05 (20D45)},
+  MRNUMBER = {MR510500 (80c:20016)},
+MRREVIEWER = {Geoffrey Mason},
+  sporsimp = {HN},
+}
+
+@phdthesis{Nor75,
+    author = {Norton, S. P.},
+     title = {F and other simple groups},
+      year = {1975},
+    school = {Cambridge},
+  sporsimp = {HN},
+}
+
+@article{NW86,
+    AUTHOR = {Norton, S. P. and Wilson, R. A.},
+     TITLE = {Maximal subgroups of the {H}arada-{N}orton group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {103},
+      YEAR = {1986},
+    NUMBER = {1},
+     PAGES = {362--376},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08 (20E28)},
+  MRNUMBER = {MR860712 (88b:20029)},
+MRREVIEWER = {Geoffrey Mason},
+  sporsimp = {HN},
+}
+
+@phdthesis{Smi75b,
+    author = {Smith, P. E.},
+     title = {On certain finite simple groups},
+      year = {1975},
+    school = {Cambridge},
+  sporsimp = {HN},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Ly
+%%
+
+@article{Lyo72,
+    AUTHOR = {Lyons, Richard},
+     TITLE = {Evidence for a new finite simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {20},
+      YEAR = {1972},
+     PAGES = {540--569},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0299674 (45 \#8722)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {Ly},
+}
+
+@article {Lyo75,
+    AUTHOR = {Lyons, Richard},
+     TITLE = {Errata: ``{E}vidence for a new finite simple group'' ({J}.
+              {A}lgebra {\bf 20} (1972), 540--569)},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {34},
+      YEAR = {1975},
+     PAGES = {188--189},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0369506 (51 \#5739)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {Ly},
+}
+
+@article{MN84,
+    AUTHOR = {Meyer, Werner and Neutsch, Wolfram},
+     TITLE = {\"{U}ber {$5$}-{D}arstellungen der {L}yonsgruppe},
+   JOURNAL = {Math. Ann.},
+  FJOURNAL = {Mathematische Annalen},
+    VOLUME = {267},
+      YEAR = {1984},
+    NUMBER = {4},
+     PAGES = {519--535},
+      ISSN = {0025-5831},
+     CODEN = {MAANA},
+   MRCLASS = {20C20 (20D08 51E20)},
+  MRNUMBER = {MR742897 (85k:20038)},
+MRREVIEWER = {Stephen D. Smith},
+  sporsimp = {Ly},
+}
+
+@article{MNP85,
+    AUTHOR = {Meyer, Werner and Neutsch, Wolfram and Parker, Richard},
+     TITLE = {The minimal {$5$}-representation of {L}yons' sporadic group},
+   JOURNAL = {Math. Ann.},
+  FJOURNAL = {Mathematische Annalen},
+    VOLUME = {272},
+      YEAR = {1985},
+    NUMBER = {1},
+     PAGES = {29--39},
+      ISSN = {0025-5831},
+     CODEN = {MAANA},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR794089 (86i:20025)},
+MRREVIEWER = {R. W. Carter},
+  sporsimp = {Ly},
+}
+
+@incollection{Sim73,
+    AUTHOR = {Sims, Charles C.},
+     TITLE = {The existence and uniqueness of {L}yons' group},
+ BOOKTITLE = {Finite groups '72 (Proc. Gainesville Conf., Univ. Florida,
+              Gainesville, Fla., 1972)},
+     PAGES = {138--141. North-Holland Math. Studies, Vol. 7},
+ PUBLISHER = {North-Holland},
+   ADDRESS = {Amsterdam},
+      YEAR = {1973},
+   MRCLASS = {20F10},
+  MRNUMBER = {MR0354881 (50 \#7358)},
+  crossref = {GHS73},
+  sporsimp = {Ly},
+}
+
+@article{Wil84c,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The subgroup structure of the {L}yons group},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {95},
+      YEAR = {1984},
+    NUMBER = {3},
+     PAGES = {403--409},
+      ISSN = {0305-0041},
+     CODEN = {MPCPCO},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR755827 (86h:20018)},
+MRREVIEWER = {Geoffrey Mason},
+  sporsimp = {Ly},
+}
+
+@article{Wil85a,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The maximal subgroups of the {L}yons group},
+   JOURNAL = {Math. Proc. Cambridge Philos. Soc.},
+  FJOURNAL = {Mathematical Proceedings of the Cambridge Philosophical
+              Society},
+    VOLUME = {97},
+      YEAR = {1985},
+    NUMBER = {3},
+     PAGES = {433--436},
+      ISSN = {0305-0041},
+     CODEN = {MPCPCO},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR778677 (86e:20017)},
+MRREVIEWER = {Geoffrey Mason},
+   sorttag = {a},
+  sporsimp = {Ly},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Th
+%%
+
+@article{Lyo84,
+    AUTHOR = {Lyons, Richard},
+     TITLE = {The {S}chur multiplier of {$F\sb{3}$} is trivial},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {12},
+      YEAR = {1984},
+    NUMBER = {15-16},
+     PAGES = {1889--1898},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR745173 (85e:20019)},
+MRREVIEWER = {M. E. Harris},
+  sporsimp = {Th},
+}
+
+@article{Mar76,
+    AUTHOR = {Markot, Robert},
+     TITLE = {A {$2$}-local characterization of the simple group {$E$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {40},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {585--595},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0409628 (53 \#13380)},
+MRREVIEWER = {Ulrich Dempwolff},
+  sporsimp = {Th},
+}
+
+@article{Par77,
+    AUTHOR = {Parrott, David},
+     TITLE = {On {T}hompson's simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {46},
+      YEAR = {1977},
+    NUMBER = {2},
+     PAGES = {389--404},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0447396 (56 \#5708)},
+MRREVIEWER = {David R. Mason},
+  sporsimp = {Th},
+}
+
+@article{Rei76,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {A characterization of {T}hompson's sporadic simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {38},
+      YEAR = {1976},
+    NUMBER = {1},
+     PAGES = {192--200},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0393217 (52 \#14027)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {Th},
+}
+
+@phdthesis{Smi75b,
+    author = {Smith, P. E.},
+     title = {On certain finite simple groups},
+      year = {1975},
+    school = {Cambridge},
+  sporsimp = {Th},
+}
+
+@article{Smi76c,
+    AUTHOR = {Smith, P. E.},
+     TITLE = {A simple subgroup of {$M?$} and {$E\sb{8}(3)$}},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {8},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {161--165},
+      ISSN = {0024-6093},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0409630 (53 \#13382)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {Th},
+}
+
+@incollection{Tho76a,
+    author = {Thompson, J. G.},
+     title = {A simple subgroup of $E_8(3)$},
+ booktitle = {Finite Groups},
+      year = {1976},
+     pages = {113--116},
+  sporsimp = {Th},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Fi23
+%%
+
+@article{Bue79a,
+    AUTHOR = {Buekenhout, Francis},
+     TITLE = {Diagrams for geometries and groups},
+   JOURNAL = {J. Combin. Theory Ser. A},
+  FJOURNAL = {Journal of Combinatorial Theory. Series A},
+    VOLUME = {27},
+      YEAR = {1979},
+    NUMBER = {2},
+     PAGES = {121--151},
+      ISSN = {0097-3165},
+     CODEN = {JCBTA7},
+   MRCLASS = {51A05 (20D08 51J05)},
+  MRNUMBER = {MR542524 (83f:51003)},
+MRREVIEWER = {Joseph A. Thas},
+  sporsimp = {Fi23},
+}
+
+@phdthesis{Enr76,
+    author = {Enright, G. M.},
+     title = {The structure and subgroups of the Fischer groups $F_{22}$ and
+              $F_{23}$},
+      year = {1976},
+    school = {Cambridge},
+  sporsimp = {Fi23},
+}
+
+@article{Enr77b,
+    AUTHOR = {Enright, Gerard M.},
+     TITLE = {A description of the {F}ischer group {$F\sb{23}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {46},
+      YEAR = {1977},
+    NUMBER = {2},
+     PAGES = {344--354},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0450390 (56 \#8685)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {Fi23},
+}
+
+@article{Enr78,
+    AUTHOR = {Enright, Gerard M.},
+     TITLE = {Subgroups generated by transpositions in {$F\sb{22}$} and
+              {$F\sb{23}$}},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {6},
+      YEAR = {1978},
+    NUMBER = {8},
+     PAGES = {823--837},
+      ISSN = {0092-7872},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0476844 (57 \#16395)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {Fi23},
+}
+
+@article{Fis71,
+    AUTHOR = {Fischer, Bernd},
+     TITLE = {Finite groups generated by {$3$}-transpositions. {I}},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {13},
+      YEAR = {1971},
+     PAGES = {232--246},
+      ISSN = {0020-9910},
+   MRCLASS = {20D99},
+  MRNUMBER = {MR0294487 (45 \#3557)},
+MRREVIEWER = {A. R. Camina},
+  sporsimp = {Fi23},
+}
+
+@article{Hun73,
+    AUTHOR = {Hunt, David C.},
+     TITLE = {A characterization of the finite simple group {$M(23)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {26},
+      YEAR = {1973},
+     PAGES = {431--439},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0322046 (48 \#410)},
+MRREVIEWER = {David R. Mason},
+  sporsimp = {Fi23},
+}
+
+@article{Hun74,
+    AUTHOR = {Hunt, David C.},
+     TITLE = {The character table of {F}ischer's simple group, {$M(23)$}},
+   JOURNAL = {Math. Comp.},
+  FJOURNAL = {Mathematics of Computation},
+    VOLUME = {28},
+      YEAR = {1974},
+     PAGES = {660--661; addendum, ibid. 28 (1974), no. 126, loose microfiche
+              suppl. E6-F9},
+      ISSN = {0025-5718},
+   MRCLASS = {20C15 (20D05)},
+  MRNUMBER = {MR0369494 (51 \#5727)},
+MRREVIEWER = {M. Herzog},
+  sporsimp = {Fi23},
+}
+
+@article{Par81,
+    AUTHOR = {Parrott, David},
+     TITLE = {Characterizations of the {F}ischer groups. {I}, {II}, {III}},
+   JOURNAL = {Trans. Amer. Math. Soc.},
+  FJOURNAL = {Transactions of the American Mathematical Society},
+    VOLUME = {265},
+      YEAR = {1981},
+    NUMBER = {2},
+     PAGES = {303--347},
+      ISSN = {0002-9947},
+     CODEN = {TAMTAM},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR610952 (82d:20018)},
+MRREVIEWER = {Leo J. Alex},
+  sporsimp = {Fi23},
+}
+
+@article{Won77,
+    AUTHOR = {Wong, S. K.},
+     TITLE = {A characterization of the {F}ischer group {$M(23)$} by a
+              {$2$}-local subgroup},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {44},
+      YEAR = {1977},
+    NUMBER = {1},
+     PAGES = {143--151},
+      ISSN = {0021-8693},
+   MRCLASS = {20D20},
+  MRNUMBER = {MR0424934 (54 \#12892)},
+MRREVIEWER = {Arthur Reifart},
+  sporsimp = {Fi23},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Co1
+%%
+
+@article{Con68,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {A perfect group of order {$8,315,553,613,086,720,000$} and the
+              sporadic simple groups},
+   JOURNAL = {Proc. Nat. Acad. Sci. U.S.A.},
+    VOLUME = {61},
+      YEAR = {1968},
+     PAGES = {398--400},
+   MRCLASS = {20.27},
+  MRNUMBER = {MR0237634 (38 \#5915)},
+MRREVIEWER = {J. E. McLaughlin},
+  sporsimp = {Co1},
+}
+
+@article{Con69a,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {A group of order {$8,315,553,613,086,720,000$}},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {1},
+      YEAR = {1969},
+     PAGES = {79--88},
+      ISSN = {0024-6093},
+   MRCLASS = {20.29},
+  MRNUMBER = {MR0248216 (40 \#1470)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {Co1},
+}
+
+@article{Con69b,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {A characterisation of {L}eech's lattice},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {7},
+      YEAR = {1969},
+     PAGES = {137--142},
+      ISSN = {0020-9910},
+   MRCLASS = {10.20},
+  MRNUMBER = {MR0245518 (39 \#6824)},
+MRREVIEWER = {G. K. White},
+  sporsimp = {Co1},
+}
+
+@incollection{Con71a,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Three lectures on exceptional groups},
+ BOOKTITLE = {Finite simple groups (Proc. Instructional Conf., Oxford,
+              1969)},
+     PAGES = {215--247},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1971},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0338152 (49 \#2918)},
+MRREVIEWER = {Thomas Laffey},
+  crossref = {PH71},
+  sporsimp = {Co1},
+}
+
+@incollection{Con71b,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Groups, lattices, and quadratic forms},
+ BOOKTITLE = {Computers in algebra and number theory (Proc. SIAM-AMS Sympos.
+              Appl. Math., New York, 1970)},
+     PAGES = {135--139. SIAM-AMS Proc., Vol. IV},
+ PUBLISHER = {Amer. Math. Soc.},
+   ADDRESS = {Providence, R.I.},
+      YEAR = {1971},
+   MRCLASS = {20D05 (10E45)},
+  MRNUMBER = {MR0342602 (49 \#7348)},
+MRREVIEWER = {E. A. Connors},
+  crossref = {BH71},
+  sporsimp = {Co1},
+}
+
+@article{Con83,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {The automorphism group of the {$26$}-dimensional even
+              unimodular {L}orentzian lattice},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {80},
+      YEAR = {1983},
+    NUMBER = {1},
+     PAGES = {159--163},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {11H06 (05B40 11E57 11H31 11H99 20B25)},
+  MRNUMBER = {MR690711 (85k:11030)},
+  sporsimp = {Co1},
+}
+
+@article{CPS82,
+    AUTHOR = {Conway, J. H. and Parker, R. A. and Sloane, N. J. A.},
+     TITLE = {The covering radius of the {L}eech lattice},
+   JOURNAL = {Proc. Roy. Soc. London Ser. A},
+  FJOURNAL = {Proceedings of the Royal Society. London. Series A.
+              Mathematical and Physical Sciences},
+    VOLUME = {380},
+      YEAR = {1982},
+    NUMBER = {1779},
+     PAGES = {261--290},
+      ISSN = {0080-4630},
+     CODEN = {PRLAAZ},
+   MRCLASS = {10E30 (52A43 94B40)},
+  MRNUMBER = {MR660415 (84m:10022b)},
+  sporsimp = {Co1},
+}
+
+@article{CS82a,
+    AUTHOR = {Conway, J. H. and Sloane, N. J. A.},
+     TITLE = {Twenty-three constructions for the {L}eech lattice},
+   JOURNAL = {Proc. Roy. Soc. London Ser. A},
+  FJOURNAL = {Proceedings of the Royal Society. London. Series A.
+              Mathematical and Physical Sciences},
+    VOLUME = {381},
+      YEAR = {1982},
+    NUMBER = {1781},
+     PAGES = {275--283},
+      ISSN = {0080-4630},
+     CODEN = {PRLAAZ},
+   MRCLASS = {10E05 (20F32 52A43 94B40)},
+  MRNUMBER = {MR661720 (84m:10020)},
+  sporsimp = {Co1},
+}
+
+@article{CS82b,
+    AUTHOR = {Conway, J. H. and Sloane, N. J. A.},
+     TITLE = {Lorentzian forms for the {L}eech lattice},
+   JOURNAL = {Bull. Amer. Math. Soc. (N.S.)},
+  FJOURNAL = {American Mathematical Society. Bulletin. New Series},
+    VOLUME = {6},
+      YEAR = {1982},
+    NUMBER = {2},
+     PAGES = {215--217},
+      ISSN = {0273-0979},
+     CODEN = {BAMOAD},
+   MRCLASS = {10E05 (10E25)},
+  MRNUMBER = {MR640949 (84d:10036)},
+MRREVIEWER = {J. S. Hsia},
+  sporsimp = {Co1},
+}
+
+@phdthesis{Cur72,
+    author = {Curtis, R. T.},
+     title = {On the Mathieu group $M_{24}$ and related topics},
+      year = {1972},
+    school = {Cambridge},
+  sporsimp = {Co1},
+}
+
+@article{Cur73,
+    AUTHOR = {Curtis, R. T.},
+     TITLE = {On subgroups of {$\sp{\ast} O$}. {I}. {L}attice stabilizers},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {27},
+      YEAR = {1973},
+     PAGES = {549--573},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0340404 (49 \#5159)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  sporsimp = {Co1},
+}
+
+@article{Cur80,
+    AUTHOR = {Curtis, R. T.},
+     TITLE = {On subgroups of {$\cdot O$}. {II}. {L}ocal structure},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {63},
+      YEAR = {1980},
+    NUMBER = {2},
+     PAGES = {413--434},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR570721 (81f:20020)},
+MRREVIEWER = {Henry S. Leonard, Jr.},
+  sporsimp = {Co1},
+}
+
+@article{LM82,
+    AUTHOR = {Lepowsky, James and Meurman, Arne},
+     TITLE = {An {$E\sb{8}$}-approach to the {L}eech lattice and the
+              {C}onway group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {77},
+      YEAR = {1982},
+    NUMBER = {2},
+     PAGES = {484--504},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {10E30 (17B10 20D08 94B40)},
+  MRNUMBER = {MR673130 (84a:10033)},
+MRREVIEWER = {N. J. A. Sloane},
+  sporsimp = {Co1},
+}
+
+@article{Nor82,
+    AUTHOR = {Norton, S.},
+     TITLE = {A bound for the covering radius of the {L}eech lattice},
+   JOURNAL = {Proc. Roy. Soc. London Ser. A},
+  FJOURNAL = {Proceedings of the Royal Society. London. Series A.
+              Mathematical and Physical Sciences},
+    VOLUME = {380},
+      YEAR = {1982},
+    NUMBER = {1779},
+     PAGES = {259--260},
+      ISSN = {0080-4630},
+     CODEN = {PRLAAZ},
+   MRCLASS = {10E30 (52A43 94B40)},
+  MRNUMBER = {MR660414 (84m:10022a)},
+  sporsimp = {Co1},
+}
+
+@phdthesis{Pat72,
+    author = {Patterson, N. J.},
+     title = {On Conway's group .0 and some subgroups},
+      year = {1972},
+    school = {Cambridge},
+  sporsimp = {Co1},
+}
+
+@article{Rei77c,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {A remark on {C}onway's group .1},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik},
+    VOLUME = {29},
+      YEAR = {1977},
+    NUMBER = {4},
+     PAGES = {389--391},
+      ISSN = {0003-889X},
+   MRCLASS = {20D05 (20D45)},
+  MRNUMBER = {MR0473000 (57 \#12679)},
+MRREVIEWER = {R. G. Stanton},
+ zblnumber = {0377.20011},
+  sporsimp = {Co1},
+}
+
+@article{Rei78,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {A {$2$}-local characterization of the simple groups {$M(24)',
+              .1$}, and {$J\sb{4}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {50},
+      YEAR = {1978},
+    NUMBER = {1},
+     PAGES = {213--227},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0466302 (57 \#6182)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {Co1},
+}
+
+@article{Tho76b,
+    AUTHOR = {Thompson, J. G.},
+     TITLE = {Finite groups and even lattices},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {38},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {523--524},
+      ISSN = {0021-8693},
+   MRCLASS = {20D30},
+  MRNUMBER = {MR0399257 (53 \#3108)},
+MRREVIEWER = {A. R. Camina},
+  sporsimp = {Co1},
+}
+
+@incollection{Tit80b,
+    author = {Tits, J.},
+     title = {Four presentations of Leech's lattice},
+ BOOKTITLE = {Proceedings of the Symposium held at the University of Durham,
+              Durham, July 31--August 10, 1978},
+ PUBLISHER = {Academic Press Inc. [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {London},
+      YEAR = {1980},
+     pages = {303--307},
+  crossref = {Col80},
+  sporsimp = {Co1},
+}
+
+@article{Wil83a,
+    AUTHOR = {Wilson, Robert A.},
+     TITLE = {The maximal subgroups of {C}onway's group {${\rm Co}\sb{1}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {85},
+      YEAR = {1983},
+    NUMBER = {1},
+     PAGES = {144--165},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D05 (20D08)},
+  MRNUMBER = {MR723071 (86b:20015)},
+   sorttag = {a},
+  sporsimp = {Co1},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  J4
+%%
+
+@phdthesis{Ben80,
+    author = {Benson, D. J.},
+     title = {The simple group $J_4$},
+      year = {1980},
+    school = {Cambridge},
+  sporsimp = {J4},
+}
+
+@article{Gul81a,
+    AUTHOR = {G{\"u}lo{\u{g}}lu, Ismail {\c{S}}uayip},
+     TITLE = {A characterization of the simple group {$J\sb{4}$}},
+   JOURNAL = {Osaka J. Math.},
+  FJOURNAL = {Osaka Journal of Mathematics},
+    VOLUME = {18},
+      YEAR = {1981},
+    NUMBER = {1},
+     PAGES = {13--24},
+      ISSN = {0030-6126},
+     CODEN = {OJMAA7},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR609974 (82g:20033)},
+MRREVIEWER = {A. V. Borovik},
+   sorttag = {a},
+  sporsimp = {J4},
+}
+
+@article{Jan76,
+    AUTHOR = {Janko, Zvonimir},
+     TITLE = {A new finite simple group of order {$86\cdot 775\cdot 571\cdot
+              046\cdot 077\cdot 562\cdot 880$} which possesses {$M\sb{24}$}
+              and the full covering group of {$M\sb{22}$} as subgroups},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {42},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {564--596},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0432751 (55 \#5734)},
+MRREVIEWER = {Peter Landrock},
+ zblnumber = {0344.20010},
+  sporsimp = {J4},
+}
+
+@article{Lem78a,
+    AUTHOR = {Lempken, Wolfgang},
+     TITLE = {The {S}chur multiplier of {$J\sb{4}$} is trivial},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik},
+    VOLUME = {30},
+      YEAR = {1978},
+     PAGES = {267--270},
+      ISSN = {0003-889X},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0472998 (57 \#12677)},
+MRREVIEWER = {Ulrich Dempwolff},
+  sporsimp = {J4},
+}
+
+@article{Lem78b,
+    AUTHOR = {Lempken, Wolfgang},
+     TITLE = {A {$2$}-local characterization of {J}anko's simple group
+              {$J\sb{4}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {55},
+      YEAR = {1978},
+    NUMBER = {2},
+     PAGES = {403--445},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR523466 (80g:20026)},
+MRREVIEWER = {A. V. Borovik},
+  sporsimp = {J4},
+}
+
+@article{Mas77b,
+    AUTHOR = {Mason, Geoffrey},
+     TITLE = {Some remarks on groups of type {$J\sb{4}$}},
+   JOURNAL = {Arch. Math. (Basel)},
+  FJOURNAL = {Archiv der Mathematik},
+    VOLUME = {29},
+      YEAR = {1977},
+    NUMBER = {6},
+     PAGES = {574--582},
+      ISSN = {0003-889X},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0463284 (57 \#3237)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {J4},
+}
+
+@incollection{Nor80,
+    AUTHOR = {Norton, Simon},
+     TITLE = {The construction of {$J\sb{4}$}},
+ BOOKTITLE = {The Santa Cruz Conference on Finite Groups (Univ. California,
+              Santa Cruz, Calif., 1979)},
+    SERIES = {Proc. Sympos. Pure Math.},
+    VOLUME = {37},
+     PAGES = {271--277},
+ PUBLISHER = {Amer. Math. Soc.},
+   ADDRESS = {Providence, R.I.},
+      YEAR = {1980},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR604593 (82a:20030)},
+  crossref = {CM80b},
+  sporsimp = {J4},
+}
+
+@article{Rei77a,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {Some simple groups related {$M\sb{24}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {45},
+      YEAR = {1977},
+    NUMBER = {1},
+     PAGES = {199--209},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0430056 (55 \#3063)},
+MRREVIEWER = {Michael J. Collins},
+  sporsimp = {J4},
+}
+
+@article{Rei77b,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {Another characterization of {J}anko's simple group
+              {$J\sb{4}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {49},
+      YEAR = {1977},
+    NUMBER = {2},
+     PAGES = {621--627},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0457555 (56 \#15760)},
+MRREVIEWER = {Geoffrey Mason},
+  sporsimp = {J4},
+}
+
+@article{Rei78,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {A {$2$}-local characterization of the simple groups {$M(24)',
+              .1$}, and {$J\sb{4}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {50},
+      YEAR = {1978},
+    NUMBER = {1},
+     PAGES = {213--227},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0466302 (57 \#6182)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {J4},
+}
+
+@article{Sta78,
+    author = {Stafford, R. M.},
+     title = {A characterization of Janko's new simple group $J_4$},
+   journal = {Notices Amer. Math. Soc.},
+    volume = {25},
+      year = {1978},
+     pages = {A-423},
+  sporsimp = {J4},
+}
+
+@article{Sta79,
+    AUTHOR = {Stafford, Richard M.},
+     TITLE = {A characterization of {J}anko's simple group {$J\sb{4}$} by
+              centralizers of elements of order {$3$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {57},
+      YEAR = {1979},
+    NUMBER = {2},
+     PAGES = {555--566},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR533814 (80h:20029)},
+MRREVIEWER = {W. J. Wong},
+  sporsimp = {J4},
+}
+
+@article{Str78,
+    AUTHOR = {Stroth, G.},
+     TITLE = {An odd characterization of {$J\sb{4}$}},
+   JOURNAL = {Israel J. Math.},
+  FJOURNAL = {Israel Journal of Mathematics},
+    VOLUME = {31},
+      YEAR = {1978},
+    NUMBER = {2},
+     PAGES = {189--192},
+      ISSN = {0021-2172},
+     CODEN = {ISJMAP},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR516255 (80b:20018)},
+MRREVIEWER = {Shui Chi Chang},
+  sporsimp = {J4},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Fi24'
+%%
+
+@article{DS81,
+    AUTHOR = {Davis, Stephen L. and Solomon, Ronald},
+     TITLE = {Some sporadic characterizations},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {9},
+      YEAR = {1981},
+    NUMBER = {17},
+     PAGES = {1725--1742},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR631885 (83a:20024)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {Fi24'},
+}
+
+@article{Fis71,
+    AUTHOR = {Fischer, Bernd},
+     TITLE = {Finite groups generated by {$3$}-transpositions. {I}},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {13},
+      YEAR = {1971},
+     PAGES = {232--246},
+      ISSN = {0020-9910},
+   MRCLASS = {20D99},
+  MRNUMBER = {MR0294487 (45 \#3557)},
+MRREVIEWER = {A. R. Camina},
+  sporsimp = {Fi24'},
+}
+
+@phdthesis{Nor75,
+    author = {Norton, S. P.},
+     title = {F and other simple groups},
+      year = {1975},
+    school = {Cambridge},
+  sporsimp = {Fi24'},
+}
+
+@misc{Nor,
+    author = {Norton, S. P.},
+     title = {Transposition algebras and the group $F_{24}$},
+      note = {preprint},
+   address = {Cambridge},
+  sporsimp = {Fi24'},
+}
+
+@article{Par81,
+    AUTHOR = {Parrott, David},
+     TITLE = {Characterizations of the {F}ischer groups. {I}, {II}, {III}},
+   JOURNAL = {Trans. Amer. Math. Soc.},
+  FJOURNAL = {Transactions of the American Mathematical Society},
+    VOLUME = {265},
+      YEAR = {1981},
+    NUMBER = {2},
+     PAGES = {303--347},
+      ISSN = {0002-9947},
+     CODEN = {TAMTAM},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR610952 (82d:20018)},
+MRREVIEWER = {Leo J. Alex},
+  sporsimp = {Fi24'},
+}
+
+@article{Rei77a,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {Some simple groups related {$M\sb{24}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {45},
+      YEAR = {1977},
+    NUMBER = {1},
+     PAGES = {199--209},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0430056 (55 \#3063)},
+MRREVIEWER = {Michael J. Collins},
+  sporsimp = {Fi24'},
+}
+
+@article{Rei78,
+    AUTHOR = {Reifart, Arthur},
+     TITLE = {A {$2$}-local characterization of the simple groups {$M(24)',
+              .1$}, and {$J\sb{4}$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {50},
+      YEAR = {1978},
+    NUMBER = {1},
+     PAGES = {213--227},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0466302 (57 \#6182)},
+MRREVIEWER = {Koichiro Harada},
+  sporsimp = {Fi24'},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  B
+%%
+
+@article{Bie79b,
+    AUTHOR = {Bierbrauer, J{\"u}rgen},
+     TITLE = {A characterization of the ``baby monster'' {$F\sb{2}$},
+              including a note on {$\sp{2}E\sb{6}(2)$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {56},
+      YEAR = {1979},
+    NUMBER = {2},
+     PAGES = {384--395},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D06 (20D08)},
+  MRNUMBER = {MR528582 (80h:20027)},
+MRREVIEWER = {Leo J. Alex},
+  sporsimp = {B},
+}
+
+@inproceedings{Hig76,
+    AUTHOR = {Higman, D. G.},
+     TITLE = {A monomial character of {F}ischer's baby monster},
+ BOOKTITLE = {Proceedings of the Conference on Finite Groups (Univ. Utah,
+              Park City, Utah, 1975)},
+     PAGES = {277--283},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {New York},
+      YEAR = {1976},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0409627 (53 \#13379)},
+MRREVIEWER = {Bhama Srinivasan},
+  crossref = {SG76},
+  sporsimp = {B},
+}
+
+@article{KL78,
+    AUTHOR = {Kroll, Ove and Landrock, Peter},
+     TITLE = {The characters of some {$2$}-blocks of the babymonster, its
+              covering group and the monster},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {6},
+      YEAR = {1978},
+    NUMBER = {18},
+     PAGES = {1893--1921},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR511168 (80f:20016)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {B},
+}
+
+@inproceedings{Leo76,
+    AUTHOR = {Leon, Jeffrey S.},
+     TITLE = {On the irreducible characters of a simple group of order
+              {$2\sp{41}\cdot 3\sp{13}\cdot 5\sp{6}\cdot 7\sp{2}\cdot
+              11\cdot 13\cdot 17\cdot 19\cdot 23\cdot 31\cdot 47$}},
+ BOOKTITLE = {Proceedings of the Conference on Finite Groups (Univ. Utah,
+              Park City, Utah, 1975)},
+     PAGES = {285--299},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {New York},
+      YEAR = {1976},
+   MRCLASS = {20C15},
+  MRNUMBER = {MR0401890 (53 \#5716)},
+MRREVIEWER = {Leo J. Alex},
+  crossref = {SG76},
+  sporsimp = {B},
+}
+
+@article{LS77,
+    AUTHOR = {Leon, Jeffrey S. and Sims, Charles C.},
+     TITLE = {The existence and uniqueness of a simple group generated by
+              {$\{3,4\}$}-transpositions},
+   JOURNAL = {Bull. Amer. Math. Soc.},
+    VOLUME = {83},
+      YEAR = {1977},
+    NUMBER = {5},
+     PAGES = {1039--1040},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0444765 (56 \#3113)},
+MRREVIEWER = {A. R. Camina},
+  sporsimp = {B},
+}
+
+@incollection{Sim80,
+    author = {Sims, Charles C.},
+     title = {How to construct a Baby Monster},
+ BOOKTITLE = {Proceedings of the Symposium held at the University of Durham,
+              Durham, July 31--August 10, 1978},
+     pages = {339--345},
+ PUBLISHER = {Academic Press Inc. [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {London},
+      YEAR = {1980},
+  crossref = {Col80},
+  sporsimp = {B},
+}
+
+@article{Str76b,
+    AUTHOR = {Stroth, G.},
+     TITLE = {A characterization of {F}ischer's sporadic simple group of the
+              order {$2\sp{41}\cdot 3\sp{13}\cdot 5\sp{6}\cdot 7\sp{2}\cdot
+              11\cdot 13\cdot 17\cdot 19\cdot 23\cdot 31\cdot 47$}},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {40},
+      YEAR = {1976},
+    NUMBER = {2},
+     PAGES = {499--531},
+      ISSN = {0021-8693},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0417277 (54 \#5334)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {B},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  M
+%%
+
+@article{Con80,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {Monsters and moonshine},
+   JOURNAL = {Math. Intelligencer},
+  FJOURNAL = {The Mathematical Intelligencer},
+    VOLUME = {2},
+      YEAR = {1979/80},
+    NUMBER = {4},
+     PAGES = {165--171},
+      ISSN = {0343-6993},
+     CODEN = {MAINDC},
+   MRCLASS = {20D08 (10D12)},
+  MRNUMBER = {MR600222 (82a:20028)},
+MRREVIEWER = {Stephen D. Smith},
+  sporsimp = {M},
+}
+
+@article{Con85,
+    AUTHOR = {Conway, J. H.},
+     TITLE = {A simple construction for the {F}ischer-{G}riess monster
+              group},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {79},
+      YEAR = {1985},
+    NUMBER = {3},
+     PAGES = {513--540},
+      ISSN = {0020-9910},
+     CODEN = {INVMBH},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR782233 (86h:20019)},
+MRREVIEWER = {Geoffrey Mason},
+  sporsimp = {M},
+}
+
+@article{CN79,
+    AUTHOR = {Conway, J. H. and Norton, S. P.},
+     TITLE = {Monstrous moonshine},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {11},
+      YEAR = {1979},
+    NUMBER = {3},
+     PAGES = {308--339},
+      ISSN = {0024-6093},
+     CODEN = {LMSBBT},
+   MRCLASS = {20D08 (10D12)},
+  MRNUMBER = {MR554399 (81j:20028)},
+MRREVIEWER = {Stephen D. Smith},
+  sporsimp = {M},
+}
+
+@article{DS81,
+    AUTHOR = {Davis, Stephen L. and Solomon, Ronald},
+     TITLE = {Some sporadic characterizations},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {9},
+      YEAR = {1981},
+    NUMBER = {17},
+     PAGES = {1725--1742},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR631885 (83a:20024)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {M},
+}
+
+@incollection{Fon80,
+    AUTHOR = {Fong, Paul},
+     TITLE = {Characters arising in the {M}onster-modular connection},
+ BOOKTITLE = {The Santa Cruz Conference on Finite Groups (Univ. California,
+              Santa Cruz, Calif., 1979)},
+    SERIES = {Proc. Sympos. Pure Math.},
+    VOLUME = {37},
+     PAGES = {557--559},
+ PUBLISHER = {Amer. Math. Soc.},
+   ADDRESS = {Providence, R.I.},
+      YEAR = {1980},
+   MRCLASS = {20D08 (10D05 20C30)},
+  MRNUMBER = {MR604633 (82a:20029)},
+  crossref = {CM80b},
+  sporsimp = {M},
+}
+
+@article{FLM84,
+    AUTHOR = {Frenkel, I. B. and Lepowsky, J. and Meurman, A.},
+     TITLE = {A natural representation of the {F}ischer-{G}riess {M}onster
+              with the modular function {$J$} as character},
+   JOURNAL = {Proc. Nat. Acad. Sci. U.S.A.},
+  FJOURNAL = {Proceedings of the National Academy of Sciences of the United
+              States of America},
+    VOLUME = {81},
+      YEAR = {1984},
+    NUMBER = {10, Phys. Sci.},
+     PAGES = {3256--3260},
+      ISSN = {0027-8424},
+     CODEN = {PNASA6},
+   MRCLASS = {20D08 (17B67 20C20)},
+  MRNUMBER = {MR747596 (85e:20018)},
+  sporsimp = {M},
+}
+
+@inproceedings{Gri76,
+    AUTHOR = {Griess, Jr., Robert L.},
+     TITLE = {The structure of the ``monster'' simple group},
+ BOOKTITLE = {Proceedings of the Conference on Finite Groups (Univ. Utah,
+              Park City, Utah, 1975)},
+     PAGES = {113--118},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {New York},
+      YEAR = {1976},
+   MRCLASS = {20D05},
+  MRNUMBER = {MR0399248 (53 \#3099)},
+MRREVIEWER = {David C. Hunt},
+  crossref = {SG76},
+  sporsimp = {M},
+}
+
+@article{Gri81,
+    AUTHOR = {Griess, Jr., Robert L.},
+     TITLE = {A construction of {$F\sb{1}$} as automorphisms of a
+              {$196,883$}-dimensional algebra},
+   JOURNAL = {Proc. Nat. Acad. Sci. U.S.A.},
+  FJOURNAL = {Proceedings of the National Academy of Sciences of the United
+              States of America},
+    VOLUME = {78},
+      YEAR = {1981},
+    NUMBER = {2, part 1},
+     PAGES = {686--691},
+      ISSN = {0027-8424},
+     CODEN = {PNASA6},
+   MRCLASS = {20D08 (17D99)},
+  MRNUMBER = {MR605419 (82d:20022)},
+MRREVIEWER = {Stephen D. Smith},
+  sporsimp = {M},
+}
+
+@article{Gri82,
+    AUTHOR = {Griess, Jr., Robert L.},
+     TITLE = {The friendly giant},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {69},
+      YEAR = {1982},
+    NUMBER = {1},
+     PAGES = {1--102},
+      ISSN = {0020-9910},
+     CODEN = {INVMBH},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR671653 (84m:20024)},
+MRREVIEWER = {George Glauberman},
+  sporsimp = {M},
+}
+
+@incollection{Gri85a,
+    AUTHOR = {Griess, Jr., Robert L.},
+     TITLE = {The {M}onster and its nonassociative algebra},
+ BOOKTITLE = {Finite groups---coming of age (Montreal, Que., 1982)},
+    SERIES = {Contemp. Math.},
+    VOLUME = {45},
+     PAGES = {121--157},
+ PUBLISHER = {Amer. Math. Soc.},
+   ADDRESS = {Providence, RI},
+      YEAR = {1985},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR822237 (87f:20025)},
+MRREVIEWER = {Geoffrey Mason},
+  crossref = {McK85},
+  sporsimp = {M},
+}
+
+@article{Kac80b,
+    AUTHOR = {Kac, Victor G.},
+     TITLE = {A remark on the {C}onway-{N}orton conjecture about the
+              ``{M}onster'' simple group},
+   JOURNAL = {Proc. Nat. Acad. Sci. U.S.A.},
+  FJOURNAL = {Proceedings of the National Academy of Sciences of the United
+              States of America},
+    VOLUME = {77},
+      YEAR = {1980},
+    NUMBER = {9, part 1},
+     PAGES = {5048--5049},
+      ISSN = {0027-8424},
+     CODEN = {PNASA6},
+   MRCLASS = {20D08 (10D12 81D05)},
+  MRNUMBER = {MR587277 (81m:20026)},
+MRREVIEWER = {Stephen D. Smith},
+  sporsimp = {M},
+}
+
+@article{Kro77,
+    author = {Kroll, O.},
+     title = {The characters of a non-principal 2-block of the Monster
+              $F_1$ (?)},
+   journal = {Preprint Ser. Math. Inst. Aarhus Univ.},
+    volume = {31},
+      year = {1977},
+  sporsimp = {M},
+}
+
+@article{KL78,
+    AUTHOR = {Kroll, Ove and Landrock, Peter},
+     TITLE = {The characters of some {$2$}-blocks of the babymonster, its
+              covering group and the monster},
+   JOURNAL = {Comm. Algebra},
+  FJOURNAL = {Communications in Algebra},
+    VOLUME = {6},
+      YEAR = {1978},
+    NUMBER = {18},
+     PAGES = {1893--1921},
+      ISSN = {0092-7872},
+     CODEN = {COALDM},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR511168 (80f:20016)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {M},
+}
+
+@incollection{Nor85,
+    AUTHOR = {Norton, S. P.},
+     TITLE = {The uniqueness of the {F}ischer-{G}riess {M}onster},
+ BOOKTITLE = {Finite groups---coming of age (Montreal, Que., 1982)},
+    SERIES = {Contemp. Math.},
+    VOLUME = {45},
+     PAGES = {271--285},
+ PUBLISHER = {Amer. Math. Soc.},
+   ADDRESS = {Providence, RI},
+      YEAR = {1985},
+   MRCLASS = {20D08 (20D05)},
+  MRNUMBER = {MR822242 (87b:20025)},
+MRREVIEWER = {Koichiro Harada},
+  crossref = {McK85},
+  sporsimp = {M},
+}
+
+@article{Tho79a,
+    AUTHOR = {Thompson, J. G.},
+     TITLE = {Uniqueness of the {F}ischer-{G}riess monster},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {11},
+      YEAR = {1979},
+    NUMBER = {3},
+     PAGES = {340--346},
+      ISSN = {0024-6093},
+     CODEN = {LMSBBT},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR554400 (81e:20024)},
+MRREVIEWER = {Arthur Reifart},
+   sorttag = {a},
+  sporsimp = {M},
+}
+
+@article{Tho79b,
+    AUTHOR = {Thompson, J. G.},
+     TITLE = {Finite groups and modular functions},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {11},
+      YEAR = {1979},
+    NUMBER = {3},
+     PAGES = {347--351},
+      ISSN = {0024-6093},
+     CODEN = {LMSBBT},
+   MRCLASS = {20D08 (10D12)},
+  MRNUMBER = {MR554401 (81j:20029)},
+MRREVIEWER = {Stephen D. Smith},
+   sorttag = {b},
+  sporsimp = {M},
+}
+
+@article{Tho79c,
+    AUTHOR = {Thompson, J. G.},
+     TITLE = {Some numerology between the {F}ischer-{G}riess {M}onster and
+              the elliptic modular function},
+   JOURNAL = {Bull. London Math. Soc.},
+  FJOURNAL = {The Bulletin of the London Mathematical Society},
+    VOLUME = {11},
+      YEAR = {1979},
+    NUMBER = {3},
+     PAGES = {352--353},
+      ISSN = {0024-6093},
+     CODEN = {LMSBBT},
+   MRCLASS = {20D08 (10D12)},
+  MRNUMBER = {MR554402 (81j:20030)},
+MRREVIEWER = {Stephen D. Smith},
+   sorttag = {c},
+  sporsimp = {M},
+}
+
+@article{Tit85a,
+    AUTHOR = {Tits, Jacques},
+     TITLE = {Le {M}onstre (d'apr\`es {R}. {G}riess, {B}. {F}ischer et al.)},
+      NOTE = {Seminar Bourbaki, Vol. 1983/84},
+   JOURNAL = {Ast\'erisque},
+  FJOURNAL = {Ast\'erisque},
+    volume = {121-122},
+      YEAR = {1985},
+     PAGES = {105--122},
+      ISSN = {0303-1179},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR768956 (86j:20014)},
+MRREVIEWER = {P. Fong},
+  crossref = {Soc85},
+  sporsimp = {M},
+}
+
+@article{Tit84,
+    AUTHOR = {Tits, J.},
+     TITLE = {On {R}. {G}riess' ``friendly giant''},
+   JOURNAL = {Invent. Math.},
+  FJOURNAL = {Inventiones Mathematicae},
+    VOLUME = {78},
+      YEAR = {1984},
+    NUMBER = {3},
+     PAGES = {491--499},
+      ISSN = {0020-9910},
+     CODEN = {INVMBH},
+   MRCLASS = {20D08},
+  MRNUMBER = {MR768989 (86f:20019)},
+MRREVIEWER = {Stephen D. Smith},
+  sporsimp = {M},
+}
+
+@article{Tra79,
+    AUTHOR = {Tran Van Trung},
+     TITLE = {On the ``monster'' simple group},
+   JOURNAL = {J. Algebra},
+  FJOURNAL = {Journal of Algebra},
+    VOLUME = {60},
+      YEAR = {1979},
+    NUMBER = {2},
+     PAGES = {559--562},
+      ISSN = {0021-8693},
+     CODEN = {JALGA4},
+   MRCLASS = {20D25},
+  MRNUMBER = {MR549947 (81a:20030)},
+MRREVIEWER = {David C. Hunt},
+  sporsimp = {M},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  entries needed by crossref
+%%
+
+@book {KN67,
+    editor = {Kov\'acs, L. G. and Neumann, B. H.},
+     TITLE = {Proceedings of the {I}nternational {C}onference on the
+              {T}heory of {G}roups},
+ PUBLISHER = {Gordon and Breach Science Publishers},
+   ADDRESS = {New York},
+      YEAR = {1967},
+     PAGES = {xvii+397},
+   MRCLASS = {20.00},
+  MRNUMBER = {MR0215897 (35 \#6732)},
+ zblnumber = {0158.00208},
+}
+
+@book {BS69,
+    editor = {Brauer, R. and Sah, C.},
+     TITLE = {Theory of finite groups: {A} symposium},
+ PUBLISHER = {W. A. Benjamin, Inc., New York-Amsterdam},
+      YEAR = {1969},
+     PAGES = {xiii+263 pp. (erratum, p. xiii)},
+   MRCLASS = {20.25},
+  MRNUMBER = {MR0240186 (39 \#1538)},
+}
+
+@proceedings {Kyo82,
+     TITLE = {Topics in finite group theory},
+ BOOKTITLE = {Proceedings of a Symposium held at the Research Institute for
+              Mathematical Sciences, Kyoto University, Kyoto, October
+              21--23, 1982},
+      NOTE = {S\^urikaisekikenky\^usho K\^oky\^uroku No. 475 (1982)},
+ PUBLISHER = {Kyoto University Research Institute for Mathematical Sciences},
+   ADDRESS = {Kyoto},
+      YEAR = {1982},
+     PAGES = {i--iii and 1--169},
+   MRCLASS = {20-06 (20Dxx)},
+  MRNUMBER = {MR702351 (84d:20004)},
+ zblnumber = {0563.20017},
+       key = {Kyo82},
+}
+
+@proceedings {Col80,
+     TITLE = {Finite simple groups. {II}},
+ BOOKTITLE = {Proceedings of the Symposium held at the University of Durham,
+              Durham, July 31--August 10, 1978},
+    EDITOR = {Collins, Michael J.},
+ PUBLISHER = {Academic Press Inc. [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {London},
+      YEAR = {1980},
+     PAGES = {xv+345},
+      ISBN = {0-12-181480-7},
+   MRCLASS = {20D05 (20C15 20C20 20D08)},
+  MRNUMBER = {MR606048 (82h:20021)},
+MRREVIEWER = {Stephen D. Smith},
+}
+
+@proceedings{Atk84,
+     TITLE = {Computational group theory},
+ BOOKTITLE = {Proceedings of the London Mathematical Society symposium held
+              in Durham, July 30--August 9, 1982},
+    EDITOR = {Atkinson, Michael D.},
+ PUBLISHER = {Academic Press Inc. [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {London},
+      YEAR = {1984},
+     PAGES = {xii+375},
+      ISBN = {0-12-066270-1},
+   MRCLASS = {20-06 (68-06)},
+  MRNUMBER = {MR760641 (85g:20001)},
+}
+
+@book {PH71,
+     TITLE = {Finite simple groups},
+ BOOKTITLE = {Proceedings of an Instructional Conference organized by the
+              London Mathematical Society (a NATO Advanced Study Institute),
+              Oxford, September 1969},
+    EDITOR = {Powell, M. B. and Higman, G.},
+ PUBLISHER = {Academic Press},
+   ADDRESS = {London},
+      YEAR = {1971},
+     PAGES = {xi+327},
+   MRCLASS = {20DXX},
+  MRNUMBER = {MR0327886 (48 \#6228)},
+}
+
+@book {BH71,
+     TITLE = {Computers in algebra and number theory},
+ BOOKTITLE = {Proceedings of a Symposium in Applied Mathematics of the
+              American Mathematical Society and the Society for Industrial
+              and Applied Mathematics. Held in New York City, March 25--26,
+              1970},
+    EDITOR = {Birkhoff, Garrett and Hall, Jr., Marshall},
+ BOOKTITLE = {SIAM-AMS Proceedings, Vol. IV},
+ PUBLISHER = {American Mathematical Society},
+   ADDRESS = {Providence, R.I.},
+      YEAR = {1971},
+     PAGES = {vii+200},
+   MRCLASS = {00A10 (10-04 20-04)},
+  MRNUMBER = {MR0327414 (48 \#5756)},
+}
+
+@proceedings {AL81,
+     TITLE = {Representations of algebras},
+    SERIES = {Lecture Notes in Mathematics},
+    VOLUME = {903},
+ BOOKTITLE = {Proceedings of the Third International Conference held in
+              Puebla, August 4--8, 1980},
+    EDITOR = {Auslander, Maurice and Lluis, Emilo},
+ PUBLISHER = {Springer-Verlag},
+   ADDRESS = {Berlin},
+      YEAR = {1981},
+     PAGES = {xv+371},
+      ISBN = {3-540-11179-4},
+   MRCLASS = {16A64},
+  MRNUMBER = {MR654698 (83c:16030)},
+}
+
+@proceedings {CR82b,
+     TITLE = {Groups---{S}t. {A}ndrews 1981},
+    SERIES = {London Mathematical Society Lecture Note Series},
+    VOLUME = {71},
+ BOOKTITLE = {Proceedings of the International Conference on Groups held at
+              the Mathematical Institute, University of St. Andrews, St.
+              Andrews, July 25--August 8, 1981},
+    EDITOR = {Campbell, Colin M. and Robertson, Edmund F.},
+ PUBLISHER = {Cambridge University Press},
+   ADDRESS = {Cambridge},
+      YEAR = {1982},
+     PAGES = {viii+360},
+      ISBN = {0-521-28974-2},
+   MRCLASS = {20-06},
+  MRNUMBER = {MR679152 (83j:20005)},
+}
+
+% removed the following entry because of missing author/editor
+% @book {MR0242614,
+%      TITLE = {Symposia mathematica. {V}ol. {I}. {C}onvegni del {D}icembre
+%               del 1967 e dell' {A}prile del 1968},
+%     SERIES = {Istituto Nazionale di Alta Matematica Roma},
+%  PUBLISHER = {Academic Press},
+%    ADDRESS = {London},
+%       YEAR = {1969},
+%      PAGES = {iii+441},
+%    MRCLASS = {00.04},
+%   MRNUMBER = {MR0242614 (39 \#3944)},
+%  zblnumber = {0179.30503},
+% }
+
+% removed the following entry because of missing author/editor
+% @book {MR0346033,
+%      TITLE = {Symposia {M}athematica. {V}ol. {XIII}},
+%       NOTE = {Convegno di Gruppi Abeliani (20--30 Novembre 1972). Convegno
+%               di Gruppi e loro Rappresentazioni (12--15 Dicembre 1972),
+%               Istituto Nazionale di Alta Matematica, Rome},
+%  PUBLISHER = {Academic Press},
+%    ADDRESS = {London},
+%       YEAR = {1974},
+%      PAGES = {558},
+%    MRCLASS = {20-06},
+%   MRNUMBER = {MR0346033 (49 \#10759)},
+%  zblnumber = {0283.00005},
+% }
+
+@book{ Soc85,
+     TITLE = {S\'eminaire {B}ourbaki. {V}ol. 1983/84},
+      NOTE = {Expos\'es 615--632,
+              Ast\'erisque No. 121-122 (1985)},
+ PUBLISHER = {Soci\'et\'e Math\'ematique de France},
+   ADDRESS = {Paris},
+      YEAR = {1985},
+     PAGES = {1--368},
+      ISSN = {0303-1179},
+   MRCLASS = {00A10},
+  MRNUMBER = {MR768950 (85g:00018)},
+ zblnumber = {0542.00005},
+}
+
+@book {Cur77b,
+     TITLE = {Topics in group theory and computation},
+ BOOKTITLE = {Proceedings of a Summer School held at University College,
+              Galway, from 16th to 21st August, 1973},
+    EDITOR = {Curran, Michael P. J.},
+ PUBLISHER = {Academic Press [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {London},
+      YEAR = {1977},
+     PAGES = {xiii+118},
+      ISBN = {0-12-200150-8},
+   MRCLASS = {20-06},
+  MRNUMBER = {MR0460427 (57 \#421)},
+}
+
+@book {New74,
+     TITLE = {Proceedings of the {S}econd {I}nternational {C}onference on
+              the {T}heory of {G}roups},
+    EDITOR = {Newman, M. F.},
+      NOTE = {Held at the Australian National University, Canberra, August
+              13--24, 1973,
+              With an introduction by B. H. Neumann,
+              Lecture Notes in Mathematics, Vol. 372},
+ PUBLISHER = {Springer-Verlag},
+   ADDRESS = {Berlin},
+      YEAR = {1974},
+     PAGES = {vii+740},
+   MRCLASS = {20-06},
+  MRNUMBER = {MR0344315 (49 \#9054)},
+}
+
+@book {GHS73,
+     TITLE = {Finite groups '72},
+ BOOKTITLE = {Proceedings of the Gainesville Conference on Finite Groups,
+              University of Florida, Gainesville, Fla., March 23--24, 1972},
+    EDITOR = {Gagen, Terrence and Hale, Jr., Mark P. and Shult, Ernest E.},
+      NOTE = {North-Holland Mathematics Studies, Vol. 7},
+ PUBLISHER = {North-Holland Publishing Co.},
+   ADDRESS = {Amsterdam},
+      YEAR = {1973},
+     PAGES = {vi+158 pp. (4 plates)},
+   MRCLASS = {20DXX},
+  MRNUMBER = {MR0347962 (50 \#460)},
+}
+
+@book {SG76,
+     TITLE = {Proceedings of the {C}onference on {F}inite {G}roups},
+    EDITOR = {Scott, William R. and Gross, Fletcher},
+      NOTE = {Held at the University of Utah, Park City, Utah, February
+              10--13, 1975},
+ PUBLISHER = {Academic Press Inc. [Harcourt Brace Jovanovich Publishers]},
+   ADDRESS = {New York},
+      YEAR = {1976},
+     PAGES = {xiii+565},
+   MRCLASS = {20-06},
+  MRNUMBER = {MR0393202 (52 \#14012)},
+}
+
+@book{Men82,
+     TITLE = {Algebraic and geometric combinatorics},
+    SERIES = {North-Holland Mathematics Studies},
+    VOLUME = {65},
+    EDITOR = {Mendelsohn, Eric},
+      NOTE = {Annals of Discrete Mathematics, 15},
+ PUBLISHER = {North-Holland Publishing Co.},
+   ADDRESS = {Amsterdam},
+      YEAR = {1982},
+     PAGES = {xiii+376},
+      ISBN = {0-444-86365-6},
+   MRCLASS = {05-06},
+  MRNUMBER = {MR772576 (85k:05002)},
+}
+
+@proceedings{JV82,
+     TITLE = {Combinatorial theory},
+    SERIES = {Lecture Notes in Mathematics},
+    VOLUME = {969},
+ BOOKTITLE = {Proceedings of a Conference held at Schloss Rauischholzhausen,
+              May 6--9, 1982},
+    EDITOR = {Jungnickel, Dieter and Vedder, Klaus},
+ PUBLISHER = {Springer-Verlag},
+   ADDRESS = {Berlin},
+      YEAR = {1982},
+     PAGES = {ii+326},
+      ISBN = {3-540-11971-X},
+   MRCLASS = {05-06},
+  MRNUMBER = {MR692229 (84b:05005)},
+}
+
+@book {Rei71,
+     TITLE = {Representation theory of finite groups and related topics},
+ BOOKTITLE = {Proceedings of the Symposium in Pure Mathematics of the
+              American Mathematical Society held at the University of
+              Wisconsin, Madison, Wis., April 14--16, 1970},
+    EDITOR = {Reiner, Irving},
+ BOOKTITLE = {Proceedings of Symposia in Pure Mathematics, Vol. XXI},
+ PUBLISHER = {American Mathematical Society},
+   ADDRESS = {Providence, R.I.},
+      YEAR = {1971},
+     PAGES = {v+178},
+   MRCLASS = {20CXX},
+  MRNUMBER = {MR0314948 (47 \#3497)},
+}
+
+@book{CM80b,
+     TITLE = {The {S}anta {C}ruz {C}onference on {F}inite {G}roups},
+    SERIES = {Proceedings of Symposia in Pure Mathematics},
+    VOLUME = {37},
+    EDITOR = {Cooperstein, Bruce and Mason, Geoffrey},
+      NOTE = {Held at the University of California, Santa Cruz, Calif., June
+              25--July 20, 1979},
+ PUBLISHER = {American Mathematical Society},
+   ADDRESS = {Providence, R.I.},
+      YEAR = {1980},
+     PAGES = {xviii+634},
+      ISBN = {0-8218-1440-0},
+   MRCLASS = {20-06 (20Dxx)},
+  MRNUMBER = {MR604551 (81m:20004)},
+}
+
+@proceedings{McK85,
+     TITLE = {Finite groups---coming of age},
+    SERIES = {Contemporary Mathematics},
+    VOLUME = {45},
+ BOOKTITLE = {Proceedings of the Canadian Mathematical Society conference
+              held at Concordia University, Montreal, Que., June 15--28,
+              1982},
+    EDITOR = {McKay, John},
+ PUBLISHER = {American Mathematical Society},
+   ADDRESS = {Providence, RI},
+      YEAR = {1985},
+     PAGES = {x+350},
+      ISBN = {0-8218-5047-4},
+   MRCLASS = {20-06 (20Dxx)},
+  MRNUMBER = {MR822230 (86j:20002)},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

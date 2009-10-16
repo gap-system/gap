@@ -1,0 +1,133 @@
+#!/bin/sh
+#############################################################################
+##
+#W  periphery           GAP character table library             Thomas Breuer
+##
+#H  @(#)$Id: periphery,v 1.3 2003/10/16 08:39:51 gap Exp $
+##
+#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This script checks whether the peripheral information related to the
+##  GAP Character Table Library is complete/consistent.
+##
+##  It must be called from the home directory of the 'ctbllib' package.
+##
+##  1. Consistency with the database of decomposition matrices.
+##
+
+
+#############################################################################
+##
+##  1. Consistency with the database of decomposition matrices.
+##
+##  Check that for each Brauer table in the GAP Character Table Library,
+##  the database of decomposition matrices contains the (pdf and PostScript)
+##  files with the decomposition matrices.
+##
+##  The root directory of the database of decomposition matrices is stored
+##  in the variable 'DECOMPDIR'.
+##
+DECOMPDIR=/usr/local/www-homes/MOC/decomposition/
+#DECOMPDIR=dec
+
+DATADIR=data
+SIMFILE=simple.tmp
+SIMNAME="simple.tmp"
+TEXFILE=lstex.tmp
+TEXNAME="lstex.tmp"
+INFILES=$DATADIR/ctb*.tbl
+
+# Get the names of simple groups in the table library.
+grep 'ARC(".*","isSimple",true)' $DATADIR/cto* | \
+sed -e 's/^.*ARC("//;s/","isSimple",true);$//' > $SIMFILE
+
+# Get the file names in the directory 'dec/tex'.
+ls $DECOMPDIR/tex/*/* | \
+sed -e 's/^.*tex\///;s/\//"/;s/\.pdf$//;s/\.ps$//' | \
+sort | uniq > $TEXFILE
+
+gawk --traditional \
+    -v "SIM=$SIMNAME" \
+    -v "TEX=$TEXNAME" \
+    -v "DATA=$DATADIR" \
+    'BEGIN {
+         FS = "\""
+
+         # Read the names of simple groups.
+         while ( getline < SIM > 0 ) {
+             simple[$1] = $1
+         }
+
+         # Read the names of existing files.
+         while ( getline < TEX > 0 ) {
+             directories[$1] = $1
+             filenames[$2] = $2
+         }
+     }
+
+     /^MBT/ {
+
+         # Identify the name of the simple group involved.
+         # (We assume that the name contains at most two dots.)
+         grpname = $2
+         prime = substr( $3, 2, length($3)-2 )
+         k = index( grpname, "." )
+         if ( k == 0 ) {
+             # no dot, the group is itself simple
+             simpname = grpname
+             factname = grpname
+         }
+         else {
+             head = substr( grpname, 1, k-1 )
+             tail = substr( grpname, k+1 )
+             l = index( tail, "." )
+             if ( l == 0 ) {
+                 # exactly one dot, we have a choice
+                 if ( head in simple ) {
+                     simpname = head
+                     factname = grpname
+                 }
+                 else {
+                     simpname = tail
+                     factname = tail
+                 }
+             }
+             else {
+                 # two dots, the middle part is the name of the simple group
+                 simpname = substr( tail, 1, l-1 )
+                 factname = tail
+             }
+         }
+
+         # Check whether the name is notified as the name of a simple group.
+         if ( ! ( simpname in simple || simpname in missing ) ) {
+             printf( "no simple group stored for group name '%s'\n",
+                     grpname ) > "/dev/stderr"
+             missing[ simpname ] = simpname
+         }
+
+         # Check whether there is a tex directory for the simple group.
+         if ( ! ( simpname in directories || simpname in missing ) ) {
+             printf( "no directory for simple group %s in %s/tex\n",
+                     simpname, DATA ) > "/dev/stderr"
+             missing[ simpname ] = simpname
+         }
+         else {
+             # Check whether there is a tex file for the factor group.
+             if ( ! ( ( factname "mod" prime ) in filenames || ( factname "mod" prime ) in missing ) ) {
+                 printf( "no data file for factor '%s'mod'%s' in %s\n",
+                     factname, prime, DATA "/tex/" simpname ) > "/dev/stderr"
+                 missing[ factname "mod" prime ] = factname
+             }
+         }
+
+     }' $INFILES
+
+# Remove the temporary files.
+rm $SIMFILE $TEXFILE
+
+
+#############################################################################
+##
+#E
+

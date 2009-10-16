@@ -1,0 +1,119 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  intro.tex          FGA documentation                Christian Sievers
+%%
+%H  $Id: intro.tex,v 1.7 2005/05/09 11:11:27 gap Exp $
+%%
+%Y  2003
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Introduction}
+
+\atindex{FGA}{@{\FGA}|indexit}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Overview}
+
+This manual describes the {\FGA} (*Free Group Algorithms*) package,
+a {\GAP} package for computations with finitely generated subgroups of
+free groups.
+
+This package allows you to (constructively) test membership and
+conjugacy, and to compute free generators, the rank, the index,
+normalizers, centralizers, and intersections
+where the groups involved are finitely generated subgroups of free groups.
+%
+In addition, it provides generators and a finite presentation for the
+automorphism group of a finitely generated free group and allows to
+write any such automorphism as word in these generators.
+
+See Chapter "Functionality of the FGA Package" for details.
+
+Chapter "Installing and Loading the FGA Package" explains
+how to install and load the {\FGA} package.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Implementation and background}
+
+The methods which are used work mainly with inverse finite automata,
+a variation of an idea known from theoretical computer science.
+An inverse finite automaton is a finite state automaton over a
+symmetric alphabet, i.e. one in which every letter has an inverse,
+such that each transition between two states for a letter corresponds
+to a transition in the opposite direction for the inverse letter.
+
+Most of these techniques are described in Chapter 4 of \cite{Sims94},
+where the same concept is called coset automaton.
+The method to obtain this automaton is called basic coset enumeration,
+and in fact it is coset enumeration where only important cosets are
+defined.  Here a coset <Gg> is called important when there
+are words <w> and <v> such that <wv> is reduced and denotes an element
+of <G> and <w> denotes an element of <Gg>.
+
+In \cite{BirgetEtAl00}, the connection between finitely generated
+subgroups of free groups and inverse finite automata is used to transfer
+results about the space complexity of problems concerning inverse finite
+automata to analogous results about finitely generated subgroups of free
+groups.
+
+Chapter 6 of \cite{Sims94} describes the Reidemeister-Schreier
+procedure and a variant called extended coset enumeration which yields
+a presentation in the given generators.  The {\FGA} package uses a
+variation thereof for its constructive membership test: it leaves out the
+part of the algorithm that fills in relations and interprets the
+resulting extended coset table differently.
+This algorithm might be called extended basic coset enumeration.
+
+Some word oriented algorithms in the {\FGA} package use basic facts about
+free groups.  These can, for example, be found in \cite{LyndonSchupp77}.
+
+The presentation of the automorphism groups follows \cite{Neumann33}.
+The algorithm for writing an automorphism in the generators works
+first at the level of Nielsen generators and uses relations from
+\cite{Nielsen}.
+
+The theoretical background for most of this implementation is
+explained in \cite{Sievers03}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Integration of the package}
+
+The {\FGA} package mainly installs new methods for operations that are
+already known to {\GAP}.  They overlap with methods in the {\GAP}
+library in the case of groups of finite index.  In this case, {\GAP}s
+methods are usually faster, and the {\FGA} package tries to recognize
+such cases and to refer to {\GAP}.
+
+The methods of the {\FGA} package will only be selected when the groups
+involved know they are finitely generated.  This may not always be the
+case for groups that were not created by methods of the {\FGA}
+package.  In such a case you will get a `no method found' error, or
+{\GAP} may try a coset enumeration that stops with the message
+`the coset enumeration has defined more than 256000 cosets'.
+You may then call `GeneratorsOfGroup', and try again.
+
+Please inform the package author if you observe any remaining problems.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{License}
+
+Like the {\GAP} system itself, the {\FGA} package is free software;
+you can redistribute it and/or modify it under the terms of the GNU
+General Public License as published by the Free Software Foundation;
+either version 2 of the License, or (at your option) any later
+version.
+
+This package is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You can find the GNU General Public License in the file `COPYING' of
+the {\FGA} package, and also in the file `GPL' in the `etc' directory
+of the main {\GAP} distribution, or see
+\URL{http://www.gnu.org/licenses/gpl.html}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E

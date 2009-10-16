@@ -1,0 +1,33 @@
+#Example: "3gp-SP-Rel-i" . . . based on: isom/3gp
+#vars: F, rels, procId;
+#options: OutputLevel, ClassBound, StandardPresentationFile
+F := FreeGroup("x", "y");
+rels := ["[x, y, y, y]", "[x, y, x]"];
+procId := PqStart(F : Prime := 3, Relators := rels);
+#comment: set a different print level by supplying <OutputLevel>
+#add <OutputLevel> for <value> if set and ok
+#PqSetOutputLevel(procId, value);;
+PqSPComputePcpAndPCover(procId : ClassBound := 1);;
+#comment: set a different `ClassBound' by supplying <ClassBound>
+#comment: also save the presentation to a file by supplying <StandardPresentationFile>
+PqSPStandardPresentation(procId, [ [[2,0],
+                                    [0,2]],
+
+                                   [[0,2],
+                                    [1,0]],
+
+                                   [[1,2],
+                                    [2,2]],
+
+                                   [[1,0],
+                                    [2,1]],
+
+                                   [[2,0],
+                                    [0,1]] ]
+
+                         : # options
+#add <StandardPresentationFile> for <value> if set and ok
+#                          StandardPresentationFile := value,
+#sub <ClassBound> for <10> if set
+                           ClassBound := 10,
+                           PcgsAutomorphisms);;

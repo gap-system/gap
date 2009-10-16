@@ -2,7 +2,7 @@
 ##
 #W  orders.gi           GAP library                           Isabel Araujo 
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: orders.gi,v 4.13 2002/04/15 10:05:11 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -10,7 +10,7 @@
 ##
 ##
 Revision.orders_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: orders.gi,v 4.13 2002/04/15 10:05:11 sal Exp $";
 
 
 #############################################################################

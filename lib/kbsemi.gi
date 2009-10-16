@@ -2,7 +2,7 @@
 ##
 #W  kbsemi.gi           GAP library         Isabel Araujo and Andrew Solomon
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: kbsemi.gi,v 4.37 2005/09/28 20:21:50 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  and monoids.
 ##  
 Revision.kbsemi_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: kbsemi.gi,v 4.37 2005/09/28 20:21:50 gap Exp $";
 
 ############################################################################
 ##

@@ -3,7 +3,7 @@
 #W  random.gi                     GAP library                    Frank Lübeck
 #W                                                             Max Neunhöffer
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: random.gi,v 4.2 2006/08/28 15:47:49 gap Exp $
 ##
 #Y  Copyright (C) 2006 The GAP Group
 ##
@@ -11,7 +11,7 @@
 ##  sources.
 ##
 Revision.random_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: random.gi,v 4.2 2006/08/28 15:47:49 gap Exp $";
 
 ###########################################################################
 ##  Generic methods for random sources.

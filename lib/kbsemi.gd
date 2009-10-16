@@ -2,7 +2,7 @@
 ##
 #W  kbsemi.gd           GAP library        Andrew Solomon and Isabel Araujo
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: kbsemi.gd,v 4.22 2007/09/05 12:45:14 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##
 
 Revision.kbsemi_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: kbsemi.gd,v 4.22 2007/09/05 12:45:14 gap Exp $";
 
 
 ############################################################################
@@ -26,8 +26,14 @@ DeclareInfoClass("InfoKnuthBendix");
 ############################################################################
 ##
 #C  IsKnuthBendixRewritingSystem(<obj>)
-## 
+##
+##  <ManSection>
+##  <Filt Name="IsKnuthBendixRewritingSystem" Arg='obj' Type='Category'/>
+##
+##  <Description>
 ##  This is the category of Knuth-Bendix rewriting systems. 
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategory("IsKnuthBendixRewritingSystem", IsRewritingSystem);
 
@@ -35,8 +41,14 @@ DeclareCategory("IsKnuthBendixRewritingSystem", IsRewritingSystem);
 ##
 #A  KnuthBendixRewritingSystem(<fam>,<wordord>)
 ##
-##  returns the Knuth-Bendix rewriting system of the family <fam>
-##  with respect to the reduction ordering on words given by <wordord>. 
+##  <ManSection>
+##  <Attr Name="KnuthBendixRewritingSystem" Arg='fam,wordord'/>
+##
+##  <Description>
+##  returns the Knuth-Bendix rewriting system of the family <A>fam</A>
+##  with respect to the reduction ordering on words given by <A>wordord</A>. 
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation("KnuthBendixRewritingSystem",[IsFamily,IsOrdering]);
 
@@ -45,6 +57,12 @@ DeclareOperation("KnuthBendixRewritingSystem",[IsFamily,IsOrdering]);
 ##
 #F  CreateKnuthBendixRewritingSystem(<S>,<lt>)
 ##
+##  <ManSection>
+##  <Func Name="CreateKnuthBendixRewritingSystem" Arg='S,lt'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction("CreateKnuthBendixRewritingSystem");
 
@@ -52,9 +70,16 @@ DeclareGlobalFunction("CreateKnuthBendixRewritingSystem");
 ############################################################################
 ##
 #F  MakeKnuthBendixRewritingSystemConfluent(<RWS>)
-##  
+##
+##  <ManSection>
+##  <Func Name="MakeKnuthBendixRewritingSystemConfluent" Arg='RWS'/>
+##
+##  <Description>
 ##  makes a RWS confluent by running a KB. It will call
-##  `KB_REW.MakeKnuthBendixRewritingSystemConfluent'.
+##  <C>KB_REW.MakeKnuthBendixRewritingSystemConfluent</C>.
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction("MakeKnuthBendixRewritingSystemConfluent");
 
 #############################################################################
@@ -62,10 +87,20 @@ DeclareGlobalFunction("MakeKnuthBendixRewritingSystemConfluent");
 #V  KB_REW
 #V  GAPKB_REW
 ##
-##  KB_REW is a global record variable whose components contain functions
-##  used for Knuth-Bendix. By default `KB_REW' is assigned to
-##  `GAPKB_REW', which contains the KB functions provided by
+##  <#GAPDoc Label="KB_REW">
+##  <ManSection>
+##  <Var Name="KB_REW"/>
+##  <Var Name="GAPKB_REW"/>
+##
+##  <Description>
+##  <C>KB_REW</C> is a global record variable whose components contain functions
+##  used for Knuth-Bendix. By default <C>KB_REW</C> is assigned to
+##  <C>GAPKB_REW</C>, which contains the KB functions provided by
 ##  the GAP library.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BindGlobal("GAPKB_REW",rec(name:="GAP library Knuth-Bendix"));
 KB_REW:=GAPKB_REW;
 
@@ -73,7 +108,13 @@ KB_REW:=GAPKB_REW;
 ############################################################################
 ##
 #F  ReduceWordUsingRewritingSystem(<RWS>,<w>)
-##  
+##
+##  <ManSection>
+##  <Func Name="ReduceWordUsingRewritingSystem" Arg='RWS,w'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction("ReduceWordUsingRewritingSystem");
 
@@ -81,9 +122,15 @@ DeclareGlobalFunction("ReduceWordUsingRewritingSystem");
 ##
 #A  TzRules( <kbrws> )
 ##
+##  <ManSection>
+##  <Attr Name="TzRules" Arg='kbrws'/>
+##
+##  <Description>
 ##  For a Knuth-Bendix rewriting system for a monoid, this attribute
-##  contains rewriting rules in compact form as ``Tietze words''. The
+##  contains rewriting rules in compact form as <Q>Tietze words</Q>. The
 ##  numbers used correspond to the generators of the monoid.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "TzRules", IsKnuthBendixRewritingSystem );
 

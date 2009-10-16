@@ -1,0 +1,16 @@
+# ACEExample "SL219-hard" : enumeration of cosets of H in G,
+# where G = SL(2,19), |G : H| = 180, using hard strategy.
+#
+local F, G, x, y, X, Y;
+# We define SL(2,19) on 2 generators
+F := FreeGroup("x","y"); x := F.1;  y := F.2; 
+                         X := x^-1; Y := y^-1;
+G := F / [x*Y*X*Y*X*Y, Y*X*X*y*x*x, x*y^4*x*y^10*x*y^4*x*y^29*x^12];
+return ACEfunc(
+    FreeGeneratorsOfFpGroup(G), 
+    RelatorsOfFpGroup(G), 
+    [y] # |SL(2,19) : H| = 180
+    # Options that don't affect the enumeration
+    : echo, enum := "SL(2,19)", subg := "H (index 180)", 
+    # Other options
+    mess := 50000, hard, mend, pmod := 2);

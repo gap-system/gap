@@ -1,0 +1,343 @@
+# Makefile.in 
+#
+#               OpenMath library 
+#
+# Software (c) INRIA 1996 
+# please read copyright included in distribution
+#
+# email:
+#          Olivier.Arsac@sophia.inria.fr
+#
+# $Id:
+#
+
+SHELL      = /bin/sh
+
+# this one is for bug tracking */
+USERFLAGS  = -DOM_DEBUG=1 -O0
+# this one is for real use in test context */
+#USERFLAGS  = -DOM_DEBUG=1
+# this one is for real use in safe context */
+#USERFLAGS  = -DOM_DEBUG=0
+
+
+DIST        = OMCv1.3c
+U_DIST_FILE = $(DIST).tgz
+W_DIST_FILE = $(DIST).zip
+ALL_DIST_FILES = $(U_DIST_FILE) $(W_DIST_FILE)
+
+VPATH      = @srcdir@
+SRCDIR     = @srcdir@
+LIBDIR     = @libdir@
+INCLUDEDIR = @includedir@
+
+CC         = @CC@
+CPP        = @CPP@
+RANLIB     = @RANLIB@
+RM         = rm -f
+
+CFLAGS     = @CFLAGS@
+CPPFLAGS   = @CPPFLAGS@
+LDFLAGS    = @LDFLAGS@
+ARFLAGS    = @ARFLAGS@
+DEFS       = @DEFS@
+LIBSSOCK   = @LIBSSOCK@
+
+INSTALL         = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA    = @INSTALL_DATA@
+
+#
+# No user serviceable parts below!
+#
+
+ALL_CFLAGS = $(CPPFLAGS) $(DEFS) $(CFLAGS) $(USERFLAGS) -I$(SRCDIR)
+
+COMPILE = $(CC) -c $(ALL_CFLAGS)
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+.c.o:
+	$(COMPILE) $<
+
+SRCSBASIC = OMbase.c OMdev.c \
+            OMdevFd.c OMdevFile.c OMdevString.c \
+            OMdevHandle.c \
+            OMencBin.c OMencXml.c OMencUnkn.c \
+            OMmisc.c OMutf7.c
+
+SRCSCONN  = OMconn.c
+
+SRCS      = $(SRCSBASIC) $(SRCSCONN) $(SRCSKLONE)
+
+OBJSBASIC = $(SRCSBASIC:.c=.o)
+OBJSCONN  = $(SRCSCONN:.c=.o)
+OBJS      = $(OBJSBASIC) $(OBJSCONN) $(OBJSKLONE)
+
+U_DIST_FILES = README copyr* configure *.in OMconfig.hin install-sh *.[ch] test*
+
+W_DIST_FILES = README.txt copyr* test* `ls *.[ch] *.dsp *.dsw | grep -v OMconn | grep -v omproxy | sort -u` OMlib.D OMlib.R OMTest
+
+DOC_DIST_FILES = `ls ../doc/api.ps ../doc/*.c ../doc/*.tex`
+
+LIBOM       = libOM.a
+LIBOM_DYN   = libOM.so
+LIBCONN     = libOMconn.a
+LIBCONN_DYN = libOMconn.so
+
+#
+# Default target
+#
+
+all: $(LIBOM) $(LIBCONN) exe check
+
+#
+# Lib targets
+#
+
+dyn: $(LIBOM_DYN) $(LIBCONN_DYN)
+
+$(LIBOM): $(OBJSBASIC)
+	$(RM) $(@)
+	$(AR) $(ARFLAGS) $(@) $(OBJSBASIC)
+	-$(RANLIB) $(@)
+
+$(LIBCONN): $(OBJSCONN) 
+	$(RM) $(@) 
+	$(AR) $(ARFLAGS) $(@) $(OBJSCONN) 
+	-$(RANLIB) $(@)
+
+
+#
+# Target for dynamic libraries
+#
+
+$(LIBOM_DYN): $(OBJSBASIC)
+	$(RM) $(@)
+	gcc -shared -Wl,-soname,libOM.so -o libOM.so $(OBJSBASIC)
+
+$(LIBCONN_DYN): $(OBJSCONN) 
+	$(RM) $(@) 
+	$(CC) -shared $(OBJSCONN) -o $(@)
+
+
+
+#
+# Sample and test executables targets
+#
+
+PROGRAMS = tpipe tenc omproxy
+
+exe: $(PROGRAMS)
+
+tpipe: tpipe.o $(LIBOM)
+	$(CC) $@.o -o $@ $(CFLAGS) $(LDFLAGS) $(LIBOM)
+
+tenc: tenc.o $(LIBOM)
+	$(CC) $@.o -o $@ $(CFLAGS) $(LDFLAGS) $(LIBOM)
+
+omproxy: omproxy.o parseopt.o $(LIBOM) $(LIBCONN)
+	$(CC) $@.o -o $@ $(CFLAGS) $(LDFLAGS) parseopt.o $(LIBOM) $(LIBCONN) $(LIBSSOCK) 
+
+
+#
+# (Auto)Test targets
+#
+
+check:  tpipetest tenctest
+	@echo
+	@echo "--- auto-tests done."
+
+
+tpipetest: tpipe
+	@echo
+	@echo "--- doing some auto-tests for OpenMath lib libOM.a ..."
+	@echo
+	@echo "auto testing general IO..."
+	@touch todel.omb todel.omt todel2.omb todel2.omt
+	@./tpipe -tb test1.omt todel.omb
+	@./tpipe -bt todel.omb todel.omt
+	@./tpipe -tb todel.omt todel2.omb
+	@./tpipe -bt todel.omb todel2.omt
+	@./tpipe -ut todel.omt todel3.omt
+	@./tpipe -ub todel.omb todel3.omb
+	@-if test -n "`cmp todel.omb todel2.omb`"; \
+          then echo "failed: test pipe1 (please check file BUGREP)"; \
+          else echo "ok: test pipe1";fi
+	@-if test -n "`cmp todel.omt todel2.omt`"; \
+          then echo "failed: test pipe2 (please check file BUGREP)"; \
+          else echo "ok: test pipe2";fi
+	@-if test -n "`cmp test1.omb todel.omb`"; \
+          then echo "failed: test pipe3 (please check file BUGREP)"; \
+          else echo "ok: test pipe3";fi
+	@echo
+	@echo "auto testing automatic encoding detection..."
+	@-if test -n "`cmp test1.omb todel3.omb`"; \
+          then echo "failed: test binary encoding auto detect (please check file BUGREP)"; \
+          else echo "ok: test binary encoding auto detect";fi
+	@-if test -n "`cmp todel.omt todel3.omt`"; \
+          then echo "failed: test XML encoding auto detect (please check file BUGREP)"; \
+          else echo "ok: test XML encoding auto detect";fi
+
+tenctest: tenc
+	@echo
+	@echo "auto testing encodings..."
+	@touch todel.omb todel.omt todel2.omb todel2.omt
+	@-if ./tenc -t -s ; \
+          then echo "ok: test enc string XML"; \
+          else echo "failed: test enc string XML (please check file BUGREP)"; fi
+	@-if ./tenc -b -s; \
+          then echo "ok: test enc string binary"; \
+          else echo "failed: test enc string binary (please check file BUGREP)"; fi
+	@-if ./tenc -t -w ; \
+          then echo "ok: test enc wide char string XML"; \
+          else echo "failed: test enc wide char string XML (please check file BUGREP)"; fi
+	@-if ./tenc -b -w; \
+          then echo "ok: test enc wide char string binary"; \
+          else echo "failed: test enc wide char string binary (please check file BUGREP)"; fi
+	@-if ./tenc -t -a ; \
+          then echo "ok: test enc array XML"; \
+          else echo "failed: test enc array XML (please check file BUGREP)"; fi
+	@-if ./tenc -b -a; \
+          then echo "ok: test enc array binary"; \
+          else echo "failed: test enc array binary (please check file BUGREP)"; fi
+	@-if ./tenc -t -d; \
+          then echo "ok: test enc double XML"; \
+          else echo "failed: test enc double XML (please check file BUGREP)"; fi
+	@-if ./tenc -b -d; \
+          then echo "ok: test enc double binary"; \
+          else echo "failed: test enc double binary (please check file BUGREP)"; fi
+
+omproxytest: omproxy
+	@echo
+	@echo "auto testing OMconn and proxy..."
+	@touch todel.omb
+	@./omproxy -l 7007 -e binary -o todel.omb &
+	@sleep 2
+	@./omproxy -l 7008 -e sgml -p 7007 &
+	@sleep 2
+	@./omproxy -i test1.omb -p 7008 
+	@-if test -n "`cmp test1.omb todel.omb`"; \
+          then echo "failed: test omproxy (please check file BUGREP)"; \
+          else echo "ok: test omproxy";fi
+
+
+#
+# Dev targets
+#
+
+testex: tpipe
+	(for Ex in `ls ../ex/*.omt`;do echo $$Ex;./tpipe -ut $$Ex todel; cmp $$Ex todel; done)
+	(for Ex in `ls ../ex/*.omb`;do echo $$Ex;./tpipe -ub $$Ex todel; cmp $$Ex todel; done)
+	$(RM) -f todel
+
+indent i:
+	indent `ls *.[ch] | grep -v OM.h`
+
+update u:
+	cupdate *.c
+
+
+collect: update
+	[ -x ./omcollect ] && ./omcollect
+
+tags t:
+	etags $(SRCS)
+
+mail: utar
+	mailuu huchet@zib.de $(U_DIST_FILE)
+
+ftp:
+	@echo "did you remember to make utar wtar?"
+	cp $(ALL_DIST_FILES) /u/zenon/4/ftp/safir/OM/
+
+
+#
+# Install targets
+#
+
+installdirs:
+	[ -d $(LIBDIR) ] || mkdir $(LIBDIR)
+	[ -d $(INCLUDEDIR) || mkdir $(INCLUDEDIR)
+
+install: all check installdirs
+	$(INSTALL_DATA) OM.h $(INCLUDEDIR)
+	$(INSTALL_DATA) $(LIBOM) $(LIBDIR)
+	$(INSTALL_DATA) $(LIBOMCONN) $(LIBDIR)
+
+uninstall:
+	$(RM) $(INCLUDEDIR)/OM.h
+	$(RM) $(LIBDIR)/$(LIBOM)
+	$(RM) $(LIBDIR)/$(LIBOMCONN)
+
+
+#
+# Standard GNU clean* targets:
+#
+
+clean c:
+	$(RM) *.[oa] todel* core *.BAK *~ .*~ \#* stamp-h
+
+mostlyclean: clean
+
+distclean dc nuke: clean
+	$(RM) config.* Makefile OMconfig.h TAGS $(PROGRAMS)
+
+maintainer-clean: distclean
+
+
+#
+# Distribution
+#
+
+utar:
+	@$(RM) -r $(DIST)
+	@mkdir $(DIST)
+	@mkdir $(DIST)/doc
+	@mkdir $(DIST)/src
+	@cp -r $(U_DIST_FILES) $(DIST)/src
+	@cp -r $(DOC_DIST_FILES) $(DIST)/doc
+	@cp README $(DIST)
+	@tar chf - $(DIST) | gzip --best > $(U_DIST_FILE)
+	@echo "$(U_DIST_FILE) done"
+	@$(RM) -r $(DIST)
+
+wtar:
+	@$(RM) -r $(DIST)
+	@mkdir $(DIST)
+	@mkdir $(DIST)/doc
+	@mkdir $(DIST)/src
+	echo $(W_DIST_FILES)
+	@cp -r $(W_DIST_FILES) $(DIST)/src
+	@cp -r $(DOC_DIST_FILES) $(DIST)/doc
+	@cp README $(DIST)
+	@zip -r - $(DIST) > $(W_DIST_FILE) 2>/dev/null
+	@echo "$(W_DIST_FILE) done"
+	@$(RM) -r $(DIST)
+
+udist: configure collect utar
+
+wdist: configure collect wtar
+
+dist: udist wdist
+
+#
+# GNU autoconf targets:
+#
+
+# config.status might not change config.h, but it changes stamp-h.
+config.h: stamp-h
+stamp-h: config.hin config.status
+	./config.status
+
+Makefile: $(SRCDIR)/Makefile.in config.status
+	(cd $(SRCDIR) && $(SHELL) ./config.status)
+
+config.status: configure
+	(cd $(SRCDIR) && $(SHELL) config.status --recheck)
+
+configure: $(SRCDIR)/configure.in
+	(cd $(SRCDIR) && autoconf)
+
+# The End.

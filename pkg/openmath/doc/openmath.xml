@@ -1,0 +1,271 @@
+<!-- $Id: openmath.xml,v 1.7 2009/05/26 16:42:08 alexk Exp $ -->
+
+<Chapter Label="OpenMathFunctionality">
+<Heading>&OpenMath; functionality in &GAP;</Heading>    
+
+<Section Label="OpenMath">
+<Heading>Loading the package</Heading>
+
+The package is loaded as shown below (possibly loading required packages at the same time).
+
+<Example>
+<![CDATA[
+gap> LoadPackage("openmath");
+-----------------------------------------------------------------------------
+Loading  openmath 10.0.4 (OpenMath functionality in GAP)
+by Marco Costantini (costanti@science.unitn.it),
+   Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/), and
+   Andrew Solomon (http://www.illywhacker.net/).
+-----------------------------------------------------------------------------
+true
+]]>
+</Example>
+
+</Section>
+
+<Section Label="ViewOpenMath">
+<Heading>Viewing &OpenMath; representation of an object</Heading>
+
+<ManSection>
+    <Func Name="OMPrint" 
+           Arg="obj" />
+ <Description>
+OMPrint writes the default XML &OpenMath; encoding of &GAP; object <A>obj</A> to the standard output.
+<Example>
+<![CDATA[
+gap> OMPrint( [ 1, 1/2 ] );     
+<OMOBJ>
+	<OMA>
+		<OMS cd="list1" name="list"/>
+		<OMI>1</OMI>
+		<OMA>
+			<OMS cd="nums1" name="rational"/>
+			<OMI>1</OMI>
+			<OMI>2</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+gap> OMPrint( "This is a string" );
+<OMOBJ>
+	<OMSTR>This is a string</OMSTR>
+</OMOBJ>
+gap> OMPrint( 1-2*E(4) );      
+<OMOBJ>
+	<OMA>
+		<OMS cd="complex1" name="complex_cartesian"/>
+		<OMI>1</OMI>
+		<OMI>-2</OMI>
+	</OMA>
+</OMOBJ>
+gap> x:=Indeterminate(Rationals,"x");;
+gap> OMPrint(x^2+1);    
+<OMOBJ>
+	<OMA>
+		<OMS cd="polyd1" name="DMP"/>
+		<OMR href="#polyringepTkNya5l8qdhAmO" />
+		<OMA>
+			<OMS cd="polyd1" name="SDMP"/>
+			<OMA>
+				<OMS cd="polyd1" name="term"/>
+				<OMI>1</OMI>
+				<OMI>2</OMI>
+			</OMA>
+			<OMA>
+				<OMS cd="polyd1" name="term"/>
+				<OMI>1</OMI>
+				<OMI>0</OMI>
+			</OMA>
+		</OMA>
+	</OMA>
+</OMOBJ>
+gap> OMPrint( Group(1,2,3) );
+<OMOBJ>
+	<OMA>
+		<OMS cd="group1" name="group_by_generators"/>
+		<OMA>
+			<OMS cd="permut1" name="permutation"/>
+			<OMI>2</OMI>
+			<OMI>3</OMI>
+			<OMI>1</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+]]>
+</Example>
+</Description>
+</ManSection>
+
+<ManSection>
+    <Func Name="OMString" 
+           Arg="obj" />
+ <Description>
+OMString returns a string with the default XML &OpenMath; encoding of &GAP; object <A>obj</A>.
+If used with the <K>noomobj</K> option, then initial and final &lt;OMOBJ> tags will be omitted.
+<Example>
+<![CDATA[
+gap> OMString(42);
+"<OMOBJ> <OMI>42</OMI> </OMOBJ>"
+gap> OMString((1,2):noomobj);
+"<OMA> <OMS cd=\"permut1\" name=\"permutation\"/> <OMI>2</OMI> <OMI>1</OMI> </OMA>"
+]]>
+</Example>
+</Description>
+</ManSection>
+
+</Section>
+
+<Section Label="ExchangeOpenMath">
+<Heading>Writing and reading &OpenMath; code to/from streams</Heading>
+
+
+<ManSection>
+    <Func Name="OMGetObject" 
+           Arg="stream" />
+<Description>
+<A>stream</A> is an input stream (see 
+<Ref BookName="ref" Oper="InputTextFile" />, 
+<Ref BookName="ref" Oper="InputTextUser" />, 
+<Ref BookName="ref" Oper="InputTextString" />, 
+<Ref BookName="ref" Oper="InputOutputLocalProcess" />, 
+<Ref BookName="scscp" Oper="InputOutputTCPStream" Label="for client" />,
+<Ref BookName="scscp" Oper="InputOutputTCPStream" Label="for server" />)
+with an &OpenMath; object on it.
+<Ref Func="OMGetObject" /> takes precisely one object off <A>stream</A> 
+and returns it as a GAP object.
+Both XML and binary &OpenMath; encoding are supported: autodetection
+is used.
+This function requires either that the &GAP; package &GAPDoc; is
+available (for XML &OpenMath;), or that the external program <File>gpipe</File>,
+included in this package, has been compiled (for both XML and binary
+&OpenMath;).
+
+This may be used to retrieve objects from a file,
+for example:
+
+<Example>
+<![CDATA[
+gap> test3:=Filename(DirectoriesPackageLibrary("openmath","tst"),"test3.omt");;
+gap> stream := InputTextFile( test3 );;
+gap> OMGetObject(stream);
+912873912381273891
+gap> OMGetObject(stream);
+E(4)
+gap> CloseStream(stream);
+]]>
+</Example>
+
+or it can be used to retrieve them from standard input -
+one may paste an &OpenMath; object directly into standard input
+after issuing GAP with the following commands:
+
+<Example>
+<![CDATA[
+gap> stream := InputTextUser();;
+gap> g := OMGetObject(stream);CloseStream(stream);
+]]>
+</Example>
+
+</Description>
+</ManSection>
+
+
+<ManSection>
+    <Func Name="OMPutObject" 
+           Arg="stream obj" />
+ <Description>
+<Ref Func="OMPutObject" /> writes (appends) the XML &OpenMath; encoding of the &GAP;
+object <A>obj</A> to output stream <A>stream</A> 
+(see <Ref BookName="ref" Oper="InputTextFile" />, 
+<Ref BookName="ref" Oper="OutputTextUser" />, 
+<Ref BookName="ref" Oper="OutputTextString" />, 
+<Ref BookName="scscp" Oper="InputOutputTCPStream" Label="for client" />,
+<Ref BookName="scscp" Oper="InputOutputTCPStream" Label="for server" />).
+
+<Example>
+<![CDATA[
+gap> g := [[1,2],[1,0]];;
+gap> t := "";
+""
+gap> s := OutputTextString(t, true);;
+gap> OMPutObject(s, g);
+gap> CloseStream(s);
+gap> Print(t);
+<OMOBJ>
+	<OMA>
+		<OMS cd="linalg2" name="matrix"/>
+		<OMA>
+			<OMS cd="linalg2" name="matrixrow"/>
+			<OMI>1</OMI>
+			<OMI>2</OMI>
+		</OMA>
+		<OMA>
+			<OMS cd="linalg2" name="matrixrow"/>
+			<OMI>1</OMI>
+			<OMI>0</OMI>
+		</OMA>
+	</OMA>
+</OMOBJ>
+]]>
+</Example>
+
+</Description>
+</ManSection>
+
+<ManSection>
+    <Func Name="OMPlainString" 
+           Arg="string" />
+<Description>
+<Ref Func="OMPlainString" /> wraps the string into a &GAP; object of a special kind 
+called an &OpenMath; plain string. Internally such object is represented as a string,
+but <Ref Func="OMPutObject" /> threat it in a different way: instead of converting
+it into a &lt;OMSTR> object, an &OpenMath; plain string will be plainly substituted
+into the output (this explains its name) without decorating it with &lt;OMSTR> tags.
+<P/>
+It is assumed that &OpenMath; plain string contains valid &OpenMath; code; no 
+actual validation is performed during its creation. Such functionality may be useful
+to compose some &OpenMath; code at the &GAP; level to communicate it to the other 
+system, in particular, to send there symbols which are not supported by &GAP;, for example:
+
+<Example>
+<![CDATA[
+gap> s:=OMPlainString("<OMS cd=\"nums1\" name=\"pi\"/>");
+<OMS cd="nums1" name="pi"/>
+gap> OMPrint(s);                                       
+<OMOBJ>
+	<OMS cd="nums1" name="pi"/>
+</OMOBJ>
+]]>
+</Example>
+
+</Description>
+</ManSection>
+
+
+
+</Section>
+
+
+<Section Label="Utilities">
+<Heading>Utilities</Heading>
+
+<ManSection>
+    <Func Name="OMTest" 
+           Arg="obj" />
+<Description>
+Converts <A>obj</A> to &OpenMath; and back. Returns true iff <A>obj</A> is unchanged
+(as a GAP object) by this operation. The &OpenMath; standard does not 
+stipulate that converting to and from &OpenMath; should be the identity
+function so this is a useful diagnostic tool. 
+
+<Example>
+<![CDATA[
+gap> OMTest( [ [1..10],[1/2,2+E(4)], ZmodnZObj(2,6), (1,2), true, "string" ] );     
+true
+]]>
+</Example>
+
+</Description>
+</ManSection>
+</Section>
+
+</Chapter>

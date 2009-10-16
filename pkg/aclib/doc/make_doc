@@ -1,0 +1,12 @@
+#!/bin/sh
+rm -f manual.aux manual.idx manual.ilg manual.ind manual.lab manual.log manual.six manual.toc
+tex manual
+../../../doc/manualindex manual
+bibtex manual
+tex manual
+tex manual
+pdftex manual; pdftex manual
+
+#rm -rf ../htm
+#mkdir ../htm
+#../../../etc/convert.pl -c -i -n aclib . ../htm

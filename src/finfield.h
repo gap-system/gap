@@ -3,7 +3,7 @@
 *W  finfield.h                  GAP source                      Werner Nickel
 **                                                         & Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: finfield.h,v 4.13 2002/04/15 10:03:48 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -52,7 +52,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_finfield_h =
-   "@(#)$Id$";
+   "@(#)$Id: finfield.h,v 4.13 2002/04/15 10:03:48 sal Exp $";
 #endif
 
 

@@ -2,10 +2,10 @@
 ##  
 #W  nilpquot.gi                 GAP Library                     Werner Nickel
 ##
-#H  $Id$
+#H  $Id: nilpquot.gi,v 4.1 1999/09/13 16:51:06 werner Exp $
 ##
 Revision.nilpquot_gi :=
-    "$Id$";
+    "$Id: nilpquot.gi,v 4.1 1999/09/13 16:51:06 werner Exp $";
 
 
 LeftNormedComm := function( list )

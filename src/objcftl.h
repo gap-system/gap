@@ -8,7 +8,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objcftl_h =
-   "@(#)$Id$";
+   "@(#)$Id: objcftl.h,v 4.7 1997/11/26 17:43:51 frank Exp $";
 #endif
 
 

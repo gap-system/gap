@@ -6,7 +6,7 @@
 #W                                                                    D. Holt
 #W                                                                  A. Hulpke
 ##
-#H  $Id$
+#H  $Id: matint.gi,v 4.34 2007/05/29 07:28:37 gap Exp $
 ##
 #Y  Copyright (C) 2003 The GAP Group
 ##
@@ -15,7 +15,7 @@
 ##  combination of the input.
 ##
 Revision.matint_gi :=
-    "$Id$";
+    "$Id: matint.gi,v 4.34 2007/05/29 07:28:37 gap Exp $";
 
 ########################################################
 ##
@@ -981,9 +981,9 @@ function ( list )
         if elm = 0  then
             Add( invs, 0 );
         elif 1 < elm  then
-            Append( invs, List( Collected(FactorsInt(elm)), x->x[1]^x[2] ) );
+            Append( invs, List( Collected(Factors(elm)), x->x[1]^x[2] ) );
         elif elm < -1 then
-            Append( invs, List( Collected(FactorsInt(-elm)), x->x[1]^x[2] ) );
+            Append( invs, List( Collected(Factors(-elm)), x->x[1]^x[2] ) );
         fi;
     od;
     Sort(invs);

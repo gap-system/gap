@@ -2,7 +2,7 @@
 ##
 #W  morpheus.tst                GAP tests                    Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: morpheus.tst,v 4.20 2005/05/25 15:16:53 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -11,7 +11,7 @@
 ##  To be listed in testall.g
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: morpheus.tst,v 4.20 2005/05/25 15:16:53 gap Exp $");
 
 gap> g:=Group((1,2,3,4),(1,3));;
 gap> a:=AutomorphismGroup(g);;
@@ -69,7 +69,7 @@ S (1 gens, size 3)
 1 (size 1)
 
 # that's all, folks
-gap> STOP_TEST( "morpheus.tst", 557400000 );
+gap> STOP_TEST( "morpheus.tst", 524900000 );
 
 
 #############################################################################

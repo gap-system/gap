@@ -3,7 +3,7 @@
 #W  mapphomo.gi                 GAP library                     Thomas Breuer
 #W                                                         and Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: mapphomo.gi,v 4.32 2009/06/15 15:28:54 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -20,7 +20,7 @@
 ##  5. default equality tests for structure preserving mappings
 ##
 Revision.mapphomo_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: mapphomo.gi,v 4.32 2009/06/15 15:28:54 gap Exp $";
 
 
 #############################################################################
@@ -52,7 +52,7 @@ InstallMethod( RespectsMultiplication,
     enum:= Enumerator( map );
     for pair1 in enum do
       for pair2 in enum do
-        if not Tuple( [ pair1[1] * pair2[1], pair1[2] * pair2[2] ] )
+        if not DirectProductElement( [ pair1[1] * pair2[1], pair1[2] * pair2[2] ] )
            in map then
           return false;
         fi;
@@ -101,7 +101,7 @@ InstallMethod( RespectsInverses,
 
     enum:= Enumerator( map );
     for pair in enum do
-      if not Tuple( [ Inverse( pair[1] ), Inverse( pair[2] ) ] )
+      if not DirectProductElement( [ Inverse( pair[1] ), Inverse( pair[2] ) ] )
              in map then
         return false;
       fi;
@@ -181,7 +181,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
       oneS:= One( Source( mapp ) );
       rel:= UnderlyingRelation( mapp );
       cokernel:= Filtered( Enumerator( R ),
-                           r -> Tuple( [ oneS, r ] ) in rel );
+                           r -> DirectProductElement( [ oneS, r ] ) in rel );
 
     elif   IsFinite( UnderlyingRelation( mapp ) )
        and HasAsList( UnderlyingRelation( mapp ) ) then
@@ -424,7 +424,7 @@ InstallMethod( RespectsAddition,
     enum:= Enumerator( map );
     for pair1 in enum do
       for pair2 in enum do
-        if not Tuple( [ pair1[1] + pair2[1], pair1[2] + pair2[2] ] )
+        if not DirectProductElement( [ pair1[1] + pair2[1], pair1[2] + pair2[2] ] )
            in map then
           return false;
         fi;
@@ -474,7 +474,7 @@ InstallMethod( RespectsAdditiveInverses,
 
     enum:= Enumerator( map );
     for pair in enum do
-      if not Tuple( [ AdditiveInverse( pair[1] ),
+      if not DirectProductElement( [ AdditiveInverse( pair[1] ),
                       AdditiveInverse( pair[2] ) ] )
              in map then
         return false;
@@ -501,7 +501,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
       zeroR:= Zero( Range( mapp ) );
       rel:= UnderlyingRelation( mapp );
       kernel:= Filtered( Enumerator( S ),
-                         s -> Tuple( [ s, zeroR ] ) in rel );
+                         s -> DirectProductElement( [ s, zeroR ] ) in rel );
 
     elif IsFinite( UnderlyingRelation( mapp ) ) then
 
@@ -568,7 +568,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
       zeroS:= Zero( Source( mapp ) );
       rel:= UnderlyingRelation( mapp );
       cokernel:= Filtered( Enumerator( R ),
-                           r -> Tuple( [ zeroS, r ] ) in rel );
+                           r -> DirectProductElement( [ zeroS, r ] ) in rel );
 
     elif   IsFinite( UnderlyingRelation( mapp ) )
        and HasAsList( UnderlyingRelation( mapp ) ) then
@@ -759,7 +759,7 @@ InstallMethod( RespectsScalarMultiplication,
       D:= Enumerator( D );
       for pair in Enumerator( map ) do
         for c in D do
-          if not Tuple( [ c * pair[1], c * pair[2] ] ) in map then
+          if not DirectProductElement( [ c * pair[1], c * pair[2] ] ) in map then
             return false;
           fi;
         od;
@@ -793,7 +793,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
       zeroR:= Zero( Range( mapp ) );
       rel:= UnderlyingRelation( mapp );
       kernel:= Filtered( Enumerator( S ),
-                         s -> Tuple( [ s, zeroR ] ) in rel );
+                         s -> DirectProductElement( [ s, zeroR ] ) in rel );
 
     elif IsFinite( UnderlyingRelation( mapp ) ) then
 
@@ -837,7 +837,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
       zeroS:= Zero( Source( mapp ) );
       rel:= UnderlyingRelation( mapp );
       cokernel:= Filtered( Enumerator( R ),
-                           r -> Tuple( [ zeroS, r ] ) in rel );
+                           r -> DirectProductElement( [ zeroS, r ] ) in rel );
 
     elif IsFinite( UnderlyingRelation( mapp ) ) then
 

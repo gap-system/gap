@@ -1,0 +1,676 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  help.tex               GAP documentation                    Frank LŸbeck -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: help.tex,v 4.21 2005/05/09 07:00:37 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1990-2001, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany -->
+<!-- %% -->
+<!-- %%  Original version by Martin Schoenert. -->
+<!-- %% -->
+<Chapter Label="The Help System">
+<Heading>The Help System</Heading>
+
+This chapter describes the &GAP; help system. The help system lets you read
+the documentation interactively.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Invoking the Help">
+<Heading>Invoking the Help</Heading>
+
+The  basic command  to  read  &GAP;'s documentation  from  within a  &GAP;
+session is as follows.
+<P/>
+<Index>getting help</Index>
+<C>?[<A>book</A>:][?]<A>topic</A></C>
+<P/>
+For an explanation and some examples
+see&nbsp;<Ref Sect="Help" BookName="tut"/>.
+<P/>
+Note that the first question mark must appear in the <E>first position</E>
+after the <C>gap> </C> prompt.
+The search strings <A>book</A> and <A>topic</A> are normalized in a certain
+way (see the end of this section for details) before the search starts.
+This makes the search case insensitive and there can be arbitrary white space
+after the first question mark.
+<!-- %%      Throw away? (FL)  -->
+<!-- %%  The help command <C>?</C> displays the section with the name <A>section</A> on the -->
+<!-- %%  screen. For example <C>?Help</C> will display this section on the screen. -->
+<!-- %%  You should not type in the single quotes. They are only used in help -->
+<!-- %%  sections to delimit text that you should enter into &GAP; or that &GAP; -->
+<!-- %%  prints in response. When the whole section has been displayed the normal -->
+<!-- %%  &GAP; prompt <C>gap></C> is shown and normal &GAP; interaction resumes. -->
+<P/>
+When there are several manual sections  that match the query a numbered list
+of topics is displayed.
+These matches can be accessed with <C>?<A>number</A></C>.
+<P/>
+<!-- %%  Section&nbsp;<Ref ???="Reading Sections"/> tells you what actions you can perform -->
+<!-- %%  while you are reading a section. You tell &GAP; to display this -->
+<!-- %%  section by entering <C>?Reading Sections</C>, without quotes. -->
+<!-- %%  Section&nbsp;<Ref ???="Format of Sections"/> describes the format of sections and the -->
+<!-- %%  conventions used, -->
+<P/>
+There  are  some  further  specially   handled  commands  which  start  with
+a  question  mark.
+They are explained in
+Section&nbsp;<Ref Sect="Browsing through the Sections"/>.
+<P/>
+As default &GAP; shows the help  sections as text in the terminal (window),
+page by  page if the shown  text does not fit  on the screen. But  there are
+several other choices to read (other formats of) the documents: via a viewer
+for <C>dvi</C> files (produced by &TeX;)
+or files in Acrobat's <C>pdf</C> format or via a web browser.
+This is explained in Section&nbsp;<Ref Sect="Changing the Help Viewer"/>.
+<!-- %%  lists the commands you use to flip -->
+<!-- %%  through sections, <Ref ???="Redisplaying a Section"/> describes how to read a -->
+<!-- %%  section again, <Ref ???="Abbreviating Section Names"/> tells you how to avoid typing -->
+<!-- %%  the long section names, and <Ref ???="Help Index"/> describes the index command. -->
+<P/>
+<E>Details of the string normalization process</E>
+<P/>
+Here now is precisely how the search strings <A>book</A> and <A>topic</A> are
+normalized before a search starts:
+backslashes and double or single quotes are removed,
+parentheses and braces are substituted by blanks,
+non-ASCII characters are considered as ISO-latin1 characters
+and the accented letters are substituted by their non-accented counterpart.
+Finally white space is normalized.
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%  Isn't all this practically self-explatory? Throw away? (FL) -->
+<!-- %%  </Section>
+<Section Label="Reading Sections">
+<Heading>Reading Sections</Heading> -->
+<!-- %%   -->
+<!-- %%  <Index>help!scrolling</Index> -->
+<!-- %%  If the section is longer than the size of your screen, &GAP; stops after -->
+<!-- %%  displaying a full screen and displays -->
+<!-- %%   -->
+<!-- %%  <Log><![CDATA[    -->
+<!-- %%  - <space> for more, <q> to quit -->
+<!-- %%  ]]></Log> -->
+<!-- %%   -->
+<!-- %%  If you press <A>space</A> &GAP; displays the next full screen of lines of the -->
+<!-- %%  section and then stops again. -->
+<!-- %%  This goes on until the whole section has been displayed, -->
+<!-- %%  at which point &GAP; will return immediately to the main &GAP; loop. -->
+<!-- %%  Pressing <C>f</C> has the same effect as <A>space</A>. -->
+<!-- %%   -->
+<!-- %%  You can also press <C>b</C> which will scroll back to the <E>previous</E> full screen -->
+<!-- %%  of lines of the section. -->
+<!-- %%  If you press <C>b</C> when &GAP; is displaying the top of a section, -->
+<!-- %%  &GAP; will ring the bell. -->
+<!-- %%   -->
+<!-- %%  You can also press <C>q</C> to quit and return immediately back to the main -->
+<!-- %%  &GAP; loop without reading the rest of the section. -->
+<!-- %%   -->
+<!-- %%  The size of the screen is set using information obtained from the -->
+<!-- %%  operating system, if possible, or to <M>24</M> lines if not. -->
+<!-- %%  If this does not produce the correct results for your system, -->
+<!-- %%  you may wish to set the number of lines with the <C>-y <A>rows</A></C> option -->
+<!-- %%  (see&nbsp;<Ref Sect="Command Line Options"/>) when you start &GAP;. -->
+<!-- %%   -->
+<!-- %%   -->
+<!-- %%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%  This should not be documented as a (compulsory) format of the sections, -->
+<!-- %%  to allow other Help formats. Shouldn't a section showed by the help -->
+<!-- %%  have a format which doesn't need further long explanations?  (FL) -->
+<P/>
+
+<!-- %%%%%%%%%  Throw this away ??? The essential information  is contained -->
+<!-- %%%%%%%%%  in <Ref ???="Ref: Manual Conventions"/>     (FL) -->
+<!-- %%  </Section>
+<Section Label="Format of Sections">
+<Heading>Format of Sections</Heading> -->
+<!-- %%   -->
+<!-- %%  <Index>help!format</Index> -->
+<!-- %%  This section describes the format of sections when they are displayed on -->
+<!-- %%  the screen and the special conventions used. -->
+<!-- %%  For general conventions about manual sections and the format of sections -->
+<!-- %%  in the printed manual, see&nbsp;<Ref Sect="Manual Conventions"/>. -->
+<!-- %%   -->
+<!-- %%  As you can see, &GAP; prints a header line -->
+<!-- %%  containing the name of the section on the left and the name of the -->
+<!-- %%  chapter on the right. -->
+<!-- %%   -->
+<!-- %%  (If this header line ends in <C>(not loaded)</C> the documentation belongs to a -->
+<!-- %%  package, which has not yet been loaded. See section&nbsp;<Ref Sect="Loading a GAP Package"/> -->
+<!-- %%  for further information.) -->
+<!-- %%   -->
+<!-- %%  <Log><![CDATA[ -->
+<!-- %%  <text> -->
+<!-- %%  ]]></Log> -->
+<!-- %%  Text enclosed in angle brackets is used for arguments in the descriptions -->
+<!-- %%  of functions and for other place holders. It means that you should not -->
+<!-- %%  actually enter this text into &GAP; but replace it by appropriate -->
+<!-- %%  text depending on what you want to do. For example when we write that -->
+<!-- %%  you should enter <C>?<A>section</A></C> to see the section with the name <A>section</A>, -->
+<!-- %%  <A>section</A> serves as a place holder, indicating that you can enter the -->
+<!-- %%  name of the section that you want to see at this place. -->
+<!-- %%   -->
+<!-- %%  <Log><![CDATA[ -->
+<!-- %%  `text'  -->
+<!-- %%  ]]></Log> -->
+<!-- %%  Text enclosed in single quotes is used for names of variables and -->
+<!-- %%  functions and other text that you may actually enter into your computer -->
+<!-- %%  and see on your screen. The text enclosed in single quotes may contain -->
+<!-- %%  place holders enclosed in angle brackets as described above. For example -->
+<!-- %%  when the help text for <C>IsPrime</C> says that the form of the call is -->
+<!-- %%  <C>IsPrime( <A>n</A> )</C> this means that you should actually -->
+<!-- %%  enter the strings <Q>IsPrime(</Q> and <Q>)</Q>, without the quotes, -->
+<!-- %%  but replace the <C><A>n</A></C> with the number (or expression) -->
+<!-- %%  that you want to test. -->
+<!-- %%   -->
+<!-- %%  <Log><![CDATA[ -->
+<!-- %%  "text" -->
+<!-- %%  ]]></Log> -->
+<!-- %%  Text enclosed in double quotes is used for cross references to other -->
+<!-- %%  parts of the manual. So the text inside the double quotes is the name of -->
+<!-- %%  another section of the manual. This is used to direct you to other -->
+<!-- %%  sections that describe a topic or a function used in this section. So,  -->
+<!-- %%  for example, <Ref Sect="Browsing through the Sections"/> is a cross reference to the next -->
+<!-- %%  section. -->
+<!-- %%   -->
+<!-- %%  <Log><![CDATA[ -->
+<!-- %%  > Oper( <arg1>, <arg2>[, <opt>] ) F -->
+<!-- %%  ]]></Log> F -->
+<!-- %%  starts a subsection on the command <C>Oper</C> that takes two arguments <A>arg1</A> -->
+<!-- %%  and <A>arg2</A> and an optional third argument <A>opt</A>. -->
+<!-- %%   -->
+<!-- %%  The letter <C>F</C> at the end -->
+<!-- %%  indicates that the command is a simple function. -->
+<!-- %%  The letters <C>A</C>, <C>P</C>, <C>O</C>, <C>C</C>, <C>R</C>, and <C>V</C> indicate -->
+<!-- %%  <Q>Attribute</Q>, <Q>Property</Q>, <Q>Operation</Q>, <Q>Category</Q>, <Q>Representation</Q> -->
+<!-- %%  (see Chapter&nbsp;<Ref Chap="Types of Objects"/>), or <Q>Variable</Q>, respectively. -->
+<!-- %%   -->
+<!-- %%  <C>_</C> and <C>^</C> -->
+<!-- %%   -->
+<!-- %%  In mathematical formulas the underscore and the caret are used to denote -->
+<!-- %%  subscription and superscription. Ordinarily they apply only to the very -->
+<!-- %%  next character following, unless a whole expression enclosed in -->
+<!-- %%  parentheses follows. So, for example, <C>x_1^(i+1)</C> denotes the variable <C>x</C> -->
+<!-- %%  with subscript 1 raised to the power <C>i+1</C>. -->
+<!-- %%   -->
+<!-- %%  Longer examples are usually paragraphs of their own. -->
+<!-- %%  Everything on the lines with the prompts <C>gap></C> and <C>></C>, except -->
+<!-- %%  the prompts themselves of course, is the input you have to type; -->
+<!-- %%  everything else is &GAP;'s response. -->
+<!-- %%   -->
+<!-- %%  <Log><![CDATA[ -->
+<!-- %%  gap> ?Format of Sections -->
+<!-- %%  Format of Sections ______________________________________ Environment -->
+<!-- %%  -->
+<!-- %%  This section describes the format of sections when they are displayed -->
+<!-- %%  on the screen and the special conventions used. -->
+<!-- %%  ... -->
+<!-- %%  ]]></Log>  -->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Browsing through the Sections">
+<Heading>Browsing through the Sections</Heading>
+
+Help books for &GAP; are organized in chapters, sections, and subsections.
+There are a few special commands starting with a question mark (in the first
+position after the <C>gap> </C> prompt) which allow browsing a book section
+or chapter wise.
+<P/>
+
+<Index>browsing forward</Index>
+<C>?></C>
+<P/>
+<Index>browsing backwards</Index>
+<C>?&lt;</C>
+<P/>
+The two help commands <C>?&lt;</C> and <C>?></C> allow one to browse through
+a whole help book.
+<C>?&lt;</C> displays the section preceding the previously shown section,
+and <C>?></C> takes you to the section following the previously shown one.
+<P/>
+<Index>browsing forward one chapter</Index>
+<C>?>></C>
+<P/>
+<Index>browsing backwards one chapter</Index>
+<C>?&lt;&lt;</C>
+<P/>
+<C>?&lt;&lt;</C> takes you back to the first section of the current chapter,
+which gives an overview of the sections described in this chapter.
+If you are already in this section <C>?&lt;&lt;</C> takes you to the first
+section of the previous chapter.
+<C>?>></C> takes you to the first section of the next chapter.
+<P/>
+<Index>browsing the previous section browsed</Index>
+<C>?-</C>
+<P/>
+<Index>browsing the next section browsed</Index>
+<C>?+</C>
+<P/>
+&GAP; remembers the last few sections that you have read.
+<C>?-</C> takes you to the one that you have read before the current one,
+and displays it again.
+Further applications of <C>?-</C> take you further back in this history.
+<C>?+</C> reverses this process, i.e., it takes you back to the section that
+you have read after the current one.
+It is important to note that <C>?-</C>  and <C>?+</C> do not alter the
+history like the other help commands.
+<P/>
+<Index>list of available books</Index>
+<C>?books</C>
+<P/>
+This command shows a list of the books which are currently known to the help
+system. For each book there is a short name which is used with the
+<A>book</A> part of the basic help query
+and there is a long name which hopefully tells you what this book is about.
+<P/>
+A short name which ends in <C>(not loaded)</C> refers to a &GAP; package
+whose documentation is loaded but which needs a call of
+<Ref Func="LoadPackage"/> before you can use the described functions.
+<P/>
+<Index>table of sections for help books</Index>
+<C>?[<A>book</A>:]sections</C>
+<P/>
+<Index>table of chapters for help books</Index>
+<C>?[<A>book</A>:][chapters]</C>
+<P/>
+These commands  show tables of  content for all available,  respectively the
+matching books.
+<P/>
+<Index>redisplay a help section</Index>
+<C>?</C>
+<P/>
+<Index>redisplay with next help viewer</Index>
+<C>?&amp;</C>
+<P/>
+These commands redisplay the last shown help section.
+In the form <C>?&amp;</C> the next preferred help viewer is used for the
+display (provided one has chosen several viewers),
+see&nbsp;<Ref Func="SetHelpViewer"/> below.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Changing the Help Viewer">
+<Heading>Changing the Help Viewer</Heading>
+
+<Index>document formats (text, dvi, ps, pdf, HTML)</Index>
+
+Books  of the  &GAP;  help  system can  be  available  in several  formats.
+Currently the following formats occur (not  all of them may be available for
+all books):
+<P/>
+<List>
+<Mark>text</Mark>
+<Item>
+  This is used for display in the terminal window in which &GAP; is
+  running. Complicated mathematical expressions may not be well readable in
+  this format.
+</Item>
+<Mark>dvi</Mark>
+<Item>
+  The standard output  format of &TeX;. Only useful if  &TeX; is installed
+  on your system. Can be used for printing a help book and onscreen reading.
+  Some  books include  hyperlink information  in  this format  which can  be
+  useful for onscreen reading.
+</Item>
+<Mark>ps</Mark>
+<Item>
+  Postscript format. Can be printed on most systems and also be used with an 
+  onscreen viewer.
+</Item>
+<Mark>pdf</Mark>
+<Item>
+  Adobe's <C>pdf</C> format. Can be used for printing and onscreen reading
+  on most current systems (with freely available software).
+  Some books have hyperlink information included in this format.
+</Item>
+<Mark>HTML</Mark>
+<Item>
+  The format of web pages.  Can be used with any web browser.  There may be
+  hyperlink information available which allows a convenient browsing through
+  the book via cross-references. This format has the problem that
+  complicated formulae may be not well readable since there is no syntax for
+  formulae in  HTML. Some books  use special  symbol fonts for  formulae and
+  need an appropriate web browser for correct display.
+</Item>
+</List>
+<P/>
+Depending on your operating system and available additional software you can
+use several of  these formats with &GAP;'s online help.  This is configured
+with the following command.
+
+
+<ManSection>
+<Func Name="SetHelpViewer" Arg='viewer1, viewer2, ...'/>
+
+<Description>
+This command  takes an arbitrary number  of arguments which must  be strings
+describing a viewer. The recognized viewers are explained below. A call with
+no arguments shows the current setting.
+<P/>
+The first  given arguments  are those  with higher priority.  So, if  a help
+section is available in the format needed by <A>viewer1</A>,
+this viewer is used.
+If not, availability of the format for <A>viewer2</A> is checked and so on.
+Recall that the command <C>?&amp;</C> displays the last seen section again
+but with the next possible viewer in your list,
+see&nbsp;<Ref Sect="Browsing through the Sections"/>.
+<P/>
+The viewer <C>"screen"</C> (see below) is always silently appended since we
+assume that each help book is available in text format.
+<P/>
+If you want to change the default setting you will probably put a call of
+<Ref Func="SetHelpViewer"/> into your <F>.gaprc</F> file
+(see&nbsp;<Ref Sect="The .gaprc file"/>).
+<P/>
+<List>
+<Mark><C>"screen"</C></Mark>
+<Item>
+  This is the default setting. The help is shown in text format using the
+  <Ref Func="Pager"/> command.
+  Hint:
+  Some formatting procedures assume that your terminal displays at least 80
+  characters per line, if this is not the case some sections may look very
+  bad. Furthermore the terminal (window) should use a fixed width font and
+  we suggest to take one with <C>ISO-8859-1</C> (also called <C>latin1</C>)
+  encoding.
+</Item>
+<Mark><C>"firefox"</C>, <C>"mozilla"</C>, <C>"netscape"</C>, <C>"konqueror"</C></Mark>
+<Item>
+  If a book is available in HTML format this is shown using the
+  corresponding web browser.
+  How well this works, for example by using a running instance of this
+  browser, depends on your particular start script of this browser.
+  Note, that for some books the browser must be configured
+  to use symbol fonts.
+</Item>
+<Mark><C>"browser"</C></Mark>
+<Item>
+  (for MS Windows) If a book is available in HTML format, it will be 
+  opened using the Windows default application (typically, a web browser).
+</Item>
+<Mark><C>"w3m"</C>, <C>"lynx"</C></Mark>
+<Item>
+  If a book is available in HTML format this is shown using the text based
+  <C>w3m</C> or <C>lynx</C> web browser inside the terminal running &GAP;.
+  Formulae which use symbol fonts may be unreadable.
+</Item>
+<Mark><C>"mac default browser"</C>, <C>"safari"</C></Mark>
+<Item>
+  (for Apple Macintosh) If a book is available in HTML format this is shown
+  in a web browser.
+  The web browser used is the program set to handle the <C>file</C> protocol
+  in the <C>Internet</C> control panel (System 9  and System X).
+  For some browsers (e.g., Internet Explorer), you may have to enter the
+  &GAP; command <C>HELP_MAC_PROTOCOL := "file:/";</C>
+  for this to work correctly.
+  If you wish to use the online HTML version of the manual, you may use
+  <C>HELP_EXTERNAL_URL := "http://www.gap-system.org/";</C>. Note that
+  <C>HELP_EXTERNAL_URL := "";</C> switches back to the local HTML files.
+  It may be a good idea to put the relevant line in the <F>gap.rc</F> file
+  (see <Ref Sect="The .gaprc file"/>).
+</Item>
+<Mark><C>"xdvi"</C></Mark>
+<Item>
+  (on X-windows systems) If a book is available in dvi format it is shown
+  with the onscreen viewer program <C>xdvi</C>.
+  (Of course, <C>xdvi</C> and &TeX; must be installed on your system.)
+  This program doesn't allow remote commands, so usually for each shown topic
+  a new <C>xdvi</C> is launched.
+  You can try to compile the program <C>GAPPATH/etc/xrmtcmd.c</C> and to put
+  the executable <C>xrmtcmd</C> into your <C>PATH</C>.
+  Then this viewer tries to reuse one running <C>xdvi</C> for each help book.
+</Item>
+<Mark><C>"xpdf"</C></Mark>
+<Item>
+  (on X-windows systems) If a book is available in pdf format it is shown
+  with the onscreen viewer program <C>xpdf</C>
+  (which must be installed on your system).
+  This is a nice program, once it is running it is reused by &GAP; for the
+  next displays of help sections.
+  (Hint: On many systems <C>xpdf</C> shows a very bad display quality,
+  this is due to a wrong or missing font configuration.
+  One needs to set certain X-resources; for more details follow the
+  <C>Problems</C> link at <URL>http://www.foolabs.com/xpdf/</URL>.
+</Item>
+<Mark><C>"acroread"</C></Mark>
+<Item>
+  If a book is available in pdf format it is shown with the onscreen viewer
+  program <C>acroread</C> (which must be available on your system).
+  This program doesn't allow remote commands or startup with a given page.
+  Therefore the page numbers you have to visit are just printed on the
+  screen.
+  When you are looking at several sections of the same book, this viewer
+  assumes that the <C>acroread</C> window still exists.
+  When you go to another book a new acroread window is launched.
+</Item>
+<Mark><C>"less"</C> or <C>"more"</C></Mark>
+<Item>
+  This is the same as <C>"screen"</C> but additionally the <C>PAGER</C> and
+  <C>PAGER_OPTIONS</C>  variables are set,
+  see the section&nbsp;<Ref Sect="The Pager Command"/> for more details.
+</Item>
+</List>
+<P/>
+Please, send ideas for further viewer commands to
+<Email>support@gap-system.org</Email>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The Pager Command">
+<Heading>The Pager Command</Heading>
+
+&GAP; contains a builtin pager which  shows a text string which doesn't fit
+on  the screen  page  by page.  Its functionality  is  very rudimentary  and
+self-explaining. This  is because (at  least under UNIX) there  are powerful
+external standard programs which do this job.
+
+
+<ManSection>
+<Func Name="Pager" Arg='lines'/>
+
+<Description>
+This function can be  used to display a text on screen  using a pager, i.e.,
+the text is shown page by page.
+<P/>
+There is a default builtin pager  in GAP which has very limited capabilities
+but should work on any system.
+<P/>
+At least  on a  UNIX system one  should use an  external pager  program like
+<C>less</C> or <C>more</C>.
+&GAP; assumes that this program has a command line option <C>+nr</C>
+which starts the display of the text with line number <C>nr</C>.
+<P/>
+Which pager is used can be controlled by setting the variable <C>PAGER</C>.
+The default setting is <C>PAGER := "builtin";</C> which means that
+the internal pager is used.
+<P/>
+On UNIX systems you probably want to set <C>PAGER := "less";</C> or
+<C>PAGER := "more";</C>, you can do this for example in your <F>.gaprc</F>
+file (see <Ref Sect="The .gaprc file"/>).
+In that case you can also tell &GAP; a list of standard options for the
+external pager.
+These are specified as list of strings in the variable <C>PAGER_OPTIONS</C>.
+<P/>
+Example:
+<Log><![CDATA[
+  PAGER := "less";
+  PAGER_OPTIONS := ["-f", "-r", "-a", "-i", "-M", "-j2"];
+]]></Log>
+<P/>
+The argument <A>lines</A> can have one of the following forms:
+<P/>
+<Enum>
+<Item>
+ a string (i.e., lines are separated by newline characters)
+</Item>
+<Item>
+ a list of strings (without  newline characters) 
+which are interpreted as lines of the text to be shown
+</Item>
+<Item>
+ a record with component <C>lines</C> as in 1. or 2. and 
+optional further components
+</Item>
+</Enum>
+<P/>
+In case&nbsp;3. currently the following additional components are used:
+<P/>
+<List>
+<Mark><C>formatted</C></Mark>
+<Item>
+  can be <K>false</K> or <K>true</K>.
+  If set to <K>true</K> the builtin pager tries to show the text exactly as
+  it is given (avoiding &GAP;'s automatic line breaking),
+</Item>
+<Mark><C>start</C></Mark>
+<Item>
+  must be a positive integer. This is interpreted as the number of the first
+  line shown by  the pager (one may see the beginning of the text via back
+  scrolling).
+</Item>
+</List>
+<P/>
+The <Ref Func="Pager"/> command is used by &GAP;'s help system for displaying
+help sections in text format.
+But, of course, it may be used for other purposes as well.
+<P/>
+<Log><![CDATA[
+gap> s6 := SymmetricGroup(6);;
+gap> words := ["This", "is", "a", "very", "stupid", "example"];;
+gap> l := List(s6, p-> Permuted(words, p));;
+gap> Pager(List(l, a-> JoinStringsWithSeparator(a," ")));;                
+]]></Log>
+</Description>
+</ManSection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%  </Section> -->
+<!-- %%  <Section Label="Changing the Way the Help Pages are Displayed"> -->
+<!-- %%  <Heading>Changing the Way the Help Pages are Displayed</Heading> -->
+<!-- %%   -->
+<!-- %%  <Index>HTML</Index> -->
+<!-- %%  <Index>netscape</Index><Index>lynx</Index><Index>internet config</Index> -->
+<!-- %%  <Index>less</Index><Index>pager</Index> -->
+<!-- %%   -->
+<!-- %%  If you have installed an html version of the manual you can -->
+<!-- %%  alternatively use an html browser to display the manual sections. The -->
+<!-- %%  command -->
+<!-- %%   -->
+<!-- %%  \>SetHelpViewer(<A>device</A>) -->
+<!-- %%   -->
+<!-- %%  will select a method described by the string <A>device</A> to display the help -->
+<!-- %%  pages online. Currently <A>device</A> can be <C>"screen"</C> for the default built-in -->
+<!-- %%  text browser, <C>"less"</C> (only under UNIX) to use <C>less</C> for paging, -->
+<!-- %%  <C>"netscape"</C> for the netscape HTML browser and <C>"lynx"</C> for the -->
+<!-- %%  lynx HTML browser. Both HTML browsers will only work under UNIX.  -->
+<!-- %%   -->
+<!-- %%  On an Apple Macintosh you can use an HTML browser by calling <C>SetHelpViewer</C> -->
+<!-- %%  with the parameter <C>"Internet Config"</C>. -->
+<!-- %%  See section&nbsp;<Ref ???="Features of GAP for MacOS"/> for details about this. -->
+<!-- %%   -->
+<!-- %%  If you want the HTML help to be the default, you should call this function -->
+<!-- %%  in your <F>.gaprc</F> file (see the sections on operating -->
+<!-- %%  system dependent features in chapter <Ref Chap="Installing GAP"/>). -->
+<!-- %%   -->
+<!-- %%  Note that you need to set up the <C>symbol</C> font properly in your web browser -->
+<!-- %%  to get a correct display of mathematical formulae (see section&nbsp;<Ref ???="HTML Font -->
+<!-- %%  Setup"/>). -->
+<!-- %%   -->
+<!-- %%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%  </Section> -->
+<!-- %%  <Section Label="Redisplaying a Section"> -->
+<!-- %%  <Heading>Redisplaying a Section</Heading> -->
+<!-- %%   -->
+<!-- %%  <Index>help!redisplaying</Index> -->
+<!-- %%   -->
+<!-- %%  \><C>?</C>{browsing the same section again} -->
+<!-- %%   -->
+<!-- %%  The help command <C>?</C> followed by no section name redisplays the last help -->
+<!-- %%  section again. So if you reach the bottom of a long help section and have -->
+<!-- %%  already forgotten what was mentioned at the beginning, or, for example, the -->
+<!-- %%  examples do not seem to agree with your interpretation of the -->
+<!-- %%  explanations, use <C>?</C> to read the whole section again from the beginning. -->
+<!-- %%   -->
+<!-- %%  When <C>?</C> is used before any section has been read, &GAP; displays a -->
+<!-- %%  <C>Welcome to GAP</C>. -->
+<!-- %%   -->
+<!-- %%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%  </Section> -->
+<!-- %%  <Section Label="Abbreviating Section Names"> -->
+<!-- %%  <Heading>Abbreviating Section Names</Heading> -->
+<!-- %%   -->
+<!-- %%  <Index>help!abbreviating</Index> -->
+<!-- %%  Upper and lower case in <A>section</A> are not distinguished, so typing either -->
+<!-- %%  <C>?Abbreviating Section Names</C> or <C>?abbreviating section names</C> will show -->
+<!-- %%  the section you are currently reading. -->
+<!-- %%   -->
+<!-- %%  Each word in <A>section</A> may be abbreviated. So instead of typing -->
+<!-- %%  <C>?abbreviating section names</C> you may also type <C>?abb sec nam</C>, or even <C>?a -->
+<!-- %%  s n</C>. You must not omit the spaces separating the words. For each word in -->
+<!-- %%  the section name you must give at least the first character. As another -->
+<!-- %%  example you may type <C>?el oper for int</C> instead of <C>?elementary operations -->
+<!-- %%  for integers</C>, which is especially handy when you can not remember whether -->
+<!-- %%  it was <C>operations</C> or <C>operators</C>. -->
+<!-- %%   -->
+<!-- %%  If an abbreviation matches multiple section names a list of all these -->
+<!-- %%  section names is displayed. -->
+<!-- %%   -->
+<!-- %%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%  </Section> -->
+<!-- %%  <Section Label="Help Index"> -->
+<!-- %%  <Heading>Help Index</Heading> -->
+<!-- %%   -->
+<!-- %%  \><C>??<A>topic</A></C>{list help topics} -->
+<!-- %%   -->
+<!-- %%  The operator <C>??</C> looks up <A>topic</A> in &GAP;'s index and prints all the -->
+<!-- %%  index entries that contain the substring <A>topic</A>. -->
+<!-- %%  Then you can decide which section is the one you are actually interested -->
+<!-- %%  in and request this one. -->
+<!-- %%   -->
+<!-- %%  <Log><![CDATA[ -->
+<!-- %%  gap> ??read -->
+<!-- %%  Help: several entries match this topic -->
+<!-- %%  [1] reference:read -->
+<!-- %%  [2] reference:reading sections -->
+<!-- %%  [3] reference:readlib -->
+<!-- %%  [4] reference:isreadablefile -->
+<!-- %%  [5] reference:read -->
+<!-- %%  ... -->
+<!-- %%  ]]></Log> -->
+<!-- %%   -->
+<!-- %%  The first part of each line is a reference number.  Then follows the -->
+<!-- %%  part of the manual which contains the section and finally the actual -->
+<!-- %%  name of the (sub)section. All names are converted to lower case. -->
+<!-- %%   -->
+<!-- %%  The order of the sections corresponds to their order in the -->
+<!-- %%  &GAP; manual, so that related sections should be adjacent. -->
+<!-- %%   -->
+<!-- %%  You can then either refer to the desired subsection by its name or simply -->
+<!-- %%  use <C>?<A>nr</A></C> to look at the topic with the reference number <A>nr</A>. So in the -->
+<!-- %%  above example <C>?3</C> would display the section on <C>ReadLib</C>. -->
+<!-- %%   -->
+<!-- %%  When referring to sections by their name you can usually omit the part -->
+<!-- %%  of the manual unless several parts contain the same section names. -->
+<!-- %%   -->
+<!-- %%  If there are several subsections which have exactly the same name, a number -->
+<!-- %%  in parentheses is added to the name to distinguish these. -->
+<!-- %%   -->
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

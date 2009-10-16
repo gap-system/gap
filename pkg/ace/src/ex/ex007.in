@@ -1,0 +1,30 @@
+
+# ex007.in - Greg Gamble - 4 Apr 01
+
+# The following shows how one can approximate one of the
+# even-numbered Sims strategies by causing ACE to stop
+# every so often, standardising and continuing. Here, we
+# use restrictive values of max to cause ACE to stop.
+
+# We emulate Sims' 4th strategy by using ACE's sims:3
+# We do Sims' Example 5.2, emulating Sims' 4th strategy 
+# by using ACE's sims:3 
+
+# From Table 5.5.3, Sims' t/m statistics are: 393/393
+
+gr: r,s,t;
+rel: (r^tRR)^-1, (s^rSS)^-1, (t^sTT)^-1;
+text: ;                               sr;
+text: ** Sims:4 (cf. 393/393) ...;
+sims:3;
+max:14;
+Start;
+standard; max:64;  Continue; standard; max:114; Continue;
+standard; max:164; Continue; standard; max:214; Continue;
+standard; max:264; Continue; standard; max:314; Continue;
+standard; max:364; Continue; standard; max:414; Continue;
+
+# Stepping max by 60 from 14 also works.
+
+# Note: starting with max:64 and stepping by 80 only needs
+# 352 (total/maximum no. of) cosets ... better than Sims.

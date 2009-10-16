@@ -1,0 +1,601 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  button.tex             GAP documentation            Joachim Neub"user
+%%
+%H  $Id: button.tex,v 1.11 2001/03/23 14:58:17 gap Exp $
+%%
+%Y  Copyright (C) 1999, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Buttons and Menus}
+
+
+The Coset Table Window will initially show you a coset table with
+columns for each of the generators of the presently investigated group
+<g> and their inverses, in which only the consequences of giving the
+subgroup <h> the coset number $1$ are inserted (so that at the
+beginning it has only one row). We have already described in Chapter
+"The Tables" how to work interactively by mouse clicks in this table.
+
+Also in that chapter (see Sections~"Warnings" and "The Information
+Line") we have described the warnings that may appear directly below
+the Coset Table and the ``Information Line'' that is placed further
+below the coset table.
+
+However the Coset Table Window also provides via buttons and menus
+access to much of the functionality offered by {\ITC}.
+
+The Coset Table Window has a row of four buttons at the top: `Sheet',
+`Settings', `Close', and `File'. We will refer to these as the *top
+buttons*. Clicking one of these will pop up a menu from which you can
+select actions in the course of a coset enumeration. You do this by
+holding the left mouse button while moving the pointer to the
+respective entry in the menu and releasing the mouse button there.
+Then the respective action of the program will be executed while the
+menu vanishes.
+
+This action may consist in popping up yet another (query) window into
+which you have to write further (e.~g. numerical) instructions or in
+setting modes for the CE or in immediately performing certain changes
+in the coset table and other tables.
+
+This way of selecting actions may be felt to be uncomfortable and
+hence for convenience the most frequently used actions occurring
+during a coset enumeration can be prompted more directly by clicking
+one of 18 buttons provided at the bottom of the Coset Table Window.
+We will refer to these as the *bottom buttons*.
+
+In the section ``The Top Buttons'' ("The Top Buttons") we will describe
+the menus belonging to the buttons at the top of the coset table.
+
+In a further section ``The Bottom Buttons'' ("The Bottom Buttons") we
+will describe the use of the bottom buttons.
+
+Many of the windows to be described will contain two further buttons
+`ok' and `cancel'. Clicking `ok' means that you want the order
+executed that is described in the window while `cancel' means that you
+do not want this execution. In any case, having pressed one of this
+buttons, you will afterwards return to where you called this window
+from.
+
+Note that *buttons* are in general clicked with the *left* mouse
+button.
+
+There is one exception where clicking a bottom button with the
+*right* mouse button will have an effect namely with showing the
+definitions made. This is explained in the description of the effect
+of the bottom button `show defs' (see~"show defs").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Top Buttons}
+
+*Button* `Sheet'
+
+Note: *This button also appears as a top button in each of the
+``display windows''*.
+
+Display windows (see Section~"How does it work?") are opened by
+clicking the following bottom buttons of the Coset Table Window:
+`show rels' (see~"show rels"), `show subgrp' (see~"show subgrp"),
+`show defs' (see~"show defs"), `show gaps' (see~"show gaps"), and
+`show coincs' (see~"show coincs"), as well as in the display window
+opened by clicking the menu entry `show current settings' in the
+menu popped up via the top button `Settings' (see~"show current
+settings").
+
+The menu popped up by the button `Sheet' has only two entries:
+
+\beginitems
+
+\>`save as postscript'{save as postscript} &
+  This allows you to save the contents of the respective window (e.~g.
+  the Coset Table Window) as a PostScript file. Releasing the left
+  mouse button on this entry will pop up a further menu which allows you
+  to enter the name of the file to which you want this to be written.
+  You are assisted doing this by a list of names of files that exist in
+  your directories, and from which you can choose. The menu also offers
+  you three more buttons: `ok', `cancel', and `home'. Choosing `home'
+  will insert the name of your home directory into the provided field
+  while `ok' starts the action after you have finished the name of the
+  target file, and `cancel' brings you back to the window in which you
+  clicked the button `Sheet'.
+
+\>`close graphic sheet'{close graphic sheet} &
+  This closes the display window and brings you back to the window from
+  which you had opened it.
+
+\enditems
+
+*Button* `Settings'
+
+The menu popped up by this button has ten entries. Two of these allow
+one to influence the size of the table provided for the coset
+enumeration. Seven further ones allow one to turn on or off certain
+modes to be followed during the enumeration. These modes can be
+turned on or off at the beginning, but can also be changed later on
+during the enumeration. The last menu entry allows one to open a window
+in which the presently set parameters and modes are shown.
+
+\beginitems
+
+\>`change default table size'{change default table size} &
+  This opens a query window (see Section "How does it work?") in which
+  you can change the default table size from the original value of
+  1000 to any positive integer you want by typing the desired size
+  into a field provided for this purpose, but consider that
+  unnecessarily high values may cause garbage collections. Clicking
+  `ok' means that you accept the value now given in the field and return
+  to the Coset Table Window, clicking `cancel' brings you back there
+  without having changed the existing default table size. You can
+  change your decision by going to that window again. Note that
+  changing the default value while a CE is under the way does not change
+  the present table size. If you want to or have to change the table
+  size during a coset enumeration, you can use the next menu entry
+  `extend table size' (see~"extend table size").
+
+\>`extend table size'{extend table size} &
+  The text in the query window (see Section "How does it work?") tells
+  you the present table size and proposes twice that size as the value
+  to which it should be changed. You can again alter that value. `ok'
+  and `cancel' have the same meaning as before.
+
+\enditems
+
+Note that an analogous window for extending the table size will spring
+up if in the coset enumeration you have exhausted the preset table
+size. If you extend the table size and leave by clicking `ok' the CE
+will immediately be resumed with the extended table size being
+provided. If you do not extend the table size in such a case, {\ITC}
+will refuse to accept or make further definitions. If you then extend
+the table size using `extend table size' as described in "extend table
+size" the calculation can be resumed but must be restarted again.
+
+\beginitems
+
+\>`coincidence handling off'{coincidence handling off}
+\>`coincidence handling on'{coincidence handling on} &
+  {\ITC} allows one to follow stepwise the handling of coincidences if such
+  occur. Since however this can be a fairly slow procedure that one
+  might not want to follow in detail, this feature can be turned on and
+  off by these two menu entries. If coincidence handling is switched
+  off any process will automatically come to a halt as soon as a
+  coincidence is encountered. At that time a window with the list of
+  pending coincidences will spring up and can then be used to eliminate
+  coincidences one by one in any wanted sequence ``by hand'' (see "The
+  List of Pending coincidences"). Also in the coset table (in addition
+  to the last definition made) all rows get marked in red that are up
+  for elimination. Note that while coincidences are pending the same
+  coset number can occur more than once in a column of an {\ITC} Coset
+  Table. By default coincidence handling will be switched on if you
+  start with a new group from the {\GAP} window, however if you make a
+  new attempt with the same group having finished the last one by the
+  `clear' button (see~"clear") you will retain the previous choice.
+
+\>`echo on'{echo on}
+\>`echo off'{echo off} &
+  When you use a mouse click to perform any of the operations of {\ITC}
+  this will be documented by a line of the form `gap>
+  PointerButtonDown($x$,$y$,...)' or `gap> MenuSelected($u$,$v$,...)'
+  in the {\GAP} window, where e.~g. the integers $x$, $y$, ... specify
+  the position in the window in which you have clicked. This,
+  however, does not help you easily to understand what you have done. It
+  is not even helpful for re-doing what you have done, because in a
+  repeat the windows may sit in different places. On the other hand in
+  a long interactive run you may want to be able to reconstruct your
+  actions, be it -- horribile dictu -- that you have run into a bug that
+  you want to report, or - rather better - that by a stroke of luck you
+  found the result in a particularly nice and short way. For this
+  purpose you can click the menu entry `echo on'. Having done this
+  the {\GAP} window will after each of these rather ununderstandable
+  messages print with the prefix `>>' readable information on the button
+  or menu entry, respectively, that you had clicked, in many cases
+  simply the text written in that button or menu entry. Since you can
+  write in parallel everything occurring in the {\GAP} window to a file
+  using the `LogTo' command (see~"ref:LogTo" in the {\GAP} reference
+  manual) you can thus keep a record of your interactive actions. If
+  you do not want this feature, you can switch it off again.
+
+\>`gaps strategy 1 (first gap)'{gaps strategy 1}
+\>`gaps strategy 2 (first rep of max weight)'{gaps strategy 2}
+\>`gaps strategy 3 (last rep of max weight)'{gaps strategy 3} &
+  These strategies have been explained in Section "Some definition
+  Strategies". You have the option to *preset the strategy* of
+  selecting the next gap of length 1 using these menu entries. Then
+  they can be executed using the bottom button `fill gaps' (see~"fill
+  gaps"). In the query window opened by clicking this bottom button
+  you can prescribe *how many* ``fill gaps'' steps you want to make
+  following the preset strategy. By default strategy 1 will be chosen.
+
+\>`show current settings'{show current settings} &
+  Selecting this menu entry opens a display window in which the chosen
+  default table size and the current table size as well as the choices
+  of modes (`coincidence handling on/off' and `echo on/off') and of the
+  strategy for choosing the next gap of length 1 are shown. As long as
+  this window remains open it will be updated whenever any of these
+  values is changed.
+
+\enditems
+
+*Button* `Close'
+
+The menu popped up by this button allows one to choose various strategies
+for trying to finish the coset enumeration. The present menu entries
+are
+
+\beginitems
+
+\>`close table by Felsch'{close table by Felsch}
+\>`use gaps strategy 1 (first gap)'{use gaps strategy 1}
+\>`use gaps strategy 2 (first rep of max weight)'{use gaps strategy 2}
+\>`use gaps strategy 3 (last rep of max weight)'{use gaps strategy 3}
+\>`close table by HLT'{close table by HLT} &
+  All these have been described in principle in Section "Some Definition
+  Strategies". Note however that the ``closing gaps of length 1''
+  strategies automatically use Felsch steps if and as long as no gap of
+  length 1 exists at a certain stage. If you want to see exactly how
+  this happens you have to use the `fill gaps' command (see~"fill gaps")
+  with some high number of wanted steps and to help it with Felsch steps
+  thrown in interactively if it gets stuck because of lack of gaps of
+  length 1. We will demonstrate this in the first of the examples.
+  Note that all but the first strategy do not guarantee the Mendelsohn
+  Condition.
+
+\enditems
+
+*Button* `File'
+
+The menu popped up by this button has three entries which concern
+reading from and writing to files important information that may have
+been obtained by a longer interactive coset enumeration:
+
+\beginitems
+
+\>`read definitions from file'{read definitions from file} &
+  \index{definition!read from file}%
+  Releasing the mouse button at this entry opens a query window (see
+  Section "How does it work?") in which you can write the name of the
+  file. You are assisted in doing that by a list of names of files that
+  exist in your directories, from which you can choose. Note that this
+  choice is disabled (and the menu text `read definitions from file'
+  coloured grey instead of black) as soon as you have started a coset
+  enumeration so that reading in another definiton sequence does not
+  make sense any longer.
+
+
+\>`write definitions to file'{write definitions to file} &
+  \index{definition!write to file}%
+  If you have constructed a definition sequence that you want to keep in
+  order to possibly reuse it, you can write this definition sequence to
+  a file. Releasing the mouse button at this entry opens a query window
+  (see Section "How does it work?") in which you can write the name of
+  the file. Again you are assisted by being offered some filenames from
+  which you can choose. Note that a definition sequence can be written
+  to a file at any time during a CE, so that you can use it to proceed
+  in different ways from a certain state that you have reached. However
+  note that this menu entry is disabled (and the menu text `write
+  definition to file' coloured grey instead of black) as long as no
+  definition sequence exists yet.
+
+
+\>`write standardized table to file'{write standardized table to file} &
+  As mentioned e.~g. also in Section "the Information Line" there is no
+  renumbering of coset numbers in case some of them are eliminated by
+  the handling of coincidences. That means that at the end of a coset
+  enumeration that did involve handling of coincidences the coset
+  numbers will form a sequence of natural numbers that starts with $1$
+  but has ``holes''. This is inconvenient, in particular if one wants to
+  consider the columns of the coset table as the permutations of the
+  cosets under right multiplication by the respective generator (or
+  inverse generator). Therefore after a CE has finished it is possible
+  to write a standardized coset table (in which in particular the coset
+  numbers now run from $1$ to the index of <h> in <g>) to a file, which
+  then can be processed in any wanted way by {\GAP}. Releasing the mouse
+  button at this entry will open a query window (see Section "How does
+  it work?") in which you can write the name of this file. Again you are
+  assisted by being offered file names from which you may choose. Note
+  that this menu entry is disabled and the text `write standardized
+  table to file' coloured grey instead of black as long as the tables
+  have not closed. That is, only closed coset tables can be
+  standardized by {\ITC}.
+  A coset table that has been written this way to a file with name
+  <filename> can be read into {\GAP} and assigned to a variable <costab>
+  via
+\) <costab>:= ReadAsFunction( <filename> )();
+
+\enditems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Bottom Buttons}
+
+The different kind of functionality of these 18 buttons is
+to some extent indicated by their colours.
+
+The first two (blue) buttons just allow one to scroll to the lines of
+the coset table that one wants to work with, if it contains more than
+30 ``alive'' rows.
+
+\beginitems
+
+\>`scroll to'{scroll to} &
+  Upon clicking this button a query window (see Section "How does it
+  work?") will be opened in which you can specify *by its number* the
+  row in the Coset Table that you want to see. The Coset Table will be
+  scrolled up or down in such a way that the wanted row appears in the
+  middle of the displayed part of the Coset Table. As a default, the
+  number of the last still alive row of the Coset Table will be offered
+  to you. If the specified coset number is no longer ``alive'' the
+  maximal alive coset number below the specified one is taken instead.
+  Any displayed Relation Tables or the Table of Definitions will be
+  scrolled in parallel to the Coset Table.
+
+\>`scroll by'{scroll by} &
+  Upon clicking this button a query window (see Section~"How does it
+  work?") will be opened in which you can enter into a field provided
+  for the purpose the number of rows by which you want to scroll up or
+  down in the coset table. Positive integers mean scrolling up, that is
+  to higher coset numbers, negative integers mean scrolling down, that
+  is to lower coset numbers. Originally the value 20 (that you may
+  change) is offered in this field. If you click this button a second
+  time, the number that you had accepted last time will be offered
+  again, thus allowing you to glance through the Coset Table at certain
+  intervals without having to type in a new number each time, Note that
+  here *actual rows shown in the tables* are counted. That is, if some
+  rows have been suppressed by coincidence handling they are not
+  counted, so that you may end up with rows of higher numbers than you
+  expected. Any displayed Relation Tables or the Table of Definitions
+  will be scrolled in parallel to the Coset Table.
+
+\enditems
+
+The next seven (green) buttons all give access to certain strategies
+to be followed through several steps in a coset enumeration. See
+Section~"Some Definition Strategies" for details.
+
+\beginitems
+
+\>`Felsch'{Felsch} &
+  The ``Felsch'' strategy for performing a coset enumeration makes a
+  sequence of definitions by row-wise filling empty places in the coset
+  table and by searching for all consequences after each definition
+  which are then immediately worked in as well as all coincidences that
+  may be found. Upon clicking this button a query window (see Section
+  "How does it work?") will be opened, in which you can choose how many
+  definitions you want to have made following this strategy. As default
+  (that you can change) the number 1 is offered; choosing this is
+  hence tantamount to making a definition in the first empty place in
+  the coset table in a row-wise scan.
+
+\>`HLT'{HLT} &
+  The ``HLT'' strategy proceeds by filling rows of Subgroup and Relation
+  Tables (see Section~"Some Definition Strategies" and note in
+  particular that as explained there the HLT strategy of {\ITC} deviates
+  in some respect from what is usually meant by the term). Upon
+  clicking this button a query window (see Section~"How does it work?")
+  is opened in which you can specify how many definitions you want to
+  make using this strategy. If you want to *close* the tables using a
+  HLT strategy, you can use the menu entry `close table by HLT' ("close
+  table by HLT") in the menu opened by the top button `Close'.
+
+\>`fill rows'{fill rows} &
+  This button allows you to fill at once in all Relation and Subgroup
+  Tables all rows that belong to one or more prescribed coset numbers.
+  Upon clicking this button a query window (see Section~"How does it
+  work?") will be opened in which you can specify the wanted coset
+  numbers, separated by commas. As a default the smallest number $i$ is
+  offered for which not all $i$th rows of Relation and Subgroup Tables
+  are filled yet. Note that you can only fill rows that do exist, that
+  is rows of a coset number that has already been defined and has not
+  been eliminated by coincidence handling. If you violate this
+  condition, your order will be ignored. If you want to fill a row only
+  in a particular Subgroup or Relation Table or in the Coset Table you
+  can do this by clicking at the beginning of the respective row
+  (see~"The Coset Table" and "The Relation Tables"). Specifying the
+  (non-existing) coset number 0 allows you to fill just the (first and
+  only) rows of the Subgroup Tables without filling rows in any of the
+  Relation Tables.
+
+\>`fill gaps'{fill gaps} &
+  Closing rows in relation or subgroup tables in which only one place is
+  open, is the easiest way to get immediate consequences. Such empty
+  places are called *gaps of length~1*. Often several choices of such
+  ``gaps of length 1'' to be closed are possible and {\ITC} offers
+  various strategies to make this choice (see Section~"Some Definition
+  Strategies"). (Remember -- compare Section~"Some Definition
+  Strategies" -- : by inspecting the Relation Tables that you can
+  display by {\ITC} you may not see all these gaps of length 1, since
+  {\ITC} does not display all the relation tables that can be obtained
+  by cyclic permutation of the relators in the given presentation.)
+  These strategies can be set via the top button `Settings' (see~"gaps
+  strategy 1"); by default strategy 1 will have been set. Clicking
+  the button `fill gaps' will open a query window (see Section "How does
+  it work?"), in which you can specify how many times you want to close
+  a gap of length 1 that is chosen by the selected strategy. By
+  clicking the button `show gaps' (see~"show gaps") you can learn which
+  gaps of length 1 are open at a given time. However note that by
+  closing a particular gap of length 1 often new gaps of length 1
+  will be created, so that by entering a number, say $ng$, bigger than
+  the number of presently existing gaps of length 1 into this window
+  you will start off what might be called a ``pure minimal gap strategy''.
+  This is often a very good strategy, however by the theory about the
+  Todd-Coxeter method it is not guaranteed that such a ``pure minimal gap
+  strategy'' must terminate, even if the index of <h> in <g> is finite
+  since the so called Mendelsohn Condition might be violated (see
+  \cite{Neu82}). If you click this button while no gaps of length 1
+  exist, a warning `There are no gaps of length 1' will appear in red
+  below the coset table. If the process runs out of gaps of length 1
+  before $ng$ of such gaps have been closed, the process will stop and a
+  warning `There are no more gaps of length 1' will appear in red below
+  the Coset Table. Note that the strategies for *closing* the tables by
+  filling gaps of length 1 that are offered in the menu of the top
+  button `Close' are not ``pure minimal gap strategies'', they throw in
+  Felsch type definitions if no gaps of length 1 exist (see~"use gaps
+  strategy 1").
+
+
+
+\>`back to'{back to} &
+  In experimenting with various definition sequences you may want to
+  retrace to a certain point in your procedure. This is offered by this
+  button. Upon clicking it a query window (see Section~"How does it
+  work?") is opened that allows you to retrace *to the situation after
+  defining the coset number that you enter into a given field*. The
+  default offered is to retrace by just one step by offering the
+  last-but-one defined coset number. If you enter a *negative* integer,
+  the CE process is retraced *by* a number of definitions that is the
+  absolute value of the negative integer that you had entered.
+
+\>`sort defs'{sort defs}&
+  \index{definition!sorting}%
+  Clicking this button will directly apply the ``Sorting
+  Definitions'' method (see Section~"Sorting Definitions") to the Coset
+  Table. Note that this button is disabled if the tables have not
+  closed. You may sometimes observe during the running of this method
+  that the number `Defined' in the Information Line is decreasing. When
+  the method has come to an end this will be indicated in the
+  Information Line by the (red) text `Tables sorted'.
+
+
+\>`short-cut'{short-cut} &
+  As already pointed out in Section "The Short-cut Method", the number of
+  coincidences encountered before all tables close may strongly depend
+  on the definition sequence (the strategy followed). Once closure has
+  been reached, the definition sequence that has led to the result is
+  kept, and in case coincidences have occurred one may try to use it for
+  finding a shorter definition sequence that also leads to the result.
+  An algorithm that tries to do this has been developed by Volkmar
+  Felsch. This ``Short-cut'' method is described in Section "The
+  Short-cut Method", here we just mention that it goes through various
+  cycles that each may reduce the number of still needed definitions.
+  By clicking the button `short-cut' a query window (see Section "How
+  does it work?") is opened in which you can specify the number of
+  cycles of the Short-cut method to be performed or can decide to let it
+  run until it terminates having exhausted all its (finitely many)
+  possibilities. This stepwise reduction can be observed in the
+  Information Line (see~"The Information Line") where the number of
+  defined cosets keeps changing, and the number of cycles of the method
+  performed so far is displayed, until the algorithm stops. While the
+  reduction achieved is often quite remarkable it should be understood
+  that no guarantee is given that the absolute minimum of needed
+  definitions will be found. In fact by experimenting with this feature
+  you can see that the final number of definitions after this ``pruning''
+  can depend on the sequence of definitions from which you start. Note
+  that you can inspect the definition sequence before and after this
+  pruning using the bottom button `show defs' ("show defs"). Note that
+  the Short-cut method can only be applied after tables have *closed*,
+  if you try to invoke it before this has been achieved, a warning `The
+  tables have not closed' flashes up in red below the Coset Table and
+  nothing happens.
+
+\enditems
+
+Of the six white buttons five allow you to open further ``display''
+windows (see Section "How does it work?"), in which additional
+information about the state of the coset enumeration is shown. Note
+that clicking the same button a second time will close the
+corresponding display window.
+
+\beginitems
+
+\>`show rels'{show rels} &
+  Clicking this button opens a window that shows the ``List of Relators''
+  (see~"The List of relators" for operating this). Note that thus it
+  indirectly gives access to the Relation Tables (see Section~"The
+  Relation Tables").
+
+\>`show subgrp'{show subgrp} &
+  Clicking this button opens a window that shows the List of Subgroup
+  Generators (see~"The List of Subgroup Generators" for operating this).
+  Note that it thus indirectly gives access to the Subgroup Tables
+  (see~"The Subgroup Tables"). If no subgroup generators are given, that
+  is if you try to enumerate the cosets of the trivial subgroup, no window
+  is opened but the warning `There are no subgroup generators' flashes
+  up in red below the Coset Table.
+
+\>`show defs'{show defs} &
+  \index{definition!show}%
+  Clicking this button with the *left* mouse button opens a window that
+  shows the Table of Definitions (see~"The Table of Definitions").
+  Clicking with the *right* mouse button will instead colour in the
+  Coset Table all those entries green in which the respective coset
+  number was defined in the present definition sequence. We hope that
+  seeing the distribution of the definitions in the coset table may be
+  of interest in particular if such a definition sequence has been
+  obtained by use of the Short-cut method (see "short-cut" and "The
+  Short-cut Method").
+
+\>`show gaps'{show gaps} &
+  Clicking this button opens a window showing a list of
+  ``representatives'' of the equivalence classes of presently known gaps
+  of length 1. See Section~"Some Definition Strategies" and
+  Section~"The List of Length 1 Gaps" for a description of the structure
+  and meaning of that list as well as for the operations that can be
+  started by clicking in that list. If no gaps of length 1 exist, no
+  window will be opened, but a warning `There are no gaps of length 1'
+  will flash up in red below the Coset table.
+
+
+\>`show coincs'{show coincs} &
+  If no coincidences are pending upon clicking this button the warning
+  `There are no pending coincidences' will flash up in red below the
+  Coset Table. Otherwise clicking this bottom button opens a window
+  which displays the text `Pending coincidences' and a list of these.
+  See `The List of Pending Coincidences' (Section "The List of Pending
+  Coincidences") for a description of the structure and meaning of that
+  list and the operations that can be started by clicking in that list.
+
+\enditems
+
+The white button
+
+\beginitems
+
+\>`mark cosets'{mark cosets} &
+  allows one to mark certain cosets (in green colour) in all tables in
+  order to see easily where they occur. Clicking this bottom button
+  opens a query window (see Section "How does it work?") in which you
+  can enter the coset numbers (separated by commas) that you want to get
+  coloured. Entering an empty sequence of coset numbers to be marked
+  will erase any markings.
+
+\enditems
+
+
+There are finally three red buttons, which allow you to leave your
+present calculation with {\ITC} in various ways.
+
+\beginitems
+
+\>`clear'{clear} &
+  Clicking this bottom button will clear all the tables from all
+  entries constructed in the coset enumeration, while keeping the group
+  and subgroup that you had entered into {\GAP}, so that you can directly
+  start anew with the same problem. The table size will be reset to the
+  default table size, but otherwise settings defined during the last
+  run, for instance whether coincidence handling is switched on or off,
+  will remain, that is, not automatically be set to their default
+  values. Remember that you can inspect the present settings in the
+  window opened via the menu entry `show current settings' ("show
+  current settings").
+
+\>`reset'{reset} &
+  This works similarly to `clear' except that all settings will be reset
+  to their default values. Remember again that you can inspect the
+  present settings in the window opened via the menu entry `show current
+  settings' ("show current settings").
+
+\>`quit'{quit} &
+  This closes all windows and just brings you back to the GAP
+  window. In a new start of {\ITC} all switches will be set to their
+  default values. The group that you had handled will still be available
+  as a {\GAP} object.
+
+\enditems
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

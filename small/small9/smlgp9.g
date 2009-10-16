@@ -9,7 +9,7 @@
 ##  the lower layers of the small groups library.
 ##
 Revision.smlgp9_g :=
-    "@(#)$Id$";
+    "@(#)$Id: smlgp9.g,v 1.4 2005/04/22 11:22:39 gap Exp $";
 
 #############################################################################
 ##

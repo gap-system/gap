@@ -3,7 +3,7 @@
 #W  grpfree.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpfree.gi,v 4.52 2008/11/25 09:21:26 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,7 +17,7 @@
 ##  equalitity test.
 ##
 Revision.grpfree_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpfree.gi,v 4.52 2008/11/25 09:21:26 gap Exp $";
 
 
 #############################################################################
@@ -273,7 +273,6 @@ InstallMethod( Enumerator,
              family        := ElementsFamily( FamilyObj( G ) ),
              nrgenerators  := Length( ElementsFamily(
                                           FamilyObj( G ) )!.names ) ) ) );
-
 
 #############################################################################
 ##

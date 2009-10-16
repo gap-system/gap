@@ -1,0 +1,44 @@
+C preface.tex 1. Preface
+C intro.tex 2. Introduction to GrpConst
+I 2.0. GrpConst
+C wrap.tex 3. Construction of All Groups
+I 3.0. Construction of All Groups
+F 3.0. ConstructAllGroups
+C frattext.tex 4. The Frattini Extension Method
+I 4.0. The Frattini Extension Method
+S 4.1. The Main Frattini Extension Function
+I 4.1. The Main Frattini Extension Function
+F 4.1. FrattiniExtensionMethod
+F 4.1. FrattiniExtensionMethod
+F 4.1. FrattiniExtensionMethod
+F 4.1. FrattiniExtensionMethod
+S 4.2. The Construction of Frattini Free Groups
+I 4.2. The Construction of Frattini Free Groups
+F 4.2. FrattiniFactorCandidates
+F 4.2. FrattiniFactorCandidates
+S 4.3. The Determination of Frattini Extensions
+I 4.3. The Determination of Frattini Extensions
+F 4.3. FrattiniExtensions
+F 4.3. FrattiniExtensions
+S 4.4. Verifying non-isomorphism
+F 4.4. DistinguishGroups
+C cyclic.tex 5. The Cyclic Split Extension Method
+I 5.0. The Cyclic Split Extension Method
+S 5.1. The Main Function
+F 5.1. CyclicSplitExtensionMethod
+F 5.1. CyclicSplitExtensionMethod
+S 5.2. The Underlying Functions
+F 5.2. CyclicSplitExtensions
+F 5.2. CyclicSplitExtensions
+F 5.2. CyclicSplitExtensionsUp
+F 5.2. CyclicSplitExtensionsUp
+F 5.2. CyclicSplitExtensionsDown
+F 5.2. CyclicSplitExtensionsDown
+C upext.tex 6. The Upwards Extension Method
+I 6.0. UpwardsExtensions
+F 6.0. UpwardsExtensions
+F 6.0. CyclicExtensions
+F 6.0. UpwardsExtensionsNoCentre
+F 6.0. ExtensionsByGroupNoCentre
+C examples.tex 7. Examples with Runtimes
+I 7.0. Examples with Runtimes

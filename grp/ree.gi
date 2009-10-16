@@ -2,12 +2,12 @@
 ##
 #W  ree.gi                     GAP library
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ree.gi,v 1.4 2006/01/16 23:00:10 gap Exp $
 ##
 #Y  (C) 2001 School Math. Sci., University of St.  Andrews, Scotland
 ##
 Revision.ree_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ree.gi,v 1.4 2006/01/16 23:00:10 gap Exp $";
 
 #############################################################################
 ##
@@ -84,6 +84,7 @@ local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
   return G;
 end );
 
+PermConstructor(ReeGroupCons,[IsPermGroup,IsObject], IsMatrixGroup);
 
 #############################################################################
 ##

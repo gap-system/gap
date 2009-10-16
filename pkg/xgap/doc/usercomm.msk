@@ -1,0 +1,131 @@
+\Chapter{User Communication}
+
+{\XGAP} has two main means to communicate with the user. The first is the
+normal command processing: The user types commands, they are transmitted to 
+{\GAP}, are executed, and produce output, which is displayed in the command
+window. The second is the mouse and the other parts of the graphical user
+interface. This latter part can be divided into menus, mouse events,
+dialogs, and popups.
+
+\beginitems
+Menus & Most of the windows of {\XGAP} have menus. The user can select
+entries in them and this information is transformed to a function call in
+{\GAP}. Menu entries can be checked or not, so menus can also display
+information. 
+
+Mouse Events & A mouse event is the pressing or releasing of a mouse
+button, together with the position where the mouse pointer is in the exact
+moment this happens and the state of certain keyboard keys (mainly shift
+and control). Such events also trigger {\GAP} function calls and the
+corresponding functions can react on these events and for example wait for
+others. 
+
+Dialogs & Dialogs are windows which display information and into which
+the user can enter information for example in form of text fields.
+
+Popups & Popups are special dialogs where the user can not type text but
+can only click on certain buttons. {\XGAP} has so called ``text selectors'' 
+which are a convenient construct to display textual information and let the
+user select parts of it.
+\enditems
+
+Most of those graphical objects have corresponding {\GAP} objects, which
+are created by constructors and can be used later on by operations.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Menus in Graphic Sheets}
+
+\Declaration{Menu}[menu]
+\Declaration{Check}
+\Declaration{Enable}
+
+See the explanation of `GraphicSheet' ("Close!Callback") for the ``Close''
+event, which occurs when the user selects the menu entry 
+`close graphic sheet' in the `Sheet' menu.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Mouse Events}
+
+When a mouse event occurs, this is communicated to {\GAP} via a function
+call which in turn triggers a callback. As described in "GraphicSheet" to
+"CtrlRightPBDown" the following callback keys are predefined as reactions
+on mouse events: `LeftPBDown', `RightPBDown', `ShiftLeftPBDown',
+`ShiftRightPBDown', `CtrlLeftPBDown', `CtrlRightPBDown'.
+
+Note that when your function gets called, the mouse button will still be
+pressed. So it can react and for example wait for the release. There is an 
+easy way to find out about the state of the mouse buttons after the event:
+
+\Declaration{WcQueryPointer}
+
+This function is used in
+
+\Declaration{Drag}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Dialogs}
+
+\Declaration{Dialog}
+
+\Declaration{Query}
+
+%Puts a dialog on screen. Returns `false' if the user clicks ``Cancel'' and
+%a string value or filename, if the user clicks ``OK'', depending on the
+%type of dialog. <default> is an optional initialization value for the string.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Popups}
+
+\Declaration{PopupMenu}
+
+\>`Query'{Query!for popup}@{`Query'!for popup}
+
+actually puts a popup on screen. `Query' returns the string of the
+selected entry or `false' if the user clicks outside the popup. 
+See also `Query' for dialogs in "Query".
+
+\Declaration{TextSelector}
+
+\>Enable( <sel>,<bt>,<flag> )!{for text selectors}
+\>Enable( <sel>,<btindex>,<flag> )!{for text selectors}
+
+Enables or disables the button <bt> (string value) or <btindex>
+(integer index)  of the text selector <sel>, according to <flag>.
+
+\>Relabel( <sel>, <list> )!{for text selectors}
+\>Relabel( <sel>, <index>, <text> )!{for text selectors}
+
+Changes the strings that are displayed in the text selector. In the
+first form <list> must be a list of strings. The second form only
+changes the text at index <index>.
+
+\>SetName( <sel>, <index>, <string> )!{for text selectors}
+
+Every string in a text selector has a name. The names are stored in
+the list `names' component of the text selector. So `sel!.names' ist a 
+list containing the names. The names are initialized with the strings
+from the creation of the text selector.
+
+\>Reset( <sel> )!{for text selectors}
+
+Resets all strings of a text selector, such that they are no longer
+selected. 
+
+\>Close( <sel> )!{for text selectors}
+
+Closes a text selector. It vanishes from screen.
+
+Note that you have access to the indices and names of strings and
+buttons:
+
+\>`IndexOfSelectedText'{IndexOfSelectedText}@{`IndexOfSelectedText'}
+
+Whenever the user clicks on a text in a text selector, the global
+variable is set to the index of the text in the text
+selector. 
+
+\>`IndexOfSelectedButton'{IndexOfSelectedButton}@{`IndexOfSelectedButton'}
+
+Whenever the user clicks on a button in a text selector, the global
+variable is set to the index of the button in the text selector.

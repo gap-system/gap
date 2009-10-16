@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+   [ <!ENTITY Example "<Package>Example</Package>">
+   ]>
+
+<!-- Documentation of the Example package. -->
+
+<Book Name="Example"> 
+
+<TitlePage>
+  <Title>&Example; -- A GAP 4 Package</Title>
+  <Version>( Version 
+<#Include SYSTEM "../VERSION">
+ )
+  </Version>
+  <Author> Werner Nickel
+    <Email>nickel@mathematik.tu-darmstadt.de</Email>
+    <Homepage>http://www. ...</Homepage>
+  </Author>
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "example.xml">
+
+<#Include SYSTEM "install.xml">
+
+</Body>
+
+<#Include SYSTEM "hints.xml">
+
+<TheIndex/>
+
+</Book>
+
+<!-- ==================================================================== -->
+

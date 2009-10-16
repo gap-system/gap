@@ -1,0 +1,154 @@
+<!-- $Id: SSP.xml,v 1.15 2007/12/27 19:33:26 alexk Exp $ -->
+
+<!-- ********************SSP******************** -->
+
+<Chapter Label="SSP">
+<Heading>Strong Shoda pairs</Heading>
+
+<Section Label="SSPSSP">
+<Heading>Computing strong Shoda pairs</Heading>
+
+<ManSection>
+   <Attr Name="StrongShodaPairs" 
+         Arg="G"  
+         Comm="A list of SSPs representatives realizing Wedderburn components of QG" />
+   <Returns>
+         A list of pairs of subgroups of the input group.
+   </Returns>
+   <Description>
+        The input should be a finite group <A>G</A>. 
+        <P/>
+        Computes a list of representatives of the equivalence classes of 
+        <E>strong Shoda pairs</E> 
+        (<Ref Sect="SSPDef" />) of a finite group <A>G</A>. 
+        <P/>
+
+<Example>
+<![CDATA[
+gap> StrongShodaPairs( SymmetricGroup(4) );
+[ [ Sym( [ 1 .. 4 ] ), Group([ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ]) ],
+  [ Sym( [ 1 .. 4 ] ), Group([ (1,3)(2,4), (1,4)(2,3), (2,4,3) ]) ],
+  [ Group([ (1,2)(3,4), (1,3,2,4), (3,4) ]), Group([ (1,2)(3,4), (1,3,2,4) ])
+     ],
+  [ Group([ (1,2)(3,4), (3,4), (1,3,2,4) ]), Group([ (1,2)(3,4), (3,4) ]) ],
+  [ Group([ (1,4)(2,3), (1,3)(2,4), (2,4,3) ]),
+      Group([ (1,4)(2,3), (1,3)(2,4) ]) ] ]
+gap> StrongShodaPairs( DihedralGroup(64) );
+[ [ <pc group of size 64 with 6 generators>,
+      Group([ f6, f5, f4, f3, f1, f2 ]) ],
+  [ <pc group of size 64 with 6 generators>, Group([ f6, f5, f4, f3, f1*f2 ])
+     ],
+  [ <pc group of size 64 with 6 generators>, Group([ f6, f5, f4, f3, f2 ]) ],
+  [ <pc group of size 64 with 6 generators>, Group([ f6, f5, f4, f3, f1 ]) ],
+  [ Group([ f1*f2, f4*f5*f6, f5*f6, f6, f3, f3 ]),
+      Group([ f6, f5, f4, f1*f2 ]) ],
+  [ Group([ f6, f5, f2, f3, f4 ]), Group([ f6, f5 ]) ],
+  [ Group([ f6, f2, f3, f4, f5 ]), Group([ f6 ]) ],
+  [ Group([ f2, f3, f4, f5, f6 ]), Group([  ]) ] ]
+]]>
+</Example>
+
+   </Description>
+</ManSection>
+
+</Section>
+
+<Section Label="IsSSP">
+<Heading>Properties related with Shoda pairs</Heading>
+
+<ManSection>
+   <Oper Name="IsStrongShodaPair" 
+         Arg="G K H"  
+         Comm="Is (K,H) a strong Shoda pair of G?" />
+   <Description>
+         The first argument should be a finite group <A>G</A>, 
+         the second one a sugroup <A>K</A> of <A>G</A> and the
+         third one a subgroup of <A>K</A>. <P/>
+                  
+         Returns <K>true</K> if (<A>K</A>,<A>H</A>) is a 
+         <E>strong Shoda pair</E> (<Ref Sect="SSPDef" />) 
+         of <A>G</A>, and <K>false</K> otherwise.
+
+<Example>
+<![CDATA[
+gap> G:=SymmetricGroup(3);; K:=Group([(1,2,3)]);; H:=Group( () );;
+gap> IsStrongShodaPair( G, K, H );
+true
+gap> IsStrongShodaPair( G, G, H );
+false
+gap> IsStrongShodaPair( G, K, K );
+false
+gap> IsStrongShodaPair( G, G, K );
+true
+]]>
+</Example>
+
+   </Description>
+</ManSection>
+
+<ManSection>
+   <Oper Name="IsShodaPair" 
+         Arg="G K H"  
+         Comm="Is (K,H) a Shoda pair of G?" />
+   <Description>
+         The first argument should be a finite group <A>G</A>, 
+         the second a subgroup <A>K</A> of <A>G</A> and the
+         third one a subgroup of <A>K</A>. <P/>
+         
+         Returns <K>true</K> if (<A>K</A>,<A>H</A>) is a 
+         <E>Shoda pair</E> (<Ref Sect="SPDef" />) of <A>G</A>.<P/>
+
+         Note that every strong Shoda pair is a Shoda pair, 
+         but the converse is not true.
+         
+<Example>
+<![CDATA[
+gap> G:=AlternatingGroup(5);;
+gap> K:=AlternatingGroup(4);;
+gap> H := Group( (1,2)(3,4), (1,3)(2,4) );;
+gap> IsStrongShodaPair( G, K, H );
+false
+gap> IsShodaPair( G, K, H );
+true
+]]>
+</Example>
+         
+   </Description>
+</ManSection>
+
+<Alt Only="LaTeX">\newpage</Alt>
+
+<ManSection>
+   <Oper Name="IsStronglyMonomial" 
+         Arg="G"  
+         Comm="Is every irreducible character strongly monomial" />
+   <Description>
+        The input <A>G</A> should be a finite group. <P/>
+   
+        Returns <K>true</K> if <A>G</A> is a <E>strongly monomial</E> 
+        (<Ref Sect="StMon" />) finite group.
+        
+<Example>
+<![CDATA[
+gap> S4:=SymmetricGroup(4);;
+gap> IsStronglyMonomial(S4);
+true
+gap> G:=SmallGroup(24,3);;
+gap> IsStronglyMonomial(G);
+false
+gap> IsMonomial(G);
+false
+gap> G:=SmallGroup(1000,86);;
+gap> IsMonomial(G);
+true
+gap> IsStronglyMonomial(G);
+false
+]]>
+</Example>
+        
+   </Description>
+</ManSection>
+
+</Section>
+
+</Chapter>

@@ -1,0 +1,29 @@
+local g1,g2,g3,g4,g5,g6,g7,r,f,g,rws,x;
+f:=FreeGroup(IsSyllableWordsFamily,7);
+g:=GeneratorsOfGroup(f);
+g1:=g[1];
+g2:=g[2];
+g3:=g[3];
+g4:=g[4];
+g5:=g[5];
+g6:=g[6];
+g7:=g[7];
+rws:=SingleCollector(f,[ 2, 3, 3, 2, 2, 2, 7 ]);
+r:=[
+[1,g6],
+[4,g6],
+[5,g6],
+];
+for x in r do SetPower(rws,x[1],x[2]);od;
+r:=[
+[2,1,g2],
+[7,1,g7^5],
+[4,3,g5],
+[5,3,g4*g5],
+[7,3,g7],
+[5,4,g6],
+];
+for x in r do SetCommutator(rws,x[1],x[2],x[3]);od;
+return GroupByRwsNC(rws);
+
+

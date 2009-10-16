@@ -1,0 +1,8 @@
+Generators: x y;
+Weights:    1 2;
+Limiting weight: 19;
+Relations:
+6 [y,[x,y]]-[x,[x,[x,y]]];
+20 [y,[x,[x,[x,y]]]] - 3 [x,[x,[x,[x,[x,y]]]]];
+[x,[x,[x,[x,[x,[x,[x,[x,y]]]]]]]];
+

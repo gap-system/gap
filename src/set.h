@@ -2,7 +2,7 @@
 **
 *W  set.h                       GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: set.h,v 4.7 2002/04/15 10:03:58 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_set_h =
-   "@(#)$Id$";
+   "@(#)$Id: set.h,v 4.7 2002/04/15 10:03:58 sal Exp $";
 #endif
 
 

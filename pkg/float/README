@@ -1,0 +1,43 @@
+                             The Float package
+
+This is the README file for the GAP package "Float",
+version $Id: README,v 1.1 2008/04/21 18:38:07 gap Exp $
+
+This package implements floating-point numbers, with arbitrary precision,
+based on the C library MPFR.
+
+The package is distributed in source form, and does not require anything
+else than a running GAP 4.4 or later. For updates, check
+
+     http://mad.epfl.ch/~laurent/Float/
+  
+To use the package, start GAP and type
+
+LoadPackage("Float");
+
+The "Float" package banner should appear on the screen.
+
+For details on how to use the Float package, please consult the documentation.
+It should be compiled, after the command `LoadPackage("Float")', by invoking
+
+FLOAT_MAKEDOC();
+
+The documentation will then be available in the `doc' subdirectory
+(view either `manual.dvi' via `xdvi' or or `manual.pdf' via a PDF
+viewer).
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or any
+later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program, in the file COPYING.  If not, see
+<http://www.gnu.org/licenses/>.
+
+  Laurent Bartholdi, Lausanne, $Date: 2008/04/21 18:38:07 $

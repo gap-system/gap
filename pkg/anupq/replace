@@ -1,0 +1,34 @@
+#!/usr/bin/perl 
+
+$string = shift(@ARGV);
+$replfile = shift(@ARGV);
+system("mv Makefile.in Makefile.in.bak");
+print "Old Makefile.in is in Makefile.in.bak\n";
+open(OLDMAKE, "<Makefile.in.bak");
+open(NEWMAKE, ">Makefile.in");
+$start = "#\@$string\@";
+$end = "#\@END$string\@";
+$copy = 1;
+while (<OLDMAKE>) {
+  if (/$start/) {
+    $copy = 0;
+    print NEWMAKE "$start\n";
+    open(REPL,"<$replfile");
+    while (<REPL>) { 
+      print NEWMAKE $_; 
+      };
+    close(REPL);
+    print NEWMAKE "$end\n";
+    next;
+    }
+  if (/$end/) {
+    $copy = 1;
+    next;
+    }
+  if ($copy) {
+    print NEWMAKE $_; 
+    };
+}
+close(OLDMAKE);
+close(NEWMAKE);
+print "Check new Makefile.in\n";

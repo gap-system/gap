@@ -1,0 +1,18 @@
+LoadPackage("recog");
+ReadPackage("recog","gap/steve/readdef.g");
+ReadPackage("recog","gap/steve/readimpl.g");
+Read("~/Documents/sal/mark/colva/stuff.g");
+Read("~/Documents/sal/mark/colva/PermGpMaps.g");
+Read("~/Documents/sal/mark/colva/AlmostSimple.g");
+Read("~/Documents/sal/mark/colva/NSM.g");
+ReadPackage("recog","gap/recogSnAnBB.gi");
+Read("~/Documents/sal/mark/colva/ProbGen.g");
+DeclareAttribute( "overgroup", IsRecognitionInfo, "mutable" );
+DeclareAttribute( "TFordered", IsRecognitionInfo, "mutable" );
+
+Read("~/Documents/sal/mark/colva/DPleaf.g");
+Read("~/Documents/sal/mark/colva/leaves.g");
+Read("~/Documents/sal/mark/colva/Evaluate.g");
+Read("~/Documents/sal/mark/colva/Refine.g");
+Read("~/Documents/sal/mark/colva/Rearrange.g");
+Read("~/Documents/sal/mark/colva/ChiefTree.g");

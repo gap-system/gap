@@ -2,7 +2,7 @@
 **
 *W  scanner.c                   GAP source                   Martin Schoenert
 **
-*H  @(#)$Id$
+*H  @(#)$Id: scanner.c,v 4.81 2009/03/09 21:10:40 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -36,7 +36,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_scanner_c =
-   "@(#)$Id$";
+   "@(#)$Id: scanner.c,v 4.81 2009/03/09 21:10:40 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -61,7 +61,7 @@ const char * Revision_scanner_c =
 #include        "string.h"              /* strings                         */
 
 #include        "opers.h"               /* DoFilter...                     */
-#include        "read.h"               /* Call0ArgsInNewReader             */
+#include        "read.h"                /* Call0ArgsInNewReader            */
 
 #include <assert.h>
 
@@ -84,9 +84,6 @@ const char * Revision_scanner_c =
 #define S_TRYNEXT       ((1UL<< 3)+3)
 #define S_INFO          ((1UL<< 3)+4)
 #define S_ASSERT        ((1UL<< 3)+5)
-#define S_SAVEWS        ((1UL<< 3)+6)
-#define S_LOADWS        ((1UL<< 3)+7)
-
 #define S_LBRACK        ((1UL<< 4)+0)
 #define S_LBRACE        ((1UL<< 4)+1)
 #define S_BLBRACK       ((1UL<< 4)+2)
@@ -245,7 +242,7 @@ typedef UInt            TypSymbolSet;
 **  Note  that  the  size  of  'Value'  limits  the  maximal  number  of
 **  significant  characters of  an identifier.  'GetIdent' truncates  an
 **  identifier after that many characters.
-**  
+**
 **  The  only other  symbols  which  may not  fit  into  Value are  long
 **  integers  or strings.  Therefor we  have  to check  in 'GetInt'  and
 **  'GetStr' if  the symbols is  not yet  completely read when  Value is
@@ -451,10 +448,10 @@ void            SyntaxError (
 	if ( SyStrcmp( "*stdin*", Input->name ) != 0 )
 	  Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
 	Pr( "\n", 0L, 0L );
-	
+
 	/* print the current line                                              */
 	Pr( "%s", (Int)Input->line, 0L );
-	
+
 	/* print a '^' pointing to the current position                        */
 	for ( i = 0; i < In - Input->line - 1; i++ ) {
 	  if ( Input->line[i] == '\t' )  Pr("\t",0L,0L);
@@ -607,11 +604,12 @@ UInt OpenInput (
     Input->isstream = 0;
     Input->file = file;
     Input->name[0] = '\0';
-    if (SyStrcmp("*errin*", filename))
+    if (SyStrcmp("*errin*", filename) && SyStrcmp("*stdin*", filename))
       Input->echo = 0;
     else
       Input->echo = 1;
     SyStrncat( Input->name, filename, sizeof(Input->name) );
+    Input->gapname = (Obj) 0;
 
     /* start with an empty line and no symbol                              */
     In = Input->line;
@@ -703,10 +701,16 @@ UInt CloseInput ( void )
         SyFclose( Input->file );
     }
 
+    /* don't keep GAP objects alive unnecessarily */
+    Input->gapname = 0;
+    Input->sline = 0;
+
     /* revert to last file                                                 */
     Input--;
     In     = Input->ptr;
     Symbol = Input->symbol;
+
+
 
     /* indicate success                                                    */
     return 1;
@@ -1237,7 +1241,7 @@ UInt OpenOutputStream (
     Output++;
     Output->stream   = stream;
     Output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
-    Output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True); 
+    Output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
     Output->line[0]  = '\0';
     Output->pos      = 0;
     Output->indent   = 0;
@@ -1274,11 +1278,13 @@ UInt CloseOutput ( void )
 
     /* refuse to close the initial output file '*stdout*'                  */
     if ( Output == OutputFiles )
-        return 0;
+      return 0;
 
-    /* refuse to close the test output file                                */
+    /* silently refuse to close the test output file this is probably
+	 an attempt to close *errout* which is silently not opened, so
+	 lets silently not close it  */
     if ( Output == TestOutput )
-        return 0;
+        return 1;
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
@@ -1408,7 +1414,7 @@ static Int GetLine2 (
 {
 
     if ( input->isstream ) {
-        if ( input->sline == 0 
+        if ( input->sline == 0
           || GET_LEN_STRING(input->sline) <= input->spos )
         {
             input->sline = CALL_1ARGS( ReadLineFunc, input->stream );
@@ -1429,11 +1435,11 @@ static Int GetLine2 (
                 for(cbuf = 0; buffer[cbuf]; cbuf++);
                 /* copy piece of input->sline into buffer and adjust counters */
                 for(count = input->spos,
-                    ptr = (Char *)CHARS_STRING(input->sline) + count, 
+                    ptr = (Char *)CHARS_STRING(input->sline) + count,
                     len = GET_LEN_STRING(input->sline),
                     max = length-2,
                     bptr = buffer + cbuf;
-                    cbuf < max && count < len 
+                    cbuf < max && count < len
                                   && *ptr != '\n' && *ptr != '\r';
                     *bptr = *ptr, cbuf++, ptr++, bptr++, count++);
                 /* we also copy an end of line if there is one */
@@ -1445,7 +1451,7 @@ static Int GetLine2 (
                 buffer[cbuf] = '\0';
                 input->spos = count;
                 /* if input->stream is a string stream, we have to adjust the
-                   position counter in the stream object as well */ 
+                   position counter in the stream object as well */
                 if (input->isstringstream) {
                     ADDR_OBJ(input->stream)[1] = INTOBJ_INT(count);
                 }
@@ -1494,15 +1500,15 @@ Char GetLine ( void )
     if ( ! Input->isstream ) {
         Pr( "%c", (Int)'\03', 0L );
         if ( Input->file == 0 ) {
-            if ( ! SyQuiet ) 
-                if ( PrintPromptHook ) 
+            if ( ! SyQuiet )
+                if ( PrintPromptHook )
                      Call0ArgsInNewReader( PrintPromptHook );
                 else
                      Pr( "%s%c", (Int)Prompt, (Int)'\03' );
             else             Pr( "%c", (Int)'\03', 0L );
         }
         else if ( Input->file == 2 ) {
-            if ( PrintPromptHook ) 
+            if ( PrintPromptHook )
                  Call0ArgsInNewReader( PrintPromptHook );
             else
                  Pr( "%s%c", (Int)Prompt, (Int)'\03' );
@@ -1527,10 +1533,10 @@ Char GetLine ( void )
         }
 
 
-        /* convert '?' at the beginning into 'HELP' 
-           (if not inside reading long string which may have line 
+        /* convert '?' at the beginning into 'HELP'
+           (if not inside reading long string which may have line
            or chunk from GetLine starting with '?')                        */
-        
+
         if ( In[0] == '?' && HELPSubsOn == 1) {
             buf[0] = '\0';
             SyStrncat( buf, In+1, 199 );
@@ -1551,8 +1557,8 @@ Char GetLine ( void )
 
         /* if neccessary echo the line to the logfile                      */
 	if( InputLog != 0 && Input->echo == 1)
-            if ( !(In[0] == '\377' && In[1] == '\0') ) 
-	    PutLine2( InputLog, In, SyStrlen(In) ); 
+            if ( !(In[0] == '\377' && In[1] == '\0') )
+	    PutLine2( InputLog, In, SyStrlen(In) );
 
 		/*	if ( ! Input->isstream ) {
 	  if ( InputLog != 0 && ! Input->isstream ) {
@@ -1594,7 +1600,13 @@ Char GetLine ( void )
 
             /* if the line is not empty or a comment, print it             */
             else if ( In[0] != '\n' && In[0] != '#' && In[0] != '\377' ) {
-                PutLine2( TestOutput, "- ", 2 );
+	      char obuf[8];
+	      /* Commented out by AK
+	      sprintf(obuf,"-%5i:\n- ", (int)TestInput->number++);
+	      PutLine2( TestOutput, obuf, 7 );
+	      */
+	      sprintf(obuf,"- ");
+	      PutLine2( TestOutput, obuf, 2 );
                 PutLine2( TestOutput, In, SyStrlen(In) );
                 In[0] = '\0';
             }
@@ -1665,7 +1677,7 @@ void GetIdent ( void )
     isQuoted = 0;
 
     /* read all characters into 'Value'                                    */
-    for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='$' || *In=='\\'; i++ ) {
+    for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='$' || *In=='@' || *In=='\\'; i++ ) {
 
         fetch = 1;
         /* handle escape sequences                                         */
@@ -1682,7 +1694,7 @@ void GetIdent ( void )
                      else i--;
                 }
                 else  {Value[i] = '\r'; fetch = 0;}
-            } 
+            }
             else if ( *In == '\n' && i < sizeof(Value)-1 )  i--;
             else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
             else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
@@ -1705,7 +1717,7 @@ void GetIdent ( void )
     }
 
     /* terminate the identifier and lets assume that it is not a keyword   */
-    if ( i < sizeof(Value)-1 )  
+    if ( i < sizeof(Value)-1 )
         Value[i] = '\0';
     else {
         SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
@@ -1750,9 +1762,7 @@ void GetIdent ( void )
                                                      Symbol=S_TRYNEXT; break;
     case 256*'I'+'o': if(!SyStrcmp(Value,"Info"))    Symbol=S_INFO;    break;
     case 256*'A'+'t': if(!SyStrcmp(Value,"Assert"))  Symbol=S_ASSERT;  break;
-    case 256*'S'+'e': if(!SyStrcmp(Value,"SaveWorkspace"))
-                                                     Symbol=S_SAVEWS;  break;
-      
+
     default: ;
     }
 
@@ -1789,7 +1799,7 @@ void GetInt ( void )
     isInt = 1;
 
     /* read the digits into 'Value'                                        */
-    for ( i=0; i < sizeof(Value)-1 && (IsDigit(*In) || IsAlpha(*In) || 
+    for ( i=0; i < sizeof(Value)-1 && (IsDigit(*In) || IsAlpha(*In) ||
                                            *In=='_' || *In=='\\'); i++ ) {
 
         fetch = 1;
@@ -1801,7 +1811,7 @@ void GetInt ( void )
                 GET_CHAR();
                 if  ( *In == '\n' )  i--;
                 else  {Value[i] = '\r'; fetch = 0;}
-            } 
+            }
             else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
             else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
             else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
@@ -1828,9 +1838,9 @@ void GetInt ( void )
     /* terminate the integer         */
     Value[i] = '\0';
     if ( isInt ) {
-        if ( i < sizeof(Value)-1 ) 
+        if ( i < sizeof(Value)-1 )
               Symbol = S_INT;
-        else          
+        else
               Symbol = S_PARTIALINT;
     }
     else {
@@ -1869,10 +1879,10 @@ void GetStr ( void )
 
     /* Avoid substitution of '?' in beginning of GetLine chunks */
     HELPSubsOn = 0;
-    
+
     /* read all characters into 'Value'                                    */
-    for ( i = 0; i < sizeof(Value)-1 && *In != '"' 
-                                     && *In != '\n' && *In != '\377'; i++ ) {
+    for ( i = 0; i < sizeof(Value)-1 && *In != '"'
+                                 /* && *In != '\n'*/ && *In != '\377'; i++ ) {
 
         fetch = 1;
         /* handle escape sequences                                         */
@@ -1883,7 +1893,7 @@ void GetStr ( void )
                 GET_CHAR();
                 if  ( *In == '\n' )  i--;
                 else  {Value[i] = '\r'; fetch = 0;}
-            } 
+            }
             else if ( *In == 'n'  )  Value[i] = '\n';
             else if ( *In == 't'  )  Value[i] = '\t';
             else if ( *In == 'r'  )  Value[i] = '\r';
@@ -1893,7 +1903,7 @@ void GetStr ( void )
             else if ( *In == 'c'  )  Value[i] = '\03';
             else if ( IsDigit( *In ) ) {
                 a = *In; GET_CHAR(); b = *In; GET_CHAR(); c = *In;
-                if (!( IsDigit(b) && IsDigit(c) )){ 
+                if (!( IsDigit(b) && IsDigit(c) )){
                  SyntaxError("expecting three octal digits after \\ in string");
                 }
                 Value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
@@ -1925,7 +1935,7 @@ void GetStr ( void )
     /* set length of string, set 'Symbol' and skip trailing '"'            */
     ValueLen = i;
     if ( i < sizeof(Value)-1 )  {
-         Symbol = S_STRING;  
+         Symbol = S_STRING;
          if ( *In == '"' )  GET_CHAR();
     }
     else
@@ -1951,7 +1961,7 @@ void GetStr ( void )
 void GetChar ( void )
 {
     Char c;
-    
+
     /* skip '\''                                                           */
     GET_CHAR();
 
@@ -1966,7 +1976,7 @@ void GetChar ( void )
         else if ( *In == '<'  )  Value[0] = '\02';
         else if ( *In == 'c'  )  Value[0] = '\03';
         else if ( *In >= '0' && *In <= '7' ) {
-            /* escaped three digit octal numbers are allowed in input */ 
+            /* escaped three digit octal numbers are allowed in input */
             c = 64 * (*In - '0');
             GET_CHAR();
             if ( *In < '0' || *In > '7' )
@@ -2040,12 +2050,12 @@ void GetSymbol ( void )
     switch ( *In ) {
 
     case '.':   Symbol = S_DOT;                         GET_CHAR();
-    /*            if ( *In == '\\' ) { GET_CHAR(); 
+    /*            if ( *In == '\\' ) { GET_CHAR();
                    if ( *In == '\n' ) { GET_CHAR(); } }   */
                 if ( *In == '.' ) { Symbol = S_DOTDOT;  GET_CHAR();  break; }
                 break;
     case '!':   Symbol = S_ILLEGAL;                     GET_CHAR();
-                if ( *In == '\\' ) { GET_CHAR(); 
+                if ( *In == '\\' ) { GET_CHAR();
                   if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '.' ) { Symbol = S_BDOT;    GET_CHAR();  break; }
                 if ( *In == '[' ) { Symbol = S_BLBRACK; GET_CHAR();  break; }
@@ -2061,7 +2071,7 @@ void GetSymbol ( void )
 
     case ':':   Symbol = S_COLON;                       GET_CHAR();
                 if ( *In == '\\' ) {
-		  GET_CHAR(); 
+		  GET_CHAR();
                   if ( *In == '\n' )
 		    { GET_CHAR(); }
 		}
@@ -2072,20 +2082,20 @@ void GetSymbol ( void )
 
     case '=':   Symbol = S_EQ;                          GET_CHAR();  break;
     case '<':   Symbol = S_LT;                          GET_CHAR();
-                if ( *In == '\\' ) { GET_CHAR(); 
+                if ( *In == '\\' ) { GET_CHAR();
                   if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '=' ) { Symbol = S_LE;      GET_CHAR();  break; }
                 if ( *In == '>' ) { Symbol = S_NE;      GET_CHAR();  break; }
                 break;
     case '>':   Symbol = S_GT;                          GET_CHAR();
-                if ( *In == '\\' ) { GET_CHAR(); 
+                if ( *In == '\\' ) { GET_CHAR();
                   if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '=' ) { Symbol = S_GE;      GET_CHAR();  break; }
                 break;
 
     case '+':   Symbol = S_PLUS;                        GET_CHAR();  break;
     case '-':   Symbol = S_MINUS;                       GET_CHAR();
-                if ( *In == '\\' ) { GET_CHAR(); 
+                if ( *In == '\\' ) { GET_CHAR();
                   if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '>' ) { Symbol=S_MAPTO;     GET_CHAR();  break; }
                 break;
@@ -2098,6 +2108,7 @@ void GetSymbol ( void )
     case '\\':                                          GetIdent();  break;
     case '_':                                           GetIdent();  break;
     case '$':                                           GetIdent();  break;
+    case '@':                                           GetIdent();  break;
     case '~':   Value[0] = '~';  Value[1] = '\0';
                 Symbol = S_IDENT;                       GET_CHAR();  break;
 
@@ -2130,7 +2141,7 @@ Obj WriteAllFunc;
 /****************************************************************************
 **
 *F  PutLine2( <output>, <line>, <len> )  . . . . . . . . . print a line, local
-**  
+**
 **  Introduced  <len> argument. Actually in all cases where this is called one
 **  knows the length of <line>, so it is not necessary to compute it again
 **  with the inefficient C- SyStrlen.  (FL)
@@ -2163,10 +2174,10 @@ void PutLine2(
 	/*    XXX SyStrncat( CSTR_STRING(str), line, len + 1 );    */
         /* this contains trailing zero character */
         memcpy(CHARS_STRING(str),  line, len + 1 );
-	
+
         /* now delegate to library level */
 	CALL_2ARGS( WriteAllFunc, output->stream, str );
-      } 
+      }
     else {
         SyFputs( line, output->file );
     }
@@ -2177,7 +2188,7 @@ void PutLine2(
 **
 *F  PutLineTo ( stream, len ) . . . . . . . . . . . . . . print a line, local
 **
-**  'PutLineTo'  prints the first len characters of the current output 
+**  'PutLineTo'  prints the first len characters of the current output
 **  line   'stream->line' to <stream>
 **  It  is  called from 'PutChrTo'.
 **
@@ -2202,6 +2213,7 @@ void PutLineTo ( KOutputStream stream, UInt len )
             if ( ! GetLine2( TestInput, TestLine, sizeof(TestLine) ) ) {
                 TestLine[0] = '\0';
             }
+	    TestInput->number++;
         }
         p = TestLine + (SyStrlen(TestLine)-2);
         while ( TestLine <= p && ( *p == ' ' || *p == '\t' ) ) {
@@ -2215,8 +2227,11 @@ void PutLineTo ( KOutputStream stream, UInt len )
             TestLine[0] = '\0';
         }
         else {
-            PutLine2( stream, "+ ", 2 );
-            PutLine2( stream, Output->line, SyStrlen(Output->line) );
+	  char obuf[80];
+	  /* sprintf(obuf,"+ 5%i bad example:\n+ ", (int)TestInput->number); */
+	  sprintf(obuf,"Line %i : \n+ ", (int)TestInput->number);
+	  PutLine2( stream, obuf, SyStrlen(obuf) );
+	  PutLine2( stream, Output->line, SyStrlen(Output->line) );
         }
     }
 
@@ -2254,7 +2269,7 @@ void PutChrTo (
 {
     Int                 i;
     Char                str [256];
-    
+
 
 
     /* '\01', increment indentation level                                  */
@@ -2262,7 +2277,7 @@ void PutChrTo (
 
       if (!stream->format)
 	return;
-      
+
       /* if this is a better place to split the line remember it         */
       if ( stream->indent < stream->pos
 	   && SyNrCols-stream->pos  + 16*stream->indent
@@ -2270,9 +2285,9 @@ void PutChrTo (
 	stream->spos     = stream->pos;
 	stream->sindent  = stream->indent;
       }
-      
+
       stream->indent++;
-      
+
     }
 
     /* '\02', decrement indentation level                                  */
@@ -2280,7 +2295,7 @@ void PutChrTo (
 
       if (!stream -> format)
 	return;
-      
+
       /* if this is a better place to split the line remember it         */
       if ( stream->indent < stream->pos
 	   && SyNrCols-stream->pos  + 16*stream->indent
@@ -2289,7 +2304,7 @@ void PutChrTo (
 	stream->sindent  = stream->indent;
       }
       stream->indent--;
-      
+
     }
 
     /* '\03', print line                                                   */
@@ -2300,7 +2315,7 @@ void PutChrTo (
 	  {
 	    stream->line[ stream->pos ] = '\0';
 	    PutLineTo(stream, stream->pos );
-	    
+
 	    /* start the next line                                         */
 	    stream->pos      = 0;
 	  }
@@ -2327,7 +2342,7 @@ void PutChrTo (
 	    /* indent for next line                                         */
 	    for ( i = 0;  i < stream->indent; i++ )
 	      stream->line[ stream->pos++ ] = ' ';
-	    
+
 	    /* set up new split positions                                   */
 	    stream->spos     = 0;
 	    stream->sindent  = 666;
@@ -2353,35 +2368,35 @@ void PutChrTo (
 
 	/* full line, acceptable split position                                */
 	else if ( stream->format && stream->spos != 0 ) {
-	  
+
 	  /* add character to the line, terminate it                         */
 	  stream->line[ stream->pos++ ] = ch;
 	  stream->line[ stream->pos++ ] = '\0';
-	  
+
 	  /* copy the rest after the best split position to a safe place     */
 	  for ( i = stream->spos; i < stream->pos; i++ )
             str[ i-stream->spos ] = stream->line[ i ];
-	  
+
 	  /* print line up to the best split position                        */
 	  stream->line[ stream->spos++ ] = '\n';
 	  stream->line[ stream->spos   ] = '\0';
 	  PutLineTo( stream, stream->spos );
-	  
+
 	  /* indent for the rest                                             */
 	  stream->pos = 0;
 	  for ( i = 0; i < stream->sindent; i++ )
             stream->line[ stream->pos++ ] = ' ';
-	  
+
 	  /* copy the rest onto the next line                                */
 	  for ( i = 0; str[ i ] != '\0'; i++ )
             stream->line[ stream->pos++ ] = str[ i ];
-	  
+
 	  /* set new split position                                          */
 	  stream->spos     = 0;
 	  stream->sindent  = 666;
-	  
+
 	}
-	
+
 	/* full line, no splitt position                                       */
 	else {
 
@@ -2414,7 +2429,7 @@ void PutChrTo (
 **
 *F  FuncToggleEcho( )
 **
-*/
+ cxq*/
 
 Obj FuncToggleEcho( Obj self)
 {
@@ -2425,7 +2440,7 @@ Obj FuncToggleEcho( Obj self)
 /****************************************************************************
 **
 *F  FuncCPROMPT( )
-**  
+**
 **  returns the current `Prompt' as GAP string.
 */
 Obj FuncCPROMPT( Obj self)
@@ -2439,17 +2454,19 @@ Obj FuncCPROMPT( Obj self)
 /****************************************************************************
 **
 *F  FuncPRINT_CPROMPT( <prompt> )
-**  
+**
 **  prints current `Prompt' if argument <prompt> is not in StringRep, otherwise
 **  uses the content of <prompt> as `Prompt'.
 **  (important is the flush character without resetting the cursor column)
 */
 Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
 {
+  Char * cprompt;
+
   if (IS_STRING_REP(prompt)) {
-     Prompt = CSTR_STRING(prompt);
+     cprompt = CSTR_STRING(prompt);
+     Pr("%s%c", (Int)cprompt, (Int)'\03' );
   }
-  Pr("%s%c", (Int)Prompt, (Int)'\03' );
   return (Obj) 0;
 }
 
@@ -2490,309 +2507,321 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 
+void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int arg2 ) {
+  const Char *    p;
+  Char *              q;
+  Int                 prec,  n;
+  Char                fill;
 
+  /* loop over the characters of the <format> string                     */
+  for ( p = format; *p != '\0'; p++ ) {
+
+    /* if the character is '%' do something special                    */
+    if ( *p == '%' ) {
+
+      /* first look for a precision field                            */
+      p++;
+      prec = 0;
+      fill = (*p == '0' ? '0' : ' ');
+      while ( IsDigit(*p) ) {
+	prec = 10 * prec + *p - '0';
+	p++;
+      }
+
+      /* '%d' print an integer                                       */
+      if ( *p == 'd'|| *p == 'i' ) {
+	if ( arg1 < 0 ) {
+	  prec--;
+	  for ( n=1; n <= -(arg1/10); n*=10 )
+	    prec--;
+	  while ( --prec > 0 )  put_a_char(fill);
+	  put_a_char('-');
+	  for ( ; n > 0; n /= 10 )
+	    put_a_char((Char)(-((arg1/n)%10) + '0') );
+	  arg1 = arg2;
+	}
+	else {
+	  for ( n=1; n<=arg1/10; n*=10 )
+	    prec--;
+	  while ( --prec > 0 )  put_a_char(  fill);
+	  for ( ; n > 0; n /= 10 )
+	    put_a_char( (Char)(((arg1/n)%10) + '0') );
+	  arg1 = arg2;
+	}
+      }
+
+      /* '%s' print a string                                         */
+      else if ( *p == 's' ) {
+
+	/* handle the case of a missing argument                     */
+	if (arg1 == 0)
+	  {
+	    put_a_char('<');
+	    put_a_char('n');
+	    put_a_char('u');
+	    put_a_char('l');
+	    put_a_char('l');
+	    put_a_char('>');
+	  }
+	else
+	  {
+	    /* compute how many characters this identifier requires    */
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      prec--;
+	    }
+
+	    /* if wanted push an appropriate number of <space>-s       */
+	    while ( prec-- > 0 )  put_a_char(' ');
+
+	    /* print the string                                        */
+	    /* must be careful that line breaks don't go inside
+	       escaped sequences \n or \123 or similar */
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      if (*q == '\\' && NoSplitLine == 0) {
+		if (*(q+1) < '8' && *(q+1) >= '0')
+		  NoSplitLine = 3;
+		else
+		  NoSplitLine = 1;
+	      }
+	      else if (NoSplitLine > 0)
+		NoSplitLine--;
+	      put_a_char( *q );
+	    }
+	  }
+	/* on to the next argument                                 */
+	arg1 = arg2;
+      }
+
+      /* '%S' print a string with the necessary escapes              */
+      else if ( *p == 'S' ) {
+
+	/* handle the case of a missing argument                     */
+	if (arg1 == 0)
+	  {
+	    put_a_char( '<');
+	    put_a_char( 'n');
+	    put_a_char( 'u');
+	    put_a_char( 'l');
+	    put_a_char( 'l');
+	    put_a_char( '>');
+	  }
+	else
+	  {
+	    /* compute how many characters this identifier requires    */
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      if      ( *q == '\n'  ) { prec -= 2; }
+	      else if ( *q == '\t'  ) { prec -= 2; }
+	      else if ( *q == '\r'  ) { prec -= 2; }
+	      else if ( *q == '\b'  ) { prec -= 2; }
+	      else if ( *q == '\01' ) { prec -= 2; }
+	      else if ( *q == '\02' ) { prec -= 2; }
+	      else if ( *q == '\03' ) { prec -= 2; }
+	      else if ( *q == '"'   ) { prec -= 2; }
+	      else if ( *q == '\\'  ) { prec -= 2; }
+	      else                    { prec -= 1; }
+	    }
+
+	    /* if wanted push an appropriate number of <space>-s       */
+	    while ( prec-- > 0 )  put_a_char(' ');
+
+	    /* print the string                                        */
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
+	      else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
+	      else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
+	      else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
+	      else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('>');  }
+	      else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('<');  }
+	      else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('c');  }
+	      else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
+	      else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
+	      else                    { put_a_char( *q );               }
+	    }
+	  }
+
+	/* on to the next argument                                 */
+	arg1 = arg2;
+      }
+
+      /* '%C' print a string with the necessary C escapes            */
+      else if ( *p == 'C' ) {
+
+	/* handle the case of a missing argument                     */
+	if (arg1 == 0)
+	  {
+	    put_a_char('<');
+	    put_a_char('n');
+	    put_a_char('u');
+	    put_a_char('l');
+	    put_a_char('l');
+	    put_a_char('>');
+	  }
+	else
+	  {
+	    /* compute how many characters this identifier requires    */
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      if      ( *q == '\n'  ) { prec -= 2; }
+	      else if ( *q == '\t'  ) { prec -= 2; }
+	      else if ( *q == '\r'  ) { prec -= 2; }
+	      else if ( *q == '\b'  ) { prec -= 2; }
+	      else if ( *q == '\01' ) { prec -= 3; }
+	      else if ( *q == '\02' ) { prec -= 3; }
+	      else if ( *q == '\03' ) { prec -= 3; }
+	      else if ( *q == '"'   ) { prec -= 2; }
+	      else if ( *q == '\\'  ) { prec -= 2; }
+	      else                    { prec -= 1; }
+	    }
+
+	    /* if wanted push an appropriate number of <space>-s       */
+	    while ( prec-- > 0 )  put_a_char(' ');
+
+	    /* print the string                                        */
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
+	      else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
+	      else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
+	      else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
+	      else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('0');
+	      put_a_char('1');                }
+	      else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('0');
+	      put_a_char('2');                }
+	      else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('0');
+	      put_a_char('3');                }
+	      else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
+	      else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
+	      else                    { put_a_char( *q );               }
+	    }
+	  }
+	/* on to the next argument                                 */
+	arg1 = arg2;
+      }
+
+      /* '%I' print an identifier                                    */
+      else if ( *p == 'I' ) {
+
+	/* handle the case of a missing argument                     */
+	if (arg1 == 0)
+	  {
+	    put_a_char('<');
+	    put_a_char('n');
+	    put_a_char('u');
+	    put_a_char('l');
+	    put_a_char('l');
+	    put_a_char('>');
+	  }
+	else
+	  {
+	    /* compute how many characters this identifier requires    */
+	    q = (Char*)arg1;
+	    if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
+		 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
+		 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
+		 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
+		 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
+		 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
+		 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
+		 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
+		 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
+		 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
+		 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
+		 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
+	      prec--;
+	    }
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_'  && *q != '$' && *q != '@') {
+		prec--;
+	      }
+	      prec--;
+	    }
+
+	    /* if wanted push an appropriate number of <space>-s       */
+	    while ( prec-- > 0 ) { put_a_char(' '); }
+
+	    /* print the identifier                                    */
+	    q = (Char*)arg1;
+	    if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
+		 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
+		 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
+		 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
+		 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
+		 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
+		 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
+		 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
+		 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
+		 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
+		 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
+		 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
+	      put_a_char( '\\' );
+	    }
+	    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+	      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' && *q != '$' && *q != '@') {
+		put_a_char( '\\' );
+	      }
+	      put_a_char( *q );
+	    }
+	  }
+	/* on to the next argument                                 */
+	arg1 = arg2;
+      }
+
+      /* '%c' print a character                                      */
+      else if ( *p == 'c' ) {
+	put_a_char( (Char)arg1 );
+	arg1 = arg2;
+      }
+
+      /* '%%' print a '%' character                                  */
+      else if ( *p == '%' ) {
+	put_a_char( '%' );
+      }
+
+      /* '%>' increment the indentation level                        */
+      else if ( *p == '>' ) {
+	put_a_char( '\01' );
+	while ( --prec > 0 )
+	  put_a_char( '\01' );
+      }
+
+      /* '%<' decrement the indentation level                        */
+      else if ( *p == '<' ) {
+	put_a_char( '\02' );
+	while ( --prec > 0 )
+	  put_a_char( '\02' );
+      }
+
+      /* else raise an error                                         */
+      else {
+	for ( p = "%format error"; *p != '\0'; p++ )
+	  put_a_char( *p );
+      }
+
+    }
+
+    /* not a '%' character, simply print it                            */
+    else {
+      put_a_char( *p );
+    }
+
+  }
+}
+
+
+static KOutputStream theStream;
+
+static void putToTheStream( Char c) {
+   PutChrTo(theStream, c);
+ }
 
 void PrTo (
-    KOutputStream     stream,   
+    KOutputStream     stream,
     const Char *      format,
     Int                 arg1,
     Int                 arg2 )
 {
-    const Char *    p;
-    Char *              q;
-    Int                 prec,  n;
-    Char                fill;
-
-    /* loop over the characters of the <format> string                     */
-    for ( p = format; *p != '\0'; p++ ) {
-
-        /* if the character is '%' do something special                    */
-        if ( *p == '%' ) {
-
-            /* first look for a precision field                            */
-            p++;
-            prec = 0;
-            fill = (*p == '0' ? '0' : ' ');
-            while ( IsDigit(*p) ) {
-                prec = 10 * prec + *p - '0';
-                p++;
-            }
-
-            /* '%d' print an integer                                       */
-            if ( *p == 'd'|| *p == 'i' ) {
-                if ( arg1 < 0 ) {
-                    prec--;
-                    for ( n=1; n <= -(arg1/10); n*=10 )
-                        prec--;
-                    while ( --prec > 0 )  PutChrTo(stream, fill);
-                    PutChrTo(stream, '-');
-                    for ( ; n > 0; n /= 10 )
-                        PutChrTo( stream, (Char)(-((arg1/n)%10) + '0') );
-                    arg1 = arg2;
-                }
-                else {
-                    for ( n=1; n<=arg1/10; n*=10 )
-                        prec--;
-                    while ( --prec > 0 )  PutChrTo( stream, fill);
-                    for ( ; n > 0; n /= 10 )
-                        PutChrTo( stream, (Char)(((arg1/n)%10) + '0') );
-                    arg1 = arg2;
-                }
-            }
-
-            /* '%s' print a string                                         */
-            else if ( *p == 's' ) {
-
-	      /* handle the case of a missing argument                     */
-	        if (arg1 == 0)
-		  {
-		    PutChrTo(stream,'<');
-		    PutChrTo(stream,'n');
-		    PutChrTo(stream,'u');
-		    PutChrTo(stream,'l');
-		    PutChrTo(stream,'l');
-		    PutChrTo(stream,'>');
-		  }
-		else
-		  {
-		    /* compute how many characters this identifier requires    */
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      prec--;
-		    }
-		    
-		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 )  PutChrTo(stream,' ');
-
-		    /* print the string                                        */
-                    /* must be careful that line breaks don't go inside
-                       escaped sequences \n or \123 or similar */
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                      if (*q == '\\' && NoSplitLine == 0) {
-                         if (*(q+1) < '8' && *(q+1) >= '0')
-                            NoSplitLine = 3;
-                         else
-                            NoSplitLine = 1;
-                      }
-                      else if (NoSplitLine > 0)
-                          NoSplitLine--;
-		      PutChrTo( stream, *q );
-		    }
-		  }
-                /* on to the next argument                                 */
-                arg1 = arg2;
-            }
-
-            /* '%S' print a string with the necessary escapes              */
-            else if ( *p == 'S' ) {
-
-	      /* handle the case of a missing argument                     */
-	        if (arg1 == 0)
-		  {
-		    PutChrTo(stream, '<');
-		    PutChrTo(stream, 'n');
-		    PutChrTo(stream, 'u');
-		    PutChrTo(stream, 'l');
-		    PutChrTo(stream, 'l');
-		    PutChrTo(stream, '>');
-		  }
-		else
-		  {
-		    /* compute how many characters this identifier requires    */
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if      ( *q == '\n'  ) { prec -= 2; }
-		      else if ( *q == '\t'  ) { prec -= 2; }
-		      else if ( *q == '\r'  ) { prec -= 2; }
-		      else if ( *q == '\b'  ) { prec -= 2; }
-		      else if ( *q == '\01' ) { prec -= 2; }
-		      else if ( *q == '\02' ) { prec -= 2; }
-		      else if ( *q == '\03' ) { prec -= 2; }
-		      else if ( *q == '"'   ) { prec -= 2; }
-		      else if ( *q == '\\'  ) { prec -= 2; }
-		      else                    { prec -= 1; }
-		    }
-
-		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 )  PutChrTo( stream,' ');
-
-		    /* print the string                                        */
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if      ( *q == '\n'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'n');  }
-		      else if ( *q == '\t'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'t');  }
-		      else if ( *q == '\r'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'r');  }
-		      else if ( *q == '\b'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'b');  }
-		      else if ( *q == '\01' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'>');  }
-		      else if ( *q == '\02' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'<');  }
-		      else if ( *q == '\03' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'c');  }
-		      else if ( *q == '"'   ) { PutChrTo( stream,'\\'); PutChrTo( stream,'"');  }
-		      else if ( *q == '\\'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'\\'); }
-		      else                    { PutChrTo( stream, *q );               }
-		    }
-		  }
-
-                /* on to the next argument                                 */
-                arg1 = arg2;
-            }
-
-            /* '%C' print a string with the necessary C escapes            */
-            else if ( *p == 'C' ) {
-
-	      /* handle the case of a missing argument                     */
-	        if (arg1 == 0)
-		  {
-		    PutChrTo( stream,'<');
-		    PutChrTo( stream,'n');
-		    PutChrTo( stream,'u');
-		    PutChrTo( stream,'l');
-		    PutChrTo( stream,'l');
-		    PutChrTo( stream,'>');
-		  }
-		else
-		  {
-		    /* compute how many characters this identifier requires    */
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if      ( *q == '\n'  ) { prec -= 2; }
-		      else if ( *q == '\t'  ) { prec -= 2; }
-		      else if ( *q == '\r'  ) { prec -= 2; }
-		      else if ( *q == '\b'  ) { prec -= 2; }
-		      else if ( *q == '\01' ) { prec -= 3; }
-		      else if ( *q == '\02' ) { prec -= 3; }
-		      else if ( *q == '\03' ) { prec -= 3; }
-		      else if ( *q == '"'   ) { prec -= 2; }
-		      else if ( *q == '\\'  ) { prec -= 2; }
-		      else                    { prec -= 1; }
-		    }
-
-		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 )  PutChrTo( stream,' ');
-		    
-		    /* print the string                                        */
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if      ( *q == '\n'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'n');  }
-		      else if ( *q == '\t'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'t');  }
-		      else if ( *q == '\r'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'r');  }
-		      else if ( *q == '\b'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'b');  }
-		      else if ( *q == '\01' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'0');
-		      PutChrTo( stream,'1');                }
-		      else if ( *q == '\02' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'0');
-		      PutChrTo( stream,'2');                }
-		      else if ( *q == '\03' ) { PutChrTo( stream,'\\'); PutChrTo( stream,'0');
-		      PutChrTo( stream,'3');                }
-		      else if ( *q == '"'   ) { PutChrTo( stream,'\\'); PutChrTo( stream,'"');  }
-		      else if ( *q == '\\'  ) { PutChrTo( stream,'\\'); PutChrTo( stream,'\\'); }
-		      else                    { PutChrTo( stream, *q );               }
-		    }
-		  }
-                /* on to the next argument                                 */
-                arg1 = arg2;
-            }
-
-            /* '%I' print an identifier                                    */
-            else if ( *p == 'I' ) {
-
-	      /* handle the case of a missing argument                     */
-	        if (arg1 == 0)
-		  {
-		    PutChrTo( stream,'<');
-		    PutChrTo( stream,'n');
-		    PutChrTo( stream,'u');
-		    PutChrTo( stream,'l');
-		    PutChrTo( stream,'l');
-		    PutChrTo( stream,'>');
-		  }
-		else
-		  {
-		    /* compute how many characters this identifier requires    */
-		    q = (Char*)arg1;
-		    if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-			 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-			 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-			 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-			 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-			 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-			 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-			 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-			 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-			 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-			 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-			 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-		      prec--;
-		    }
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_'  && *q != '$') {
-                        prec--;
-		      }
-		      prec--;
-		    }
-
-		    /* if wanted push an appropriate number of <space>-s       */
-		    while ( prec-- > 0 ) { PutChrTo( stream,' '); }
-
-		    /* print the identifier                                    */
-		    q = (Char*)arg1;
-		    if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-			 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-			 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-			 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-			 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-			 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-			 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-			 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-			 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-			 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-			 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-			 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-		      PutChrTo( stream, '\\' );
-		    }
-		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' && *q != '$') {
-                        PutChrTo( stream, '\\' );
-		      }
-		      PutChrTo( stream, *q );
-		    }
-		  }
-                /* on to the next argument                                 */
-                arg1 = arg2;
-            }
-
-            /* '%c' print a character                                      */
-            else if ( *p == 'c' ) {
-                PutChrTo( stream, (Char)arg1 );
-                arg1 = arg2;
-            }
-
-            /* '%%' print a '%' character                                  */
-            else if ( *p == '%' ) {
-                PutChrTo( stream, '%' );
-            }
-
-            /* '%>' increment the indentation level                        */
-            else if ( *p == '>' ) {
-                PutChrTo( stream, '\01' );
-                while ( --prec > 0 )
-                    PutChrTo( stream, '\01' );
-            }
-
-            /* '%<' decrement the indentation level                        */
-            else if ( *p == '<' ) {
-                PutChrTo( stream, '\02' );
-                while ( --prec > 0 )
-                    PutChrTo( stream, '\02' );
-            }
-
-            /* else raise an error                                         */
-            else {
-                for ( p = "%format error"; *p != '\0'; p++ )
-                    PutChrTo( stream, *p );
-            }
-
-        }
-
-        /* not a '%' character, simply print it                            */
-        else {
-            PutChrTo( stream, *p );
-        }
-
-    }
+  KOutputStream savedStream = theStream;
+  theStream = stream;
+  FormatOutput( putToTheStream, format, arg1, arg2);
+  theStream = savedStream;
 }
 
 void Pr (
@@ -2803,10 +2832,46 @@ void Pr (
   PrTo(Output, format, arg1, arg2);
 }
 
+static Char *theBuffer;
+static UInt theCount;
+static UInt theLimit;
+
+static void putToTheBuffer( Char c)
+{
+  if (theCount < theLimit)
+    theBuffer[theCount++] = c;
+}
+
+void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
+{
+  Char *savedBuffer = theBuffer;
+  UInt savedCount = theCount;
+  UInt savedLimit = theLimit;
+  theBuffer = buffer;
+  theCount = 0;
+  theLimit = maxlen;
+  FormatOutput(putToTheBuffer, format, arg1, arg2);
+  putToTheBuffer('\0');
+  theBuffer = savedBuffer;
+  theCount = savedCount;
+  theLimit = savedLimit;
+}
+
+
+Obj FuncINPUT_FILENAME( Obj self) {
+  UInt len = SyStrlen(Input->name);
+  Obj s = NEW_STRING(len);
+  SyStrncat(CSTR_STRING(s),Input->name, len);
+  return s;
+}
+
+Obj FuncINPUT_LINENUMBER( Obj self) {
+  return INTOBJ_INT(Input->number);
+}
+
+
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -2824,6 +2889,13 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "PRINT_CPROMPT", 1, "prompt",
       FuncPRINT_CPROMPT, "src/scanner.c:PRINT_CPROMPT" },
+
+    { "INPUT_FILENAME", 0 , "",
+      FuncINPUT_FILENAME, "src/scanner.c:INPUT_FILENAME" },
+
+    { "INPUT_LINENUMBER", 0 , "",
+      FuncINPUT_LINENUMBER, "src/scanner.c:INPUT_LINENUMBER" },
+
 
     { 0 }
 
@@ -2850,6 +2922,7 @@ static Int InitLibrary (
 */
 static Char Cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
 static Char MoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
+static Char StillMoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
 
 static Int InitKernel (
     StructInitInfo *    module )
@@ -2866,23 +2939,27 @@ static Int InitKernel (
     InputLog  = 0;  OutputLog  = 0;
     TestInput = 0;  TestOutput = 0;
 
-    /* initialize cookies for streams                                      */
+    /* initialize cookies for streams                                      */ 
+    /* also initialize the cookies for the GAP strings which hold the
+       latest lines read from the streams  and the name of the current input file*/
     for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
         Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
         Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
         Cookie[i][6] = ' ';  Cookie[i][7] = '0'+i;
         Cookie[i][8] = '\0';
         InitGlobalBag(&(InputFiles[i].stream), &(Cookie[i][0]));
-    }
 
-    /* also initialize the cookies for the GAP strings which hold the
-       latest lines read from the streams */
-    for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
         MoreCookie[i][0] = 's';  MoreCookie[i][1] = 'l';  MoreCookie[i][2] = 'i';
         MoreCookie[i][3] = 'n';  MoreCookie[i][4] = 'e';  MoreCookie[i][5] = ' ';
         MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
         MoreCookie[i][8] = '\0';
         InitGlobalBag(&(InputFiles[i].sline), &(MoreCookie[i][0]));
+
+        StillMoreCookie[i][0] = 'g';  StillMoreCookie[i][1] = 'a';  StillMoreCookie[i][2] = 'p';
+        StillMoreCookie[i][3] = 'n';  StillMoreCookie[i][4] = 'a';  StillMoreCookie[i][5] = 'm';
+        StillMoreCookie[i][6] = 'e';  StillMoreCookie[i][7] = '0'+i;
+        StillMoreCookie[i][8] = '\0';
+        InitGlobalBag(&(InputFiles[i].gapname), &(StillMoreCookie[i][0]));
     }
 
     /* tell GASMAN about the global bags                                   */
@@ -2891,7 +2968,7 @@ static Int InitKernel (
     InitGlobalBag(&(inputLogStream.stream), "src/scanner.c:inputLogStream" );
     InitGlobalBag(&(outputLogStream.stream),"src/scanner.c:outputLogStream");
 
-    
+
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );

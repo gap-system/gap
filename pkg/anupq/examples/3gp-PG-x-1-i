@@ -1,0 +1,19 @@
+#Example: "3gp-PG-x-i" . . . based on example from Werner
+#A `by hand' descendants example
+#vars: F, procId;
+#options: OutputLevel
+F := FreeGroup("a", "b");
+procId := PqStart(F : Prime := 3);
+#comment: set a different print level by supplying <OutputLevel>
+Pq(procId : ClassBound := 1, 
+#sub <OutputLevel> for <1> if set and ok
+                          OutputLevel := 1);;
+PqPCover(procId);;
+PqPGSupplyAutomorphisms(procId, [ [[1,1],
+                                   [0,1]],
+
+                                  [[0,1],
+                                   [1,0]] ]);;
+PqPGExtendAutomorphisms(procId);;
+PqPGConstructDescendants(procId : ClassBound := 3,
+                                  BasicAlgorithm);

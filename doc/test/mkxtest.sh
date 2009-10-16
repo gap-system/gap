@@ -3,7 +3,7 @@
 ##
 #W  mkxtest.sh      Test the examples in GAP manual files      Volkmar Felsch
 ##
-#H  $Id$
+#H  $Id: mkxtest.sh,v 1.7 2006/07/10 13:36:26 alexk Exp $
 ##
 #Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
 ##
@@ -52,12 +52,14 @@
 ##  If no file names are specified then all files with the given suffix in
 ##  the directory with the given suffix are handled.
 ##
+##  This test reported to be not working in the UNIX version of GAP under 
+##  MAC OS X.
 
 #############################################################################
 ##
 ##  Define the local call of GAP.
 ##
-gap="../../../bin/gap.sh -b -m 100m -o 500m -A -N -x 80 -r -T"
+gap="gapdev -b -m 100m -o 500m -A -N -x 80 -r -T"
 
 
 #############################################################################

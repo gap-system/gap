@@ -3,7 +3,7 @@
 #W  ctbllatt.gi                 GAP library                     Thomas Breuer
 #W                                                                Ansgar Kaup
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ctbllatt.gi,v 4.15 2002/04/15 10:04:34 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  context of character tables.
 ##
 Revision.ctbllatt_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ctbllatt.gi,v 4.15 2002/04/15 10:04:34 sal Exp $";
 
 
 #############################################################################

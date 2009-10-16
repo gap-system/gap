@@ -2,13 +2,13 @@
 **
 *W  vec8bit.h                    GAP source                     Steve Linton
 **
-*H  @(#)$Id$
+*H  @(#)$Id: vec8bit.h,v 4.4 2001/12/19 22:35:20 gap Exp $
 **
 *Y  Copyright (C)  1997,  St Andrews
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vec8bit_h =
-   "@(#)$Id$";
+   "@(#)$Id: vec8bit.h,v 4.4 2001/12/19 22:35:20 gap Exp $";
 #endif
 
 	

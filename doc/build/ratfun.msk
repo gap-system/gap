@@ -3,7 +3,7 @@
 %A  ratfun.msk                  GAP documentation            Alexander Hulpke
 %A                                                           Frank Celler
 %%
-%A  @(#)$Id$
+%A  @(#)$Id: ratfun.msk,v 1.70 2007/01/31 19:02:11 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -46,49 +46,49 @@ coefficients, however, $R$ must be a unique factorization domain.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Indeterminates}
 
-\FileHeader{ringpoly}[2]
+\FileHeader{ringpoly}[1]
 
 \Declaration{Indeterminate}
 \beginexample
-gap> a:=Indeterminate(GF(3));
-x_1
 gap> x:=Indeterminate(GF(3),"x");
 x
-gap> Indeterminate(GF(3),"x")=x;
-false
-gap> y:=Indeterminate(GF(3),"y");z:=Indeterminate(GF(3),"X");
+gap> y:=X(GF(3),"y");z:=X(GF(3),"X");
 y
 X
-gap> Indeterminate(GF(3),3);
+gap> X(GF(3),2);
 y
-gap> Indeterminate(GF(3),[y,z]);
+gap> X(GF(3),"x_3");
+X
+gap> X(GF(3),[y,z]);
 x
 \endexample
+
+\FileHeader{ringpoly}[2]
 
 \Declaration{IndeterminateNumberOfUnivariateRationalFunction}
 \Declaration{IndeterminateOfUnivariateRationalFunction}
 \beginexample
 gap> IndeterminateNumberOfUnivariateRationalFunction(z);
-4
+3
 gap> IndeterminateOfUnivariateRationalFunction(z^5+z);
 X
 \endexample
 
 \Declaration{IndeterminateName}
 \beginexample
-gap> IndeterminateName(FamilyObj(x),3);
+gap> IndeterminateName(FamilyObj(x),2);
 "y"
-gap> HasIndeterminateName(FamilyObj(x),5);
+gap> HasIndeterminateName(FamilyObj(x),4);
 false
 gap> SetIndeterminateName(FamilyObj(x),10,"bla");
-gap> Indeterminate(GF(3),10);
+gap> X(GF(3),10);
 bla
 \endexample
 
 As a convenience there is a special method installed for `SetName' that will
 assign a name to an indeterminate.
 \beginexample
-gap> a:=Indeterminate(GF(3),5);
+gap> a:=X(GF(3),5);
 x_5
 gap> SetName(a,"ah");
 gap> a^5+a;
@@ -96,6 +96,43 @@ ah^5+ah
 \endexample
 
 \Declaration{CIUnivPols}
+
+\FileHeader{ringpoly}[2]
+\begintt
+gap> R:=PolynomialRing(GF(3),["x","y","z"]);
+Error, Indeterminate ``x'' is already used.
+Use the `old' option; e.g. X(Rationals,"x":old);
+  to re-use the variable already defined with this name and the
+`new' option; e.g. X(Rationals,"x":new);
+  to create a new variable with the duplicate name.
+ called from GiveNumbersNIndeterminates(  [...]
+brk> quit;
+gap> R:=PolynomialRing(GF(3),["x","y","z"]:old);
+GF(3)[x,y,z]
+gap> List(IndeterminatesOfPolynomialRing(R),
+>   IndeterminateNumberOfLaurentPolynomial);
+[ 1, 2, 3 ]
+gap> R:=PolynomialRing(GF(3),["x","y","z"]:new);
+GF(3)[x,y,z]
+gap> List(IndeterminatesOfPolynomialRing(R),
+>   IndeterminateNumberOfLaurentPolynomial);
+[ 4, 5, 6 ]
+\endtt
+
+\Declaration{INDETERMINATENAMEREUSE}
+\begintt
+gap> x:=X(GF(3),"x");    
+Error, Indeterminate ``x'' is already used. [...]
+gap> INDETERMINATENAMEREUSE:=2;;
+gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+x
+7
+gap> INDETERMINATENAMEREUSE:=1;;
+gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+x
+1
+\endtt
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations for Rational Functions}
@@ -109,7 +146,7 @@ therefore all arithmetic operations are applicable to rational functions.
 \>`<f> / <g>'{quotient!rational functions}
 
 \beginexample
-gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
+gap> x:=X(Rationals,1);;y:=X(Rationals,2);;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
 (x_1^2*x_2+x_1*x_2^2+5)/(x_1^5+x_1*x_2+3)
@@ -132,10 +169,12 @@ remainder (see~"EuclideanRemainder") of <f> modulo <g>.
 % as constant polynomials.
 % Therefore, I leave the second method undocumented.
 
-At the moment {\GAP} does not contain a proper multivariate Gcd algorithm.
-Therefore it cannot be guaranteed that rational functions will always be
+As calculating a multivariate Gcd can be expensive,
+it is not guaranteed that rational functions will always be
 represented as a quotient of coprime polynomials. In certain unfortunate
-situations this might lead to a degree explosion.
+situations this might lead to a degree explosion. To ensure cancellation you
+can use `Gcd' on the `NumeratorOfRationalFunction' and
+`DenominatorOfRationalFunction' of a given rational function.
 
 All polynomials as well as all the univariate polynomials in the same
 indeterminate form subrings of this field. If two rational functions are
@@ -152,7 +191,7 @@ $`Numerator'(<f>)*`Denominator'(<g>)$ equals
 $`Numerator'(<g>)*`Denominator'(<f>)$.
 
 \beginexample
-gap> x:=Indeterminate(Rationals,"x");;y:=Indeterminate(Rationals,"y");;
+gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
 (x^2*y+x*y^2+5)/(x^5+x*y+3)
@@ -214,7 +253,7 @@ and then lexicographically on the coefficients.
 \Declaration{NumeratorOfRationalFunction}
 \Declaration{DenominatorOfRationalFunction}
 \beginexample
-gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
+gap> x:=X(Rationals,1);;y:=X(Rationals,2);;
 gap> DenominatorOfRationalFunction((x*y+x^2)/y);
 y
 gap> NumeratorOfRationalFunction((x*y+x^2)/y);
@@ -405,17 +444,19 @@ x^4+x^3+x^2+x+1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Polynomial Factorization}
 
-At the moment {\GAP} provides only methods to factorize univariate
-polynomials over finite fields (see Chapter~"Finite Fields") and
-over subfields of cyclotomic fields (see Chapter~"Abelian Number Fields").
+At the moment {\GAP} provides only methods to factorize 
+polynomials over finite fields (see Chapter~"Finite Fields"),
+over subfields of cyclotomic fields (see Chapter~"Abelian Number Fields"),
+and over algegracic extensions of these (see Chapter~"Algebraic extensions
+of fields").
 
-\>Factors([<R>,]<upoly>[,<opt>])!{of univariate polynomial}
+\>Factors([<R>,]<poly>[,<opt>])!{of polynomial}
 
-returns a list of the irreducible factors of the univariate polynomial
-<upoly> in the polynomial ring <R>. (That is factors over the
+returns a list of the irreducible factors of the polynomial
+<poly> in the polynomial ring <R>. (That is factors over the
 `CoefficientsRing' of <R>.)
 
-It is possible to pass a record <opt> as a third
+For univariate factorizations, it is possible to pass a record <opt> as a third
 argument. This record can contain the following components:
 \beginitems
 `onlydegs'&is a set of positive integers. The factorization assumes
@@ -441,10 +482,20 @@ gap> Factors( f );
 gap> Factors( PolynomialRing( Rationals ), f );
 [ x^2+1 ]
 gap> Factors( PolynomialRing( CF(4) ), f );
-[ x+(-E(4)), x+E(4) ]
+[ x+-E(4), x+E(4) ]
 \endexample
 
 \Declaration{FactorsSquarefree}
+
+The current method for multivariate factorization reduces to univariate
+factorization by use of a reduction homomorphism of the form
+$f(x_1,x_2,x_3)\mapsto f(x,x^p,x^{p^2})$. It can be very time intensive for
+larger degrees.
+
+\beginexample
+gap> Factors(x^10-y^10);
+[ x-y, x+y, x^4-x^3*y+x^2*y^2-x*y^3+y^4, x^4+x^3*y+x^2*y^2+x*y^3+y^4 ]
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Polynomials over the Rationals}
@@ -511,7 +562,7 @@ gap> CoefficientsOfLaurentPolynomial(p*p);
 \Declaration{UnivariateRationalFunctionByCoefficients}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Polynomial Rings}
+\Section{Polynomial Rings and Function Fields}
 
 While polynomials depend only on the family of the coefficients, polynomial
 rings $A$ are defined over a base ring $R$. A polynomial is an element of
@@ -525,7 +576,7 @@ can affect the behavior of operations like factorization into irreducibles.
 \beginexample
 gap> r:=PolynomialRing(GF(7));
 GF(7)[x_1]
-gap>  r:=PolynomialRing(GF(7),3);
+gap> r:=PolynomialRing(GF(7),3);
 GF(7)[x_1,x_2,x_3]
 gap> IndeterminatesOfPolynomialRing(r);
 [ x_1, x_2, x_3 ]
@@ -548,18 +599,18 @@ Either, first create the ring and then get the indeterminates as
 `IndeterminatesOfPolynomialRing'. 
 
 \beginexample
-gap> r := PolynomialRing(Rationals,["x","y"]);;
+gap> r := PolynomialRing(Rationals,["a","b"]);;
 gap> indets := IndeterminatesOfPolynomialRing(r);;
-gap> x := indets[1]; y := indets[2];
-x
-y
+gap> a := indets[1]; a := indets[2];
+a
+b
 \endexample
 
 Alternatively, first create the
 indeterminates and then create the ring including these indeterminates.
 \beginexample
-gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;
-gap> PolynomialRing(Rationals,[x,y]);;
+gap> a:=X(Rationals,"a":old);;b:=X(Rationals,"b":old);;
+gap> PolynomialRing(Rationals,[a,b]);;
 \endexample
 
 As a convenient shortcut, intended mainly for interactive working, the
@@ -570,14 +621,14 @@ or, if they have names, as 'r.<name>'. *Note* that the number <i> is
 indeterminates list of `r';
 
 \beginexample
-gap> r := PolynomialRing(Rationals, ["x", "y"] );;
-gap> r.1; r.2; r.x; r.y;
-x
-y
-x
-y
+gap> r := PolynomialRing(Rationals, ["a", "b"]:old );;
+gap> r.1; r.2; r.a; r.b;
+a
+b
+a
+b
 gap> IndeterminateNumberOfLaurentPolynomial(r.1);
-7
+3
 \endexample
 
 
@@ -601,14 +652,17 @@ gap> IsRationalsPolynomialRing(r);
 true
 \endexample
 
+\Declaration{FunctionField}
+\Declaration{IsFunctionField}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Univariate Polynomial Rings}
 
 \Declaration{UnivariatePolynomialRing}
 \Declaration{IsUnivariatePolynomialRing}
 \beginexample
-gap> r:=UnivariatePolynomialRing(Rationals,"x");
-Rationals[x]
+gap> r:=UnivariatePolynomialRing(Rationals,"p");
+Rationals[p]
 gap> r2:=PolynomialRing(Rationals,["q"]);
 Rationals[q]
 gap> IsUnivariatePolynomialRing(r);
@@ -637,7 +691,7 @@ $a,b$ and $c$.
 \Declaration{IsMonomialOrdering}
 \Declaration{LeadingMonomialOfPolynomial}
 \beginexample
-gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;z:=X(Rationals,"z");;
+gap> x:=X(Rationals,"x":old);;y:=X(Rationals,"y":old);;z:=X(Rationals,"z");;
 gap> lexord:=MonomialLexOrdering();grlexord:=MonomialGrlexOrdering();
 MonomialLexOrdering()
 MonomialGrlexOrdering()
@@ -761,9 +815,9 @@ gap> GroebnerBasis(l,MonomialGrlexOrdering());
 gap> ReducedGroebnerBasis(l,MonomialGrlexOrdering());
 [ x-y, z^2-2*y+1, y^2+y-1 ]
 gap> ReducedGroebnerBasis(l,MonomialLexOrdering());    
-[ z^4+4*z^2-1, -1/2*z^2+y-1/2, -1/2*z^2+x-1/2 ]
+[ z^4+4*z^2-1, -1/2*z^2+y-1/2, -1/4*z^2+x-1/4 ]
 gap> ReducedGroebnerBasis(l,MonomialLexOrdering([y,z,x]));
-[ x^2+x-1, z^2-2*x+1, -x+y ]
+[ 1, x^2+x-1, z^2-x+1/2, -x+y ]
 \endexample
 
 For performance reasons it can be advantageous to define monomial orderings
@@ -807,7 +861,7 @@ multiplication and addition of base ring elements to rational functions
 return the expected results, polynomials and rational functions are not
 equal.
 \beginexample
-gap> 1=Indeterminate(Rationals)^0;
+gap> 1=X(Rationals)^0;
 false
 \endexample
 
@@ -927,8 +981,10 @@ polynomials are described in section~"Coefficient List Arithmetic".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Cancellation Tests for Rational Functions}
 
-{\GAP} does not contain a multivariate GCD algorithm. The following
-operations are used internally to try to keep the denominators as small as
+The operation `Gcd' can be used to test for common factors of two
+polynomials. This however would be too expensive to be done in the
+arithmetic, thus uses the following
+operations internally to try to keep the denominators as small as
 possible
 
 \Declaration{RationalFunctionByExtRepWithCancellation}

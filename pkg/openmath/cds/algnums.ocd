@@ -1,0 +1,76 @@
+<CD>
+<CDName> algnums </CDName>
+<CDURL> http://www.nag.co.uk/Projects/openmath/corecd/cd/algnums.ocd </CDURL>
+<CDReviewDate> 2000-09-01 </CDReviewDate>
+<CDDate> 1999-10-20 </CDDate>
+<CDVersion> 1.01 </CDVersion>
+<CDStatus> experimental </CDStatus>
+<CDUses>
+  <CDName>nums</CDName>
+  <CDName>quant1</CDName>
+  <CDName>arith1</CDName>
+  <CDName>relation1</CDName>
+</CDUses>
+<Description>
+Symbols defining algebraic numbers.
+</Description>
+
+
+<CDDefinition>
+<Name> star </Name>
+<Description> 
+Takes a single argument cyc which is a cyclotomic number.
+If the cyclotomic cyc is an irrational element of a quadratic extension 
+of the rationals then star(cyc) is the unique Galois conjugate of 
+cyc that is different from cyc, otherwise star(cyc) is undefined. 
+</Description>
+</CDDefinition>
+
+
+
+<CDDefinition>
+<Name> NthRootOfUnity </Name>
+<Description> 
+This constructor function takes two positive integral arguments, n and r. 
+The value is e^{2*r*\pi*i/n}.
+</Description>
+<FMP>
+        <OMOBJ>
+    <OMBIND>
+      <OMS cd="quant1" name="forall"/>
+      <OMBVAR>
+        <OMV name="n"/>
+        <OMV name="r"/>
+      </OMBVAR>
+      <OMA>
+        <OMS cd="relation1" name="eq"/>
+        <OMA>
+          <OMS cd="algnums" name="NthRootOfUnity"/>
+          <OMV name="n"/>
+          <OMV name="r"/>
+        </OMA>
+        <OMA>
+          <OMS cd="arith1" name="power"/>
+                                        <OMS cd="nums" name="e"/>
+                                        <OMA>
+                                                <OMS cd="arith1" name="divide"/>
+                                                <OMA>
+                                                        <OMS cd="arith1" name="times"/>
+                                                        <OMI> 2 </OMI>
+                                                        <OMS cd="nums" name="pi"/>
+                                                        <OMS cd="nums" name="i"/>
+                                                        <OMV name="r"/>
+                                                </OMA>
+                                                <OMV name="n"/>
+                                        </OMA>
+                                </OMA>
+                        </OMA>
+                </OMBIND>
+  </OMOBJ>
+</FMP>
+</CDDefinition>
+
+
+
+</CD>
+

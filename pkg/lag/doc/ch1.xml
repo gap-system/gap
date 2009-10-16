@@ -1,0 +1,108 @@
+<#GAPDoc Label="ch1">
+<Chapter Label="First"><Heading>Introduction</Heading>    
+
+<Section Label="FirstFirst"><Heading>General aims</Heading>
+
+&LAGUNA; is built on two previous software packages, namely &LAG; and
+Sisyphos. The &LAG; package arose as a byproduct of the third author's 
+PhD thesis
+<!--[Richard Rossmanith, Centre-by-metabelian group algebras,
+Friedrich-Schiller-Universitaet Jena, 1997]-->
+<Cite Key="Ros97"/>. Its first version was ported to &GAP;~4
+and was brought into the standard &GAP;~4 package format during his visit to 
+St.~Andrews in September 1998. <P/>
+
+
+For the purposes of this package, a group algebra <M>FG</M> is said to be
+<M>p</M>-modular, if <M>G</M> is a finite <M>p</M>-group, and <M>F</M> is the
+field of <M>p</M> elements.
+Besides computing some general properties and attributes, the &LAGUNA; share package is able to carry out two main kinds 
+of computations in <M>FG</M>. Namely, it  is capable of computing the structure
+of the normalised unit group, and it is capable of verifying whether some Lie
+property holds in <M>FG</M>.</Section>
+
+Verifying some
+Lie algebra properties of a <M>p</M>-modular group algebra was already 
+possible in the &LAG; package. The current version
+of &LAGUNA; is heavily built on &LAG;. 
+The standalone program Sisyphos, which 
+has a &GAP;~3 interface, contains functions that can compute the structure of
+the normalised unit group of a <M>p</M>-modular group algebra.  
+The corresponding functions of &LAGUNA; use the same algorithmic and theoretical ideas as
+those in Sisyphos. 
+The reason why we reimplemented the normalised unit group algorithms in
+the &LAGUNA; package  is that Sisyphos has no interface to &GAP;~4, and, even in &GAP;~3, it is cumbersome to use
+the Sisyphos output for further computation with the normalised unit group. 
+
+
+
+
+<Section Label="FirstFirstandahalf"><Heading>General Computations in a
+<M>p</M>-modular group algebra</Heading>
+
+The &LAGUNA; package provides with a set of functions to carry out some basic
+computations with a <M>p</M>-modular group algebra and its elements. 
+Among other things, it is possible to efficiently compute the augmentation of
+an element, the augmentation ideal, the powers of the augmentation ideal. See
+Sections <Ref Sect="GenSec"/>--<Ref Sect="Ideals"/> for more details.
+
+
+
+</Section>
+
+
+
+<Section Label="FirstSecond"><Heading>Computations in the normalized unit 
+group</Heading>
+
+
+One of the aims of the &LAGUNA; package is to carry out efficient computations in
+the normalised unit group of a <M>p</M>-modular group algebra <M>FG</M>. 
+If
+<M>U</M> is the unit group of <M>FG</M> then it is easy to see that <M>U=V\times
+F^*</M> where <M>F^*</M> is the multiplicative group of <M>F</M>, and
+<M>V</M> is the group of normalised units. A unit <M>\sum_{g\in G}\alpha_g
+g</M> in <M>FG</M> is said to be
+normalised if <M>\sum_{g\in G}\alpha_g=1</M>. 
+
+<P/>
+
+It is well-known that the normalised unit group <M>V</M> has order <M>p^{|G|-1}</M>, and so <M>V</M> is a finite
+<M>p</M>-group. Thus computing <M>V</M> efficiently means to compute a
+polycyclic presentation for <M>V</M>. For the theory of polycyclic
+presentations refer to Chapter~9 in 
+<Cite Key="Sims"/>. For this computation we use an
+algorithm that was also used in the Sisyphos package. For a brief description
+see Chapter <Ref Sect="Third"/>. 
+The functions that compute the structure of the normalised unit
+group are described in Section~<Ref Sect="UnitGroup"/>.
+</Section>
+
+<Section Label="FirstThird"><Heading>Computing Lie properties of the group algebra </Heading>
+
+The functions that are used to compute Lie properties of <M>p</M>-modular group
+algebras were already included in the previous versions of the package. The
+bracket operation <M>[\cdot,\cdot]</M> on a <M>p</M>-modular group algebra
+<M>FG</M> is
+defined by <M>[a,b]=ab-ba</M>. It is well-known and very easy to check that
+<M>(FG,+,[\cdot,\cdot])</M> is a Lie algebra. Then we may ask what kind of Lie
+algebra properties are satisfied by <M>FG</M>. The results in <Cite Key="LR86"/>,
+<Cite Key="PPS73"/>, and <Cite Key="Ros00"/> give fast
+practical algorithms to check whether the Lie algebra <M>FG</M> is abelian,
+nilpotent, soluble, centre-by-metabelian, etc. The functions that implement
+these algorithms are described in Section~<Ref Sect="LieAlgebra"/>.
+
+
+</Section>
+
+
+
+
+</Chapter>
+<#/GAPDoc>
+
+
+
+
+<!--************************************************** -->
+

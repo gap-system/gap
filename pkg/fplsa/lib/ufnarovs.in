@@ -1,0 +1,6 @@
+Generators, Ufnarovsky's ex.: X Y;
+Weights:                      1 2;
+<*Limiting weight: 11;*>
+Relations:
+[X,[X,[X,Y]]] - 6 [Y,[X,Y]];
+2 [Y,[Y,[X,Y]]] - 3 [[X,Y],[X,[X,Y]]].

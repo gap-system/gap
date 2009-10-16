@@ -2,14 +2,14 @@
 ##
 #W  trans.grp         GAP transitive groups library          Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: trans.grp,v 4.25 2008/12/03 15:46:18 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the routines for the transitive groups library
 ##
 Revision.trans_grp:=
-  "@(#)$Id$";
+  "@(#)$Id: trans.grp,v 4.25 2008/12/03 15:46:18 gap Exp $";
 
 #############################################################################
 ##
@@ -460,7 +460,7 @@ local l,i;
   l:=TransCombinat(MovedPoints(g),n);
   for i in l do MakeImmutable(i);od;
   Sort(l);
-  return Orbits(g,l,OnSets);
+  return OrbitsDomain(g,l,OnSets);
 end); 
 
 BindGlobal("SeqsOrbits",function(g,n)
@@ -468,7 +468,7 @@ local l,i;
   l:=TransArrange(MovedPoints(g),n);
   for i in l do MakeImmutable(i);od;
   Sort(l);
-  return Orbits(g,l,OnTuples);
+  return OrbitsDomain(g,l,OnTuples);
 end); 
 
 # the (undocumented) `cheap' parameter has the following function:
@@ -483,7 +483,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
   grp:=ogrp;
   dom:=MovedPoints(grp);
   if not IsTransitive(grp,dom) then
-    Error("Group must operate transitive");
+    Error("Group must operate transitively");
   fi;
   deg:=Length(dom);
   if not IsBound(TRANSLENGTHS[deg]) then
@@ -497,14 +497,14 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     cand:=Filtered([1..TRANSLENGTHS[deg]],i->TRANSProperties(deg,i)[1]=s);
   fi;
   if Length(cand)>1 and deg>4 then
-    co:=CntOp(grp,Orbits(grp,TransCombinat(dom,2),OnSets),OnSets);
+    co:=CntOp(grp,OrbitsDomain(grp,TransCombinat(dom,2),OnSets),OnSets);
     cand:=Filtered(cand,i->TRANSProperties(deg,i)[6]=co);
     if Length(cand)>1 then
-      co:=CntOp(grp,Orbits(grp,TransArrange(dom,2),OnTuples),OnTuples);
+      co:=CntOp(grp,OrbitsDomain(grp,TransArrange(dom,2),OnTuples),OnTuples);
       cand:=Filtered(cand,i->TRANSProperties(deg,i)[7]=co);
     fi;
     if Length(cand)>1 then
-      co:=CntOp(grp,Orbits(grp,TransCombinat(dom,3),OnSets),OnSets);
+      co:=CntOp(grp,OrbitsDomain(grp,TransCombinat(dom,3),OnSets),OnSets);
       cand:=Filtered(cand,i->TRANSProperties(deg,i)[8]=co);
     fi;
   fi;
@@ -591,21 +591,21 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
   # maximal subgroups
   if cheap=fail and IsSolvableGroup(grp) and Length(cand)>1 then
     t:=Collected(List(MaximalSubgroupClassReps(grp),
-      i->[Size(i),Collected(List(Orbits(i,MovedPoints(grp)),Length))]));
+      i->[Size(i),Collected(List(OrbitsDomain(i,MovedPoints(grp)),Length))]));
     s:=Filtered([1..Length(cand)],k->
          Collected(List(MaximalSubgroupClassReps(p[k]),
-	   i->[Size(i),Collected(List(Orbits(i,MovedPoints(grp)),Length))]))=t);
+	   i->[Size(i),Collected(List(OrbitsDomain(i,MovedPoints(grp)),Length))]))=t);
     cand:=cand{s};
     p:=p{s};
     if Length(cand)>1 then
       a:=Filtered(t,i->i[2]<=5 and Length(i[1][2])=1 and i[1][2][1][2]=1);
       a:=List(a,i->i[1][1]);
       t:=Collected(List(Filtered(MaximalSubgroupClassReps(grp),
-		  i->Size(i) in a and Length(Orbits(i,MovedPoints(grp)))=1),
+		  i->Size(i) in a and Length(OrbitsDomain(i,MovedPoints(grp)))=1),
 		  x->TransitiveIdentification(x:cheap)));
       s:=Filtered([1..Length(cand)],
 	  k->Collected(List(Filtered(MaximalSubgroupClassReps(p[k]),
-		  i->Size(i) in a and Length(Orbits(i,MovedPoints(p[k])))=1),
+		  i->Size(i) in a and Length(OrbitsDomain(i,MovedPoints(p[k])))=1),
 		  x->TransitiveIdentification(x:cheap)))=t);
       cand:=cand{s};
       p:=p{s};

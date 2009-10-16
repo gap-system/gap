@@ -1,0 +1,490 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  tables.tex             GAP documentation            Joachim Neub"user
+%%
+%H  $Id: tables.tex,v 1.10 2001/03/23 14:58:17 gap Exp $
+%%
+%Y  Copyright (C) 1999, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{The Tables}
+
+Usually table entries in all tables are black. Red indicates that
+these entries were the result of the last step that has been performed
+by {\ITC}. Coset numbers can also be coloured green using the `mark
+cosets' bottom button (see~"mark cosets") or the `show defs' bottom
+button (see~"show defs"). In case of conflict green has preference to
+red.
+
+As a general rule we state that clicking some place in one of the
+*tables* with the *left* mouse button will result in an action in the
+process of CE, e.~g. in making a definition.
+
+There are only very few cases where clicking with the *right* mouse
+button in a table will have an effect:
+
+\beginlist
+
+\item{--}
+  with clicking a coset number or a dot in the Coset Table (see Section
+  "The Coset Table"),
+
+\item{--}
+  with clicking on an entry of the Table of Definitions (see Section
+  "The Table of Definitions"),
+
+\item{--}
+  with clicking on an entry of the List of Length 1 Gaps (see Section
+  "The List of Length 1 Gaps" and "show gaps"), and
+
+\item{--}
+  with clicking on an entry of the List of Pending Coincidences (see
+  Section "The List of Pending Coincidences").
+
+\endlist
+
+In each of these cases clicking with the right mouse button will
+result in {\ITC} displaying further information in a new display
+window.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Coset Table}
+
+The main table in any coset enumeration is the coset table. Its rows
+are numbered by natural numbers, the ``coset numbers'', which are
+defined in the process of the coset enumeration. Remember that coset
+numbers denote cosets defined by representatives given by words in
+the generators, but until a coset
+enumeration is finished, different coset numbers may represent the
+same coset (by different words).
+
+Note that {\ITC} displays on the screen only rows for ``still alive''
+coset numbers, that is coset numbers that have not been eliminated by
+coincidences.
+
+So the first column of the {\ITC} Coset Table displays the list of
+presently ``still alive'' coset numbers. The further columns of the
+{\ITC} Coset Table are indexed by the generators of the finitely
+presented group <g> and their inverses.
+
+Entries in an {\ITC} Coset Table can either be empty, or a coset
+number, or a dot. An entry $j$ in row $i$ and column $k$ means that
+the coset with number $i$ multiplied by the generator or inverse
+generator heading column $k$ yields the coset with number $j$. An
+empty entry indicates that nothing is yet known about the respective
+product. A dot as entry indicates that making a definition in this
+place will close at least one row in a subgroup or a relation table,
+i.e. it belongs to a ``gap of length 1'' (see Section "Some
+Definition Strategies").
+
+Let <h> be the subgroup of the group <g> whose cosets are to be
+enumerated. At the beginning of an enumeration {\ITC} fills
+automatically those entries of the Coset Table (as well as of Subgroup
+and Relation Tables) that are consequences of coset number $1$ always
+being given to the subgroup <h>.
+
+Clicking with the *left* mouse button an empty place or a place
+with a dot in the Coset Table will make a definition in this place.
+That is: Let $c$ be the last coset number defined, then a click in the
+place in row $i$ and column headed by generator or inverse generator
+$x$ will define a coset number $c+1$ that represents the product of
+the coset with number $i$ by $x$. See Section "Making a Definition"
+for details of the changes (marked in red) in the tables caused by
+making such a definition.
+
+At the same time new dots may occur in the coset table, representing
+places newly found to allow filling gaps of length~1 in one of the
+Relation Tables or Subgroup Tables. These new dots will also be
+coloured red.
+
+Clicking with the *right* mouse button a dot will open a window
+which will show a list of all those definitions that are equivalent to
+the one belonging to this place in the sense that they will close the
+same length~1 gaps in Relation and Subgroup Tables. (Compare also
+"Some Definition Strategies" and "show gaps").
+
+Clicking with the *left* mouse button the coset number at the
+beginning of a row of the Coset Table will result in closing this row
+by new definitions. (This way you can e.~g. easily fulfill the
+Mendelsohn Condition for this row requesting that images of that coset
+under multiplication by all generators and their inverses must
+eventually get defined).
+
+Clicking with the *right* mouse button the coset number at the
+beginning of a row of the Coset Table or any already defined coset
+number in the Coset Table will open a window in which a coset
+representative of the respective coset will be displayed as a word in
+the generators of $g$ and their inverses. Clicking the same coset
+number once more (in the same or in another position of the Coset
+Table) will close the coset representative window again. (In Section
+"The Table of Definitions" we will see that the same coset
+representative window can be switched on or off also by clicking the
+respective row in the Table of Definitions.)
+
+Note that only up to 30 rows of the Coset Table are displayed
+simultaneously on the screen but that the Coset Table can be scrolled
+using the bottom buttons `scroll to' (see~"scroll to") and `scroll by'
+(see~"scroll by").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Warnings}
+
+Directly below the Coset Table a row is left open in which warnings
+will flash up in red if the user is trying to start an action that is
+impossible or does not make sense in the present situation, so that
+e.~g. certain buttons are disabled. These are:
+
+\beginitems
+
+`There are no subgroup generators' &
+  if the user clicks the bottom button `show subgrp', but there are no
+  subgroup generators specified, i.~e. one is performing a CE of the
+  cosets of the trivial group.
+
+`There are no gaps of length 1' &
+  if the user tries to show or to fill gaps of length 1 using the
+  bottom buttons `show gaps' or `fill gaps', respectively, but no such
+  gaps of length 1 exist in any of the Subgroup or Relation Tables.
+
+`There are no more gaps of length 1' &
+  if the user had requested to perform a prescribed number of steps
+  filling gaps of length 1, but the supply of such gaps ran out before
+  this number of steps had been performed.
+
+`There are no pending coincidences' &
+  if the user tries to see the list of coincidences while no such are
+  known.
+
+`There are pending coincidences' &
+  if the user tries to make any definition while coincidences are still
+  pending, which may be the case only if the automatic coincidence
+  handling is switched off. (Note that the user is informed anyhow of
+  the fact that coincidences are pending in the ``Information Line'').
+
+`The tables are closed' &
+  if the user tries to make any definition after the tables are closed
+  already.
+
+`The tables are not closed' &
+  if the user tries to invoke the Short-cut method before the tables
+  are closed.
+
+`Insufficient table size' &
+  if the coset enumeration comes to a halt without closing the tables
+  because the size for the Coset Table was too small. In this case
+  this size has to be extended using the menu entry `extend table
+  size' in the menu popped up via the top button `Settings'
+  (see~"extend table size").
+
+`Illegal argument' &
+  if an illegal answer has been typed into a query window, e.~g. if the
+  number of steps requested in the query window opened by clicking the
+  bottom button `Felsch' is given as a negative integer.
+
+`Illegal coset number' &
+
+`This command has no effect' &
+
+\enditems
+
+The warning message will vanish as soon as the user performs the next
+allowed action.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Information Line}
+
+Underneath the Coset Table you see a line which will all the time
+display three numbers that characterize the present state of the coset
+enumeration:
+
+\beginitems
+
+`Defined:'~$i$ &
+  means that so far $i$ coset numbers have been defined altogether
+  (some of which may already have been eliminated again by the
+  coincidence routine).
+
+`Deleted:'~$j$ &
+  means that so far $j$ of these coset numbers have been eliminated
+  again through the handling of coincidences (see also
+  Section~"Handling a Coincidence" and "show coincs").
+
+`Alive:'~$k$ &
+  means that $k$ coset numbers have survived the elimination process
+  of the coincidence handling (if coincidences did occur at all). So
+  obviously $k = i - j$. Note that during a run of {\ITC} there is no
+  change (renumbering) of coset numbers after a coincidence has been
+  handled, i.~e. the sequence of coset numbers will always be an
+  ordered sequence of natural numbers starting with $1$, but if
+  coincidences have been handled, it will have ``holes'', i.~e. no longer
+  be consecutive. While in fact in the internal data structure for the
+  coset table these ``dead'' cosets still exist, in the Coset Table (and
+  Relation Tables) occurring on the screen these lines will be
+  suppressed, so that at any given moment the actual number of lines
+  in the Coset Table and the Relation Tables that can be seen on the
+  screen will be $k$, (not $i$). This has some impact on the scrolling
+  of the Coset Table (compare ~"scroll to" and "scroll by").
+
+\enditems
+
+Behind these three numbers the Information Line will at certain
+instances also display warnings:
+
+\beginlist
+
+\item{--} When the CE has come to an end, that is, when all tables
+  have been closed with no coincidences pending, the text `Tables
+  Closed' is shown in red.
+
+\item{--} If the handling of coincidences has been switched off using
+  `coincidence handling off' (see ~"coincidence handling off") in the
+  menu of the top button `Settings' the text `Coincidence Handling OFF'
+  is shown in red until a coincidence is really encountered (if any
+  occur at all). Then the process will come to a halt and the text
+  shown will change for the warning `Pending Coincidences', again shown
+  in red. Note that this in particular means that the tables will not
+  have closed and the CE has not been finished yet. If the CE process is
+  resumed after the pending coincidences have been worked off, also the
+  text `Coincidence Handling OFF' will reappear as long as coincidence
+  handling remains switched off and not all tables have closed.
+
+\item{--} If the definition sequence has been changed using the
+  Short-cut method (see~"short-cut" as well as Section "The Short-Cut
+  Method") this will be indicated by the text `Short-Cut' shown in red,
+  followed by the number of ``loops'' that the Short-cut method has
+  performed (see Section~"The Short-cut method"). Analogously `Tables
+  sorted' is shown after `sort defs' (see~"sort defs") has been applied.
+
+
+\endlist
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The List of Relators}
+
+The List of Relators is shown in a display window that pops up
+after clicking the (white) bottom button `show rels' (see~"show
+rels").
+
+Clicking one of the relators opens a window for the respective
+Relation Table (see~"The Relation Tables").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Relation Tables}
+
+For a relator that is the product of $n$ generators or inverse
+generators the Relation Table is a table with $n+1$ columns. The
+vertical lines between the columns of the table are headed by the
+factors of the relator. Each row has in its first and last place the
+same coset number. Further entries can either be empty or be occupied
+by a coset number.
+
+Assume that at a certain time coset numbers 1 to $c$ have already been
+defined and consider an empty entry in a Relation Table that is either
+the first empty one or the last empty one in its row. Then clicking
+such an empty space defines coset number $c+1$ in this place.
+
+To be more explicit:
+
+Let $i$ be the coset number standing before an empty place and $x$ be
+the generator or inverse generator heading the vertical line in front
+of the empty place then by clicking this empty place $c+1$ is defined
+to be the coset number for the coset that is obtained as the product
+of the coset with coset number $i$ by $x$.
+
+Analogously let $i$ be the coset number standing behind an empty place
+and $x$ be the generator or inverse generator heading the vertical
+line behind the empty place then by clicking this empty place $c+1$ is
+defined as the coset number of the coset obtained as the product of
+the coset with coset number $i$ by $x^{-1}$.
+
+See Section~"Making a Definition" for more details on the resulting
+changes of the tables.
+
+Clicking the *first* or the *last* entry of a row (that are always
+filled by the same coset number as soon as this row exists) will
+result in *filling this whole row* in an analogous manner starting
+from the left. The last coset number defined in this process
+(i.e. the rightmost one) and the consequences of its definition get
+marked in red.
+
+For the possibility to fill *all* $i$th rows in all Relation Tables
+you can use the green bottom button `fill rows' (see~"fill rows").
+
+Clicking on some other place already filled by a coset number will
+have no effect. Also clicking on an empty place that is neither the
+first nor the last empty one in its row will have no effect.
+
+Unlike most of the other display windows, but in line with the Coset
+Table Window, the windows of the Relation Tables do not vanish when the
+contents of the Relation Tables changes
+but the tables change in their windows.
+Note that (as with the Coset Table) only up to 30 rows of the
+Relation Tables are displayed simultaneously on the screen
+but that the Relation Tables can be scrolled parallel to the Coset Table
+using the bottom buttons `scroll to' (see~"scroll to") and `scroll by'
+(see~"scroll by").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The List of Subgroup Generators}
+
+The list of generators of the subgroup <h> is shown in a window that
+springs up after clicking the (white) bottom button `show subgrp'
+(see~"show subgrp").
+
+Clicking one of the subgroup generators opens a window for the
+respective Subgroup Table (see~"The Subgroup Tables").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Subgroup Tables}
+
+Except that they have only one row that begins and ends with the coset
+number $1$, Subgroup Tables are exactly like Relation Tables. All
+that has been said about making definitions in Relation Tables holds
+for Subgroup Tables as well.
+Also unlike most of the other display windows, but in line with the Coset
+Table Window, the windows of the Subgroup Tables do not vanish when the
+contents of the Subgroup Tables changes
+but the tables change in their windows.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Table of Definitions}
+
+\index{definition!the list of}
+
+Whenever the {\ITC} performs a coset enumeration it saves the occurring
+sequence of definitions of coset numbers in a *List of Definitions*.
+This list is not affected by coincidence handling, however it is
+changed if you make new definitions or retrace to a previous state of
+the definition sequence using the `back to' bottom button (see~"back
+to") or call the Short-cut algorithm (see~"short-cut") or the ``Sorting
+Definitions'' (see~"sort defs"). To some extent the List of Definitions
+reflects the history of the enumeration. It will probably be mainly of
+interest for use in further computations and can for that purpose be
+written to a file (see~`write definitions to file', "write definitions
+to file", and `read definitions from file', "read definitions from
+file", of the top menu popped down by clicking the top button `File').
+
+The current state of the enumeration is reflected by a second list
+which we will call the *Table of Definitions*. It contains only the
+definitions of those coset numbers which are ``still alive'', i.~e. which
+have not vanished by coincidences. and all coset numbers involved in
+these definitions which are not alive any more are replaced by their
+alive representatives. So the Table of Definitions also changes
+whenever a coincidence is handled.
+
+Upon clicking with the *left* mouse button the (white) bottom button
+`show defs' ("show defs") a window appears which displays the Table
+of Definitions or, to be more precise, an extract of that table
+consisting of the up to 30 lines corresponding to the cosets
+currently shown in the Coset Table Window. Like the Relation Tables
+(see Section "The Relation Tables") this window does not vanish when
+the contents of the Table of Definitions changes but the table changes
+in the window, and whenwever the Coset Table is scrolled using the
+bottom buttons `scroll to' (see~"scroll to") and `scroll by'
+(see~"scroll by") it will be scrolled in parallel.
+
+Clicking with the *left* or with the *right* mouse button a definition
+*in the Table of Definitions* will open a window in which a coset
+representative of the coset defined here will be displayed as a word
+in the generators of $g$ and their inverses. The coset representative
+displayed is the one that is obtained by retracing in the List (not
+the Table) of Definitions from this coset number to the coset number
+$1$. A second click on the same definition will close the coset
+representative window again. Note that the coset representative
+windows can also be opened or closed by clicking a coset number in
+the Coset Table with the right mouse button (see Section "The Coset
+Table").
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The List of Length 1 Gaps}
+
+For some background definitions for ``gaps of length 1'' see Section
+"Some Definition Strategies".
+
+On clicking the (white) bottom button `show gaps' (see~"show gaps"),
+either, if no gaps of length 1 exist, only a warning `There are no
+gaps of length 1' appears in red below the Coset Table, or a window
+springs up that lists representatives of the equivalence classes of
+gaps of length 1 in Subgroup and Relation Tables.
+
+A row in this list has the form $i$: $w$ [ $l$, $x$ ] or $i$: $w$ [
+$l$, $x^{-1}$ ] respectively. Here $i$ is just the number of the list
+entry in a consecutive numbering and $w$ is the weight of the
+respective equivalence class of gaps of length 1. The remaining
+information describes the representative of that equivalence class (it
+indicates that defining a new coset as the product of the coset with
+number $l$ and generator $x$, or $x^{-1}$, respectively, will close
+gaps of length 1 of weight $w$ in Subgroup and Relation Tables).
+
+The idea of giving this information is that the ``weight'' $w$ may
+be a guide for the choice of definitions that have a strong influence
+on the progress of a CE.
+
+By clicking on such a row with the *left* mouse button this definition
+will be made and together with its consequences inserted into all
+relevant places in the tables. See Section "Making a Definition" for
+more details.
+
+Clicking on one of the entries in this list with the *right* mouse
+button will open a further window in which all equivalent definitions
+are listed in the form [ $l$, $x$ ] or [ $l$, $x^{-1}$ ],
+respectively.
+
+Clicking on any of these, again with the *left* mouse button, will
+result in making this definition. See again Section "Making a
+Definition" for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The List of Pending Coincidences}
+
+Clicking the (white) bottom button `show coincs' ("show coincs") with
+the *left* mouse button you either get the warning `There are no
+pending coincidences' shown in red below the Coset Table, or a window
+springs up in which the list of all pending coincidences is shown.
+These appear in the form $i = j$ meaning that the coset numbers $i$
+and $j$ really denote the same coset. If $i$ is the larger integer
+then clicking such a line in the List of Pending Coincidences will
+eliminate $i$, that is replace it by $j$ in all occurrences in all
+tables and then suppress the $i$th lines in all tables. See also
+Section "Handling a Coincidence".
+
+As a consequence, more coincidences may be found, so that the List of
+Pending Coincidences may have become longer.
+
+In case coincidence handling is switched off (see `coincidence
+handling off', "coincidence handling off" in the menu of the top
+button `Settings'), the CE process will stop automatically as soon as
+a coincidence is encountered and then the window for the List of
+Pending Coincidences will spring up automatically.
+
+Since a coincidence really means that {\ITC} has found two
+representatives, say $r$ and $s$, of the same coset, given as words
+in the generators of the group, the quotient
+$r*s^{-1}$ will be an element of the subgroup $h$. Clicking this
+coincidence with the *right* mouse button will open a window in which
+the subgroup element $r*s^{-1}$ will be displayed as word in the
+generators of $g$ and their inverses.
+
+As in particular George Havas has pointed out in several papers (see
+for instance \cite{HR99b}) it can be helpful in some ``hard'' coset
+enumerations to add subgroup words obtained in this way from
+coincidences to the subgroup generators in the {\GAP} input of the
+given subgroup $h$ and to restart {\ITC}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

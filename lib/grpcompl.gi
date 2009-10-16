@@ -2,7 +2,7 @@
 ##
 #W  grpcompl.gi                  GAP Library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpcompl.gi,v 4.16 2006/06/09 19:10:14 gap Exp $
 ##
 #Y  Copyright (C)  1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,12 +12,52 @@
 ##  'white box groups'
 ##
 Revision.grpcompl_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpcompl.gi,v 4.16 2006/06/09 19:10:14 gap Exp $";
+
+
+BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
+  local b, mats, orb, com, stabilizer, i,coc,u;
+  if not IsBound(oc.complement) then
+    return [];
+  fi;
+  oc.zero:=Zero(LeftActingDomain(oc.oneCocycles));
+  b:=BaseSteinitzVectors(BasisVectors(Basis(oc.oneCocycles)),
+                         BasisVectors(Basis(oc.oneCoboundaries)));
+  if Length(b.factorspace)=0 then
+    u:=rec(com:=[rec(cocycle:=Zero(oc.oneCocycles),stabilizer:=actgrp)],
+	   bas:=b);
+    if orbs then
+      u.com[1].orbit:=[Zero(oc.oneCocycles)];
+    fi;
+    return u;
+  fi;
+  Info(InfoComplement,2,"fuse ",
+    Characteristic(oc.zero)^Length(b.factorspace)," classes");
+  if Length(auts)=0 then
+    auts:=[One(actgrp)];
+  fi;
+
+  mats:=COAffineCohomologyAction(oc,oc.complementGens,auts,b);
+  orb:=COAffineBlocks(actgrp,auts,mats,orbs);
+  com:=[];
+  for i in orb do
+
+    coc:=i.vector*b.factorspace;
+    #u:=oc.cocycleToComplement(coc);
+    u:=rec(cocycle:=coc,
+		#complement:=u,
+		stabilizer:=i.stabilizer);
+    if orbs then u.orbit:=i.orbit;fi;
+    Add(com,u);
+  od;
+  Info(InfoComplement,1,"obtain ",Length(com)," orbits");
+  return rec(com:=com,bas:=b,mats:=mats);
+end);
 
 ComplementclassesSolvableWBG:=function(G,N)
-local s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
-      ncomgens, ncen, nlcom, nlcomgens, nlcen, ocr, generators, 
-      modulePcgs, l, v, dimran, opfun, k, afu, i, j, jj;
+local s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom, 
+      ncomgens, ncen, nlcom, nlcomgens, nlcen, ocr, generators, modulePcgs, 
+      l, complement, k, v, afu, i, j, jj;
 
   # compute a series through N
   s:=ChiefSeriesUnderAction(G,N);
@@ -88,41 +128,45 @@ local s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
       if IsBound(ocr.complement) then
 	# special treatment for trivial case:
 	if Dimension(ocr.oneCocycles)=Dimension(ocr.oneCoboundaries) then
-	  l:=[ExternalSet(cen[j],[Zero(ocr.oneCocycles)])];
-	  SetStabilizerOfExternalSet(l[1],cen[j]);
+	  l:=[rec(stabilizer:=cen[j],
+                  cocycle:=Zero(ocr.oneCocycles),
+		  complement:=ocr.complement)];
         else
-	  l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
-				 BasisVectors(Basis(ocr.oneCoboundaries)));
+	  #l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
+	#			 BasisVectors(Basis(ocr.oneCoboundaries)));
+#
+#	  v:=Enumerator(VectorSpace(LeftActingDomain(ocr.oneCocycles),
+#				    l.factorspace,Zero(ocr.oneCocycles)));
+#
+#	  dimran:=[1..Length(v[1])];
+#
+#	  # fuse
+#	  Info(InfoComplement,2,"fuse ",Length(v)," classes; working in dim ",
+#	   Dimension(ocr.oneCocycles),"/",Dimension(ocr.oneCoboundaries));
+#
+#	  opfun:=function(z,g)
+#	    Assert(3,z in AsList(v));
+#	    z:=ocr.cocycleToList(z);
+#	    for k in [1..Length(z)] do
+#	      z[k]:=Inverse(ocr.complementGens[k])*(ocr.complementGens[k]*z[k])^g;
+#	    od;
+#	    Assert(2,ForAll(z,k->k in s[i-1]));
+#	    z:=ocr.listToCocycle(z);
+#	    Assert(2,z in ocr.oneCocycles);
+#	    # sift z
+#	    for k in dimran do
+#	      if IsBound(l.heads[k]) and l.heads[k]<0 then
+#		z:=z-z[k]*l.subspace[-l.heads[k]];
+#	      fi;
+#	    od;
+#	    Assert(1,z in AsList(v));
+#	    return z;
+#	  end;
+#
+#	  k:=ExternalOrbitsStabilizers(cen[j],v,opfun);
 
-	  v:=Enumerator(VectorSpace(LeftActingDomain(ocr.oneCocycles),
-				    l.factorspace,Zero(ocr.oneCocycles)));
-
-	  dimran:=[1..Length(v[1])];
-
-	  # fuse
-	  Info(InfoComplement,2,"fuse ",Length(v)," classes; working in dim ",
-	   Dimension(ocr.oneCocycles),"/",Dimension(ocr.oneCoboundaries));
-
-	  opfun:=function(z,g)
-	    Assert(3,z in AsList(v));
-	    z:=ocr.cocycleToList(z);
-	    for k in [1..Length(z)] do
-	      z[k]:=Inverse(ocr.complementGens[k])*(ocr.complementGens[k]*z[k])^g;
-	    od;
-	    Assert(2,ForAll(z,k->k in s[i-1]));
-	    z:=ocr.listToCocycle(z);
-	    Assert(2,z in ocr.oneCocycles);
-	    # sift z
-	    for k in dimran do
-	      if IsBound(l.heads[k]) and l.heads[k]<0 then
-		z:=z-z[k]*l.subspace[-l.heads[k]];
-	      fi;
-	    od;
-	    Assert(1,z in AsList(v));
-	    return z;
-	  end;
-
-	  l:=ExternalOrbitsStabilizers(cen[j],v,opfun);
+	  l:=COCohomologyAction(ocr,cen[j],GeneratorsOfGroup(cen[j]),false).com;
+#	  if Length(l)<>Length(k) then Error("differ!");fi;
 	fi;
 
 	Info(InfoComplement,2,"splits in ",Length(l)," complements");
@@ -132,8 +176,8 @@ local s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
       fi;
 
       for k in l do
-	q:=StabilizerOfExternalSet(k);
-	k:=ocr.cocycleToComplement(Representative(k));
+	q:=k.stabilizer;
+	k:=ocr.cocycleToComplement(k.cocycle);
 	Assert(3,Length(GeneratorsOfGroup(k))
 	          =Length(MappingGeneratorsImages(fpi)[2]));
 	# correct stabilizer to obtain centralizer

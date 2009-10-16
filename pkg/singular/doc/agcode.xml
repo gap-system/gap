@@ -1,0 +1,102 @@
+<Section Label="AlgebraicGeometricCodes">
+<Heading>Algebraic-geometric codes functions</Heading>
+
+This section of &GAP;'s <Package>singular</Package> package and the
+corresponding code were written by David Joyner,
+<Email>wdj@usna.edu</Email>, (with help from Christoph Lossen and Marco
+Costantini). It has been tested with <Package>Singular</Package> versrion 2.0.x.
+
+<P/>
+
+To start off, several new <Package>Singular</Package> commands must be loaded.
+
+The following command loads the necessary <Package>Singular</Package>
+and &GAP; commands, the packages <Package>singular</Package> and
+<Package>GUAVA</Package> (if not already loaded), and (re)starts
+<Package>Singular</Package>.
+
+
+<Example>
+gap> ReadPackage("singular", "contrib/agcode.g");;
+</Example>
+
+<ManSection>
+<Func Name="AllPointsOnCurve" Arg = "f, F"/>
+<Description>
+
+Let <M>F</M> be a finite and prime field. The function
+<A>AllPointsOnCurve( f, F )</A> computes a list of 
+generators of maximal ideals representing rationals
+points on a curve <M>X</M> defined by <M>f(x,y)=0</M>.
+
+<Example>
+gap> F:=GF(7);;
+gap> R2:= PolynomialRing( F, 2 );;
+gap> SetTermOrdering( R2, "lp" );; # --- the term ordering must be "lp"
+gap> indet:= IndeterminatesOfPolynomialRing(R2);;
+gap> x:= indet[1];; y:= indet[2];;
+gap> f:=x^7-y^2-x;;
+gap> AllPointsOnCurve(f,F);
+[ [ x_1 ], [ x_1-Z(7)^0 ], [ x_1+Z(7)^4 ], [ x_1+Z(7)^5 ], [ x_1+Z(7)^0 ], 
+  [ x_1+Z(7) ], [ x_1+Z(7)^2 ] ]
+</Example>
+
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="AGCode" Arg = "f, G, D"/>
+<Description>
+
+Let f be a polynomial in x,y over F=GF(p) representing plane curve
+<M>X</M> defined by <M>f(x,y)=0</M>, where p is a prime (prime powers
+are not yet supported by the underlying <Package>Singular</Package>
+function).
+Let G, D be disjoint rational divisors on <M>X</M>, where
+D is a sum of distinct points, <M>supp(D)={P_1, ..., P_n}</M>.
+The AG code associated to
+f, G, D is the F defined to be the image of the
+evaluation map <M>f \mapsto (f(P_1),...,f(P_n))</M>.
+The function <A>AGCode</A> computes a list of
+length three, [G, n, k], where G is a generator matrix
+of the AG code C, n is its length, and k is its dimension.
+
+<Example>
+gap> F:=GF(7);;
+gap> R2:= PolynomialRing( F, 2 );;
+gap> SetTermOrdering( R2, "lp" );; # --- the term ordering must be "lp"
+gap> SingularSetBaseRing(R2);
+gap> indet:= IndeterminatesOfPolynomialRing(R2);;
+gap> x:= indet[1];; y:= indet[2];;
+gap> f:=x^7-y^2-x;;
+gap> G:=[2,2,0,0,0,0,0]; D:=[4..8];
+[ 2, 2, 0, 0, 0, 0, 0 ]
+[ 4 .. 8 ]
+gap> agc:=AGCode(f,G,D);
+[ [ [ Z(7)^3, Z(7), 0*Z(7), Z(7)^4, Z(7)^5 ],
+      [ 0*Z(7), Z(7)^4, Z(7)^0, Z(7)^5, Z(7)^3 ],
+      [ 0*Z(7), 0*Z(7), Z(7)^3, Z(7), Z(7)^2 ] ], 5, 3 ]
+</Example>
+
+This generator matrix can be fed into the <Package>GUAVA</Package>
+command <Ref Oper="GeneratorMatCode" BookName="GUAVA"/> to create a
+linear code in &GAP;, which in turn can be fed into the
+<Package>GUAVA</Package> command
+<Ref Oper="MinimumDistance" BookName="GUAVA"/> to compute the minimum
+distance of the code.
+
+<Example>
+gap> ag_mat:=agc[1];;
+gap> C := GeneratorMatCode( ag_mat, GF(7) );
+a linear [5,3,1..3]2 code defined by generator matrix over GF(7)
+gap> MinimumDistance(C);
+3
+</Example>
+
+</Description>
+</ManSection>
+
+
+</Section>
+
+

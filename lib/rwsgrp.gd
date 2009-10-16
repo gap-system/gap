@@ -2,7 +2,7 @@
 ##
 #W  rwsgrp.gd                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: rwsgrp.gd,v 4.18 2007/09/05 12:45:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -17,12 +17,11 @@
 ##  `IsBuiltFromGroup' in this case.
 ##
 Revision.rwsgrp_gd :=
-    "@(#)$Id$";
+    "@(#)$Id: rwsgrp.gd,v 4.18 2007/09/05 12:45:15 gap Exp $";
 
 
 #############################################################################
 ##
-
 #C  IsElementsFamilyByRws .  category of elements family constructed with RWS
 ##
 DeclareCategory(
@@ -34,6 +33,13 @@ DeclareCategory(
 ##
 #O  MultiplicativeElementsWithInversesFamilyByRws( <rws> )  . . . this family
 ##
+##  <ManSection>
+##  <Oper Name="MultiplicativeElementsWithInversesFamilyByRws" Arg='rws'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "MultiplicativeElementsWithInversesFamilyByRws",
     [ IsRewritingSystem ] );
@@ -41,8 +47,6 @@ DeclareOperation(
 
 #############################################################################
 ##
-
-
 #C  IsMultiplicativeElementWithInverseByRws . . .  category of these elements
 ##
 DeclareCategory(
@@ -54,6 +58,13 @@ DeclareCategory(
 ##
 #O  ElementByRws( <fam>, <elm> )  . . . . . . . . . construct such an element
 ##
+##  <ManSection>
+##  <Oper Name="ElementByRws" Arg='fam, elm'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "ElementByRws",
     [ IsElementsFamilyByRws, IsObject ] );
@@ -62,6 +73,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  GroupByRws( <rws> ) . . . . . . . . . . . .  construct a group from a RWS
+##
+##  <ManSection>
+##  <Oper Name="GroupByRws" Arg='rws'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "GroupByRws",
@@ -72,6 +90,13 @@ DeclareOperation(
 ##
 #O  GroupByRwsNC( <rws> ) . . . . . . . . . . .  construct a group from a RWS
 ##
+##  <ManSection>
+##  <Oper Name="GroupByRwsNC" Arg='rws'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "GroupByRwsNC",
     [ IsRewritingSystem ] );
@@ -79,6 +104,5 @@ DeclareOperation(
 
 #############################################################################
 ##
+#E
 
-#E  rwsgrp.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

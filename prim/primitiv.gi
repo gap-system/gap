@@ -2,14 +2,14 @@
 ##
 #W  primitiv.gi       GAP primitive groups library          Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: primitiv.gi,v 4.52 2007/03/14 17:42:07 gap Exp $
 ##
 #Y  Copyright (C)  1999, School Math.&Comp. Sci., University of St Andrews
 ##
 ##  This file contains the routines for the primitive groups library
 ##
 Revision.primitiv_gi:=
-  "@(#)$Id$";
+  "@(#)$Id: primitiv.gi,v 4.52 2007/03/14 17:42:07 gap Exp $";
 
 Unbind(PRIMGRP);
 
@@ -73,7 +73,9 @@ BIND_GLOBAL("PRIMGrp",function(deg,nr)
 end);
 
 InstallGlobalFunction(NrPrimitiveGroups, function(deg)
-  PrimGrpLoad(deg);
+  if not IsBound(PRIMLENGTHS[deg]) then
+    PrimGrpLoad(deg);
+  fi;
   return PRIMLENGTHS[deg];
 end);
 
@@ -212,9 +214,27 @@ local dom,deg,PD,s,cand,a,p,s_quot,b,cs,n,beta,alpha,i,ag,bg,q,gl,hom;
     fi;
   fi;
 
+  if Length(cand)>1 then
+    # sylow orbits
+    gl:=Reversed(Set(Factors(Size(grp))));
+    while Length(cand)>1 and Length(gl)>0 do
+      a:=Collected(List(Orbits(SylowSubgroup(grp,gl[1]),MovedPoints(grp)),
+	                Length));
+      b:=[];
+      for i in [1..Length(cand)] do
+	b[i]:=Collected(List(Orbits(SylowSubgroup(p[i],gl[1]),
+	                            MovedPoints(p[i])),
+			  Length));
+      od;
+      s:=Filtered([1..Length(cand)],i->b[i]=a);
+      cand:=cand{s};
+      p:=p{s};
+      gl:=gl{[2..Length(gl)]};
+    od;
+  fi;
 
   if Length(cand) > 1 then
-    # Some tests for the sylow subgroups
+    # Some further tests for the sylow subgroups
     for q in Set(Factors(Size(grp)/Size(Socle(grp)))) do
       if q=1 then 
         q:=2;
@@ -291,7 +311,7 @@ local dom,deg,PD,s,cand,a,p,s_quot,b,cs,n,beta,alpha,i,ag,bg,q,gl,hom;
 
   if Length(cand)>1 then
     # Klassen
-    a:=Collected(List(ConjugacyClasses(grp),
+    a:=Collected(List(ConjugacyClasses(grp:onlysizes),
                       i->[CycleStructurePerm(Representative(i)),Size(i)]));
 
     # use caching
@@ -303,7 +323,7 @@ local dom,deg,PD,s,cand,a,p,s_quot,b,cs,n,beta,alpha,i,ag,bg,q,gl,hom;
     b:=[];
     for i in [1..Length(cand)] do
       if not IsBound(PGICS[cand[i]]) then
-        PGICS[cand[i]]:=Collected(List(ConjugacyClasses(p[i]),
+        PGICS[cand[i]]:=Collected(List(ConjugacyClasses(p[i]:onlysizes),
 		  j->[CycleStructurePerm(Representative(j)),Size(j)]));
       fi;
       b[i]:=PGICS[cand[i]];
@@ -414,13 +434,15 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
       p:=Position(arglis,a);
       if p<>fail then
 	p:=arglis[p+1];
-	if IsList(p) then
-	  p:=Maximum(p);
-	fi;
 	if IsInt(p) then
-	  deg:=Filtered(deg,j->j<=p);
-	  b:=false;
-	  f:=true;
+	  p:=[p];
+	fi;
+	  
+	if IsList(p) then
+	  deg := Filtered( deg,
+	       d -> ForAny( p, k -> 0 = k mod d ) );
+	  b := false;
+	  f := not IsSubset( PRIMRANGE, p );
 	fi;
       fi;
     od;
@@ -434,64 +456,55 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
     gut[i]:=[1..NrPrimitiveGroups(i)];
   od;
 
-  for ind in [1..l] do
-    a:=arglis[2*ind-1];
-    b:=arglis[2*ind];
+  for i in deg do
+    for ind in [1..l] do
+      a:=arglis[2*ind-1];
+      b:=arglis[2*ind];
 
-    # get all cheap properties first
+      # get all cheap properties first
 
-    if a=NrMovedPoints then
-      nr:=0; # done already 
-    elif a=Size or a=Transitivity or a=ONanScottType then
-      if a=Size then
-        nr:=2;
-      elif a=Transitivity then
-        nr:=6;
-      elif a=ONanScottType then
-        nr:=4;
-	if b=1 or b=2 or b=5 then
-          b:=String(b);
-	elif b=3 then
-	  b:=["3a","3b"];
-	elif b=4 then
-	  b:=["4a","4b","4c"];
+      if a=NrMovedPoints then
+	nr:=0; # done already 
+      elif a=Size or a=Transitivity or a=ONanScottType then
+	if a=Size then
+	  nr:=2;
+	elif a=Transitivity then
+	  nr:=6;
+	elif a=ONanScottType then
+	  nr:=4;
+	  if b=1 or b=2 or b=5 then
+	    b:=String(b);
+	  elif b=3 then
+	    b:=["3a","3b"];
+	  elif b=4 then
+	    b:=["4a","4b","4c"];
+	  fi;
 	fi;
-      fi;
-      for i in deg do
 	gut[i]:=Filtered(gut[i],j->STGSelFunc(PRIMGrp(i,j)[nr],b));
-      od;
-    elif a=IsSimpleGroup or a=IsSimple then
-      for i in deg do
+      elif a=IsSimpleGroup or a=IsSimple then
 	gut[i]:=Filtered(gut[i],j->STGSelFunc(PRIMGrp(i,j)[3] mod 2=1,b));
-      od;
-    elif a=IsSolvableGroup or a=IsSolvable then
-      for i in deg do
+      elif a=IsSolvableGroup or a=IsSolvable then
 	gut[i]:=Filtered(gut[i],j->STGSelFunc(QuoInt(PRIMGrp(i,j)[3],2)=1,b));
-      od;
-    elif a=SocleTypePrimitiveGroup then
-      if IsFunction(b) then
-	# for a functiuon we have to translate the list form into records
-	RFL:=function(lst)
-	  return rec(series:=lst[1],parameter:=lst[2],width:=lst[3]);
-	end;
-	for i in deg do
+      elif a=SocleTypePrimitiveGroup then
+	if IsFunction(b) then
+	  # for a function we have to translate the list form into records
+	  RFL:=function(lst)
+	    return rec(series:=lst[1],parameter:=lst[2],width:=lst[3]);
+	  end;
 	  gut[i]:=Filtered(gut[i],j->b(RFL(PRIMGrp(i,j)[8])));
-	od;
-      else
-	# otherwise we may bring b into the form we want
-	if IsRecord(b) then
-	  b:=[b];
-	fi;
-	if IsList(b) and IsRecord(b[1]) then
-	  b:=List(b,i->[i.series,i.parameter,i.width]);
-	fi;
-	for i in deg do
+	else
+	  # otherwise we may bring b into the form we want
+	  if IsRecord(b) then
+	    b:=[b];
+	  fi;
+	  if IsList(b) and IsRecord(b[1]) then
+	    b:=List(b,i->[i.series,i.parameter,i.width]);
+	  fi;
 	  gut[i]:=Filtered(gut[i],j->PRIMGrp(i,j)[8] in b);
-	od;
-
-      fi;
+	fi;
       
-    fi;
+      fi;
+    od;
   od;
 
   if f then

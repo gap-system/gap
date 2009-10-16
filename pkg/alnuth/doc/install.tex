@@ -1,0 +1,202 @@
+
+\Chapter{Installation}
+
+This package provides an interface between GAP 4 and KANT respectively
+KASH, the shell of the computational algebraic number theory system KANT. By
+now the interface can only be used on a Linux system.  KASH itself is not part
+of this package.  It has to be obtained and installed independently of this
+package. Alnuth works with KASH version 2.4 or 2.5.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Getting and installing KASH}
+ 
+KASH is available at
+\begintt 
+            www.math.tu-berlin.de/~kant/download.html
+\endtt
+ 
+Note that you have to download two files for a complete installation
+of KASH. For the installation of version 2.5 of KASH on a Linux
+system you would do the following steps:
+\beginlist
+\item{1.} Download the files
+    kash_2.5.6.common.tar.gz and kash_2.5.7.linux.tar.gz
+    into the same directory on your system.
+ 
+\item{2.} Unpack the files using tar.  This will create a directory
+    KASH_2.5 containing among other files the KASH executable called
+    kash.
+
+\endlist
+
+The place where KASH is located in your system is independent of the place
+ where the Alnuth-package is installed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing this package}
+ 
+This package is available at
+\begintt 
+           www.icm.tu-bs.de/ag_algebra/software/assmann/Alnuth
+\endtt 
+
+in form of a gzipped tar-archive or as an uncompressed tar-archive.
+ 
+There are two ways of installing the package.  If you have permission
+to add files to the installation of GAP 4 on your system you may
+install the Alnuth-package into the pkg subdirectory of the GAP
+installation tree.  If you do not have the permission to do that you
+may install the Alnuth-package in your private area. In the latter case you
+need to have a directory named pkg in your private area (for details see
+"ref:Installing a GAP Package" in the reference manual). 
+
+Now move the alnuth.tar.gz of alnuth.tar file into the directory pkg and
+unpack it:
+
+\beginexample
+    bash> tar xfz alnuth.tar.gz        # for the gzipped tar-archive
+    bash> tar xf alnuth.tar         # for the uncompressed tar-archive
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Adjust the path of the executable for KASH}
+
+This package needs to know where the executable for KASH is. 
+In the default setting Alnuth will check if there is an executable
+called `kash' in your search path (The search path is the 
+set of directories through which your shell looks for executable 
+programs when no absolute path is given. Type
+`echo \$PATH'
+in your terminal to see which directories are contained in your
+search path.).
+
+In Section "How to write a shell script which executes KASH"
+we explain how to write a very short shell script,
+which executes KASH, 
+and indicate how you can assure that Alnuth finds it in the default
+setting. 
+We recommend to use this default setting.
+An advantage of this method is, that in case 
+of an installation of a new version of Alnuth you do not have to 
+adjust the path to the executable of KASH again. 
+
+If you do not want to use the default setting, then there are
+two other possibilities.
+ 
+If you are able to edit the file `pkg/alnuth/defs.g', then 
+you can change the line 
+\beginexample
+    BindGlobal( "KANTEXEC", Filename( DirectoriesSystemPrograms( ), "kash" ) );
+\endexample
+to something like
+\beginexample
+    BindGlobal( "KANTEXEC", "mykash/kash -l mykash/lib" );
+\endexample 
+where `mykash' needs to be replaced with the directory where KASH
+was installed. For example `mykash' could be replaced by
+`/usr/local/KASH_2.5'. Please note that in case of a new installation 
+of Alnuth you will have to edit the file `pkg/alnuth/defs.g'
+again. Alternatively you can also change your personal `.gaprc' file (see 3.4
+The .gaprc file) for setting the variable KANTEXEC to a proper value. To do
+this add the command line mentioned above to `.gaprc'.
+ 
+The third possibility is to change the path to the executable within GAP using
+one of the following two functions. To do this you first have to load the
+package (see Section "Loading and testing the package").
+\> SetKantExecutable( <path> )
+
+adjusts the global variable `KANTEXEC' for the current GAP session. Depending
+on your installation of KASH the string <path> has to be either the command
+to start KASH in a terminal (for example `kash') 
+or the complete path to the executable of KASH 
+(for example `/usr/local/KASH_2.5/kash'). In
+the latter case the library-path does not have to be specified, but is added
+automatically. Thereby the message
+\beginexample
+    kash: hmm, I cannot find 'lib/init.g', maybe use option '-l <libname>'?
+\endexample
+will appear on the screen, which can be ignored.
+
+To use
+\> SetKantExecutablePermanently( <path> )
+
+you need to be allowed to overwrite the file `pkg/alnuth/defs.g'. The function
+does the same as `SetKantExecutable' and changes the file `pkg/alnuth/defs.g'
+respectively in addition. Thus the value of the global variable `KANTEXEC' is
+changed permanently. In case of a new installation of Alnuth,
+you will have to run this command again. 
+
+Both functions run a test whether <path> is a valid string for a filename of an
+executable for KASH version 2.4 or 2.5.
+
+If you want to set the path to the executable of KASH using the function
+`SetKantExecutable' every time you start GAP, you could add
+the command line `SetKantExecutable( <path> )' to your 
+personal `.gaprc' file (see Section "ref:The .gaprc file" in the 
+GAP Reference manual). 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{How to write a shell script which executes KASH}
+
+In this section we explain how to write a shell script which executes
+KASH. Such a script is needed if you want to use the default setting
+of Alnuth for the execution of KASH 
+(see Section "Adjust the path of the executable for KASH").
+
+Switch to your home directory (`cd ~') and check (using `ls') if there
+is a directory called `bin'. If not then create one with
+`mkdir bin'. Change to the `bin' directory (`cd bin') and 
+and open an empty file called `kash' with an editor of your choice.
+Add the lines
+\beginexample
+     #!/bin/sh
+     mykash/kash -l mykash/lib
+\endexample
+where `mykash' needs to be replaced with the directory where KASH was
+installed. After this your file could look for example like this:
+\beginexample
+     #!/bin/sh
+     /usr/local/KASH_2.5/kash -l /usr/local/KASH_2.5/lib
+\endexample
+Save  the file and close the editor. 
+Then type `chmod u+x kash' in your terminal to make the script executable.
+
+Now we have to assure that the directory `bin' is in your search path. 
+Type `echo \$PATH' to check if this is the case. If not then you can add 
+`bin' to the search path by typing
+\beginexample
+    bash> export PATH=$PATH:/home/user/bin
+\endexample
+where `/home/user' needs to be replaced by your home directory. 
+If you want to extend your search path permanently you can 
+add this line to the `.bashrc' file in your home directory. 
+
+If you use a c-shell instead of bash, then you have to extend the 
+search path with the command 
+\beginexample
+     set PATH = ( $PATH /home/user/bin )
+\endexample
+and edit the file `.cshrc'. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Loading and testing the package}
+
+To use this package you have to request it explicitly. This is done by calling
+
+\beginexample
+    gap> LoadingPackage("alnuth");
+    Loading Alnuth 2.2.2 ...
+    true
+    gap>
+\endexample
+Once the package is loaded, it is possible to check the correct
+    installation by running the test suite of the package with the command
+
+\beginexample
+    gap> ReadPackage( "alnuth", "tst/testall.g" );
+\endexample
+   
+
+
+
+

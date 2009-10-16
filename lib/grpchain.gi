@@ -3,7 +3,7 @@
 #W  grpchain.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: grpchain.gi,v 4.10 2005/05/12 17:33:04 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -36,7 +36,7 @@
 ##  transversal), may have unpredictable results.
 ##
 Revision.grpchain_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: grpchain.gi,v 4.10 2005/05/12 17:33:04 gap Exp $";
 
 ##
 ##  For debugging only:
@@ -467,7 +467,6 @@ InstallGlobalFunction( ChainSubgroupByStabiliser,
 	SetChainSubgroup( G, subgp );
 	return subgp;
     end );
-ChainSubgroupByStabilizer := ChainSubgroupByStabiliser;
 
 #############################################################################
 ##

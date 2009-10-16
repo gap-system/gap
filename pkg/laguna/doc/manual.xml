@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- $Id: manual.xml,v 1.31 2009/05/30 21:13:40 alexk Exp $ -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+[<!ENTITY Clanguage "<Package>C</Package>">] 
+[<!ENTITY LAG "<Package>LAG</Package>">] 
+[<!ENTITY LAGUNA "<Package>LAGUNA</Package>">]
+[<!ENTITY SISYPHOS "<Package>SISYPHOS</Package>">] >
+
+<Book Name="LAGUNA">
+
+<TitlePage>
+  <Title>&LAGUNA;</Title>
+  <Subtitle>Lie AlGebras and UNits of group Algebras</Subtitle>
+  <Version>Version 3.5.0</Version>
+
+  <Author>Victor Bovdi 
+          <Email>vbovdi@math.klte.hu</Email>
+          <Address>
+           Institute of Mathematics and Informatics<Br/>
+	   University of Debrecen<Br/> 
+	   P.O.Box 12, Debrecen, H-4010 Hungary	   </Address>
+  </Author>
+
+  <Author>Alexander Konovalov
+          <Email>konovalov@member.ams.org</Email>
+	  <Homepage>http://www.cs.st-andrews.ac.uk/&tilde;alexk/</Homepage>
+          <Address>
+            School of Computer Science<Br/>
+            University of St Andrews<Br/>
+            Jack Cole Building, North Haugh,<Br/>
+            St Andrews, Fife, KY16 9SX, Scotland
+          </Address> 
+  </Author>
+
+  <Author>Richard Rossmanith
+          <Email>richard.rossmanith@d-fine.de</Email>
+          <Address>
+    	    d-fine GmbH<Br/>
+            Mergenthalerallee 55
+            65760 Eschborn/Frankfurt<Br/>
+            Germany
+          </Address> 
+  </Author>
+
+  <Author>
+  Csaba Schneider
+  <Email>csaba.schneider@sztaki.hu</Email>
+  <Homepage>http://www.sztaki.hu/&tilde;schneider</Homepage>
+          <Address>
+            Informatics Laboratory<Br/>
+            Computer and Automation Research Institute<Br/>
+            The Hungarian Academy of Sciences<Br/>
+	    1111 Budapest, Lagymanyosi u. 11, Hungary
+       </Address> 
+  </Author>
+
+
+  <Date>30 May 2009</Date>
+
+<Abstract>
+
+<Index Key="LAGUNA package">&LAGUNA; package</Index> 
+The title ``&LAGUNA;'' stands for ``<B>L</B>ie <B>A</B>l<B>G</B>ebras and 
+<B>UN</B>its of group <B>A</B>lgebras''.
+This is the new name of the &GAP;4 package &LAG;, which is thus replaced by &LAGUNA;.
+<P/>
+&LAGUNA; extends the &GAP; functionality for computations in group rings. Besides 
+computing some general properties and attributes of group rings and their 
+elements, &LAGUNA; is able to perform two main kinds of computations. Namely, 
+it can verify  whether a group algebra of a finite group satisfies certain 
+Lie properties; and it can calculate the structure of the normalized unit group
+of a group algebra of a finite <M>p</M>-group over
+the field of <M>p</M> elements.
+<P/>
+
+</Abstract>
+
+<Copyright>
+  &copyright; 2003-2009 by Victor Bovdi, Alexander Konovalov, 
+  Richard Rossmanith, and Csaba Schneider<P/>
+
+  &LAGUNA; is free software; you can redistribute it and/or modify it 
+  under the terms of the GNU General Public License as published by 
+  the Free Software Foundation; either version 2 of the License, or 
+  (at your option) any later version. For details, see the FSF's own site
+  <URL>http://www.gnu.org/licenses/gpl.html</URL>.<P/>
+
+  If you obtained &LAGUNA;, we would be grateful for a short notification
+  sent to one of the authors.<P/>
+
+  If you publish a result which was partially obtained with the usage of
+  &LAGUNA;, please cite it in the following form:<P/>
+
+  V. Bovdi, A. Konovalov, R. Rossmanith and C. Schneider. 
+  <E>LAGUNA --- Lie AlGebras and UNits of group Algebras, 
+  Version 3.5.0;</E> 2009 
+  (<URL>http://www.cs.st-andrews.ac.uk/&tilde;alexk/laguna.htm</URL>).
+</Copyright>
+  
+<Acknowledgements>
+
+Some of the features of &LAGUNA; were already included in the &GAP;4 package
+&LAG; written by the third author, Richard Rossmanith. 
+<!--which was ported to &GAP;4 during his visit to
+St Andrews in September 1998. Since in the new version the functionality
+of the package is no longer restricted to Lie algebras, the package
+changed its name to &LAGUNA; which means "Lie AlGebras and UNits of group
+Algebras".-->
+The three other authors first would like to thank Greg Gamble for
+maintaining &LAG; and for upgrading it from version 2.0
+to version 2.1, and Richard Rossmanith for allowing them to update
+and extend the &LAG; package. We are also grateful to Wolfgang Kimmerle
+for organizing the workshop ``Computational Group and Group Ring
+Theory'' (University of Stuttgart, 28--29 November, 2002), which allowed
+us to meet and have fruitful discussions that led towards the final
+&LAGUNA; release.
+<P/> 
+We  are all very grateful to the members of the &GAP; team: Thomas Breuer,
+Willem de Graaf, Alexander Hulpke, Stefan Kohl, Steve Linton, Frank L&#252;beck, 
+Max Neunh&#246;ffer and many other colleagues for helpful comments and advise.
+We acknowledge very much Herbert Pahlings for communicating the package 
+and the referee for careful testing &LAGUNA; and useful suggestions.       
+<P/> 
+A part of the work on upgrading &LAG; to &LAGUNA; was done in 2002 during
+Alexander Konovalov's visits to Debrecen, St Andrews and Stuttgart 
+Universities.
+He would like to express his gratitude to Adalbert Bovdi and
+Victor Bovdi, Colin Campbell, Edmund Robertson and Steve Linton,
+Wolfgang Kimmerle, Martin Hertweck and Stefan Kohl for their warm
+hospitality, and to the NATO Science Fellowship Program, to the London
+Mathematical Society and to the DAAD for the support of these visits.     
+<P/>
+
+</Acknowledgements>
+
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "intro.xml">
+<#Include SYSTEM "example.xml">
+<#Include SYSTEM "theory.xml"> 
+<#Include SYSTEM "funct.xml">
+
+</Body>
+
+<Bibliography Databases="manual"/>
+
+<TheIndex/>
+
+</Book>

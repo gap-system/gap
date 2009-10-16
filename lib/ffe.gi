@@ -3,7 +3,7 @@
 #W  ffe.gi                      GAP library                     Werner Nickel
 #W                                                         & Martin Schoenert
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: ffe.gi,v 4.75 2008/03/19 14:57:37 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -23,7 +23,7 @@
 ##  in the file `zmodnz.gi'.
 ##
 Revision.ffe_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: ffe.gi,v 4.75 2008/03/19 14:57:37 gap Exp $";
 
 
 #############################################################################
@@ -684,9 +684,8 @@ InstallMethod( PrintObj,
 #M  String( <F> ) . . . . . . . . . . a string representing a field of `FFE's
 ##
 InstallMethod( String,
-               "for a field of FFEs", true,
+               "for a field of FFEs",
                [ IsField and IsFFECollection ], 10,
-
   function( F )
 
     local  str, out;

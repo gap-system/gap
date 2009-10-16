@@ -1,0 +1,18 @@
+
+# test010.in - Colin Ramsay - 2 Oct 99
+#
+# Playing with the ordinary (p,q,r) triangle groups.  That is:
+#   < x,y,z | x^p = y^q = z^r = xyz = 1 >.
+# Note that z = (xy)^-1 = YX.
+
+# <xx,yy,xyz,z^r> has order 26?
+
+gr:xyz;
+rel:xx,yy,zzz,xyz;
+mess:1000;
+end;
+
+# <xx,yyy,z^r,xyz> ...
+
+rel:xx,yyy,zzzz,xyz;
+end;

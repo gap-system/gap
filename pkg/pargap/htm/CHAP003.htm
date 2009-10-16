@@ -1,0 +1,480 @@
+<html><head><title>[ParGAP] 3 Basic Concepts for the TOP-C model (MasterSlave)</title></head>
+<body text="#000000" bgcolor="#ffffff">
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Previous</a>] [<a href ="CHAP004.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<h1>3 Basic Concepts for the TOP-C model (MasterSlave)</h1><p>
+<P>
+<H3>Sections</H3>
+<oL>
+<li> <A HREF="CHAP003.htm#SECT001">Basic TOP-C (Master-Slave) commands</a>
+<li> <A HREF="CHAP003.htm#SECT002">Other TOP-C Commands</a>
+<li> <A HREF="CHAP003.htm#SECT003">Simple Usage of MasterSlave()</a>
+<li> <A HREF="CHAP003.htm#SECT004">Efficient Parallelism in MasterSlave() using CheckTaskResult()</a>
+<li> <A HREF="CHAP003.htm#SECT005">Modifying Task Output or Input (a dirty trick)</a>
+<li> <A HREF="CHAP003.htm#SECT006">The GOTO statement of the TOP-C model</a>
+<li> <A HREF="CHAP003.htm#SECT007">Being nice to other users (Nice, Alarm and LimitRss)</a>
+<li> <A HREF="CHAP003.htm#SECT008">Converting legacy sequential code to the TOP-C model</a>
+</ol><p>
+<p>
+TOP-C stands for <strong>Task-Oriented Parallel  C</strong>&nbsp;<a href="biblio.htm#Coo96"><cite>Coo96</cite></a>.   The  ``TOP-C
+model'' is the specific master slave model implemented here.  That  model
+has  been  adapted  for  use  in  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.  The  implementation  is  in
+<code>masslave.g</code> in <font face="Gill Sans,Helvetica,Arial">ParGAP</font>'s <code>lib</code> directory. Note that the functions  and
+variables with names <code>TOPC...</code> are intended as internal  functions  only,
+and should not be used by the <font face="Gill Sans,Helvetica,Arial">GAP</font> programmer.
+<p>
+For the impatient, you may type <code>MSexample();</code>  in  a  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  session
+now. If you prefer further hands-on learning in a tutorial style, you may
+wish to next read Chapter&nbsp;<a href="CHAP005.htm">MasterSlave Tutorial</a>. Eventually, if you wish
+a deeper understanding of the TOP-C model, you will  need  to  read  this
+current section and those that follow.
+<p>
+The initial <font face="Gill Sans,Helvetica,Arial">GAP</font> process is the <strong>master</strong> process, and  all  others  are
+<strong>slave</strong> processes. It allows most of the CPU-intensive computations to be
+carried  out  on  slave  processes,  which  typically  reside  on  remote
+processors. A well-developed  TOP-C  application  should  find  that  the
+master process is almost never busy when a slave process is idle, waiting
+for a new computation to carry  out.  This  provides  a  natural  way  of
+maximizing utilization and load balancing.
+<p>
+The TOP-C model depends on three concepts:
+<p>
+<p>
+<dl compact>
+<p>
+<a name = "I0"></a>
+
+<dt>the <strong>task</strong>:<dd>
+    a function that takes an arbitrary object  as  its  single  argument,
+    reads some or all of the global  shared data,  and  then  returns  an
+    arbitrary object as its value. The task typically corresponds to  the
+    inner loop of a typical application.
+<p>
+<a name = "I1"></a>
+
+<dt>the <strong>shared data</strong>:<dd>
+    global data, shared among all processes. This data  can  be  read  as
+    part of the computation of a task. However, after  initialization  of
+    the shared data, this data must be written  (modified)  <strong>only</strong>  by  a
+    particular user-provided application routine, <code></code><var>UpdateSharedData</var><code>()</code>.
+<p>
+<a name = "I2"></a>
+
+<dt>the <strong>action</strong>:<dd>
+    After the output of a task has been produced, an application  routine
+    must choose one of four actions to determine how the output is used.
+<p>
+</dl>
+<p>
+<a name = "I3"></a>
+
+<a name = "I3"></a>
+<a name = "I4"></a>
+
+The <strong>task input</strong> is defined to be the argument of the <strong>task</strong>  (considered
+as a function), and the <strong>task output</strong> is the return value of the <strong>task</strong>.
+<p>
+<p>
+<a name="SECT001"><h2>3.1 Basic TOP-C (Master-Slave) commands</h2></a>
+<p><p>
+<a name = "I5"></a>
+
+<a name = "I5"></a>
+<a name = "I6"></a>
+
+There is only one core TOP-C command, a  utility  function,  and  several
+constants. A TOP-C command must be evaluated on the  master  and  on  all
+slaves. We shall  describe  the  commands  in  detail  in  the  following
+sections, but a short list of the essentials and a small example will  be
+helpful to set the context.
+<p>
+<a name = "SSEC001.1"></a>
+<li><code>MasterSlave( </code><var>SubmitTaskInput</var><code>,</code><var>DoTask</var><code>[,</code><var>CheckTaskResult</var><code>[,</code><var>UpdateSharedData</var><code>[,</code><var>taskAgglomCount</var><code>]]] ) F</code>
+<p>
+See Section&nbsp;<a href="CHAP003.htm#SECT002">Other TOP-C Commands</a> for a description of <code>MasterSlave</code>.
+<p>
+<a name = "SSEC001.2"></a>
+<li><code>NOTASK V</code>
+<p>
+<a name = "I7"></a>
+
+<a name = "SSEC001.3"></a>
+<li><code>NO_ACTION V</code>
+<a name = "SSEC001.3"></a>
+<li><code>UPDATE_ACTION V</code>
+<a name = "SSEC001.3"></a>
+<li><code>REDO_ACTION V</code>
+<a name = "SSEC001.3"></a>
+<li><code>CONTINUATION_ACTION( </code><var>taskContinuation</var><code> ) F</code>
+<p>
+<code>CONTINUATION_ACTION()</code> is described in Section&nbsp;<a href="CHAP003.htm#SECT006">The  GOTO  statement  of the TOP-C model</a>.
+<p>
+<a name = "SSEC001.4"></a>
+<li><code>IsUpToDate() F</code>
+<p>
+<a name = "SSEC001.5"></a>
+<li><code>ParInstallTOPCGlobalFunction( </code><var>string</var><code>, </code><var>function</var><code> ) F</code>
+<li><code>ParInstallTOPCGlobalFunction( </code><var>gvar</var><code>, </code><var>function</var><code> ) F</code>
+<p>
+A short example shows one possible implementation of <code>ParList()</code>.
+<p>
+<pre>
+gap&gt; ParInstallTOPCGlobalFunction( "MyParListWithAgglom",
+&gt; function( list, fnc )
+&gt;   local result, i;
+&gt;   result := []; i := 0;
+&gt;   MasterSlave( function() if i &gt;= Length(list) then return NOTASK;
+&gt;                           else i := i+1; return i; fi; end,
+&gt;                fnc,
+&gt;                function(input,output) result[input] := output;
+&gt;                                       return NO_ACTION; end,
+&gt;                Error
+&gt;              );
+&gt;   return result;
+&gt; end );
+</pre>
+<p>
+(Of course rather than  type  such  code  in  a  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  session  it's
+generally more convenient to have it in a file and <code>Read</code> it in.)
+<p>
+<p>
+<a name="SECT002"><h2>3.2 Other TOP-C Commands</h2></a>
+<p><p>
+A master-slave computation is invoked when a <font face="Gill Sans,Helvetica,Arial">GAP</font>  program  issues  the
+command <code>MasterSlave()</code>. As given earlier, the typical form is:
+<p>
+<code>MasterSlave( </code><var>SubmitTaskInput</var><code>, </code><var>DoTask</var><code> [, </code><var>CheckTaskResult</var><code>[, </code><var>UpdateSharedData</var><code>[, </code><var>taskAgglom</var><code>]]] )</code>
+<p>
+where the first four arguments of <code>MasterSlave()</code> are also functions, but
+they must be defined by the application writer. Their calling  syntax  is
+defined by the following <font face="Gill Sans,Helvetica,Arial">GAP</font> code, which also  provides  a  simplified
+description of how  a  sequential  (non-parallel)  <code>MasterSlave()</code>  would
+invoke these functions if there were  only  a  single  process.  (A  more
+sophisticated version of this routine is provided in <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  to  allow
+one to debug within a  single  process  first.)  The  use  of  the  fifth
+argument, <var>taskAgglom</var>, is deferred  until  section&nbsp;<a href="CHAP005.htm#SECT007">Agglomerating  tasks for efficiency (ParSemiEchelonMat revisited again)</a>.
+<p>
+In this section, we define <code>MasterSlave()</code> and describe the  use  of  its
+four  arguments  in  a  purely  sequential  environment.  The  issues  of
+parallelism and passing of messages between processes is covered  in  the
+next section. The call to <code>MasterSlave()</code> in <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, above, will  have
+the same result  as  if  <code>MasterSlave()</code>  were  defined  equivalently  to
+<code>SeqMasterSlave()</code> below, and then run in a standard,  sequential  <font face="Gill Sans,Helvetica,Arial">GAP</font>
+(a  single  process).  The  next  section  describes  the   multi-process
+implementation of <code>MasterSlave()</code> in <font face="Gill Sans,Helvetica,Arial">ParGAP</font>, in which  <code>taskInput</code>  is
+computed on the master process and sent as a message to a slave  process,
+while <code>taskOutput</code> is computed on a slave process and sent as  a  message
+to the master process.
+<p>
+<a name = "I8"></a>
+
+<pre>
+SeqMasterSlave :=
+  function(SubmitTaskInput, DoTask, CheckTaskResult, UpdateSharedData)
+  local taskInput, taskOutput, action;
+  while true do
+    taskInput := SubmitTaskInput();
+    if taskInput = NOTASK then break; fi;
+    repeat
+      taskOutput := DoTask( taskInput );
+      action := CheckTaskResult( taskOutput, taskInput );
+    until action &lt;&gt; REDO_ACTION;
+    if action = UPDATE_ACTION then
+      # Modify the shared data (global data structures) here
+      # Called on all processes, master and slaves
+      UpdateSharedData( taskOutput, taskInput );
+    fi;
+  od;
+end;
+</pre>
+<p>
+One can also follow the life of  a  single  task  in  a  multi-processing
+environment through the diagram below.
+<p>
+<pre>
+               MASTER               |               SLAVE
+_________________________________________________________________________
+                                    |  
+      +---------------------+       |
+      | GenerateTaskInput() |       |
+      +---------------------+       |
+                             \input |
+                              \______________
+                                    |        |
+                                    |        v
+                                    |       +---------------+
+                                    |       | DoTask(input) |
+                                    |       +---------------+
+                                    |output/  ^
+                                 _________/   |
+                                |   |         |
+                                v   |         |
+ +--------------------------------+ |         |
+ | CheckTaskResult(input, output) |___________|
+ +--------------------------------+ (if action == REDO)
+                         |          |
+                         | (if action == UPDATE)
+                         v          |
+                    +---------------------------------+
+                    | UpdateSharedData(input, output) |
+                    +---------------------------------+
+                                    |
+                         TOP-C Programmers' Model
+                          (Life Cycle of a Task)
+ 
+</pre>
+<p>
+Although not explicit in the code,  the  application  writer  should  add
+comments to define the shared data. The <strong>shared data</strong>  is  defined  as  a
+global  data   structure   that   is   treated   as   ``read-write''   by
+<code></code><var>UpdateSharedData</var><code>()</code>,  while  being   treated   as   ``read-only''   by
+<code></code><var>SubmitTaskInput</var><code>()</code>, <code></code><var>DoTask</var><code>()</code>, and <code></code><var>CheckTaskResult</var><code>()</code>. Note also
+that an application writer may use different names for the four functions
+<code></code><var>SubmitTaskInput</var><code>()</code>, etc. It is only a convention within this manual to
+give  those  functions  the   names,   above.   Similarly,   <var>taskInput</var>,
+<var>taskOutput</var> and <var>action</var> are the conventional names used in this manual,
+and a given application may use different names.
+<p>
+In a correct <font face="Gill Sans,Helvetica,Arial">ParGAP</font> application, the shared data should be initialized
+to  the  same  value  on  all  processes  before  the  application  calls
+<code>MasterSlave()</code>. <code>MasterSlave()</code> is then called on all  processes.  After
+that,  the  shared data   can   be   modified   only   by   a   call   to
+<code></code><var>UpdateSharedData</var><code>()</code>, and <code>MasterSlave()</code> arranges  for  each  call  to
+<code></code><var>UpdateSharedData</var><code>()</code>  to  be  executed  on  all   processes.   Further,
+<code></code><var>UpdateSharedData</var><code>()</code> has access only to <var>taskInput</var>, <var>taskOutput</var>,  and
+the previous value of the shared data.  Thus,  <code>MasterSlave()</code>  maintains
+the same shared data uniformly on all processes.
+<p>
+<p>
+<a name="SECT003"><h2>3.3 Simple Usage of MasterSlave()</h2></a>
+<p><p>
+This section is  concerned  with  formal  definitions  for  the  routines
+associated  with  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>.  It  is  important  to  keep  in  mind   the
+pseudo-code   of   Chapter&nbsp;<a href="CHAP003.htm">Basic   Concepts   for   the   TOP-C    model (MasterSlave)</a>. Since <code>MasterSlave()</code> uses all the  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  processes,
+the user must invoke it on all processes. This is typically done  through
+some function provided by the slave listener layer, such  as  <code>ParEval()</code>
+(see&nbsp;<a href="CHAP002.htm#SSEC001.10">ParEval</a>). It may be instructive for the reader  to  run  <font face="Gill Sans,Helvetica,Arial">ParGAP</font>
+and type <code>MSexample();</code>  now,  or  else  to  look  at  some  examples  of
+<font face="Gill Sans,Helvetica,Arial">ParGAP</font>  applications  in  the  section&nbsp;<a href="CHAP005.htm">MasterSlave  Tutorial</a>.   This
+demonstrates the use of <code>MasterSlave()</code> in a typical session.
+<p>
+The   four   functions   written   by   the   application   writer   are:
+<code></code><var>SubmitTaskInput</var><code>()</code>,    <code></code><var>DoTask</var><code>()</code>,    <code></code><var>CheckTaskResult</var><code>()</code>,     and
+<code></code><var>UpdateSharedData</var><code>()</code>.   <code></code><var>DoTask</var><code>()</code>   is   executed   on   a    slave.
+<code></code><var>SubmitTaskInput</var><code>()</code>  and  <code></code><var>CheckTaskResult</var><code>()</code>  are  executed  on  the
+master, where a <var>taskInput</var> is generated and a corresponding <var>taskOutput</var>
+is  received.  Finally,  <code></code><var>UpdateSharedData</var><code>()</code>  is   executed   on   all
+processes. <font face="Gill Sans,Helvetica,Arial">ParGAP</font>  arranges  to  automatically  pass  <var>taskInput</var>  and
+<var>taskOutput</var> between the master and a slave.
+<p>
+Since the  single  master  process  is  responsible  for  generating  all
+<var>taskInput</var>s  and  receiving  all  <var>taskOutput</var>s,  it  is  critical  that
+computation on the master process should not become a  bottleneck  for  a
+well-designed <font face="Gill Sans,Helvetica,Arial">ParGAP</font> application. Accordingly, the application  writer
+should arrange for  <code></code><var>SubmitTaskInput</var><code>()</code>  and  <code></code><var>CheckTaskResult</var><code>()</code>  to
+execute  quickly,  even  if  this   means   additional   computation   by
+<code></code><var>DoTask</var><code>()</code> or <code></code><var>UpdateSharedData</var><code>()</code>.
+<p>
+As seen in the examples, <code></code><var>SubmitTaskInput</var><code>()</code> may use global  variables  on
+the  master  to  ``remember''  the  last  <var>taskInput</var>  or   other   state
+information. Note that such  global  variables  cannot  be  part  of  the
+shared data, since they are modified outside of <code></code><var>UpdateSharedData</var><code>()</code>.
+<p>
+<p>
+<a name="SECT004"><h2>3.4 Efficient Parallelism in MasterSlave() using CheckTaskResult()</h2></a>
+<p><p>
+It is instructive to review the logic for the  lifetime  of  a  task,  as
+described by the pseudo-code for <code>SeqMasterSlave</code> in Section&nbsp;<a href="CHAP003.htm#SECT002">Other TOP-C commands</a>. Initially, <code>MasterSlave()</code> calls <code></code><var>SubmitTaskInput</var><code>()</code> on  the
+master, which returns an application-defined <font face="Gill Sans,Helvetica,Arial">GAP</font> object,  <var>taskInput</var>.
+<code>MasterSlave()</code> then copies <var>taskInput</var> to an  arbitrary  slave  process,
+and <code>MasterSlave()</code> then calls <code></code><var>DoTask</var><code>( </code><var>taskInput</var><code> )</code>  on  the  slave.
+This returns an application-defined <font face="Gill Sans,Helvetica,Arial">GAP</font>  object,  <var>taskOutput</var>,  which
+<code>MasterSlave()</code>  copies  to  the   master   process.   On   the   master,
+<code>MasterSlave()</code> then calls <code></code><var>CheckTaskResult</var><code>( </code><var>taskInput</var><code>,  </code><var>taskOutput</var><code>
+)</code>, which returns an action. (Recall that <var>taskInput</var>,  <var>taskOutput</var>  and
+<code></code><var>CheckTaskResult</var><code>()</code> are defined by the application writer,  and  so  an
+application program may give them different names.)
+<p>
+There are four possible  <strong>actions</strong>  (<font face="Gill Sans,Helvetica,Arial">ParGAP</font>  constants):  <code>NO_ACTION</code>,
+<code>UPDATE_ACTION</code>, <code>REDO_ACTION</code>, <code>CONTINUATION_ACTION(  </code><var>taskContinuation</var><code>
+)</code>.   A   standard   language   idiom   in   <font face="Gill Sans,Helvetica,Arial">ParGAP</font>   is   to   define
+<code></code><var>CheckTaskResult</var><code>()</code>       as       the        <font face="Gill Sans,Helvetica,Arial">ParGAP</font>        function
+<code>DefaultCheckTaskResult()</code>, whose code is as follows:
+<p>
+<pre>
+DefaultCheckTaskResult := function( taskOutput, taskInput )
+  if taskOutput = false then return NO_ACTION;
+  elif IsUpToDate() then return UPDATE_ACTION;
+  else return REDO_ACTION;
+  fi;
+end;
+</pre>
+<p>
+<a name = "I9"></a>
+
+In the simplest case, <code></code><var>CheckTaskResult</var><code>()</code> returns <code>NO_ACTION</code>, in which
+case there is no further computation related to the original <var>taskInput</var>.
+<code></code><var>CheckTaskResult</var><code>()</code>  may  record  global  information  on  the   master
+process, based on the <var>taskOutput</var>, but the shared data,  and  hence  the
+state of the slave processes, will not be modified.
+<p>
+<a name = "I10"></a>
+
+In  the  second   most   common   case,   <code></code><var>CheckTaskResult</var><code>()</code>   returns
+<code>UPDATE_ACTION</code>.   This   action   causes   <code>MasterSlave()</code>    to    call
+<code></code><var>UpdateSharedData</var><code>(  </code><var>taskOutput</var><code>,  </code><var>taskInput</var><code>  )</code>  on  all   processes
+(master and slaves). This is the <strong>only</strong> way in which the shared data  can
+be modified by a correct <font face="Gill Sans,Helvetica,Arial">ParGAP</font> program.
+<p>
+<a name = "I11"></a>
+
+In the third most common case, <code></code><var>CheckTaskResult</var><code>()</code> returns <code>REDO_ACTION</code>.
+When a <code>REDO_ACTION</code> action is generated, the  value  of  <var>taskInput</var>  is
+re-sent to the same slave that executed <code></code><var>DoTask</var><code>( </code><var>taskInput</var><code> )</code> for the
+current task. An application will typically invoke <code>REDO_ACTION</code>  if  the
+shared data has changed, and this changed shared data will produce a  new
+<var>taskOutput</var>. As  before,  <code></code><var>DoTask</var><code>()</code>  then  returns  a  new  value  of
+<var>taskOutput</var>. Then, <var>taskInput</var> and the new <var>taskOutput</var> are again passed
+to <code></code><var>CheckTaskResult</var><code>()</code>.
+<p>
+Note that <code>MasterSlave()</code> guarantees that <code>REDO_ACTION</code> causes  the  task
+to be re-sent to the same slave process. This allows the  application  to
+cache in a  global  variable  some  information  computed  by  the  first
+invocation of <code></code><var>DoTask</var><code>()</code>. A second invocation of <code></code><var>DoTask</var><code>()</code> caused by
+the <code>REDO_ACTION</code> allows the task to test if the <var>taskInput</var> is the  same
+as  the  last  invocation.  In   that   case,   the   application-defined
+<code></code><var>DoTask</var><code>()</code> routine can recognize that this is a <code>REDO_ACTION</code>,  and  it
+can take advantage of the cached global variable  to  avoid  re-computing
+certain quantities that would not be changed by the altered shared  data.
+In order to make this strategy possible, <code>MasterSlave()</code> also  guarantees
+that in the case of <code>REDO_ACTION</code>, the slave process will not  have  seen
+any intervening calls to <code></code><var>DoTask</var><code>()</code> with values  of  <code>taskInput</code>  other
+than the current value.
+<p>
+In typical usage, the application-defined routine, <code></code><var>CheckTaskResult</var><code>()</code>,
+will first call <code>IsUpToDate()</code>. <code>IsUpToDate()</code> tests if the  shared  data
+has  been  modified  since  the  current  <var>taskInput</var>  corresponding   to
+<code></code><var>CheckTaskResult</var><code>()</code> was originally generated by  <code></code><var>SubmitTaskInput</var><code>()</code>.
+The times of the relevant events are recorded as when seen on the  master
+process. It is an error to call  <code>IsUpToDate()</code>  outside  of  a  call  to
+<code></code><var>CheckTaskResult</var><code>()</code>  by  <code>MasterSlave()</code>.  <code>IsUpToDate()</code>   returns   a
+boolean value, <code>true</code> or <code>false</code>.
+<p>
+The last possible action, <code>CONTINUATION_ACTION( </code><var>taskContinuation</var><code> )</code>, is
+provided for unusual cases. As with advice about the use of ``goto'',  it
+is recommended to avoid <code>CONTINUATION_ACTION()</code> where possible.
+<p>
+A favorite aphorism of this author is, ``The source code is the  ultimate
+documentation''. With this in mind, the reader  may  also  wish  to  read
+<code>lib/masslave.g</code>, for which readability of the code was one of the design
+criteria.
+<p>
+<p>
+<a name="SECT005"><h2>3.5 Modifying Task Output or Input (a dirty trick)</h2></a>
+<p><p>
+At this point, it should be noted that  it  explicitly  <strong>is</strong>  allowed  to
+modify the input or output of a task from  within  <code></code><var>CheckTaskResult</var><code>()</code>.
+This is  not  recommended  in  general,  but  there  may  be  times  when
+<code></code><var>CheckTaskResult</var><code>()</code> returns an <code>UPDATE_ACTION</code> and must also be used to
+pass additional information to <code></code><var>UpdateSharedData</var><code>()</code>. In order to modify
+a previous input or output, it is  important  that  the  application  has
+chosen a representation of the input or output as a list or record, which
+can be modified in place, such that the  code  excerpt  succeeds  without
+error.
+<p>
+<pre>
+oldOutput := taskOutput;
+# Modify taskOutput here
+if ( IsIdenticalObj( oldOutput, taskOutput ) ) = false then
+  Error( "MasterSlave() will see only oldOutput, not current taskOutput" );
+fi;
+return UPDATE_ACTION;
+</pre>
+<p>
+In principle, a <strong>dirty trick</strong> like this would also work in  the  case  of
+returning a <code>REDO_ACTION</code>. However, this is  not  recommended.  For  that
+functionality,   the   code   will   be   clearer    if    an    explicit
+<code>CONTINUATION_ACTION(   </code><var>modifiedTaskOutput</var><code>   )</code>   is   returned.    See
+Section&nbsp;<a href="CHAP003.htm#SECT006">The GOTO statement of the TOP-C model</a> for further discussion on
+the use of <code>CONTINUATION_ACTION()</code>.
+<p>
+<p>
+<a name="SECT006"><h2>3.6 The GOTO statement of the TOP-C model</h2></a>
+<p><p>
+<a name = "SSEC006.1"></a>
+<li><code>CONTINUATION_ACTION( </code><var>taskContinuation</var><code> )</code>
+<p>
+The  <code>CONTINUATION_ACTION()</code>,  like  the   <var>goto</var>   statement,   is   not
+recommended for ordinary programs,  but  it  may  be  useful  in  unusual
+circumstances. This  is  a  parametrized  action.  When  the  application
+routine  <code></code><var>CheckTaskResult</var><code>()</code>   returns   this   action,   <code>MasterSlave()</code>
+guarantees to invoke <code></code><var>DoTask</var><code>()</code> on the same slave process  as  for  the
+original task. There will have been no intervening calls to  <code></code><var>DoTask</var><code>()</code>
+on that slave, although there  may  have  been  an  intervening  call  to
+<code></code><var>UpdateSharedData</var><code>()</code> on that slave.
+<p>
+This action allows arbitrary, repeated communication between  the  master
+and a  single  slave  process.  The  slave  process  executes  <code></code><var>DoTask</var><code>(
+</code><var>taskInput</var><code>  )</code>  and  communicates  with  the  master  by   returning   a
+<var>taskOutput</var>.   The   master   process    executes    <code></code><var>CheckTaskResult</var><code>(
+</code><var>taskInput</var><code>,  </code><var>taskOutput</var><code>  )</code>  and  returns  a  <var>taskContinuation</var>.  The
+original  slave  process  then  receives  another  call   to   <code></code><var>DoTask</var><code>(
+</code><var>taskInput</var><code> )</code>, this time with <var>taskInput</var> bound to <var>taskContinuation</var>.
+<p>
+<p>
+<a name="SECT007"><h2>3.7 Being nice to other users (Nice, Alarm and LimitRss)</h2></a>
+<p><p>
+When you are running a long job on a network of  workstations,  you  will
+often be sharing it with others. Making your parallel job as  unintrusive
+as possible will leave you with a warmer welcome the next time  that  you
+want to use that  network  of  workstations.  Accordingly,  three  useful
+functions are provided.
+<p>
+<a name = "SSEC007.1"></a>
+<li><code>UNIX_Nice( </code><var>priority</var><code> ) F</code>
+<p>
+This is  similar  to  the  <code>nice</code>  command  of  many  UNIX  shells.  UNIX
+priorities are in a range from <font face="symbol">-</font>20 to 20 with <font face="symbol">-</font>20 being the  highest.
+Users typically start at priority  0.  You  can  give  yourself  a  lower
+priority by specifying a priority of 5, for example. Usually,  priorities
+19 and 20 are <strong>absolute</strong> priorities. Any process with a  priority  higher
+than 19 that wishes to run will always have precedence. Other  priorities
+are <strong>relative</strong> priorities. Your process will still receive some CPU  time
+even if other processes with higher priorities are running. You  can  set
+your priority lower, but you cannot raise it back to its  original  value
+after that. The return value is the previous priority of your process.
+<p>
+<a name = "SSEC007.2"></a>
+<li><code>UNIX_Alarm( </code><var>seconds</var><code> ) F</code>
+<p>
+This causes the process to kill itself after that many seconds. This is a
+useful safety measure, since it is unfortunately too easy for  a  runaway
+slave process to continue if the master process  is  killed  without  the
+normal <code>quit;</code>. You might consider  adding  something  like  <code>UNIX_Alarm(
+25000 );</code> (about 6 hours) to your <code>.gaprc</code> file. Executing <code>UNIX_Alarm( 0
+);</code> cancels any previous alarm. The return value is the number of seconds
+remaining under the previous setting of the alarm.
+<p>
+<a name = "SSEC007.3"></a>
+<li><code>UNIX_LimitRss( </code><var>size</var><code> ) [ = setrlimit(RLIMIT_RSS, ...) ] F</code>
+<p>
+Many dialects of UNIX (and their shells)  offer  a  <code>limit</code>  or  <code>ulimit</code>
+command to limit the resources  available  to  the  shell.  This  command
+limits the size of the RSS (resident set size), or the amount of physical
+RAM used by your process. The size limit is in bytes. Unfortunately, some
+UNIX dialects may not allow or even silently ignore this request to limit
+the RSS. A UNIX command such as <code>top</code> can show you if your process RSS is
+staying below your requested limit.
+<p>
+<p>
+<a name="SECT008"><h2>3.8 Converting legacy sequential code to the TOP-C model</h2></a>
+<p><p>
+The (tutorial contains a section&nbsp;<a href="CHAP005.htm#SECT008">Raw MasterSlave (ParMultMat revisited)</a>,
+about <var>raw</var> version of <code>MasterSlave()</code>  that  is  useful  for  converting
+legacy sequential code to the TOP-C model. However,  that  model  is  not
+recommended for writing new code, for stylistic reasons.
+<p>
+<p>
+[<a href = "chapters.htm">Up</a>] [<a href ="CHAP002.htm">Previous</a>] [<a href ="CHAP004.htm">Next</a>] [<a href = "theindex.htm">Index</a>]
+<P>
+<address>ParGAP manual<br>November 2001
+</address></body></html>

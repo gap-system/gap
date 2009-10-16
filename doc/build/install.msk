@@ -5,7 +5,7 @@
 %W                                                     & Alexander Hulpke
 %W                                                    & Burkhard Hoefling
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: install.msk,v 1.134 2006/03/10 09:20:48 gap Exp $
 %%
 %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %Y  (C) 1998 School Math and Comp. Sci., University of St  Andrews, Scotland
@@ -553,7 +553,7 @@ The `^'-key or `"'-key cannot be entered.&
 This is a problem if you are running a keyboard driver for some non-english
 languages. These drivers catch the `^' character to produce the French
 circumflex accent and do not pass it properly to {\GAP}.
-No fix is known.
+No fix is known.  (One can type `POW(a,b)' for `a^b'.) 
 
 {\GAP} does not start or cannot expand memory&
 You will have to edit a registry entry to be able to use more than 127MB of
@@ -606,7 +606,7 @@ files to ``now'') and try again.
 Sometimes the `configure' process does not properly figure out the 
 ``inline'' compiler command. If you get error messages
 that complain that ``inline'' is unknown, edit the file `config.h' in the
-`bin/<target>' subdirectory and replace the line
+`bin/<architecture>' subdirectory and replace the line
 \begintt
 /* #undef inline */
 \endtt
@@ -661,7 +661,7 @@ have to enclose them by quotes to avoid depending on the shell you are
 using.
 
 The `configure' process also introduces some default compiler
-options. (See the `Makefile' in the `bin' directory for details.)
+options. (See the `Makefile' in the `bin/<architecture>' directory for details.)
 You can eliminate these by assigning the variable `CFLAGS' (which contains
 the default options and `COPTS') to the desired list of compiler options in
 the same way as you would assign `COPTS'.

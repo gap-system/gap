@@ -59,10 +59,15 @@ ReadLib( "liefam.gi"   );
 ReadLib( "algrep.gi"   );
 ReadLib( "lierep.gi"   );
 
-ReadLib( "numtheor.gi" );
-ReadLib( "contfrac.gi" );
-
 ReadLib( "string.gi"   );
+
+ReadLib( "numtheor.gi" );
+ReadLib( "primality.gi");
+ReadLib( "contfrac.gi" );
+ReadLib( "ringsc.gi"    );
+ReadLib( "ringhom.gi"    );
+
+ReadLib( "combinat.gi" );
 
 ReadLib( "ratfun.gi"   );
 ReadLib( "ratfunul.gi" );
@@ -81,6 +86,7 @@ ReadLib( "unknown.gi"  );
 ReadLib( "field.gi"    );
 ReadLib( "fieldfin.gi" );
 ReadLib( "zmodnz.gi"   );
+ReadLib( "zmodnze.gi"  );
 ReadLib( "ffe.gi"      );
 ReadLib( "ffeconway.gi");
 ReadLib( "rational.gi" );
@@ -89,10 +95,13 @@ ReadLib( "cyclotom.gi" );
 ReadLib( "fldabnum.gi" );
 ReadLib( "padics.gi"   );
 
+ReadLib( "matobj.gi"   );
 ReadLib( "vecmat.gi"   );
 ReadLib( "vec8bit.gi"  );
 ReadLib( "mat8bit.gi"  );
+ReadLib( "matobjplist.gi" );
 ReadLib( "meataxe.gi"  );
+ReadLib( "meatauto.gi" );
 
 ReadLib( "word.gi"     );
 ReadLib( "wordass.gi"  );
@@ -159,6 +168,7 @@ ReadLib( "clas.gi"     );
 ReadLib( "claspcgs.gi" );
 ReadLib( "clasperm.gi" );
 ReadLib( "clashom.gi"  );
+ReadLib( "permdeco.gi"  );
 ReadLib( "csetgrp.gi"  );
 ReadLib( "csetperm.gi" );
 ReadLib( "csetpc.gi"   );
@@ -192,7 +202,6 @@ ReadLib( "grppclat.gi" );
 
 ReadLib( "grppcaut.gi" );
 
-
 # files dealing with matrix groups
 ReadLib( "grpmat.gi"   );
 ReadLib( "grpffmat.gi" );
@@ -200,7 +209,8 @@ ReadLib( "grpramat.gi" );
 
 
 # files dealing with fp groups
-ReadLib( "grpfp.gi"    );
+ReadLib( "grpfp.gi"  );
+ReadLib( "gpfpiso.gi");
 ReadLib( "sgpres.gi" );
 ReadLib( "tietze.gi" );
 ReadLib( "ghomfp.gi" );

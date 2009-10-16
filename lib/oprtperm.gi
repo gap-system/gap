@@ -2,14 +2,14 @@
 ##
 #W  oprtperm.gi                 GAP library                    Heiko Thei"sen
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: oprtperm.gi,v 4.79 2009/03/15 03:14:27 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprtperm_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: oprtperm.gi,v 4.79 2009/03/15 03:14:27 gap Exp $";
 
 
 #############################################################################
@@ -1050,6 +1050,78 @@ end );
 
 #############################################################################
 ##
+#M  IsTransitive( <G> )
+#M  Transitivity( <G> )
+##
+##  For a group with known order, we use that the number of moved points
+##  of a transitive permutation group divides the group order.
+##  If this is not the case then this check avoids computing an orbit or of
+##  a point stabilizer.
+##  Note that the GAP library defines transitivity also on partial orbits.
+##  (If this would be changed then also the five argument method that is
+##  installed in the call of `OrbitsishOperation' could take advantage of
+##  the divisibility criterion.)
+##
+InstallOtherMethod( IsTransitive,
+    "for a permutation group (use shortcuts)",
+    [ IsPermGroup ], 1,
+    function( G )
+    local n, gens;
+
+    n:= NrMovedPoints( G );
+    if n = 0 then
+      return true;
+    elif HasSize( G ) and Size( G ) mod n <> 0 then
+      # Avoid computing an orbit if the (known) group order
+      # is not divisible by the (known) number of points.
+      return false;
+    else
+      # Avoid the `IsSubset' test that occurs in the generic method,
+      # checking the orbit length suffices.
+      # (And do not call `Orbit'!)
+      gens:= GeneratorsOfGroup( G );
+      return n = Length( OrbitOp( G, SmallestMovedPoint( G ), gens, gens,
+                                  OnPoints ) );
+    fi;
+    end );
+
+InstallOtherMethod( Transitivity,
+    "for a permutation group with known size",
+    [ IsPermGroup and HasSize ],
+    function( G )
+    local n, t, size;
+
+    n:= NrMovedPoints( G );
+    if n = 0 then
+      # The trivial group is transitive on the empty set,
+      # but has transitivity zero.
+      return 0;
+    fi;
+    t:= 0;
+    size:= Size( G );
+    while IsTransitive( G ) do
+      t:= t + 1;
+      size:= size / n;
+      n:= n-1;
+      if size mod n <> 0 then
+        break;
+      fi;
+      G:= Stabilizer( G, SmallestMovedPoint( G ) );
+      if NrMovedPoints( G ) <> n then
+        if n = 1 then
+          # The trivial group is transitive on a singleton set,
+          # with transitivity one.
+          t:= t + 1;
+        fi;
+        break;
+      fi;
+    od;
+    return t;
+    end );
+
+
+#############################################################################
+##
 #M  IsSemiRegular( <G>, <D>, <gens>, <acts>, <act> )  . . . . for perm groups
 ##
 InstallMethod( IsSemiRegular, "permgroup on numbers", true,
@@ -1300,7 +1372,7 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
 
     # action on permgroups, use backtrack
     elif act = OnPoints and IsPermGroup( d ) and IsPermGroup( e )  then
-        rep := IsomorphismPermGroups( G, d, e );
+        rep := ConjugatorPermGroup( G, d, e );
 
     # action on pairs or tuples of other objects, iterate
     elif act = OnPairs  or act = OnTuples  then
@@ -1347,21 +1419,23 @@ end );
 ##
 #M  Stabilizer( <G>, <d>, <gens>, <gens>, <act> ) . . . . . . for perm groups
 ##
-InstallOtherMethod( StabilizerOp, "permutation group", true,
-        [ IsPermGroup, IsObject,
-          IsList,
-          IsList,
-          IsFunction ],
-  # the objects might be a group element: rank up	
-  RankFilter(IsMultiplicativeElementWithInverse)
-  # and we are better even if the group is solvable
-  +RankFilter(IsSolvableGroup)
-  ,
-    function( G, d, gens, acts, act )
+
+PermGroupStabilizerOp:=function(arg)
     local   K,          # stabilizer <K>, result
-            S,  base;
+            S,  base,
+	    G,d,gens,acts,act,dom;
+
+ # get arguments, ignoring a given domain
+ G:=arg[1];
+ K:=Length(arg);
+ act:=arg[K];
+ acts:=arg[K-1];
+ gens:=arg[K-2];
+ d:=arg[K-3];
 
     if gens <> acts  then
+	#TODO: Check whether  acts is permutations and one could work in the
+	#permutation image (even if G is not permgroups)
         TryNextMethod();
     fi;
 
@@ -1437,7 +1511,31 @@ InstallOtherMethod( StabilizerOp, "permutation group", true,
 
     # return the stabilizer
     return K;
-end );
+end;
+
+InstallOtherMethod( StabilizerOp, "permutation group with generators list",
+       true,
+        [ IsPermGroup, IsObject,
+          IsList,
+          IsList,
+          IsFunction ],
+  # the objects might be a group element: rank up	
+  RankFilter(IsMultiplicativeElementWithInverse)
+  # and we are better even if the group is solvable
+  +RankFilter(IsSolvableGroup),
+  PermGroupStabilizerOp);
+
+InstallOtherMethod( StabilizerOp, "permutation group with domain",true,
+        [ IsPermGroup, IsObject,
+	  IsObject,
+          IsList,
+          IsList,
+          IsFunction ],
+  # the objects might be a group element: rank up	
+  RankFilter(IsMultiplicativeElementWithInverse)
+  # and we are better even if the group is solvable
+  +RankFilter(IsSolvableGroup),
+  PermGroupStabilizerOp);
 
 #############################################################################
 ##

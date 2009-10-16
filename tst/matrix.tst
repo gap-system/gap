@@ -3,14 +3,14 @@
 #W  matrix.tst                  GAP Tests                     Robert F. Morse
 ##  
 ##
-#H  $Id$ 
+#H  $Id: matrix.tst,v 1.8 2005/05/05 15:04:16 gap Exp $ 
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
 ##  Exclude from testall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("$Id: matrix.tst,v 1.8 2005/05/05 15:04:16 gap Exp $");
 gap> ##
 gap> ##
 gap> ########################################################################
@@ -540,7 +540,7 @@ gap> ## Matrices as Linear Mappings
 gap> ##
 gap> ##
 gap> ########################################################################
-gap> STOP_TEST( "matrix.tst", 3542900000 );
+gap> STOP_TEST( "matrix.tst",3721017553);
 
 #############################################################################
 ##

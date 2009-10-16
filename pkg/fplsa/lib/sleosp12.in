@@ -1,0 +1,8 @@
+Generators osp(1|2): -X Y;
+Relations:
+
+[Y,[X,Y]];
+[[X,[X,Y]],Y] - 2 Y;
+[[X,[X,Y]],X] + X;
+
+

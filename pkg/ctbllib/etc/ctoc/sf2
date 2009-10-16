@@ -1,0 +1,4 @@
+/powermap/w tmp3.xx
+/powermap\[2\]/c\
+powermap:=[],
+/powermap\[[0-9]*[^2]\]/d

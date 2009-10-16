@@ -1,0 +1,92 @@
+
+<!-- %W  install.xml            GAP documentation                  Greg Gamble -->
+<!-- %H  $Id: install.xml,v 1.1 2007/10/10 14:07:28 gap Exp $ -->
+<!-- %Y  Copyright (C) 2001, School of Math & Comp. Sci., St Andrews, Scotland -->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Installing and Loading the Example Package">
+<Heading>Installing and Loading the Example Package</Heading>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Installing the Example Package">
+<Heading>Installing the Example Package</Heading>
+
+To install the &Example; package, unpack the archive file, which  should
+have a name of form <C>example-<A>XXX</A>.zoo</C> for some version number <A>XXX</A>, by
+typing
+<P/>
+&nbsp;&nbsp;<C>unzoo -x example-<A>XXX</A></C>
+<P/>
+in the <F>pkg</F> directory of your version of &GAP;&nbsp;4,  or  in  a  directory
+named <F>pkg</F> (e.g.&nbsp;in your home directory). (The only essential difference
+with installing &Example; in a <F>pkg</F> directory different to the &GAP;&nbsp;4
+home directory is that one  must  start  &GAP;  with  the  <C>-l</C>  switch,
+e.g.&nbsp;if your private <F>pkg</F> directory is a subdirectory of <F>mygap</F> in your
+home directory you might type:
+<P/>
+<!-- %begintt -->
+&nbsp;&nbsp;<C>gap -l ";<A>myhomedir</A>/mygap"</C>
+<!-- %endtt -->
+<P/>
+where <A>myhomedir</A> is the  path  to  your  home  directory,  which  (since
+&GAP;&nbsp;4.3) may be replaced  by  a  tilde.  The  empty  path  before  the
+semicolon is  filled  in  by  the  default  path  of  the  &GAP;&nbsp;4  home
+directory.)
+<P/>
+After unpacking the archive, go to the newly created <F>example</F>  directory
+and call <C>./configure <A>path</A></C> where <A>path</A> is the path to the &GAP; home
+directory. So for example if you install the package in  the  main  <F>pkg</F>
+directory call
+<P/>
+<Log><![CDATA[
+./configure ../..
+]]></Log>
+<P/>
+This will fetch the architecture type for which &GAP; has been  compiled
+last and create a <F>Makefile</F>. Now simply call
+<P/>
+<Log><![CDATA[
+make
+]]></Log>
+<P/>
+to compile the binary and to install it in the appropriate place.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Loading the Example Package">
+<Heading>Loading the Example Package</Heading>
+
+To use the &Example; Package you have to request it explicitly. This  is
+done by calling
+<P/>
+<Example><![CDATA[
+gap> LoadPackage("example");
+----------------------------------------------------------------
+Loading  Example 2.0
+by Werner Nickel (http://www.mathematik.tu-darmstadt.de/~nickel)
+   Greg Gamble (http://www.math.rwth-aachen.de/~Greg.Gamble)
+For help, type: ?Example package 
+----------------------------------------------------------------
+true
+]]></Example>
+<P/>
+The <C>LoadPackage</C> command is described  in  Section&nbsp;<Ref Func="LoadPackage" BookName="ref"/>.
+<P/>
+If &GAP; cannot find a working binary, the call  to  <C>LoadPackage</C>  will
+still succeed but a warning is issued informing that  the  <C>HelloWorld()</C>
+function will be unavailable.
+<P/>
+If you want to load the &Example; package by default, you  can  put  the
+<C>LoadPackage</C> command  into  your  <F>.gaprc</F>  file  (see  Section&nbsp;<Ref Sect="The .gaprc file" BookName="ref"/>).
+
+</Section>
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

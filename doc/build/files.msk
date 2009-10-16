@@ -3,7 +3,7 @@
 %W  files.msk                 GAP documentation              Frank Celler
 %W                                                     & Martin Schoenert
 %%
-%H  @(#)$Id$
+%H  @(#)$Id: files.msk,v 1.5 2007/01/05 17:31:46 gap Exp $
 %%
 %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %%
@@ -61,6 +61,7 @@ When   starting {\GAP} it is possible   to specify various directories as
 root directories.  In  {\GAP}'s view of  the world these  directories are
 merged  into one meta-directory.  This  directory is called *{\GAP}  root
 directory* in the following.
+%T as soon as `GAPInfo' is documented, add a cross-reference to it here
 
 For example, if `<root1>;<root2>;...' is passed as argument to `-l'  when
 {\GAP} is started and {\GAP} wants to locate a file `lib/group.gd' in the

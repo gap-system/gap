@@ -1,0 +1,14 @@
+#Example: "PqSupplementInnerAutomorphisms" . . . based on manual example
+#Illustrates `PqSupplementInnerAutomorphisms' usage
+#vars: Q, procId, des, S, A;
+#options: 
+#alt: do
+#procId := PqStart( FreeGroup(2) );
+#alt: sub <procId> for <FreeGroup(2)>
+Q := Pq( FreeGroup(2) : Prime := 3, ClassBound := 1 );
+#alt: do
+#PqSetPQuotientToGroup( procId );;
+#alt: sub <procId> for <Q>
+des := PqDescendants( Q : StepSize := 1 );
+S := PqSupplementInnerAutomorphisms( des[3] );
+A := AutomorphismGroupPGroup( des[3] );

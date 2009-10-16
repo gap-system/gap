@@ -3,7 +3,7 @@
 #W  addgphom.gi                 GAP library                      Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
+#H  @(#)$Id: addgphom.gi,v 1.2 2002/04/15 10:04:22 sal Exp $
 ##
 #Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -12,7 +12,7 @@
 ##  groups.
 ##
 Revision.addgphom_gi :=
-    "@(#)$Id$";
+    "@(#)$Id: addgphom.gi,v 1.2 2002/04/15 10:04:22 sal Exp $";
 
 
 #############################################################################
