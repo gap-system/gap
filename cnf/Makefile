@@ -23,7 +23,7 @@ range		rational	read		records		saveload\
 scanner		sctable		set		stats		streams	\
 string		sysfiles	system		tietze		vars	\
 vecgf2		vec8bit         vector		vecffe		weakptr	\
-iostream	macfloat
+iostream	macfloat	thread		tls
 
 
 default: configure.out ../configure

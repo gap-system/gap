@@ -104,6 +104,7 @@ extern char * In;
 #endif
 
 #include        "thread.h"
+#include        "tls.h"
 
 #ifdef SYS_IS_MAC_MWC
 #include        "macintr.h"              /* Mac interrupt handlers	      */

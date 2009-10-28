@@ -3,7 +3,7 @@
 ##
 #W  Makefile                    GAP source                       Frank Celler
 ##
-#H  @(#)$Id: Makegap.in,v 4.31 2008/04/21 17:02:49 gap Exp $
+#H  @(#)$Id: Makegap.top,v 4.10 2008/02/11 15:10:14 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -18,7 +18,7 @@ ITANIUMOBJ=@ITANIUMOBJ@
 EXTOBJS=extern/jenkins/jhash.o
 
 # OBJECTS are generated from SOURCE
-OBJECTS=ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o $(GAPMPI_OBJ)
+OBJECTS=ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o thread.o tls.o $(GAPMPI_OBJ)
 
 
 # compile and link GAP
@@ -209,7 +209,7 @@ gap.o: @srcdir@/gap.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
   @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h @srcdir@/vars.h \
   @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h @srcdir@/intrprtr.h \
   @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/saveload.h @srcdir@/streams.h \
-  @srcdir@/sysfiles.h @srcdir@/weakptr.h @srcdir@/iostream.h
+  @srcdir@/sysfiles.h @srcdir@/weakptr.h @srcdir@/thread.h @srcdir@/iostream.h
 	$(CC) -I. -I../.. -DCONFIG_H $(GMP_CFLAGS) $(CFLAGS) -o gap.o -c @srcdir@/gap.c
 
 gasman.o: @srcdir@/gasman.c @srcdir@/system.h @srcdir@/gasman.h \
@@ -373,7 +373,8 @@ saveload.o: @srcdir@/saveload.c @srcdir@/system.h @srcdir@/gasman.h \
 scanner.o: @srcdir@/scanner.c @srcdir@/system.h @srcdir@/sysfiles.h \
   @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
   @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/bool.h @srcdir@/records.h \
-  @srcdir@/precord.h @srcdir@/lists.h @srcdir@/string.h @srcdir@/opers.h
+  @srcdir@/precord.h @srcdir@/lists.h @srcdir@/string.h @srcdir@/opers.h \
+  @srcdir@/read.h
 	$(CC) -I. -I../.. -DCONFIG_H $(GMP_CFLAGS) $(CFLAGS) -o scanner.o -c @srcdir@/scanner.c
 
 sctable.o: @srcdir@/sctable.c @srcdir@/system.h @srcdir@/gasman.h \
@@ -399,9 +400,10 @@ stats.o: @srcdir@/stats.c @srcdir@/system.h @srcdir@/sysfiles.h @srcdir@/gasman.
 
 streams.o: @srcdir@/streams.c @srcdir@/system.h @srcdir@/sysfiles.h \
   @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
-  @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/bool.h \
-  @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
-  @srcdir@/string.h @srcdir@/saveload.h @srcdir@/streams.h @srcdir@/vars.h
+  @srcdir@/read.h @srcdir@/funcs.h @srcdir@/gvars.h @srcdir@/calls.h \
+  @srcdir@/bool.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+  @srcdir@/plist.h @srcdir@/string.h @srcdir@/saveload.h @srcdir@/streams.h \
+  @srcdir@/vars.h
 	$(CC) -I. -I../.. -DCONFIG_H $(GMP_CFLAGS) $(CFLAGS) -o streams.o -c @srcdir@/streams.c
 
 string.o: @srcdir@/string.c @srcdir@/system.h @srcdir@/gasman.h \
@@ -482,6 +484,13 @@ macfloat.o: @srcdir@/macfloat.c @srcdir@/system.h @srcdir@/gasman.h \
   @srcdir@/objects.h @srcdir@/gap.h @srcdir@/ariths.h @srcdir@/macfloat.h \
   @srcdir@/bool.h @srcdir@/scanner.h @srcdir@/string.h
 	$(CC) -I. -I../.. -DCONFIG_H $(GMP_CFLAGS) $(CFLAGS) -o macfloat.o -c @srcdir@/macfloat.c
+
+thread.o: @srcdir@/thread.c @srcdir@/tls.h @srcdir@/tlsconfig.h \
+  @srcdir@/thread.h
+	$(CC) -I. -I../.. -DCONFIG_H $(GMP_CFLAGS) $(CFLAGS) -o thread.o -c @srcdir@/thread.c
+
+tls.o: @srcdir@/tls.c @srcdir@/tls.h @srcdir@/tlsconfig.h
+	$(CC) -I. -I../.. -DCONFIG_H $(GMP_CFLAGS) $(CFLAGS) -o tls.o -c @srcdir@/tls.c
 
 itanium.o: @srcdir@/itanium.s 
 	$(CC) $(CFLAGS) -o itanium.o -c @srcdir@/itanium.s
