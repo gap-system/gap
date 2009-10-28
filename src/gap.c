@@ -103,6 +103,8 @@ extern char * In;
 #include        "gapmpi.h"              /* ParGAP/MPI			   */
 #endif
 
+#include        "thread.h"
+
 #ifdef SYS_IS_MAC_MWC
 #include        "macintr.h"              /* Mac interrupt handlers	      */
 #endif
@@ -502,12 +504,21 @@ Obj FuncSHELL (Obj self, Obj args)
   return res;
 }
 
-
-#ifdef COMPILECYGWINDLL
 int realmain (
-#else
+	  int                 argc,
+	  char *              argv [],
+          char *              environ [] );
+
 int main (
-#endif
+	  int                 argc,
+	  char *              argv [],
+          char *              environ [] )
+{
+  RunThreadedMain(realmain, argc, argv, environ);
+  return 0;
+}
+
+int realmain (
 	  int                 argc,
 	  char *              argv [],
           char *              environ [] )
@@ -3692,7 +3703,9 @@ void RecordLoadedModule (
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 */
+#ifndef BOEHM_GC
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
+#endif
 
 static Obj POST_RESTORE;
 
@@ -3782,10 +3795,12 @@ void InitializeGap (
 	ActivateIntr ();
 #endif
 
+#ifndef BOEHM_GC
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
         TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
     }
+#endif
 
     /* if we are restoring, load the workspace and call the post restore   */
     if ( SyRestoring ) {
