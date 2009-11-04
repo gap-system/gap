@@ -144,7 +144,7 @@ const char * Revision_intrprtr_c =
 **  'CountObj' there were active when the current interpreter was started and
 **  which will be made active again when the current interpreter will stop.
 */
-Obj             IntrState;
+/* TL: Obj             IntrState; */
 
 /* TL: Obj             StackObj; */
 
@@ -245,10 +245,10 @@ void IntrBegin ( Obj frame )
        place from which we might call SaveWorkspace */
     intrState = NewBag( T_PLIST, 4*sizeof(Obj) );
     ADDR_OBJ(intrState)[0] = (Obj)3;
-    ADDR_OBJ(intrState)[1] = IntrState;
+    ADDR_OBJ(intrState)[1] = TLS->intrState;
     ADDR_OBJ(intrState)[2] = TLS->stackObj;
     ADDR_OBJ(intrState)[3] = INTOBJ_INT(TLS->countObj);
-    IntrState = intrState;
+    TLS->intrState = intrState;
 
     /* allocate a new values stack                                         */
     TLS->stackObj = NEW_PLIST( T_PLIST, 64 );
@@ -295,9 +295,9 @@ ExecStatus IntrEnd (
         }
 
         /* switch back to the old state                                    */
-        TLS->countObj  = INT_INTOBJ( ADDR_OBJ(IntrState)[3] );
-        TLS->stackObj  = ADDR_OBJ(IntrState)[2];
-        IntrState = ADDR_OBJ(IntrState)[1];
+        TLS->countObj  = INT_INTOBJ( ADDR_OBJ(TLS->intrState)[3] );
+        TLS->stackObj  = ADDR_OBJ(TLS->intrState)[2];
+        TLS->intrState = ADDR_OBJ(TLS->intrState)[1];
 
     }
 
@@ -322,9 +322,9 @@ ExecStatus IntrEnd (
         TLS->intrResult = (Obj)0;
 
         /* switch back to the old state                                    */
-        TLS->countObj  = INT_INTOBJ( ADDR_OBJ(IntrState)[3] );
-        TLS->stackObj  = ADDR_OBJ(IntrState)[2];
-        IntrState = ADDR_OBJ(IntrState)[1];
+        TLS->countObj  = INT_INTOBJ( ADDR_OBJ(TLS->intrState)[3] );
+        TLS->stackObj  = ADDR_OBJ(TLS->intrState)[2];
+        TLS->intrState = ADDR_OBJ(TLS->intrState)[1];
 
     }
 
@@ -4445,7 +4445,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* TL: InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" ); */
-    InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  );
+    /* TL: InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  ); */
     /* TL: InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   ); */
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
 
