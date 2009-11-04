@@ -5,10 +5,34 @@
 
 #include "tlsconfig.h"
 
-typedef struct
+typedef struct ThreadLocalStorage
 {
   int threadID;
+  /* From intrprtr.h */
+  Obj intrResult;
+  UInt intrIgnoring;
+  UInt intrReturning;
+  UInt intrCoding;
+  Obj intrState;
+  Obj stackObj;
+  Int countObj;
 } ThreadLocalStorage;
+
+typedef struct
+{
+  struct TLSHandler *nextHandler;
+  void (*constructor)();
+  void (*destructor)();
+} TLSHandler;
+
+void InstallTLSHandler(
+	TLSHandler *handler,
+	void (*constructor)(),
+	void (*destructor)()
+);
+
+void RunTLSConstructors();
+void RunTLSDestructors();
 
 #ifdef HAVE_NATIVE_TLS
 

@@ -41,6 +41,9 @@ const char * Revision_read_c =
 #include        "read.h"                /* reader                          */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"tls.h"
+#include	"thread.h"
+
 #include        "bool.h"
 
 #include         <assert.h>
@@ -375,7 +378,7 @@ void ReadCallVarAss (
       && VAL_GVAR(var) == 0 
       && ELM_PLIST(ExprGVars,var) == 0
       && CompNowFuncs == 0
-      && ! IntrIgnoring
+      && ! TLS->intrIgnoring
       && ! GlobalComesFromEnclosingForLoop(var)      
       && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
@@ -546,7 +549,7 @@ void ReadCallVarAss (
     else if ( mode == 's' || (mode == 'x' && Symbol == S_ASSIGN) ) {
         if ( type != 'c' && type != 'C') {
             Match( S_ASSIGN, ":=", follow );
-            if ( CountNams == 0 || !IntrCoding ) { CurrLHSGVar = (type == 'g' ? var : 0); }
+            if ( CountNams == 0 || !TLS->intrCoding ) { CurrLHSGVar = (type == 'g' ? var : 0); }
             ReadExpr( follow, 'r' );
         }
         if ( READ_ERROR() ) {}
@@ -1011,9 +1014,9 @@ void ReadFuncExpr (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0 && IntrCoding ) {
+    else if ( nrError == 0 && TLS->intrCoding ) {
         CodeEnd(1);
-        IntrCoding--;
+        TLS->intrCoding--;
         CurrLVars = currLVars;
         PtrLVars  = PTR_BAG( CurrLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
@@ -1073,9 +1076,9 @@ void ReadFuncExpr1 (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0  && IntrCoding ) {
+    else if ( nrError == 0  && TLS->intrCoding ) {
         CodeEnd(1);
-        IntrCoding--;
+        TLS->intrCoding--;
         CurrLVars = currLVars;
         PtrLVars  = PTR_BAG( CurrLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
@@ -1697,9 +1700,9 @@ void ReadFor (
     /* If we hadn't actually come out of coding the body, we need
        to recover. Otherwise it was probably an error in executing the body and
        we just return */
-    else if ( nrError == 0  && IntrCoding ) {
+    else if ( nrError == 0  && TLS->intrCoding ) {
       CodeEnd(1);
-      IntrCoding--;
+      TLS->intrCoding--;
       CurrLVars = currLVars;
       PtrLVars  = PTR_BAG( CurrLVars );
       PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
@@ -1751,9 +1754,9 @@ void ReadWhile (
     /* If we hadn't actually come out of coding the body, we need
        to recover. Otherwise it was probably an error in executing the body and
        we just return */
-    else if ( nrError == 0 && IntrCoding ) {
+    else if ( nrError == 0 && TLS->intrCoding ) {
         CodeEnd(1);
-        IntrCoding--;
+        TLS->intrCoding--;
         CurrLVars = currLVars;
         PtrLVars  = PTR_BAG( CurrLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
@@ -1803,9 +1806,9 @@ void ReadRepeat (
     /* If we hadn't actually come out of coding the body, we need
        to recover. Otherwise it was probably an error in executing the body and
        we just return */
-    else if ( nrError == 0 && IntrCoding ) {
+    else if ( nrError == 0 && TLS->intrCoding ) {
         CodeEnd(1);
-        IntrCoding--;
+        TLS->intrCoding--;
         CurrLVars = currLVars;
         PtrLVars  = PTR_BAG( CurrLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
@@ -2155,7 +2158,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     ErrorLVars = errorLVars;
 
     /* copy the result (if any)                                            */
-    ReadEvalResult = IntrResult;
+    ReadEvalResult = TLS->intrResult;
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -2259,7 +2262,7 @@ UInt ReadEvalFile ( void )
     else {
         Obj fexp;
         CodeEnd(1);
-        IntrCoding--;
+        TLS->intrCoding--;
         fexp = CURR_FUNC;
         if (fexp && ENVI_FUNC(fexp))  SWITCH_TO_OLD_LVARS(ENVI_FUNC(fexp));
     }
@@ -2282,7 +2285,7 @@ UInt ReadEvalFile ( void )
     CurrLHSGVar = currLHSGVar;
 
     /* copy the result (if any)                                            */
-    ReadEvalResult = IntrResult;
+    ReadEvalResult = TLS->intrResult;
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -2331,8 +2334,8 @@ Obj Call0ArgsInNewReader(Obj f)
   readTilde   = ReadTilde;
   currLHSGVar = CurrLHSGVar;
   userHasQuit = UserHasQuit;
-  intrCoding = IntrCoding;
-  intrIgnoring = IntrIgnoring;
+  intrCoding = TLS->intrCoding;
+  intrIgnoring = TLS->intrIgnoring;
   nrError = NrError;
   memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
@@ -2343,8 +2346,8 @@ Obj Call0ArgsInNewReader(Obj f)
   ReadTilde   = 0;
   CurrLHSGVar = 0;
   UserHasQuit = 0;
-  IntrCoding = 0;
-  IntrIgnoring = 0;
+  TLS->intrCoding = 0;
+  TLS->intrIgnoring = 0;
   NrError = 0;
   IntrBegin( BottomLVars );
 
@@ -2367,8 +2370,8 @@ Obj Call0ArgsInNewReader(Obj f)
   ReadTop     = readTop;
   ReadTilde   = readTilde;
   CurrLHSGVar = currLHSGVar;
-  IntrCoding = intrCoding;
-  IntrIgnoring = intrIgnoring;
+  TLS->intrCoding = intrCoding;
+  TLS->intrIgnoring = intrIgnoring;
   NrError = nrError;
   return result;
 }
@@ -2403,8 +2406,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   readTilde   = ReadTilde;
   currLHSGVar = CurrLHSGVar;
   userHasQuit = UserHasQuit;
-  intrCoding = IntrCoding;
-  intrIgnoring = IntrIgnoring;
+  intrCoding = TLS->intrCoding;
+  intrIgnoring = TLS->intrIgnoring;
   nrError = NrError;
   memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
@@ -2415,8 +2418,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   ReadTilde   = 0;
   CurrLHSGVar = 0;
   UserHasQuit = 0;
-  IntrCoding = 0;
-  IntrIgnoring = 0;
+  TLS->intrCoding = 0;
+  TLS->intrIgnoring = 0;
   NrError = 0;
   IntrBegin( BottomLVars );
 
@@ -2433,8 +2436,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   
   /* switch back to the old reader context                               */
   memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-  IntrCoding = intrCoding;
-  IntrIgnoring = intrIgnoring;
+  TLS->intrCoding = intrCoding;
+  TLS->intrIgnoring = intrIgnoring;
   StackNams   = stackNams;
   CountNams   = countNams;
   ReadTop     = readTop;

@@ -7,8 +7,10 @@
 #include <errno.h>
 #include <gc/gc.h>
 
-#include "tls.h"
-#include "thread.h"
+#include        "system.h"
+#include        "objects.h"
+#include        "tls.h"
+#include        "thread.h"
 
 typedef struct {
   pthread_t pthread_id;
