@@ -88,27 +88,27 @@ void RunThreadedMain(
 static void AddGCRoots()
 {
   void *p = TLS;
-#if 0
   GC_add_roots(p, (char *)p + sizeof(ThreadLocalStorage));
-#endif
 }
 
 static void RemoveGCRoots()
 {
   void *p = TLS;
-#if 0
   GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
-#endif
 }
 
 void *DispatchThread(void *arg)
 {
   ThreadData *this_thread = arg;
+  struct GC_stack_base stack_base;
+  stack_base.mem_base = &stack_base;
+  GC_register_my_thread(&stack_base);
   InitializeTLS();
   TLS->threadID = this_thread - thread_data;
   AddGCRoots();
   this_thread->start();
   RemoveGCRoots();
+  GC_unregister_my_thread();
   return 0;
 }
 
