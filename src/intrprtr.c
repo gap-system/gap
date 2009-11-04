@@ -4444,9 +4444,9 @@ void             IntrAssertEnd3Args ( void )
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* TL: InitGlobalBag( &IntrResult, "src/intrprtr.c:TLS->intrResult" ); */
+    /* TL: InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" ); */
     InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  );
-    /* TL: InitGlobalBag( &StackObj,   "src/intrprtr.c:TLS->stackObj"   ); */
+    /* TL: InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   ); */
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
 
     /* The work of handling Info messages is delegated to the GAP level */
