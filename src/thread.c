@@ -61,6 +61,18 @@ void FreeTLS(void *address)
 
 #endif /* HAVE_NATIVE_TLS */
 
+void AddGCRoots()
+{
+  void *p = TLS;
+  GC_add_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+}
+
+void RemoveGCRoots()
+{
+  void *p = TLS;
+  GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+}
+
 void RunThreadedMain(
   int (*mainFunction)(int, char **, char **),
   int argc,
@@ -86,18 +98,6 @@ void RunThreadedMain(
   pthread_mutex_init(&master_lock, 0);
   TLS->threadID = -1;
   exit((*mainFunction)(argc, argv, environ));
-}
-
-static void AddGCRoots()
-{
-  void *p = TLS;
-  GC_add_roots(p, (char *)p + sizeof(ThreadLocalStorage));
-}
-
-static void RemoveGCRoots()
-{
-  void *p = TLS;
-  GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
 }
 
 void *DispatchThread(void *arg)

@@ -129,6 +129,7 @@ const char * Revision_gasman_c =
 
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
+#include	"thread.h"
 
 
 
@@ -1105,6 +1106,7 @@ void            InitBags (
     GC_all_interior_pointers = 0;
     GC_init();
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
+    AddGCRoots();
 #endif /* BOEHM_GC */
 }
 

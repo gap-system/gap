@@ -12,11 +12,16 @@ void *AllocateTLS();
 void FreeTLS(void *address);
 #endif
 
+
+void AddGCRoots();
+void RemoveGCroots();
+
 void RunThreadedMain(
 	int (*mainFunction)(int, char **, char **),
 	int argc,
 	char **argv,
 	char **environ );
+
 int RunThread(void (*start)());
 void JoinThread(int id);
 
