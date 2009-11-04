@@ -63,6 +63,9 @@ const char * Revision_scanner_c =
 #include        "opers.h"               /* DoFilter...                     */
 #include        "read.h"                /* Call0ArgsInNewReader            */
 
+#include	"tls.h"
+#include	"thread.h"
+
 #include <assert.h>
 
 /****************************************************************************
@@ -233,23 +236,23 @@ typedef UInt            TypSymbolSet;
 
 /****************************************************************************
 **
-*V  Value . . . . . . . . . . . .  value of the identifier, integer or string
+*V  TLS->value . . . . . . . . . . . .  value of the identifier, integer or string
 **
-**  If 'Symbol' is 'S_IDENT','S_INT' or 'S_STRING' the variable 'Value' holds
+**  If 'Symbol' is 'S_IDENT','S_INT' or 'S_STRING' the variable 'TLS->value' holds
 **  the name of the identifier, the digits of the integer or the value of the
 **  string constant.
 **
-**  Note  that  the  size  of  'Value'  limits  the  maximal  number  of
+**  Note  that  the  size  of  'TLS->value'  limits  the  maximal  number  of
 **  significant  characters of  an identifier.  'GetIdent' truncates  an
 **  identifier after that many characters.
 **
-**  The  only other  symbols  which  may not  fit  into  Value are  long
+**  The  only other  symbols  which  may not  fit  into  TLS->value are  long
 **  integers  or strings.  Therefor we  have  to check  in 'GetInt'  and
-**  'GetStr' if  the symbols is  not yet  completely read when  Value is
+**  'GetStr' if  the symbols is  not yet  completely read when  TLS->value is
 **  filled.
 */
-Char            Value [1025];
-UInt            ValueLen;
+/* TL: Char            Value [1025]; */
+/* TL: UInt            ValueLen; */
 
 /****************************************************************************
 **
@@ -273,8 +276,8 @@ UInt            ValueLen;
 **  one line, since they  probabely  just reflect  the  fact that the  parser
 **  has not resynchronized yet.
 */
-UInt            NrError;
-UInt            NrErrLine;
+/* TL: UInt            NrError; */
+/* TL: UInt            NrErrLine; */
 
 
 /****************************************************************************
@@ -436,11 +439,11 @@ void            SyntaxError (
     assert(Output);
 
     /* one more error                                                      */
-    NrError++;
-    NrErrLine++;
+    TLS->nrError++;
+    TLS->nrErrLine++;
 
     /* do not print a message if we found one already on the current line  */
-    if ( NrErrLine == 1 )
+    if ( TLS->nrErrLine == 1 )
 
       {
 	/* print the message and the filename, unless it is '*stdin*'          */
@@ -1522,7 +1525,7 @@ Char GetLine ( void )
 
     /* initialize 'In', no errors on this line so far                      */
     In = Input->line;  In[0] = '\0';
-    NrErrLine = 0;
+    TLS->nrErrLine = 0;
 
     /* read a line from an ordinary input file                             */
     if ( TestInput != Input ) {
@@ -1640,10 +1643,10 @@ Char GetLine ( void )
 *F  GetIdent()  . . . . . . . . . . . . . get an identifier or keyword, local
 **
 **  'GetIdent' reads   an identifier from  the current  input  file  into the
-**  variable 'Value' and sets 'Symbol' to 'S_IDENT'.   The first character of
+**  variable 'TLS->value' and sets 'Symbol' to 'S_IDENT'.   The first character of
 **  the   identifier  is  the current character  pointed to  by 'In'.  If the
 **  characters make  up   a  keyword 'GetIdent'  will  set   'Symbol'  to the
-**  corresponding value.  The parser will ignore 'Value' in this case.
+**  corresponding value.  The parser will ignore 'TLS->value' in this case.
 **
 **  An  identifier consists of a letter  followed by more letters, digits and
 **  underscores '_'.  An identifier is terminated by the first  character not
@@ -1652,19 +1655,19 @@ Char GetLine ( void )
 **  '\' can be used  to include special characters like  '('  in identifiers.
 **  For example 'G\(2\,5\)' is an identifier not a call to a function 'G'.
 **
-**  The size  of 'Value' limits the  number  of significant characters  in an
+**  The size  of 'TLS->value' limits the  number  of significant characters  in an
 **  identifier.   If  an  identifier   has more characters    'GetIdent' will
 **  silently truncate it.
 **
 **  After reading the identifier 'GetIdent'  looks at the  first and the last
-**  character  of  'Value' to see if  it  could possibly  be  a keyword.  For
+**  character  of  'TLS->value' to see if  it  could possibly  be  a keyword.  For
 **  example 'test'  could  not be  a  keyword  because there  is  no  keyword
 **  starting and ending with a 't'.  After that  test either 'GetIdent' knows
-**  that 'Value' is not a keyword, or there is a unique possible keyword that
+**  that 'TLS->value' is not a keyword, or there is a unique possible keyword that
 **  could match, because   no two  keywords  have  identical  first and  last
-**  characters.  For example if 'Value' starts with 'f' and ends with 'n' the
+**  characters.  For example if 'TLS->value' starts with 'f' and ends with 'n' the
 **  only possible keyword  is 'function'.   Thus in this case  'GetIdent' can
-**  decide with one string comparison if 'Value' holds a keyword or not.
+**  decide with one string comparison if 'TLS->value' holds a keyword or not.
 */
 extern void GetSymbol ( void );
 
@@ -1676,7 +1679,7 @@ void GetIdent ( void )
     /* initially it could be a keyword                                     */
     isQuoted = 0;
 
-    /* read all characters into 'Value'                                    */
+    /* read all characters into 'TLS->value'                                    */
     for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='$' || *In=='@' || *In=='\\'; i++ ) {
 
         fetch = 1;
@@ -1693,22 +1696,22 @@ void GetIdent ( void )
                      if (i == 0) { GetSymbol();  return; }
                      else i--;
                 }
-                else  {Value[i] = '\r'; fetch = 0;}
+                else  {TLS->value[i] = '\r'; fetch = 0;}
             }
-            else if ( *In == '\n' && i < sizeof(Value)-1 )  i--;
-            else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
-            else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
-            else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
-            else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
-            else if ( i < sizeof(Value)-1 )  {
-                Value[i] = *In;
+            else if ( *In == '\n' && i < MAX_VALUE_LEN-1 )  i--;
+            else if ( *In == 'n'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\n';
+            else if ( *In == 't'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\t';
+            else if ( *In == 'r'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\r';
+            else if ( *In == 'b'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\b';
+            else if ( i < MAX_VALUE_LEN-1 )  {
+                TLS->value[i] = *In;
                 isQuoted = 1;
             }
         }
 
-        /* put normal chars into 'Value' but only if there is room         */
+        /* put normal chars into 'TLS->value' but only if there is room         */
         else {
-            if ( i < sizeof(Value)-1 )  Value[i] = *In;
+            if ( i < MAX_VALUE_LEN-1 )  TLS->value[i] = *In;
         }
 
         /* read the next character                                         */
@@ -1717,51 +1720,51 @@ void GetIdent ( void )
     }
 
     /* terminate the identifier and lets assume that it is not a keyword   */
-    if ( i < sizeof(Value)-1 )
-        Value[i] = '\0';
+    if ( i < MAX_VALUE_LEN-1 )
+        TLS->value[i] = '\0';
     else {
         SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
-        i =  sizeof(Value)-1;
-        Value[i] = '\0';
+        i =  MAX_VALUE_LEN-1;
+        TLS->value[i] = '\0';
     }
     Symbol = S_IDENT;
 
-    /* now check if 'Value' holds a keyword                                */
-    switch ( 256*Value[0]+Value[i-1] ) {
-    case 256*'a'+'d': if(!SyStrcmp(Value,"and"))     Symbol=S_AND;     break;
-    case 256*'b'+'k': if(!SyStrcmp(Value,"break"))   Symbol=S_BREAK;   break;
-    case 256*'c'+'e': if(!SyStrcmp(Value,"continue"))   Symbol=S_CONTINUE;   break;
-    case 256*'d'+'o': if(!SyStrcmp(Value,"do"))      Symbol=S_DO;      break;
-    case 256*'e'+'f': if(!SyStrcmp(Value,"elif"))    Symbol=S_ELIF;    break;
-    case 256*'e'+'e': if(!SyStrcmp(Value,"else"))    Symbol=S_ELSE;    break;
-    case 256*'e'+'d': if(!SyStrcmp(Value,"end"))     Symbol=S_END;     break;
-    case 256*'f'+'e': if(!SyStrcmp(Value,"false"))   Symbol=S_FALSE;   break;
-    case 256*'f'+'i': if(!SyStrcmp(Value,"fi"))      Symbol=S_FI;      break;
-    case 256*'f'+'r': if(!SyStrcmp(Value,"for"))     Symbol=S_FOR;     break;
-    case 256*'f'+'n': if(!SyStrcmp(Value,"function"))Symbol=S_FUNCTION;break;
-    case 256*'i'+'f': if(!SyStrcmp(Value,"if"))      Symbol=S_IF;      break;
-    case 256*'i'+'n': if(!SyStrcmp(Value,"in"))      Symbol=S_IN;      break;
-    case 256*'l'+'l': if(!SyStrcmp(Value,"local"))   Symbol=S_LOCAL;   break;
-    case 256*'m'+'d': if(!SyStrcmp(Value,"mod"))     Symbol=S_MOD;     break;
-    case 256*'n'+'t': if(!SyStrcmp(Value,"not"))     Symbol=S_NOT;     break;
-    case 256*'o'+'d': if(!SyStrcmp(Value,"od"))      Symbol=S_OD;      break;
-    case 256*'o'+'r': if(!SyStrcmp(Value,"or"))      Symbol=S_OR;      break;
-    case 256*'r'+'c': if(!SyStrcmp(Value,"rec"))     Symbol=S_REC;     break;
-    case 256*'r'+'t': if(!SyStrcmp(Value,"repeat"))  Symbol=S_REPEAT;  break;
-    case 256*'r'+'n': if(!SyStrcmp(Value,"return"))  Symbol=S_RETURN;  break;
-    case 256*'t'+'n': if(!SyStrcmp(Value,"then"))    Symbol=S_THEN;    break;
-    case 256*'t'+'e': if(!SyStrcmp(Value,"true"))    Symbol=S_TRUE;    break;
-    case 256*'u'+'l': if(!SyStrcmp(Value,"until"))   Symbol=S_UNTIL;   break;
-    case 256*'w'+'e': if(!SyStrcmp(Value,"while"))   Symbol=S_WHILE;   break;
-    case 256*'q'+'t': if(!SyStrcmp(Value,"quit"))    Symbol=S_QUIT;    break;
-    case 256*'Q'+'T': if(!SyStrcmp(Value,"QUIT"))    Symbol=S_QQUIT;   break;
+    /* now check if 'TLS->value' holds a keyword                                */
+    switch ( 256*TLS->value[0]+TLS->value[i-1] ) {
+    case 256*'a'+'d': if(!SyStrcmp(TLS->value,"and"))     Symbol=S_AND;     break;
+    case 256*'b'+'k': if(!SyStrcmp(TLS->value,"break"))   Symbol=S_BREAK;   break;
+    case 256*'c'+'e': if(!SyStrcmp(TLS->value,"continue"))   Symbol=S_CONTINUE;   break;
+    case 256*'d'+'o': if(!SyStrcmp(TLS->value,"do"))      Symbol=S_DO;      break;
+    case 256*'e'+'f': if(!SyStrcmp(TLS->value,"elif"))    Symbol=S_ELIF;    break;
+    case 256*'e'+'e': if(!SyStrcmp(TLS->value,"else"))    Symbol=S_ELSE;    break;
+    case 256*'e'+'d': if(!SyStrcmp(TLS->value,"end"))     Symbol=S_END;     break;
+    case 256*'f'+'e': if(!SyStrcmp(TLS->value,"false"))   Symbol=S_FALSE;   break;
+    case 256*'f'+'i': if(!SyStrcmp(TLS->value,"fi"))      Symbol=S_FI;      break;
+    case 256*'f'+'r': if(!SyStrcmp(TLS->value,"for"))     Symbol=S_FOR;     break;
+    case 256*'f'+'n': if(!SyStrcmp(TLS->value,"function"))Symbol=S_FUNCTION;break;
+    case 256*'i'+'f': if(!SyStrcmp(TLS->value,"if"))      Symbol=S_IF;      break;
+    case 256*'i'+'n': if(!SyStrcmp(TLS->value,"in"))      Symbol=S_IN;      break;
+    case 256*'l'+'l': if(!SyStrcmp(TLS->value,"local"))   Symbol=S_LOCAL;   break;
+    case 256*'m'+'d': if(!SyStrcmp(TLS->value,"mod"))     Symbol=S_MOD;     break;
+    case 256*'n'+'t': if(!SyStrcmp(TLS->value,"not"))     Symbol=S_NOT;     break;
+    case 256*'o'+'d': if(!SyStrcmp(TLS->value,"od"))      Symbol=S_OD;      break;
+    case 256*'o'+'r': if(!SyStrcmp(TLS->value,"or"))      Symbol=S_OR;      break;
+    case 256*'r'+'c': if(!SyStrcmp(TLS->value,"rec"))     Symbol=S_REC;     break;
+    case 256*'r'+'t': if(!SyStrcmp(TLS->value,"repeat"))  Symbol=S_REPEAT;  break;
+    case 256*'r'+'n': if(!SyStrcmp(TLS->value,"return"))  Symbol=S_RETURN;  break;
+    case 256*'t'+'n': if(!SyStrcmp(TLS->value,"then"))    Symbol=S_THEN;    break;
+    case 256*'t'+'e': if(!SyStrcmp(TLS->value,"true"))    Symbol=S_TRUE;    break;
+    case 256*'u'+'l': if(!SyStrcmp(TLS->value,"until"))   Symbol=S_UNTIL;   break;
+    case 256*'w'+'e': if(!SyStrcmp(TLS->value,"while"))   Symbol=S_WHILE;   break;
+    case 256*'q'+'t': if(!SyStrcmp(TLS->value,"quit"))    Symbol=S_QUIT;    break;
+    case 256*'Q'+'T': if(!SyStrcmp(TLS->value,"QUIT"))    Symbol=S_QQUIT;   break;
 
-    case 256*'I'+'d': if(!SyStrcmp(Value,"IsBound")) Symbol=S_ISBOUND; break;
-    case 256*'U'+'d': if(!SyStrcmp(Value,"Unbind"))  Symbol=S_UNBIND;  break;
-    case 256*'T'+'d': if(!SyStrcmp(Value,"TryNextMethod"))
+    case 256*'I'+'d': if(!SyStrcmp(TLS->value,"IsBound")) Symbol=S_ISBOUND; break;
+    case 256*'U'+'d': if(!SyStrcmp(TLS->value,"Unbind"))  Symbol=S_UNBIND;  break;
+    case 256*'T'+'d': if(!SyStrcmp(TLS->value,"TryNextMethod"))
                                                      Symbol=S_TRYNEXT; break;
-    case 256*'I'+'o': if(!SyStrcmp(Value,"Info"))    Symbol=S_INFO;    break;
-    case 256*'A'+'t': if(!SyStrcmp(Value,"Assert"))  Symbol=S_ASSERT;  break;
+    case 256*'I'+'o': if(!SyStrcmp(TLS->value,"Info"))    Symbol=S_INFO;    break;
+    case 256*'A'+'t': if(!SyStrcmp(TLS->value,"Assert"))  Symbol=S_ASSERT;  break;
 
     default: ;
     }
@@ -1777,7 +1780,7 @@ void GetIdent ( void )
 *F  GetInt()  . . . . . . . . . . . . . . . . . . . . . get an integer, local
 **
 **  'GetInt' reads  an integer number from  the  current  input file into the
-**  variable  'Value' and sets  'Symbol' to 'S_INT'.   The first character of
+**  variable  'TLS->value' and sets  'Symbol' to 'S_INT'.   The first character of
 **  the integer is the current character pointed to by 'In'.
 **
 **  An  integer is   a sequence of   digits  '0..9'.    The  escape  sequence
@@ -1787,7 +1790,7 @@ void GetIdent ( void )
 **  If the sequence contains characters which are not  digits  'GetInt'  will
 **  interpret the sequence as an identifier and set 'Symbol' to 'S_IDENT'.
 **
-**  When Value is  completely filled we have to check  if the reading of
+**  When TLS->value is  completely filled we have to check  if the reading of
 **  the integer  is complete  or not to  decide between  Symbol=S_INT or
 **  S_PARTIALINT.
 */
@@ -1798,33 +1801,33 @@ void GetInt ( void )
 
     isInt = 1;
 
-    /* read the digits into 'Value'                                        */
-    for ( i=0; i < sizeof(Value)-1 && (IsDigit(*In) || IsAlpha(*In) ||
+    /* read the digits into 'TLS->value'                                        */
+    for ( i=0; i < MAX_VALUE_LEN-1 && (IsDigit(*In) || IsAlpha(*In) ||
                                            *In=='_' || *In=='\\'); i++ ) {
 
         fetch = 1;
         /* handle escape sequences                                         */
         if ( *In == '\\' ) {
             GET_CHAR();
-            if      ( *In == '\n' && i < sizeof(Value)-1 )  i--;
+            if      ( *In == '\n' && i < MAX_VALUE_LEN-1 )  i--;
             else if ( *In == '\r' )  {
                 GET_CHAR();
                 if  ( *In == '\n' )  i--;
-                else  {Value[i] = '\r'; fetch = 0;}
+                else  {TLS->value[i] = '\r'; fetch = 0;}
             }
-            else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
-            else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
-            else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
-            else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
-            else if ( *In == '>'  && i < sizeof(Value)-1 )  Value[i] = '\01';
-            else if ( *In == '<'  && i < sizeof(Value)-1 )  Value[i] = '\02';
-            else if ( *In == 'c'  && i < sizeof(Value)-1 )  Value[i] = '\03';
-            else if (                i < sizeof(Value)-1 )  Value[i] = *In;
+            else if ( *In == 'n'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\n';
+            else if ( *In == 't'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\t';
+            else if ( *In == 'r'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\r';
+            else if ( *In == 'b'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\b';
+            else if ( *In == '>'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\01';
+            else if ( *In == '<'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\02';
+            else if ( *In == 'c'  && i < MAX_VALUE_LEN-1 )  TLS->value[i] = '\03';
+            else if (                i < MAX_VALUE_LEN-1 )  TLS->value[i] = *In;
         }
 
-        /* put normal chars into 'Value' but only if there is room         */
+        /* put normal chars into 'TLS->value' but only if there is room         */
         else {
-            Value[i] = *In;
+            TLS->value[i] = *In;
         }
 
         /* if the characters contain non digits it is a variable           */
@@ -1836,15 +1839,15 @@ void GetInt ( void )
     }
 
     /* terminate the integer         */
-    Value[i] = '\0';
+    TLS->value[i] = '\0';
     if ( isInt ) {
-        if ( i < sizeof(Value)-1 )
+        if ( i < MAX_VALUE_LEN-1 )
               Symbol = S_INT;
         else
               Symbol = S_PARTIALINT;
     }
     else {
-        if ( i < sizeof(Value)-1 )
+        if ( i < MAX_VALUE_LEN-1 )
               Symbol = S_IDENT;
         else
            SyntaxError("Identifier must have less than 1023 characters.");
@@ -1857,7 +1860,7 @@ void GetInt ( void )
 *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
 **
 **  'GetStr' reads  a  string from the  current input file into  the variable
-**  'Value' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
+**  'TLS->value' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
 **  of the string is the current character pointed to by 'In'.
 **
 **  A string is a sequence of characters delimited  by double quotes '"'.  It
@@ -1868,7 +1871,7 @@ void GetInt ( void )
 **  An error is raised if the string includes a <newline> character or if the
 **  file ends before the closing '"'.
 **
-**  When Value is  completely filled we have to check  if the reading of
+**  When TLS->value is  completely filled we have to check  if the reading of
 **  the string is  complete or not to decide  between Symbol=S_STRING or
 **  S_PARTIALSTRING.
 */
@@ -1880,8 +1883,8 @@ void GetStr ( void )
     /* Avoid substitution of '?' in beginning of GetLine chunks */
     HELPSubsOn = 0;
 
-    /* read all characters into 'Value'                                    */
-    for ( i = 0; i < sizeof(Value)-1 && *In != '"'
+    /* read all characters into 'TLS->value'                                    */
+    for ( i = 0; i < MAX_VALUE_LEN-1 && *In != '"'
                                  /* && *In != '\n'*/ && *In != '\377'; i++ ) {
 
         fetch = 1;
@@ -1892,28 +1895,28 @@ void GetStr ( void )
             else if ( *In == '\r' )  {
                 GET_CHAR();
                 if  ( *In == '\n' )  i--;
-                else  {Value[i] = '\r'; fetch = 0;}
+                else  {TLS->value[i] = '\r'; fetch = 0;}
             }
-            else if ( *In == 'n'  )  Value[i] = '\n';
-            else if ( *In == 't'  )  Value[i] = '\t';
-            else if ( *In == 'r'  )  Value[i] = '\r';
-            else if ( *In == 'b'  )  Value[i] = '\b';
-            else if ( *In == '>'  )  Value[i] = '\01';
-            else if ( *In == '<'  )  Value[i] = '\02';
-            else if ( *In == 'c'  )  Value[i] = '\03';
+            else if ( *In == 'n'  )  TLS->value[i] = '\n';
+            else if ( *In == 't'  )  TLS->value[i] = '\t';
+            else if ( *In == 'r'  )  TLS->value[i] = '\r';
+            else if ( *In == 'b'  )  TLS->value[i] = '\b';
+            else if ( *In == '>'  )  TLS->value[i] = '\01';
+            else if ( *In == '<'  )  TLS->value[i] = '\02';
+            else if ( *In == 'c'  )  TLS->value[i] = '\03';
             else if ( IsDigit( *In ) ) {
                 a = *In; GET_CHAR(); b = *In; GET_CHAR(); c = *In;
                 if (!( IsDigit(b) && IsDigit(c) )){
                  SyntaxError("expecting three octal digits after \\ in string");
                 }
-                Value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
+                TLS->value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
             }
-            else  Value[i] = *In;
+            else  TLS->value[i] = *In;
         }
 
-        /* put normal chars into 'Value' but only if there is room         */
+        /* put normal chars into 'TLS->value' but only if there is room         */
         else {
-            Value[i] = *In;
+            TLS->value[i] = *In;
         }
 
         /* read the next character                                         */
@@ -1921,10 +1924,10 @@ void GetStr ( void )
 
     }
 
-    /* XXX although we have ValueLen we need trailing \000 here,
+    /* XXX although we have TLS->valueLen we need trailing \000 here,
        in gap.c, function FuncMAKE_INIT this is still used as C-string
        and long integers and strings are not yet supported!    */
-    Value[i] = '\0';
+    TLS->value[i] = '\0';
 
     /* check for error conditions                                          */
     if ( *In == '\n'  )
@@ -1933,8 +1936,8 @@ void GetStr ( void )
         SyntaxError("string must end with \" before end of file");
 
     /* set length of string, set 'Symbol' and skip trailing '"'            */
-    ValueLen = i;
-    if ( i < sizeof(Value)-1 )  {
+    TLS->valueLen = i;
+    if ( i < MAX_VALUE_LEN-1 )  {
          Symbol = S_STRING;
          if ( *In == '"' )  GET_CHAR();
     }
@@ -1951,7 +1954,7 @@ void GetStr ( void )
 *F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
 **
 **  'GetChar' reads the next  character from the current input file  into the
-**  variable 'Value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
+**  variable 'TLS->value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
 **  '\'' of the character is the current character pointed to by 'In'.
 **
 **  A  character is  a  single character delimited by single quotes '\''.  It
@@ -1968,13 +1971,13 @@ void GetChar ( void )
     /* handle escape equences                                              */
     if ( *In == '\\' ) {
         GET_CHAR();
-        if ( *In == 'n'  )       Value[0] = '\n';
-        else if ( *In == 't'  )  Value[0] = '\t';
-        else if ( *In == 'r'  )  Value[0] = '\r';
-        else if ( *In == 'b'  )  Value[0] = '\b';
-        else if ( *In == '>'  )  Value[0] = '\01';
-        else if ( *In == '<'  )  Value[0] = '\02';
-        else if ( *In == 'c'  )  Value[0] = '\03';
+        if ( *In == 'n'  )       TLS->value[0] = '\n';
+        else if ( *In == 't'  )  TLS->value[0] = '\t';
+        else if ( *In == 'r'  )  TLS->value[0] = '\r';
+        else if ( *In == 'b'  )  TLS->value[0] = '\b';
+        else if ( *In == '>'  )  TLS->value[0] = '\01';
+        else if ( *In == '<'  )  TLS->value[0] = '\02';
+        else if ( *In == 'c'  )  TLS->value[0] = '\03';
         else if ( *In >= '0' && *In <= '7' ) {
             /* escaped three digit octal numbers are allowed in input */
             c = 64 * (*In - '0');
@@ -1986,14 +1989,14 @@ void GetChar ( void )
             if ( *In < '0' || *In > '7' )
                 SyntaxError("expecting 3 octal digits in character constant");
             c = c + (*In - '0');
-            Value[0] = c;
+            TLS->value[0] = c;
         }
-        else                     Value[0] = *In;
+        else                     TLS->value[0] = *In;
     }
 
-    /* put normal chars into 'Value'                                       */
+    /* put normal chars into 'TLS->value'                                       */
     else {
-        Value[0] = *In;
+        TLS->value[0] = *In;
     }
 
     /* read the next character                                             */
@@ -2015,7 +2018,7 @@ void GetChar ( void )
 **
 **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
 **  variable 'Symbol'.  If 'Symbol' is  'T_IDENT', 'T_INT' or 'T_STRING'  the
-**  value of the symbol is stored in the variable 'Value'.  'GetSymbol' first
+**  value of the symbol is stored in the variable 'TLS->value'.  'GetSymbol' first
 **  skips all <space>, <tab> and <newline> characters and comments.
 **
 **  After reading  a  symbol the current  character   is the first  character
@@ -2109,7 +2112,7 @@ void GetSymbol ( void )
     case '_':                                           GetIdent();  break;
     case '$':                                           GetIdent();  break;
     case '@':                                           GetIdent();  break;
-    case '~':   Value[0] = '~';  Value[1] = '\0';
+    case '~':   TLS->value[0] = '~';  TLS->value[1] = '\0';
                 Symbol = S_IDENT;                       GET_CHAR();  break;
 
     case '0': case '1': case '2': case '3': case '4':

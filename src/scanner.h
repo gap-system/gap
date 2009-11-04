@@ -210,8 +210,10 @@ typedef UInt            TypSymbolSet;
 **  maximal length of a  string.   'GetIdent', 'GetInt' and 'GetStr' truncate
 **  identifier, integers or strings after that many characters.
 */
-extern  Char            Value [1025];
-extern  UInt            ValueLen;
+/* TL: extern  Char            Value [1025]; */
+/* TL: extern  UInt            ValueLen; */
+
+#define MAX_VALUE_LEN 1025
 
 /****************************************************************************
 **
@@ -235,8 +237,8 @@ extern  UInt            ValueLen;
 **  one line, since they  probabely  just reflect  the  fact that the  parser
 **  has not resynchronized yet.
 */
-extern  UInt            NrError;
-extern  UInt            NrErrLine;
+/* TL: extern  UInt            NrError; */
+/* TL: extern  UInt            NrErrLine; */
 
 
 /****************************************************************************

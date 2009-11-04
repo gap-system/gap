@@ -51,6 +51,9 @@ const char * Revision_stats_c =
 #include        "stats.h"               /* statements                      */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"tls.h"
+#include	"thread.h"
+
 #ifdef SYS_IS_MAC_MWC
 #include        "macintr.h"              /* Mac interrupt handlers	      */
 #endif
@@ -1671,8 +1674,8 @@ void ClearError ( void )
 	ReactivateIntr ();   /* re-enable Mac interrupt check */
 #endif
 
-    /* reset <NrError>                                                     */
-    NrError = 0;
+    /* reset <TLS->nrError>                                                     */
+    TLS->nrError = 0;
 }
 
 

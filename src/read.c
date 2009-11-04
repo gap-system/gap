@@ -57,7 +57,7 @@ const char * Revision_read_c =
 **  the interpretation of  an expression  or  statement lead to an  error (in
 **  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
 **
-#define READ_ERROR()    (NrError || (NrError+=setjmp(ReadJmpError)))
+#define READ_ERROR()    (TLS->nrError || (TLS->nrError+=setjmp(ReadJmpError)))
 */
 jmp_buf         ReadJmpError;
 
@@ -202,7 +202,7 @@ void ReadFuncCallOption( TypSymbolSet follow )
 {
   volatile UInt       rnam;           /* record component name           */
   if ( Symbol == S_IDENT ) {
-    rnam = RNamName( Value );
+    rnam = RNamName( TLS->value );
     Match( S_IDENT, "identifier", S_COMMA | follow );
     if ( ! READ_ERROR() ) { IntrFuncCallOptionsBeginElmName( rnam ); }
   }
@@ -279,7 +279,7 @@ void ReadCallVarAss (
     while ( type == ' ' && nest < CountNams ) {
         nams = ELM_LIST( StackNams, CountNams-nest );
         for ( indx = LEN_LIST( nams ); 1 <= indx; indx-- ) {
-            if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+            if ( SyStrcmp( TLS->value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
                 if ( nest == 0 ) {
                     type = 'l';
                     var = indx;
@@ -312,12 +312,12 @@ void ReadCallVarAss (
 	    if (indx >= 1024)
 	      {
 		Pr("Warning; Ignoring local names after 1024th in search for %s\n",
-		   (Int) Value,
+		   (Int) TLS->value,
 		   0L);
 		indx = 1023;
 	      }
 	    for ( ; 1 <= indx; indx-- ) {
-	      if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+	      if ( SyStrcmp( TLS->value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
 		type = 'd';
 		
 		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
@@ -331,7 +331,7 @@ void ReadCallVarAss (
 	if (nest >= 65536)
 	  {
 	    Pr("Warning: abandoning search for %s at 1024th higher frame\n",
-	       (Int)Value,0L);
+	       (Int)TLS->value,0L);
 	    break;
 	  }
       }
@@ -340,7 +340,7 @@ void ReadCallVarAss (
 	if (nest0 >= 65536)
 	  {
 	    Pr("Warning: abandoning search for %s 4096 frames up stack\n",
-	       (Int)Value,0L);
+	       (Int)TLS->value,0L);
 	    break;
 	  }
     }
@@ -348,7 +348,7 @@ void ReadCallVarAss (
     /* get the variable as a global variable                               */
     if ( type == ' ' ) {
         type = 'g';
-        var = GVarName( Value );
+        var = GVarName( TLS->value );
     }
 
     /* match away the identifier, now that we know the variable            */
@@ -385,8 +385,8 @@ void ReadCallVarAss (
       && ! SyCompilePlease )
     {
         SyntaxError("warning: unbound global variable");
-        NrError--;
-        NrErrLine--;
+        TLS->nrError--;
+        TLS->nrErrLine--;
     }
 
     /* check whether this is a reference to the global variable '~'        */
@@ -452,7 +452,7 @@ void ReadCallVarAss (
         else if ( Symbol == S_DOT ) {
             Match( S_DOT, ".", follow );
             if ( Symbol == S_IDENT || Symbol == S_INT ) {
-                rnam = RNamName( Value );
+                rnam = RNamName( TLS->value );
                 Match( Symbol, "identifier", follow );
                 type = '.';
             }
@@ -472,7 +472,7 @@ void ReadCallVarAss (
         else if ( Symbol == S_BDOT ) {
             Match( S_BDOT, "!.", follow );
             if ( Symbol == S_IDENT || Symbol == S_INT ) {
-                rnam = RNamName( Value );
+                rnam = RNamName( TLS->value );
                 Match( Symbol, "identifier", follow );
                 type = '!';
             }
@@ -682,8 +682,8 @@ void ReadPerm (
 **
 *F  ReadLongInt( <follow> )  . . . . . . . . . . . . . . . read a long integer
 ** 
-**  A `long integer' here means one whose digits don't fit into `Value',
-**  see scanner.c.  This function copies repeatedly  digits from `Value'
+**  A `long integer' here means one whose digits don't fit into `TLS->value',
+**  see scanner.c.  This function copies repeatedly  digits from `TLS->value'
 **  into a GAP string until the full integer is read.
 **
 */
@@ -694,26 +694,26 @@ void ReadLongInt(
      UInt count;
 
      /* string for digits of first part */
-     string = NEW_STRING(sizeof(Value) - 1);
+     string = NEW_STRING(sizeof(TLS->value) - 1);
      count = 1;
-     memcpy(CHARS_STRING(string), (void *)Value, sizeof(Value));
+     memcpy(CHARS_STRING(string), (void *)TLS->value, sizeof(TLS->value));
 
      Match(S_PARTIALINT, "", follow);
      while (Symbol == S_PARTIALINT) {
          /* grow for next chunk, this should be cheap since no
             other objects were allocated in between   */
-         GROW_STRING(string, (count+1) * (sizeof(Value)-1));
-         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value,
-                                        sizeof(Value));
+         GROW_STRING(string, (count+1) * (sizeof(TLS->value)-1));
+         memcpy(CHARS_STRING(string) + count*(sizeof(TLS->value)-1), (void *)TLS->value,
+                                        sizeof(TLS->value));
          count++;
          Match(S_PARTIALINT, "", follow);
      }
 
      if (Symbol == S_INT) {
-         /* last chunk must not fill `Value' completely      */
-         GROW_STRING(string, (count+1) * (sizeof(Value)-1));
-         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value, 
-                                        sizeof(Value));
+         /* last chunk must not fill `TLS->value' completely      */
+         GROW_STRING(string, (count+1) * (sizeof(TLS->value)-1));
+         memcpy(CHARS_STRING(string) + count*(sizeof(TLS->value)-1), (void *)TLS->value, 
+                                        sizeof(TLS->value));
          Match(S_INT, "", follow);
          IntrLongIntExpr( string );
      }
@@ -729,8 +729,8 @@ void ReadLongInt(
 **
 *F  ReadString( <follow> )  . . . . . . . . . . . . . . read a (long) string
 ** 
-**  A string is  read by copying parts of `Value'  (see scanner.c) given
-**  by `ValueLen' into  a string GAP object. This is  repeated until the
+**  A string is  read by copying parts of `TLS->value'  (see scanner.c) given
+**  by `TLS->valueLen' into  a string GAP object. This is  repeated until the
 **  end of the string is reached.
 **
 */
@@ -740,20 +740,20 @@ void ReadString(
      Obj  string;   
      UInt count;
 
-     string = NEW_STRING(ValueLen);
+     string = NEW_STRING(TLS->valueLen);
      count = 1;
-     memcpy(CHARS_STRING(string), (void *)Value, ValueLen);
+     memcpy(CHARS_STRING(string), (void *)TLS->value, TLS->valueLen);
 
      while (Symbol == S_PARTIALSTRING) {
          Match(S_PARTIALSTRING, "", follow);
-         GROW_STRING(string, (count) * (sizeof(Value)-1) + ValueLen);
-         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value,
-                                        ValueLen);
+         GROW_STRING(string, (count) * (sizeof(TLS->value)-1) + TLS->valueLen);
+         memcpy(CHARS_STRING(string) + count*(sizeof(TLS->value)-1), (void *)TLS->value,
+                                        TLS->valueLen);
          count++;
      }
 
      Match(S_STRING, "", follow);
-     count = (count-1) * (sizeof(Value)-1) + ValueLen;
+     count = (count-1) * (sizeof(TLS->value)-1) + TLS->valueLen;
      SET_LEN_STRING(string, count);
      /* ensure trailing zero for interpretation as C-string */
      *(CHARS_STRING(string) + count) = 0;
@@ -866,12 +866,12 @@ void ReadRecExpr (
       }
       if ( Symbol != S_RPAREN ) {
         if ( Symbol == S_INT ) {
-	  rnam = RNamName( Value );
+	  rnam = RNamName( TLS->value );
 	  Match( S_INT, "integer", follow );
 	  if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
         }
         else if ( Symbol == S_IDENT ) {
-	  rnam = RNamName( Value );
+	  rnam = RNamName( TLS->value );
 	  Match( S_IDENT, "identifier", follow );
 	  if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
         }
@@ -925,7 +925,7 @@ void ReadFuncExpr (
     volatile UInt       nloc;           /* number of locals                */
     volatile UInt       nr;             /* number of statements            */
     volatile UInt       i;              /* loop variable                   */
-    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile UInt       nrError;        /* copy of <TLS->nrError>          */
     volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* begin the function                                                  */
@@ -939,8 +939,8 @@ void ReadFuncExpr (
     CountNams += 1;
     ASS_LIST( StackNams, CountNams, nams );
     if ( Symbol != S_RPAREN ) {
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( SyStrlen(TLS->value) );
+        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
         narg += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -948,12 +948,12 @@ void ReadFuncExpr (
     while ( Symbol == S_COMMA ) {
         Match( S_COMMA, ",", follow );
         for ( i = 1; i <= narg; i++ ) {
-            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                 SyntaxError("name used for two arguments");
             }
         }
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( SyStrlen(TLS->value) );
+        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
         narg += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -962,31 +962,31 @@ void ReadFuncExpr (
     if ( Symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
-            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                 SyntaxError("name used for argument and local");
             }
         }
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( SyStrlen(TLS->value) );
+        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         while ( Symbol == S_COMMA ) {
             /* init to avoid strange message in case of empty string */
-            Value[0] = '\0';
+            TLS->value[0] = '\0';
             Match( S_COMMA, ",", follow );
             for ( i = 1; i <= narg; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                     SyntaxError("name used for argument and local");
                 }
             }
             for ( i = narg+1; i <= narg+nloc; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( SyStrlen(Value) );
-            SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+            name = NEW_STRING( SyStrlen(TLS->value) );
+            SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1000,7 +1000,7 @@ void ReadFuncExpr (
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
-    nrError   = NrError;
+    nrError   = TLS->nrError;
 
     /* now finally begin the function                                      */
     if ( ! READ_ERROR() ) { IntrFuncExprBegin( narg, nloc, nams ); }
@@ -1044,7 +1044,7 @@ void ReadFuncExpr1 (
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
-    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile UInt       nrError;        /* copy of <TLS->nrError>          */
     volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* make and push the new local variables list                          */
@@ -1052,8 +1052,8 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     CountNams++;
     ASS_LIST( StackNams, CountNams, nams );
-    name = NEW_STRING( SyStrlen(Value) );
-    SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+    name = NEW_STRING( SyStrlen(TLS->value) );
+    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
     ASS_LIST( nams, 1, name );
 
     /* match away the '->'                                                 */
@@ -1061,7 +1061,7 @@ void ReadFuncExpr1 (
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
-    nrError   = NrError;
+    nrError   = TLS->nrError;
 
     /* begin interpreting the function expression (with 1 argument)        */
     if ( ! READ_ERROR() ) { IntrFuncExprBegin( 1L, 0L, nams ); }
@@ -1117,7 +1117,7 @@ void ReadLiteral (
 {
     /* <Int>                                                               */
     if ( Symbol == S_INT ) {
-        if ( ! READ_ERROR() ) { IntrIntExpr( Value ); }
+        if ( ! READ_ERROR() ) { IntrIntExpr( TLS->value ); }
         Match( S_INT, "integer", follow );
     }
 
@@ -1140,7 +1140,7 @@ void ReadLiteral (
 
     /* <Char>                                                              */
     else if ( Symbol == S_CHAR ) {
-        if ( ! READ_ERROR() ) { IntrCharExpr( Value[0] ); }
+        if ( ! READ_ERROR() ) { IntrCharExpr( TLS->value[0] ); }
         Match( S_CHAR, "character", follow );
     }
 
@@ -1207,7 +1207,7 @@ void ReadAtom (
 #ifndef LAURENT_IS_A_FISHHEAD
     /* otherwise read a floating-point number                              */
     else if ( Symbol == S_DOT ) {
-        Obj strobj = NEW_STRING(sizeof(Value)+20);
+        Obj strobj = NEW_STRING(sizeof(TLS->value)+20);
 	Char *string, *s;
         Match (S_DOT, "floating-point dot", follow);
 	if ( ! READ_ERROR() ) {
@@ -1215,7 +1215,7 @@ void ReadAtom (
 	    Match (Symbol, "floating-point mantissa", follow);
 	    string = s = CSTR_STRING(strobj);
 	    *s++ = '.';
-	    memcpy (s, Value, sizeof Value);
+	    memcpy (s, TLS->value, sizeof TLS->value);
 	    for (; *s; s++) {
  	        if (*s =='e' || *s == 'E' || *s == '@')
 		    exp = s;
@@ -1226,7 +1226,7 @@ void ReadAtom (
 		else
 		    *s++ = '-';
 	        Match(Symbol,"floating-point exponent", follow);
-		for (exp = Value; *exp;)
+		for (exp = TLS->value; *exp;)
 		    *s++ = *exp++;
 		Match(S_INT,"floating-point exponent", follow);
 	    }
@@ -1665,12 +1665,12 @@ void ReadFor (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile UInt       nrError;        /* copy of <Tls->nrError>          */
     volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
-    nrError   = NrError;
+    nrError   = TLS->nrError;
 
     /* 'for'                                                               */
     if ( ! READ_ERROR() ) { IntrForBegin(); }
@@ -1726,12 +1726,12 @@ void ReadWhile (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile UInt       nrError;        /* copy of <TLS->nrError>          */
     volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
-    nrError   = NrError;
+    nrError   = TLS->nrError;
 
     /* 'while' <Expr>  'do'                                                */
     if ( ! READ_ERROR() ) { IntrWhileBegin(); }
@@ -1779,12 +1779,12 @@ void ReadRepeat (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile UInt       nrError;        /* copy of <TLS->nrError>          */
     volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
-    nrError   = NrError;
+    nrError   = TLS->nrError;
 
     /* 'repeat'                                                            */
     if ( ! READ_ERROR() ) { IntrRepeatBegin(); }
@@ -2222,21 +2222,21 @@ UInt ReadEvalFile ( void )
     ASS_LIST( StackNams, CountNams, nams );
     if ( Symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( SyStrlen(TLS->value) );
+        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
         while ( Symbol == S_COMMA ) {
-            Value[0] = '\0';
+            TLS->value[0] = '\0';
             Match( S_COMMA, ",", 0L );
             for ( i = 1; i <= nloc; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( SyStrlen(Value) );
-            SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+            name = NEW_STRING( SyStrlen(TLS->value) );
+            SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2336,7 +2336,7 @@ Obj Call0ArgsInNewReader(Obj f)
   userHasQuit = UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
-  nrError = NrError;
+  nrError = TLS->nrError;
   memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
   /* intialize everything and begin an interpreter                       */
@@ -2348,7 +2348,7 @@ Obj Call0ArgsInNewReader(Obj f)
   UserHasQuit = 0;
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
-  NrError = 0;
+  TLS->nrError = 0;
   IntrBegin( BottomLVars );
 
   if (!READ_ERROR()) {
@@ -2372,7 +2372,7 @@ Obj Call0ArgsInNewReader(Obj f)
   CurrLHSGVar = currLHSGVar;
   TLS->intrCoding = intrCoding;
   TLS->intrIgnoring = intrIgnoring;
-  NrError = nrError;
+  TLS->nrError = nrError;
   return result;
 }
 
@@ -2408,7 +2408,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   userHasQuit = UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
-  nrError = NrError;
+  nrError = TLS->nrError;
   memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
   /* intialize everything and begin an interpreter                       */
@@ -2420,7 +2420,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   UserHasQuit = 0;
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
-  NrError = 0;
+  TLS->nrError = 0;
   IntrBegin( BottomLVars );
 
   if (!READ_ERROR()) {
@@ -2444,7 +2444,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   ReadTilde   = readTilde;
   CurrLHSGVar = currLHSGVar;
   UserHasQuit = userHasQuit;
-  NrError = nrError;
+  TLS->nrError = nrError;
   return result;
 }
 

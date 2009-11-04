@@ -64,6 +64,8 @@ const char * Revision_streams_c =
 
 #include        "vars.h"                /* BottomLVars for execution contexts */
 
+#include	"tls.h"
+
 
 /****************************************************************************
 **

@@ -1788,7 +1788,7 @@ Obj FuncCOM_FUN (
     do {                                        \
         symbol = Symbol;                        \
         value[0] = '\0';                        \
-        SyStrncat( value, Value, 1023 );        \
+        SyStrncat( value, TLS->value, 1023 );        \
         if ( Symbol != S_EOF )  GetSymbol();    \
     } while (0)
 

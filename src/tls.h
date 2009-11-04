@@ -8,7 +8,7 @@
 typedef struct ThreadLocalStorage
 {
   int threadID;
-  /* From intrprtr.h */
+  /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;
   UInt intrReturning;
@@ -16,6 +16,11 @@ typedef struct ThreadLocalStorage
   Obj intrState;
   Obj stackObj;
   Int countObj;
+  /* From scanner.c */
+  Char value[MAX_VALUE_LEN];
+  UInt valueLen;
+  UInt nrError;
+  UInt nrErrLine;
 } ThreadLocalStorage;
 
 typedef struct

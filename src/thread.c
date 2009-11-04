@@ -9,6 +9,7 @@
 
 #include        "system.h"
 #include        "objects.h"
+#include	"scanner.h"
 #include        "tls.h"
 #include        "thread.h"
 
