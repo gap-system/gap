@@ -70,6 +70,7 @@ const char * Revision_calls_c =
 #include        "stats.h"               /* statements                      */
 
 #include        "saveload.h"            /* saving and loading              */
+#include        "tls.h"                 /* thread-local storage            */
 
 
 /****************************************************************************

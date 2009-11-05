@@ -39,8 +39,8 @@ const char * Revision_exprs_h =
 #endif
 
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)PtrLVars)+OFFSET_REFLVAR(expr)) != 0 ? \
-                         *(Obj*)(((char*)PtrLVars)+OFFSET_REFLVAR(expr)) : \
+                        (*(Obj*)(((char*)TLS->ptrLVars)+OFFSET_REFLVAR(expr)) != 0 ? \
+                         *(Obj*)(((char*)TLS->ptrLVars)+OFFSET_REFLVAR(expr)) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 

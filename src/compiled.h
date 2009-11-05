@@ -73,7 +73,7 @@
 #include        "streams.h"             /* streams package                 */
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
-
+#include        "tls.h"                 /* thread-local storage            */
 
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;
@@ -123,7 +123,7 @@ typedef UInt    RNam;
 #define SWITCH_TO_NEW_FRAME     SWITCH_TO_NEW_LVARS
 #define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS
 
-#define CURR_FRAME              CurrLVars
+#define CURR_FRAME              TLS->currLVars
 #define CURR_FRAME_1UP          ENVI_FUNC( PTR_BAG( CURR_FRAME     )[0] )
 #define CURR_FRAME_2UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_1UP )[0] )
 #define CURR_FRAME_3UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_2UP )[0] )
@@ -132,7 +132,7 @@ typedef UInt    RNam;
 #define CURR_FRAME_6UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_5UP )[0] )
 #define CURR_FRAME_7UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_6UP )[0] )
 
-/* #define OBJ_LVAR(lvar)  PtrLVars[(lvar)+2] */
+/* #define OBJ_LVAR(lvar)  TLS->ptrLVars[(lvar)+2] */
 #define OBJ_LVAR_0UP(lvar) \
     OBJ_LVAR(lvar)
 #define OBJ_LVAR_1UP(lvar) \
@@ -152,7 +152,7 @@ typedef UInt    RNam;
 #define OBJ_LVAR_8UP(lvar) \
     PTR_BAG(CURR_FRAME_8UP)[(lvar)+2]
 
-/* #define ASS_LVAR(lvar,obj) do { PtrLVars[(lvar)+2] = (obj); } while ( 0 ) */
+/* #define ASS_LVAR(lvar,obj) do { TLS->ptrLVars[(lvar)+2] = (obj); } while ( 0 ) */
 #define ASS_LVAR_0UP(lvar,obj) \
     ASS_LVAR(lvar,obj)
 #define ASS_LVAR_1UP(lvar,obj) \

@@ -42,11 +42,11 @@ const char * Revision_vars_h =
 */
 #define SWITCH_TO_NEW_LVARS(func,narg,nloc,old)                             \
                         do {                                                \
-                            (old) = CurrLVars;                              \
+                            (old) = TLS->currLVars;                              \
                             CHANGED_BAG( (old) );                           \
-                            CurrLVars = NewBag( T_LVARS,                    \
+                            TLS->currLVars = NewBag( T_LVARS,                    \
                                                 sizeof(Obj)*(3+narg+nloc) );\
-                            PtrLVars  = PTR_BAG( CurrLVars );               \
+                            TLS->ptrLVars  = PTR_BAG( TLS->currLVars );               \
                             CURR_FUNC = (func);                             \
                             PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
                             SET_BRK_CALL_FROM( old );                       \
@@ -61,9 +61,9 @@ const char * Revision_vars_h =
 */
 #define SWITCH_TO_OLD_LVARS(old)                                            \
                         do {                                                \
-                            CHANGED_BAG( CurrLVars );                       \
-                            CurrLVars = (old);                              \
-                            PtrLVars  = PTR_BAG( CurrLVars );               \
+                            CHANGED_BAG( TLS->currLVars );                       \
+                            TLS->currLVars = (old);                              \
+                            TLS->ptrLVars  = PTR_BAG( TLS->currLVars );               \
                             PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
                         } while ( 0 )
 
@@ -79,7 +79,7 @@ const char * Revision_vars_h =
 **  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
 **  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
 */
-extern  Bag             CurrLVars;
+/* TL: extern  Bag             CurrLVars; */
 
 
 /****************************************************************************
@@ -91,7 +91,7 @@ extern  Bag             CurrLVars;
 **  have to check for the bottom, slowing it down.
 **
 */
-extern  Bag             BottomLVars;
+/* TL: extern  Bag             BottomLVars; */
 
 
 /****************************************************************************
@@ -104,7 +104,7 @@ extern  Bag             BottomLVars;
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
 **  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
 */
-extern  Obj *           PtrLVars;
+/* TL: extern  Obj *           PtrLVars; */
 
 
 /****************************************************************************
@@ -116,7 +116,7 @@ extern  Obj *           PtrLVars;
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-#define CURR_FUNC       (PtrLVars[0])
+#define CURR_FUNC       (TLS->ptrLVars[0])
 
 
 /****************************************************************************
@@ -125,8 +125,8 @@ extern  Obj *           PtrLVars;
 *F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
 */
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)(Int)(PtrLVars[1]))
-#define SET_BRK_CALL_TO(expr)           (PtrLVars[1] = (Obj)(Int)(expr))
+#define BRK_CALL_TO()                   ((Expr)(Int)(TLS->ptrLVars[1]))
+#define SET_BRK_CALL_TO(expr)           (TLS->ptrLVars[1] = (Obj)(Int)(expr))
 #endif
 #ifdef  NO_BRK_CALLS
 #define BRK_CALL_TO()                   /* do nothing */
@@ -140,8 +140,8 @@ extern  Obj *           PtrLVars;
 *F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
 */
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 (PtrLVars[2])
-#define SET_BRK_CALL_FROM(lvars)        (PtrLVars[2] = (lvars))
+#define BRK_CALL_FROM()                 (TLS->ptrLVars[2])
+#define SET_BRK_CALL_FROM(lvars)        (TLS->ptrLVars[2] = (lvars))
 #endif
 #ifdef  NO_BRK_CALLS
 #define BRK_CALL_FROM()                 /* do nothing */
@@ -156,7 +156,7 @@ extern  Obj *           PtrLVars;
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-#define ASS_LVAR(lvar,val)      (PtrLVars[(lvar)+2] = (val))
+#define ASS_LVAR(lvar,val)      (TLS->ptrLVars[(lvar)+2] = (val))
 
 
 /****************************************************************************
@@ -165,7 +165,7 @@ extern  Obj *           PtrLVars;
 **
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
-#define OBJ_LVAR(lvar)          (PtrLVars[(lvar)+2])
+#define OBJ_LVAR(lvar)          (TLS->ptrLVars[(lvar)+2])
 
 
 /****************************************************************************

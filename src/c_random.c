@@ -272,13 +272,13 @@ static Obj  HdlrFunc1 (
       return list[QUO_INT( R_X[R_N] * LEN_LIST( list ), R_228 ) + 1];
   end; */
  t_1 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
- ENVI_FUNC( t_1 ) = CurrLVars;
+ ENVI_FUNC( t_1 ) = TLS->currLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_2) = INTOBJ_INT(27);
  ENDLINE_BODY(t_2) = INTOBJ_INT(30);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
- CHANGED_BAG( CurrLVars );
+ CHANGED_BAG( TLS->currLVars );
  AssGVar( G_RANDOM__LIST, t_1 );
  
  /* RANDOM_SEED := function ( n )
@@ -295,13 +295,13 @@ static Obj  HdlrFunc1 (
       return;
   end; */
  t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
- ENVI_FUNC( t_1 ) = CurrLVars;
+ ENVI_FUNC( t_1 ) = TLS->currLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_2) = INTOBJ_INT(34);
  ENDLINE_BODY(t_2) = INTOBJ_INT(42);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
- CHANGED_BAG( CurrLVars );
+ CHANGED_BAG( TLS->currLVars );
  AssGVar( G_RANDOM__SEED, t_1 );
  
  /* if R_X = [  ] then */
@@ -395,8 +395,8 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- ENVI_FUNC( func1 ) = CurrLVars;
- CHANGED_BAG( CurrLVars );
+ ENVI_FUNC( func1 ) = TLS->currLVars;
+ CHANGED_BAG( TLS->currLVars );
  body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
  BODY_FUNC( func1 ) = body1;
  CHANGED_BAG( func1 );

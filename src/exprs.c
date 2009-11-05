@@ -49,6 +49,8 @@ const char * Revision_exprs_c =
 #include        "exprs.h"               /* expressions                     */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "tls.h"                 /* thread-local storage            */
+
 
 /****************************************************************************
 **
@@ -67,8 +69,8 @@ const char * Revision_exprs_c =
 #endif
 #ifndef NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)PtrLVars)+(expr)+5) != 0 ? \
-                         *(Obj*)(((char*)PtrLVars)+(expr)+5) : \
+                        (*(Obj*)(((char*)TLS->ptrLVars)+(expr)+5) != 0 ? \
+                         *(Obj*)(((char*)TLS->ptrLVars)+(expr)+5) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 */

@@ -52,6 +52,8 @@ const char * Revision_code_c =
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
 
+#include        "tls.h"                 /* thread-local storage            */
+
 
 /****************************************************************************
 **
@@ -460,7 +462,7 @@ void CodeBegin ( void )
     assert( CountExpr == 0 );
 
     /* remember the current frame                                          */
-    CodeLVars = CurrLVars;
+    CodeLVars = TLS->currLVars;
 
     /* clear the code result bag                                           */
     CodeResult = 0;
@@ -476,8 +478,8 @@ UInt CodeEnd (
         assert( CountStat == 0 );
         assert( CountExpr == 0 );
 
-        /* we must be back to 'CurrLVars'                                  */
-        assert( CurrLVars == CodeLVars );
+        /* we must be back to 'TLS->currLVars'                                  */
+        assert( TLS->currLVars == CodeLVars );
 
         /* 'CodeFuncExprEnd' left the function already in 'CodeResult'     */
     }
@@ -639,7 +641,7 @@ void CodeFuncExprBegin (
     OffsBody = 0;
 
     /* give it an environment                                              */
-    ENVI_FUNC( fexp ) = CurrLVars;
+    ENVI_FUNC( fexp ) = TLS->currLVars;
     CHANGED_BAG( fexp );
 
     /* switch to this function                                             */
@@ -710,7 +712,7 @@ void CodeFuncExprEnd (
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
-    if ( CurrLVars != CodeLVars ) {
+    if ( TLS->currLVars != CodeLVars ) {
         fexs = FEXS_FUNC( CURR_FUNC );
         len = LEN_PLIST( fexs );
         GROW_PLIST(      fexs, len+1 );

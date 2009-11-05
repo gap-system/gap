@@ -53,6 +53,8 @@ const char * Revision_funcs_c =
 
 #include        "opers.h"               /* generic operations              */
 
+#include        "tls.h"                 /* thread-local storage            */
+
 
 /****************************************************************************
 **
@@ -1207,9 +1209,9 @@ Obj             MakeFunction (
     /* install the things an interpreted function needs                    */
     NLOC_FUNC( func ) = NLOC_FUNC( fexp );
     BODY_FUNC( func ) = BODY_FUNC( fexp );
-    ENVI_FUNC( func ) = CurrLVars;
-    /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
-    CHANGED_BAG( CurrLVars );
+    ENVI_FUNC( func ) = TLS->currLVars;
+    /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
+    CHANGED_BAG( TLS->currLVars );
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 
     /* return the function                                                 */
@@ -1351,9 +1353,9 @@ void            ExecBegin ( Obj frame )
     execState = NewBag( T_PLIST, 4*sizeof(Obj) );
     ADDR_OBJ(execState)[0] = (Obj)3;
     ADDR_OBJ(execState)[1] = ExecState;
-    ADDR_OBJ(execState)[2] = CurrLVars;
-    /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
-    CHANGED_BAG( CurrLVars );
+    ADDR_OBJ(execState)[2] = TLS->currLVars;
+    /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
+    CHANGED_BAG( TLS->currLVars );
     ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)CurrStat);
     ExecState = execState;
 

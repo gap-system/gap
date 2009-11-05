@@ -16,6 +16,10 @@ typedef struct ThreadLocalStorage
   Obj intrState;
   Obj stackObj;
   Int countObj;
+  /* From vars.c */
+  Bag bottomLVars;
+  Bag currLVars;
+  Obj *ptrLVars;
   /* From scanner.c */
   Char value[MAX_VALUE_LEN];
   UInt valueLen;

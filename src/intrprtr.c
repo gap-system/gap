@@ -2764,11 +2764,11 @@ void            IntrAssDVar (
     rhs = PopObj();
 
     /* assign the right hand side                                          */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     ASS_HVAR( dvar, rhs );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -2794,11 +2794,11 @@ void            IntrUnbDVar (
     }
 
     /* assign the right hand side                                          */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     ASS_HVAR( dvar, (Obj)0 );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -2830,10 +2830,10 @@ void            IntrRefDVar (
     }
 
     /* get and check the value                                             */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
@@ -2859,11 +2859,11 @@ void            IntrIsbDVar (
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the value                                                       */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
 

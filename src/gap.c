@@ -970,7 +970,7 @@ Obj  ErrorLVars0;
 Obj  ErrorLVars;
 Int  ErrorLLevel;
 
-extern Obj BottomLVars;
+/* TL: extern Obj BottomLVars; */
 
 
 void DownEnvInner( Int depth )
@@ -993,8 +993,8 @@ void DownEnvInner( Int depth )
   
   /* now go down                                                         */
   while ( 0 < depth
-	  && ErrorLVars != BottomLVars
-	  && PTR_BAG(ErrorLVars)[2] != BottomLVars ) {
+	  && ErrorLVars != TLS->bottomLVars
+	  && PTR_BAG(ErrorLVars)[2] != TLS->bottomLVars ) {
     ErrorLVars = PTR_BAG(ErrorLVars)[2];
     ErrorLLevel--;
     ShellContext = PTR_BAG(ShellContext)[2];
@@ -1057,9 +1057,9 @@ Obj FuncUpEnv (
 
 Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
-  Obj currLVars = CurrLVars;
+  Obj currLVars = TLS->currLVars;
   Expr call;
-  if (context == BottomLVars)
+  if (context == TLS->bottomLVars)
     return (Obj) 0;
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
@@ -1111,7 +1111,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     else 
       plain_args = args;
     memcpy((void *)&readJmpError, (void *)&ReadJmpError, sizeof(jmp_buf));
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     currStat = CurrStat;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     if (setjmp(ReadJmpError)) {
@@ -1120,8 +1120,8 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       SET_ELM_PLIST(res,2,ThrownObject);
       CHANGED_BAG(res);
       ThrownObject = 0;
-      CurrLVars = currLVars;
-      PtrLVars = PTR_BAG(CurrLVars);
+      TLS->currLVars = currLVars;
+      TLS->ptrLVars = PTR_BAG(TLS->currLVars);
       PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       CurrStat = currStat;
     } else {
@@ -1215,7 +1215,7 @@ Obj CallErrorInner (
   Obj r = NEW_PREC(0);
   Obj l;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
-  AssPRec(r, RNamName("context"), CurrLVars);
+  AssPRec(r, RNamName("context"), TLS->currLVars);
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
   AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
   AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid? True : False);
@@ -1466,7 +1466,7 @@ void Complete (
 
     /* now do the reading                                                  */
     while ( 1 ) {
-        type = ReadEvalCommand(BottomLVars);
+        type = ReadEvalCommand(TLS->bottomLVars);
         if ( type == STATUS_RETURN_VAL || type == STATUS_RETURN_VOID ) {
             Pr( "'return' must not be used in file read-eval loop",
                 0L, 0L );
@@ -2083,7 +2083,7 @@ Obj FuncLOAD_DYN (
 
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( BottomLVars );
+    ExecBegin( TLS->bottomLVars );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {
@@ -2162,7 +2162,7 @@ Obj FuncLOAD_STAT (
     UpdateCopyFopyInfo();
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( BottomLVars );
+    ExecBegin( TLS->bottomLVars );
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
     if ( res ) {

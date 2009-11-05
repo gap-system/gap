@@ -62,7 +62,7 @@ const char * Revision_streams_c =
 #include        "streams.h"             /* streams package                 */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "vars.h"                /* BottomLVars for execution contexts */
+#include        "vars.h"                /* TLS->bottomLVars for execution contexts */
 
 #include	"tls.h"
 
@@ -78,7 +78,7 @@ Int READ_COMMAND ( void ) {
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand(BottomLVars);
+    status = ReadEvalCommand(TLS->bottomLVars);
     if( status == STATUS_EOF )
         return 0;
 
@@ -168,7 +168,7 @@ Int READ ( void )
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        status = ReadEvalCommand(BottomLVars);
+        status = ReadEvalCommand(TLS->bottomLVars);
 	if (UserHasQuit || UserHasQUIT)
 	  break;
         /* handle return-value or return-void command                      */
@@ -267,7 +267,7 @@ Int READ_TEST ( void )
 
         /* read and evaluate the command                                   */
         ClearError();
-        type = ReadEvalCommand(BottomLVars);
+        type = ReadEvalCommand(TLS->bottomLVars);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
@@ -399,7 +399,7 @@ Int READ_GAP_ROOT ( Char * filename )
 	  SySetBuffering(Input->file);
             while ( 1 ) {
                 ClearError();
-                type = ReadEvalCommand(BottomLVars);
+                type = ReadEvalCommand(TLS->bottomLVars);
 		if (UserHasQuit || UserHasQUIT)
 		  break;
                 if ( type == 1 || type == 2 ) {

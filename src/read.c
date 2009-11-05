@@ -188,7 +188,7 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 */
 extern Obj ExprGVars;
 extern Obj ErrorLVars;
-extern Obj BottomLVars;
+/* TL: extern Obj BottomLVars; */
 
 /* This function reads the options part at the end of a function call
    The syntax is
@@ -301,10 +301,10 @@ void ReadCallVarAss (
        up the static definition stack for each call function */
     lvars0 = ErrorLVars;
     nest0 = 0;
-    while ( type == ' ' && lvars0 != 0 && lvars0 != BottomLVars) {
+    while ( type == ' ' && lvars0 != 0 && lvars0 != TLS->bottomLVars) {
       lvars = lvars0;
       nest = 0;
-      while ( type == ' ' && lvars != 0 && lvars != BottomLVars ) {
+      while ( type == ' ' && lvars != 0 && lvars != TLS->bottomLVars ) {
 	nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
 	if (nams != (Obj) 0)
 	  {
@@ -926,7 +926,7 @@ void ReadFuncExpr (
     volatile UInt       nr;             /* number of statements            */
     volatile UInt       i;              /* loop variable                   */
     volatile UInt       nrError;        /* copy of <TLS->nrError>          */
-    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
 
     /* begin the function                                                  */
     Match( S_FUNCTION, "function", follow );
@@ -999,7 +999,7 @@ void ReadFuncExpr (
         narg = -1;
 
     /* remember the current variables in case of an error                  */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     nrError   = TLS->nrError;
 
     /* now finally begin the function                                      */
@@ -1017,8 +1017,8 @@ void ReadFuncExpr (
     else if ( nrError == 0 && TLS->intrCoding ) {
         CodeEnd(1);
         TLS->intrCoding--;
-        CurrLVars = currLVars;
-        PtrLVars  = PTR_BAG( CurrLVars );
+        TLS->currLVars = currLVars;
+        TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
@@ -1045,7 +1045,7 @@ void ReadFuncExpr1 (
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
     volatile UInt       nrError;        /* copy of <TLS->nrError>          */
-    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
 
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 1 );
@@ -1060,7 +1060,7 @@ void ReadFuncExpr1 (
     Match( S_MAPTO, "->", follow );
 
     /* remember the current variables in case of an error                  */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     nrError   = TLS->nrError;
 
     /* begin interpreting the function expression (with 1 argument)        */
@@ -1079,8 +1079,8 @@ void ReadFuncExpr1 (
     else if ( nrError == 0  && TLS->intrCoding ) {
         CodeEnd(1);
         TLS->intrCoding--;
-        CurrLVars = currLVars;
-        PtrLVars  = PTR_BAG( CurrLVars );
+        TLS->currLVars = currLVars;
+        TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
@@ -1666,10 +1666,10 @@ void ReadFor (
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <Tls->nrError>          */
-    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
 
     /* remember the current variables in case of an error                  */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     nrError   = TLS->nrError;
 
     /* 'for'                                                               */
@@ -1703,8 +1703,8 @@ void ReadFor (
     else if ( nrError == 0  && TLS->intrCoding ) {
       CodeEnd(1);
       TLS->intrCoding--;
-      CurrLVars = currLVars;
-      PtrLVars  = PTR_BAG( CurrLVars );
+      TLS->currLVars = currLVars;
+      TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
       PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
       
     }
@@ -1727,10 +1727,10 @@ void ReadWhile (
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <TLS->nrError>          */
-    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
 
     /* remember the current variables in case of an error                  */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     nrError   = TLS->nrError;
 
     /* 'while' <Expr>  'do'                                                */
@@ -1757,8 +1757,8 @@ void ReadWhile (
     else if ( nrError == 0 && TLS->intrCoding ) {
         CodeEnd(1);
         TLS->intrCoding--;
-        CurrLVars = currLVars;
-        PtrLVars  = PTR_BAG( CurrLVars );
+        TLS->currLVars = currLVars;
+        TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 }
@@ -1780,10 +1780,10 @@ void ReadRepeat (
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <TLS->nrError>          */
-    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
 
     /* remember the current variables in case of an error                  */
-    currLVars = CurrLVars;
+    currLVars = TLS->currLVars;
     nrError   = TLS->nrError;
 
     /* 'repeat'                                                            */
@@ -1809,8 +1809,8 @@ void ReadRepeat (
     else if ( nrError == 0 && TLS->intrCoding ) {
         CodeEnd(1);
         TLS->intrCoding--;
-        CurrLVars = currLVars;
-        PtrLVars  = PTR_BAG( CurrLVars );
+        TLS->currLVars = currLVars;
+        TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
         PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 }
@@ -2036,7 +2036,7 @@ void RecreateStackNams( Obj context )
   Obj lvars = context;
   Obj nams;
   UInt i;
-  while (lvars != BottomLVars && lvars != (Obj)0)
+  while (lvars != TLS->bottomLVars && lvars != (Obj)0)
     {
       nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
       if (nams != (Obj) 0)
@@ -2212,7 +2212,7 @@ UInt ReadEvalFile ( void )
     ReadTop     = 0;
     ReadTilde   = 0;
     CurrLHSGVar = 0;
-    IntrBegin(BottomLVars);
+    IntrBegin(TLS->bottomLVars);
 
     /* check for local variables                                           */
     nloc = 0;
@@ -2299,7 +2299,7 @@ UInt ReadEvalFile ( void )
 void            ReadEvalError ( void )
 {
     PtrBody  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-    PtrLVars = PTR_BAG(CurrLVars);
+    TLS->ptrLVars = PTR_BAG(TLS->currLVars);
     longjmp( ReadJmpError, 1 );
 }
 
@@ -2349,7 +2349,7 @@ Obj Call0ArgsInNewReader(Obj f)
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
   TLS->nrError = 0;
-  IntrBegin( BottomLVars );
+  IntrBegin( TLS->bottomLVars );
 
   if (!READ_ERROR()) {
     result = CALL_0ARGS(f);
@@ -2421,7 +2421,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
   TLS->nrError = 0;
-  IntrBegin( BottomLVars );
+  IntrBegin( TLS->bottomLVars );
 
   if (!READ_ERROR()) {
     result = CALL_1ARGS(f,a);

@@ -34,7 +34,7 @@ extern  Obj             MakeFunction (
 /****************************************************************************
 **
 *F  ExecBegin( <frame> ) . . . . . . . . .begin an execution in context frame
-**  if in doubt, pass BottomLVars as <frame>
+**  if in doubt, pass TLS->bottomLVars as <frame>
 **
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
