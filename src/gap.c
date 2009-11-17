@@ -22,7 +22,7 @@
 const char * Revision_gap_c =
 "@(#)$Id: gap.c,v 4.216 2009/09/25 15:17:05 gap Exp $";
 
-extern char * In;
+/* TL: extern char * In; */
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -177,7 +177,7 @@ void ViewObjHandler ( Obj obj )
   cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
-  memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+  memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
   if ( ! READ_ERROR() ) {
     if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
       CALL_1ARGS(cfunc, obj);
@@ -189,10 +189,10 @@ void ViewObjHandler ( Obj obj )
       PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
   }
   else {
-    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
   }
 }
 
@@ -286,7 +286,7 @@ Obj Shell ( Obj context,
       time = SyTime();
 
     /* read and evaluate one command                                   */
-    Prompt = prompt;
+    TLS->prompt = prompt;
     ClearError();
 
     /* here is a hook: */
@@ -299,7 +299,7 @@ Obj Shell ( Obj context,
         {
           Call0ArgsInNewReader(preCommandHook);
           /* Recover from a potential break loop: */
-          Prompt = prompt;
+          TLS->prompt = prompt;
           ClearError();
         }
     }
@@ -311,7 +311,7 @@ Obj Shell ( Obj context,
 
 
     /* handle ordinary command                                         */
-    if ( status == STATUS_END && ReadEvalResult != 0 ) {
+    if ( status == STATUS_END && TLS->readEvalResult != 0 ) {
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
@@ -319,11 +319,11 @@ Obj Shell ( Obj context,
       if (lastDepth >= 2)
 	AssGVar( Last2, VAL_GVAR( Last  ) );
       if (lastDepth >= 1)
-	AssGVar( Last,  ReadEvalResult   );
+	AssGVar( Last,  TLS->readEvalResult   );
 
       /* print the result                                            */
-      if ( ! DualSemicolon ) {
-	ViewObjHandler( ReadEvalResult );
+      if ( ! TLS->dualSemicolon ) {
+	ViewObjHandler( TLS->readEvalResult );
       }
 	    
     }
@@ -400,7 +400,7 @@ Obj Shell ( Obj context,
     {
       res = NEW_PLIST(T_PLIST_HOM,1);
       SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,ReadEvalResult);
+      SET_ELM_PLIST(res,1,TLS->readEvalResult);
       return res;
     }
   assert(0); 
@@ -967,7 +967,7 @@ Obj FuncWindowCmd (
 UInt ErrorLevel;
 
 Obj  ErrorLVars0;    
-Obj  ErrorLVars;
+/* TL: Obj  ErrorLVars; */
 Int  ErrorLLevel;
 
 /* TL: extern Obj BottomLVars; */
@@ -978,14 +978,14 @@ void DownEnvInner( Int depth )
   /* if we really want to go up                                          */
   if ( depth < 0 && -ErrorLLevel <= -depth ) {
     depth = 0;
-    ErrorLVars = ErrorLVars0;
+    TLS->errorLVars = ErrorLVars0;
     ErrorLLevel = 0;
     ShellContextDepth = 0;
     ShellContext = BaseShellContext;
   }
   else if ( depth < 0 ) {
     depth = -ErrorLLevel + depth;
-    ErrorLVars = ErrorLVars0;
+    TLS->errorLVars = ErrorLVars0;
     ErrorLLevel = 0;
     ShellContextDepth = 0;
     ShellContext = BaseShellContext;
@@ -993,9 +993,9 @@ void DownEnvInner( Int depth )
   
   /* now go down                                                         */
   while ( 0 < depth
-	  && ErrorLVars != TLS->bottomLVars
-	  && PTR_BAG(ErrorLVars)[2] != TLS->bottomLVars ) {
-    ErrorLVars = PTR_BAG(ErrorLVars)[2];
+	  && TLS->errorLVars != TLS->bottomLVars
+	  && PTR_BAG(TLS->errorLVars)[2] != TLS->bottomLVars ) {
+    TLS->errorLVars = PTR_BAG(TLS->errorLVars)[2];
     ErrorLLevel--;
     ShellContext = PTR_BAG(ShellContext)[2];
     ShellContextDepth--;
@@ -1019,7 +1019,7 @@ Obj FuncDownEnv (
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( ErrorLVars == 0 ) {
+  if ( TLS->errorLVars == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1045,7 +1045,7 @@ Obj FuncUpEnv (
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( ErrorLVars == 0 ) {
+  if ( TLS->errorLVars == 0 ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1110,11 +1110,11 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
     else 
       plain_args = args;
-    memcpy((void *)&readJmpError, (void *)&ReadJmpError, sizeof(jmp_buf));
+    memcpy((void *)&readJmpError, (void *)&TLS->readJmpError, sizeof(jmp_buf));
     currLVars = TLS->currLVars;
     currStat = CurrStat;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
-    if (setjmp(ReadJmpError)) {
+    if (setjmp(TLS->readJmpError)) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
       SET_ELM_PLIST(res,2,ThrownObject);
@@ -1161,13 +1161,13 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       else
 	SET_LEN_PLIST(res,1);
     }
-    memcpy((void *)&ReadJmpError, (void *)&readJmpError, sizeof(jmp_buf));
+    memcpy((void *)&TLS->readJmpError, (void *)&readJmpError, sizeof(jmp_buf));
     return res;      
   }
 
  Obj FuncJUMP_TO_CATCH( Obj self, Obj payload) {
    ThrownObject = payload;
-   longjmp(ReadJmpError, 1);
+   longjmp(TLS->readJmpError, 1);
    return 0;
  }
   
@@ -1455,7 +1455,7 @@ void Complete (
     ClearError();
     
     /* switch on the buffer for faster reading */
-    SySetBuffering(Input->file);
+    SySetBuffering(TLS->input->file);
     
     /* we are now completing                                               */
     if ( SyDebugLoading ) {
@@ -1786,10 +1786,10 @@ Obj FuncCOM_FUN (
 */
 #define MAKE_INIT_GET_SYMBOL                    \
     do {                                        \
-        symbol = Symbol;                        \
+        symbol = TLS->symbol;                        \
         value[0] = '\0';                        \
         SyStrncat( value, TLS->value, 1023 );        \
-        if ( Symbol != S_EOF )  GetSymbol();    \
+        if ( TLS->symbol != S_EOF )  GetSymbol();    \
     } while (0)
 
 
@@ -1832,14 +1832,14 @@ Obj FuncMAKE_INIT (
     MAKE_INIT_GET_SYMBOL;
     while ( symbol != S_EOF ) {
 
-        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
         if ( READ_ERROR() ) {
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
             CloseInput();
             CloseOutput();
             ReadEvalError();
         }
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
 
         /* handle function beginning and ending                            */
         if ( symbol == S_FUNCTION ) {
@@ -1857,9 +1857,9 @@ Obj FuncMAKE_INIT (
         }
 
         /* handle -> expressions                                           */
-        else if ( symbol == S_IDENT && Symbol == S_MAPTO ) {
+        else if ( symbol == S_IDENT && TLS->symbol == S_MAPTO ) {
             Pr( "COM_FUN(%d)", funcNum++, 0L );
-            symbol = Symbol;  if ( Symbol != S_EOF )  GetSymbol();
+            symbol = TLS->symbol;  if ( TLS->symbol != S_EOF )  GetSymbol();
             MAKE_INIT_GET_SYMBOL;
             level = 0;
             while ( level != 0

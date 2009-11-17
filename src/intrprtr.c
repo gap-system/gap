@@ -709,11 +709,11 @@ void IntrForBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
        
-    if (CountNams > 0)
+    if (TLS->countNams > 0)
       {
-	GROW_PLIST(StackNams, ++CountNams);
-	SET_ELM_PLIST(StackNams, CountNams, nams);
-	SET_LEN_PLIST(StackNams, CountNams);
+	GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+	SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
       }
 
     CodeFuncExprBegin( 0, 0, nams );
@@ -783,8 +783,8 @@ void IntrForEnd ( void )
     CodeEnd( 0 );
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (CountNams > 0)
-      CountNams--;
+    if (TLS->countNams > 0)
+      TLS->countNams--;
 
     func = CodeResult;
 
@@ -847,11 +847,11 @@ void            IntrWhileBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
        
-    if (CountNams > 0)
+    if (TLS->countNams > 0)
       {
-	GROW_PLIST(StackNams, ++CountNams);
-	SET_ELM_PLIST(StackNams, CountNams, nams);
-	SET_LEN_PLIST(StackNams, CountNams);
+	GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+	SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
       }
     
     CodeFuncExprBegin( 0, 0, nams );
@@ -915,8 +915,8 @@ void            IntrWhileEnd ( void )
 
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (CountNams > 0)
-      CountNams--;
+    if (TLS->countNams > 0)
+      TLS->countNams--;
     
     func = CodeResult;
 
@@ -978,11 +978,11 @@ void            IntrRepeatBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
        
-    if (CountNams > 0)
+    if (TLS->countNams > 0)
       {
-	GROW_PLIST(StackNams, ++CountNams);
-	SET_ELM_PLIST(StackNams, CountNams, nams);
-	SET_LEN_PLIST(StackNams, CountNams);
+	GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+	SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
       }
 
     CodeFuncExprBegin( 0, 0, nams );
@@ -1044,8 +1044,8 @@ void            IntrRepeatEnd ( void )
     CodeEnd( 0 );
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (CountNams > 0)
-      CountNams--;
+    if (TLS->countNams > 0)
+      TLS->countNams--;
     func = CodeResult;
 
     /* call the function                                                   */
@@ -2739,7 +2739,7 @@ void            IntrIsbHVar (
 **
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
-extern  Obj             ErrorLVars;
+/* TL: extern  Obj             ErrorLVars; */
 
 void            IntrAssDVar (
     UInt                dvar,
@@ -2765,8 +2765,8 @@ void            IntrAssDVar (
 
     /* assign the right hand side                                          */
     currLVars = TLS->currLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
+    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     ASS_HVAR( dvar, rhs );
@@ -2795,8 +2795,8 @@ void            IntrUnbDVar (
 
     /* assign the right hand side                                          */
     currLVars = TLS->currLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
+    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     ASS_HVAR( dvar, (Obj)0 );
@@ -2831,7 +2831,7 @@ void            IntrRefDVar (
 
     /* get and check the value                                             */
     currLVars = TLS->currLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     val = OBJ_HVAR( dvar );
@@ -2860,8 +2860,8 @@ void            IntrIsbDVar (
 
     /* get the value                                                       */
     currLVars = TLS->currLVars;
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
+    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     val = OBJ_HVAR( dvar );

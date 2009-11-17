@@ -113,9 +113,9 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
     }
 
     if (echo == True)
-      Input->echo = 1;
+      TLS->input->echo = 1;
     else
-      Input->echo = 0;
+      TLS->input->echo = 0;
 
     status = READ_COMMAND();
     
@@ -132,7 +132,7 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
       UserHasQuit = 0;
     }
     
-    return ReadEvalResult ? ReadEvalResult : SFail;
+    return TLS->readEvalResult ? TLS->readEvalResult : SFail;
     
 }
 
@@ -190,10 +190,10 @@ Int READ ( void )
 	  UserHasQUIT = 1;
 	  break;
 	}
-	if (ReadEvalResult)
+	if (TLS->readEvalResult)
 	  {
 	    MakeReadWriteGVar(LastReadValueGVar);
-	    AssGVar( LastReadValueGVar, ReadEvalResult);
+	    AssGVar( LastReadValueGVar, TLS->readEvalResult);
 	    MakeReadOnlyGVar(LastReadValueGVar);
 	  }
 	
@@ -229,7 +229,7 @@ Obj READ_AS_FUNC ( void )
 
     /* get the function                                                    */
     if ( type == 0 ) {
-        func = ReadEvalResult;
+        func = TLS->readEvalResult;
     }
     else {
         func = Fail;
@@ -273,16 +273,16 @@ Int READ_TEST ( void )
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
 
         /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
+        if ( type == 0 && TLS->readEvalResult != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
             AssGVar( Last3, VAL_GVAR( Last2 ) );
             AssGVar( Last2, VAL_GVAR( Last  ) );
-            AssGVar( Last,  ReadEvalResult   );
+            AssGVar( Last,  TLS->readEvalResult   );
 
             /* print the result                                            */
-            if ( ! DualSemicolon ) {
-                ViewObjHandler( ReadEvalResult );
+            if ( ! TLS->dualSemicolon ) {
+                ViewObjHandler( TLS->readEvalResult );
             }
         }
 
@@ -396,7 +396,7 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result) ) {
-	  SySetBuffering(Input->file);
+	  SySetBuffering(TLS->input->file);
             while ( 1 ) {
                 ClearError();
                 type = ReadEvalCommand(TLS->bottomLVars);
@@ -670,17 +670,17 @@ Obj FuncPrint (
 	  PrintFunction( arg );
         }
         else {
-            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
                 PrintObj( arg );
             }
             else {
-                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
                 ReadEvalError();
             }
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -732,7 +732,7 @@ Obj FuncPRINT_TO (
             PrintObjFull = 0;
         }
         else {
-            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -740,10 +740,10 @@ Obj FuncPRINT_TO (
             }
             else {
                 CloseOutput();
-                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
                 ReadEvalError();
             }
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -784,7 +784,7 @@ Obj FuncPRINT_TO_STREAM (
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -803,10 +803,10 @@ Obj FuncPRINT_TO_STREAM (
         }
         else {
             CloseOutput();
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
             ReadEvalError();
         }
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -863,7 +863,7 @@ Obj FuncAPPEND_TO (
             PrintObjFull = 0;
         }
         else {
-            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -871,10 +871,10 @@ Obj FuncAPPEND_TO (
             }
             else {
                 CloseOutput();
-                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
                 ReadEvalError();
             }
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -915,7 +915,7 @@ Obj FuncAPPEND_TO_STREAM (
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -934,10 +934,10 @@ Obj FuncAPPEND_TO_STREAM (
         }
         else {
             CloseOutput();
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
             ReadEvalError();
         }
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -971,7 +971,7 @@ Obj FuncREAD (
         return False;
     }
 
-    SySetBuffering(Input->file);
+    SySetBuffering(TLS->input->file);
    
     /* read the test file                                                  */
     return READ() ? True : False;
@@ -1061,7 +1061,7 @@ Obj FuncREAD_AS_FUNC (
         return Fail;
     }
 
-    SySetBuffering(Input->file);
+    SySetBuffering(TLS->input->file);
     
     /* read the function                                                   */
     return READ_AS_FUNC();

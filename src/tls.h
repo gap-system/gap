@@ -20,11 +20,53 @@ typedef struct ThreadLocalStorage
   Bag bottomLVars;
   Bag currLVars;
   Obj *ptrLVars;
+  /* From read.c */
+  jmp_buf readJmpError;
+  Obj stackNams;
+  UInt countNams;
+  UInt readTop;
+  UInt readTilde;
+  UInt currLHSGVar;
+  UInt currentGlobalForLoopVariables[100];
+  UInt currentGlobalForLoopDepth;
+  Obj exprGVars;
+  Obj errorLVars;
+  UInt warnOnUnboundGlobalsRNam;
+  Obj readEvalResult;
   /* From scanner.c */
   Char value[MAX_VALUE_LEN];
   UInt valueLen;
   UInt nrError;
   UInt nrErrLine;
+  UInt            symbol;
+  Char *          prompt;
+  Obj  printPromptHook;
+  Obj  endLineHook;
+  TypInputFile *  input;
+  Char *          in;
+  TypOutputFile * output;
+  TypOutputFile * inputLog;
+  TypOutputFile * outputLog;
+  TypInputFile *  testInput;
+  TypOutputFile * testOutput;
+  Char            testLine [256];
+  Obj isStringStream;
+  TypOutputFile logFile;
+  TypOutputFile logStream;
+  TypOutputFile inputLogFile;
+  TypOutputFile inputLogStream;
+  TypOutputFile outputLogFile;
+  TypOutputFile outputLogStream;
+  Obj printFormattingStatus;
+  Obj readLineFunc;
+  Int helpSubsOn;
+  Int dualSemicolon;
+  Obj writeAllFunc;
+  Int noSplitLine;
+  KOutputStream theStream;
+  Char *theBuffer;
+  UInt theCount;
+  UInt theLimit;
 } ThreadLocalStorage;
 
 typedef struct

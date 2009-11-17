@@ -36,6 +36,7 @@ void *AllocateTLS()
   void *addr;
   void *result;
   size_t pagesize = getpagesize();
+  size_t tlssize = (sizeof(ThreadLocalStorage)+pagesize-1) & ~ (pagesize-1);
   addr = mmap(0, 2 * TLS_SIZE, PROT_READ|PROT_WRITE,
     MAP_PRIVATE|MAP_ANONYMOUS, -1 , 0);
   result = (void *)((((uintptr_t) addr) + (TLS_SIZE-1)) & TLS_MASK);
@@ -43,9 +44,9 @@ void *AllocateTLS()
   munmap((char *)result+TLS_SIZE, (char *)addr-(char *)result+TLS_SIZE);
   /* generate a stack overflow protection area */
 #ifdef STACK_GROWS_UP
-  mprotect((char *) result + TLS_SIZE - pagesize, pagesize, PROT_NONE);
+  mprotect((char *) result + TLS_SIZE - tlssize - pagesize, pagesize, PROT_NONE);
 #else
-  mprotect((char *) result + pagesize, pagesize, PROT_NONE);
+  mprotect((char *) result + tlssize, pagesize, PROT_NONE);
 #endif
   return result;
 }

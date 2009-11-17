@@ -126,7 +126,7 @@ const char * Revision_scanner_h =
 
 #define S_EOF           ((1UL<<31))
 
-extern  UInt            Symbol;
+/* TL: extern  UInt            Symbol; */
 
 
 /****************************************************************************
@@ -251,7 +251,7 @@ typedef UInt            TypSymbolSet;
 **  It is set to 'gap> ' or 'brk> ' in the  read-eval-print loops and changed
 **  to the partial prompt '> ' in 'Read' after the first symbol is read.
 */
-extern  Char *          Prompt;
+/* TL: extern  Char *          Prompt; */
 
 /***************************************************************************** 
 **
@@ -262,7 +262,7 @@ extern  Char *          Prompt;
 **  default is: Instead of `PrintPromptHook' the `Prompt' is printed and
 **  instead of `EndLineHook' nothing is done.
 */
-extern Obj  PrintPromptHook;
+/* TL: extern Obj  PrintPromptHook; */
 extern Obj  EndLineHook;
 
 /****************************************************************************
@@ -354,7 +354,7 @@ extern  void            SyntaxError (
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
 */
-extern Int DualSemicolon;
+/* TL: extern Int DualSemicolon; */
 
 extern void Match (
             UInt                symbol,
@@ -831,8 +831,8 @@ typedef struct {
 */
 
 extern TypInputFile    InputFiles [16];
-extern TypInputFile *  Input;
-extern Char *          In;
+/* TL: extern TypInputFile *  Input; */
+/* TL: extern Char *          In; */
 
 
 /****************************************************************************
@@ -867,7 +867,7 @@ typedef struct {
 } TypOutputFile;
 
 extern TypOutputFile   OutputFiles [16];
-extern TypOutputFile * Output;
+/* TL: extern TypOutputFile * Output; */
 
 /****************************************************************************
 **
@@ -929,7 +929,7 @@ extern  void            SPrTo (
 **  not 0  the    scanner echoes all input   from  the files  '*stdin*'   and
 **  '*errin*' to this file.
 */
-extern TypOutputFile * InputLog;
+/* TL: extern TypOutputFile * InputLog; */
 
 
 /****************************************************************************
@@ -940,7 +940,7 @@ extern TypOutputFile * InputLog;
 **  is  not  0  the  scanner echoes  all output  to  the files '*stdout*' and
 **  '*errout*' to this file.
 */
-extern TypOutputFile * OutputLog;
+/* TL: extern TypOutputFile * OutputLog; */
 
 
 /****************************************************************************
@@ -964,9 +964,9 @@ extern TypOutputFile * OutputLog;
 **  'TestLine' holds the one line that is read from 'TestInput' to compare it
 **  with a line that is about to be printed to 'TestOutput'.
 */
-extern TypInputFile *  TestInput;
-extern TypOutputFile * TestOutput;
-extern Char            TestLine [256];
+/* TL: extern TypInputFile *  TestInput; */
+/* TL: extern TypOutputFile * TestOutput; */
+/* TL: extern Char            TestLine [256]; */
 
 
 /****************************************************************************

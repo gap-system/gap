@@ -25,17 +25,17 @@ const char * Revision_read_h =
 **  the interpretation of  an expression  or  statement lead to an  error (in
 **  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
 */
-extern jmp_buf ReadJmpError;
+/* TL: extern jmp_buf ReadJmpError; */
 
 #ifndef DEBUG_READ_ERROR
 
-#define READ_ERROR()    (TLS->nrError || (TLS->nrError+=setjmp(ReadJmpError)))
+#define READ_ERROR()    (TLS->nrError || (TLS->nrError+=setjmp(TLS->readJmpError)))
 
 #else
 
 #define READ_ERROR()                                                     \
     ( TLS->nrError ||                                                         \
-      ( ( TLS->nrError += setjmp(ReadJmpError) ) ?                            \
+      ( ( TLS->nrError += setjmp(TLS->readJmpError) ) ?                            \
         Pr( "READ_ERROR( %s, %d )\n", (Int)__FILE__, __LINE__ ),0 : 0 ), \
       TLS->nrError )
 
@@ -54,7 +54,7 @@ extern jmp_buf ReadJmpError;
 
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
-extern Obj ReadEvalResult;
+/* TL: extern Obj ReadEvalResult; */
 
 
 /****************************************************************************
@@ -99,8 +99,8 @@ extern void ReadEvalError ( void );
 **  while loops and the break loop
 */
 
-extern Obj StackNams;
-extern UInt CountNams;
+/* TL: extern Obj StackNams; */
+/* TL: extern UInt CountNams; */
 
 
 extern void PushGlobalForLoopVariable( UInt var);

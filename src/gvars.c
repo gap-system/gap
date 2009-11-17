@@ -55,6 +55,8 @@ const char * Revision_gvars_c =
 
 #include        "bool.h"                /* booleans                        */
 
+#include        "tls.h"                 /* thread-local storage            */
+
 /****************************************************************************
 **
 
@@ -102,7 +104,7 @@ Obj * PtrGVars;
 */
 Obj             NameGVars;
 Obj             WriteGVars;
-Obj             ExprGVars;
+/* TL: Obj             ExprGVars; */
 Obj             CopiesGVars;
 Obj             FopiesGVars;
 UInt            CountGVars;
@@ -199,7 +201,7 @@ void            AssGVar (
     CHANGED_BAG( ValGVars );
 
     /* if the global variable was automatic, convert it to normal          */
-    SET_ELM_PLIST( ExprGVars, gvar, 0 );
+    SET_ELM_PLIST( TLS->exprGVars, gvar, 0 );
 
     /* assign the value to all the internal copies                         */
     cops = ELM_PLIST( CopiesGVars, gvar );
@@ -264,11 +266,11 @@ Obj             ValAutoGVar (
     Obj                 arg;            /* argument to pass for automatic  */
 
     /* if this is an automatic variable, make the function call            */
-    if ( VAL_GVAR(gvar) == 0 && ELM_PLIST( ExprGVars, gvar ) != 0 ) {
+    if ( VAL_GVAR(gvar) == 0 && ELM_PLIST( TLS->exprGVars, gvar ) != 0 ) {
 
         /* make the function call                                          */
-        func = ELM_PLIST( ELM_PLIST( ExprGVars, gvar ), 1 );
-        arg  = ELM_PLIST( ELM_PLIST( ExprGVars, gvar ), 2 );
+        func = ELM_PLIST( ELM_PLIST( TLS->exprGVars, gvar ), 1 );
+        arg  = ELM_PLIST( ELM_PLIST( TLS->exprGVars, gvar ), 2 );
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
@@ -387,9 +389,9 @@ UInt GVarName (
         GROW_PLIST(    WriteGVars,  CountGVars );
         SET_LEN_PLIST( WriteGVars,  CountGVars );
         SET_ELM_PLIST( WriteGVars,  CountGVars, INTOBJ_INT(1) );
-        GROW_PLIST(    ExprGVars,   CountGVars );
-        SET_LEN_PLIST( ExprGVars,   CountGVars );
-        SET_ELM_PLIST( ExprGVars,   CountGVars, 0 );
+        GROW_PLIST(    TLS->exprGVars,   CountGVars );
+        SET_LEN_PLIST( TLS->exprGVars,   CountGVars );
+        SET_ELM_PLIST( TLS->exprGVars,   CountGVars, 0 );
         GROW_PLIST(    CopiesGVars, CountGVars );
         SET_LEN_PLIST( CopiesGVars, CountGVars );
         SET_ELM_PLIST( CopiesGVars, CountGVars, 0 );
@@ -622,8 +624,8 @@ Obj             AUTOHandler (
         }
         gvar = GVarName( CSTR_STRING(name) );
         SET_ELM_PLIST( ValGVars,   gvar, 0    );
-        SET_ELM_PLIST( ExprGVars, gvar, list );
-        CHANGED_BAG(   ExprGVars );
+        SET_ELM_PLIST( TLS->exprGVars, gvar, list );
+        CHANGED_BAG(   TLS->exprGVars );
     }
 
     /* return void                                                         */
@@ -662,7 +664,7 @@ UInt            completion_gvar (
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
-        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
+        if ( VAL_GVAR( i ) || ELM_PLIST( TLS->exprGVars, i )) {
             curr = NameGVar( i );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -712,7 +714,7 @@ Obj FuncIDENTS_BOUND_GVARS (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
     for ( i = 1, j = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
-        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
+        if ( VAL_GVAR( i ) || ELM_PLIST( TLS->exprGVars, i )) {
            SET_ELM_PLIST( copy, j, ELM_PLIST( NameGVars, i ) );
            j++;
         }
@@ -762,7 +764,7 @@ Obj FuncISB_GVAR (
 
     gv = GVarName( CSTR_STRING(gvar) );
     return ( VAL_GVAR( gv ) ||
-	     ELM_PLIST( ExprGVars, gv )) ? True : False;
+	     ELM_PLIST( TLS->exprGVars, gv )) ? True : False;
 }
 
 
@@ -1089,8 +1091,8 @@ static Int InitKernel (
                    "src/gvars.c:NameGVars" );
     InitGlobalBag( &WriteGVars,
                    "src/gvars.c:WriteGVars" );
-    InitGlobalBag( &ExprGVars,
-                   "src/gvars.c:ExprGVars" );
+    /* TL: InitGlobalBag( &ExprGVars,
+                   "src/gvars.c:TLS->exprGVars" ); */
     InitGlobalBag( &CopiesGVars,
                    "src/gvars.c:CopiesGVars" );
     InitGlobalBag( &FopiesGVars,
@@ -1188,8 +1190,8 @@ static Int InitLibrary (
     WriteGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( WriteGVars, 0 );
 
-    ExprGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( ExprGVars, 0 );
+    TLS->exprGVars = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( TLS->exprGVars, 0 );
 
     CopiesGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CopiesGVars, 0 );

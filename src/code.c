@@ -629,14 +629,14 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    if (!Input->gapname) {
-      len = SyStrlen(Input->name);
-      Input->gapname = NEW_STRING(len);
-      SyStrncat(CSTR_STRING(Input->gapname),Input->name, len);
+    if (!TLS->input->gapname) {
+      len = SyStrlen(TLS->input->name);
+      TLS->input->gapname = NEW_STRING(len);
+      SyStrncat(CSTR_STRING(TLS->input->gapname),TLS->input->name, len);
     }
-    FILENAME_BODY(body) = Input->gapname;
-    STARTLINE_BODY(body) = INTOBJ_INT(Input->number);
-    /*    Pr("Coding begin at %s:%d ",(Int)(Input->name),Input->number);
+    FILENAME_BODY(body) = TLS->input->gapname;
+    STARTLINE_BODY(body) = INTOBJ_INT(TLS->input->number);
+    /*    Pr("Coding begin at %s:%d ",(Int)(TLS->input->name),TLS->input->number);
 	  Pr(" Body id %d\n",(Int)(body),0L); */
     OffsBody = 0;
 
@@ -701,8 +701,8 @@ void CodeFuncExprEnd (
 
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), OffsBody+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(Input->number);
-    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), Input->number); */
+    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(TLS->input->number);
+    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), TLS->input->number); */
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
