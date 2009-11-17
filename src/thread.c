@@ -13,10 +13,14 @@
 #include        "tls.h"
 #include        "thread.h"
 
+#define LOG2_NUM_LOCKS 11
+#define NUM_LOCKS (1 << LOG2_NUM_LOCKS)
+
 typedef struct {
   pthread_t pthread_id;
   void *tls;
-  void (*start)();
+  void (*start)(void *);
+  void *arg;
   int next;
 } ThreadData;
 
@@ -24,6 +28,8 @@ static ThreadData thread_data[MAX_THREADS];
 static int thread_free_list;
 
 static pthread_mutex_t master_lock;
+
+static pthread_rwlock_t ObjLock[NUM_LOCKS];
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -92,6 +98,8 @@ void RunThreadedMain(
 #endif
   for (i=0; i<MAX_THREADS-1; i++)
     thread_data[i].next = i+1;
+  for (i=0; i<NUM_LOCKS; i++)
+    pthread_rwlock_init(&ObjLock[i], 0);
   thread_data[MAX_THREADS-1].next = -1;
   for (i=0; i<MAX_THREADS; i++)
     thread_data[i].tls = 0;
@@ -110,13 +118,13 @@ void *DispatchThread(void *arg)
   InitializeTLS();
   TLS->threadID = this_thread - thread_data;
   AddGCRoots();
-  this_thread->start();
+  this_thread->start(this_thread->arg);
   RemoveGCRoots();
   GC_unregister_my_thread();
   return 0;
 }
 
-int RunThread(void (*start)())
+int RunThread(void (*start)(void *), void *arg)
 {
   int result;
 #ifndef HAVE_NATIVE_TLS
@@ -136,6 +144,7 @@ int RunThread(void (*start)())
 #ifndef HAVE_NATIVE_TLS
   tls = thread_data[result].tls = AllocateTLS();
 #endif
+  thread_data[result].arg = arg;
   thread_data[result].start = start;
   /* set up the thread attribute to support a custom stack in our TLS */
   pthread_attr_init(&thread_attr);
@@ -178,3 +187,32 @@ void JoinThread(int id)
   FreeTLS(tls);
 #endif
 }
+
+unsigned LockID(void *object) {
+  unsigned p = (unsigned) object;
+  if (sizeof(void *) == 4)
+    return ((p >> 2)
+      ^ (p >> (2 + LOG2_NUM_LOCKS))
+      ^ (p << (LOG2_NUM_LOCKS - 2))) % NUM_LOCKS;
+  else
+    return ((p >> 3)
+      ^ (p >> (3 + LOG2_NUM_LOCKS))
+      ^ (p << (LOG2_NUM_LOCKS - 3))) % NUM_LOCKS;
+}
+
+void Lock(void *object) {
+  pthread_rwlock_wrlock(&ObjLock[LockID(object)]);
+}
+
+void LockShared(void *object) {
+  pthread_rwlock_rdlock(&ObjLock[LockID(object)]);
+}
+
+void Unlock(void *object) {
+  pthread_rwlock_unlock(&ObjLock[LockID(object)]);
+}
+
+void UnlockShared(void *object) {
+  pthread_rwlock_unlock(&ObjLock[LockID(object)]);
+}
+

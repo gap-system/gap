@@ -22,7 +22,12 @@ void RunThreadedMain(
 	char **argv,
 	char **environ );
 
-int RunThread(void (*start)());
+int RunThread(void (*start)(void *), void *arg);
 void JoinThread(int id);
+
+void Lock(void *obj);
+void LockShared(void *obj);
+void Unlock(void *obj);
+void UnlockShared(void *obj);
 
 #endif /* _THREAD_H */

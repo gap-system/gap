@@ -3237,6 +3237,137 @@ Obj FuncGETPID(Obj self) {
   return INTOBJ_INT(getpid());
 }
 
+void ThreadedInterpreter(void *function) {
+  Obj tmp;
+
+  /* intialize everything and begin an interpreter                       */
+  TLS->stackNams   = NEW_PLIST( T_PLIST, 16 );
+  TLS->countNams   = 0;
+  TLS->readTop     = 0;
+  TLS->readTilde   = 0;
+  TLS->currLHSGVar = 0;
+  TLS->intrCoding = 0;
+  TLS->intrIgnoring = 0;
+  TLS->nrError = 0;
+  TLS->bottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
+  tmp = NewFunctionC( "bottom", 0, "", 0 );
+  PTR_BAG(TLS->bottomLVars)[0] = tmp;
+  tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+  BODY_FUNC( PTR_BAG(TLS->bottomLVars)[0] ) = tmp;
+  TLS->currLVars = TLS->bottomLVars;
+
+  IntrBegin( TLS->bottomLVars );
+
+  if (!READ_ERROR()) {
+    CALL_0ARGS((Obj)function);
+    PushVoidObj();
+    /* end the interpreter                                                 */
+    IntrEnd( 0UL );
+  } else {
+    IntrEnd( 1UL );
+    ClearError();
+  } 
+}
+
+/****************************************************************************
+**
+*F FuncCreateThread  ... create a new thread
+**
+** The function creates a new thread with a new interpreter and executes
+** the function passed as an argument in it. It returns an integer that
+** is a unique identifier for the thread.
+*/
+
+Obj FuncCreateThread(Obj self, Obj function) {
+  int id;
+  id = RunThread(ThreadedInterpreter, function);
+  return INTOBJ_INT(id);
+}
+
+/****************************************************************************
+**
+*F FuncWaitThread  ... wait for a created thread to finish.
+**
+** The function waits for an existing thread to finish.
+*/
+
+Obj FuncWaitThread(Obj self, Obj id) {
+  int thread_num = INT_INTOBJ(id);
+  JoinThread(thread_num);
+  return (Obj) 0;
+}
+
+/****************************************************************************
+**
+*F FuncLock ........... acquire write lock on an object.
+*F FuncUnlock ......... release write lock on an object.
+*F FuncLockShared ..... acquire read lock on an object.
+*F FuncUnlockShared ... release read lock on an object.
+**
+*/
+
+
+Obj FuncLock(Obj self, Obj target) {
+  Lock(target);
+  return (Obj) 0;
+}
+
+Obj FuncUnlock(Obj self, Obj target) {
+  Unlock(target);
+  return (Obj) 0;
+}
+
+Obj FuncLockShared(Obj self, Obj target) {
+  LockShared(target);
+  return (Obj) 0;
+}
+
+Obj FuncUnlockShared(Obj self, Obj target) {
+  UnlockShared(target);
+  return (Obj) 0;
+}
+
+/****************************************************************************
+**
+*F FuncSynchronized ......... execute a function while holding a write lock.
+*F FuncSynchronizedShared ... execute a function while holding a read lock.
+**
+*/
+
+Obj FuncSynchronized(Obj self, Obj target, Obj function) {
+  volatile int locked = 0;
+  jmp_buf readJmpError;
+  memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+  if (!READ_ERROR()) {
+    Lock(target);
+    locked = 1;
+    CALL_0ARGS(function);
+    locked = 0;
+    Unlock(target);
+  }
+  if (locked)
+    Unlock(target);
+  memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+  return (Obj) 0;
+}
+
+Obj FuncSynchronizedShared(Obj self, Obj target, Obj function) {
+  volatile int locked = 0;
+  jmp_buf readJmpError;
+  memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+  if (!READ_ERROR()) {
+    LockShared(target);
+    locked = 1;
+    CALL_0ARGS(function);
+    locked = 0;
+    UnlockShared(target);
+  }
+  if (locked)
+    UnlockShared(target);
+  memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+  return (Obj) 0;
+}
+
 /****************************************************************************
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
@@ -3364,6 +3495,30 @@ static StructGVarFunc GVarFuncs [] = {
     { "PRINT_CURRENT_STATEMENT", 1, "context",
       FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
 
+    { "CreateThread", 1, "function",
+      FuncCreateThread, "src/gap.c:CreateThread" },
+
+    { "WaitThread", 1, "threadID",
+      FuncWaitThread, "src/gap.c:WaitThread" },
+
+    { "Lock", 1, "object",
+      FuncLock, "src/gap.c:Lock" },
+    
+    { "LockShared", 1, "object",
+      FuncLockShared, "src/gap.c:LockShared" },
+    
+    { "Unlock", 1, "object",
+      FuncUnlock, "src/gap.c:Unlock" },
+    
+    { "UnlockShared", 1, "object",
+      FuncUnlockShared, "src/gap.c:UnlockShared" },
+
+    { "Synchronized", 2, "object, function",
+      FuncSynchronized, "src/gap.c:Synchronized" },
+
+    { "SynchronizedShared", 2, "object, function",
+      FuncSynchronizedShared, "src/gap.c:SynchronizedShared" },
+    
     { 0 }
 
 };
