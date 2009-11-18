@@ -103,7 +103,7 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  purpose of 'CurrStat' is to make it possible to  point to the location in
 **  case an error is signalled.
 */
-Stat            CurrStat;
+/* TL: Stat            CurrStat; */
 
 
 /****************************************************************************
@@ -114,7 +114,7 @@ Stat            CurrStat;
 **  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
 **  interpret functions.
 */
-Obj             ReturnObjStat;
+/* TL: Obj             ReturnObjStat; */
 
 
 /****************************************************************************
@@ -1520,7 +1520,7 @@ UInt            ExecReturnObj (
 
     /* evaluate the expression                                             */
     SET_BRK_CURR_STAT( stat );
-    ReturnObjStat = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    TLS->returnObjStat = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
     return 1;
@@ -1550,8 +1550,8 @@ UInt            ExecReturnVoid (
     }
 #endif
 
-    /* set 'ReturnObjStat' to void                                         */
-    ReturnObjStat = 0;
+    /* set 'TLS->returnObjStat' to void                                         */
+    TLS->returnObjStat = 0;
 
     /* return up to function interpreter                                   */
     return 2;
@@ -2043,7 +2043,7 @@ static Int InitKernel (
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
 
-    InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" );
+    /* TL: InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" ); */
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );

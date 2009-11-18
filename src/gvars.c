@@ -39,6 +39,8 @@ const char * Revision_gvars_c =
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
+#include        "code.h"                /* coder                           */
+
 #define INCLUDE_DECLARATION_PART
 #include        "gvars.h"               /* global variables                */
 #undef  INCLUDE_DECLARATION_PART

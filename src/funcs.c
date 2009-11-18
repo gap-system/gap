@@ -759,7 +759,7 @@ Obj             EvalFunccallXargs (
 **  'DoExecFunc<i>args' first switches  to a new  values bag.  Then it enters
 **  the arguments <arg1>, <arg2>, and so on in this new  values bag.  Then it
 **  executes  the function body.   After  that it  switches back  to  the old
-**  values bag.  Finally it returns the result from 'ReturnObjStat'.
+**  values bag.  Finally it returns the result from 'TLS->returnObjStat'.
 **
 **  Note that these functions are never called directly, they are only called
 **  through the function call mechanism.
@@ -860,8 +860,8 @@ Obj DoExecFunc0args (
       /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -898,8 +898,8 @@ Obj             DoExecFunc1args (
     /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -938,8 +938,8 @@ Obj             DoExecFunc2args (
     /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -980,8 +980,8 @@ Obj             DoExecFunc3args (
     /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -1024,8 +1024,8 @@ Obj             DoExecFunc4args (
     /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -1070,8 +1070,8 @@ Obj             DoExecFunc5args (
     /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -1118,8 +1118,8 @@ Obj             DoExecFunc6args (
     /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -1170,8 +1170,8 @@ Obj             DoExecFuncXargs (
     /* return the result                                                   */
       {
 	Obj                 returnObjStat;
-	returnObjStat = ReturnObjStat;
-	ReturnObjStat = (Obj)0;
+	returnObjStat = TLS->returnObjStat;
+	TLS->returnObjStat = (Obj)0;
 	return returnObjStat;
       }
 }
@@ -1356,7 +1356,7 @@ void            ExecBegin ( Obj frame )
     ADDR_OBJ(execState)[2] = TLS->currLVars;
     /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
     CHANGED_BAG( TLS->currLVars );
-    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)CurrStat);
+    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)TLS->currStat);
     ExecState = execState;
 
     /* set up new state                                                    */
@@ -1371,7 +1371,7 @@ void            ExecEnd (
     if ( ! error ) {
 
         /* the state must be primal again                                  */
-        assert( CurrStat  == 0 );
+        assert( TLS->currStat  == 0 );
 
         /* switch back to the old state                                    */
         SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));

@@ -60,7 +60,7 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  purpose of 'CurrStat' is to make it possible to  point to the location in
 **  case an error is signalled.
 */
-extern  Stat            CurrStat;
+/* TL: extern  Stat            CurrStat; */
 
 
 /****************************************************************************
@@ -71,10 +71,10 @@ extern  Stat            CurrStat;
 *F  RES_BRK_CURR_STAT() . . . . . . . . restore currently executing statement
 */
 #ifndef NO_BRK_CURR_STAT
-#define SET_BRK_CURR_STAT(stat) (CurrStat = (stat))
+#define SET_BRK_CURR_STAT(stat) (TLS->currStat = (stat))
 #define OLD_BRK_CURR_STAT       Stat oldStat;
-#define REM_BRK_CURR_STAT()     (oldStat = CurrStat)
-#define RES_BRK_CURR_STAT()     (CurrStat = oldStat)
+#define REM_BRK_CURR_STAT()     (oldStat = TLS->currStat)
+#define RES_BRK_CURR_STAT()     (TLS->currStat = oldStat)
 #endif
 #ifdef  NO_BRK_CURR_STAT
 #define SET_BRK_CURR_STAT(stat) /* do nothing */
@@ -92,7 +92,7 @@ extern  Stat            CurrStat;
 **  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
 **  interpret functions.
 */
-extern  Obj             ReturnObjStat;
+/* TL: extern  Obj             ReturnObjStat; */
 
 
 /****************************************************************************

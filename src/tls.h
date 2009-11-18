@@ -67,6 +67,9 @@ typedef struct ThreadLocalStorage
   Char *theBuffer;
   UInt theCount;
   UInt theLimit;
+  /* From stats.c */
+  Stat currStat;
+  Obj returnObjStat;
 } ThreadLocalStorage;
 
 typedef struct

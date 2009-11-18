@@ -1112,7 +1112,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       plain_args = args;
     memcpy((void *)&readJmpError, (void *)&TLS->readJmpError, sizeof(jmp_buf));
     currLVars = TLS->currLVars;
-    currStat = CurrStat;
+    currStat = TLS->currStat;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     if (setjmp(TLS->readJmpError)) {
       SET_LEN_PLIST(res,2);
@@ -1123,7 +1123,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS->currLVars = currLVars;
       TLS->ptrLVars = PTR_BAG(TLS->currLVars);
       PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-      CurrStat = currStat;
+      TLS->currStat = currStat;
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
@@ -1224,7 +1224,7 @@ Obj CallErrorInner (
   l = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, 1);
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
-  SET_BRK_CALL_TO(CurrStat);
+  SET_BRK_CALL_TO(TLS->currStat);
   return CALL_2ARGS(ErrorInner,r,l);  
 }
 

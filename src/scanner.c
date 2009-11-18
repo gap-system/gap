@@ -47,6 +47,8 @@ const char * Revision_scanner_c =
 #include        "scanner.h"             /* scanner                         */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "code.h"                /* coder                           */
+
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
