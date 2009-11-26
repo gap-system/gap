@@ -2764,7 +2764,7 @@ void VarsAfterCollectBags ( void )
   if (TLS->currLVars)
     {
       TLS->ptrLVars = PTR_BAG( TLS->currLVars );
-      PtrBody  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      TLS->ptrBody  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
   if (ValGVars)
     PtrGVars = PTR_BAG( ValGVars );

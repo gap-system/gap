@@ -1019,7 +1019,7 @@ void ReadFuncExpr (
         TLS->intrCoding--;
         TLS->currLVars = currLVars;
         TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
-        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
     /* pop the new local variables list                                    */
@@ -1081,7 +1081,7 @@ void ReadFuncExpr1 (
         TLS->intrCoding--;
         TLS->currLVars = currLVars;
         TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
-        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
     /* pop the new local variables list                                    */
@@ -1705,7 +1705,7 @@ void ReadFor (
       TLS->intrCoding--;
       TLS->currLVars = currLVars;
       TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
-      PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
       
     }
 }
@@ -1759,7 +1759,7 @@ void ReadWhile (
         TLS->intrCoding--;
         TLS->currLVars = currLVars;
         TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
-        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 }
 
@@ -1811,7 +1811,7 @@ void ReadRepeat (
         TLS->intrCoding--;
         TLS->currLVars = currLVars;
         TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
-        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 }
 
@@ -2298,7 +2298,7 @@ UInt ReadEvalFile ( void )
 */
 void            ReadEvalError ( void )
 {
-    PtrBody  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+    TLS->ptrBody  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
     TLS->ptrLVars = PTR_BAG(TLS->currLVars);
     longjmp( TLS->readJmpError, 1 );
 }

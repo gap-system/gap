@@ -1122,7 +1122,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       ThrownObject = 0;
       TLS->currLVars = currLVars;
       TLS->ptrLVars = PTR_BAG(TLS->currLVars);
-      PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS->currStat = currStat;
     } else {
       switch (LEN_PLIST(plain_args)) {

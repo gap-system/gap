@@ -514,7 +514,7 @@ void            IntrFuncExprEnd (
     /* switch back to immediate mode, get the function                     */
     CodeEnd(0);
     TLS->intrCoding = 0;
-    func = CodeResult;
+    func = TLS->codeResult;
 
     /* push the function                                                   */
     PushObj(func);
@@ -786,7 +786,7 @@ void IntrForEnd ( void )
     if (TLS->countNams > 0)
       TLS->countNams--;
 
-    func = CodeResult;
+    func = TLS->codeResult;
 
     /* call the function                                                   */
     CALL_0ARGS( func );
@@ -918,7 +918,7 @@ void            IntrWhileEnd ( void )
     if (TLS->countNams > 0)
       TLS->countNams--;
     
-    func = CodeResult;
+    func = TLS->codeResult;
 
     
     /* call the function                                                   */
@@ -1046,7 +1046,7 @@ void            IntrRepeatEnd ( void )
        variable names list to get the counts right. Remove it */
     if (TLS->countNams > 0)
       TLS->countNams--;
-    func = CodeResult;
+    func = TLS->codeResult;
 
     /* call the function                                                   */
     CALL_0ARGS( func );

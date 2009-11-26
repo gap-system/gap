@@ -70,6 +70,15 @@ typedef struct ThreadLocalStorage
   /* From stats.c */
   Stat currStat;
   Obj returnObjStat;
+  /* From code.c */
+  Stat *ptrBody;
+  Stat offsBody;
+  Obj codeResult;
+  Bag stackStat;
+  Int countStat;
+  Bag stackExpr;
+  Int countExpr;
+  Bag codeLVars;
 } ThreadLocalStorage;
 
 typedef struct

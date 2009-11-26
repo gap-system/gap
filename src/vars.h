@@ -48,7 +48,7 @@ const char * Revision_vars_h =
                                                 sizeof(Obj)*(3+narg+nloc) );\
                             TLS->ptrLVars  = PTR_BAG( TLS->currLVars );               \
                             CURR_FUNC = (func);                             \
-                            PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
+                            TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
                             SET_BRK_CALL_FROM( old );                       \
                         } while ( 0 )
 
@@ -64,7 +64,7 @@ const char * Revision_vars_h =
                             CHANGED_BAG( TLS->currLVars );                       \
                             TLS->currLVars = (old);                              \
                             TLS->ptrLVars  = PTR_BAG( TLS->currLVars );               \
-                            PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
+                            TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
                         } while ( 0 )
 
 

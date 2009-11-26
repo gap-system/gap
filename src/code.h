@@ -47,7 +47,7 @@ const char * Revision_code_h =
 **
 **  'PtrBody' is a pointer to the current body.
 */
-extern  Stat *          PtrBody;
+/* TL: extern  Stat *          PtrBody; */
 
 
 /****************************************************************************
@@ -193,7 +193,7 @@ extern  Stat *          PtrBody;
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat*)(((char*)PtrBody)+(stat)))
+#define ADDR_STAT(stat) ((Stat*)(((char*)TLS->ptrBody)+(stat)))
 
 
 /****************************************************************************
@@ -454,7 +454,7 @@ extern  Stat *          PtrBody;
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-extern  Obj             CodeResult;
+/* TL: extern  Obj             CodeResult; */
 
 
 /****************************************************************************
