@@ -3368,6 +3368,13 @@ Obj FuncSynchronizedShared(Obj self, Obj target, Obj function) {
   return (Obj) 0;
 }
 
+Obj FuncCreateChannel(Obj self, Obj args);
+Obj FuncDestroyChannel(Obj self, Obj id);
+Obj FuncSendChannel(Obj self, Obj id, Obj obj);
+Obj FuncReceiveChannel(Obj self, Obj id);
+Obj FuncTrySendChannel(Obj self, Obj id, Obj obj);
+Obj FuncTryReceiveChannel(Obj self, Obj id, Obj defaultobj);
+
 /****************************************************************************
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
@@ -3518,6 +3525,24 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SynchronizedShared", 2, "object, function",
       FuncSynchronizedShared, "src/gap.c:SynchronizedShared" },
+
+    { "CreateChannel", -1, "string [, size]",
+      FuncCreateChannel, "src/synchronize.c:CreateChannel" },
+
+    { "DestroyChannel", 1, "channelid",
+      FuncDestroyChannel, "src/synchronize.c:DestroyChannel" },
+
+    { "SendChannel", 2, "channelid, obj",
+      FuncSendChannel, "src/synchronize.c:SendChannel" },
+
+    { "ReceiveChannel", 1, "channelid",
+      FuncReceiveChannel, "src/synchronize:ReceiveChannel" },
+
+    { "TryReceiveChannel", 2, "channelid, obj",
+      FuncTryReceiveChannel, "src/synchronize.c:TryReceiveChannel" },
+
+    { "TrySendChannel", 2, "channelid, obj",
+      FuncTrySendChannel, "src/synchronize.c:TrySendChannel" },
     
     { 0 }
 
@@ -4077,15 +4102,488 @@ void InitializeGap (
 
 }
 
+/* Read and write atomic words */
+
+#define AtomicRead(v) (v)
+#define AtomicWrite(x, v) (x) = (v)
+
+#define MemoryBarrier()
+
+#define TABLE_SIZE 4096
+
+/* Shared object types */
+
+#define T_CHANNEL 0
+#define T_BARRIER 1
+#define T_SYNCVAR 2
+
+typedef struct SharedObject
+{
+  struct SharedObject *next;
+  char *name;
+  int type;
+  void *data;
+} SharedObject;
+
+typedef struct Channel
+{
+  Obj queue;
+  Obj keepAlive;
+  int id;
+  int waiting;
+  int head, tail;
+  int size, capacity;
+  int dynamic;
+  pthread_mutex_t mutex;
+  pthread_cond_t signal;
+} Channel;
+
+typedef struct Barrier
+{
+  int count;
+} Barrier;
+
+
+/* TODO: register globals */
+Obj firstKeepAlive;
+Obj lastKeepAlive;
+
+SharedObject *SharedTable[TABLE_SIZE];
+
+pthread_mutex_t tableLock;
+
+void *Allocate(size_t size)
+{
+  return malloc(size);
+}
+
+void Free(void *addr)
+{
+  free(addr);
+}
+
+void LockTable()
+{
+  pthread_mutex_lock(&tableLock);
+}
+
+void UnlockTable()
+{
+  pthread_mutex_unlock(&tableLock);
+}
+
+
+SharedObject *AllocateSharedObject(char *name, int type, void *data)
+{
+  SharedObject *result = Allocate(sizeof(SharedObject));
+  result->name = name;
+  result->type = type;
+  result->data = data;
+  return result;
+}
+
+unsigned HashShared(char *name, int type)
+{
+  unsigned result = type;
+  while (*name)
+  {
+    result *= 100093;
+    result += *(unsigned char *)name;
+    name++;
+  }
+  return result;
+}
+
+int CreateObject(char *name, int type, void *data)
+{
+  unsigned hash = HashShared(name, type);
+  unsigned index = hash % TABLE_SIZE;
+  unsigned pos = 0;
+  SharedObject **currentp;
+  SharedObject *current;
+  LockTable();
+  currentp = &SharedTable[index];
+  while ((current = AtomicRead(*currentp)))
+  {
+    if (strcmp(AtomicRead(current->name), name) == 0
+        && AtomicRead(current->type) == type)
+    {
+      if (current->data == 0)
+      {
+        AtomicWrite(current->data, data);
+	UnlockTable();
+	return hash + TABLE_SIZE * pos;
+      }
+      UnlockTable();
+      return -1;
+    }
+    pos++;
+  }
+  MemoryBarrier();
+  AtomicWrite(*currentp, AllocateSharedObject(name, type, data));
+  UnlockTable();
+  return index + TABLE_SIZE * pos;
+}
+
+int DestroyObject(unsigned id, int type)
+{
+  SharedObject *current;
+  unsigned index = id % TABLE_SIZE;
+  LockTable();
+  id /= TABLE_SIZE;
+  current = AtomicRead(SharedTable[index]);
+  while (id && current)
+  {
+    id--;
+    current = AtomicRead(current->next);
+  }
+  if (current->type == type)
+  {
+    AtomicWrite(current->data, 0);
+    UnlockTable();
+    return 1;
+  }
+  UnlockTable();
+  return 0;
+}
+
+int DestroyObjectByName(char *name, int type)
+{
+  SharedObject *current;
+  unsigned hash = HashShared(name, type);
+  unsigned index = hash % TABLE_SIZE;
+  unsigned id = hash / TABLE_SIZE;
+  LockTable();
+  current = AtomicRead(SharedTable[index]);
+  while (id && current)
+  {
+    id--;
+    current = AtomicRead(current->next);
+  }
+  if (current->type == type)
+  {
+    AtomicWrite(current->data, 0);
+    return 1;
+  }
+  UnlockTable();
+  return 0;
+}
+
+void *FindObjectById(unsigned id, int type)
+{
+  SharedObject *current;
+  unsigned index = id % TABLE_SIZE;
+  id /= TABLE_SIZE;
+  current = AtomicRead(SharedTable[index]);
+  while (id && current)
+  {
+    id--;
+    current = AtomicRead(current->next);
+  }
+  if (AtomicRead(current->type) == type)
+    return AtomicRead(current->data);
+  return 0;
+}
+
+void *FindObjectByName(char *name, int type)
+{
+  SharedObject *current;
+  unsigned hash = HashShared(name, type);
+  unsigned index = hash % TABLE_SIZE;
+  current = AtomicRead(SharedTable[index]);
+  while (current)
+  {
+    if (strcmp(current->name, name) == 0 && AtomicRead(current->type == type))
+    {
+      MemoryBarrier();
+      return AtomicRead(current->data);
+    }
+  }
+  return 0;
+}
+
+#define PREV(obj) (ADDR_OBJ(obj)[2])
+#define NEXT(obj) (ADDR_OBJ(obj)[3])
+
+Obj KeepAlive(Obj obj)
+{
+  Obj newKeepAlive = NewBag( T_PLIST, 4*sizeof(Obj) );
+  LockTable();
+  ADDR_OBJ(newKeepAlive)[0] = (Obj) 3; /* Length 3 */
+  ADDR_OBJ(newKeepAlive)[1] = obj;
+  PREV(newKeepAlive) = lastKeepAlive;
+  NEXT(newKeepAlive) = (Obj) 0;
+  if (lastKeepAlive)
+    NEXT(lastKeepAlive) = newKeepAlive;
+  else
+    firstKeepAlive = lastKeepAlive = newKeepAlive;
+  UnlockTable();
+  return newKeepAlive;
+}
+
+void StopKeepAlive(Obj node)
+{
+  Obj pred, succ;
+  LockTable();
+  pred = PREV(node);
+  succ = NEXT(node);
+  if (pred)
+    NEXT(pred) = succ;
+  else
+    firstKeepAlive = succ;
+  if (succ)
+    PREV(succ) = pred;
+  else
+    lastKeepAlive = pred;
+  UnlockTable();
+}
+
+static void LockChannel(Channel *channel)
+{
+  pthread_mutex_lock(&channel->mutex);
+}
+
+static void UnlockChannel(Channel *channel)
+{
+  pthread_mutex_unlock(&channel->mutex);
+}
+
+static void SignalChannel(Channel *channel)
+{
+  pthread_cond_broadcast(&channel->signal);
+}
+
+static void WaitChannel(Channel *channel)
+{
+  channel->waiting++;
+  pthread_cond_wait(&channel->signal, &channel->mutex);
+  channel->waiting--;
+}
+
+static void ExpandChannel(Channel *channel)
+{
+  /* Growth ratio should be less than the golden ratio */
+  unsigned capacity = channel->capacity * 16 / 10 - 1;
+  if (capacity == channel->capacity)
+    capacity++;
+  channel->capacity = capacity;
+  GROW_PLIST(channel->queue, capacity);
+}
+
+static void ContractChannel(Channel *channel)
+{
+  /* Not yet implemented */
+}
+
+static void SendChannel(Channel *channel, Obj obj)
+{
+  LockChannel(channel);
+  if (channel->size == channel->capacity && channel->dynamic)
+    ExpandChannel(channel);
+  while (channel->size == channel->capacity)
+    WaitChannel(channel);
+  ADDR_OBJ(channel->queue)[1+channel->tail++] = obj;
+  if (channel->tail == channel->capacity)
+    channel->tail = 0;
+  channel->size++;
+  UnlockChannel(channel);
+}
+
+static int TrySendChannel(Channel *channel, Obj obj)
+{
+  LockChannel(channel);
+  if (channel->size == channel->capacity && channel->dynamic)
+    ExpandChannel(channel);
+  if (channel->size == channel->capacity)
+  {
+    UnlockChannel(channel);
+    return 0;
+  }
+  ADDR_OBJ(channel->queue)[1+channel->tail++] = obj;
+  if (channel->tail == channel->capacity)
+    channel->tail = 0;
+  channel->size++;
+  UnlockChannel(channel);
+  return 1;
+}
+
+static Obj ReceiveChannel(Channel *channel)
+{
+  Obj result;
+  LockChannel(channel);
+  while (channel->size == 0)
+    WaitChannel(channel);
+  result = ADDR_OBJ(channel->queue)[1+channel->head++];
+  if (channel->head == channel->capacity)
+    channel->head = 0;
+  channel->size--;
+  UnlockChannel(channel);
+  return result;
+}
+
+static Obj TryReceiveChannel(Channel *channel, Obj defaultobj)
+{
+  Obj result;
+  LockChannel(channel);
+  if (channel->size == 0)
+  {
+    UnlockChannel(channel);
+    return defaultobj;
+  }
+  result = ADDR_OBJ(channel->queue)[1+channel->head++];
+  if (channel->head == channel->capacity)
+    channel->head = 0;
+  channel->size--;
+  UnlockChannel(channel);
+  return result;
+}
+
+static int CreateChannel(char *name, int capacity)
+{
+  Channel *channel;
+  int id;
+  channel = Allocate(sizeof(Channel));
+  id = CreateObject(name, T_CHANNEL, channel);
+  if (id < 0) {
+    Free(channel);
+    return -1;
+  }
+  channel->id = id;
+  channel->size = channel->head = channel->tail = 0;
+  channel->capacity = (capacity < 0) ? 10 : capacity;
+  channel->dynamic = (capacity < 0);
+  channel->waiting = 0;
+  channel->queue = NewBag( T_PLIST, (capacity+1) * sizeof(Obj) );
+  channel->keepAlive = KeepAlive(channel->queue);
+  UnlockTable();
+  return id;
+}
+
+static int DestroyChannel(Channel *channel)
+{
+  LockChannel(channel);
+  if (channel->waiting)
+  {
+    UnlockChannel(channel);
+    return 0;
+  }
+  UnlockChannel(channel);
+  /* TODO: Race condition */
+  StopKeepAlive(channel->keepAlive);
+  DestroyObject(channel->id, T_CHANNEL);
+  return 1;
+}
+
+void ImmediateError(char *message)
+{
+  ErrorQuit(message, 0, 0);
+}
+
+Obj FuncCreateChannel(Obj self, Obj args)
+{
+  char *name;
+  int capacity;
+  if (!IS_PLIST(args) || LEN_PLIST(args) == 0 || LEN_PLIST(args) > 2)
+    ImmediateError("CreateChannel: Function takes one or two arguments");
+  if (!IS_STRING(ELM_PLIST(args, 1)))
+    ImmediateError("CreateChannel: First argument must be a string");
+  if (LEN_PLIST(args) == 2 && !IS_INTOBJ(ELM_PLIST(args, 2)))
+    ImmediateError("CreateChannel: Second argument must be an integer");
+  name = CSTR_STRING(ELM_PLIST(args, 1));
+  if (LEN_PLIST(args) == 1)
+    capacity = 10;
+  else
+    capacity = INT_INTOBJ(ELM_PLIST(args, 2));
+  if (capacity <= 0)
+    ImmediateError("CreateChannel: Capacity must be positive");
+  return INTOBJ_INT(CreateChannel(name, capacity));
+}
+
+Obj FuncDestroyChannel(Obj self, Obj ident)
+{
+  char *name;
+  Channel *channel;
+  if (IS_STRING(ident))
+  {
+    name = CSTR_STRING(ident);
+    channel = FindObjectByName(name, T_CHANNEL);
+  }
+  else if (IS_INTOBJ(ident))
+  {
+    channel = ident >= 0 ? FindObjectById(INT_INTOBJ(ident), T_CHANNEL) : 0;
+  }
+  else
+  {
+    ImmediateError("DestroyChannel: Channel identifier must be a string or number");
+    return (Obj) 0; /* flow control hint */
+  }
+  if (!channel)
+    ImmediateError("DestroyChannel: No such channel exists");
+  if (!DestroyChannel(channel))
+    ImmediateError("DestroyChannel: Channel is in use");
+  return (Obj) 0;
+}
+
+Channel *LookupChannel(int id, char *func)
+{
+  Channel *channel = FindObjectById(id, T_CHANNEL);
+  if (!channel)
+    ImmediateError("%s: Can't find channel");
+  return channel;
+}
+
+Obj FuncSendChannel(Obj self, Obj idobj, Obj obj)
+{
+  int id;
+  if (!IS_INTOBJ(idobj))
+    ImmediateError("SendChannel: Channel identifier must be a number");
+  id = INT_INTOBJ(idobj);
+  if (id < 0)
+    ImmediateError("SendChannel: Channel identifier must be non-negative");
+  SendChannel(LookupChannel(id, "SendChannel"), obj);
+  return (Obj) 0;
+}
+
+Obj FuncTrySendChannel(Obj self, Obj idobj, Obj obj)
+{
+  int id;
+  if (!IS_INTOBJ(idobj))
+    ImmediateError("TrySendChannel: Channel identifier must be a number");
+  id = INT_INTOBJ(idobj);
+  if (id < 0)
+    ImmediateError("TrySendChannel: Channel identifier must be non-negative");
+  return INTOBJ_INT(TrySendChannel(LookupChannel(id, "TrySendChannel"), obj));
+}
+
+Obj FuncReceiveChannel(Obj self, Obj idobj)
+{
+  int id;
+  if (!IS_INTOBJ(idobj))
+    ImmediateError("ReceiveChannel: Channel identifier must be a number");
+  id = INT_INTOBJ(idobj);
+  if (id < 0)
+    ImmediateError("ReceiveChannel: Channel identifier must be non-negative");
+  return ReceiveChannel(LookupChannel(id, "ReceiveChannel"));
+}
+
+Obj FuncTryReceiveChannel(Obj self, Obj idobj, Obj obj)
+{
+  int id;
+  if (!IS_INTOBJ(idobj))
+    ImmediateError("TryReceiveChannel: Channel identifier must be a number");
+  id = INT_INTOBJ(idobj);
+  if (id < 0)
+    ImmediateError("TryReceiveChannel: Channel identifier must be non-negative");
+  return INTOBJ_INT(TryReceiveChannel(LookupChannel(id, "TryReceiveChannel"),
+           obj));
+}
+
+
 
 /****************************************************************************
 **
 
 *E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-
 
 
