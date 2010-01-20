@@ -4377,18 +4377,22 @@ static void ExpandChannel(Channel *channel)
     newCapacity++;
   channel->capacity = newCapacity;
   GROW_PLIST(channel->queue, newCapacity);
+  SET_LEN_PLIST(channel->queue, newCapacity);
   /* assert(channel->head == channel->tail); */
-  for (i = 0; i < channel->tail; i++)
+  if (channel->tail <= channel->head)
   {
-    unsigned d = oldCapacity+i;
-    if (d >= newCapacity)
-      d -= newCapacity;
-    ADDR_OBJ(channel->queue)[d+1] = ADDR_OBJ(channel->queue)[i+1];
+    for (i = 0; i < channel->tail; i++)
+    {
+      unsigned d = oldCapacity+i;
+      if (d >= newCapacity)
+	d -= newCapacity;
+      ADDR_OBJ(channel->queue)[d+1] = ADDR_OBJ(channel->queue)[i+1];
+    }
+    tail = channel->head + oldCapacity;
+    if (tail >= newCapacity)
+      tail -= newCapacity;
+    channel->tail = tail;
   }
-  tail = channel->head + oldCapacity;
-  if (tail >= newCapacity)
-    tail -= newCapacity;
-  channel->tail = tail;
 }
 
 static void ContractChannel(Channel *channel)
@@ -4478,7 +4482,8 @@ static int CreateChannel(char *name, int capacity)
   channel->capacity = (capacity < 0) ? 10 : capacity;
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
-  channel->queue = NewBag( T_PLIST, (capacity+1) * sizeof(Obj) );
+  channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
+  SET_LEN_PLIST(channel->queue, channel->capacity);
   channel->keepAlive = KeepAlive(channel->queue);
   UnlockTable();
   return id;
