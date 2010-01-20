@@ -4508,19 +4508,42 @@ Obj FuncCreateChannel(Obj self, Obj args)
 {
   char *name;
   int capacity;
-  if (!IS_PLIST(args) || LEN_PLIST(args) == 0 || LEN_PLIST(args) > 2)
-    ImmediateError("CreateChannel: Function takes one or two arguments");
-  if (!IS_STRING(ELM_PLIST(args, 1)))
-    ImmediateError("CreateChannel: First argument must be a string");
-  if (LEN_PLIST(args) == 2 && !IS_INTOBJ(ELM_PLIST(args, 2)))
-    ImmediateError("CreateChannel: Second argument must be an integer");
-  name = CSTR_STRING(ELM_PLIST(args, 1));
-  if (LEN_PLIST(args) == 1)
-    capacity = 10;
-  else
-    capacity = INT_INTOBJ(ELM_PLIST(args, 2));
-  if (capacity <= 0)
-    ImmediateError("CreateChannel: Capacity must be positive");
+  switch (LEN_PLIST(args))
+  {
+    case 0:
+      name = ANON_OBJECT;
+      capacity = -1;
+      break;
+    case 1:
+      if (IS_STRING(ELM_PLIST(args, 1)))
+      {
+        name = CSTR_STRING(ELM_PLIST(args, 1));
+	capacity = -1;
+	break;
+      }
+      if (IS_INTOBJ(ELM_PLIST(args, 1)))
+      {
+        name = ANON_OBJECT;
+	capacity = INT_INTOBJ(ELM_PLIST(args, 1));
+	if (capacity <= 0)
+	  ImmediateError("CreateChannel: Capacity must be positive");
+	break;
+      }
+      ImmediateError("CreateChannel: Single argument must be a string or capacity");
+    case 2:
+      if (!IS_STRING(ELM_PLIST(args, 1)))
+	ImmediateError("CreateChannel: First argument must be a string");
+      if (!IS_INTOBJ(ELM_PLIST(args, 2)))
+	ImmediateError("CreateChannel: Second argument must be an integer");
+      name = CSTR_STRING(ELM_PLIST(args, 1));
+      capacity = INT_INTOBJ(ELM_PLIST(args, 2));
+      if (capacity <= 0)
+	ImmediateError("CreateChannel: Capacity must be positive");
+      break;
+    default:
+      ImmediateError("CreateChannel: Function takes up to two arguments");
+      return (Obj) 0; /* control flow hint */
+  }
   return INTOBJ_INT(CreateChannel(name, capacity));
 }
 
@@ -4535,11 +4558,14 @@ Obj FuncDestroyChannel(Obj self, Obj ident)
   }
   else if (IS_INTOBJ(ident))
   {
-    channel = ident >= 0 ? FindObjectById(INT_INTOBJ(ident), T_CHANNEL) : 0;
+    int id = INT_INTOBJ(ident);
+    if (id < 0)
+      ImmediateError("DestroyChannel: Channel identifier must be a non-negative integer");
+    channel = FindObjectById(INT_INTOBJ(ident), T_CHANNEL);
   }
   else
   {
-    ImmediateError("DestroyChannel: Channel identifier must be a string or number");
+    ImmediateError("DestroyChannel: Argument must be a string or non-negative integer");
     return (Obj) 0; /* flow control hint */
   }
   if (!channel)
