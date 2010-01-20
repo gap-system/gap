@@ -4356,7 +4356,8 @@ static void UnlockChannel(Channel *channel)
 
 static void SignalChannel(Channel *channel)
 {
-  pthread_cond_broadcast(&channel->signal);
+  if (channel->waiting)
+    pthread_cond_broadcast(&channel->signal);
 }
 
 static void WaitChannel(Channel *channel)
@@ -4369,11 +4370,25 @@ static void WaitChannel(Channel *channel)
 static void ExpandChannel(Channel *channel)
 {
   /* Growth ratio should be less than the golden ratio */
-  unsigned capacity = channel->capacity * 16 / 10 - 1;
-  if (capacity == channel->capacity)
-    capacity++;
-  channel->capacity = capacity;
-  GROW_PLIST(channel->queue, capacity);
+  unsigned oldCapacity = channel->capacity;
+  unsigned newCapacity = oldCapacity * 16 / 10;
+  unsigned i, tail;
+  if (newCapacity == oldCapacity)
+    newCapacity++;
+  channel->capacity = newCapacity;
+  GROW_PLIST(channel->queue, newCapacity);
+  /* assert(channel->head == channel->tail); */
+  for (i = 0; i < channel->tail; i++)
+  {
+    unsigned d = oldCapacity+i;
+    if (d >= newCapacity)
+      d -= newCapacity;
+    ADDR_OBJ(channel->queue)[d+1] = ADDR_OBJ(channel->queue)[i+1];
+  }
+  tail = channel->head + oldCapacity;
+  if (tail >= newCapacity)
+    tail -= newCapacity;
+  channel->tail = tail;
 }
 
 static void ContractChannel(Channel *channel)
@@ -4392,6 +4407,7 @@ static void SendChannel(Channel *channel, Obj obj)
   if (channel->tail == channel->capacity)
     channel->tail = 0;
   channel->size++;
+  SignalChannel(channel);
   UnlockChannel(channel);
 }
 
@@ -4409,6 +4425,7 @@ static int TrySendChannel(Channel *channel, Obj obj)
   if (channel->tail == channel->capacity)
     channel->tail = 0;
   channel->size++;
+  SignalChannel(channel);
   UnlockChannel(channel);
   return 1;
 }
@@ -4423,6 +4440,7 @@ static Obj ReceiveChannel(Channel *channel)
   if (channel->head == channel->capacity)
     channel->head = 0;
   channel->size--;
+  SignalChannel(channel);
   UnlockChannel(channel);
   return result;
 }
@@ -4440,6 +4458,7 @@ static Obj TryReceiveChannel(Channel *channel, Obj defaultobj)
   if (channel->head == channel->capacity)
     channel->head = 0;
   channel->size--;
+  SignalChannel(channel);
   UnlockChannel(channel);
   return result;
 }
