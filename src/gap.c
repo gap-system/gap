@@ -4148,6 +4148,9 @@ typedef struct Barrier
 Obj firstKeepAlive;
 Obj lastKeepAlive;
 
+#define ANON_OBJECT NULL
+unsigned AnonIndex = 0;
+
 SharedObject *SharedTable[TABLE_SIZE];
 
 pthread_mutex_t tableLock;
@@ -4176,6 +4179,7 @@ void UnlockTable()
 SharedObject *AllocateSharedObject(char *name, int type, void *data)
 {
   SharedObject *result = Allocate(sizeof(SharedObject));
+  result->next = NULL;
   result->name = name;
   result->type = type;
   result->data = data;
@@ -4196,11 +4200,32 @@ unsigned HashShared(char *name, int type)
 
 int CreateObject(char *name, int type, void *data)
 {
-  unsigned hash = HashShared(name, type);
-  unsigned index = hash % TABLE_SIZE;
+  unsigned hash, index;
   unsigned pos = 0;
   SharedObject **currentp;
   SharedObject *current;
+  if (name == ANON_OBJECT)
+  {
+    LockTable();
+    index = AnonIndex = (AnonIndex + 1) % TABLE_SIZE;
+    currentp = &SharedTable[index];
+    while ((current = *currentp))
+    {
+      if (current->name == name && current->type == type && current->data == 0)
+      {
+        AtomicWrite(current->data, data);
+	UnlockTable();
+	return index + TABLE_SIZE * pos;
+      }
+      pos++;
+      currentp = &current->next;
+    }
+    AtomicWrite(*currentp, AllocateSharedObject(name, type, data));
+    UnlockTable();
+    return index + TABLE_SIZE * pos;
+  }
+  hash = HashShared(name, type);
+  index = hash % TABLE_SIZE;
   LockTable();
   currentp = &SharedTable[index];
   while ((current = AtomicRead(*currentp)))
@@ -4212,11 +4237,12 @@ int CreateObject(char *name, int type, void *data)
       {
         AtomicWrite(current->data, data);
 	UnlockTable();
-	return hash + TABLE_SIZE * pos;
+	return index + TABLE_SIZE * pos;
       }
       UnlockTable();
       return -1;
     }
+    currentp = &current->next;
     pos++;
   }
   MemoryBarrier();
@@ -4247,28 +4273,6 @@ int DestroyObject(unsigned id, int type)
   return 0;
 }
 
-int DestroyObjectByName(char *name, int type)
-{
-  SharedObject *current;
-  unsigned hash = HashShared(name, type);
-  unsigned index = hash % TABLE_SIZE;
-  unsigned id = hash / TABLE_SIZE;
-  LockTable();
-  current = AtomicRead(SharedTable[index]);
-  while (id && current)
-  {
-    id--;
-    current = AtomicRead(current->next);
-  }
-  if (current->type == type)
-  {
-    AtomicWrite(current->data, 0);
-    return 1;
-  }
-  UnlockTable();
-  return 0;
-}
-
 void *FindObjectById(unsigned id, int type)
 {
   SharedObject *current;
@@ -4280,7 +4284,7 @@ void *FindObjectById(unsigned id, int type)
     id--;
     current = AtomicRead(current->next);
   }
-  if (AtomicRead(current->type) == type)
+  if (current && AtomicRead(current->type) == type)
     return AtomicRead(current->data);
   return 0;
 }
@@ -4293,7 +4297,9 @@ void *FindObjectByName(char *name, int type)
   current = AtomicRead(SharedTable[index]);
   while (current)
   {
-    if (strcmp(current->name, name) == 0 && AtomicRead(current->type == type))
+    if (strcmp(current->name, name) == 0
+        && current->name != ANON_OBJECT
+        && AtomicRead(current->type == type))
     {
       MemoryBarrier();
       return AtomicRead(current->data);
