@@ -4678,7 +4678,7 @@ Obj FuncTrySendChannel(Obj self, Obj idobj, Obj obj)
   id = INT_INTOBJ(idobj);
   if (id < 0)
     ImmediateError("TrySendChannel: Channel identifier must be non-negative");
-  return INTOBJ_INT(TrySendChannel(LookupChannel(id, "TrySendChannel"), obj));
+  return TrySendChannel(LookupChannel(id, "TrySendChannel"), obj) ? True : False;
 }
 
 Obj FuncReceiveChannel(Obj self, Obj idobj)
@@ -4716,8 +4716,7 @@ Obj FuncTryReceiveChannel(Obj self, Obj idobj, Obj obj)
   id = INT_INTOBJ(idobj);
   if (id < 0)
     ImmediateError("TryReceiveChannel: Channel identifier must be non-negative");
-  return INTOBJ_INT(TryReceiveChannel(LookupChannel(id, "TryReceiveChannel"),
-           obj));
+  return TryReceiveChannel(LookupChannel(id, "TryReceiveChannel"), obj);
 }
 
 
