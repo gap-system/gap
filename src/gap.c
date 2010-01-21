@@ -4147,15 +4147,15 @@ typedef struct Barrier
 
 
 /* TODO: register globals */
-Obj firstKeepAlive;
-Obj lastKeepAlive;
+Obj FirstKeepAlive;
+Obj LastKeepAlive;
 
 #define ANON_OBJECT NULL
 unsigned AnonIndex = 0;
 
 SharedObject *SharedTable[TABLE_SIZE];
 
-pthread_mutex_t tableLock;
+pthread_mutex_t TableLock;
 
 void *Allocate(size_t size)
 {
@@ -4169,12 +4169,12 @@ void Free(void *addr)
 
 void LockTable()
 {
-  pthread_mutex_lock(&tableLock);
+  pthread_mutex_lock(&TableLock);
 }
 
 void UnlockTable()
 {
-  pthread_mutex_unlock(&tableLock);
+  pthread_mutex_unlock(&TableLock);
 }
 
 
@@ -4355,12 +4355,12 @@ Obj KeepAlive(Obj obj)
   LockTable();
   ADDR_OBJ(newKeepAlive)[0] = (Obj) 3; /* Length 3 */
   ADDR_OBJ(newKeepAlive)[1] = obj;
-  PREV(newKeepAlive) = lastKeepAlive;
+  PREV(newKeepAlive) = LastKeepAlive;
   NEXT(newKeepAlive) = (Obj) 0;
-  if (lastKeepAlive)
-    NEXT(lastKeepAlive) = newKeepAlive;
+  if (LastKeepAlive)
+    NEXT(LastKeepAlive) = newKeepAlive;
   else
-    firstKeepAlive = lastKeepAlive = newKeepAlive;
+    FirstKeepAlive = LastKeepAlive = newKeepAlive;
   UnlockTable();
   return newKeepAlive;
 }
@@ -4374,11 +4374,11 @@ void StopKeepAlive(Obj node)
   if (pred)
     NEXT(pred) = succ;
   else
-    firstKeepAlive = succ;
+    FirstKeepAlive = succ;
   if (succ)
     PREV(succ) = pred;
   else
-    lastKeepAlive = pred;
+    LastKeepAlive = pred;
   UnlockTable();
 }
 
