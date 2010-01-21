@@ -4122,6 +4122,8 @@ typedef struct SharedObject
   struct SharedObject *next;
   char *name;
   int type;
+  unsigned id;
+  pthread_mutex_t lock;
   void *data;
 } SharedObject;
 
@@ -4129,12 +4131,12 @@ typedef struct Channel
 {
   Obj queue;
   Obj keepAlive;
-  int id;
+  unsigned id;
   int waiting;
   int head, tail;
   int size, capacity;
   int dynamic;
-  pthread_mutex_t mutex;
+  pthread_mutex_t *lock;
   pthread_cond_t signal;
 } Channel;
 
@@ -4176,13 +4178,15 @@ void UnlockTable()
 }
 
 
-SharedObject *AllocateSharedObject(char *name, int type, void *data)
+SharedObject *AllocateSharedObject(char *name, int type, void *data, unsigned id)
 {
   SharedObject *result = Allocate(sizeof(SharedObject));
   result->next = NULL;
   result->name = name;
   result->type = type;
   result->data = data;
+  result->id = id;
+  pthread_mutex_init(&result->lock, NULL);
   return result;
 }
 
@@ -4198,12 +4202,22 @@ unsigned HashShared(char *name, int type)
   return result;
 }
 
-int CreateObject(char *name, int type, void *data)
+void LockSharedObject(SharedObject *ob)
+{
+  pthread_mutex_lock(&ob->lock);
+}
+
+void UnlockSharedObject(SharedObject *ob)
+{
+  pthread_mutex_unlock(&ob->lock);
+}
+
+SharedObject* CreateObject(char *name, int type, void *data)
 {
   unsigned hash, index;
   unsigned pos = 0;
   SharedObject **currentp;
-  SharedObject *current;
+  SharedObject *current, *result;
   if (name == ANON_OBJECT)
   {
     LockTable();
@@ -4213,16 +4227,21 @@ int CreateObject(char *name, int type, void *data)
     {
       if (current->name == name && current->type == type && current->data == 0)
       {
+	LockSharedObject(current);
+	MemoryBarrier();
         AtomicWrite(current->data, data);
 	UnlockTable();
-	return index + TABLE_SIZE * pos;
+	return current;
       }
       pos++;
       currentp = &current->next;
     }
-    AtomicWrite(*currentp, AllocateSharedObject(name, type, data));
+    result = AllocateSharedObject(name, type, data, index+TABLE_SIZE*pos);
+    LockSharedObject(result);
+    MemoryBarrier();
+    AtomicWrite(*currentp, result);
     UnlockTable();
-    return index + TABLE_SIZE * pos;
+    return result;
   }
   hash = HashShared(name, type);
   index = hash % TABLE_SIZE;
@@ -4235,26 +4254,31 @@ int CreateObject(char *name, int type, void *data)
     {
       if (current->data == 0)
       {
+	LockSharedObject(current);
+	MemoryBarrier();
         AtomicWrite(current->data, data);
 	UnlockTable();
-	return index + TABLE_SIZE * pos;
+	return current;
       }
       UnlockTable();
-      return -1;
+      return NULL;
     }
     currentp = &current->next;
     pos++;
   }
+  result = AllocateSharedObject(name, type, data, index+TABLE_SIZE*pos);
+  LockSharedObject(result);
   MemoryBarrier();
-  AtomicWrite(*currentp, AllocateSharedObject(name, type, data));
+  AtomicWrite(*currentp, result);
   UnlockTable();
-  return index + TABLE_SIZE * pos;
+  return result;
 }
 
-int DestroyObject(unsigned id, int type)
+void *DestroyObject(unsigned id, int type)
 {
   SharedObject *current;
   unsigned index = id % TABLE_SIZE;
+  void *result;
   LockTable();
   id /= TABLE_SIZE;
   current = AtomicRead(SharedTable[index]);
@@ -4265,9 +4289,10 @@ int DestroyObject(unsigned id, int type)
   }
   if (current->type == type)
   {
+    result = current->data;
     AtomicWrite(current->data, 0);
     UnlockTable();
-    return 1;
+    return result;
   }
   UnlockTable();
   return 0;
@@ -4285,8 +4310,16 @@ void *FindObjectById(unsigned id, int type)
     current = AtomicRead(current->next);
   }
   if (current && AtomicRead(current->type) == type)
-    return AtomicRead(current->data);
-  return 0;
+  {
+    void *result;
+    LockSharedObject(current);
+    result = AtomicRead(current->data);
+    if (result)
+      return result;
+    UnlockSharedObject(current);
+    return NULL;
+  }
+  return NULL;
 }
 
 void *FindObjectByName(char *name, int type)
@@ -4301,11 +4334,16 @@ void *FindObjectByName(char *name, int type)
         && current->name != ANON_OBJECT
         && AtomicRead(current->type == type))
     {
-      MemoryBarrier();
-      return AtomicRead(current->data);
+      void *result;
+      LockSharedObject(current);
+      result = AtomicRead(current->data);
+      if (result)
+        return result;
+      UnlockSharedObject(current);
+      return NULL;
     }
   }
-  return 0;
+  return NULL;
 }
 
 #define PREV(obj) (ADDR_OBJ(obj)[2])
@@ -4346,12 +4384,12 @@ void StopKeepAlive(Obj node)
 
 static void LockChannel(Channel *channel)
 {
-  pthread_mutex_lock(&channel->mutex);
+  pthread_mutex_lock(channel->lock);
 }
 
 static void UnlockChannel(Channel *channel)
 {
-  pthread_mutex_unlock(&channel->mutex);
+  pthread_mutex_unlock(channel->lock);
 }
 
 static void SignalChannel(Channel *channel)
@@ -4363,7 +4401,7 @@ static void SignalChannel(Channel *channel)
 static void WaitChannel(Channel *channel)
 {
   channel->waiting++;
-  pthread_cond_wait(&channel->signal, &channel->mutex);
+  pthread_cond_wait(&channel->signal, channel->lock);
   channel->waiting--;
 }
 
@@ -4402,7 +4440,6 @@ static void ContractChannel(Channel *channel)
 
 static void SendChannel(Channel *channel, Obj obj)
 {
-  LockChannel(channel);
   if (channel->size == channel->capacity && channel->dynamic)
     ExpandChannel(channel);
   while (channel->size == channel->capacity)
@@ -4417,7 +4454,6 @@ static void SendChannel(Channel *channel, Obj obj)
 
 static int TrySendChannel(Channel *channel, Obj obj)
 {
-  LockChannel(channel);
   if (channel->size == channel->capacity && channel->dynamic)
     ExpandChannel(channel);
   if (channel->size == channel->capacity)
@@ -4437,7 +4473,6 @@ static int TrySendChannel(Channel *channel, Obj obj)
 static Obj ReceiveChannel(Channel *channel)
 {
   Obj result;
-  LockChannel(channel);
   while (channel->size == 0)
     WaitChannel(channel);
   result = ADDR_OBJ(channel->queue)[1+channel->head++];
@@ -4452,7 +4487,6 @@ static Obj ReceiveChannel(Channel *channel)
 static Obj TryReceiveChannel(Channel *channel, Obj defaultobj)
 {
   Obj result;
-  LockChannel(channel);
   if (channel->size == 0)
   {
     UnlockChannel(channel);
@@ -4470,14 +4504,16 @@ static Obj TryReceiveChannel(Channel *channel, Obj defaultobj)
 static int CreateChannel(char *name, int capacity)
 {
   Channel *channel;
-  int id;
+  SharedObject *container;
   channel = Allocate(sizeof(Channel));
-  id = CreateObject(name, T_CHANNEL, channel);
-  if (id < 0) {
+  container = CreateObject(name, T_CHANNEL, channel);
+  if (!container) {
     Free(channel);
     return -1;
   }
-  channel->id = id;
+  channel->id = container->id;
+  channel->lock = &container->lock;
+  pthread_cond_init(&channel->signal, NULL);
   channel->size = channel->head = channel->tail = 0;
   channel->capacity = (capacity < 0) ? 10 : capacity;
   channel->dynamic = (capacity < 0);
@@ -4485,22 +4521,24 @@ static int CreateChannel(char *name, int capacity)
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
   SET_LEN_PLIST(channel->queue, channel->capacity);
   channel->keepAlive = KeepAlive(channel->queue);
+  UnlockChannel(channel);
   UnlockTable();
-  return id;
+  return container->id;
 }
 
 static int DestroyChannel(Channel *channel)
 {
-  LockChannel(channel);
+  Obj keepAlive = channel->keepAlive;
   if (channel->waiting)
   {
     UnlockChannel(channel);
     return 0;
   }
-  UnlockChannel(channel);
-  /* TODO: Race condition */
-  StopKeepAlive(channel->keepAlive);
   DestroyObject(channel->id, T_CHANNEL);
+  UnlockChannel(channel);
+  pthread_cond_destroy(&channel->signal);
+  Free(channel);
+  StopKeepAlive(keepAlive);
   return 1;
 }
 
