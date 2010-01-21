@@ -3237,8 +3237,57 @@ Obj FuncGETPID(Obj self) {
   return INTOBJ_INT(getpid());
 }
 
-void ThreadedInterpreter(void *function) {
-  Obj tmp;
+void ImmediateError(char *message)
+{
+  ErrorQuit(message, 0, 0);
+}
+
+/* TODO: register globals */
+Obj FirstKeepAlive;
+Obj LastKeepAlive;
+pthread_mutex_t KeepAliveLock;
+
+#define KEPT(obj) (ADDR_OBJ(obj)[1])
+#define PREV_KEPT(obj) (ADDR_OBJ(obj)[2])
+#define NEXT_KEPT(obj) (ADDR_OBJ(obj)[3])
+
+Obj KeepAlive(Obj obj)
+{
+  Obj newKeepAlive = NewBag( T_PLIST, 4*sizeof(Obj) );
+  pthread_mutex_lock(&KeepAliveLock);
+  ADDR_OBJ(newKeepAlive)[0] = (Obj) 3; /* Length 3 */
+  ADDR_OBJ(newKeepAlive)[1] = obj;
+  PREV_KEPT(newKeepAlive) = LastKeepAlive;
+  NEXT_KEPT(newKeepAlive) = (Obj) 0;
+  if (LastKeepAlive)
+    NEXT_KEPT(LastKeepAlive) = newKeepAlive;
+  else
+    FirstKeepAlive = LastKeepAlive = newKeepAlive;
+  pthread_mutex_unlock(&KeepAliveLock);
+  return newKeepAlive;
+}
+
+void StopKeepAlive(Obj node)
+{
+  Obj pred, succ;
+  pthread_mutex_lock(&KeepAliveLock);
+  pred = PREV_KEPT(node);
+  succ = NEXT_KEPT(node);
+  if (pred)
+    NEXT_KEPT(pred) = succ;
+  else
+    FirstKeepAlive = succ;
+  if (succ)
+    PREV_KEPT(succ) = pred;
+  else
+    LastKeepAlive = pred;
+  pthread_mutex_unlock(&KeepAliveLock);
+}
+
+
+void ThreadedInterpreter(void *funcargs) {
+  Obj tmp, func;
+  int i;
 
   /* intialize everything and begin an interpreter                       */
   TLS->stackNams   = NEW_PLIST( T_PLIST, 16 );
@@ -3257,9 +3306,18 @@ void ThreadedInterpreter(void *function) {
   TLS->currLVars = TLS->bottomLVars;
 
   IntrBegin( TLS->bottomLVars );
+  tmp = KEPT(funcargs);
+  StopKeepAlive(funcargs);
+  func = ELM_PLIST(tmp, 1);
+  for (i=2; i<=LEN_PLIST(tmp); i++)
+  {
+    Obj item = ELM_PLIST(tmp, i);
+    SET_ELM_PLIST(tmp, i-1, item);
+  }
+  SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
 
   if (!READ_ERROR()) {
-    CALL_0ARGS((Obj)function);
+    FuncCALL_FUNC_LIST((Obj) 0, func, tmp);
     PushVoidObj();
     /* end the interpreter                                                 */
     IntrEnd( 0UL );
@@ -3268,6 +3326,7 @@ void ThreadedInterpreter(void *function) {
     ClearError();
   } 
 }
+
 
 /****************************************************************************
 **
@@ -3278,9 +3337,14 @@ void ThreadedInterpreter(void *function) {
 ** is a unique identifier for the thread.
 */
 
-Obj FuncCreateThread(Obj self, Obj function) {
+Obj FuncCreateThread(Obj self, Obj funcargs) {
   int id;
-  id = RunThread(ThreadedInterpreter, function);
+  if (LEN_PLIST(funcargs) == 0 || !IS_FUNC(ELM_PLIST(funcargs, 1)))
+  {
+    ImmediateError("CreateThread: Needs at least one function argument");
+    return (Obj) 0; /* flow control hint */
+  }
+  id = RunThread(ThreadedInterpreter, KeepAlive(funcargs));
   return INTOBJ_INT(id);
 }
 
@@ -3375,6 +3439,8 @@ Obj FuncReceiveChannel(Obj self, Obj id);
 Obj FuncMultiReceiveChannel(Obj self, Obj id, Obj count);
 Obj FuncTrySendChannel(Obj self, Obj id, Obj obj);
 Obj FuncTryReceiveChannel(Obj self, Obj id, Obj defaultobj);
+Obj FuncCreateThread(Obj self, Obj funcargs);
+Obj FuncWaitThread(Obj self, Obj id);
 
 /****************************************************************************
 **
@@ -3503,7 +3569,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "PRINT_CURRENT_STATEMENT", 1, "context",
       FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
 
-    { "CreateThread", 1, "function",
+    { "CreateThread", -1, "function",
       FuncCreateThread, "src/gap.c:CreateThread" },
 
     { "WaitThread", 1, "threadID",
@@ -3676,6 +3742,11 @@ static Int InitLibrary (
 
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
+
+    /* synchronization */
+    extern pthread_mutex_t TableLock, KeepAliveLock;
+    pthread_mutex_init(&TableLock, NULL);
+    pthread_mutex_init(&KeepAliveLock, NULL);
 
 
     
@@ -4150,10 +4221,6 @@ typedef struct Barrier
 } Barrier;
 
 
-/* TODO: register globals */
-Obj FirstKeepAlive;
-Obj LastKeepAlive;
-
 #define ANON_OBJECT NULL
 unsigned AnonIndex = 0;
 
@@ -4350,42 +4417,6 @@ void *FindObjectByName(char *name, int type)
   return NULL;
 }
 
-#define PREV(obj) (ADDR_OBJ(obj)[2])
-#define NEXT(obj) (ADDR_OBJ(obj)[3])
-
-Obj KeepAlive(Obj obj)
-{
-  Obj newKeepAlive = NewBag( T_PLIST, 4*sizeof(Obj) );
-  LockTable();
-  ADDR_OBJ(newKeepAlive)[0] = (Obj) 3; /* Length 3 */
-  ADDR_OBJ(newKeepAlive)[1] = obj;
-  PREV(newKeepAlive) = LastKeepAlive;
-  NEXT(newKeepAlive) = (Obj) 0;
-  if (LastKeepAlive)
-    NEXT(LastKeepAlive) = newKeepAlive;
-  else
-    FirstKeepAlive = LastKeepAlive = newKeepAlive;
-  UnlockTable();
-  return newKeepAlive;
-}
-
-void StopKeepAlive(Obj node)
-{
-  Obj pred, succ;
-  LockTable();
-  pred = PREV(node);
-  succ = NEXT(node);
-  if (pred)
-    NEXT(pred) = succ;
-  else
-    FirstKeepAlive = succ;
-  if (succ)
-    PREV(succ) = pred;
-  else
-    LastKeepAlive = pred;
-  UnlockTable();
-}
-
 static void LockChannel(Channel *channel)
 {
   pthread_mutex_lock(channel->lock);
@@ -4574,11 +4605,6 @@ static int DestroyChannel(Channel *channel)
   return 1;
 }
 
-void ImmediateError(char *message)
-{
-  ErrorQuit(message, 0, 0);
-}
-
 Obj FuncCreateChannel(Obj self, Obj args)
 {
   char *name;
@@ -4718,8 +4744,6 @@ Obj FuncTryReceiveChannel(Obj self, Obj idobj, Obj obj)
     ImmediateError("TryReceiveChannel: Channel identifier must be non-negative");
   return TryReceiveChannel(LookupChannel(id, "TryReceiveChannel"), obj);
 }
-
-
 
 /****************************************************************************
 **
