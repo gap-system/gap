@@ -3372,6 +3372,7 @@ Obj FuncCreateChannel(Obj self, Obj args);
 Obj FuncDestroyChannel(Obj self, Obj id);
 Obj FuncSendChannel(Obj self, Obj id, Obj obj);
 Obj FuncReceiveChannel(Obj self, Obj id);
+Obj FuncMultiReceiveChannel(Obj self, Obj id, Obj count);
 Obj FuncTrySendChannel(Obj self, Obj id, Obj obj);
 Obj FuncTryReceiveChannel(Obj self, Obj id, Obj defaultobj);
 
@@ -3537,6 +3538,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ReceiveChannel", 1, "channelid",
       FuncReceiveChannel, "src/synchronize:ReceiveChannel" },
+
+    { "MultiReceiveChannel", 2, "channelid",
+      FuncMultiReceiveChannel, "src/synchronize:MultiReceiveChannel" },
 
     { "TryReceiveChannel", 2, "channelid, obj",
       FuncTryReceiveChannel, "src/synchronize.c:TryReceiveChannel" },
@@ -4475,10 +4479,38 @@ static Obj ReceiveChannel(Channel *channel)
   Obj result;
   while (channel->size == 0)
     WaitChannel(channel);
-  result = ADDR_OBJ(channel->queue)[1+channel->head++];
+  result = ELM_PLIST(channel->queue,channel->head+1);
+  SET_ELM_PLIST(channel->queue,channel->head+1, (Obj) 0);
+  channel->head++;
   if (channel->head == channel->capacity)
     channel->head = 0;
   channel->size--;
+  SignalChannel(channel);
+  UnlockChannel(channel);
+  return result;
+}
+
+static Obj MultiReceiveChannel(Channel *channel, unsigned max)
+{
+  Obj result;
+  unsigned count;
+  unsigned i;
+  if (max > channel->size)
+    count = channel->size;
+  else
+    count = max;
+  result = NEW_PLIST(T_PLIST, count);
+  SET_LEN_PLIST(result, count);
+  for (i=0; i<max; i++)
+  {
+    Obj item = ELM_PLIST(channel->queue, channel->head+1);
+    SET_ELM_PLIST(channel->queue, channel->head+1, (Obj) 0);
+    channel->head++;
+    if (channel->head == channel->capacity)
+      channel->head = 0;
+    SET_ELM_PLIST(result, i+1, item);
+  }
+  channel->size -= count;
   SignalChannel(channel);
   UnlockChannel(channel);
   return result;
@@ -4658,6 +4690,22 @@ Obj FuncReceiveChannel(Obj self, Obj idobj)
   if (id < 0)
     ImmediateError("ReceiveChannel: Channel identifier must be non-negative");
   return ReceiveChannel(LookupChannel(id, "ReceiveChannel"));
+}
+
+Obj FuncMultiReceiveChannel(Obj self, Obj idobj, Obj countobj)
+{
+  int id, count;
+  if (!IS_INTOBJ(idobj))
+    ImmediateError("MultiReceiveChannel: Channel identifier must be a number");
+  id = INT_INTOBJ(idobj);
+  if (id < 0)
+    ImmediateError("MultiReceiveChannel: Channel identifier must be non-negative");
+  if (!IS_INTOBJ(countobj))
+    ImmediateError("MultiReceiveChannel: Channel identifier must be a number");
+  count = INT_INTOBJ(countobj);
+  if (count < 0)
+    ImmediateError("MultiReceiveChannel: Channel identifier must be non-negative");
+  return MultiReceiveChannel(LookupChannel(id, "ReceiveChannel"), count);
 }
 
 Obj FuncTryReceiveChannel(Obj self, Obj idobj, Obj obj)
