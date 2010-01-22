@@ -768,27 +768,27 @@ Obj             EvalFunccallXargs (
 **
 */
 
-Int RecursionDepth;
+/* TL: Int RecursionDepth; */
 static UInt RecursionTrapInterval;
 
 static void RecursionDepthTrap( void )
 {
     Int recursionDepth;
-    recursionDepth = RecursionDepth;
-    RecursionDepth = 0;
+    recursionDepth = TLS->recursionDepth;
+    TLS->recursionDepth = 0;
     ErrorReturnVoid( "recursion depth trap (%d)\n",         
 		     (Int)recursionDepth, 0L,               
 		     "you may 'return;'" );
-    RecursionDepth = recursionDepth;
+    TLS->recursionDepth = recursionDepth;
 }
      
 #ifndef SYS_IS_MAC_MWC
 
 static inline void CheckRecursionBefore( void )
 {
-    RecursionDepth++;                                           
+    TLS->recursionDepth++;                                           
     if ( RecursionTrapInterval &&                                
-	 0 == (RecursionDepth % RecursionTrapInterval) )
+	 0 == (TLS->recursionDepth % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 
@@ -805,7 +805,7 @@ static void StackOverflowTrap( void )
 {
  	unsigned long stackLeft; /* just for debugging purposes */
  	
- 	RecursionDepth = 0;
+ 	TLS->recursionDepth = 0;
     stackLeft = StackSpace ();
     ErrorQuit( "Stack overflow - you should check for infinite recursion\n",         
 		0L, 0L );
@@ -817,9 +817,9 @@ static inline void CheckRecursionBefore( void )
     if (&c < SyMinStack) 
     	StackOverflowTrap ();
     	
-    RecursionDepth++;                                           
+    TLS->recursionDepth++;                                           
     if ( RecursionTrapInterval &&                                
-	 0 == (RecursionDepth % RecursionTrapInterval) )
+	 0 == (TLS->recursionDepth % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 
@@ -828,7 +828,7 @@ static inline void CheckRecursionBefore( void )
 #define CHECK_RECURSION_BEFORE CheckRecursionBefore();
 
 
-#define CHECK_RECURSION_AFTER     RecursionDepth--;       
+#define CHECK_RECURSION_AFTER     TLS->recursionDepth--;       
 
 
 Obj DoExecFunc0args (

@@ -79,6 +79,8 @@ typedef struct ThreadLocalStorage
   Bag stackExpr;
   Int countExpr;
   Bag codeLVars;
+  /* From funcs.h */
+  Int recursionDepth;
 } ThreadLocalStorage;
 
 typedef struct

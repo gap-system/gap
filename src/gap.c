@@ -345,7 +345,7 @@ Obj Shell ( Obj context,
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      RecursionDepth = 0;
+      TLS->recursionDepth = 0;
       UserHasQuit = 1;
       break;
     }
@@ -1179,7 +1179,7 @@ UInt UserHasQUIT;
    {
      UserHasQuit = INT_INTOBJ(value);
      if (UserHasQuit)
-       RecursionDepth = 0;
+       TLS->recursionDepth = 0;
      return 0;
    }
 

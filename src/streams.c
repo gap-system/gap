@@ -93,7 +93,7 @@ Int READ_COMMAND ( void ) {
 
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
-        RecursionDepth = 0;
+        TLS->recursionDepth = 0;
         UserHasQuit = 1;
     }
     else if (status == STATUS_QQUIT) {
@@ -183,7 +183,7 @@ Int READ ( void )
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
 	  break;
 	else if (status == STATUS_QUIT) {
-          RecursionDepth = 0;
+          TLS->recursionDepth = 0;
 	  UserHasQuit = 1;
 	  break;
 	}

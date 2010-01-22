@@ -44,7 +44,7 @@ extern  void            ExecEnd (
             UInt                error );
 
 
-extern Int RecursionDepth;
+/* TL: extern Int RecursionDepth; */
 /****************************************************************************
 **
 
