@@ -4301,7 +4301,6 @@ SharedObject* CreateObject(char *name, int type, void *data)
 	LockSharedObject(current);
 	MemoryBarrier();
         AtomicWrite(current->data, data);
-	UnlockTable();
 	return current;
       }
       pos++;
@@ -4311,7 +4310,6 @@ SharedObject* CreateObject(char *name, int type, void *data)
     LockSharedObject(result);
     MemoryBarrier();
     AtomicWrite(*currentp, result);
-    UnlockTable();
     return result;
   }
   hash = HashShared(name, type);
@@ -4328,7 +4326,6 @@ SharedObject* CreateObject(char *name, int type, void *data)
 	LockSharedObject(current);
 	MemoryBarrier();
         AtomicWrite(current->data, data);
-	UnlockTable();
 	return current;
       }
       UnlockTable();
