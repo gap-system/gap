@@ -3441,6 +3441,9 @@ Obj FuncTrySendChannel(Obj self, Obj id, Obj obj);
 Obj FuncTryReceiveChannel(Obj self, Obj id, Obj defaultobj);
 Obj FuncCreateThread(Obj self, Obj funcargs);
 Obj FuncWaitThread(Obj self, Obj id);
+Obj FuncCreateBarrier(Obj self, Obj args);
+Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
+Obj FuncWaitBarrier(Obj self, Obj barrier);
 
 /****************************************************************************
 **
@@ -3593,7 +3596,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "SynchronizedShared", 2, "object, function",
       FuncSynchronizedShared, "src/gap.c:SynchronizedShared" },
 
-    { "CreateChannel", -1, "string [, size]",
+    { "CreateChannel", -1, "[string [, size]]",
       FuncCreateChannel, "src/synchronize.c:CreateChannel" },
 
     { "DestroyChannel", 1, "channelid",
@@ -3614,6 +3617,15 @@ static StructGVarFunc GVarFuncs [] = {
     { "TrySendChannel", 2, "channelid, obj",
       FuncTrySendChannel, "src/synchronize.c:TrySendChannel" },
     
+    { "CreateBarrier", -1, "[string]",
+      FuncCreateBarrier, "src/synchronize.c:CreateBarrier" },
+
+    { "StartBarrier", 2, "barrierid, count",
+      FuncStartBarrier, "src/synchronize.c:StartBarrier" },
+
+    { "WaitBarrier", 1, "barrierid",
+      FuncWaitBarrier, "src/synchronize.c:WaitBarrier" },
+
     { 0 }
 
 };
@@ -4217,7 +4229,12 @@ typedef struct Channel
 
 typedef struct Barrier
 {
+  int id;
   int count;
+  unsigned phase;
+  int waiting;
+  pthread_mutex_t *lock;
+  pthread_cond_t signal;
 } Barrier;
 
 
@@ -4677,7 +4694,7 @@ Channel *LookupChannel(int id, char *func)
 {
   Channel *channel = FindObjectById(id, T_CHANNEL);
   if (!channel)
-    ImmediateError("%s: Can't find channel");
+    ErrorQuit("%s: Can't find channel", (Int)func, 0);
   return channel;
 }
 
@@ -4741,6 +4758,127 @@ Obj FuncTryReceiveChannel(Obj self, Obj idobj, Obj obj)
     ImmediateError("TryReceiveChannel: Channel identifier must be non-negative");
   return TryReceiveChannel(LookupChannel(id, "TryReceiveChannel"), obj);
 }
+
+void LockBarrier(Barrier *barrier)
+{
+  pthread_mutex_lock(barrier->lock);
+}
+
+void UnlockBarrier(Barrier *barrier)
+{
+  pthread_mutex_unlock(barrier->lock);
+}
+
+void JoinBarrier(Barrier *barrier)
+{
+  barrier->waiting++;
+  pthread_cond_wait(&barrier->signal, barrier->lock);
+  barrier->waiting--;
+}
+
+void SignalBarrier(Barrier *barrier)
+{
+  if (barrier->waiting)
+    pthread_cond_broadcast(&barrier->signal);
+}
+
+int CreateBarrier(char *name)
+{
+  Barrier *barrier;
+  SharedObject *container;
+  barrier = Allocate(sizeof(Channel));
+  container = CreateObject(name, T_BARRIER, barrier);
+  if (!container) {
+    Free(barrier);
+    return -1;
+  }
+  barrier->id = container->id;
+  barrier->lock = &container->lock;
+  pthread_cond_init(&barrier->signal, NULL);
+  barrier->count = 0;
+  barrier->phase = 0;
+  barrier->waiting = 0;
+  UnlockBarrier(barrier);
+  UnlockTable();
+  return container->id;
+}
+
+int DestroyBarrier(Barrier *barrier)
+{
+}
+
+void StartBarrier(Barrier *barrier, unsigned count)
+{
+  barrier->count = count;
+  barrier->phase++;
+  SignalBarrier(barrier);
+  UnlockBarrier(barrier);
+}
+
+void WaitBarrier(Barrier *barrier)
+{
+  unsigned phaseDelta;
+  phaseDelta = barrier->phase;
+  if (--barrier->count <= 0)
+    SignalBarrier(barrier);
+  else
+    JoinBarrier(barrier);
+  phaseDelta -= barrier->phase;
+  UnlockBarrier(barrier);
+  if (phaseDelta != 0)
+    ImmediateError("WaitBarrier: Barrier was reset");
+}
+
+Barrier *LookupBarrier(int id, char *funcname)
+{
+  Barrier *barrier = FindObjectById(id, T_BARRIER);
+  if (!barrier)
+    ErrorQuit("%s: Can't find barrier.", (Int) funcname, 0);
+  return barrier;
+}
+
+Obj FuncCreateBarrier(Obj self, Obj args)
+{
+  char *name;
+  switch (LEN_PLIST(args))
+  {
+    case 0:
+      name = ANON_OBJECT;
+      break;
+    case 1:
+      if (!IS_STRING(ELM_PLIST(args, 1)))
+        ImmediateError("CreateBarrier: Argument must be a string");
+      name = CSTR_STRING(ELM_PLIST(args, 1));
+      break;
+    default:
+      ImmediateError("CreateBarrier: Function accepts at most one argument");
+      return (Obj) 0; /* flow control hint */
+  }
+  return INTOBJ_INT(CreateBarrier(name));
+}
+
+Obj FuncDestroyBarrier(Obj self, Obj barrier)
+{
+}
+
+Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
+{
+  if (!IS_INTOBJ(barrier))
+    ImmediateError("StartBarrier: First argument must be a barrier id");
+  if (!IS_INTOBJ(count))
+    ImmediateError("StartBarrier: Second argument must be the number of threads to synchronize");
+  StartBarrier(LookupBarrier(INT_INTOBJ(barrier), "StartBarrier"), INT_INTOBJ(count));
+  return (Obj) 0;
+}
+
+Obj FuncWaitBarrier(Obj self, Obj barrier)
+{
+  if (!IS_INTOBJ(barrier))
+    ImmediateError("StartBarrier: Argument must be a barrier id");
+  WaitBarrier(LookupBarrier(INT_INTOBJ(barrier), "WaitBarrier"));
+  return (Obj) 0;
+}
+
 
 /****************************************************************************
 **
