@@ -4546,7 +4546,7 @@ static Obj MultiReceiveChannel(Channel *channel, unsigned max)
     count = max;
   result = NEW_PLIST(T_PLIST, count);
   SET_LEN_PLIST(result, count);
-  for (i=0; i<max; i++)
+  for (i=0; i<count; i++)
   {
     Obj item = ELM_PLIST(channel->queue, channel->head+1);
     SET_ELM_PLIST(channel->queue, channel->head+1, (Obj) 0);
