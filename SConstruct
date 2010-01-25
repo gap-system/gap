@@ -116,5 +116,7 @@ source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
 source.append("extern/jenkins/jhash.o")
 
+GAP.Command("extern/include/jhash.h", "extern/jenkins/jhash.h",
+            "cp -f $SOURCE $TARGET")
 GAP.Object("extern/jenkins/jhash.o", "extern/jenkins/jhash.c")
 GAP.Program(build_dir + "/gap", source, LIBS=libs, **options)
