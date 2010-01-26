@@ -38,6 +38,8 @@ if conf.CheckLib("pthread"):
   libs.append("pthread")
 if conf.CheckLib("rt"):
   libs.append("rt")
+if conf.CheckLib("m"):
+  libs.append("m")
 if GAP["gc"] == "system":
   if conf.CheckLib("gc"):
     compile_gc = False
@@ -78,6 +80,7 @@ GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags)
 # Building external libraries
 
 abi_path = "extern/"+GAP["abi"]+"bit"
+GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
 
 def build_external(libname):
   global abi_path
@@ -85,10 +88,12 @@ def build_external(libname):
     os.makedirs(abi_path)
   except:
     pass
-  os.system("cd " + abi_path + ";"
+  if not os.system("cd " + abi_path + ";"
           + "tar xzf ../" + libname + ".tar.gz;"
 	  + "cd " + libname + ";"
-	  + "./configure --prefix=$PWD/.. && make && make install")
+	  + "./configure --prefix=$PWD/.. && make && make install"):
+    print "=== Failed to build " + libname + " ==="
+    exit(1)
 
 if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   os.environ["ABI"] = GAP["abi"]
