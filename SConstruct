@@ -2,9 +2,14 @@ import commands, os, glob
 
 # parse options and set up environment
 
+if repr(1 << 32)[-1] == 'L':
+  default_abi = '32'
+else:
+  default_abi = '64'
+
 vars = Variables()
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
-vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", '32',
+vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", default_abi,
   allowed_values=('32', '64')))
 vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
