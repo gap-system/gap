@@ -1103,9 +1103,9 @@ void            InitBags (
     /* Set ChangedBags to a proper initial value */
     ChangedBags = 0;
 #else /* BOEHM_GC */
-    GC_all_interior_pointers = 0;
+    GC_all_interior_pointers = 1;
     GC_init();
-    GC_register_displacement(HEADER_SIZE*sizeof(Bag));
+    /* GC_register_displacement(HEADER_SIZE*sizeof(Bag)); */
     AddGCRoots();
 #endif /* BOEHM_GC */
 }
