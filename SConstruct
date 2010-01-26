@@ -2,15 +2,10 @@ import commands, os, glob, sys
 
 # parse options and set up environment
 
-if repr(1 << 32)[-1] == 'L':
-  default_abi = '32'
-else:
-  default_abi = '64'
-
 vars = Variables()
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
-vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", default_abi,
-  allowed_values=('32', '64')))
+vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", 'auto',
+  allowed_values=('32', '64', 'auto')))
 vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
@@ -27,11 +22,30 @@ try:
 except:
   pass
 
-# Create config.h if we don't have it
+# Create confi.h if we don't have it
 
-if (not os.access(build_dir+"/config.h", os.R_OK) or
+config_header_file = build_dir + "/config.h"
+
+if (not os.access(config_header_file, os.R_OK) or
     "config" in COMMAND_LINE_TARGETS):
   os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
+
+# determine ABI
+
+config_file_contents = open(config_header_file).read()
+
+default_abi = GAP["abi"]
+if default_abi == "auto":
+  if "SIZEOF_VOID_P 8" in config_file_contents:
+    default_abi = '64'
+  elif "SIZEOF_VOID_P 4" in config_file_contents:
+    default_abi = '32'
+    if repr(1 << 32)[-1] == 'L':
+      default_abi = '32'
+    else:
+      default_abi = '64'
+  GAP["abi"] = default_abi
+
 
 GAP.Command("config", [], "") # Empty builder for the config target
 
@@ -106,7 +120,10 @@ if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   del os.environ["ABI"]
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
+  if commands.getoutput("uname -s") != "Darwin":
+    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
+  else:
+    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"] + " -D_XOPEN_SOURCE"
   build_external("gc-7.2alpha2")
   del os.environ["CC"]
 
