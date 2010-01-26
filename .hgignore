@@ -23,3 +23,8 @@ syntax: regexp
 ^Makefile$
 ^extern/include/
 ^extern/lib/
+^extern/32bit/
+^extern/64bit/
+^bin/scons-local-1.2.0/.*\.pyc$
+^\.scon
+^\.scon
