@@ -28,6 +28,7 @@ config_header_file = build_dir + "/config.h"
 
 if (not os.access(config_header_file, os.R_OK) or
     "config" in COMMAND_LINE_TARGETS):
+  os.system("./configure")
   os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
 
 # determine ABI
