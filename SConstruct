@@ -96,7 +96,7 @@ if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   del os.environ["ABI"]
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  os.environ["CC"] = "gcc -m"+GAP["abi"]
+  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   build_external("gc-7.2alpha2")
   del os.environ["CC"]
 
