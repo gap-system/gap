@@ -1,4 +1,4 @@
-import commands, os, glob
+import commands, os, glob, sys
 
 # parse options and set up environment
 
@@ -93,12 +93,12 @@ def build_external(libname):
     os.makedirs(abi_path)
   except:
     pass
-  if not os.system("cd " + abi_path + ";"
+  if os.system("cd " + abi_path + ";"
           + "tar xzf ../" + libname + ".tar.gz;"
 	  + "cd " + libname + ";"
-	  + "./configure --prefix=$PWD/.. && make && make install"):
+	  + "./configure --prefix=$PWD/.. && make && make install") != 0:
     print "=== Failed to build " + libname + " ==="
-    exit(1)
+    sys.exit(1)
 
 if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   os.environ["ABI"] = GAP["abi"]
