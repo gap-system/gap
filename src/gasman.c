@@ -1112,6 +1112,9 @@ void            InitBags (
     GC_all_interior_pointers = 1;
     GC_init();
 #endif
+#ifdef DISABLE_GC
+    GC_disable();
+#endif
     AddGCRoots();
 #endif /* BOEHM_GC */
 }
@@ -2432,7 +2435,9 @@ again:
     /* return success                                                      */
     return 1;
 #else
+#ifndef DISABLE_GC
     GC_gcollect();
+#endif
     return 1;
 #endif
 }
