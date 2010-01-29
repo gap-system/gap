@@ -113,15 +113,11 @@ void RunThreadedMain(
 void *DispatchThread(void *arg)
 {
   ThreadData *this_thread = arg;
-  struct GC_stack_base stack_base;
-  stack_base.mem_base = &stack_base;
-  GC_register_my_thread(&stack_base);
   InitializeTLS();
   TLS->threadID = this_thread - thread_data;
   AddGCRoots();
   this_thread->start(this_thread->arg);
   RemoveGCRoots();
-  GC_unregister_my_thread();
   return 0;
 }
 

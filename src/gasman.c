@@ -1106,6 +1106,7 @@ void            InitBags (
 #if SIZEOF_VOID_P == 4
     GC_all_interior_pointers = 0;
     GC_init();
+    GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
 #else
     GC_all_interior_pointers = 1;
@@ -1191,7 +1192,7 @@ Bag NewBag (
     dst       = AllocBags;
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
 #else /* BOEHM_GC */
-    dst = GC_malloc(HEADER_SIZE*sizeof(Bag) + size);
+    dst = GC_malloc_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
     bag = GC_malloc(sizeof(Bag *));
 #endif /* BOEHM_GC */
 
@@ -1459,7 +1460,7 @@ void            RetypeBag (
         dst       = AllocBags;
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
 #else
-        dst       = GC_malloc( HEADER_SIZE*sizeof(Bag) + new_size );
+        dst       = GC_malloc_ignore_off_page( HEADER_SIZE*sizeof(Bag) + new_size );
 #endif
 	
         /* leave magic size-type word  for the sweeper, type must be 255   */

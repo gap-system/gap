@@ -92,6 +92,7 @@ if not GAP["debug"]:
 cflags += " -g"
 cflags += " -m"+GAP["abi"]
 cflags += " -DCONFIG_H"
+cflags += " -DGC_THREADS"
 if "gmp" in libs:
   cflags += " -DUSE_GMP"
 
