@@ -3,6 +3,7 @@ import commands, os, glob, sys
 # parse options and set up environment
 
 vars = Variables()
+vars.Add('cflags', 'Supply additional CFLAGS', "")
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
 vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", 'auto',
   allowed_values=('32', '64', 'auto')))
@@ -95,6 +96,10 @@ cflags += " -DCONFIG_H"
 cflags += " -DGC_THREADS"
 if "gmp" in libs:
   cflags += " -DUSE_GMP"
+
+if GAP["cflags"]:
+  cflags += " " + GAP["cflags"]
+
 
 GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags)
 
