@@ -110,14 +110,17 @@ GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
 
 def build_external(libname):
   global abi_path
+  if GetOption("help") or GetOption("clean"):
+    return
   try:
     os.makedirs(abi_path)
   except:
     pass
+  jobs = GetOption("num_jobs")
   if os.system("cd " + abi_path + ";"
           + "tar xzf ../" + libname + ".tar.gz;"
 	  + "cd " + libname + ";"
-	  + "./configure --prefix=$PWD/.. && make && make install") != 0:
+	  + "./configure --prefix=$PWD/.. && make -j " + str(jobs) + " && make install") != 0:
     print "=== Failed to build " + libname + " ==="
     sys.exit(1)
 
