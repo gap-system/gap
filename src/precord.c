@@ -21,7 +21,7 @@
 **  components are always appended (record bags grow by a factor of 5/4
 **  if needed as plists do), already sorted rnams are stored by storing
 **  their negative value to indicate sortedness. The new entries will have
-**  positive rnams and can thus be distinguished. Every read access will 
+**  positive rnams and can thus be distinguished. Every read access will
 **  clean up the mess by sorting the new part and then merging the two
 **  sorted areas. After that, all rnams are negative indicating sortedness.
 */
@@ -44,6 +44,7 @@ const char * Revision_precord_c =
 #include        "ariths.h"              /* basic arithmetic                */
 #include        "records.h"             /* generic records                 */
 #include        "lists.h"               /* generic lists                   */
+#include        "integer.h"             /* arbitrary size integers         */
 
 #include        "bool.h"                /* booleans                        */
 
@@ -140,7 +141,7 @@ Int IsCopyablePRecYes (
 */
 Obj NEW_PREC(UInt len)
 {
-    Obj o = NewBag( T_PREC, (len) * 2*sizeof(Obj) + 2*sizeof(Obj) ); 
+    Obj o = NewBag( T_PREC, (len) * 2*sizeof(Obj) + 2*sizeof(Obj) );
     SET_LEN_PREC(o,0);
     return o;
 }
@@ -155,15 +156,15 @@ Int             GrowPRec (
     Obj                 rec,
     UInt                need )
 {
-    UInt                newsize, want, good;     
+    UInt                newsize, want, good;
 
     /* check if big enough */
     want = (2*need+2)*sizeof(Obj);
     if (SIZE_OBJ(rec) >= want) return 0L;
 
-    
+
     /* find out how large the bag should become at least                   */
-    good = ((5 * LEN_PREC(rec) + 3)/4 + 1) * 2 * sizeof(Obj) + 2; 
+    good = ((5 * LEN_PREC(rec) + 3)/4 + 1) * 2 * sizeof(Obj) + 2;
 
     /* but maybe we need more                                              */
     newsize = (want < good) ? good : want;
@@ -325,7 +326,7 @@ void MakeImmutablePRec( Obj rec)
 
 
 /****************************************************************************
- * FindPRec( <rec>, <rnam>, <pos>, <cleanup> )  
+ * FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
  *   . . . . . . . . . . . . . . . . . find a component name by binary search
  *
  * Searches rnam in rec, sets pos to the position where it is found (return
@@ -343,12 +344,12 @@ UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup )
     UInt high;
 
     high = LEN_PREC(rec);
-    if (high > 0 && (Int) (GET_RNAM_PREC(rec,high)) > 0) {  
+    if (high > 0 && (Int) (GET_RNAM_PREC(rec,high)) > 0) {
         /* DIRTY! Not everything sorted! */
         if (cleanup) {
             SortPRecRNam(rec,0);
-            /* Note that this does not change the length and it cannot 
-             * trigger a garbage collection if cleanup is 1! 
+            /* Note that this does not change the length and it cannot
+             * trigger a garbage collection if cleanup is 1!
              * We do not want record accesses to trigger garbage
              * collections! */
         } else {
@@ -558,7 +559,7 @@ static int PrecComparer(const void *a, const void *b)
     else return 1;
 }
 
-void SortPRecRNam ( 
+void SortPRecRNam (
     Obj                 rec, int inplace )
 {
     UInt len = LEN_PREC(rec);
@@ -829,7 +830,7 @@ Obj FuncREC_NAMES (
     UInt                rnam;           /* one name of record              */
     Char*               strnam;         /* name                            */
     Obj                 string;         /* one name as string              */
-    UInt                i, len;      
+    UInt                i, len;
 
     /* check the argument                                                  */
     while ( ! IS_PREC_REP(rec) ) {
@@ -874,7 +875,7 @@ Obj FuncREC_NAMES_COMOBJ (
     UInt                rnam;           /* one name of record              */
     Char*               strnam;         /* name                            */
     Obj                 string;         /* one name as string              */
-    UInt                i, len;      
+    UInt                i, len;
 
     /* check the argument                                                  */
     while ( TNUM_OBJ(rec) != T_COMOBJ ) {
@@ -1385,7 +1386,7 @@ void LoadPRec( Obj prec )
   return;
 }
 
-/* Temporarily borrowed by AK from the IO package for timing  
+/* Temporarily borrowed by AK from the IO package for timing
    (see also an entry for this in GVarFuncs below) */
 
 #ifndef USE_GMP
@@ -1506,7 +1507,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CurrentTime", 0, "",
       Func_gettimeofday, "src/precord.c:CurrentTime" },
-      
+
     { 0 }
 
 };
