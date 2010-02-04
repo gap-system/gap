@@ -1385,6 +1385,48 @@ void LoadPRec( Obj prec )
   return;
 }
 
+/* Temporarily borrowed by AK from the IO package for timing  
+   (see also an entry for this in GVarFuncs below) */
+
+#ifndef USE_GMP
+static Obj MyObjInt_Int(Int i)
+{
+    Obj n;
+    Int bound = 1L << NR_SMALL_INT_BITS;
+    if (i >= bound) {
+        /* We have to make a big integer */
+        n = NewBag(T_INTPOS,4*sizeof(TypDigit));
+        ADDR_INT(n)[0] = (TypDigit) (i & ((Int) INTBASE - 1L));
+        ADDR_INT(n)[1] = (TypDigit) (i >> NR_DIGIT_BITS);
+        ADDR_INT(n)[2] = 0;
+        ADDR_INT(n)[3] = 0;
+        return n;
+    } else if (-i > bound) {
+        n = NewBag(T_INTNEG,4*sizeof(TypDigit));
+        ADDR_INT(n)[0] = (TypDigit) ((-i) & ((Int) INTBASE - 1L));
+        ADDR_INT(n)[1] = (TypDigit) ((-i) >> NR_DIGIT_BITS);
+        ADDR_INT(n)[2] = 0;
+        ADDR_INT(n)[3] = 0;
+        return n;
+    } else {
+        return INTOBJ_INT(i);
+    }
+}
+#else
+#define MyObjInt_Int(i) ObjInt_Int(i)
+#endif
+
+Obj Func_gettimeofday( Obj self )
+{
+   Obj tmp;
+   struct timeval tv;
+   gettimeofday(&tv, NULL);
+   tmp = NEW_PREC(0);
+   AssPRec(tmp, RNamName("tv_sec"), MyObjInt_Int( tv.tv_sec ));
+   AssPRec(tmp, RNamName("tv_usec"), MyObjInt_Int( tv.tv_usec ));
+   return tmp;
+}
+
 /****************************************************************************
 **
 
@@ -1462,6 +1504,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "LT_PREC_DEFAULT",2,"left, right",
       FuncLT_PREC_DEFAULT, "src/precord.c:LT_PREC_DEFAULT" },
 
+    { "CurrentTime", 0, "",
+      Func_gettimeofday, "src/precord.c:CurrentTime" },
+      
     { 0 }
 
 };
