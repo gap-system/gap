@@ -29,8 +29,15 @@ config_header_file = build_dir + "/config.h"
 
 if (not os.access(config_header_file, os.R_OK) or
     "config" in COMMAND_LINE_TARGETS):
+  if GAP["abi"] != "auto":
+    os.environ["CC"] = compiler 
+    os.environ["CFLAGS"] = " -m" + GAP["abi"]
   os.system("./configure")
   os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
+  os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
+  if GAP["abi"] != "auto":
+    del os.environ["CC"]
+    del os.environ["CFLAGS"]
 
 # determine ABI
 
