@@ -26,6 +26,9 @@
 **  The scanner relies on the functions  provided  by  the  operating  system
 **  dependent module 'system.c' for the low level input/output.
 */
+
+#include <pthread.h>
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_scanner_h =
    "@(#)$Id: scanner.h,v 4.34 2009/03/07 13:12:44 sal Exp $";
@@ -390,7 +393,6 @@ extern Int BreakLoopPending( void );
 
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
-
 
 /****************************************************************************
 **
@@ -830,7 +832,7 @@ typedef struct {
 **  current input character.  It points into the buffer 'Input->line'.
 */
 
-extern TypInputFile    InputFiles [16];
+/* extern TypInputFile    InputFiles [16]; */
 /* TL: extern TypInputFile *  Input; */
 /* TL: extern Char *          In; */
 
@@ -864,10 +866,21 @@ typedef struct {
     Int         spos;
     Int         sindent;
     Obj         stream;
+    pthread_mutex_t lock;
 } TypOutputFile;
 
-extern TypOutputFile   OutputFiles [16];
+/* TL: extern TypOutputFile   OutputFiles [16]; */
 /* TL: extern TypOutputFile * Output; */
+
+/****************************************************************************
+**
+*F  LockOutput( <output> ) . . . . . . . .  lock mutex associated with output
+*F  UnlockOutput( <output> ) . . . . . .  unlock mutex associated with output
+*/
+
+void LockOutput( TypOutputFile * output );
+void UnlockOutput( TypOutputFile * output );
+
 
 /****************************************************************************
 **

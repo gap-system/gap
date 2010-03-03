@@ -59,6 +59,7 @@ const char * Revision_string_c =
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
+#include        "code.h"                /* coder                           */
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
@@ -82,6 +83,7 @@ const char * Revision_string_c =
 #undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
+#include        "tls.h"                 /* thread-local storage            */
 
 #include        <assert.h>
 
@@ -734,15 +736,16 @@ void CleanStringCopy (
 **  which can be read in by GAP afterwards.
 **
 */
-static char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
 
 void PrintString (
     Obj                 list )
 {
+  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
   UInt scanout, n;
   UInt1 c;
   UInt len = GET_LEN_STRING(list);
   UInt off = 0;
+  LockOutput(TLS->output);
   Pr("\"", 0L, 0L);
   while (off < len)
     {
@@ -808,6 +811,7 @@ void PrintString (
       Pr( "%s", (Int)PrStrBuf, 0L );
     }
   Pr( "\"", 0L, 0L );
+  UnlockOutput(TLS->output);
 }
 /****************************************************************************
 **
@@ -821,10 +825,12 @@ void PrintString (
 void PrintString1 (
     Obj                 list )
 {
+  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
   UInt len = GET_LEN_STRING(list);
   UInt scanout, off = 0;
   UInt1  *p;
 
+  LockOutput(TLS->output);
   while (off < len)    {
     for (p = CHARS_STRING(list), scanout=0; 
          p[off] && off<len && scanout<10000; 
@@ -837,6 +843,7 @@ void PrintString1 (
       Pr("%c", 0L, 0L);
     }
   }
+  UnlockOutput(TLS->output);
 }
 
 

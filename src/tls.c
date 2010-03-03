@@ -6,6 +6,8 @@
 
 static TLSHandler *firstHandler, *lastHandler;
 
+ThreadLocalStorage *MainThreadTLS;
+
 #ifdef HAVE_NATIVE_TLS
 
 __thread ThreadLocalStorage TLSInstance;
@@ -51,3 +53,14 @@ void RunTLSDestructors()
      handler->destructor();
 }
 
+void InitTLS()
+{
+  void InitScannerTLS();
+  InitScannerTLS();
+}
+
+void DestroyTLS()
+{
+  void DestroyScannerTLS();
+  DestroyScannerTLS();
+}

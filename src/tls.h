@@ -42,6 +42,10 @@ typedef struct ThreadLocalStorage
   Char *          prompt;
   Obj  printPromptHook;
   Obj  endLineHook;
+  TypInputFile *  inputFiles[16];
+  TypOutputFile* outputFiles[16];
+  int inputFilesSP;
+  int outputFilesSP;
   TypInputFile *  input;
   Char *          in;
   TypOutputFile * output;
@@ -83,6 +87,8 @@ typedef struct ThreadLocalStorage
   Int recursionDepth;
 } ThreadLocalStorage;
 
+extern ThreadLocalStorage *MainThreadTLS;
+
 typedef struct
 {
   struct TLSHandler *nextHandler;
@@ -123,6 +129,14 @@ static inline ThreadLocalStorage *GetTLS()
 
 #endif /* HAVE_NATIVE_TLS */
 
+static inline int IsMainThread()
+{
+  return TLS->threadID < 0;
+};
+
 void InitializeTLS();
+
+void InitTLS();
+void DestroyTLS();
 
 #endif /* _TLS_H */

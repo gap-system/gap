@@ -69,6 +69,7 @@ const char * Revision_scanner_c =
 #include	"thread.h"
 
 #include <assert.h>
+#include <stdlib.h>
 
 /****************************************************************************
 **
@@ -326,7 +327,7 @@ Obj  EndLineHook = 0;
 **  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
 **  current input  character.  It points  into the buffer 'Input->line'.
 */
-TypInputFile    InputFiles [16];
+/* TL: TypInputFile    InputFiles [16]; */
 /* TL: TypInputFile *  Input; */
 /* TL: Char *          In; */
 
@@ -350,7 +351,7 @@ TypInputFile    InputFiles [16];
 **  'Output' is a pointer to the current output file.  It points to  the  top
 **  of the stack 'OutputFiles'.
 */
-TypOutputFile   OutputFiles [16];
+/* TL: TypOutputFile   OutputFiles [16]; */
 /* TL: TypOutputFile * Output; */
 
 
@@ -545,6 +546,54 @@ void Match (
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
+void InitOutput(TypOutputFile *output)
+{
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+  pthread_mutex_init(&output->lock, &attr);
+  pthread_mutexattr_destroy(&attr);
+}
+
+void DisposeOutput(TypOutputFile *output)
+{
+  pthread_mutex_destroy(&output->lock);
+  free(output);
+}
+void DisposeInput(TypInputFile *input)
+{
+  free(input);
+}
+
+TypOutputFile *NewOutput()
+{
+  TypOutputFile *result;
+  result = malloc(sizeof(TypOutputFile));
+  if (!result)
+    abort();
+  InitOutput(result);
+  return result;
+}
+
+TypInputFile *NewInput()
+{
+  TypInputFile *result;
+  result = malloc(sizeof(TypInputFile));
+  if (!result)
+    abort();
+  return result;
+}
+
+void LockOutput(TypOutputFile *output)
+{
+  pthread_mutex_lock(&output->lock);
+}
+
+void UnlockOutput(TypOutputFile *output)
+{
+  pthread_mutex_unlock(&output->lock);
+}
+
 
 /****************************************************************************
 **
@@ -584,9 +633,10 @@ UInt OpenInput (
     Char *              filename )
 {
     Int                 file;
+    int sp;
 
     /* fail if we can not handle another open input file                   */
-    if ( TLS->input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
+    if ( TLS->inputFilesSP == (sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]))-1 )
         return 0;
 
     /* in test mode keep reading from test input file for break loop input */
@@ -599,13 +649,18 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS->input+1 != InputFiles ) {
+    if ( TLS->inputFilesSP != 0 ) {
         TLS->input->ptr    = TLS->in;
         TLS->input->symbol = TLS->symbol;
     }
 
     /* enter the file identifier and the file name                         */
-    TLS->input++;
+    sp = TLS->inputFilesSP++;
+    if (!TLS->inputFiles[sp])
+    {
+      TLS->inputFiles[sp] = NewInput();
+    }
+    TLS->input = TLS->inputFiles[sp];
     TLS->input->isstream = 0;
     TLS->input->file = file;
     TLS->input->name[0] = '\0';
@@ -638,18 +693,24 @@ UInt OpenInput (
 UInt OpenInputStream (
     Obj                 stream )
 {
+    int sp;
     /* fail if we can not handle another open input file                   */
-    if ( TLS->input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
+    if ( TLS->inputFilesSP == (sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]))-1 )
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( TLS->input+1 != InputFiles ) {
+    if ( TLS->inputFilesSP != 0 ) {
         TLS->input->ptr    = TLS->in;
         TLS->input->symbol = TLS->symbol;
     }
 
     /* enter the file identifier and the file name                         */
-    TLS->input++;
+    sp = TLS->inputFilesSP++;
+    if (!TLS->inputFiles[sp])
+    {
+      TLS->inputFiles[sp] = NewInput();
+    }
+    TLS->input = TLS->inputFiles[sp];
     TLS->input->isstream = 1;
     TLS->input->stream = stream;
     TLS->input->isstringstream = (CALL_1ARGS(TLS->isStringStream, stream) == True);
@@ -694,7 +755,7 @@ UInt OpenInputStream (
 UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
-    if ( TLS->input == InputFiles )
+    if ( TLS->inputFilesSP <= 1)
         return 0;
 
     /* refuse to close the test input file                                 */
@@ -711,7 +772,7 @@ UInt CloseInput ( void )
     TLS->input->sline = 0;
 
     /* revert to last file                                                 */
-    TLS->input--;
+    TLS->input = TLS->inputFiles[--TLS->inputFilesSP-1];
     TLS->in     = TLS->input->ptr;
     TLS->symbol = TLS->input->symbol;
 
@@ -1163,6 +1224,7 @@ UInt CloseOutputLog ( void )
 }
 
 
+
 /****************************************************************************
 **
 *F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
@@ -1194,9 +1256,10 @@ UInt OpenOutput (
     Char *              filename )
 {
     Int                 file;
+    int sp;
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS->output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+    if ( TLS->outputFilesSP == sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
@@ -1209,7 +1272,12 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    TLS->output++;
+    sp = TLS->outputFilesSP++;
+    if (!TLS->outputFiles[sp])
+    {
+      TLS->outputFiles[sp] = NewOutput();
+    }
+    TLS->output = TLS->outputFiles[sp];
     TLS->output->file     = file;
     TLS->output->line[0]  = '\0';
     TLS->output->pos      = 0;
@@ -1238,12 +1306,19 @@ UInt OpenOutput (
 UInt OpenOutputStream (
     Obj                 stream )
 {
+    int sp;
     /* fail if we can not handle another open output file                  */
-    if ( TLS->output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+    if ( TLS->outputFilesSP == sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]))
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    TLS->output++;
+    sp = TLS->outputFilesSP++;
+    if (!TLS->outputFiles[sp])
+    {
+      TLS->outputFiles[sp] = NewOutput();
+    }
+
+    TLS->output = TLS->outputFiles[sp];
     TLS->output->stream   = stream;
     TLS->output->isstringstream = (CALL_1ARGS(TLS->isStringStream, stream) == True);
     TLS->output->format   = (CALL_1ARGS(TLS->printFormattingStatus, stream) == True);
@@ -1282,7 +1357,7 @@ UInt CloseOutput ( void )
 {
 
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->output == OutputFiles )
+    if ( TLS->outputFilesSP <= 1)
       return 0;
 
     /* silently refuse to close the test output file this is probably
@@ -1298,7 +1373,7 @@ UInt CloseOutput ( void )
     }
 
     /* revert to previous output file and indicate success                 */
-    TLS->output--;
+    TLS->output = TLS->outputFiles[--TLS->outputFilesSP-1];
     return 1;
 }
 
@@ -1318,9 +1393,10 @@ UInt OpenAppend (
     Char *              filename )
 {
     Int                 file;
+    int sp;
 
     /* fail if we can not handle another open output file                  */
-    if ( TLS->output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+    if ( TLS->outputFilesSP == sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]))
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
@@ -1333,7 +1409,13 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    TLS->output++;
+    sp = TLS->outputFilesSP++;
+    if (!TLS->outputFiles[sp])
+    {
+      TLS->outputFiles[sp] = NewOutput();
+    }
+
+    TLS->output = TLS->outputFiles[sp];
     TLS->output->file     = file;
     TLS->output->line[0]  = '\0';
     TLS->output->pos      = 0;
@@ -1374,7 +1456,7 @@ UInt OpenAppendStream (
 UInt CloseAppend ( void )
 {
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->output == OutputFiles )
+    if ( TLS->outputFilesSP <= 1)
         return 0;
 
     /* refuse to close the test output file                                */
@@ -1388,7 +1470,7 @@ UInt CloseAppend ( void )
     }
 
     /* revert to previous output file and indicate success                 */
-    TLS->output--;
+    TLS->output = TLS->outputFiles[--TLS->outputFilesSP];
     return 1;
 }
 
@@ -2825,7 +2907,9 @@ void PrTo (
 {
   KOutputStream savedStream = TLS->theStream;
   TLS->theStream = stream;
+  LockOutput(stream);
   FormatOutput( putToTheStream, format, arg1, arg2);
+  UnlockOutput(stream);
   TLS->theStream = savedStream;
 }
 
@@ -2925,9 +3009,9 @@ static Int InitLibrary (
 
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-static Char Cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
-static Char MoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
-static Char StillMoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
+/* TL: static Char Cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
+/* TL: static Char MoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
+/* TL: static Char StillMoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
 
 static Int InitKernel (
     StructInitInfo *    module )
@@ -2935,11 +3019,9 @@ static Int InitKernel (
     Int                 ignore;
     Int                 i;
 
-    TLS->input = InputFiles;
-    TLS->input--;
     ignore = OpenInput(  "*stdin*"  );
     TLS->input->echo = 1; /* echo stdin */
-    TLS->output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
+    ignore = OpenOutput( "*stdout*" );
 
     TLS->inputLog  = 0;  TLS->outputLog  = 0;
     TLS->testInput = 0;  TLS->testOutput = 0;
@@ -2947,6 +3029,9 @@ static Int InitKernel (
     /* initialize cookies for streams                                      */ 
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
+    /* We don't need the cookies anymore, since the data got moved to thread-local
+     * storage. */
+#if 0
     for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
         Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
         Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
@@ -2966,6 +3051,7 @@ static Int InitKernel (
         StillMoreCookie[i][8] = '\0';
         /* TL: InitGlobalBag(&(InputFiles[i].gapname), &(StillMoreCookie[i][0])); */
     }
+#endif
 
     /* tell GASMAN about the global bags                                   */
     /* TL: InitGlobalBag(&(logFile.stream),        "src/scanner.c:logFile"        ); */
@@ -3013,6 +3099,53 @@ StructInitInfo * InitInfoScanner ( void )
     module.revision_h = Revision_scanner_h;
     FillInVersion( &module );
     return &module;
+}
+
+/****************************************************************************
+**
+*F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
+*F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
+*/
+
+void InitScannerTLS()
+{
+  if (!IsMainThread())
+  {
+    TLS->output = MainThreadTLS->output;
+    TLS->outputFiles[0] = TLS->output;
+    TLS->outputFilesSP = 1;
+    TLS->outputLog = MainThreadTLS->outputLog;
+    TLS->outputLogFile = MainThreadTLS->outputLogFile;
+    TLS->outputLogStream = MainThreadTLS->outputLogStream;
+    TLS->input = MainThreadTLS->input;
+    TLS->inputFiles[0] = TLS->input;
+    TLS->inputFilesSP = 1;
+    TLS->inputLog = MainThreadTLS->inputLog;
+    TLS->inputLogFile = MainThreadTLS->inputLogFile;
+    TLS->inputLogStream = MainThreadTLS->inputLogStream;
+    TLS->testInput = MainThreadTLS->testInput;
+    TLS->testOutput = MainThreadTLS->testOutput;
+  }
+}
+
+void DestroyScannerTLS()
+{
+  int i;
+  /* Skip file at index zero, which is reused storage from the main
+   * thread.
+   */
+  for (i=1; i<sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]); i++)
+  {
+    if (!TLS->outputFiles[i])
+      break;
+    DisposeOutput(TLS->outputFiles[i]);
+  }
+  for (i=1; i<sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]); i++)
+  {
+    if (!TLS->inputFiles[i])
+      break;
+    DisposeInput(TLS->inputFiles[i]);
+  }
 }
 
 

@@ -4033,6 +4033,8 @@ void InitializeGap (
         }
     }
 
+    InitTLS();
+
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
 

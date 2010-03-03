@@ -94,8 +94,9 @@ void RunThreadedMain(
 #ifndef HAVE_NATIVE_TLS
   int dummy[0];
   alloca(((uintptr_t) dummy) &~TLS_MASK);
-  InitializeTLS();
 #endif
+  InitializeTLS();
+  MainThreadTLS = TLS;
 #endif
   for (i=0; i<MAX_THREADS-1; i++)
     thread_data[i].next = i+1;
@@ -116,7 +117,9 @@ void *DispatchThread(void *arg)
   InitializeTLS();
   TLS->threadID = this_thread - thread_data;
   AddGCRoots();
+  InitTLS();
   this_thread->start(this_thread->arg);
+  DestroyTLS();
   RemoveGCRoots();
   return 0;
 }
