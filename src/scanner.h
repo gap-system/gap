@@ -867,6 +867,9 @@ typedef struct {
     Int         sindent;
     Obj         stream;
     pthread_mutex_t lock;
+    pthread_cond_t signal;
+    void *      lock_owner;
+    int         lock_counter;
 } TypOutputFile;
 
 /* TL: extern TypOutputFile   OutputFiles [16]; */

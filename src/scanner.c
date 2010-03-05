@@ -550,14 +550,18 @@ void InitOutput(TypOutputFile *output)
 {
   pthread_mutexattr_t attr;
   pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+  /* pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); */
   pthread_mutex_init(&output->lock, &attr);
   pthread_mutexattr_destroy(&attr);
+  pthread_cond_init(&output->signal, NULL);
+  output->lock_owner = NULL;
+  output->lock_counter = 0;
 }
 
 void DisposeOutput(TypOutputFile *output)
 {
   pthread_mutex_destroy(&output->lock);
+  pthread_cond_destroy(&output->signal);
   free(output);
 }
 void DisposeInput(TypInputFile *input)
@@ -587,10 +591,21 @@ TypInputFile *NewInput()
 void LockOutput(TypOutputFile *output)
 {
   pthread_mutex_lock(&output->lock);
+  while (output->lock_owner != TLS && output->lock_counter > 0)
+    pthread_cond_wait(&output->signal, &output->lock);
+  output->lock_owner = TLS;
+  output->lock_counter++;
+  pthread_mutex_unlock(&output->lock);
 }
 
 void UnlockOutput(TypOutputFile *output)
 {
+  pthread_mutex_lock(&output->lock);
+  if (--output->lock_counter <= 0)
+  {
+    output->lock_owner = NULL;
+    pthread_cond_signal(&output->signal);
+  }
   pthread_mutex_unlock(&output->lock);
 }
 
