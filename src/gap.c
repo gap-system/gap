@@ -4249,12 +4249,14 @@ pthread_mutex_t TableLock;
 
 void *Allocate(size_t size)
 {
-  return malloc(size);
+  /* TODO: This works around GC issues, but needs to be fixed better in the long term. */
+  return GC_malloc(size);
 }
 
 void Free(void *addr)
 {
-  free(addr);
+  /* TODO: This works around GC issues, but needs to be fixed better in the long term. */
+  /* free(addr); */
 }
 
 void LockTable()
