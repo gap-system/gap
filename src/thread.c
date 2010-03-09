@@ -81,6 +81,17 @@ void RemoveGCRoots()
   GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
 }
 
+#ifdef __GNUC__
+static void SetupTLS() __attribute__((noinline));
+#endif
+
+static void SetupTLS()
+{
+  InitializeTLS();
+  MainThreadTLS = TLS;
+  TLS->threadID = -1;
+}
+
 void RunThreadedMain(
   int (*mainFunction)(int, char **, char **),
   int argc,
@@ -95,8 +106,7 @@ void RunThreadedMain(
   int dummy[0];
   alloca(((uintptr_t) dummy) &~TLS_MASK);
 #endif
-  InitializeTLS();
-  MainThreadTLS = TLS;
+  SetupTLS();
 #endif
   for (i=0; i<MAX_THREADS-1; i++)
     thread_data[i].next = i+1;
@@ -107,7 +117,6 @@ void RunThreadedMain(
     thread_data[i].tls = 0;
   thread_free_list = 0;
   pthread_mutex_init(&master_lock, 0);
-  TLS->threadID = -1;
   exit((*mainFunction)(argc, argv, environ));
 }
 
