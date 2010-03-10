@@ -140,7 +140,7 @@ end;
 fib_threads(6);
 
 # Example 9. Compare standard, Fibonacci and threaded Fibonacci multiplication
-Read("~/gap/hpcgap/karatsuba.g");
+ReadGapRoot("demo/karatsuba.g");
 x:=Indeterminate(Rationals,"x");
 nr:=IndeterminateNumberOfLaurentPolynomial(x);
 fam:=FamilyObj(1);;
