@@ -5,6 +5,9 @@
 
 #include "tlsconfig.h"
 
+
+#include "code.h"
+
 typedef struct ThreadLocalStorage
 {
   int threadID;
@@ -85,6 +88,9 @@ typedef struct ThreadLocalStorage
   Bag codeLVars;
   /* From funcs.h */
   Int recursionDepth;
+
+  /* From permutat.c */
+  Obj TmpPerm;
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;
