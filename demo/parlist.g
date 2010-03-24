@@ -45,4 +45,32 @@ ParList1 := function(l, f, n)
     DestroyChannel(outch);
     return res;
 end;
+
+ParList2 := function(l, f, n)
+    local   inch,  worker,  threads,  res,  i,  t;
+    inch := CreateChannel();
+    worker := function()
+        local   x;
+        while true do
+            x := ReceiveChannel(inch);
+            if x = fail then
+                    return;
+            fi;
+            res[x] := f(res[x]);    
+        od;
+    end;    
+    threads := List([1..n], i->CreateThread(worker));
+    res := PlainListCopy(l);
+    for i in [1..Length(l)] do
+        SendChannel(inch, i);
+    od;
+    for i in [1..n] do
+        SendChannel(inch, fail);
+    od;
+    for t in threads do
+        WaitThread(t);
+    od;
+    DestroyChannel(inch);
+    return res;
+end;
             
