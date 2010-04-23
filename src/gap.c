@@ -3363,6 +3363,17 @@ Obj FuncWaitThread(Obj self, Obj id) {
 
 /****************************************************************************
 **
+*F FuncCurrentThread ... return id of current thread.
+**
+*/
+
+Obj FuncCurrentThread(Obj self) {
+  return INTOBJ_INT(TLS->threadID);
+}
+
+
+/****************************************************************************
+**
 *F FuncLock ........... acquire write lock on an object.
 *F FuncUnlock ......... release write lock on an object.
 *F FuncLockShared ..... acquire read lock on an object.
@@ -3440,6 +3451,7 @@ Obj FuncMultiReceiveChannel(Obj self, Obj id, Obj count);
 Obj FuncTrySendChannel(Obj self, Obj id, Obj obj);
 Obj FuncTryReceiveChannel(Obj self, Obj id, Obj defaultobj);
 Obj FuncCreateThread(Obj self, Obj funcargs);
+Obj FuncCurrentThread(Obj self);
 Obj FuncWaitThread(Obj self, Obj id);
 Obj FuncCreateBarrier(Obj self, Obj args);
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
@@ -3574,6 +3586,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CreateThread", -1, "function",
       FuncCreateThread, "src/gap.c:CreateThread" },
+
+    { "CurrentThread", 0, "",
+      FuncCurrentThread, "src/gap.c:CurrentThread" },
 
     { "WaitThread", 1, "threadID",
       FuncWaitThread, "src/gap.c:WaitThread" },
