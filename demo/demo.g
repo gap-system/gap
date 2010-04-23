@@ -6,6 +6,15 @@
 
 ReadGapRoot("demo/threads.g");
 
+# "Hello, World" example
+
+hello:=function(n)
+Sleep(n mod 3);
+Print("Hello World, thread ", n, " with id ", CurrentThread(), " is here\n");
+end;
+threads:=List( [1..10], i -> CreateThread( hello, i ) );
+Perform( threads, WaitThread );
+
 # Example 1. Simple operations channels with no threads
 ch1:=CreateChannel("t1");   
 ch2:=CreateChannel("t2");
@@ -149,9 +158,15 @@ deg:=5000;
 KARATSUBA_CUTOFF:=150; # quasi-optimal value for one main and two subthreads
 f:=LaurentPolynomialByCoefficients( fam, List([1..deg],i->l[(i mod 10) + 1]), 0, 1 );;
 g:=LaurentPolynomialByCoefficients( fam, List([1..deg],i->l[((i+5) mod 10) + 1]), 0, 1 );;
-Exec("date"); t1:=f*g;; Exec("date");
-Exec("date"); t2:=KaratsubaPolynomialMultiplication(f,g);; Exec("date");
-Exec("date"); t3:=KaratsubaPolynomialMultiplicationThreaded(f,g);; Exec("date");
+Print("Testing standard multiplication of polynomials ... ");
+t1:=f*g;;
+Print("done\n");
+Print("Testing Karatsuba multiplication of polynomials ... ");
+t2:=KaratsubaPolynomialMultiplication(f,g);; 
+Print("done\n");
+Print("Testing Karatsuba multiplication of polynomials in threads ... ");
+t3:=KaratsubaPolynomialMultiplicationThreaded(f,g);; 
+Print("done\n");
 t1=t2; t1=t3; 
 
 
