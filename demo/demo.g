@@ -7,7 +7,6 @@
 ReadGapRoot("demo/threads.g");
 
 # "Hello, World" example
-
 hello:=function(n)
 Sleep(n mod 3);
 Print("Hello World, thread ", n, " with id ", CurrentThread(), " is here\n");

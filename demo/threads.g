@@ -18,9 +18,9 @@
 CallFuncListThread:=function( func, args, chin, chout )
 SendChannel( chin, args );
 return CreateThread( 
-    function( ) 
+    function( func, chin, chout ) 
     SendChannel( chout, CallFuncList( func, ReceiveChannel( chin ) ) );
-    end );
+    end, func, chin, chout );
 end;
 
 
