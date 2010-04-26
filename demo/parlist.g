@@ -73,4 +73,24 @@ ParList2 := function(l, f, n)
     DestroyChannel(inch);
     return res;
 end;
+
+BlockedParlist:= function(ParListFun, blocking)
+    return function(l,f,n)
+        local   len,  blocks,  i,  j;
+        len := Length(l);
+        blocks := [];
+        i := 1;
+        j := i+blocking-1;
+        while j <= len do
+            Add(blocks, l{[i..j]});
+            i := i+blocking;
+            j := j+blocking;
+        od;
+        if i <= len then
+            Add(blocks,l{[i..len]});
+        fi;
+        return Concatenation(ParListFun(blocks, block -> List(block, f), n));
+    end;
+end;
             
+
