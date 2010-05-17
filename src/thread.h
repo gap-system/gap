@@ -23,7 +23,7 @@ void RunThreadedMain(
 	char **environ );
 
 int RunThread(void (*start)(void *), void *arg);
-void JoinThread(int id);
+int JoinThread(int id);
 
 void Lock(void *obj);
 void LockShared(void *obj);

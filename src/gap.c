@@ -3357,8 +3357,10 @@ Obj FuncCreateThread(Obj self, Obj funcargs) {
 
 Obj FuncWaitThread(Obj self, Obj id) {
   int thread_num = INT_INTOBJ(id);
-  JoinThread(thread_num);
-  return (Obj) 0;
+  if (JoinThread(thread_num))
+    return True;
+  else
+    return False;
 }
 
 /****************************************************************************
