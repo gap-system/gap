@@ -72,6 +72,8 @@ const char * Revision_permutat_c =
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
+#include        "code.h"                /* coder                           */
+
 #include        "saveload.h"            /* saving and loading              */
 #include        "tls.h"
 
