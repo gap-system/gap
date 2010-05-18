@@ -166,7 +166,48 @@ Print("done\n");
 Print("Testing Karatsuba multiplication of polynomials in threads ... ");
 t3:=KaratsubaPolynomialMultiplicationThreaded(f,g);; 
 Print("done\n");
-t1=t2; t1=t3; 
+# t1=t2; t1=t3; # this causes crash 
+
+# Example 10. Barriers
+# This example works:
+Print("Barrier test 1 \n");
+bar:=CreateBarrier();
+StartBarrier( bar, 3 );
+t:=[];
+for i in [1..3] do
+    t[i]:=CreateThread( 
+             function(i) 
+             local t, s; 
+             t:=CurrentTime();
+             s := Concatenation("Thread ", String(i), " started at ", 
+                    String(t.tv_sec), ".", String(t.tv_usec), "\n");
+             Print( s );
+             Sleep(5*i); 
+             WaitBarrier(bar); 
+             s := Concatenation("Thread ", String(i), " stopped at ", 
+                    String(t.tv_sec), ".", String(t.tv_usec), "\n");
+             Print( s );
+             end, 
+             i );
+od;
+for i in [1..3] do WaitThread(t[i]); od;
+
+# And this not:
+Print("Barrier test 2 \n");
+m:=List([1..10],i->List([1..10],j->10*(i-1)+j));
+s:=[];
+bar:=CreateBarrier();
+StartBarrier( bar, Length(m) );
+t:=[];
+for i in [1..Length(m)] do
+    t[i]:=CreateThread( function(i) s[i]:=Sum( List(m[i], Factorial ) ); WaitBarrier(bar); end, i );
+od;
+for i in [1..Length(t)] do WaitThread(t); od;
+x1:=Sum(s);
+x2:=Sum(List([1..100],Factorial));
+Print(x1,"\n");
+Print(x2,"\n");
+Print( "Barrier test 2 ", x1=x2, "\n");
 
 
 
