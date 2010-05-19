@@ -10,7 +10,8 @@
 #
 # This is an analog of CallFuncList(func,args) which calls the function
 # func with arguments args in a separate newly created thread with an 
-# input channel chin and an output channel chout.
+# input channel chin and an output channel chout, and returns the identifier
+# of the created thread.
 #
 # This function allows to use the same function both in CallFuncList and
 # in CallFuncListThread
@@ -31,7 +32,7 @@ end;
 # Performs four actions in one call for a thread with an input channel chin 
 # and an output channel chout: waits (blocking) until the thread will return
 # the result to its output channel and free its resources, then destroys both
-# input and output channels for that thread.
+# input and output channels for that thread and returns the result;
 #
 FinaliseThread:=function( thread, chin, chout )
 local res;
