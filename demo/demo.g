@@ -15,17 +15,17 @@ threads:=List( [1..10], i -> CreateThread( hello, i ) );
 Perform( threads, WaitThread );
 
 # Example 1. Simple operations channels with no threads
-ch1:=CreateChannel("t1");   
-ch2:=CreateChannel("t2");
+ch1:=CreateChannel();   
+ch2:=CreateChannel();
 SendChannel(ch1,6);
 SendChannel(ch1,7);
 SendChannel( ch2, ReceiveChannel(ch1)*ReceiveChannel(ch1));
 ReceiveChannel(ch2);
-DestroyChannel("t1");
-DestroyChannel("t2");
+DestroyChannel(ch1);
+DestroyChannel(ch2);
 
 # Example 2. Sending to channel list elements in a loop inside a thread
-ch:=CreateChannel("test");
+ch:=CreateChannel();
 n:=10000;
 f:=function() local i; for i in [1..n] do SendChannel(ch,i); od; end;
 CreateThread(f);
@@ -34,10 +34,10 @@ DestroyChannel(ch);
 l=[1..n];
 
 # Example 3. Two threads, each with own input and output channels
-chin1:=CreateChannel("chin1");
-chin2:=CreateChannel("chin2");
-chout1:=CreateChannel("chout1");
-chout2:=CreateChannel("chout2");
+chin1:=CreateChannel();
+chin2:=CreateChannel();
+chout1:=CreateChannel();
+chout2:=CreateChannel();
 mult1:=function() SendChannel( chout1, ReceiveChannel(chin1)*ReceiveChannel(chin1)); end;
 mult2:=function() SendChannel( chout2, ReceiveChannel(chin2)*ReceiveChannel(chin2)); end;
 CreateThread(mult1);

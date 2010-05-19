@@ -289,8 +289,22 @@ static inline Obj prod_intobjs(Int l, Int r)
      /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
         remove to get parity right */
 #define LAST_EXTERNAL_TNUM      T_WPOBJ
-#define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
-#define LAST_VIRTUAL_TNUM LAST_EXTERNAL_TNUM
+
+#define FIRST_SHARED_TNUM	(LAST_EXTERNAL_TNUM+1)
+/* Primitive types */
+#define T_MUTEX			(FIRST_SHARED_TNUM+ 0)
+#define T_CONDVAR		(FIRST_SHARED_TNUM+ 1)
+#define T_RWLOCK		(FIRST_SHARED_TNUM+ 2)
+#define T_MONITOR		(FIRST_SHARED_TNUM+ 3)
+/* User-programmable types */
+#define T_LOCK			(FIRST_SHARED_TNUM+ 4)
+#define T_CHANNEL		(FIRST_SHARED_TNUM+ 5)
+#define T_BARRIER		(FIRST_SHARED_TNUM+ 6)
+#define T_SYNCVAR		(FIRST_SHARED_TNUM+ 7)
+#define LAST_SHARED_TNUM	(T_SYNCVAR)
+
+#define LAST_REAL_TNUM          LAST_SHARED_TNUM
+#define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)

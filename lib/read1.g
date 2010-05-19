@@ -77,5 +77,7 @@ ReadLib( "string.gd"   );
 
 ReadLib( "cmdledit.g"  );
 
+ReadLib( "synchronize.g" );
+
 ReadLib( "error.g"   );
 ReadLib( "session.g" );

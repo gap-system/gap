@@ -57,10 +57,14 @@ void InitTLS()
 {
   void InitScannerTLS();
   InitScannerTLS();
+  void InitThreadAPITLS();
+  InitThreadAPITLS();
 }
 
 void DestroyTLS()
 {
   void DestroyScannerTLS();
   DestroyScannerTLS();
+  void DestroyThreadAPITLS();
+  DestroyThreadAPITLS();
 }

@@ -492,6 +492,29 @@ void InitSweepFuncBags (
 #endif
 }
 
+/****************************************************************************
+**
+*F  InitFinalizerFuncBags(<type>,<finalizer-func>)  . . . . install finalizer
+*/
+
+FinalizerFunction TabFinalizerFuncBags [ NTYPES ];
+
+void InitFinalizerFuncBags(
+    UInt		type,
+    FinalizerFunction   finalizer_func)
+{
+  TabFinalizerFuncBags[type] = finalizer_func;
+}
+
+void StandardFinalizer( void * bagContents, void * data )
+{
+  Bag bag;
+  bagContents = ((char *) bagContents) + HEADER_SIZE * sizeof (Bag *);
+  bag = (Bag) &bagContents;
+  TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
+}
+
+
 #if ITANIUM
 extern void * ItaniumRegisterStackTop();
 
@@ -1195,8 +1218,14 @@ Bag NewBag (
     dst       = AllocBags;
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
 #else /* BOEHM_GC */
-    dst = GC_malloc_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
     bag = GC_malloc(sizeof(Bag *));
+    if (TabFinalizerFuncBags[type])
+    {
+      dst = GC_malloc_atomic_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
+      GC_register_finalizer(dst, StandardFinalizer, NULL, NULL, NULL);
+    }
+    else
+      dst = GC_malloc_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
 #endif /* BOEHM_GC */
 
     /* enter size-type words                                               */
