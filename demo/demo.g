@@ -76,7 +76,7 @@ ChannelTest(Factorial);
 ChannelTest(GlobalRandomSource);
 ChannelTest("bla");  
 
-for i in [1..10000] do r:=ChannelTest(i); od;time;
+for i in [1..10000] do r:=ChannelTest(i); od; # time;
 
 # Example 5. A function to multiply objects in a thread
 MultiplyInThread := function(a,b)
