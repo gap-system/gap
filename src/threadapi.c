@@ -1101,7 +1101,6 @@ static int IsChannel(Obj obj)
 
 Obj FuncDestroyChannel(Obj self, Obj channel)
 {
-  char *name;
   if (!IsChannel(channel))
   {
     ArgumentError("DestroyChannel: Argument is not a channel");
@@ -1114,7 +1113,6 @@ Obj FuncDestroyChannel(Obj self, Obj channel)
 
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 {
-  int id;
   if (!IsChannel(channel))
     ArgumentError("SendChannel: Channel identifier must be a number");
   SendChannel(ObjPtr(channel), obj);
@@ -1132,7 +1130,6 @@ Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 
 Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 {
-  int id;
   if (!IsChannel(channel))
     ArgumentError("TrySendChannel: Argument is not a channel");
   return TrySendChannel(ObjPtr(channel), obj) ? True : False;
@@ -1140,7 +1137,6 @@ Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 
 Obj FuncReceiveChannel(Obj self, Obj channel)
 {
-  int id;
   if (!IsChannel(channel))
     ArgumentError("ReceiveChannel: Argument is not a channel");
   return ReceiveChannel(ObjPtr(channel));
@@ -1175,7 +1171,7 @@ Obj FuncReceiveAnyChannel(Obj self, Obj args)
 
 Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
 {
-  int id, count;
+  int count;
   if (!IsChannel(channel))
     ArgumentError("MultiReceiveChannel: Argument is not a channel");
   if (!IS_INTOBJ(countobj))
@@ -1195,7 +1191,6 @@ Obj FuncInspectChannel(Obj self, Obj channel)
 
 Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj obj)
 {
-  int id;
   if (!IsChannel(channel))
     ArgumentError("TryReceiveChannel: Argument must be a channel");
   return TryReceiveChannel(ObjPtr(channel), obj);
