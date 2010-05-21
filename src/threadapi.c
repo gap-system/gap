@@ -529,6 +529,7 @@ Obj FuncReceiveAnyChannel(Obj self, Obj args);
 Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj count);
 Obj FuncInspectChannel(Obj self, Obj channel);
 Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list);
+Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list);
 Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj);
 Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj defaultobj);
 Obj FuncCreateThread(Obj self, Obj funcargs);
@@ -597,6 +598,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "MultiSendChannel", 2, "channel, list",
       FuncMultiSendChannel, "src/threadapi:MultiSendChannel" },
+
+    { "TryMultiSendChannel", 2, "channel, list",
+      FuncTryMultiSendChannel, "src/threadapi:TryMultiSendChannel" },
 
     { "TrySendChannel", 2, "channel, obj",
       FuncTrySendChannel, "src/threadapi.c:TrySendChannel" },
@@ -867,7 +871,29 @@ static void SendChannel(Channel *channel, Obj obj)
   UnlockChannel(channel);
 }
 
-static int MultiSendChannel(Channel *channel, Obj list)
+static void MultiSendChannel(Channel *channel, Obj list)
+{
+  int listsize = LEN_LIST(list);
+  int i;
+  Obj obj;
+  LockChannel(channel);
+  for (i = 1; i <= listsize; i++)
+  {
+    if (channel->size == channel->capacity && channel->dynamic)
+      ExpandChannel(channel);
+    while (channel->size == channel->capacity)
+      WaitChannel(channel);
+    obj = ELM_LIST(list, i);
+    SET_ELM_PLIST(channel->queue, 1+channel->tail++, obj);
+    if (channel->tail == channel->capacity)
+      channel->tail = 0;
+    channel->size++;
+  }
+  SignalChannel(channel);
+  UnlockChannel(channel);
+}
+
+static int TryMultiSendChannel(Channel *channel, Obj list)
 {
   int result = 0;
   int listsize = LEN_LIST(list);
@@ -1125,8 +1151,19 @@ Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
     ArgumentError("MultiSendChannel: First argument must be a channel");
   if (!IS_DENSE_LIST(list))
     ArgumentError("MultiSendChannel: Second argument must be a dense list");
-  return INTOBJ_INT(MultiSendChannel(ObjPtr(channel), list));
+  MultiSendChannel(ObjPtr(channel), list);
+  return (Obj) 0;
 }
+
+Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
+{
+  if (!IsChannel(channel))
+    ArgumentError("TryMultiSendChannel: First argument must be a channel");
+  if (!IS_DENSE_LIST(list))
+    ArgumentError("TryMultiSendChannel: Second argument must be a dense list");
+  return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list));
+}
+
 
 Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 {
