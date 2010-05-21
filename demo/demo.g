@@ -31,6 +31,8 @@ ReceiveChannel(ch2);
 DestroyChannel(ch1);
 DestroyChannel(ch2);
 
+Print("Passed example 1\n");
+
 # Example 2. Sending to channel list elements in a loop inside a thread
 ch:=CreateChannel();
 n:=10000;
@@ -39,6 +41,8 @@ CreateThread(f);
 l:=List([1..n],i->ReceiveChannel(ch));;
 DestroyChannel(ch);
 l=[1..n];
+
+Print("Passed example 2\n");
 
 # Example 3. Two threads, each with own input and output channels
 chin1:=CreateChannel();
@@ -58,6 +62,8 @@ ReceiveChannel(chout2);
 for ch in [ chin1, chin2, chout1, chout2 ] do
    DestroyChannel(ch); 
 od;
+
+Print("Passed example 3\n");
 
 # Example 4. Sending objects to a thread and receiving them back
 ChannelTest:=function( obj )
@@ -85,6 +91,8 @@ ChannelTest("bla");
 
 for i in [1..10000] do r:=ChannelTest(i); od; # time;
 
+Print("Passed example 4\n");
+
 # Example 5. A function to multiply objects in a thread
 MultiplyInThread := function(a,b)
 local chin, chout, thread, r;
@@ -101,11 +109,15 @@ return r;
 end;
 MultiplyInThread(6,7);
 
+Print("Passed example 5\n");
+
 # Example 6. Usage of CallFuncListThread and FinaliseThread
 chin:=CreateChannel();
 chout:=CreateChannel();
 r:= CallFuncListThread( s -> Size(SmallGroup(s)), [[8,3]], chin, chout );
 FinaliseThread( r, chin, chout );
+
+Print("Passed example 6\n");
 
 # Example 7. Recursive computation of Fibonacci(n) with two threads on top.
 fib_recursive := function(n)
@@ -134,6 +146,8 @@ fi;
 end; 
 fib_threads_recursive(6);
 
+Print("Passed example 7\n");
+
 # Example 8. Recursive computation of Fibonacci(n) creating two subthreads 
 # on each step (good to exhaust resources and get segfaults)
 fib_threads:= function(n)
@@ -153,6 +167,8 @@ else
 fi;
 end; 
 fib_threads(6);
+
+Print("Passed example 8\n");
 
 # Example 9. Compare standard, Fibonacci and threaded Fibonacci multiplication
 ReadGapRoot("demo/karatsuba.g");
@@ -175,6 +191,8 @@ t3:=KaratsubaPolynomialMultiplicationThreaded(f,g);;
 Print("done\n");
 # t1=t2; t1=t3; # this causes crash 
 
+Print("Passed example 9\n");
+
 # Example 10. Barriers
 # This example works:
 Print("Barrier test 1 \n");
@@ -191,6 +209,7 @@ for i in [1..3] do
              Print( s );
              Sleep(5*i); 
              WaitBarrier(bar); 
+             t:=CurrentTime();
              s := Concatenation("Thread ", String(i), " stopped at ", 
                     String(t.tv_sec), ".", String(t.tv_usec), "\n");
              Print( s );
@@ -215,3 +234,6 @@ x2:=Sum(List([1..100],Factorial));
 Print(x1,"\n");
 Print(x2,"\n");
 Print( "Barrier test 2 ", x1=x2, "\n");
+
+Print("Passed example 10\n");
+
