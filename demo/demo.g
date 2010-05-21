@@ -6,7 +6,14 @@
 
 ReadGapRoot("demo/threads.g");
 
-# "Hello, World" example
+# "Hello, World" from a thread example
+
+t:=CreateThread( function() Print("Hello, Multithreaded World!\n");end );
+WaitThread(t);
+
+CurrentThread();
+
+# multithreaded "Hello, World" example
 hello:=function(n)
 Sleep(n mod 3);
 Print("Hello World, thread ", n, " with id ", CurrentThread(), " is here\n");
@@ -208,6 +215,3 @@ x2:=Sum(List([1..100],Factorial));
 Print(x1,"\n");
 Print(x2,"\n");
 Print( "Barrier test 2 ", x1=x2, "\n");
-
-
-
