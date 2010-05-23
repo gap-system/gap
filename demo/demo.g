@@ -79,6 +79,7 @@ DestroyChannel(chout);
 return r=obj;
 end;
 
+Print("Starting ChannelTests ... \n");
 ChannelTest(1);
 ChannelTest(E(4)); 
 ChannelTest(Integers);
@@ -89,7 +90,9 @@ ChannelTest(Factorial);
 ChannelTest(GlobalRandomSource);
 ChannelTest("bla");  
 
+Print("Performing ChannelTest in a loop ... ");
 for i in [1..10000] do r:=ChannelTest(i); od; # time;
+Print("done\n");
 
 Print("Passed example 4\n");
 
