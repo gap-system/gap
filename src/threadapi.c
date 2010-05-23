@@ -676,6 +676,11 @@ static void PrintSyncVar(Obj);
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  /* install info string */
+  InfoBags[T_CHANNEL].name = "channel";
+  InfoBags[T_BARRIER].name = "barrier";
+  InfoBags[T_SYNCVAR].name = "syncvar";
+  
     /* install the kind methods */
     TypeObjFuncs[ T_CHANNEL ] = TypeChannel;
     TypeObjFuncs[ T_BARRIER ] = TypeBarrier;
