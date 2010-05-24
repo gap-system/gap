@@ -28,8 +28,6 @@ SendChannel(ch1,6);
 SendChannel(ch1,7);
 SendChannel( ch2, ReceiveChannel(ch1)*ReceiveChannel(ch1));
 ReceiveChannel(ch2);
-DestroyChannel(ch1);
-DestroyChannel(ch2);
 
 Print("Passed example 1\n");
 
@@ -39,7 +37,6 @@ n:=10000;
 f:=function() local i; for i in [1..n] do SendChannel(ch,i); od; end;
 CreateThread(f);
 l:=List([1..n],i->ReceiveChannel(ch));;
-DestroyChannel(ch);
 l=[1..n];
 
 Print("Passed example 2\n");
@@ -59,9 +56,6 @@ SendChannel(chin2,4);
 SendChannel(chin2,5);
 ReceiveChannel(chout1);
 ReceiveChannel(chout2);
-for ch in [ chin1, chin2, chout1, chout2 ] do
-   DestroyChannel(ch); 
-od;
 
 Print("Passed example 3\n");
 
@@ -74,8 +68,6 @@ thread := CreateThread( function() SendChannel(chout, ReceiveChannel(chin) ); en
 SendChannel( chin, obj );
 r:=ReceiveChannel( chout );
 WaitThread( thread );
-DestroyChannel(chin);
-DestroyChannel(chout);
 return r=obj;
 end;
 
@@ -106,8 +98,6 @@ SendChannel( chin, b );
 thread := CreateThread( function() SendChannel(chout, ReceiveChannel(chin)*ReceiveChannel(chin) ); end ); 
 r:=ReceiveChannel( chout );
 WaitThread( thread );
-DestroyChannel(chin);
-DestroyChannel(chout);
 return r;
 end;
 MultiplyInThread(6,7);
