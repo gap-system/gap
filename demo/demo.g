@@ -200,7 +200,7 @@ for i in [1..3] do
              s := Concatenation("Thread ", String(i), " started at ", 
                     String(t.tv_sec), ".", String(t.tv_usec), "\n");
              Print( s );
-             Sleep(5*i); 
+             Sleep(i); 
              WaitBarrier(bar); 
              t:=CurrentTime();
              s := Concatenation("Thread ", String(i), " stopped at ", 
