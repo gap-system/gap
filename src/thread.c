@@ -183,6 +183,7 @@ int RunThread(void (*start)(void *), void *arg)
 int JoinThread(int id)
 {
   pthread_t pthread_id;
+  void (*start)(void *);
 #ifndef HAVE_NATIVE_TLS
   void *tls;
 #endif
@@ -190,24 +191,26 @@ int JoinThread(int id)
     return 0;
   pthread_mutex_lock(&master_lock);
   pthread_id = thread_data[id].pthread_id;
+  start = thread_data[id].start;
 #ifndef HAVE_NATIVE_TLS
   tls = thread_data[id].tls;
 #endif
-  if (tls != NULL)
+  if (start != NULL)
   {
     thread_data[id].next = thread_free_list;
     thread_free_list = id;
     thread_data[id].tls = NULL;
+    thread_data[id].start = NULL;
   }
   pthread_mutex_unlock(&master_lock);
-  if (tls != NULL)
+  if (start != NULL)
   {
     pthread_join(pthread_id, 0);
 #ifndef HAVE_NATIVE_TLS
     FreeTLS(tls);
 #endif
   }
-  return tls != NULL;
+  return start != NULL;
 }
 
 unsigned LockID(void *object) {
