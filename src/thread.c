@@ -83,6 +83,7 @@ void RemoveGCRoots()
 
 #ifdef __GNUC__
 static void SetupTLS() __attribute__((noinline));
+static void GrowStack() __attribute__((noinline));
 #endif
 
 static void GrowStack()
