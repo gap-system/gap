@@ -85,8 +85,21 @@ void RemoveGCRoots()
 static void SetupTLS() __attribute__((noinline));
 #endif
 
+static void GrowStack()
+{
+  char *tls = (char *) GetTLS();
+  size_t pagesize = getpagesize();
+  char *p = alloca(pagesize);
+  while (p > tls)
+  {
+    *p = '\0'; /* touch memory */
+    p = alloca(pagesize);
+  }
+}
+
 static void SetupTLS()
 {
+  GrowStack();
   InitializeTLS();
   MainThreadTLS = TLS;
   TLS->threadID = -1;

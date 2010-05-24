@@ -5,8 +5,12 @@
 
 #ifndef HAVE_NATIVE_TLS
 
-#define TLS_SIZE (1 << 16)
-#define TLS_MASK ~(TLS_SIZE - 1)
+#if SIZEOF_VOID_P == 8
+#define TLS_SIZE (1L << 18)
+#else
+#define TLS_SIZE (1L << 16)
+#endif
+#define TLS_MASK ~(TLS_SIZE - 1L)
 
 #if TLS_SIZE & ~TLS_MASK
 #error TLS_SIZE must be a power of 2
