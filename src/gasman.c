@@ -509,8 +509,9 @@ void InitFinalizerFuncBags(
 void StandardFinalizer( void * bagContents, void * data )
 {
   Bag bag;
-  bagContents = ((char *) bagContents) + HEADER_SIZE * sizeof (Bag *);
-  bag = (Bag) &bagContents;
+  void *bagContents2;
+  bagContents2 = ((char *) bagContents) + HEADER_SIZE * sizeof (Bag *);
+  bag = (Bag) &bagContents2;
   TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
 }
 
