@@ -226,14 +226,15 @@ Print("Barrier test 2 \n");
 m:=List([1..10],i->List([1..10],j->10*(i-1)+j));
 s:=[];
 bar:=CreateBarrier();
-StartBarrier( bar, Length(m) );
+StartBarrier( bar, Length(m)+1 );
 t:=[];
 for i in [1..Length(m)] do
     t[i]:=CreateThread( function(i) s[i]:=Sum( List(m[i], Factorial ) ); WaitBarrier(bar); end, i );
 od;
-for i in [1..Length(t)] do WaitThread(t); od;
+WaitBarrier(bar);
 x1:=Sum(s);
 x2:=Sum(List([1..100],Factorial));
+for i in [1..Length(t)] do WaitThread(t[i]); od;
 Print(x1,"\n");
 Print(x2,"\n");
 Print( "Barrier test 2 ", x1=x2, "\n");
