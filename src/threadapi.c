@@ -1258,7 +1258,7 @@ void JoinBarrier(Barrier *barrier)
 void SignalBarrier(Barrier *barrier)
 {
   if (barrier->waiting)
-    SignalBarrier(ObjPtr(barrier->monitor));
+    SignalMonitor(ObjPtr(barrier->monitor));
 }
 
 Obj CreateBarrier()
@@ -1287,10 +1287,9 @@ void WaitBarrier(Barrier *barrier)
   unsigned phaseDelta;
   LockBarrier(barrier);
   phaseDelta = barrier->phase;
-  if (--barrier->count <= 0)
-    SignalBarrier(barrier);
-  else
+  if (--barrier->count != 0)
     JoinBarrier(barrier);
+  SignalBarrier(barrier);
   phaseDelta -= barrier->phase;
   UnlockBarrier(barrier);
   if (phaseDelta != 0)
