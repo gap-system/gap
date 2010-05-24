@@ -422,11 +422,13 @@ Obj FuncCreateThread(Obj self, Obj funcargs) {
 */
 
 Obj FuncWaitThread(Obj self, Obj id) {
-  int thread_num = INT_INTOBJ(id);
-  if (JoinThread(thread_num))
-    return True;
-  else
-    return False;
+  int thread_num;
+  if (!IS_INTOBJ(id))
+    ArgumentError("WaitThread: Argument must be a thread id");
+  thread_num = INT_INTOBJ(id);
+  if (!JoinThread(thread_num))
+    ErrorQuit("WaitThread: Invalid thread id", 0L, 0L);
+  return (Obj) 0;
 }
 
 /****************************************************************************
@@ -1287,7 +1289,7 @@ void WaitBarrier(Barrier *barrier)
   unsigned phaseDelta;
   LockBarrier(barrier);
   phaseDelta = barrier->phase;
-  if (--barrier->count != 0)
+  if (--barrier->count > 0)
     JoinBarrier(barrier);
   SignalBarrier(barrier);
   phaseDelta -= barrier->phase;
