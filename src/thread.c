@@ -19,6 +19,7 @@
 
 typedef struct {
   pthread_t pthread_id;
+  int joined;
   void *tls;
   void (*start)(void *);
   void *arg;
@@ -170,6 +171,7 @@ int RunThread(void (*start)(void *), void *arg)
 #endif
   thread_data[result].arg = arg;
   thread_data[result].start = start;
+  thread_data[result].joined = 0;
   /* set up the thread attribute to support a custom stack in our TLS */
   pthread_attr_init(&thread_attr);
 #ifndef HAVE_NATIVE_TLS
@@ -209,22 +211,24 @@ int JoinThread(int id)
 #ifndef HAVE_NATIVE_TLS
   tls = thread_data[id].tls;
 #endif
-  if (start != NULL)
+  if (thread_data[id].joined || start == NULL)
   {
-    thread_data[id].next = thread_free_list;
-    thread_free_list = id;
-    thread_data[id].tls = NULL;
-    thread_data[id].start = NULL;
+    pthread_mutex_unlock(&master_lock);
+    return 0;
   }
+  thread_data[id].joined = 1;
   pthread_mutex_unlock(&master_lock);
-  if (start != NULL)
-  {
-    pthread_join(pthread_id, 0);
+  pthread_join(pthread_id, NULL);
+  pthread_mutex_lock(&master_lock);
+  thread_data[id].next = thread_free_list;
+  thread_free_list = id;
+  thread_data[id].tls = NULL;
+  thread_data[id].start = NULL;
+  pthread_mutex_unlock(&master_lock);
 #ifndef HAVE_NATIVE_TLS
-    FreeTLS(tls);
+  FreeTLS(tls);
 #endif
-  }
-  return start != NULL;
+  return 1;
 }
 
 unsigned LockID(void *object) {
