@@ -87,9 +87,10 @@ static void SetupTLS() __attribute__((noinline));
 static void GrowStack() __attribute__((noinline));
 #endif
 
+#ifndef HAVE_NATIVE_TLS
 static void GrowStack()
 {
-  char *tls = (char *) GetTLS();
+  char *tls = (char *) TLS;
   size_t pagesize = getpagesize();
   char *p = alloca(pagesize);
   while (p > tls)
@@ -98,10 +99,13 @@ static void GrowStack()
     p = alloca(pagesize);
   }
 }
+#endif
 
 static void SetupTLS()
 {
+#ifndef HAVE_NATIVE_TLS
   GrowStack();
+#endif
   InitializeTLS();
   MainThreadTLS = TLS;
   TLS->threadID = -1;
