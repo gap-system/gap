@@ -19,6 +19,7 @@
 
 typedef struct {
   pthread_t pthread_id;
+  int joined;
   void *tls;
   void (*start)(void *);
   void *arg;
@@ -83,10 +84,28 @@ void RemoveGCRoots()
 
 #ifdef __GNUC__
 static void SetupTLS() __attribute__((noinline));
+static void GrowStack() __attribute__((noinline));
+#endif
+
+#ifndef HAVE_NATIVE_TLS
+static void GrowStack()
+{
+  char *tls = (char *) TLS;
+  size_t pagesize = getpagesize();
+  char *p = alloca(pagesize);
+  while (p > tls)
+  {
+    *p = '\0'; /* touch memory */
+    p = alloca(pagesize);
+  }
+}
 #endif
 
 static void SetupTLS()
 {
+#ifndef HAVE_NATIVE_TLS
+  GrowStack();
+#endif
   InitializeTLS();
   MainThreadTLS = TLS;
   TLS->threadID = -1;
@@ -140,6 +159,7 @@ int RunThread(void (*start)(void *), void *arg)
   void *tls;
 #endif
   pthread_attr_t thread_attr;
+  size_t pagesize = getpagesize();
   pthread_mutex_lock(&master_lock);
   /* allocate a new thread id */
   if (thread_free_list < 0)
@@ -155,11 +175,12 @@ int RunThread(void (*start)(void *), void *arg)
 #endif
   thread_data[result].arg = arg;
   thread_data[result].start = start;
+  thread_data[result].joined = 0;
   /* set up the thread attribute to support a custom stack in our TLS */
   pthread_attr_init(&thread_attr);
 #ifndef HAVE_NATIVE_TLS
-  pthread_attr_setstackaddr(&thread_attr, (char *)tls + TLS_SIZE);
-  pthread_attr_setstacksize(&thread_attr, TLS_SIZE-getpagesize()*2);
+  pthread_attr_setstack(&thread_attr, (char *)tls + pagesize * 2,
+      TLS_SIZE-pagesize*2);
 #endif
   pthread_mutex_unlock(&master_lock);
   /* fork the thread */
@@ -169,17 +190,20 @@ int RunThread(void (*start)(void *), void *arg)
     thread_data[result].next = thread_free_list;
     thread_free_list = result;
     pthread_mutex_unlock(&master_lock);
+    pthread_attr_destroy(&thread_attr);
 #ifndef HAVE_NATIVE_TLS
     FreeTLS(tls);
   #endif
     return -1;
   }
+  pthread_attr_destroy(&thread_attr);
   return result;
 }
 
 int JoinThread(int id)
 {
   pthread_t pthread_id;
+  void (*start)(void *);
 #ifndef HAVE_NATIVE_TLS
   void *tls;
 #endif
@@ -187,24 +211,28 @@ int JoinThread(int id)
     return 0;
   pthread_mutex_lock(&master_lock);
   pthread_id = thread_data[id].pthread_id;
+  start = thread_data[id].start;
 #ifndef HAVE_NATIVE_TLS
   tls = thread_data[id].tls;
 #endif
-  if (tls != NULL)
+  if (thread_data[id].joined || start == NULL)
   {
-    thread_data[id].next = thread_free_list;
-    thread_free_list = id;
-    thread_data[id].tls = NULL;
+    pthread_mutex_unlock(&master_lock);
+    return 0;
   }
+  thread_data[id].joined = 1;
   pthread_mutex_unlock(&master_lock);
-  if (tls != NULL)
-  {
-    pthread_join(pthread_id, 0);
+  pthread_join(pthread_id, NULL);
+  pthread_mutex_lock(&master_lock);
+  thread_data[id].next = thread_free_list;
+  thread_free_list = id;
+  thread_data[id].tls = NULL;
+  thread_data[id].start = NULL;
+  pthread_mutex_unlock(&master_lock);
 #ifndef HAVE_NATIVE_TLS
-    FreeTLS(tls);
+  FreeTLS(tls);
 #endif
-  }
-  return tls != NULL;
+  return 1;
 }
 
 unsigned LockID(void *object) {

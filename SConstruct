@@ -23,12 +23,30 @@ try:
 except:
   pass
 
-# Create confi.h if we don't have it
+def abi_from_config(config_header_file):
+  global GAP
+  try:
+    config_file_contents = open(config_header_file).read()
+  except:
+    config_file_contents = ""
+
+  abi = GAP["abi"]
+  if "SIZEOF_VOID_P 8" in config_file_contents:
+    abi = '64'
+  elif "SIZEOF_VOID_P 4" in config_file_contents:
+    abi = '32'
+  return abi, config_file_contents != ""
+
+
+# Create config.h if we don't have it and determine ABI
 
 config_header_file = build_dir + "/config.h"
+default_abi, has_config = abi_from_config(config_header_file)
+changed_abi = GAP["abi"] != "auto" and GAP["abi"] != default_abi
+if changed_abi:
+  default_abi = GAP["abi"]
 
-if (not os.access(config_header_file, os.R_OK) or
-    "config" in COMMAND_LINE_TARGETS):
+if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
   if GAP["abi"] != "auto":
     os.environ["CC"] = compiler 
     os.environ["CFLAGS"] = " -m" + GAP["abi"]
@@ -39,22 +57,11 @@ if (not os.access(config_header_file, os.R_OK) or
     del os.environ["CC"]
     del os.environ["CFLAGS"]
 
-# determine ABI
-
-config_file_contents = open(config_header_file).read()
-
-default_abi = GAP["abi"]
-if default_abi == "auto":
-  if "SIZEOF_VOID_P 8" in config_file_contents:
-    default_abi = '64'
-  elif "SIZEOF_VOID_P 4" in config_file_contents:
-    default_abi = '32'
-    if repr(1 << 32)[-1] == 'L':
-      default_abi = '32'
-    else:
-      default_abi = '64'
-  GAP["abi"] = default_abi
-
+default_abi, has_config = abi_from_config(config_header_file)
+if not has_config:
+  print "=== Configuration file wasn't created ==="
+  Exit(1)
+GAP["abi"] = default_abi
 
 GAP.Command("config", [], "") # Empty builder for the config target
 
