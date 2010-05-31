@@ -79,7 +79,7 @@ if GAP["gc"] == "system":
   if conf.CheckLib("gc"):
     compile_gc = False
   else:
-    print "No system gc library found, using internal one."
+    print "=== No system gc library found, using internal one. ==="
     compile_gc = True
 elif GAP["gc"] == "yes":
   compile_gc = True
@@ -90,7 +90,7 @@ if GAP["gmp"] == "system":
   if conf.CheckLib("gmp"):
     compile_gmp = False
   else:
-    print "No system gmp library found, using internal one."
+    print "=== No system gmp library found, using internal one. ==="
     compile_gmp = True
 elif GAP["gmp"] == "yes":
   compile_gmp = True
