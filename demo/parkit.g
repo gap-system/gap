@@ -62,10 +62,16 @@ BeParkitManager := function(manager)
             Assert(2, task.taskID = id);
             task.temps := NewDictionary("abc",true);
             Info(InfoParkit,2,"Launching ",id);
-            CreateThread(task.fun, id, manager.channel, 
+            CreateThread(task.fun, id, manager, 
                    List(task.inputs, id -> LookupSimpleMap(manager.objects,id).value));
         fi;
     end;
+    
+    checkStop := function()
+        if SizeSimpleMap(manager.runningTasks) <> 0 then
+            return false;
+            
+    
     while true do
         command := ReceiveChannel(manager.channel);
         Info(InfoParkit,2, command.op," from ",command.taskID);
@@ -293,6 +299,9 @@ BeParkitManager := function(manager)
             fi;
             RemoveFromSimpleMap(manager.runningTasks, command.taskID);
             checkQueue();
+        elif op = "stop" then
+            checkStop();
+            manager.shouldStop := true;
         elif op = "quit" then
             return;
         else
@@ -329,10 +338,62 @@ CreateParkitManager := function(arg)
                     waitingTasks := NewSimpleMap(),
                     objects := NewSimpleMap(),
                     nextObjectID := 1,
-                    nextTaskID := 1);
-    
+                    shouldStop := false,
+                    nextTaskID := 1);      
     manager.thread := CreateThread(BeParkitManager,manager );
-    
+    manager.submit := function(type, ins, outs, submitterID, onComplete)
+        local   cmd;
+        cmd := rec(op := "submit",
+                   type := type,
+                   ins := ins,
+                   taskID := submitterID,
+                   outs := outs);
+        if onComplete <> fail then
+            cmd.onComplete := onComplete;
+        fi;
+        SendChannel(manager.channel, cmd);
+    end;
+    manager.register := function(key, func, taskID)
+        local   cmd;
+        cmd := rec(op := "register",
+                   key := key,
+                   func := func,
+                   taskID := taskID);
+        SendChannel(manager.channel, cmd);
+    end;
+    manager.finished := function(taskID)
+        local   cmd;
+        cmd := rec(op := "finished",
+                   taskID := taskID);
+        SendChannel(manager.channel, cmd);
+    end;
+    manager.provideOutput := function(which, value, taskID)
+        local   cmd;
+        cmd := rec(op := "ProvideOutput",
+                   which := which,
+                   value := value,
+                   taskID := taskID);
+        SendChannel(manager.channel, cmd);
+    end;
+    manager.releaseInput := function(which,  taskID)
+        local   cmd;
+        cmd := rec(op := "ReleaseInput",
+                   which := which,
+                   taskID := taskID);
+        SendChannel(manager.channel, cmd);
+    end;
+    manager.hardstop := function(taskID)
+        local   cmd;
+        cmd := rec(op := "quit",
+                   taskID := taskID);
+        SendChannel(manager.channel, cmd);
+    end;
+    manager.stop := function(taskID)
+        local   cmd;
+        cmd := rec(op := "stop",
+                   taskID := taskID);
+        SendChannel(manager.channel, cmd);
+    end;
     return manager;
 end;
 
