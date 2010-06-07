@@ -11,7 +11,7 @@ Test1 := function()
     
     m.register("NoOp", NoOp, 0);
     m.submit("NoOp",[],[],0,fail);
-    m.stop(0);
+    StopParkitManager(m);
 
 end;
 
@@ -72,7 +72,7 @@ ParListViaParkitDivideAndConquer := function(l, f, chunk)
     v := CreateSyncVar();
     m.submit("overall",[],[],0,fail);
     res := ReadSyncVar(v);
-    m.stop(0);
+    StopParkitManager(m);
     return res;
 end;    
         

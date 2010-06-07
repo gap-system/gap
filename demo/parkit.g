@@ -48,9 +48,10 @@ end;
 
 
 BeParkitManager := function(manager)
-    local   checkQueue,  command,  op,  fun,  task,  newtask,  
-            inputsOK,  waitCount,  input,  id,  inobj,  outputsOK,  
-            output,  outobj,  r,  inpobj,  obj,  createdObj;
+    local   checkQueue,  checkStop,  command,  op,  fun,  task,  
+            newtask,  inputsOK,  waitCount,  input,  id,  inobj,  
+            outputsOK,  output,  outobj,  r,  inpobj,  obj,  
+            createdObj;
     checkQueue := function()
         Info(InfoParkit,2,"running ",SizeSimpleMap(manager.runningTasks)," runnable ",SizeSimpleMap(manager.queuedTasks));
         if SizeSimpleMap(manager.runningTasks) < manager.opts.maxRunningTasks and
@@ -62,7 +63,7 @@ BeParkitManager := function(manager)
             Assert(2, task.taskID = id);
             task.temps := NewDictionary("abc",true);
             Info(InfoParkit,2,"Launching ",id);
-            CreateThread(task.fun, id, manager, 
+            task.thread := CreateThread(task.fun, id, manager, 
                    List(task.inputs, id -> LookupSimpleMap(manager.objects,id).value));
         fi;
     end;
@@ -70,6 +71,12 @@ BeParkitManager := function(manager)
     checkStop := function()
         if SizeSimpleMap(manager.runningTasks) <> 0 then
             return false;
+        elif SizeSimpleMap(manager.queuedTasks) <> 0 or
+          SizeSimpleMap(manager.waitingTasks) <> 0 then
+            Info(InfoParkit,1, "Manager seems to have locked up -- jobs queued, stop requested, none running");
+        fi;
+        return true;
+    end;
             
     
     while true do
@@ -298,11 +305,18 @@ BeParkitManager := function(manager)
                 task.onComplete();
             fi;
             RemoveFromSimpleMap(manager.runningTasks, command.taskID);
+            WaitThread(task.thread);
             checkQueue();
+            if manager.shouldStop and checkStop() then
+                return;
+            fi;
         elif op = "stop" then
-            checkStop();
-            manager.shouldStop := true;
-        elif op = "quit" then
+            if checkStop() then
+                return;
+            else
+                manager.shouldStop := true;
+            fi;
+        elif op = "hardstop" then
             return;
         else
             Info(InfoParkit,1,"Unknown command");
@@ -398,7 +412,10 @@ CreateParkitManager := function(arg)
 end;
 
 
-
+StopParkitManager := function(m)
+    m.stop(0);
+    WaitThread(m.thread);
+end;
     
 
            
