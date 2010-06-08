@@ -199,6 +199,8 @@ Int             GrowPlist (
 **     its tnum BEFORE any element of it is examined.
 **
 **     
+**     All of this is horribly thread-unsafe!
+
 **
 */
 
