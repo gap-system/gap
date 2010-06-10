@@ -177,8 +177,7 @@ void UnlockMonitor(Monitor *monitor)
  **
  ** 'WaitForMonitor' waits for the monitor to be signaled by another
  ** thread. The monitor must be locked upon entry and will be locked
- ** again upon exit. The current thread will also be locked upon exit
- ** and must be unlocked with 'UnlockThread(TLS)' before continuing.
+ ** again upon exit.
  */
 
 void WaitForMonitor(Monitor *monitor)
@@ -274,8 +273,7 @@ void UnlockMonitors(unsigned count, Monitor **monitors)
  ** by calling 'LockMonitors'.
  **
  ** Upon return, all monitors but the one that was signaled will be
- ** unlocked. The current thread is also locked and must be unlocked
- ** with 'UnlockThread(TLS)' by the caller.
+ ** unlocked.
  */
 
 int WaitForAnyMonitor(unsigned count, Monitor **monitors)

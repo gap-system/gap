@@ -15,6 +15,7 @@ static inline Monitor *MonitorPtr(Obj obj)
 }
 Obj NewMonitor();
 void LockMonitor(Monitor *monitor);
+int TryLockMonitor(Monitor *monitor);
 void UnlockMonitor(Monitor *monitor);
 void WaitForMonitor(Monitor *monitor);
 int WaitForAnyMonitor(unsigned count, Monitor **monitors);
