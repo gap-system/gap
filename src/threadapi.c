@@ -57,11 +57,6 @@
 
 #include        "compiler.h"            /* compiler                        */
 
-typedef struct {
-  pthread_mutex_t lock;
-  struct WaitList *head, *tail;
-} Monitor;
-
 struct WaitList {
   struct WaitList *prev;
   struct WaitList *next;
@@ -130,7 +125,7 @@ static inline void *ObjPtr(Obj obj)
   return PTR_BAG(obj);
 }
 
-static Obj NewMonitor()
+Obj NewMonitor()
 {
   Bag monitorBag;
   Monitor *monitor;
@@ -218,7 +213,7 @@ static int MonitorOrder(const void *r1, const void *r2)
     return 0;
 }
 
-static void SortMonitors(unsigned count, Monitor **monitors)
+void SortMonitors(unsigned count, Monitor **monitors)
 {
   qsort(monitors, count, sizeof(Monitor *), MonitorOrder);
 }
@@ -256,6 +251,14 @@ void LockMonitors(unsigned count, Monitor **monitors)
   for (i=0; i<count; i++)
     LockMonitor(monitors[i]);
 }
+
+void UnlockMonitors(unsigned count, Monitor **monitors)
+{
+  unsigned i;
+  for (i=0; i<count; i++)
+    UnlockMonitor(monitors[i]);
+}
+
 
 /****************************************************************************
  **
@@ -324,7 +327,7 @@ int WaitForAnyMonitor(unsigned count, Monitor **monitors)
  ** exit. If no thread is waiting for the monitor, no operation will occur.
  */
 
-SignalMonitor(Monitor *monitor)
+void SignalMonitor(Monitor *monitor)
 {
   struct WaitList *queue;
   ThreadLocalStorage *thread = NULL;
