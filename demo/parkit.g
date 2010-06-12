@@ -48,10 +48,10 @@ end;
 
 
 BeParkitManager := function(manager)
-    local   checkQueue,  checkStop,  command,  op,  fun,  task,  
-            newtask,  inputsOK,  waitCount,  input,  id,  inobj,  
-            outputsOK,  output,  outobj,  r,  inpobj,  obj,  
-            createdObj;
+    local   checkQueue,  checkStop,  managerStatistics,  command,  op,  
+            count,  time,  fun,  task,  newtask,  created,  inputsOK,  
+            waitCount,  input,  id,  inobj,  outputsOK,  output,  
+            outobj,  r,  inpobj,  obj,  createdObj;
     checkQueue := function()
         Info(InfoParkit,2,"running ",SizeSimpleMap(manager.runningTasks)," runnable ",SizeSimpleMap(manager.queuedTasks));
         if SizeSimpleMap(manager.runningTasks) < manager.opts.maxRunningTasks and
@@ -62,7 +62,7 @@ BeParkitManager := function(manager)
             AddToSimpleMap(manager.runningTasks, id, task);
             Assert(2, task.taskID = id);
             task.temps := NewDictionary("abc",true);
-            Info(InfoParkit,2,"Launching ",id);
+            Info(InfoParkit,2,"Launching ",id," ",task.type);
             task.thread := CreateThread(task.fun, id, manager, 
                    List(task.inputs, id -> LookupSimpleMap(manager.objects,id).value));
         fi;
@@ -75,9 +75,19 @@ BeParkitManager := function(manager)
           SizeSimpleMap(manager.waitingTasks) <> 0 then
             Info(InfoParkit,1, "Manager seems to have locked up -- jobs queued, stop requested, none running");
         fi;
+        Info(InfoParkit, 2, managerStatistics());
         return true;
     end;
             
+    managerStatistics := function()
+        local   s,  t,  r;
+        s := "";
+        for t in manager.types do
+            r := LookupSimpleMap(manager.fns,t);
+            Append(s, Concatenation(t," ", String(r.count)," ",String(r.time),"\n"));
+        od;
+        return s;
+    end;
     
     while true do
         command := ReceiveChannel(manager.channel);
@@ -99,7 +109,11 @@ BeParkitManager := function(manager)
                 continue;
             fi;
             Info(InfoParkit,2,command.key);
-            AddDictionary(manager.fns, command.key, command.func);
+            Add(manager.types, command.key);
+            AddToSimpleMap(manager.fns, command.key, 
+                    rec(fn := command.func,
+                              count := 0,
+                              time := 0));
         elif op = "submit" then
             if not IsBound(command.type) or 
                not IsString(command.type) or
@@ -114,7 +128,7 @@ BeParkitManager := function(manager)
                 continue;
             fi;
             Info(InfoParkit,2,command.type);
-            fun := LookupDictionary(manager.fns,command.type);
+            fun := LookupSimpleMap(manager.fns,command.type).fn;
             if fun = fail then
                 Info(InfoParkit,1,"Unknown function key");
                 continue;
@@ -128,7 +142,8 @@ BeParkitManager := function(manager)
                     continue;
                 fi;
             fi;
-            newtask := rec(taskID := manager.nextTaskID, fun := fun, created := []);
+            newtask := rec(taskID := manager.nextTaskID, fun := fun, 
+                           created := [], type := command.type);
             manager.nextTaskID := manager.nextTaskID+1;
             if task = false and (Length(command.ins) > 0 or Length(command.outs) > 0) 
                then
@@ -199,13 +214,6 @@ BeParkitManager := function(manager)
             if not outputsOK then
                 continue;
             fi;
-            if IsBound(command.onComplete) then
-                if not IsFunction(command.onComplete) then
-                    Info(InfoParkit,1,"Bad value for onComplete");
-                    continue;
-                fi;
-                newtask.onComplete := command.onComplete;
-            fi;
             if waitCount > 0 then
                 newtask.waitCount := waitCount;
                 AddToSimpleMap(manager.waitingTasks, newtask.taskID, newtask);
@@ -261,6 +269,7 @@ BeParkitManager := function(manager)
             outobj := LookupSimpleMap(manager.objects, task.outputs[command.which]);
             Assert(1,outobj <> fail);
             if IsBound(outobj.creator) or Length(outobj.readers) > 0 then
+                MakeImmutable(command.value);
                 outobj.value := command.value;
             fi;
             for r in outobj.readers do
@@ -301,11 +310,13 @@ BeParkitManager := function(manager)
                     Unbind(obj.value);
                 fi;
             od;
-            if IsBound(task.onComplete) then
-                task.onComplete();
-            fi;
             RemoveFromSimpleMap(manager.runningTasks, command.taskID);
             WaitThread(task.thread);
+            r := LookupSimpleMap(manager.fns, task.type);
+            r.count := r.count+1;
+            if IsBound(command.runtime) then
+                r.time := r.time + command.runtime;
+            fi;
             checkQueue();
             if manager.shouldStop and checkStop() then
                 return;
@@ -346,25 +357,23 @@ CreateParkitManager := function(arg)
     
     manager := rec( opts := opts,
                     channel := CreateChannel(),
-                    fns := NewDictionary("name", true),
+                    fns := NewSimpleMap(),
                     runningTasks := NewSimpleMap(),
                     queuedTasks := NewSimpleMap(),
                     waitingTasks := NewSimpleMap(),
                     objects := NewSimpleMap(),
                     nextObjectID := 1,
                     shouldStop := false,
+                    types := [],
                     nextTaskID := 1);      
     manager.thread := CreateThread(BeParkitManager,manager );
-    manager.submit := function(type, ins, outs, submitterID, onComplete)
+    manager.submit := function(type, ins, outs, submitterID)
         local   cmd;
         cmd := rec(op := "submit",
                    type := type,
                    ins := ins,
                    taskID := submitterID,
                    outs := outs);
-        if onComplete <> fail then
-            cmd.onComplete := onComplete;
-        fi;
         SendChannel(manager.channel, cmd);
     end;
     manager.register := function(key, func, taskID)
@@ -375,14 +384,19 @@ CreateParkitManager := function(arg)
                    taskID := taskID);
         SendChannel(manager.channel, cmd);
     end;
-    manager.finished := function(taskID)
+    manager.finished := function(arg)
         local   cmd;
         cmd := rec(op := "finished",
-                   taskID := taskID);
+                   taskID := arg[1]);
+        if Length(arg) > 1 then
+            cmd.runtime := arg[2];
+        fi;
         SendChannel(manager.channel, cmd);
     end;
     manager.provideOutput := function(which, value, taskID)
         local   cmd;
+        MakeImmutable(value);
+        TypeObj(value);
         cmd := rec(op := "ProvideOutput",
                    which := which,
                    value := value,
