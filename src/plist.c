@@ -4859,6 +4859,11 @@ static Int InitKernel (
     for (t1 = T_PLIST_DENSE_NHOM; t1 <= T_PLIST_FFE; t1 += 2 ) 
       MakeImmutableObjFuncs[ t1 ] = MakeImmutablePlistNoMutElms;
 
+    /* mutable tables may have mutable rows */
+      MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
+      MakeImmutableObjFuncs[T_PLIST_TAB_RECT] = MakeImmutablePlistInHom;
+    
+
 
       
     
