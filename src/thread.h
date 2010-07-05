@@ -6,6 +6,7 @@
 #define MAX_THREADS 1024
 
 typedef pthread_t ThreadID;
+extern int PreThreadCreation;
 
 #ifndef HAVE_NATIVE_TLS
 void *AllocateTLS();

@@ -33,6 +33,8 @@ static pthread_mutex_t master_lock;
 
 static pthread_rwlock_t ObjLock[NUM_LOCKS];
 
+int PreThreadCreation = 1;
+
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -161,6 +163,7 @@ int RunThread(void (*start)(void *), void *arg)
   pthread_attr_t thread_attr;
   size_t pagesize = getpagesize();
   pthread_mutex_lock(&master_lock);
+  PreThreadCreation = 0;
   /* allocate a new thread id */
   if (thread_free_list < 0)
   {

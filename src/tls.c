@@ -59,6 +59,8 @@ void InitTLS()
   InitScannerTLS();
   void InitThreadAPITLS();
   InitThreadAPITLS();
+  void InitOpersTLS();
+  InitOpersTLS();
 }
 
 void DestroyTLS()
@@ -67,4 +69,6 @@ void DestroyTLS()
   DestroyScannerTLS();
   void DestroyThreadAPITLS();
   DestroyThreadAPITLS();
+  void DestroyOpersTLS();
+  DestroyOpersTLS();
 }

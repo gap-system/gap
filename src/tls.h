@@ -91,6 +91,10 @@ typedef struct ThreadLocalStorage
   /* From funcs.h */
   Int recursionDepth;
 
+  /* From opers.c */
+  Obj methodCache;
+  Obj *methodCacheItems;
+  UInt methodCacheSize;
   /* From permutat.c */
   Obj TmpPerm;
 } ThreadLocalStorage;
