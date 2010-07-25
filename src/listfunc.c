@@ -154,7 +154,8 @@ Obj             FuncAPPEND_LIST_INTR (
     Obj *               ptr1;           /* pointer into the first list     */
     Obj *               ptr2;           /* pointer into the second list    */
     Obj                 elm;            /* one element of the second list  */
-    Int                 i;              /* loop variable                   */
+    Int                i;              /* loop variable                   */
+    Obj e1,e2;
 
     /* check the mutability of the first argument */
     while ( !IS_MUTABLE_OBJ( list1) )
@@ -178,21 +179,8 @@ Obj             FuncAPPEND_LIST_INTR (
 	return (Obj) 0;
       }
     
-    /* check the type of the first argument                                */
-    if ( TNUM_OBJ( list1 ) != T_PLIST ) {
-        while ( ! IS_SMALL_LIST( list1 ) ) {
-            list1 = ErrorReturnObj(
-                "AppendList: <list1> must be a small list (not a %s)",
-                (Int)TNAM_OBJ(list1), 0L,
-                "you can replace <list1> via 'return <list1>;'" );
-        }
-        PLAIN_LIST( list1 );
-        RetypeBag( list1, T_PLIST );
-    }
-    len1 = LEN_PLIST( list1 );
-
     /* check the type of the second argument                               */
-    if ( TNUM_OBJ( list2 ) != T_PLIST ) {
+    if ( !IS_PLIST(list2)) {
         while ( ! IS_SMALL_LIST( list2 ) ) {
             list2 = ErrorReturnObj(
                 "AppendList: <list2> must be a small list (not a %s)",
@@ -205,27 +193,142 @@ Obj             FuncAPPEND_LIST_INTR (
         len2 = LEN_PLIST( list2 );
     }
 
-    /* if the list has no room at the end, enlarge it                      */
-    if ( 0 < len2 ) {
-        GROW_PLIST( list1, len1+len2 );
-        SET_LEN_PLIST( list1, len1+len2 );
+    if (len2 == 0)
+      return (Obj) 0;
+
+    /* check the type of the first argument                                */
+    if ( !IS_PLIST(list1)) {
+        while ( ! IS_SMALL_LIST( list1 ) ) {
+            list1 = ErrorReturnObj(
+                "AppendList: <list1> must be a small list (not a %s)",
+                (Int)TNAM_OBJ(list1), 0L,
+                "you can replace <list1> via 'return <list1>;'" );
+        }
+        PLAIN_LIST( list1 );
+        RetypeBag( list1, T_PLIST );
     }
+    len1 = LEN_PLIST( list1 );
+
+    
+    /* if the list has no room at the end, enlarge it                      */
+    GROW_PLIST( list1, len1+len2 );
+    SET_LEN_PLIST( list1, len1+len2 );
 
     /* add the elements                                                    */
-    if ( TNUM_OBJ(list2) == T_PLIST ) {
-        ptr1 = ADDR_OBJ(list1) + len1;
-        ptr2 = ADDR_OBJ(list2);
-        for ( i = 1; i <= len2; i++ ) {
-            ptr1[i] = ptr2[i];
-            /* 'CHANGED_BAG(list1);' not needed, ELM_PLIST does not NewBag */
-        }
+    if ( IS_PLIST(list2) ) {
+      memcpy((void *)(ADDR_OBJ(list1) + len1+1),
+	     (void *)(ADDR_OBJ(list2)+1),
+	     sizeof(Obj)*len2);
         CHANGED_BAG( list1 );
+	/* Sort out the type */
+
+	switch (TNUM_OBJ(list1)) {
+	case T_PLIST:
+	case T_PLIST_NDENSE:
+	  break;
+	case T_PLIST_DENSE_NHOM_SSORT:
+	case T_PLIST_DENSE_NHOM_NSORT:
+	  RetypeBag(list1, T_PLIST_DENSE_NHOM);
+	  /* fall through into the next case deliberately */
+	case T_PLIST_DENSE:
+	case T_PLIST_DENSE_NHOM:
+	  if (TNUM_OBJ(list2) < T_PLIST_DENSE)
+	    {
+	      if (IS_MUTABLE_PLIST(list2))
+		RetypeBag(list1, TNUM_OBJ(list2));
+	      else
+		RetypeBag(list2, TNUM_OBJ(list2) - IMMUTABLE);
+	    }
+	  break;
+	case T_PLIST_EMPTY:
+	  if (IS_MUTABLE_PLIST(list2))
+	    RetypeBag(list1, TNUM_OBJ(list2));
+	  else
+	    RetypeBag(list2, TNUM_OBJ(list2) - IMMUTABLE);
+	  break;
+	case T_PLIST_HOM_NSORT:
+	case T_PLIST_HOM_SSORT:
+	  RetypeBag(list1, T_PLIST_HOM);
+	  /* fall through */
+	case T_PLIST_HOM:
+	  if (TNUM_OBJ(list2) < T_PLIST_DENSE)
+	    RetypeBag(list1, T_PLIST);
+	  else if (TNUM_OBJ(list2) < T_PLIST_HOM)
+	    RetypeBag(list1, T_PLIST_DENSE);
+	  else {
+	    if (FAMILY_OBJ(ELM_PLIST(list1,1)) != 
+		FAMILY_OBJ(ELM_PLIST(list2,1)))
+	      RetypeBag(list1, T_PLIST_DENSE_NHOM);
+	  }
+	  break;
+
+	case T_PLIST_TAB_NSORT:
+	case T_PLIST_TAB_SSORT:
+	  RetypeBag(list1, T_PLIST_TAB);
+	  /* fall through */
+	case T_PLIST_TAB:
+	  if (TNUM_OBJ(list2) < T_PLIST_DENSE)
+	    RetypeBag(list1, T_PLIST);
+	  else if (TNUM_OBJ(list2) < T_PLIST_HOM)
+	    RetypeBag(list1, T_PLIST_DENSE);
+	  else if (FAMILY_OBJ(ELM_PLIST(list1,1)) != 
+		   FAMILY_OBJ(ELM_PLIST(list2,1)))
+	    RetypeBag(list1, T_PLIST_DENSE_NHOM);
+	  break;
+
+	case T_PLIST_TAB_RECT_NSORT:
+	case T_PLIST_TAB_RECT_SSORT:
+	  RetypeBag(list1, T_PLIST_TAB_RECT);
+	  /* fall through */
+	case T_PLIST_TAB_RECT:
+	  if (TNUM_OBJ(list2) < T_PLIST_DENSE)
+	    RetypeBag(list1, T_PLIST);
+	  else if (TNUM_OBJ(list2) < T_PLIST_HOM)
+	    RetypeBag(list1, T_PLIST_DENSE);
+	  else { 
+	    e1 = ELM_PLIST(list1,1);
+	    e2 = ELM_PLIST(list2,1);
+	    if (FAMILY_OBJ(e1) != FAMILY_OBJ(e2))
+	      RetypeBag(list1, T_PLIST_DENSE_NHOM);
+	    else if (LENGTH(e1) != LENGTH(e2))
+	      RetypeBag(list1, T_PLIST_TAB);
+	  }
+	  break;
+
+	case T_PLIST_CYC_NSORT:
+	case T_PLIST_CYC_SSORT:
+	  RetypeBag(list1, T_PLIST_CYC);
+	  /* fall through */
+	case T_PLIST_CYC:
+	  if (TNUM_OBJ(list2) < T_PLIST_DENSE)
+	    RetypeBag(list1, T_PLIST);
+	  else if (TNUM_OBJ(list2) < T_PLIST_HOM)
+	    RetypeBag(list1, T_PLIST_DENSE);
+	  else if (TNUM_OBJ(ELM_PLIST(list2,1)) > T_CYC)
+	      RetypeBag(list1, T_PLIST_DENSE_NHOM);
+	  break;
+	  
+	case T_PLIST_FFE:
+	  if (TNUM_OBJ(list2) < T_PLIST_DENSE)
+	    RetypeBag(list1, T_PLIST);
+	  else if (TNUM_OBJ(list2) < T_PLIST_HOM)
+	    RetypeBag(list1, T_PLIST_DENSE);
+	  else if (TNUM_OBJ(ELM_PLIST(list2,1)) != T_FFE)
+	    RetypeBag(list1, T_PLIST_DENSE_NHOM);
+	  else if (CharFFE(ELM_PLIST(list2,1)) != CharFFE(ELM_PLIST(list1,1)))
+	    RetypeBag(list1, T_PLIST_DENSE_NHOM);
+	  else if (DegreeFFE(ELM_PLIST(list2,1)) != DegreeFFE(ELM_PLIST(list1,1)))
+	    RetypeBag(list1, T_PLIST_HOM);
+	  break;
+	}
+
     }
     else {
         for ( i = 1; i <= len2; i++ ) {
             elm = ELMV0_LIST( list2, i );
             SET_ELM_PLIST( list1, i+len1, elm );
             CHANGED_BAG( list1 );
+	    
         }
     }
 
