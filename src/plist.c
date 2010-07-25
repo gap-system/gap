@@ -1262,7 +1262,8 @@ Obj             ElmvPlistDense (
 **  value at any of  the positions in <poss>, or  if an element of  <poss> is
 **  larger than the length of <list>.
 **
-**  'ElmsPlist' is the function in 'ElmsListFuncs' for plain lists.
+**  'ElmsPlist' is the function in 'ElmsListFuncs' for plain lists which are 
+**  not known to be dense.
 */
 Obj             ElmsPlist (
     Obj                 list,
@@ -1291,8 +1292,7 @@ Obj             ElmsPlist (
         lenPoss = LEN_LIST( poss );
 
         /* make the result list                                            */
-        /* do not assert "dense", list might be homogeneous                */
-        elms = NEW_PLIST( T_PLIST, lenPoss );
+        elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
         /* loop over the entries of <positions> and select                 */
@@ -1356,8 +1356,7 @@ Obj             ElmsPlist (
         }
 
         /* make the result list                                            */
-        /* do not assert "dense", list might be homogeneous                */
-        elms = NEW_PLIST( T_PLIST, lenPoss );
+        elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
         /* loop over the entries of <positions> and select                 */
@@ -1386,6 +1385,9 @@ Obj             ElmsPlist (
     /* return the result                                                   */
     return elms;
 }
+
+/* This version for lists which are known to be at least dense 
+   and might be better */
 
 Obj             ElmsPlistDense (
     Obj                 list,
@@ -1420,6 +1422,8 @@ Obj             ElmsPlistDense (
 	    elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss);
 	    RESET_FILT_LIST( elms, FN_IS_NHOMOG); /* can't deduce this one */
 	  }
+	else if (HAS_FILT_LIST(list, FN_IS_RECT))
+	  elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
 	else if (HAS_FILT_LIST(list, FN_IS_TABLE))
 	  elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
 	else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= 
@@ -1431,7 +1435,7 @@ Obj             ElmsPlistDense (
 	else if (HAS_FILT_LIST(list, FN_IS_HOMOG))
 	  elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
 	else
-	  elms = NEW_PLIST( T_PLIST, lenPoss);
+	  elms = NEW_PLIST( T_PLIST_DENSE, lenPoss);
 	  
         SET_LEN_PLIST( elms, lenPoss );
 
@@ -1499,6 +1503,8 @@ Obj             ElmsPlistDense (
 		  SET_FILT_LIST(elms, FN_IS_NSORT);
 		}  */
 	  }
+	else if (HAS_FILT_LIST(list, FN_IS_RECT))
+	  elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
 	else if (HAS_FILT_LIST(list, FN_IS_TABLE))
 	  elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
 	else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= 
@@ -4861,13 +4867,12 @@ static Int InitKernel (
 
     /* mutable tables may have mutable rows */
       MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
-      MakeImmutableObjFuncs[T_PLIST_TAB_RECT] = MakeImmutablePlistInHom;
     
 
 
       
     
-    /* return success                                                      */
+    /* Return success                                                      */
     return 0;
 }
 
