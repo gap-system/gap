@@ -1956,12 +1956,17 @@ void            ElmsListLevel (
 
             /* replace the list with the elements                          */
             SET_ELM_PLIST( lists, i, elm );
-
+	    
             /* notify Gasman                                               */
             CHANGED_BAG( lists );
 
         }
 
+	/* Since the elements of lists are now mutable lists
+	   (made by ELMS_LIST in the list above), we cannot remember too much
+	   about them */
+	RetypeBag(lists, T_PLIST_DENSE);
+	
     }
 
     /* otherwise recurse                                                   */
@@ -1978,6 +1983,7 @@ void            ElmsListLevel (
             ElmsListLevel( list, poss, level-1 );
 
         }
+	RetypeBag(lists, T_PLIST_DENSE);
 
     }
 
