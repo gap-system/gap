@@ -368,6 +368,9 @@ void ReadCallVarAss (
 
     /* check whether this is an unbound global variable                    */
 
+    /* This can't need to be thread-local. It's effectively single assignment
+       and any thread which assigns it will assign the same value */
+
     if (TLS->warnOnUnboundGlobalsRNam == 0)
       TLS->warnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
