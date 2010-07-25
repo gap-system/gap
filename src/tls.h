@@ -97,6 +97,11 @@ typedef struct ThreadLocalStorage
   UInt methodCacheSize;
   /* From permutat.c */
   Obj TmpPerm;
+  /* From cyclotom.c */
+  Obj ResultCyc;
+  Obj  LastECyc;
+  UInt LastNCyc;
+
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;
