@@ -48,25 +48,16 @@ for n in NamesOfComponents(SpinInners) do
     SpinsPerSecond.(n) := QuoInt(200*ct,t);
 od;
 
-Realtime := function() 
-    local   s,  str;
-    s := "";
-    str := OutputTextString(s,true);
-    Process(DirectoryCurrent(),
-            Filename(DirectoriesSystemPrograms(),"date"),
-            InputTextNone(),
-            str,
-            ["+%s"]);
-    CloseStream(str);
-    RemoveCharacters(s," \n");
-    return Int(s);
+DiffCurrentTimes := function(t1, t2)
+    return (t1.tv_sec - t2.tv_sec)*1000000 +
+           (t1.tv_usec - t2.tv_usec);
 end;
 
 TestParList := function(parListFun,ntasks, nworkers, spintype, taskLenFun)
     local   lens,  t,  tr;
     lens := List([1..ntasks],taskLenFun);
     t := Runtime();
-    tr := Realtime();
+    tr := CurrentTime();
     parListFun(lens, t->Spin(spintype,t), nworkers);
-    return [Runtime()-t,1000*(Realtime()-tr)];
+    return [Runtime()-t,QuoInt(DiffCurrentTimes(CurrentTime(),tr),1000)];
 end;
