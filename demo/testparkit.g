@@ -80,53 +80,52 @@ end;
 StrassenMult := function(m1,m2, threshold)
     local   m,  n,  emitter,  collector,  splitter,  joiner,  adder,  
             sub,  multiplier,  overall,  v,  x,  res;
-       m := CreateParkitManager();
-       n := Length(m1);
-       emitter := x-> function(taskID, m, ins)
-           m.provideOutput(1,x,taskID);
-           m.finished(taskID);
-       end;
-       
-       collector := v-> function(taskID, m, ins)
-           WriteSyncVar(v,ins[1]);
-           m.finished(taskID);
-       end; 
-       
-       splitter := function(taskID, m, ins)
-           local   n,  k,  l,  s,  z,  v,  r, t;
-           t := Runtime();
-           n := Length(ins[1]);
-           k := LogInt(n-1,2);
-           l := 2^k;
-           s := ins[1]{[1..l]}{[1..l]};
-           m.provideOutput(1,s,taskID);
-           z := Zero(ins[1][1][1]);
-           s := ins[1]{[1..l]}{[l+1..n]};
-           if 2*l > n then
-               v := ListWithIdenticalEntries(2*l-n,z);
-               for r in s do
-                   Append(r,v);
-               od;
-           fi;
-           m.provideOutput(2,s,taskID);
-           s := ins[1]{[l+1..n]}{[1..l]};
-           if 2 *l > n then
-               v := ListWithIdenticalEntries(l,z);
-               Append(s,ListWithIdenticalEntries(2*l-n,v));
-           fi;
-           m.provideOutput(3,s,taskID);
-           s := ins[1]{[l+1..n]}{[l+1..n]};
-           if 2 *l > n then
-               v := ListWithIdenticalEntries(2*l-n,z);
-               for r in s do
-                   Append(r,v);
-               od;
-               v := ListWithIdenticalEntries(l,z);
-               Append(s,ListWithIdenticalEntries(2*l-n,v));
-           fi;
-           m.provideOutput(4,s,taskID);
-           m.finished(taskID, Runtime() - t);
-       end;
+
+    m := CreateParkitManager();
+    n := Length(m1);
+    
+    emitter := x-> function(taskID, m, ins)
+        m.provideOutput(1,x,taskID);
+        m.finished(taskID);
+    end;
+    
+    collector := v-> function(taskID, m, ins)
+        WriteSyncVar(v,ins[1]);
+        m.finished(taskID);
+    end; 
+    
+    splitter := function(taskID, m, ins)
+        local   t,  n,  l,  s,  z,  pad,  r,  v;
+        t := Runtime();
+        n := Length(ins[1]);
+        l := QuoInt(n+1,2);
+        s := ins[1]{[1..l]}{[1..l]};
+        m.provideOutput(1,s,taskID);
+        z := Zero(ins[1][1][1]);
+        s := ins[1]{[1..l]}{[l+1..n]};
+        pad := n mod 2 = 1;
+        if pad then
+            for r in s do
+                Add(r,z);
+            od;
+        fi;
+        m.provideOutput(2,s,taskID);
+        s := ins[1]{[l+1..n]}{[1..l]};
+        if pad then
+            v := ListWithIdenticalEntries(l,z);
+            Add(s,v);
+        fi;
+        m.provideOutput(3,s,taskID);
+        s := ins[1]{[l+1..n]}{[l+1..n]};
+        if pad then
+            for r in s do
+                Add(r,z);
+            od;
+            Add(s,v);
+        fi;
+        m.provideOutput(4,s,taskID);
+        m.finished(taskID, Runtime() - t);
+    end;
 
          
        joiner := function(taskID, m, ins)
@@ -165,6 +164,7 @@ StrassenMult := function(m1,m2, threshold)
            local t;
            t := Runtime();
            if Length(ins[1]) <= threshold then
+               Perform(ins, TypeObj);
                m.provideOutput(1,Product(ins), taskID);
            else
                m.submit("splitter", [1],["a11","a12","a21","a22"], taskID);
@@ -223,4 +223,11 @@ StrassenMult := function(m1,m2, threshold)
     res := ReadSyncVar(v);
     StopParkitManager(m);
     return res{[1..n]}{[1..n]};     
+end;
+
+
+TimeCurrent := function()
+    local ct;
+    ct := CurrentTime();
+    return 1000000*ct.tv_sec + ct.tv_usec;
 end;
