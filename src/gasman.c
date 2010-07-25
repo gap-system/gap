@@ -1225,8 +1225,17 @@ Bag NewBag (
       dst = GC_malloc_atomic_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
       GC_register_finalizer(dst, StandardFinalizer, NULL, NULL, NULL);
     }
-    else
-      dst = GC_malloc_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
+    else if (TabMarkFuncBags[type] == MarkNoSubBags) {
+      if (size > 1024)
+	dst = GC_malloc_atomic_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
+      else
+	dst = GC_malloc_atomic(HEADER_SIZE*sizeof(Bag) + size);
+    } else {
+      if (size > 1024)
+	dst = GC_malloc_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
+      else
+	dst = GC_malloc(HEADER_SIZE*sizeof(Bag) + size);
+    }
 #endif /* BOEHM_GC */
 
     /* enter size-type words                                               */
