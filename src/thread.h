@@ -23,8 +23,15 @@ void RunThreadedMain(
 	char **argv,
 	char **environ );
 
+void CreateMainDataSpace();
 int RunThread(void (*start)(void *), void *arg);
 int JoinThread(int id);
+
+void DataSpaceWriteLock(DataSpace *dataspace);
+void DataSpaceWriteUnlock(DataSpace *dataspace);
+void DataSpaceReadLock(DataSpace *dataspace);
+void DataSpaceReadUnlock(DataSpace *dataspace);
+DataSpace *CurrentDataSpace();
 
 void Lock(void *obj);
 void LockShared(void *obj);

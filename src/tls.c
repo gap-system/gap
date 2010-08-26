@@ -1,4 +1,5 @@
 #include 	"system.h"
+#include 	"gasman.h"
 #include 	"objects.h"
 #include	"scanner.h"
 #include	"code.h"

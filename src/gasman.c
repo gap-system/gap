@@ -137,7 +137,6 @@ const char * Revision_gasman_c =
 
 
 
-
 /****************************************************************************
 **
 
@@ -1142,6 +1141,7 @@ void            InitBags (
     GC_init();
 #endif
     AddGCRoots();
+    CreateMainDataSpace();
 #endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
 }
@@ -1223,7 +1223,7 @@ Bag NewBag (
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
 #else /* BOEHM_GC */
 #ifndef DISABLE_GC
-    bag = GC_malloc(sizeof(Bag *));
+    bag = GC_malloc(2*sizeof(Bag *));
     if (TabFinalizerFuncBags[type])
     {
       dst = GC_malloc_atomic_ignore_off_page(HEADER_SIZE*sizeof(Bag) + size);
@@ -1241,7 +1241,7 @@ Bag NewBag (
 	dst = GC_malloc(HEADER_SIZE*sizeof(Bag) + size);
     }
 #else
-    bag = malloc(sizeof(Bag *));
+    bag = malloc(2*sizeof(Bag *));
     dst = malloc(HEADER_SIZE*sizeof(Bag) + size);
     memset(dst, 0, HEADER_SIZE*sizeof(Bag) + size);
 #endif /* DISABLE_GC */
@@ -1261,6 +1261,7 @@ Bag NewBag (
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = dst;
+    DS_BAG(bag) = CurrentDataSpace();
 #if 0
     {
       extern void * stderr;
@@ -2651,6 +2652,29 @@ UInt SET_ELM_BAG (
 }
 
 #endif
+
+void LockFinalizer(void *lock, void *data)
+{
+  pthread_rwlock_destroy(lock);
+}
+
+DataSpace *NewDataSpace(void)
+{
+  DataSpace *result;
+  pthread_rwlock_t *lock;
+#ifndef DISABLE_GC
+  result = GC_malloc(sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
+  lock = GC_malloc_atomic(sizeof(*lock));
+  GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
+#else
+  result = malloc(sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
+  memset(result, 0, sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
+  lock = malloc_atomic(sizeof(*lock));
+#endif
+  pthread_rwlock_init(lock, NULL);
+  result->lock = lock;
+  return result;
+}
 
 
 /****************************************************************************

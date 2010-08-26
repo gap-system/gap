@@ -13,6 +13,7 @@ typedef struct ThreadLocalStorage
   pthread_cond_t threadSignal;
   void *acquiredMonitor;
   unsigned multiplexRandomSeed;
+  void *currentDataSpace;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;
@@ -145,6 +146,36 @@ static inline ThreadLocalStorage *GetTLS()
 #define TLS (GetTLS())
 
 #endif /* HAVE_NATIVE_TLS */
+
+static inline void WriteGuard(Bag bag)
+{
+  extern void WriteGuardError();
+  DataSpace *dataspace = DS_BAG(bag);
+  if (dataspace && dataspace->owner != TLS)
+    WriteGuardError();
+}
+
+static inline int CheckWrite(Bag bag)
+{
+  DataSpace *dataspace = DS_BAG(bag);
+  return (dataspace && dataspace->owner != TLS);
+}
+
+static inline void ReadGuard(Bag bag)
+{
+  extern void ReadGuardError();
+  DataSpace *dataspace = DS_BAG(bag);
+  if (dataspace && dataspace->owner != TLS &&
+      !dataspace->readers[TLS->threadID+1])
+    ReadGuardError();
+}
+
+static inline int CheckRead(Bag bag)
+{
+  DataSpace *dataspace = DS_BAG(bag);
+  return (dataspace && dataspace->owner != TLS &&
+    !dataspace->readers[TLS->threadID+1]);
+}
 
 static inline int IsMainThread()
 {

@@ -210,7 +210,6 @@ typedef UInt * *        Bag;
 */
 #define PTR_BAG(bag)    (*(Bag**)(bag))
 
-
 /****************************************************************************
 **
 *F  CHANGED_BAG(<bag>)  . . . . . . . .  notify Gasman that a bag has changed
@@ -1079,6 +1078,49 @@ extern void FinishBags( void );
 
 extern void CallbackForAllBags(
      void (*func)(Bag) );
+
+typedef struct
+{
+  void *lock; /* void * so that we don't have to include pthread.h always */
+  void *owner; /* opaque thread descriptor */
+  unsigned char readers[0];
+} DataSpace;
+
+/****************************************************************************
+**
+*F  NewDataSpace() . . . . . . . . . . . . . . . . allocate a new data space
+*/
+
+DataSpace *NewDataSpace(void);
+
+/****************************************************************************
+**
+*F  DS_BAG(<bag>)  . . . . . . . .  return the dataspace containing the bag
+**
+*/
+#define DS_BAG(bag) (((DataSpace **)(bag))[1])
+
+/****************************************************************************
+**
+*F  Migrate(bag, dataspace)  . . . . migrate 'bag' to data space 'dataspace'
+*F  Publish(bag) . . . . . . . . . . . migrate 'bag' to the public data space
+*F  Share(bag) . . . . . . . . . . . . . . migrate 'bag' to a new data space
+*/
+
+static inline void Migrate(Bag bag, DataSpace *dataspace)
+{
+  DS_BAG(bag) = dataspace;
+}
+
+static inline void Publish(Bag bag)
+{
+  DS_BAG(bag) = 0;
+}
+
+static inline void Share(Bag bag)
+{
+  DS_BAG(bag) = NewDataSpace();
+}
 
 
 /****************************************************************************

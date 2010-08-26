@@ -10,6 +10,7 @@
 #endif
 
 #include        "system.h"
+#include        "gasman.h"
 #include        "objects.h"
 #include	"scanner.h"
 #include	"code.h"
@@ -145,6 +146,12 @@ void RunThreadedMain(
   exit((*mainFunction)(argc, argv, environ));
 }
 
+void CreateMainDataSpace()
+{
+  TLS->currentDataSpace = NewDataSpace();
+  DataSpaceWriteLock(TLS->currentDataSpace);
+}
+
 void *DispatchThread(void *arg)
 {
   ThreadData *this_thread = arg;
@@ -154,7 +161,10 @@ void *DispatchThread(void *arg)
   AddGCRoots();
 #endif
   InitTLS();
+  TLS->currentDataSpace = NewDataSpace();
+  DataSpaceWriteLock(TLS->currentDataSpace);
   this_thread->start(this_thread->arg);
+  DataSpaceWriteUnlock(TLS->currentDataSpace);
   DestroyTLS();
 #ifndef DISABLE_GC
   RemoveGCRoots();
@@ -274,3 +284,31 @@ void UnlockShared(void *object) {
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 
+void DataSpaceWriteLock(DataSpace *dataspace)
+{
+  pthread_rwlock_wrlock(dataspace->lock);
+  dataspace->owner = TLS;
+}
+
+void DataSpaceWriteUnlock(DataSpace *dataspace)
+{
+  dataspace->owner = NULL;
+  pthread_rwlock_unlock(dataspace->lock);
+}
+
+void DataSpaceReadLock(DataSpace *dataspace)
+{
+  pthread_rwlock_rdlock(dataspace->lock);
+  dataspace->readers[TLS->threadID+1] = 1;
+}
+
+void DataSpaceReadUnlock(DataSpace *dataspace)
+{
+  dataspace->readers[TLS->threadID+1] = 0;
+  pthread_rwlock_unlock(dataspace->lock);
+}
+
+DataSpace *CurrentDataSpace()
+{
+  return TLS->currentDataSpace;
+}
