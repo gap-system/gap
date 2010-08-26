@@ -5,7 +5,9 @@
 #include <sys/mman.h>
 #include <pthread.h>
 #include <errno.h>
+#ifndef DISABLE_GC
 #include <gc/gc.h>
+#endif
 
 #include        "system.h"
 #include        "objects.h"
@@ -72,6 +74,7 @@ void FreeTLS(void *address)
 
 #endif /* HAVE_NATIVE_TLS */
 
+#ifndef DISABLE_GC
 void AddGCRoots()
 {
   void *p = TLS;
@@ -83,6 +86,7 @@ void RemoveGCRoots()
   void *p = TLS;
   GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
 }
+#endif /* DISABLE_GC */
 
 #ifdef __GNUC__
 static void SetupTLS() __attribute__((noinline));
@@ -146,11 +150,15 @@ void *DispatchThread(void *arg)
   ThreadData *this_thread = arg;
   InitializeTLS();
   TLS->threadID = this_thread - thread_data;
+#ifndef DISABLE_GC
   AddGCRoots();
+#endif
   InitTLS();
   this_thread->start(this_thread->arg);
   DestroyTLS();
+#ifndef DISABLE_GC
   RemoveGCRoots();
+#endif
   return 0;
 }
 

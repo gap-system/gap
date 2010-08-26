@@ -123,7 +123,11 @@ const char * Revision_gasman_c =
 #undef  INCLUDE_DECLARATION_PART
 
 #ifdef BOEHM_GC
+#ifndef DISABLE_GC
 #include <gc/gc.h>
+#else
+#include <stdlib.h>
+#endif
 #endif
 
 
@@ -1127,6 +1131,7 @@ void            InitBags (
     /* Set ChangedBags to a proper initial value */
     ChangedBags = 0;
 #else /* BOEHM_GC */
+#ifndef DISABLE_GC
 #if SIZEOF_VOID_P == 4
     GC_all_interior_pointers = 0;
     GC_init();
@@ -1136,10 +1141,8 @@ void            InitBags (
     GC_all_interior_pointers = 1;
     GC_init();
 #endif
-#ifdef DISABLE_GC
-    GC_disable();
-#endif
     AddGCRoots();
+#endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
 }
 
@@ -1219,6 +1222,7 @@ Bag NewBag (
     dst       = AllocBags;
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
 #else /* BOEHM_GC */
+#ifndef DISABLE_GC
     bag = GC_malloc(sizeof(Bag *));
     if (TabFinalizerFuncBags[type])
     {
@@ -1236,6 +1240,11 @@ Bag NewBag (
       else
 	dst = GC_malloc(HEADER_SIZE*sizeof(Bag) + size);
     }
+#else
+    bag = malloc(sizeof(Bag *));
+    dst = malloc(HEADER_SIZE*sizeof(Bag) + size);
+    memset(dst, 0, HEADER_SIZE*sizeof(Bag) + size);
+#endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
 
     /* enter size-type words                                               */
@@ -1422,9 +1431,13 @@ void            RetypeBag (
 #ifndef BOEHM_GC
     if ( WORDS_BAG(new_size) == WORDS_BAG(old_size) ) {
 #else
+#ifndef DISABLE_GC
     alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
     if ( HEADER_SIZE*sizeof(Bag) + new_size <= alloc_size
          && HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
+#else
+    if (new_size <= old_size) {
+#endif /* DISABLE_GC */
 #endif
 
         /* change the size word                                            */
@@ -1502,7 +1515,12 @@ void            RetypeBag (
         dst       = AllocBags;
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
 #else
+#ifndef DISABLE_GC
         dst       = GC_malloc_ignore_off_page( HEADER_SIZE*sizeof(Bag) + new_size );
+#else
+        dst       = malloc( HEADER_SIZE*sizeof(Bag) + new_size );
+	memset(dst, 0, HEADER_SIZE*sizeof(Bag) + new_size);
+#endif
 #endif
 	
         /* leave magic size-type word  for the sweeper, type must be 255   */
