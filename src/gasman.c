@@ -2669,7 +2669,7 @@ DataSpace *NewDataSpace(void)
 #else
   result = malloc(sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
   memset(result, 0, sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
-  lock = malloc_atomic(sizeof(*lock));
+  lock = malloc(sizeof(*lock));
 #endif
   pthread_rwlock_init(lock, NULL);
   result->lock = lock;
