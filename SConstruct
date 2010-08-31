@@ -75,6 +75,8 @@ if conf.CheckLib("rt"):
   libs.append("rt")
 if conf.CheckLib("m"):
   libs.append("m")
+if conf.CheckLib("dl"):
+  libs.append("dl")
 if GAP["gc"] == "system":
   if conf.CheckLib("gc"):
     compile_gc = False
