@@ -3,14 +3,14 @@
 #W  groebner.gi                   GAP Library               Alexander Hulpke   
 #W                                                              David Joyner   
 ##
-#H  @(#)$Id: groebner.gi,v 4.11 2009/06/11 18:59:49 gap Exp $
+#H  @(#)$Id: groebner.gi,v 4.12 2010/01/08 23:24:04 gap Exp $
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations for monomial orderings and Groebner
 ##  bases.
 Revision.groebner_gi :=
-    "@(#)$Id: groebner.gi,v 4.11 2009/06/11 18:59:49 gap Exp $";
+    "@(#)$Id: groebner.gi,v 4.12 2010/01/08 23:24:04 gap Exp $";
 
 BindGlobal("MakeMonomialOrdering",function(name,ercomp)
 local obj;
@@ -1168,7 +1168,7 @@ local basis_elt,p,t,F,vars,vars2,GB,coeff_t;
   vars:=IndeterminatesOfPolynomialRing(R);
   t:=X(F,vars);
   vars2:=Concatenation([t],vars);
-  GB:=GroebnerBasis([t*f,(1-t)*g],MonomialLexOrdering(vars2));
+  GB:=ReducedGroebnerBasis([t*f,(1-t)*g],MonomialLexOrdering(vars2));
   for basis_elt in GB do
     coeff_t:=PolynomialCoefficientsOfPolynomial(basis_elt,t);
     if Length(coeff_t)=1 then 

@@ -2,7 +2,7 @@
 ##
 #W  teaching.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: teaching.g,v 4.1 2009/01/03 00:22:55 gap Exp $
+#H  @(#)$Id: teaching.g,v 4.4 2010/02/12 21:26:47 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -11,13 +11,16 @@
 ##  always installed with GAP.
 ##
 Revision.teaching_g:=
-  "@(#)$Id: teaching.g,v 4.1 2009/01/03 00:22:55 gap Exp $";
+  "@(#)$Id: teaching.g,v 4.4 2010/02/12 21:26:47 gap Exp $";
 
 DeclareGlobalFunction("ListOfDigits");
 
 DeclareGlobalFunction("RootsOfPolynomial");
 
 DeclareGlobalFunction("ShowGcd");
+
+##  return representatives of all homomorphisms G->H up to H-conjugacy.
+DeclareGlobalFunction("AllHomomorphismClasses");
 
 ##  SetNameObject(<o>,<s>)  set name <s> for object <o>. When viewing the
 ##  object <o>, {\GAP} will print the string <s>.
@@ -31,6 +34,10 @@ DeclareGlobalFunction("SetNameObject");
 ##  SetExecutionObject(<o>,fail);
 ##  deletes the special viewing setup.
 DeclareGlobalFunction("SetExecutionObject");
+
+BindGlobal("AllSubgroups",
+  G->Concatenation(List(ConjugacyClassesSubgroups(G),Elements)));
+
 
 BindGlobal("StringLC",function(x,a,y,b)
 local s;
@@ -131,17 +138,16 @@ end);
 
 InstallGlobalFunction(ListOfDigits,function(arg)
 local a, l, b, i;
-  a:=arg[1];
-  if IsString(a) then
-    l:=ShallowCopy(a);
+  if Length(arg)=1 and IsString(arg[1]) then
+    l:=ShallowCopy(arg[1]);
     l:=Filtered(l,i->not i in "([-)]");
     for i in [1..Length(l)] do
       if l[i] in CHARS_DIGITS then
 	l[i]:=Position(CHARS_DIGITS,l[i])-1;
       fi;
     od;
-  elif IsInt(a) then
-    a:=AbsInt(a);
+  elif Length(arg)=1 and IsInt(arg[1]) then
+    a:=AbsInt(arg[1]);
     l:=[];
     while a<>0 do
       b:=a mod 10;
@@ -149,34 +155,29 @@ local a, l, b, i;
       a:=(a-b)/10;
     od;
     l:=Reversed(l);
-  elif IsList(a) and ForAll(a,i->(IsInt(a) and 0<=a and 9>=a) 
-     or (a in CHARS_UALPHA)) then
-     l:=ShallowCopy(a);
+  elif Length(arg)=1 and IsList(arg[1]) 
+    and ForAll(arg[1],i->(IsInt(i) and 0<=i and 9>=i) 
+     or (i in CHARS_UALPHA)) then
+     l:=ShallowCopy(arg[1]);
+  elif IsList(arg) and ForAll(arg,i->(IsInt(i) and 0<=i and 9>=i) 
+     or (i in CHARS_UALPHA)) then
+     l:=ShallowCopy(arg);
   else
     Error("Number must be given as integer, as string or as list of digits");
-  fi;
-  if Length(arg)>1 then
-    a:=arg[2];
-    if Length(l)<a then
-      Info(InfoWarning,1,"Number is too short. Padding with leading zeroes");
-      while Length(l)<a do
-	l:=Concatenation([0],l);
-      od;
-    fi;
   fi;
   return l;
 end);
 
 BindGlobal("CheckDigitTestFunction",function(len,modulo,scalars)
-  return function(a)
+  return function(arg)
     local l, s, i;
-    l:=ListOfDigits(a);
+    l:=CallFuncList(ListOfDigits,arg);
     if Length(l)=len or Length(l)=len-1 then
       s:=0;
       for i in [1..len-1] do
 	s:=s+scalars[i]*l[i] mod modulo;
       od;
-      s:=s*scalars[len] mod modulo;
+      s:=s/(-scalars[len]) mod modulo;
       if s=10 then
 	s:='X';
       fi;
@@ -197,16 +198,16 @@ BindGlobal("CheckDigitTestFunction",function(len,modulo,scalars)
 end);
 
 BindGlobal("CheckDigitISBN",
-  CheckDigitTestFunction(10,11,[1,2,3,4,5,6,7,8,9,1]));
+  CheckDigitTestFunction(10,11,[1,2,3,4,5,6,7,8,9,-1]));
 
 BindGlobal("CheckDigitISBN13",
-  CheckDigitTestFunction(13,10,[1,3,1,3,1,3,1,3,1,3,1,3,-1]));
+  CheckDigitTestFunction(13,10,[1,3,1,3,1,3,1,3,1,3,1,3,1]));
 
 BindGlobal("CheckDigitPostalMoneyOrder",
-  CheckDigitTestFunction(11,9,[1,1,1,1,1,1,1,1,1,1,1]));
+  CheckDigitTestFunction(11,9,[1,1,1,1,1,1,1,1,1,1,-1]));
 
 BindGlobal("CheckDigitUPC",
-  CheckDigitTestFunction(12,10,[3,1,3,1,3,1,3,1,3,1,3,-1]));
+  CheckDigitTestFunction(12,10,[3,1,3,1,3,1,3,1,3,1,3,1]));
 
 
 
@@ -308,9 +309,115 @@ local c,l,i;
   return l;
 end);
 
-BindGlobal("GallianAutoDn",G->Elements(AutomorphismGroup(G)));
+BindGlobal("AllAutomorphisms",G->Elements(AutomorphismGroup(G)));
+BindGlobal("GallianAutoDn",AllAutomorphisms);
 
-BindGlobal("GallianHomoDn",function(G)
-   #TODO
+
+# up to G-conjugacy
+InstallGlobalFunction(AllHomomorphismClasses,function(H,G)
+local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
+
+  if IsAbelian(G) and not IsAbelian(H) then
+    k:=NaturalHomomorphismByNormalSubgroup(H,DerivedSubgroup(H));
+    return List(AllHomomorphismClasses(Image(k),G),x->k*x);
+  fi;
+
+  cl:=ConjugacyClasses(G);
+
+  if IsCyclic(H) then
+    k:=SmallGeneratingSet(H)[1];
+    c:=Order(k);
+    Assert(1,Order(k)=Order(H));
+    cl:=List(cl,Representative);
+    cl:=Filtered(cl,x->IsInt(c/Order(x)));
+    return List(cl,x->GroupHomomorphismByImagesNC(H,G,[k],[x]));
+  fi;
+
+  # find a suitable generating system
+  bw:=infinity;
+  bo:=[0,0];
+  cnt:=0;
+  repeat
+    if cnt=0 then
+      # first the small gen syst.
+      gens:=SmallGeneratingSet(H);
+      sg:=Length(gens);
+    else
+      # then something random
+      repeat
+	if Length(gens)>2 and Random([1,2])=1 then
+	  # try to get down to 2 gens
+	  gens:=List([1,2],i->Random(H));
+	else
+	  gens:=List([1..sg],i->Random(H));
+	fi;
+	# try to get small orders
+	for k in [1..Length(gens)] do
+	  go:=Order(gens[k]);
+	  # try a p-element
+	  if Random([1..3*Length(gens)])=1 then
+	    gens[k]:=gens[k]^(go/(Random(Factors(go))));
+	  fi;
+	od;
+
+      until Index(H,SubgroupNC(H,gens))=1;
+    fi;
+
+    go:=List(gens,Order);
+    imgs:=List(go,i->Filtered(cl,j->IsInt(i/Order(Representative(j)))));
+    Info(InfoMorph,3,go,":",Product(imgs,i->Sum(i,Size)));
+    if Product(imgs,i->Sum(i,Size))<bw then
+      bg:=gens;
+      bo:=go;
+      bi:=imgs;
+      bw:=Product(imgs,i->Sum(i,Size));
+    elif Set(go)=Set(bo) then
+      # we hit the orders again -> sign that we can't be
+      # completely off track
+      cnt:=cnt+Int(bw/Size(G)*3);
+    fi;
+    cnt:=cnt+1;
+  until bw/Size(G)*3<cnt;
+
+  if bw=0 then
+    Error("trivial homomorphism not found");
+  fi;
+
+  # skipped verbal business
+
+  Info(InfoMorph,2,"find ",bw," from ",cnt);
+
+  if Length(bg)>2 and cnt>Size(H)^2 and Size(G)<bw then
+    Info(InfoPerformance,1,
+    "The group tested requires many generators. `IsomorphicSubgroups' often\n",
+"#I  does not perform well for such groups -- see the documentation.");
+  fi;
+
+  params:=rec(gens:=bg,from:=H);
+  # find all embeddings
+  emb:=MorClassLoop(G,bi,params,
+    # all homs = 1+8
+    9); 
+  Info(InfoMorph,2,Length(emb)," homomorphisms");
+  # skipped removal of duplicate images
+  return emb;
 end);
+
+BindGlobal("AllHomomorphisms",function(G,H)
+local c,i,m,o,j;
+  c:=[];
+  for i in AllHomomorphismClasses(G,H) do
+    m:=MappingGeneratorsImages(i);
+    o:=Orbit(H,m[2],OnTuples);
+    for j in o do
+      Add(c,GroupHomomorphismByImages(G,H,m[1],j));
+    od;
+  od;
+  return c;
+end);
+
+BindGlobal("AllEndomorphisms",G->AllHomomorphisms(G,G));
+BindGlobal("GallianHomoDn",AllEndomorphisms);
+
+BindGlobal("GallianIntror2",n->RootsOfPolynomial(X(Integers mod n)^2+1));
 

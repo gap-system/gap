@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  object.gi                   GAP library                  Martin Schoenert
+#W  object.gi                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: object.gi,v 4.43 2009/04/06 13:48:53 gap Exp $
+#H  @(#)$Id: object.gi,v 4.44 2010/02/23 15:13:19 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some methods applicable to objects in general.
 ##
 Revision.object_gi :=
-    "@(#)$Id: object.gi,v 4.43 2009/04/06 13:48:53 gap Exp $";
+    "@(#)$Id: object.gi,v 4.44 2010/02/23 15:13:19 gap Exp $";
 
 
 #############################################################################

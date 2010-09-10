@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  type.g                      GAP library                  Martin Schoenert
+#W  type.g                      GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: type.g,v 4.52 2009/06/15 15:28:55 gap Exp $
+#H  @(#)$Id: type.g,v 4.55 2010/05/28 16:04:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file defines the format of families and types. Some functions 
 ##  are moved to type1.g, which is compiled
 ##
 Revision.type_g :=
-    "@(#)$Id: type.g,v 4.52 2009/06/15 15:28:55 gap Exp $";
+    "@(#)$Id: type.g,v 4.55 2010/05/28 16:04:53 gap Exp $";
 
 
 #############################################################################
@@ -72,6 +72,7 @@ BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
         InstallTrueMethod( super, cat );
     fi;
     BIND_GLOBAL( name, cat );
+    SET_NAME_FUNC( cat, name );
 end );
 
 
@@ -189,6 +190,7 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     InstallTrueMethod( arg[2], rep );
     BIND_GLOBAL( arg[1], rep );
+    SET_NAME_FUNC( rep, arg[1] );
 end );
 
 
@@ -423,11 +425,11 @@ FamilyOfTypes!.TYPES_LIST_FAM  := [];
 FamilyOfTypes!.TYPES_LIST_FAM[27] := 0;
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
-TypeOfFamilyOfTypes     := [
+BIND_GLOBAL( "TypeOfFamilyOfTypes",  [
     FamilyOfFamilies,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfTypes and IsTypeDefaultRep ) ),
     false,
-    NEW_TYPE_NEXT_ID ];
+    NEW_TYPE_NEXT_ID ] );
 
 SET_TYPE_COMOBJ( FamilyOfFamilies, TypeOfFamilyOfFamilies );
 SET_TYPE_POSOBJ( TypeOfFamilies,   TypeOfTypes            );

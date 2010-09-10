@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  listoper.h                  GAP source                   Martin Schoenert
+*W  listoper.h                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: listoper.h,v 4.10 2002/04/15 10:03:51 sal Exp $
+*H  @(#)$Id: listoper.h,v 4.11 2010/02/23 15:13:44 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares  the functions of the  package with the operations for
@@ -13,7 +13,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_listoper_h =
-   "@(#)$Id: listoper.h,v 4.10 2002/04/15 10:03:51 sal Exp $";
+   "@(#)$Id: listoper.h,v 4.11 2010/02/23 15:13:44 gap Exp $";
 #endif
 
 /* These functions are exported because specialised methods may want to

@@ -2,17 +2,17 @@
 ##
 #W  polyrat.gd                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id: polyrat.gd,v 4.18 2009/02/11 13:49:18 gap Exp $
+#H  @(#)$Id: polyrat.gd,v 4.19 2010/02/23 15:13:24 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains attributes, properties and operations for univariate
 ##  polynomials over the rationals
 ##
 Revision.polyrat_gd:=
-  "@(#)$Id: polyrat.gd,v 4.18 2009/02/11 13:49:18 gap Exp $";
+  "@(#)$Id: polyrat.gd,v 4.19 2010/02/23 15:13:24 gap Exp $";
 
 
 #############################################################################

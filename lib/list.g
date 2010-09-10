@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  list.g                        GAP library                Martin Schoenert
+#W  list.g                        GAP library                Martin Schönert
 ##
-#H  @(#)$Id: list.g,v 4.46 2009/03/13 20:45:43 gap Exp $
+#H  @(#)$Id: list.g,v 4.47 2010/02/23 15:13:11 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some  list types and functions that  have to be  known
 ##  very early in the bootstrap stage (therefore they are not in list.gi)
 ##
 Revision.list_g :=
-    "@(#)$Id: list.g,v 4.46 2009/03/13 20:45:43 gap Exp $";
+    "@(#)$Id: list.g,v 4.47 2010/02/23 15:13:11 gap Exp $";
 
 
 #############################################################################

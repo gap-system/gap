@@ -1,19 +1,19 @@
 /****************************************************************************
 **
-*W  compiler.h                  GAP source                   Ferencz Rakowczi
-*W                                                         & Martin Schoenert
+*W  compiler.h                  GAP source                   Ferenc Ràkòczi
+*W                                                         & Martin Schönert
 **
-*H  @(#)$Id: compiler.h,v 4.10 2002/04/15 10:03:45 sal Exp $
+*H  @(#)$Id: compiler.h,v 4.11 2010/02/23 15:13:40 gap Exp $
 **
-*Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the GAP to C compiler.
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_compiler_h =
-   "@(#)$Id: compiler.h,v 4.10 2002/04/15 10:03:45 sal Exp $";
+   "@(#)$Id: compiler.h,v 4.11 2010/02/23 15:13:40 gap Exp $";
 #endif
 
 

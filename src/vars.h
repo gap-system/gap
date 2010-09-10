@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  vars.h                      GAP source                   Martin Schoenert
+*W  vars.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: vars.h,v 4.15 2007/03/01 00:02:40 sal Exp $
+*H  @(#)$Id: vars.h,v 4.16 2010/02/23 15:13:50 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of variables package.
@@ -19,7 +19,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vars_h =
-   "@(#)$Id: vars.h,v 4.15 2007/03/01 00:02:40 sal Exp $";
+   "@(#)$Id: vars.h,v 4.16 2010/02/23 15:13:50 gap Exp $";
 #endif
 
 

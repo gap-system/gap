@@ -2,10 +2,10 @@
 ##
 #W  compat3a.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: compat3a.g,v 4.45 2007/02/06 22:28:08 gap Exp $
+#H  @(#)$Id: compat3a.g,v 4.46 2010/02/23 15:12:49 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the non-destructive part of the {\GAP}~3 compatibility
@@ -22,7 +22,7 @@
 ##  This file is *not* read as part of the {\GAP}~4 library.
 ##
 Revision.compat3a_g :=
-    "@(#)$Id: compat3a.g,v 4.45 2007/02/06 22:28:08 gap Exp $";
+    "@(#)$Id: compat3a.g,v 4.46 2010/02/23 15:12:49 gap Exp $";
 
 
 #############################################################################

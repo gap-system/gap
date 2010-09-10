@@ -2,10 +2,10 @@
 ##
 #W  semicong.gi                  GAP library   	               Andrew Solomon
 ##
-#H  @(#)$Id: semicong.gi,v 4.16 2002/04/15 10:05:21 sal Exp $
+#H  @(#)$Id: semicong.gi,v 4.17 2010/02/23 15:13:29 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for semigroup congruences.
@@ -15,7 +15,7 @@
 ##  Andrew Solomon
 ##
 Revision.semicong_gi :=
-    "@(#)$Id: semicong.gi,v 4.16 2002/04/15 10:05:21 sal Exp $";
+    "@(#)$Id: semicong.gi,v 4.17 2010/02/23 15:13:29 gap Exp $";
 
 ######################################################################
 ##

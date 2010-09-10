@@ -2,17 +2,17 @@
 ##
 #W  compat3c.g                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id: compat3c.g,v 4.13 2002/04/15 10:04:30 sal Exp $
+#H  @(#)$Id: compat3c.g,v 4.14 2010/02/23 15:12:50 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file provides methods to make records behave as records with
 ##  `operations' component in {\GAP} 3.
 ##
 Revision.compat3c_g :=
-    "@(#)$Id: compat3c.g,v 4.13 2002/04/15 10:04:30 sal Exp $";
+    "@(#)$Id: compat3c.g,v 4.14 2010/02/23 15:12:50 gap Exp $";
 
 
 #############################################################################

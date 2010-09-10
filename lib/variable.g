@@ -2,10 +2,10 @@
 ##
 #W  variable.g                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id: variable.g,v 4.23 2008/09/18 07:58:05 gap Exp $
+#H  @(#)$Id: variable.g,v 4.24 2010/02/23 15:13:35 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the functions for the special handling of those global
@@ -16,7 +16,7 @@
 ##  For the global functions in the {\GAP} libraray, see `oper.g'.
 ##
 Revision.variable_g :=
-    "@(#)$Id: variable.g,v 4.23 2008/09/18 07:58:05 gap Exp $";
+    "@(#)$Id: variable.g,v 4.24 2010/02/23 15:13:35 gap Exp $";
 
 
 #############################################################################

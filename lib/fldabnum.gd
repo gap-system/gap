@@ -2,10 +2,10 @@
 ##
 #W  fldabnum.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: fldabnum.gd,v 4.34 2008/09/09 16:11:14 gap Exp $
+#H  @(#)$Id: fldabnum.gd,v 4.35 2010/02/23 15:12:59 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares operations for fields consisting of cyclotomics.
@@ -18,7 +18,7 @@
 ##  by their family.)
 ##
 Revision.fldabnum_gd :=
-    "@(#)$Id: fldabnum.gd,v 4.34 2008/09/09 16:11:14 gap Exp $";
+    "@(#)$Id: fldabnum.gd,v 4.35 2010/02/23 15:12:59 gap Exp $";
 
 
 #T add rings of integers in abelian number fields!

@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  clasperm.gi                 GAP library                    Heiko Thei"sen
+#W  clasperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: clasperm.gi,v 4.38 2005/08/06 12:55:14 gap Exp $
+#H  @(#)$Id: clasperm.gi,v 4.39 2010/02/23 15:12:49 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This   file contains the functions   that calculate ordinary and rational
 ##  classes for permutation groups.
 ##
 Revision.clasperm_gi :=
-    "@(#)$Id: clasperm.gi,v 4.38 2005/08/06 12:55:14 gap Exp $";
+    "@(#)$Id: clasperm.gi,v 4.39 2010/02/23 15:12:49 gap Exp $";
 
 
 #############################################################################

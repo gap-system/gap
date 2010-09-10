@@ -2,10 +2,10 @@
 ##
 #W  rws.gd                      GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: rws.gd,v 4.51 2008/11/17 17:31:27 gap Exp $
+#H  @(#)$Id: rws.gd,v 4.52 2010/02/23 15:13:27 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains    the   operations for   rewriting   systems.    Any
@@ -92,7 +92,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.rws_gd :=
-    "@(#)$Id: rws.gd,v 4.51 2008/11/17 17:31:27 gap Exp $";
+    "@(#)$Id: rws.gd,v 4.52 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################

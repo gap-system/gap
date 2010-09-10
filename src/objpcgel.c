@@ -2,16 +2,16 @@
 **
 *W  objpcgel.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objpcgel.c,v 4.28 2002/04/15 10:03:53 sal Exp $
+*H  @(#)$Id: objpcgel.c,v 4.29 2010/02/23 15:13:45 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_objpcgel_c =
-   "@(#)$Id: objpcgel.c,v 4.28 2002/04/15 10:03:53 sal Exp $";
+   "@(#)$Id: objpcgel.c,v 4.29 2010/02/23 15:13:45 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

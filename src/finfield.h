@@ -1,12 +1,12 @@
 /****************************************************************************
 **
 *W  finfield.h                  GAP source                      Werner Nickel
-**                                                         & Martin Schoenert
+**                                                         & Martin Schönert
 **
-*H  @(#)$Id: finfield.h,v 4.13 2002/04/15 10:03:48 sal Exp $
+*H  @(#)$Id: finfield.h,v 4.14 2010/02/23 15:13:42 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the  functions  to compute  with elements  from  small
@@ -52,7 +52,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_finfield_h =
-   "@(#)$Id: finfield.h,v 4.13 2002/04/15 10:03:48 sal Exp $";
+   "@(#)$Id: finfield.h,v 4.14 2010/02/23 15:13:42 gap Exp $";
 #endif
 
 

@@ -2,10 +2,10 @@
 ##
 #W  liefam.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: liefam.gd,v 4.28 2008/09/22 16:22:29 gap Exp $
+#H  @(#)$Id: liefam.gd,v 4.30 2010/02/23 15:13:11 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of the family of Lie elements of a
@@ -76,7 +76,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.liefam_gd :=
-    "@(#)$Id: liefam.gd,v 4.28 2008/09/22 16:22:29 gap Exp $";
+    "@(#)$Id: liefam.gd,v 4.30 2010/02/23 15:13:11 gap Exp $";
 
 
 #############################################################################
@@ -88,6 +88,8 @@ Revision.liefam_gd :=
 ##  <ManSection>
 ##  <Filt Name="IsLieObject" Arg='obj' Type='Category'/>
 ##  <Filt Name="IsLieObjectCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsRestrictedLieObject" Arg='obj' Type='Category'/>
+##  <Filt Name="IsRestrictedLieObjectCollection" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
 ##  An object lies in <C>IsLieObject</C> if and only if it lies in a family
@@ -112,6 +114,10 @@ DeclareCategory( "IsLieObject",
 
 DeclareCategoryCollections( "IsLieObject" );
 
+DeclareSynonym( "IsRestrictedLieObject",
+	IsLieObject and IsRestrictedJacobianElement);
+
+DeclareCategoryCollections( "IsRestrictedLieObject" );
 
 #############################################################################
 ##

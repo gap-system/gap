@@ -3,14 +3,14 @@
 #W  basicim.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: basicim.gi,v 4.3 2002/04/15 10:04:26 sal Exp $
+#H  @(#)$Id: basicim.gi,v 4.4 2010/02/23 15:12:47 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.basicim_gi :=
-    "@(#)$Id: basicim.gi,v 4.3 2002/04/15 10:04:26 sal Exp $";
+    "@(#)$Id: basicim.gi,v 4.4 2010/02/23 15:12:47 gap Exp $";
 
 
 #############################################################################

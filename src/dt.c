@@ -2,10 +2,10 @@
 **
 *W  dt.c                        GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id: dt.c,v 4.29 2002/04/15 10:03:46 sal Exp $
+*H  @(#)$Id: dt.c,v 4.30 2010/02/23 15:13:41 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file implements the part of the deep thought package which deals
@@ -55,7 +55,7 @@
 #include       "system.h"
 
 const char * Revision_dt_c =
-   "@(#)$Id: dt.c,v 4.29 2002/04/15 10:03:46 sal Exp $";
+   "@(#)$Id: dt.c,v 4.30 2010/02/23 15:13:41 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */

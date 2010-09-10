@@ -2,16 +2,16 @@
 ##
 #W  ctblgrp.gd                   GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id: ctblgrp.gd,v 4.26 2009/01/06 11:19:49 gap Exp $
+#H  @(#)$Id: ctblgrp.gd,v 4.27 2010/02/23 15:12:52 gap Exp $
 ##
 #Y  Copyright (C) 1997
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for the Dixon-Schneider algorithm
 ##
 Revision.ctblgrp_gd :=
-    "@(#)$Id: ctblgrp.gd,v 4.26 2009/01/06 11:19:49 gap Exp $";
+    "@(#)$Id: ctblgrp.gd,v 4.27 2010/02/23 15:12:52 gap Exp $";
 
 
 #############################################################################

@@ -2,16 +2,16 @@
 ##
 #W  mgmhom.gd                    GAP library                  Andrew Solomon
 ##
-#H  @(#)$Id: mgmhom.gd,v 4.8 2008/10/27 08:56:56 gap Exp $
+#H  @(#)$Id: mgmhom.gd,v 4.9 2010/02/23 15:13:15 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains declarations for magma homomorphisms.
 ##
 Revision.mgmhom_gd:=
-    "@(#)$Id: mgmhom.gd,v 4.8 2008/10/27 08:56:56 gap Exp $";
+    "@(#)$Id: mgmhom.gd,v 4.9 2010/02/23 15:13:15 gap Exp $";
 
 #############################################################################
 ##

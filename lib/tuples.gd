@@ -2,10 +2,10 @@
 ##
 #W  tuples.gd                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: tuples.gd,v 4.23 2009/06/15 15:28:55 gap Exp $
+#H  @(#)$Id: tuples.gd,v 4.25 2010/05/19 14:43:21 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for direct product elements.
@@ -13,7 +13,14 @@
 ##  Direct product elements are immutable finite type-safe lists.
 ##
 Revision.tuples_gd :=
-    "@(#)$Id: tuples.gd,v 4.23 2009/06/15 15:28:55 gap Exp $";
+    "@(#)$Id: tuples.gd,v 4.25 2010/05/19 14:43:21 gap Exp $";
+
+
+#############################################################################
+##
+#V  InfoDirectProductElements  . . . . . . . . . . . . . . . . . . Info Class
+##
+DeclareInfoClass( "InfoDirectProductElements" );
 
 
 #############################################################################
@@ -114,6 +121,24 @@ DeclareOperation( "DirectProductElementsFamily", [ IsCollection ] );
 ##
 DeclareAttribute( "ComponentsOfDirectProductElementsFamily",
     IsDirectProductElementFamily );
+
+
+#############################################################################
+##
+#R  IsDefaultDirectProductElementRep( <obj> )  . . . . .  representation as a
+#R                                                           component object
+##
+DeclareRepresentation( "IsDefaultDirectProductElementRep",
+    IsPositionalObjectRep and IsDirectProductElement, [] );
+
+
+#############################################################################
+##
+#V  EmptyDirectProductElementsFamily
+##
+BindGlobal( "EmptyDirectProductElementsFamily",
+    NewFamily( "DirectProductElementsFamily([])", IsDirectProductElement,
+               IsDirectProductElement ) );
 
 
 #############################################################################

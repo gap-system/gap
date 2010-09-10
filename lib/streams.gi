@@ -2,16 +2,16 @@
 ##
 #W  streams.gi                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: streams.gi,v 4.60 2009/03/27 10:08:00 gap Exp $
+#H  @(#)$Id: streams.gi,v 4.63 2010/07/28 15:45:21 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for streams.
 ##
 Revision.streams_gi :=
-    "@(#)$Id: streams.gi,v 4.60 2009/03/27 10:08:00 gap Exp $";
+    "@(#)$Id: streams.gi,v 4.63 2010/07/28 15:45:21 gap Exp $";
 
 
 #############################################################################
@@ -246,12 +246,14 @@ InstallOtherMethod( ReadTest,
     "input stream",
     [ IsInputStream ],
     function( stream )
-    local oldvalue, result;
-
+    local oldvalue, result, breakOnError;
+	breakOnError := BreakOnError;
+	BreakOnError := false;
     oldvalue:= SizeScreen();
     SizeScreen( [ 80 ] );
     result:= READ_TEST_STREAM( stream );
     SizeScreen( oldvalue );
+ 	BreakOnError := breakOnError;
     return result;
     end );
 
@@ -284,9 +286,10 @@ end );
 #F  # # # # # # # # # # # # # # output stream # # # # # # # # # # # # # # # #
 ##
 
-IN_LOGGING_MODE:=false;
+CallAndInstallPostRestore( function()
+    ASS_GVAR( "IN_LOGGING_MODE", false );
+    end );
 
-Add(POST_RESTORE_FUNCS, function() IN_LOGGING_MODE := false; end);
 
 #############################################################################
 ##

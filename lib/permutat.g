@@ -3,16 +3,16 @@
 #W  permutat.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: permutat.g,v 4.48 2008/10/09 07:52:34 gap Exp $
+#H  @(#)$Id: permutat.g,v 4.51 2010/06/14 21:24:15 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with permutations.
 ##
 Revision.permutat_g :=
-    "@(#)$Id: permutat.g,v 4.48 2008/10/09 07:52:34 gap Exp $";
+    "@(#)$Id: permutat.g,v 4.51 2010/06/14 21:24:15 alexk Exp $";
 
 
 #############################################################################
@@ -25,12 +25,16 @@ Revision.permutat_g :=
 ##  to the largest moved integer, but a bigger <M>d</M> can result from a
 ##  multiplication of two permutations, because the product is not shortened
 ##  if it fixes&nbsp;<M>d</M>.
-##  The images are either all stored as <M>16</M>-bit integers or all as
+##  The images are stored as <M>16</M>-bit integers or all as
 ##  <M>32</M>-bit integers (actually as &GAP; immediate integers less than
 ##  <M>2^{28}</M>), depending on whether <M>d \leq 65536</M> or not.
-##  This means that the identity permutation <C>()</C> takes <M>4m</M> bytes
-##  if it was calculated as
-##  <M>(1, 2, \ldots, m) * (1, 2, \ldots, m)^{{-1}}</M>.
+##  For example, if <M>m\geq 65536</M>, the permutation 
+##  <M>(1, 2, \ldots, m)</M> has internal degree <M>d=m</M> and takes
+##  <M>4m</M> bytes of memory for storage. But --- since the internal degree
+##  is not reduced  --- this
+##  means that the identity permutation <C>()</C> calculated as
+##  <M>(1, 2, \ldots, m) * (1, 2, \ldots, m)^{{-1}}</M> also
+##  takes <M>4m</M> bytes of storage.
 ##  It can take even more because the internal list has sometimes room for
 ##  more than <M>d</M> images.
 ##  For example, the maximal degree of any permutation in &GAP; is
@@ -40,6 +44,10 @@ Revision.permutat_g :=
 ##  <M>2^{24}</M>&nbsp;bytes.
 ##  However, <M>2^{24}</M> is the largest possible size of an object that the
 ##  &GAP; storage manager can deal with.
+##  <P/>
+##  The operation <Ref Func="RestrictedPerm"/> reduces the storage degree of
+##  its result and therefore can be used to save memory if intermediate
+##  calculations in large degree result in a small degree result.
 ##  <P/>
 ##  Permutations do not belong to a specific group.
 ##  That means that one can work with permutations without defining
@@ -492,7 +500,9 @@ end );
 ##  <Ref Func="RestrictedPerm"/> returns the new permutation
 ##  that acts on the points in the list <A>list</A> in the same way as
 ##  the permutation <A>perm</A>,
-##  and that fixes those points that are not in <A>list</A>.
+##  and that fixes those points that are not in <A>list</A>. The resulting
+##  permutation is stored internally of degree given by the maximal entry of
+##  <A>list</A>.
 ##  <A>list</A> must be a list of positive integers such that for each
 ##  <M>i</M> in <A>list</A> the image <M>i</M><C>^</C><A>perm</A> is also in
 ##  <A>list</A>,

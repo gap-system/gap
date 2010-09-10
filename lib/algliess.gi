@@ -2,10 +2,10 @@
 ##
 #W  algliess.gi                 GAP library                   Willem de Graaf
 ##
-#H  @(#)$Id: algliess.gi,v 4.25 2008/02/20 11:02:37 gap Exp $
+#H  @(#)$Id: algliess.gi,v 4.27 2010/04/27 17:57:17 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions to construct semisimple Lie algebras of type
@@ -19,7 +19,7 @@
 ##
 ##
 Revision.algliess_gi :=
-    "@(#)$Id: algliess.gi,v 4.25 2008/02/20 11:02:37 gap Exp $";
+    "@(#)$Id: algliess.gi,v 4.27 2010/04/27 17:57:17 gap Exp $";
 
 
 ##############################################################################
@@ -1605,6 +1605,7 @@ end;
 ##
 
 InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
+    local A;
 
     # Check the arguments.
     if not ( IsString( type ) and ( IsInt( n ) or IsList( n ) ) and 
@@ -1613,22 +1614,27 @@ InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
     fi;
 
     if type in [ "A","B","C","D","E","F","G" ] then
-      return SimpleLieAlgebraTypeA_G( type, n, F );
+      A := SimpleLieAlgebraTypeA_G( type, n, F );
     elif type = "W" then
-      return SimpleLieAlgebraTypeW( n, F )[1];
+      A := SimpleLieAlgebraTypeW( n, F )[1];
     elif type = "S" then
-      return SimpleLieAlgebraTypeS( n, F );
+      A := SimpleLieAlgebraTypeS( n, F );
     elif type = "H" then
-      return SimpleLieAlgebraTypeH( n, F );
+      A := SimpleLieAlgebraTypeH( n, F );
     elif type = "K" then
-      return SimpleLieAlgebraTypeK( n, F );
+      A := SimpleLieAlgebraTypeK( n, F );
     elif type = "M" then
-      return SimpleLieAlgebraTypeM( n, F );
+      A := SimpleLieAlgebraTypeM( n, F );
     else
        Error( "<type> must be one of \"A\", \"B\", \"C\", \"D\", \"E\", ",
              "\"F\", \"G\", \"H\", \"K\", \"M\", \"S\", \"W\" " );
     fi;
 
+    # store the pth power images in the family (LB)
+    if IsRestrictedLieAlgebra(A) then
+        FamilyObj(Representative(A))!.pMapping := PthPowerImages(Basis(A));
+    fi;
+    return A;
 end );
 
 

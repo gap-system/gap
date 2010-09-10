@@ -1,13 +1,13 @@
 /****************************************************************************
 **
 *W  sysfiles.h                  GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                         & Martin Schönert
+*W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: sysfiles.h,v 4.35 2008/03/19 19:19:34 sal Exp $
+*H  @(#)$Id: sysfiles.h,v 4.36 2010/02/23 15:13:49 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  The  file 'system.c'  declares  all operating system  dependent functions
@@ -15,7 +15,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_sysfiles_h =
-   "@(#)$Id: sysfiles.h,v 4.35 2008/03/19 19:19:34 sal Exp $";
+   "@(#)$Id: sysfiles.h,v 4.36 2010/02/23 15:13:49 gap Exp $";
 #endif
 
 

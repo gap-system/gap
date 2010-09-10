@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  domain.gd                   GAP library                  Martin Schoenert
+#W  domain.gd                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: domain.gd,v 4.58 2009/04/22 13:05:09 gap Exp $
+#H  @(#)$Id: domain.gd,v 4.59 2010/02/23 15:12:55 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This declares the operations for domains.
@@ -95,7 +95,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.domain_gd :=
-    "@(#)$Id: domain.gd,v 4.58 2009/04/22 13:05:09 gap Exp $";
+    "@(#)$Id: domain.gd,v 4.59 2010/02/23 15:12:55 gap Exp $";
 
 
 #############################################################################

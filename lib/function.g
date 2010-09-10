@@ -3,16 +3,16 @@
 #W  function.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: function.g,v 4.21 2008/09/09 16:11:14 gap Exp $
+#H  @(#)$Id: function.g,v 4.23 2010/08/04 09:17:14 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with functions.
 ##
 Revision.function_g :=
-    "@(#)$Id: function.g,v 4.21 2008/09/09 16:11:14 gap Exp $";
+    "@(#)$Id: function.g,v 4.23 2010/08/04 09:17:14 gap Exp $";
 
 
 #############################################################################
@@ -139,6 +139,7 @@ BIND_GLOBAL( "TYPE_OPERATION",
 ##
 BIND_GLOBAL( "NameFunction", NAME_FUNC );
 
+
 #############################################################################
 ##
 #F  SetNameFunction( <func>, <name> )  . . . . . . . .set  name of a function
@@ -220,6 +221,60 @@ BIND_GLOBAL( "NumberArgumentsFunction", NARG_FUNC );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NamesLocalVariablesFunction", NAMS_FUNC );
+
+
+#############################################################################
+##
+##  <#GAPDoc Label="FilenameFunc">
+##  <ManSection>
+##  <Func Name="FilenameFunc" Arg='func'/>
+##
+##  <Description>
+##  For a function <A>func</A>, <Ref Func="FilenameFunc"/> returns either
+##  <K>fail</K> or the absolute path of the file from which <A>func</A>
+##  has been read.
+##  The return value <K>fail</K> occurs if <A>func</A> is
+##  a compiled function or an operation.
+##  For functions that have been entered interactively,
+##  the string <C>"*stdin*</C> is returned,
+##  see Section <Ref Sect="Special Filenames"/>.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> FilenameFunc( LEN_LIST );  # a kernel function
+##  fail
+##  gap> FilenameFunc( Size );      # an operation
+##  fail
+##  gap> FilenameFunc( x -> x^2 );  # an interactively entered function
+##  "*stdin*"
+##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
+##  gap> FilenameFunc( meth );
+##  "... some path .../grpperm.gi"
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
+
+
+#############################################################################
+##
+##  <#GAPDoc Label="StartlineFunc">
+##  <ManSection>
+##  <Func Name="StartlineFunc" Arg='func'/>
+##
+##  <Description>
+##  Let <A>func</A> be a function.
+##  If <Ref Func="FilenameFunc"/> returns <K>fail</K> for <A>func</A> then
+##  also <Ref Func="StartlineFunc"/> returns <K>fail</K>.
+##  If <Ref Func="FilenameFunc"/> returns a filename for <A>func</A> then
+##  <Ref Func="StartlineFunc"/> returns the line number in this file
+##  where the definition of <A>func</A> starts.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
 
 
 #############################################################################
@@ -390,8 +445,10 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
     Print("<Operation \"",NAME_FUNC(op),"\">");
          end);  
     
-    InstallMethod( ViewObj, "for an operation", true, [IsOperation], 0,
-            PRINT_OPERATION);
+InstallMethod( ViewObj,
+    "for an operation",
+    [ IsOperation ],
+    PRINT_OPERATION );
     
 
 #############################################################################

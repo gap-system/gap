@@ -2,12 +2,12 @@
 ##
 #W  randiso.gd                GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.randiso_gd :=
-    "@(#)$Id: randiso.gd,v 1.15 2009/06/15 15:20:22 gap Exp $";
+    "@(#)$Id: randiso.gd,v 1.17 2010/06/24 12:26:26 gap Exp $";
 
 DeclareInfoClass( "InfoRandIso" );
 DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
@@ -70,10 +70,10 @@ DeclareGlobalFunction( "PcGroupCode" );
 ##
 ##  <#GAPDoc Label="PcGroupCodeRec">
 ##  <ManSection>
-##  <Func Name="PcGroupCodeRec" Arg='rec'/>
+##  <Func Name="PcGroupCodeRec" Arg='record'/>
 ##
 ##  <Description>
-##  Here <A>rec</A> needs to have entries .code and .order.
+##  Here <A>record</A> needs to have entries .code and .order.
 ##  Then <Ref Func="PcGroupCode"/> returns a pc group of size .order
 ##  corresponding to .code.
 ##  <Example><![CDATA[

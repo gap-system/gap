@@ -2,10 +2,10 @@
 ##
 #W  vspchom.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspchom.gi,v 4.42 2008/08/18 16:05:46 gap Exp $
+#H  @(#)$Id: vspchom.gi,v 4.43 2010/02/23 15:13:36 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for general linear mappings of finite
@@ -33,7 +33,7 @@
 ##  5. methods for full hom spaces
 ##
 Revision.vspchom_gi :=
-    "@(#)$Id: vspchom.gi,v 4.42 2008/08/18 16:05:46 gap Exp $";
+    "@(#)$Id: vspchom.gi,v 4.43 2010/02/23 15:13:36 gap Exp $";
 
 #T TODO:
 #T

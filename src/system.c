@@ -1,17 +1,17 @@
 /****************************************************************************
 **
 *W  system.c                    GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 *W                                                         & Dave Bayer (MAC)
 *W                                                  & Harald Boegeholz (OS/2)
 *W                                                         & Paul Doyle (VMS)
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id: system.c,v 4.137 2007/09/25 18:14:00 gap Exp $
+*H  @(#)$Id: system.c,v 4.139 2010/07/16 16:59:13 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  The  files   "system.c" and  "sysfiles.c"  contains all  operating system
@@ -38,7 +38,7 @@
 #undef  INCLUDE_DECLARATION_PART
 
 const char * Revision_system_c =
-   "@(#)$Id: system.c,v 4.137 2007/09/25 18:14:00 gap Exp $";
+   "@(#)$Id: system.c,v 4.139 2010/07/16 16:59:13 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 #include        <fcntl.h>
@@ -234,7 +234,7 @@ Int SyDebugLoading;
 **
 *V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
 **
-**  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
+**  'SyGapRootPaths' contains the  names   of the directories where   the GAP
 **  files are located.
 **
 **  It is modified by the command line option -l.
@@ -252,6 +252,14 @@ Int SyDebugLoading;
 */
 Char SyGapRootPaths [MAX_GAP_DIRS] [512];
 
+/****************************************************************************
+**
+*V  IgnoreGapRC . . . . . . . . . . . . . . . . . . . -r option for kernel
+*V  DotGapPath  . . . . . . . . . . . . . . . . . . . path of ~/.gap 
+**
+*/
+Int IgnoreGapRC;
+Char DotGapPath[512];
 
 /****************************************************************************
 **
@@ -1914,6 +1922,7 @@ struct optInfo options[] = {
   { 'i',  storeString, SySystemInitFile, 1}, /* kernel */
   { 'l',  setGapRootPath, 0, 1}, /* kernel */
   { 'm',  storeMemory2, &SyStorMin, 1 }, /* kernel */
+  { 'r',  toggle, &IgnoreGapRC, 0 }, /* kernel */
   { 's',  storeMemory, &SyAllocPool, 1 }, /* kernel */
   { 'n',  forceLineEditing, 0, 0}, /* prob library */
   { 'o',  storeMemory2, &SyStorMax, 1 }, /* library with new interface */
@@ -2432,6 +2441,11 @@ void InitSystem (
     if ( getenv("HOME") != 0 ) {
         SyStrncat(SyUserHome, getenv("HOME"), sizeof(SyUserHome)-1);
         SyHasUserHome = 1;
+        if (!IgnoreGapRC) {
+          SyStrncat(DotGapPath, getenv("HOME"), sizeof(DotGapPath)-6);
+          SyStrncat(DotGapPath+SyStrlen(DotGapPath), "/.gap;", 6);
+          SySetGapRootPath(DotGapPath);
+        }
     }
 #endif
 

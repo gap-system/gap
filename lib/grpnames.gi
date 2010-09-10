@@ -1,10 +1,10 @@
 #############################################################################
 ##
 #W  grpnames.gi                                                   Stefan Kohl
-##                                                             Markus Püschel
+##                                                             Markus PÃ¼schel
 ##                                                            Sebastian Egner
 ##
-#H  @(#)$Id: grpnames.gi,v 4.19 2009/09/23 15:55:26 gap Exp $
+#H  @(#)$Id: grpnames.gi,v 4.20 2010/02/23 15:13:05 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -18,10 +18,10 @@
 ##  description for a given group.
 ##
 ##  The code has been translated, simplified and extended by Stefan Kohl
-##  from GAP3 code written by Markus Püschel and Sebastian Egner.
+##  from GAP3 code written by Markus PÃ¼schel and Sebastian Egner.
 ##
 Revision.grpnames_gi :=
-  "@(#)$Id: grpnames.gi,v 4.19 2009/09/23 15:55:26 gap Exp $";
+  "@(#)$Id: grpnames.gi,v 4.20 2010/02/23 15:13:05 gap Exp $";
 
 #############################################################################
 ##

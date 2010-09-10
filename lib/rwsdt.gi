@@ -2,16 +2,16 @@
 ##
 #W  rwsdt.gi                   GAP Library                  Wolfgang Merkwitz
 ##
-#H  &(#)$Id: rwsdt.gi,v 4.12 2002/04/15 10:05:15 sal Exp $
+#H  &(#)$Id: rwsdt.gi,v 4.13 2010/02/23 15:13:28 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file implements a deep thought collector as representation of a 
 ##  polycyclic collector with power/conjugate presentation.
 Revision.rwsdt_gi :=
-    "@(#)$Id: rwsdt.gi,v 4.12 2002/04/15 10:05:15 sal Exp $";
+    "@(#)$Id: rwsdt.gi,v 4.13 2010/02/23 15:13:28 gap Exp $";
 
 
 #############################################################################

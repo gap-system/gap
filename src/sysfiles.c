@@ -1,13 +1,13 @@
 /****************************************************************************
 **
 *W  sysfiles.c                  GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                         & Martin Schönert
+*W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: sysfiles.c,v 4.144 2009/06/25 12:31:19 gap Exp $
+*H  @(#)$Id: sysfiles.c,v 4.156 2010/07/28 13:29:18 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  The  files  "system.c" and  "sysfiles.c"   contain  all operating  system
@@ -19,7 +19,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_sysfiles_c =
-   "@(#)$Id: sysfiles.c,v 4.144 2009/06/25 12:31:19 gap Exp $";
+   "@(#)$Id: sysfiles.c,v 4.156 2010/07/28 13:29:18 gap Exp $";
 
 #define INCLUDE_DECLARATION_PART
 #include        "sysfiles.h"            /* file input/output               */
@@ -46,7 +46,7 @@ const char * Revision_sysfiles_c =
 #include <assert.h>
 #include <fcntl.h>
 
-#ifdef USE_READLINE
+#if HAVE_LIBREADLINE
 #include        <readline/readline.h>   /* readline for interactive input  */
 #endif
 
@@ -610,8 +610,7 @@ Obj FuncCrcString( Obj self, Obj str ) {
     if ( crc == 0 ) {
         crc = 1;
     }
-    crc = ((Int4) crc) >> 4;
-    return INTOBJ_INT(crc);
+    return INTOBJ_INT(((Int4) crc) >> 4);
 }
 
 
@@ -841,7 +840,7 @@ InitInfoFunc SyLoadModule ( Char * name )
 **
 *F  ESC( <V> )  . . . . . . . . . . . . . . . . . convert <V> into escape-<V>
 */
-#ifndef USE_READLINE
+#if !HAVE_LIBREADLINE
 #define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
 #endif
 
@@ -2358,11 +2357,19 @@ extern  long            time ( long * buf );
 UInt            syLastIntr;             /* time of the last interrupt      */
 
 
+#if HAVE_LIBREADLINE
+Int doingReadline;
+#endif
 
 SYS_SIG_T syAnswerIntr (
     int                 signr )
 {
     UInt                nowIntr;
+
+#if HAVE_LIBREADLINE
+    /* ignore during readline */
+    if (doingReadline) return;
+#endif
 
     /* get the current wall clock time                                     */
     nowIntr = time(0);
@@ -4317,7 +4324,7 @@ Char * syFgetsNoEdit (
 Obj LineEditKeyHandler;
 Obj LineEditKeyHandlers;
 
-#ifdef USE_READLINE
+#if HAVE_LIBREADLINE
 
 /* we import GAP level functions from GAPInfo components */
 Obj GAPInfo;
@@ -4334,15 +4341,20 @@ int GAP_set_macro(int count, int key)
 /* a generic rl_command_func_t that delegates to GAP level */
 int GAP_rl_func(int count, int key)
 {
-   Obj   rldata, linestr, okey, res, obj, beginchange, endchange, m;
-   Int   len, n;
+   Obj   rldata, linestr, okey, res, obj, data, beginchange, endchange, m;
+   Int   len, n, hook, dlen, max, i;
 
    /* we shift indices 0-based on C-level and 1-based on GAP level */
    C_NEW_STRING(linestr, strlen(rl_line_buffer), rl_line_buffer);
    okey = INTOBJ_INT(key + 1000*GAPMacroNumber);
    GAPMacroNumber = 0;
-   rldata = NEW_PLIST(T_PLIST, 5);
-   SET_LEN_PLIST(rldata, 5);
+   rldata = NEW_PLIST(T_PLIST, 6);
+   if (GAP_rl_func == rl_last_func) {
+     SET_LEN_PLIST(rldata, 6);
+     SET_ELM_PLIST(rldata, 6, True);
+   }
+   else
+     SET_LEN_PLIST(rldata, 5);
    SET_ELM_PLIST(rldata, 1, INTOBJ_INT(count));
    SET_ELM_PLIST(rldata, 2, okey);
    SET_ELM_PLIST(rldata, 3, linestr);
@@ -4382,6 +4394,44 @@ int GAP_rl_func(int count, int key)
       rl_insert_text(CSTR_STRING(obj));
       rl_end_undo_group();
       n = 3;
+   } else if (IS_INTOBJ(obj) && len == 2) {
+      /* several hooks to particular rl_ functions with data */
+      hook = INT_INTOBJ(obj);
+      data = ELM_LIST(res, 2);
+      if (hook == 1) {
+         /* display matches */
+         if (!IS_LIST(data)) return 0;
+         dlen = LEN_LIST(data);
+         char **strs = (char**)malloc((dlen+1) * sizeof(char*));
+         max = 0;
+         for (i=1; i <= dlen; i++) {
+            if (!IsStringConv(ELM_LIST(data, i))) {
+               free(strs);
+               return 0;
+            }
+            strs[i] = CSTR_STRING(ELM_LIST(data, i));
+            if (max < strlen(strs[i])) max = strlen(strs[i]);
+         }
+         rl_display_match_list(strs, dlen, max);
+         free(strs);
+         rl_on_new_line();
+      }
+      else if (hook == 2) {
+         /* put these characters into sequence of input keys */
+         if (!IsStringConv(data)) return 0;
+         dlen = strlen(CSTR_STRING(data));
+         for (i=0; i < dlen; i++)
+             rl_stuff_char(CSTR_STRING(data)[i]);
+      }
+      n = 2;
+   } else if (IS_INTOBJ(obj) && len == 1) {
+      /* several hooks to particular rl_ functions with no data */
+      hook = INT_INTOBJ(obj);
+      /* ring bell */
+      if (hook == 100) rl_ding();
+      /* return line (execute Ctrl-m) */
+      else if (hook == 101) rl_execute_next(13);
+      n = 1;
    } else
       n = 0;
 
@@ -4399,7 +4449,7 @@ int GAP_rl_func(int count, int key)
    return 0;
 }
 
-Obj FuncBindKeysToGAPHandler (Obj self, Obj keys)
+Obj FuncBINDKEYSTOGAPHANDLER (Obj self, Obj keys)
 {  
   Char*  seq;
 
@@ -4410,7 +4460,7 @@ Obj FuncBindKeysToGAPHandler (Obj self, Obj keys)
   return True;
 }
 
-Obj FuncBindKeysToMacro (Obj self, Obj keys, Obj macro)
+Obj FuncBINDKEYSTOMACRO (Obj self, Obj keys, Obj macro)
 {  
   Char   *seq, *macr;
 
@@ -4422,7 +4472,7 @@ Obj FuncBindKeysToMacro (Obj self, Obj keys, Obj macro)
   return True;
 }
 
-Obj FuncReadlineInitLine (Obj self, Obj line)
+Obj FuncREADLINEINITLINE (Obj self, Obj line)
 {  
   Char   *cline;
 
@@ -4452,17 +4502,13 @@ void initreadline ( )
   rl_readline_name = "GAP";
   /* this should pipe signals through to GAP  */
   rl_already_prompted = 1 ;
-  rl_catch_signals = 1 ;
-  rl_catch_sigwinch = 1 ;
-  rl_set_signals () ;
+
+  rl_catch_signals = 0;
+  rl_catch_sigwinch = 1;
   /* hook to read from other channels */
   rl_event_hook = charreadhook_rl;
-
-  /* very useful, show matching parenthesis for up to 2 seconds 
-     for this enter in your ~/.inputrc:
-       set blink-matching-paren on                          */
-  rl_set_paren_blink_timeout(2000000);
-  rl_variable_bind("blink-matching-paren", "on");
+  /* give GAP_rl_func a name that can be used in .inputrc */
+  rl_add_defun( "handled-by-GAP", GAP_rl_func, -1 );
 
   rl_bind_keyseq("\\C-x\\C-g", GAP_set_macro);
 
@@ -4470,8 +4516,6 @@ void initreadline ( )
   KeyHandler = ELM_REC(CLEFuncs, RNamName("KeyHandler"));
   ISINITREADLINE = 1;
 }
-
-
 
 Char * readlineFgets (
     Char *              line,
@@ -4485,14 +4529,23 @@ Char * readlineFgets (
   current_rl_fid = fid;
   if (!ISINITREADLINE) initreadline();
   
-  /* read as most as much as we can buffer */
+  /* read at most as much as we can buffer */
   rl_num_chars_to_read = length-2;
   /* now do the real work */
+  doingReadline = 1;
   rlres = readline(Prompt);
+  doingReadline = 0;
   /* we get a NULL pointer on EOF, say by pressing Ctr-d  */
   if (!rlres) {
-    *line = '\0';
-    return (Char*)0;
+    if (!SyCTRD) {
+      while (!rlres)
+        rlres = readline(Prompt);
+    } 
+    else {
+      printf("\n");fflush(stdout);
+      line[0] = '\0';
+      return (Char*)0;
+    }
   }
   /* maybe add to history, we use key 0 for this function */
   GAP_rl_func(0, 0);
@@ -4517,7 +4570,7 @@ Char * syFgets (
     Int                 fid,
     UInt                block)
 {
-#ifdef USE_READLINE
+#if HAVE_LIBREADLINE
     Char *  p;
 #else
     Int                 ch,  ch2,  ch3, last;
@@ -4557,7 +4610,7 @@ Char * syFgets (
     }
 
     
-#ifdef USE_READLINE
+#if HAVE_LIBREADLINE
     /* switch back to cooked mode                                          */
     if ( SyLineEdit == 1 )
         syStopraw(fid);
@@ -5028,24 +5081,6 @@ Char * syFgets (
 
           last = ch;
         }
-
-        /* strip away prompts in beginning (useful for pasting old stuff)  
- Remove after test phase, this is now done by the ' ' LineEditKeyHandlers in
- the library (and can be switched off).
-        if (line[0]=='g'&&line[1]=='a'&&line[2]=='p'&&
-                          line[3]=='>'&&line[4]==' '){
-            for ( r = line, q = line+5; q[-1] != '\0'; r++, q++ )  *r = *q;
-            p-=5; if (p<line) p = line;
-        }
-        if (line[0]=='b'&&line[1]=='r'&&line[2]=='k'&&
-                          line[3]=='>'&&line[4]==' '){
-            for ( r = line, q = line+5; q[-1] != '\0'; r++, q++ )  *r = *q;
-            p-=5; if (p<line) p = line;
-        }
-        if (line[0]=='>'&&line[1]==' '){
-            for ( r = line, q = line+2; q[-1] != '\0'; r++, q++ )  *r = *q;
-            p-=2; if (p<line) p = line;
-        }    */
 
         if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
             /* if there is a hook for line ends, call it before echoing */
@@ -6429,12 +6464,18 @@ Char * SyTmpname ( void )
 *f  SyTmpdir( <hint> )  . . . . . . . . . . . . . . . . . . . . using `mkdir'
 */
 
+#if SYS_IS_CYGWIN32
+#define TMPDIR_BASE "/cygdrive/c/WINDOWS/Temp/"
+#else
+#define TMPDIR_BASE "/tmp/"
+#endif
+
 
 #if HAVE_MKDTEMP
 Char * SyTmpdir( Char * hint )
 {
   static char name[1024];
-  static char *base = "/tmp/";
+  static char *base = TMPDIR_BASE;
   name[0] = 0;
   SyStrncat(name, base, SyStrlen(base)+1);
   if (hint)
@@ -6523,15 +6564,15 @@ static StructGVarFunc GVarFuncs [] = {
     { "EchoLine", 5, "line, len, off, pos, fid",
       FuncEchoLine, "src/sysfiles.c:FuncEchoLine" },
 
-#ifdef USE_READLINE
-    { "BindKeysToGAPHandler", 1, "keyseq",
-       FuncBindKeysToGAPHandler, "src/sysfiles.c:FuncBindKeysToGAPHandler" },
+#if HAVE_LIBREADLINE
+    { "BINDKEYSTOGAPHANDLER", 1, "keyseq",
+       FuncBINDKEYSTOGAPHANDLER, "src/sysfiles.c:FuncBINDKEYSTOGAPHANDLER" },
 
-    { "BindKeysToMacro", 2, "keyseq, macro",
-       FuncBindKeysToMacro, "src/sysfiles.c:FuncBindKeysToMacro" },
+    { "BINDKEYSTOMACRO", 2, "keyseq, macro",
+       FuncBINDKEYSTOMACRO, "src/sysfiles.c:FuncBINDKEYSTOMACRO" },
 
-    { "ReadlineInitLine", 1, "line",
-       FuncReadlineInitLine, "src/sysfiles.c:FuncReadlineInitLine" },
+    { "READLINEINITLINE", 1, "line",
+       FuncREADLINEINITLINE, "src/sysfiles.c:FuncREADLINEINITLINE" },
 #endif
 
     { 0 } };
@@ -6570,10 +6611,11 @@ static Int InitKernel(
   InitHdlrFuncsFromTable( GVarFuncs );
 
   /* line edit key handler from library                                  */
+#if HAVE_LIBREADLINE
+  ImportGVarFromLibrary("GAPInfo", &GAPInfo);
+#else
   ImportFuncFromLibrary("LineEditKeyHandler", &LineEditKeyHandler);
   ImportGVarFromLibrary("LineEditKeyHandlers", &LineEditKeyHandlers);
-#ifdef USE_READLINE
-  ImportGVarFromLibrary("GAPInfo", &GAPInfo);
 #endif
   /* return success                                                      */
   return 0;

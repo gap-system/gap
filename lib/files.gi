@@ -2,16 +2,16 @@
 ##
 #W  files.gi                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: files.gi,v 4.31 2006/11/13 23:18:49 gap Exp $
+#H  @(#)$Id: files.gi,v 4.36 2010/07/28 15:45:20 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for files and directories.
 ##
 Revision.files_gi :=
-    "@(#)$Id: files.gi,v 4.31 2006/11/13 23:18:49 gap Exp $";
+    "@(#)$Id: files.gi,v 4.36 2010/07/28 15:45:20 gap Exp $";
 
 
 #############################################################################
@@ -34,22 +34,6 @@ BindGlobal( "DirectoryType", NewType(
     IsDirectory and IsDirectoryRep ) );
 
 
-#############################################################################
-##
-#F  USER_HOME_EXPAND . . . . . . . . . . . .  expand leading ~ in file name
-##  
-##  If `GAPInfo.UserHome' has positive length then a leading '~' character in 
-##  string `str' is substituted by the content of `GAPInfo.UserHome'.
-##  Otherwise `str' itself is returned.
-##  
-InstallGlobalFunction(USER_HOME_EXPAND, function(str)
-  if Length(str) > 0 and str[1] = '~' and Length( GAPInfo.UserHome ) > 0 then
-    return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
-  else
-    return str;
-  fi;
-end);
-    
 
 #############################################################################
 ##
@@ -218,12 +202,14 @@ InstallMethod( ReadTest,
     "string",
     [ IsString ],
     function( name )
-    local oldvalue, result;
-
+    local oldvalue, result, breakOnError;
+	breakOnError := BreakOnError;
+	BreakOnError := false;
     oldvalue:= SizeScreen();
     SizeScreen( [ 80 ] );
     result:= READ_TEST( USER_HOME_EXPAND( name ) );  
     SizeScreen( oldvalue );
+    BreakOnError := breakOnError;
     return result;
     end );
 
@@ -246,9 +232,11 @@ InstallGlobalFunction( Edit, function( name )
     local   editor,  ret;
 
     name := USER_HOME_EXPAND(name);
-    editor := Filename( DirectoriesSystemPrograms(), EDITOR );
+    editor := Filename( DirectoriesSystemPrograms(),
+                        GAPInfo.UserPreferences.Editor );
     if editor = fail  then
-        Error( "cannot locate editor `", EDITOR, "' (check variable EDITOR)" );
+        Error( "cannot locate editor `", GAPInfo.UserPreferences.Editor,
+               "' (check variable GAPInfo.UserPreferences.Editor)" );
     fi;
     ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
                     OutputTextUser(), [ name ] );
@@ -394,6 +382,91 @@ InstallGlobalFunction( CheckCompletionFiles, function()
     od;
     return nook;
 end );
+
+# try to find the HOME directory in the environment.
+BindGlobal("StringHOMEPath",function()
+local env;
+  if IsBound(GAPInfo.UserHome) then
+    return GAPInfo.UserHome;
+  fi;
+  env:=GAPInfo.SystemEnvironment;
+  if IsRecord(env) then
+    env:=env.HOME;
+  else
+    env:=First(env,x->Length(x)>5 and x{[1..5]}="HOME=");
+    env:=env{[6..Length(env)]};
+  fi;
+  return env;
+end);
+
+InstallGlobalFunction(DirectoryHome,function()
+local a,h,d;
+  if ARCH_IS_WINDOWS() then
+    h:=StringHOMEPath();
+    d:=List(DirectoryContents(h),LowercaseString);
+    a:=First(["My Documents", #en
+	      "Eigene Dateien", #de
+	      "Documenti", #it
+	      "Mes documents", #fr
+	      "Mijn documenten", #nl
+	      "Meus documentos", #pt
+	      "Mis documentos", #es
+	      "Mina dokument", #sv
+	      "Mine dokumenter", #no
+	      "Dokumentumok", #hu
+	      "Dokumenty", #cz
+	      "Moje dokumenty", #po
+	      "Omat tiedostot", #fi
+	      "Î¤Î± Î­Î³Î³ÏÎ±Ï†Î¬ Î¼Î¿Ï…", #gr
+	      "ÐœÐ¾Ð¸ Ð”Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ñ‹", #ru
+	      ],x->LowercaseString(x) in d);
+    if a<>fail then
+      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      return Directory(Concatenation(h,a));
+    else
+      Info(InfoWarning,1,"Foreign Localization of Windows\n",
+	"Need name of 'My Documents' folder",d);
+      return Directory(StringHOMEPath());
+    fi;
+  else
+    return Directory(StringHOMEPath());
+  fi;
+end);
+
+InstallGlobalFunction(DirectoryDesktop,function()
+local a,h,d;
+  h:=StringHOMEPath();
+  if ARCH_IS_WINDOWS() then
+    d:=List(DirectoryContents(h),LowercaseString);
+    a:=First(["Desktop",
+	      "Bureau", #fr
+	      "Bureaublad", #nl
+	      "Escritorio", #es
+	      "Î•Ï€Î¹Ï†Î¬Î½ÎµÎ¹Î± ÎµÏÎ³Î±ÏƒÎ¯Î±Ï‚", #gr
+	     ],x->LowercaseString(x) in d);
+    if a<>fail then
+      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      return Directory(Concatenation(h,a));
+    else
+      Info(InfoWarning,1,"Foreign Localization of Windows\n",
+	"Need name of 'Desktop' folder",d);
+      return Directory(StringHOMEPath());
+    fi;
+  else
+    d:=List(DirectoryContents(h),LowercaseString);
+    a:=First(["Desktop",
+	      "Bureau", #fr
+	      "Bureaublad", #nl
+	      "Escritorio", #es
+	     ],x->LowercaseString(x) in d);
+    if a<>fail then
+      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      return Directory(Concatenation(h,a));
+    else
+      return Directory(h);
+    fi;
+  fi;
+end);
 
 
 #############################################################################

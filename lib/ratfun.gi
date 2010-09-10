@@ -5,17 +5,17 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfun.gi,v 4.118 2008/07/17 14:41:07 gap Exp $
+#H  @(#)$Id: ratfun.gi,v 4.119 2010/02/23 15:13:25 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains    methods  for    rational  functions,  laurent
 ##  polynomials and polynomials and their families.
 ##
 Revision.ratfun_gi :=
-    "@(#)$Id: ratfun.gi,v 4.118 2008/07/17 14:41:07 gap Exp $";
+    "@(#)$Id: ratfun.gi,v 4.119 2010/02/23 15:13:25 gap Exp $";
 
 #############################################################################
 ##

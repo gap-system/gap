@@ -3,16 +3,16 @@
 #W  ffe.g                        GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: ffe.g,v 4.16 2005/08/24 13:17:38 sal Exp $
+#H  @(#)$Id: ffe.g,v 4.17 2010/02/23 15:12:58 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with internal finite field elements.
 ##
 Revision.ffe_g :=
-    "@(#)$Id: ffe.g,v 4.16 2005/08/24 13:17:38 sal Exp $";
+    "@(#)$Id: ffe.g,v 4.17 2010/02/23 15:12:58 gap Exp $";
 
 
 #############################################################################

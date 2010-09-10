@@ -2,7 +2,7 @@
 ##
 #W  permdeco.gi                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: permdeco.gi,v 1.6 2008/04/25 21:41:22 gap Exp $
+#H  @(#)$Id: permdeco.gi,v 1.7 2010/06/22 09:23:49 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -11,7 +11,32 @@
 ##  as permutation groups.
 ##
 Revision.permdeco_gi :=
-    "@(#)$Id: permdeco.gi,v 1.6 2008/04/25 21:41:22 gap Exp $";
+    "@(#)$Id: permdeco.gi,v 1.7 2010/06/22 09:23:49 gap Exp $";
+
+InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
+function( G )
+local   pcgs,r,hom,A,iso;
+  
+  r:=RadicalGroup(G);
+  hom:=NaturalHomomorphismByNormalSubgroup(G,r);
+  
+  pcgs := TryPcgsPermGroup( G,r, false, false, true );
+  if not IsPcgs( pcgs )  then
+    return fail;
+  fi;
+  if not HasPcgsElementaryAbelianSeries(r) then
+    SetPcgsElementaryAbelianSeries(r,pcgs);
+  fi;
+  A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), false );
+  iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ));
+  SetIsBijective( iso, true );
+  return rec(pcgs:=pcgs,
+             depths:=IndicesEANormalSteps(pcgs),
+	     radical:=r,
+	     pcisom:=iso,
+	     factorhom:=hom);
+
+end );
 
 InstallGlobalFunction(AutomorphismRepresentingGroup,function(G,autos)
 local G0,a0,cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v,w;

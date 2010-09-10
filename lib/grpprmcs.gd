@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  grpprmcs.gd                 GAP library                       Akos Seress
+#W  grpprmcs.gd                 GAP library                       Ákos Seress
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-#H  @(#)$Id: grpprmcs.gd,v 4.8 2002/04/15 10:04:52 sal Exp $
+#H  @(#)$Id: grpprmcs.gd,v 4.9 2010/02/23 15:13:08 gap Exp $
 ##
 Revision.grpprmcs_gd :=
-    "@(#)$Id: grpprmcs.gd,v 4.8 2002/04/15 10:04:52 sal Exp $";
+    "@(#)$Id: grpprmcs.gd,v 4.9 2010/02/23 15:13:08 gap Exp $";
 
 DeclareGlobalFunction( "NonPerfectCSPG" );
 DeclareGlobalFunction( "PerfectCSPG" );

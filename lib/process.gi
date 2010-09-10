@@ -2,14 +2,14 @@
 ##
 #W  process.gi                  GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for process.
 ##
 Revision.process_gi :=
-    "@(#)$Id: process.gi,v 4.20 2009/07/08 20:06:38 gap Exp $";
+    "@(#)$Id: process.gi,v 4.21 2010/02/23 15:13:24 gap Exp $";
 
 
 #############################################################################

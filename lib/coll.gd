@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  coll.gd                     GAP library                  Martin Schoenert
+#W  coll.gd                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id: coll.gd,v 4.122 2008/10/27 08:56:55 gap Exp $
+#H  @(#)$Id: coll.gd,v 4.125 2010/05/05 12:05:23 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for collections.
 ##
 Revision.coll_gd :=
-    "@(#)$Id: coll.gd,v 4.122 2008/10/27 08:56:55 gap Exp $";
+    "@(#)$Id: coll.gd,v 4.125 2010/05/05 12:05:23 gap Exp $";
 
 #T change the installation of isomorphism and factor maintained methods
 #T in the same way as that of subset maintained methods!
@@ -1344,7 +1344,7 @@ DeclareProperty( "IsEmpty", IsListOrCollection );
 ##  <Description>
 ##  <Ref Prop="IsTrivial"/> returns <K>true</K> if the collection <A>C</A>
 ##  consists of exactly one element.
-##  <!--  1996/08/08 M.Schoenert is this a sensible definition?-->
+##  <!--  1996/08/08 M.Schönert is this a sensible definition?-->
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1370,7 +1370,7 @@ InstallFactorMaintenance( IsTrivial,
 ##  <P/>
 ##  <!-- I need this to distinguish trivial rings-with-one from fields!-->
 ##  <!-- (indication to introduce antifilters?)-->
-##  <!--  1996/08/08 M.Schoenert is this a sensible definition?-->
+##  <!--  1996/08/08 M.Schönert is this a sensible definition?-->
 ##  <Example><![CDATA[
 ##  gap> IsEmpty( [] );  IsEmpty( [ 1 .. 100 ] );  IsEmpty( Group( (1,2,3) ) );
 ##  true
@@ -1580,9 +1580,10 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  <Ref Oper="Random" Label="for a list or collection"/> returns a
 ##  (pseudo-)random element of the list or collection <A>listorcoll</A>.
 ##  <P/>
-##  As lists or ranges are restricted in length, the second form returns a
-##  random integer in the range <A>from</A> to <A>to</A> (inclusive),
-##  where <M><A>to</A>-<A>from</A></M> may be larger than <M>2^{28}</M>.
+##  As lists or ranges are restricted in length (<M>2^{28}-1</M> or 
+##  <M>2^{60}-1</M> depending on your system), the second form returns a
+##  random integer in the range <A>from</A> to <A>to</A> (inclusive) for
+##  arbitrary integers <A>from</A> and <A>to</A>.
 ##  <P/>
 ##  The distribution of elements returned by
 ##  <Ref Oper="Random" Label="for a list or collection"/> depends
@@ -1624,9 +1625,21 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  The method used by &GAP; to obtain random elements may depend on the
 ##  type object.
 ##  <P/>
+##  Most methods which produce random elements in &GAP; use a global random
+##  number generator (see <Ref Var="GlobalMersenneTwister"/>).  
+##  This random number generator is (deliberately) initialized to the same
+##  values when &GAP; is started, so different runs of &GAP; with the same
+##  input will always produce the same result, even if random calculations
+##  are involved.
+##  <P/>
+##  See <Ref Oper="Reset"/> for a description of how to reset the
+##  random number generator to a previous state.
+##  <P/>
+##  
+##  <!-- all outdated? (FL)
 ##  Many random methods in the library are eventually based on the function
 ##  <Ref Func="RandomList"/>.
-##  As <Ref Func="RandomList"/> is restricted to lists of up to <M>2^{28}</M>
+##  As <Ref Func="RandomList"/> is restricted to lists of  <M>2^{28}</M>
 ##  elements, this may create problems for very large collections. Also note
 ##  that the method used by <Ref Func="RandomList"/> is intended to provide
 ##  a fast algorithm rather than to produce high quality randomness for
@@ -1637,6 +1650,7 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  that they initialize their seed to a defined value when they are loaded
 ##  to permit to reproduce calculations even if they involved random
 ##  elements.
+##  -->
 ##  <#/GAPDoc>
 ##
 
@@ -1651,20 +1665,13 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##
 ##  <Description>
 ##  <Index>random seed</Index>
-##  For a dense list <A>list</A> of up to <M>2^{28}</M> elements,
+##  For a dense list <A>list</A>,
 ##  <Ref Func="RandomList"/> returns a (pseudo-)random element with equal
 ##  distribution.
 ##  <P/>
-##  The algorithm used is an additive number generator, see
-##  <Cite Key="TACP2" Where="Section 3.2.2, Algorithm A, with lag 30"/>.
+##  This function uses the <Ref Var="GlobalMersenneTwister"/> to produce the
+##  random elements (a source of high quality random numbers).
 ##  <P/>
-##  This random number generator is (deliberately) initialized to the same
-##  values when &GAP; is started, so different runs of &GAP; with the same
-##  input will always produce the same result, even if random calculations
-##  are involved.
-##  <P/>
-##  See <Ref Func="StateRandom"/> for a description on how to reset the
-##  random number generator to a previous state.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

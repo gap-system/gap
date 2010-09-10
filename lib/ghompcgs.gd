@@ -2,12 +2,12 @@
 ##
 #W  ghompcgs.gd                 GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghompcgs_gd :=
-    "@(#)$Id: ghompcgs.gd,v 4.12 2007/09/05 12:45:14 gap Exp $";
+    "@(#)$Id: ghompcgs.gd,v 4.13 2010/02/23 15:13:00 gap Exp $";
 
 #############################################################################
 ##

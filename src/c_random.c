@@ -248,10 +248,10 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.random_g := "@(#)$Id: c_random.c,v 4.25 2009/03/25 11:42:47 gap Exp $"; */
+ /* Revision.random_g := "@(#)$Id: c_random.c,v 4.26 2010/02/23 18:03:59 gap Exp $"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 53, "@(#)$Id: c_random.c,v 4.25 2009/03/25 11:42:47 gap Exp $" )
+ C_NEW_STRING( t_2, 53, "@(#)$Id: c_random.c,v 4.26 2010/02/23 18:03:59 gap Exp $" )
  ASS_REC( t_1, R_random__g, t_2 );
  
  /* R_N := 1; */
@@ -344,14 +344,14 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "RANDOM_SEED", &GF_RANDOM__SEED );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(75217378)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(75217378)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(75217378)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](75217378)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(75217378)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](75217378)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(75217378)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](75217378)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(4165679765)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(4165679765)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(4165679765)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](4165679765)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(4165679765)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](4165679765)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(4165679765)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](4165679765)" );
  
  /* return success */
  return 0;
@@ -448,7 +448,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 75217378,
+ /* crc         = */ 4165679765,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

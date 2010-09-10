@@ -5,17 +5,17 @@
 #W                                                              & Stefan Kohl
 #W                                                            & Werner Nickel
 #W                                                           & Alice Niemeyer
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id: integer.gi,v 4.84 2008/11/26 15:55:35 gap Exp $
+#H  @(#)$Id: integer.gi,v 4.85 2010/02/23 15:13:10 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.integer_gi :=
-    "@(#)$Id: integer.gi,v 4.84 2008/11/26 15:55:35 gap Exp $";
+    "@(#)$Id: integer.gi,v 4.85 2010/02/23 15:13:10 gap Exp $";
 
 
 #############################################################################

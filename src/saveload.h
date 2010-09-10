@@ -2,10 +2,10 @@
 **
 *W  saveload.h                  GAP source                   Steve Linton
 **
-*H  @(#)$Id: saveload.h,v 4.13 2002/04/15 10:03:57 sal Exp $
+*H  @(#)$Id: saveload.h,v 4.14 2010/02/23 15:13:47 gap Exp $
 **
-*Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions concerned with saving and loading
@@ -14,7 +14,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_saveload_h =
-   "@(#)$Id: saveload.h,v 4.13 2002/04/15 10:03:57 sal Exp $";
+   "@(#)$Id: saveload.h,v 4.14 2010/02/23 15:13:47 gap Exp $";
 #endif
 
 /***************************************************************************

@@ -2,11 +2,11 @@
 ##
 #W  matint.gi                GAP library                        A. Storjohann
 #W                                                              R. Wainwright
-#W                                                                 F. Gaehler
+#W                                                                 F. Gähler
 #W                                                                    D. Holt
 #W                                                                  A. Hulpke
 ##
-#H  $Id: matint.gi,v 4.34 2007/05/29 07:28:37 gap Exp $
+#H  $Id: matint.gi,v 4.35 2010/02/23 15:13:13 gap Exp $
 ##
 #Y  Copyright (C) 2003 The GAP Group
 ##
@@ -15,7 +15,7 @@
 ##  combination of the input.
 ##
 Revision.matint_gi :=
-    "$Id: matint.gi,v 4.34 2007/05/29 07:28:37 gap Exp $";
+    "$Id: matint.gi,v 4.35 2010/02/23 15:13:13 gap Exp $";
 
 ########################################################
 ##

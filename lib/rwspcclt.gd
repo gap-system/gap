@@ -2,8 +2,8 @@
 ##
 #W  rwspcclt.gd                 GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains operations for  polycyclic rewriting systems, with  or
@@ -42,7 +42,7 @@
 ##  is changed.
 ##
 Revision.rwspcclt_gd :=
-    "@(#)$Id: rwspcclt.gd,v 4.35 2007/09/05 12:45:15 gap Exp $";
+    "@(#)$Id: rwspcclt.gd,v 4.36 2010/02/23 15:13:28 gap Exp $";
 
 #############################################################################
 ##

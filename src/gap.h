@@ -1,18 +1,18 @@
 /****************************************************************************
 **
-*W  gap.h                       GAP source                   Martin Schoenert
+*W  gap.h                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gap.h,v 4.39 2008/04/10 22:28:47 gap Exp $
+*H  @(#)$Id: gap.h,v 4.40 2010/02/23 15:13:42 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the various read-eval-print loops and  related  stuff.
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gap_h =
-   "@(#)$Id: gap.h,v 4.39 2008/04/10 22:28:47 gap Exp $";
+   "@(#)$Id: gap.h,v 4.40 2010/02/23 15:13:42 gap Exp $";
 #endif
 
 

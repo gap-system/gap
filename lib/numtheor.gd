@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  numtheor.gd                 GAP library                  Martin Schoenert
+#W  numtheor.gd                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: numtheor.gd,v 4.35 2008/10/07 15:56:00 gap Exp $
+#H  @(#)$Id: numtheor.gd,v 4.39 2010/06/16 14:14:19 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares operations for integer primes.
@@ -29,7 +29,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.numtheor_gd:=
-    "@(#)$Id: numtheor.gd,v 4.35 2008/10/07 15:56:00 gap Exp $";
+    "@(#)$Id: numtheor.gd,v 4.39 2010/06/16 14:14:19 gap Exp $";
 
 
 ##########################################################################
@@ -301,12 +301,12 @@ DeclareGlobalFunction( "PrimitiveRootMod" );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> GeneratorsPrimeResidues( 1 );
-##  rec( primes := [  ], exponents := [  ], generators := [  ] )
+##  rec( generators := [  ], primes := [  ], exponents := [  ] )
 ##  gap> GeneratorsPrimeResidues( 4*3 );
-##  rec( primes := [ 2, 3 ], exponents := [ 2, 1 ], generators := [ 7, 5 ] )
+##  rec( generators := [ 7, 5 ], primes := [ 2, 3 ], exponents := [ 2, 1 ] )
 ##  gap> GeneratorsPrimeResidues( 8*9*5 );
-##  rec( primes := [ 2, 3, 5 ], exponents := [ 3, 2, 1 ], 
-##    generators := [ [ 271, 181 ], 281, 217 ] )
+##  rec( generators := [ [ 271, 181 ], 281, 217 ], primes := [ 2, 3, 5 ], 
+##    exponents := [ 3, 2, 1 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -607,12 +607,13 @@ DeclareGlobalFunction( "DoLogModRho" );
 ##  <M>2^{{<A>n</A>-1}}(2^{<A>n</A>}-1)</M>
 ##  where <M>2^{<A>n</A>}-1</M> is prime.
 ##  Primes of the form <M>2^{<A>n</A>}-1</M> are called
-##  <E>Mersenne primes</E>,
-##  the known 44 Mersenne primes are obtained for <A>n</A> <M>=</M> 2, 3, 5, 7, 13, 17, 19,
+##  <E>Mersenne primes</E>, and
+##  42 among the known Mersenne primes are obtained for <A>n</A> <M>=</M> 2, 3, 5, 7, 13, 17, 19,
 ##  31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689,
 ##  9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091,
 ##  756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917,
-##  20996011, 24036583, 25964951, 30402457 and 32582657.
+##  20996011, 24036583 and 25964951. Please find more up to date information
+##  about Mersenne primes at <URL>http://www.mersenne.org</URL>.
 ##  It is not known whether odd perfect integers exist,
 ##  however&nbsp;<Cite Key="BC89"/> show that any such integer must have
 ##  at least 300 decimal digits.
@@ -769,7 +770,6 @@ DeclareGlobalFunction( "MoebiusMu" );
 ##  gap> TwoSquares( 13*17 );  # [10,11] would be the other possible representation
 ##  [ 5, 14 ]
 ##  gap> TwoSquares( 848654483879497562821 );  # 848654483879497562821 is prime
-##  #I  beyond the guaranteed bound of the probabilistic primality test
 ##  [ 6305894639, 28440994650 ]
 ##  ]]></Example>
 ##  </Description>

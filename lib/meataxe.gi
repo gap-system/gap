@@ -4,17 +4,17 @@
 #W                                                                 Sarah Rees
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: meataxe.gi,v 4.78 2009/03/27 10:09:10 gap Exp $ 
+#H  @(#)$Id: meataxe.gi,v 4.79 2010/02/23 15:13:14 gap Exp $ 
 ##
 #Y  Copyright 1994 -- School of Mathematical Sciences, ANU   
-#Y  (C) 1998-2001 School Math. Sci., University of St.  Andrews, Scotland
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998-2001 School Math. Sci., University of St Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the 'Smash'-MeatAxe modified for GAP4 and using the 
 ##  standard MeatAxe interface.  It defines the MeatAxe SMTX.
 ##
 Revision.meataxe_gi:=
-  "@(#)$Id: meataxe.gi,v 4.78 2009/03/27 10:09:10 gap Exp $";
+  "@(#)$Id: meataxe.gi,v 4.79 2010/02/23 15:13:14 gap Exp $";
 
 InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;

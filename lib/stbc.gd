@@ -1,16 +1,16 @@
 #############################################################################
 ##
-#W  stbc.gd                     GAP library                    Heiko Thei"sen
-#W                                                               'Akos Seress
+#W  stbc.gd                     GAP library                    Heiko Theißen
+#W                                                               Ákos Seress
 ##
-#H  @(#)$Id: stbc.gd,v 4.52 2009/01/12 17:26:17 gap Exp $
+#H  @(#)$Id: stbc.gd,v 4.54 2010/04/30 19:21:25 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.stbc_gd :=
-    "@(#)$Id: stbc.gd,v 4.52 2009/01/12 17:26:17 gap Exp $";
+    "@(#)$Id: stbc.gd,v 4.54 2010/04/30 19:21:25 alexk Exp $";
 
 
 #############################################################################
@@ -158,8 +158,8 @@ Revision.stbc_gd :=
 ##      In this case, &GAP; does a non-deterministic construction until the
 ##      size is correct.
 ##  </Item>
-##  <Mark><C>limit</C> (default <C>Size( Parent( <A>G</A> ) )</C> or
-##           <C>StabChainOptions( Parent( <A>G</A> ) ).limit</C>
+##  <Mark><C>limit</C> (default <C>Size(Parent(<A>G</A>))</C> or
+##           <C>StabChainOptions(Parent(<A>G</A>)).limit</C>
 ##           if this is present) </Mark>
 ##  <Item>
 ##      If this component is present, it must be greater than or equal to

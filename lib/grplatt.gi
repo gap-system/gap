@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  grplatt.gi                GAP library                   Martin Sch"onert,
+#W  grplatt.gi                GAP library                   Martin Schönert,
 #W                                                          Alexander Hulpke
 ##
-#H  @(#)$Id: grplatt.gi,v 4.87 2009/02/26 22:57:10 gap Exp $
+#H  @(#)$Id: grplatt.gi,v 4.89 2010/02/23 15:13:05 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains declarations for subgroup latices
 ##
 Revision.grplatt_gi:=
-  "@(#)$Id: grplatt.gi,v 4.87 2009/02/26 22:57:10 gap Exp $";
+  "@(#)$Id: grplatt.gi,v 4.89 2010/02/23 15:13:05 gap Exp $";
 
 #############################################################################
 ##
@@ -783,7 +783,7 @@ end);
 InstallGlobalFunction(LatticeViaRadical,function(arg)
   local G,H,HN,HNI,ser, pcgs, u, hom, f, c, nu, nn, nf, a, k, ohom, mpcgs, gf,
   act, nts, orbs, n, ns, nim, fphom, as, p, isn, isns, lmpc, npcgs, ocr, v,
-  com, cg, i, j, w, ii,first,cgs,cs,presmpcgs,select;
+  com, cg, i, j, w, ii,first,cgs,cs,presmpcgs,select,fselect;
 
   G:=arg[1];
   H:=fail;
@@ -812,17 +812,24 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   elif Size(ser[1])=1 then
     if H<>fail then
       return LatticeByCyclicExtension(G,u->IsSubset(H,u));
+    elif select<>fail then
+      return LatticeByCyclicExtension(G,select);
     else
       return LatticeByCyclicExtension(G);
     fi;
   else
     hom:=NaturalHomomorphismByNormalSubgroupNC(G,ser[1]);
     f:=Image(hom,G);
+    fselect:=fail;
     if H<>fail then
       HN:=Image(hom,H);
       c:=LatticeByCyclicExtension(f,u->IsSubset(HN,u))!.conjugacyClassesSubgroups;
     elif select<>fail and (select=IsPerfectGroup  or select=IsSimpleGroup) then
       c:=ConjugacyClassesPerfectSubgroups(f);
+      c:=Filtered(c,x->Size(Representative(x))>1);
+      fselect:=U->not IsSolvableGroup(U);
+    elif select<>fail then
+      c:=LatticeByCyclicExtension(f,select)!.conjugacyClassesSubgroups;
     else
       c:=LatticeByCyclicExtension(f)!.conjugacyClassesSubgroups;
     fi;
@@ -867,7 +874,32 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 
     if Length(mpcgs)>0 then
       gf:=GF(RelativeOrders(mpcgs)[1]);
-      act:=ActionSubspacesElementaryAbelianGroup(G,mpcgs);
+      if select=IsPerfectGroup then
+	# the only normal subgroups are those that are normal under any
+	# subgroup so far.
+
+	# minimal of the subgroups so far
+	nu:=Filtered(u[1],x->not ForAny(u[1],y->Size(y)<Size(x)
+                     and IsSubgroup(x,y)));
+        nts:=[];
+	#T: Use invariant subgroups here
+	for j in nu do
+	  for k in Filtered(NormalSubgroups(j),y->IsSubset(ser[i-1],y)
+	      and IsSubset(y,ser[i])) do
+            if not k in nts then Add(nts,k);fi;
+	  od;
+	od;
+	# by setting up `act' as fail, we force a different selection later
+	act:=[nts,fail];
+
+      elif select=IsSimpleGroup then
+	# simple -> no extensions, only the trivial subgroup is valid.
+	act:=[[ser[i]],GroupHomomorphismByImagesNC(G,Group(()),
+	    GeneratorsOfGroup(G),
+	    List(GeneratorsOfGroup(G),i->()))];
+      else
+	act:=ActionSubspacesElementaryAbelianGroup(G,mpcgs);
+      fi;
     else
       gf:=GF(Factors(Index(ser[i-1],ser[i]))[1]);
       act:=[[ser[i]],GroupHomomorphismByImagesNC(G,Group(()),
@@ -886,9 +918,25 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 #if ForAny(GeneratorsOfGroup(a),i->SIZE_OBJ(i)>maxsz) then Error("1");fi;
       n:=u[2][j];
 #if ForAny(GeneratorsOfGroup(n),i->SIZE_OBJ(i)>maxsz) then Error("2");fi;
-      ns:=Difference([1..Length(nts)],MovedPoints(Image(act,a)));
-      nim:=Image(act,n);
-      ns:=Orbits(nim,ns);
+
+      # find indices of subgroups normal under a and form orbits under the
+      # normalizer
+      if act<>fail then
+	ns:=Difference([1..Length(nts)],MovedPoints(Image(act,a)));
+	nim:=Image(act,n);
+	ns:=Orbits(nim,ns);
+      else
+	nim:=Filtered([1..Length(nts)],x->IsNormal(a,nts[x]));
+	ns:=[];
+	for k in [1..Length(nim)] do
+	  if not ForAny(ns,x->nim[k] in x) then
+	    p:=Orbit(n,nts[k]);
+	    p:=List(p,x->Position(nts,x));
+	    p:=Filtered(p,x->x<>fail and x in nim);
+	    Add(ns,p);
+	  fi;
+	od;
+      fi;
       if Size(a)>Size(ser[i-1]) then
 	# keep old groups
 	if H=fail or IsSubset(HN,a) then
@@ -899,7 +947,8 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 	  fi;
 	fi;
 	orbs[j]:=ns;
-      else
+      else # here a is the trivial subgroup in the factor. (This will never
+	   # happen if we look for perfect or simple groups!)
 	orbs[j]:=[];
 	# previous kernel -- there the orbits are classes of subgroups in G
 	for k in ns do
@@ -1021,22 +1070,25 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 		      ", ",w," local complements, ",Length(com)," orbits");
 		for w in com do
 		  c:=w.representative;
-		  Add(nu,c);
-		  Add(nn,w.normalizer);
-		  if Size(ser[i])>1 then
-		    # need to lift presentation
-		    fphom:=ComplementFactorFpHom(ocr.factorfphom,
-		    a,ser[i-1],nts[j],c,
-		    ocr.generators,cgs[w.pos]);
+		  if fselect=fail or fselect(c) then
+		    Add(nu,c);
+		    Add(nn,w.normalizer);
+		    if Size(ser[i])>1 then
+		      # need to lift presentation
+		      fphom:=ComplementFactorFpHom(ocr.factorfphom,
+		      a,ser[i-1],nts[j],c,
+		      ocr.generators,cgs[w.pos]);
 
-		    Assert(1,KernelOfMultiplicativeGeneralMapping(fphom)=nts[j]);
-		    if Size(nts[j])>Size(ser[i]) then
-		      fphom:=LiftFactorFpHom(fphom,c,nts[j],ser[i],npcgs);
-		      Assert(1,
-			KernelOfMultiplicativeGeneralMapping(fphom)=ser[i]);
+		      Assert(1,KernelOfMultiplicativeGeneralMapping(fphom)=nts[j]);
+		      if Size(nts[j])>Size(ser[i]) then
+			fphom:=LiftFactorFpHom(fphom,c,nts[j],ser[i],npcgs);
+			Assert(1,
+			  KernelOfMultiplicativeGeneralMapping(fphom)=ser[i]);
+		      fi;
+		      Add(nf,fphom);
 		    fi;
-		    Add(nf,fphom);
 		  fi;
+
 		od;
 	      fi;
 
@@ -1060,6 +1112,12 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     SetStabilizerOfExternalSet(a,n);
     Add(nn,a);
   od;
+
+  # some `select'ions remove the trivial subgroup
+  if select<>fail and not ForAny(u[1],x->Size(x)=1) 
+    and select(TrivialSubgroup(G)) then
+    Add(nn,ConjugacyClassSubgroups(G,TrivialSubgroup(G)));
+  fi;
   return LatticeFromClasses(G,nn);
 end);
 

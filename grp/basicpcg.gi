@@ -2,15 +2,15 @@
 ##
 #W  basicpcg.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicpcg.gi,v 4.18 2009/01/07 04:19:05 gap Exp $
+#H  @(#)$Id: basicpcg.gi,v 4.19 2010/02/23 15:12:39 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for the construction of the basic pc group
 ##  types.
 ##
 Revision.basicpcg_gi :=
-    "@(#)$Id: basicpcg.gi,v 4.18 2009/01/07 04:19:05 gap Exp $";
+    "@(#)$Id: basicpcg.gi,v 4.19 2010/02/23 15:12:39 gap Exp $";
 
 
 #############################################################################

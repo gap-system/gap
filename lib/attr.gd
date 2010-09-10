@@ -2,13 +2,13 @@
 ##
 #W  attr.gd                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: attr.gd,v 4.9 2007/10/23 07:46:49 gap Exp $
+#H  @(#)$Id: attr.gd,v 4.10 2010/02/23 15:12:47 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 Revision.attr_gd :=
-  "@(#)$Id: attr.gd,v 4.9 2007/10/23 07:46:49 gap Exp $";
+  "@(#)$Id: attr.gd,v 4.10 2010/02/23 15:12:47 gap Exp $";
 
 
 #############################################################################

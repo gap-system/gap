@@ -2,17 +2,17 @@
 ##
 #W  pcgsind.gi                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: pcgsind.gi,v 4.70 2002/04/15 10:05:12 sal Exp $
+#H  @(#)$Id: pcgsind.gi,v 4.71 2010/02/23 15:13:22 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains  the operations   for  induced polycylic  generating
 ##  systems.
 ##
 Revision.pcgsind_gi :=
-    "@(#)$Id: pcgsind.gi,v 4.70 2002/04/15 10:05:12 sal Exp $";
+    "@(#)$Id: pcgsind.gi,v 4.71 2010/02/23 15:13:22 gap Exp $";
 
 
 #############################################################################

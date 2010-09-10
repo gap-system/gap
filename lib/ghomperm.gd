@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  ghomperm.gd                 GAP library                    Heiko Thei"sen
+#W  ghomperm.gd                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: ghomperm.gd,v 4.16 2007/09/05 12:45:14 gap Exp $
+#H  @(#)$Id: ghomperm.gd,v 4.17 2010/02/23 15:13:01 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomperm_gd :=
-    "@(#)$Id: ghomperm.gd,v 4.16 2007/09/05 12:45:14 gap Exp $";
+    "@(#)$Id: ghomperm.gd,v 4.17 2010/02/23 15:13:01 gap Exp $";
 
 
 #############################################################################

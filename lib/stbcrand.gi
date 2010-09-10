@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  stbcrand.gi                 GAP library                       Akos Seress
+#W  stbcrand.gi                 GAP library                       Ákos Seress
 ##
-#H  @(#)$Id: stbcrand.gi,v 4.33 2005/05/10 14:12:49 gap Exp $
+#H  @(#)$Id: stbcrand.gi,v 4.34 2010/02/23 15:13:32 gap Exp $
 ##
-#Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1994,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains  the  functions for  a random Schreier-Sims algorithm
 ##  with verification.
 ##
 Revision.stbcrand_gi :=
-    "@(#)$Id: stbcrand.gi,v 4.33 2005/05/10 14:12:49 gap Exp $";
+    "@(#)$Id: stbcrand.gi,v 4.34 2010/02/23 15:13:32 gap Exp $";
 
 #############################################################################
 ##

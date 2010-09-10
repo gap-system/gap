@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  tom.gd                   GAP library                       Goetz Pfeiffer
+#W  tom.gd                   GAP library                       GÃ¶tz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
-#H  @(#)$Id: tom.gd,v 4.54 2009/04/22 13:10:17 gap Exp $
+#H  @(#)$Id: tom.gd,v 4.57 2010/02/23 15:13:33 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D fÃ¼r Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of the category and family of tables
@@ -27,7 +27,7 @@
 ##  13. Generic Construction of Tables of Marks
 ##
 Revision.tom_gd :=
-    "@(#)$Id: tom.gd,v 4.54 2009/04/22 13:10:17 gap Exp $";
+    "@(#)$Id: tom.gd,v 4.57 2010/02/23 15:13:33 gap Exp $";
 
 
 #############################################################################
@@ -1061,12 +1061,12 @@ DeclareAttribute( "MatTom", IsTableOfMarks );
 ##  <Attr Name="MoebiusTom" Arg='tom'/>
 ##
 ##  <Description>
-##  <Ref Func="MoebiusTom"/> computes the Möbius values both of the subgroup
+##  <Ref Func="MoebiusTom"/> computes the MÃ¶bius values both of the subgroup
 ##  lattice of the group <M>G</M> with table of marks <A>tom</A>
 ##  and of the poset of conjugacy classes of subgroups of <M>G</M>.
 ##  It returns a record where the component
-##  <C>mu</C> contains the Möbius values of the subgroup lattice,
-##  and the component <C>nu</C> contains the Möbius values of the poset.
+##  <C>mu</C> contains the MÃ¶bius values of the subgroup lattice,
+##  and the component <C>nu</C> contains the MÃ¶bius values of the poset.
 ##  <P/>
 ##  Moreover, according to an observation of Isaacs et al.
 ##  (see&nbsp;<Cite Key="HIO89"/>, <Cite Key="Pah93"/>),
@@ -1910,8 +1910,9 @@ DeclareAttribute( "StraightLineProgramsTom", IsTableOfMarks );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> std:= StandardGeneratorsInfo( a5 );
-##  [ rec( generators := "a, b", description := "||a||=2, ||b||=3, ||ab||=5", 
-##        script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ], ATLAS := true ) ]
+##  [ rec( generators := "a, b", ATLAS := true, 
+##        description := "|a|=2, |b|=3, |ab|=5", 
+##        script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ] ) ]
 ##  gap> # Now find standard generators of an isomorphic group.
 ##  gap> g:= SL(2,4);;
 ##  gap> repeat

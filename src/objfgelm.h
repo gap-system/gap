@@ -2,15 +2,15 @@
 **
 *W  objfgelm.h                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objfgelm.h,v 4.18 2002/04/15 10:03:53 sal Exp $
+*H  @(#)$Id: objfgelm.h,v 4.19 2010/02/23 15:13:45 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objfgelm_h =
-   "@(#)$Id: objfgelm.h,v 4.18 2002/04/15 10:03:53 sal Exp $";
+   "@(#)$Id: objfgelm.h,v 4.19 2010/02/23 15:13:45 gap Exp $";
 #endif
 
 

@@ -2,14 +2,14 @@
 ##
 #W  process.gd                  GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for process.
 ##
 Revision.process_gd :=
-    "@(#)$Id: process.gd,v 4.22 2009/07/08 20:06:38 gap Exp $";
+    "@(#)$Id: process.gd,v 4.24 2010/05/20 08:25:13 gap Exp $";
 
 
 #############################################################################
@@ -300,9 +300,6 @@ DeclareGlobalFunction("Restart");
 ##  Packages which had been available but not loaded before the workspace
 ##  was saved are available also when the workspace is loaded,
 ##  provided these packages have not been upgraded.
-##  Packages which have been newly installed <E>after</E> the workspace was
-##  saved are <E>not</E> available when the workspace is loaded.
-##  <!-- %T Is this acceptable? -->
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

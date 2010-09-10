@@ -1,13 +1,13 @@
 /****************************************************************************
 **
 *W  compiler.c                  GAP source                       Frank Celler
-*W                                                         & Ferencz Rakowczi
-*W                                                         & Martin Schoenert
+*W                                                         & Ferenc Ràkòczi
+*W                                                         & Martin Schönert
 **
-*H  @(#)$Id: compiler.c,v 4.59 2009/04/06 12:00:49 gap Exp $
+*H  @(#)$Id: compiler.c,v 4.60 2010/02/23 15:13:40 gap Exp $
 **
-*Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the GAP to C compiler.
@@ -16,7 +16,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_compiler_c =
-   "@(#)$Id: compiler.c,v 4.59 2009/04/06 12:00:49 gap Exp $";
+   "@(#)$Id: compiler.c,v 4.60 2010/02/23 15:13:40 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

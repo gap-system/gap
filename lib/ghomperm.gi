@@ -1,15 +1,13 @@
 #############################################################################
 ##
-#W  ghomperm.gi                 GAP library       Akos Seress, Heiko Thei"sen
+#W  ghomperm.gi                 GAP library       Ákos Seress, Heiko Theißen
 ##
-#H  @(#)$Id: ghomperm.gi,v 4.106 2007/02/22 17:24:03 gap Exp $
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomperm_gi :=
-    "@(#)$Id: ghomperm.gi,v 4.106 2007/02/22 17:24:03 gap Exp $";
+    "@(#)$Id: ghomperm.gi,v 4.108 2010/02/23 15:13:01 gap Exp $";
 
 #############################################################################
 ##
@@ -1038,13 +1036,14 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
   FamSource1EqFamRange2, [ IsGroupHomomorphism,
           IsPermGroupGeneralMappingByImages and IsGroupHomomorphism ], 0,
     function( hom1, hom2 )
-    local   prd,  stb,  levs,  S;
+    local   prd,  stb,  levs,  S,t,i,oli;
 
     stb := StructuralCopy( StabChainMutable( hom2 ) );
     levs := [  ];
     S := stb;
     while IsBound( S.stabilizer )  do
         S.idimage := One( Range( hom1 ) );
+	oli:=S.labelimages;
         if not ForAny( levs, lev -> IsIdenticalObj( lev, S.labelimages ) )  then
             Add( levs, S );
             S.labelimages := List( S.labelimages, g ->
@@ -1052,8 +1051,17 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
         fi;
         S.generators  := S.labels     { S.genlabels };
         S.genimages   := S.labelimages{ S.genlabels };
-        S.transimages := [  ];
-        S.transimages{ S.orbit } := S.labelimages{ S.translabels{ S.orbit } };
+        t:=S.translabels{ S.orbit };
+	# are transimages actually given by translabels?
+	if ForAll([1..Length(S.orbit)],
+	  x->IsIdenticalObj(S.transimages[S.orbit[x]],oli[t[x]])) then
+	  S.transimages := [  ];
+	  S.transimages{ S.orbit } := S.labelimages{ S.translabels{ S.orbit } };
+	else
+	  for i in S.orbit do
+	    S.transimages[i]:=Image(hom1,S.transimages[i]);
+	  od;
+	fi;
         S := S.stabilizer;
     od;
     prd := GroupHomomorphismByImagesNC( Source( hom2 ), Range( hom1 ),

@@ -2,10 +2,10 @@
 ##
 #W  zmodnz.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zmodnz.gd,v 4.43 2008/10/07 15:56:00 gap Exp $
+#H  @(#)$Id: zmodnz.gd,v 4.44 2010/02/23 15:13:37 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the design of the rings $Z / n Z$ and their elements.
@@ -17,7 +17,7 @@
 ##  again the ordering of representatives is chosen.
 ##
 Revision.zmodnz_gd :=
-    "@(#)$Id: zmodnz.gd,v 4.43 2008/10/07 15:56:00 gap Exp $";
+    "@(#)$Id: zmodnz.gd,v 4.44 2010/02/23 15:13:37 gap Exp $";
 
 
 #############################################################################

@@ -3,16 +3,16 @@
 #W  grppc.gi                    GAP Library                      Frank Celler
 #W                                                             & Bettina Eick
 ##
-#H  @(#)$Id: grppc.gi,v 4.167 2005/12/26 19:22:07 gap Exp $
+#H  @(#)$Id: grppc.gi,v 4.168 2010/02/23 15:13:06 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for groups with a polycyclic collector.
 ##
 Revision.grppc_gi :=
-    "@(#)$Id: grppc.gi,v 4.167 2005/12/26 19:22:07 gap Exp $";
+    "@(#)$Id: grppc.gi,v 4.168 2010/02/23 15:13:06 gap Exp $";
 
 #############################################################################
 ##

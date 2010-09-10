@@ -2,17 +2,17 @@
 ##
 #W  gasman.gd                   GAP Library                       Steve Linton
 ##
-#H  @(#)$Id: gasman.gd,v 4.5 2008/09/22 16:22:28 gap Exp $
+#H  @(#)$Id: gasman.gd,v 4.7 2010/05/28 16:06:38 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file contains declarations of functions that report information from the
-##  GASMAN garbage collector
+##  This file contains declarations of functions that report information from
+##  the GASMAN garbage collector.
 ##
 Revision.gasman_gd :=
-    "@(#)$Id: gasman.gd,v 4.5 2008/09/22 16:22:28 gap Exp $";
+    "@(#)$Id: gasman.gd,v 4.7 2010/05/28 16:06:38 gap Exp $";
 
 #############################################################################
 ##
@@ -23,9 +23,10 @@ Revision.gasman_gd :=
 ##  <Func Name="GasmanStatistics" Arg=''/>
 ##
 ##  <Description>
-##  <C>GasmanStatistics()</C> returns a record containing some information
-##  from the garbage collection mechanism. The record may contain up to four 
-##  components: <C>full</C>, <C>partial</C>, <C>npartial</C> and <C>nfull</C>.
+##  <Ref Func="GasmanStatistics"/> returns a record containing some
+##  information from the garbage collection mechanism.
+##  The record may contain up to four components:
+##  <C>full</C>, <C>partial</C>, <C>npartial</C>, and <C>nfull</C>.
 ##  <P/>
 ##  The <C>full</C> component will be present if a full garbage collection
 ##  has taken place since &GAP; started. It contains information about
@@ -75,14 +76,15 @@ DeclareGlobalFunction("GasmanStatistics");
 ##  <Func Name="SetGasmanMessageStatus" Arg='stat'/>
 ##
 ##  <Description>
-##  <C>GasmanMessageStatus()</C> returns one of the string "none",
-##  "full" or "all", depending on whether the garbage collector is
-##  currently set to print messages on no collections, full
-##  collections only or all collections. 
+##  <Ref Func="GasmanMessageStatus"/> returns one of the strings
+##  <C>"none"</C>, <C>"full"</C>, or <C>"all"</C>,
+##  depending on whether the garbage collector is currently set to print
+##  messages on
+##  no collections, full collections only, or all collections, respectively. 
 ##  <P/>
-##  <C>SetGasmanMessageStatus( <A>stat</A> )</C> sets the garbage collector
-##  messaging level. <A>stat</A> should be one of the strings "none",
-##  "full" or "all".   
+##  Calling <Ref Func="SetGasmanMessageStatus"/> with the argument
+##  <A>stat</A>, which should be one of the three strings mentioned above,
+##  sets the garbage collector messaging level.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -100,7 +102,7 @@ DeclareGlobalFunction("SetGasmanMessageStatus");
 ##  <Func Name="GasmanLimits" Arg=''/>
 ##
 ##  <Description>
-##  <C>GasmanLimits()</C> returns a record with three components:
+##  <Ref Func="GasmanLimits"/> returns a record with three components:
 ##  <C>min</C> is the minimum workspace size as set by the <C>-m</C>
 ##  command line option in kilobytes.
 ##  The workspace size will never be reduced below this by the garbage

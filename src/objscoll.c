@@ -2,10 +2,10 @@
 **
 *W  objscoll.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objscoll.c,v 4.39 2002/04/15 10:03:53 sal Exp $
+*H  @(#)$Id: objscoll.c,v 4.40 2010/02/23 15:13:45 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains a single collector for finite polycyclic groups.
@@ -25,7 +25,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_objscoll_c =
-   "@(#)$Id: objscoll.c,v 4.39 2002/04/15 10:03:53 sal Exp $";
+   "@(#)$Id: objscoll.c,v 4.40 2010/02/23 15:13:45 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

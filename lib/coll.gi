@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  coll.gi                     GAP library                  Martin Schoenert
+#W  coll.gi                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id: coll.gi,v 4.106 2008/02/05 14:56:07 sal Exp $
+#H  @(#)$Id: coll.gi,v 4.107 2010/02/23 15:12:49 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for collections in general.
 ##
 Revision.coll_gi :=
-    "@(#)$Id: coll.gi,v 4.106 2008/02/05 14:56:07 sal Exp $";
+    "@(#)$Id: coll.gi,v 4.107 2010/02/23 15:12:49 gap Exp $";
 
 
 #############################################################################

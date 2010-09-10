@@ -2,17 +2,17 @@
 ##
 #W  idealalg.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: idealalg.gi,v 4.7 2002/04/15 10:04:53 sal Exp $
+#H  @(#)$Id: idealalg.gi,v 4.8 2010/02/23 15:13:10 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for (left/right/two-sided) ideals
 ##  in algebras and algebras-with-one.
 ##
 Revision.idealalg_gi :=
-    "@(#)$Id: idealalg.gi,v 4.7 2002/04/15 10:04:53 sal Exp $";
+    "@(#)$Id: idealalg.gi,v 4.8 2010/02/23 15:13:10 gap Exp $";
 
 
 #############################################################################

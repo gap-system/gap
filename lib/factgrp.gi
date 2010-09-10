@@ -2,14 +2,14 @@
 ##
 #W  factgrp.gi                      GAP library              Alexander Hulpke
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of operations for factor group maps
 ##
 Revision.factgrp_gi:=
-  "@(#)$Id: factgrp.gi,v 4.69 2009/06/25 16:51:28 gap Exp $";
+  "@(#)$Id: factgrp.gi,v 4.70 2010/02/23 15:12:58 gap Exp $";
 
 #############################################################################
 ##

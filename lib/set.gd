@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  set.gd                        GAP library                Martin Schoenert
+#W  set.gd                        GAP library                Martin Schönert
 ##
-#H  @(#)$Id: set.gd,v 4.8 2008/09/15 07:56:12 gap Exp $
+#H  @(#)$Id: set.gd,v 4.9 2010/02/23 15:13:30 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some functions for proper sets.
@@ -20,7 +20,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.set_gd :=
-    "@(#)$Id: set.gd,v 4.8 2008/09/15 07:56:12 gap Exp $";
+    "@(#)$Id: set.gd,v 4.9 2010/02/23 15:13:30 gap Exp $";
 
 
 #############################################################################

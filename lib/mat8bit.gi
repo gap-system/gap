@@ -2,10 +2,10 @@
 ##
 #W  mat8bit.gi                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id: mat8bit.gi,v 4.34 2007/08/24 09:40:32 gap Exp $
+#H  @(#)$Id: mat8bit.gi,v 4.35 2010/02/23 15:13:13 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is a first stab at a special posobj-based representation 
@@ -14,7 +14,7 @@
 ##  all rows must be the same length and written over the same field
 ##
 Revision.mat8bit_gi :=
-    "@(#)$Id: mat8bit.gi,v 4.34 2007/08/24 09:40:32 gap Exp $";
+    "@(#)$Id: mat8bit.gi,v 4.35 2010/02/23 15:13:13 gap Exp $";
 
 #############################################################################
 ##

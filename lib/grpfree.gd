@@ -2,10 +2,10 @@
 ##
 #W  grpfree.gd                  GAP library                     Werner Nickel
 ##
-#H  $Id: grpfree.gd,v 4.14 2008/11/12 13:04:45 gap Exp $
+#H  $Id: grpfree.gd,v 4.15 2010/02/23 15:13:04 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Free groups are treated as   special cases of finitely presented  groups.
@@ -14,7 +14,7 @@
 ##  equalitity test.  
 ##
 Revision.grpfree_gd :=
-    "$Id: grpfree.gd,v 4.14 2008/11/12 13:04:45 gap Exp $";
+    "$Id: grpfree.gd,v 4.15 2010/02/23 15:13:04 gap Exp $";
 
 
 #############################################################################

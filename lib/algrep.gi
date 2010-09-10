@@ -2,16 +2,16 @@
 ##
 #W  algrep.gi                  GAP library               Willem de Graaf
 ##
-#H  @(#)$Id: algrep.gi,v 4.35 2009/09/30 15:41:19 gap Exp $
+#H  @(#)$Id: algrep.gi,v 4.36 2010/02/23 15:12:46 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for general modules over algebras.
 ##
 Revision.algrep_gi :=
-    "@(#)$Id: algrep.gi,v 4.35 2009/09/30 15:41:19 gap Exp $";
+    "@(#)$Id: algrep.gi,v 4.36 2010/02/23 15:12:46 gap Exp $";
 
 
 #############################################################################

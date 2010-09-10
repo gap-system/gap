@@ -1,8 +1,8 @@
 ############################################################################
 ##  
-#W  lbutil.g                 GAP Library                        Frank Lübeck
+#W  lbutil.g                 GAP Library                        Frank LÃ¼beck
 ##  
-#H  @(#)$Id: lbutil.g,v 1.1 2004/05/14 13:11:45 gap Exp $
+#H  @(#)$Id: lbutil.g,v 1.2 2010/02/23 15:13:11 gap Exp $
 ##  
 #Y  Copyright (C) 2004 The GAP Group
 ##  
@@ -10,7 +10,7 @@
 ##  different line break conventions for Unix, DOS/Windows, MacOS.
 ##  
 Revision.lbutil_g := 
-  "@(#)$Id: lbutil.g,v 1.1 2004/05/14 13:11:45 gap Exp $";
+  "@(#)$Id: lbutil.g,v 1.2 2010/02/23 15:13:11 gap Exp $";
 
 
 ############################################################################

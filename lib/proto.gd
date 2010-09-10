@@ -2,16 +2,16 @@
 ##
 #W  proto.gd                    GAP library                  Andrew Solomon
 ##
-#H  @(#)$Id: proto.gd,v 4.6 2007/01/31 19:02:19 gap Exp $
+#H  @(#)$Id: proto.gd,v 4.7 2010/02/23 15:13:24 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Declarations of utilities for fast prototyping of new GAP objects.
 ##
 Revision.proto_gd :=
-    "@(#)$Id: proto.gd,v 4.6 2007/01/31 19:02:19 gap Exp $";
+    "@(#)$Id: proto.gd,v 4.7 2010/02/23 15:13:24 gap Exp $";
 
 
 ##########################################################################

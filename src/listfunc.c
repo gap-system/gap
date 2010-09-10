@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  listfunc.c                  GAP source                   Martin Schoenert
+*W  listfunc.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: listfunc.c,v 4.65 2005/11/18 20:11:16 gap Exp $
+*H  @(#)$Id: listfunc.c,v 4.66 2010/02/23 15:13:44 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for generic lists.
@@ -13,7 +13,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_listfunc_c =
-   "@(#)$Id: listfunc.c,v 4.65 2005/11/18 20:11:16 gap Exp $";
+   "@(#)$Id: listfunc.c,v 4.66 2010/02/23 15:13:44 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */

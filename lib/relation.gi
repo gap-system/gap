@@ -2,10 +2,10 @@
 ##
 #W  relation.gi                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id: relation.gi,v 4.55 2009/06/15 15:28:55 gap Exp $
+#H  @(#)$Id: relation.gi,v 4.57 2010/02/23 15:13:26 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for binary relations, equivalence
@@ -21,7 +21,7 @@
 ##
 ##
 Revision.relation_gi :=
-    "@(#)$Id: relation.gi,v 4.55 2009/06/15 15:28:55 gap Exp $";
+    "@(#)$Id: relation.gi,v 4.57 2010/02/23 15:13:26 gap Exp $";
 
 ############################################################################
 ##
@@ -577,7 +577,7 @@ InstallMethod(TransitiveClosureBinaryRelation,
 ##
 InstallMethod(HasseDiagramBinaryRelation,
         "for binary relation", true,
-        [IsBinaryRelation and IsPartialOrderBinaryRelation], 0,
+        [IsBinaryRelation], 0,
     function(rel)
 
         local i, j,           # iterators
@@ -591,6 +591,9 @@ InstallMethod(HasseDiagramBinaryRelation,
               HDBREltCovers,  #    to find the cover of an element
               HDBRListCovers; #    to find the set of covers
 
+        while not IsPartialOrderBinaryRelation(rel) do
+	    Error("Relation ",rel," is not a partial order");
+	od;
 
         ## return the minimal elements of a list under rel
         HDBRMinElts := function(list, rel)

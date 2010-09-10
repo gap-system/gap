@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  scanner.c                   GAP source                   Martin Schoenert
+*W  scanner.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: scanner.c,v 4.81 2009/03/09 21:10:40 gap Exp $
+*H  @(#)$Id: scanner.c,v 4.87 2010/06/24 08:58:40 sal Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the scanner, which is responsible for
@@ -36,7 +36,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_scanner_c =
-   "@(#)$Id: scanner.c,v 4.81 2009/03/09 21:10:40 gap Exp $";
+   "@(#)$Id: scanner.c,v 4.87 2010/06/24 08:58:40 sal Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -1371,15 +1371,16 @@ UInt OpenOutputStream (
 UInt CloseOutput ( void )
 {
 
-    /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->outputFilesSP <= 1)
-      return 0;
-
     /* silently refuse to close the test output file this is probably
 	 an attempt to close *errout* which is silently not opened, so
 	 lets silently not close it  */
     if ( TLS->output == TLS->testOutput )
         return 1;
+
+    /* refuse to close the initial output file '*stdout*'                  */
+    if ( TLS->outputFilesSP <= 1 )
+      return 0;
+
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
@@ -1657,7 +1658,7 @@ Char GetLine ( void )
             SyStrncat( TLS->in, "\");\n", 4 );
         }
 
-        /* if neccessary echo the line to the logfile                      */
+        /* if necessary echo the line to the logfile                      */
 	if( TLS->inputLog != 0 && TLS->input->echo == 1)
             if ( !(TLS->in[0] == '\377' && TLS->in[1] == '\0') )
 	    PutLine2( TLS->inputLog, TLS->in, SyStrlen(TLS->in) );
@@ -1665,7 +1666,7 @@ Char GetLine ( void )
 		/*	if ( ! TLS->input->isstream ) {
 	  if ( TLS->inputLog != 0 && ! TLS->input->isstream ) {
 	    if ( TLS->input->file == 0 || TLS->input->file == 2 ) {
-	      PutLine2( TLS->inputLog, TLS->in );
+	      PutLine2( TLS->inputLog, In );
 	    }
 	    }
 	    } */
@@ -2308,6 +2309,7 @@ void PutLine2(
 void PutLineTo ( KOutputStream stream, UInt len )
 {
     Char *          p;
+    UInt lt,ls;     /* These are supposed to hold string lengths */
 
     /* if in test mode and the next input line matches print nothing       */
     if ( TLS->testInput != 0 && TLS->testOutput == stream ) {
@@ -2317,16 +2319,31 @@ void PutLineTo ( KOutputStream stream, UInt len )
             }
 	    TLS->testInput->number++;
         }
-        p = TLS->testLine + (SyStrlen(TLS->testLine)-2);
+
+        /* Note that TLS->testLine is ended by a \n, but stream->line need not! */
+
+        lt = SyStrlen(TLS->testLine);   /* this counts including the newline! */
+        p = TLS->testLine + (lt-2);    
+        /* this now points to the last char before \n in the line! */
         while ( TLS->testLine <= p && ( *p == ' ' || *p == '\t' ) ) {
-            p[1] = '\0';  p[0] = '\n';  p--;
+            p[1] = '\0';  p[0] = '\n';  p--; lt--;
         }
-        p = stream->line + (SyStrlen(stream->line)-2);
-        while ( stream->line <= p && ( *p == ' ' || *p == '\t' ) ) {
-            p[1] = '\0';  p[0] = '\n';  p--;
+        /* lt is still the correct string length including \n */
+        ls = SyStrlen(stream->line);
+        p = stream->line + (ls-1);
+        /* this now points to the last char of the string, could be a \n */
+        if (*p == '\n') {
+            p--;   /* now we point before that newline character */
+            while ( stream->line <= p && ( *p == ' ' || *p == '\t' ) ) {
+                p[1] = '\0';  p[0] = '\n';  p--; ls--;
+            }
         }
-        if ( ! SyStrcmp( TLS->testLine, stream->line ) ) {
-            TLS->testLine[0] = '\0';
+        /* ls is still the correct string length including a possible \n */
+        if ( ! SyStrncmp( TLS->testLine, stream->line, ls ) ) {
+            if (ls < lt) 
+                memmove(TLS->testLine,TLS->testLine + ls,lt-ls+1);
+            else
+                TLS->testLine[0] = '\0';
         }
         else {
 	  char obuf[80];
@@ -2563,11 +2580,11 @@ Obj FuncCPROMPT( Obj self)
 */
 Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
 {
-  Char * cprompt;
-
   if (IS_STRING_REP(prompt)) {
-     cprompt = CSTR_STRING(prompt);
-     Pr("%s%c", (Int)cprompt, (Int)'\03' );
+     /* by assigning to Prompt we also tell readline (if used) what the
+        current prompt is  */
+     TLS->prompt = CSTR_STRING(prompt);
+     Pr("%s%c", (Int)TLS->prompt, (Int)'\03' );
   }
   return (Obj) 0;
 }

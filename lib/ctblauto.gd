@@ -2,9 +2,9 @@
 ##
 #W  ctblauto.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblauto.gd,v 4.14 2008/08/18 16:05:45 gap Exp $
+#H  @(#)$Id: ctblauto.gd,v 4.16 2010/02/23 15:12:51 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declaration of operations to calculate
 ##  automorphisms of matrices,
@@ -14,7 +14,7 @@
 ##  to the rows of another matrix.
 ##
 Revision.ctblauto_gd :=
-    "@(#)$Id: ctblauto.gd,v 4.14 2008/08/18 16:05:45 gap Exp $";
+    "@(#)$Id: ctblauto.gd,v 4.16 2010/02/23 15:12:51 gap Exp $";
 
 
 #############################################################################
@@ -226,13 +226,13 @@ DeclareOperation( "TransformingPermutations", [ IsMatrix, IsMatrix ] );
 ##  gap> OrdersClassRepresentatives( tblq8 );
 ##  [ 1, 4, 2, 4, 4 ]
 ##  gap> TransformingPermutations( irrd8, irrq8 );
-##  rec( columns := (), rows := (), group := Group([ (4,5), (2,4) ]) )
+##  rec( group := Group([ (4,5), (2,4) ]), columns := (), rows := () )
 ##  gap> TransformingPermutationsCharacterTables( tbld8, tblq8 );
 ##  fail
 ##  gap> tbld6:= CharacterTable( "Dihedral", 6 );;
 ##  gap> tbls3:= CharacterTable( "Symmetric", 3 );;
 ##  gap> TransformingPermutationsCharacterTables( tbld6, tbls3 );
-##  rec( columns := (2,3), rows := (1,3,2), group := Group(()) )
+##  rec( group := Group(()), columns := (2,3), rows := (1,3,2) )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

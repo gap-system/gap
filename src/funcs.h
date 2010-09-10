@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  funcs.h                     GAP source                   Martin Schoenert
+*W  funcs.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: funcs.h,v 4.9 2009/09/25 15:17:05 gap Exp $
+*H  @(#)$Id: funcs.h,v 4.10 2010/02/23 15:13:42 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the function interpreter package.
@@ -16,7 +16,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_funcs_h =
-   "@(#)$Id: funcs.h,v 4.9 2009/09/25 15:17:05 gap Exp $";
+   "@(#)$Id: funcs.h,v 4.10 2010/02/23 15:13:42 gap Exp $";
 #endif
 
 

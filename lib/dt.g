@@ -2,10 +2,10 @@
 ##
 #W  dt.g                        GAP library                 Wolfgang Merkwitz
 ##
-#H  @(#)$Id: dt.g,v 4.12 2002/04/15 10:04:39 sal Exp $
+#H  @(#)$Id: dt.g,v 4.13 2010/02/23 15:12:57 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file initializes Deep Thought.
@@ -52,7 +52,7 @@
 ##  for pos( <b> ) for all trees <b> which are represented by <a>.
 ##
 Revision.dt_g :=
-  "@(#)$Id: dt.g,v 4.12 2002/04/15 10:04:39 sal Exp $";
+  "@(#)$Id: dt.g,v 4.13 2010/02/23 15:12:57 gap Exp $";
 
 
 

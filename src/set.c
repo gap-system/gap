@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  set.c                       GAP source                   Martin Schoenert
+*W  set.c                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: set.c,v 4.48 2009/06/23 09:41:09 gap Exp $
+*H  @(#)$Id: set.c,v 4.49 2010/02/23 15:13:48 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions which mainly deal with proper sets.
@@ -24,7 +24,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_set_c =
-   "@(#)$Id: set.c,v 4.48 2009/06/23 09:41:09 gap Exp $";
+   "@(#)$Id: set.c,v 4.49 2010/02/23 15:13:48 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

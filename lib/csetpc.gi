@@ -2,16 +2,16 @@
 ##
 #W  csetpc.gi                       GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id: csetpc.gi,v 4.38 2003/01/30 18:38:05 gap Exp $
+#H  @(#)$Id: csetpc.gi,v 4.39 2010/02/23 15:12:50 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for cosets of pc groups
 ##
 Revision.csetpc_gi:=
-  "@(#)$Id: csetpc.gi,v 4.38 2003/01/30 18:38:05 gap Exp $";
+  "@(#)$Id: csetpc.gi,v 4.39 2010/02/23 15:12:50 gap Exp $";
 
 #############################################################################
 ##

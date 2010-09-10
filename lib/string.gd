@@ -3,14 +3,14 @@
 #W  string.gd                   GAP library                      Frank Celler
 ##
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for functions for strings.
 ##
 Revision.string_gd :=
-    "@(#)$Id: string.gd,v 4.33 2009/07/08 20:01:44 gap Exp $";
+    "@(#)$Id: string.gd,v 4.35 2010/06/16 15:33:41 gap Exp $";
 
 
 #############################################################################
@@ -164,8 +164,8 @@ DeclareGlobalFunction( "DMYDay" );
 ##  The result is <K>fail</K> on input outside valid ranges.
 ##  <P/>
 ##  Note that this makes not much sense for early dates like: before 1582
-##  (no Gregorian calendar at all), or before 1753 in many English countries
-##  or before 1917 in Russia.
+##  (no Gregorian calendar at all), or before 1753 in many English speaking
+##  countries or before 1917 in Russia.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

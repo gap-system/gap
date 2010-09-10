@@ -2,10 +2,10 @@
 **
 *W  macfloat.c                      GAP source                      Steve Linton
 **
-*H  @(#)$Id: macfloat.c,v 4.1 2008/04/20 19:47:01 gap Exp $
+*H  @(#)$Id: macfloat.c,v 4.2 2010/02/23 15:13:44 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for the macfloat package.
@@ -15,7 +15,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_macfloat_c =
-   "@(#)$Id: macfloat.c,v 4.1 2008/04/20 19:47:01 gap Exp $";
+   "@(#)$Id: macfloat.c,v 4.2 2010/02/23 15:13:44 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

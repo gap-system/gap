@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  opers.h                     GAP source                   Martin Schoenert
+*W  opers.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: opers.h,v 4.26 2007/10/16 17:35:48 gap Exp $
+*H  @(#)$Id: opers.h,v 4.27 2010/02/23 15:13:46 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the  filters, operations, attributes,
@@ -13,7 +13,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_opers_h =
-   "@(#)$Id: opers.h,v 4.26 2007/10/16 17:35:48 gap Exp $";
+   "@(#)$Id: opers.h,v 4.27 2010/02/23 15:13:46 gap Exp $";
 #endif
 
 

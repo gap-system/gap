@@ -1,12 +1,12 @@
 /****************************************************************************
 **
 *W  streams.c                   GAP source                       Frank Celler
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: streams.c,v 4.95 2009/09/25 15:17:06 gap Exp $
+*H  @(#)$Id: streams.c,v 4.97 2010/04/27 09:27:44 sal Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the  various read-eval-print loops and streams related
@@ -32,7 +32,7 @@
 
 
 const char * Revision_streams_c =
-   "@(#)$Id: streams.c,v 4.95 2009/09/25 15:17:06 gap Exp $";
+   "@(#)$Id: streams.c,v 4.97 2010/04/27 09:27:44 sal Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -147,7 +147,7 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
 
 static UInt LastReadValueGVar;
 
-Int READ ( void )
+static Int READ_INNER ( UInt UseUHQ )
 {
     ExecStatus                status;
 
@@ -209,9 +209,22 @@ Int READ ( void )
     }
     ClearError();
 
+    if (!UseUHQ && UserHasQuit) {
+      UserHasQuit = 0; /* stop recovery here */
+      return 2;
+    }
+
     return 1;
 }
 
+
+Int READ( void ) {
+  return READ_INNER(1);
+}
+
+Int READ_NORECOVERY( void ) {
+  return READ_INNER(0);
+}
 
 /****************************************************************************
 **
@@ -383,8 +396,11 @@ Int READ_GAP_ROOT ( Char * filename )
     else if (SyRestoring)
       {
 	if (res == 3 || res == 4)
-	  Pr("Can't find compiled module '%s' needed by saved workspace\n",
-	     (Int) filename, 0L);
+	  {
+	    Pr("Can't find compiled module '%s' needed by saved workspace\n",
+	       (Int) filename, 0L);
+	    return 0;
+	  }
 	else
 	  Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
 	SyExit(1);
@@ -976,6 +992,40 @@ Obj FuncREAD (
    
     /* read the test file                                                  */
     return READ() ? True : False;
+}
+
+/****************************************************************************
+**
+*F  FuncREAD_NORECOVERY( <self>, <filename> )  . . .  . . . . . . read a file
+**  disabling the automatic recovery to a live prompt after quit.
+*/
+Obj FuncREAD_NORECOVERY (
+    Obj                 self,
+    Obj                 filename )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "READ: <filename> must be a string (not a %s)",
+            (Int)TNAM_OBJ(filename), 0L,
+            "you can replace <filename> via 'return <filename>;'" );
+    }
+
+    /* try to open the file                                                */
+    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
+        return False;
+    }
+
+    SySetBuffering(TLS->input->file);
+   
+    /* read the  file 
+     */
+    switch (READ_NORECOVERY()) {
+    case 0: return False;
+    case 1: return True;
+    case 2: return Fail;
+    default: return Fail;
+    }
 }
 
 
@@ -2437,6 +2487,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "READ", 1L, "filename",
       FuncREAD, "src/streams.c:READ" },
+
+    { "READ_NORECOVERY", 1L, "filename",
+      FuncREAD_NORECOVERY, "src/streams.c:READ_NORECOVERY" },
 
     { "READ_COMMAND", 2L, "stream, echo", 
       FuncREAD_COMMAND, "src/streams.c:READ_COMMAND" },

@@ -2,16 +2,16 @@
 ##
 #W  polyrat.gi                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id: polyrat.gi,v 4.43 2004/09/14 02:21:25 gap Exp $
+#H  @(#)$Id: polyrat.gi,v 4.46 2010/08/20 03:34:33 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions for polynomials over the rationals
 ##
 Revision.polyrat_gi:=
-  "@(#)$Id: polyrat.gi,v 4.43 2004/09/14 02:21:25 gap Exp $";
+  "@(#)$Id: polyrat.gi,v 4.46 2010/08/20 03:34:33 gap Exp $";
 
 #############################################################################
 ##
@@ -73,9 +73,9 @@ local ac,bc,mc,i,j,pc,ci,f,fam;
   mc:=List(m[1],i->i mod p);
   mc:=ShiftedCoeffs(mc,m[2]);
   ReduceCoeffsMod(ac,mc,p);
-  ShrinkCoeffs(ac);
+  ShrinkRowVector(ac);
   ReduceCoeffsMod(bc,mc,p);
-  ShrinkCoeffs(bc);
+  ShrinkRowVector(bc);
   if Length(ac)>Length(bc) then
     pc:=ac;
     ac:=bc;
@@ -88,7 +88,7 @@ local ac,bc,mc,i,j,pc,ci,f,fam;
       # only do it 2nd time (here to avoin doing once too often)
       bc:=ShiftedCoeffs(bc,1);
       ReduceCoeffsMod(bc,mc,p);
-      ShrinkCoeffs(bc);
+      ShrinkRowVector(bc);
     else
       f:=true;
     fi;
@@ -99,9 +99,9 @@ local ac,bc,mc,i,j,pc,ci,f,fam;
     for j in [1..Length(bc)] do
       pc[j]:=(pc[j]+i*bc[j] mod p) mod p;
     od;
-    ShrinkCoeffs(pc);
+    ShrinkRowVector(pc);
     ReduceCoeffsMod(pc,mc,p);
-    ShrinkCoeffs(pc);
+    ShrinkRowVector(pc);
   od;
   p:=RemoveOuterCoeffs(pc,fam!.zeroCoefficient);
   return LaurentPolynomialByExtRepNC(fam,pc,p,ci);
@@ -539,8 +539,8 @@ local gcd, u, v, w, val, r, s;
   val := Minimum(f[2], g[2]);
   s   := ShiftedCoeffs(f[1],f[2]-val);
   r   := ShiftedCoeffs(g[1],g[2]-val);
-  ReduceCoeffsMod(s,p);  ShrinkCoeffs(s);
-  ReduceCoeffsMod(r,p);  ShrinkCoeffs(r);
+  ReduceCoeffsMod(s,p);  ShrinkRowVector(s);
+  ReduceCoeffsMod(r,p);  ShrinkRowVector(r);
   
   # compute the gcd
   u := r;
@@ -548,7 +548,7 @@ local gcd, u, v, w, val, r, s;
   while 0 < Length(v)  do
     w := v;
     ReduceCoeffsMod(u,v,p);
-    ShrinkCoeffs(u);
+    ShrinkRowVector(u);
     v := u;
     u := w;
   od;
@@ -558,7 +558,7 @@ local gcd, u, v, w, val, r, s;
   ReduceCoeffsMod(gcd,p);
 
   # and return the polynomial
-  return LaurentPolynomialByCoefficients(R,gcd,val,brci);
+  return LaurentPolynomialByCoefficients(CoefficientsFamily(FamilyObj(f)),gcd,val,brci);
 
 end);
 
@@ -566,7 +566,7 @@ end);
 BindGlobal("RPGcdCRT",function(f,p,g,q,ci)
 local min, cf, lf, cg, lg, i, P, m, r, fam;
 
-  fam := FamilyObj(f);
+  fam := CoefficientsFamily(FamilyObj(f));
   f:=CoefficientsOfLaurentPolynomial(f);
   g:=CoefficientsOfLaurentPolynomial(g);
   # remove valuation
@@ -879,8 +879,8 @@ BindGlobal("RPGcdRepresentationModPrime",function(R,f,g,p)
   val:=Minimum(f[2],g[2]);
   f  :=ShiftedCoeffs(f[1],f[2]-val);
   g  :=ShiftedCoeffs(g[1],g[2]-val);
-  ReduceCoeffsMod(f,p);  ShrinkCoeffs(f);
-  ReduceCoeffsMod(g,p);  ShrinkCoeffs(g);
+  ReduceCoeffsMod(f,p);  ShrinkRowVector(f);
+  ReduceCoeffsMod(g,p);  ShrinkRowVector(g);
   
   # compute the gcd and representation mod <p>
   s := ShallowCopy(f);  sx := [ One(brci[1]) ];
@@ -909,11 +909,11 @@ BindGlobal("RPGcdRepresentationModPrime",function(R,f,g,p)
     t  := s;
     AddCoeffs(t,ProductCoeffs(q,h),-1);
     ReduceCoeffsMod(t,p);
-    ShrinkCoeffs(t);
+    ShrinkRowVector(t);
     tx := sx;
     AddCoeffs(tx,ProductCoeffs(q,hx),-1);
     ReduceCoeffsMod(tx,p);
-    ShrinkCoeffs(tx);
+    ShrinkRowVector(tx);
     s  := h;     
     sx := hx;
   od;

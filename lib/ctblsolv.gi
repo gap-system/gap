@@ -3,16 +3,16 @@
 #W  ctblsolv.gi                 GAP library                Hans Ulrich Besche
 #W                                                              Thomas Breuer
 ##
-#H  @(#)$Id: ctblsolv.gi,v 4.46 2005/09/08 08:46:11 gap Exp $
+#H  @(#)$Id: ctblsolv.gi,v 4.47 2010/02/23 15:12:54 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains character table methods for solvable groups.
 ##
 Revision.ctblsolv_gi :=
-    "@(#)$Id: ctblsolv.gi,v 4.46 2005/09/08 08:46:11 gap Exp $";
+    "@(#)$Id: ctblsolv.gi,v 4.47 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################

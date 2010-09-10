@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  clas.gd                     GAP library                    Heiko Thei"sen
+#W  clas.gd                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: clas.gd,v 4.46 2009/01/06 11:19:49 gap Exp $
+#H  @(#)$Id: clas.gd,v 4.47 2010/02/23 15:12:48 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.clas_gd :=
-    "@(#)$Id: clas.gd,v 4.46 2009/01/06 11:19:49 gap Exp $";
+    "@(#)$Id: clas.gd,v 4.47 2010/02/23 15:12:48 gap Exp $";
 
 DeclareInfoClass( "InfoClasses" );
 

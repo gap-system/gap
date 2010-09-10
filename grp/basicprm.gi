@@ -2,15 +2,15 @@
 ##
 #W  basicprm.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicprm.gi,v 4.32 2009/06/19 15:55:32 gap Exp $
+#H  @(#)$Id: basicprm.gi,v 4.33 2010/02/23 15:12:39 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains the methods  for  the construction  of the basic perm
 ##  group types.
 ##
 Revision.basicprm_gi :=
-    "@(#)$Id: basicprm.gi,v 4.32 2009/06/19 15:55:32 gap Exp $";
+    "@(#)$Id: basicprm.gi,v 4.33 2010/02/23 15:12:39 gap Exp $";
 
 
 #############################################################################

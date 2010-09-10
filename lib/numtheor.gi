@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  numtheor.gi                 GAP library                  Martin Schoenert
+#W  numtheor.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: numtheor.gi,v 4.22 2007/11/14 12:47:24 gap Exp $
+#H  @(#)$Id: numtheor.gi,v 4.23 2010/02/23 15:13:19 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods mainly for integer primes.
 ##
 Revision.numtheor_gi :=
-    "@(#)$Id: numtheor.gi,v 4.22 2007/11/14 12:47:24 gap Exp $";
+    "@(#)$Id: numtheor.gi,v 4.23 2010/02/23 15:13:19 gap Exp $";
 
 
 #############################################################################

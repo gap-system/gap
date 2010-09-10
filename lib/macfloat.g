@@ -3,16 +3,16 @@
 #W  macfloat.g                        GAP library                   Steve Linton
 ##                                                                Stefan Kohl
 ##
-#H  @(#)$Id: macfloat.g,v 4.1 2008/04/20 19:47:01 gap Exp $
+#H  @(#)$Id: macfloat.g,v 4.2 2010/02/23 15:13:12 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with macfloats
 ##
 Revision.macfloat_g :=
-  "@(#)$Id: macfloat.g,v 4.1 2008/04/20 19:47:01 gap Exp $";
+  "@(#)$Id: macfloat.g,v 4.2 2010/02/23 15:13:12 gap Exp $";
 
 BIND_GLOBAL( "MacFloatsFamily", 
         NewFamily( "MacFloatsFamily", IS_MACFLOAT ));

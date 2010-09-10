@@ -3,16 +3,16 @@
 #W  alglie.gi                   GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id: alglie.gi,v 4.94 2009/04/22 13:00:44 gap Exp $
+#H  @(#)$Id: alglie.gi,v 4.97 2010/02/23 15:12:46 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for Lie algebras.
 ##
 Revision.alglie_gi :=
-    "@(#)$Id: alglie.gi,v 4.94 2009/04/22 13:00:44 gap Exp $";
+    "@(#)$Id: alglie.gi,v 4.97 2010/02/23 15:12:46 gap Exp $";
 
 
 #############################################################################
@@ -1069,6 +1069,37 @@ InstallMethod( PowerS,
 ##
 #F  PthPowerImage( <B>, <x> )
 ##
+BindGlobal("PTHPOWERIMAGE_PPI_VEC", function(L,zero,p,bv,pmap,cf,x)
+    local
+          n,     # the dimension of L
+          s,     # the list of s_i functions
+          im,    # the image of x under the p-th power map
+          i,j;   # loop variables
+
+      n:= Dimension( L );
+      s:= PowerS( L );
+      im:= Zero( L );
+
+      # First the sum of all $\alpha_i^p x_i^{[p]}$ is calculated.
+      for i in [1..n] do
+        im:= im + cf[i]^p * pmap[i];
+      od;
+
+      # To this the double sum of all
+      # $s_i(\alpha_j x_j, \sum_{k=j+1}^n \alpha_k x_k)$
+      # is added.
+      for j in [1..n-1] do
+        if cf[j] <> zero then
+          x:= x - cf[j] * bv[j];
+          for i in [1..p-1] do
+            im:= im + s[i]( [cf[j]*bv[j],x] );
+          od;
+        fi;
+      od;
+
+      return im;
+end);
+
 InstallMethod( PthPowerImage,
     "for a basis of an algebra, and a ring element",
     IsCollsElms,
@@ -1107,36 +1138,46 @@ InstallMethod( PthPowerImage,
       return LinearCombination( B, cf );
 
     else
-
-      n:= Dimension( L );
-      s:= PowerS( L );
-      pmap:= PthPowerImages( B );
-      cf:= Coefficients( B, x );
-      im:= Zero( L );
-
-      # First the sum of all $\alpha_i^p x_i^{[p]}$ is calculated.
-      for i in [1..n] do
-        im:= im + cf[i]^p * pmap[i];
-      od;
-
-      # To this the double sum of all
-      # $s_i(\alpha_j x_j, \sum_{k=j+1}^n \alpha_k x_k)$
-      # is added.
-      zero:= Zero( F );
-      bv:= BasisVectors( B );
-      for j in [1..n-1] do
-        if cf[j] <> zero then
-          x:= x - cf[j] * bv[j];
-          for i in [1..p-1] do
-            im:= im + s[i]( [cf[j]*bv[j],x] );
-          od;
-        fi;
-      od;
-
-      return im;
+      return PTHPOWERIMAGE_PPI_VEC(L,Zero(F),p,BasisVectors(B),PthPowerImages(B),Coefficients(B,x),x);
     fi;
     end );
 
+InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra",
+    [ IsJacobianElement ], # weaker filter, we maybe only discovered later
+      			   # that the algebra is restricted
+    function(x)
+    local fam;
+    fam := FamilyObj(x);
+    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    return PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
+end);
+
+InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra and an integer",
+    [ IsJacobianElement, IsInt ],
+    function(x,n)
+    local fam;
+    fam := FamilyObj(x);
+    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    while n>0 do
+        x := PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
+	n := n-1;
+    od;
+    return x;
+end);
+
+InstallMethod( PClosureSubalgebra, "for a subalgebra of restricted jacobian elements",
+    [ IsLieAlgebra and IsJacobianElementCollection ],
+    function(A)
+    local i, p, oldA;
+
+    repeat
+	oldA := A;
+        for i in Basis(oldA) do
+      	    A := ClosureLeftModule(A,PthPowerImage(i));
+    	od;
+    until A=oldA;
+    return A;
+end);
 
 #############################################################################
 ##
@@ -5696,6 +5737,7 @@ InstallMethod( JenningsLieAlgebra,
     od;
     SetPthPowerImages( B, pimgs );
     SetIsRestrictedLieAlgebra( L, true );
+    FamilyObj(Representative(L))!.pMapping := pimgs;
     SetIsLieNilpotent( L, true );
 
        hm:= function( g, i )

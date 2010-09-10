@@ -2,16 +2,16 @@
 ##
 #W  algfld.gd                   GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: algfld.gd,v 4.25 2008/09/03 15:43:25 gap Exp $
+#H  @(#)$Id: algfld.gd,v 4.26 2010/02/23 15:12:45 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the categories,  attributes, properties and operations
 ##  for algebraic extensions of fields and their elements
 Revision.algfld_gd:=
-  "@(#)$Id: algfld.gd,v 4.25 2008/09/03 15:43:25 gap Exp $";
+  "@(#)$Id: algfld.gd,v 4.26 2010/02/23 15:12:45 gap Exp $";
 
 #############################################################################
 ##

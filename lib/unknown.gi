@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  unknown.gi                 GAP Library                   Martin Schoenert
+#W  unknown.gi                 GAP Library                   Martin Schönert
 ##
-#H  @(#)$Id: unknown.gi,v 4.9 2002/04/15 10:05:25 sal Exp $
+#H  @(#)$Id: unknown.gi,v 4.10 2010/02/23 15:13:34 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  implements the  arithmetic  for unknown values,  unknowns for
@@ -26,7 +26,7 @@
 ##  because the unknown could stand for 0.
 ##
 Revision.unknown_gi :=
-    "@(#)$Id: unknown.gi,v 4.9 2002/04/15 10:05:25 sal Exp $";
+    "@(#)$Id: unknown.gi,v 4.10 2010/02/23 15:13:34 gap Exp $";
 
 
 #############################################################################

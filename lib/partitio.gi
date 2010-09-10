@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  partitio.gi                 GAP library                    Heiko Thei"sen
+#W  partitio.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: partitio.gi,v 4.19 2003/06/03 21:07:16 gap Exp $
+#H  @(#)$Id: partitio.gi,v 4.20 2010/02/23 15:13:22 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This    file contains the  functions that    construct and modify ordered
@@ -31,7 +31,7 @@
 ##  \enditems                             
 ##
 Revision.partitio_gi :=
-    "@(#)$Id: partitio.gi,v 4.19 2003/06/03 21:07:16 gap Exp $";
+    "@(#)$Id: partitio.gi,v 4.20 2010/02/23 15:13:22 gap Exp $";
 
 
 #############################################################################

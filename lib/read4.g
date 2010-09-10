@@ -17,3 +17,5 @@ ReadLib( "helpdef.gi"   );
 ReadLib( "reread.g"    );
 ReadLib( "package.gi"   );
 
+ReadLib( "string.gi"   ); # since StringFile is needed early
+

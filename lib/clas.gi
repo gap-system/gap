@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  clas.gi                     GAP library                    Heiko Thei"sen
+#W  clas.gi                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: clas.gi,v 4.75 2006/05/18 19:40:16 gap Exp $
+#H  @(#)$Id: clas.gi,v 4.76 2010/02/23 15:12:48 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.clas_gi :=
-    "@(#)$Id: clas.gi,v 4.75 2006/05/18 19:40:16 gap Exp $";
+    "@(#)$Id: clas.gi,v 4.76 2010/02/23 15:12:48 gap Exp $";
 
 
 #############################################################################

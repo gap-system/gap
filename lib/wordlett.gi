@@ -2,15 +2,15 @@
 ##
 #W  wordlett.gi                  GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id: wordlett.gi,v 4.17 2008/05/07 14:02:24 gap Exp $
+#H  @(#)$Id: wordlett.gi,v 4.18 2010/02/23 15:13:37 gap Exp $
 ##
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains  methods for   associative words  in letter
 ##  representation
 Revision.wordlett_gi :=
-    "@(#)$Id: wordlett.gi,v 4.17 2008/05/07 14:02:24 gap Exp $";
+    "@(#)$Id: wordlett.gi,v 4.18 2010/02/23 15:13:37 gap Exp $";
 
 LIB_CHAR_SINT:=function(n)
   if n<0 then n:=n+256;fi;

@@ -1,9 +1,9 @@
 #############################################################################
 # 
 # matobjplist.gi
-#                                                        by Max Neunhoeffer
+#                                                        by Max Neunhöffer
 #
-# Copyright (C) 2006 by Lehrstuhl D fuer Mathematik, RWTH Aachen
+# Copyright (C) 2006 by Lehrstuhl D für Mathematik, RWTH Aachen
 #
 # This file is a sample implementation for new style vectors and matrices.
 # It stores matrices as dense lists of lists with wrapping.
@@ -11,7 +11,7 @@
 ############################################################################
 
 Revision.matobjplist_gi :=
-    "@(#)$Id: matobjplist.gi,v 4.4 2007/10/19 10:00:53 gap Exp $";
+    "@(#)$Id: matobjplist.gi,v 4.5 2010/02/23 15:13:14 gap Exp $";
 
 ############################################################################
 # Constructors:

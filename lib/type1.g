@@ -2,17 +2,17 @@
 ##
 #W  type1.g                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: type1.g,v 4.17 2008/11/19 13:29:56 gap Exp $
+#H  @(#)$Id: type1.g,v 4.18 2010/02/23 15:13:34 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some functions moved from type.g to a place
 ##  where they will be compiled by default
 ##
 Revision.type1_g :=
-    "@(#)$Id: type1.g,v 4.17 2008/11/19 13:29:56 gap Exp $";
+    "@(#)$Id: type1.g,v 4.18 2010/02/23 15:13:34 gap Exp $";
 
 #############################################################################
 ##

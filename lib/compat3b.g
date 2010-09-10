@@ -2,10 +2,10 @@
 ##
 #W  compat3b.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: compat3b.g,v 4.26 2002/04/15 10:04:30 sal Exp $
+#H  @(#)$Id: compat3b.g,v 4.28 2010/02/23 15:12:49 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the parts of the {\GAP}~3 compatibility mode that
@@ -29,7 +29,7 @@
 ##  This file is read only if the user explicitly reads it.
 ##
 Revision.compat3b_g :=
-    "@(#)$Id: compat3b.g,v 4.26 2002/04/15 10:04:30 sal Exp $";
+    "@(#)$Id: compat3b.g,v 4.28 2010/02/23 15:12:49 gap Exp $";
 
 
 #############################################################################
@@ -894,6 +894,7 @@ InstallMethod( IsBound\.,
     true,
     [ IsOperationsRecord, IsPosInt ], 0,
     function( oprec, n )
+    local op;
     n:= NameRNam( n );
     if IsBound( oprec!.COMPONENTS.( n ) ) then
       return true;

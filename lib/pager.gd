@@ -1,11 +1,11 @@
 #############################################################################
 ##  
-#W  pager.gd                     GAP Library                     Frank L�beck
+#W  pager.gd                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id: pager.gd,v 1.3 2002/04/15 10:05:11 sal Exp $
+#H  @(#)$Id: pager.gd,v 1.5 2010/07/28 15:45:21 gap Exp $
 ##  
-#Y  Copyright  (C) 2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen, Germany 
-#Y (C) 2001 School Math and  Comp. Sci., University of St. Andrews, Scotland
+#Y  Copyright  (C) 2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen, Germany 
+#Y (C) 2001 School Math and  Comp. Sci., University of St Andrews, Scotland
 #Y Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  pager.g{d,i}  contain  the `Pager'  utility.  A  rudimentary
@@ -13,13 +13,11 @@
 ##  But this utility is certainly useful for other purposes as well.
 ##  
 Revision.pager_gd := 
-  "@(#)$Id: pager.gd,v 1.3 2002/04/15 10:05:11 sal Exp $";
+  "@(#)$Id: pager.gd,v 1.5 2010/07/28 15:45:21 gap Exp $";
 
 #############################################################################
 ##  
 #F  Pager( <lines> ) . . . . . . . . . . . . display text on screen in a pager
-#V  PAGER . . . . . . . . . . . . . . . . .  variable for choosing a pager
-#V  PAGER_OPTIONS . . . . . . . . . . . . .  options for external pager
 ##  
 ##  This function can be used to display a text on screen using a pager, i.e.,
 ##  the text is shown page by page. 
@@ -31,20 +29,23 @@ Revision.pager_gd :=
 ##  `less' or `more'. {\GAP} assumes that this program has a command line option 
 ##  `+nr' which starts the display of the text with line number `nr'.
 ##  
-##  Which pager is used can be controlled by setting the variable `PAGER'.
-##  The default setting is `PAGER := "builtin";' which means that the 
-##  internal pager is used.
+##  Which pager is used can be controlled by setting the variable
+##  `GAPInfo.UserPreferences.Pager'.
+##  The default setting is `GAPInfo.UserPreferences.Pager := "builtin";'
+##  which means that the internal pager is used.
 ##  
-##  On UNIX systems you probably want to set `PAGER := "less";' or
-##  `PAGER := "more";', you can do this for example in your `.gaprc' file.
+##  On UNIX systems you probably want to set
+##  `GAPInfo.UserPreferences.Pager := "less";' or
+##  `GAPInfo.UserPreferences.Pager := "more";',
+##  you can do this for example in your `gap.ini' file.
 ##  In that case you can also tell {\GAP} a list of standard options for the
 ##  external pager. These are specified as list of strings in the variable
-##  `PAGER_OPTIONS'.
+##  `GAPInfo.UserPreferences.PagerOptions'.
 ##  
 ##  Example:
 ##  \begintt
-##    PAGER := "less";
-##    PAGER_OPTIONS := ["-f", "-r", "-a", "-i", "-M", "-j2"];
+##    GAPInfo.UserPreferences.Pager  := "less";
+##    GAPInfo.UserPreferences.PagerOptions := ["-f", "-r", "-a", "-i", "-M", "-j2"];
 ##  \endtt
 ##  
 ##  The argument <lines> can have one of the following forms:

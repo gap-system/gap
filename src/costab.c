@@ -2,13 +2,13 @@
 **
 *W  costab.c                    GAP source                       Frank Celler
 *W                                                           & Volkmar Felsch
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 *W                                                         & Alexander Hulpke
 **
-*H  @(#)$Id: costab.c,v 4.43 2006/03/15 23:22:24 gap Exp $
+*H  @(#)$Id: costab.c,v 4.44 2010/02/23 15:13:41 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of for coset tables.
@@ -16,7 +16,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_costab_c =
-   "@(#)$Id: costab.c,v 4.43 2006/03/15 23:22:24 gap Exp $";
+   "@(#)$Id: costab.c,v 4.44 2010/02/23 15:13:41 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

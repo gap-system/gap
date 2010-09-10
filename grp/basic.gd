@@ -2,15 +2,15 @@
 ##
 #W  basic.gd                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basic.gd,v 4.35 2008/10/27 08:56:54 gap Exp $
+#H  @(#)$Id: basic.gd,v 4.37 2010/02/23 15:12:39 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the operations for the construction of the basic group
 ##  types.
 ##
 Revision.basic_gd :=
-    "@(#)$Id: basic.gd,v 4.35 2008/10/27 08:56:54 gap Exp $";
+    "@(#)$Id: basic.gd,v 4.37 2010/02/23 15:12:39 gap Exp $";
 
 
 #############################################################################
@@ -129,6 +129,9 @@ DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 BindGlobal( "AbelianGroup", function ( arg )
 
   if Length(arg) = 1  then
+    if ForAny(arg[1],x->x=0) then
+      return AbelianGroupCons( IsFpGroup, arg[1] );
+    fi;
     return AbelianGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
 
@@ -247,6 +250,9 @@ DeclareConstructor( "CyclicGroupCons", [ IsGroup, IsInt ] );
 BindGlobal( "CyclicGroup", function ( arg )
 
   if Length(arg) = 1  then
+    if arg[1]=infinity then
+      return CyclicGroupCons(IsFpGroup,arg[1]);
+    fi;
     return CyclicGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
 

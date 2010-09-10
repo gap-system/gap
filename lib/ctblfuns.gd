@@ -2,10 +2,10 @@
 ##
 #W  ctblfuns.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblfuns.gd,v 4.70 2008/09/15 07:56:11 gap Exp $
+#H  @(#)$Id: ctblfuns.gd,v 4.73 2010/08/02 16:04:07 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of categories of class functions,
@@ -27,7 +27,7 @@
 ##  14. Auxiliary operations
 ##
 Revision.ctblfuns_gd :=
-    "@(#)$Id: ctblfuns.gd,v 4.70 2008/09/15 07:56:11 gap Exp $";
+    "@(#)$Id: ctblfuns.gd,v 4.73 2010/08/02 16:04:07 gap Exp $";
 
 
 #############################################################################
@@ -2200,14 +2200,15 @@ DeclareSynonym( "Reduced", ReducedClassFunctions );
 ##  gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
 ##  gap> chars:= Set( Tensored( chars, chars ) );;
 ##  gap> red:= ReducedClassFunctions( chars );
-##  rec( remainders := [  ], 
+##  rec( 
 ##    irreducibles := [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
 ##        Character( CharacterTable( "A5" ), 
 ##          [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
 ##        Character( CharacterTable( "A5" ), 
 ##          [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
 ##        Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
-##        Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ] )
+##        Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ], 
+##    remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2341,6 +2342,7 @@ DeclareSynonym( "Symmetrisations", Symmetrizations );
 ##  <Func Name="SymmetricParts" Arg='tbl, characters, n'/>
 ##
 ##  <Description>
+##  <Index>symmetric power</Index>
 ##  is the list of symmetrizations of the characters <A>characters</A>
 ##  of the character table <A>tbl</A> with the trivial character of
 ##  the symmetric group of degree <A>n</A>
@@ -2370,6 +2372,7 @@ DeclareGlobalFunction( "SymmetricParts" );
 ##  <Func Name="AntiSymmetricParts" Arg='tbl, characters, n'/>
 ##
 ##  <Description>
+##  <Index>exterior power</Index>
 ##  is the list of symmetrizations of the characters <A>characters</A>
 ##  of the character table <A>tbl</A> with the alternating character of
 ##  the symmetric group of degree <A>n</A>

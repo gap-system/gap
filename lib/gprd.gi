@@ -1,16 +1,16 @@
 #############################################################################
 ##
 #W  gprd.gi                     GAP library                      Bettina Eick
-##                                                             Heiko Thei"sen
+##                                                             Heiko Theißen
 ##
-#H  @(#)$Id: gprd.gi,v 4.59 2009/06/15 15:28:54 gap Exp $
+#H  @(#)$Id: gprd.gi,v 4.62 2010/06/22 08:53:34 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprd_gi :=
-    "@(#)$Id: gprd.gi,v 4.59 2009/06/15 15:28:54 gap Exp $";
+    "@(#)$Id: gprd.gi,v 4.62 2010/06/22 08:53:34 gap Exp $";
 
 
 #############################################################################
@@ -271,7 +271,7 @@ function( D )
     Assert (1, ForAll (DirectProductInfo( D ).groups, IsPGroup));    
     p := First (DirectProductInfo( D ).groups, G -> PrimePGroup (G) <> fail);
     Assert (1, ForAll (DirectProductInfo( D ).groups, G -> PrimePGroup (G) in [fail, p]));
-    return p;
+    return PrimePGroup(p);
 end );
 
 
@@ -1076,10 +1076,23 @@ end);
 InstallOtherMethod( SemidirectProduct, "group with vector space: affine", true,
   [ IsGroup, IsGroupHomomorphism, IsFullRowModule and IsVectorSpace ], 0,
 function( G, map, V )
-local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt;
+local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
   # construction assumes faithful action. AH
   if Size(KernelOfMultiplicativeGeneralMapping(map))<>1 then
-    TryNextMethod();
+    # not faithful -- cannot simply build as matrices
+    N:=ElementaryAbelianGroup(Size(V));
+    pcgs:=Pcgs(N);
+    auts:=[];
+    mapi:=MappingGeneratorsImages(map);
+    for i in mapi[2] do
+      imgs:=List(i,x->PcElementByExponents(pcgs,x));
+      Add(auts,GroupHomomorphismByImagesNC(N,N,pcgs,imgs));
+    od;
+    ag:=Group(auts,IdentityMapping(N));
+    SetIsGroupOfAutomorphismsFiniteGroup(ag,true);
+    phi:=GroupHomomorphismByImages(G,ag,mapi[1],auts);
+    s:=SemidirectProduct(G,phi,N);
+    return s;
   fi;
   G:=Image(map,G);
   F:=LeftActingDomain(V);

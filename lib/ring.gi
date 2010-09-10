@@ -2,16 +2,16 @@
 ##
 #W  ring.gi                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ring.gi,v 4.50 2008/07/03 01:04:34 gap Exp $
+#H  @(#)$Id: ring.gi,v 4.51 2010/02/23 15:13:27 gap Exp $
 ##
-#Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for rings.
 ##
 Revision.ring_gi :=
-    "@(#)$Id: ring.gi,v 4.50 2008/07/03 01:04:34 gap Exp $";
+    "@(#)$Id: ring.gi,v 4.51 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################

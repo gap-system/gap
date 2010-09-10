@@ -2,17 +2,17 @@
 ##
 #W  filter1.g                    GAP library                     Steve Linton
 ##
-#H  @(#)$Id: filter1.g,v 4.2 2002/04/15 10:04:40 sal Exp $
+#H  @(#)$Id: filter1.g,v 4.3 2010/02/23 15:12:59 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Speed-critical code moved from filter.g so that it can be
 ##  statically compiled
 ##
 Revision.filter1_g :=
-    "@(#)$Id: filter1.g,v 4.2 2002/04/15 10:04:40 sal Exp $";
+    "@(#)$Id: filter1.g,v 4.3 2010/02/23 15:12:59 gap Exp $";
 
 #############################################################################
 ##

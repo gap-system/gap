@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  mapphomo.gi                 GAP library                     Thomas Breuer
-#W                                                         and Heiko Thei"sen
+#W                                                         and Heiko Theißen
 ##
-#H  @(#)$Id: mapphomo.gi,v 4.32 2009/06/15 15:28:54 gap Exp $
+#H  @(#)$Id: mapphomo.gi,v 4.33 2010/02/23 15:13:12 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for properties of mappings preserving
@@ -20,7 +20,7 @@
 ##  5. default equality tests for structure preserving mappings
 ##
 Revision.mapphomo_gi :=
-    "@(#)$Id: mapphomo.gi,v 4.32 2009/06/15 15:28:54 gap Exp $";
+    "@(#)$Id: mapphomo.gi,v 4.33 2010/02/23 15:13:12 gap Exp $";
 
 
 #############################################################################

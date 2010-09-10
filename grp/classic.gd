@@ -2,15 +2,15 @@
 ##
 #W  classic.gd                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: classic.gd,v 4.23 2009/03/24 13:47:25 gap Exp $
+#H  @(#)$Id: classic.gd,v 4.24 2010/02/23 15:12:39 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the operations for the construction of the classical
 ##  group types.
 ##
 Revision.classic_gd :=
-    "@(#)$Id: classic.gd,v 4.23 2009/03/24 13:47:25 gap Exp $";
+    "@(#)$Id: classic.gd,v 4.24 2010/02/23 15:12:39 gap Exp $";
 
 
 #############################################################################

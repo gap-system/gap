@@ -2,13 +2,13 @@
 **
 *W  weakptr.c                   GAP source                       Steve Linton
 **
-*H  @(#)$Id: weakptr.c,v 4.20 2007/09/12 21:35:29 gap Exp $
+*H  @(#)$Id: weakptr.c,v 4.21 2010/02/23 15:13:50 gap Exp $
 **
 *Y  Copyright (C)  1997,  School of Mathematical and Computational Sciences,
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 *Y                        University of St Andrews, Scotland
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions that deal with weak pointer objects
@@ -19,7 +19,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_weakptr_c =
-   "@(#)$Id: weakptr.c,v 4.20 2007/09/12 21:35:29 gap Exp $";
+   "@(#)$Id: weakptr.c,v 4.21 2010/02/23 15:13:50 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  objects.c                   GAP source                   Martin Schoenert
+*W  objects.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: objects.c,v 4.59 2009/03/11 12:18:42 gap Exp $
+*H  @(#)$Id: objects.c,v 4.62 2010/04/26 14:14:22 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the objects package.
@@ -13,7 +13,7 @@
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
 const char * Revision_objects_c =
-   "@(#)$Id: objects.c,v 4.59 2009/03/11 12:18:42 gap Exp $";
+   "@(#)$Id: objects.c,v 4.62 2010/04/26 14:14:22 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -834,7 +834,7 @@ static UInt LastPV = 0; /* This variable contains one of the values
 			   is no dynamically enc losing call to
 			   PrintObj or ViewObj still open (0), or the
 			   innermost such is Print (1) or View (2) */
-     
+
 void            PrintObj (
     Obj                 obj )
 {
@@ -846,7 +846,6 @@ void            PrintObj (
     /* check for interrupts                                                */
     if ( SyIsIntr() ) {
         i = PrintObjDepth;
-        PrintObjDepth = 0;
         Pr( "%c%c", (Int)'\03', (Int)'\04' );
         ErrorReturnVoid(
             "user interrupt while printing",

@@ -1,17 +1,17 @@
 ##############################################################################
 ##
-#W  unknown.gd                 GAP Library                   Martin Schoenert
+#W  unknown.gd                 GAP Library                   Martin Schönert
 ##
-#H  @(#)$Id: unknown.gd,v 4.20 2008/09/03 15:43:25 gap Exp $
+#H  @(#)$Id: unknown.gd,v 4.21 2010/02/23 15:13:34 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for unknowns.
 ##
 Revision.unknown_gd :=
-    "@(#)$Id: unknown.gd,v 4.20 2008/09/03 15:43:25 gap Exp $";
+    "@(#)$Id: unknown.gd,v 4.21 2010/02/23 15:13:34 gap Exp $";
 
 
 #############################################################################

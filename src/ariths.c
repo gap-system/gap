@@ -1,12 +1,12 @@
 /****************************************************************************
 **
 *W  ariths.c                    GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 **
-*H  @(#)$Id: ariths.c,v 4.37 2002/04/15 10:03:41 sal Exp $
+*H  @(#)$Id: ariths.c,v 4.38 2010/02/23 15:13:39 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the  arithmetic  operations  package.
@@ -14,7 +14,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_ariths_c =
-   "@(#)$Id: ariths.c,v 4.37 2002/04/15 10:03:41 sal Exp $";
+   "@(#)$Id: ariths.c,v 4.38 2010/02/23 15:13:39 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

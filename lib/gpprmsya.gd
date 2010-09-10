@@ -3,17 +3,17 @@
 #W  gpprmsya.gd                   GAP Library                    Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: gpprmsya.gd,v 4.16 2009/01/12 17:26:16 gap Exp $
+#H  @(#)$Id: gpprmsya.gd,v 4.17 2010/02/23 15:13:01 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for symmetric and alternating
 ##  permutation groups
 ##
 Revision.gpprmsya_gd :=
-    "@(#)$Id: gpprmsya.gd,v 4.16 2009/01/12 17:26:16 gap Exp $";
+    "@(#)$Id: gpprmsya.gd,v 4.17 2010/02/23 15:13:01 gap Exp $";
 
 
 #############################################################################

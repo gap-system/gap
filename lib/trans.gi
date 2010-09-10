@@ -2,10 +2,10 @@
 ##
 #W  trans.gi           GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id: trans.gi,v 4.23 2007/06/07 20:56:02 jamesm Exp $
+#H  @(#)$Id: trans.gi,v 4.24 2010/02/23 15:13:34 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for transformations
@@ -15,7 +15,7 @@
 ##
 
 Revision.trans_gi :=
-    "@(#)$Id: trans.gi,v 4.23 2007/06/07 20:56:02 jamesm Exp $";
+    "@(#)$Id: trans.gi,v 4.24 2010/02/23 15:13:34 gap Exp $";
 
 ## Functions altered JDM
 ## 1) KernelOfTransformation

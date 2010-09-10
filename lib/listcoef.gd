@@ -2,12 +2,12 @@
 ##
 #W  listcoef.gd                 GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.listcoef_gd :=
-    "@(#)$Id: listcoef.gd,v 4.36 2008/10/24 16:31:23 gap Exp $";
+    "@(#)$Id: listcoef.gd,v 4.40 2010/08/03 15:19:11 alexk Exp $";
 
 
 #############################################################################
@@ -136,6 +136,8 @@ DeclareOperation(
 ##  returns the coefficient list obtained by reducing the entries in
 ##  <A>list1</A> modulo <A>modulus</A>.
 ##  After reducing it shrinks the list to remove trailing zeroes.
+##  If the optional argument <A>len1</A> is used, it reduces
+##  only first <A>len1</A> elements of the list. 
 ##  <Example><![CDATA[
 ##  gap> l:=[1,2,3,4];;CoeffsMod(l,2);
 ##  [ 1, 0, 1 ]
@@ -345,27 +347,6 @@ DeclareOperation( "QuotRemCoeffs", [IsList, IsInt, IsList, IsInt]);
 
 #############################################################################
 ##
-#F  ProductPol( <coeffs_f>, <coeffs_g> )  . . . .  product of two polynomials
-##
-##  <ManSection>
-##  <Func Name="ProductPol" Arg='coeffs_f, coeffs_g'/>
-##
-##  <Description>
-##  <E>@ OBSOLETE @</E>
-##  Let <A>coeffs_f</A> and <A>coeffs_g</A> be coefficients lists of two univariate
-##  polynomials <M>f</M> and <M>g</M>, respectively.
-##  <C>ProductPol</C> returns the coefficients list of the product <M>f g</M>.
-##  <P/>
-##  The coefficient of <M>x^i</M> is assumed to be stored at position <M>i+1</M> in
-##  the coefficients lists.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "ProductPol" );
-
-
-#############################################################################
-##
 #F  ValuePol( <coeff>, <x> ) . . . .  evaluate a polynomial at a point
 ##
 ##  <#GAPDoc Label="ValuePol">
@@ -495,32 +476,6 @@ DeclareOperation(
 
 #############################################################################
 ##
-#O  ShrinkCoeffs( <list> )
-##
-##  <#GAPDoc Label="ShrinkCoeffs">
-##  <ManSection>
-##  <Oper Name="ShrinkCoeffs" Arg='list'/>
-##
-##  <Description>
-##  removes trailing zeroes from <A>list</A>.
-##  It returns the position of the last non-zero entry,
-##  that is the length of <A>list</A> after the operation.
-##  <Example><![CDATA[
-##  gap> l:=[1,0,0];;ShrinkCoeffs(l);l;
-##  1
-##  [ 1 ]
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation(
-    "ShrinkCoeffs",
-    [ IsMutable and IsList ] );
-
-
-#############################################################################
-##
 #O  ShrinkRowVector( <list> )
 ##
 ##  <#GAPDoc Label="ShrinkRowVector">
@@ -529,6 +484,10 @@ DeclareOperation(
 ##
 ##  <Description>
 ##  removes trailing zeroes from the list <A>list</A>.
+##  <Example><![CDATA[
+##  gap> l:=[1,0,0];;ShrinkRowVector(l);l;
+##  [ 1 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

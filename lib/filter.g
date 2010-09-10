@@ -2,19 +2,19 @@
 ##
 #W  filter.g                    GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: filter.g,v 4.18 2008/09/18 07:58:02 gap Exp $
+#H  @(#)$Id: filter.g,v 4.19 2010/02/23 15:12:59 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with filters. Some speed-critical functions are in 
 ##  filter1.g, which is compiled
 ##
 Revision.filter_g :=
-    "@(#)$Id: filter.g,v 4.18 2008/09/18 07:58:02 gap Exp $";
+    "@(#)$Id: filter.g,v 4.19 2010/02/23 15:12:59 gap Exp $";
 
 #############################################################################
 ##

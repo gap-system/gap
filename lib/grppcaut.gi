@@ -2,12 +2,12 @@
 ##
 #W  grppcaut.gi                 GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcaut_gi :=
-    "@(#)$Id: grppcaut.gi,v 4.54 2009/06/15 15:28:54 gap Exp $";
+    "@(#)$Id: grppcaut.gi,v 4.55 2010/02/23 15:13:06 gap Exp $";
 
 #############################################################################
 ##

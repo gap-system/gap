@@ -2,9 +2,9 @@
 ##
 #W  ctblauto.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblauto.gi,v 4.9 2003/01/27 08:18:03 gap Exp $
+#H  @(#)$Id: ctblauto.gi,v 4.10 2010/02/23 15:12:52 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains functions to calculate automorphisms of matrices,
 ##  e.g., the character matrices of character tables, and functions to
@@ -16,7 +16,7 @@
 ##  It would be desirable to translate them.
 ##
 Revision.ctblauto_gi :=
-    "@(#)$Id: ctblauto.gi,v 4.9 2003/01/27 08:18:03 gap Exp $";
+    "@(#)$Id: ctblauto.gi,v 4.10 2010/02/23 15:12:52 gap Exp $";
 
 
 #############################################################################

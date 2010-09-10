@@ -2,17 +2,17 @@
 ##
 #W  grptbl.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: grptbl.gd,v 4.19 2008/11/17 17:31:27 gap Exp $
+#H  @(#)$Id: grptbl.gd,v 4.20 2010/02/23 15:13:08 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation of magmas, monoids, and groups from
 ##  a multiplication table.
 ##
 Revision.grptbl_gd :=
-    "@(#)$Id: grptbl.gd,v 4.19 2008/11/17 17:31:27 gap Exp $";
+    "@(#)$Id: grptbl.gd,v 4.20 2010/02/23 15:13:08 gap Exp $";
 
 
 #############################################################################

@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  ffe.gi                      GAP library                     Werner Nickel
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: ffe.gi,v 4.75 2008/03/19 14:57:37 gap Exp $
+#H  @(#)$Id: ffe.gi,v 4.76 2010/02/23 15:12:58 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for `FFE's.
@@ -23,7 +23,7 @@
 ##  in the file `zmodnz.gi'.
 ##
 Revision.ffe_gi :=
-    "@(#)$Id: ffe.gi,v 4.75 2008/03/19 14:57:37 gap Exp $";
+    "@(#)$Id: ffe.gi,v 4.76 2010/02/23 15:12:58 gap Exp $";
 
 
 #############################################################################

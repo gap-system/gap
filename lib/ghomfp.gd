@@ -2,11 +2,11 @@
 ##
 #W  ghomfp.gd                   GAP library                  Alexander Hulpke
 ##
-#Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomfp_gd :=
-    "@(#)$Id: ghomfp.gd,v 4.16 2009/06/11 21:16:26 gap Exp $";
+    "@(#)$Id: ghomfp.gd,v 4.17 2010/02/23 15:13:00 gap Exp $";
 
 ############################################################################
 ##

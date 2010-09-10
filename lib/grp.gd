@@ -3,12 +3,12 @@
 #W  grp.gd                      GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 #W                                                             & Bettina Eick
-#W                                                           & Heiko Theissen
+#W                                                           & Heiko Theißen
 ##
-#H  @(#)$Id: grp.gd,v 4.226 2009/06/15 15:20:21 gap Exp $
+#H  @(#)$Id: grp.gd,v 4.232 2010/06/14 16:50:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of operations for groups.
@@ -33,7 +33,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.grp_gd :=
-    "@(#)$Id: grp.gd,v 4.226 2009/06/15 15:20:21 gap Exp $";
+    "@(#)$Id: grp.gd,v 4.232 2010/06/14 16:50:53 gap Exp $";
 
 
 #############################################################################
@@ -953,9 +953,9 @@ DeclareAttribute( "CompositionSeries", IsGroup );
 ##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) ]
 ##  gap> DisplayCompositionSeries(Group((1,2,3,4,5,6,7),(1,2)));
 ##  G (2 gens, size 5040)
-##   || Z(2)
+##   | Z(2)
 ##  S (5 gens, size 2520)
-##   || A(7)
+##   | A(7)
 ##  1 (0 gens, size 1)
 ##  ]]></Example>
 ##  </Description>
@@ -2571,6 +2571,8 @@ DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##
 ##  <Description>
 ##  returns the image of the <C>NaturalHomomorphismByNormalSubgroup(<A>G</A>,<A>N</A>)</C>.
+##  The homomorphism will be stored in the attribute
+##  <C>NaturalHomomorphism</C> of the result.
 ##  The <C>NC</C> version does not test whether <A>N</A> is normal in <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;n:=Subgroup(g,[(1,2)(3,4),(1,3)(2,4)]);;
@@ -2587,6 +2589,24 @@ DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##
 DeclareGlobalFunction( "FactorGroup" );
 DeclareOperation( "FactorGroupNC", [ IsGroup, IsGroup ] );
+
+#############################################################################
+##
+#A  NaturalHomomorphism(<F>)
+##
+##  <#GAPDoc Label="NaturalHomomorphism">
+##  <ManSection>
+##  <Attr Name="NaturalHomomorphism" Arg='F'/>
+##
+##  <Description>
+##  For a group <A>F</A> obtained via <C>FactorGroup</C>, this attribute
+##  holds the natural homomorphism onto <A>F</A>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "NaturalHomomorphism", IsGroup );
+
 
 
 #############################################################################
@@ -2630,7 +2650,8 @@ DeclareOperation( "IndexNC", [ IsGroup, IsGroup ] );
 ##
 ##  <Description>
 ##  If the family of elements of <A>G</A> itself forms a group <A>P</A>, this
-##  attribute returns the index of <A>G</A> in <A>P</A>.
+##  attribute returns the index of <A>G</A> in <A>P</A>. It is used
+##  primarily for free groups or finitely presented groups.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3620,9 +3641,9 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup(Group((4,5)(6,7),(1,2,4)(3,5,6)));
-##  rec( series := "L", parameter := [ 2, 7 ], 
+##  rec( 
 ##    name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,7) = U(2\
-##  ,7) ~ A(2,2) = L(3,2)" )
+##  ,7) ~ A(2,2) = L(3,2)", series := "L", parameter := [ 2, 7 ] )
 ##  ]]></Example>
 ##  <P/>
 ##  For a positive integer <A>n</A>,
@@ -3636,13 +3657,13 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 5 );    
-##  rec( series := "Z", parameter := 5, name := "Z(5)" )
+##  rec( name := "Z(5)", series := "Z", parameter := 5 )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 6 );
 ##  fail
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( Size( SymplecticGroup(6,3)) / 2 );
-##  rec( parameter := [ 3, 3 ], 
+##  rec( 
 ##    name := "cannot decide from size alone between B(3,3) = O(7,3) and C(3,3) = \
-##  S(6,3)" )
+##  S(6,3)", parameter := [ 3, 3 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3706,17 +3727,16 @@ DeclareGlobalFunction( "SmallSimpleGroup" );
 ##  <![CDATA[
 ##  gap> List(AllSmallNonabelianSimpleGroups([1..1000000]),
 ##  >         StructureDescription);
-##  [ "A5", "PSL(3,2)", "A6", "PSL(2,8)", "PSL(2,11)", "PSL(2,13)",
-##    "PSL(2,17)", "A7", "PSL(2,19)", "PSL(2,16)", "PSL(3,3)",
-##    "PSU(3,3)", "PSL(2,23)", "PSL(2,25)", "M11", "PSL(2,27)",
-##    "PSL(2,29)", "PSL(2,31)", "A8", "PSL(3,4)", "PSL(2,37)", "O(5,3)",
-##    "Sz(8)", "PSL(2,32)", "PSL(2,41)", "PSL(2,43)", "PSL(2,47)",
-##    "PSL(2,49)", "PSU(3,4)", "PSL(2,53)", "M12", "PSL(2,59)",
-##    "PSL(2,61)", "PSU(3,5)", "PSL(2,67)", "J1", "PSL(2,71)", "A9",
-##    "PSL(2,73)", "PSL(2,79)", "PSL(2,64)", "PSL(2,81)", "PSL(2,83)",
-##    "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)",
-##    "PSL(2,103)", "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)",
-##    "PSL(2,121)", "PSL(2,125)", "O(5,4)" ]
+##  [ "A5", "PSL(3,2)", "A6", "PSL(2,8)", "PSL(2,11)", "PSL(2,13)", "PSL(2,17)", 
+##    "A7", "PSL(2,19)", "PSL(2,16)", "PSL(3,3)", "PSU(3,3)", "PSL(2,23)", 
+##    "PSL(2,25)", "M11", "PSL(2,27)", "PSL(2,29)", "PSL(2,31)", "A8", 
+##    "PSL(3,4)", "PSL(2,37)", "O(5,3)", "Sz(8)", "PSL(2,32)", "PSL(2,41)", 
+##    "PSL(2,43)", "PSL(2,47)", "PSL(2,49)", "PSU(3,4)", "PSL(2,53)", "M12", 
+##    "PSL(2,59)", "PSL(2,61)", "PSU(3,5)", "PSL(2,67)", "J1", "PSL(2,71)", "A9", 
+##    "PSL(2,73)", "PSL(2,79)", "PSL(2,64)", "PSL(2,81)", "PSL(2,83)", 
+##    "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)", "PSL(2,103)", 
+##    "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)", "PSL(2,121)", "PSL(2,125)", 
+##    "O(5,4)" ]
 ##  ]]>
 ##  </Example>
 ##  </Description>
@@ -4096,6 +4116,23 @@ DeclareGlobalFunction( "PowerMapOfGroupWithInvariants" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("HasAbelianFactorGroup");
+
+#############################################################################
+##
+#O  HasSolvableFactorGroup( <G>, <N> )
+##
+##  <#GAPDoc Label="HasSolvableFactorGroup">
+##  <ManSection>
+##  <Oper Name="HasSolvableFactorGroup" Arg='G, N'/>
+##
+##  <Description>
+##  tests whether <A>G</A> <M>/</M> <A>N</A> is solvable
+##  (without explicitly constructing the factor group).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("HasSolvableFactorGroup");
 
 
 #############################################################################

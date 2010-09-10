@@ -3,17 +3,17 @@
 #W  alglie.gd                   GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id: alglie.gd,v 4.58 2008/09/22 16:22:28 gap Exp $
+#H  @(#)$Id: alglie.gd,v 4.64 2010/04/30 13:52:43 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for Lie algebras.
 ##
 Revision.alglie_gd :=
-    "@(#)$Id: alglie.gd,v 4.58 2008/09/22 16:22:28 gap Exp $";
+    "@(#)$Id: alglie.gd,v 4.64 2010/04/30 13:52:43 gap Exp $";
 
 
 #############################################################################
@@ -721,12 +721,24 @@ DeclareAttribute( "PowerS", IsAlgebra and IsLieAlgebra );
 ##
 ##  <#GAPDoc Label="PthPowerImage">
 ##  <ManSection>
-##  <Oper Name="PthPowerImage" Arg='B, x'/>
+##  <Oper Name="PthPowerImage" Arg='B, x' Label="for basis and element" />
+##  <Oper Name="PthPowerImage" Arg='x'    Label="for element" />
+##  <Oper Name="PthPowerImage" Arg='x, n' Label="for element and integer" />
 ##
 ##  <Description>
-##  <A>B</A> is a basis of a restricted Lie algebra <M>L</M>.
-##  This function calculates for an element <A>x</A> of <M>L</M> the image of <A>x</A>
-##  under the <M>p</M>-map.
+##  This function computes the image of an element <A>x</A> of a restricted Lie algebra
+##  under its <M>p</M>-map.
+##
+##  <P/> In the first form, a basis of the Lie algebra is provided; this basis stores
+##  the <M>p</M>th powers of its elements. It is the traditional form, provided for
+##  backwards compatibility.
+##
+##  <P/> In its second form, only the element <A>x</A> is provided. It is the only
+##  form for elements of Lie algebras with no predetermined basis, such as those
+##  constructed by <Ref Attr="LieObject"/>.
+##
+##  <P/> In its third form, an extra non-negative integer <A>n</A> is specified; the
+##  <M>p</M>-mapping is iterated <A>n</A> times on the element <A>x</A>.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "W", [1], GF(11) );;
 ##  gap> B:= Basis( L );;
@@ -734,13 +746,51 @@ DeclareAttribute( "PowerS", IsAlgebra and IsLieAlgebra );
 ##  v.1+v.11
 ##  gap> PthPowerImage( B, x );
 ##  v.1+v.11
+##  gap> PthPowerImage( x, 2 );
+##  v.1+v.11
+##  gap> f := FreeAssociativeAlgebra(GF(2),"x","y");
+##  <algebra over GF(2), with 2 generators>
+##  gap> x := LieObject(f.1);; y := LieObject(f.2);;
+##  gap> x*y; x^2; PthPowerImage(x);
+##  LieObject( (Z(2)^0)*x*y+(Z(2)^0)*y*x )
+##  LieObject( <zero> of ... )
+##  LieObject( (Z(2)^0)*x^2 )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PthPowerImage", [ IsBasis, IsRingElement ] );
+DeclareOperation( "PthPowerImage", [ IsJacobianElement ] );
+DeclareOperation( "PthPowerImage", [ IsJacobianElement, IsInt ] );
 
+#############################################################################
+##
+#O  PClosureSubalgebra( <A> )
+##
+##  <#GAPDoc Label="PClosureSubalgebra">
+##  <ManSection>
+##  <Oper Name="PClosureSubalgebra" Arg='A'/>
+##
+##  <Description>
+##  This function computes the smallest restricted Lie algebra that contains
+##  <A>A</A>.
+##  <Example><![CDATA[
+##  gap> L := JenningsLieAlgebra(SmallGroup(4,1)); # group C_4
+##  <Lie algebra of dimension 2 over GF(2)>
+##  gap> L0 := Subalgebra(L,GeneratorsOfAlgebra(L){[1]});
+##  <Lie algebra over GF(2), with 1 generators>
+##  gap> Dimension(L0);
+##  1
+##  gap> PClosureSubalgebra(L0); last=L;
+##  <vector space of dimension 2 over GF(2)>
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("PClosureSubalgebra", [IsLieAlgebra and IsJacobianElementCollection]);
 
 #############################################################################
 ##

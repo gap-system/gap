@@ -3,25 +3,7 @@
 ##
 #X  files dealing with character tables, class functions, tables of marks
 ##
-ReadLib( "ctblfuns.gd" );
-ReadLib( "ctblmaps.gd" );
-ReadLib( "ctblauto.gd" );
-ReadLib( "ctbllatt.gd" );
-ReadLib( "ctblsymm.gd" );
-ReadLib( "ctblsolv.gd" );
-ReadLib( "ctblpope.gd" );
-ReadLib( "ctblmoli.gd" );
-ReadLib( "ctblmono.gd" );
-ReadLib( "ctblgrp.gd"  );
-
-ReadLib( "tom.gd");
-
-
-#############################################################################
-##
-#X  implementation part
-##
-ReadLib( "ctbl.gi"     );
+# ReadLib( "ctbl.gi"     );  # cannot be read here because of completion bug
 ReadLib( "ctblfuns.gi" );
 ReadLib( "ctblmaps.gi" );
 ReadLib( "ctblauto.gi" );

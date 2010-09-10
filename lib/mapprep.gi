@@ -1,13 +1,13 @@
 #############################################################################
 ##
 #W  mapprep.gi                  GAP library                     Thomas Breuer
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mapprep.gi,v 4.44 2008/07/03 01:07:47 gap Exp $
+#H  @(#)$Id: mapprep.gi,v 4.45 2010/02/23 15:13:13 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains (representation dependent)
@@ -20,7 +20,7 @@
 ##  6. methods for zero mappings
 ##
 Revision.mapprep_gi :=
-    "@(#)$Id: mapprep.gi,v 4.44 2008/07/03 01:07:47 gap Exp $";
+    "@(#)$Id: mapprep.gi,v 4.45 2010/02/23 15:13:13 gap Exp $";
 
 
 #############################################################################

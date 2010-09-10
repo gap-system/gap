@@ -2,10 +2,10 @@
 ##
 #W  imf.grp                     GAP group library              Volkmar Felsch
 ##
-#H  @(#)$Id: imf.grp,v 1.6 2000/06/09 13:48:44 gap Exp $
+#H  @(#)$Id: imf.grp,v 1.7 2010/02/23 15:12:40 gap Exp $
 ##
-#Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  Copyright (C)  2000,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  2000,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This is the main secondary file of the GAP library of irreducible maximal
 ##  finite (imf) integral matrix groups. It contains a list IMFList of length
@@ -63,7 +63,7 @@
 ##                          imf class.
 ##
 Revision.imf_grp :=
-    "@(#)$Id: imf.grp,v 1.6 2000/06/09 13:48:44 gap Exp $";
+    "@(#)$Id: imf.grp,v 1.7 2010/02/23 15:12:40 gap Exp $";
 
 
 #############################################################################

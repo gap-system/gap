@@ -2,10 +2,10 @@
 ##
 #W  ghom.gi                  GAP library                        Thomas Breuer
 #W                                                           Alexander Hulpke
-#W                                                             Heiko Thei"sen
+#W                                                             Heiko Theißen
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  1. Functions for creating group general mappings by images
@@ -14,7 +14,7 @@
 ##  4. Functions for ...
 ##
 Revision.ghom_gi :=
-    "@(#)$Id: ghom.gi,v 4.116 2009/08/12 23:15:52 gap Exp $";
+    "@(#)$Id: ghom.gi,v 4.118 2010/06/14 08:44:38 gap Exp $";
 
 
 #############################################################################
@@ -528,7 +528,8 @@ function(hom)
 local G;
   if Length(MappingGeneratorsImages(hom)[1])
       >2*Length(GeneratorsOfGroup(Source(hom))) then
-    G:=SubgroupNC( Range( hom ), List(GeneratorsOfGroup(Source(hom)),i->Image(hom,i)));
+    G:=SubgroupNC( Range( hom ),
+      List(GeneratorsOfGroup(Source(hom)),i->ImageElm(hom,i)));
   else
     G:=SubgroupNC( Range( hom ), MappingGeneratorsImages(hom)[2] );
   fi;

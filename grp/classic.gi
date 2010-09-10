@@ -1,16 +1,16 @@
 #############################################################################
 ##
 #W  classic.gi                  GAP group library                Frank Celler
-#W                                                           & Heiko Thei"sen
+#W                                                           & Heiko Theißen
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id: classic.gi,v 4.29 2009/04/09 15:22:34 gap Exp $
+#H  @(#)$Id: classic.gi,v 4.30 2010/02/23 15:12:39 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 Revision.classic_gi :=
-    "@(#)$Id: classic.gi,v 4.29 2009/04/09 15:22:34 gap Exp $";
+    "@(#)$Id: classic.gi,v 4.30 2010/02/23 15:12:39 gap Exp $";
 
 
 #############################################################################

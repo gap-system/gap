@@ -2,12 +2,12 @@
 ##
 #W  glzmodmz.gd                    GAP library                    Stefan Kohl
 ##
-#H  @(#)$Id: glzmodmz.gd,v 1.1 2001/11/29 12:12:15 stefan Exp $
+#H  @(#)$Id: glzmodmz.gd,v 1.2 2010/02/23 15:12:40 gap Exp $
 ##
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 Revision.glzmodmz_gd :=
-    "@(#)$Id: glzmodmz.gd,v 1.1 2001/11/29 12:12:15 stefan Exp $";
+    "@(#)$Id: glzmodmz.gd,v 1.2 2010/02/23 15:12:40 gap Exp $";
 
 #############################################################################
 ##

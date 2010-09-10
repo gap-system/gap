@@ -3,19 +3,19 @@
 #W  integer.gd                  GAP library                       Stefan Kohl
 #W                                                            & Werner Nickel
 #W                                                           & Alice Niemeyer
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id: integer.gd,v 4.56 2009/01/06 11:19:50 gap Exp $
+#H  @(#)$Id: integer.gd,v 4.57 2010/02/23 15:13:10 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for integers.
 ##
 Revision.integer_gd :=
-    "@(#)$Id: integer.gd,v 4.56 2009/01/06 11:19:50 gap Exp $";
+    "@(#)$Id: integer.gd,v 4.57 2010/02/23 15:13:10 gap Exp $";
 
 
 #############################################################################

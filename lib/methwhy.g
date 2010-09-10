@@ -2,16 +2,16 @@
 ##
 #W  methwhy.g                  GAP tools                    Alexander Hulpke
 ##
-#H  @(#)$Id: methwhy.g,v 4.29 2008/09/22 16:22:30 gap Exp $
+#H  @(#)$Id: methwhy.g,v 4.30 2010/02/23 15:13:15 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file allows some fancy accesses to the method selection
 ##
 Revision.methwhy_g :=
-    "@(#)$Id: methwhy.g,v 4.29 2008/09/22 16:22:30 gap Exp $";
+    "@(#)$Id: methwhy.g,v 4.30 2010/02/23 15:13:15 gap Exp $";
 
 #############################################################################
 ##

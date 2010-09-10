@@ -7,7 +7,7 @@
 ##  order and for groups of cubefree order up to 50000.
 ##
 Revision.idgrp10_g :=
-    "@(#)$Id: idgrp10.g,v 1.2 2005/04/02 09:34:37 gap Exp $";
+    "@(#)$Id: idgrp10.g,v 1.3 2009/11/05 15:31:29 alexk Exp $";
 
 #############################################################################
 ##
@@ -29,7 +29,7 @@ ID_AVAILABLE_FUNCS[ 10 ] := SMALL_AVAILABLE_FUNCS[ 10 ];
 ##
 ID_GROUP_FUNCS[ 24 ] := function( G, inforec )
     local primes, spcgs, lg, p_ind, mat, kp, m, n, k, s, im, root, set, i,
-          op_indices, op_index;
+          op, op_indices, op_index;
 
     if IsAbelian( G ) then
          return 1;

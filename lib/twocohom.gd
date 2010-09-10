@@ -2,12 +2,12 @@
 ##
 #W  twocohom.gd                 GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.twocohom_gd :=
-    "@(#)$Id: twocohom.gd,v 4.17 2009/06/15 15:20:22 gap Exp $";
+    "@(#)$Id: twocohom.gd,v 4.19 2010/02/23 15:13:34 gap Exp $";
 
 
 #############################################################################
@@ -166,9 +166,9 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 ##  gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );
 ##  [ [ <a GF2 vector of length 1> ], [ <a GF2 vector of length 1> ] ]
 ##  gap> M := GModuleByMats( mats, GF(2) );
-##  rec( field := GF(2), isMTXModule := true, dimension := 1, 
-##    generators := [ <an immutable 1x1 matrix over GF2>, 
-##        <an immutable 1x1 matrix over GF2> ] )
+##  rec( 
+##    generators := [ <an immutable 1x1 matrix over GF2>, <an immutable 1x1 matrix\
+##   over GF2> ], dimension := 1, field := GF(2), isMTXModule := true )
 ##  gap> TwoCoboundaries( G, M );
 ##  [  ]
 ##  gap> TwoCocycles( G, M );

@@ -4,7 +4,7 @@
 #W                                                              R. Wainwright
 #W                                                                  A. Hulpke
 ##
-#H  @(#)$Id: matint.gd,v 4.32 2008/11/12 13:04:45 gap Exp $
+#H  @(#)$Id: matint.gd,v 4.33 2009/10/30 14:26:04 alexk Exp $
 ##
 #Y  Copyright (C) 2003 The GAP Group
 ##
@@ -12,7 +12,7 @@
 ##  integral matrices.
 ##
 Revision.matint_gd:=
-  "@(#)$Id: matint.gd,v 4.32 2008/11/12 13:04:45 gap Exp $";
+  "@(#)$Id: matint.gd,v 4.33 2009/10/30 14:26:04 alexk Exp $";
 
 #############################################################################
 ##
@@ -63,10 +63,10 @@ DeclareOperation("TriangulizedIntegerMat",[IsMatrix]);
 ##  gap> TriangulizedIntegerMat(m);
 ##  [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
 ##  gap> n:=TriangulizedIntegerMatTransform(m);
-##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+##  rec( rank := 3, normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+##    rowtrans := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], signdet := 1, 
 ##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
-##    rowQ := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3, 
-##    signdet := 1, rowtrans := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+##    rowQ := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
 ##  gap> n.rowtrans*m=n.normal;
 ##  true
 ##  gap> TriangulizeIntegerMat(m); m;
@@ -135,11 +135,10 @@ DeclareOperation("HermiteNormalFormIntegerMat",[IsMatrix]);
 ##  gap> HermiteNormalFormIntegerMat(m);          
 ##  [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
 ##  gap> n:=HermiteNormalFormIntegerMatTransform(m);
-##  rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
-##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
-##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3, 
-##    signdet := 1, 
-##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+##  rec( rank := 3, normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1, rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
 ##  gap> n.rowtrans*m=n.normal;
 ##  true
 ##  ]]></Example>
@@ -210,13 +209,12 @@ DeclareOperation("SmithNormalFormIntegerMatTransforms",[IsMatrix]);
 ##  gap> SmithNormalFormIntegerMat(m);          
 ##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]
 ##  gap> n:=SmithNormalFormIntegerMatTransforms(m);  
-##  rec( normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], 
-##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##  rec( rank := 3, normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1, rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
 ##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
 ##    colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
-##    colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], rank := 3, 
-##    signdet := 1, 
-##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
 ##    coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ] )
 ##  gap> n.rowtrans*m*n.coltrans=n.normal;
 ##  true
@@ -284,22 +282,20 @@ DeclareGlobalFunction( "DiagonalizeIntMat" );
 ##  <Example><![CDATA[
 ##  gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
 ##  gap> NormalFormIntMat(m,0);  # Triangular, no transforms
-##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
+##  rec( rank := 3, normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
 ##    signdet := 1 )
 ##  gap> NormalFormIntMat(m,6);  # Hermite Normal Form with row transforms
-##  rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
-##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
-##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3, 
-##    signdet := 1, 
-##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
-##  gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforms        
-##  rec( normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], 
-##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##  rec( rank := 3, normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1, rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+##  gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforms       
+##  rec( rank := 3, normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1, rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
 ##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
 ##    colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
-##    colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], rank := 3, 
-##    signdet := 1, 
-##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
 ##    coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ] )
 ##  gap> last.rowtrans*m*last.coltrans;
 ##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]

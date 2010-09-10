@@ -3,10 +3,10 @@
 #W  smgrpfre.gi                 GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: smgrpfre.gi,v 4.43 2008/11/25 09:25:01 gap Exp $
+#H  @(#)$Id: smgrpfre.gi,v 4.44 2010/02/23 15:13:30 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for free semigroups.
@@ -16,7 +16,7 @@
 ##  For the external representation see the file 'wordrep.gi'.
 ##
 Revision.smgrpfre_gi :=
-    "@(#)$Id: smgrpfre.gi,v 4.43 2008/11/25 09:25:01 gap Exp $";
+    "@(#)$Id: smgrpfre.gi,v 4.44 2010/02/23 15:13:30 gap Exp $";
 
 
 #############################################################################

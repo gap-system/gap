@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  list.gi                     GAP library                  Martin Schoenert
+#W  list.gi                     GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: list.gi,v 4.226 2008/04/22 23:05:32 gap Exp $
+#H  @(#)$Id: list.gi,v 4.229 2010/06/04 12:00:50 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for lists in general.
 ##
 Revision.list_gi :=
-    "@(#)$Id: list.gi,v 4.226 2008/04/22 23:05:32 gap Exp $";
+    "@(#)$Id: list.gi,v 4.229 2010/06/04 12:00:50 alexk Exp $";
 
 
 #############################################################################
@@ -527,6 +527,8 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
     end );
 
 od;
+
+Unbind( op );
 
 InstallMethod( ConstantTimeAccessList,
     "for a constant time access list",
@@ -1254,7 +1256,7 @@ InstallMethod( Position,
     function ( list, obj, start )
     local   pos;
 
-#N  1996/08/14 M.Schoenert 'POSITION_SORTED_LIST' should take 3 arguments
+#N  1996/08/14 M.Schönert 'POSITION_SORTED_LIST' should take 3 arguments
 #T  (This method is used only for ``external'' lists, the kernel methods
 #T  `PosPlistSort', `PosPlistHomSort' support the argument `start'.)
     if start = 0 then
@@ -2220,7 +2222,7 @@ InstallMethod( SortingPerm,
 
     # Sort the new list according to the first item (stable).
     # This needs more memory than a call of 'Sort' but is much faster.
-    # (The change was proposed by Frank Luebeck.)
+    # (The change was proposed by Frank Lübeck.)
     both := Set( both );
 
     # Remember the permutation.
@@ -3708,6 +3710,9 @@ local i,n,s;
     i:=i+8;
   od;
   b:=b{[i..n]};
+  if Length(b) = 0 then
+    return s;
+  fi;  
   while Length(b)<8 do
     Add(b,false);
   od;

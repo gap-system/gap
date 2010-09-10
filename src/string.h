@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  string.h                    GAP source                   Martin Schoenert
+*W  string.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: string.h,v 4.19 2008/04/10 22:24:56 gap Exp $
+*H  @(#)$Id: string.h,v 4.20 2010/02/23 15:13:49 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions which mainly deal with strings.
@@ -24,7 +24,7 @@
 **  installed in the appropriate tables by 'InitString'.  */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_string_h =
-   "@(#)$Id: string.h,v 4.19 2008/04/10 22:24:56 gap Exp $";
+   "@(#)$Id: string.h,v 4.20 2010/02/23 15:13:49 gap Exp $";
 #endif
 
 #include <string.h>  /* for memcpy */

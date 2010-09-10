@@ -2,10 +2,10 @@
 ##
 #W  ctblfuns.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblfuns.gi,v 4.84 2009/09/25 12:30:26 gap Exp $
+#H  @(#)$Id: ctblfuns.gi,v 4.86 2010/06/16 16:31:37 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for class functions.
@@ -25,7 +25,7 @@
 ##  14. Auxiliary operations
 ##
 Revision.ctblfuns_gi :=
-    "@(#)$Id: ctblfuns.gi,v 4.84 2009/09/25 12:30:26 gap Exp $";
+    "@(#)$Id: ctblfuns.gi,v 4.86 2010/06/16 16:31:37 gap Exp $";
 
 
 #############################################################################
@@ -4356,7 +4356,8 @@ InstallGlobalFunction( ZevDataValue, function( q, n )
               fi;
             fi;
             reslen:= ReduceCoeffs( res, Length( res ), conw, conwlen );
-            reslen:= ShrinkCoeffs( res );  # needed?
+            ShrinkRowVector( res );  # needed?
+            reslen:= Length( res );  # needed?
           od;
 
           # If $\zeta^i$ is a root of `f' then take the corresponding

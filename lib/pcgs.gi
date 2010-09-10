@@ -2,16 +2,16 @@
 ##
 #W  pcgs.gi                     GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: pcgs.gi,v 4.104 2005/10/11 09:28:41 gap Exp $
+#H  @(#)$Id: pcgs.gi,v 4.106 2010/06/20 11:52:59 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for polycylic generating systems.
 ##
 Revision.pcgs_gi :=
-    "@(#)$Id: pcgs.gi,v 4.104 2005/10/11 09:28:41 gap Exp $";
+    "@(#)$Id: pcgs.gi,v 4.106 2010/06/20 11:52:59 gap Exp $";
 
 #############################################################################
 ##
@@ -398,7 +398,7 @@ end );
 ##
 InstallMethod( ExponentOfPcElement,
     "generic method, ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
+    IsCollsElmsX,
     [ IsPcgs,
       IsObject,
       IsPosInt ],
@@ -415,7 +415,7 @@ end );
 ##
 InstallOtherMethod( ExponentsOfPcElement,
     "with positions, falling back to ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
+    IsCollsElmsX,
     [ IsPcgs,
       IsObject,
       IsList ],

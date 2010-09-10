@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  vector.h                    GAP source                   Martin Schoenert
+*W  vector.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: vector.h,v 4.6 2002/04/15 10:04:03 sal Exp $
+*H  @(#)$Id: vector.h,v 4.7 2010/02/23 15:13:50 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions  that mainly  operate  on vectors  whose
@@ -30,7 +30,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vector_h =
-   "@(#)$Id: vector.h,v 4.6 2002/04/15 10:04:03 sal Exp $";
+   "@(#)$Id: vector.h,v 4.7 2010/02/23 15:13:50 gap Exp $";
 #endif
 
 

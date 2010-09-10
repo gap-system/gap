@@ -2,17 +2,17 @@
 ##
 #W  zlattice.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zlattice.gd,v 4.26 2008/11/12 13:04:46 gap Exp $
+#H  @(#)$Id: zlattice.gd,v 4.28 2010/02/23 15:13:37 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D f√ºr Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of functions and operations dealing
 ##  with lattices.
 ##
 Revision.zlattice_gd :=
-    "@(#)$Id: zlattice.gd,v 4.26 2008/11/12 13:04:46 gap Exp $";
+    "@(#)$Id: zlattice.gd,v 4.28 2010/02/23 15:13:37 gap Exp $";
 
 
 #############################################################################
@@ -281,7 +281,7 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##  <Index>short vectors spanning a lattice</Index>
 ##  <Index>lattice base reduction</Index>
 ##  provides an implementation of the <E>LLL algorithm</E> by
-##  Lenstra, Lenstra and Lov·sz (see&nbsp;<Cite Key="LLL82"/>,
+##  Lenstra, Lenstra and Lov√°sz (see&nbsp;<Cite Key="LLL82"/>,
 ##  <Cite Key="Poh87"/>).
 ##  The implementation follows the description
 ##  in&nbsp;<Cite Key="Coh93" Where="p. 94f."/>.
@@ -330,14 +330,14 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##  >                [ 25, 1, 1, 0, 0 ] ];;
 ##  gap> LLLReducedBasis( vectors, "linearcomb" );; Display( last );
 ##  rec(
+##    B := [ 5, 36/5, 12, 50/3 ],
+##    relations := [ [ -1, 0, -1, 0, 1 ] ],
 ##    basis := [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], [ -1, 3, -1, -1, -1 ], 
 ##        [ -3, 1, 0, 2, 2 ] ],
-##    relations := [ [ -1, 0, -1, 0, 1 ] ],
+##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ],
 ##    transformation := 
 ##     [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], [ 1, -2, 0, 1, 0 ], 
-##        [ -1, -2, 1, 1, 0 ] ],
-##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ],
-##    B := [ 5, 36/5, 12, 50/3 ] )
+##        [ -1, -2, 1, 1, 0 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -358,7 +358,7 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  <Index Subkey="for Gram matrices">LLL algorithm</Index>
 ##  <Index>lattice base reduction</Index>
 ##  <Ref Func="LLLReducedGramMat"/> provides an implementation of the
-##  <E>LLL algorithm</E> by Lenstra, Lenstra and Lov·sz
+##  <E>LLL algorithm</E> by Lenstra, Lenstra and Lov√°sz
 ##  (see&nbsp;<Cite Key="LLL82"/>,&nbsp;<Cite Key="Poh87"/>).
 ##  The implementation follows the description in
 ##  <Cite Key="Coh93" Where="p. 94f."/>.
@@ -397,15 +397,15 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  >    [ 5, 7, 11, 2, 0 ], [ 2, 4, 2, 8, 4 ], [ 2, 4, 0, 4, 8 ] ];;
 ##  gap> LLLReducedGramMat( g );; Display( last );
 ##  rec(
-##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], [ 1, 0, 5, 0, 2 ], 
-##        [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ],
+##    B := [ 4, 4, 75/16, 168/25, 32/7 ],
 ##    relations := [  ],
+##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
+##        [ -1/4, 1/8, 37/75, 8/21 ] ],
 ##    transformation := 
 ##     [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ], [ -1, 0, 1, 0, 0 ], 
 ##        [ 0, 0, 0, 1, 0 ], [ -2, 0, 1, 0, 1 ] ],
-##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
-##        [ -1/4, 1/8, 37/75, 8/21 ] ],
-##    B := [ 4, 4, 75/16, 168/25, 32/7 ] )
+##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], [ 1, 0, 5, 0, 2 ], 
+##        [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

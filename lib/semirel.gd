@@ -2,10 +2,10 @@
 ##
 #W  semirel.gd                  GAP library                   James D Mitchell
 ##
-#H  @(#)$Id: semirel.gd,v 4.30 2009/01/12 17:26:17 gap Exp $
+#H  @(#)$Id: semirel.gd,v 4.31 2010/02/23 15:13:29 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for equivalence relations on
@@ -13,7 +13,7 @@
 ##  congruences, and Rees congruences.
 ##
 Revision.semirel_gd :=
-    "@(#)$Id: semirel.gd,v 4.30 2009/01/12 17:26:17 gap Exp $";
+    "@(#)$Id: semirel.gd,v 4.31 2010/02/23 15:13:29 gap Exp $";
 
 #############################################################################
 ##

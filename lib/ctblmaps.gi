@@ -2,10 +2,10 @@
 ##
 #W  ctblmaps.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblmaps.gi,v 4.48 2008/08/20 15:05:32 gap Exp $
+#H  @(#)$Id: ctblmaps.gi,v 4.49 2010/02/23 15:12:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains those functions that are used to construct maps,
@@ -19,7 +19,7 @@
 ##  6. Subroutines for the Construction of Class Fusions
 ##
 Revision.ctblmaps_gi :=
-    "@(#)$Id: ctblmaps.gi,v 4.48 2008/08/20 15:05:32 gap Exp $";
+    "@(#)$Id: ctblmaps.gi,v 4.49 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################

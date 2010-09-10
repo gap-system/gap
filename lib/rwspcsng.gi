@@ -2,8 +2,8 @@
 ##
 #W  rwspcsng.gi                 GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This files implement a single collector as representation of a polycyclic
@@ -15,7 +15,7 @@
 ##  object are defined in the kernel and are exported as "SCP_something".
 ##
 Revision.rwspcsng_gi :=
-    "@(#)$Id: rwspcsng.gi,v 4.50 2002/05/04 13:45:53 gap Exp $";
+    "@(#)$Id: rwspcsng.gi,v 4.51 2010/02/23 15:13:28 gap Exp $";
 
 
 #############################################################################

@@ -2,16 +2,16 @@
 ##
 #W  grpmat.gd                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grpmat.gd,v 4.31 2009/02/11 13:49:18 gap Exp $
+#H  @(#)$Id: grpmat.gd,v 4.33 2010/06/03 14:47:07 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for matrix groups.
 ##
 Revision.grpmat_gd :=
-    "@(#)$Id: grpmat.gd,v 4.31 2009/02/11 13:49:18 gap Exp $";
+    "@(#)$Id: grpmat.gd,v 4.33 2010/06/03 14:47:07 gap Exp $";
 
 
 #############################################################################
@@ -550,6 +550,7 @@ DeclareGlobalFunction( "AffineActionByMatrixGroup" );
 ##
 DeclareGlobalFunction( "BlowUpIsomorphism" );
 
+DeclareGlobalFunction( "BasisVectorsForMatrixAction" );
 
 #############################################################################
 ##

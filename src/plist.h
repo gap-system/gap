@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  plist.h                     GAP source                   Martin Schoenert
+*W  plist.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: plist.h,v 4.19 2007/07/12 15:13:20 gap Exp $
+*H  @(#)$Id: plist.h,v 4.20 2010/02/23 15:13:46 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions that deal with plain lists.
@@ -25,7 +25,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_plist_h =
-   "@(#)$Id: plist.h,v 4.19 2007/07/12 15:13:20 gap Exp $";
+   "@(#)$Id: plist.h,v 4.20 2010/02/23 15:13:46 gap Exp $";
 #endif
 
 

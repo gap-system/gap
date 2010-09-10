@@ -3,10 +3,10 @@
 #W  basicim.gd			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: basicim.gd,v 4.3 2002/07/09 09:53:59 gap Exp $
+#H  @(#)$Id: basicim.gd,v 4.4 2010/02/23 15:12:47 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Allows elements of a group with stabiliser chain to be represented as
@@ -18,7 +18,7 @@
 ##  Exports: BasicImageGroups
 ##
 Revision.basicim_gd :=
-    "@(#)$Id: basicim.gd,v 4.3 2002/07/09 09:53:59 gap Exp $";
+    "@(#)$Id: basicim.gd,v 4.4 2010/02/23 15:12:47 gap Exp $";
 
 #############################################################################
 #############################################################################

@@ -2,16 +2,16 @@
 ##
 #W  ctblmoli.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblmoli.gi,v 4.17 2005/12/02 09:22:22 gap Exp $
+#H  @(#)$Id: ctblmoli.gi,v 4.18 2010/02/23 15:12:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for Molien series.
 ##
 Revision.ctblmoli_gi :=
-    "@(#)$Id: ctblmoli.gi,v 4.17 2005/12/02 09:22:22 gap Exp $";
+    "@(#)$Id: ctblmoli.gi,v 4.18 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################

@@ -4,10 +4,10 @@
 **                                                           
 **                                                           
 **
-*H  @(#)$Id: gmpints.h,v 4.1 2008/02/01 14:49:19 jjm Exp $
+*H  @(#)$Id: gmpints.h,v 4.2 2010/02/23 15:13:43 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions handling gmp integers.
@@ -17,7 +17,7 @@
 
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gmpints_h =
-   "@(#)$Id: gmpints.h,v 4.1 2008/02/01 14:49:19 jjm Exp $";
+   "@(#)$Id: gmpints.h,v 4.2 2010/02/23 15:13:43 gap Exp $";
 #endif
 
 #include <gmp.h>

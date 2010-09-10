@@ -6,7 +6,7 @@
 ##
 ##  This file contains information about the SmallGroups Library
 ##
-"@(#)$Id: README,v 1.13 2008/05/29 06:10:46 gap Exp $";
+"@(#)$Id: README,v 1.14 2010/02/23 15:13:39 gap Exp $";
 
 #############################################################################
 #
@@ -28,7 +28,7 @@ The SmallGroups Library has been developed by
 
 Hans Ulrich Besche
 Fachbereich Mathematik und Informatik
-Technische Universit‰t Braunschweig
+Technische Universit√§t Braunschweig
 Pockelsstrasse 14 
 38106 Braunschweig
 Germany
@@ -38,7 +38,7 @@ http://www.tu-bs.de/~hubesche/
 
 Bettina Eick
 Fachbereich Mathematik und Informatik
-Technische Universit‰t Braunschweig
+Technische Universit√§t Braunschweig
 Pockelsstr. 14
 38106 Braunschweig
 Germany

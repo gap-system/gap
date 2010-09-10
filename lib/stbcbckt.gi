@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  stbcbckt.gi                 GAP library                    Heiko Thei"sen
+#W  stbcbckt.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: stbcbckt.gi,v 4.101 2007/08/27 21:23:00 gap Exp $
+#H  @(#)$Id: stbcbckt.gi,v 4.102 2010/02/23 15:13:31 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the basic   routines for permutation group   backtrack
@@ -14,7 +14,7 @@
 ##  intersections.
 ##
 Revision.stbcbckt_gi :=
-    "@(#)$Id: stbcbckt.gi,v 4.101 2007/08/27 21:23:00 gap Exp $";
+    "@(#)$Id: stbcbckt.gi,v 4.102 2010/02/23 15:13:31 gap Exp $";
 
 if not IsBound( LARGE_TASK )  then  LARGE_TASK := false;   fi;
 

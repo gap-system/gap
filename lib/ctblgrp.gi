@@ -3,13 +3,13 @@
 #W  ctblgrp.gi                   GAP library                 Alexander Hulpke
 ##
 #Y  Copyright (C) 1993, 1997
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation of the Dixon-Schneider algorithm
 ##
 Revision.ctblgrp_gi :=
-    "@(#)$Id: ctblgrp.gi,v 4.58 2009/02/24 04:11:06 gap Exp $";
+    "@(#)$Id: ctblgrp.gi,v 4.59 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################

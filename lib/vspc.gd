@@ -2,10 +2,10 @@
 ##
 #W  vspc.gd                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspc.gd,v 4.51 2008/09/18 07:58:05 gap Exp $
+#H  @(#)$Id: vspc.gd,v 4.52 2010/02/23 15:13:36 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for vector spaces.
@@ -14,7 +14,7 @@
 ##  <F>lib/basis.gd<F>.
 ##
 Revision.vspc_gd :=
-    "@(#)$Id: vspc.gd,v 4.51 2008/09/18 07:58:05 gap Exp $";
+    "@(#)$Id: vspc.gd,v 4.52 2010/02/23 15:13:36 gap Exp $";
 
 
 #############################################################################

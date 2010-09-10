@@ -2,12 +2,12 @@
 ##
 #W  grppcrep.gd                 GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcrep_gi :=
-    "@(#)$Id: grppcrep.gi,v 4.21 2007/03/21 11:39:51 gap Exp $";
+    "@(#)$Id: grppcrep.gi,v 4.22 2010/02/23 15:13:08 gap Exp $";
 
 
 #############################################################################

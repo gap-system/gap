@@ -2,21 +2,26 @@
 ##
 #W  error.g                    GAP library                 Steve Linton
 ##
-#H  @(#)$Id: error.g,v 4.9 2009/01/26 16:40:29 alexk Exp $
+#H  @(#)$Id: error.g,v 4.11 2010/07/28 15:45:20 gap Exp $
 ##
 #Y  Copyright (C) 2007 The GAP Group
 ##
 ##  Error handling, break loop, etc. Now in GAP
 ##
 Revision.error_g :=
-    "@(#)$Id: error.g,v 4.9 2009/01/26 16:40:29 alexk Exp $";
+    "@(#)$Id: error.g,v 4.11 2010/07/28 15:45:20 gap Exp $";
 
-errorCount := 0;
-ErrorLevel := 0;
+
+CallAndInstallPostRestore( function()
+    ASS_GVAR( "errorCount", 0 );
+    ASS_GVAR( "ErrorLevel", 0 );
+    ASS_GVAR( "QUITTING", false );
+end);
+
+
 MakeReadWriteGlobal("OnQuit");
 OnQuit := fail;
-QUITTING := false;
-BreakOnError := true;
+
 
 BIND_GLOBAL("AncestorLVars", function(lv, depth)
     local i;
@@ -247,9 +252,3 @@ BIND_GLOBAL("Error",
                                arg);
 end);
 
-ADD_LIST(POST_RESTORE_FUNCS, 
-        function()
-    errorCount := 0;
-    ErrorLevel := 0;
-    QUITTING := false;
-end);

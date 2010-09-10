@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  code.h                      GAP source                   Martin Schoenert
+*W  code.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: code.h,v 4.25 2009/03/07 12:28:51 sal Exp $
+*H  @(#)$Id: code.h,v 4.26 2010/02/23 15:13:40 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the coder package.
@@ -15,7 +15,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_code_h =
-   "@(#)$Id: code.h,v 4.25 2009/03/07 12:28:51 sal Exp $";
+   "@(#)$Id: code.h,v 4.26 2010/02/23 15:13:40 gap Exp $";
 #endif
 
 

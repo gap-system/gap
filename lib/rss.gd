@@ -3,10 +3,10 @@
 #W  rss.gd			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: rss.gd,v 4.4 2002/04/15 10:05:15 sal Exp $
+#H  @(#)$Id: rss.gd,v 4.5 2010/02/23 15:13:27 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  The random Schreier-Sims algorithm for permutation groups and matrix 
@@ -16,7 +16,7 @@
 ##  Exports: functions RandomSchreierSims and ChangedBaseGroup
 ##
 Revision.rss_gd :=
-    "@(#)$Id: rss.gd,v 4.4 2002/04/15 10:05:15 sal Exp $";
+    "@(#)$Id: rss.gd,v 4.5 2010/02/23 15:13:27 gap Exp $";
 
 DeclareInfoClass( "InfoRSS" );
 

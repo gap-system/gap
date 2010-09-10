@@ -2,10 +2,10 @@
 ##
 #A  oldmatint.gi                   GAP library                 Robert Wainwright
 ##
-#H  $Id: oldmatint.gi,v 1.1 2003/06/02 19:55:08 gap Exp $
+#H  $Id: oldmatint.gi,v 1.2 2010/02/23 15:13:19 gap Exp $
 ##
-#Y  Copyright (C)  1997,  St. Andrews
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  St Andrews
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is preserved to keep the old routines available. It is not
@@ -18,7 +18,7 @@
 
 ##
 Revision.oldmatint_gi :=
-    "$Id: oldmatint.gi,v 1.1 2003/06/02 19:55:08 gap Exp $";
+    "$Id: oldmatint.gi,v 1.2 2010/02/23 15:13:19 gap Exp $";
 
 
 ##############################################################################

@@ -2,7 +2,7 @@
 ##
 #W  teachmod.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: teachmod.g,v 4.3 2009/01/03 00:22:55 gap Exp $
+#H  @(#)$Id: teachmod.g,v 4.4 2009/12/28 22:57:22 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -12,7 +12,7 @@
 ##  always installed with GAP.
 ##
 Revision.teachmod_g:=
-  "@(#)$Id: teachmod.g,v 4.3 2009/01/03 00:22:55 gap Exp $";
+  "@(#)$Id: teachmod.g,v 4.4 2009/12/28 22:57:22 gap Exp $";
 
 
 ## FFE Display
@@ -29,6 +29,21 @@ function(x)
     Print("ZmodnZObj( ",Int(x),", ",p," )");
   else
     Print("Z(",p^d,")^",LogFFE(x,Z(p^d)));
+  fi;
+end);
+
+InstallMethod(String,true,[IsFFE],100,
+function(x)
+  local p,d;
+  if TEACHMODE<>true then
+    TryNextMethod();
+  fi;
+  d:=DegreeFFE(x);
+  p:=Characteristic(x);
+  if d=1 then
+    return Concatenation("ZmodnZObj( ",String(Int(x)),", ",String(p)," )");
+  else
+    return Concatenation("Z(",String(p^d),")^",String(LogFFE(x,Z(p^d))));
   fi;
 end);
 
@@ -62,3 +77,107 @@ local a,p, d, e, b, i;
   Print(a.display);
 end);
 
+# basic constructors -- if teaching mode they will default to fp groups
+
+
+#############################################################################
+##
+#F  AbelianGroup( [<filt>, ]<ints> )  . . . . . . . . . . . . . abelian group
+##
+BindGlobal( "AbelianGroup", function ( arg )
+
+  if Length(arg) = 1  then
+    if ForAny(arg[1],x->x=0) or TEACHMODE=true then
+      return AbelianGroupCons( IsFpGroup, arg[1] );
+    else
+      return AbelianGroupCons( IsPcGroup, arg[1] );
+    fi;
+  elif IsOperation(arg[1]) then
+
+    if Length(arg) = 2  then
+      return AbelianGroupCons( arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+      return AbelianGroupCons( arg[1], arg[2], arg[3] );
+    fi;
+  fi;
+  Error( "usage: AbelianGroup( [<filter>, ]<ints> )" );
+
+end );
+
+
+#############################################################################
+##
+#F  CyclicGroup( [<filt>, ]<n> )  . . . . . . . . . . . . . . .  cyclic group
+##
+BindGlobal( "CyclicGroup", function ( arg )
+
+  if Length(arg) = 1  then
+    if arg[1]=infinity or TEACHMODE=true then
+      return CyclicGroupCons(IsFpGroup,arg[1]);
+    fi;
+    return CyclicGroupCons( IsPcGroup, arg[1] );
+  elif IsOperation(arg[1]) then
+
+    if Length(arg) = 2  then
+      return CyclicGroupCons( arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+      return CyclicGroupCons( arg[1], arg[2], arg[3] );
+    fi;
+  fi;
+  Error( "usage: CyclicGroup( [<filter>, ]<size> )" );
+
+end );
+
+
+#############################################################################
+##
+#F  DihedralGroup( [<filt>, ]<n> )  . . . . . . . dihedral group of order <n>
+##
+BindGlobal( "DihedralGroup", function ( arg )
+
+  if Length(arg) = 1  then
+    if TEACHMODE=true then
+      return DihedralGroupCons( IsFpGroup, arg[1] );
+    else
+      return DihedralGroupCons( IsPcGroup, arg[1] );
+    fi;
+  elif IsOperation(arg[1]) then
+
+    if Length(arg) = 2  then
+      return DihedralGroupCons( arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+      return DihedralGroupCons( arg[1], arg[2], arg[3] );
+    fi;
+  fi;
+  Error( "usage: DihedralGroup( [<filter>, ]<size> )" );
+
+end );
+
+
+#############################################################################
+##
+#F  ElementaryAbelianGroup( [<filt>, ]<n> ) . . . .  elementary abelian group
+##
+BindGlobal( "ElementaryAbelianGroup", function ( arg )
+
+  if Length(arg) = 1  then
+    if TEACHMODE=true then
+      return ElementaryAbelianGroupCons( IsFpGroup, arg[1] );
+    else
+      return ElementaryAbelianGroupCons( IsPcGroup, arg[1] );
+    fi;
+  elif IsOperation(arg[1]) then
+
+    if Length(arg) = 2  then
+      return ElementaryAbelianGroupCons( arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+      return ElementaryAbelianGroupCons( arg[1], arg[2], arg[3] );
+    fi;
+  fi;
+  Error( "usage: ElementaryAbelianGroup( [<filter>, ]<size> )" );
+
+end );

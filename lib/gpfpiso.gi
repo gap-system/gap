@@ -3,17 +3,17 @@
 #W  gpfpiso.gi                  GAP library                      Bettina Eick
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: gpfpiso.gi,v 4.8 2009/01/12 22:03:58 gap Exp $
+#H  @(#)$Id: gpfpiso.gi,v 4.9 2010/02/23 15:13:01 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2004 The GAP Group
 ##
 ##  This file contains the methods for computing presentations for
 ##  (permutation) groups.
 ##
 Revision.gpfpiso_gi :=
-    "@(#)$Id: gpfpiso.gi,v 4.8 2009/01/12 22:03:58 gap Exp $";
+    "@(#)$Id: gpfpiso.gi,v 4.9 2010/02/23 15:13:01 gap Exp $";
 
 #############################################################################
 ##

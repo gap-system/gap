@@ -2,17 +2,17 @@
 ##
 #W  grpnice.gd                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id: grpnice.gd,v 4.33 2009/06/23 16:20:21 gap Exp $
+#H  @(#)$Id: grpnice.gd,v 4.34 2010/02/23 15:13:05 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains generic     methods   for groups handled    by  nice
 ##  monomorphisms..
 ##
 Revision.grpnice_gd :=
-    "@(#)$Id: grpnice.gd,v 4.33 2009/06/23 16:20:21 gap Exp $";
+    "@(#)$Id: grpnice.gd,v 4.34 2010/02/23 15:13:05 gap Exp $";
 
 
 #############################################################################

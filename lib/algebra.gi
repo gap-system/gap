@@ -3,16 +3,16 @@
 #W  algebra.gi                  GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id: algebra.gi,v 4.82 2007/08/16 20:35:41 gap Exp $
+#H  @(#)$Id: algebra.gi,v 4.83 2010/02/23 15:12:45 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for algebras and algebras-with-one.
 ##
 Revision.algebra_gi :=
-    "@(#)$Id: algebra.gi,v 4.82 2007/08/16 20:35:41 gap Exp $";
+    "@(#)$Id: algebra.gi,v 4.83 2010/02/23 15:12:45 gap Exp $";
 
 
 #############################################################################

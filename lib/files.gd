@@ -2,14 +2,14 @@
 ##
 #W  files.gd                    GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for files and directories.
 ##
 Revision.files_gd :=
-    "@(#)$Id: files.gd,v 4.49 2009/07/10 14:28:11 gap Exp $";
+    "@(#)$Id: files.gd,v 4.62 2010/07/28 15:45:20 gap Exp $";
 
 
 #############################################################################
@@ -40,18 +40,6 @@ DeclareCategory( "IsDirectory", IsObject );
 BIND_GLOBAL( "DirectoriesFamily", NewFamily( "DirectoriesFamily" ) );
 
 
-#############################################################################
-##
-#F  USER_HOME_EXPAND . . . . . . . . . . . . .  expand leading ~ in file name
-##
-##  <ManSection>
-##  <Func Name="USER_HOME_EXPAND" Arg='obj'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("USER_HOME_EXPAND");
 
 
 #############################################################################
@@ -82,6 +70,57 @@ DeclareGlobalFunction("USER_HOME_EXPAND");
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "Directory", [ IsString ] );
+
+#############################################################################
+##
+#F  DirectoryHome() . . . . . . . . . . . . . . .  new directory object
+##
+##  <#GAPDoc Label="DirectoryHome">
+##  <ManSection>
+##  <Oper Name="DirectoryHome" />
+##
+##  <Description>
+##  returns a directory object for the users home directory, defined as a
+##  directory in which the user will typically have full read and write
+##  access.
+##  The function is intended to provide a cross-platform interface to a
+##  directory that is easily accessible by the user.
+##
+##  Under Unix systems (as well as on the Mac) this will be the
+##  usual user home directory. Under Windows it will the the users <C>My
+##  Documents</C> folder (or the appropriate name under different
+##  languages).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "DirectoryHome" );
+
+#############################################################################
+##
+#F  DirectoryDesktop() . . . . . . . . . . . . . . .  new directory object
+##
+##  <#GAPDoc Label="DirectoryDesktop">
+##  <ManSection>
+##  <Oper Name="DirectoryDesktop" />
+##
+##  <Description>
+##  returns a directory object for the users desktop directory as defined on
+##  many modern operating systems. 
+##  The function is intended to provide a cross-platform interface to a
+##  directory that is easily accessible by the user.
+##
+##  Under Unix systems (as well as on the Mac) this will be the
+##  <C>Desktop</C> directory in the users home directory if it exists, and
+##  the users home directry otherwise. 
+##  Under Windows it will the the users <C>Desktop</C> folder
+##  (or the appropriate name under different
+##  languages).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "DirectoryDesktop" );
 
 
 #############################################################################
@@ -205,12 +244,31 @@ DeclareOperation( "Read", [ IsString ] );
 ##
 #O  ReadTest( <string> )  . . . . . . . . . . . . . . . . .  read a test file
 ##
+##  <#GAPDoc Label="ReadTest">
 ##  <ManSection>
 ##  <Oper Name="ReadTest" Arg='string'/>
-##
+##  
 ##  <Description>
+##  reads the test file with name <A>string</A>.
+##  The test file should contain lines of &GAP; input and corresponding output.
+##  The input lines start with the <C>gap> </C> prompt
+##  (or with the <C>> </C> prompt if commands exceed one line).
+##  The output is exactly as would result from typing
+##  in the input interactively to a &GAP; session
+##  (on a screen with 80 characters per line).
+##  <P/>
+##  Optionally, <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> 
+##  may be used in the beginning and end of test files 
+##  to reinitialize the caches and the global 
+##  random number generator in order to be independent of the reading order 
+##  of several test files. 
+##  Furthermore, <Ref Func="START_TEST"/> increases the assertion level 
+##  for the time of the test, and <Ref Func="STOP_TEST"/> sets the 
+##  proportionality factor that is used to output a <Q>&GAP;stone</Q> 
+##  speed ranking after the file has been completely processed.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ReadTest", [ IsString ] );
 
@@ -267,6 +325,8 @@ DeclareOperation( "ReadAsFunction", [ IsString ] );
 ##  This function returns a list of filenames/directory names that reside in
 ##  the directory with name <A>name</A> (given as a string).
 ##  It is an error, if such a directory does not exist. 
+##  <P/>
+##  The ordering of the list entries can depend on the operating system.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -285,8 +345,8 @@ DeclareGlobalFunction("DirectoryContents");
 ##  <Description>
 ##  <Ref Func="DirectoriesLibrary"/> returns the directory objects for the
 ##  &GAP; library <A>name</A> as a list.
-##  <A>name</A> must be one of <C>"lib"</C> (the default), <C>"grp"</C>,
-##  <C>"prim"</C>, and so on.
+##  <A>name</A> must be one of <C>"lib"</C> (the default), <C>"doc"</C>,
+##  <C>"tst"</C>, and so on.
 ##  <P/>
 ##  The string <C>""</C> is also legal and with this argument
 ##  <Ref Func="DirectoriesLibrary"/> returns the list of
@@ -403,40 +463,45 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+SplitString:="2b defined";
+Exec:="2b defined";
 BIND_GLOBAL( "DirectoryTemporary", function( arg )
-    local   dir;
+    local   dir,a;
 
     # check arguments
     if 1 < Length(arg)  then
         Error( "usage: DirectoryTemporary( [<hint>] )" );
     fi;
 
-    # create temporary directory
+  # create temporary directory
 
-    if ARCH_IS_WINDOWS() then
-      # Under Windows, the cygwin environment may return a path under /tmp,
-      # but this is actually mapped to
-      # C:/Documents and Settings/Username/.../Temp
-      # A path /tmp/... then causes problems with external binaries that do not
-      # use cygwin. Therefore it seems to be better to use the Windows Temp
-      # directory. The lack of subdirectories then potentially could cause
-      # problems if several instances of a package run at the same time,
-      # however -- Windows being primarily single-user -- this seems
-      # unlikely.
-      #T Create subdirectories with random name. (How to create directory?)
-      dir:="C:/WINDOWS/Temp/";
-    else
-      dir := TmpDirectory();
-      if dir = fail  then
-	return fail;
-      fi;
-      # remember directory name
-      Add( GAPInfo.DirectoriesTemporary, dir );
+  dir := TmpDirectory();
+  if ARCH_IS_WINDOWS() then
+    # just in case the new kernel code still fails under Windows, default
+    if not ':' in dir then # non-windows path -- so we're still wrong
+      a:=SplitString(dir,"/");
+      a:=a[Length(a)]; # is "tmp.uq8dsf", get rid of tmp. bit
+      a:=SplitString(a,".");
+      a:=Concatenation("t",a[2]); # now its tuq8dsf, which should be fine.
+      dir:=Concatenation("C:/WINDOWS/Temp/",a);
+
+      # dirty, dirty hack: Create temp folder in C:\WINDOWS\Temp
+      Exec(Concatenation("mkdir ",ReplacedString(dir,"/","\\")));
+
+      Add(dir,'/');
     fi;
+  fi;
+
+  if dir = fail  then
+    return fail;
+  fi;
+  # remember directory name
+  Add( GAPInfo.DirectoriesTemporary, dir );
 
     return Directory(dir);
 end );
-
+UNBIND_GLOBAL("Exec");
+UNBIND_GLOBAL("SplitString");
 
 #T THIS IS A HACK UNTIL `RemoveDirectory' IS AVAILABLE
 InputTextNone := "2b defined";
@@ -464,6 +529,21 @@ if ARCH_IS_UNIX() then
   end );
 fi;
 
+if ARCH_IS_WINDOWS() then
+  # as we use `rmdir' this will only run under Windows.
+  InstallAtExit( function()
+  local i;
+
+    for i  in GAPInfo.DirectoriesTemporary  do
+      # delete all files in there with force
+      Exec(Concatenation("del /F /S /Q ",ReplacedString(i,"/","\\")));
+      # then delete folders
+      Exec(Concatenation("rmdir /S /Q ",ReplacedString(i,"/","\\")));
+    od;
+
+  end );
+fi;
+
 
 #############################################################################
 ##
@@ -475,7 +555,6 @@ fi;
 ##
 ##  <Description>
 ##  returns the directory object for the current directory.
-##  <!--  THIS IS A HACK (will not work if SetDirectoryCurrent is implemented)-->
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -497,13 +576,21 @@ end );
 ##  <Func Name="CrcFile" Arg='name-file'/>
 ##
 ##  <Description>
-##  computes a checksum value for the file with filename <A>name-file</A>
-##  and returns this value as an integer.
-##  See Section&nbsp;<Ref Sect="CRC Numbers"/> for an example.
+##  CRC (cyclic redundancy check) numbers provide a certain method of doing
+##  checksums. They are used by &GAP; to check whether
+##  files have changed.
+##  <P/>
+##  <Ref Func="CrcFile"/> computes a checksum value for the file with
+##  filename <A>name-file</A> and returns this value as an integer.
 ##  The function returns <K>fail</K> if a system error occurred, say,
 ##  for example, if <A>name-file</A> does not exist.
 ##  In this case the function <Ref Func="LastSystemError"/>
 ##  can be used to get information about the error.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> CrcFile( "lib/morpheus.gi" );
+##  2705743645
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -582,13 +669,6 @@ end );
 
 #############################################################################
 ##
-#V  EDITOR  . . . . . . . . . . . . . . . . . . . . default editor for `Edit'
-##
-EDITOR := "vi";
-
-
-#############################################################################
-##
 #F  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
 ##
 ##  <#GAPDoc Label="Edit">
@@ -600,12 +680,13 @@ EDITOR := "vi";
 ##  by the string <A>filename</A>, and reads the file back into &GAP;
 ##  when you exit the editor again.
 ##  <P/>
-##  You should set the &GAP; variable <C>EDITOR</C> to the name of
-##  the editor that you usually use, e.g., <F>/usr/ucb/vi</F>.
+##  You should set the &GAP; variable <C>GAPInfo.UserPreferences.Editor</C>
+##  to the name of the editor that you usually use,
+##  e.g., <F>/usr/bin/vim</F>.
 ##  On Windows you can use <C>edit.com</C>.
-##  This can for example be done in your <F>.gaprc</F> file
-##  (see the sections on operating system dependent features
-##  in Chapter&nbsp;<Ref Chap="Installing GAP"/>).
+##  <P/>
+##  This can for example be done in your <F>gap.ini</F> file,
+##  see Section <Ref Subsect="subsect:gap.ini file"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -615,8 +696,7 @@ DeclareGlobalFunction( "Edit" );
 
 #############################################################################
 ##
-#F  CreateCompletionFiles() . . . . . . . . . . . create "lib/readX.co" files
-#F  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
+#F  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
 ##
 ##  <#GAPDoc Label="CreateCompletionFiles">
 ##  <ManSection>
@@ -631,11 +711,16 @@ DeclareGlobalFunction( "Edit" );
 ##  where <A>path</A> is a string giving a path to the home directory of
 ##  &GAP; (the  directory containing the <F>lib</F> directory).
 ##  <P/>
+##  If you want to call <Ref Func="CreateCompletionFiles"/> without arguments
+##  then you should start &GAP; with the <C>-r</C> option,
+##  since otherwise &GAP; will try to create the completion files in the
+##  directory <F>~/.gap/lib</F>, see <Ref Sect="The .gaprc file"/>.
+##  <P/>
 ##  This produces, in addition to lots of informational output,
 ##  the completion files.
 ##  <P/>
 ##  <Log><![CDATA[
-##  $ gap4 -N
+##  $ gap4 -N -r
 ##  gap> CreateCompletionFiles();
 ##  #I  converting "gap4/lib/read2.g" to "gap4/lib/read2.co"
 ##  #I    parsing "gap4/lib/process.gd"

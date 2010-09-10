@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  scanner.h                   GAP source                   Martin Schoenert
+*W  scanner.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: scanner.h,v 4.34 2009/03/07 13:12:44 sal Exp $
+*H  @(#)$Id: scanner.h,v 4.35 2010/02/23 15:13:48 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the scanner, which is responsible for
@@ -31,7 +31,7 @@
 
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_scanner_h =
-   "@(#)$Id: scanner.h,v 4.34 2009/03/07 13:12:44 sal Exp $";
+   "@(#)$Id: scanner.h,v 4.35 2010/02/23 15:13:48 gap Exp $";
 #endif
 
 

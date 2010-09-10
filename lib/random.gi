@@ -3,7 +3,7 @@
 #W  random.gi                     GAP library                    Frank Lübeck
 #W                                                             Max Neunhöffer
 ##
-#H  @(#)$Id: random.gi,v 4.2 2006/08/28 15:47:49 gap Exp $
+#H  @(#)$Id: random.gi,v 4.4 2010/09/07 12:53:21 gap Exp $
 ##
 #Y  Copyright (C) 2006 The GAP Group
 ##
@@ -11,7 +11,7 @@
 ##  sources.
 ##
 Revision.random_gi :=
-    "@(#)$Id: random.gi,v 4.2 2006/08/28 15:47:49 gap Exp $";
+    "@(#)$Id: random.gi,v 4.4 2010/09/07 12:53:21 gap Exp $";
 
 ###########################################################################
 ##  Generic methods for random sources.
@@ -153,11 +153,28 @@ end);
 ##  Random source using the Mersenne twister kernel functions.
 ##  
 InstallMethod(Init, [IsMersenneTwister, IsObject], function(rs, seed)
-  if IsPlistRep(seed) and IsString(seed[1]) then
-    rs!.state := ShallowCopy(seed[1]);
+  local st, endianseed, endiansys, perm, tmp, i;
+  if IsPlistRep(seed) and IsString(seed[1]) and Length(seed[1]) = 2504 then
+    st := ShallowCopy(seed[1]);
+    # maybe adjust endianness if seed comes from different machine:
+    endianseed := st{[2501..2504]};
+    endiansys := GlobalMersenneTwister!.state{[2501..2504]};
+    if endianseed <> endiansys then
+      perm := List(endiansys, c-> Position(endianseed, c));
+      tmp := "";
+      for i in [0..625] do
+        tmp{[4*i+1..4*i+4]} := st{4*i+perm};
+      od;
+      st := tmp;
+    fi;
+    rs!.state := st;
   else
     if not IsString(seed) then
-      seed := String(seed);
+      seed := ShallowCopy(String(seed));
+      # padding such that length is positive and divisible by 4
+      while Length(seed) = 0 or Length(seed) mod 4 <> 0 do
+        Add(seed, CHAR_INT(0));
+      od;
     fi;
     rs!.state := InitRandomMT(seed);
   fi;
@@ -197,19 +214,6 @@ end);
 # One global Mersenne twister random source, can be used to overwrite
 # the library Random(list) and Random(a,b) methods.
 InstallValue(GlobalMersenneTwister, RandomSource(IsMersenneTwister, "1"));
-
-############################################################################
-##  Compatibility functions, these are documented for a long time.
-##  (We also keep the global variables R_N and R_X within the 
-##  'GlobalRandomSource' because they were documented.)
-##  
-InstallGlobalFunction(StateRandom,function()
-  return State(GlobalRandomSource);
-end);
-
-InstallGlobalFunction(RestoreStateRandom,function(seed)
-  Reset(GlobalRandomSource, seed);
-end);
 
 # default random method for lists and pairs of integers using the Mersenne
 # twister

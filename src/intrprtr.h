@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  intrprtr.h                  GAP source                   Martin Schoenert
+*W  intrprtr.h                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: intrprtr.h,v 4.23 2005/10/17 09:31:34 gap Exp $
+*H  @(#)$Id: intrprtr.h,v 4.24 2010/02/23 15:13:43 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the immediate interpreter package.
@@ -18,7 +18,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_intrprtr_h =
-   "@(#)$Id: intrprtr.h,v 4.23 2005/10/17 09:31:34 gap Exp $";
+   "@(#)$Id: intrprtr.h,v 4.24 2010/02/23 15:13:43 gap Exp $";
 #endif
 
 

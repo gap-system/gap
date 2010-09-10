@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  funcs.c                     GAP source                   Martin Schoenert
+*W  funcs.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: funcs.c,v 4.42 2009/09/25 15:17:05 gap Exp $
+*H  @(#)$Id: funcs.c,v 4.44 2010/02/23 15:13:42 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the function interpreter package.
@@ -22,7 +22,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_funcs_c =
-   "@(#)$Id: funcs.c,v 4.42 2009/09/25 15:17:05 gap Exp $";
+   "@(#)$Id: funcs.c,v 4.44 2010/02/23 15:13:42 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -768,18 +768,24 @@ Obj             EvalFunccallXargs (
 **
 */
 
-/* TL: Int RecursionDepth; */
+/* Int RecursionDepth; */
 static UInt RecursionTrapInterval;
 
 static void RecursionDepthTrap( void )
 {
     Int recursionDepth;
-    recursionDepth = TLS->recursionDepth;
-    TLS->recursionDepth = 0;
-    ErrorReturnVoid( "recursion depth trap (%d)\n",         
-		     (Int)recursionDepth, 0L,               
-		     "you may 'return;'" );
-    TLS->recursionDepth = recursionDepth;
+    /* in interactive work the RecursionDepth could become slightly negative
+     * when quit-ting a higher level brk-loop to a lower level one.
+     * Therefore we don't do anything if  RecursionDepth <= 0
+    */
+    if (TLS->recursionDepth > 0) {
+        recursionDepth = TLS->recursionDepth;
+        TLS->recursionDepth = 0;
+        ErrorReturnVoid( "recursion depth trap (%d)\n",         
+                         (Int)recursionDepth, 0L,               
+                         "you may 'return;'" );
+        TLS->recursionDepth = recursionDepth;
+    }
 }
      
 #ifndef SYS_IS_MAC_MWC

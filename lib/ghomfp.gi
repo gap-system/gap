@@ -2,11 +2,11 @@
 ##
 #W  ghomfp.gi                   GAP library                  Alexander Hulpke
 ##
-#Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomfp_gi :=
-    "@(#)$Id: ghomfp.gi,v 4.49 2009/06/11 21:16:26 gap Exp $";
+    "@(#)$Id: ghomfp.gi,v 4.51 2010/06/03 15:58:12 gap Exp $";
 
 #############################################################################
 ##
@@ -827,7 +827,7 @@ local aug,w,p,pres,f,fam;
   fi;
   aug:=CopiedAugmentedCosetTable(aug);
   pres := PresentationAugmentedCosetTable( aug,nam,0,true );
-  TzOptions(pres).printLevel:=0; # shut up
+  TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup);
   DecodeTree(pres);
 
   # new free group

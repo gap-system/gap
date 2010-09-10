@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  pcgsperm.gi                 GAP library                    Heiko Thei"sen
+#W  pcgsperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: pcgsperm.gi,v 4.125 2008/09/18 19:54:02 gap Exp $
+#H  @(#)$Id: pcgsperm.gi,v 4.127 2010/06/20 15:13:34 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains    functions which deal with   polycyclic  generating
 ##  systems of solvable permutation groups.
 ##
 Revision.pcgsperm_gi :=
-    "@(#)$Id: pcgsperm.gi,v 4.125 2008/09/18 19:54:02 gap Exp $";
+    "@(#)$Id: pcgsperm.gi,v 4.127 2010/06/20 15:13:34 gap Exp $";
 
 #############################################################################
 ##
@@ -285,23 +285,36 @@ end );
 
 #############################################################################
 ##
-#F  TryPcgsPermGroup(<G>, <cent>, <desc>, <elab>) . . try to construct a pcgs
+#F  TryPcgsPermGroup(<Act>[, <G>] , <cent>, <desc>, <elab>) . . try for pcgs
 ##
-InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
+InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     local   grp,  pcgs,  U,  oldlen,  series,  y,  w,  whole,
-            bound,  deg,  step,  i,  S,  filter;
+            bound,  deg,  step,  i,  S,  filter,A,G,cent,desc,elab,gens;
+
+    A:=arg[1];
+    cent:=arg[Length(arg)-2];
+    desc:=arg[Length(arg)-1];
+    elab:=arg[Length(arg)];
 
     # If the last member <U> of the series <G> already has a pcgs, start with
     # its stabilizer chain.
-    if IsList( G )  then
+    if IsList( A )  then
+	G:=A;
+	A:=A[1];
         U := G[ Length( G ) ];
         if HasPcgs( U )  and  IsPcgsPermGroupRep( Pcgs( U ) )  then
             U := CopyStabChain( Pcgs( U )!.stabChain );
         fi;
+    elif Length(arg)>4 then
+      G:=arg[2];
+      U := TrivialSubgroup( G );
+      if ForAll(GeneratorsOfGroup(G),x->IsOne(x)) then G:=[G];
+                                      else G:=[G,U];fi;
     else
-        U := TrivialSubgroup( G );
-        if IsTrivial( G )  then  G := [ G ];
-                           else  G := [ G, U ];  fi;
+      G:=A;
+      U := TrivialSubgroup( G );
+      if IsTrivial( G )  then  G := [ G ];
+			  else  G := [ G, U ];  fi;
     fi;
     
     # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
@@ -352,6 +365,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
     series := [ U ];
     series[ 1 ].relativeOrders := [  ];
 
+step:="W";
     if not IsTrivial( grp )  then
         
         # The derived  length of  <G> was  bounded by  Dixon. The  nilpotency
@@ -371,7 +385,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
         for step  in Reversed( [ 1 .. Length( G ) - 1  ] )  do
             for y  in GeneratorsOfGroup( G[ step ] )  do
                 if not y in GeneratorsOfGroup( G[ step + 1 ] )  then
-                    w := ExtendSeriesPermGroup( G[ step ], series, cent,
+                    w := ExtendSeriesPermGroup( A, series, cent,
                                  desc, elab, y, 0, 0, bound );
                     if w <> true  then
                         SetIsNilpotentGroup( grp, false );

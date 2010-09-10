@@ -3,17 +3,17 @@
 #W  lierep.gd                   GAP library               Willem de Graaf
 #W                                                    and Craig A. Struble
 ##
-#H  @(#)$Id: lierep.gd,v 4.33 2009/06/15 15:20:22 gap Exp $
+#H  @(#)$Id: lierep.gd,v 4.34 2010/02/23 15:13:11 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for modules over Lie algebras.
 ##
 Revision.lierep_gd :=
-    "@(#)$Id: lierep.gd,v 4.33 2009/06/15 15:20:22 gap Exp $";
+    "@(#)$Id: lierep.gd,v 4.34 2010/02/23 15:13:11 gap Exp $";
 
 
 #############################################################################

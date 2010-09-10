@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  tom.gi                   GAP library                       Goetz Pfeiffer
+#W  tom.gi                   GAP library                       Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
-#H  @(#)$Id: tom.gi,v 4.54 2008/11/26 16:25:20 gap Exp $
+#H  @(#)$Id: tom.gi,v 4.57 2010/05/20 16:23:59 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for tables of marks.
@@ -26,7 +26,7 @@
 ##  13. Generic Construction of Tables of Marks
 ##
 Revision.tom_gi :=
-    "@(#)$Id: tom.gi,v 4.54 2008/11/26 16:25:20 gap Exp $";
+    "@(#)$Id: tom.gi,v 4.57 2010/05/20 16:23:59 gap Exp $";
 
 
 #############################################################################
@@ -924,11 +924,14 @@ InstallMethod( TableOfMarks,
 #F  TableOfMarksFromLibrary( <name> )
 ##
 ##  The `TableOfMarks' method for a string calls `TableOfMarksFromLibrary'.
-##  We bind this to a dummy function that signals an error.
+##  If the library of tables of marks is not available then we bind this
+##  to a dummy function that signals an error.
 ##
-BindGlobal( "TableOfMarksFromLibrary", function( arg )
-    Error( "sorry, the GAP Tables Of Marks Library is not installed" );
-    end );
+#if not IsBoundGlobal( "TableOfMarksFromLibrary" ) then
+#  BindGlobal( "TableOfMarksFromLibrary", function( arg )
+#      Error( "sorry, the GAP Tables Of Marks Library is not installed" );
+#      end );
+#fi;
 
 
 #############################################################################

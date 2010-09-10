@@ -2,10 +2,10 @@
 ##
 #W  alghom.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: alghom.gd,v 4.23 2009/01/27 17:10:18 gap Exp $
+#H  @(#)$Id: alghom.gd,v 4.24 2010/02/23 15:12:45 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains declarations of operations for algebra(-with-one)
@@ -21,7 +21,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.alghom_gd :=
-    "@(#)$Id: alghom.gd,v 4.23 2009/01/27 17:10:18 gap Exp $";
+    "@(#)$Id: alghom.gd,v 4.24 2010/02/23 15:12:45 gap Exp $";
 
 
 #############################################################################

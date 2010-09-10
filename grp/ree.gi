@@ -2,12 +2,12 @@
 ##
 #W  ree.gi                     GAP library
 ##
-#H  @(#)$Id: ree.gi,v 1.4 2006/01/16 23:00:10 gap Exp $
+#H  @(#)$Id: ree.gi,v 1.5 2010/02/23 15:12:44 gap Exp $
 ##
-#Y  (C) 2001 School Math. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2001 School Math. Sci., University of St Andrews, Scotland
 ##
 Revision.ree_gi :=
-    "@(#)$Id: ree.gi,v 1.4 2006/01/16 23:00:10 gap Exp $";
+    "@(#)$Id: ree.gi,v 1.5 2010/02/23 15:12:44 gap Exp $";
 
 #############################################################################
 ##

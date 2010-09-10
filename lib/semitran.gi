@@ -1,18 +1,18 @@
 ############################################################################
 ##
-#W  semitran.gi           GAP library         Isabel Araujo and Robert Arthur 
+#W  semitran.gi           GAP library         Isabel Araújo and Robert Arthur 
 ##
-#H  @(#)$Id: semitran.gi,v 4.12 2005/12/15 15:42:29 sal Exp $
+#H  @(#)$Id: semitran.gi,v 4.13 2010/02/23 15:13:30 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation of some basics for transformation 
 ##	semigroups 
 ##
 Revision.semitran_gi :=
-    "@(#)$Id: semitran.gi,v 4.12 2005/12/15 15:42:29 sal Exp $";
+    "@(#)$Id: semitran.gi,v 4.13 2010/02/23 15:13:30 gap Exp $";
 
 #############################################################################
 ##

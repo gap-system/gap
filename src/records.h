@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  records.h                   GAP source                   Martin Schoenert
+*W  records.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: records.h,v 4.9 2002/04/15 10:03:56 sal Exp $
+*H  @(#)$Id: records.h,v 4.10 2010/02/23 15:13:47 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the generic record package.
@@ -15,7 +15,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_records_h =
-   "@(#)$Id: records.h,v 4.9 2002/04/15 10:03:56 sal Exp $";
+   "@(#)$Id: records.h,v 4.10 2010/02/23 15:13:47 gap Exp $";
 #endif
 
 

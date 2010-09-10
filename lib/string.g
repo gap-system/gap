@@ -3,16 +3,16 @@
 #W  string.g                     GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: string.g,v 4.26 2008/09/09 16:11:14 gap Exp $
+#H  @(#)$Id: string.g,v 4.28 2010/03/05 13:45:42 sal Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with strings and characters.
 ##
 Revision.string_g :=
-    "@(#)$Id: string.g,v 4.26 2008/09/09 16:11:14 gap Exp $";
+    "@(#)$Id: string.g,v 4.28 2010/03/05 13:45:42 sal Exp $";
 
 
 #############################################################################
@@ -304,8 +304,31 @@ InstallMethod( String,
       local res; res := "\'"; Add(res, ch); Add(res, '\''); return res; 
     end);
 
+    
+#############################################################################
+##
+#F  USER_HOME_EXPAND . . . . . . . . . . . . .  expand leading ~ in file name
+##
+##  <ManSection>
+##  <Func Name="USER_HOME_EXPAND" Arg='obj'/>
+##  <Description>
+##
+##  
+##  If `GAPInfo.UserHome' has positive length then a leading '~' character in 
+##  string `str' is substituted by the content of `GAPInfo.UserHome'.
+##  Otherwise `str' itself is returned.
+##  </Description>
+##  </ManSection>
+##  
+BIND_GLOBAL("USER_HOME_EXPAND", function(str)
+  if Length(str) > 0 and str[1] = '~' and Length( GAPInfo.UserHome ) > 0 then
+    return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
+  else
+    return str;
+  fi;
+end);
+    
 
 #############################################################################
 ##
 #E
-

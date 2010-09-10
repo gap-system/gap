@@ -2,17 +2,17 @@
 ##
 #W  grpcompl.gi                  GAP Library                 Alexander Hulpke
 ##
-#H  @(#)$Id: grpcompl.gi,v 4.16 2006/06/09 19:10:14 gap Exp $
+#H  @(#)$Id: grpcompl.gi,v 4.18 2010/02/23 15:13:04 gap Exp $
 ##
 #Y  Copyright (C)  1997
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for the computation of complements in
 ##  'white box groups'
 ##
 Revision.grpcompl_gi :=
-    "@(#)$Id: grpcompl.gi,v 4.16 2006/06/09 19:10:14 gap Exp $";
+    "@(#)$Id: grpcompl.gi,v 4.18 2010/02/23 15:13:04 gap Exp $";
 
 
 BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
@@ -54,18 +54,34 @@ BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
   return rec(com:=com,bas:=b,mats:=mats);
 end);
 
-ComplementclassesSolvableWBG:=function(G,N)
-local s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom, 
+ComplementclassesSolvableWBG:=function(arg)
+local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom, 
       ncomgens, ncen, nlcom, nlcomgens, nlcen, ocr, generators, modulePcgs, 
       l, complement, k, v, afu, i, j, jj;
 
+  G:=arg[1];
+  N:=arg[2];
   # compute a series through N
   s:=ChiefSeriesUnderAction(G,N);
+  if Length(arg)=2 then
+    K:=fail;
+  else
+    K:=arg[3];
+    # build a series only down to K
+    h:=List(s,x->ClosureGroup(K,x));
+    s:=[h[1]];
+    for i in h{[2..Length(h)]} do
+      if Size(i)<Size(s[Length(s)]) then
+	Add(s,i);
+      fi;
+    od;
+
+  fi;
 
   Info(InfoComplement,1,"Series of factors:",
        List([1..Length(s)-1],i->Size(s[i])/Size(s[i+1])));
 
-  # transfer probably to better group (later, AgCase)
+  # #T transfer probably to better group (later, AgCase)
 
   # construct a presentation
   h:=NaturalHomomorphismByNormalSubgroup(G,N);
@@ -209,6 +225,9 @@ local s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
     Info(InfoComplement,1,Length(com)," complements in total");
   od;
 
+  if K<>fail then
+    com:=List(com,x->ClosureGroup(K,x));
+  fi;
   return com;
 
 end;

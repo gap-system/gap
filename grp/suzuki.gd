@@ -2,12 +2,12 @@
 ##
 #W  suzuki.gd                   GAP library                       Stefan Kohl
 ##
-#H  @(#)$Id: suzuki.gd,v 4.7 2008/10/27 08:56:55 gap Exp $
+#H  @(#)$Id: suzuki.gd,v 4.8 2010/02/23 15:12:44 gap Exp $
 ##
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 Revision.suzuki_gd :=
-    "@(#)$Id: suzuki.gd,v 4.7 2008/10/27 08:56:55 gap Exp $";
+    "@(#)$Id: suzuki.gd,v 4.8 2010/02/23 15:12:44 gap Exp $";
 
 
 #############################################################################

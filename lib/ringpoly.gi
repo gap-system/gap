@@ -2,15 +2,15 @@
 ##
 #W  ringpoly.gi                 GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods  for attributes, properties and operations
 ##  for polynomial rings and function fields.
 ##
 Revision.ringpoly_gi :=
-    "@(#)$Id: ringpoly.gi,v 4.55 2009/05/05 15:43:00 gap Exp $";
+    "@(#)$Id: ringpoly.gi,v 4.57 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################
@@ -522,7 +522,7 @@ function( ogens )
          HasCoefficientsOfLaurentPolynomial(ogens[i]));
 
     univ:=Filtered(ogens{g},
-	     i->DegreeOfUnivariateLaurentPolynomial(i)>0 and
+	     i->DegreeOfUnivariateLaurentPolynomial(i)>=0 and
 		DegreeOfUnivariateLaurentPolynomial(i)<infinity);
 
     gens:=ogens{Difference([1..Length(ogens)],g)};

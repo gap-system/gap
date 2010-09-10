@@ -2,16 +2,16 @@
 ##
 #W  algebra.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: algebra.gd,v 4.89 2008/09/22 16:22:27 gap Exp $
+#H  @(#)$Id: algebra.gd,v 4.91 2010/02/23 15:12:44 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for `FLMLOR's and algebras.
 ##
 Revision.algebra_gd :=
-    "@(#)$Id: algebra.gd,v 4.89 2008/09/22 16:22:27 gap Exp $";
+    "@(#)$Id: algebra.gd,v 4.91 2010/02/23 15:12:44 gap Exp $";
 
 
 #############################################################################
@@ -183,7 +183,6 @@ DeclareSynonym( "IsAlgebraWithOne",
 ##
 DeclareSynonymAttr( "IsLieAlgebra",
     IsAlgebra and IsZeroSquaredRing and IsJacobianRing );
-
 
 #############################################################################
 ##
@@ -1640,6 +1639,8 @@ DeclareGlobalFunction( "AlgebraByStructureConstants" );
 ##  <ManSection>
 ##  <Func Name="LieAlgebraByStructureConstants"
 ##   Arg='R, sctable[, nameinfo]'/>
+##  <Func Name="RestrictedLieAlgebraByStructureConstants"
+##   Arg='R, sctable[, nameinfo], pmapping'/>
 ##
 ##  <Description>
 ##  <Ref Func="LieAlgebraByStructureConstants"/> does the same as
@@ -1660,6 +1661,7 @@ DeclareGlobalFunction( "AlgebraByStructureConstants" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LieAlgebraByStructureConstants" );
+DeclareGlobalFunction( "RestrictedLieAlgebraByStructureConstants" );
 
 
 #############################################################################

@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  gprd.gd                     GAP library                    Heiko Thei"sen
+#W  gprd.gd                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: gprd.gd,v 4.42 2009/09/24 14:45:57 alexk Exp $
+#H  @(#)$Id: gprd.gd,v 4.43 2010/02/23 15:13:01 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprd_gd :=
-    "@(#)$Id: gprd.gd,v 4.42 2009/09/24 14:45:57 alexk Exp $";
+    "@(#)$Id: gprd.gd,v 4.43 2010/02/23 15:13:01 gap Exp $";
 
 
 #############################################################################

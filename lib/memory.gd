@@ -1,16 +1,16 @@
 #############################################################################
 ##
-##  memory.gd          recog package                      Max Neunhoeffer
-##                                                            ¡kos Seress
+##  memory.gd          recog package                      Max Neunh√∂ffer
+##                                                            √Åkos Seress
 ##
-##  Copyright 2005 Lehrstuhl D f¸r Mathematik, RWTH Aachen
+##  Copyright 2005 Lehrstuhl D f√ºr Mathematik, RWTH Aachen
 ##
 ##  Group objects remembering how they were created from the generators.
 ##
 #############################################################################
 
 Revision.memory_gd :=
-  "@(#)$Id: memory.gd,v 1.2 2006/08/19 13:06:26 gap Exp $";
+  "@(#)$Id: memory.gd,v 1.3 2010/02/23 15:13:14 gap Exp $";
 
 DeclareFilter("IsObjWithMemoryRankFilter",100); 
 

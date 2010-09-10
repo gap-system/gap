@@ -2,17 +2,17 @@
 ##
 #W  vecmat.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: vecmat.gi,v 4.108 2008/12/15 10:01:03 gap Exp $
+#H  @(#)$Id: vecmat.gi,v 4.110 2010/06/16 16:31:39 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains  the basic methods for  creating and doing  arithmetic
 ##  with GF2 vectors and matrices.
 ##
 Revision.vecmat_gi :=
-    "@(#)$Id: vecmat.gi,v 4.108 2008/12/15 10:01:03 gap Exp $";
+    "@(#)$Id: vecmat.gi,v 4.110 2010/06/16 16:31:39 gap Exp $";
 
 #############################################################################
 ##
@@ -502,17 +502,6 @@ function( a, b )
     return ADDCOEFFS_GF2VEC_GF2VEC(a,b);
 end );
 
-
-#############################################################################
-##
-#M  ShrinkCoeffs( <gf2vec> )  . . . . . . . . . . . . . . shrink a GF2 vector
-##
-InstallMethod( ShrinkCoeffs,
-    "for GF2 vector",
-    true,
-    [ IsMutable and IsRowVector and IsGF2VectorRep ],
-    0,
-    SHRINKCOEFFS_GF2VEC );
 
 #############################################################################
 ##

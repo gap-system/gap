@@ -3,17 +3,17 @@
 #W  algmat.gi                   GAP library                     Thomas Breuer
 #W                                                            Willem de Graaf
 ##
-#H  @(#)$Id: algmat.gi,v 4.35 2009/05/04 09:33:27 gap Exp $
+#H  @(#)$Id: algmat.gi,v 4.36 2010/02/23 15:12:46 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains those functions that mainly deal with matrix algebras,
 ##  that is, associative matrix algebras and matrix Lie algebras.
 ##
 Revision.algmat_gi :=
-    "@(#)$Id: algmat.gi,v 4.35 2009/05/04 09:33:27 gap Exp $";
+    "@(#)$Id: algmat.gi,v 4.36 2010/02/23 15:12:46 gap Exp $";
 
 
 #############################################################################

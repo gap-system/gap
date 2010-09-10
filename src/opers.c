@@ -1,12 +1,12 @@
 /****************************************************************************
 **
 *W  opers.c                     GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 **
-*H  @(#)$Id: opers.c,v 4.109 2009/04/06 12:07:22 gap Exp $
+*H  @(#)$Id: opers.c,v 4.110 2010/02/23 15:13:46 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the  filters, operations, attributes,
@@ -17,7 +17,7 @@
 
 
 const char * Revision_opers_c =
-   "@(#)$Id: opers.c,v 4.109 2009/04/06 12:07:22 gap Exp $";
+   "@(#)$Id: opers.c,v 4.110 2010/02/23 15:13:46 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */

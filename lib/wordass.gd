@@ -3,10 +3,10 @@
 #W  wordass.gd                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: wordass.gd,v 4.50 2008/11/12 13:04:46 gap Exp $
+#H  @(#)$Id: wordass.gd,v 4.52 2010/05/20 07:07:36 gap Exp $
 ##
-#Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for associative words.
@@ -20,7 +20,7 @@
 ##  7. Some Undocumented Functions
 ##
 Revision.wordass_gd :=
-    "@(#)$Id: wordass.gd,v 4.50 2008/11/12 13:04:46 gap Exp $";
+    "@(#)$Id: wordass.gd,v 4.52 2010/05/20 07:07:36 gap Exp $";
 
 
 #############################################################################
@@ -461,6 +461,13 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##  <P/>
 ##  See also <Ref Func="MappedWord"/>, an operation that is applicable to
 ##  arbitrary words.
+##  <P/>
+##  See Section <Ref Sect="Representations for Associative Words"/>
+##  for a discussion of the internal representations of associative words
+##  that are supported by &GAP;.
+##  Note that operations to extract or act on parts of words
+##  (letter or syllables) can carry substantially different
+##  costs, depending on the representation the words are in.
 ##  <#/GAPDoc>
 ##
 
@@ -679,22 +686,13 @@ DeclareOperation( "EliminatedWord",
 ##
 DeclareOperation( "ExponentSumWord", [ IsAssocWord, IsAssocWord ] );
 
-##  <#GAPDoc Label="[4]{wordass}">
-##  There are two internal representations of associative words: By letters
-##  and by syllables
-##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).
-##  Unless something else is specified, words are stored in the letter
-##  representation. Note, however, that operations to extract or act on
-##  parts of words (letter or syllables) can carry substantially different
-##  costs, depending on the representation the words are in.
-##  <#/GAPDoc>
 
 #############################################################################
 ##
 ##  4. Operations for Associative Words by their Syllables
 ##  <#GAPDoc Label="[5]{wordass}">
 ##  For an associative word
-##  <M><A>w</A> = x_1^{{n_1}} x_2^{{n_2}} \cdots x_k^{{n_k}}</M>
+##  <A>w</A> <M>= x_1^{{n_1}} x_2^{{n_2}} \cdots x_k^{{n_k}}</M>
 ##  over an alphabet containing <M>x_1, x_2, \ldots, x_k</M>,
 ##  such that <M>x_i \neq x_{{i+1}}^{{\pm 1}}</M> for
 ##  <M>1 \leq i \leq k-1</M>,

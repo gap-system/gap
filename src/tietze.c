@@ -3,18 +3,20 @@
 *W  tietze.c                    GAP source                       Frank Celler
 *W                                                           & Volkmar Felsch
 **
-*H  @(#)$Id: tietze.c,v 4.32 2009/10/06 22:59:49 gap Exp $
+*H  @(#)$Id: tietze.c,v 4.34 2010/06/14 15:56:26 sal Exp $
 **
-*Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright 1990-1992,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for computing with finite presentations.
 */
 #include        "system.h"              /* system dependent part           */
+#include        "code.h"
+#include        "stats.h"               /* for TakeInterrupt */
 
 const char * Revision_tietze_c = 
-  "@(#)$Id: tietze.c,v 4.32 2009/10/06 22:59:49 gap Exp $";
+  "@(#)$Id: tietze.c,v 4.34 2010/06/14 15:56:26 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1556,6 +1558,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
  
  /* while i in [ 1 .. n ] od */
  while (i<=n) {
+   TakeInterrupt();
   
   /* k := 1; */
   k=1;

@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  plist.c                     GAP source                   Martin Schoenert
+*W  plist.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: plist.c,v 4.82 2007/12/05 16:05:44 sal Exp $
+*H  @(#)$Id: plist.c,v 4.84 2010/06/12 20:44:34 sal Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions that deal with plain lists.
@@ -38,7 +38,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_plist_c =
-   "@(#)$Id: plist.c,v 4.82 2007/12/05 16:05:44 sal Exp $";
+   "@(#)$Id: plist.c,v 4.84 2010/06/12 20:44:34 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -2647,6 +2647,7 @@ void MakeImmutablePlistInHom( Obj list )
 {
   UInt i;
   Obj elm;
+  RetypeBag( list, IMMUTABLE_TNUM(TNUM_OBJ(list)));
   for (i = 1; i <= LEN_PLIST(list); i++)
     {
       elm = ELM_PLIST( list, i);
@@ -2656,7 +2657,6 @@ void MakeImmutablePlistInHom( Obj list )
 	  CHANGED_BAG(list);
 	}
     }
-  RetypeBag( list, IMMUTABLE_TNUM(TNUM_OBJ(list)));
 }
 
 /****************************************************************************
@@ -4864,6 +4864,10 @@ static Int InitKernel (
 
     for (t1 = T_PLIST_DENSE_NHOM; t1 <= T_PLIST_FFE; t1 += 2 ) 
       MakeImmutableObjFuncs[ t1 ] = MakeImmutablePlistNoMutElms;
+
+    /* mutable tables may have mutable rows */
+      MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
+    
 
     /* mutable tables may have mutable rows */
       MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;

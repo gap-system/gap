@@ -2,10 +2,10 @@
 ##
 #W  liefam.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: liefam.gi,v 4.28 2002/04/15 10:04:54 sal Exp $
+#H  @(#)$Id: liefam.gi,v 4.31 2010/02/23 15:13:11 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  1. general methods for Lie elements
@@ -15,7 +15,7 @@
 ##     (there are special methods for Lie matrix spaces)
 ##
 Revision.liefam_gi :=
-    "@(#)$Id: liefam.gi,v 4.28 2002/04/15 10:04:54 sal Exp $";
+    "@(#)$Id: liefam.gi,v 4.31 2010/02/23 15:13:11 gap Exp $";
 
 
 #############################################################################
@@ -40,10 +40,16 @@ InstallMethod( LieFamily,
     [ IsRingElementFamily ], 0,
     function( Fam )
 
-    local F;
+    local F, filt;
+
+    if HasCharacteristic(Fam) and Characteristic(Fam)>0 then
+        filt := IsRestrictedLieObject;
+    else
+        filt := IsLieObject;
+    fi;
 
     # Make the family of Lie elements.
-    F:= NewFamily( "LieFamily(...)", IsLieObject,CanEasilySortElements,
+    F:= NewFamily( "LieFamily(...)", filt,CanEasilySortElements,
 				     CanEasilySortElements);
     SetUnderlyingFamily( F, Fam );
 
@@ -53,7 +59,7 @@ InstallMethod( LieFamily,
 #T maintain other req/imp properties as implied properties of `F'?
 
     # Enter the type of objects in the image.
-    F!.packedType:= NewType( F, IsLieObject and IsPackedElementDefaultRep );
+    F!.packedType:= NewType( F, filt and IsPackedElementDefaultRep );
 
     # Return the Lie family.
     return F;
@@ -65,10 +71,16 @@ InstallMethod( LieFamily,
     [ IsCollectionFamily ], 0,
     function( Fam )
 
-    local F;
+    local F, filt;
+
+    if HasCharacteristic(Fam) and Characteristic(Fam)>0 then
+        filt := IsRestrictedLieObject;
+    else
+        filt := IsLieObject;
+    fi;
 
     # Make the family of Lie elements.
-    F:= NewFamily( "LieFamily(...)", IsLieObject and IsMatrix );
+    F:= NewFamily( "LieFamily(...)", filt and IsMatrix );
     SetUnderlyingFamily( F, Fam );
 
     if HasCharacteristic( Fam ) then
@@ -77,7 +89,7 @@ InstallMethod( LieFamily,
 #T maintain other req/imp properties as implied properties of `F'?
 
     # Enter the type of objects in the image.
-    F!.packedType:= NewType( F,     IsLieObject
+    F!.packedType:= NewType( F, filt
                                 and IsPackedElementDefaultRep
                                 and IsLieMatrix );
 
@@ -276,6 +288,26 @@ InstallMethod( \^,
     fi;
     end );
 
+#############################################################################
+##
+#M  PthPowerImage( <lie_obj> ) . . . . . . . . .  for a restricted Lie object
+##
+InstallMethod(PthPowerImage, "for restricted Lie object",
+	[ IsRestrictedLieObject ],
+        function(x)
+    return LieObject(x![1]^Characteristic(FamilyObj(x)));
+end);
+InstallMethod(PthPowerImage, "for restricted Lie object and integer",
+	[ IsRestrictedLieObject, IsInt ],
+        function(x,n)
+    local y;
+    y := x![1];
+    while n>0 do
+	y := y^Characteristic(FamilyObj(x));
+	n := n-1;
+    od;
+    return LieObject(y);
+end);
 
 #############################################################################
 ##

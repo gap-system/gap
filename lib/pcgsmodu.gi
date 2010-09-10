@@ -2,17 +2,17 @@
 ##
 #W  pcgsmodu.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: pcgsmodu.gi,v 4.48 2004/06/17 21:19:56 gap Exp $
+#H  @(#)$Id: pcgsmodu.gi,v 4.49 2010/02/23 15:13:23 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the   methods for polycylic generating  systems modulo
 ##  another such system.
 ##
 Revision.pcgsmodu_gi :=
-    "@(#)$Id: pcgsmodu.gi,v 4.48 2004/06/17 21:19:56 gap Exp $";
+    "@(#)$Id: pcgsmodu.gi,v 4.49 2010/02/23 15:13:23 gap Exp $";
 
 
 #############################################################################

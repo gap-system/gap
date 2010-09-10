@@ -1,18 +1,18 @@
 #############################################################################
 ##  
-#W  helpview.gi                 GAP Library                      Frank L�beck
+#W  helpview.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id: helpview.gi,v 1.13 2008/07/22 14:27:30 alexk Exp $
+#H  @(#)$Id: helpview.gi,v 1.15 2010/07/28 15:45:20 gap Exp $
 ##  
-#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  helpview.g{d,i} contain the configuration mechanism  for  the
 ##  different help viewer.
 ##  
 Revision.helpview_gi := 
-  "@(#)$Id: helpview.gi,v 1.13 2008/07/22 14:27:30 alexk Exp $";
+  "@(#)$Id: helpview.gi,v 1.15 2010/07/28 15:45:20 gap Exp $";
 
 #############################################################################
 ##  
@@ -217,11 +217,10 @@ end);
 XRMTCMD:=false;
 
 ##  dvi version with xdvi
-##  default options, can be adjusted in .gaprc file or by environment
+##  default options, can be adjusted in gap.ini file or by environment
 ##  variables
-XDVI_OPTIONS := "";
 ##  longer example:
-#XDVI_OPTIONS := " -geometry 739x577 -paper a4 -s 6 -fg \"#111111\" -bg \"#dddddd\" -margins 1cm -gamma 0.8";
+#GAPInfo.UserPreferences.XdviOptions:= " -geometry 739x577 -paper a4 -s 6 -fg \"#111111\" -bg \"#dddddd\" -margins 1cm -gamma 0.8";
 
 HELP_VIEWER_INFO.xdvi := rec(
 type := "dvi",
@@ -244,8 +243,8 @@ show := function(file)
     wnum:=fail;
   fi;
   if wnum=fail or XRMTCMD=fail then
-    Exec(Concatenation("xdvi ", XDVI_OPTIONS, " +", String(page), " ",
-	    file, " &"));
+    Exec(Concatenation("xdvi ", GAPInfo.UserPreferences.XdviOptions, " +",
+            String(page), " ", file, " &"));
   else
     #Print("Window: ",wnum,"\n");
     # command for xdvi: a (to \relax), pagenumber, goto
@@ -256,7 +255,6 @@ end
 );
 
 # pdf version with xpdf (very good with well configured fonts!)
-XPDF_OPTIONS := "";
 HELP_VIEWER_INFO.xpdf := rec(
 type := "pdf",
 show := function(file)
@@ -272,7 +270,8 @@ show := function(file)
     fi;
     file := file.file;
   fi;
-  Exec(Concatenation("xpdf -remote gap4 -raise ", XPDF_OPTIONS, 
+  Exec(Concatenation("xpdf -remote gap4 -raise ",
+                        GAPInfo.UserPreferences.XpdfOptions, 
                         " ", file, " ", page, " 2>/dev/null &"));
 end
 );
@@ -310,10 +309,6 @@ end
 #F  SetHelpViewer(<viewer>):  Set the viewer used for help
 ##
 
-##  This variable contains the list of preferred help viewers for a user.
-##  It should be set by using `SetHelpViewer'.  The default is  "screen".
-HELP_VIEWER := ["screen"];
-
 # Can give one or more strings for the preferred help viewer;
 # the HELP tries to get the data for the viewer in the order given here.
 # No argument shows current setting.
@@ -328,18 +323,20 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
       Info(InfoWarning, 1, 
       "Help viewer \"less\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
-      "PAGER := \"less\"; ",
-      "PAGER_OPTIONS := [\"-f\", \"-r\", \"-a\", \"-i\", \"-M\", \"-j2\"];");
-      PAGER := "less";
-      PAGER_OPTIONS := ["-f", "-r", "-a", "-i", "-M", "-j2"];
+      "GAPInfo.UserPreferences.Pager := \"less\";\n#I  ",
+      "GAPInfo.UserPreferences.PagerOptions:= ",
+      "[\"-f\",\"-r\",\"-a\",\"-i\",\"-M\",\"-j2\"];");
+      GAPInfo.UserPreferences.Pager := "less";
+      GAPInfo.UserPreferences.PagerOptions:= ["-f","-r","-a","-i","-M","-j2"];
       view[i] := "screen";
     elif a = "more" then
       Info(InfoWarning, 1, 
       "Help viewer \"more\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
-      "PAGER := \"more\"; PAGER_OPTIONS := [];");
-      PAGER := "more";
-      PAGER_OPTIONS := [];
+      "GAPInfo.UserPreferences.Pager := \"more\";\n#I  ",
+      "GAPInfo.UserPreferences.PagerOptions := [];");
+      GAPInfo.UserPreferences.Pager := "more";
+      GAPInfo.UserPreferences.PagerOptions := [];
       view[i] := "screen";
     elif not IsBound(HELP_VIEWER_INFO.(a)) then
       Info(InfoWarning, 1, Concatenation(
@@ -351,14 +348,16 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
     Add(view, "screen");
   fi;
   if Length(arg) > 0 then
-    HELP_VIEWER := Filtered(view, a-> a<>fail);  
+    GAPInfo.UserPreferences.HelpViewers := Filtered(view, a-> a<>fail);  
   fi;
-  if Length(HELP_VIEWER) > 1 then
-    Info(InfoWarning, 1, "Trying to use\n#I  ", HELP_VIEWER, 
+  if Length( GAPInfo.UserPreferences.HelpViewers ) > 1 then
+    Info( InfoWarning, 1, "Trying to use\n#I  ",
+          GAPInfo.UserPreferences.HelpViewers, 
           "\n#I  (in this order) as help viewer.");
   else
     Info(InfoWarning, 1, Concatenation(
-          "Using ", HELP_VIEWER[1], " as help viewer."));
+          "Using ", GAPInfo.UserPreferences.HelpViewers[1],
+          " as help viewer."));
   fi;
 end);
 

@@ -2,12 +2,10 @@
 ##
 #W  straight.gi              GAP library                        Thomas Breuer
 #W                                                           Alexander Hulpke
-#W                                                            Max Neunhoeffer
+#W                                                            Max Neunhöffer
 ##
-#H  @(#)$Id: straight.gi,v 4.36 2008/05/21 13:55:22 gap Exp $
-##
-#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations of methods and functions
@@ -17,7 +15,7 @@
 ##  2. Functions for elements represented by straight line programs
 ##
 Revision.straight_gi :=
-    "@(#)$Id: straight.gi,v 4.36 2008/05/21 13:55:22 gap Exp $";
+    "@(#)$Id: straight.gi,v 4.40 2010/02/23 15:13:32 gap Exp $";
 
 
 #############################################################################
@@ -1951,6 +1949,24 @@ local c,i,f;
   return c;
 end);
 
+InstallOtherMethod( CycleStructurePerm, "straight line program perms", true,
+  [ IsPerm and IsStraightLineProgElm ],1, 
+function(p)
+  return CycleStructurePerm(EvalStraightLineProgElm(p));
+end);
+
+InstallOtherMethod( SignPerm, "straight line program perms", true,
+  [ IsPerm and IsStraightLineProgElm ],1, 
+function(p)
+  return SignPerm(EvalStraightLineProgElm(p));
+end);
+
+InstallOtherMethod( RestrictedPermNC, "straight line program perms", true,
+  [ IsPerm and IsStraightLineProgElm,IsList ],1, 
+function(p,l)
+  return RestrictedPermNC(EvalStraightLineProgElm(p),l);
+end);
+
 ##
 ##  special methods for straight line assoc words
 ##
@@ -2816,7 +2832,7 @@ InstallMethod( SlotUsagePattern, "for an slp",
                 Add(slotusage[cur],-step);
                 res := cur;
                 cur := cur + 1;
-            elif IsList(li[1]) and IsInt(li[2]) then  # a standard line with w.
+            elif Length(li) = 2 and IsInt(li[2]) then # a standard line with w.
                 if not(IsBound(slotusage[li[2]])) then 
                     slotusage[li[2]] := []; 
                 fi;
@@ -2858,7 +2874,7 @@ InstallMethod( SlotUsagePattern, "for an slp",
                 if su[Length(su)] < 0 then
                     Add(unnecessary,-su[Length(su)]);
                     addedun := true;
-                elif su[Length(su)] < Length(l) then
+                elif su[Length(su)] > 0 and su[Length(su)] < Length(l) then
                     Add(deletions[su[Length(su)]],i);
                 fi;
             fi;

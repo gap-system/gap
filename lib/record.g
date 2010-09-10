@@ -3,10 +3,10 @@
 #W  record.g                    GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: record.g,v 4.25 2008/09/18 07:58:04 gap Exp $
+#H  @(#)$Id: record.g,v 4.27 2010/06/24 12:26:26 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for records.
@@ -23,7 +23,7 @@
 ##  families, one can load the file `compat3c.g'.
 ##
 Revision.record_g :=
-    "@(#)$Id: record.g,v 4.25 2008/09/18 07:58:04 gap Exp $";
+    "@(#)$Id: record.g,v 4.27 2010/06/24 12:26:26 gap Exp $";
 
 
 #############################################################################
@@ -147,7 +147,7 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 ##  <P/>
 ##  Note that you cannot use the string result in the ordinary way to access
 ##  or change a record component.
-##  You can use the <C><A>rec</A>.(<A>name</A>)</C> construct for that,
+##  You can use the <C><A>record</A>.(<A>name</A>)</C> construct for that,
 ##  see <Ref Sect="Accessing Record Elements"/> and
 ##  <Ref Sect="Record Assignment"/>.
 ##  </Description>

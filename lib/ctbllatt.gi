@@ -3,17 +3,17 @@
 #W  ctbllatt.gi                 GAP library                     Thomas Breuer
 #W                                                                Ansgar Kaup
 ##
-#H  @(#)$Id: ctbllatt.gi,v 4.15 2002/04/15 10:04:34 sal Exp $
+#H  @(#)$Id: ctbllatt.gi,v 4.16 2010/02/23 15:12:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions that mainly deal with lattices in the
 ##  context of character tables.
 ##
 Revision.ctbllatt_gi :=
-    "@(#)$Id: ctbllatt.gi,v 4.15 2002/04/15 10:04:34 sal Exp $";
+    "@(#)$Id: ctbllatt.gi,v 4.16 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################

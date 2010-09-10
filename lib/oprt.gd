@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  oprt.gd                     GAP library                    Heiko Thei"sen
+#W  oprt.gd                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: oprt.gd,v 4.107 2009/01/06 11:19:50 gap Exp $
+#H  @(#)$Id: oprt.gd,v 4.110 2010/02/23 15:13:20 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprt_gd :=
-    "@(#)$Id: oprt.gd,v 4.107 2009/01/06 11:19:50 gap Exp $";
+    "@(#)$Id: oprt.gd,v 4.110 2010/02/23 15:13:20 gap Exp $";
 
 DeclareInfoClass( "InfoAction" );
 DeclareSynonym( "InfoOperation",InfoAction );
@@ -602,7 +602,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
           gens:= GeneratorsOfGroup( G );
         fi;
         if IsDomain( D ) then
-          D:= Enumerator( D );
+	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, gens, OnPoints );
         end );
@@ -638,7 +638,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
           gens:= GeneratorsOfGroup( G );
         fi;
         if IsDomain( D ) then
-          D:= Enumerator( D );
+	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, gens, act );
         end );
@@ -668,7 +668,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
         [ IsGroup, IsObject, IsList, IsList ], 0,
         function( G, D, gens, acts )
         if IsDomain( D ) then
-          D:= Enumerator( D );
+	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, acts, OnPoints );
         end );
@@ -797,7 +797,7 @@ local str, nname, orbish, func,isnotest;
 	    then
 	      D := arg[ 2 ];
 	      if IsDomain( D )  then
-		  D := Enumerator( D );
+	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
 	      fi;
 	      p := 3;
 	  else
@@ -2104,8 +2104,8 @@ DeclareOperation( "RepresentativeActionOp",
 ##  gap> Stabilizer(g,[1,2],OnTuples);
 ##  Group(())
 ##  gap> OrbitStabilizer(g,[1,2],OnSets);
-##  rec( orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ],
-##    stabilizer := Group([ (1,2)(3,4) ]) )
+##  rec( stabilizer := Group([ (1,2)(3,4) ]), 
+##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ] )
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>

@@ -2,17 +2,17 @@
 ##
 #W  ctblsolv.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblsolv.gd,v 4.21 2008/08/20 15:05:32 gap Exp $
+#H  @(#)$Id: ctblsolv.gd,v 4.22 2010/02/23 15:12:54 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of operations for computing
 ##  characters of solvable groups.
 ##
 Revision.ctblsolv_gd :=
-    "@(#)$Id: ctblsolv.gd,v 4.21 2008/08/20 15:05:32 gap Exp $";
+    "@(#)$Id: ctblsolv.gd,v 4.22 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################

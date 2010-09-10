@@ -1,5 +1,5 @@
 ##  
-##  colorprompt.g                                             Frank Lübeck
+##  colorprompt.g                                             Frank LÃ¼beck
 ##  
 ##  A demo for customizing the GAP prompt.
 ##  
@@ -9,7 +9,7 @@
 ##     ANSI_COLORS := false;
 ##  
 Revision.colorprompt_g := 
-    "$Id: colorprompt.g,v 4.7 2008/09/04 07:58:06 gap Exp $";
+    "$Id: colorprompt.g,v 4.10 2010/07/28 15:45:20 gap Exp $";
 
 # see comment below
 if not IsBound(STDOut) then
@@ -37,7 +37,7 @@ EndLineHook := function() end;
 ##  <Description>
 ##  With  <C>ColorPrompt(true);</C> &GAP;  changes its  user interface:
 ##  The prompts and the user input are displayed in different colors.
-##  It also sets the variable <C>ANSI_COLORS</C> to <K>true</K> (which has
+##  It also sets the variable <C>ANSI_COLORS</C> to <K>true</K>, which has
 ##  the side effect that some help pages are also displayed with color markup.
 ##  Switch off the colored prompts with <C>ColorPrompt(false);</C>.
 ##  <P/>
@@ -51,9 +51,9 @@ EndLineHook := function() end;
 ##  conventions you see  the standard prompt in bold blue  and the break
 ##  loop prompt in bold red, as well as your input in red.
 ##  <P/>
-##  If   it  works   for   you   and  you   like   it,   put  the   line
-##  <C>ColorPrompt(true);</C> in your <F>.gaprc</F> file
-##  (see&nbsp;<Ref Sect="The .gaprc file"/>).
+##  If it works for you and you like it, set the <C>UseColorPrompt</C>
+##  component in your <F>gap.ini</F> file to <K>true</K> or to a
+##  record as described below (see&nbsp;<Ref Sect="The .gaprc file"/>).
 ##  <P/>
 ##  The optional second argument <A>optrec</A> allows one to further
 ##  customize the behaviour.
@@ -99,7 +99,7 @@ EndLineHook := function() end;
 ##  <P/>
 ##  Here is an example.
 ##  <P/>
-##  <Example><![CDATA[
+##  <Listing><![CDATA[
 ##  LoadPackage("GAPDoc");
 ##  timeSHOWMIN := 100;
 ##  ColorPrompt(true, rec(
@@ -112,7 +112,7 @@ EndLineHook := function() end;
 ##         Print("Time of last command: ", time, " ms\n");
 ##       fi;
 ##     end)    );
-##  ]]></Example>
+##  ]]></Listing>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  ctblmono.gd                 GAP library                     Thomas Breuer
-#W                                                         & Erzsebet Horvath
+#W                                                         & Erzsébet Horváth
 ##
-#H  @(#)$Id: ctblmono.gd,v 4.22 2008/08/20 15:05:32 gap Exp $
+#H  @(#)$Id: ctblmono.gd,v 4.25 2010/02/23 15:12:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of the functions dealing with
@@ -91,7 +91,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.ctblmono_gd :=
-    "@(#)$Id: ctblmono.gd,v 4.22 2008/08/20 15:05:32 gap Exp $";
+    "@(#)$Id: ctblmono.gd,v 4.25 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################
@@ -349,15 +349,16 @@ DeclareProperty( "IsPrimitiveCharacter", IsClassFunction );
 ##  gap> chi:= Irr( Sl23 )[4];
 ##  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 ##  gap> TestQuasiPrimitive( chi );
-##  rec( isQuasiPrimitive := true, comment := "all restrictions checked" )
+##  rec( comment := "all restrictions checked", isQuasiPrimitive := true )
 ##  gap> chi:= Irr( Sl23 )[7];
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 ##  gap> TestQuasiPrimitive( chi );
-##  rec( isQuasiPrimitive := false, comment := "restriction checked", 
+##  rec( comment := "restriction checked",
 ##    character := Character( CharacterTable( Group(
-##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
-##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ) )
+##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ],
+##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ],
+##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ),
+##    isQuasiPrimitive := false )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -404,11 +405,11 @@ DeclareProperty( "IsQuasiPrimitive", IsClassFunction );
 ##  [ false, false, false, false, false, false, true ]
 ##  gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 ##  >          TestInducedFromNormalSubgroup );
-##  [ rec( isInduced := false, comment := "linear character" ), 
-##    rec( isInduced := true, comment := "induced from component '.character'", 
-##        character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
-##          [ 1, 1, E(3)^2, E(3) ] ) ), 
-##    rec( isInduced := false, comment := "all maximal normal subgroups checked" 
+##  [ rec( comment := "linear character", isInduced := false ),
+##    rec( comment := "induced from component '.character'",
+##        character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
+##          [ 1, 1, E(3)^2, E(3) ] ), isInduced := true ),
+##    rec( comment := "all maximal normal subgroups checked", isInduced := false
 ##       ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -577,11 +578,11 @@ DeclareProperty( "IsMonomialNumber", IsPosInt );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TestMonomialQuick( Irr( S4 )[3] );
-##  rec( isMonomial := true, comment := "whole group is monomial" )
+##  rec( comment := "whole group is monomial", isMonomial := true )
 ##  gap> TestMonomialQuick( S4 );
-##  rec( isMonomial := true, comment := "abelian by supersolvable group" )
+##  rec( comment := "abelian by supersolvable group", isMonomial := true )
 ##  gap> TestMonomialQuick( Sl23 );
-##  rec( isMonomial := "?", comment := "no decision by cheap tests" )
+##  rec( comment := "no decision by cheap tests", isMonomial := "?" )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -648,9 +649,9 @@ DeclareAttribute( "TestMonomialQuick", IsGroup );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TestMonomial( S4 );
-##  rec( isMonomial := true, comment := "abelian by supersolvable group" )
+##  rec( comment := "abelian by supersolvable group", isMonomial := true )
 ##  gap> TestMonomial( Sl23 );
-##  rec( isMonomial := false, comment := "list Delta( G ) contains entry > 1" )
+##  rec( comment := "list Delta( G ) contains entry > 1", isMonomial := false )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -722,14 +723,14 @@ TestMonomialUseLattice := 1000;
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TestSubnormallyMonomial( S4 );
-##  rec( isSubnormallyMonomial := false, 
-##    character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
-##    comment := "found non-SM character" )
+##  rec( comment := "found non-SM character",
+##    character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ),
+##    isSubnormallyMonomial := false )
 ##  gap> TestSubnormallyMonomial( Irr( S4 )[4] );
-##  rec( isSubnormallyMonomial := false, 
-##    comment := "all subnormal subgroups checked" )
+##  rec( comment := "all subnormal subgroups checked",
+##    isSubnormallyMonomial := false )
 ##  gap> TestSubnormallyMonomial( DerivedSubgroup( S4 ) );
-##  rec( isSubnormallyMonomial := true, comment := "all irreducibles checked" )
+##  rec( comment := "all irreducibles checked", isSubnormallyMonomial := true )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -802,8 +803,8 @@ DeclareProperty( "IsSubnormallyMonomial", IsClassFunction );
 ##  gap> IsSubnormallyMonomial( DerivedSubgroup( S4 ) );
 ##  true
 ##  gap> TestRelativelySM( DerivedSubgroup( S4 ) );
-##  rec( isRelativelySM := true, 
-##    comment := "normal subgroups are abelian or have nilpotent factor group" )
+##  rec( comment := "normal subgroups are abelian or have nilpotent factor group",
+##    isRelativelySM := true )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

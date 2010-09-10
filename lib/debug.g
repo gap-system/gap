@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  debug.g                      GAP library                    Thomas Breuer
-#W                                                          & Max Neunhoeffer
+#W                                                          & Max Neunhöffer
 ##
-#H  @(#)$Id: debug.g,v 1.4 2005/08/23 08:36:52 gap Exp $
+#H  @(#)$Id: debug.g,v 1.5 2010/02/23 15:12:55 gap Exp $
 ##
-#Y  Copyright (C)  2003,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2003 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  2003,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 2003 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2003 The GAP Group
 ##
 ##  This file contains some global variables and functions to support
@@ -16,7 +16,7 @@
 ##  than vim.
 ##
 Revision.debug_g :=
-    "@(#)$Id: debug.g,v 1.4 2005/08/23 08:36:52 gap Exp $";
+    "@(#)$Id: debug.g,v 1.5 2010/02/23 15:12:55 gap Exp $";
 
 BindGlobal( "DEBUG", rec() );
 DEBUG.debugvim_txt:= Filename( DirectoriesLibrary( "etc" ), "debugvim.txt" );

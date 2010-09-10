@@ -3,10 +3,10 @@
 #W  grpchain.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: grpchain.gi,v 4.10 2005/05/12 17:33:04 gap Exp $
+#H  @(#)$Id: grpchain.gi,v 4.11 2010/02/23 15:13:03 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Requires: transversal, rss (for ChainSubgroup only)
@@ -36,7 +36,7 @@
 ##  transversal), may have unpredictable results.
 ##
 Revision.grpchain_gi :=
-    "@(#)$Id: grpchain.gi,v 4.10 2005/05/12 17:33:04 gap Exp $";
+    "@(#)$Id: grpchain.gi,v 4.11 2010/02/23 15:13:03 gap Exp $";
 
 ##
 ##  For debugging only:

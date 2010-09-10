@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  gasman.c                    GAP source                   Martin Schoenert
+*W  gasman.c                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gasman.c,v 4.71 2008/02/11 15:10:14 sal Exp $
+*H  @(#)$Id: gasman.c,v 4.73 2010/02/28 10:26:05 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains  the functions of  Gasman,  the  GAP  storage manager.
@@ -115,7 +115,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_gasman_c =
-   "@(#)$Id: gasman.c,v 4.71 2008/02/11 15:10:14 sal Exp $";
+   "@(#)$Id: gasman.c,v 4.73 2010/02/28 10:26:05 gap Exp $";
 
 
 #define INCLUDE_DECLARATION_PART
@@ -2114,7 +2114,8 @@ again:
 
             /* oops                                                        */
             else {
-                (*AbortFuncBags)("Panic: Gasman found a bogus header");
+                (*AbortFuncBags)(
+                  "Panic: Gasman found a bogus header (looking for dead bags)");
             }
 
         }

@@ -2,10 +2,10 @@
 ##
 #W  arith.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: arith.gd,v 4.84 2008/10/27 08:56:55 gap Exp $
+#H  @(#)$Id: arith.gd,v 4.87 2010/06/24 13:17:56 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of the arithmetic operations, and the
@@ -22,7 +22,7 @@
 ##  mean that the the product of *any* two elements in the family is defined,
 ##
 Revision.arith_gd :=
-    "@(#)$Id: arith.gd,v 4.84 2008/10/27 08:56:55 gap Exp $";
+    "@(#)$Id: arith.gd,v 4.87 2010/06/24 13:17:56 gap Exp $";
 
 
 #############################################################################
@@ -428,7 +428,7 @@ DeclareSynonym( "IsMultiplicativeElementWithInverseTable",
 ##  for example lists of matrices are not vectors.
 ##  This is because although the category
 ##  <Ref Func="IsAdditiveElementWithInverse"/> is
-##  implied by the join of its collections category and <Ref Func="IsList"/>,
+##  implied by the meet of its collections category and <Ref Func="IsList"/>,
 ##  the family of a list entry may not imply
 ##  <Ref Func="IsAdditiveElementWithInverse"/> for all its elements.
 ##  </Description>
@@ -704,7 +704,7 @@ DeclareAttribute( "NestingDepthM", IsObject );
 ##  <Filt Name="IsNearRingElement" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsNearRingElement"/> is just a synonym for the join of
+##  <Ref Func="IsNearRingElement"/> is just a synonym for the meet of
 ##  <Ref Func="IsNearAdditiveElementWithInverse"/> and
 ##  <Ref Func="IsMultiplicativeElement"/>.
 ##  </Description>
@@ -745,7 +745,7 @@ DeclareCategoryFamily( "IsNearRingElement" );
 ##  <Filt Name="IsNearRingElementWithOne" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsNearRingElementWithOne"/> is just a synonym for the join of
+##  <Ref Func="IsNearRingElementWithOne"/> is just a synonym for the meet of
 ##  <Ref Func="IsNearAdditiveElementWithInverse"/> and
 ##  <Ref Func="IsMultiplicativeElementWithOne"/>.
 ##  </Description>
@@ -820,7 +820,7 @@ InstallTrueMethod(
 ##  <Filt Name="IsRingElement" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsRingElement"/> is just a synonym for the join of
+##  <Ref Func="IsRingElement"/> is just a synonym for the meet of
 ##  <Ref Func="IsAdditiveElementWithInverse"/> and
 ##  <Ref Func="IsMultiplicativeElement"/>.
 ##  </Description>
@@ -861,7 +861,7 @@ DeclareCategoryFamily( "IsRingElement" );
 ##  <Filt Name="IsRingElementWithOne" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsRingElementWithOne"/> is just a synonym for the join of
+##  <Ref Func="IsRingElementWithOne"/> is just a synonym for the meet of
 ##  <Ref Func="IsAdditiveElementWithInverse"/> and
 ##  <Ref Func="IsMultiplicativeElementWithOne"/>.
 ##  </Description>
@@ -903,7 +903,7 @@ InstallTrueMethod(
 ##
 ##  <Description>
 ##  <Ref Func="IsRingElementWithInverse"/> and <Ref Func="IsScalar"/>
-##  are just synonyms for the join of
+##  are just synonyms for the meet of
 ##  <Ref Func="IsAdditiveElementWithInverse"/> and
 ##  <Ref Func="IsMultiplicativeElementWithInverse"/>.
 ##  </Description>
@@ -1248,6 +1248,9 @@ DeclareCategoryCollections( "IsFiniteOrderElementCollection" );
 ##  <Filt Name="IsJacobianElement" Arg='obj' Type='Category'/>
 ##  <Filt Name="IsJacobianElementCollection" Arg='obj' Type='Category'/>
 ##  <Filt Name="IsJacobianElementCollColl" Arg='obj' Type='Category'/>
+##  <Filt Name="IsRestrictedJacobianElement" Arg='obj' Type='Category'/>
+##  <Filt Name="IsRestrictedJacobianElementCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsRestrictedJacobianElementCollColl" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
 ##  An element <A>obj</A> in the category <Ref Func="IsJacobianElement"/>
@@ -1266,6 +1269,9 @@ DeclareCategory( "IsJacobianElement", IsRingElement );
 DeclareCategoryCollections( "IsJacobianElement" );
 DeclareCategoryCollections( "IsJacobianElementCollection" );
 
+DeclareCategory( "IsRestrictedJacobianElement", IsRingElement );
+DeclareCategoryCollections( "IsRestrictedJacobianElement" );
+DeclareCategoryCollections( "IsRestrictedJacobianElementCollection" );
 
 #############################################################################
 ##

@@ -3,16 +3,16 @@
 #W  grp.gi                      GAP library                     Thomas Breuer
 #W                                                               Frank Celler
 #W                                                               Bettina Eick
-#W                                                             Heiko Theissen
+#W                                                             Heiko Theißen
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for groups.
 ##
 Revision.grp_gi :=
-    "@(#)$Id: grp.gi,v 4.252 2009/06/19 15:41:06 gap Exp $";
+    "@(#)$Id: grp.gi,v 4.259 2010/07/18 23:39:12 gap Exp $";
 
 
 #############################################################################
@@ -77,6 +77,39 @@ local g;
   return [g];
 end);
 
+#############################################################################
+##
+#M  MinimalGeneratingSet(<G>) . . . . . . . . . . . . . for groups
+##
+InstallMethod(MinimalGeneratingSet,"solvable group via pc",true,
+  [IsGroup],0,
+function(G)
+local i;
+  if not IsSolvableGroup(G) then
+    TryNextMethod();
+  fi;
+  i:=IsomorphismPcGroup(G);
+  G:=Image(i,G);
+  G:=MinimalGeneratingSet(G);
+  return List(G,j->PreImagesRepresentative(i,j));
+end);
+
+#############################################################################
+##
+#M  MinimalGeneratingSet(<G>)
+##
+InstallOtherMethod(MinimalGeneratingSet,"fallback method to inform user",true,
+  [IsObject],0,
+function(G)
+  if IsGroup(G) and IsSolvableGroup(G) then
+    TryNextMethod();
+  else
+    Error(
+  "`MinimalGeneratingSet' currently assumes that the group must be solvable.\n",
+  "In general, try `SmallGeneratingSet' instead, which returns a generating\n",
+  "set that is small but not of guarateed smallest cardinality");
+  fi;
+end);
 
 #############################################################################
 ##
@@ -1894,19 +1927,22 @@ end );
 #F  ClosureSubgroupNC( <G>, <obj> )
 ##
 InstallGlobalFunction( ClosureSubgroupNC, function(arg)
-local G,obj;
+local G,obj,close;
     G:=arg[1];
     obj:=arg[2];
     if not HasParent( G ) then
       # don't be obnoxious
-      Info(InfoWarning,1,"`ClosureSubgroup' called for orphan group" );
+      Info(InfoWarning,3,"`ClosureSubgroup' called for orphan group" );
+      close:=false;
+    else
+      close:=true;
     fi;
     if Length(arg)=2 then
       obj:= ClosureGroup( G, obj );
     else
       obj:= ClosureGroup( G, obj, arg[3] );
     fi;
-    if not IsIdenticalObj( Parent( G ), obj ) then
+    if close and not IsIdenticalObj( Parent( G ), obj ) then
       SetParent( obj, Parent( G ) );
     fi;
     return obj;
@@ -2069,13 +2105,15 @@ InstallGlobalFunction( FactorGroup,function(G,N)
   return FactorGroupNC(G,N);
 end);
 
-InstallMethod( FactorGroupNC,
-    "generic method for two groups",
-    IsIdenticalObj,
+InstallMethod( FactorGroupNC, "generic method for two groups", IsIdenticalObj,
     [ IsGroup, IsGroup ],
-    function( G, N )
-    return ImagesSource( NaturalHomomorphismByNormalSubgroupNC( G, N ) );
-    end );
+function( G, N )
+local hom,F;
+  hom:=NaturalHomomorphismByNormalSubgroupNC( G, N );
+  F:=ImagesSource(hom);
+  SetNaturalHomomorphism(F,hom);
+  return F;
+end );
 
 InstallOtherMethod( \/,
     "generic method for two groups",
@@ -4324,6 +4362,14 @@ end);
 
 #############################################################################
 ##
+#M  HasSolvableFactorGroup(<G>,<N>)   test whether G/N is abelian
+##
+InstallGlobalFunction(HasSolvableFactorGroup,function(G,N)
+  return ForAny(DerivedSeriesOfGroup(G),x->IsSubset(N,x));
+end);
+
+#############################################################################
+##
 #M  HasElementaryAbelianFactorGroup(<G>,<N>)   test whether G/N is el. abelian
 ##
 InstallGlobalFunction(HasElementaryAbelianFactorGroup,function(G,N)
@@ -4517,7 +4563,11 @@ function(G,elm)
 
   OG:=G;
   if not IsBound(G!.factorinfo) then
-    hom:=EpimorphismFromFreeGroup(G:names:="x");
+    names:=ValueOption("names");
+    if not IsList(names) or Length(names)<>Length(GeneratorsOfGroup(G)) then
+      names:="x";
+    fi;
+    hom:=EpimorphismFromFreeGroup(G:names:=names);
     G!.factFreeMap:=hom; # compatibility
     F:=Source(hom);
     gens:=ShallowCopy(MappingGeneratorsImages(hom)[2]);
@@ -4544,7 +4594,7 @@ function(G,elm)
     objnum:=x->e[x];
     numobj:=x->PositionCanonical(e,x);
     actobj:=OnRight;
-    if IsPermGroup(G) then
+    if IsPermGroup(G) and Size(G)>1 then
 
       #tune enumerator (use a bit more memory to get unfactorized transversal
       # on top level)

@@ -1,7 +1,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_vecgf2_c =
-   "@(#)$Id: vecgf2.c,v 4.119 2009/09/24 09:29:44 sal Exp $";
+   "@(#)$Id: vecgf2.c,v 4.120 2010/06/16 09:42:41 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -36,6 +36,10 @@ const char * Revision_vecgf2_c =
 #include        "integer.h"             /* integers                        */
 
 #include        "vec8bit.h"             /* vectors over bigger small fields*/
+
+#include        "code.h"                /* Needed for TakeInterrupt */
+#include        "stats.h"
+
 #include        <assert.h>
 
 /****************************************************************************
@@ -528,6 +532,7 @@ Obj ProdGF2MatGF2MatSimple( Obj ml, Obj mr )
       TYPE_DATOBJ(row) = rtype;
       SET_ELM_GF2MAT(prod,i,row);
       CHANGED_BAG(prod);
+      TakeInterrupt();
     }
   return prod;
 }
@@ -706,10 +711,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
       
       pgtags = (UInt *)ADDR_OBJ(gtags);
       pgrules = (UInt *)ADDR_OBJ(grules);
-      if (greasesize >= 2)
-	pgbuf = (UInt *)ADDR_OBJ(gbuf);
-      else
-	pgbuf = (UInt *)0;
+      pgbuf = (UInt *)ADDR_OBJ(gbuf);
       
 
       /* Calculate the greasing rules */
@@ -805,7 +807,30 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 				/* This function should be inlined */
 	      AddGF2VecToGF2Vec(pprow, v,  rlen);  
 	    }  
+	  }
+	
+      /* Allow GAP to respond to Ctrl-C */
+      if (TakeInterrupt()) {
+	/* Might have been a garbage collection, reload everything */
+	if (greasesize >= 2) {
+	  pgtags = (UInt *)ADDR_OBJ(gtags);
+	  pgrules = (UInt *)ADDR_OBJ(grules);
+	  pgbuf = (UInt *)ADDR_OBJ(gbuf);
+	  /* fill in some more bits of g */
+	  g.pgrules = pgrules;
+	  g.nblocks = nwords;
 	}
+	plrows = (UInt **)ADDR_OBJ(lrowptrs);
+	prrows = (UInt **)ADDR_OBJ(rrowptrs);
+	pprows = (UInt **)ADDR_OBJ(prowptrs);
+	for (i = 0; i < len; i++)
+	  {
+	    plrows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(ml,i+1));
+	    pprows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(prod, i+1));
+	  }
+	for (i = 0; i < ilen; i++)
+	  prrows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(mr, i+1));
+      }
     }
   return prod;
 }
@@ -942,6 +967,7 @@ Obj InversePlistGF2VecsDesstructive( Obj list )
                 }
             }
         }
+	TakeInterrupt();
     }
     return inv;
 }
@@ -1148,6 +1174,7 @@ Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
           CHANGED_BAG(relns);    /* Could be an old bag by now. Max. */
 	  SET_LEN_PLIST(relns, nrels);
 	}
+      TakeInterrupt();
     }
   if (RNheads == 0)
     {
@@ -1237,6 +1264,7 @@ UInt TriangulizeListGF2Vecs( Obj mat, UInt clearup)
 	    }
 	  
 	}
+      TakeInterrupt();
       
     }
   return rank;
@@ -3398,7 +3426,7 @@ UInt AClosVec(
       SET_ELM_PLIST(coords,pos,INTOBJ_INT(0));
     }
   
-
+  TakeInterrupt();
   return bd;
 }
 
@@ -3567,6 +3595,7 @@ UInt CosetLeadersInnerGF2( Obj veclis,
       BLOCKS_GF2VEC(w)[0] ^= u0;
       BLOCK_ELM_GF2VEC(v, pos) &= ~MASK_POS_GF2VEC(pos);
     }
+  TakeInterrupt();
   return found;
 }
 

@@ -2,10 +2,10 @@
 ##
 #W  alghom.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: alghom.gi,v 4.26 2009/01/27 17:10:18 gap Exp $
+#H  @(#)$Id: alghom.gi,v 4.27 2010/02/23 15:12:45 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for algebra(-with-one) general mappings.
@@ -21,7 +21,7 @@
 ##  5. methods for isomorphisms to f.p. algebras
 ##
 Revision.alghom_gi :=
-    "@(#)$Id: alghom.gi,v 4.26 2009/01/27 17:10:18 gap Exp $";
+    "@(#)$Id: alghom.gi,v 4.27 2010/02/23 15:12:45 gap Exp $";
 
 
 #############################################################################

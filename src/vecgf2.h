@@ -2,15 +2,15 @@
 **
 *W  vecgf2.h                    GAP source                       Frank Celler
 **
-*H  @(#)$Id: vecgf2.h,v 4.14 2003/04/30 11:27:14 sal Exp $
+*H  @(#)$Id: vecgf2.h,v 4.15 2010/02/23 15:13:50 gap Exp $
 **
-*Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vecgf2_h =
-   "@(#)$Id: vecgf2.h,v 4.14 2003/04/30 11:27:14 sal Exp $";
+   "@(#)$Id: vecgf2.h,v 4.15 2010/02/23 15:13:50 gap Exp $";
 #endif
 
 

@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  calls.h                     GAP source                   Martin Schoenert
+*W  calls.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: calls.h,v 4.24 2004/09/10 11:36:49 sal Exp $
+*H  @(#)$Id: calls.h,v 4.25 2010/02/23 15:13:40 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file  declares the functions of the  generic function call mechanism
@@ -44,7 +44,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_calls_h =
-   "@(#)$Id: calls.h,v 4.24 2004/09/10 11:36:49 sal Exp $";
+   "@(#)$Id: calls.h,v 4.25 2010/02/23 15:13:40 gap Exp $";
 #endif
 
 

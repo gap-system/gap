@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  ctblsymm.gi                 GAP library                    Goetz Pfeiffer
+#W  ctblsymm.gi                 GAP library                    Götz Pfeiffer
 #W                                                               Felix Noeske
 ##
-#H  @(#)$Id: ctblsymm.gi,v 4.17 2003/11/19 09:41:32 gap Exp $
+#H  @(#)$Id: ctblsymm.gi,v 4.18 2010/02/23 15:12:55 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains  the  functions   needed  for a  direct computation of
@@ -14,7 +14,7 @@
 ##  the   symmetric group  on   n points.
 ##  
 Revision.ctblsymm_gi :=
-     "@(#)$Id: ctblsymm.gi,v 4.17 2003/11/19 09:41:32 gap Exp $";
+     "@(#)$Id: ctblsymm.gi,v 4.18 2010/02/23 15:12:55 gap Exp $";
 
 
 #############################################################################

@@ -1,19 +1,19 @@
 #############################################################################
 ##
 #W  polyconw.gi                 GAP library                     Thomas Breuer
-#W                                                              Frank L�beck
+#W                                                              Frank Lübeck
 ##
-#H  @(#)$Id: polyconw.gi,v 4.25 2005/12/28 16:49:22 gap Exp $
+#H  @(#)$Id: polyconw.gi,v 4.27 2010/06/16 16:31:38 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation part of functions and data around
 ##  Conway polynomials.
 ##
 Revision.polyconw_gi :=
-    "@(#)$Id: polyconw.gi,v 4.25 2005/12/28 16:49:22 gap Exp $";
+    "@(#)$Id: polyconw.gi,v 4.27 2010/06/16 16:31:38 gap Exp $";
 
 
 ###############################################################################
@@ -32,7 +32,7 @@ InstallGlobalFunction( PowerModEvalPol, function( f, g, xpownmodf )
       res:= ProductCoeffs( res, xpownmodf );   # `res:= res * x^n;'
       ReduceCoeffs( res, f );                  # `res:= res mod f;'
       res[1]:= res[1] + g[l-i];                # `res:= res + g_{l-i+1};'
-      ShrinkCoeffs( res );
+      ShrinkRowVector( res );
     od;
     return res;
 end );
@@ -60,7 +60,7 @@ BindGlobal("CONWAYPOLYNOMIALSINFO",  rec(
  RP := "original list by Richard Parker (from 1980's)\n",
  GAP := "computed with the GAP function by Thomas Breuer, just checks\n\
 conditions starting from 'smallest' polynomial\n",
- FL := "computed by a parallelized program by Frank Luebeck, computes\n\
+ FL := "computed by a parallelized program by Frank Lübeck, computes\n\
 minimal polynomial of all compatible elements (~2001)\n",
  KM := "computed by Kate Minola, a parallelized program for p=2, considering\n\
 minimal polynomials of all compatible elements (~2004-2005)\n",
@@ -351,14 +351,14 @@ InstallGlobalFunction( ConwayPol, function( p, n )
           found := ForAll(linfac, a-> a * cpol <> zero); 
           if found then
             pow:= PowerModCoeffs( x, pp, cpol );
-            ShrinkCoeffs( pow );
+            ShrinkRowVector( pow );
             found:= ( pow = onelist );
           fi; 
 
           i:= 1;
           while found and ( i <= Length( ppmin ) ) do
             pow:= PowerModCoeffs( x, ppmin[i], cpol );
-            ShrinkCoeffs( pow );
+            ShrinkRowVector( pow );
             found:= pow <> onelist;
             i:= i+1;
           od;
@@ -370,10 +370,10 @@ InstallGlobalFunction( ConwayPol, function( p, n )
             # Compute $`cpols[i]'( x^{\frac{p^n-1}{p^m-1}} ) mod `cpol'$.
             xpownmodf:= PowerModCoeffs( x, quots[i], cpol );
             pow:= PowerModEvalPol( cpol, cpols[i], xpownmodf );
-            # Note that we need *not* call `ShrinkCoeffs'
+            # Note that we need *not* call `ShrinkRowVector'
             # since the list `cpols[i]' has always length at least 2,
-            # and a final `ShrinkCoeffs' call is done by `PowerModEvalPol'.
-            # ShrinkCoeffs( pow );
+            # and a final `ShrinkRowVector' call is done by `PowerModEvalPol'.
+            # ShrinkRowVector( pow );
             found:= IsEmpty( pow );
             i:= i+1;
 
@@ -418,7 +418,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
         # and store this polynomial in the global list.
         found:= ShallowCopy( cpol );
         Unbind( found[ n+1 ] );
-        ShrinkCoeffs( found );
+        ShrinkRowVector( found );
         cachelist[n]:= [List([0..Length(found)-1], k-> p^k) * found, 
                               "GAP"];
       end;

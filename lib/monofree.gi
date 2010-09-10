@@ -2,16 +2,16 @@
 ##
 #W  monofree.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: monofree.gi,v 4.37 2008/11/25 09:25:01 gap Exp $
+#H  @(#)$Id: monofree.gi,v 4.38 2010/02/23 15:13:18 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for free monoids.
 ##
 Revision.monofree_gi:=
-    "@(#)$Id: monofree.gi,v 4.37 2008/11/25 09:25:01 gap Exp $";
+    "@(#)$Id: monofree.gi,v 4.38 2010/02/23 15:13:18 gap Exp $";
 
 
 #############################################################################

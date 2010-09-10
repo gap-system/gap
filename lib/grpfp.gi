@@ -3,8 +3,8 @@
 #W  grpfp.gi                    GAP library                    Volkmar Felsch
 #W                                                           Alexander Hulpke
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for finitely presented groups (fp groups).
@@ -14,7 +14,7 @@
 ##  2. methods for f.p. groups
 ##
 Revision.grpfp_gi :=
-    "@(#)$Id: grpfp.gi,v 4.252 2009/09/24 20:10:36 gap Exp $";
+    "@(#)$Id: grpfp.gi,v 4.255 2010/06/11 15:04:15 gap Exp $";
 
 
 #############################################################################
@@ -1029,7 +1029,7 @@ end );
 ##  \enditems
 InstallGlobalFunction( CosetTableFromGensAndRels,
 function ( fgens, grels, fsgens )
-  Info( InfoFpGroup, 2, "CosetTableFromGensAndRels called:" );
+  Info( InfoFpGroup, 3, "CosetTableFromGensAndRels called:" );
   # catch trivial subgroup generators
   if ForAny(fsgens,i->Length(i)=0) then
     fsgens:=Filtered(fsgens,i->Length(i)>0);
@@ -1068,6 +1068,7 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
             nrmax,                  # maximal value of the above
             nrdel,                  # number of deleted cosets
             nrinf,                  # number for next information message
+	    infstep,
 	    silent,		    # do we want the algorithm to silently
 	                            # return `fail' if the algorithm did not
 				    # finish in the permitted size?
@@ -1079,11 +1080,10 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
     grels:=arg[2];
     fsgens:=arg[3];
     # give some information
-    Info( InfoFpGroup, 3, "    defined deleted alive   maximal");
+    Info( InfoFpGroup, 2, "    defined deleted alive   maximal");
     nrdef := 1;
     nrmax := 1;
     nrdel := 0;
-    nrinf := 1000;
     # to give tidy instructions if one enters a break-loop
     SavedOnBreakMessage := OnBreakMessage;
     TCEOnBreakMessage := function(n)
@@ -1100,6 +1100,8 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
     if maxlimit = fail or not (IsInt(maxlimit) or maxlimit=infinity) then
       maxlimit := CosetTableDefaultMaxLimit;
     fi;
+    infstep:=QuoInt(maxlimit,10);
+    nrinf := infstep;
     limit := CosetTableDefaultLimit;
     if limit > maxlimit and maxlimit > 0 then
       limit := maxlimit;
@@ -1140,7 +1142,8 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
       if IsStraightLineProgElm(rel) then
         rel:=EvalStraightLineProgElm(rel);
       fi;
-        length := Length( rel );
+      length := Length( rel );
+      if length>0 then
         length2 := 2 * length;
         nums := [ ]; nums[length2] := 0;
         cols := [ ]; cols[length2] := 0;
@@ -1163,6 +1166,7 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
             nums[j-1] := p2;  cols[j-1] := table[p2];
         od;
         Add( subgroup, [ nums, cols ] );
+      fi;
     od;
 
     # add an empty deduction list
@@ -1189,7 +1193,11 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
                 if firstFree = 0  then
                     if 0 < maxlimit and  maxlimit <= limit  then
 			if silent then
-			  return fail;
+			  if ValueOption("returntable")=true then
+			    return table;
+			  else
+			    return fail;
+			  fi;
 			fi;
                         maxlimit := Maximum(maxlimit*2,limit*2);
                         OnBreakMessage := function()
@@ -1246,7 +1254,7 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
                 if nrinf <= nrdef+nrdel then
                     Info( InfoFpGroup, 3, "\t", nrdef, "\t", nrinf-nrdef,
                           "\t", 2*nrdef-nrinf, "\t", nrmax );
-                    nrinf := ( Int(nrdef+nrdel)/1000 + 1 ) * 1000;
+                    nrinf := ( Int(nrdef+nrdel)/infstep + 1 ) * infstep;
                 fi;
 
             fi;

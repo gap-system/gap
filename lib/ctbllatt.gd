@@ -3,17 +3,17 @@
 #W  ctbllatt.gd                 GAP library                     Thomas Breuer
 #W                                                                Ansgar Kaup
 ##
-#H  @(#)$Id: ctbllatt.gd,v 4.21 2008/08/20 15:05:32 gap Exp $
+#H  @(#)$Id: ctbllatt.gd,v 4.23 2010/02/23 15:12:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of functions that mainly deal with
 ##  lattices in the context of character tables.
 ##
 Revision.ctbllatt_gd :=
-    "@(#)$Id: ctbllatt.gd,v 4.21 2008/08/20 15:05:32 gap Exp $";
+    "@(#)$Id: ctbllatt.gd,v 4.23 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################
@@ -77,13 +77,13 @@ Revision.ctbllatt_gd :=
 ##  >     [ 12, 0, 4, 0, 0 ], [ 6, 0, 2, 0, -2 ], [ 12, -2, 0, 0, 0 ],
 ##  >     [ 8, 0, 0, 2, 0 ], [ 12, 2, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ] ];;
 ##  gap> LLL( s4, chars );
-##  rec( 
+##  rec( norms := [  ],
 ##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 
 ##           ] ), Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ) ], 
-##    remainders := [  ], norms := [  ] )
+##    remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -145,14 +145,14 @@ DeclareGlobalFunction( "LLL" );
 ##  gap> dec:= Decreased( s4, red, ext.solution[1], ext.choice[1] );;
 ##  gap> Display( dec );
 ##  rec(
+##    matrix := [  ],
 ##    irreducibles := 
 ##     [ Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ],
-##    remainders := [  ],
-##    matrix := [  ] )
+##    remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -334,13 +334,13 @@ DeclareGlobalFunction( "OrthogonalEmbeddingsSpecialDimension" );
 ##  gap> dec:= Decreased( s4, red, emb.vectors{ emb.solutions[1] } );;
 ##  gap> Display( dec );
 ##  rec(
+##    matrix := [  ],
 ##    irreducibles := 
 ##     [ Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ) ],
-##    remainders := [  ],
-##    matrix := [  ] )
+##    remainders := [  ] )
 ##  gap> Decreased( s4, red, emb.vectors{ emb.solutions[2] } );
 ##  fail
 ##  gap> Decreased( s4, red, emb.vectors{ emb.solutions[3] } );
@@ -407,13 +407,13 @@ DeclareGlobalFunction( "Decreased" );
 ##  [ [ 2, 1, 0, 0 ], [ 1, 2, 1, -1 ], [ 0, 1, 2, 0 ], [ 0, -1, 0, 2 ] ]
 ##  gap> dn:= DnLattice( s4, gram, red );; Display( dn );
 ##  rec(
-##    gram := [  ],
-##    remainders := [  ],
 ##    irreducibles := 
 ##     [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ] )
+##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ],
+##    remainders := [  ],
+##    gram := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -453,13 +453,13 @@ DeclareGlobalFunction( "DnLattice" );
 ##  >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
 ##  gap> dn:= DnLatticeIterative( s4, red );; Display( dn );
 ##  rec(
+##    norms := [  ],
 ##    irreducibles := 
 ##     [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ],
-##    remainders := [  ],
-##    norms := [  ] )
+##    remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

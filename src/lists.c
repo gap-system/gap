@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  lists.c                     GAP source                   Martin Schoenert
+*W  lists.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: lists.c,v 4.62 2007/02/14 16:52:40 gap Exp $
+*H  @(#)$Id: lists.c,v 4.64 2010/04/28 14:02:26 sal Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the generic list package.
@@ -23,7 +23,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_lists_c =
-   "@(#)$Id: lists.c,v 4.62 2007/02/14 16:52:40 gap Exp $";
+   "@(#)$Id: lists.c,v 4.64 2010/04/28 14:02:26 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -622,6 +622,7 @@ Obj ElmListObject (
     return elm;
 }
 
+#if 0
 /****************************************************************************
 **
 *F  ElmbListError( <list>, <pos> ) . . . . . . . . . . . . . . . error message
@@ -671,6 +672,20 @@ Obj ElmbListObject (
     Obj                 pos )
 {
     Obj                 elm;
+
+    elm = DoOperation2Args( ElmListOper, list, pos );
+    while ( elm == 0 ) {
+        elm = ErrorReturnObj(
+            "List access method must return a value", 0L, 0L,
+            "you can supply a value <val> via 'return <val>;'" );
+    }
+    return elm;
+}
+
+#endif
+
+Obj ELMB_LIST(Obj list, Obj pos)     {
+   Obj                 elm;
 
     elm = DoOperation2Args( ElmListOper, list, pos );
     while ( elm == 0 ) {
@@ -2754,7 +2769,8 @@ static Int InitKernel (
         ElmwListFuncs[ type ] = ElmListObject;
     }
 
-    /* make and install the 'ELMB_LIST' operation                           */
+
+    /* make and install the 'ELMB_LIST' operation                           
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         ElmbListFuncs[  type ] = ElmbListError;
     }
@@ -2767,7 +2783,7 @@ static Int InitKernel (
         ElmbListFuncs[  type ] = ElmbListObject;
     }
 
-
+    */
 
     /* make and install the 'ELMS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {

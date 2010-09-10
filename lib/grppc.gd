@@ -2,10 +2,10 @@
 ##
 #W  grppc.gd                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grppc.gd,v 4.63 2009/06/15 15:20:21 gap Exp $
+#H  @(#)$Id: grppc.gd,v 4.64 2010/02/23 15:13:05 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for groups with a polycyclic collector.
@@ -26,7 +26,7 @@
 ##    a group that knows a pcgs of a super group
 ##
 Revision.grppc_gd :=
-    "@(#)$Id: grppc.gd,v 4.63 2009/06/15 15:20:21 gap Exp $";
+    "@(#)$Id: grppc.gd,v 4.64 2010/02/23 15:13:05 gap Exp $";
 
 
 #############################################################################

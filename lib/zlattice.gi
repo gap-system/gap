@@ -2,16 +2,16 @@
 ##
 #W  zlattice.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zlattice.gi,v 4.18 2006/09/26 00:40:12 gap Exp $
+#H  @(#)$Id: zlattice.gi,v 4.19 2010/02/23 15:13:37 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for lattices.
 ##
 Revision.zlattice_gi :=
-    "@(#)$Id: zlattice.gi,v 4.18 2006/09/26 00:40:12 gap Exp $";
+    "@(#)$Id: zlattice.gi,v 4.19 2010/02/23 15:13:37 gap Exp $";
 
 
 #############################################################################
@@ -1395,13 +1395,13 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
     local
     # sonstige prozeduren
           Symmatinv,
-    # variablen fuer Embed
+    # variablen für Embed
           maxdim, M, D, s, phi, mult, m, x, t, x2, sumg, sumh,
           f, invg, sol, solcount, out,
           l, g, i, j, k, n, a, IdMat, chpo,
     # booleans
           checkpositiv, checkdim,
-    # prozeduren fuer Embed
+    # prozeduren für Embed
           comp1, comp2, scp2, multiples, solvevDMtr,
           Dextend, Mextend, inca, rnew,
           deca;

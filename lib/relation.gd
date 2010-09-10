@@ -2,10 +2,10 @@
 ##
 #W  relation.gd                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id: relation.gd,v 4.41 2008/11/17 17:31:27 gap Exp $
+#H  @(#)$Id: relation.gd,v 4.43 2010/05/20 07:08:02 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for binary relations on sets.
@@ -16,7 +16,7 @@
 ##  Andrew Solomon
 ##
 Revision.relation_gd :=
-    "@(#)$Id: relation.gd,v 4.41 2008/11/17 17:31:27 gap Exp $";
+    "@(#)$Id: relation.gd,v 4.43 2010/05/20 07:08:02 gap Exp $";
 
 
 #############################################################################
@@ -139,7 +139,8 @@ DeclareGlobalFunction("RandomBinaryRelationOnPoints");
 ##  In the first form if a positive integer <A>degree</A> is given then
 ##  the domain is the set of the integers
 ##  <M>\{ 1, \ldots, <A>degree</A> \}</M>.
-##  In the second form, the pairs are from the domain <A>domain</A>.
+##  In the second form, the objects <M>x</M> are from the domain
+##  <A>domain</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

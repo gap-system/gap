@@ -2,12 +2,12 @@
 ##
 #W  straight.gd              GAP library                        Thomas Breuer
 #W                                                           Alexander Hulpke
-#W                                                            Max Neunhoeffer
+#W                                                            Max Neunhöffer
 ##
-#H  @(#)$Id: straight.gd,v 4.29 2008/10/07 15:56:00 gap Exp $
+#H  @(#)$Id: straight.gd,v 4.30 2010/02/23 15:13:32 gap Exp $
 ##
-#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of the operations
@@ -17,7 +17,7 @@
 ##  2. Functions for elements represented by straight line programs
 ##
 Revision.straight_gd :=
-    "@(#)$Id: straight.gd,v 4.29 2008/10/07 15:56:00 gap Exp $";
+    "@(#)$Id: straight.gd,v 4.30 2010/02/23 15:13:32 gap Exp $";
 
 
 #############################################################################

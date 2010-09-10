@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  range.c                     GAP source                   Martin Schoenert
+*W  range.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: range.c,v 4.44 2009/02/04 16:58:02 gap Exp $
+*H  @(#)$Id: range.c,v 4.45 2010/02/23 15:13:46 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions that deal with ranges.
@@ -53,7 +53,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_range_c =
-   "@(#)$Id: range.c,v 4.44 2009/02/04 16:58:02 gap Exp $";
+   "@(#)$Id: range.c,v 4.45 2010/02/23 15:13:46 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

@@ -2,10 +2,10 @@
 ##
 #W  cyclotom.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: cyclotom.gd,v 4.44 2008/10/07 15:55:59 gap Exp $
+#H  @(#)$Id: cyclotom.gd,v 4.47 2010/02/23 15:12:55 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is being maintained by Thomas Breuer.
@@ -16,7 +16,7 @@
 ##  This file declares operations for cyclotomics.
 ##
 Revision.cyclotom_gd :=
-    "@(#)$Id: cyclotom.gd,v 4.44 2008/10/07 15:55:59 gap Exp $";
+    "@(#)$Id: cyclotom.gd,v 4.47 2010/02/23 15:12:55 gap Exp $";
 
 
 #############################################################################
@@ -811,9 +811,9 @@ DeclareGlobalFunction( "StarCyc" );
 ##  <Example><![CDATA[
 ##  gap> Quadratic( EB(5) ); Quadratic( EB(27) );
 ##  rec( a := -1, b := 1, root := 5, d := 2, ATLAS := "b5", 
-##    display := "(-1+ER(5))/2" )
+##    display := "(-1+Sqrt(5))/2" )
 ##  rec( a := -1, b := 3, root := -3, d := 2, ATLAS := "1+3b3", 
-##    display := "(-1+3*ER(-3))/2" )
+##    display := "(-1+3*Sqrt(-3))/2" )
 ##  gap> Quadratic(0); Quadratic( E(5) );
 ##  rec( a := 0, b := 0, root := 1, d := 1, ATLAS := "0", display := "0" )
 ##  fail
@@ -903,19 +903,19 @@ DeclareGlobalFunction( "Quadratic" );
 ##  </List>
 ##  <P/>
 ##  In the following example we temporarily increase the line length limit
-##  from its default value 80 to 84 in order to get a nicer output format.
+##  from its default value 80 to 82 in order to get a nicer output format.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> SizeScreen([ 84, ]);;
+##  gap> SizeScreen([ 82, ]);;
 ##  gap> GaloisMat( [ [ E(3), E(4) ] ] );
-##  rec(
-##    mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], [ E(3)^2, -E(4) ] ],
-##    galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ],
-##    generators := [ (1,2)(3,4), (1,3)(2,4) ] )
-##  gap> SizeScreen([ 80, ]);;
+##  rec( generators := [ (1,2)(3,4), (1,3)(2,4) ], 
+##    mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], [ E(3)^2, -E(4) ] 
+##       ], galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ] )
+##  gap> SizeScreen([ 82, ]);;
 ##  gap> GaloisMat( [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ] ] );
-##  rec( mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ],
-##    galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ], generators := [ (2,3) ] )
+##  rec( generators := [ (2,3) ], 
+##    mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ], 
+##    galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

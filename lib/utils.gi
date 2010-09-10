@@ -3,16 +3,16 @@
 #W  utils.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: utils.gi,v 4.14 2002/04/15 10:05:26 sal Exp $
+#H  @(#)$Id: utils.gi,v 4.15 2010/02/23 15:13:35 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This is a temporary file containing utilities for group chains.
 ##
 Revision.utils_gi :=
-    "@(#)$Id: utils.gi,v 4.14 2002/04/15 10:05:26 sal Exp $";
+    "@(#)$Id: utils.gi,v 4.15 2010/02/23 15:13:35 gap Exp $";
 
 
 #############################################################################

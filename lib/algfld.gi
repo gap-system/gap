@@ -2,16 +2,16 @@
 ##
 #W  algfld.gi                   GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: algfld.gi,v 4.64 2009/09/28 16:01:17 gap Exp $
+#H  @(#)$Id: algfld.gi,v 4.66 2010/06/16 16:31:37 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for algebraic elements and their families
 ##
 Revision.algfld_gi:=
-  "@(#)$Id: algfld.gi,v 4.64 2009/09/28 16:01:17 gap Exp $";
+  "@(#)$Id: algfld.gi,v 4.66 2010/06/16 16:31:37 gap Exp $";
 
 #############################################################################
 ##
@@ -572,7 +572,7 @@ local i,fam,f,g,t,h,rf,rg,rh,z;
     od;
     f:=h;
     rf:=rh;
-    ShrinkCoeffs(g);
+    ShrinkRowVector(g);
     #t:=Length(g);
     #while t>0 and g[t]=z do
     #  Unbind(g[t]);

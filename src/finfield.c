@@ -1,12 +1,12 @@
 /****************************************************************************
 **
 *W  finfield.c                  GAP source                      Werner Nickel
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 **
-*H  @(#)$Id: finfield.c,v 4.51 2009/10/06 02:19:29 gap Exp $
+*H  @(#)$Id: finfield.c,v 4.52 2010/02/23 15:13:42 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the  functions  to compute  with elements  from  small
@@ -53,7 +53,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_finfield_c =
-   "@(#)$Id: finfield.c,v 4.51 2009/10/06 02:19:29 gap Exp $";
+   "@(#)$Id: finfield.c,v 4.52 2010/02/23 15:13:42 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

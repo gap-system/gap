@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  ctbl.gd                     GAP library                     Thomas Breuer
-#W                                                           & Goetz Pfeiffer
+#W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id: ctbl.gd,v 4.115 2009/04/22 13:03:31 gap Exp $
+#H  @(#)$Id: ctbl.gd,v 4.119 2010/03/31 10:23:17 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of categories of character table like
@@ -28,7 +28,7 @@
 ##  13. Auxiliary Stuff
 ##
 Revision.ctbl_gd :=
-    "@(#)$Id: ctbl.gd,v 4.115 2009/04/22 13:03:31 gap Exp $";
+    "@(#)$Id: ctbl.gd,v 4.119 2010/03/31 10:23:17 gap Exp $";
 
 
 #T when are two character tables equal? -> same identifier & same permutation?)
@@ -1160,18 +1160,18 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  gap> List( tables, Size );
 ##  [ 3, 24, 60 ]
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "C5" ) );
-##  rec( series := "Z", parameter := 5, name := "Z(5)" )
+##  rec( name := "Z(5)", series := "Z", parameter := 5 )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "S3" ) );
 ##  fail
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "S6(3)" ) );
-##  rec( series := "C", parameter := [ 3, 3 ], name := "C(3,3) = S(6,3)" )
+##  rec( name := "C(3,3) = S(6,3)", series := "C", parameter := [ 3, 3 ] )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "O7(3)" ) );
-##  rec( series := "B", parameter := [ 3, 3 ], name := "B(3,3) = O(7,3)" )
+##  rec( name := "B(3,3) = O(7,3)", series := "B", parameter := [ 3, 3 ] )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "A8" ) );
-##  rec( series := "A", parameter := 8, 
-##    name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)" )
+##  rec( name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)", series := "A", 
+##    parameter := 8 )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "L3(4)" ) );
-##  rec( series := "L", parameter := [ 3, 4 ], name := "A(2,4) = L(3,4)" )
+##  rec( name := "A(2,4) = L(3,4)", series := "L", parameter := [ 3, 4 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2244,8 +2244,8 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "L3(2)" );;
 ##  gap> pbl:= PrimeBlocks( tbl, 2 );
-##  rec( block := [ 1, 1, 1, 1, 1, 2 ], defect := [ 3, 0 ], 
-##    height := [ 0, 0, 0, 1, 0, 0 ], relevant := [ 3, 5 ], 
+##  rec( relevant := [ 3, 5 ], block := [ 1, 1, 1, 1, 1, 2 ], defect := [ 3, 0 ], 
+##    height := [ 0, 0, 0, 1, 0, 0 ], 
 ##    centralcharacter := [ [ ,, 56,, 24 ], [ ,, -7,, 3 ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -2358,10 +2358,10 @@ DeclareGlobalFunction( "SameBlock" );
 ##  <Example><![CDATA[
 ##  gap> BlocksInfo( CharacterTable( "L3(2)" ) mod 2 );
 ##  [ rec( defect := 3, ordchars := [ 1, 2, 3, 4, 5 ], modchars := [ 1, 2, 3 ], 
-##        decinv := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
-##        basicset := [ 1, 2, 3 ] ), 
-##    rec( defect := 0, ordchars := [ 6 ], modchars := [ 4 ], decinv := [ [ 1 ] ],
-##        basicset := [ 6 ] ) ]
+##        basicset := [ 1, 2, 3 ], 
+##        decinv := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] ), 
+##    rec( defect := 0, ordchars := [ 6 ], modchars := [ 4 ], basicset := [ 6 ], 
+##        decinv := [ [ 1 ] ] ) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2467,7 +2467,7 @@ DeclareOperation( "DecompositionMatrix", [ IsBrauerTable, IsPosInt ] );
 ##  gap> modtbl:= CharacterTable( "L3(2)" ) mod 2;;
 ##  gap> Print( LaTeXStringDecompositionMatrix( modtbl, 1 ) );
 ##  \[
-##  \begin{array}{r||rrr} \hline
+##  \begin{array}{r|rrr} \hline
 ##   & {\tt Y}_{1}
 ##   & {\tt Y}_{2}
 ##   & {\tt Y}_{3}
@@ -2483,7 +2483,7 @@ DeclareOperation( "DecompositionMatrix", [ IsBrauerTable, IsPosInt ] );
 ##  gap> options:= rec( phi:= "\\varphi", chi:= "\\chi" );;
 ##  gap> Print( LaTeXStringDecompositionMatrix( modtbl, 1, options ) );
 ##  \[
-##  \begin{array}{r||rrr} \hline
+##  \begin{array}{r|rrr} \hline
 ##   & \varphi_{1}
 ##   & \varphi_{2}
 ##   & \varphi_{3}
@@ -3386,7 +3386,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  X.5     5  1 -1  .  .
 ##  
 ##  A = -E(5)-E(5)^4
-##    = (1-ER(5))/2 = -b5
+##    = (1-Sqrt(5))/2 = -b5
 ##  gap> CharacterTableDisplayDefaults.User:= rec(
 ##  >        powermap:= "ATLAS", centralizers:= "ATLAS", chars:= false );;
 ##  gap> Display( CharacterTable( "A5" ) );
@@ -3704,24 +3704,26 @@ DeclareOperation( "CharacterTableFactorGroup",
 
 #############################################################################
 ##
-#O  CharacterTableIsoclinic( <tbl>[, <classes>[, <centre>]] )
+#O  CharacterTableIsoclinic( <tbl>[, <classes>][, <centre>] )
 ##
 ##  <#GAPDoc Label="CharacterTableIsoclinic">
 ##  <ManSection>
-##  <Oper Name="CharacterTableIsoclinic" Arg='tbl[, classes[, centre]]'/>
+##  <Oper Name="CharacterTableIsoclinic" Arg='tbl[, classes][, centre]'/>
 ##
 ##  <Description>
 ##  If <A>tbl</A> is the (ordinary or modular) character table of a group
 ##  with the structure <M>2.G.2</M> with a central subgroup <M>Z</M> of order
-##  <M>2</M> and a normal subgroup <M>N</M> of index <M>2</M> that contains
-##  <M>Z</M> then <Ref Oper="CharacterTableIsoclinic"/> returns the table of
-##  the isoclinic group in the sense of the &ATLAS; of Finite Groups
+##  <M>2</M> or <M>4</M> and a normal subgroup <M>N</M> of index <M>2</M>
+##  that contains <M>Z</M> then <Ref Oper="CharacterTableIsoclinic"/> returns
+##  the table of the isoclinic group in the sense of the
+##  &ATLAS; of Finite Groups
 ##  <Cite Key="CCN85" Where="Chapter 6, Section 7"/>.
 ##  If <M>N</M> is not uniquely determined then the positions of the classes
 ##  forming <M>N</M> must be entered as list <A>classes</A>.
-##  If <M>Z</M> is not unique in <M>N</M> then the position of the class
-##  consisting of the involution in <M>Z</M> must be entered as
-##  <A>centre</A>.
+##  If <M>Z</M> is not unique inside <M>N</M> then the positions of the
+##  classes in <M>Z</M> must be entered as list <A>centre</A>;
+##  If <M>Z</M> has order <M>2</M> then <A>centre</A> can be also the
+##  position of the involution in <M>Z</M>.
 ##  <P/>
 ##  Note that also if <A>tbl</A> is a Brauer table then <A>classes</A> and
 ##  <A>centre</A> denote class numbers w.r.t.&nbsp;the <E>ordinary</E>
@@ -3753,7 +3755,12 @@ DeclareAttribute( "CharacterTableIsoclinic", IsNearlyCharacterTable );
 DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ] );
 DeclareOperation( "CharacterTableIsoclinic",
+    [ IsNearlyCharacterTable, IsPosInt ] );
+DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection, IsPosInt ]);
+DeclareOperation( "CharacterTableIsoclinic",
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection,
+      IsList and IsCyclotomicCollection ] );
 
 
 #############################################################################

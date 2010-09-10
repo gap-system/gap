@@ -2,16 +2,16 @@
 ##
 #W  addcoset.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: addcoset.gi,v 4.7 2002/04/15 10:04:22 sal Exp $
+#H  @(#)$Id: addcoset.gi,v 4.8 2010/02/23 15:12:44 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for additive cosets.
 ##
 Revision.addcoset_gi :=
-    "@(#)$Id: addcoset.gi,v 4.7 2002/04/15 10:04:22 sal Exp $";
+    "@(#)$Id: addcoset.gi,v 4.8 2010/02/23 15:12:44 gap Exp $";
 
 
 #############################################################################

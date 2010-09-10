@@ -2,10 +2,10 @@
 ##
 #W  hash.gd                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: hash.gd,v 4.12 2007/09/05 12:45:14 gap Exp $
+#H  @(#)$Id: hash.gd,v 4.13 2010/02/23 15:13:09 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Hash tables module, declarations part. 
@@ -16,7 +16,7 @@
 ##  choice of representation when mutability is needed)
 ##
 Revision.hash_gd :=
-    "@(#)$Id: hash.gd,v 4.12 2007/09/05 12:45:14 gap Exp $";
+    "@(#)$Id: hash.gd,v 4.13 2010/02/23 15:13:09 gap Exp $";
 
 
 #############################################################################

@@ -1,12 +1,12 @@
 /****************************************************************************
 **
-*W  string.c                    GAP source                     Frank Luebeck,
-*W                                            Frank Celler & Martin Schoenert
+*W  string.c                    GAP source                     Frank Lübeck,
+*W                                            Frank Celler & Martin Schönert
 **
-*H  @(#)$Id: string.c,v 4.77 2009/06/23 09:42:25 gap Exp $
+*H  @(#)$Id: string.c,v 4.79 2010/03/11 19:57:57 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions which mainly deal with strings.
@@ -54,7 +54,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_string_c =
-   "@(#)$Id: string.c,v 4.77 2009/06/23 09:42:25 gap Exp $";
+   "@(#)$Id: string.c,v 4.79 2010/03/11 19:57:57 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -610,43 +610,6 @@ Obj TypeString (
 **
 **  'CleanString' is the function in 'CleanObjFuncs' for strings.
 */
-Obj CopyStringXXX (
-    Obj                 list,
-    Int                 mut )
-{
-    Obj                 copy;           /* handle of the copy, result      */
-    UInt                i;              /* loop variable                   */
-
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(list) ) {
-        return list;
-    }
-
-    /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
-    }
-    else {
-        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
-    }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
-
-    /* leave a forwarding pointer                                          */
-    ADDR_OBJ(list)[0] = copy;
-    CHANGED_BAG( list );
-
-    /* now it is copied                                                    */
-    MARK_LIST( list, COPYING );
-
-    /* copy the subvalues                                                  */
-    for ( i = 1; i < (SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj); i++ ) {
-        ADDR_OBJ(copy)[i] = ADDR_OBJ(list)[i];
-    }
-
-    /* return the copy                                                     */
-    return copy;
-}
-
 Obj CopyString (
     Obj                 list,
     Int                 mut )
@@ -665,8 +628,18 @@ Obj CopyString (
     else {
         copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
-    memcpy((void*)ADDR_OBJ(copy), (void*)ADDR_OBJ(list), 
-           ((SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj)) * sizeof(Obj));
+    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
+
+    /* leave a forwarding pointer                                          */
+    ADDR_OBJ(list)[0] = copy;
+    CHANGED_BAG( list );
+
+    /* now it is copied                                                    */
+    MARK_LIST( list, COPYING );
+
+    /* copy the subvalues                                                  */
+    memcpy((void*)(ADDR_OBJ(copy)+1), (void*)(ADDR_OBJ(list)+1), 
+           ((SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj)-1) * sizeof(Obj));
 
     /* return the copy                                                     */
     return copy;

@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  ctblsymm.gd                 GAP library                    Goetz Pfeiffer
+#W  ctblsymm.gd                 GAP library                    Götz Pfeiffer
 #W                                                               Felix Noeske
 ##
-#H  @(#)$Id: ctblsymm.gd,v 4.17 2008/08/18 16:05:45 gap Exp $
+#H  @(#)$Id: ctblsymm.gd,v 4.19 2010/02/23 15:12:54 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains  the  declaration  of functions  needed for a  direct
@@ -70,7 +70,7 @@
 ##  symbol.
 ##
 Revision.ctblsymm_gd :=
-    "@(#)$Id: ctblsymm.gd,v 4.17 2008/08/18 16:05:45 gap Exp $";
+    "@(#)$Id: ctblsymm.gd,v 4.19 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################
@@ -288,9 +288,9 @@ DeclareGlobalFunction( "CharValueWreathSymmetric" );
 ##  X.9     1  -A -/A -/A  1  -A  1  -A -/A
 ##  
 ##  A = -E(3)^2
-##    = (1+ER(-3))/2 = 1+b3
+##    = (1+Sqrt(-3))/2 = 1+b3
 ##  B = 2*E(3)
-##    = -1+ER(-3) = 2b3
+##    = -1+Sqrt(-3) = 2b3
 ##  gap> CharacterParameters( wr )[1];
 ##  [ [ 1, 1 ], [  ], [  ] ]
 ##  ]]></Example>

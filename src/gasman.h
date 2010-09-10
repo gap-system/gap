@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  gasman.h                    GAP source                   Martin Schoenert
+*W  gasman.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gasman.h,v 4.26 2006/02/23 15:53:37 sal Exp $
+*H  @(#)$Id: gasman.h,v 4.27 2010/02/23 15:13:42 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares  the functions of  Gasman,  the  GAP  storage manager.
@@ -35,7 +35,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gasman_h =
-   "@(#)$Id: gasman.h,v 4.26 2006/02/23 15:53:37 sal Exp $";
+   "@(#)$Id: gasman.h,v 4.27 2010/02/23 15:13:42 gap Exp $";
 #endif
 extern const char * Revision_gasman_h;  /* gap.c uses this. */
 extern const char * Revision_gasman_c;

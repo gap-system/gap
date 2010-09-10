@@ -3,10 +3,10 @@
 #W  grpfree.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: grpfree.gi,v 4.52 2008/11/25 09:21:26 gap Exp $
+#H  @(#)$Id: grpfree.gi,v 4.54 2010/06/04 10:56:56 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for free groups.
@@ -17,7 +17,7 @@
 ##  equalitity test.
 ##
 Revision.grpfree_gi :=
-    "@(#)$Id: grpfree.gi,v 4.52 2008/11/25 09:21:26 gap Exp $";
+    "@(#)$Id: grpfree.gi,v 4.54 2010/06/04 10:56:56 gap Exp $";
 
 
 #############################################################################
@@ -95,7 +95,7 @@ BindGlobal( "ShallowCopy_FreeGroup", iter -> rec(
 
 InstallMethod( Iterator,
     "for a free group",
-    [ IsAssocWordWithInverseCollection and IsWholeFamily ],
+    [ IsAssocWordWithInverseCollection and IsWholeFamily and IsGroup ],
     G -> IteratorByFunctions( rec(
              IsDoneIterator := ReturnFalse,
              NextIterator   := NextIterator_FreeGroup,

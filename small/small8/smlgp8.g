@@ -7,7 +7,7 @@
 ##  of size 1536.
 ##
 Revision.smlgp8_g :=
-    "@(#)$Id: smlgp8.g,v 1.4 2004/09/26 18:33:31 gap Exp $";
+    "@(#)$Id: smlgp8.g,v 1.5 2009/11/05 15:31:29 alexk Exp $";
 
 #############################################################################
 ##
@@ -36,7 +36,7 @@ end;
 ##
 SMALL_GROUP_FUNCS[ 14 ] := function( size, i, inforec )
     local j, k, n1, t, pos, ind, g, file, c, DATA, p, nrs, sid, rank,
-          aut, op1, op2, S, exp, F, gens, rel, rels, id, rrf, rrs,
+          aut, op, op1, op2, S, exp, F, gens, rel, rels, id, rrf, rrs,
           zs, z2s, zf, z2f, ff, lf, llf, sf, ucs, ucf, cf, cs, ss, indf;
 
     if i > 408641062 then 

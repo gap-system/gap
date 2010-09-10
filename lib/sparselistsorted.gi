@@ -2,10 +2,10 @@
 ##
 #W  sparselistsorted.gi             GAP library                      Steve Linton
 ##
-#H  @(#)$Id: sparselistsorted.gi,v 4.3 2002/04/15 10:05:23 sal Exp $
+#H  @(#)$Id: sparselistsorted.gi,v 4.4 2010/02/23 15:13:31 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains a specific representation of sparse lists and
@@ -13,7 +13,7 @@
 ##
 
 Revision.sparselistsorted_gi :=
-  "@(#)$Id: sparselistsorted.gi,v 4.3 2002/04/15 10:05:23 sal Exp $";
+  "@(#)$Id: sparselistsorted.gi,v 4.4 2010/02/23 15:13:31 gap Exp $";
 
 #############################################################################
 ##

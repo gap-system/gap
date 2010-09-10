@@ -3,11 +3,11 @@
 #W  schur.gd                 GAP library                        Werner Nickel 
 #W                                                           Alexander Hulpke
 ##
-#Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.schur_gd :=
-    "@(#)$Id: schur.gd,v 4.20 2009/09/24 13:24:17 alexk Exp $";
+    "@(#)$Id: schur.gd,v 4.21 2010/02/23 15:13:29 gap Exp $";
 
 #############################################################################
 ##

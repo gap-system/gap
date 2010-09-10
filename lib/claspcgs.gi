@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  claspcgs.gi                 GAP library                    Heiko Thei"sen
+#W  claspcgs.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: claspcgs.gi,v 4.71 2005/06/24 14:54:21 sal Exp $
+#H  @(#)$Id: claspcgs.gi,v 4.72 2010/02/23 15:12:48 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions that  deal with conjugacy topics in solvable
@@ -15,7 +15,7 @@
 ##  representation of the groups.
 ##
 Revision.claspcgs_gi:=
-    "@(#)$Id: claspcgs.gi,v 4.71 2005/06/24 14:54:21 sal Exp $";
+    "@(#)$Id: claspcgs.gi,v 4.72 2010/02/23 15:12:48 gap Exp $";
 
 #############################################################################
 ##

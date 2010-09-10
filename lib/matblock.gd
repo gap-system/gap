@@ -2,16 +2,16 @@
 ##
 #W  matblock.gd                 GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: matblock.gd,v 4.14 2009/06/26 15:49:59 gap Exp $
+#H  @(#)$Id: matblock.gd,v 4.15 2010/02/23 15:13:13 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for block matrices.
 ##
 Revision.matblock_gd :=
-    "@(#)$Id: matblock.gd,v 4.14 2009/06/26 15:49:59 gap Exp $";
+    "@(#)$Id: matblock.gd,v 4.15 2010/02/23 15:13:13 gap Exp $";
 
 
 ##  <#GAPDoc Label="[1]{matblock}">

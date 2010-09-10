@@ -2,17 +2,17 @@
 ##
 #W  vspchom.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspchom.gd,v 4.20 2007/10/23 07:46:51 gap Exp $
+#H  @(#)$Id: vspchom.gd,v 4.21 2010/02/23 15:13:36 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  1. Single Linear Mappings
 ##  2. Vector Spaces of Linear Mappings
 ##
 Revision.vspchom_gd :=
-    "@(#)$Id: vspchom.gd,v 4.20 2007/10/23 07:46:51 gap Exp $";
+    "@(#)$Id: vspchom.gd,v 4.21 2010/02/23 15:13:36 gap Exp $";
 
 
 #############################################################################

@@ -2,17 +2,17 @@
 ##
 #W  upoly.gd                 GAP Library                     Alexander Hulpke
 ##
-#H  @(#)$Id: upoly.gd,v 4.32 2008/09/22 16:22:31 gap Exp $
+#H  @(#)$Id: upoly.gd,v 4.33 2010/02/23 15:13:35 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains attributes, properties and operations for univariate
 ##  polynomials
 ##
 Revision.upoly_gd:=
-  "@(#)$Id: upoly.gd,v 4.32 2008/09/22 16:22:31 gap Exp $";
+  "@(#)$Id: upoly.gd,v 4.33 2010/02/23 15:13:35 gap Exp $";
 
 #############################################################################
 ##

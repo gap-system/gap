@@ -3,19 +3,19 @@
 #W  matrix.gd                   GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 #W                                                         & Alexander Hulpke
-#W                                                           & Heiko Theissen
-#W                                                         & Martin Schoenert
+#W                                                           & Heiko Theißen
+#W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: matrix.gd,v 4.111 2009/06/24 12:25:53 gap Exp $
+#H  @(#)$Id: matrix.gd,v 4.113 2010/02/23 15:13:14 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains those functions that mainly deal with matrices.
 ##
 Revision.matrix_gd :=
-    "@(#)$Id: matrix.gd,v 4.111 2009/06/24 12:25:53 gap Exp $";
+    "@(#)$Id: matrix.gd,v 4.113 2010/02/23 15:13:14 gap Exp $";
 
 
 #############################################################################
@@ -697,7 +697,7 @@ DeclareAttribute( "SemiEchelonMat", IsMatrix );
 ##  <Example><![CDATA[
 ##  gap> mm:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> SemiEchelonMatDestructive( mm );
-##  rec( heads := [ 1, 2, 0 ], vectors := [ [ 1, 2, 3 ], [ 0, 1, 2 ] ] )
+##  rec( vectors := [ [ 1, 2, 3 ], [ 0, 1, 2 ] ], heads := [ 1, 2, 0 ] )
 ##  gap> mm;
 ##  [ [ 1, 2, 3 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
 ##  ]]></Example>
@@ -735,8 +735,8 @@ DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrix and IsMutable] );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> SemiEchelonMatTransformation([[1,2,3],[0,0,1]]);
-##  rec( heads := [ 1, 0, 2 ], vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ], 
-##    coeffs := [ [ 1, 0 ], [ 0, 1 ] ], relations := [  ] )
+##  rec( vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ], relations := [  ], 
+##    heads := [ 1, 0, 2 ], coeffs := [ [ 1, 0 ], [ 0, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1200,9 +1200,8 @@ DeclareGlobalFunction( "BaseFixedSpace" );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> BaseSteinitzVectors(IdentityMat(3,1),[[11,13,15]]);
-##  rec( factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ], 
-##    factorzero := [ 0, 0, 0 ], subspace := [ [ 1, 13/11, 15/11 ] ], 
-##    heads := [ -1, 1, 2 ] )
+##  rec( heads := [ -1, 1, 2 ], subspace := [ [ 1, 13/11, 15/11 ] ], 
+##    factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ], factorzero := [ 0, 0, 0 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

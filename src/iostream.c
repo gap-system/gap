@@ -2,9 +2,9 @@
 **
 *W  iostream.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id: iostream.c,v 4.35 2007/03/05 15:35:33 sal Exp $
+*H  @(#)$Id: iostream.c,v 4.36 2010/02/23 15:13:43 gap Exp $
 **
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **
@@ -27,7 +27,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_iostream_c =
-   "@(#)$Id: iostream.c,v 4.35 2007/03/05 15:35:33 sal Exp $";
+   "@(#)$Id: iostream.c,v 4.36 2010/02/23 15:13:43 gap Exp $";
 
 #define INCLUDE_DECLARATION_PART
 #include        "iostream.h"            /* file input/output               */

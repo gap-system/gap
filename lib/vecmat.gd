@@ -2,17 +2,17 @@
 ##
 #W  vecmat.gd                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: vecmat.gd,v 4.45 2008/10/24 16:31:23 gap Exp $
+#H  @(#)$Id: vecmat.gd,v 4.47 2010/06/14 16:34:30 sal Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the basic operations for creating and doing arithmetic
 ##  with vectors.
 ##
 Revision.vecmat_gd :=
-    "@(#)$Id: vecmat.gd,v 4.45 2008/10/24 16:31:23 gap Exp $";
+    "@(#)$Id: vecmat.gd,v 4.47 2010/06/14 16:34:30 sal Exp $";
 
 
 #############################################################################
@@ -230,6 +230,15 @@ DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 ##   Label="for a list (and a prime power)"/>
 ##
 ##  <Description>
+##
+##  This function is more technical version of <Ref Func="ImmutableMatrix"/>,
+##  which will never copy a matrix (or any rows of it) but may fail if it
+##  encounters rows locked in the wrong representation, or various other
+##  more technical problems. Most users should use <Ref Func="ImmutableMatrix"/>
+##  instead. The NC versions of the function do less checking of the 
+##  argument and may cause unpredictable results or crashes if given 
+##  unsuitable arguments.
+##
 ##  Called with one argument <A>list</A>,
 ##  <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>
 ##  converts <A>list</A> to an internal matrix representation
@@ -252,14 +261,9 @@ DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 ##  <A>list</A> may already be a compressed matrix. In this case, if no
 ##  <A>field</A> or <A>fieldsize</A> is given, then nothing happens.
 ##  <P/>
-##  <A>list</A> itself may be mutable, but its entries must be immutable.
-##  <P/>
 ##  The return value is the size of the field over which the matrix
 ##  ends up written, if it is written in a compressed representation.
 ##  <P/>
-##  In general, it is better to call <Ref Func="ImmutableMatrix"/> instead
-##  since this function can also deal with
-##  mutable rows or rows locked in a wrong representation.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

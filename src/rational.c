@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  rational.c                  GAP source                   Martin Schoenert
+*W  rational.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: rational.c,v 4.32 2002/04/15 10:03:55 sal Exp $
+*H  @(#)$Id: rational.c,v 4.33 2010/02/23 15:13:47 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains  the  functions  for  the  artithmetic  of  rationals.
@@ -46,7 +46,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_rational_c =
-   "@(#)$Id: rational.c,v 4.32 2002/04/15 10:03:55 sal Exp $";
+   "@(#)$Id: rational.c,v 4.33 2010/02/23 15:13:47 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 

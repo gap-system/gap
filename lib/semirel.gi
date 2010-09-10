@@ -1,10 +1,10 @@
 #############################################################################
 #W  semirel.gi                  GAP library                James D. Mitchell
 ##
-#H  @(#)$Id: semirel.gi,v 4.43 2007/03/13 16:40:28 jamesm Exp $
+#H  @(#)$Id: semirel.gi,v 4.44 2010/02/23 15:13:29 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for equivalence relations on 
@@ -12,7 +12,7 @@
 ##  congruences, and Rees congruences.
 ##
 Revision.semirel_gi :=
-    "@(#)$Id: semirel.gi,v 4.43 2007/03/13 16:40:28 jamesm Exp $";
+    "@(#)$Id: semirel.gi,v 4.44 2010/02/23 15:13:29 gap Exp $";
 
 #######################
 #######################
@@ -829,7 +829,7 @@ InstallMethod(GroupHClassOfGreensDClass, "for a Green's H-class", true,
 ##
 ## this returns a matrix with the j-th entry in the i-th row
 ## being the intersection of the i-th R-class and the j-th L-class 
-##�(by the construction of GreensHClasses)
+##Ê(by the construction of GreensHClasses)
 ##
 
 InstallMethod(EggBoxOfDClass, "for a Green's D class", true, 

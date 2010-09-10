@@ -1,12 +1,12 @@
 /****************************************************************************
 **
-*W  permutat.c                  GAP source                   Martin Schoenert
+*W  permutat.c                  GAP source                   Martin Schönert
 **                                                           & Alice Niemeyer
 **
-*H  @(#)$Id: permutat.c,v 4.62 2008/09/16 17:52:29 gap Exp $
+*H  @(#)$Id: permutat.c,v 4.63 2010/02/23 15:13:46 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for permutations (small and large).
@@ -41,7 +41,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_permutat_c =
-   "@(#)$Id: permutat.c,v 4.62 2008/09/16 17:52:29 gap Exp $";
+   "@(#)$Id: permutat.c,v 4.63 2010/02/23 15:13:46 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

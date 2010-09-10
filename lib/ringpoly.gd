@@ -2,17 +2,17 @@
 ##
 #W  ringpoly.gd                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: ringpoly.gd,v 4.41 2009/02/11 13:50:24 gap Exp $
+#H  @(#)$Id: ringpoly.gd,v 4.43 2010/06/14 16:51:17 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains  the categories, attributes, properties and operations
 ##  for polynomial rings and function fields.
 ##
 Revision.ringpoly_gd :=
-    "@(#)$Id: ringpoly.gd,v 4.41 2009/02/11 13:50:24 gap Exp $";
+    "@(#)$Id: ringpoly.gd,v 4.43 2010/06/14 16:51:17 gap Exp $";
 
 
 #############################################################################
@@ -188,14 +188,17 @@ DeclareCategory( "IsRationalsPolynomialRing",
 DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 
 ##  <#GAPDoc Label="[1]{ringpoly}">
-##  &GAP; implements a polynomial ring with countably many indeterminates.
-##  These indeterminates can be referred to by positive integers.
-##  If only a number <A>num</A> of indeterminates is required they default to
-##  <C>[1..<A>num</A>]</C>.
+##  Internally, indeterminates are created for a <E>family</E> of objects
+##  (for example all elements of finite fields in characteristic <M>3</M> are in
+##  one family). Thus a variable <Q>x</Q> over the
+##  rationals is also an <Q>x</Q> over the integers,
+##  while an <Q>x</Q> over <C>GF(3)</C> is different.
 ##  <P/>
-##  Indeterminates are created per <E>family</E>. Thus the <Q>x</Q> over the
-##  rationals is the same as the <Q>x</Q> over the integers,
-##  while <Q>x</Q> over <C>GF(3)</C> is different.
+##  Within one family, every indeterminate has a number <A>nr</A> and as
+##  long as  no other names have been assigned, this indeterminte will be
+##  displayed as
+##  <Q><C>x_<A>nr</A></C></Q>. Indeterminate numbers can be arbitrary
+##  nonnegative integers.
 ##  <P/>
 ##  It is possible to assign names to indeterminates; these names are
 ##  strings and only provide a means for printing the indeterminates in a
@@ -213,7 +216,8 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##
 ##  <#GAPDoc Label="[2]{ringpoly}">
 ##  When asking for indeterminates with certain
-##  names, &GAP; usually will take the first indeterminates that are not
+##  names, &GAP; usually will take the first (with respect to the internal
+##  numbering) indeterminates that are not
 ##  yet named, name these accordingly and return them. Thus when asking for
 ##  named indeterminates, no relation between names and indeterminate
 ##  numbers can be guaranteed. The attribute

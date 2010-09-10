@@ -2,9 +2,9 @@
 ##
 #W  clashom.gi                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: clashom.gi,v 4.65 2008/04/24 18:05:13 gap Exp $
+#H  @(#)$Id: clashom.gi,v 4.66 2010/02/23 15:12:48 gap Exp $
 ##
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions that compute the conjugacy classes of a
@@ -13,7 +13,7 @@
 ##  homomorphic images, MathComp, to appear.
 ##
 Revision.clashom_gi :=
-    "@(#)$Id: clashom.gi,v 4.65 2008/04/24 18:05:13 gap Exp $";
+    "@(#)$Id: clashom.gi,v 4.66 2010/02/23 15:12:48 gap Exp $";
 
 
 #############################################################################

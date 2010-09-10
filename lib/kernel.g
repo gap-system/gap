@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  kernel.g                    GAP library                  Martin Schoenert
+#W  kernel.g                    GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: kernel.g,v 4.44 2007/10/23 07:46:51 gap Exp $
+#H  @(#)$Id: kernel.g,v 4.46 2010/07/28 15:45:21 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains function that should be in the kernel of GAP.
@@ -13,7 +13,7 @@
 ##  the bootstrap.
 ##
 Revision.kernel_g :=
-    "@(#)$Id: kernel.g,v 4.44 2007/10/23 07:46:51 gap Exp $";
+    "@(#)$Id: kernel.g,v 4.46 2010/07/28 15:45:21 gap Exp $";
 
 
 #############################################################################
@@ -208,20 +208,6 @@ Runtimes := function()
   fi;
   return res;
 end;
-
-############################################################################
-##
-#V  POST_RESTORE_FUNCS
-##
-##  <ManSection>
-##  <Var Name="POST_RESTORE_FUNCS"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-POST_RESTORE_FUNCS := [];
-
 
 
 #############################################################################

@@ -2,10 +2,10 @@
 ##
 #W  addmagma.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: addmagma.gd,v 4.20 2009/01/12 17:26:16 gap Exp $
+#H  @(#)$Id: addmagma.gd,v 4.21 2010/02/23 15:12:44 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for additive magmas,
@@ -14,7 +14,7 @@
 ##  and additive-magma-with-inverses is different.
 ##
 Revision.addmagma_gd :=
-    "@(#)$Id: addmagma.gd,v 4.20 2009/01/12 17:26:16 gap Exp $";
+    "@(#)$Id: addmagma.gd,v 4.21 2010/02/23 15:12:44 gap Exp $";
 
 
 #############################################################################

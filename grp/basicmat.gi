@@ -2,15 +2,15 @@
 ##
 #W  basicmat.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicmat.gi,v 4.15 2009/03/24 13:47:25 gap Exp $
+#H  @(#)$Id: basicmat.gi,v 4.16 2010/02/23 15:12:39 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains the methods for the  construction of the basic matrix
 ##  group types.
 ##
 Revision.basicmat_gi :=
-    "@(#)$Id: basicmat.gi,v 4.15 2009/03/24 13:47:25 gap Exp $";
+    "@(#)$Id: basicmat.gi,v 4.16 2010/02/23 15:12:39 gap Exp $";
 
 
 #############################################################################

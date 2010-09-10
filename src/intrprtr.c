@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  intrprtr.c                  GAP source                   Martin Schoenert
+*W  intrprtr.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: intrprtr.c,v 4.73 2008/01/18 16:21:02 sal Exp $
+*H  @(#)$Id: intrprtr.c,v 4.75 2010/04/28 14:02:26 sal Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the immediate interpreter package.
@@ -20,7 +20,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_intrprtr_c =
-   "@(#)$Id: intrprtr.c,v 4.73 2008/01/18 16:21:02 sal Exp $";
+   "@(#)$Id: intrprtr.c,v 4.75 2010/04/28 14:02:26 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -3186,25 +3186,13 @@ void            IntrElmList ( void )
     list = PopObj();
 
     
-    if ( ! IS_INTOBJ(pos))
+    if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0)
       {
-	if (TNUM_OBJ(pos) != T_INTPOS)
-	  {
-	    ErrorQuit("List Element: <position> must be a positive integer (not a %s)",
-		      (Int)TNAM_OBJ(pos), 0);
-	  }
+	/* This mostly dispatches to the library */
 	elm = ELMB_LIST( list, pos);
       }
     else
       {
-	if (INT_INTOBJ(pos) <= 0 ) {
-	  ErrorQuit(
-		    "List Element: <position> must be positive (not a %d)",
-		    INT_INTOBJ(pos), 0L );
-	}
-	p = INT_INTOBJ( pos );
-	
-	
 	/* get the element of the list                                         */
 	elm = ELM_LIST( list, p );
       }

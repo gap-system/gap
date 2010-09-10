@@ -2,16 +2,16 @@
 ##
 #W  extrset.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: extrset.gd,v 4.7 2002/04/15 10:04:39 sal Exp $
+#H  @(#)$Id: extrset.gd,v 4.8 2010/02/23 15:12:57 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for external right sets.
 ##
 Revision.extrset_gd :=
-    "@(#)$Id: extrset.gd,v 4.7 2002/04/15 10:04:39 sal Exp $";
+    "@(#)$Id: extrset.gd,v 4.8 2010/02/23 15:12:57 gap Exp $";
 
 
 #############################################################################

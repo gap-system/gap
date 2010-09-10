@@ -1,13 +1,13 @@
 /****************************************************************************
 **
-*W  integer.c                   GAP source                   Martin Schoenert
+*W  integer.c                   GAP source                   Martin Schönert
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id: integer.c,v 4.72 2009/05/29 23:00:28 alexk Exp $
+*H  @(#)$Id: integer.c,v 4.74 2010/09/07 12:53:21 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file implements the  functions  handling  arbitrary  size  integers.
@@ -89,7 +89,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_integer_c =
-   "@(#)$Id: integer.c,v 4.72 2009/05/29 23:00:28 alexk Exp $";
+   "@(#)$Id: integer.c,v 4.74 2010/09/07 12:53:21 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -3187,6 +3187,7 @@ void LoadInt( Obj bigint)
 **  taken from:
 **          http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
 **  (Also look in Wikipedia for "Mersenne twister".)
+**  We use the file mt19937ar.c, version 2002/1/26.
 */
 
 /****************************************************************************
@@ -3213,10 +3214,22 @@ void initGRMT(UInt4 *mt, UInt4 s)
     mt[624] = mti;
 }
 
+/* to read a seed string independently of endianness */
+static inline UInt4 uint4frombytes(UChar *s)
+{
+  UInt4 res;
+  res = s[3]; res <<= 8;
+  res += s[2]; res <<= 8;
+  res += s[1]; res <<= 8;
+  res += s[0];
+  return res;
+}
+
 Obj FuncInitRandomMT( Obj self, Obj initstr)
 {
   Obj str;
-  UInt4 *mt, *init_key, key_length, i, j, k, N=624;
+  UChar *init_key;
+  UInt4 *mt, key_length, i, j, k, N=624;
 
   /* check the seed, given as string */
   while (! IsStringConv(initstr)) {
@@ -3225,33 +3238,36 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
          (Int)TNAM_OBJ(initstr), 0L,
          "you can replace <initstr> via 'return <initstr>;'" );
   }
-  init_key = (UInt4*) CHARS_STRING(initstr);
+  init_key = CHARS_STRING(initstr);
   key_length = GET_LEN_STRING(initstr) / 4;
 
-   /* store array of 624 UInt4 and one UInt4 as counter "mti" */
-   str = NEW_STRING(4*625);
-   SET_LEN_STRING(str, 4*625);
-   mt = (UInt4*) CHARS_STRING(str);
-   /* here the counter mti is set to 624 */
-   initGRMT(mt, 19650218UL);
-   i=1; j=0;
-   k = (N>key_length ? N : key_length);
-   for (; k; k--) {
-       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
-         + init_key[j] + j;
-       mt[i] &= 0xffffffffUL;
-       i++; j++;
-       if (i>=N) { mt[0] = mt[N-1]; i=1; }
-       if (j>=key_length) j=0;
-   }
-   for (k=N-1; k; k--) {
-       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i;
-       mt[i] &= 0xffffffffUL;
-       i++;
-       if (i>=N) { mt[0] = mt[N-1]; i=1; }
-   }
-   mt[0] = 0x80000000UL;
-   return str;
+  /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
+     endianness marker */
+  str = NEW_STRING(4*626);
+  SET_LEN_STRING(str, 4*626);
+  mt = (UInt4*) CHARS_STRING(str);
+  /* here the counter mti is set to 624 */
+  initGRMT(mt, 19650218UL);
+  i=1; j=0;
+  k = (N>key_length ? N : key_length);
+  for (; k; k--) {
+      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
+        + uint4frombytes(init_key+4*j) + j;
+      mt[i] &= 0xffffffffUL;
+      i++; j++;
+      if (i>=N) { mt[0] = mt[N-1]; i=1; }
+      if (j>=key_length) j=0;
+  }
+  for (k=N-1; k; k--) {
+      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i;
+      mt[i] &= 0xffffffffUL;
+      i++;
+      if (i>=N) { mt[0] = mt[N-1]; i=1; }
+  }
+  mt[0] = 0x80000000UL;
+  /* gives string "1234" in little endian as marker */
+  mt[625] = 875770417UL;
+  return str;
 }
 
 

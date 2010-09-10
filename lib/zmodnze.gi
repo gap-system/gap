@@ -2,10 +2,10 @@
 ##
 #W  zmodnze.gi                   GAP library              Alexander Konovalov
 ##
-#H  @(#)$Id: zmodnze.gi,v 1.5 2004/07/15 17:42:26 alexk Exp $
+#H  @(#)$Id: zmodnze.gi,v 1.6 2010/02/23 15:13:38 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for the elements of the rings $Z/nZ(epsilon)$,
@@ -18,7 +18,7 @@
 ##  as cyclotomic interers.
 ##
 Revision.zmodnze_gi :=
-    "@(#)$Id: zmodnze.gi,v 1.5 2004/07/15 17:42:26 alexk Exp $";
+    "@(#)$Id: zmodnze.gi,v 1.6 2010/02/23 15:13:38 gap Exp $";
 
 
 #############################################################################

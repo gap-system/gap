@@ -2,19 +2,19 @@
 ##
 #W  oper.g                      GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
-#W                                                         & Martin Schoenert
+#W                                                          & Martin Schönert
 ##
-#H  @(#)$Id: oper.g,v 4.107 2008/09/18 07:58:04 gap Exp $
+#H  @(#)$Id: oper.g,v 4.112 2010/08/03 20:43:51 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file defines operations and such. Some functions have moved
 ##  to oper1.g so as to be compiled in the default kernel
 ##
 Revision.oper_g :=
-    "@(#)$Id: oper.g,v 4.107 2008/09/18 07:58:04 gap Exp $";
+    "@(#)$Id: oper.g,v 4.112 2010/08/03 20:43:51 alexk Exp $";
 
 
 INSTALL_METHOD := false;
@@ -309,6 +309,9 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       IMM_FLAGS:= SUB_FLAGS( IMM_FLAGS, FLAGS_FILTER( FILTERS[j] ) );
 #T here it would be better to subtract a flag list
 #T with `true' exactly at position `j'!
+#T means: When an immed. method gets installed for a property then
+#T the property tester should remain in IMM_FLAGS.
+#T (This would make an if statement in `RunImmediateMethods' unnecessary!)
 
       # Find the place to put the new method.
       if not IsBound( IMMEDIATES[j] ) then
@@ -703,6 +706,7 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, oper );
+    SET_NAME_FUNC( oper, name );
 
     filt := [];
     for filter  in filters  do
@@ -795,6 +799,7 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, oper );
+    SET_NAME_FUNC( oper, name );
 
     filt := [];
     for filter  in filters  do
@@ -865,6 +870,7 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, getter );
+    SET_NAME_FUNC( getter, name );
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -1113,8 +1119,6 @@ end );
 LENGTH_SETTER_METHODS_2 := 0;
 
 
-
-
 #############################################################################
 ##
 #F  DeclarePropertyKernel( <name>, <filter>, <getter> ) . . . .  new property
@@ -1133,6 +1137,7 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, getter );
+    SET_NAME_FUNC( getter, name );
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -1333,7 +1338,6 @@ end );
 #F  InstallAtExit( <func> ) . . . . . . . . . . function to call when exiting
 ##
 BIND_GLOBAL( "InstallAtExit", function( func )
-
     if not IS_FUNCTION(func)  then
         Error( "<func> must be a function" );
     fi;
@@ -1342,8 +1346,7 @@ BIND_GLOBAL( "InstallAtExit", function( func )
             Error( "<func> must accept zero arguments" );
         fi;
     fi;
-    ADD_LIST( AT_EXIT_FUNCS, func );
-
+    ADD_LIST( GAPInfo.AtExitFuncs, func );
 end );
 
 
@@ -1372,14 +1375,21 @@ DeclareOperationKernel( "ViewObj", [ IS_OBJECT ], VIEW_OBJ );
 ##
 #O  ViewString( <obj> )  . . . . . . . . . . . . . . . . . . . view an object
 ##
+##  <#GAPDoc Label="ViewString">
 ##  <ManSection>
 ##  <Oper Name="ViewString" Arg='obj'/>
 ##
 ##  <Description>
-##  'ViewString' returns a string which would be displayed by ViewObj for an
-##  object.
+##  <Ref Oper="ViewString"/> returns a string which would be displayed 
+##  by <Ref Oper="ViewObj"/> for an
+##  object. Note that no method vor <Ref Oper="ViewString"/> may 
+##  delegate to any of
+##  the operations <Ref Oper="Display"/>, <Ref Oper="ViewObj"/>,
+##  <Ref Oper="DisplayString"/> or <Ref Oper="PrintObj"/> to avoid 
+##  circular delegations.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ViewString", [ IS_OBJECT ]);
 
@@ -1394,7 +1404,8 @@ DeclareOperation( "ViewString", [ IS_OBJECT ]);
 ##
 ##  <Description>
 ##  <Ref Func="View"/> shows the objects <A>obj1</A>, <A>obj2</A>... etc.
-##  <E>in a short form</E> on the standard output.
+##  <E>in a short form</E> on the standard output by calling the
+##  <Ref Oper="ViewObj"/> operation on each of them.
 ##  <Ref Func="View"/> is called in the read-eval-print loop,
 ##  thus the output looks exactly like the representation of the
 ##  objects shown by the main loop.
@@ -1478,12 +1489,19 @@ end );
 ##
 #O  LaTeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . LaTeX an object
 ##
+##  <#GAPDoc Label="LaTeXObj">
 ##  <ManSection>
 ##  <Oper Name="LaTeXObj" Arg='obj'/>
-##
+##  
 ##  <Description>
+##  The function <Ref Func="LaTeX"/> actually calls the operation
+##  <Ref Func="LaTeXObj"/> for each argument.
+##  By installing special methods for this operation, it is possible
+##  to achieve special &LaTeX;'ing behavior for certain objects
+##  (see Chapter&nbsp;<Ref Chap="Method Selection"/>).
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 
@@ -1492,12 +1510,32 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##
 #F  LaTeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . LaTeX objects
 ##
-##  <ManSection>
-##  <Func Name="LaTeX" Arg='obj1, ...'/>
+##  <#GAPDoc Label="LaTeX">
 ##
+##  <ManSection>
+##  <Func Name="LaTeX" Arg='obj1, obj2, ...'/>
+##  
 ##  <Description>
+##  Returns a LaTeX string describing the objects <A>obj1</A>, <A>obj2</A>, ... .
+##  This string can for example be pasted to a &LaTeX; file, or one can use
+##  it in composing a temporary &LaTeX; file,
+##  which is intended for being &LaTeX;'ed afterwards from within &GAP;.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> LaTeX(355/113);
+##  "\\frac{355}{113}%\n"
+##  gap> LaTeX(Z(9)^5);
+##  "Z(3^{2})^{5}%\n"
+##  gap> Print(LaTeX([[1,2,3],[4,5,6],[7,8,9]]));
+##  \left(\begin{array}{rrr}%
+##  1&2&3\\%
+##  4&5&6\\%
+##  7&8&9\\%
+##  \end{array}\right)%
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "LaTeX", function( arg )
     local   str,  res,  obj;

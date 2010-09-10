@@ -2,14 +2,14 @@
 ##
 #W  ctblmoli.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblmoli.gd,v 4.17 2009/06/15 15:20:21 gap Exp $
+#H  @(#)$Id: ctblmoli.gd,v 4.19 2010/02/23 15:12:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ctblmoli_gd :=
-    "@(#)$Id: ctblmoli.gd,v 4.17 2009/06/15 15:20:21 gap Exp $";
+    "@(#)$Id: ctblmoli.gd,v 4.19 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################
@@ -162,13 +162,13 @@ DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 ##  gap> HasMolienSeriesInfo( mol );
 ##  true
 ##  gap> MolienSeriesInfo( mol );
-##  rec( summands := [ rec( numer := [ -24, -12, -24 ], r := 5, k := 1 ), 
-##        rec( numer := [ -20 ], r := 3, k := 1 ), 
-##        rec( numer := [ -45/4, 75/4, -15/4, -15/4 ], r := 2, k := 2 ), 
-##        rec( numer := [ -1 ], r := 1, k := 3 ), 
-##        rec( numer := [ -15/4 ], r := 1, k := 1 ) ], size := 60, degree := 3, 
-##    numer := -x_1^9+x_1^7+x_1^6-x_1^3-x_1^2+1, 
-##    denom := x_1^12-2*x_1^10-x_1^9+x_1^8+x_1^7+x_1^5+x_1^4-x_1^3-2*x_1^2+1, 
+##  rec( denom := x_1^12-2*x_1^10-x_1^9+x_1^8+x_1^7+x_1^5+x_1^4-x_1^3-2*x_1^2+1, 
+##    size := 60, degree := 3, numer := -x_1^9+x_1^7+x_1^6-x_1^3-x_1^2+1, 
+##    summands := [ rec( r := 5, k := 1, numer := [ -24, -12, -24 ] ), 
+##        rec( r := 3, k := 1, numer := [ -20 ] ), 
+##        rec( r := 2, k := 2, numer := [ -45/4, 75/4, -15/4, -15/4 ] ), 
+##        rec( r := 1, k := 3, numer := [ -1 ] ), 
+##        rec( r := 1, k := 1, numer := [ -15/4 ] ) ], 
 ##    denominfo := [ 5, 1, 3, 1, 2, 2 ], numerstring := "1-z^2-z^3+z^6+z^7-z^9", 
 ##    denomstring := "(1-z^5)*(1-z^3)*(1-z^2)^2", 
 ##    ratfun := ( 1-z^2-z^3+z^6+z^7-z^9 ) / ( (1-z^5)*(1-z^3)*(1-z^2)^2 ) )

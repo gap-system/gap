@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  ctblmono.gi                 GAP library                     Thomas Breuer
-#W                                                         & Erzsebet Horvath
+#W                                                         & Erzsébet Horváth
 ##
-#H  @(#)$Id: ctblmono.gi,v 4.20 2003/06/10 15:40:09 gap Exp $
+#H  @(#)$Id: ctblmono.gi,v 4.21 2010/02/23 15:12:54 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the functions dealing with monomiality questions for
@@ -18,7 +18,7 @@
 ##  4. Minimal Nonmonomial Groups
 ##
 Revision.ctblmono_gi :=
-    "@(#)$Id: ctblmono.gi,v 4.20 2003/06/10 15:40:09 gap Exp $";
+    "@(#)$Id: ctblmono.gi,v 4.21 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################
@@ -1082,7 +1082,7 @@ InstallMethod( TestMonomialQuick,
       # If the codegree is a prime power then the character is monomial,
       # by a result of Chillag, Mann, and Manz.
       # Here is a short proof due to M. I. Isaacs
-      # (communicated by E. Horvath).
+      # (communicated by E. Horváth).
       #
       # Let $G$ be a finite group, $\chi\in Irr(G)$ with codegree $p^a$
       # for a prime $p$, and $P\in Syl_p(G)$.

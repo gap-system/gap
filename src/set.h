@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  set.h                       GAP source                   Martin Schoenert
+*W  set.h                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: set.h,v 4.7 2002/04/15 10:03:58 sal Exp $
+*H  @(#)$Id: set.h,v 4.8 2010/02/23 15:13:48 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declaress the functions which mainly deal with proper sets.
@@ -16,7 +16,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_set_h =
-   "@(#)$Id: set.h,v 4.7 2002/04/15 10:03:58 sal Exp $";
+   "@(#)$Id: set.h,v 4.8 2010/02/23 15:13:48 gap Exp $";
 #endif
 
 

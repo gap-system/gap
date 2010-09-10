@@ -4,16 +4,16 @@
 #W                                                             & Frank Celler
 #W                                                         & Alexander Hulpke
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-#H  @(#)$Id: wordass.gi,v 4.37 2008/07/03 01:02:38 gap Exp $
+#H  @(#)$Id: wordass.gi,v 4.38 2010/02/23 15:13:37 gap Exp $
 ##
 ##  This file contains generic methods for associative words.
 ##
 Revision.wordass_gi :=
-    "@(#)$Id: wordass.gi,v 4.37 2008/07/03 01:02:38 gap Exp $";
+    "@(#)$Id: wordass.gi,v 4.38 2010/02/23 15:13:37 gap Exp $";
 
 #############################################################################
 ##

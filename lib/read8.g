@@ -12,7 +12,8 @@ ReadLib( "compiler.g"  );
 
 #############################################################################
 ##
-#X  Teaching mode
+#X  Teaching functionality
 ##
+ReadLib( "teaching.g"  );
 ReadLib( "teachm2.g"  );
 

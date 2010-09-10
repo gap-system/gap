@@ -2,10 +2,10 @@
 ##
 #W  compat3d.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: compat3d.g,v 4.13 2004/05/03 07:24:09 gap Exp $
+#H  @(#)$Id: compat3d.g,v 4.14 2010/02/23 15:12:50 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the destructive part of the {\GAP}~3 compatibility
@@ -18,7 +18,7 @@
 ##  compatibility mode once it has been loaded.
 ##
 Revision.compat3d_g :=
-    "@(#)$Id: compat3d.g,v 4.13 2004/05/03 07:24:09 gap Exp $";
+    "@(#)$Id: compat3d.g,v 4.14 2010/02/23 15:12:50 gap Exp $";
 
 
 #############################################################################

@@ -5,10 +5,10 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfun1.gi,v 4.20 2009/03/11 03:07:15 gap Exp $
+#H  @(#)$Id: ratfun1.gi,v 4.22 2010/06/16 16:31:38 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains those  methods  for    rational  functions,  laurent
@@ -16,7 +16,7 @@
 ##  and will benefit from compilation.
 ##
 Revision.ratfun1_gi :=
-    "@(#)$Id: ratfun1.gi,v 4.20 2009/03/11 03:07:15 gap Exp $";
+    "@(#)$Id: ratfun1.gi,v 4.22 2010/06/16 16:31:38 gap Exp $";
 
 # Functions to create objects 
 
@@ -738,13 +738,13 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
     sum:=ShallowCopy(r[1]);
     RightShiftRowVector(sum,r[2]-l[2],zero);
     AddCoeffs(sum,l[1]);
-    ShrinkCoeffs(sum);
+    ShrinkRowVector(sum);
     val:=l[2];
   else #l[2]>r[2]
     sum:=ShallowCopy(l[1]);
     RightShiftRowVector(sum,l[2]-r[2],zero);
     AddCoeffs(sum,r[1]);
-    ShrinkCoeffs(sum);
+    ShrinkRowVector(sum);
     val:=r[2];
   fi;
 
@@ -795,14 +795,14 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
     sum:=ShallowCopy(AdditiveInverseOp(r[1]));
     RightShiftRowVector(sum,r[2]-l[2],zero);
     AddCoeffs(sum,l[1]);
-    ShrinkCoeffs(sum);
+    ShrinkRowVector(sum);
     val:=l[2];
   else #l[2]>r[2]
     sum:=ShallowCopy(l[1]);
     RightShiftRowVector(sum,l[2]-r[2],zero);
     # was: AddCoeffs(sum,AdditiveInverseOp(r[1]));
     AddCoeffs(sum,r[1],-fam!.oneCoefficient);
-    ShrinkCoeffs(sum);
+    ShrinkRowVector(sum);
     val:=r[2];
   fi;
 
@@ -862,7 +862,7 @@ local w;
   while 0<Length(v) do
     w:=v;
     ReduceCoeffs(u,v);
-    ShrinkCoeffs(u);
+    ShrinkRowVector(u);
     v:=u;
     u:=w;
   od;

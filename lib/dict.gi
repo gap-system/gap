@@ -4,16 +4,16 @@
 #W							         Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: dict.gi,v 4.40 2009/02/09 23:48:23 gap Exp $
+#H  @(#)$Id: dict.gi,v 4.41 2010/02/23 15:12:55 gap Exp $
 ##
-#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations for dictionaries.
 ##
 Revision.dict_gi :=
-    "@(#)$Id: dict.gi,v 4.40 2009/02/09 23:48:23 gap Exp $";
+    "@(#)$Id: dict.gi,v 4.41 2010/02/23 15:12:55 gap Exp $";
 
 ##
 ## List and Sort dictionaries

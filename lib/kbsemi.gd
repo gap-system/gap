@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  kbsemi.gd           GAP library        Andrew Solomon and Isabel Araujo
+#W  kbsemi.gd           GAP library        Andrew Solomon and Isabel Araújo
 ##
-#H  @(#)$Id: kbsemi.gd,v 4.22 2007/09/05 12:45:14 gap Exp $
+#H  @(#)$Id: kbsemi.gd,v 4.23 2010/02/23 15:13:10 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for Knuth-Bendix Rewriting Systems
 ##
 
 Revision.kbsemi_gd :=
-    "@(#)$Id: kbsemi.gd,v 4.22 2007/09/05 12:45:14 gap Exp $";
+    "@(#)$Id: kbsemi.gd,v 4.23 2010/02/23 15:13:10 gap Exp $";
 
 
 ############################################################################

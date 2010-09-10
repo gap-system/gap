@@ -2,9 +2,9 @@
 **
 *W  objccoll.c                  GAP source                      Werner Nickel
 **
-*H  @(#)$Id: objccoll.c,v 4.5 2002/04/15 10:03:52 sal Exp $
+*H  @(#)$Id: objccoll.c,v 4.6 2010/02/23 15:13:45 gap Exp $
 **
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file  contains  the collection functions of  combinatorial collectors
@@ -17,7 +17,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_objccoll_c =
-   "@(#)$Id: objccoll.c,v 4.5 2002/04/15 10:03:52 sal Exp $";
+   "@(#)$Id: objccoll.c,v 4.6 2010/02/23 15:13:45 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

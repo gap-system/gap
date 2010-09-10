@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  kbsemi.gi           GAP library         Isabel Araujo and Andrew Solomon
+#W  kbsemi.gi           GAP library         Isabel Araújo and Andrew Solomon
 ##
-#H  @(#)$Id: kbsemi.gi,v 4.37 2005/09/28 20:21:50 gap Exp $
+#H  @(#)$Id: kbsemi.gi,v 4.38 2010/02/23 15:13:10 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains code for the Knuth-Bendix rewriting system for semigroups
 ##  and monoids.
 ##  
 Revision.kbsemi_gi :=
-    "@(#)$Id: kbsemi.gi,v 4.37 2005/09/28 20:21:50 gap Exp $";
+    "@(#)$Id: kbsemi.gi,v 4.38 2010/02/23 15:13:10 gap Exp $";
 
 ############################################################################
 ##

@@ -2,16 +2,16 @@
 ##
 #W  morpheus.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: morpheus.gi,v 4.123 2008/10/14 20:54:29 gap Exp $
+#H  @(#)$Id: morpheus.gi,v 4.124 2010/02/23 15:13:18 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains declarations for Morpheus
 ##
 Revision.morpheus_gi:=
-  "@(#)$Id: morpheus.gi,v 4.123 2008/10/14 20:54:29 gap Exp $";
+  "@(#)$Id: morpheus.gi,v 4.124 2010/02/23 15:13:18 gap Exp $";
 
 #############################################################################
 ##

@@ -3,10 +3,10 @@
 #W  word.gd                     GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: word.gd,v 4.40 2008/11/12 13:05:34 gap Exp $
+#H  @(#)$Id: word.gd,v 4.41 2010/02/23 15:13:36 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the categories and operations for words and
@@ -19,7 +19,7 @@
 ##  5. External Representation for Nonassociative Words
 ##
 Revision.word_gd :=
-    "@(#)$Id: word.gd,v 4.40 2008/11/12 13:05:34 gap Exp $";
+    "@(#)$Id: word.gd,v 4.41 2010/02/23 15:13:36 gap Exp $";
 
 
 #############################################################################

@@ -3,9 +3,9 @@
 #W  ratfun.gd                   GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfun.gd,v 4.80 2009/05/26 17:10:06 gap Exp $
+#H  @(#)$Id: ratfun.gd,v 4.82 2010/02/23 15:13:25 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci.,  University of St  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
@@ -13,7 +13,7 @@
 ##  for  rational functions, Laurent polynomials   and polynomials and  their
 ##  families.
 Revision.ratfun_gd :=
-    "@(#)$Id: ratfun.gd,v 4.80 2009/05/26 17:10:06 gap Exp $";
+    "@(#)$Id: ratfun.gd,v 4.82 2010/02/23 15:13:25 gap Exp $";
 
 ##  Warning:
 ##  If the mechanism for storing attributes is changed,
@@ -1107,6 +1107,7 @@ DeclareOperation("Value",[IsPolynomialFunction,IsList,IsList]);
 ##  A permutation <A>perm</A> acts on the multivariate polynomial <A>poly</A>
 ##  by permuting the indeterminates as it permutes points.
 ##  <Example><![CDATA[
+##  gap> x:=Indeterminate(Rationals,"x");; y:=Indeterminate(Rationals,"y");;
 ##  gap> OnIndeterminates(x^7*y+x*y^4,(1,17)(2,28));
 ##  x_17^7*x_28+x_17*x_28^4
 ##  gap> Stabilizer(Group((1,2,3,4),(1,2)),x*y,OnIndeterminates);

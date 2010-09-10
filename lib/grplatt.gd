@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  grplatt.gd                GAP library                   Martin Sch"onert,
+#W  grplatt.gd                GAP library                   Martin Schönert,
 #W                                                          Alexander Hulpke
 ##
-#H  @(#)$Id: grplatt.gd,v 4.36 2009/01/06 11:19:49 gap Exp $
+#H  @(#)$Id: grplatt.gd,v 4.37 2010/02/23 15:13:05 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains declarations for subgroup latices
 ##
 Revision.grplatt_gd:=
-  "@(#)$Id: grplatt.gd,v 4.36 2009/01/06 11:19:49 gap Exp $";
+  "@(#)$Id: grplatt.gd,v 4.37 2010/02/23 15:13:05 gap Exp $";
 
 
 #############################################################################

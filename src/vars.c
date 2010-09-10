@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  vars.c                      GAP source                   Martin Schoenert
+*W  vars.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: vars.c,v 4.39 2009/03/07 12:28:51 sal Exp $
+*H  @(#)$Id: vars.c,v 4.42 2010/06/01 21:16:20 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of variables package.
@@ -20,7 +20,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_vars_c =
-   "@(#)$Id: vars.c,v 4.39 2009/03/07 12:28:51 sal Exp $";
+   "@(#)$Id: vars.c,v 4.42 2010/06/01 21:16:20 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1395,15 +1395,9 @@ Obj             EvalElmList (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( TNUM_OBJ(pos) != T_INTPOS && (! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0) ) {
-        pos = ErrorReturnObj(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
-    if (IS_INTOBJ(pos))
+    
+    if (IS_INTOBJ(pos) && (p = INT_INTOBJ( pos )) > 0)
       {
-	p = INT_INTOBJ( pos );
 	
 	/* special case for plain lists (use generic code to signal errors)    */
 	tnum = TNUM_OBJ(list);
@@ -1667,7 +1661,7 @@ void            PrintIsbList (
     Pr("%<[",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[1] );
     Pr("%<]",0L,0L);
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 

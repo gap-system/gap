@@ -2,10 +2,10 @@
 ##
 #W  rwsgrp.gd                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: rwsgrp.gd,v 4.18 2007/09/05 12:45:15 gap Exp $
+#H  @(#)$Id: rwsgrp.gd,v 4.19 2010/02/23 15:13:28 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This   file contains  the operations  for  groups   defined by  rewriting
@@ -17,7 +17,7 @@
 ##  `IsBuiltFromGroup' in this case.
 ##
 Revision.rwsgrp_gd :=
-    "@(#)$Id: rwsgrp.gd,v 4.18 2007/09/05 12:45:15 gap Exp $";
+    "@(#)$Id: rwsgrp.gd,v 4.19 2010/02/23 15:13:28 gap Exp $";
 
 
 #############################################################################

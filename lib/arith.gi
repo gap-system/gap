@@ -2,17 +2,17 @@
 ##
 #W  arith.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: arith.gi,v 4.39 2002/04/15 10:04:25 sal Exp $
+#H  @(#)$Id: arith.gi,v 4.40 2010/02/23 15:12:47 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains  the generic  methods  for elements in families  that
 ##  allow certain arithmetical operations.
 ##
 Revision.arith_gi :=
-    "@(#)$Id: arith.gi,v 4.39 2002/04/15 10:04:25 sal Exp $";
+    "@(#)$Id: arith.gi,v 4.40 2010/02/23 15:12:47 gap Exp $";
 
 
 #############################################################################

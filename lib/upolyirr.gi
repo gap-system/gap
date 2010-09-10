@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  upolyirr.gi                     GAP Library                 frank Luebeck
+#W  upolyirr.gi                     GAP Library                 Frank Lübeck
 ##
-#H  @(#)$Id: upolyirr.gi,v 4.7 2002/04/15 10:05:26 sal Exp $
+#H  @(#)$Id: upolyirr.gi,v 4.9 2010/06/16 16:31:38 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains methods to compute irreducible univariate polynomials
 ##
 Revision.upolyirr_gi:=
-  "@(#)$Id: upolyirr.gi,v 4.7 2002/04/15 10:05:26 sal Exp $";
+  "@(#)$Id: upolyirr.gi,v 4.9 2010/06/16 16:31:38 gap Exp $";
 
 #############################################################################
 ##
@@ -62,7 +62,7 @@ AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
       # here we go around method selection which gives a 10% speedup
       ReduceCoeffs(pp, lp, rr, lr);
 ##        RedCoeffDirectFun(pp, lp, rr, lr);
-      ShrinkCoeffs(pp);
+      ShrinkRowVector(pp);
       if Length(pp)=0 then
         return false;
       fi;

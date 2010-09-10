@@ -1,15 +1,15 @@
 ############################################################################
 ##
-#W  grpperm.gi                  GAP library                   Heiko Thei"sen
+#W  grpperm.gi                  GAP library                   Heiko Theißen
 ##
-#H  @(#)$Id: grpperm.gi,v 4.170 2009/02/25 13:42:20 gap Exp $
+#H  @(#)$Id: grpperm.gi,v 4.172 2010/06/09 08:32:40 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpperm_gi :=
-    "@(#)$Id: grpperm.gi,v 4.170 2009/02/25 13:42:20 gap Exp $";
+    "@(#)$Id: grpperm.gi,v 4.172 2010/06/09 08:32:40 gap Exp $";
 
 
 #############################################################################
@@ -1856,23 +1856,6 @@ local  i, j, U, gens;
     fi;
   od;
   return gens;
-end);
-
-#############################################################################
-##
-#M  MinimalGeneratingSet(<G>) . . . . . . . . . . . . . for permutation groups
-##
-InstallMethod(MinimalGeneratingSet,"solvable perm group via pc",true,
-  [IsPermGroup],0,
-function(G)
-local i;
-  if not IsSolvableGroup(G) then
-    TryNextMethod();
-  fi;
-  i:=IsomorphismPcGroup(G);
-  G:=Image(i,G);
-  G:=MinimalGeneratingSet(G);
-  return List(G,j->PreImagesRepresentative(i,j));
 end);
 
 #############################################################################

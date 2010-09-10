@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  ctbl.gi                     GAP library                     Thomas Breuer
-#W                                                           & Goetz Pfeiffer
+#W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id: ctbl.gi,v 4.117 2009/04/22 13:03:31 gap Exp $
+#H  @(#)$Id: ctbl.gi,v 4.120 2010/05/19 16:22:10 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations corresponding to the declarations
@@ -28,7 +28,7 @@
 ##  13. Auxiliary Stuff
 ##
 Revision.ctbl_gi :=
-    "@(#)$Id: ctbl.gi,v 4.117 2009/04/22 13:03:31 gap Exp $";
+    "@(#)$Id: ctbl.gi,v 4.120 2010/05/19 16:22:10 gap Exp $";
 
 
 #############################################################################
@@ -962,8 +962,14 @@ InstallMethod( LinearCharacters,
     "for a group, and zero",
     [ IsGroup, IsZeroCyc ],
     function( G, zero )
-    local pi, img;
+    local tbl, pi, img, fus;
 
+    if HasOrdinaryCharacterTable( G ) then
+      tbl:= OrdinaryCharacterTable( G );
+      if HasIrr( tbl ) then
+        return LinearCharacters( tbl );
+      fi;
+    fi;
     if IsAbelian( G ) then
       return Irr( G, 0 );
     fi;
@@ -971,27 +977,13 @@ InstallMethod( LinearCharacters,
     pi:= NaturalHomomorphismByNormalSubgroupNC( G, DerivedSubgroup( G ) );
     img:= ImagesSource( pi );
     SetIsAbelian( img, true );
-    return RestrictedClassFunctions( CharacterTable( img ),
-               Irr( img, 0 ), pi );
+#   return RestrictedClassFunctions( CharacterTable( img ),
+#              Irr( img, 0 ), pi );
+# We cannot use this because the source of `pi' may be not identical with `G'!
+    fus:= FusionConjugacyClasses( pi );
+    tbl:= CharacterTable( G );
+    return List( Irr( img, 0 ), x -> Character( tbl, x{ fus } ) );
 #T related to `DxLinearCharacters'?
-    end );
-
-
-#############################################################################
-##
-#M  LinearCharacters( <G>, 0 )
-##
-InstallMethod( LinearCharacters,
-    "for a group with known ordinary table, and zero",
-    [ IsGroup and HasOrdinaryCharacterTable, IsZeroCyc ],
-    function( G, zero )
-    local tbl;
-    tbl:= OrdinaryCharacterTable( G );
-    if HasIrr( tbl ) then
-      return LinearCharacters( tbl );
-    else
-      TryNextMethod();
-    fi;
     end );
 
 
@@ -1624,7 +1616,7 @@ InstallMethod( OrdersClassRepresentatives,
 #M  SizesCentralizers( <ordtbl> ) . . . . . . for an ordinary character table
 #M  SizesCentralizers( <modtbl> ) . . . . . . .  for a Brauer character table
 ##
-##  If we know the class lengths,
+##  If we know the class lengths or the irreducible characters,
 ##  we prefer them to using a perhaps known group.
 ##
 InstallMethod( SizesCentralizers,
@@ -1637,23 +1629,25 @@ InstallMethod( SizesCentralizers,
     end );
 
 InstallMethod( SizesCentralizers,
-    "for a character table with known class lengths",
-    [ IsNearlyCharacterTable and HasSizesConjugacyClasses ],
-    RankFilter( HasUnderlyingGroup ),  # better than the method with group
+    "for a character table",
+    [ IsNearlyCharacterTable ],
     function( tbl )
     local classlengths, size;
-    classlengths:= SizesConjugacyClasses( tbl );
-    size:= Sum( classlengths, 0 );
-    return List( classlengths, s -> size / s );
-    end );
 
-InstallMethod( SizesCentralizers,
-    "for a character table with known group",
-    [ IsNearlyCharacterTable and HasUnderlyingGroup ],
-    function( tbl )
-    local size;
-    size:= Size( tbl );
-    return List( ConjugacyClasses( tbl ), c -> size / Size( c ) );
+    if HasSizesConjugacyClasses( tbl ) then
+      classlengths:= SizesConjugacyClasses( tbl );
+      size:= Sum( classlengths, 0 );
+      return List( classlengths, s -> size / s );
+    elif HasIrr( tbl ) then
+      return Sum( List( Irr( tbl ),
+                        x -> List( x, y -> y * ComplexConjugate( y ) ) ) );
+    elif HasUnderlyingGroup( tbl ) then
+      size:= Size( tbl );
+      return List( ConjugacyClasses( tbl ), c -> size / Size( c ) );
+    fi;
+
+    # Give up.
+    TryNextMethod();
     end );
 
 
@@ -1662,7 +1656,7 @@ InstallMethod( SizesCentralizers,
 #M  SizesConjugacyClasses( <ordtbl> ) . . . . for an ordinary character table
 #M  SizesConjugacyClasses( <modtbl> ) . . . . .  for a Brauer character table
 ##
-##  If we know the centralizer orders,
+##  If we know the centralizer orders or the irreducible characters,
 ##  we prefer them to using a perhaps known group.
 ##
 InstallMethod( SizesConjugacyClasses,
@@ -1676,20 +1670,22 @@ InstallMethod( SizesConjugacyClasses,
     end );
 
 InstallMethod( SizesConjugacyClasses,
-    "for a character table with known centralizer sizes",
-    [ IsNearlyCharacterTable and HasSizesCentralizers ],
-    RankFilter( HasUnderlyingGroup ),  # better than the method with group
+    "for a character table ",
+    [ IsNearlyCharacterTable ],
     function( tbl )
     local centsizes, size;
-    centsizes:= SizesCentralizers( tbl );
-    size:= centsizes[1];
-    return List( centsizes, s -> size / s );
-    end );
 
-InstallMethod( SizesConjugacyClasses,
-    "for a character table with known group",
-    [ IsNearlyCharacterTable and HasUnderlyingGroup ],
-    tbl -> List( ConjugacyClasses( tbl ), Size ) );
+    if HasSizesCentralizers( tbl ) or HasIrr( tbl ) then
+      centsizes:= SizesCentralizers( tbl );
+      size:= centsizes[1];
+      return List( centsizes, s -> size / s );
+    elif HasUnderlyingGroup( tbl ) then
+      return List( ConjugacyClasses( tbl ), Size );
+    fi;
+
+    # Give up.
+    TryNextMethod();
+    end );
 
 
 #############################################################################
@@ -4055,9 +4051,14 @@ InstallMethod( CharacterTable,
 ##  `CharacterTableFromLibrary'.
 ##  We bind this to a dummy function that signals an error.
 ##
-BindGlobal( "CharacterTableFromLibrary", function( arg )
-    Error( "sorry, the GAP Character Table Library is not installed" );
-    end );
+##  (If the package CTblLib is already loaded, for example because the
+##  current file is reread, we do not replace the working function.)
+##
+if not IsBound( CharacterTableFromLibrary ) then
+  BindGlobal( "CharacterTableFromLibrary", function( arg )
+      Error( "sorry, the GAP Character Table Library is not installed" );
+      end );
+fi;
 
 
 #############################################################################
@@ -4176,7 +4177,7 @@ InstallMethod( BrauerTableOp,
 #T sort w.r.t. class permutation!
       modtbls:= BrauerTable( source[1], p );
       if modtbls <> fail then
-        return CharacterTableIsoclinic( modtbls, source[2], source[3], tbl );
+        return CharacterTableIsoclinic( modtbls, tbl );
       fi;
     fi;
 
@@ -4536,7 +4537,9 @@ BindGlobal( "CharacterTableDisplayPrintLegendDefault",
 ##
 #F  CharacterTableDisplayDefault( <tbl>, <options> )
 ##
-CambridgeMaps:= "dummy";  # the function is in the character table library
+if not IsBound( CambridgeMaps ) then
+  CambridgeMaps:= "dummy";  # the function is in the character table library
+fi;
 
 BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
     local i, j,              # loop variables
@@ -4997,7 +5000,9 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
     printLegend( stringEntryData );
     end );
 
-Unbind( CambridgeMaps );
+if IsString( CambridgeMaps ) then
+  Unbind( CambridgeMaps );
+fi;
 
 
 #############################################################################
@@ -5070,7 +5075,7 @@ InstallGlobalFunction( PrintCharacterTable, function( tbl, varname )
 
     # Print the preamble.
     Print( varname, ":= function()\n" );
-    Print( "local tbl;\n" );
+    Print( "local tbl, i;\n" );
     Print( "tbl:=rec();\n" );
 
     # Print the values of supported attributes.
@@ -5116,7 +5121,6 @@ InstallGlobalFunction( PrintCharacterTable, function( tbl, varname )
 
     # Print the values of supported components if available.
     if IsLibraryCharacterTableRep( tbl ) then
-
       for comp in SupportedLibraryTableComponents do
         if IsBound( tbl!.( comp ) ) then
           info:= tbl!.( comp );
@@ -5135,13 +5139,21 @@ InstallGlobalFunction( PrintCharacterTable, function( tbl, varname )
           fi;
         fi;
       od;
-      Print( "ConvertToLibraryCharacterTableNC(tbl);\n" );
+    fi;
 
-    else
-      Print( "ConvertToCharacterTableNC(tbl);\n" );
+    # Set class lengths if known.
+    if HasConjugacyClasses( tbl ) and HasSizesConjugacyClasses( tbl ) then
+      Print( "for i in [1..Length(tbl.ConjugacyClasses)] do\n  ",
+          "SetSize(tbl.ConjugacyClasses[i],tbl.SizesConjugacyClasses[i]);\n",
+          "od;\n" );
     fi;
 
     # Print the rest of the construction.
+    if IsLibraryCharacterTableRep( tbl ) then
+      Print( "ConvertToLibraryCharacterTableNC(tbl);\n" );
+    else
+      Print( "ConvertToCharacterTableNC(tbl);\n" );
+    fi;
     Print( "return tbl;\n" );
     Print( "end;\n" );
     Print( varname, ":= ", varname, "();\n" );
@@ -5535,7 +5547,7 @@ InstallGlobalFunction( CharacterTableHeadOfFactorGroupByFusion,
 
     # Transfer known power maps of `tbl' to `F'.
     inverse:= ProjectionMap( factorfusion );
-    for p in Set( Factors( F.Size ) ) do
+    for p in [ 1 .. Length( ComputedPowerMaps( tbl ) ) ] do
       if IsBound( ComputedPowerMaps( tbl )[p] ) then
         map:= ComputedPowerMaps( tbl )[p];
         F.ComputedPowerMaps[p]:= factorfusion{ map{ inverse } };
@@ -5620,14 +5632,7 @@ InstallMethod( CharacterTableFactorGroup,
     # with the largest normal subgroup of `p' power order.
     sizes:= SizesConjugacyClasses( ordtbl );
     fus:= GetFusionMap( modtbl, ordtbl );
-    kernel:= fus{ classes };
-    for n in ClassPositionsOfNormalSubgroups( ordtbl ) do
-      size:= Sum( sizes{ n }, 0 );
-      if size mod p = 0 and IsPrimePowerInt( size ) then
-        UniteSet( kernel, n );
-      fi;
-    od;
-    kernel:= ClassPositionsOfNormalClosure( ordtbl, kernel );
+    kernel:= ClassPositionsOfNormalClosure( ordtbl, fus{ classes } );
 
     # Construct the factor character tables.
     ordfact:= CharacterTableFactorGroup( ordtbl, kernel );
@@ -5654,37 +5659,7 @@ InstallMethod( CharacterTableFactorGroup,
 InstallMethod( CharacterTableIsoclinic,
     "for an ordinary character table",
     [ IsOrdinaryTable ],
-    function( tbl )
-    local classes, half, kernel, orders, centre;
-
-    # Identify the unique normal subgroup of index 2.
-    half:= Size( tbl ) / 2;
-    classes:= SizesConjugacyClasses( tbl );
-    kernel:= Filtered( List( Filtered( Irr( tbl ),
-                                       chi -> DegreeOfCharacter( chi ) = 1 ),
-                             ClassPositionsOfKernel ),
-                       ker -> Sum( classes{ ker }, 0 ) = half );
-
-    # If there is more than one index 2 subgroup
-    # and if there is a unique central subgroup $Z$ of order 2
-    # then consider only those index 2 subgroups containing $Z$.
-    if 1 < Length( kernel ) then
-      orders:= OrdersClassRepresentatives( tbl );
-      centre:= Filtered( [ 1 .. Length( classes ) ],
-                         x -> classes[x] = 1 and orders[x] = 2 );
-      if Length( centre ) = 1 then
-        centre:= centre[1];
-        kernel:= Filtered( kernel, ker -> centre in ker );
-      fi;
-    fi;
-    if IsEmpty( kernel ) or 1 < Length( kernel ) then
-      Error( "normal subgroup of index 2 not uniquely determined,\n",
-             "use CharacterTableIsoclinic( <tbl>, <classes_of_nsg> )" );
-    fi;
-
-    # Delegate to the two-argument version.
-    return CharacterTableIsoclinic( tbl, kernel[1] );
-    end );
+    tbl -> CharacterTableIsoclinic( tbl, fail, fail ) );
 
 
 #############################################################################
@@ -5692,22 +5667,79 @@ InstallMethod( CharacterTableIsoclinic,
 #M  CharacterTableIsoclinic( <ordtbl>, <nsg> )
 ##
 InstallMethod( CharacterTableIsoclinic,
-    "for an ordinary character table, and a list of classes",
+    "for an ordinary character table and a list of classes",
     [ IsOrdinaryTable, IsList and IsCyclotomicCollection ],
     function( tbl, nsg )
-    local classes, orders, centre;
+    return CharacterTableIsoclinic( tbl, nsg, fail );
+    end );
 
-    # Get the unique central subgroup of order 2 in the normal subgroup.
-    classes:= SizesConjugacyClasses( tbl );
-    orders:= OrdersClassRepresentatives( tbl );
-    centre:= Filtered( nsg, x -> classes[x] = 1 and orders[x] = 2 );
-    if Length( centre ) <> 1 then
-      Error( "central subgroup of order 2 not uniquely determined,\n",
-             "use CharTableIsoclinic( <tbl>, <classes>, <centrepos> )" );
+
+#############################################################################
+##
+#M  CharacterTableIsoclinic( <ordtbl>, <centralinv> )
+##
+InstallMethod( CharacterTableIsoclinic,
+    "for an ordinary character table and a class pos.",
+    [ IsOrdinaryTable, IsPosInt ],
+    function( tbl, centralinv )
+    return CharacterTableIsoclinic( tbl, fail, centralinv );
+    end );
+
+
+#############################################################################
+##
+#F  IrreducibleCharactersOfIsoclinicGroup( <irr>, <center>, <outer>, <xpos> )
+##
+BindGlobal( "IrreducibleCharactersOfIsoclinicGroup",
+    function( irr, center, outer, xpos )
+    local nonfaith, faith, irreds, root1, chi, values, root2;
+
+    # Adjust faithful characters in outer classes.
+    nonfaith:= [];
+    faith:= [];
+    irreds:= [];
+    root1:= E(4);
+    if Length( center ) = 1 then
+      # The central subgroup has order two.
+      for chi in irr do
+        values:= ValuesOfClassFunction( chi );
+        if values[ center[1] ] = values[1] then
+          Add( nonfaith, values );
+        else
+          values:= ShallowCopy( values );
+          values{ outer }:= root1 * values{ outer };
+          Add( faith, values );
+        fi;
+        Add( irreds, values );
+      od;
+    else
+      # The central subgroup has order four.
+      root2:= E(8);
+      for chi in irr do
+        values:= ValuesOfClassFunction( chi );
+        if ForAll( center, i -> values[i] = values[1] ) then
+          Add( nonfaith, values );
+        else
+          values:= ShallowCopy( values );
+          if ForAny( center, i -> values[i] = values[1] ) then
+            values{ outer }:= root1 * values{ outer };
+          elif values[ xpos ] / values[1] = root1 then
+            values{ outer }:= root2 * values{ outer };
+          else
+            # If B is the matrix for g in G, the matrix for gz in H
+            # depends on the character value of z^2 = x;
+            # we have to choose the same square root for the whole character,
+            # so the two possibilities differ just by the ordering of the two
+            # extensions which we get.
+            values{ outer }:= root2^-1 * values{ outer };
+          fi;
+          Add( faith, values );
+        fi;
+        Add( irreds, values );
+      od;
     fi;
 
-    # Delegate to the three-argument version.
-    return CharacterTableIsoclinic( tbl, nsg, centre[1] );
+    return rec( all:= irreds, nonfaith:= nonfaith, faith:= faith );
     end );
 
 
@@ -5715,47 +5747,114 @@ InstallMethod( CharacterTableIsoclinic,
 ##
 #M  CharacterTableIsoclinic( <ordtbl>, <nsg>, <center> )
 ##
-InstallMethod( CharacterTableIsoclinic,
-    "for an ordinary character table, a list of classes, and a class pos.",
-    [ IsOrdinaryTable, IsList and IsCyclotomicCollection, IsPosInt ],
+##  This is the method that does the work.
+##  Let $G$ and $H$ be the two isoclinic groups in question, embedded into
+##  the group $K$ that is the central product of $G$ and a cyclic group
+##  $Z = \langle z \rangle$
+##  of twice the order of the central subgroup of $G$ given by <center>.
+##  Then $K$ is also the central product of $H$ and $Z$.
+##  Let <ordtbl> be the ordinary character table of $G$.
+##  We have to construct the ordinary character table of $H$.
+##  Currently the only supported cases for $|Z|$ are $4$ and $8$.
+##  
+##  We set up a character table of the same format as <ordtbl>.
+##  The classes inside the normal subgroup given by <nsg> correspond to
+##  $U = G \cap H$.
+##  The classes of $H$ outside $U$ are given by representatives $g z$
+##  where $g$ runs over class representatives of $G$ outside $U$.
+##
+InstallOtherMethod( CharacterTableIsoclinic,
+    "for an ordinary character table and two lists of class positions",
+    [ IsOrdinaryTable, IsObject, IsObject ],
     function( tbl, nsg, center )
-    local centralizers,    # attribute of `tbl'
-          classes,         # attribute of `tbl'
-          orders,          # attribute of `tbl'
-          size,            # attribute of `tbl'
-          i,               # `E(4)'
-          j,               # loop variable
-          chi,             # one character
-          values,          # values of `chi'
-          class,
-          map,
-          linear,          # linear characters of `tbl'
-          isoclinic,       # the isoclinic table, result
-          outer,           # classes outside the index 2 subgroup
-          nonfaith,        # characters of the factor group modulo `center'
-          irreds,          # characters of `isoclinic'
-          images,
-          factorfusion,    # fusion onto factor modulo the central inv.
-          p,               # loop over prime divisors of the size of `tbl'
-          reg;             # restriction to regular classes
+    local centralizers, classes, orders, size, half, kernel, xpos, outer,
+          irreds, isoclinic, factorfusion, invfusion, p, map, k, ypos, class,
+          old, images, fus;
 
     centralizers:= SizesCentralizers( tbl );
     classes:= SizesConjugacyClasses( tbl );
     orders:= ShallowCopy( OrdersClassRepresentatives( tbl ) );
     size:= Size( tbl );
 
+    # Perhaps only the central subgroup was specified.
+    if center = fail and IsList( nsg )
+                     and Sum( classes{ nsg } ) <> size / 2 then
+      center:= nsg;
+      nsg:= fail;
+    fi;
+
     # Check `nsg'.
-    if Sum( classes{ nsg }, 0 ) <> size / 2 then
+    if nsg = fail then
+      # Identify the unique normal subgroup of index 2.
+      half:= size / 2;
+      kernel:= Filtered( List( LinearCharacters( tbl ),
+                               ClassPositionsOfKernel ),
+                         ker -> Sum( classes{ ker }, 0 ) = half );
+    elif IsList( nsg ) and Sum( classes{ nsg }, 0 ) = size / 2 then
+      kernel:= [ nsg ];
+    else
       Error( "normal subgroup described by <nsg> must have index 2" );
     fi;
 
     # Check `center'.
-    if not center in nsg then
-      Error( "<center> must lie in <nsg>" );
+    if center = fail then
+      # Get the unique central subgroup of order 2 in the normal subgroup.
+      center:= Filtered( [ 1 .. Length( classes ) ],
+                         i -> classes[i] = 1 and orders[i] = 2
+                              and ForAny( kernel, n -> i in n ) );
+      if Length( center ) <> 1 then
+        Error( "central subgroup of order 2 not uniquely determined,\n",
+               "use CharacterTableIsoclinic( <tbl>, <classes>, <center> )" );
+      fi;
+    elif IsPosInt( center ) then
+      center:= [ center ];
+    else
+      center:= Difference( center, [ 1 ] );
     fi;
+
+    # If there is more than one index 2 subgroup
+    # and if there is a unique central subgroup $Z$ of order 2 or 4
+    # then consider only those index 2 subgroups containing $Z$.
+    if 1 < Length( kernel ) then
+      kernel:= Filtered( kernel, ker -> IsSubset( ker, center ) );
+    fi;
+    if Length( kernel ) <> 1 then
+      Error( "normal subgroup of index 2 not uniquely determined,\n",
+             "use CharacterTableIsoclinic( <tbl>, <classes_of_nsg> )" );
+    fi;
+    nsg:= kernel[1];
+
+    if not IsSubset( nsg, center ) then
+      Error( "<center> must lie in <nsg>" );
+    elif ForAny( center, i -> classes[i] <> 1 ) then
+      Error( "<center> must be a list of positions of central classes" );
+    elif Length( center ) = 1 then
+      xpos:= center[1];
+      if orders[ xpos ] <> 2 then
+        Error( "<center> must list the classes of a central subgroup" );
+      fi;
+    elif Length( center ) = 3 then
+      xpos:= First( center, i -> orders[i] = 4 );
+      if xpos = fail then
+        Error( "<center> must list the classes of a cyclic subgroup" );
+      elif not ( PowerMap( tbl, 3, xpos ) in center and
+                 PowerMap( tbl, 2, xpos ) in center ) then
+        Error( "<center> must list the classes of a central subgroup" );
+      fi;
+    else
+      Error( "the central subgroup must have order 2 or 4" );
+    fi;
+
+    # classes outside the normal subgroup
+    outer:= Difference( [ 1 .. Length( classes ) ], nsg );
+
+    # Adjust faithful characters in outer classes.
+    irreds:= IrreducibleCharactersOfIsoclinicGroup( Irr( tbl ), center,
+                 outer, xpos );
 
     # Make the isoclinic table.
     isoclinic:= Concatenation( "Isoclinic(", Identifier( tbl ), ")" );
+#T careful!!
     ConvertToStringRep( isoclinic );
 
     isoclinic:= rec(
@@ -5766,69 +5865,69 @@ InstallMethod( CharacterTableIsoclinic,
         SizesConjugacyClasses      := classes,
         OrdersClassRepresentatives := orders,
         ComputedClassFusions       := [],
-        ComputedPowerMaps          := []             );
+        ComputedPowerMaps          := [],
+        Irr                        := irreds.all );
 
-    # classes outside the normal subgroup
-    outer:= Difference( [ 1 .. Length( classes ) ], nsg );
-
-    # Adjust faithful characters in outer classes.
-    nonfaith:= [];
-    irreds:= [];
-    i:= E(4);
-    for chi in Irr( tbl ) do
-      values:= ValuesOfClassFunction( chi );
-      if values[ center ] = values[1] then
-        Add( nonfaith, values );
-      else
-        values:= ShallowCopy( values );
-        values{ outer }:= i * values{ outer };
-      fi;
-      Add( irreds, values );
-    od;
-    isoclinic.Irr:= irreds;
-
-    # Get the fusion map onto the factor group modulo `[ 1, center ]'.
-    factorfusion:= CollapsedMat( nonfaith, [] ).fusion;
+    # Get the fusion map onto the factor group modulo the central subgroup.
+    # We assume that the first class of element order two or four in the
+    # kernel contains the element $x = z^2 \in U$.
+    factorfusion:= CollapsedMat( irreds.nonfaith, [] ).fusion;
+    invfusion:= InverseMap( factorfusion );
 
     # Adjust the power maps.
-    for p in Set( Factors( isoclinic.Size ) ) do
+    for p in Set( Factors( size ) ) do
 
-      map:= PowerMap( tbl, p );
+      map:= ShallowCopy( PowerMap( tbl, p ) );
 
-      # For $`p' \bmod 4 = 1$, the map remains unchanged,
-      # since $g^p = h$ and $(gi)^p = hi^p = hi$ then.
-      if p mod 4 = 2 then
+      # For $p \bmod |z| = 1$, the map remains unchanged,
+      # since $g^p = h$ implies $(gz)^p = hz^p = hz$ then.
+      # So we have to deal with the cases $p = 2$ and $p$ congruent
+      # to the other odd positive integers up to $|z| - 1$.
+      k:= p mod ( 2 * Length( center ) + 2 );
+      if p = 2 then
+        ypos:= xpos;
+      else
+        ypos:= PowerMap( tbl, (k-1)/2, xpos );
+      fi;
 
-        # The squares lie in `nsg'; for $g^2 = h$,
-        # we have $(gi)^2 = hz$, so we must take the other
-        # preimage under the factorfusion, if exists.
-        map:= ShallowCopy( map );
+      # The squares of elements outside $U$ lie in $U$.
+      # For $g^2 = h \in U$, we have $(gz)^2 = hx$.
+      # If $|Z| = 4$ then we take the other
+      # preimage under the factorfusion, if exists.
+      # If $|Z| = 8$ then we take the one among the up to four preimages
+      # for which the character values fit.
+
+      # For $g^p = h$,
+      # we have $(gz)^p = hz^p = hz^k = hz x^{(k-1)/2} = hz y$,
+      # where $k$ is one of $1, 3, 5, 7$.
+      # For $k \not= 1$,
+      # we must choose the appropriate preimage under the factor fusion;
+      # the `p'-th powers lie outside `nsg' in this case.
+      if k <> 1 then
         for class in outer do
-          images:= Filtered( Difference( nsg, [ map[class] ] ),
-#T does this difference make sense?
-              x -> factorfusion[x] = factorfusion[ map[ class ] ] );
-          if Length( images ) = 1 then
+          old:= map[ class ];
+          images:= invfusion[ factorfusion[ old ] ];
+          if IsList( images ) then
+            if Length( center ) = 1 then
+              # The image is ``the other'' class.
+              images:= Difference( images, [ old ] );
+            else
+              # It can happen that the class powers to itself.
+              # Use the character values for the decision.
+              images:= Filtered( images,
+                         x -> ForAll( irreds.faith,
+                                chi -> chi[ old ] = 0 or
+                                chi[x] / chi[ old ] = chi[ ypos ] / chi[1] ) );
+            fi;
+# if Length( images ) <> 1 then
+#   Error( "power map problem!" );
+# fi;
             map[ class ]:= images[1];
-            orders[ class ]:= 2 * orders[ images[1] ];
+            if p = 2 then
+              orders[ class ]:= 2 * orders[ images[1] ];
+            fi;
           fi;
         od;
-
-      elif p mod 4 = 3 then
-
-        # For $g^p = h$, we have $(gi)^p = hi^p = hiz$, so again
-        # we must choose the other preimage under the
-        # factorfusion, if exists; the `p'-th powers lie outside
-        # `nsg' in this case.
-        map:= ShallowCopy( map );
-        for class in outer do
-          images:= Filtered( Difference( outer, [ map[ class ] ] ),
-#T does this difference make sense?
-              x -> factorfusion[x] = factorfusion[ map[ class ] ] );
-          if Length( images ) = 1 then
-            map[ class ]:= images[1];
-          fi;
-        od;
-
       fi;
 
       isoclinic.ComputedPowerMaps[p]:= map;
@@ -5836,15 +5935,15 @@ InstallMethod( CharacterTableIsoclinic,
     od;
 
     # Transfer those factor fusions that have `center' inside the kernel.
-    for j in ComputedClassFusions( tbl ) do
-      if j.map[ center ] = 1 then
-        Add( isoclinic.ComputedClassFusions, j );
+    for fus in ComputedClassFusions( tbl ) do
+      if Set( fus.map{ center } ) = [ 1 ] then
+        Add( isoclinic.ComputedClassFusions, fus );
       fi;
     od;
 
     # Convert the record into a library table.
     ConvertToLibraryCharacterTableNC( isoclinic );
-    SetSourceOfIsoclinicTable( isoclinic, [ tbl, nsg, center ] );
+    SetSourceOfIsoclinicTable( isoclinic, [ tbl, nsg, center, xpos ] );
 #T sorting w.r.t. class permutation!
 
     # Return the result.
@@ -5854,8 +5953,7 @@ InstallMethod( CharacterTableIsoclinic,
 
 #############################################################################
 ##
-#M  CharacterTableIsoclinic( <modtbl> ) . . . . . . . . .  for a Brauer table
-#M  CharacterTableIsoclinic( <modtbl>, <nsg>, <centre> ) . for a Brauer table
+#M  CharacterTableIsoclinic( <modtbl>[, <nsg>][, <centre>] ) . . Brauer table
 ##
 ##  For the isoclinic table of a Brauer table of the structure $2.G.2$,
 ##  we transfer the normal subgroup information to the regular classes,
@@ -5864,64 +5962,61 @@ InstallMethod( CharacterTableIsoclinic,
 InstallMethod( CharacterTableIsoclinic,
     "for a Brauer table",
     [ IsBrauerTable ],
-    function( tbl )
-    local isoclinic, source;
+    tbl -> CharacterTableIsoclinic( tbl, fail, fail ) );
 
-    # The normal subgroup and the central involution are uniquely determined.
-    isoclinic:= CharacterTableIsoclinic( OrdinaryCharacterTable( tbl ) );
-    source:= SourceOfIsoclinicTable( isoclinic );
-    return CharacterTableIsoclinic( tbl, source[2], source[3] );
+InstallMethod( CharacterTableIsoclinic,
+    "for a Brauer table and a list of classes",
+    [ IsBrauerTable, IsList and IsCyclotomicCollection ],
+    function( tbl, nsg )
+    return CharacterTableIsoclinic( tbl, nsg, fail );
     end );
 
 InstallMethod( CharacterTableIsoclinic,
-    "for a Brauer table, a list of classes, and a class pos.",
-    [ IsBrauerTable, IsList and IsCyclotomicCollection, IsPosInt ],
-    function( tbl, nsg, centre )
-    return CharacterTableIsoclinic( tbl, nsg, centre,
-               CharacterTableIsoclinic( OrdinaryCharacterTable( tbl ),
-                   nsg, centre ) );
+    "for a Brauer table and a class pos.",
+    [ IsBrauerTable, IsPosInt ],
+    function( tbl, center )
+    return CharacterTableIsoclinic( tbl, fail, center );
+    end );
+
+InstallOtherMethod( CharacterTableIsoclinic,
+    "for a Brauer table and two lists of class positions",
+    [ IsBrauerTable, IsObject, IsObject ],
+    function( tbl, nsg, center )
+    return CharacterTableIsoclinic( tbl, CharacterTableIsoclinic(
+               OrdinaryCharacterTable( tbl ), nsg, center ) );
     end );
 
 
 #############################################################################
 ##
-#M  CharacterTableIsoclinic( <modtbl>, <nsg>, <centre>, <ordiso> )
+#M  CharacterTableIsoclinic( <modtbl>, <ordiso> )
 ##
 ##  In some cases, we have already the ordinary isoclinic table,
 ##  and do not want to create it anew.
 ##
 InstallOtherMethod( CharacterTableIsoclinic,
-    "for a Brauer table, a list of classes, a class pos., an ord. table",
-    [ IsBrauerTable, IsList and IsCyclotomicCollection, IsPosInt,
-      IsOrdinaryTable ],
-    function( modtbl, nsg, centre, ordiso )
-    local p,
-          reg,
-          factorfusion,
-          outer,
-          irreducibles,
-          i,
-          chi,
-          values;
+    "for a Brauer table and an ordnary table",
+    [ IsBrauerTable, IsOrdinaryTable ],
+    function( modtbl, ordiso )
+    local p, reg, irreducibles, source, factorfusion, nsg, centre, xpos,
+          outer;
 
     p:= UnderlyingCharacteristic( modtbl );
     reg:= CharacterTableRegular( ordiso, p );
-    factorfusion:= GetFusionMap( reg, ordiso );
-    nsg:= List( nsg, i -> Position( factorfusion, i ) );
-    centre:= Position( factorfusion, centre );
-    outer:= Difference( [ 1 .. NrConjugacyClasses( reg ) ], nsg );
 
     # Compute the irreducibles as for the ordinary isoclinic table.
-    irreducibles:= [];
-    i:= E(4);
-    for chi in Irr( modtbl ) do
-      values:= ValuesOfClassFunction( chi );
-      if p <> 2 and values[ centre ] <> values[1] then
-        values:= ShallowCopy( values );
-        values{ outer }:= i * values{ outer };
-      fi;
-      Add( irreducibles, values );
-    od;
+    if p = 2 then
+      irreducibles:= List( Irr( modtbl ), ValuesOfClassFunction );
+    else
+      source:= SourceOfIsoclinicTable( ordiso );
+      factorfusion:= GetFusionMap( reg, ordiso );
+      nsg:= List( source[2], i -> Position( factorfusion, i ) );
+      centre:= List( source[3], i -> Position( factorfusion, i ) );
+      xpos:= Position( factorfusion, source[4] );
+      outer:= Difference( [ 1 .. NrConjugacyClasses( reg ) ], nsg );
+      irreducibles:= IrreducibleCharactersOfIsoclinicGroup( Irr( modtbl ),
+                        centre, outer, xpos ).all;
+    fi;
     SetIrr( reg, List( irreducibles, vals -> Character( reg, vals ) ) );
 
     # Return the result.
@@ -6482,12 +6577,17 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
       kernel:= arg[3];
       fus:= ComputedClassFusions( tbl );
       nrfus:= Length( fus );
-      F:= CharacterTableFactorGroup( tbl, kernel );
-      trans:= TransformingPermutationsCharacterTables( F, facttbl );
-      if trans = fail then
-        Info( InfoCharacterTable, 2,
-              "SortedCharacterTable: tables of factors not compatible" );
-        return fail;
+      if GetFusionMap( tbl, facttbl ) <> fail then
+        F:= facttbl;
+        trans:= rec( rows:= (), columns:= () );
+      else
+        F:= CharacterTableFactorGroup( tbl, kernel );
+        trans:= TransformingPermutationsCharacterTables( F, facttbl );
+        if trans = fail then
+          Info( InfoCharacterTable, 2,
+                "SortedCharacterTable: tables of factors not compatible" );
+          return fail;
+        fi;
       fi;
 
       # permutation of classes:

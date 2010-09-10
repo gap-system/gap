@@ -2,10 +2,10 @@
 ##
 #W  mgmring.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: mgmring.gd,v 4.41 2008/10/24 16:31:23 gap Exp $
+#H  @(#)$Id: mgmring.gd,v 4.42 2010/02/23 15:13:17 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares operations for magma rings.
@@ -233,7 +233,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.mgmring_gd :=
-    "@(#)$Id: mgmring.gd,v 4.41 2008/10/24 16:31:23 gap Exp $";
+    "@(#)$Id: mgmring.gd,v 4.42 2010/02/23 15:13:17 gap Exp $";
 
 
 #############################################################################

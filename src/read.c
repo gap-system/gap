@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  read.c                      GAP source                   Martin Schoenert
+*W  read.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: read.c,v 4.73 2009/03/09 21:12:33 gap Exp $
+*H  @(#)$Id: read.c,v 4.75 2010/03/18 16:13:39 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This module contains the functions to read expressions and statements.
@@ -14,7 +14,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_read_c =
-   "@(#)$Id: read.c,v 4.73 2009/03/09 21:12:33 gap Exp $";
+   "@(#)$Id: read.c,v 4.75 2010/03/18 16:13:39 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -1207,45 +1207,45 @@ void ReadAtom (
         ReadLiteral( follow );
     }
 
-#ifndef LAURENT_IS_A_FISHHEAD
-    /* otherwise read a floating-point number                              */
-    else if ( TLS->symbol == S_DOT ) {
-        Obj strobj = NEW_STRING(sizeof(TLS->value)+20);
+/* #ifndef LAURENT_IS_A_FISHHEAD
+    // otherwise read a floating-point number                              
+    else if ( Symbol == S_DOT ) {
+        Obj strobj = NEW_STRING(sizeof(Value)+20);
 	Char *string, *s;
         Match (S_DOT, "floating-point dot", follow);
 	if ( ! READ_ERROR() ) {
 	    Char *exp = 0;
-	    Match (TLS->symbol, "floating-point mantissa", follow);
+	    Match (Symbol, "floating-point mantissa", follow);
 	    string = s = CSTR_STRING(strobj);
 	    *s++ = '.';
-	    memcpy (s, TLS->value, sizeof TLS->value);
+	    memcpy (s, Value, sizeof Value);
 	    for (; *s; s++) {
  	        if (*s =='e' || *s == 'E' || *s == '@')
 		    exp = s;
 	    }
-	    if (s == exp+1 && (TLS->symbol == S_MINUS || TLS->symbol == S_PLUS)) {
-  	        if (TLS->symbol == S_PLUS)
+	    if (s == exp+1 && (Symbol == S_MINUS || Symbol == S_PLUS)) {
+  	        if (Symbol == S_PLUS)
 		    *s++ = '+';
 		else
 		    *s++ = '-';
-	        Match(TLS->symbol,"floating-point exponent", follow);
-		for (exp = TLS->value; *exp;)
+	        Match(Symbol,"floating-point exponent", follow);
+		for (exp = Value; *exp;)
 		    *s++ = *exp++;
 		Match(S_INT,"floating-point exponent", follow);
 	    }
 	    SET_LEN_STRING(strobj,s-string);
 	}
 	Obj Float = VAL_GVAR(GVarName("Float"));
- /* FL: XXX This is to please compiler for the moment. 
-    Doesn't the use of PushObj here mean that this code is in the
-    wrong place?  */
+ //   FL: XXX This is to please compiler for the moment. 
+ //   Doesn't the use of PushObj here mean that this code is in the
+ //   wrong place?  
 void            PushObj ( Obj                 val );
 	if (Float)
 	    PushObj (CALL_1ARGS(Float,strobj));
 	else
 	    PushObj (strobj);
     }
-#endif
+#endif */
 
     /* '(' <Expr> ')'                                                      */
     else if ( TLS->symbol == S_LPAREN ) {

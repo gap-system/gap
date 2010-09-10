@@ -2,16 +2,16 @@
 ##
 #W  hash.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: hash.gi,v 4.17 2002/04/15 10:04:53 sal Exp $
+#H  @(#)$Id: hash.gi,v 4.18 2010/02/23 15:13:09 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Hash tables module, implementation part. 
 ##
 Revision.hash_gi :=
-    "@(#)$Id: hash.gi,v 4.17 2002/04/15 10:04:53 sal Exp $";
+    "@(#)$Id: hash.gi,v 4.18 2010/02/23 15:13:09 gap Exp $";
 
 
 #############################################################################

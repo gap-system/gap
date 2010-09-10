@@ -2,17 +2,17 @@
 ##
 #W  module.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: module.gd,v 4.53 2009/02/11 13:49:18 gap Exp $
+#H  @(#)$Id: module.gd,v 4.54 2010/02/23 15:13:17 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for left modules, right modules,
 ##  and bimodules.
 ##
 Revision.module_gd :=
-    "@(#)$Id: module.gd,v 4.53 2009/02/11 13:49:18 gap Exp $";
+    "@(#)$Id: module.gd,v 4.54 2010/02/23 15:13:17 gap Exp $";
 
 
 #############################################################################

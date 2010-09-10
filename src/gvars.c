@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  gvars.c                     GAP source                   Martin Schoenert
+*W  gvars.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gvars.c,v 4.54 2007/12/14 16:08:47 gap Exp $
+*H  @(#)$Id: gvars.c,v 4.55 2010/02/23 15:13:43 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the global variables package.
@@ -30,7 +30,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_gvars_c =
-   "@(#)$Id: gvars.c,v 4.54 2007/12/14 16:08:47 gap Exp $";
+   "@(#)$Id: gvars.c,v 4.55 2010/02/23 15:13:43 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

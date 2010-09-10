@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  precord.c                   GAP source                   Martin Schoenert
+*W  precord.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: precord.c,v 4.47 2009/04/08 14:25:57 gap Exp $
+*H  @(#)$Id: precord.c,v 4.51 2010/03/16 14:44:08 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for plain records.
@@ -29,7 +29,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_precord_c =
-   "@(#)$Id: precord.c,v 4.47 2009/04/08 14:25:57 gap Exp $";
+   "@(#)$Id: precord.c,v 4.51 2010/03/16 14:44:08 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -822,23 +822,12 @@ Obj FuncPRINT_PREC (
 **  'RecNames'  returns a list containing the  names of the components of the
 **  record <rec> as strings.
 */
-Obj FuncREC_NAMES (
-    Obj                 self,
-    Obj                 rec )
+Obj InnerRecNames( Obj rec )
 {
     Obj                 list;           /* list of record names, result    */
     UInt                rnam;           /* one name of record              */
-    Char*               strnam;         /* name                            */
     Obj                 string;         /* one name as string              */
     UInt                i, len;
-
-    /* check the argument                                                  */
-    while ( ! IS_PREC_REP(rec) ) {
-        rec = ErrorReturnObj(
-            "RecNames: <rec> must be a record (not a %s)",
-            (Int)TNAM_OBJ(rec), 0L,
-            "you can replace <rec> via 'return <rec>;'" );
-    }
 
     SortPRecRNam(rec,0);   /* Make sure rnams are sorted and thus negative */
 
@@ -849,10 +838,10 @@ Obj FuncREC_NAMES (
     /* loop over the components                                            */
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         rnam = -(Int)(GET_RNAM_PREC( rec, i ));
-        strnam = NAME_RNAM(rnam);
-        len = SyStrlen(strnam);
+        len = SyStrlen(NAME_RNAM(rnam));
         string = NEW_STRING( len );
-        SyStrncat( CSTR_STRING(string), strnam, len );
+        /* could have been moved by garbage collection */
+        SyStrncat( CSTR_STRING(string), NAME_RNAM(rnam), len );
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }
@@ -861,22 +850,31 @@ Obj FuncREC_NAMES (
     return list;
 }
 
+Obj FuncREC_NAMES (
+    Obj                 self,
+    Obj                 rec )
+{
+    /* check the argument                                                  */
+    while ( ! IS_PREC_REP(rec) ) {
+        rec = ErrorReturnObj(
+            "RecNames: <rec> must be a record (not a %s)",
+            (Int)TNAM_OBJ(rec), 0L,
+            "you can replace <rec> via 'return <rec>;'" );
+    }
+
+    return InnerRecNames( rec );
+}
+
 
 /****************************************************************************
 **
 *F  FuncREC_NAMES_COMOBJ( <self>, <rec> ) . . . record names of a record object
 */
-/* XXX  Why is this needed ??? Cannot this be included above?  */
+/* same as FuncREC_NAMES except for different argument check  */
 Obj FuncREC_NAMES_COMOBJ (
     Obj                 self,
     Obj                 rec )
 {
-    Obj                 list;           /* list of record names, result    */
-    UInt                rnam;           /* one name of record              */
-    Char*               strnam;         /* name                            */
-    Obj                 string;         /* one name as string              */
-    UInt                i, len;
-
     /* check the argument                                                  */
     while ( TNUM_OBJ(rec) != T_COMOBJ ) {
         rec = ErrorReturnObj(
@@ -884,26 +882,7 @@ Obj FuncREC_NAMES_COMOBJ (
             (Int)TNAM_OBJ(rec), 0L,
             "you can replace <rec> via 'return <rec>;'" );
     }
-
-    SortPRecRNam(rec,0);   /* Make sure rnams are sorted and thus negative */
-
-    /* allocate the list                                                   */
-    list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
-    SET_LEN_PLIST( list, LEN_PREC(rec) );
-
-    /* loop over the components                                            */
-    for ( i = 1; i <= LEN_PREC(rec); i++ ) {
-        rnam = -(Int)(GET_RNAM_PREC( rec, i ));
-        strnam = NAME_RNAM(rnam);
-        len = SyStrlen(strnam);
-        string = NEW_STRING( len );
-        SyStrncat( CSTR_STRING(string), strnam, len );
-        SET_ELM_PLIST( list, i, string );
-        CHANGED_BAG( list );
-    }
-
-    /* return the list                                                     */
-    return list;
+    return InnerRecNames( rec );
 }
 
 

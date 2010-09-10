@@ -2,16 +2,16 @@
 ##
 #W  grpmat.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grpmat.gi,v 4.68 2008/04/01 21:35:13 gap Exp $
+#H  @(#)$Id: grpmat.gi,v 4.74 2010/06/19 10:01:17 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for matrix groups.
 ##
 Revision.grpmat_gi :=
-    "@(#)$Id: grpmat.gi,v 4.68 2008/04/01 21:35:13 gap Exp $";
+    "@(#)$Id: grpmat.gi,v 4.74 2010/06/19 10:01:17 gap Exp $";
 
 
 #############################################################################
@@ -150,8 +150,8 @@ local f,i,j,veclist,acts;
   return f^Length(veclist[1]);
 end);
 
-BindGlobal("BasisVectorsForMatrixAction",function(G)
-local F, gens, evals, espaces, is, ise, gen, i, j;
+InstallGlobalFunction(BasisVectorsForMatrixAction,function(G)
+local F, gens, evals, espaces, is, ise, gen, i, j,module,list,ind,vecs,mins;
 
   F := DefaultFieldOfMatrixGroup(G);
   # `Cyclotomics', the default field for rational matrix groups causes
@@ -159,6 +159,32 @@ local F, gens, evals, espaces, is, ise, gen, i, j;
   if IsIdenticalObj(F,Cyclotomics) then
     F:=FieldOfMatrixGroup(G);
   fi;
+
+  list:=[];
+  if false and ValueOption("nosubmodules")=fail and IsFinite(F) then
+    module:=GModuleByMats(GeneratorsOfGroup(G),F);
+    if not MTX.IsIrreducible(module) then
+      mins:=Filtered(MTX.BasesCompositionSeries(module),x->Length(x)>0);
+      if Length(mins)<=5 then
+	mins:=MTX.BasesMinimalSubmodules(module);
+      else
+	if Length(mins)>7 then
+	  mins:=mins{Set(List([1..7],x->Random([1..Length(mins)])))};
+	fi;
+      fi;
+
+      # now get potential basis vectors from submodules
+      for i in mins do
+	ind:=MTX.InducedActionSubmodule(module,i);
+	vecs:=BasisVectorsForMatrixAction(Group(ind.generators):nosubmodules);
+	Append(list,vecs*i);
+      od;
+
+    fi;
+  fi;
+
+  # use Murray/OBrien method
+
   gens := ShallowCopy( GeneratorsOfGroup( G ) ); # Need copy for mutability
   while Length( gens ) < 10 do
       Add( gens, PseudoRandom( G ) );
@@ -180,7 +206,8 @@ local F, gens, evals, espaces, is, ise, gen, i, j;
       fi;
     od;
   od;
-  return Concatenation(List(is,i->BasisVectors(Basis(i))));
+  Append(list,Concatenation(List(is,i->BasisVectors(Basis(i)))));
+  return list;
 end);
 
 #############################################################################
@@ -416,7 +443,7 @@ end);
 #M  IsomorphismPermGroup( <mat-grp> )
 ##
 BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
-local   nice,img;
+local   nice,img,module;
   # don't be too clever if it is a matrix over a non-field domain
   if not IsField(DefaultFieldOfMatrixGroup(grp)) then
     #nice:=ActionHomomorphism( grp,AsSSortedList(grp),OnRight,"surjective");
@@ -439,9 +466,23 @@ local   nice,img;
     SetIsSurjective( nice, true );
     if not ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
              (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
-      # improve via blocks
       img:=Image(nice);
-      nice:=nice*SmallerDegreePermutationRepresentation(img);
+      if not IsFinite(FieldOfMatrixGroup(grp)) or
+      Length(GeneratorsOfGroup(grp))=0 then
+        module:=fail;
+      else
+	module:=GModuleByMats(GeneratorsOfGroup(grp),FieldOfMatrixGroup(grp));
+      fi;
+      #improve,
+      # try hard, unless absirr and orbit lengths at least 1/q^2 of domain --
+      #then we expect improvements to be of little help
+      if module<>fail and not (NrMovedPoints(img)>=
+        Size(FieldOfMatrixGroup(grp))^(Length(One(grp))-2)
+	and MTX.IsAbsolutelyIrreducible(module)) then
+	  nice:=nice*SmallerDegreePermutationRepresentation(img);
+      else
+	nice:=nice*SmallerDegreePermutationRepresentation(img:cheap:=true);
+      fi;
     fi;
   fi;
 

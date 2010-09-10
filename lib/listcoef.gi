@@ -2,8 +2,8 @@
 ##
 #W  listcoef.gi                 GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  The  '<Something>RowVector' functions operate  on row vectors, that is to
@@ -21,7 +21,7 @@
 ##  different lengths, the returned result will have trailing zeros removed.
 ##
 Revision.listcoef_gi :=
-    "@(#)$Id: listcoef.gi,v 4.59 2006/03/16 19:50:53 gap Exp $";
+    "@(#)$Id: listcoef.gi,v 4.62 2010/08/02 16:36:55 alexk Exp $";
 
 
 #############################################################################
@@ -841,24 +841,6 @@ InstallOtherMethod( RemoveOuterCoeffs,"error if immutable", true,
     L1_IMMUTABLE_ERROR);
 
 
-#############################################################################
-##
-#M  ShrinkCoeffs( <list> )
-##
-InstallMethod( ShrinkCoeffs,"call `ShrinkRowVector'",
-    true,
-    [ IsList and IsMutable ],
-    0,
-
-function( l1 )
-    ShrinkRowVector(l1);
-    return Length(l1);
-end );
-
-InstallOtherMethod( ShrinkCoeffs,"error if immutable", true,
-    [ IsList],0,
-    L1_IMMUTABLE_ERROR);
-
 
 #############################################################################
 ##
@@ -1002,27 +984,6 @@ InstallMethod( ShiftedCoeffs,"empty list", true,
 function( l, shift )
   return [];
 end);
-
-
-#############################################################################
-##
-#F  ProductPol( <coeffs_f>, <coeffs_g> )  . . . .  product of two polynomials
-##
-InstallGlobalFunction( ProductPol, function( f, g )
-    local  prod,  q,  m,  n,  i,  k;
-    m := Length(f);  while 1 < m  and f[m] = 0  do m := m-1;  od;
-    n := Length(g);  while 1 < n  and g[n] = 0  do n := n-1;  od;
-#T other zero elements are not allowed?
-    prod := [];
-    for i  in [ 2 .. m+n ]  do
-        q := 0;
-        for k  in [ Maximum(1,i-n) .. Minimum(m,i-1) ]  do
-            q := q + f[k] * g[i-k];
-        od;
-        prod[i-1] := q;
-    od;
-    return prod;
-end );
 
 
 #############################################################################

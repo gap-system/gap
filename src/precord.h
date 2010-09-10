@@ -1,18 +1,18 @@
 /****************************************************************************
 **
-*W  precord.h                   GAP source                   Martin Schoenert
+*W  precord.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: precord.h,v 4.13 2009/03/25 11:42:47 gap Exp $
+*H  @(#)$Id: precord.h,v 4.14 2010/02/23 15:13:46 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions for plain records.
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_precord_h =
-   "@(#)$Id: precord.h,v 4.13 2009/03/25 11:42:47 gap Exp $";
+   "@(#)$Id: precord.h,v 4.14 2010/02/23 15:13:46 gap Exp $";
 #endif
 
 

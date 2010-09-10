@@ -2,17 +2,17 @@
 ##
 #W  grpfp.gd                    GAP library                    Volkmar Felsch
 ##
-#H  @(#)$Id: grpfp.gd,v 4.82 2009/06/15 15:20:21 gap Exp $
+#H  @(#)$Id: grpfp.gd,v 4.85 2010/07/16 21:14:33 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
 Revision.grpfp_gd :=
-    "@(#)$Id: grpfp.gd,v 4.82 2009/06/15 15:20:21 gap Exp $";
+    "@(#)$Id: grpfp.gd,v 4.85 2010/07/16 21:14:33 gap Exp $";
 
 
 #############################################################################
@@ -66,7 +66,7 @@ CosetTableDefaultLimit := 1000;
 ##  <P/>
 ##  If this number of cosets is reached, &GAP; will issue an error message
 ##  and prompt the user to either continue the calculation or to stop it.
-##  The default value is <M>256000</M>.
+##  The default value is <M>4096000</M>.
 ##  <P/>
 ##  See also the description of the options to
 ##  <Ref Func="CosetTableFromGensAndRels"/>.
@@ -76,7 +76,7 @@ CosetTableDefaultLimit := 1000;
 ##  gap> u := Subgroup( f, [ f.2 ] );
 ##  Group([ b ])
 ##  gap> Index( f, u );
-##  Error, the coset enumeration has defined more than 256000 cosets
+##  Error, the coset enumeration has defined more than 4096000 cosets
 ##   called from
 ##  TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
 ##  CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
@@ -85,7 +85,7 @@ CosetTableDefaultLimit := 1000;
 ##  IndexInWholeGroup( H ) called from
 ##  ...
 ##  Entering break read-eval-print loop ...
-##  type 'return;' if you want to continue with a new limit of 512000 cosets,
+##  type 'return;' if you want to continue with a new limit of 8192000 cosets,
 ##  type 'quit;' if you want to quit the coset enumeration,
 ##  type 'maxlimit := 0; return;' in order to continue without a limit
 ##  brk> quit;
@@ -131,7 +131,7 @@ CosetTableDefaultLimit := 1000;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-CosetTableDefaultMaxLimit := 256000;
+CosetTableDefaultMaxLimit := 2^12*1000;
 
 
 #############################################################################
@@ -1289,7 +1289,7 @@ DeclareAttribute("FPFaithHom",IsFamily);
 ##  Change of upper/lower case is interpreted to indicate inverses.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> g:=FreeGroup("x","y","z");;
+##  gap> f:=FreeGroup("x","y","z");;
 ##  gap> AssignGeneratorVariables(f);
 ##  #I  Assigned the global variables [ x, y, z ]
 ##  gap> r:=ParseRelators([x,y,z],

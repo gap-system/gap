@@ -1,19 +1,19 @@
 #############################################################################
 ##
 #W  ctblpope.gi                 GAP library                     Thomas Breuer
-#W                                                           & Goetz Pfeiffer
+#W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id: ctblpope.gi,v 4.26 2008/07/11 22:06:59 gap Exp $
+#H  @(#)$Id: ctblpope.gi,v 4.27 2010/02/23 15:12:54 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for those functions that are needed to
 ##  compute and test possible permutation characters.
 ##
 Revision.ctblpope_gi :=
-    "@(#)$Id: ctblpope.gi,v 4.26 2008/07/11 22:06:59 gap Exp $";
+    "@(#)$Id: ctblpope.gi,v 4.27 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################

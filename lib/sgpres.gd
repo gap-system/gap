@@ -2,17 +2,17 @@
 ##
 #W  sgpres.gd                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: sgpres.gd,v 4.39 2009/07/07 14:39:55 gap Exp $
+#H  @(#)$Id: sgpres.gd,v 4.40 2010/02/23 15:13:30 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
 Revision.sgpres_gd :=
-    "@(#)$Id: sgpres.gd,v 4.39 2009/07/07 14:39:55 gap Exp $";
+    "@(#)$Id: sgpres.gd,v 4.40 2010/02/23 15:13:30 gap Exp $";
 
 
 ############################################################################
@@ -672,7 +672,7 @@ DeclareGlobalFunction("PresentationSubgroupMtc");
 ##  <P/>
 ##  The Reduced Reidemeister-Schreier algorithm is a modification of the
 ##  Reidemeister-Schreier algorithm of George Havas <Cite Key="Hav74b"/>.
-##  It was proposed by Joachim Neub�ser and first implemented in 1986 by
+##  It was proposed by Joachim Neubüser and first implemented in 1986 by
 ##  Andrea Lucchini and Volkmar Felsch in the SPAS system
 ##  <Cite Key="Spa89"/>.
 ##  Like the Reidemeister-Schreier algorithm of George Havas, it needs only

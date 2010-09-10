@@ -2,32 +2,16 @@
 ##
 #W  tuples.gi                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: tuples.gi,v 4.32 2009/06/15 15:28:55 gap Exp $
+#H  @(#)$Id: tuples.gi,v 4.34 2010/05/19 14:43:21 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for direct product elements.
 ##
 Revision.tuples_gi :=
-  "@(#)$Id: tuples.gi,v 4.32 2009/06/15 15:28:55 gap Exp $";
-
-
-#############################################################################
-##
-#V  InfoDirectProductElements  . . . . . . . . . . . . . . . . . . Info Class
-##
-DeclareInfoClass( "InfoDirectProductElements" );
-
-
-#############################################################################
-##
-#R  IsDefaultDirectProductElementRep( <obj> )  . . . . .  representation as a
-#R                                                           component object
-##
-DeclareRepresentation( "IsDefaultDirectProductElementRep",
-    IsPositionalObjectRep and IsDirectProductElement, [] );
+  "@(#)$Id: tuples.gi,v 4.34 2010/05/19 14:43:21 gap Exp $";
 
 
 #############################################################################
@@ -35,10 +19,6 @@ DeclareRepresentation( "IsDefaultDirectProductElementRep",
 #V  DIRECT_PRODUCT_ELEMENT_FAMILIES . . . list of all direct product elements
 #V                                                                   families
 ##
-BindGlobal( "EmptyDirectProductElementsFamily",
-    NewFamily( "DirectProductElementsFamily([])", IsDirectProductElement,
-               IsDirectProductElement ) );
-
 EmptyDirectProductElementsFamily!.defaultTupleType:= NewType(
     EmptyDirectProductElementsFamily, IsDefaultDirectProductElementRep );
 

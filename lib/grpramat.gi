@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  grpramat.gi                 GAP Library                     Franz G"ahler
+#W  grpramat.gi                 GAP Library                     Franz Gähler
 ##
-#H  @(#)$Id: grpramat.gi,v 4.26 2008/04/14 09:12:55 stefan Exp $
+#H  @(#)$Id: grpramat.gi,v 4.27 2010/02/23 15:13:08 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains operations for matrix groups over the rationals
 ##
 Revision.grpramat_gi :=
-    "@(#)$Id: grpramat.gi,v 4.26 2008/04/14 09:12:55 stefan Exp $";
+    "@(#)$Id: grpramat.gi,v 4.27 2010/02/23 15:13:08 gap Exp $";
 
 #############################################################################
 ##

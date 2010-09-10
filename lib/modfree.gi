@@ -2,16 +2,16 @@
 ##
 #W  modfree.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: modfree.gi,v 4.40 2003/05/24 09:30:36 gap Exp $
+#H  @(#)$Id: modfree.gi,v 4.41 2010/02/23 15:13:17 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for free left modules.
 ##
 Revision.modfree_gi :=
-    "@(#)$Id: modfree.gi,v 4.40 2003/05/24 09:30:36 gap Exp $";
+    "@(#)$Id: modfree.gi,v 4.41 2010/02/23 15:13:17 gap Exp $";
 
 
 #############################################################################

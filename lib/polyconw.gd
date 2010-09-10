@@ -2,17 +2,17 @@
 ##
 #W  polyconw.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: polyconw.gd,v 4.14 2008/09/15 07:56:11 gap Exp $
+#H  @(#)$Id: polyconw.gd,v 4.15 2010/02/23 15:13:23 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of functions and data around
 ##  Conway polynomials.
 ##
 Revision.polyconw_gd :=
-    "@(#)$Id: polyconw.gd,v 4.14 2008/09/15 07:56:11 gap Exp $";
+    "@(#)$Id: polyconw.gd,v 4.15 2010/02/23 15:13:23 gap Exp $";
 
 
 ###############################################################################

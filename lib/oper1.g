@@ -2,16 +2,16 @@
 ##
 #W  oper1.g                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: oper1.g,v 4.19 2008/11/17 17:37:29 gap Exp $
+#H  @(#)$Id: oper1.g,v 4.20 2010/02/23 15:13:19 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Functions moved from oper.g, so as to be compiled in the default kernel
 ##
 Revision.oper1_g :=
-    "@(#)$Id: oper1.g,v 4.19 2008/11/17 17:37:29 gap Exp $";
+    "@(#)$Id: oper1.g,v 4.20 2010/02/23 15:13:19 gap Exp $";
 
 
 #############################################################################

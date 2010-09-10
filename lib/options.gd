@@ -2,10 +2,10 @@
 ##
 #W  options.gd                     GAP library                   Steve Linton
 ##
-#H  @(#)$Id: options.gd,v 4.12 2009/08/12 12:07:20 gap Exp $
+#H  @(#)$Id: options.gd,v 4.15 2010/06/16 13:43:51 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  <#GAPDoc Label="[1]{options}">
@@ -40,20 +40,21 @@
 ##  calls, or where the <C>DoSomething</C> procedure is actually an infix
 ##  operator, or other function with special syntax. 
 ##  <P/>
-##  At some time, an options predicate or something of the kind may
-##  be added to method selection.
-##  <P/>
 ##  An alternative to this system is the use of additional optional
-##  arguments in procedure calls. This is not felt to be adequate
+##  arguments in procedure calls. This is not felt to be sufficient
 ##  because many procedure calls might cause, for example, a coset
 ##  enumeration and each would need to make provision for the
 ##  possibility of extra arguments. In this system the options are
 ##  pushed when the user-level procedure is called, and remain in
 ##  effect (unless altered) for all procedures called by it.
+##  <P/>
+##  Note that in some places in the system optional records containing
+##  options which are valid only for the immediate function or method
+##  call are in fact used.
 ##  <#/GAPDoc>
 ##
 Revision.options_gd :=
-    "@(#)$Id: options.gd,v 4.12 2009/08/12 12:07:20 gap Exp $";
+    "@(#)$Id: options.gd,v 4.15 2010/06/16 13:43:51 gap Exp $";
 
 
 #############################################################################
@@ -87,7 +88,8 @@ DeclareGlobalFunction( "PushOptions");
 ##  <Func Name="PopOptions" Arg=''/>
 ##
 ##  <Description>
-##  This function removes the top-most options record from the options stack.
+##  This function removes the top-most options record from the options stack
+##  if there is one.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -124,22 +126,22 @@ DeclareGlobalFunction( "ResetOptionsStack");
 ##
 #F  OnQuit( )                                   currently removes all options
 ##
-##  <#GAPDoc Label="ResetOptionsStack">
+##  <#GAPDoc Label="OnQuit">
 ##  <ManSection>
-##  <Func Name="ResetOptionsStack" Arg=''/>
+##  <Func Name="OnQuit" Arg=''/>
 ##
 ##  <Description>
-##  called when a user elects to <C>quit;</C> a break loop entered via
-##  execution of <C>Error</C>.
-##  As &GAP; starts up, <C>OnQuit</C> is defined to do nothing,
-##  in case an <C>Error</C> is encountered during &GAP; start-up.
-##  Here we redefine <C>OnQuit</C> to do a variant of
+##  called when a user selects to <C>quit;</C> a break loop entered via
+##  execution of <Ref Func="Error"/>.
+##  As &GAP; starts up, <Ref Func="OnQuit"/> is defined to do nothing,
+##  in case an error is encountered during &GAP; start-up.
+##  Here we redefine <Ref Func="OnQuit"/> to do a variant of
 ##  <Ref Func="ResetOptionsStack"/> to ensure the options stack is empty
-##  after a user quits an <C>Error</C>-induced break loop.
-##  (<C>OnQuit</C> differs from <Ref Func="ResetOptionsStack"/> in that it
-##  warns when it does something rather than the other way round.)
-##  Currently, <C>OnQuit</C> is not advertised, since exception handling may
-##  make it obsolete.
+##  after a user quits an <Ref Func="Error"/>-induced break loop.
+##  (<Ref Func="OnQuit"/> differs from <Ref Func="ResetOptionsStack"/>
+##  in that it warns when it does something rather than the other way round.)
+##  Currently, <Ref Func="OnQuit"/> is not advertised,
+##  since exception handling may make it obsolete.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -158,11 +160,12 @@ DeclareGlobalFunction( "ResetOptionsStack");
 ##  <Func Name="ValueOption" Arg='opt'/>
 ##
 ##  <Description>
-##  This function is the main method of accessing the options stack;
-##  <A>opt</A> should be the name of an option, i.e.&nbsp;a string. A 
-##  function which makes decisions which might be affected by options should
-##  examine the result of <Ref Func="ValueOption"/>.
-##  If <A>opt</A> has never been set then <K>fail</K> is returned.
+##  This function is a method for accessing the options stack without
+##  changing it;
+##  <A>opt</A> should be the name of an option, i.e.&nbsp;a string.
+##  A function which makes decisions that might be affected by options
+##  should examine the result of <Ref Func="ValueOption"/>.
+##  If <A>opt</A> is currently not set then <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  fpmon.gd           GAP library        										Isabel Araujo
+#W  fpmon.gd           GAP library        										Isabel Araújo
 ##
-#H  @(#)$Id: fpmon.gd,v 4.9 2008/12/09 22:33:32 gap Exp $
+#H  @(#)$Id: fpmon.gd,v 4.10 2010/02/23 15:12:59 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for finitely presented monoids. 
 ##
 Revision.fpmon_gd :=
-    "@(#)$Id: fpmon.gd,v 4.9 2008/12/09 22:33:32 gap Exp $";
+    "@(#)$Id: fpmon.gd,v 4.10 2010/02/23 15:12:59 gap Exp $";
 
 #############################################################################
 ##

@@ -2,12 +2,12 @@
 ##
 #W  ghom.gd                     GAP library                     Thomas Breuer
 #W                                                           Alexander Hulpke
-#W                                                             Heiko Thei"sen
+#W                                                             Heiko Theißen
 ##
-#H  @(#)$Id: ghom.gd,v 4.64 2009/01/06 11:19:49 gap Exp $
+#H  @(#)$Id: ghom.gd,v 4.65 2010/02/23 15:13:00 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  1. Functions for creating group general mappings by images
@@ -16,7 +16,7 @@
 ##  4. Functions for ...
 ##
 Revision.ghom_gd :=
-    "@(#)$Id: ghom.gd,v 4.64 2009/01/06 11:19:49 gap Exp $";
+    "@(#)$Id: ghom.gd,v 4.65 2010/02/23 15:13:00 gap Exp $";
 
 
 #############################################################################

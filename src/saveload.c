@@ -2,10 +2,10 @@
 **
 *W  saveload.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id: saveload.c,v 4.58 2009/10/15 09:02:03 gap Exp $
+*H  @(#)$Id: saveload.c,v 4.59 2010/02/23 15:13:47 gap Exp $
 **
-*Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions concerned with saving and loading
@@ -15,7 +15,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_saveload_c =
-   "@(#)$Id: saveload.c,v 4.58 2009/10/15 09:02:03 gap Exp $";
+   "@(#)$Id: saveload.c,v 4.59 2010/02/23 15:13:47 gap Exp $";
 
 #include        <unistd.h>              /* write, read                     */
    

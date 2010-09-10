@@ -2,10 +2,10 @@
 ##
 #W  info.gd                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: info.gd,v 4.17 2007/02/01 14:31:44 gap Exp $
+#H  @(#)$Id: info.gd,v 4.18 2010/02/23 15:13:10 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This package sets up the new Info messages system
@@ -36,7 +36,7 @@
 ##  This file is the declarations part of that package
 ##
 Revision.info_gd :=
-    "@(#)$Id: info.gd,v 4.17 2007/02/01 14:31:44 gap Exp $";
+    "@(#)$Id: info.gd,v 4.18 2010/02/23 15:13:10 gap Exp $";
 
 #############################################################################
 ##

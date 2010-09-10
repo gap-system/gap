@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  stats.c                     GAP source                   Martin Schoenert
+*W  stats.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: stats.c,v 4.44 2008/07/16 11:39:48 gap Exp $
+*H  @(#)$Id: stats.c,v 4.46 2010/06/14 15:56:26 sal Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the statements package.
@@ -16,7 +16,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_stats_c =
-   "@(#)$Id: stats.c,v 4.44 2008/07/16 11:39:48 gap Exp $";
+   "@(#)$Id: stats.c,v 4.46 2010/06/14 15:56:26 sal Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -50,6 +50,8 @@ const char * Revision_stats_c =
 #define INCLUDE_DECLARATION_PART
 #include        "stats.h"               /* statements                      */
 #undef  INCLUDE_DECLARATION_PART
+
+#include        <assert.h>
 
 #include	"tls.h"
 #include	"thread.h"
@@ -1557,6 +1559,38 @@ UInt            ExecReturnVoid (
     return 2;
 }
 
+UInt (* RealExecStatFuncs[256]) ( Stat stat );
+UInt RealExecStatCopied;
+
+
+/****************************************************************************
+**
+*F  UInt TakeInterrupt() . . . . . . . . allow user interrupts
+**
+**  When you call this you promise that the heap is in a normal state, 
+**  allowing GAP execution in the usual way
+**
+**  This will do nothing (pretty quickly) if Ctrl-C has not been pressed and 
+**  return 0. Otherwise it
+**   will respond appropriately.  This may result in a longjmp
+**  or in returning to the caller after arbitrary execution of GAP code
+** including possible garbage collection. In this case 1 is returned.
+*/
+
+UInt TakeInterrupt() {
+  UInt i;
+  if (SyIsIntr()) {
+    assert(RealExecStatCopied);
+        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+            ExecStatFuncs[i] = RealExecStatFuncs[i];
+        }
+        RealExecStatCopied = 0;
+	ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+	return 1;
+  }
+  return 0;
+}
+
 
 /****************************************************************************
 **
@@ -1567,8 +1601,6 @@ UInt            ExecReturnVoid (
 **  'ExecStatFuncs' back   to   their original   value,   calls 'Error',  and
 **  redispatches after a return from the break-loop.
 */
-UInt (* RealExecStatFuncs[256]) ( Stat stat );
-UInt RealExecStatCopied;
 
 UInt ExecIntrStat (
     Stat                stat )
@@ -1620,6 +1652,7 @@ UInt ExecIntrStat (
 void InterruptExecStat ( void )
 {
     UInt                i;              /* loop variable                   */
+    /*    assert(reason > 0) */
 
     /* remember the original entries from the table 'ExecStatFuncs'        */
     if ( ! RealExecStatCopied ) {
@@ -1647,6 +1680,11 @@ void InterruptExecStat ( void )
 **
 *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
 */
+
+Int BreakLoopPending( void ) {
+     return RealExecStatCopied;
+}
+
 void ClearError ( void )
 {
     UInt        i;

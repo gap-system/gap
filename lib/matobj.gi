@@ -1,9 +1,9 @@
 ############################################################################
 # 
 # matobj.gi
-#                                                        by Max Neunhoeffer
+#                                                        by Max Neunhöffer
 #
-##  Copyright (C) 2007  Max Neunhoeffer, University of St Andrews
+##  Copyright (C) 2007  Max Neunhöffer, University of St Andrews
 ##  This file is free software, see license information at the end.
 #
 # This file contains some generic methods for the vector/matrix interface
@@ -11,7 +11,7 @@
 #
 ############################################################################
 Revision.matobj_gi :=
-    "@(#)$Id: matobj.gi,v 4.1 2007/09/26 13:05:55 gap Exp $";
+    "@(#)$Id: matobj.gi,v 4.2 2010/02/23 15:13:13 gap Exp $";
 
 
 InstallMethod( WeightOfVector, "generic method",

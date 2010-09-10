@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  fpmon .gi           GAP library          								Isabel Araujo
+#W  fpmon .gi           GAP library          								Isabel Araújo
 ##
-#H  @(#)$Id: fpmon.gi,v 4.7 2002/04/15 10:04:40 sal Exp $
+#H  @(#)$Id: fpmon.gi,v 4.8 2010/02/23 15:12:59 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.fpmon_gi :=
-    "@(#)$Id: fpmon.gi,v 4.7 2002/04/15 10:04:40 sal Exp $";
+    "@(#)$Id: fpmon.gi,v 4.8 2010/02/23 15:12:59 gap Exp $";
 
 #############################################################################
 ##

@@ -1,9 +1,9 @@
 ############################################################################
 # 
 # matobj2.gd
-#                                                        by Max Neunhoeffer
+#                                                        by Max Neunhöffer
 #
-##  Copyright (C) 2007  Max Neunhoeffer, Lehrstuhl D f. Math., RWTH Aachen
+##  Copyright (C) 2007  Max Neunhöffer, Lehrstuhl D f. Math., RWTH Aachen
 ##  This file is free software, see license information at the end.
 #
 # This file together with matobj1.gd formally define the interface to the 
@@ -13,7 +13,7 @@
 #
 ############################################################################
 Revision.matobj2_gd :=
-    "@(#)$Id: matobj2.gd,v 4.2 2007/09/26 13:05:55 gap Exp $";
+    "@(#)$Id: matobj2.gd,v 4.3 2010/02/23 15:13:13 gap Exp $";
 
 
 ############################################################################

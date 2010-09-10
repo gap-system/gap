@@ -3,16 +3,16 @@
 #W  polyfinf.gi                 GAP Library                      Frank Celler
 #W                                                         & Alexander Hulpke
 ##
-#H  @(#)$Id: polyfinf.gi,v 4.40 2004/12/10 21:04:57 gap Exp $
+#H  @(#)$Id: polyfinf.gi,v 4.42 2010/06/16 16:31:38 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions for polynomials over finite fields
 ##
 Revision.polyfinf_gi :=
-    "@(#)$Id: polyfinf.gi,v 4.40 2004/12/10 21:04:57 gap Exp $";
+    "@(#)$Id: polyfinf.gi,v 4.42 2010/06/16 16:31:38 gap Exp $";
 
 
 #############################################################################
@@ -58,7 +58,7 @@ local   c,  ind,  br,  g,  h,  k,  i,dou;
       for i  in [1..DegreeOverPrimeField(br)*d-1]  do
 	  g := ProductCoeffs(g,g);
 	  ReduceCoeffs(g,k);
-	  ShrinkCoeffs(g);
+	  ShrinkRowVector(g);
 	  AddCoeffs(h,g);
       od;
       h := LaurentPolynomialByCoefficients(

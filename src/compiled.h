@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  compiled.h                  GAP source                   Martin Schoenert
+*W  compiled.h                  GAP source                   Martin Schönert
 **
 **  This package defines macros and functions that are used by compiled code.
 **  Those macros and functions should go into the appropriate packages.

@@ -2,10 +2,10 @@
 ##
 #W  methsel1.g                   GAP library                  Steve Linton
 ##
-#H  @(#)$Id: methsel1.g,v 4.4 2002/04/15 10:05:03 sal Exp $
+#H  @(#)$Id: methsel1.g,v 4.5 2010/02/23 15:13:15 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file defines the more frequently used functions to 
@@ -13,7 +13,7 @@
 ##  is not compiled in the default setup. See also methsel2.g
 ##
 Revision.methsel1_g :=
-    "@(#)$Id: methsel1.g,v 4.4 2002/04/15 10:05:03 sal Exp $";
+    "@(#)$Id: methsel1.g,v 4.5 2010/02/23 15:13:15 gap Exp $";
 
 #############################################################################
 ##

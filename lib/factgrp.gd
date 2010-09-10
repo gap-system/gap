@@ -2,16 +2,16 @@
 ##
 #W  factgrp.gd                      GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id: factgrp.gd,v 4.22 2009/01/12 17:26:16 gap Exp $
+#H  @(#)$Id: factgrp.gd,v 4.23 2010/02/23 15:12:58 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of operations for factor group maps
 ##
 Revision.factgrp_gd:=
-  "@(#)$Id: factgrp.gd,v 4.22 2009/01/12 17:26:16 gap Exp $";
+  "@(#)$Id: factgrp.gd,v 4.23 2010/02/23 15:12:58 gap Exp $";
 
 ##
 ##  To implement new factor group methods, one does not need to deal with

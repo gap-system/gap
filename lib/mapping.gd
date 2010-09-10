@@ -1,13 +1,13 @@
 #############################################################################
 ##
 #W  mapping.gd                  GAP library                     Thomas Breuer
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mapping.gd,v 4.65 2009/06/15 15:28:54 gap Exp $
+#H  @(#)$Id: mapping.gd,v 4.67 2010/06/24 13:37:02 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for general mappings.
@@ -204,7 +204,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.mapping_gd :=
-    "@(#)$Id: mapping.gd,v 4.65 2009/06/15 15:28:54 gap Exp $";
+    "@(#)$Id: mapping.gd,v 4.67 2010/06/24 13:37:02 gap Exp $";
 
 
 #############################################################################
@@ -1343,7 +1343,7 @@ DeclareOperation( "Embedding", [ IsDomain, IsObject ] );
 ##  returns the projection of the domain <A>S</A> onto the domain <A>T</A>,
 ##  or in the second form, some domain indexed by the positive integer
 ##  <A>i</A>,
-##  or in the third form some natural subdomain of <A>S</A>.
+##  or in the third form some natural quotient domain of <A>S</A>.
 ##  Various methods are defined for group products;
 ##  see&nbsp;<Ref Sect="Embeddings and Projections for Group Products"/> for
 ##  a general description,

@@ -2,16 +2,16 @@
 ##
 #W  csetgrp.gd                      GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id: csetgrp.gd,v 4.38 2009/01/06 11:19:49 gap Exp $
+#H  @(#)$Id: csetgrp.gd,v 4.40 2010/02/23 15:12:50 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of operations for cosets.
 ##
 Revision.csetgrp_gd:=
-  "@(#)$Id: csetgrp.gd,v 4.38 2009/01/06 11:19:49 gap Exp $";
+  "@(#)$Id: csetgrp.gd,v 4.40 2010/02/23 15:12:50 gap Exp $";
 
 #############################################################################
 ##
@@ -319,7 +319,8 @@ DeclareAttribute( "RepresentativesContainedRightCosets", IsDoubleCoset );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory("IsRightCoset", IsDomain and IsExternalOrbit);
+DeclareCategory("IsRightCoset", IsDomain and IsExternalOrbit and
+  IsMultiplicativeElementWithInverse);
 
 #############################################################################
 ##

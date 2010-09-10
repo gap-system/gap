@@ -2,10 +2,10 @@
 ##
 #W  trans.gd                 GAP library                       Andrew Solomon
 ##
-#H  @(#)$Id: trans.gd,v 4.26 2009/01/12 17:26:18 gap Exp $
+#H  @(#)$Id: trans.gd,v 4.27 2010/02/23 15:13:34 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for transformations
@@ -39,7 +39,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.trans_gd :=
-    "@(#)$Id: trans.gd,v 4.26 2009/01/12 17:26:18 gap Exp $";
+    "@(#)$Id: trans.gd,v 4.27 2010/02/23 15:13:34 gap Exp $";
 
 ############################################################################
 ##

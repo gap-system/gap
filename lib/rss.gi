@@ -3,10 +3,10 @@
 #W  rss.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: rss.gi,v 4.6 2002/04/15 10:05:15 sal Exp $
+#H  @(#)$Id: rss.gi,v 4.7 2010/02/23 15:13:27 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##
@@ -35,7 +35,7 @@
 ##  Exports: functions RandomSchreierSims and ChangedBaseGroup
 ##
 Revision.rss_gi :=
-    "@(#)$Id: rss.gi,v 4.6 2002/04/15 10:05:15 sal Exp $";
+    "@(#)$Id: rss.gi,v 4.7 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################

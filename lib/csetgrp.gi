@@ -2,14 +2,14 @@
 ##
 #W  csetgrp.gi                      GAP library              Alexander Hulpke
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the generic operations for cosets.
 ##
 Revision.csetgrp_gi:=
-  "@(#)$Id: csetgrp.gi,v 4.64 2009/07/29 17:40:51 gap Exp $";
+  "@(#)$Id: csetgrp.gi,v 4.66 2010/02/23 15:12:50 gap Exp $";
 
 
 #############################################################################
@@ -400,6 +400,12 @@ local d,fam;
   return d;
 end);
 
+InstallOtherMethod(\*,"group times element",IsCollsElms,
+  [IsGroup,IsMultiplicativeElementWithInverse],0,
+function(s,a)
+  return RightCoset(s,a);
+end);
+
 InstallMethod(PrintObj,"RightCoset",true,[IsRightCoset],0,
 function(d)
   Print("RightCoset(",ActingDomain(d),",",Representative(d),")");
@@ -426,11 +432,56 @@ function(a,b)
          Representative(a)/Representative(b) in ActingDomain(a);
 end);
 
-InstallOtherMethod(\*,"RightCosets",IsCollsElms,
+InstallOtherMethod(\*,"RightCoset with element",IsCollsElms,
         [IsRightCoset,IsMultiplicativeElementWithInverse],0,
 function(a,g)
     return RightCoset( ActingDomain( a ), Representative( a ) * g );
 end);
+
+InstallOtherMethod(\*,"RightCosets",IsIdenticalObj,
+        [IsRightCoset,IsRightCoset],0,
+function(a,b)
+  if ActingDomain(a)<>ActingDomain(b) then
+    Error("no multiplication defined for cosets of different subgroups");
+  fi;
+  return RightCoset(ActingDomain(a), Representative(a) * Representative(b) );
+end);
+
+InstallOtherMethod(InverseOp,"Right cosets",true,
+  [IsRightCoset],0,
+function(a)
+local s,r;
+  s:=ActingDomain(a);
+  r:=Representative(a);
+  if ForAny(GeneratorsOfGroup(s),x->not x^r in s) then
+    Error("Inversion only works for cosetss of normal subgroups");
+  fi;
+  return RightCoset(s,Inverse(r));
+end);
+
+InstallOtherMethod(OneOp,"Right cosets",true,
+  [IsRightCoset],0,
+function(a)
+  return RightCoset(ActingDomain(a),One(Representative(a)));
+end);
+
+InstallMethod(IsGeneratorsOfMagmaWithInverses,"cosets",true,
+  [IsMultiplicativeElementWithInverseCollColl],0,
+function(l)
+local a,r;
+  if Length(l)>0 and ForAll(l,IsRightCoset) then
+    a:=ActingDomain(l[1]);
+    r:=List(l,Representative);
+
+    if ForAll(l,x->ActingDomain(x)=a) and
+      ForAll(r,x->ForAll(GeneratorsOfGroup(a),y->y^x in a)) then
+      return true;
+    fi;
+  fi;
+  TryNextMethod();
+end);
+
+
 
 # disabled because of comparison incompatibilities
 #InstallMethod(\<,"RightCosets",IsIdenticalObj,[IsRightCoset,IsRightCoset],0,

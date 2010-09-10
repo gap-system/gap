@@ -2,17 +2,17 @@
 ##
 #W  grppclat.gd                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: grppclat.gd,v 4.31 2009/01/06 11:19:50 gap Exp $
+#H  @(#)$Id: grppclat.gd,v 4.32 2010/02/23 15:13:07 gap Exp $
 ##
 #Y  Copyright (C)  1997  
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains declarations for the subgroup lattice functions for
 ##  pc groups.
 ##
 Revision.grppclat_gd:=
-  "@(#)$Id: grppclat.gd,v 4.31 2009/01/06 11:19:50 gap Exp $";
+  "@(#)$Id: grppclat.gd,v 4.32 2010/02/23 15:13:07 gap Exp $";
 
 #############################################################################
 ##

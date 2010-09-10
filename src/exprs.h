@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  exprs.h                     GAP source                   Martin Schoenert
+*W  exprs.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: exprs.h,v 4.11 2002/04/15 10:03:47 sal Exp $
+*H  @(#)$Id: exprs.h,v 4.12 2010/02/23 15:13:41 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the expressions package.
@@ -15,7 +15,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_exprs_h =
-   "@(#)$Id: exprs.h,v 4.11 2002/04/15 10:03:47 sal Exp $";
+   "@(#)$Id: exprs.h,v 4.12 2010/02/23 15:13:41 gap Exp $";
 #endif
 
 

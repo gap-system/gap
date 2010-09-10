@@ -1,7 +1,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_vec8bit_c =
-   "@(#)$Id: vec8bit.c,v 4.110 2009/04/06 12:07:23 gap Exp $";
+   "@(#)$Id: vec8bit.c,v 4.111 2010/06/16 09:42:41 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -41,6 +41,9 @@ const char * Revision_vec8bit_c =
 
 #include        "vecgf2.h"              /* needed for the conversion to
 					   GF(2^n) n>1) */
+
+#include        "code.h"               /* for TakeInterrupt */
+#include        "stats.h" 
 
 #ifndef DEBUG
 #ifndef NDEBUG
@@ -2325,6 +2328,7 @@ void DistDistrib8Bits(
       }
     AddVec8BitVec8BitInner(sum,sum,ELM_PLIST(vp,i+1),1,len);
   }
+  TakeInterrupt();
 }
 
 Obj FuncDISTANCE_DISTRIB_VEC8BITS(
@@ -2438,7 +2442,7 @@ UInt AClosVec8Bit(
   if (coords)
     SET_ELM_PLIST(coords,pos,INTOBJ_INT(0));
   
-
+  TakeInterrupt();
   return bd;
 }
 
@@ -2720,6 +2724,7 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	}
       
     }
+  TakeInterrupt();
   return found;
 }
 
@@ -3767,6 +3772,7 @@ Obj ProdMat8BitMat8Bit( Obj matl, Obj matr)
       TYPE_DATOBJ(row) = locked_type;
       SET_ELM_MAT8BIT(prod,i,row);
       CHANGED_BAG(prod);
+      TakeInterrupt();
     }
   return prod;
 
@@ -3931,6 +3937,10 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
 		}
 	    }
 	}
+      if (TakeInterrupt()) {
+	gettab = GETELT_FIELDINFO_8BIT(info);
+	ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+      }
     }
 
   /* Now clean up inv and return it */
@@ -5354,6 +5364,7 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
 	  CHANGED_BAG(relns);
 	  SET_LEN_PLIST(relns, nrels);
 	}
+      TakeInterrupt();
     }
   if (RNheads == 0)
     {
@@ -5468,7 +5479,10 @@ UInt TriangulizeListVec8Bits( Obj mat, UInt clearup, Obj *deterp)
 		AddVec8BitVec8BitMultInner(row2,row2,row,AINV(convtab[x2]),workcol,ncols);
 	    }
 	}
-      
+      if (TakeInterrupt()) {
+	gettab = GETELT_FIELDINFO_8BIT(info);
+	convtab = FFE_FELT_FIELDINFO_8BIT(info);
+      }
     }
   if (deterp)
     {

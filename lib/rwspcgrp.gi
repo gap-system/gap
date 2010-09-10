@@ -2,17 +2,17 @@
 ##
 #W  rwspcgrp.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: rwspcgrp.gi,v 4.46 2003/07/04 15:26:23 gap Exp $
+#H  @(#)$Id: rwspcgrp.gi,v 4.47 2010/02/23 15:13:28 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file   contains  the methods  for  groups  defined  by  a polycyclic
 ##  collector.
 ##
 Revision.rwspcgrp_gi :=
-    "@(#)$Id: rwspcgrp.gi,v 4.46 2003/07/04 15:26:23 gap Exp $";
+    "@(#)$Id: rwspcgrp.gi,v 4.47 2010/02/23 15:13:28 gap Exp $";
 
 
 #############################################################################

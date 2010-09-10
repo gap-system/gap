@@ -2,9 +2,9 @@
 ##
 #W  suzuki.gi                   GAP library                       Stefan Kohl
 ##
-#H  @(#)$Id: suzuki.gi,v 4.8 2005/09/27 10:27:01 stefan Exp $
+#H  @(#)$Id: suzuki.gi,v 4.9 2010/02/23 15:12:44 gap Exp $
 ##
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 ##  This file contains constructors for the Suzuki groups.
 ##
@@ -16,7 +16,7 @@
 ##  See the middle of page 140, in the proof of Theorem 12.
 ##
 Revision.suzuki_gi :=
-    "@(#)$Id: suzuki.gi,v 4.8 2005/09/27 10:27:01 stefan Exp $";
+    "@(#)$Id: suzuki.gi,v 4.9 2010/02/23 15:12:44 gap Exp $";
 
 #############################################################################
 ##

@@ -2,17 +2,17 @@
 ##
 #W  algfp.gi                   GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: algfp.gi,v 4.26 2005/10/28 10:46:24 gap Exp $
+#H  @(#)$Id: algfp.gi,v 4.27 2010/02/23 15:12:45 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for finitely presented algebras.
 ##  So far, there are not many.
 ##
 Revision.algfp_gi :=
-    "@(#)$Id: algfp.gi,v 4.26 2005/10/28 10:46:24 gap Exp $";
+    "@(#)$Id: algfp.gi,v 4.27 2010/02/23 15:12:45 gap Exp $";
 
 
 #############################################################################

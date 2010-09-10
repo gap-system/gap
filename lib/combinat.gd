@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  combinat.gd                 GAP library                  Martin Schoenert
+#W  combinat.gd                 GAP library                  Martin Schönert
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: combinat.gd,v 4.29 2008/10/24 16:31:22 gap Exp $
+#H  @(#)$Id: combinat.gd,v 4.30 2010/02/23 15:12:49 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains declaration for combinatorics functions.
 ##
 Revision.combinat_gd :=
-  "@(#)$Id: combinat.gd,v 4.29 2008/10/24 16:31:22 gap Exp $";
+  "@(#)$Id: combinat.gd,v 4.30 2010/02/23 15:12:49 gap Exp $";
 
 
 #############################################################################
@@ -1050,7 +1050,7 @@ DeclareGlobalFunction("NrRestrictedPartitions");
 ##  <Func Name="IteratorOfPartitions" Arg='n'/>
 ##
 ##  <Description>
-##  For a positive integer <A>n</A>, `IteratorOfPartitions� returns an iterator
+##  For a positive integer <A>n</A>, `IteratorOfPartitions returns an iterator
 ##  (see&nbsp;<Ref Sect="Iterators"/>) of the set of partitions of <A>n</A> (see&nbsp;<Ref Func="Partitions"/>).
 ##  The partitions of <A>n</A> are returned in lexicographic order.
 ##  </Description>

@@ -4,10 +4,10 @@
 #W							         Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: dict.gd,v 4.21 2008/09/15 07:56:11 gap Exp $
+#H  @(#)$Id: dict.gd,v 4.23 2010/05/20 07:11:00 gap Exp $
 ##
-#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for dictionaries and for improved
@@ -36,7 +36,7 @@
 ##	Variables MaxViewSize, LastHashIndex.
 ##
 Revision.dict_gd :=
-    "@(#)$Id: dict.gd,v 4.21 2008/09/15 07:56:11 gap Exp $";
+    "@(#)$Id: dict.gd,v 4.23 2010/05/20 07:11:00 gap Exp $";
 
 #############################################################################
 ##
@@ -175,10 +175,13 @@ DeclareGlobalFunction("NewDictionary");
 ##  <Func Name="DictionaryByPosition" Arg='list,lookup'/>
 ##
 ##  <Description>
-##  creates a new (lookup) dictionary which uses <Ref Oper="PositionCanonical"/> in
-##  <A>list</A> for indexing. The dictionary will have an entry <C><A>dict</A>!.blist</C>
+##  creates a new (lookup) dictionary which uses
+##  <Ref Oper="PositionCanonical"/> in <A>list</A> for indexing.
+##  The dictionary will have an entry <A>dict</A><C>!.blist</C>
 ##  which is a bit list corresponding to <A>list</A> indicating the known
-##  If <A>look</A> is <K>true</K>, the dictionary will be a lookup dictionary,
+##  values.
+##  If <A>look</A> is <K>true</K>,
+##  the dictionary will be a lookup dictionary,
 ##  otherwise it is an ordinary dictionary.
 ##  </Description>
 ##  </ManSection>
@@ -209,8 +212,9 @@ BindGlobal("DictionariesFamily",NewFamily( "DictionariesFamily",IsDictionary));
 ##  <Oper Name="KnowsDictionary" Arg='dict,key'/>
 ##
 ##  <Description>
-##  checks, whether <A>key</A> is known to the dictionary <A>dict</A>, and returns
-##  <K>true</K> or <K>false</K> accordingly. <A>key</A> <E>must</E> be an object of the kind for
+##  checks, whether <A>key</A> is known to the dictionary <A>dict</A>,
+##  and returns <K>true</K> or <K>false</K> accordingly.
+##  <A>key</A> <E>must</E> be an object of the kind for
 ##  which the dictionary was specified, otherwise the results are
 ##  unpredictable.
 ##  </Description>
@@ -226,11 +230,11 @@ DeclareOperation("KnowsDictionary",[IsDictionary,IsObject]);
 ##
 ##  <#GAPDoc Label="AddDictionary">
 ##  <ManSection>
-##  <Oper Name="AddDictionary" Arg='dict,key [,val]'/>
+##  <Oper Name="AddDictionary" Arg='dict,key[,val]'/>
 ##
 ##  <Description>
-##  adds <A>key</A> to the dictionary <A>dict</A>, storing the associated value <A>val</A>
-##  in case <A>dict</A> is a lookup dictionary. 
+##  adds <A>key</A> to the dictionary <A>dict</A>, storing the associated
+##  value <A>val</A> in case <A>dict</A> is a lookup dictionary. 
 ##  If <A>key</A> is known already, or is not an object of the kind for
 ##  which the dictionary was specified ??? . otherwise the results are
 ##  unpredictable.
@@ -252,8 +256,8 @@ DeclareSynonym("AddHashEntry",AddDictionary);
 ##
 ##  <Description>
 ##  looks up <A>key</A> in the lookup dictionary <A>dict</A> and returns the
-##  associated value. If <A>key</A> is not known to the dictionary, <K>fail</K> is
-##  returned.
+##  associated value.
+##  If <A>key</A> is not known to the dictionary, <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -316,7 +320,8 @@ IsSortLookupDictionary:=NewRepresentation("IsSortLookupDictionary",
 ##  <Filt Name="IsPositionLookupDictionary" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
-##  A hash dictionary uses <C>PositionCanonical</C> in a list internally.
+##  A hash dictionary uses <Ref Oper="PositionCanonical"/> in a list
+##  internally.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -385,7 +390,7 @@ DeclareOperation( "HashKeyEnumerator", [ IsHash ] );
 ##
 ##  <Description>
 ##  If this filter is set, the hash table has an <C>IntKey</C> function in its
-##  component <C><A>hash</A>!.intKeyFun</C>.
+##  component <A>hash</A><C>!.intKeyFun</C>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -557,8 +562,9 @@ DeclareGlobalFunction( "HashFunct", [ IsInt, IsInt, IsInt ] );
 ##
 ##  <Description>
 ##  returns a function that can be used as hash key function for objects
-##  such as <A>obj</A> in the collection <A>objcoll</A>. <A>objcoll</A> typically will be a
-##  large domain.  If the domain is not available, it can be given as
+##  such as <A>obj</A> in the collection <A>objcoll</A>.
+##  Typically, <A>objcoll</A> will be a large domain.
+##  If the domain is not available, it can be given as
 ##  <K>false</K> in which case the hash key function will be determined only
 ##  based on <A>obj</A>. (For a further discussion of these two arguments
 ##  see&nbsp;<Ref Func="NewDictionary"/>).
@@ -582,10 +588,12 @@ DeclareOperation("DenseIntKey",[IsObject,IsObject]);
 ##
 ##  <Description>
 ##  returns a function that can be used as hash key function for objects
-##  such as <A>obj</A> in the collection <A>objcoll</A>. In contrast to <Ref Oper="DenseIntKey"/>,
+##  such as <A>obj</A> in the collection <A>objcoll</A>.
+##  In contrast to <Ref Oper="DenseIntKey"/>,
 ##  the function returned may return the same key value for different
 ##  objects.
-##  If no suitable hash key function has been predefined, <K>fail</K> is returned.
+##  If no suitable hash key function has been predefined,
+##  <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

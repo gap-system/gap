@@ -2,16 +2,16 @@
 ##
 #W  padics.gd                   GAP Library                     Jens Hollmann
 ##
-#H  @(#)$Id: padics.gd,v 4.26 2009/04/22 13:11:17 gap Exp $
+#H  @(#)$Id: padics.gd,v 4.27 2010/02/23 15:13:21 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration part of the padic numbers.
 ##
 Revision.padics_gd :=
-    "@(#)$Id: padics.gd,v 4.26 2009/04/22 13:11:17 gap Exp $";
+    "@(#)$Id: padics.gd,v 4.27 2010/02/23 15:13:21 gap Exp $";
 
 
 #############################################################################

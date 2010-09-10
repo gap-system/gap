@@ -2,17 +2,17 @@
 ##
 #W  tietze.gd                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: tietze.gd,v 4.35 2009/10/09 22:20:50 gap Exp $
+#H  @(#)$Id: tietze.gd,v 4.36 2010/02/23 15:13:33 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
 Revision.tietze_gd :=
-    "@(#)$Id: tietze.gd,v 4.35 2009/10/09 22:20:50 gap Exp $";
+    "@(#)$Id: tietze.gd,v 4.36 2010/02/23 15:13:33 gap Exp $";
 
 
 #############################################################################

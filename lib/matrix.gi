@@ -3,19 +3,19 @@
 #W  matrix.gi                   GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 #W                                                         & Alexander Hulpke
-#W                                                           & Heiko Theissen
-#W                                                         & Martin Schoenert
+#W                                                           & Heiko Theißen
+#W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: matrix.gi,v 4.180 2008/02/05 14:41:51 sal Exp $
+#H  @(#)$Id: matrix.gi,v 4.182 2010/02/23 15:13:14 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for matrices.
 ##
 Revision.matrix_gi :=
-    "@(#)$Id: matrix.gi,v 4.180 2008/02/05 14:41:51 sal Exp $";
+    "@(#)$Id: matrix.gi,v 4.182 2010/02/23 15:13:14 gap Exp $";
 
 
 #
@@ -250,6 +250,11 @@ InstallMethod( \+,
     function(null,null2)
     return null;
 end );
+
+InstallMethod( AINV,
+    "for a null map matrix",
+    [ IsNullMapMatrix ],
+    null -> null );
 
 InstallMethod( \*,
     "for two null map matrices",

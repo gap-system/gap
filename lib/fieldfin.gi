@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  fieldfin.gi                 GAP library                     Werner Nickel
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: fieldfin.gi,v 4.50 2008/12/15 16:21:44 gap Exp $
+#H  @(#)$Id: fieldfin.gi,v 4.51 2010/02/23 15:12:59 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file    contains  methods for  finite  fields.    Note that  we must
@@ -23,7 +23,7 @@
 ##  4. Automorphisms of Finite Fields
 ##
 Revision.fieldfin_gi :=
-    "@(#)$Id: fieldfin.gi,v 4.50 2008/12/15 16:21:44 gap Exp $";
+    "@(#)$Id: fieldfin.gi,v 4.51 2010/02/23 15:12:59 gap Exp $";
 
 
 #############################################################################

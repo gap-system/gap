@@ -2,16 +2,16 @@
 ##
 #W  word.gi                     GAP library                     Thomas Breuer
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-#H  @(#)$Id: word.gi,v 4.31 2006/07/27 20:30:51 gap Exp $
+#H  @(#)$Id: word.gi,v 4.32 2010/02/23 15:13:36 gap Exp $
 ##
 ##  This file contains generic methods for nonassociative words.
 ##
 Revision.word_gi :=
-    "@(#)$Id: word.gi,v 4.31 2006/07/27 20:30:51 gap Exp $";
+    "@(#)$Id: word.gi,v 4.32 2010/02/23 15:13:36 gap Exp $";
 
 
 #############################################################################

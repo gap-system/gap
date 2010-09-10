@@ -2,10 +2,10 @@
 ##
 #W  overload.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: overload.g,v 4.28 2008/09/15 07:56:11 gap Exp $
+#H  @(#)$Id: overload.g,v 4.31 2010/06/24 13:17:57 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration and methods of ``overloaded''
@@ -30,7 +30,7 @@
 ##  
 ##  The key requirement is that no object ever exists which inherits from
 ##  two types with distinct meanings.
-##  Whenever this happens, there *must* be a method installed for the join
+##  Whenever this happens, there *must* be a method installed for the meet
 ##  of the relevant categories which decides which meaning applies,
 ##  otherwise the meaning of the operation is at the mercy of the ranking
 ##  system.
@@ -49,7 +49,7 @@
 #T Shall we print warnings when the shorthands are used?
 ##
 Revision.overload_g :=
-    "@(#)$Id: overload.g,v 4.28 2008/09/15 07:56:11 gap Exp $";
+    "@(#)$Id: overload.g,v 4.31 2010/06/24 13:17:57 gap Exp $";
 
 
 #############################################################################
@@ -159,6 +159,9 @@ InstallMethod( IsIrreducible, [ IsRingElement ],
     fi;
     return IsIrreducibleRingElement( r );
     end );
+
+InstallOtherMethod(IsIrreducible,"polynomial",IsCollsElms,
+  [IsPolynomialRing,IsPolynomial],0,IsIrreducibleRingElement);
 
 
 #############################################################################

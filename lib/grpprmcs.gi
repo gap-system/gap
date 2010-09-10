@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  grpprmcs.gi                 GAP library                       Akos Seress
+#W  grpprmcs.gi                 GAP library                       Ákos Seress
 ##
-#H  @(#)$Id: grpprmcs.gi,v 4.54 2008/10/14 21:02:48 gap Exp $
+#H  @(#)$Id: grpprmcs.gi,v 4.56 2010/05/01 20:34:18 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpprmcs_gi :=
-    "@(#)$Id: grpprmcs.gi,v 4.54 2008/10/14 21:02:48 gap Exp $";
+    "@(#)$Id: grpprmcs.gi,v 4.56 2010/05/01 20:34:18 alexk Exp $";
 
 
 #############################################################################
@@ -47,8 +47,11 @@ InstallGlobalFunction( DisplayCompositionSeries, function( S )
     if IsGroup( S )  then
         S := CompositionSeries( S );
     fi;
-
-    # display the composition series
+    
+    # if we know the composition series, we know orders of groups, so we may
+    # enforce their computation before calling GroupString to display them.
+    Perform( S, Size );
+    
     Print( GroupString( S[1], "G" ), "\n" );
     for i  in [2..Length(S)]  do
       f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));

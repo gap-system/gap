@@ -1,12 +1,12 @@
 /****************************************************************************
 **
 *W  blister.c                   GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 **
-*H  @(#)$Id: blister.c,v 4.59 2009/03/13 19:00:08 gap Exp $
+*H  @(#)$Id: blister.c,v 4.60 2010/02/23 15:13:39 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This  file contains the functions  that mainly operate  on boolean lists.
@@ -73,7 +73,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_blister_c =
-   "@(#)$Id: blister.c,v 4.59 2009/03/13 19:00:08 gap Exp $";
+   "@(#)$Id: blister.c,v 4.60 2010/02/23 15:13:39 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */

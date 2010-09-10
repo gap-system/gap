@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  object.gd                   GAP library                  Martin Schoenert
+#W  object.gd                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: object.gd,v 4.68 2009/04/06 13:48:53 gap Exp $
+#H  @(#)$Id: object.gd,v 4.70 2010/06/24 22:52:05 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for all objects.
 ##
 Revision.object_gd :=
-    "@(#)$Id: object.gd,v 4.68 2009/04/06 13:48:53 gap Exp $";
+    "@(#)$Id: object.gd,v 4.70 2010/06/24 22:52:05 gap Exp $";
 
 
 #T Shall we add a check that no  object ever lies in both
@@ -481,6 +481,7 @@ DeclareOperation( "Display", [ IsObject ] );
 ##
 #O  DisplayString( <obj> )  . . . . . . . . . . . . . . . . display an object
 ##
+##  <#GAPDoc Label="DisplayString">
 ##  <ManSection>
 ##  <Oper Name="DisplayString" Arg='obj'/>
 ##
@@ -490,8 +491,12 @@ DeclareOperation( "Display", [ IsObject ] );
 ##  read (but might be difficult for machines to understand).
 ##  The actual format used for this depends on the type of <A>obj</A>.
 ##  Each method should include a newline character as last character.
+##  Note that no method for <Ref Oper="DisplayString"/> may delegate
+##  to any of the operations <Ref Oper="Display"/>, <Ref Oper="ViewObj"/>
+##  or <Ref Oper="PrintObj"/> to avoid circular delegations.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "DisplayString", [ IsObject ] );
 

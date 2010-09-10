@@ -2,10 +2,10 @@
 ##
 #W  cyclotom.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: cyclotom.gi,v 4.55 2008/11/21 11:00:01 gap Exp $
+#H  @(#)$Id: cyclotom.gi,v 4.56 2010/02/23 15:12:55 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is being maintained by Thomas Breuer.
@@ -16,7 +16,7 @@
 ##  This file contains methods for cyclotomics.
 ##
 Revision.cyclotom_gi :=
-    "@(#)$Id: cyclotom.gi,v 4.55 2008/11/21 11:00:01 gap Exp $";
+    "@(#)$Id: cyclotom.gi,v 4.56 2010/02/23 15:12:55 gap Exp $";
 
 
 #############################################################################

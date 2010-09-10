@@ -2,7 +2,7 @@
 ##
 #W  permdeco.gd                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: permdeco.gd,v 1.3 2008/04/22 23:06:59 gap Exp $
+#H  @(#)$Id: permdeco.gd,v 1.4 2010/06/22 09:23:49 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -11,7 +11,7 @@
 ##  as permutation groups.
 ##
 Revision.permdeco_gd :=
-    "@(#)$Id: permdeco.gd,v 1.3 2008/04/22 23:06:59 gap Exp $";
+    "@(#)$Id: permdeco.gd,v 1.4 2010/06/22 09:23:49 gap Exp $";
 
 #############################################################################
 ##
@@ -67,9 +67,42 @@ DeclareGlobalFunction("WreathActionChiefFactor");
 ## way the series was obtained) or `false'.
 ## The option `limit' can be used to limit the orders of the solvable
 ## factors (if possible).
+##
+## This is considered an old function that will be superceded by
+##  FittingFreeLiftSetup
 DeclareGlobalFunction("PermliftSeries");
 
 DeclareAttribute("StoredPermliftSeries",IsGroup);
+
+#############################################################################
+##
+#A  FittingFreeLiftSetup( <G> )
+##
+##  <#GAPDoc Label="FittingFreeLiftSetup">
+##  <ManSection>
+##  <Attr Name="FittingFreeLiftSetup" Arg='G'/>
+##
+##  <Description>
+##  for a finite group <A>G</A>, this returns a record with the following
+##  components:
+##  <C>radical</C> The solvable radical <M>Rad(G)</M>.
+##  <C>pcgs</C> A pcgs for <M>Rad(G)</M> that refines a
+##  <M>G</M>-normal series
+##  with elementary abelian factors.
+##  <C>depths</C>
+##A list of indiced in the pcgs, indicating the <M>G</M>-normal subgroups in
+##  the series for the pcgs, including an entry for the trivial subgroup.
+##  <C>pcisom</C>  An isomorphism from <M>Rad(G)</M> to a pc group
+##  <C>factorhom</C> A epimorphism from <M>G</M> onto <M>G/Rad(G)</M>,
+##  the image group being
+##  represented in a way that decomposition into generators will work
+##  efficiently.
+##  The redndancy amongst the components is deliberate, as the redundant
+##  objects can be created at minimal extra cost and not doing so risks the
+##  creation of duplicate objects by user code later on.
+##  The record may hold other components that are germane to the recognition
+##  setup. These components may not be modified.
+DeclareAttribute("FittingFreeLiftSetup",IsGroup);
 
 #############################################################################
 ##

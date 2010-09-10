@@ -2,10 +2,10 @@
 ##
 #W  ctblmaps.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblmaps.gd,v 4.40 2008/09/03 15:43:25 gap Exp $
+#H  @(#)$Id: ctblmaps.gd,v 4.42 2010/02/23 15:12:53 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of those functions that are used
@@ -19,7 +19,7 @@
 ##  6. Subroutines for the Construction of Class Fusions
 ##
 Revision.ctblmaps_gd :=
-    "@(#)$Id: ctblmaps.gd,v 4.40 2008/09/03 15:43:25 gap Exp $";
+    "@(#)$Id: ctblmaps.gd,v 4.42 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################
@@ -1506,14 +1506,14 @@ DeclareGlobalFunction( "ImproveMaps" );
 ##  gap> map1:= [ [ 1, 2, 3 ], [ 1, 3 ] ];;  map2:= [ [ 1, 2 ], 1, [ 1, 3 ] ];;
 ##  gap> map3:= [ [ 2, 3 ], 3 ];;  map4:= [ , 1, 2, [ 1, 2 ] ];;
 ##  gap> imp:= CommutativeDiagram( map1, map2, map3, map4 );
-##  rec( imp1 := [ 2 ], imp2 := [ 1 ], imp3 := [  ], imp4 := [  ] )
+##  rec( imp1 := [ 2 ], imp3 := [  ], imp2 := [ 1 ], imp4 := [  ] )
 ##  gap> map1;  map2;  map3;  map4;
 ##  [ [ 1, 2, 3 ], 1 ]
 ##  [ 2, 1, [ 1, 3 ] ]
 ##  [ [ 2, 3 ], 3 ]
 ##  [ , 1, 2, [ 1, 2 ] ]
 ##  gap> imp2:= CommutativeDiagram( map1, map2, map3, map4, imp );
-##  rec( imp1 := [  ], imp2 := [  ], imp3 := [  ], imp4 := [  ] )
+##  rec( imp1 := [  ], imp3 := [  ], imp2 := [  ], imp4 := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -3,16 +3,16 @@
 #W  grppcint.gi                 GAP Library                      Frank Celler
 #W                                                             & Bettina Eick
 ##
-#H  @(#)$Id: grppcint.gi,v 4.28 2005/04/12 19:03:57 gap Exp $
+#H  @(#)$Id: grppcint.gi,v 4.29 2010/02/23 15:13:07 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for the intersection of polycylic groups.
 ##
 Revision.grppcint_gi :=
-    "@(#)$Id: grppcint.gi,v 4.28 2005/04/12 19:03:57 gap Exp $";
+    "@(#)$Id: grppcint.gi,v 4.29 2010/02/23 15:13:07 gap Exp $";
 
 
 #############################################################################

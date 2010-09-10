@@ -2,16 +2,16 @@
 ##
 #W  ring.gd                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ring.gd,v 4.63 2009/01/12 17:26:17 gap Exp $
+#H  @(#)$Id: ring.gd,v 4.65 2010/02/23 15:13:26 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for rings.
 ##
 Revision.ring_gd :=
-    "@(#)$Id: ring.gd,v 4.63 2009/01/12 17:26:17 gap Exp $";
+    "@(#)$Id: ring.gd,v 4.65 2010/02/23 15:13:26 gap Exp $";
 
 
 #############################################################################
@@ -1316,9 +1316,9 @@ DeclareOperation( "GcdOp",
 ##  That this representation exists can be shown using the Euclidean
 ##  algorithm, which in fact can compute those coefficients.
 ##  <Example><![CDATA[
-##  gap> x:= Indeterminate( Rationals, "x" );;
-##  gap> GcdRepresentation( x^2+1, x^3+1 );
-##  [ -1/2*x^2-1/2*x+1/2, 1/2*x+1/2 ]
+##  gap> a:= Indeterminate( Rationals, "a" );;
+##  gap> GcdRepresentation( a^2+1, a^3+1 );
+##  [ -1/2*a^2-1/2*a+1/2, 1/2*a+1/2 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

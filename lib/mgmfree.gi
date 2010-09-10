@@ -3,10 +3,10 @@
 #W  mgmfree.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mgmfree.gi,v 4.14 2004/10/26 16:06:30 gap Exp $
+#H  @(#)$Id: mgmfree.gi,v 4.15 2010/02/23 15:13:15 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D f√ºr Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for free magmas and free magma-with-ones.
@@ -18,7 +18,7 @@
 ##  with objects in `IsWord' here but with objects in `IsNonassocWord'.)
 ##
 Revision.mgmfree_gi :=
-    "@(#)$Id: mgmfree.gi,v 4.14 2004/10/26 16:06:30 gap Exp $";
+    "@(#)$Id: mgmfree.gi,v 4.15 2010/02/23 15:13:15 gap Exp $";
 
 
 #############################################################################
@@ -48,7 +48,7 @@ InstallMethod( IsWholeFamily,
 ##  Let <M> be a free magma on $N$ generators $x_1, x_2, \ldots, x_N$, say.
 ##  Each element in <M> is uniquely determined by an element in a free
 ##  semigroup $S$ over $s_1, s_2, \ldots, s_N$ (which is obtained by mapping
-##  $x_i$ to $s_i$) plus the ``bracketing¥¥ of the element.
+##  $x_i$ to $s_i$) plus the ``bracketing of the element.
 ##  Thus we can describe each element $x$ in <M> by a quadruple $[N,l,p,q]$
 ##  where $l$ is the length of the corresponding associative word $s$, say,
 ##  $p$ is the position of $s$ among the associative words of length $l$ in

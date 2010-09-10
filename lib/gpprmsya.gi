@@ -1,19 +1,19 @@
 #############################################################################
 ##
-#W  gpprmsya.gi                 GAP Library                    Heiko Theissen
+#W  gpprmsya.gi                 GAP Library                    Heiko Theißen
 #W                                                           Alexander Hulpke
-#W                                                           Martin Schoenert
+#W                                                           Martin Schönert
 ##
-#H  @(#)$Id: gpprmsya.gi,v 4.54 2008/06/11 18:33:26 gap Exp $
+#H  @(#)$Id: gpprmsya.gi,v 4.56 2010/02/23 15:13:01 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for symmetric and alternating groups
 ##
 Revision.gpprmsya_gi :=
-    "@(#)$Id: gpprmsya.gi,v 4.54 2008/06/11 18:33:26 gap Exp $";
+    "@(#)$Id: gpprmsya.gi,v 4.56 2010/02/23 15:13:01 gap Exp $";
 
 # xref to transgrp library
 if not IsBound(TRANSDEGREES) then
@@ -557,7 +557,7 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
   fi;
 end;
 
-# see Akos Seress, Permutation group algorithms. Cambridge Tracts in
+# see Ákos Seress, Permutation group algorithms. Cambridge Tracts in
 # Mathematics, 152. Section 10.2 for the background of this function.
 BindGlobal("DoSnAnGiantTest",function(g,dom,kind)
 local bound, n, i, p, cycles, l, pnt;
@@ -760,6 +760,29 @@ function( S,G )
   return IsSubset(MovedPoints(S),MovedPoints(G));
 end );
 
+
+#############################################################################
+##
+#M  Socle( <nat-sym/alt-grp> )
+##
+InstallMethod( Socle,
+    true, [ IsNaturalSymmetricGroup ], 0,
+function(sym)
+  if NrMovedPoints(sym)<=4 then
+    TryNextMethod();
+  else
+    return AlternatingGroup(MovedPoints(sym));
+  fi;
+end);
+
+InstallMethod( Socle, true, [ IsNaturalAlternatingGroup ], 0,
+function(alt)
+  if NrMovedPoints(alt)<=4 then
+    TryNextMethod();
+  else
+    return alt;
+  fi;
+end);
 
 #############################################################################
 ##

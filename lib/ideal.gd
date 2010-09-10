@@ -2,10 +2,10 @@
 ##
 #W  ideal.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ideal.gd,v 4.15 2009/01/12 17:26:16 gap Exp $
+#H  @(#)$Id: ideal.gd,v 4.16 2010/02/23 15:13:10 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for ideals.
@@ -74,7 +74,7 @@
 #T  The product of two ideals ...
 ##
 Revision.ideal_gd :=
-    "@(#)$Id: ideal.gd,v 4.15 2009/01/12 17:26:16 gap Exp $";
+    "@(#)$Id: ideal.gd,v 4.16 2010/02/23 15:13:10 gap Exp $";
 
 
 #############################################################################

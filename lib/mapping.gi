@@ -1,13 +1,13 @@
 #############################################################################
 ##
 #W  mapping.gi                  GAP library                     Thomas Breuer
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mapping.gi,v 4.70 2009/06/15 15:28:54 gap Exp $
+#H  @(#)$Id: mapping.gi,v 4.71 2010/02/23 15:13:13 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains
@@ -16,7 +16,7 @@
 ##  3. generic methods for underlying relations of general mappings
 ##
 Revision.mapping_gi :=
-    "@(#)$Id: mapping.gi,v 4.70 2009/06/15 15:28:54 gap Exp $";
+    "@(#)$Id: mapping.gi,v 4.71 2010/02/23 15:13:13 gap Exp $";
 
 
 #############################################################################

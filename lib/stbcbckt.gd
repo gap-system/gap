@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  stbcbckt.gd                 GAP library                    Heiko Thei"sen
+#W  stbcbckt.gd                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: stbcbckt.gd,v 4.31 2009/01/12 17:26:18 gap Exp $
+#H  @(#)$Id: stbcbckt.gd,v 4.32 2010/02/23 15:13:31 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.stbcbckt_gd :=
-    "@(#)$Id: stbcbckt.gd,v 4.31 2009/01/12 17:26:18 gap Exp $";
+    "@(#)$Id: stbcbckt.gd,v 4.32 2010/02/23 15:13:31 gap Exp $";
 
 
 #############################################################################

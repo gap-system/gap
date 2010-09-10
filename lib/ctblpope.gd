@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  ctblpope.gd                 GAP library                     Thomas Breuer
-#W                                                           & Goetz Pfeiffer
+#W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id: ctblpope.gd,v 4.35 2008/08/20 15:05:32 gap Exp $
+#H  @(#)$Id: ctblpope.gd,v 4.37 2010/02/23 15:12:54 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of those functions that are needed to
@@ -125,7 +125,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.ctblpope_gd :=
-    "@(#)$Id: ctblpope.gd,v 4.35 2008/08/20 15:05:32 gap Exp $";
+    "@(#)$Id: ctblpope.gd,v 4.37 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################
@@ -197,12 +197,11 @@ Revision.ctblpope_gd :=
 ##  gap> psi:= Sum( Irr( t ){ [ 1, 3, 6 ] } );
 ##  Character( CharacterTable( "A6" ), [ 15, 3, 0, 3, 1, 0, 0 ] )
 ##  gap> info:= PermCharInfo( t, psi );
-##  rec( contained := [ [ 1, 9, 0, 8, 6, 0, 0 ] ], 
-##    bound := [ [ 1, 3, 8, 8, 6, 24, 24 ] ], 
-##    display := rec( classes := [ 1, 2, 4, 5 ], 
+##  rec( bound := [ [ 1, 3, 8, 8, 6, 24, 24 ] ], ATLAS := [ "1a+5b+9a" ], 
+##    display := rec( classes := [ 1, 2, 4, 5 ], letter := "I", 
 ##        chars := [ [ 15, 3, 0, 3, 1, 0, 0 ], [ 1, 9, 0, 8, 6, 0, 0 ], 
-##            [ 1, 3, 8, 8, 6, 24, 24 ] ], letter := "I" ), 
-##    ATLAS := [ "1a+5b+9a" ] )
+##            [ 1, 3, 8, 8, 6, 24, 24 ] ] ), 
+##    contained := [ [ 1, 9, 0, 8, 6, 0, 0 ] ] )
 ##  gap> Display( t, info.display );
 ##  A6
 ##  

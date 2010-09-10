@@ -2,17 +2,17 @@
 ##
 #W  mat8bit.gd                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id: mat8bit.gd,v 4.4 2007/08/24 09:40:32 gap Exp $
+#H  @(#)$Id: mat8bit.gd,v 4.5 2010/02/23 15:13:13 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file should possibly be called mat8bit.g  (see also vecmat.gd)
 ##  It provides some things that the kernel needs from the library 
 ##
 Revision.mat8bit_gd :=
-    "@(#)$Id: mat8bit.gd,v 4.4 2007/08/24 09:40:32 gap Exp $";
+    "@(#)$Id: mat8bit.gd,v 4.5 2010/02/23 15:13:13 gap Exp $";
 
 #############################################################################
 ##

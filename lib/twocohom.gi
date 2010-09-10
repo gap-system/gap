@@ -2,12 +2,12 @@
 ##
 #W  twocohom.gi                 GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.twocohom_gi :=
-    "@(#)$Id: twocohom.gi,v 4.19 2007/07/27 19:15:19 gap Exp $";
+    "@(#)$Id: twocohom.gi,v 4.21 2010/06/16 16:31:38 gap Exp $";
 
 #############################################################################
 ##
@@ -317,7 +317,7 @@ InstallGlobalFunction( AddEquationsSQ, function( eq, t1, t2 )
                 if t1[i][j] <> eq.vzero then
                     l[j][i] := ShallowCopy(t1[i][j]);
                     AddCoeffs( l[j][i], v );
-                    ShrinkCoeffs(l[j][i]);
+                    ShrinkRowVector(l[j][i]);
                 fi;
             od;
         fi;
@@ -335,7 +335,7 @@ InstallGlobalFunction( AddEquationsSQ, function( eq, t1, t2 )
                 if IsBound(x[i])  then
                     x[i] := ShallowCopy( x[i] );
                     AddCoeffs( x[i], eq.system[w][i], c );
-                    ShrinkCoeffs(x[i]);
+                    ShrinkRowVector(x[i]);
                     if 0 = Length(x[i])  then
                         Unbind(x[i]);
                     fi;
@@ -388,7 +388,7 @@ InstallGlobalFunction( SolutionSQ, function( C, eq )
                     v{[p+1..p+Length(eq.system[j][i])]} := eq.system[j][i];
                 fi;
             od;
-            ShrinkCoeffs(v);
+            ShrinkRowVector(v);
             t[Length(v)] := v;
             AddSet( w, Length(v) );
         fi;
@@ -403,7 +403,7 @@ InstallGlobalFunction( SolutionSQ, function( C, eq )
                 if p <> v  then
                     t[j] := ShallowCopy( t[j] );
                     AddCoeffs( t[j], t[i], -p );
-                    ShrinkCoeffs(t[j]);
+                    ShrinkRowVector(t[j]);
                 fi;
             fi;
         od;

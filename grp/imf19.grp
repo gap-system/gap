@@ -2,9 +2,9 @@
 ##
 #A  imf19.grp                   GAP group library              Volkmar Felsch
 ##
-#H  @(#)$Id: imf19.grp,v 1.1 2000/02/16 14:20:24 gap Exp $
+#H  @(#)$Id: imf19.grp,v 1.2 2010/02/23 15:12:41 gap Exp $
 ##
-#Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains,  for each  Z-class representative  of the irreducible
 ##  maximal finite integral matrix groups of dimension 19,
@@ -13,7 +13,7 @@
 ##  [2]  a list of matrix generators.
 ##
 Revision.imf19_grp :=
-    "@(#)$Id: imf19.grp,v 1.1 2000/02/16 14:20:24 gap Exp $";
+    "@(#)$Id: imf19.grp,v 1.2 2010/02/23 15:12:41 gap Exp $";
 
 
 #############################################################################

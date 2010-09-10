@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  pcgsperm.gd                 GAP library                    Heiko Thei"sen
+#W  pcgsperm.gd                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: pcgsperm.gd,v 4.22 2002/04/15 10:05:12 sal Exp $
+#H  @(#)$Id: pcgsperm.gd,v 4.23 2010/02/23 15:13:23 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.pcgsperm_gd :=
-    "@(#)$Id: pcgsperm.gd,v 4.22 2002/04/15 10:05:12 sal Exp $";
+    "@(#)$Id: pcgsperm.gd,v 4.23 2010/02/23 15:13:23 gap Exp $";
 
 #############################################################################
 ##

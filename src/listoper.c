@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  listoper.c                  GAP source                   Martin Schoenert
+*W  listoper.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: listoper.c,v 4.88 2003/12/01 12:54:14 sal Exp $
+*H  @(#)$Id: listoper.c,v 4.89 2010/02/23 15:13:44 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains  the functions of the  package with the operations for
@@ -14,7 +14,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_listoper_c =
-   "@(#)$Id: listoper.c,v 4.88 2003/12/01 12:54:14 sal Exp $";
+   "@(#)$Id: listoper.c,v 4.89 2010/02/23 15:13:44 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -1362,7 +1362,7 @@ Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 **  'PowMatrixInt' is a specialization   of 'PowObjInt', which  avoids  going
 **  through the extended dispatchers again and again.
 **
-*N  1996/08/28 M.Schoenert is this function really worth the trouble?
+*N  1996/08/28 M.Schönert is this function really worth the trouble?
 *N  2002/01/21 S. Linton It's not used, and I'm not sure it works
 */
 

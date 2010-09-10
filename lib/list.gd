@@ -1,18 +1,18 @@
 #############################################################################
 ##
-#W  list.gd                     GAP library                  Martin Schoenert
+#W  list.gd                     GAP library                  Martin Schönert
 #W                                                            & Werner Nickel
 ##
-#H  @(#)$Id: list.gd,v 4.114 2008/10/24 16:31:22 gap Exp $
+#H  @(#)$Id: list.gd,v 4.116 2010/06/16 14:48:20 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of operations and functions for lists.
 ##
 Revision.list_gd :=
-    "@(#)$Id: list.gd,v 4.114 2008/10/24 16:31:22 gap Exp $";
+    "@(#)$Id: list.gd,v 4.116 2010/06/16 14:48:20 gap Exp $";
 
 
 #############################################################################
@@ -547,7 +547,7 @@ InstallTrueMethod( IsDuplicateFree, IsList and IsSSortedList );
 ##  <Prop Name="IsPositionsList" Arg='obj'/>
 ##
 ##  <Description>
-##  <!--  1996/09/01 M.Schoenert should inherit from <C>IsHomogeneousList</C>-->
+##  <!--  1996/09/01 M.Schönert should inherit from <C>IsHomogeneousList</C>-->
 ##  <!--  but the empty list is a positions list but not homogeneous-->
 ##  </Description>
 ##  </ManSection>
@@ -761,7 +761,6 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  Specialized functions for certain kinds of lists must be installed 
 ##  as methods for the operation <C>PositionSortedOp</C>.
 ##  <P/>
-##  <!-- we catch plain lists by a function to avoid method selection -->
 ##  <Example><![CDATA[
 ##  gap> PositionSorted( [1,4,5,5,6,7], 0 );
 ##  1
@@ -778,6 +777,7 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  We catch plain lists by a function to avoid method selection:
 DeclareGlobalFunction( "PositionSorted" );
 DeclareOperation( "PositionSortedOp", [ IsList, IsObject ] );
 DeclareOperation( "PositionSortedOp", [ IsList, IsObject, IsFunction ] );

@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  combinat.gi                 GAP library                  Martin Schoenert
+#W  combinat.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: combinat.gi,v 4.29 2009/04/19 20:06:28 alexk Exp $
+#H  @(#)$Id: combinat.gi,v 4.31 2010/06/16 11:27:43 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains method for combinatorics.
 ##
 Revision.combinat_gi :=
-    "@(#)$Id: combinat.gi,v 4.29 2009/04/19 20:06:28 alexk Exp $";
+    "@(#)$Id: combinat.gi,v 4.31 2010/06/16 11:27:43 gap Exp $";
 
 
 #############################################################################
@@ -687,10 +687,10 @@ InstallGlobalFunction( EnumeratorOfTuples, function( set, k )
     local enum;
 
     # Handle some trivial cases first.
-    if IsEmpty( set ) then
-      return Immutable( [] );
-    elif k = 0 then
+    if k = 0 then
       return Immutable( [ [] ] );
+    elif IsEmpty( set ) then
+      return Immutable( [] );
     fi;
 
     # Construct the object.
@@ -792,10 +792,10 @@ InstallGlobalFunction( "IteratorOfTuples",
     function( s, n )
     
     if not ( n=0 or IsPosInt( n ) ) then
-		Error( "The second argument <n> must be a positive integer" );
-	fi; 
+	Error( "The second argument <n> must be a non-negative integer" );
+    fi; 
 	   
-    if not ( IsCollection( s ) and IsFinite( s ) ) then
+    if not ( IsCollection( s ) and IsFinite( s ) or IsEmpty( s ) and n=0 ) then
     	if s = [] then
     		return IteratorByFunctions(
       		  rec( IsDoneIterator := ReturnTrue,
@@ -803,7 +803,7 @@ InstallGlobalFunction( "IteratorOfTuples",
                    ShallowCopy    := ShallowCopy_Tuples,
                              next := false) );
     	else
-			Error( "The first argument <s> must be a finite collection" );
+		Error( "The first argument <s> must be a finite collection or empty" );
     	fi;
     fi;
     s := Set(s);
@@ -1491,7 +1491,7 @@ end );
 # The following replaces what is now `PartitionsRecursively':
 # It now calls `GPartitions' and friends, which is much faster
 # and more environment-friendly because it produces less garbage.
-# Thanks to Goetz Pfeiffer for the ideas!
+# Thanks to Götz Pfeiffer for the ideas!
 InstallGlobalFunction(Partitions,function ( arg )
     local   parts;
     if Length(arg) = 1  then

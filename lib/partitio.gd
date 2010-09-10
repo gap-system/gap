@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  partitio.gd                 GAP library                    Heiko Thei"sen
+#W  partitio.gd                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: partitio.gd,v 4.3 2002/04/15 10:05:12 sal Exp $
+#H  @(#)$Id: partitio.gd,v 4.4 2010/02/23 15:13:22 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.partitio_gd :=
-    "@(#)$Id: partitio.gd,v 4.3 2002/04/15 10:05:12 sal Exp $";
+    "@(#)$Id: partitio.gd,v 4.4 2010/02/23 15:13:22 gap Exp $";
 
 #############################################################################
 ##

@@ -2,10 +2,10 @@
 ##
 #W  global.gd                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: global.gd,v 4.14 2008/09/18 07:58:03 gap Exp $
+#H  @(#)$Id: global.gd,v 4.15 2010/02/23 15:13:01 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##
@@ -28,7 +28,7 @@
 ##  GAP parser
 ##
 Revision.global_gd :=
-    "@(#)$Id: global.gd,v 4.14 2008/09/18 07:58:03 gap Exp $";
+    "@(#)$Id: global.gd,v 4.15 2010/02/23 15:13:01 gap Exp $";
 
 #############################################################################
 ##

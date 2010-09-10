@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  rwssmg.gd           GAP library                             Isabel Araujo
+#W  rwssmg.gd           GAP library                             Isabel Araújo
 ##
-#H  @(#)$Id: rwssmg.gd,v 4.19 2008/09/22 16:22:31 gap Exp $
+#H  @(#)$Id: rwssmg.gd,v 4.20 2010/02/23 15:13:28 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for semigroups defined by rws.
 ##
 Revision.rwssmg_gd :=
-    "@(#)$Id: rwssmg.gd,v 4.19 2008/09/22 16:22:31 gap Exp $";
+    "@(#)$Id: rwssmg.gd,v 4.20 2010/02/23 15:13:28 gap Exp $";
 
 
 ############################################################################

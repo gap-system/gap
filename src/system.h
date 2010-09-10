@@ -1,18 +1,18 @@
 
 /****************************************************************************
 **
-*W  system.h                    GAP source                   Martin Schoenert
+*W  system.h                    GAP source                   Martin Schönert
 *W                                                         & Dave Bayer (MAC)
 *W                                                  & Harald Boegeholz (OS/2)
 *W                                                      & Frank Celler (MACH)
 *W                                                         & Paul Doyle (VMS)
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id: system.h,v 4.68 2007/10/07 22:11:00 gap Exp $
+*H  @(#)$Id: system.h,v 4.69 2010/02/23 15:13:49 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  The  file 'system.c'  declares  all operating system  dependent functions
@@ -235,7 +235,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_system_h =
-   "@(#)$Id: system.h,v 4.68 2007/10/07 22:11:00 gap Exp $";
+   "@(#)$Id: system.h,v 4.69 2010/02/23 15:13:49 gap Exp $";
 #endif
 extern const char * Revision_system_c;  /* gap.c uses this */
 extern const char * Revision_system_h;

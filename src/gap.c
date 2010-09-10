@@ -1,12 +1,12 @@
 /****************************************************************************
 **
 *W  gap.c                       GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 **
-*H  @(#)$Id: gap.c,v 4.216 2009/09/25 15:17:05 gap Exp $
+*H  @(#)$Id: gap.c,v 4.221 2010/04/26 14:14:22 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the various read-eval-print loops and  related  stuff.
@@ -20,7 +20,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_gap_c =
-"@(#)$Id: gap.c,v 4.216 2009/09/25 15:17:05 gap Exp $";
+"@(#)$Id: gap.c,v 4.221 2010/04/26 14:14:22 gap Exp $";
 
 /* TL: extern char * In; */
 
@@ -259,6 +259,8 @@ Obj Shell ( Obj context,
 {
   UInt time = 0;
   UInt status;
+  UInt oldindent;
+  UInt oldPrintDepth;
   Obj res;
   Obj oldShellContext;
   Obj oldBaseShellContext;
@@ -280,6 +282,11 @@ Obj Shell ( Obj context,
       ErrorMayQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
+  oldPrintDepth = PrintObjDepth;
+  PrintObjDepth = 0;
+  oldindent = TLS->output->indent;
+  TLS->output->indent = 0;
+
   while ( 1 ) {
 
     /* start the stopwatch                                             */
@@ -289,6 +296,8 @@ Obj Shell ( Obj context,
     /* read and evaluate one command                                   */
     TLS->prompt = prompt;
     ClearError();
+    PrintObjDepth = 0;
+    TLS->output->indent = 0;
 
     /* here is a hook: */
     if (preCommandHook) {
@@ -368,7 +377,9 @@ Obj Shell ( Obj context,
       }
 
   }
-
+  
+  PrintObjDepth = oldPrintDepth;
+  TLS->output->indent = oldindent;
   CloseInput();
   CloseOutput();
   BaseShellContext = oldBaseShellContext;
@@ -3755,6 +3766,33 @@ extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
 static Obj POST_RESTORE;
 
+/* needed in two places below */
+void CreateRevisionRecord()
+{
+    int i;
+
+    /* create a revision record / overwrite a restored one           */
+    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
+        Char buf[30];
+        buf[0] = 0;
+        SyStrncat( buf, Modules[i]->name, 27 );
+        SyStrncat( buf, "_c", 2 );
+        SET_REVISION( buf, Modules[i]->revision_c );
+        buf[0] = 0;
+        SyStrncat( buf, Modules[i]->name, 27 );
+        SyStrncat( buf, "_h", 2 );
+        SET_REVISION( buf, Modules[i]->revision_h );
+    }
+
+    /* add revisions for files which are not modules                       */
+    {
+        SET_REVISION( "system_c", Revision_system_c );
+        SET_REVISION( "system_h", Revision_system_h );
+        SET_REVISION( "gasman_c", Revision_gasman_c );
+        SET_REVISION( "gasman_h", Revision_gasman_h );
+    }
+}
+
 void InitializeGap (
     int *               pargc,
     char *              argv [] )
@@ -3767,7 +3805,7 @@ void InitializeGap (
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
     /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
-    InitGapmpi( pargc, &argv, &BreakOnError );
+    InitGapmpi( pargc, &argv );
 #endif
 
     InitSystem( *pargc, argv );
@@ -3870,8 +3908,11 @@ void InitializeGap (
         }
 	SyRestoring = NULL;
 
-	
-	/* Call POST_RESTORE which is a GAP function that now takes control, 
+
+        /* overwrite revision record of kernel modules */
+        CreateRevisionRecord();
+
+        /* Call POST_RESTORE which is a GAP function that now takes control, 
 	   calls the post restore functions and then runs a GAP session */
 	if (POST_RESTORE != (Obj) 0 &&
 	    IS_FUNC(POST_RESTORE))
@@ -3923,27 +3964,8 @@ void InitializeGap (
         }
     }
 
-    /* create a revision record (overwrite a restored one)                 */
-    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
-        Char buf[30];
-
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_c", 2 );
-        SET_REVISION( buf, Modules[i]->revision_c );
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_h", 2 );
-        SET_REVISION( buf, Modules[i]->revision_h );
-    }
-
-    /* add revisions for files which are not modules                       */
-    {
-        SET_REVISION( "system_c", Revision_system_c );
-        SET_REVISION( "system_h", Revision_system_h );
-        SET_REVISION( "gasman_c", Revision_gasman_c );
-        SET_REVISION( "gasman_h", Revision_gasman_h );
-    }
+    /* create revision record of kernel modules */
+    CreateRevisionRecord();
 
     /* read the init files      
        this now actually runs the GAP session, we only get 

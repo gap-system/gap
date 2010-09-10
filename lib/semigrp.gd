@@ -2,16 +2,16 @@
 ##
 #W  semigrp.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: semigrp.gd,v 4.43 2009/01/12 17:26:17 gap Exp $
+#H  @(#)$Id: semigrp.gd,v 4.44 2010/02/23 15:13:29 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of operations for semigroups.
 ##
 Revision.semigrp_gd :=
-    "@(#)$Id: semigrp.gd,v 4.43 2009/01/12 17:26:17 gap Exp $";
+    "@(#)$Id: semigrp.gd,v 4.44 2010/02/23 15:13:29 gap Exp $";
 
 
 #############################################################################

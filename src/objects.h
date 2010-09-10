@@ -1,11 +1,11 @@
 /****************************************************************************
 **
-*W  objects.h                   GAP source                   Martin Schoenert
+*W  objects.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: objects.h,v 4.51 2008/10/30 13:27:47 sal Exp $
+*H  @(#)$Id: objects.h,v 4.54 2010/04/26 14:14:22 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file defines the functions of the objects package.
@@ -16,7 +16,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objects_h =
-   "@(#)$Id: objects.h,v 4.51 2008/10/30 13:27:47 sal Exp $";
+   "@(#)$Id: objects.h,v 4.54 2010/04/26 14:14:22 gap Exp $";
 #endif
 
 

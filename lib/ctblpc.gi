@@ -2,16 +2,16 @@
 ##
 #W  ctblpc.gi                    GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id: ctblpc.gi,v 4.8 2002/04/15 10:04:35 sal Exp $
+#H  @(#)$Id: ctblpc.gi,v 4.9 2010/02/23 15:12:54 gap Exp $
 ##
 #Y  Copyright (C) 1993, 1997
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the parts of the Dixon-Schneider specific to pc groups
 ##
 Revision.ctblpc_gi :=
-    "@(#)$Id: ctblpc.gi,v 4.8 2002/04/15 10:04:35 sal Exp $";
+    "@(#)$Id: ctblpc.gi,v 4.9 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################

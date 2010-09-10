@@ -1,18 +1,18 @@
 #############################################################################
 ##  
-#W  helpbase.gi                 GAP Library                      Frank Lübeck
+#W  helpbase.gi                 GAP Library                      Frank LÃ¼beck
 ##  
-#H  @(#)$Id: helpbase.gi,v 1.22 2008/12/03 18:34:47 gap Exp $
+#H  @(#)$Id: helpbase.gi,v 1.25 2010/07/28 15:45:20 gap Exp $
 ##  
-#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  2001,  Lehrstuhl D fÃ¼r Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##  
 ## The files helpbase.g{d,i} contain the interface between GAP's online help
 ## and the actual help books.
 ##  
 Revision.helpbase_gi := 
-  "@(#)$Id: helpbase.gi,v 1.22 2008/12/03 18:34:47 gap Exp $";
+  "@(#)$Id: helpbase.gi,v 1.25 2010/07/28 15:45:20 gap Exp $";
 
 #############################################################################
 ##  
@@ -194,8 +194,10 @@ InstallGlobalFunction(SIMPLE_STRING, function(str)
 "\177\200\201\202",
 "\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225",
 "\226\227\230\231\232\233\234\235\236\237\238",
-"¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿aaaaaa",
-"aceeeeiiiidnooooo×ouuuuypsaaaaaaaceeeeiiiidnooooo÷ouuuuypy");
+"\241\242\244\244\246\246\250\250\251\252\253\254\255\256\257\260\261\262",
+"\264\264\265\266\270\270\271\272\276\276\276\276\277aaaaaa",
+"aceeeeiiiidnooooo\327ouuuuypsaaaaaaaceeeeiiiidnooooo\367ouuuuypy"
+);
 
   CONV_STRING(str);
   str := trans{List(str, INT_CHAR) + 1};
@@ -503,16 +505,16 @@ end);
 ##  
 ##  <match> is [book, entrynr]
 ##  
-if not IsBound(HELP_VIEWER) then HELP_VIEWER := ["screen"]; fi;
 InstallGlobalFunction(HELP_PRINT_MATCH, function(match)
   local   book,  entrynr,  viewer,  type,  data, hv;
   book := HELP_BOOK_INFO(match[1]);
   entrynr := match[2];
+  viewer:= GAPInfo.UserPreferences.HelpViewers;
   if HELP_LAST.NEXT_VIEWER = false then
-    hv := HELP_VIEWER;
+    hv := viewer;
   else
-    hv := HELP_VIEWER{[Position(HELP_VIEWER,
-                            HELP_LAST.VIEWER)+1..Length(HELP_VIEWER)]};
+    hv := viewer{ [ Position( viewer,
+                              HELP_LAST.VIEWER )+1 .. Length( viewer ) ] };
     if Length(hv) = 0 then
       hv := [HELP_LAST.VIEWER];
     fi;

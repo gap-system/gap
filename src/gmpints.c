@@ -4,10 +4,10 @@
 **                                                           
 **                                                           
 **
-*H  @(#)$Id: gmpints.c,v 4.7 2008/09/30 13:33:07 sal Exp $
+*H  @(#)$Id: gmpints.c,v 4.11 2010/09/07 12:53:21 gap Exp $
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file implements the  functions  handling  GMP integers.
@@ -61,7 +61,7 @@
 #undef  INCLUDE_DECLARATION_PART
 
 const char * Revision_gmpints_c =
-   "@(#)$Id: gmpints.c,v 4.7 2008/09/30 13:33:07 sal Exp $";
+   "@(#)$Id: gmpints.c,v 4.11 2010/09/07 12:53:21 gap Exp $";
 
 /* macros to save typing later :)                                          */
 #define VAL_LIMB0(obj)         ( *(TypLimb *)ADDR_OBJ(obj)                  )
@@ -70,7 +70,6 @@ const char * Revision_gmpints_c =
 #define IS_INTNEG(obj)         (  TNUM_OBJ(obj) == T_INTNEG                 )
 #define IS_LARGEINT(obj)       (  ( TNUM_OBJ(obj) == T_INTPOS ) || \
                                   ( TNUM_OBJ(obj) == T_INTNEG )             )
-
 
 /****************************************************************************
 **
@@ -1237,7 +1236,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
   Obj                 prd;            /* handle of the result bag          */
   Int                   i;            /* hold small int value              */
   Int                   k;            /* hold small int value              */
-  TypLimb           carry;            /* most significant limb: mpn_mul_1  */
+  TypLimb           carry;            /* most significant limb             */
   
   /* multiplying two small integers                                        */
   if ( ARE_INTOBJS( gmpL, gmpR ) ) {
@@ -1879,10 +1878,6 @@ Obj QuoInt ( Obj opL, Obj opR )
     rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(TypLimb) );
 
     /* allocate a bag for the quotient                                     */
-
-    /* findme - is this not enough space? does it account for the 
-       'floating exception' crashes we get for QuoInt(a,b) when
-       b is not as big as a? */
     if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
       quo = NewBag( T_INTPOS, 
 		    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
@@ -2115,9 +2110,14 @@ Obj GcdInt ( Obj opL, Obj opR )
   Obj                 gmpL;           /* copy of the first arg             */
   Obj                 gmpR;           /* copy of the second arg            */
   Obj                 gcd;            /* handle of the result              */
+  TypLimb             gcdsize;        /* number of limbs mpn_gcd returns   */
   Int                 p,q;            /* number of zero limbs per arg      */
   Int                 r,s;            /* number of zero bits per arg       */
   TypLimb             bmask;          /* bit mask                          */
+  UInt                plimbs;         /* zero limbs to shift by */
+  UInt                prest;          /* and remaining zero bits */
+  UInt                overflow;       /* possible overflow from most 
+					 significant word */
 
   /* compute the gcd of two small integers                                 */
   if ( ARE_INTOBJS( opL, opR ) ) {
@@ -2220,17 +2220,44 @@ Obj GcdInt ( Obj opL, Obj opR )
     /* get gcd of odd numbers gmpL, gmpR - put it in a bag as big as one
        of the original args, which will be big enough for the gcd */
     gcd = NewBag( T_INTPOS, SIZE_OBJ(opR) );
-    mpn_gcd( ADDR_INT(gcd), 
+    
+    /* choose smaller of p,q and make it p 
+       we are going to multiply back in by 2 to that power */
+    if ( p > q ) p = q;
+    plimbs = p/mp_bits_per_limb;
+    prest = p - plimbs*mp_bits_per_limb;
+    
+    /* We deal with most of the power of two by placing some
+       0 limbs below the least significant limb of the GCD */
+    for (i = 0; i < plimbs; i++)
+      ADDR_INT(gcd)[i] = 0;
+
+    /* Now we do the GCD -- gcdsize tells us the number of 
+       limbs used for the result */
+
+    gcdsize = mpn_gcd( plimbs + ADDR_INT(gcd), 
 	     ADDR_INT(gmpL), SIZE_INT(gmpL),
 	     ADDR_INT(gmpR), SIZE_INT(gmpR) );
     
-    /* choose smaller of p,q and multiply back in by 2 to that power */
-    if ( p > q ) p = q;
-    for ( i = 0 ; i < p ; i++ ){
-      /*findme - do we need to check the return value for overflow here? */
-      mpn_lshift( ADDR_INT(gcd), ADDR_INT(gcd),
-		  SIZE_INT(gcd), (UInt)1 );
+    /* Now we do the rest of the power of two */
+    if (prest != 0)
+      {
+	overflow = mpn_lshift( plimbs + ADDR_INT(gcd), plimbs + ADDR_INT(gcd),
+		  gcdsize, (UInt)prest );
+	
+	/* which might extend the GCD to one more limb */
+	if (overflow != 0)
+	  {
+	    ADDR_INT(gcd)[gcdsize + plimbs] = overflow;
+	    gcdsize++;
+	  }
+      }
+
+    /* if the bag is too big, reduce it (stuff in extra space may not be 0) */
+    if ( gcdsize+plimbs != SIZE_INT(opR) ) {
+      ResizeBag( gcd, (gcdsize+plimbs)*sizeof(TypLimb) );
     }
+
   }
   gcd = GMP_NORMALIZE(gcd);
   gcd = GMP_REDUCE(gcd);
@@ -2450,10 +2477,22 @@ void initGRMT(UInt4 *mt, UInt4 s)
     mt[624] = mti;
 }
 
+/* to read a seed string independently of endianness */
+static inline UInt4 uint4frombytes(UChar *s)
+{
+  UInt4 res;
+  res = s[3]; res <<= 8;
+  res += s[2]; res <<= 8;
+  res += s[1]; res <<= 8;
+  res += s[0];
+  return res;
+}
+
 Obj FuncInitRandomMT( Obj self, Obj initstr)
 {
   Obj str;
-  UInt4 *mt, *init_key, key_length, i, j, k, N=624;
+  UChar *init_key;
+  UInt4 *mt, key_length, i, j, k, N=624;
 
   /* check the seed, given as string */
   while (! IsStringConv(initstr)) {
@@ -2462,33 +2501,36 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
          (Int)TNAM_OBJ(initstr), 0L,
          "you can replace <initstr> via 'return <initstr>;'" );
   }
-  init_key = (UInt4*) CHARS_STRING(initstr);
+  init_key = CHARS_STRING(initstr);
   key_length = GET_LEN_STRING(initstr) / 4;
    
-   /* store array of 624 UInt4 and one UInt4 as counter "mti" */
-   str = NEW_STRING(4*625);
-   SET_LEN_STRING(str, 4*625);
-   mt = (UInt4*) CHARS_STRING(str);
-   /* here the counter mti is set to 624 */
-   initGRMT(mt, 19650218UL);
-   i=1; j=0;
-   k = (N>key_length ? N : key_length);
-   for (; k; k--) {
-       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
-         + init_key[j] + j; 
-       mt[i] &= 0xffffffffUL; 
-       i++; j++;
-       if (i>=N) { mt[0] = mt[N-1]; i=1; }
-       if (j>=key_length) j=0;
-   }
-   for (k=N-1; k; k--) {
-       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i; 
-       mt[i] &= 0xffffffffUL; 
-       i++;
-       if (i>=N) { mt[0] = mt[N-1]; i=1; }
-   }
-   mt[0] = 0x80000000UL; 
-   return str; 
+  /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
+     endianness marker */
+  str = NEW_STRING(4*626);
+  SET_LEN_STRING(str, 4*626);
+  mt = (UInt4*) CHARS_STRING(str);
+  /* here the counter mti is set to 624 */
+  initGRMT(mt, 19650218UL);
+  i=1; j=0;
+  k = (N>key_length ? N : key_length);
+  for (; k; k--) {
+      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
+        + uint4frombytes(init_key+4*j) + j;
+      mt[i] &= 0xffffffffUL; 
+      i++; j++;
+      if (i>=N) { mt[0] = mt[N-1]; i=1; }
+      if (j>=key_length) j=0;
+  }
+  for (k=N-1; k; k--) {
+      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i; 
+      mt[i] &= 0xffffffffUL; 
+      i++;
+      if (i>=N) { mt[0] = mt[N-1]; i=1; }
+  }
+  mt[0] = 0x80000000UL; 
+  /* gives string "1234" in little endian as marker */
+  mt[625] = 875770417UL;
+  return str; 
 }
 
 

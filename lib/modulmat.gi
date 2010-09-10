@@ -2,10 +2,10 @@
 ##
 #W  modulmat.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: modulmat.gi,v 4.21 2009/10/01 15:26:24 gap Exp $
+#H  @(#)$Id: modulmat.gi,v 4.23 2010/04/30 13:56:37 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for *matrix modules*, that is,
@@ -19,7 +19,7 @@
 ##  suffices.)
 ##
 Revision.modulmat_gi :=
-    "@(#)$Id: modulmat.gi,v 4.21 2009/10/01 15:26:24 gap Exp $";
+    "@(#)$Id: modulmat.gi,v 4.23 2010/04/30 13:56:37 gap Exp $";
 
 
 #############################################################################
@@ -91,7 +91,7 @@ InstallOtherMethod( \^,
 ##
 InstallMethod( IsMatrixModule,
     "for a free left module",
-    [ IsFreeLeftModule ],
+    [ IsFreeLeftModule and HasGeneratorsOfLeftModule ],
     function( M )
     local gens;
     gens:= GeneratorsOfLeftModule( M );
@@ -102,6 +102,10 @@ InstallMethod( IsMatrixModule,
     fi;
     end );
 
+InstallMethod( IsMatrixModule,
+    "for a free left module without generators",
+    [ IsFreeLeftModule ],
+    M -> IsMatrix(Representative(M)));
 
 #############################################################################
 ##

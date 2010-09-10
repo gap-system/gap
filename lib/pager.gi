@@ -1,11 +1,11 @@
 #############################################################################
 ##  
-#W  pager.gi                     GAP Library                     Frank L�beck
+#W  pager.gi                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id: pager.gi,v 1.4 2002/05/10 12:56:28 gap Exp $
+#H  @(#)$Id: pager.gi,v 1.6 2010/07/28 15:45:21 gap Exp $
 ##  
-#Y  Copyright  (C) 2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen, Germany 
-#Y (C) 2001 School Math and  Comp. Sci., University of St. Andrews, Scotland
+#Y  Copyright  (C) 2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen, Germany 
+#Y (C) 2001 School Math and  Comp. Sci., University of St Andrews, Scotland
 #Y Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  pager.g{d,i}  contain  the `Pager'  utility.  A  rudimentary
@@ -13,14 +13,16 @@
 ##  But this utility is certainly useful for other purposes as well.
 ##  
 Revision.pager_gi := 
-  "@(#)$Id: pager.gi,v 1.4 2002/05/10 12:56:28 gap Exp $";
+  "@(#)$Id: pager.gi,v 1.6 2010/07/28 15:45:21 gap Exp $";
 ##  
 ##  There is a builtin pager `PAGER_BUILTIN', but  at least under UNIX one
-##  should use an external one.  This can be  set via the variable `PAGER'
-##  (e.g., PAGER :=  "less";). Here,  `less'  should be  in the executable
+##  should use an external one.  This can be  set via the variable
+##  `GAPInfo.UserPreferences.Pager'
+##  (e.g., GAPInfo.UserPreferences.Pager :=  "less";).
+##  Here,  `less'  should be  in the executable
 ##  PATH of the user and we assume that it supports an argument `+num' for
 ##  starting display in   line number `num'.   Additional options  can  be
-##  assigned to `PAGER_OPTIONS' as list of strings.
+##  assigned to `GAPInfo.UserPreferences.PagerOptions' as list of strings.
 ##  
 ##  The user function is `Pager'.
 ##  
@@ -159,18 +161,17 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   CloseStream(stream);
 end);
 
-# for using `more' or `less' or ... (read from `PAGER')
-# we assume that PAGER allows command line option +num for starting
-# display in line num
-PAGER := "builtin";
-PAGER_OPTIONS := [];
+# for using `more' or `less' or ... (read from `GAPInfo.UserPreferences.Pager')
+# we assume that GAPInfo.UserPreferences.Pager allows command line option
+# +num for starting display in line num
 
 BindGlobal("PAGER_EXTERNAL",  function( lines )
   local   path,  pager,  linepos,  str,  i,  cmdargs,  stream;
   path := DirectoriesSystemPrograms();
-  pager := Filename(path, PAGER);
+  pager := Filename( path, GAPInfo.UserPreferences.Pager );
   if pager=fail then
-    Error("Pager ", PAGER, " not found, change `PAGER'.");
+    Error( "Pager ", GAPInfo.UserPreferences.Pager,
+           " not found, change `GAPInfo.UserPreferences.Pager'." );
   fi;
   linepos := 1;
   if IsRecord(lines) then
@@ -195,11 +196,11 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
   fi;
   stream:=InputTextString(lines);
   Process(path[1], pager, stream, OutputTextUser(),
-          Concatenation(PAGER_OPTIONS, cmdargs));
+          Concatenation( GAPInfo.UserPreferences.PagerOptions, cmdargs ));
 end);
 
 InstallGlobalFunction("Pager",  function(lines)
-  if PAGER="builtin" then
+  if GAPInfo.UserPreferences.Pager = "builtin" then
     PAGER_BUILTIN(lines);
   else
     PAGER_EXTERNAL(lines);

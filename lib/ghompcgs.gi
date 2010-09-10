@@ -3,12 +3,12 @@
 #W  ghompcgs.gi                 GAP library                      Bettina Eick
 #W							     Alexander Hulpke
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghompcgs_gi :=
-    "@(#)$Id: ghompcgs.gi,v 4.55 2005/10/10 02:03:58 gap Exp $";
+    "@(#)$Id: ghompcgs.gi,v 4.56 2010/02/23 15:13:00 gap Exp $";
 
 # compute the powers of the source pcgs. We cache these to speed up frequent
 # mapping.

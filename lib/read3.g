@@ -147,6 +147,7 @@ ReadLib( "grppcfp.gd" );
 ReadLib( "randiso.gd" );
 
 ReadLib( "schur.gd" );
+ReadLib( "schursym.gd" );
 
 ReadLib( "grplatt.gd"  );
 ReadLib( "oprtglat.gd" );
@@ -223,9 +224,19 @@ ReadLib( "helpview.gd" );
 ReadLib( "helpt2t.gd" );
 ReadLib( "helpdef.gd" );
 
-#X  files dealing with character tables and class functions
-# (this needs to be here for using `CharacterDegrees' in the library.)
-ReadLib( "ctbl.gd"     );
+# files dealing with character tables, class functions, tables of marks
+ReadLib( "ctbl.gd" );
+ReadLib( "ctblfuns.gd" );
+ReadLib( "ctblmaps.gd" );
+ReadLib( "ctblauto.gd" );
+ReadLib( "ctbllatt.gd" );
+ReadLib( "ctblsymm.gd" );
+ReadLib( "ctblsolv.gd" );
+ReadLib( "ctblpope.gd" );
+ReadLib( "ctblmoli.gd" );
+ReadLib( "ctblmono.gd" );
+ReadLib( "ctblgrp.gd" );
+ReadLib( "tom.gd" );
 
 # prototyping utilities
 ReadLib("proto.gd");

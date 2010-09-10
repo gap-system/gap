@@ -2,17 +2,17 @@
 ##
 #W  tietze.gi                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: tietze.gi,v 4.59 2009/10/09 21:43:22 gap Exp $
+#H  @(#)$Id: tietze.gi,v 4.60 2010/02/23 15:13:33 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for Tietze transformations of presentation
 ##  records (i.e., of presentations of finitely presented groups (fp groups).
 ##
 Revision.tietze_gi :=
-    "@(#)$Id: tietze.gi,v 4.59 2009/10/09 21:43:22 gap Exp $";
+    "@(#)$Id: tietze.gi,v 4.60 2010/02/23 15:13:33 gap Exp $";
 
 #############################################################################
 ##
@@ -652,7 +652,7 @@ end );
 ##    Discrete Math. 5 (1973), 105-129, and in
 ##
 ##    Joachim Neubueser: An elementary introduction to coset table methods in
-##    computational  group theory.  Groups-St. Andrews 1981,  edited by C. M.
+##    computational  group theory.  Groups-St Andrews 1981,  edited by C. M.
 ##    Campbell and E. F. Robertson, pp. 1-45.  London Math. Soc. Lecture Note
 ##    Series no. 71, Cambridge Univ. Press, Cambridge, 1982.
 ##

@@ -59,8 +59,6 @@ ReadLib( "liefam.gi"   );
 ReadLib( "algrep.gi"   );
 ReadLib( "lierep.gi"   );
 
-ReadLib( "string.gi"   );
-
 ReadLib( "numtheor.gi" );
 ReadLib( "primality.gi");
 ReadLib( "contfrac.gi" );
@@ -191,6 +189,7 @@ ReadLib( "randiso2.gi");
 ReadLib( "grppcfp.gi");
 
 ReadLib( "schur.gi");
+ReadLib( "schursym.gi");
 
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );

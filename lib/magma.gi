@@ -2,16 +2,16 @@
 ##
 #W  magma.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: magma.gi,v 4.62 2005/08/24 14:01:29 gap Exp $
+#H  @(#)$Id: magma.gi,v 4.63 2010/02/23 15:13:12 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for magmas.
 ##
 Revision.magma_gi :=
-    "@(#)$Id: magma.gi,v 4.62 2005/08/24 14:01:29 gap Exp $";
+    "@(#)$Id: magma.gi,v 4.63 2010/02/23 15:13:12 gap Exp $";
 
 
 #############################################################################

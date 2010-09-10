@@ -2,16 +2,16 @@
 ##
 #W  basis.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: basis.gi,v 4.71 2009/09/30 15:07:19 gap Exp $
+#H  @(#)$Id: basis.gi,v 4.72 2010/02/23 15:12:47 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for bases.
 ##
 Revision.basis_gi :=
-    "@(#)$Id: basis.gi,v 4.71 2009/09/30 15:07:19 gap Exp $";
+    "@(#)$Id: basis.gi,v 4.72 2010/02/23 15:12:47 gap Exp $";
 
 
 #############################################################################

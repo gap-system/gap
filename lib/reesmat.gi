@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  reesmat.gi           GAP library         Andrew Solomon and Isabel Araujo
+#W  reesmat.gi           GAP library         Andrew Solomon and Isabel Araújo
 ##
-#H  @(#)$Id: reesmat.gi,v 4.24 2006/11/14 16:13:13 jamesm Exp $
+#H  @(#)$Id: reesmat.gi,v 4.25 2010/02/23 15:13:26 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation of Rees matrix semigroups.
 ##
 Revision.reesmat_gi :=
-    "@(#)$Id: reesmat.gi,v 4.24 2006/11/14 16:13:13 jamesm Exp $";
+    "@(#)$Id: reesmat.gi,v 4.25 2010/02/23 15:13:26 gap Exp $";
 
 #JDM: make a NC version of ReesMatrixSemigroup and ReesZeroMatrixSemigroup
 

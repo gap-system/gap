@@ -2,10 +2,10 @@
 ##
 #W  vspcmat.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspcmat.gi,v 4.37 2002/08/23 14:35:10 gap Exp $
+#H  @(#)$Id: vspcmat.gi,v 4.39 2010/05/19 14:41:48 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for matrix spaces.
@@ -33,7 +33,7 @@
 ##  7. Methods for mutable bases of Gaussian matrix spaces
 ##
 Revision.vspcmat_gi :=
-    "@(#)$Id: vspcmat.gi,v 4.37 2002/08/23 14:35:10 gap Exp $";
+    "@(#)$Id: vspcmat.gi,v 4.39 2010/05/19 14:41:48 gap Exp $";
 
 
 #############################################################################
@@ -152,7 +152,8 @@ InstallHandlingByNiceBasis( "IsNonGaussianMatrixSpace", rec(
 ##  relative basis.
 ##  (So there is no need for `IsBasisGaussianMatrixSpace').
 ##
-##  If basis vectors are known then the component `heads' is bound.
+##  If basis vectors are known and if the space is nontrivial
+##  then the component `heads' is bound.
 ##
 DeclareRepresentation( "IsSemiEchelonBasisOfGaussianMatrixSpaceRep",
     IsAttributeStoringRep,

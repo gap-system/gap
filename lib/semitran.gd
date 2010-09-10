@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  semitran.gd           GAP library         Isabel Araujo and Robert Arthur 
+#W  semitran.gd           GAP library         Isabel Araújo and Robert Arthur 
 ##
-#H  @(#)$Id: semitran.gd,v 4.11 2009/01/12 17:26:17 gap Exp $
+#H  @(#)$Id: semitran.gd,v 4.12 2010/02/23 15:13:30 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for basics of transformation semigroup 
 ##
 Revision.semitran_gd :=
-    "@(#)$Id: semitran.gd,v 4.11 2009/01/12 17:26:17 gap Exp $";
+    "@(#)$Id: semitran.gd,v 4.12 2010/02/23 15:13:30 gap Exp $";
 
 
 #############################################################################

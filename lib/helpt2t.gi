@@ -4,10 +4,10 @@
 #W                                                          Alexander Hulpke
 #W                                                          Greg Gamble
 ##  
-#H  @(#)$Id: helpt2t.gi,v 1.18 2004/04/23 15:09:22 gap Exp $
+#H  @(#)$Id: helpt2t.gi,v 1.19 2010/02/23 15:13:09 gap Exp $
 ##  
-#Y  Copyright  (C)  1996-2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen,
-#Y  Germany (C) 2001 School Math and  Comp. Sci., University of St. Andrews,
+#Y  Copyright  (C)  1996-2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen,
+#Y  Germany (C) 2001 School Math and  Comp. Sci., University of St Andrews,
 #Y  Scotland
 ##  
 ##  The files  helpt2t.g{d,i} contain the  probably longest function  in the
@@ -15,7 +15,7 @@
 ##  into text for the "screen" online help viewer.
 ##  
 Revision.helpt2t_gi := 
-  "@(#)$Id: helpt2t.gi,v 1.18 2004/04/23 15:09:22 gap Exp $";
+  "@(#)$Id: helpt2t.gi,v 1.19 2010/02/23 15:13:09 gap Exp $";
   
 #############################################################################
 ##

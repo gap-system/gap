@@ -2,10 +2,10 @@
 ##
 #W  algsc.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: algsc.gi,v 4.38 2008/11/05 13:17:00 gap Exp $
+#H  @(#)$Id: algsc.gi,v 4.40 2010/02/23 15:12:46 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for elements of algebras given by structure
@@ -27,7 +27,7 @@
 ##  then it has the component `coefficientsDomain'.
 ##
 Revision.algsc_gi :=
-    "@(#)$Id: algsc.gi,v 4.38 2008/11/05 13:17:00 gap Exp $";
+    "@(#)$Id: algsc.gi,v 4.40 2010/02/23 15:12:46 gap Exp $";
 
 
 #T need for the norm of a quaternion?
@@ -575,11 +575,19 @@ end );
 
 InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
     local A;
-    A:= AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj );
+    A:= AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj and IsJacobianElement );
     SetIsLieAlgebra( A, true );
     return A;
 end );
 
+InstallGlobalFunction( RestrictedLieAlgebraByStructureConstants, function( arg )
+    local A, firstargs;
+    firstargs := arg{[1..Length(arg)-1]};
+    A:= AlgebraByStructureConstantsArg( firstargs, IsSCAlgebraObj and IsRestrictedJacobianElement );
+    SetIsRestrictedLieAlgebra( A, true );
+    FamilyObj(Representative(A))!.pMapping := arg[Length(arg)];
+    return A;
+end );
 
 #############################################################################
 ##

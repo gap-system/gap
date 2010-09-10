@@ -2,10 +2,10 @@
 ##
 #W  zmodnz.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zmodnz.gi,v 4.56 2008/09/17 08:56:30 gap Exp $
+#H  @(#)$Id: zmodnz.gi,v 4.57 2010/02/23 15:13:37 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for the elements of the rings $Z / n Z$
@@ -27,7 +27,7 @@
 ##  again the ordering of representatives is chosen.
 ##
 Revision.zmodnz_gi :=
-    "@(#)$Id: zmodnz.gi,v 4.56 2008/09/17 08:56:30 gap Exp $";
+    "@(#)$Id: zmodnz.gi,v 4.57 2010/02/23 15:13:37 gap Exp $";
 
 #T for small residue class rings, avoid constructing new objects by
 #T keeping an elements list, and change the constructor such that the

@@ -4,17 +4,17 @@
 #W                                                             Andrew Solomon
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfunul.gi,v 4.97 2009/05/27 22:04:52 gap Exp $
+#H  @(#)$Id: ratfunul.gi,v 4.98 2010/02/23 15:13:26 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for rational functions that know that they
 ##  are univariate.
 ##
 Revision.ratfunul_gi :=
-    "@(#)$Id: ratfunul.gi,v 4.97 2009/05/27 22:04:52 gap Exp $";
+    "@(#)$Id: ratfunul.gi,v 4.98 2010/02/23 15:13:26 gap Exp $";
 
 #############################################################################
 ##

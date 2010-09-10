@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  grpperm.gd                  GAP library                    Heiko Thei"sen
+#W  grpperm.gd                  GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: grpperm.gd,v 4.58 2009/01/12 17:26:16 gap Exp $
+#H  @(#)$Id: grpperm.gd,v 4.62 2010/06/11 15:53:30 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpperm_gd :=
-    "@(#)$Id: grpperm.gd,v 4.58 2009/01/12 17:26:16 gap Exp $";
+    "@(#)$Id: grpperm.gd,v 4.62 2010/06/11 15:53:30 gap Exp $";
 
 
 #############################################################################
@@ -359,43 +359,44 @@ DeclareAttribute( "PrimitiveIdentification", IsPermGroup );
 ##  returns the type of a primitive permutation group <A>G</A>,
 ##  according to the O'Nan-Scott classification.
 ##  The labelling of the different types is not consistent in the literature,
-##  we use the following:
+##  we use the following identifications. The two-letter code given is the
+##  name of the type as used by Praeger.
 ##  <List>
 ##  <Mark>1</Mark>
 ##  <Item>
-##   Affine.
+##   Affine. (HA)
 ##  </Item>
 ##  <Mark>2</Mark>
 ##  <Item>
-##   Almost simple.
+##   Almost simple. (AS)
 ##  </Item>
 ##  <Mark>3a</Mark>
 ##  <Item>
-##   Diagonal, Socle consists of two normal subgroups.
+##   Diagonal, Socle consists of two normal subgroups. (HS)
 ##  </Item>
 ##  <Mark>3b</Mark>
 ##  <Item>
-##   Diagonal, Socle is minimal normal.
+##   Diagonal, Socle is minimal normal. (SD)
 ##  </Item>
 ##  <Mark>4a</Mark>
 ##  <Item>
-##   Product action with the first factor primitive of type 3a.
+##   Product action with the first factor primitive of type 3a. (HC)
 ##  </Item>
 ##  <Mark>4b</Mark>
 ##  <Item>
-##   Product action with the first factor primitive of type 3b.
+##   Product action with the first factor primitive of type 3b. (CD)
 ##  </Item>
 ##  <Mark>4c</Mark>
 ##  <Item>
-##   Product action with the first factor primitive of type 2.
+##   Product action with the first factor primitive of type 2. (PA)
 ##  </Item>
 ##  <Mark>5</Mark>
 ##  <Item>
-##   Twisted wreath product
+##   Twisted wreath product (TW)
 ##  </Item>
 ##  </List>
-##  <!-- %%  See <Cite Key="eickhulpkeXX"/> for correspondence to other labellings used -->
-##  <!-- %%  in the literature. -->
+##  See <Cite Key="EickHulpke01"/> for correspondence to other labellings used
+##  in the literature.
 ##  As it can contain letters, the type is returned as a string.
 ##  <P/>
 ##  If <A>G</A> is not a permutation group or does not act primitively on the
@@ -438,10 +439,10 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  gap> ONanScottType(ac);
 ##  "3a"
 ##  gap> SocleTypePrimitiveGroup(ac);
-##  rec( series := "A", width := 2, 
+##  rec( 
 ##    name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
 ##  ) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
-##  (2,5)", parameter := 5 )
+##  (2,5)", series := "A", parameter := 5, width := 2 )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

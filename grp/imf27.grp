@@ -2,9 +2,9 @@
 ##
 #A  imf27.grp                   GAP group library              Volkmar Felsch
 ##
-#H  @(#)$Id: imf27.grp,v 1.1 2000/04/14 13:01:26 gap Exp $
+#H  @(#)$Id: imf27.grp,v 1.2 2010/02/23 15:12:42 gap Exp $
 ##
-#Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains,  for each  Q-class representative  of the irreducible
 ##  maximal finite integral matrix groups of dimension 27,
@@ -13,7 +13,7 @@
 ##  [2]  a list of matrix generators.
 ##
 Revision.imf27_grp :=
-    "@(#)$Id: imf27.grp,v 1.1 2000/04/14 13:01:26 gap Exp $";
+    "@(#)$Id: imf27.grp,v 1.2 2010/02/23 15:12:42 gap Exp $";
 
 
 #############################################################################

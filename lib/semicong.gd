@@ -2,10 +2,10 @@
 ##
 #W  semicong.gd                  GAP library                 Andrew Solomon
 ##
-#H  @(#)$Id: semicong.gd,v 4.12 2009/01/12 17:26:17 gap Exp $
+#H  @(#)$Id: semicong.gd,v 4.13 2010/02/23 15:13:29 gap Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration for semigroup congruences.
@@ -15,7 +15,7 @@
 ##  Andrew Solomon
 ##
 Revision.semicong_gd :=
-    "@(#)$Id: semicong.gd,v 4.12 2009/01/12 17:26:17 gap Exp $";
+    "@(#)$Id: semicong.gd,v 4.13 2010/02/23 15:13:29 gap Exp $";
 
 ###########################################################################
 ##
