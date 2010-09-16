@@ -181,6 +181,237 @@ Obj AddCoeffsGF2VecGF2Vec (
 }
 
 
+
+
+static inline UInt highbits( UInt word, UInt howmany) 
+{
+  return (word  >> (BIPEB-howmany));
+}
+
+static inline UInt lowbits(UInt word, UInt howmany)
+{
+  return word & (((UInt)(-1L)) >> (BIPEB - howmany));
+}
+
+static inline UInt midbits(UInt word, UInt from, UInt howmany)
+{
+  return lowbits(highbits(word, BIPEB-from), howmany);
+}
+
+
+
+static inline void setlowbits(UInt *dest, UInt howmany, UInt bits) 
+{
+  *dest = (highbits(*dest, BIPEB - howmany) << howmany) | bits;
+}
+
+static inline void sethighbits(UInt *dest, UInt howmany, UInt bits) 
+{
+  *dest = lowbits(*dest, BIPEB - howmany) | (bits << (BIPEB - howmany));
+}
+
+
+static inline void setmidbits(UInt *dest, UInt from, UInt howmany, UInt bits) 
+{
+  UInt mask;
+  if (from + howmany == BIPEB)
+    mask = 0;
+  else
+    mask = ((UInt)(-1L)) << (from  + howmany);
+  if (from != 0)
+    mask |= ((UInt)(-1L)) >> (BIPEB - from);
+  *dest = (*dest & mask) | (bits << from);
+}
+
+
+/* This is the time critical loop for the unaligned case
+   we bring it out as an inline function to mark various things as const
+   and allow us to include it once for each shift which saves about a factor of 2 */
+
+static inline void dothework( UInt const *sptr, UInt *dptr, const UInt cbits, UInt * const dend) {
+  UInt bits;
+  UInt x = *sptr++;
+  while (dptr < dend) {
+    bits = x >> (BIPEB - cbits);
+    x = *sptr++;
+    *dptr++ =  bits | (x  << cbits);
+    }
+} 
+    
+void CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
+{
+  UInt soff;
+  UInt doff;
+  UInt *sptr;
+  UInt *dptr;
+  UInt *send;
+  UInt *dend;
+  UInt i;
+
+  if (nelts == 0) {
+    return;
+  }
+    
+  /* switch to zero-based indices and find the first blocks and so on */
+  soff = (--smin) %BIPEB;
+  doff = (--dmin) %BIPEB;
+  sptr = BLOCKS_GF2VEC(src) + smin/BIPEB;
+  dptr = BLOCKS_GF2VEC(dest) + dmin/BIPEB;
+  
+  /* deal with some short section cases */
+  UInt bits;
+  /* all the section is within the starting source block */
+  if (nelts <= BIPEB -soff) {
+    /* get all the section in one go */
+    bits = midbits(*sptr, soff, nelts);
+    /* they may or may not all hit one destination block */
+    if (nelts <= BIPEB - doff) 
+      setmidbits(dptr, doff, nelts, bits);
+    else {
+      sethighbits(dptr++, BIPEB- doff, lowbits(bits, BIPEB - doff));
+      setlowbits(dptr, nelts - BIPEB + doff, (bits >> (BIPEB - doff)));
+    }
+    return;
+  }
+  
+  /* all the section is within the starting destination block */
+  if (nelts <= BIPEB - doff) {
+    /* since we weren't in the last case, we need to collect the bits from two
+       source blocks */
+
+    bits = highbits(*sptr++, BIPEB-soff);
+    bits |= (lowbits(*sptr, nelts + soff  - BIPEB) << (BIPEB-soff));
+    setmidbits(dptr, doff, nelts, bits);
+    return;
+  }
+
+  /* If we reach this point, we are reading from at least two source blocks
+     and writing to at least two destination blocks */  
+
+  /* Now, split according to relationship of soff and doff 
+     easiest case first, when they are equal */
+  if (soff == doff) {
+    UInt fullblocks;
+    /* partial block at the start */
+    if (soff != 0) {
+      bits = highbits(*sptr++, BIPEB - soff);
+      sethighbits(dptr++, BIPEB - soff, bits);
+      fullblocks = (nelts + soff - BIPEB)/BIPEB;
+    } else
+      fullblocks = nelts/BIPEB;
+    /* Now zero or more full blocks */
+    memmove(dptr, sptr, fullblocks*sizeof(Obj));
+    /* partial block at the end */
+    UInt eoff = (soff + nelts) % BIPEB;
+    if (eoff != 0) {
+      bits = lowbits(sptr[fullblocks],eoff);
+      setlowbits(dptr+fullblocks,eoff, bits);
+    }
+    return;
+  } else {
+    UInt cbits, endbits;
+    if (soff > doff) {
+      setmidbits(dptr, doff, BIPEB - soff, highbits(*sptr++, BIPEB - soff));
+      sethighbits(dptr++, soff-doff, lowbits(*sptr, soff-doff));
+      cbits = BIPEB + doff-soff;
+    } else {
+      sethighbits(dptr++, BIPEB -doff, midbits(*sptr, soff, BIPEB-doff));
+      cbits = doff-soff;
+    }
+
+    /* At this point dptr points to a block that needs to be filled from the start
+       with the cbits highbits of *sptr and the remaining bits from sptr[1] 
+     except of course that it might be the final block and so need less than that */
+    dend = BLOCKS_GF2VEC(dest) + (dmin + nelts )/BIPEB; /* first block we don't fill completely */
+    /* We replicate the inner loop 31 or 63 times, so that the shifts are known at compile time*/
+
+
+    switch(cbits) {
+    case 1:     dothework(sptr, dptr, 1, dend); break;
+    case 2:     dothework(sptr, dptr, 2, dend); break;
+    case 3:     dothework(sptr, dptr, 3, dend); break;
+    case 4:     dothework(sptr, dptr, 4, dend); break;
+    case 5:     dothework(sptr, dptr, 5, dend); break;
+    case 6:     dothework(sptr, dptr, 6, dend); break;
+    case 7:     dothework(sptr, dptr, 7, dend); break;
+    case 8:     dothework(sptr, dptr, 8, dend); break;
+    case 9:     dothework(sptr, dptr, 9, dend); break;
+    case 10:     dothework(sptr, dptr, 10, dend); break;
+    case 11:     dothework(sptr, dptr, 11, dend); break;
+    case 12:     dothework(sptr, dptr, 12, dend); break;
+    case 13:     dothework(sptr, dptr, 13, dend); break;
+    case 14:     dothework(sptr, dptr, 14, dend); break;
+    case 15:     dothework(sptr, dptr, 15, dend); break;
+    case 16:     dothework(sptr, dptr, 16, dend); break;
+    case 17:     dothework(sptr, dptr, 17, dend); break;
+    case 18:     dothework(sptr, dptr, 18, dend); break;
+    case 19:     dothework(sptr, dptr, 19, dend); break;
+    case 20:     dothework(sptr, dptr, 20, dend); break;
+    case 21:     dothework(sptr, dptr, 21, dend); break;
+    case 22:     dothework(sptr, dptr, 22, dend); break;
+    case 23:     dothework(sptr, dptr, 23, dend); break;
+    case 24:     dothework(sptr, dptr, 24, dend); break;
+    case 25:     dothework(sptr, dptr, 25, dend); break;
+    case 26:     dothework(sptr, dptr, 26, dend); break;
+    case 27:     dothework(sptr, dptr, 27, dend); break;
+    case 28:     dothework(sptr, dptr, 28, dend); break;
+    case 29:     dothework(sptr, dptr, 29, dend); break;
+    case 30:     dothework(sptr, dptr, 30, dend); break;
+    case 31:     dothework(sptr, dptr, 31, dend); break;
+#ifdef SYS_IS_64BIT
+    case 32:     dothework(sptr, dptr, 32, dend); break;
+    case 33:     dothework(sptr, dptr, 33, dend); break;
+    case 34:     dothework(sptr, dptr, 34, dend); break;
+    case 35:     dothework(sptr, dptr, 35, dend); break;
+    case 36:     dothework(sptr, dptr, 36, dend); break;
+    case 37:     dothework(sptr, dptr, 37, dend); break;
+    case 38:     dothework(sptr, dptr, 38, dend); break;
+    case 39:     dothework(sptr, dptr, 39, dend); break;
+    case 40:     dothework(sptr, dptr, 40, dend); break;
+    case 41:     dothework(sptr, dptr, 41, dend); break;
+    case 42:     dothework(sptr, dptr, 42, dend); break;
+    case 43:     dothework(sptr, dptr, 43, dend); break;
+    case 44:     dothework(sptr, dptr, 44, dend); break;
+    case 45:     dothework(sptr, dptr, 45, dend); break;
+    case 46:     dothework(sptr, dptr, 46, dend); break;
+    case 47:     dothework(sptr, dptr, 47, dend); break;
+    case 48:     dothework(sptr, dptr, 48, dend); break;
+    case 49:     dothework(sptr, dptr, 49, dend); break;
+    case 50:     dothework(sptr, dptr, 50, dend); break;
+    case 51:     dothework(sptr, dptr, 51, dend); break;
+    case 52:     dothework(sptr, dptr, 52, dend); break;
+    case 53:     dothework(sptr, dptr, 53, dend); break;
+    case 54:     dothework(sptr, dptr, 54, dend); break;
+    case 55:     dothework(sptr, dptr, 55, dend); break;
+    case 56:     dothework(sptr, dptr, 56, dend); break;
+    case 57:     dothework(sptr, dptr, 57, dend); break;
+    case 58:     dothework(sptr, dptr, 58, dend); break;
+    case 59:     dothework(sptr, dptr, 59, dend); break;
+    case 60:     dothework(sptr, dptr, 60, dend); break;
+    case 61:     dothework(sptr, dptr, 61, dend); break;
+    case 62:     dothework(sptr, dptr, 62, dend); break;
+    case 63:     dothework(sptr, dptr, 63, dend); break;
+#endif
+    default:  Pr("Illegal shift %i", cbits, 0);
+      SyExit(2);
+    }
+
+    /* fixup pointers */
+    sptr += (dend - dptr);
+    dptr = dend;
+    /* OK, so now we may need to copy some more bits to fill the final block */
+    endbits = (dmin + nelts) % BIPEB;
+    if (endbits) 
+      if (endbits <= cbits)
+	setlowbits(dptr, endbits, midbits(*sptr++,BIPEB-cbits, endbits));
+      else {
+	bits = highbits(*sptr++,cbits);
+	setlowbits(dptr, endbits, bits | (lowbits(*sptr, endbits - cbits) << cbits));
+      }
+    return;
+  }
+}
+
 /****************************************************************************
 **
 *F  AddPartialGF2VecGF2Vec( <sum>, <vl>, <vr>, <n> )  . . . . . . partial sum
@@ -242,6 +473,7 @@ Obj AddPartialGF2VecGF2Vec (
     if (vl == sum)
       while ( ptS < end )
 	{
+	  /* maybe remove this condition */
 	  if ((x = *ptR)!= 0)
 	    *ptS = *ptL ^ x;
 	  ptL++; ptS++; ptR++;
@@ -249,6 +481,7 @@ Obj AddPartialGF2VecGF2Vec (
     else if (vr == sum)
       while ( ptS < end )
 	{
+	  /* maybe remove this condition */
 	  if ((x = *ptL) != 0)
 	    *ptS = *ptR ^ x;
 	  ptL++; ptS++; ptR++;
@@ -579,43 +812,43 @@ struct greaseinfo {
   UInt **prrows;
 };
 
-static struct greaseinfo g;
+
 
 /* Make if necessary the grease row for bits
    controlled by the data in g. Recursive
    so can't be inlined */
 
-static UInt * getgreasedata( UInt bits)
+static UInt * getgreasedata( struct greaseinfo *g, UInt bits)
 { 
   UInt x,y;
   register UInt *ps, *pd, *ps2,i ;
   UInt *pd1;
-  switch(g.pgtags[bits])
+  switch(g->pgtags[bits])
     {
     case 0:
       /* Need to make the row */
-      x = g.pgrules[bits];
+      x = g->pgrules[bits];
       y = bits ^ (1 << x);
       /* make it by adding row x to grease vector indexed y */
-      ps =g.prrows[x];
-      ps2 = getgreasedata(y);
-      pd1 = g.pgbuf + (bits-3)*g.nblocks;
+      ps =g->prrows[x];
+      ps2 = getgreasedata(g,y);
+      pd1 = g->pgbuf + (bits-3)*g->nblocks;
       pd = pd1;
       /* time critical inner loop */
-      for (i = g.nblocks; i > 0; i--)
+      for (i = g->nblocks; i > 0; i--)
 	*pd++ = *ps++ ^ *ps2++;
       /* record that we made it */
-      g.pgtags[bits] = 1;
+      g->pgtags[bits] = 1;
       return pd1;
 
     case 1:
       /* we've made this one already, so just return it */
-      return  g.pgbuf + (bits-3)*g.nblocks;
+      return  g->pgbuf + (bits-3)*g->nblocks;
 
     case 2:
       /* This one does not need making, bits actually
 	 has just a single 1 bit in it */
-      return g.prrows[g.pgrules[bits]];
+      return g->prrows[g->pgrules[bits]];
 
     }
   return (UInt *)0;		/* can't actually get here
@@ -651,6 +884,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
   UInt **prrows;
   Obj prowptrs;			/* and for prod */
   UInt **pprows;
+  struct greaseinfo g;
   
   len = LEN_GF2MAT(ml);
   row = ELM_GF2MAT(mr, 1);
@@ -787,6 +1021,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 
 	      /* find the appropriate parts of grease tags
 		 grease buffer and mr. Store in g */
+	      
 	      if (gs > 1)
 		{
 		  g.pgtags = pgtags + glen*i;
@@ -803,7 +1038,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 	      else if (bits == 1) /* handle this one specially to speed up the greaselevel 1 case */
 		v = prrows[k-1]; /* -1 is because k is 1-based index */
 	      else
-		v = getgreasedata(bits); /* The main case */
+		v = getgreasedata(&g,bits); /* The main case */
 				/* This function should be inlined */
 	      AddGF2VecToGF2Vec(pprow, v,  rlen);  
 	    }  
@@ -1804,32 +2039,14 @@ Obj FuncELMS_GF2VEC (
         /* make the result vector                                          */
         NEW_GF2VEC( elms, TYPE_LIST_GF2VEC, lenPoss );
         SET_LEN_GF2VEC( elms, lenPoss );
-
-        /* special code for ranges with increment of one and perfect fit   */
-        cut = (pos-1) % BIPEB;
-        if ( inc == 1 && cut == 0 ) {
-            ptrS = BLOCKS_GF2VEC(list) + ((pos-1)/BIPEB);
-            ptrD = BLOCKS_GF2VEC(elms);
-            for ( i = (lenPoss+BIPEB-1)/BIPEB;  0 < i;  i-- )
-                *ptrD++ = *ptrS++;
-        }
-
-        /* special code for ranges with increment of one                   */
-        else if ( inc == 1 ) {
-            ptrS = BLOCKS_GF2VEC(list) + ((pos-1)/BIPEB);
-            ptrD = BLOCKS_GF2VEC(elms);
-            for ( i = lenPoss;  BIPEB <= i;  ptrD++, ptrS++, i -= BIPEB ) {
-                *ptrD = (ptrS[0] >> cut) | (ptrS[1] << (BIPEB-cut));
-            }
-            if ( 0 < i )
-                *ptrD = *ptrS >> cut;
-	    if (BIPEB - cut < i)
-	      *ptrD |= ptrS[1] << (BIPEB-cut);
-        }
+	
+	/* increment 1 ranges is a block copy */
+	if (inc == 1)
+	  CopySection_GF2Vecs(list, elms, pos, 1, lenPoss);
 
         /* loop over the entries of <positions> and select                 */
         else {
-            for ( i = 1;  i <= lenPoss;  i++, pos += inc ) {
+           for ( i = 1;  i <= lenPoss;  i++, pos += inc ) {
                 if ( ELM_GF2VEC(list,pos) == GF2One ) {
                     BLOCK_ELM_GF2VEC(elms,i) |= MASK_POS_GF2VEC(i);
                 }
@@ -2639,6 +2856,29 @@ Obj FuncPOSITION_NONZERO_GF2VEC3(
 }
 
 
+
+Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany) {
+  if (!IS_GF2VEC_REP(src) ||
+      !IS_GF2VEC_REP(dest) ||
+      !IS_INTOBJ(from) || 
+      !IS_INTOBJ(to) || 
+      !IS_INTOBJ(howmany)) 
+    ErrorMayQuit("Bad argument types", 0,0);
+  Int ifrom = INT_INTOBJ(from);
+  Int ito = INT_INTOBJ(to);
+  Int ihowmany = INT_INTOBJ(howmany);
+  UInt lens = LEN_GF2VEC(src);
+  UInt lend = LEN_GF2VEC(dest);
+  if (ifrom <= 0 || ito <= 0 ||
+      ihowmany < 0 || ifrom + ihowmany -1 > lens || ito + ihowmany -1 > lend)
+    ErrorMayQuit("Bad argument values",0,0);
+  if (!IS_MUTABLE_OBJ(dest))
+    ErrorMayQuit("Immutable destination vector", 0,0);
+  CopySection_GF2Vecs(src, dest, (UInt)ifrom, (UInt)ito, (UInt)ihowmany);
+  return (Obj) 0;
+}
+
+
 /****************************************************************************
 **
 *F  FuncAPPEND_VECGF2( <self>, <vecl>, <vecr> )
@@ -2660,48 +2900,7 @@ Obj FuncAPPEND_VECGF2( Obj self, Obj vecl, Obj vecr )
       return 0;
     }
   ResizeBag(vecl, SIZE_PLEN_GF2VEC(lenl+lenr));
-  ptrr = BLOCKS_GF2VEC(vecr);
-  nextr = 0;
-  if (lenl != 0)
-    {
-      ptrl = BLOCKS_GF2VEC(vecl) + (lenl-1)/BIPEB;
-      offl = (lenl-1) % BIPEB + 1; /* number of significant bits in the last word */
-      off2 = BIPEB - offl;         /* number of insignificant bits in the last word */
-
-      /* mask out the last bits */
-#ifdef SYS_IS_64_BIT
-      *ptrl &= 0xffffffffffffffff >> off2;
-#else
-      *ptrl &= 0xffffffff >> off2;
-#endif
-    }
-  else
-    {
-      ptrl = BLOCKS_GF2VEC(vecl)-1;
-      offl = BIPEB;
-      off2 = 0; /* just to please compiler, not actually used */
-    }
-  if (offl == BIPEB)
-    {
-      while (nextr < lenr)
-	{
-	  *++ptrl = *ptrr++;
-	  nextr += BIPEB;
-	}
-    }
-  else
-    while (nextr < lenr)
-      {
-	*ptrl |= (*ptrr) << offl;
-	ptrl++;
-	nextr += off2;
-	if (nextr >= lenr)
-	  break;
-	*ptrl = (*ptrr) >> off2;
-	ptrr++;
-	nextr += offl;
-      }
-  
+  CopySection_GF2Vecs(vecr, vecl, 1, lenl+1, lenr);
   SET_LEN_GF2VEC(vecl,lenl+lenr);
   return (Obj) 0;
 }
@@ -4457,6 +4656,11 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
   return mat;
 }
 
+
+
+
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
@@ -4649,6 +4853,10 @@ static StructGVarFunc GVarFuncs [] = {
     
     { "KRONECKERPRODUCT_GF2MAT_GF2MAT", 2, "mat, mat",
       FuncKRONECKERPRODUCT_GF2MAT_GF2MAT, "src/vecgf2.c:KRONECKERPRODUCT_GF2MAT_GF2MAT" },
+
+
+    { "COPY_SECTION_GF2VECS", 5, "src, dest, from, to, howmany",
+      FuncCOPY_SECTION_GF2VECS, "src/vecgf2.c:COPY_SECTION_GF2VECS"},
     
     { 0 }
 
