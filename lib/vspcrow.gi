@@ -653,7 +653,7 @@ InstallMethod( SemiEchelonBasis,
     fi;
     SetUnderlyingLeftModule( B, V );
     gensi := Immutable(gens);
-    ConvertToMatrixRepNC(gensi, LeftActingDomain(V));
+    ConvertToMatrixRep(gensi, LeftActingDomain(V));
     SetBasisVectors( B, gensi );
 
     B!.heads:= heads;
@@ -689,7 +689,7 @@ InstallMethod( SemiEchelonBasisNC,
     fi;
     SetUnderlyingLeftModule( B, V );
     gensi := Immutable(gens);
-    ConvertToMatrixRepNC(gensi, LeftActingDomain(V));
+    ConvertToMatrixRep(gensi, LeftActingDomain(V));
     SetBasisVectors( B, gens );
 
     # Provide the `heads' information.

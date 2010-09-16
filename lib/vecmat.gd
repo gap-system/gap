@@ -269,7 +269,7 @@ DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConvertToMatrixRepNC");
-DeclareSynonym("ConvertToMatrixRep",ConvertToMatrixRepNC);
+DeclareGlobalFunction("ConvertToMatrixRep",ConvertToMatrixRepNC);
 
 
 #############################################################################

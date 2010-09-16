@@ -2036,10 +2036,7 @@ end);
 InstallMethod( ZeroVector, "for an int and a gf2 vector",
   [IsInt, IsGF2VectorRep],
   function( len, v )
-    local w;
-    w := ZeroMutable(v);
-    RESIZE_GF2VEC(w,len);
-    return w;
+    return ZERO_GF2VEC_2(len);
   end );
 
 
@@ -2134,23 +2131,59 @@ InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
   [IsGF2MatrixRep, IsList, IsList],
   function( m, rows, cols )
-    local mm;
-    mm := m{rows}{cols};
-    ConvertToMatrixRep(mm,2);
+    local mm,r;
+    mm := [];
+    for r in rows do
+        Add(mm, m![r+1]{cols});
+    od;
+    ConvertToMatrixRepNC(mm,2);
     return mm;
   end );
 
-InstallMethod( CopySubVector, "for two gf2 vectors, and two lists",
+InstallMethod( CopySubVector, "for two gf2 vectors, and two ranges",
+  [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsRange, IsRange],
+        function( v, w, f, t )
+    local l;
+    l := Length(f);
+    Assert(2, l = Length(t));
+    if l <= 1 or (f[2] - f[1] = 1 and t[2] - t[1] = 1) then
+        COPY_SECTION_GF2VECS(v,w,f[1],t[1],l);
+    else
+        TryNextMethod();
+    fi;
+  end );
+  
+  InstallMethod( CopySubVector, "for two gf2 vectors, and two lists",
   [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsList, IsList],
-  function( v, w, f, t )
+        function( v, w, f, t )
     w{t} := v{f};
   end );
 
 InstallMethod( CopySubMatrix, "for two gf2 matrices, and four lists",
   [IsGF2MatrixRep, IsGF2MatrixRep, IsList, IsList, IsList, IsList],
-  function( a, b, frows, trows, fcols, tcols )
-    b{trows}{tcols} := a{frows}{fcols};
-  end );
+        function( a, b, frows, trows, fcols, tcols )
+    local   i;
+    for i in [1..Length(frows)] do
+        CopySubVector(a[frows[i]],b[trows[i]], fcols, tcols);
+    od;
+end );
+
+InstallMethod( CopySubMatrix, "for two gf2 matrices, two lists and two ranges",
+  [IsGF2MatrixRep, IsGF2MatrixRep, IsList, IsList, IsRange, IsRange],
+        function( a, b, frows, trows, fcols, tcols )
+    local   l,  i;
+    l := Length(fcols);
+    Assert(2, l = Length(tcols));
+    if l <= 1 or (fcols[2] - fcols[1] = 1 and tcols[2] - tcols[1] = 1) then
+        for i in [1..Length(frows)] do
+            COPY_SECTION_GF2VECS(a[frows[i]],b[trows[i]],fcols[1],tcols[1],l);
+        od;
+    else
+        TryNextMethod();
+    fi;
+end );
+
+
 
 InstallMethod( Randomize, "for a mutable gf2 matrix",
   [IsGF2MatrixRep and IsMutable],
@@ -2210,29 +2243,27 @@ InstallMethod( NewRowVector, "for IsGF2VectorRep, GF(2), and a list",
   function( filter, f, l )
     local v;
     v := ShallowCopy(l);
-    ConvertToVectorRep(v,2);
+    ConvertToVectorRepNC(v,2);
     return v;
   end );
 
 InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",
   [IsInt, IsInt, IsGF2MatrixRep],
   function( rows, cols, m )
-    local l,i;
+    local l,i,x;
     l := [];
+    x := m[1];
     for i in [1..rows] do
-        Add(l,ZeroVector(cols,m[1]));
+        Add(l,ZeroVector(cols,x));
     od;
-    ConvertToMatrixRep(l);
+    ConvertToMatrixRepNC(l,2);
     return l;
   end );
 
 InstallMethod( NewZeroVector, "for IsGF2VectorRep, GF(2), and an int",
   [ IsGF2VectorRep, IsField and IsFinite, IsInt ],
   function( filter, f, i )
-    local v;
-    v := ListWithIdenticalEntries(i,0*Z(2));
-    ConvertToVectorRep(v,2);
-    return v;
+    return ZERO_GF2VEC_2(i);
   end );
 
 InstallMethod( IdentityMatrix, "for a compressed gf2 matrix",
@@ -2240,7 +2271,7 @@ InstallMethod( IdentityMatrix, "for a compressed gf2 matrix",
   function(rows,m)
     local n;
     n := IdentityMat(rows,GF(2));
-    ConvertToMatrixRep(n,2);
+    ConvertToMatrixRepNC(n,2);
     return n;
   end );
 

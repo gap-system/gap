@@ -1093,8 +1093,8 @@ InstallMethod(DistancesDistributionVecFFEsVecFFE,"generic",IsCollsElms,
   [IsList, IsList],0,
 function(vecs,vec)
 local d,i;
-  ConvertToMatrixRepNC(vecs);
-  ConvertToVectorRepNC(vec);
+  ConvertToMatrixRep(vecs);
+  ConvertToVectorRep(vec);
   d:=ListWithIdenticalEntries(Length(vec)+1,0);
   for i in vecs do
     i:=DistanceVecFFE(i,vec);
@@ -1288,7 +1288,7 @@ AClosestVectorDriver :=
       Error("First list needs at least ", cnt, " vectors . . .\n");
     fi;
     
-    ConvertToMatrixRepNC(mat);
+    ConvertToMatrixRepNC(mat,Size(f));
     ConvertToVectorRepNC(vec,f);
     
     # build the data structures

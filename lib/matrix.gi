@@ -2997,9 +2997,9 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         fi;
     od;
     if f <> false then
-        ConvertToMatrixRepNC(id,f);
+        ConvertToMatrixRep(id,f);
     else
-        ConvertToMatrixRepNC(id);
+        ConvertToMatrixRep(id);
     fi;
 
     # return the identity matrix
@@ -3041,7 +3041,7 @@ InstallGlobalFunction( NullMat, function ( arg )
     for i  in [1..m]  do
         null[i] := ShallowCopy( row );
     od;
-    ConvertToMatrixRepNC(null,f);
+    ConvertToMatrixRep(null,f);
 
     # return the null matrix
     return null;
@@ -3231,7 +3231,7 @@ InstallGlobalFunction( DiagonalMat, function( vector )
       M[i][i]:= vector[i];
       ConvertToVectorRepNC(M[i]);
     od;
-    ConvertToMatrixRepNC( M );
+    ConvertToMatrixRep( M );
     return M;
 end );
 
@@ -3300,7 +3300,7 @@ InstallGlobalFunction( ReflectionMat, function( arg )
       ConvertToVectorRepNC( row );
       M[i]:= row;
     od;
-    ConvertToMatrixRepNC( M );
+    ConvertToMatrixRep( M );
 
     # Return the result.
     return M;
@@ -3341,7 +3341,7 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
             mat[i] := row;
         until NullspaceMat( mat ) = [];
     od;
-    ConvertToMatrixRepNC( mat, R );
+    ConvertToMatrixRep( mat, R );
     return mat;
 end );
 
@@ -3381,7 +3381,7 @@ InstallGlobalFunction( RandomMat, function ( arg )
     od;
 
     # put into optimal form
-    ConvertToMatrixRepNC(mat);
+    ConvertToMatrixRep(mat);
     return mat;
 end );
 

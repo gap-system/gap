@@ -247,11 +247,12 @@ end);
 
 #############################################################################
 ##
-#M  ConvertToMatrixRepNC( <list> )
+#M  ConvertToMatrixRepNC( <list>, <fieldsize )
+#M  ConvertToMatrixRepC( <list>[, <fieldsize> | <field>])
 ##
 
 
-InstallGlobalFunction(ConvertToMatrixRepNC,
+InstallGlobalFunction(ConvertToMatrixRep,
         function( arg )
     local m,qs, v,  q, givenq, q1, LeastCommonPower, lens;
     
@@ -384,14 +385,22 @@ InstallGlobalFunction(ConvertToMatrixRepNC,
         od;
     fi;
     
+    if q < 256 then
+        ConvertToMatrixRepNC(m,q);
+    fi;
+    
+    return q;
+end);    
+
+
+InstallGlobalFunction(ConvertToMatrixRepNC, function(m,q)    
     if q = 2 then
         CONV_GF2MAT(m);
     elif q <= 256 then
         CONV_MAT8BIT(m, q);
     fi;
-    return q;
-end);    
-        
+end);
+
 #############################################################################
 ##
 #M <vec> * <mat>
