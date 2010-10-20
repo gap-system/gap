@@ -761,11 +761,11 @@ Obj FuncPRINT_PREC_DEFAULT (
     Obj                 self,
     Obj                 rec )
 {
+    Int PrintObjIndex;
     /* print the record                                                    */
     Pr( "%2>rec(\n%2>", 0L, 0L );
     /*PrintObjDepth = 1;
     PrintObjThis = rec;*/
-    Int PrintObjIndex;
     for ( PrintObjIndex=1; PrintObjIndex<=LEN_PREC(rec); PrintObjIndex++ ) {
         Pr( "%I", (Int)NAME_RNAM(
                        labs((Int)(GET_RNAM_PREC(rec,PrintObjIndex)))), 0L );

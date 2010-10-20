@@ -247,6 +247,7 @@ void CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
   UInt *send;
   UInt *dend;
   UInt i;
+  UInt bits;
 
   if (nelts == 0) {
     return;
@@ -259,7 +260,6 @@ void CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
   dptr = BLOCKS_GF2VEC(dest) + dmin/BIPEB;
   
   /* deal with some short section cases */
-  UInt bits;
   /* all the section is within the starting source block */
   if (nelts <= BIPEB -soff) {
     /* get all the section in one go */
@@ -292,6 +292,7 @@ void CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
      easiest case first, when they are equal */
   if (soff == doff) {
     UInt fullblocks;
+    UInt eoff;
     /* partial block at the start */
     if (soff != 0) {
       bits = highbits(*sptr++, BIPEB - soff);
@@ -302,7 +303,7 @@ void CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
     /* Now zero or more full blocks */
     memmove(dptr, sptr, fullblocks*sizeof(Obj));
     /* partial block at the end */
-    UInt eoff = (soff + nelts) % BIPEB;
+    eoff = (soff + nelts) % BIPEB;
     if (eoff != 0) {
       bits = lowbits(sptr[fullblocks],eoff);
       setlowbits(dptr+fullblocks,eoff, bits);

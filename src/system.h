@@ -122,7 +122,7 @@
 #endif
 
 #ifndef SYS_ARCH
-# define SYS_ARCH = "unknown";
+# define SYS_ARCH "unknown"
 #endif
 
 #ifndef SY_STOR_MIN

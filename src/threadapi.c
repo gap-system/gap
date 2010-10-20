@@ -730,11 +730,12 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+    extern pthread_mutex_t KeepAliveLock;
+
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* synchronization */
-    extern pthread_mutex_t KeepAliveLock;
     pthread_mutex_init(&KeepAliveLock, NULL);
 
     /* return success                                                      */
