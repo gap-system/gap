@@ -531,9 +531,7 @@ Obj AddPartialGF2VecGF2Vec (
 
 #endif
 
-Obj ProdGF2VecGF2Vec ( vl, vr )
-    Obj                 vl;
-    Obj                 vr;
+Obj ProdGF2VecGF2Vec ( Obj vl, Obj vr )
 {
     UInt *              ptL;            /* bit field of <vl>               */
     UInt *              ptR;            /* bit field of <vr>               */
@@ -591,9 +589,7 @@ Obj ProdGF2VecGF2Vec ( vl, vr )
 **  multiplied by the corresponding entry of <vl>.  Note that the  caller has
 **  to ensure, that <vl> is a gf2-vector and <vr> is a gf2-matrix.
 */
-Obj ProdGF2VecGF2Mat ( vl, vr )
-    Obj                 vl;
-    Obj                 vr;
+Obj ProdGF2VecGF2Mat ( Obj vl, Obj vr )
 {
     UInt                len;            /* length of the list              */
     UInt                stop;
@@ -659,9 +655,7 @@ Obj ProdGF2VecGF2Mat ( vl, vr )
 **  Note that the  caller has
 **  to ensure, that <ml> is a GF2 matrix and <vr> is a GF2 vector.
 */
-Obj ProdGF2MatGF2Vec ( ml, vr )
-    Obj                 ml;
-    Obj                 vr;
+Obj ProdGF2MatGF2Vec ( Obj ml, Obj vr )
 {
     UInt                len;            /* length of the vector            */
     UInt                ln1;            /* length of the rows of the mx    */
@@ -2859,17 +2853,22 @@ Obj FuncPOSITION_NONZERO_GF2VEC3(
 
 
 Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany) {
+  Int   ifrom;
+  Int   ito;
+  Int   ihowmany;
+  UInt  lens;
+  UInt  lend;
   if (!IS_GF2VEC_REP(src) ||
       !IS_GF2VEC_REP(dest) ||
       !IS_INTOBJ(from) || 
       !IS_INTOBJ(to) || 
       !IS_INTOBJ(howmany)) 
     ErrorMayQuit("Bad argument types", 0,0);
-  Int ifrom = INT_INTOBJ(from);
-  Int ito = INT_INTOBJ(to);
-  Int ihowmany = INT_INTOBJ(howmany);
-  UInt lens = LEN_GF2VEC(src);
-  UInt lend = LEN_GF2VEC(dest);
+  ifrom = INT_INTOBJ(from);
+  ito = INT_INTOBJ(to);
+  ihowmany = INT_INTOBJ(howmany);
+  lens = LEN_GF2VEC(src);
+  lend = LEN_GF2VEC(dest);
   if (ifrom <= 0 || ito <= 0 ||
       ihowmany < 0 || ifrom + ihowmany -1 > lens || ito + ihowmany -1 > lend)
     ErrorMayQuit("Bad argument values",0,0);
