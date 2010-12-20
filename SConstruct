@@ -181,7 +181,7 @@ if preprocess:
   gen = map(lambda s: "gen/"+s[4:], pregen)
   for i in range(len(pregen)):
     GAP.Command(gen[i], pregen[i],
-        preprocess + " <$SOURCE >$TARGET")
+        preprocess + " $SOURCE >$TARGET")
   source = map(lambda s: "gen/"+s[4:], source)
 
 source.append("extern/jenkins/jhash.o")
