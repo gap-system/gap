@@ -1,4 +1,4 @@
-#ifndef _TLS_H
+#ifndef iTLS_H
 #define _TLS_H
 
 #include <stdint.h>
@@ -147,32 +147,48 @@ static inline ThreadLocalStorage *GetTLS()
 
 #endif /* HAVE_NATIVE_TLS */
 
-static inline void WriteGuard(Bag bag)
+#define IS_BAG_REF(bag) (!((Int)(bag)& 0x03))
+
+static inline Bag WriteGuard(Bag bag)
 {
   extern void WriteGuardError();
-  DataSpace *dataspace = DS_BAG(bag);
+  DataSpace *dataspace;
+  if (!IS_BAG_REF(bag))
+    return bag;
+  dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS)
     WriteGuardError();
+  return bag;
 }
 
 static inline int CheckWrite(Bag bag)
 {
-  DataSpace *dataspace = DS_BAG(bag);
+  DataSpace *dataspace;
+  if (!IS_BAG_REF(bag))
+    return 1;
+  dataspace = DS_BAG(bag);
   return (dataspace && dataspace->owner != TLS);
 }
 
-static inline void ReadGuard(Bag bag)
+static inline Bag ReadGuard(Bag bag)
 {
   extern void ReadGuardError();
-  DataSpace *dataspace = DS_BAG(bag);
+  DataSpace *dataspace;
+  if (!IS_BAG_REF(bag))
+    return bag;
+  dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS &&
       !dataspace->readers[TLS->threadID+1])
     ReadGuardError();
+  return bag;
 }
 
 static inline int CheckRead(Bag bag)
 {
-  DataSpace *dataspace = DS_BAG(bag);
+  DataSpace *dataspace;
+  if (!IS_BAG_REF(bag))
+    return 1;
+  dataspace = DS_BAG(bag);
   return (dataspace && dataspace->owner != TLS &&
     !dataspace->readers[TLS->threadID+1]);
 }
