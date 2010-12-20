@@ -11,6 +11,7 @@ vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
+vars.Add('preprocess', 'Use source preprocessor', "")
 
 GAP = DefaultEnvironment(variables=vars)
 
@@ -168,8 +169,21 @@ options["OBJPREFIX"] = "../" + build_dir + "/"
 
 # Building binary from source
 
+preprocess = GAP["preprocess"]
+
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
+if preprocess:
+  import os, stat
+  try: os.mkdir("gen")
+  except: pass
+  pregen = glob.glob("src/*.[ch]")
+  gen = map(lambda s: "gen/"+s[4:], pregen)
+  for i in range(len(pregen)):
+    GAP.Command(gen[i], pregen[i],
+        preprocess + " <$SOURCE >$TARGET")
+  source = map(lambda s: "gen/"+s[4:], source)
+
 source.append("extern/jenkins/jhash.o")
 
 GAP.Command("extern/include/jhash.h", "extern/jenkins/jhash.h",
