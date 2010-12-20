@@ -41,6 +41,10 @@ const char * Revision_records_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **
@@ -199,12 +203,13 @@ UInt            RNamObj (
     }
 
     /* otherwise fail                                                      */
-    else {
-        obj = ErrorReturnObj(
+    {
+	Obj err;
+        err = ErrorReturnObj(
             "Record: '<rec>.(<obj>)' <obj> must be a string or an integer",
             0L, 0L,
             "you can replace <obj> via 'return <obj>;'" );
-        return RNamObj( obj );
+        return RNamObj( err );
     }
 }
 

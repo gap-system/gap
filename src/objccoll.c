@@ -48,6 +48,10 @@ const char * Revision_objccoll_c =
 #include        "objccoll.h"            /* combinatorial collector         */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 /****************************************************************************
 **
 *F  C8Bits_CombiCollectWord( <sc>, <vv>, <w> )

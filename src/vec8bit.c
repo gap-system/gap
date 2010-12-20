@@ -44,6 +44,8 @@ const char * Revision_vec8bit_c =
 
 #include        "code.h"               /* for TakeInterrupt */
 #include        "stats.h" 
+#include	"thread.h"
+#include	"tls.h"
 
 #ifndef DEBUG
 #ifndef NDEBUG
@@ -1451,9 +1453,7 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
       prod = CopyVec8Bit( vec, IS_MUTABLE_OBJ(vec));
     }
   else if (VAL_FFE(ffe) == 0)
-    return ZeroVec8Bit(FIELD_VEC8BIT(vec),
-		       LEN_VEC8BIT(vec),
-		       IS_MUTABLE_OBJ(vec));
+    return ZeroVec8Bit(FIELD_VEC8BIT(vec), LEN_VEC8BIT(vec), IS_MUTABLE_OBJ(vec));
   
   info = GetFieldInfo8Bit(FIELD_VEC8BIT(vec));
   d = D_FIELDINFO_8BIT(info);

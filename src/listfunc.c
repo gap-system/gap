@@ -46,6 +46,9 @@ const char * Revision_listfunc_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
 #include        "range.h"               /* ranges                          */
+#include	"code.h"
+#include	"thread.h"
+#include	"tls.h"
 
 #include		<string.h>
 

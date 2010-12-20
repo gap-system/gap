@@ -2442,9 +2442,7 @@ Obj FuncGASMAN_STATS(Obj self)
 	  if (x < (1L << NR_SMALL_INT_BITS))
 	    entry = INTOBJ_INT(x);
 	  else
-	    entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)),
-			      INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))),
-			 INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
+	    entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)), INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))), INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
 	  SET_ELM_PLIST(row, j, entry);
 	}
       SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));	

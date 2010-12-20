@@ -64,6 +64,10 @@ const char * Revision_sctable_c =
 #include        "sctable.h"             /* structure constant table        */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **

@@ -46,6 +46,9 @@ const char * Revision_listoper_c =
 #include        "string.h"              /* strings                         */
 #include        "opers.h"               /* TRY_NEXT_METHOD                 */
 #include        "range.h"               /* Ranges                          */
+#include        "code.h"		/* Coder                           */
+#include        "thread.h"              /* threads                         */
+#include        "tls.h"                 /* thread-local storage            */
 
 
 /****************************************************************************

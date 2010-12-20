@@ -55,6 +55,8 @@ const char * Revision_objscoll_c =
 #undef  INCLUDE_DECLARATION_PART
 
 #include        "objccoll.h"            /* combinatorial collector         */
+#include        "thread.h"
+#include        "tls.h"
 
 /****************************************************************************
 **

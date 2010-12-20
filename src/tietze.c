@@ -39,6 +39,10 @@ const char * Revision_tietze_c =
 #include        "tietze.h"              /* tietze helper functions         */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **

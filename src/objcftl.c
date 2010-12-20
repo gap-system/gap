@@ -34,6 +34,10 @@ const char * Revision_objcftl_c =
 #include        "objcftl.h"             /* from the left collect           */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"code.h"
+#include	"thread.h"
+#include	"tls.h"
+
 
 #define IS_INT_ZERO( n )  (IS_INTOBJ(n) && ((n) == INTOBJ_INT(0))) 
 

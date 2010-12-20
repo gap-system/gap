@@ -102,6 +102,9 @@ const char * Revision_objfgelm_c =
 #include        "objfgelm.h"            /* objects of free groups          */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
 
 /****************************************************************************
 **

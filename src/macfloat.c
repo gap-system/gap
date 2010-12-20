@@ -33,6 +33,10 @@ const char * Revision_macfloat_c =
 #include        "scanner.h"
 #include        "string.h"
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */
 extern Double LoadDouble( void);

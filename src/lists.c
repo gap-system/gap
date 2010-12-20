@@ -52,6 +52,10 @@ const char * Revision_lists_c =
 #include        "string.h"              /* strings                         */
 #include        "integer.h"             /* integers                        */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **

@@ -37,6 +37,10 @@ const char * Revision_saveload_c =
 #include        "saveload.h"            /* saving and loading              */
 #undef  INCLUDE_DECLARATION_PART
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /***************************************************************************
 **

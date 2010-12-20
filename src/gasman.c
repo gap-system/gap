@@ -133,7 +133,10 @@ const char * Revision_gasman_c =
 
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
-#include	"thread.h"
+
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
 
 
 
@@ -444,6 +447,17 @@ UInt                    NrHalfDeadBags;
 *V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
 */
 TNumInfoBags            InfoBags [ NTYPES ];
+
+/****************************************************************************
+**
+*V  PublicBags[<type>]  . . . .  . . . . . . . . . .  data space info for bags
+*/
+static char 	PublicBags[NTYPES];
+
+void MakeBagTypePublic(int type)
+{
+    PublicBags[type] = 1;
+}
 
 
 /****************************************************************************
@@ -1261,7 +1275,7 @@ Bag NewBag (
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = dst;
-    DS_BAG(bag) = CurrentDataSpace();
+    DS_BAG(bag) = PublicBags[type] ? NULL : CurrentDataSpace();
 #if 0
     {
       extern void * stderr;

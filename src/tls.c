@@ -73,3 +73,13 @@ void DestroyTLS()
   DestroyThreadAPITLS();
   DestroyOpersTLS();
 }
+
+void WriteGuardError()
+{
+  ErrorMayQuit("WriteGuard() failed", 0L, 0L);
+}
+
+void ReadGuardError()
+{
+  ErrorMayQuit("ReadGuard() failed", 0L, 0L);
+}

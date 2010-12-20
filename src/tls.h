@@ -147,7 +147,7 @@ static inline ThreadLocalStorage *GetTLS()
 
 #endif /* HAVE_NATIVE_TLS */
 
-#define IS_BAG_REF(bag) (!((Int)(bag)& 0x03))
+#define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 
 static inline Bag WriteGuard(Bag bag)
 {

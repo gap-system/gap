@@ -68,6 +68,9 @@ const char * Revision_plist_c =
 #include        "blister.h"             /* boolean lists                   */
 
 #include        "saveload.h"            /* saving and loading              */
+#include	"code.h"
+#include	"thread.h"
+#include	"tls.h"
 
 #include        <assert.h>
 /****************************************************************************

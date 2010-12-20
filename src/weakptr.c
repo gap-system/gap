@@ -41,6 +41,11 @@ const char * Revision_weakptr_c =
 #include        "saveload.h"            /* saving and loading              */
 #include        "opers.h"               /* generic operations              */
 
+#include	"scanner.h"		/* scanner                         */
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 
 /****************************************************************************
 **
