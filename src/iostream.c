@@ -50,6 +50,10 @@ const char * Revision_iostream_c =
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* True and False                  */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
 # include <stdio.h>
 # define SYS_STDIO_H

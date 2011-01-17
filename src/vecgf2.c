@@ -40,6 +40,9 @@ const char * Revision_vecgf2_c =
 #include        "code.h"                /* Needed for TakeInterrupt */
 #include        "stats.h"
 
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include        <assert.h>
 
 /****************************************************************************

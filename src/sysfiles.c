@@ -43,6 +43,10 @@ const char * Revision_sysfiles_c =
 #include        "records.h"             /* generic records                 */
 #include        "bool.h"                /* Global True and False           */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include <assert.h>
 #include <fcntl.h>
 
