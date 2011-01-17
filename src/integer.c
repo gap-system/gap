@@ -120,6 +120,10 @@ const char * Revision_integer_c =
 
 #include        "extern/include/jhash.h" /* Jenkins Hash function, from extern */
 
+#include	"code.h"		/* coder                           */
+#include	"thread.h"		/* threads			   */
+#include	"tls.h"			/* thread-local storage		   */
+
 #include <stdio.h>
 
 /****************************************************************************
