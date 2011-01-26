@@ -1471,6 +1471,38 @@ void ReadAnd (
 
 /****************************************************************************
 **
+*F  ReadQualifiedExpr( <follow>, <mode> )  . . . . .  read an expression which
+**                may be qualified with readonly or readwrite
+**
+**  'ReadQualifiedExpr' reads a qualifed expression.  In case of an error it skips all symbols
+**  up to one contained in <follow>.
+**
+**  <QualifiedExpr> := ['readonly' | 'readwrite' ] <Expr>
+*/
+void ReadQualifiedExpr (
+    TypSymbolSet        follow,
+    Char                mode )
+{
+  UInt access  = 0;
+  if (TLS->symbol == S_READWRITE) 
+    {
+      Match( S_READWRITE, "readwrite", follow | EXPRBEGIN );
+      access = 2;
+    }
+  else if (TLS->symbol == S_READONLY) 
+    {
+      Match( S_READONLY, "readonly", follow | EXPRBEGIN );
+      access = 1;
+    }
+  IntrQualifiedExprBegin(access);
+  ReadExpr(follow,mode);
+  IntrQualifiedExprEnd();
+}
+
+
+
+/****************************************************************************
+**
 *F  ReadExpr( <follow>, <mode> )  . . . . . . . . . . . .  read an expression
 **
 **  'ReadExpr' reads an expression.  In case of an error it skips all symbols
@@ -1766,6 +1798,68 @@ void ReadWhile (
     }
 }
 
+/****************************************************************************
+**
+*F  ReadAtomic( <follow> ) . . . . . . . . . . . . . .  read an atomic block
+**
+**  'ReadAtomic' reads an atomic block.  In case of an error it skips all symbols
+**  up to one contained in <follow>.
+**
+**  <Statement> := 'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
+**
+*/
+void ReadAtomic (
+    TypSymbolSet        follow )
+{
+    volatile UInt       nrs;            /* number of statements in body    */
+    volatile UInt       nexprs;            /* number of statements in body    */
+    volatile UInt       nrError;        /* copy of <TLS->nrError>          */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
+
+    /* remember the current variables in case of an error                  */
+    currLVars = TLS->currLVars;
+    nrError   = TLS->nrError;
+
+    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */    
+    if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
+    Match( S_ATOMIC, "atomic", follow );
+    ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
+    nexprs = 1;
+    while (TLS->symbol == S_COMMA) {
+      Match( S_COMMA, "comma", follow | S_DO | S_OD );
+      ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
+      nexprs ++;
+      if (nexprs > MAX_ATOMIC_OBJS)
+	SyntaxError("atomic statement can have at most 256 objects to lock");
+      ReadEvalError();
+    }
+
+    Match( S_DO, "do", STATBEGIN|S_DO|follow );
+
+    /*     <Statments>                                                     */
+    if ( ! READ_ERROR() ) { IntrAtomicBeginBody(nexprs); }
+    nrs = ReadStats( S_OD|follow );
+    if ( ! READ_ERROR() ) { IntrAtomicEndBody( nrs ); }
+
+    /* 'od'                                                                */
+    Match( S_OD, "od", follow );
+    if ( ! READ_ERROR() ) {
+        IntrAtomicEnd();
+    }
+
+    /* an error has occured *after* the 'IntrAtomicEndBody'                 */
+    /* If we hadn't actually come out of coding the body, we need
+       to recover. Otherwise it was probably an error in executing the body and
+       we just return */
+    else if ( nrError == 0 && TLS->intrCoding ) {
+        CodeEnd(1);
+        TLS->intrCoding--;
+        TLS->currLVars = currLVars;
+        TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
+        TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+    }
+}
+
 
 /****************************************************************************
 **
@@ -1971,6 +2065,7 @@ void            ReadQUIT (
 **              |  'repeat' <Statments>  'until' <Expr> ';'
 **              |  'break' ';'
 **              |  'return' [ <Expr> ] ';'
+**              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
 **              |  ';'
 */
 UInt ReadStats (
@@ -1996,6 +2091,7 @@ UInt ReadStats (
         else if ( TLS->symbol == S_RETURN ) ReadReturn(    follow    );
         else if ( TLS->symbol == S_TRYNEXT) ReadTryNext(   follow    );
 	else if ( TLS->symbol == S_QUIT   ) ReadQuit(      follow    );
+	else if ( TLS->symbol == S_ATOMIC ) ReadAtomic(    follow    );
 	else                           ReadEmpty(     follow    );
 	nr++;
         Match( S_SEMICOLON, ";", follow );

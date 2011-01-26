@@ -165,6 +165,8 @@ const char * Revision_code_h =
 
 #define T_PROCCALL_OPTS        (FIRST_STAT_TNUM+ 79)
 
+#define T_ATOMIC               (FIRST_STAT_TNUM+80)
+
 #define LAST_STAT_TNUM          T_PROCCALL_OPTS
 
 

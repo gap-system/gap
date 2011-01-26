@@ -67,6 +67,8 @@ const char * Revision_scanner_h =
 #define S_COMMA         ((1UL<< 9)+0)
 #define S_DOTDOT        ((1UL<< 9)+1)
 #define S_COLON         ((1UL<< 9)+2)
+#define S_READWRITE     ((1UL<< 9)+3)
+#define S_READONLY      ((1UL<< 9)+4)
 
 #define S_PARTIALINT    ((1UL<<10)+0)
 #define S_INT           ((1UL<<10)+1)
@@ -110,6 +112,7 @@ const char * Revision_scanner_h =
 #define S_FOR           ((1UL<<22)+1)
 #define S_WHILE         ((1UL<<22)+2)
 #define S_REPEAT        ((1UL<<22)+3)
+#define S_ATOMIC        ((1UL<<22)+4)
 
 #define S_THEN          ((1UL<<23))
 #define S_ELIF          ((1UL<<24)+0)

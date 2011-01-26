@@ -1831,6 +1831,7 @@ void GetIdent ( void )
 
     /* now check if 'TLS->value' holds a keyword                                */
     switch ( 256*TLS->value[0]+TLS->value[i-1] ) {
+    case 256*'a'+'c': if(!SyStrcmp(TLS->value,"atomic"))  TLS->symbol=S_ATOMIC;  break;
     case 256*'a'+'d': if(!SyStrcmp(TLS->value,"and"))     TLS->symbol=S_AND;     break;
     case 256*'b'+'k': if(!SyStrcmp(TLS->value,"break"))   TLS->symbol=S_BREAK;   break;
     case 256*'c'+'e': if(!SyStrcmp(TLS->value,"continue"))   TLS->symbol=S_CONTINUE;   break;
@@ -1849,6 +1850,8 @@ void GetIdent ( void )
     case 256*'n'+'t': if(!SyStrcmp(TLS->value,"not"))     TLS->symbol=S_NOT;     break;
     case 256*'o'+'d': if(!SyStrcmp(TLS->value,"od"))      TLS->symbol=S_OD;      break;
     case 256*'o'+'r': if(!SyStrcmp(TLS->value,"or"))      TLS->symbol=S_OR;      break;
+    case 256*'r'+'e': if(!SyStrcmp(TLS->value,"readwrite")) TLS->symbol=S_READWRITE;     break;
+    case 256*'r'+'y': if(!SyStrcmp(TLS->value,"readonly"))  TLS->symbol=S_READONLY;     break;
     case 256*'r'+'c': if(!SyStrcmp(TLS->value,"rec"))     TLS->symbol=S_REC;     break;
     case 256*'r'+'t': if(!SyStrcmp(TLS->value,"repeat"))  TLS->symbol=S_REPEAT;  break;
     case 256*'r'+'n': if(!SyStrcmp(TLS->value,"return"))  TLS->symbol=S_RETURN;  break;

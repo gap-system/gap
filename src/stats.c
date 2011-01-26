@@ -1014,6 +1014,55 @@ UInt            ExecForRange3 (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  ExecAtomic(<stat>)
+*/
+
+UInt ExecAtomic(
+		Stat stat)
+{
+  Obj tolock[MAX_ATOMIC_OBJS];
+  int locktypes[MAX_ATOMIC_OBJS];
+  int lockstatus[MAX_ATOMIC_OBJS];
+  UInt mode, nrexprs,i,j;
+  
+  nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
+  
+    for (i = 0; i < nrexprs; i++) {
+      tolock[i] =  EVAL_EXPR(ADDR_STAT(stat)[2*i]);
+      mode = INT_INTEXPR(ADDR_STAT(stat)[2*i-1]);
+      locktypes[i] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+    }
+    
+    GetLockStatus(nrexprs, tolock, lockstatus);
+
+    j = 0;
+    for (i = 0; i < nrexprs; i++)
+      {
+	switch(lockstatus[i]) {
+	case 0:
+	  tolock[j] = tolock[i];
+	  locktypes[j] = locktypes[i];
+	  j++;
+	  break;
+	case 1:
+	  if (locktypes[i] == 1)
+	    break;
+	  ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+	case 2:
+	  if (locktypes[i] == 0)
+	    break;
+	  ErrorMayQuit("Attempt to change from write to read lock", 0L, 0L);
+ 	default:
+	  assert(0);
+	}
+      }
+    LockObjects(j, tolock, locktypes);
+    EXEC_STAT(ADDR_STAT(stat)[0]);
+    UnlockObjects(j, tolock);
+    return 0;
+}
 
 /****************************************************************************
 **

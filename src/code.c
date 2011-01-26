@@ -959,6 +959,100 @@ void CodeForEnd ( void )
 }
 
 
+void CodeQualifiedExprBegin(UInt qual) 
+{
+  PushExpr(INTEXPR_INT(qual));
+}
+
+void CodeQualifiedExprEnd() 
+{
+}
+
+
+/****************************************************************************
+**
+*F  CodeAtomicBegin()  . . . . . . .  code atomic-statement, begin of statement
+*F  CodeAtomicBeginBody()  . . . . . . . . code atomic-statement, begin of body
+*F  CodeAtomicEndBody( <nr> )  . . . . . . . code atomic-statement, end of body
+*F  CodeAtomicEnd()  . . . . . . . . .  code atomic-statement, end of statement
+**
+**  'CodeAtomicBegin'  is an action to  code a atomic-statement.   It is called
+**  when the  reader encounters the 'atomic',  i.e., *before* the condition is
+**  read.
+**
+**  'CodeAtomicBeginBody'  is  an action   to code a  atomic-statement.   It is
+**  called when  the reader encounters  the beginning  of the statement body,
+**  i.e., *after* the condition is read.
+**
+**  'CodeAtomicEndBody' is an action to  code a atomic-statement.  It is called
+**  when the reader encounters  the end of  the statement body.  <nr> is  the
+**  number of statements in the body.
+**
+**  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
+**  the reader encounters  the end  of the  statement, i.e., immediate  after
+**  'CodeAtomicEndBody'.
+*/
+void CodeAtomicBegin ( void )
+{
+}
+
+void CodeAtomicBeginBody ( UInt nrexprs )
+{
+  PushExpr(INTEXPR_INT(nrexprs)); 
+  return;
+}
+
+void CodeAtomicEndBody (
+    UInt                nrstats )
+{
+    Stat                stat;           /* atomic-statement, result         */
+    Expr                cond;           /* condition                       */
+    Stat                stat1;          /* single statement of body        */
+    UInt                i;              /* loop variable                   */
+    UInt nrexprs;
+    UInt mode;
+
+
+    /* fix up the case of no statements */
+    if ( 0 == nrstats ) {
+       nrexprs = INT_INTEXPR(PopExpr());
+       PushStat( NewStat( T_EMPTY, 0) );
+       nrstats = 1;
+    }
+    
+    /* collect the statements into a statement sequence   */
+    if ( 1 < nrstats ) {
+      stat1 = PopSeqStat( nr );
+      nrexprs = INT_INTEXPR(PopExpr());
+    }
+    
+    /* allocate the atomic-statement                                        */
+    stat = NewStat( T_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
+    
+
+    /* enter the statement sequence */
+    ADDR_STAT(stat)[0] = stat1;
+
+    
+    /* enter the expressions                                                */
+    for ( i = 2*nr; 1 <= i; i -= 2 ) {
+        stat1 = PopStat();
+	qual = PopExpr();
+        ADDR_STAT(stat)[i] = stat1;
+	ADDR_STAT(stat)[i-1] = qual;
+    }
+
+
+    /* push the atomic-statement                                            */
+    PushStat( stat );
+}
+
+void CodeAtomicEnd ( void )
+{
+}
+
+
+
 /****************************************************************************
 **
 *F  CodeWhileBegin()  . . . . . . .  code while-statement, begin of statement
