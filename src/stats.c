@@ -1931,6 +1931,40 @@ void            PrintWhile (
     Pr( "%4<\nod;", 0L, 0L );
 }
 
+/****************************************************************************
+**
+*F  PrintAtomic(<stat>)  . . . . . . . . . . . . . . . . .  print a atomic loop
+**
+**  'PrintAtomic' prints the atomic-loop <stat>.
+**
+**  Linebreaks are printed after the 'do' and the statments  in the body.  If
+**  necessary one is preferred immediately before the 'do'.
+*/
+void            PrintAtomic (
+    Stat                stat )
+{
+  UInt nrexprs;
+    UInt                i;              /* loop variable                   */
+
+    Pr( "atomic%4> ", 0L, 0L );
+    nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
+    for (i = 0; i <  nrexprs; i++) {
+      if (i != 0)
+	Pr(",%4> ",0L,0L);
+      switch (INT_INTEXPR(ADDR_STAT(stat)[2*i-1])) {
+      case 0: break;
+      case 1: Pr("readonly ",0L,0L);
+	break;
+      case 2: Pr("readwrite ",0L,0L);
+	break;
+      }
+      PrintExpr(ADDR_STAT(stat)[2*i]);
+    }
+    Pr( "%2<  do%2>\n", 0L, 0L );
+    PrintStat( ADDR_STAT(stat)[0]);
+    Pr( "%4<\nod;", 0L, 0L );
+}
+
 
 /****************************************************************************
 **
@@ -2174,6 +2208,7 @@ static Int InitKernel (
     ExecStatFuncs [ T_RETURN_OBJ     ] = ExecReturnObj;
     ExecStatFuncs [ T_RETURN_VOID    ] = ExecReturnVoid;
     ExecStatFuncs [ T_EMPTY          ] = ExecEmpty;
+    ExecStatFuncs [ T_ATOMIC         ] = ExecAtomic;
 
     /* install printers for non-statements                                */
     for ( i = 0; i < sizeof(PrintStatFuncs)/sizeof(PrintStatFuncs[0]); i++ ) {
@@ -2211,6 +2246,7 @@ static Int InitKernel (
     PrintStatFuncs[ T_RETURN_OBJ     ] = PrintReturnObj;
     PrintStatFuncs[ T_RETURN_VOID    ] = PrintReturnVoid;
     PrintStatFuncs[ T_EMPTY          ] = PrintEmpty;
+    PrintStatFuncs[ T_ATOMIC         ] = PrintAtomic;
 
     /* return success                                                      */
     return 0;
