@@ -404,14 +404,21 @@ void StopKeepAlive(Obj node)
 */
 
 Obj FuncCreateThread(Obj self, Obj funcargs) {
-  int id;
+  int id, i, n;
   void ThreadedInterpreter(void *);
-  if (LEN_PLIST(funcargs) == 0 || !IS_FUNC(ELM_PLIST(funcargs, 1)))
+  Obj templist;
+  n = LEN_PLIST(funcargs);
+  if (n == 0 || !IS_FUNC(ELM_PLIST(funcargs, 1)))
   {
     ArgumentError("CreateThread: Needs at least one function argument");
     return (Obj) 0; /* flow control hint */
   }
-  id = RunThread(ThreadedInterpreter, KeepAlive(funcargs));
+  templist = NEW_PLIST(T_PLIST, n);
+  SET_LEN_PLIST(templist, n);
+  DS_BAG(templist) = NULL; /* make it public */
+  for (i=1; i<=n; i++)
+    SET_ELM_PLIST(templist, i, ELM_PLIST(funcargs, i));
+  id = RunThread(ThreadedInterpreter, KeepAlive(templist));
   return INTOBJ_INT(id);
 }
 
