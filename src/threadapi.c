@@ -554,7 +554,7 @@ Obj FuncReadSyncVar(Obj self, Obj var);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
-Obj FuncNEW_DATA_SPACE(Obj self);
+Obj FuncSHARED_LIST(Obj self);
 
 /****************************************************************************
 **
@@ -649,8 +649,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "UNLOCK", -1, "obj, ...",
       FuncUNLOCK, "src/threadapi.c:LOCK" },
 
-    { "NEW_DATA_SPACE", 0, "",
-      FuncNEW_DATA_SPACE, "src/threadapi.c:NEW_DATA_SPACE" },
+    { "SHARED_LIST", 0, "",
+      FuncSHARED_LIST, "src/threadapi.c:SHARED_LIST" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1527,7 +1527,7 @@ Obj FuncUNLOCK(Obj self, Obj args)
   return (Obj) 0;
 }
 
-Obj FuncNEW_DATA_SPACE(Obj self)
+Obj FuncSHARED_LIST(Obj self)
 {
   Obj result = NEW_PLIST(T_PLIST, 0);
   SET_LEN_PLIST(result, 0);
