@@ -1019,6 +1019,10 @@ UInt            ExecForRange3 (
 *F  ExecAtomic(<stat>)
 */
 
+#define GetLockStatus(a,b,c)  memset(c,0,a*sizeof(int))
+#define LockObjects(ct, objs, locktype) Pr("Locking %i objects\n",ct,0L);
+#define UnlockObjects(ct, objs) Pr("Unlocking %i objects\n",ct,0L);
+
 UInt ExecAtomic(
 		Stat stat)
 {
@@ -1029,7 +1033,7 @@ UInt ExecAtomic(
   
   nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
   
-    for (i = 0; i < nrexprs; i++) {
+    for (i = 1; i <= nrexprs; i++) {
       tolock[i] =  EVAL_EXPR(ADDR_STAT(stat)[2*i]);
       mode = INT_INTEXPR(ADDR_STAT(stat)[2*i-1]);
       locktypes[i] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
@@ -1948,9 +1952,9 @@ void            PrintAtomic (
 
     Pr( "atomic%4> ", 0L, 0L );
     nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
-    for (i = 0; i <  nrexprs; i++) {
-      if (i != 0)
-	Pr(",%4> ",0L,0L);
+    for (i = 1; i <=  nrexprs; i++) {
+      if (i != 1)
+	Pr(", ",0L,0L);
       switch (INT_INTEXPR(ADDR_STAT(stat)[2*i-1])) {
       case 0: break;
       case 1: Pr("readonly ",0L,0L);

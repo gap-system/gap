@@ -943,7 +943,7 @@ void IntrQualifiedExprBegin(UInt qual)
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
-    if ( TLS->intrCoding    > 0 ) { CodeQualifiedExpressionBegin(qual); return; }
+    if ( TLS->intrCoding    > 0 ) { CodeQualifiedExprBegin(qual); return; }
     if ( CompNowFuncs != 0 ) { return; }
     PushObj(INTOBJ_INT(qual));
     return;
@@ -954,7 +954,7 @@ void IntrQualifiedExprEnd( void )
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring--; return; }
-    if ( TLS->intrCoding    > 0 ) { CodeQualifiedExpressionEnd(); return; }
+    if ( TLS->intrCoding    > 0 ) { CodeQualifiedExprEnd(); return; }
     if ( CompNowFuncs != 0 ) { return; }
     return;
 }
@@ -1115,6 +1115,10 @@ void            IntrAtomicEnd ( void )
       locktypes[i] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
     }
     
+#define GetLockStatus(a,b,c)  memset(c,0,a*sizeof(int))
+#define LockObjects(ct, objs, locktype) Pr("Locking %i objects\n",ct,0L);
+#define UnlockObjects(ct, objs) Pr("Unlocking %i objects\n",ct,0L);
+
     GetLockStatus(nrexprs, tolock, lockstatus);
 
     j = 0;

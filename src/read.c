@@ -1830,11 +1830,13 @@ void ReadAtomic (
       ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
       nexprs ++;
       if (nexprs > MAX_ATOMIC_OBJS)
-	SyntaxError("atomic statement can have at most 256 objects to lock");
-      ReadEvalError();
+	{
+	  SyntaxError("atomic statement can have at most 256 objects to lock");
+	  return;
+	}
     }
 
-    Match( S_DO, "do", STATBEGIN|S_DO|follow );
+    Match( S_DO, "do or comma", STATBEGIN|S_DO|follow );
 
     /*     <Statments>                                                     */
     if ( ! READ_ERROR() ) { IntrAtomicBeginBody(nexprs); }
@@ -2219,6 +2221,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     else if (TLS->symbol==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
     else if (TLS->symbol==S_QQUIT     ) { ReadQUIT(   S_SEMICOLON|S_EOF      ); }
     else if (TLS->symbol==S_SEMICOLON ) { ReadEmpty(  S_SEMICOLON|S_EOF      ); }
+    else if (TLS->symbol==S_ATOMIC )    { ReadAtomic(  S_SEMICOLON|S_EOF      ); }
 
     /* otherwise try to read an expression                                 */
     /* Unless the statement is empty, in which case do nothing             */
