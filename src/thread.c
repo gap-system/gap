@@ -313,7 +313,8 @@ void DataSpaceReadUnlock(DataSpace *dataspace)
 
 void DataSpaceUnlock(DataSpace *dataspace)
 {
-  dataspace->owner = NULL;
+  if (dataspace->owner == TLS)
+    dataspace->owner = NULL;
   dataspace->readers[TLS->threadID+1] = 0;
   pthread_rwlock_unlock(dataspace->lock);
 }
