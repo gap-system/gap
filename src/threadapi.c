@@ -555,6 +555,10 @@ Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncSHARED_LIST(Obj self);
+Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
+Obj FuncPUBLISH_NORECURSE(Obj self, Obj obj);
+Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
+Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
 
 /****************************************************************************
 **
@@ -651,6 +655,18 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SHARED_LIST", 0, "",
       FuncSHARED_LIST, "src/threadapi.c:SHARED_LIST" },
+
+    { "SHARE_NORECURSE", 1, "obj",
+      FuncSHARE_NORECURSE, "src/threadapi.c:SHARE_NORECURSE" },
+
+    { "ADOPT_NORECURSE", 1, "obj",
+      FuncADOPT_NORECURSE, "src/threadapi.c:ADOPT_NORECURSE" },
+
+    { "MIGRATE_NORECURSE", 2, "obj, target",
+      FuncMIGRATE_NORECURSE, "src/threadapi.c:MIGRATE_NORECURSE" },
+
+    { "PUBLISH_NORECURSE", 1, "obj",
+      FuncPUBLISH_NORECURSE, "src/threadapi.c:PUBLISH_NORECURSE" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1534,3 +1550,45 @@ Obj FuncSHARED_LIST(Obj self)
   DS_BAG(result) = NewDataSpace();
   return result;
 }
+
+static int MigrateObjects(int count, Obj *objects, DataSpace *target)
+{
+  int i;
+  for (i=0; i<count; i++)
+    if (IS_BAG_REF(objects[i]) &&
+        ((DataSpace *)(DS_BAG(objects[i])))->owner != TLS)
+      return 0;
+  for (i=0; i<count; i++)
+    DS_BAG(objects[i]) = target;
+}
+
+Obj FuncPUBLISH_NORECURSE(Obj self, Obj obj)
+{
+  if (!MigrateObjects(1, &obj, NULL))
+    ArgumentError("PUBLISH_NORECURSE: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncSHARE_NORECURSE(Obj self, Obj obj)
+{
+  if (!MigrateObjects(1, &obj, NewDataSpace()))
+    ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
+{
+  if (IsLocked(target) != 2)
+    ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target data space");
+  if (!MigrateObjects(1, &obj, DS_BAG(target)))
+    ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
+  return obj;
+}
+
+Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
+{
+  if (!MigrateObjects(1, &obj, TLS->currentDataSpace))
+    ArgumentError("ADOPT_NORECURSE: Thread does not have exclusive access to objects");
+  return obj;
+}
+
