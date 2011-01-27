@@ -1084,6 +1084,7 @@ extern void CallbackForAllBags(
 typedef struct
 {
   void *lock; /* void * so that we don't have to include pthread.h always */
+  int is_thread_local;
   void *owner; /* opaque thread descriptor */
   unsigned char readers[0];
 } DataSpace;

@@ -150,6 +150,7 @@ void RunThreadedMain(
 void CreateMainDataSpace()
 {
   TLS->currentDataSpace = NewDataSpace();
+  ((DataSpace *)TLS->currentDataSpace)->is_thread_local = 1;
   DataSpaceWriteLock(TLS->currentDataSpace);
 }
 
@@ -163,6 +164,7 @@ void *DispatchThread(void *arg)
 #endif
   InitTLS();
   TLS->currentDataSpace = NewDataSpace();
+  ((DataSpace *)TLS->currentDataSpace)->is_thread_local = 1;
   DataSpaceWriteLock(TLS->currentDataSpace);
   this_thread->start(this_thread->arg);
   DataSpaceWriteUnlock(TLS->currentDataSpace);
@@ -368,17 +370,18 @@ int LockObjects(int count, Obj *objects, int *mode)
   heapsort(order, count, sizeof(LockRequest), CompareByDSRef);
   for (i=0; i<count; i++)
   {
-    void *ds = order[i].dataspace;
+    DataSpace *ds = order[i].dataspace;
     /* If there are multiple lock requests with different modes,
      * they have been sorted for writes to occur first, so deadlock
      * cannot occur from doing readlocks before writelocks.
      */
     if (i > 0 && ds == order[i-1].dataspace)
       continue; /* skip duplicates */
-    else if (IsLocked(ds))
+    else if (IsLocked(ds) || ds->is_thread_local)
     {
       /* DataSpaces may not be locked twice. If that is attempted,
-       * the entire lock operation is reverted.
+       * the entire lock operation is reverted. Similarly if one
+       * attempts to lock another thread's data space.
        */
       while (--i >= 0)
         DataSpaceUnlock(order[i].dataspace);
