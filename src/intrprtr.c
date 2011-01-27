@@ -931,6 +931,231 @@ void            IntrWhileEnd ( void )
 
 /****************************************************************************
 **
+*F  IntrQualifiedExprBegin( UInt qual ) . . . . . . interpret expression guarded
+**                                       by readwrite or readonlu
+*F  IntrQualifiedExprEnd( ) 
+**                                       by readwrite or readonlu
+**
+*/
+
+void IntrQualifiedExprBegin(UInt qual) 
+{
+    /* ignore or code                                                      */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
+    if ( TLS->intrCoding    > 0 ) { CodeQualifiedExprBegin(qual); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+    PushObj(INTOBJ_INT(qual));
+    return;
+}
+
+void IntrQualifiedExprEnd( void ) 
+{
+    /* ignore or code                                                      */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring--; return; }
+    if ( TLS->intrCoding    > 0 ) { CodeQualifiedExprEnd(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+    return;
+}
+
+/****************************************************************************
+**
+*F  IntrAtomicBegin()  . . . . . interpret atomic-statement, begin of statement
+*F  IntrAtomicBeginBody(<nrexprs>)  . . . . .  interpret atomic-statement, begin of body
+*F  IntrAtomicEndBody(<nrstats>)  . . . . .  interpret atomic-statement, end of body
+*F  IntrAtomicEnd()  . . . . . . . interpret atomic-statement, end of statement
+**
+**  'IntrAtomicBegin' is   an action to  interpret   a atomic-statement.  It is
+**  called when the    reader encounters the    'atomic', i.e., *before*   the
+**  expressions to be locked are read.
+**
+**  'IntrAtomicBeginBody' is an action  to interpret a atomic-statement.  It is
+**  called when the reader encounters  the  beginning of the statement  body,
+**  i.e., *after* the expressions to be locked are read. <nrexprs> is the number
+** of expressions to be locked
+**
+**  'IntrAtomicEndBody' is  an action to interpret   a atomic-statement.  It is
+**  called when the reader encounters the end of the statement body.  <nrstats> is
+**  the number of statements in the body.
+**
+**  'IntrAtomicEnd' is an action to interpret a atomic-statement.  It is called
+**  when  the reader encounters  the  end of  the  statement, i.e., immediate
+**  after 'IntrAtomicEndBody'.
+**
+*/
+void            IntrAtomicBegin ( void )
+{
+    Obj                 nams;           /* (empty) list of names           */
+
+    /* ignore or code                                                      */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { return; }
+    if ( TLS->intrCoding    > 0 ) { TLS->intrCoding; CodeAtomicBegin(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* nothing to do here */
+    return;
+  
+}
+
+void            IntrAtomicBeginBody ( UInt nrexprs )
+{
+  Obj nams;
+
+    /* ignore    or code                                                          */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { return; }
+    if ( TLS->intrCoding    > 0 ) { TLS->intrCoding++; CodeAtomicBeginBody(nrexprs); return; }
+
+    if ( TLS->intrCoding == 0 && CompNowFuncs != 0 ) {
+        while ( 1 < --nrexprs ) {
+            PopExpr();
+        }
+    } else {
+
+
+      /* leave the expressions and qualifiers on the stack, switch to coding to process the body
+	 of the Atomic expression */
+      PushObj(INTOBJ_INT(nrexprs));
+      CodeBegin();
+      TLS->intrCoding = 1;
+      
+      
+      /* code a function expression (with no arguments and locals)           */
+      
+      nams = NEW_PLIST( T_PLIST, 0 );
+      SET_LEN_PLIST( nams, 0 );
+      
+      /* If we are in the break loop, then a local variable context may well exist,
+	 and we have to create an empty local variable names list to match the
+	 function expression that we are creating.
+	 
+	 If we are not in a break loop, then this would be a waste of time and effort */
+      
+      if (TLS->countNams > 0)
+	{
+	  GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+	  SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+	  SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
+	}
+      
+      CodeFuncExprBegin( 0, 0, nams );
+    }
+}
+
+void            IntrAtomicEndBody (
+    UInt                nrstats )
+{
+  Obj body;
+
+    /* ignore                                                              */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { return; }
+
+    /* otherwise must be coding                                            */
+    if ( TLS->intrCoding == 0 && CompNowFuncs != 0 ) {
+        while ( 1 < --nrstats ) {
+            PopStat();
+        }
+    }
+    else if (TLS->intrCoding == 1) {
+      /* This is the case where we are really immediately interpreting an atomic
+	 statement, but we switched to coding to store the body until we have it all */
+
+    /* If we are in a break loop, then we will have created a "dummy" local
+       variable names list to get the counts right. Remove it */
+      if (TLS->countNams > 0)
+	TLS->countNams--;
+
+      /* Code the body as a function expression */
+      CodeFuncExprEnd( nrstats, 0UL );
+    
+
+      /* switch back to immediate mode, get the function                     */
+      TLS->intrCoding = 0;
+      CodeEnd( 0 );
+      body = TLS->codeResult;
+      PushObj(body);
+      return;
+    } else {
+      
+        assert( TLS->intrCoding > 0 );
+        CodeAtomicEndBody( nrstats );
+    }
+}
+
+
+void            IntrAtomicEnd ( void )
+{
+    Obj                 body;           /* the function, result            */
+    UInt                nrexprs;
+    UInt                mode,i,j;
+
+    Obj tolock[MAX_ATOMIC_OBJS];
+    int locktypes[MAX_ATOMIC_OBJS];
+    int lockstatus[MAX_ATOMIC_OBJS];
+    DataSpace *locked[MAX_ATOMIC_OBJS];
+    int nlockedDS;
+    Obj o;
+
+    /* ignore or code                                                      */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { return; }
+    if ( TLS->intrCoding    > 0 ) { TLS->intrCoding--; CodeAtomicEnd(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* Now we need to recover the objects to lock, and go to work */
+
+    body = PopObj();
+
+    nrexprs = INT_INTOBJ(PopObj());
+
+    j = 0;
+    for (i = 0; i < nrexprs; i++) {
+      o = PopObj();
+      mode = INT_INTOBJ(PopObj());
+      if (!((Int)o & 0x3)) {
+	tolock[j] =  o;
+	locktypes[j++] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+      }
+    }
+    nrexprs = j;
+
+    GetLockStatus(nrexprs, tolock, lockstatus);
+
+    j = 0;
+    for (i = 0; i < nrexprs; i++)
+      {
+	switch(lockstatus[i]) {
+	case 0:
+	  tolock[j] = tolock[i];
+	  locktypes[j] = locktypes[i];
+	  j++;
+	  break;
+	case 2:
+	  if (locktypes[i] == 1)
+	    break;
+	  ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+	case 1:
+	  if (locktypes[i] == 0)
+	    break;
+	  ErrorMayQuit("Attempt to change from write to read lock", 0L, 0L);
+ 	default:
+	  assert(0);
+	}
+      }
+    nlockedDS = LockObjects(j, tolock, locktypes, locked);
+    CALL_0ARGS( body );
+    UnlockDataSpaces(nlockedDS, locked);
+
+    /* push void                                                           */
+    PushVoidObj();
+}
+
+
+/****************************************************************************
+**
 *F  IntrRepeatBegin() . . . .  interpret repeat-statement, begin of statement
 *F  IntrRepeatBeginBody() . . . . . interpret repeat-statement, begin of body
 *F  IntrRepeatEndBody(<nr>) . . . . . interpret repeat-statement, end of body
@@ -1214,7 +1439,6 @@ void            IntrQUIT ( void )
     /* indicate that a quit-statement was interpreted                      */
     TLS->intrReturning = STATUS_QQUIT;
 }
-
 
 /****************************************************************************
 **

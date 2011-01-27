@@ -1014,6 +1014,65 @@ UInt            ExecForRange3 (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  ExecAtomic(<stat>)
+*/
+
+UInt ExecAtomic(
+		Stat stat)
+{
+  Obj tolock[MAX_ATOMIC_OBJS];
+  int locktypes[MAX_ATOMIC_OBJS];
+  int lockstatus[MAX_ATOMIC_OBJS];
+  DataSpace *locked[MAX_ATOMIC_OBJS];
+  int nlockedDS;
+  UInt mode, nrexprs,i,j;
+  Obj o;
+  
+  nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
+  
+  j = 0;
+  for (i = 1; i <= nrexprs; i++) {
+    o = EVAL_EXPR(ADDR_STAT(stat)[2*i]);
+    if (!((Int)o & 0x3)) {
+      tolock[j] =  o;
+      mode = INT_INTEXPR(ADDR_STAT(stat)[2*i-1]);
+      locktypes[j] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+      j++;
+    }
+  }
+  
+  nrexprs = j;
+
+  GetLockStatus(nrexprs, tolock, lockstatus);
+
+    j = 0;
+    for (i = 0; i < nrexprs; i++)
+      {
+	switch(lockstatus[i]) {
+	case 0:
+	  tolock[j] = tolock[i];
+	  locktypes[j] = locktypes[i];
+	  j++;
+	  break;
+	case 2:
+	  if (locktypes[i] == 1)
+	    break;
+	  ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+	case 1:
+	  if (locktypes[i] == 0)
+	    break;
+	  ErrorMayQuit("Attempt to change from write to read lock", 0L, 0L);
+ 	default:
+	  assert(0);
+	}
+      }
+    nlockedDS = LockObjects(j, tolock, locktypes, locked);
+    EXEC_STAT(ADDR_STAT(stat)[0]);
+    UnlockDataSpaces(nlockedDS, locked);
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -1882,6 +1941,40 @@ void            PrintWhile (
     Pr( "%4<\nod;", 0L, 0L );
 }
 
+/****************************************************************************
+**
+*F  PrintAtomic(<stat>)  . . . . . . . . . . . . . . . . .  print a atomic loop
+**
+**  'PrintAtomic' prints the atomic-loop <stat>.
+**
+**  Linebreaks are printed after the 'do' and the statments  in the body.  If
+**  necessary one is preferred immediately before the 'do'.
+*/
+void            PrintAtomic (
+    Stat                stat )
+{
+  UInt nrexprs;
+    UInt                i;              /* loop variable                   */
+
+    Pr( "atomic%4> ", 0L, 0L );
+    nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
+    for (i = 1; i <=  nrexprs; i++) {
+      if (i != 1)
+	Pr(", ",0L,0L);
+      switch (INT_INTEXPR(ADDR_STAT(stat)[2*i-1])) {
+      case 0: break;
+      case 1: Pr("readonly ",0L,0L);
+	break;
+      case 2: Pr("readwrite ",0L,0L);
+	break;
+      }
+      PrintExpr(ADDR_STAT(stat)[2*i]);
+    }
+    Pr( "%2<  do%2>\n", 0L, 0L );
+    PrintStat( ADDR_STAT(stat)[0]);
+    Pr( "%4<\nod;", 0L, 0L );
+}
+
 
 /****************************************************************************
 **
@@ -2125,6 +2218,7 @@ static Int InitKernel (
     ExecStatFuncs [ T_RETURN_OBJ     ] = ExecReturnObj;
     ExecStatFuncs [ T_RETURN_VOID    ] = ExecReturnVoid;
     ExecStatFuncs [ T_EMPTY          ] = ExecEmpty;
+    ExecStatFuncs [ T_ATOMIC         ] = ExecAtomic;
 
     /* install printers for non-statements                                */
     for ( i = 0; i < sizeof(PrintStatFuncs)/sizeof(PrintStatFuncs[0]); i++ ) {
@@ -2162,6 +2256,7 @@ static Int InitKernel (
     PrintStatFuncs[ T_RETURN_OBJ     ] = PrintReturnObj;
     PrintStatFuncs[ T_RETURN_VOID    ] = PrintReturnVoid;
     PrintStatFuncs[ T_EMPTY          ] = PrintEmpty;
+    PrintStatFuncs[ T_ATOMIC         ] = PrintAtomic;
 
     /* return success                                                      */
     return 0;
