@@ -391,7 +391,7 @@ int LockObjects(int count, Obj *objects, int *mode)
       DataSpaceWriteLock(ds);
     else
       DataSpaceReadLock(ds);
-    if (DS_BAG(order[i].obj != ds))
+    if (DS_BAG(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
       while (i >= 0)
