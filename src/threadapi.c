@@ -551,6 +551,10 @@ Obj FuncWaitBarrier(Obj self, Obj barrier);
 Obj FuncCreateSyncVar(Obj self);
 Obj FuncWriteSyncVar(Obj self, Obj var, Obj value);
 Obj FuncReadSyncVar(Obj self, Obj var);
+Obj FuncIS_LOCKED(Obj self, Obj obj);
+Obj FuncLOCK(Obj self, Obj args);
+Obj FuncUNLOCK(Obj self, Obj args);
+Obj FuncNEW_DATA_SPACE(Obj self);
 
 /****************************************************************************
 **
@@ -635,6 +639,18 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ReadSyncVar", 1, "syncvar",
       FuncReadSyncVar, "src/threadapi.c:ReadSyncVar" },
+
+    { "IS_LOCKED", 1, "obj",
+      FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
+
+    { "LOCK", -1, "obj, ...",
+      FuncLOCK, "src/threadapi.c:LOCK" },
+
+    { "UNLOCK", -1, "obj, ...",
+      FuncUNLOCK, "src/threadapi.c:LOCK" },
+
+    { "NEW_DATA_SPACE", 0, "",
+      FuncNEW_DATA_SPACE, "src/threadapi.c:NEW_DATA_SPACE" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1462,4 +1478,59 @@ static void PrintSyncVar(Obj obj)
   Pr(buffer, 0L, 0L);
 }
 
+Obj FuncIS_LOCKED(Obj self, Obj obj)
+{
+  DataSpace *ds = IS_BAG_REF(obj) ? DS_BAG(obj) : NULL;
+  if (!ds)
+    return INTOBJ_INT(0);
+  return INTOBJ_INT(IsLocked(ds));
+}
 
+Obj FuncLOCK(Obj self, Obj args)
+{
+  int numargs = LEN_PLIST(args);
+  int count = (numargs+1)/2;
+  Obj *objects;
+  int *modes;
+  int i;
+
+  if (count >= 1024)
+    ArgumentError("LOCK: Too many arguments");
+  objects = alloca(sizeof(Obj) * count);
+  modes = alloca(sizeof(int) * count);
+  for (i=0; i<count; i++)
+  {
+    int mode;
+    objects[i] = ELM_PLIST(args, 2 * i + 1);
+    if ((i+1)*2 > numargs)
+      mode = 1;
+    else
+    {
+      Obj modeobj = ELM_PLIST(args, 2 * i + 2);
+      if (modeobj == False)
+        mode = 0;
+      else if (modeobj == True)
+        mode = 1;
+      else if IS_INTOBJ(modeobj)
+        mode = INT_INTOBJ(modeobj) && 1;
+      else
+        ArgumentError("LOCK: Invalid mode argument");
+    }
+    modes[i] = mode;
+  }
+  return LockObjects(count, objects, modes) ? True : False;
+}
+
+Obj FuncUNLOCK(Obj self, Obj args)
+{
+  UnlockObjects(LEN_PLIST(args), ADDR_OBJ(args)+1);
+  return (Obj) 0;
+}
+
+Obj FuncNEW_DATA_SPACE(Obj self)
+{
+  Obj result = NEW_PLIST(T_PLIST, 0);
+  SET_LEN_PLIST(result, 0);
+  DS_BAG(result) = NewDataSpace();
+  return result;
+}
