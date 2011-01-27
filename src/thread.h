@@ -33,6 +33,11 @@ void DataSpaceReadLock(DataSpace *dataspace);
 void DataSpaceReadUnlock(DataSpace *dataspace);
 DataSpace *CurrentDataSpace();
 
+int IsLocked(DataSpace *dataspace);
+void GetLockStatus(int count, Obj *objects, int *status);
+int LockObjects(int count, Obj *objects, int *mode);
+void UnlockObjects(int count, Obj *objects);
+
 void Lock(void *obj);
 void LockShared(void *obj);
 void Unlock(void *obj);

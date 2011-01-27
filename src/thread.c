@@ -308,6 +308,110 @@ void DataSpaceReadUnlock(DataSpace *dataspace)
   pthread_rwlock_unlock(dataspace->lock);
 }
 
+void DataSpaceUnlock(DataSpace *dataspace)
+{
+  dataspace->owner = NULL;
+  dataspace->readers[TLS->threadID+1] = 0;
+  pthread_rwlock_unlock(dataspace->lock);
+}
+
+int IsLocked(DataSpace *dataspace)
+{
+  if (!dataspace)
+    return 2; /* public dataspace */
+  if (dataspace->owner == TLS)
+    return 1;
+  if (dataspace->readers[TLS->threadID+1])
+    return 2;
+  return 0;
+}
+
+void GetLockStatus(int count, Obj *objects, int *status)
+{
+  int i;
+  for (i=0; i<count; i++)
+    status[i] = IsLocked(DS_BAG(objects[i]));
+}
+
+#define MAX_LOCKS 1024
+
+typedef struct
+{
+  Obj obj;
+  DataSpace *dataspace;
+  int mode;
+} LockRequest;
+
+int CompareByDSRef(void *a, void *b)
+{
+  DataSpace *ds_a = ((LockRequest *)a)->dataspace;
+  DataSpace *ds_b = ((LockRequest *)b)->dataspace;
+  if (ds_a == ds_b) /* prioritize writes */
+    return ((LockRequest *)b)->mode-((LockRequest *)a)->mode;
+  return (char *)ds_a - (char *)ds_b;
+}
+
+int LockObjects(int count, Obj *objects, int *mode)
+{
+  int i;
+  LockRequest *order;
+  if (count > MAX_LOCKS)
+    return 0;
+  order = alloca(sizeof(LockRequest)*count);
+  for (i=0; i<count; i++)
+  {
+    order[i].obj = objects[i];
+    order[i].dataspace = DS_BAG(objects[i]);
+    order[i].mode = mode[i];
+  }
+  heapsort(order, count, sizeof(LockRequest), CompareByDSRef);
+  for (i=0; i<count; i++)
+  {
+    void *ds = order[i].dataspace;
+    /* If there are multiple lock requests with different modes,
+     * they have been sorted for writes to occur first, so deadlock
+     * cannot occur from doing readlocks before writelocks.
+     */
+    if (i > 0 && ds == order[i-1].dataspace)
+      continue; /* skip duplicates */
+    else if (IsLocked(ds))
+    {
+      /* DataSpaces may not be locked twice. If that is attempted,
+       * the entire lock operation is reverted.
+       */
+      while (--i >= 0)
+        DataSpaceUnlock(order[i].dataspace);
+      return 0;
+    }
+    if (order[i].mode)
+      DataSpaceWriteLock(ds);
+    else
+      DataSpaceReadLock(ds);
+    if (DS_BAG(order[i].obj != ds))
+    {
+      /* Race condition, revert locks and fail */
+      while (i >= 0)
+      {
+        DataSpaceUnlock(order[i].dataspace);
+	i--;
+      }
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void UnlockObjects(int count, Obj *objects)
+{
+  int i;
+  for (i=0; i<count; i++)
+  {
+    DataSpace *dataspace = DS_BAG(objects[i]);
+    if (dataspace && IsLocked(dataspace))
+      DataSpaceUnlock(dataspace);
+  }
+}
+
 DataSpace *CurrentDataSpace()
 {
   return TLS->currentDataSpace;
