@@ -31,12 +31,14 @@ void DataSpaceWriteLock(DataSpace *dataspace);
 void DataSpaceWriteUnlock(DataSpace *dataspace);
 void DataSpaceReadLock(DataSpace *dataspace);
 void DataSpaceReadUnlock(DataSpace *dataspace);
+void DataSpaceUnlock(DataSpace *dataspace);
 DataSpace *CurrentDataSpace();
 
 int IsLocked(DataSpace *dataspace);
 void GetLockStatus(int count, Obj *objects, int *status);
-int LockObjects(int count, Obj *objects, int *mode);
+int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked);
 void UnlockObjects(int count, Obj *objects);
+void UnlockDataSpaces(int count, DataSpace **dataspaces);
 
 typedef void (*TraversalFunction)(Obj);
 

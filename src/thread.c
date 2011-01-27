@@ -354,8 +354,9 @@ int CompareByDSRef(const void *a, const void *b)
   return (char *)ds_a - (char *)ds_b;
 }
 
-int LockObjects(int count, Obj *objects, int *mode)
+int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
 {
+  int result = 0;
   int i;
   LockRequest *order;
   if (count > MAX_LOCKS)
@@ -391,6 +392,9 @@ int LockObjects(int count, Obj *objects, int *mode)
       DataSpaceWriteLock(ds);
     else
       DataSpaceReadLock(ds);
+    if (locked)
+      locked[result] = ds;
+    result++;
     if (DS_BAG(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
@@ -402,7 +406,7 @@ int LockObjects(int count, Obj *objects, int *mode)
       return 0;
     }
   }
-  return 1;
+  return result;
 }
 
 void UnlockObjects(int count, Obj *objects)
@@ -414,6 +418,12 @@ void UnlockObjects(int count, Obj *objects)
     if (dataspace && IsLocked(dataspace))
       DataSpaceUnlock(dataspace);
   }
+}
+
+void UnlockDataSpaces(int count, DataSpace **dataspaces)
+{
+  while (count--)
+    DataSpaceUnlock(*dataspaces++);
 }
 
 DataSpace *CurrentDataSpace()

@@ -1534,7 +1534,7 @@ Obj FuncLOCK(Obj self, Obj args)
     }
     modes[i] = mode;
   }
-  return LockObjects(count, objects, modes) ? True : False;
+  return LockObjects(count, objects, modes, NULL) ? True : False;
 }
 
 Obj FuncUNLOCK(Obj self, Obj args)
