@@ -534,6 +534,8 @@ typedef struct  {
 
 extern  TNumInfoBags            InfoBags [ 256 ];
 
+void MakeBagTypePublic(int type);
+
 
 /****************************************************************************
 **
