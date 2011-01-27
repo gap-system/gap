@@ -14,6 +14,15 @@ typedef struct ThreadLocalStorage
   void *acquiredMonitor;
   unsigned multiplexRandomSeed;
   void *currentDataSpace;
+  Obj travList;
+  int travListSize;
+  int travListCurrent;
+  int travListCapacity;
+  Obj travHash;
+  int travHashSize;
+  int travHashCapacity;
+  int travHashBits;
+  void *travDataSpace;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;

@@ -38,6 +38,10 @@ void GetLockStatus(int count, Obj *objects, int *status);
 int LockObjects(int count, Obj *objects, int *mode);
 void UnlockObjects(int count, Obj *objects);
 
+typedef void (*TraversalFunction)(Obj);
+
+extern TraversalFunction TraversalFunc[];
+
 void Lock(void *obj);
 void LockShared(void *obj);
 void Unlock(void *obj);

@@ -14,6 +14,7 @@
 #include        "objects.h"
 #include	"scanner.h"
 #include	"code.h"
+#include	"plist.h"
 #include        "tls.h"
 #include        "thread.h"
 
@@ -342,7 +343,7 @@ typedef struct
   int mode;
 } LockRequest;
 
-int CompareByDSRef(void *a, void *b)
+int CompareByDSRef(const void *a, const void *b)
 {
   DataSpace *ds_a = ((LockRequest *)a)->dataspace;
   DataSpace *ds_b = ((LockRequest *)b)->dataspace;
@@ -415,4 +416,123 @@ void UnlockObjects(int count, Obj *objects)
 DataSpace *CurrentDataSpace()
 {
   return TLS->currentDataSpace;
+}
+
+static Obj NewList(int size)
+{
+  Obj list;
+  list = NEW_PLIST(size == 0 ? T_PLIST_EMPTY : T_PLIST, size);
+  SET_LEN_PLIST(list, size);
+  return list;
+}
+
+TraversalFunction TraversalFunc[LAST_REAL_TNUM+1];
+
+static void InitTraversal()
+{
+  TLS->travHash = NewList(16);
+  TLS->travHashSize = 0;
+  TLS->travHashCapacity = 16;
+  TLS->travHashBits = 4;
+  TLS->travList = NewList(10);
+  TLS->travListSize = 0;
+  TLS->travListCapacity = 10;
+  TLS->travListCurrent = 0;
+}
+
+#if SIZEOF_VOID_P == 4
+#define TRAV_HASH_MULT 0x9e3779b9UL
+#else
+#define TRAV_HASH_MULT 0x9e3779b97f4a7c13UL
+#endif
+#define TRAV_HASH_BITS (SIZEOF_VOID_P * 8)
+
+static void TraversalRehash();
+
+static int SeenDuringTraversal(Obj obj)
+{
+  Int type;
+  Obj *hashTable = ADDR_OBJ(TLS->travHash)+1;
+  unsigned long hash;
+  if (!IS_BAG_REF(obj))
+    return;
+  hash = ((unsigned long) obj) * TRAV_HASH_MULT;
+  hash >>= TRAV_HASH_BITS - TLS->travHashBits;
+  if (TLS->travHashSize * 3 / 2 >= TLS->travHashCapacity)
+    TraversalRehash();
+  for (;;)
+  {
+    if (hashTable[hash] == NULL)
+    {
+      hashTable[hash] = obj;
+      return 1;
+    }
+    if (hashTable[hash] == obj)
+      return 0;
+    hash = (hash + 1) & (TLS->travHashSize-1);
+  }
+}
+
+static void TraversalRehash()
+{
+  Obj list = NewList(TLS->travHashCapacity * 2);
+  int oldsize = TLS->travHashCapacity;
+  int i;
+  Obj oldlist = TLS->travHash;
+  TLS->travHashCapacity *= 2;
+  TLS->travHash = list;
+  TLS->travHashSize = 0;
+  TLS->travHashBits++;
+  for (i = 1; i <= oldsize; i++)
+  {
+    Obj obj = ADDR_OBJ(oldlist)[i];
+    if (obj != NULL)
+      SeenDuringTraversal(obj);
+  }
+}
+
+void QueueForTraversal(Obj obj)
+{
+  int i;
+  if (!IS_BAG_REF(obj))
+    return; /* skip ojects that aren't bags */
+  if (DS_BAG(obj) != TLS->travDataSpace)
+    return; /* stop traversal at the border of a data space */
+  if (!SeenDuringTraversal(obj))
+    return; /* don't revisit objects that we've already seen */
+  if (TLS->travListSize == TLS->travListCapacity)
+  {
+    unsigned oldcapacity = TLS->travListCapacity;
+    unsigned newcapacity = oldcapacity * 14/10;
+    Obj oldlist = TLS->travList;
+    Obj list = NewList(newcapacity);
+    for (i=1; i<=oldcapacity; i++)
+      ADDR_OBJ(list)[i] = ADDR_OBJ(oldlist)[i];
+    TLS->travList = list;
+    TLS->travListCapacity = newcapacity;
+  }
+  ADDR_OBJ(TLS->travList)[++TLS->travListSize] = obj;
+}
+
+Obj TraverseDataSpaceFrom(Obj obj)
+{
+  Obj result;
+  if (!IS_BAG_REF(obj))
+    return NewList(0);
+  if (!CheckRead(obj))
+    return NewList(0);
+  TLS->travDataSpace = DS_BAG(obj);
+  InitTraversal();
+  QueueForTraversal(obj);
+  while (TLS->travListCurrent < TLS->travListSize)
+  {
+    Obj current = ADDR_OBJ(TLS->travList)[++TLS->travListCurrent];
+    TraversalFunction tfunc = TraversalFunc[TNUM_BAG(current)];
+    if (tfunc)
+      tfunc(current);
+  }
+  result = TLS->travList;
+  TLS->travList = NULL;
+  TLS->travHash = NULL;
+  return result;
 }
