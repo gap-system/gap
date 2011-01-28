@@ -346,13 +346,13 @@ typedef struct
   int mode;
 } LockRequest;
 
-int CompareByDSRef(const void *a, const void *b)
+static int LessThanLockRequest(const void *a, const void *b)
 {
   DataSpace *ds_a = ((LockRequest *)a)->dataspace;
   DataSpace *ds_b = ((LockRequest *)b)->dataspace;
   if (ds_a == ds_b) /* prioritize writes */
-    return ((LockRequest *)b)->mode-((LockRequest *)a)->mode;
-  return (char *)ds_a - (char *)ds_b;
+    return ((LockRequest *)a)->mode>((LockRequest *)b)->mode;
+  return (char *)ds_a < (char *)ds_b;
 }
 
 int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
@@ -369,7 +369,7 @@ int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
     order[i].dataspace = DS_BAG(objects[i]);
     order[i].mode = mode[i];
   }
-  heapsort(order, count, sizeof(LockRequest), CompareByDSRef);
+  MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
   for (i=0; i<count; i++)
   {
     DataSpace *ds = order[i].dataspace;

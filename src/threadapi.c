@@ -204,34 +204,24 @@ static int MonitorOrder(const void *r1, const void *r2)
 {
   const char *p1 = *(const char **)r1;
   const char *p2 = *(const char **)r2;
-  if (p1 < p2)
-    return -1;
-  else if (p1 > p2)
-    return 1;
-  else
-    return 0;
+  return p1 < p2;
 }
 
 void SortMonitors(unsigned count, Monitor **monitors)
 {
-  qsort(monitors, count, sizeof(Monitor *), MonitorOrder);
+  MergeSort(monitors, count, sizeof(Monitor *), MonitorOrder);
 }
 
 static int ChannelOrder(const void *c1, const void *c2)
 {
   const char *p1 = (const char *)ObjPtr((*(Channel **) c1)->monitor);
   const char *p2 = (const char *)ObjPtr((*(Channel **) c2)->monitor);
-  if (p1 < p2)
-    return -1;
-  else if (p1 > p2)
-    return 1;
-  else
-    return 0;
+  return p1 < p2;
 }
 
 static void SortChannels(unsigned count, Channel **channels)
 {
-  qsort(channels, count, sizeof(Channel *), ChannelOrder);
+  MergeSort(channels, count, sizeof(Channel *), ChannelOrder);
 }
 
 static int MonitorsAreSorted(unsigned count, Monitor **monitors)
