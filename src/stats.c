@@ -1049,7 +1049,8 @@ UInt ExecAtomic(
 
     j = 0;
     for (i = 0; i < nrexprs; i++)
-      {
+      {	
+
 	switch(lockstatus[i]) {
 	case 0:
 	  tolock[j] = tolock[i];
@@ -1061,9 +1062,7 @@ UInt ExecAtomic(
 	    break;
 	  ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
 	case 1:
-	  if (locktypes[i] == 0)
-	    break;
-	  ErrorMayQuit("Attempt to change from write to read lock", 0L, 0L);
+	  break;
  	default:
 	  assert(0);
 	}
