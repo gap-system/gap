@@ -1569,7 +1569,7 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj)
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
   DataSpace *targetDS = DS_BAG(target);
-  if (targetDS && IsLocked(targetDS) != 2)
+  if (targetDS && IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target data space");
   if (!MigrateObjects(1, &obj, targetDS))
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
