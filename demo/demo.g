@@ -231,3 +231,6 @@ Print( "Barrier test 2 ", x1=x2, "\n");
 
 Print("Passed example 10\n");
 
+Read("atomic.g");
+Read("migrate.g");
+
