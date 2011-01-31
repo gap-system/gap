@@ -549,6 +549,11 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
 Obj FuncPUBLISH_NORECURSE(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
+Obj FuncSHARE(Obj self, Obj obj);
+Obj FuncPUBLISH(Obj self, Obj obj);
+Obj FuncADOPT(Obj self, Obj obj);
+Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
+Obj FuncREACHABLE(Obj self, Obj obj);
 
 /****************************************************************************
 **
@@ -655,8 +660,22 @@ static StructGVarFunc GVarFuncs [] = {
     { "MIGRATE_NORECURSE", 2, "obj, target",
       FuncMIGRATE_NORECURSE, "src/threadapi.c:MIGRATE_NORECURSE" },
 
+    { "SHARE", 1, "obj",
+      FuncSHARE, "src/threadapi.c:SHARE_NORECURSE" },
+
+    { "ADOPT", 1, "obj",
+      FuncADOPT, "src/threadapi.c:ADOPT_NORECURSE" },
+
+    { "MIGRATE", 2, "obj, target",
+      FuncMIGRATE, "src/threadapi.c:MIGRATE_NORECURSE" },
+
+    /*
     { "PUBLISH_NORECURSE", 1, "obj",
       FuncPUBLISH_NORECURSE, "src/threadapi.c:PUBLISH_NORECURSE" },
+    */
+
+    { "REACHABLE", 1, "obj",
+      FuncREACHABLE, "src/threadapi.c:REACHABLE" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1583,3 +1602,38 @@ Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
   return obj;
 }
 
+Obj FuncREACHABLE(Obj self, Obj obj)
+{
+  return TraverseDataSpaceFrom(obj);
+}
+
+Obj FuncSHARE(Obj self, Obj obj)
+{
+  Obj reachable = TraverseDataSpaceFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, NewDataSpace()))
+    ArgumentError("SHARE: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncADOPT(Obj self, Obj obj)
+{
+  Obj reachable = TraverseDataSpaceFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, TLS->currentDataSpace))
+    ArgumentError("ADOPT: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
+{
+  DataSpace *targetDS = DS_BAG(target);
+  Obj reachable;
+  if (targetDS && IsLocked(targetDS) != 1)
+    ArgumentError("MIGRATE: Thread does not have exclusive access to target data space");
+  reachable = TraverseDataSpaceFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, targetDS))
+    ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
+  return obj;
+}

@@ -21,6 +21,8 @@
 #define LOG2_NUM_LOCKS 11
 #define NUM_LOCKS (1 << LOG2_NUM_LOCKS)
 
+#ifndef WARD_ENABLED
+
 typedef struct {
   pthread_t pthread_id;
   int joined;
@@ -119,6 +121,8 @@ static void SetupTLS()
   TLS->threadID = -1;
 }
 
+static void InitTraversal();
+
 void RunThreadedMain(
   int (*mainFunction)(int, char **, char **),
   int argc,
@@ -144,6 +148,7 @@ void RunThreadedMain(
     thread_data[i].tls = 0;
   thread_free_list = 0;
   pthread_mutex_init(&master_lock, 0);
+  InitTraversal();
   exit((*mainFunction)(argc, argv, environ));
 }
 
@@ -440,9 +445,49 @@ static Obj NewList(int size)
   return list;
 }
 
+void QueueForTraversal(Obj obj);
+
+#define TRAVERSE_NONE (1)
+#define TRAVERSE_ALL (-1)
+#define TRAVERSE_BY_FUNCTION (0)
+
 TraversalFunction TraversalFunc[LAST_REAL_TNUM+1];
+int TraversalMask[LAST_REAL_TNUM+1];
+
+void TraversePList(Obj obj)
+{
+  Int len = LEN_PLIST(obj);
+  Obj *ptr = ADDR_OBJ(obj)+1;
+  while (--len >= 0)
+    QueueForTraversal(*ptr++);
+}
 
 static void InitTraversal()
+{
+  int i;
+  for (i=FIRST_CONSTANT_TNUM; i<=LAST_CONSTANT_TNUM; i++)
+    TraversalMask[i] = TRAVERSE_NONE;
+  TraversalMask[T_LVARS] = TRAVERSE_NONE;
+  TraversalMask[T_PREC] = TRAVERSE_ALL;
+  TraversalMask[T_PREC+IMMUTABLE] = TRAVERSE_ALL;
+  for (i=FIRST_PLIST_TNUM; i<=LAST_PLIST_TNUM; i++)
+  {
+    TraversalMask[i] = TRAVERSE_BY_FUNCTION;
+    TraversalFunc[i] = TraversePList;
+  }
+  TraversalMask[T_PLIST_CYC] = TRAVERSE_NONE;
+  TraversalMask[T_PLIST_CYC_NSORT] = TRAVERSE_NONE;
+  TraversalMask[T_PLIST_CYC_SSORT] = TRAVERSE_NONE;
+  TraversalMask[T_PLIST_FFE] = TRAVERSE_NONE;
+  for (i=LAST_PLIST_TNUM+1; i<=LAST_LIST_TNUM; i++)
+    TraversalMask[i] = TRAVERSE_NONE;
+  for (i=FIRST_EXTERNAL_TNUM; i<=LAST_EXTERNAL_TNUM; i++)
+    TraversalMask[i] = TRAVERSE_ALL;
+  for (i=FIRST_SHARED_TNUM; i<=LAST_SHARED_TNUM; i++)
+    TraversalMask[i] = TRAVERSE_NONE;
+}
+
+static void BeginTraversal()
 {
   TLS->travHash = NewList(16);
   TLS->travHashSize = 0;
@@ -536,17 +581,35 @@ Obj TraverseDataSpaceFrom(Obj obj)
   if (!CheckRead(obj))
     return NewList(0);
   TLS->travDataSpace = DS_BAG(obj);
-  InitTraversal();
+  BeginTraversal();
   QueueForTraversal(obj);
   while (TLS->travListCurrent < TLS->travListSize)
   {
     Obj current = ADDR_OBJ(TLS->travList)[++TLS->travListCurrent];
-    TraversalFunction tfunc = TraversalFunc[TNUM_BAG(current)];
-    if (tfunc)
-      tfunc(current);
+    int tnum = TNUM_BAG(current);
+    int mask = TraversalMask[TNUM_BAG(current)];
+    if (!mask)
+      TraversalFunc[tnum](current);
+    else
+    {
+      int size = SIZE_BAG(current)/sizeof(Obj);
+      Obj *ptr = PTR_BAG(current);
+      mask >>= 1;
+      while (mask && size)
+      {
+        if (mask & 1)
+	  QueueForTraversal(*ptr);
+	ptr++;
+	size--;
+	mask >>= 1;
+      }
+    }
   }
   result = TLS->travList;
+  SET_LEN_PLIST(result, TLS->travListSize);
   TLS->travList = NULL;
   TLS->travHash = NULL;
   return result;
 }
+
+#endif

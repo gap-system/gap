@@ -44,6 +44,8 @@ typedef void (*TraversalFunction)(Obj);
 
 extern TraversalFunction TraversalFunc[];
 
+Obj TraverseDataSpaceFrom(Obj obj);
+
 void Lock(void *obj);
 void LockShared(void *obj);
 void Unlock(void *obj);
