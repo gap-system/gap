@@ -661,17 +661,19 @@ static StructGVarFunc GVarFuncs [] = {
       FuncMIGRATE_NORECURSE, "src/threadapi.c:MIGRATE_NORECURSE" },
 
     { "SHARE", 1, "obj",
-      FuncSHARE, "src/threadapi.c:SHARE_NORECURSE" },
+      FuncSHARE, "src/threadapi.c:SHARE" },
 
     { "ADOPT", 1, "obj",
-      FuncADOPT, "src/threadapi.c:ADOPT_NORECURSE" },
+      FuncADOPT, "src/threadapi.c:ADOPT" },
 
     { "MIGRATE", 2, "obj, target",
-      FuncMIGRATE, "src/threadapi.c:MIGRATE_NORECURSE" },
+      FuncMIGRATE, "src/threadapi.c:MIGRATE" },
 
     /*
     { "PUBLISH_NORECURSE", 1, "obj",
       FuncPUBLISH_NORECURSE, "src/threadapi.c:PUBLISH_NORECURSE" },
+    { "PUBLISH", 1, "obj",
+      FuncPUBLISH, "src/threadapi.c:PUBLISH" },
     */
 
     { "REACHABLE", 1, "obj",
@@ -1622,6 +1624,15 @@ Obj FuncADOPT(Obj self, Obj obj)
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, TLS->currentDataSpace))
     ArgumentError("ADOPT: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncPUBLISH(Obj self, Obj obj)
+{
+  Obj reachable = TraverseDataSpaceFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, 0))
+    ArgumentError("PUBLISH: Thread does not have exclusive access to objects");
   return obj;
 }
 
