@@ -532,6 +532,27 @@ static int SeenDuringTraversal(Obj obj)
   }
 }
 
+static int FindTraversedObj(Obj obj)
+{
+  Int type;
+  Obj *hashTable = ADDR_OBJ(TLS->travHash)+1;
+  unsigned long hash;
+  if (!IS_BAG_REF(obj))
+    return;
+  hash = ((unsigned long) obj) * TRAV_HASH_MULT;
+  hash >>= TRAV_HASH_BITS - TLS->travHashBits;
+  if (TLS->travHashSize * 3 / 2 >= TLS->travHashCapacity)
+    TraversalRehash();
+  for (;;)
+  {
+    if (hashTable[hash] == obj)
+      return (int) hash+1;
+    if (hashTable[hash] == NULL)
+      return 0;
+    hash = (hash + 1) & (TLS->travHashSize-1);
+  }
+}
+
 static void TraversalRehash()
 {
   Obj list = NewList(TLS->travHashCapacity * 2);
