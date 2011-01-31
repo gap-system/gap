@@ -514,7 +514,7 @@ static int SeenDuringTraversal(Obj obj)
   Obj *hashTable = ADDR_OBJ(TLS->travHash)+1;
   unsigned long hash;
   if (!IS_BAG_REF(obj))
-    return;
+    return 0;
   hash = ((unsigned long) obj) * TRAV_HASH_MULT;
   hash >>= TRAV_HASH_BITS - TLS->travHashBits;
   if (TLS->travHashSize * 3 / 2 >= TLS->travHashCapacity)
@@ -538,7 +538,7 @@ static int FindTraversedObj(Obj obj)
   Obj *hashTable = ADDR_OBJ(TLS->travHash)+1;
   unsigned long hash;
   if (!IS_BAG_REF(obj))
-    return;
+    return 0;
   hash = ((unsigned long) obj) * TRAV_HASH_MULT;
   hash >>= TRAV_HASH_BITS - TLS->travHashBits;
   if (TLS->travHashSize * 3 / 2 >= TLS->travHashCapacity)
