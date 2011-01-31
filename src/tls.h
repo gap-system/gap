@@ -176,7 +176,7 @@ static inline int CheckWrite(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   dataspace = DS_BAG(bag);
-  return (dataspace && dataspace->owner != TLS);
+  return !(dataspace && dataspace->owner != TLS);
 }
 
 static inline Bag ReadGuard(Bag bag)
@@ -198,7 +198,7 @@ static inline int CheckRead(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   dataspace = DS_BAG(bag);
-  return (dataspace && dataspace->owner != TLS &&
+  return !(dataspace && dataspace->owner != TLS &&
     !dataspace->readers[TLS->threadID+1]);
 }
 
