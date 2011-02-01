@@ -15,6 +15,7 @@
 #include	"scanner.h"
 #include	"code.h"
 #include	"plist.h"
+#include	"precord.h"
 #include        "tls.h"
 #include        "thread.h"
 
@@ -449,6 +450,7 @@ void QueueForTraversal(Obj obj);
 
 #define TRAVERSE_NONE (1)
 #define TRAVERSE_ALL (-1)
+#define TRAVERSE_ALL_BUT(n) (1 | ((-1) << (1+(n))))
 #define TRAVERSE_BY_FUNCTION (0)
 
 TraversalFunction TraversalFunc[LAST_REAL_TNUM+1];
@@ -456,10 +458,20 @@ int TraversalMask[LAST_REAL_TNUM+1];
 
 void TraversePList(Obj obj)
 {
-  Int len = LEN_PLIST(obj);
+  UInt len = LEN_PLIST(obj);
   Obj *ptr = ADDR_OBJ(obj)+1;
-  while (--len >= 0)
+  while (len)
+  {
     QueueForTraversal(*ptr++);
+    len--;
+  }
+}
+
+void TraversePRecord(Obj obj)
+{
+  UInt i, len = LEN_PREC(obj);
+  for (i=1; i<=len; i++)
+    QueueForTraversal((Obj)GET_ELM_PREC(obj, i));
 }
 
 static void InitTraversal()
@@ -468,8 +480,10 @@ static void InitTraversal()
   for (i=FIRST_CONSTANT_TNUM; i<=LAST_CONSTANT_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
   TraversalMask[T_LVARS] = TRAVERSE_NONE;
-  TraversalMask[T_PREC] = TRAVERSE_ALL;
-  TraversalMask[T_PREC+IMMUTABLE] = TRAVERSE_ALL;
+  TraversalMask[T_PREC] = TRAVERSE_BY_FUNCTION;
+  TraversalMask[T_PREC+IMMUTABLE] = TRAVERSE_BY_FUNCTION;
+  TraversalFunc[T_PREC] = TraversePRecord;
+  TraversalFunc[T_PREC+IMMUTABLE] = TraversePRecord;
   for (i=FIRST_PLIST_TNUM; i<=LAST_PLIST_TNUM; i++)
   {
     TraversalMask[i] = TRAVERSE_BY_FUNCTION;
@@ -482,7 +496,11 @@ static void InitTraversal()
   for (i=LAST_PLIST_TNUM+1; i<=LAST_LIST_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
   for (i=FIRST_EXTERNAL_TNUM; i<=LAST_EXTERNAL_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_ALL;
+    TraversalMask[i] = TRAVERSE_NONE;
+  TraversalMask[T_POSOBJ] = TRAVERSE_ALL_BUT(1);
+  TraversalMask[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
+  TraversalFunc[T_COMOBJ] = TraversePRecord;
+  TraversalMask[T_DATOBJ] = TRAVERSE_NONE;
   for (i=FIRST_SHARED_TNUM; i<=LAST_SHARED_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
 }
