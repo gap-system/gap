@@ -554,6 +554,7 @@ Obj FuncPUBLISH(Obj self, Obj obj);
 Obj FuncADOPT(Obj self, Obj obj);
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
 Obj FuncREACHABLE(Obj self, Obj obj);
+Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
 
 /****************************************************************************
 **
@@ -678,6 +679,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "REACHABLE", 1, "obj",
       FuncREACHABLE, "src/threadapi.c:REACHABLE" },
+
+    { "CLONE_REACHABLE", 1, "obj",
+      FuncCLONE_REACHABLE, "src/threadapi.c:CLONE_REACHABLE" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1606,8 +1610,14 @@ Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 
 Obj FuncREACHABLE(Obj self, Obj obj)
 {
-  return TraverseDataSpaceFrom(obj);
+  return ReachableObjectsFrom(obj);
 }
+
+Obj FuncCLONE_REACHABLE(Obj self, Obj obj)
+{
+  return CopyReachableObjectsFrom(obj);
+}
+
 
 Obj FuncSHARE(Obj self, Obj obj)
 {

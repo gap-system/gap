@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <pthread.h>
@@ -453,7 +454,10 @@ void QueueForTraversal(Obj obj);
 #define TRAVERSE_ALL_BUT(n) (1 | ((-1) << (1+(n))))
 #define TRAVERSE_BY_FUNCTION (0)
 
+typedef void (*TraversalCopyFunction)(Obj copy, Obj original);
+
 TraversalFunction TraversalFunc[LAST_REAL_TNUM+1];
+TraversalCopyFunction TraversalCopyFunc[LAST_REAL_TNUM+1];
 int TraversalMask[LAST_REAL_TNUM+1];
 
 void TraversePList(Obj obj)
@@ -467,11 +471,42 @@ void TraversePList(Obj obj)
   }
 }
 
+static UInt FindTraversedObj(Obj);
+
+static inline Obj ReplaceByCopy(Obj obj)
+{
+  Obj result;
+  UInt found = FindTraversedObj(obj);
+  if (found)
+    return ELM_PLIST(TLS->travMap, found);
+  else
+    return obj;
+}
+
+void CopyPList(Obj copy, Obj original)
+{
+  UInt len = LEN_PLIST(original);
+  Obj *ptr = ADDR_OBJ(original)+1;
+  Obj *copyptr = ADDR_OBJ(copy)+1;
+  while (len)
+  {
+    *copyptr++ = ReplaceByCopy(*ptr++);
+    len--;
+  }
+}
+
 void TraversePRecord(Obj obj)
 {
   UInt i, len = LEN_PREC(obj);
   for (i=1; i<=len; i++)
     QueueForTraversal((Obj)GET_ELM_PREC(obj, i));
+}
+
+void CopyPRecord(Obj copy, Obj original)
+{
+  UInt i,len = LEN_PREC(original);
+  for (i=1; i>=len; i++)
+    SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
 }
 
 static void InitTraversal()
@@ -483,11 +518,14 @@ static void InitTraversal()
   TraversalMask[T_PREC] = TRAVERSE_BY_FUNCTION;
   TraversalMask[T_PREC+IMMUTABLE] = TRAVERSE_BY_FUNCTION;
   TraversalFunc[T_PREC] = TraversePRecord;
+  TraversalCopyFunc[T_PREC] = CopyPRecord;
   TraversalFunc[T_PREC+IMMUTABLE] = TraversePRecord;
+  TraversalCopyFunc[T_PREC+IMMUTABLE] = CopyPRecord;
   for (i=FIRST_PLIST_TNUM; i<=LAST_PLIST_TNUM; i++)
   {
     TraversalMask[i] = TRAVERSE_BY_FUNCTION;
     TraversalFunc[i] = TraversePList;
+    TraversalCopyFunc[i] = CopyPList;
   }
   TraversalMask[T_PLIST_CYC] = TRAVERSE_NONE;
   TraversalMask[T_PLIST_CYC_NSORT] = TRAVERSE_NONE;
@@ -500,6 +538,7 @@ static void InitTraversal()
   TraversalMask[T_POSOBJ] = TRAVERSE_ALL_BUT(1);
   TraversalMask[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
   TraversalFunc[T_COMOBJ] = TraversePRecord;
+  TraversalCopyFunc[T_COMOBJ] = CopyPRecord;
   TraversalMask[T_DATOBJ] = TRAVERSE_NONE;
   for (i=FIRST_SHARED_TNUM; i<=LAST_SHARED_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
@@ -550,17 +589,15 @@ static int SeenDuringTraversal(Obj obj)
   }
 }
 
-static int FindTraversedObj(Obj obj)
+static UInt FindTraversedObj(Obj obj)
 {
   Int type;
   Obj *hashTable = ADDR_OBJ(TLS->travHash)+1;
-  unsigned long hash;
+  UInt hash;
   if (!IS_BAG_REF(obj))
     return 0;
-  hash = ((unsigned long) obj) * TRAV_HASH_MULT;
+  hash = ((UInt) obj) * TRAV_HASH_MULT;
   hash >>= TRAV_HASH_BITS - TLS->travHashBits;
-  if (TLS->travHashSize * 3 / 2 >= TLS->travHashCapacity)
-    TraversalRehash();
   for (;;)
   {
     if (hashTable[hash] == obj)
@@ -601,7 +638,7 @@ void QueueForTraversal(Obj obj)
   if (TLS->travListSize == TLS->travListCapacity)
   {
     unsigned oldcapacity = TLS->travListCapacity;
-    unsigned newcapacity = oldcapacity * 14/10;
+    unsigned newcapacity = oldcapacity * 25/16; /* 25/16 < golden ratio */
     Obj oldlist = TLS->travList;
     Obj list = NewList(newcapacity);
     for (i=1; i<=oldcapacity; i++)
@@ -646,9 +683,72 @@ Obj TraverseDataSpaceFrom(Obj obj)
   }
   result = TLS->travList;
   SET_LEN_PLIST(result, TLS->travListSize);
+  return result;
+}
+
+Obj ReachableObjectsFrom(Obj obj)
+{
+  Obj result = TraverseDataSpaceFrom(obj);
   TLS->travList = NULL;
   TLS->travHash = NULL;
   return result;
+}
+
+static Obj CopyBag(Obj copy, Obj original)
+{
+  UInt size = SIZE_BAG(original);
+  UInt type = TNUM_BAG(original);
+  int mask = TraversalMask[type];
+  memcpy(ADDR_OBJ(copy), ADDR_OBJ(original), size);
+  if (mask)
+  {
+    Obj *ptr = ADDR_OBJ(copy);
+    size = size / sizeof(Obj);
+    mask >>= 1;
+    while (size && mask)
+    {
+      if (mask & 1)
+        *ptr = ReplaceByCopy(*ptr);
+      ptr++;
+      size -= 1;
+      mask >>= 1;
+    }
+  } else {
+    TraversalCopyFunc[type](copy, original);
+  }
+  return copy;
+}
+
+Obj CopyReachableObjectsFrom(Obj obj)
+{
+  Obj* traversed = ADDR_OBJ(TraverseDataSpaceFrom(obj));
+  UInt len = (UInt) *traversed;
+  Obj copyList = NEW_PLIST(T_PLIST, len);
+  Obj *copies = ADDR_OBJ(copyList);
+  UInt i;
+  if (len == 0)
+    ErrorQuit("Object not in a readable data space", 0L, 0L);
+  TLS->travMap = NEW_PLIST(T_PLIST, LEN_PLIST(TLS->travHash));
+  SET_LEN_PLIST(TLS->travMap, LEN_PLIST(TLS->travHash));
+  for (i = 1; i<=len; i++)
+  {
+    UInt loc = FindTraversedObj(traversed[i]);
+    if (loc)
+    {
+      Obj original = traversed[i];
+      Obj copy;
+      copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
+      SET_ELM_PLIST(TLS->travMap, loc, copy);
+      copies[i] = copy;
+    }
+  }
+  for (i=1; i<=len; i++)
+    if (copies[i])
+      CopyBag(copies[i], traversed[i]);
+  TLS->travList = NULL;
+  TLS->travHash = NULL;
+  TLS->travMap = NULL;
+  return copies[1];
 }
 
 #endif

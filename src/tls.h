@@ -19,6 +19,7 @@ typedef struct ThreadLocalStorage
   int travListCurrent;
   int travListCapacity;
   Obj travHash;
+  Obj travMap;
   int travHashSize;
   int travHashCapacity;
   int travHashBits;
