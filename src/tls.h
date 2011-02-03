@@ -113,6 +113,9 @@ typedef struct ThreadLocalStorage
   Obj  LastECyc;
   UInt LastNCyc;
 
+  /* From gap.c */
+  Obj thrownObject;
+
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;

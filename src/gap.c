@@ -1101,7 +1101,7 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 */
   
 /* jmp_buf CatchBuffer; */
-Obj ThrownObject = 0;
+/* TL: Obj ThrownObject = 0; */
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
   {
@@ -1129,9 +1129,9 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     if (setjmp(TLS->readJmpError)) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
-      SET_ELM_PLIST(res,2,ThrownObject);
+      SET_ELM_PLIST(res,2,TLS->thrownObject);
       CHANGED_BAG(res);
-      ThrownObject = 0;
+      TLS->thrownObject = 0;
       TLS->currLVars = currLVars;
       TLS->ptrLVars = PTR_BAG(TLS->currLVars);
       TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
@@ -1178,7 +1178,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
   }
 
  Obj FuncJUMP_TO_CATCH( Obj self, Obj payload) {
-   ThrownObject = payload;
+   TLS->thrownObject = payload;
    longjmp(TLS->readJmpError, 1);
    return 0;
  }
@@ -1227,6 +1227,9 @@ Obj CallErrorInner (
   Obj r = NEW_PREC(0);
   Obj l;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
+  /* TMPFIX */
+  if (!IsMainThread())
+    FuncJUMP_TO_CATCH(NULL, EarlyMsg);
   AssPRec(r, RNamName("context"), TLS->currLVars);
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
   AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
@@ -3260,6 +3263,7 @@ void ThreadedInterpreter(void *funcargs) {
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
   TLS->nrError = 0;
+  TLS->thrownObject = 0;
   TLS->bottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
   tmp = NewFunctionC( "bottom", 0, "", 0 );
   PTR_BAG(TLS->bottomLVars)[0] = tmp;
@@ -3285,6 +3289,11 @@ void ThreadedInterpreter(void *funcargs) {
     IntrEnd( 0UL );
   } else {
     IntrEnd( 1UL );
+    /* TMPFIX: */
+    if (TLS->thrownObject) {
+      Pr("#Error (thread %d): %s\n", TLS->threadID, (UInt)(CHARS_STRING(TLS->thrownObject)));
+      TLS->thrownObject = NULL;
+    }
     ClearError();
   } 
 }
@@ -3438,7 +3447,7 @@ static Int InitKernel (
     InitGlobalBag( &EmptyList,         "src/gap.c:EmptyList"         );
 
     InitGlobalBag( &Revisions,         "src/gap.c:Revisions"         );
-    InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
+    /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
 
     /* list of exit functions                                              */
     InitGlobalBag( &AtExitFunctions, "src/gap.c:AtExitFunctions" );
