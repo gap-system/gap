@@ -887,32 +887,35 @@ static void WaitChannel(Channel *channel)
   channel->waiting--;
 }
 
+#ifndef ENABLE_WARD
 static void ExpandChannel(Channel *channel)
 {
   /* Growth ratio should be less than the golden ratio */
   unsigned oldCapacity = channel->capacity;
-  unsigned newCapacity = oldCapacity * 16 / 10;
+  unsigned newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
   unsigned i, tail;
+  Obj newqueue;
   if (newCapacity == oldCapacity)
-    newCapacity++;
+    newCapacity+=2;
+  newqueue = NEW_PLIST(T_PLIST, newCapacity);
+  SET_LEN_PLIST(newqueue, newCapacity);
+  DS_BAG(newqueue) = DS_BAG(channel->queue);
   channel->capacity = newCapacity;
-  GROW_PLIST(channel->queue, newCapacity);
-  SET_LEN_PLIST(channel->queue, newCapacity);
   /* assert(channel->head == channel->tail); */
-  if (channel->tail <= channel->head)
+  for (i = channel->head; i < oldCapacity; i++)
+    ADDR_OBJ(newqueue)[i+1] = ADDR_OBJ(channel->queue)[i+1];
+  for (i = 0; i < channel->tail; i++)
   {
-    for (i = 0; i < channel->tail; i++)
-    {
-      unsigned d = oldCapacity+i;
-      if (d >= newCapacity)
-	d -= newCapacity;
-      ADDR_OBJ(channel->queue)[d+1] = ADDR_OBJ(channel->queue)[i+1];
-    }
-    tail = channel->head + oldCapacity;
-    if (tail >= newCapacity)
-      tail -= newCapacity;
-    channel->tail = tail;
+    unsigned d = oldCapacity+i;
+    if (d >= newCapacity)
+      d -= newCapacity;
+    ADDR_OBJ(newqueue)[d+1] = ADDR_OBJ(channel->queue)[i+1];
   }
+  tail = channel->head + oldCapacity;
+  if (tail >= newCapacity)
+    tail -= newCapacity;
+  channel->tail = tail;
+  channel->queue = newqueue;
 }
 
 static void AddToChannel(Channel *channel, Obj obj)
@@ -944,6 +947,7 @@ static Obj RemoveFromChannel(Channel *channel)
   channel->size -= 2;
   return obj;
 }
+#endif
 
 static void ContractChannel(Channel *channel)
 {
@@ -1102,7 +1106,6 @@ static Obj MultiReceiveChannel(Channel *channel, unsigned max)
     Obj item = RemoveFromChannel(channel);
     SET_ELM_PLIST(result, i+1, item);
   }
-  channel->size -= count;
   SignalChannel(channel);
   UnlockChannel(channel);
   return result;
@@ -1148,7 +1151,7 @@ static Obj CreateChannel(int capacity)
   channel = ObjPtr(channelBag);
   channel->monitor = NewMonitor();
   channel->size = channel->head = channel->tail = 0;
-  channel->capacity = (capacity < 0) ? 10 : capacity;
+  channel->capacity = (capacity < 0) ? 20 : capacity;
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
