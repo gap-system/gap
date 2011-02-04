@@ -760,6 +760,7 @@ static Int InitKernel (
     IsMutableObjFuncs [ T_CHANNEL ] = AlwaysMutable;
     IsMutableObjFuncs [ T_BARRIER ] = AlwaysMutable;
     IsMutableObjFuncs [ T_SYNCVAR ] = AlwaysMutable;
+    MakeBagTypePublic(T_CHANNEL);
     /* return success                                                      */
     return 0;
 }
@@ -914,6 +915,36 @@ static void ExpandChannel(Channel *channel)
   }
 }
 
+static void AddToChannel(Channel *channel, Obj obj)
+{
+  Obj children = ReachableObjectsFrom(obj);
+  DataSpace *ds = DS_BAG(channel->queue);
+  UInt i, len = LEN_PLIST(children);
+  for (i=1; i<= len; i++)
+    DS_BAG(ADDR_OBJ(children)[i]) = ds;
+  ADDR_OBJ(channel->queue)[++channel->tail] = obj;
+  ADDR_OBJ(channel->queue)[++channel->tail] = children;
+  if (channel->tail == channel->capacity)
+    channel->tail = 0;
+  channel->size += 2;
+}
+
+static Obj RemoveFromChannel(Channel *channel)
+{
+  Obj obj = ADDR_OBJ(channel->queue)[++channel->head];
+  Obj children = ADDR_OBJ(channel->queue)[++channel->head];
+  DataSpace *ds = TLS->currentDataSpace;
+  UInt i, len = LEN_PLIST(children);
+  ADDR_OBJ(channel->queue)[channel->head-2] = 0;
+  ADDR_OBJ(channel->queue)[channel->head-1] = 0;
+  if (channel->head == channel->capacity)
+    channel->head = 0;
+  for (i=1; i<= len; i++)
+    DS_BAG(ADDR_OBJ(children)[i]) = ds;
+  channel->size -= 2;
+  return obj;
+}
+
 static void ContractChannel(Channel *channel)
 {
   /* Not yet implemented */
@@ -926,10 +957,7 @@ static void SendChannel(Channel *channel, Obj obj)
     ExpandChannel(channel);
   while (channel->size == channel->capacity)
     WaitChannel(channel);
-  ADDR_OBJ(channel->queue)[1+channel->tail++] = obj;
-  if (channel->tail == channel->capacity)
-    channel->tail = 0;
-  channel->size++;
+  AddToChannel(channel, obj);
   SignalChannel(channel);
   UnlockChannel(channel);
 }
@@ -947,10 +975,7 @@ static void MultiSendChannel(Channel *channel, Obj list)
     while (channel->size == channel->capacity)
       WaitChannel(channel);
     obj = ELM_LIST(list, i);
-    SET_ELM_PLIST(channel->queue, 1+channel->tail++, obj);
-    if (channel->tail == channel->capacity)
-      channel->tail = 0;
-    channel->size++;
+    AddToChannel(channel, obj);
   }
   SignalChannel(channel);
   UnlockChannel(channel);
@@ -970,10 +995,7 @@ static int TryMultiSendChannel(Channel *channel, Obj list)
     if (channel->size == channel->capacity)
       break;
     obj = ELM_LIST(list, i);
-    SET_ELM_PLIST(channel->queue, 1+channel->tail++, obj);
-    if (channel->tail == channel->capacity)
-      channel->tail = 0;
-    channel->size++;
+    AddToChannel(channel, obj);
     result++;
   }
   SignalChannel(channel);
@@ -991,10 +1013,7 @@ static int TrySendChannel(Channel *channel, Obj obj)
     UnlockChannel(channel);
     return 0;
   }
-  ADDR_OBJ(channel->queue)[1+channel->tail++] = obj;
-  if (channel->tail == channel->capacity)
-    channel->tail = 0;
-  channel->size++;
+  AddToChannel(channel, obj);
   SignalChannel(channel);
   UnlockChannel(channel);
   return 1;
@@ -1006,12 +1025,7 @@ static Obj ReceiveChannel(Channel *channel)
   LockChannel(channel);
   while (channel->size == 0)
     WaitChannel(channel);
-  result = ELM_PLIST(channel->queue,channel->head+1);
-  SET_ELM_PLIST(channel->queue,channel->head+1, (Obj) 0);
-  channel->head++;
-  if (channel->head == channel->capacity)
-    channel->head = 0;
-  channel->size--;
+  result = RemoveFromChannel(channel);
   SignalChannel(channel);
   UnlockChannel(channel);
   return result;
@@ -1065,12 +1079,7 @@ static Obj ReceiveAnyChannel(Obj channelList)
       UnlockMonitor(monitors[p]);
       LockMonitors(count, monitors);
     }
-  result = ELM_PLIST(channel->queue,channel->head+1);
-  SET_ELM_PLIST(channel->queue,channel->head+1, (Obj) 0);
-  channel->head++;
-  if (channel->head == channel->capacity)
-    channel->head = 0;
-  channel->size--;
+  result = RemoveFromChannel(channel);
   SignalChannel(channel);
   UnlockMonitor(monitors[p]);
   return result;
@@ -1082,19 +1091,15 @@ static Obj MultiReceiveChannel(Channel *channel, unsigned max)
   unsigned count;
   unsigned i;
   LockChannel(channel);
-  if (max > channel->size)
-    count = channel->size;
+  if (max > channel->size/2)
+    count = channel->size/2;
   else
     count = max;
   result = NEW_PLIST(T_PLIST, count);
   SET_LEN_PLIST(result, count);
   for (i=0; i<count; i++)
   {
-    Obj item = ELM_PLIST(channel->queue, channel->head+1);
-    SET_ELM_PLIST(channel->queue, channel->head+1, (Obj) 0);
-    channel->head++;
-    if (channel->head == channel->capacity)
-      channel->head = 0;
+    Obj item = RemoveFromChannel(channel);
     SET_ELM_PLIST(result, i+1, item);
   }
   channel->size -= count;
@@ -1110,7 +1115,7 @@ static Obj InspectChannel(Channel *channel)
   LockChannel(channel);
   result = NEW_PLIST(T_PLIST, channel->size);
   SET_LEN_PLIST(result, channel->size);
-  for (i = 0, p = channel->head; i < channel->size; i++) {
+  for (i = 0, p = channel->head; i < channel->size; i+=2) {
     SET_ELM_PLIST(result, i+1, ELM_PLIST(channel->queue, p+1));
     p++;
     if (p == channel->capacity)
@@ -1129,10 +1134,7 @@ static Obj TryReceiveChannel(Channel *channel, Obj defaultobj)
     UnlockChannel(channel);
     return defaultobj;
   }
-  result = ADDR_OBJ(channel->queue)[1+channel->head++];
-  if (channel->head == channel->capacity)
-    channel->head = 0;
-  channel->size--;
+  result = RemoveFromChannel(channel);
   SignalChannel(channel);
   UnlockChannel(channel);
   return result;
@@ -1150,6 +1152,7 @@ static Obj CreateChannel(int capacity)
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
+  DS_BAG(channel->queue) = NewDataSpace();
   SET_LEN_PLIST(channel->queue, channel->capacity);
   return channelBag;
 }
