@@ -1284,7 +1284,7 @@ Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
     ArgumentError("MultiReceiveChannel: Channel identifier must be a number");
   count = INT_INTOBJ(countobj);
   if (count < 0)
-    ArgumentError("MultiReceiveChannel: Channel identifier must be non-negative");
+    ArgumentError("MultiReceiveChannel: Channel size must be non-negative");
   return MultiReceiveChannel(ObjPtr(channel), count);
 }
 
