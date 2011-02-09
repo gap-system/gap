@@ -523,6 +523,8 @@ void InitFinalizerFuncBags(
   TabFinalizerFuncBags[type] = finalizer_func;
 }
 
+#ifndef WARD_ENABLED
+
 void StandardFinalizer( void * bagContents, void * data )
 {
   Bag bag;
@@ -531,6 +533,8 @@ void StandardFinalizer( void * bagContents, void * data )
   bag = (Bag) &bagContents2;
   TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
 }
+
+#endif
 
 
 #if ITANIUM
