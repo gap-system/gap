@@ -581,11 +581,12 @@ static int SeenDuringTraversal(Obj obj)
     if (hashTable[hash] == NULL)
     {
       hashTable[hash] = obj;
+      TLS->travHashSize++;
       return 1;
     }
     if (hashTable[hash] == obj)
       return 0;
-    hash = (hash + 1) & (TLS->travHashSize-1);
+    hash = (hash + 1) & (TLS->travHashCapacity-1);
   }
 }
 
@@ -604,7 +605,7 @@ static UInt FindTraversedObj(Obj obj)
       return (int) hash+1;
     if (hashTable[hash] == NULL)
       return 0;
-    hash = (hash + 1) & (TLS->travHashSize-1);
+    hash = (hash + 1) & (TLS->travHashCapacity-1);
   }
 }
 
