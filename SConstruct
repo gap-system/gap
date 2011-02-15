@@ -1,10 +1,12 @@
-import commands, os, glob, sys
+import commands, os, glob, sys, string
 
 # parse options and set up environment
 
 vars = Variables()
 vars.Add('cflags', 'Supply additional CFLAGS', "")
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
+vars.Add(BoolVariable("profile",
+  "Set for profiling with google performance tools", 0))
 vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", 'auto',
   allowed_values=('32', '64', 'auto')))
 vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
@@ -19,10 +21,15 @@ compiler = GAP["CC"]
 platform = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform + "-" + compiler
 
-try:
-  os.makedirs(build_dir)
-except:
-  pass
+try: os.makedirs(build_dir)
+except: pass
+
+try: os.unlink("bin/current")
+except: pass
+
+try: os.symlink(platform+"-"+compiler, "bin/current")
+except: pass
+ 
 
 def abi_from_config(config_header_file):
   global GAP
@@ -101,6 +108,8 @@ else:
   compile_gmp = False
   libs.remove("gmp")
 conf.Finish()
+if GAP["profile"]:
+  libs.append("profiler")
 
 # Construct command line options
 
@@ -167,6 +176,27 @@ if compile_gc or compile_gmp:
 options["CPPPATH"] = include_path
 options["OBJPREFIX"] = "../" + build_dir + "/"
 
+# uname file generator
+
+sysinfo_os, sysinfo_host, sysinfo_version, sysinfo_os_full, sysinfo_arch = \
+  os.uname()
+
+sysinfo_header = [
+  "#ifndef _SYSINFO_H",
+  "#define SYSINFO_OS " + sysinfo_os,
+  "#define SYSINFO_OS_"+ string.upper(sysinfo_os)+" 1",
+  "#define SYSINFO_VERSION " + sysinfo_version,
+  "#define SYSINFO_ARCH " + sysinfo_arch,
+  "#define SYSINFO_ARCH_"+ string.upper(sysinfo_arch)+" 1",
+  "#endif /* _SYSINFO_H */"
+]
+
+def SysInfoBuilder(target, source, env):
+  file = open(target[0].get_abspath(), "w")
+  for line in sysinfo_header:
+    file.write(line+"\n")
+  file.close()
+
 # Building binary from source
 
 preprocess = GAP["preprocess"]
@@ -188,5 +218,6 @@ source.append("extern/jenkins/jhash.o")
 
 GAP.Command("extern/include/jhash.h", "extern/jenkins/jhash.h",
             "cp -f $SOURCE $TARGET")
+GAP.Command("extern/include/sysinfo.h", [], SysInfoBuilder)
 GAP.Object("extern/jenkins/jhash.o", "extern/jenkins/jhash.c")
 GAP.Program(build_dir + "/gap", source, LIBS=libs, **options)
