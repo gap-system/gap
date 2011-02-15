@@ -199,7 +199,7 @@ def SysInfoBuilder(target, source, env):
 
 # Building binary from source
 
-preprocess = GAP["preprocess"]
+preprocess = string.replace(GAP["preprocess"], "%", " ")
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
