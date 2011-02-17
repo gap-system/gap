@@ -301,7 +301,9 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_CHANNEL		(FIRST_SHARED_TNUM+ 5)
 #define T_BARRIER		(FIRST_SHARED_TNUM+ 6)
 #define T_SYNCVAR		(FIRST_SHARED_TNUM+ 7)
-#define LAST_SHARED_TNUM	(T_SYNCVAR)
+#define T_ALIST			(FIRST_SHARED_TNUM+ 8)
+#define T_AREC 			(FIRST_SHARED_TNUM+ 9)
+#define LAST_SHARED_TNUM	(T_AREC)
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
 #define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM

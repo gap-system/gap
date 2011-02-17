@@ -1,0 +1,1 @@
+StructInitInfo *InitInfoAObjects(void);

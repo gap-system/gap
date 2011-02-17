@@ -106,6 +106,7 @@ const char * Revision_gap_c =
 #include        "thread.h"
 #include        "tls.h"
 #include        "threadapi.h"
+#include        "aobjects.h"
 
 #ifdef SYS_IS_MAC_MWC
 #include        "macintr.h"              /* Mac interrupt handlers	      */
@@ -3670,6 +3671,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
 
     /* threads                                                             */
     InitInfoThreadAPI,
+    InitInfoAObjects,
 
 #ifdef GAPMPI
     /* ParGAP/MPI module						   */

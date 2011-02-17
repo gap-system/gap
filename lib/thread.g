@@ -17,11 +17,16 @@ Revision.thread_g :=
 
 
 SynchronizationFamily := NewFamily("SynchronizationFamily", IsObject);
+AtomicFamily := NewFamily("AtomicFamily", IsObject);
 
 DeclareFilter("IsChannel", IsObject);
 DeclareFilter("IsBarrier", IsObject);
 DeclareFilter("IsSyncVar", IsObject);
+DeclareFilter("IsAtomicList", IsObject);
+DeclareFilter("IsAtomicRecord", IsObject);
 
 TYPE_CHANNEL := NewType(SynchronizationFamily, IsChannel);
 TYPE_BARRIER := NewType(SynchronizationFamily, IsBarrier);
 TYPE_SYNCVAR := NewType(SynchronizationFamily, IsSyncVar);
+TYPE_ALIST := NewType(AtomicFamily, IsAtomicList);
+TYPE_AREC := NewType(AtomicFamily, IsAtomicRecord);
