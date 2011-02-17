@@ -937,7 +937,7 @@ UInt CloseTest ( void )
     }
 
     /* revert to last file                                                 */
-    TLS->input--;
+    TLS->input = TLS->inputFiles[--TLS->inputFilesSP-1];
     TLS->in     = TLS->input->ptr;
     TLS->symbol = TLS->input->symbol;
 
