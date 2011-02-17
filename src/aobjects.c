@@ -107,6 +107,7 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
       *data++ = NULL;
       for (i=1; i<= len; i++)
         *data++ = ELM_LIST(init, i);
+      AO_nop_write(); /* Should not be necessary, but better be safe. */
       return result;
     case 2:
       if (!IS_INTOBJ(ELM_PLIST(args, 1)))
@@ -121,6 +122,7 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
       *data++ = NULL;
       for (i=1; i<=len; i++)
         *data++ = init;
+      AO_nop_write(); /* Should not be necessary, but better be safe. */
       return result;
     default:
       ArgumentError("NewAtomicList: Too many arguments");
@@ -140,9 +142,8 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
   n = INT_INTOBJ(index);
   if (n <= 0 || n > len)
     ArgumentError("GET_ATOMIC_LIST: Index out of range");
-  result = ADDR_OBJ(list)[n+1];
   AO_nop_read(); /* read barrier */
-  return result;
+  return ADDR_OBJ(list)[n+1];
 }
 
 static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
@@ -173,6 +174,7 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
   len = (UInt) *data++;
   result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
+  AO_nop_read();
   for (i=1; i<=len; i++)
     SET_ELM_PLIST(result, i, data[i]);
   return result;
@@ -260,6 +262,7 @@ static Obj Elm0AList(Obj list, Int pos)
   UInt len = (UInt) ADDR_OBJ(list)[0];
   if (pos < 1 || pos > len)
     return 0;
+  AO_nop_read();
   return ADDR_OBJ(list)[1+pos];
 }
 
@@ -276,6 +279,7 @@ static Obj ElmAList(Obj list, Int pos)
     } while (!IS_INTOBJ(posobj));
     pos = INT_INTOBJ(posobj);
   }
+  AO_nop_read();
   return ADDR_OBJ(list)[1+pos];
 }
 
@@ -293,6 +297,7 @@ static void AssAList(Obj list, Int pos, Obj obj)
     pos = INT_INTOBJ(posobj);
   }
   ADDR_OBJ(list)[1+pos] = obj;
+  AO_nop_write();
 }
 
 
