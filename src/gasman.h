@@ -535,6 +535,10 @@ typedef struct  {
 extern  TNumInfoBags            InfoBags [ 256 ];
 
 void MakeBagTypePublic(int type);
+static inline Bag MakeBagPublic(Bag bag) {
+  bag[1] = 0; /* DS_BAG(bag) */
+  return bag;
+}
 
 
 /****************************************************************************
@@ -1084,7 +1088,7 @@ extern void CallbackForAllBags(
 typedef struct
 {
   void *lock; /* void * so that we don't have to include pthread.h always */
-  int is_thread_local;
+  int not_shared;
   void *owner; /* opaque thread descriptor */
   unsigned char readers[0];
 } DataSpace;

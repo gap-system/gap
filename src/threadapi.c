@@ -1241,7 +1241,7 @@ static Obj CreateChannel(int capacity)
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
-  DS_BAG(channel->queue) = NewDataSpace();
+  DS_BAG(channel->queue) = limbo;
   SET_LEN_PLIST(channel->queue, channel->capacity);
   return channelBag;
 }

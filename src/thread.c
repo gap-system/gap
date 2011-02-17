@@ -34,6 +34,8 @@ typedef struct {
   int next;
 } ThreadData;
 
+DataSpace *limbo;
+
 static ThreadData thread_data[MAX_THREADS];
 static int thread_free_list;
 
@@ -157,8 +159,10 @@ void RunThreadedMain(
 void CreateMainDataSpace()
 {
   TLS->currentDataSpace = NewDataSpace();
-  ((DataSpace *)TLS->currentDataSpace)->is_thread_local = 1;
+  ((DataSpace *)TLS->currentDataSpace)->not_shared = 1;
   DataSpaceWriteLock(TLS->currentDataSpace);
+  limbo = NewDataSpace();
+  limbo->not_shared = 1;
 }
 
 void *DispatchThread(void *arg)
@@ -171,7 +175,7 @@ void *DispatchThread(void *arg)
 #endif
   InitTLS();
   TLS->currentDataSpace = NewDataSpace();
-  ((DataSpace *)TLS->currentDataSpace)->is_thread_local = 1;
+  ((DataSpace *)TLS->currentDataSpace)->not_shared = 1;
   DataSpaceWriteLock(TLS->currentDataSpace);
   this_thread->start(this_thread->arg);
   DataSpaceWriteUnlock(TLS->currentDataSpace);
@@ -386,7 +390,7 @@ int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
      */
     if (i > 0 && ds == order[i-1].dataspace)
       continue; /* skip duplicates */
-    else if (IsLocked(ds) || ds->is_thread_local)
+    else if (IsLocked(ds) || ds->not_shared)
     {
       /* DataSpaces may not be locked twice. If that is attempted,
        * the entire lock operation is reverted. Similarly if one
