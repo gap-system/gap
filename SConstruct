@@ -76,7 +76,7 @@ GAP.Command("config", [], "") # Empty builder for the config target
 # Which external libraries do we need?
 
 conf = Configure(GAP)
-libs = ["gmp", "gc"]
+libs = ["gmp", "gc", "atomic_ops"]
 if conf.CheckLib("pthread"):
   libs.append("pthread")
 if conf.CheckLib("rt"):
@@ -158,6 +158,14 @@ if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   build_external("gmp-4.2.2")
   del os.environ["ABI"]
 
+if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
+  if commands.getoutput("uname -s") != "Darwin":
+    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
+  else:
+    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"] + " -D_XOPEN_SOURCE"
+  build_external("libatomic_ops-1.2")
+  del os.environ["CC"]
+
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
   if commands.getoutput("uname -s") != "Darwin":
     os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
@@ -165,6 +173,8 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
     os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"] + " -D_XOPEN_SOURCE"
   build_external("gc-7.2alpha2")
   del os.environ["CC"]
+
+
 
 # Adding paths for external libraries
 
