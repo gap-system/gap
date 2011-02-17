@@ -2,27 +2,13 @@
 ##
 #W  bugfix.tst
 ##
-#H  $Id: bugfix.tst,v 1.80 2009/09/30 19:01:17 alexk Exp $
+#H  $Id: bugfix.tst,v 1.102 2011/01/20 15:52:01 alexk Exp $
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
-
-
-##  Do not show package banners during these tests.
-gap> BANNER_ORIG:= GAPInfo.CommandLineOptions.b;;
-gap> GAPInfo.CommandLineOptions.b:= true;;
 
 
 gap> START_TEST("bugfixes test");
-
-##  Bug 18 for fix 4
-##
-gap> if LoadPackage( "ctbllib" ) <> fail then
->      if Irr( CharacterTable( "WeylD", 4 ) )[1] <>
->           [ 3, -1, 3, -1, 1, -1, 3, -1, -1, 0, 0, -1, 1 ] then
->        Print( "problem with Irr( CharacterTable( \"WeylD\", 4 ) )[1]\n" );
->      fi;
->    fi;
 
 ##  Check to see if the strongly connected component (Error 3) fix has been
 ##     installed
@@ -94,7 +80,7 @@ gap> RelativeBasis(b,b2);;
 ## Testing if an element is in a Green's D equivalence class (fix 2 no. 12)
 gap> s := Semigroup(Transformation([1,1,3,4]),Transformation([1,2,2,4]));;
 gap> dc := GreensDClasses(s);;
-gap> Transformation([1,1,3,4]) in dc[1];
+gap> ForAll(dc, c->Transformation([1,1,3,4]) in c);
 false
 
 ## Testing if Green's D classes can be compared for finite semigroups
@@ -102,7 +88,7 @@ gap> s := Transformation([1,1,3,4,5]);;
 gap> c := Transformation([2,3,4,5,1]);;
 gap> op5 := Semigroup(s,c);;
 gap> dcl := GreensDClasses(op5);;
-gap> IsGreensLessThanOrEqual(dcl[4],dcl[5]);
+gap> ForAny(Cartesian(dcl,dcl), x->IsGreensLessThanOrEqual(x[1],x[2]));
 true
 
 ## Testing that GroupHClassOfGreensDClass is implemented
@@ -236,9 +222,8 @@ gap> Difference( [ 1, 1 ], [] );
 ## bug 17 for fix 4
 gap> f := FreeGroup( 2 );;
 gap> g := f/[f.1^4,f.2^4,Comm(f.1,f.2)];;
-gap> Elements(g);
-[ <identity ...>, f1, f1^3, f2, f2^3, f1^2, f1*f2, f1*f2^3, f1^3*f2, 
-  f1^3*f2^3, f2^2, f1^2*f2, f1^2*f2^3, f1*f2^2, f1^3*f2^2, f1^2*f2^2 ]
+gap> Length(Elements(g));
+16
 
 gap> NrPrimitiveGroups(441);
 24
@@ -264,10 +249,6 @@ true
 ##  bug 5 for fix 5
 gap> BaseOrthogonalSpaceMat( [ [ 1, 0 ] ] );
 [ [ 0, 1 ] ]
-
-##  bug 6 for fix 5
-gap> IsSet( AUTOLOAD_PACKAGES );
-true
 
 ##  bug 7 for fix 5
 gap> tbl:= CharacterTable( SL(2,3) );;  irr:= Irr( tbl );;
@@ -331,21 +312,16 @@ true
 ##  bug 18 for fix 5
 gap> List( Irr( AlternatingGroup( 5 ) ), TestMonomial );;
 
-##  bug 2 for fix 6
-gap> if LoadPackage( "tomlib" ) <> fail then
->      DerivedSubgroupsTom( TableOfMarks( "A10" ) );
->    fi;
-
 ##  bug 3 for fix 6
 gap> Order( ZmodnZObj( 2, 7 ) );;  Inverse( ZmodnZObj( 2, 7 ) );;
 
 ##  bug 4 for fix 6
 gap> tbl:= CharacterTable( SL(2,3) );;  irr:= Irr( tbl );;
-gap> z:= Indeterminate( Rationals );
+gap> z := Indeterminate( Rationals : old );
 x_1
-gap> lin:= Filtered( LinearCharacters( tbl ), x -> Order(x) = 3 );;
-gap> deg3:= First( irr, x -> DegreeOfCharacter( x ) = 3 );;
-gap> ser:= MolienSeries( tbl, lin[1] + deg3, lin[2] );;
+gap> lin := Filtered( LinearCharacters( tbl ), x -> Order(x) = 3 );;
+gap> deg3 := First( irr, x -> DegreeOfCharacter( x ) = 3 );;
+gap> ser := MolienSeries( tbl, lin[1] + deg3, lin[2] );;
 gap> MolienSeriesWithGivenDenominator( ser, [ 6,6,4,4 ] );
 ( 2*z^2+z^3+3*z^4+6*z^5+3*z^6+7*z^7+7*z^8+3*z^9+6*z^10+4*z^11+z^12+3*z^13+z^14\
 +z^16 ) / ( (1-z^6)^2*(1-z^4)^2 )
@@ -407,7 +383,6 @@ false
 gap> AbelianInvariantsMultiplier(SL(3,2));
 [ 2 ]
 gap> AllPrimitiveGroups(Size,60);
-#W  AllPrimitiveGroups: Degree restricted to [ 1 .. 2499 ]
 [ A(5), PSL(2,5), A(5) ]
 gap> ix18:=X(GF(5),1);;f:=ix18^5-1;;
 gap> Discriminant(f);
@@ -562,43 +537,6 @@ gap> String( [ [ '1' ] ] );  String( rec( a:= [ '1' ] ) );
 "rec( a := \"1\" )"
 
 
-# 2005/05/03 (BH)
-gap> if LoadPackage ("crisp") <> fail then
->      F:=FreeGroup("a","b","c");;
->      a:=F.1;;b:=F.2;;c:=F.3;;
->      G:=F/[a^12,b^2*a^6,c^2*a^6,b^-1*a*b*a,c^-1*a*c*a^-7,c^-1*b*c*a^-9*b^-1];;
->      pcgs := PcgsElementaryAbelianSeries (G);;
->      ser := ChiefSeries (G);;
->      if ForAny (ser, H -> ParentPcgs (InducedPcgs (pcgs, H))
->                           <> ParentPcgs (pcgs)) then
->        Print( "problem with crisp (1)\n" );
->      fi;
->      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
->                           <>  ParentPcgs(HomePcgs (H))) then
->        Print( "problem with crisp (2)\n" );
->      fi;
->      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
->                           <> HomePcgs (H)) then
->        Print( "problem with crisp (3)\n" );
->      fi;
->      G2:=Image(IsomorphismPermGroup(G));
->      pcgs := PcgsElementaryAbelianSeries (G2);
->      ser := ChiefSeries (G2);
->      if ForAny (ser, H -> ParentPcgs (InducedPcgs (pcgs, H))
->                           <> pcgs) then
->        Print( "problem with crisp (4)\n" );
->      fi;
->      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
->                           <> ParentPcgs(HomePcgs (H))) then
->        Print( "problem with crisp (5)\n" );
->      fi;
->      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
->                           <> HomePcgs (H)) then
->        Print( "problem with crisp (6)\n" );
->      fi;
->    fi;
-
-
 # 2005/05/03 (BE)
 gap> SmallGroupsInformation(512);
 
@@ -667,15 +605,9 @@ gap> Sort(A); A;
 # call: gap -A -L wsp
 
 
-# 2005/05/09 (FL)
-gap> NextPrimeInt(23482648263482364926498249);
-#I  IsPrimeInt: probably prime, but not proven: 23482648263482364926498251
-23482648263482364926498251
-
-
 # 2005/05/09 (Colva, FL (for 4R4))
 gap> L:=AllPrimitiveGroups(NrMovedPoints,26,Size,[1..2^28-1]);
-[ PSL(2, 25), PGL(2, 25), PSigmaL(2, 25), PSL(2, 25).2, PGammaL(2, 25) ]
+[ PSL(2, 25), PGL(2, 25), PSigmaL(2, 25), PSL(2, 25).2_3, PGammaL(2, 25) ]
 
 # For new features:
 
@@ -705,7 +637,7 @@ function( p ) ... end
 
 
 # 2005/04/27 (TB)
-gap> IsBound( CYC_LIST );
+gap> IsBound( CycList );
 true
 
 
@@ -808,11 +740,7 @@ gap> l;
 [ 1, 2, 2, 3, 4 ]
 
 
-# 2005/06/23 (AH)
-gap> if LoadPackage("crisp") <> fail then
->     h:=Source(EpimorphismSchurCover(SmallGroup(64,150)));
->     NormalSubgroups( Centre( h ) );
->     fi;
+
 
 
 # 2005/07/09 (AH)
@@ -952,23 +880,6 @@ gap> IsBound(x);
 false
 
 
-# 2005/08/23 (TB)
-gap> tbl:= CharacterTable( ElementaryAbelianGroup( 4 ) );;
-gap> IsElementaryAbelian( tbl );
-true
-gap> ClassPositionsOfMinimalNormalSubgroups( tbl );
-[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ] ]
-gap> if LoadPackage ("ctbllib") <> fail then
->      tbl:= CharacterTableIsoclinic( CharacterTable( "2.A5.2" ) );
->      if tbl mod 3 = fail then
->        Error( CharacterTable( "Isoclinic(2.A5.2)" ), " mod 3" );
->      fi;
->      SourceOfIsoclinicTable( tbl );
->    fi;
-gap> tbl:= CharacterTable( Group( () ) );;
-gap> ClassPositionsOfElementaryAbelianSeries( tbl );;
-
-
 # 2005/08/25 (JS)
 gap> G := Group((1,2));; PrimePGroup(G);
 2
@@ -984,11 +895,6 @@ true
 # 2005/08/26 (Max)
 gap> IsOperation(MutableCopyMat);
 true
-
-
-# 2005/08/29 (TB)
-gap> LoadPackage( "ctbllib", "=0.0" );
-fail
 
 
 # For new features:
@@ -1127,16 +1033,6 @@ gap> IsBoundGlobal ("ComputedInducedPcgses");
 true
 
 
-# 2005/10/14 (BH)
-gap> if LoadPackage ("crisp", "1.2.1", false) <> fail then
->     G := DirectProduct(CyclicGroup(2), CyclicGroup(3), SymmetricGroup(4));
->     AllInvariantSubgroupsWithQProperty (G, G, ReturnTrue, ReturnTrue, rec());
->     if ( (1, 5) in EnumeratorByPcgs ( Pcgs( SymmetricGroup (4) ) ) ) then
->      Print( "problem with crisp (7)\n" );
->     fi;
->    fi;
-
-
 # 2005/10/26 (JS)
 gap> PolynomialByExtRep(FamilyObj(X(Rationals)),[[1,1],1,[2,1],1]); # x_2+x_1 in 4.4.6
 x_1+x_2
@@ -1157,14 +1053,6 @@ gap> rg:= GroupRing( GF(2), SymmetricGroup( 3 ) );;
 gap> i:= Ideal( rg, [ Sum( GeneratorsOfAlgebra( rg ){ [ 1, 2 ] } ) ] );;
 gap> Dimension( rg / i );;
 
-
-# 2005/10/29 (TB)
-gap> if LoadPackage( "ctbllib" ) <> fail then
->      t:= CharacterTable( "S12(2)" );  p:= PrevPrimeInt( Exponent( t ) );
->      if not IsSmallIntRep( p ) then
->        PowerMap( t, p );
->      fi;
->    fi;
 
 
 # 2005/11/22 (TB)
@@ -1291,19 +1179,21 @@ gap> RepresentativeAction(Group(()), [1], [2], OnSets);;
 
 
 # 2006/03/02 (AH)
-gap> x:=X(Rationals,1);;
-gap> y:=X(Rationals,2);;
-gap> a:=X(Rationals,3);;
-gap> c:=X(Rationals,4);;
-gap> s:=X(Rationals,5);;
-gap> L:=[(a+c)*s-x,(a+c)*c-y,s^2+c^2-1];;
-gap> ReducedGroebnerBasis(L,MonomialLexOrdering([x,y,a,c,s]));
-[ c^2+s^2-1, -a*c+s^2+y-1, -a*s-c*s+x ]
-gap> ReducedGroebnerBasis(L,MonomialLexOrdering([c,s,x,y,a]));
-[ x^4+2*x^2*y^2-x^2*a^2+y^4-y^2*a^2-2*x^2*y-2*y^3+y^2, 
-  -x^3-x*y^2+x*a^2+y*a*s+x*y, x^2*y+x*a*s+y^3-y*a^2-x^2-2*y^2+y, 
-  x^2*s+y^2*s-x*a-y*s, -x^2-y^2+a^2+s^2+2*y-1, -x^2-y^2+a^2+a*c+y, 
-  x*s+y*c-a-c, x*c-y*s, a*s+c*s-x, x^2+y^2-a^2+c^2-2*y ]
+gap> x_1:=X(Rationals,"x_1":old);;
+gap> x_2:=X(Rationals,"x_2":old);;
+gap> x_3:=X(Rationals,"x_3":old);;
+gap> x_4:=X(Rationals,"x_4":old);;
+gap> x_5:=X(Rationals,"x_5":old);;
+gap> L:=[(x_3+x_4)*x_5-x_1,(x_3+x_4)*x_4-x_2,x_5^2+x_4^2-1];;
+gap> ReducedGroebnerBasis(L,MonomialLexOrdering([x_1,x_2,x_3,x_4,x_5]));
+[ x_4^2+x_5^2-1, -x_3*x_4+x_5^2+x_2-1, -x_3*x_5-x_4*x_5+x_1 ]
+gap> ReducedGroebnerBasis(L,MonomialLexOrdering([x_4,x_5,x_1,x_2,x_3]));
+[ x_1^4+2*x_1^2*x_2^2-x_1^2*x_3^2+x_2^4-x_2^2*x_3^2-2*x_1^2*x_2-2*x_2^3+x_2^2, 
+  -x_1^3-x_1*x_2^2+x_1*x_3^2+x_2*x_3*x_5+x_1*x_2, 
+  x_1^2*x_2+x_1*x_3*x_5+x_2^3-x_2*x_3^2-x_1^2-2*x_2^2+x_2, 
+  x_1^2*x_5+x_2^2*x_5-x_1*x_3-x_2*x_5, -x_1^2-x_2^2+x_3^2+x_5^2+2*x_2-1, 
+  -x_1^2-x_2^2+x_3^2+x_3*x_4+x_2, x_1*x_5+x_2*x_4-x_3-x_4, x_1*x_4-x_2*x_5, 
+  x_3*x_5+x_4*x_5-x_1, x_1^2+x_2^2-x_3^2+x_4^2-2*x_2 ]
 
 
 # 2006/03/03 (FL)
@@ -1329,32 +1219,6 @@ z
 
 
 # For new features:
-
-
-# 2005/12/08 (TB)
-gap> if LoadPackage( "ctbllib" ) <> fail then
->      if List( Filtered( Irr( CharacterTable( "Sz(8).3" ) mod 3 ),
->                         x -> x[1] = 14 ), ValuesOfClassFunction )
->         <> [ [ 14, -2, 2*E(4), -2*E(4), -1, 0, 1 ],
->              [ 14, -2, -2*E(4), 2*E(4), -1, 0, 1 ] ] then
->        Print( "ordering problem in table of Sz(8).3 mod 3\n" );
->      fi;
->    fi;
-
-
-# 2005/12/08 (TB)
-gap> t:= CharacterTable( SymmetricGroup( 4 ) );;
-gap> SetIdentifier( t, "Sym(4)" );  Display( t,
->     rec( powermap:= "ATLAS", centralizers:= "ATLAS", chars:= false ) );
-Sym(4)
-
-    24  4  8  3  4
-
- p      A  A  A  B
- p'     A  A  A  A
-    1A 2A 2B 3A 4A
-
-
 
 # 2005/12/08 (TB, Michael Hartley (implementation of a prototype))
 gap> LowIndexSubgroupsFpGroupIterator;;
@@ -1472,7 +1336,7 @@ true
 
 
 # 2006/08/22 (Max)
-gap> "IS_BLIST_REP" in NamesFilter(TypeObj(BlistList([1,2],[2]))![2]);
+gap> "IsBlistRep" in NamesFilter(TypeObj(BlistList([1,2],[2]))![2]);
 true
 
 
@@ -1626,7 +1490,7 @@ gap> v:= GF(2)^2;;  bv:= BasisVectors( Basis( v ) );;
 gap> IsInjective( LeftModuleGeneralMappingByImages( v, v, bv, 0 * bv ) );
 false
 gap> map:= LeftModuleGeneralMappingByImages( v, v, 0 * bv, bv );;
-gap> ImagesRepresentative( map, Zero( v ) );
+gap> Print( ImagesRepresentative( map, Zero( v ) ), "\n" );
 [ 0*Z(2), 0*Z(2) ]
 
 
@@ -1691,12 +1555,6 @@ gap> Print(x -> 100000000000, "\n");
 function ( x )
     return 100000000000;
 end
-
-
-# 2007/04/18 (FL)
-gap> PRINT_PREC(rec(a:=1)); Print("\n");
-rec(
-  a := 1 )
 
 
 # 2007/06/14 (FL)
@@ -1764,11 +1622,6 @@ gap> MakeImmutable(l);
 gap> f := UnivariatePolynomial( Rationals, [-4,0,0,1] );;
 gap> L := AlgebraicExtension( Rationals, f );
 <algebraic extension over the Rationals of degree 3>
-
-
-# 2007/08/28 (TB)
-gap> IsDocumentedVariable( "CharacterTableRegular" );
-true
 
 
 # 2007/08/29 (TB)
@@ -1840,11 +1693,21 @@ gap> DefiningPolynomial( AsField( GF(9), GF(3^6) ) );
 x_1^3+Z(3^2)^6*x_1^2+Z(3^2)*x_1+Z(3^2)^5
 
 
-# 2008/04/03 (JS)
-gap> if LoadPackage( "atlasrep" ) <> fail then
->      g:= Group( AtlasGenerators( "HS", 1, 4 ).generators );
->      ConjugacyClassesMaximalSubgroups( g ); 
->    fi;
+# 2008/04/03 (JS), updated on 2010/10/01 (AK)
+gap> g:=Group( (1,33)(2,12)(3,96)(4,37)(5,95)(6,11)(7,51)(8,42)(9,32)(10,80)
+> (13,17)(14,59)(15,62)(16,85)(18,22)(19,29)(20,24)(21,90)(23,72)(25,26)
+> (27,30)(28,70)(31,92)(34,100)(35,75)(36,82)(38,86)(39,77)(40,46)(41,44)
+> (43,61)(45,52)(47,78)(48,88)(49,57)(50,55)(53,97)(54,67)(56,91)(58,81)
+> (60,93)(63,71)(64,73)(65,89)(66,79)(68,98)(69,83)(74,87)(76,99)(84,94), 
+> (1,10)(2,7,52,98)(3,68,75,12)(4,51,49,27)(5,18,29,91)(6,41,54,72)
+> (8,78,25,99)(9,95,67,55)(11,86,39,38)(13,17)(14,61,82,79)(15,97,28,46)
+> (16,56,74,83)(20,94,90,47)(21,65,66,58)(22,50,87,71)(23,93,31,85)(24,53)
+> (26,76,36,73)(30,37,44,69)(32,34)(33,70)(40,43)(42,88,64,80)(45,60,92,57)
+> (48,81)(59,62,84,89)(77,96) );;
+gap> c:=ConjugacyClassesMaximalSubgroups( g );;
+gap> Collected(List(c,x->[Size(Representative(x)),Size(x)]));
+[ [ [ 120, 336 ], 1 ], [ [ 144, 280 ], 1 ], [ [ 336, 120 ], 3 ], 
+  [ [ 384, 105 ], 1 ], [ [ 720, 56 ], 3 ], [ [ 20160, 1 ], 1 ] ]
 
 
 # 2008/04/23 (TB)
@@ -1997,8 +1860,11 @@ fail
 
 # 2008/11/16 (TB)
 gap> att:= NewAttribute( "att", IsObject );
+<Attribute "att">
 gap> prop1:= NewProperty( "prop1", IsObject );
+<Property "prop1">
 gap> prop2:= NewProperty( "prop2", IsObject );
+<Property "prop2">
 gap> InstallTrueMethod( prop2, prop1 );
 gap> InstallImmediateMethod( att, Tester( prop2 ), 0, G -> 1 );
 gap> # The intended behaviour is that `prop1' implies `prop2',
@@ -2019,12 +1885,180 @@ true
 gap> Tester( att )( g );  # Here we got `false' before the fix.
 true
 
+# Reported by Sohail Iqbal on 2008/10/15, added by AK on 2010/10/03
+gap> f:=FreeGroup("s","t");; s:=f.1;; t:=f.2;;
+gap> g:=f/[s^4,t^4,(s*t)^2,(s*t^3)^2];;
+gap> CharacterTable(g);
+CharacterTable( <fp group of size 16 on the generators [ s, t ]> )
+gap> Length(Irr(g));
+10
+
+# Reported by Laurent Bartholdi on 2008/11/14, added by AK on 2010/10/15
+gap> f := FreeGroup(0);; g := FreeGroup(1);;
+gap> phi := GroupHomomorphismByImages(f,g,[],[]);;
+gap> One(f)^phi = One(g);
+true
+gap> One(f)^phi=One(f);
+false
+
+# Reported by FL on 2010/05/05, added by AK on 2011/01/16
+gap> Size(Set(List([1..10],i->Random(1,2^60-1))))=10;
+true
+gap> Size(Set(List([1..10],i->Random(1,2^60))))=10;  
+true
+
+# Reported by MN on 2009/10/06, added by AK on 2011/01/16
+gap> (Z(65536)^2)^LogFFE(Z(65536)^16386,Z(65536)^2) = Z(65536)^16386;
+true
+
+# Reported by TB on 2009/11/09, added by AK on 2011/01/20
+# Log2Int(2^60) bug (a 64bit/GMP issue)
+gap> Log2Int( 2^60 );
+60
+
+#############################################################################
+#
+# Tests requiring loading some packages
+#
+
+#############################################################################
+#
+# Tests requiring TomLib
+
+##  bug 2 for fix 6
+gap> if LoadPackage( "tomlib", false ) <> fail then
+>      DerivedSubgroupsTom( TableOfMarks( "A10" ) );
+>    fi;
+
+
+#############################################################################
+#
+# Tests requiring CTblLib
+
+# 2005/08/29 (TB)
+gap> LoadPackage( "ctbllib", "=0.0" );
+fail
+
+##  Bug 18 for fix 4
+gap> if LoadPackage( "ctbllib", false ) <> fail then
+>      if Irr( CharacterTable( "WeylD", 4 ) )[1] <>
+>           [ 3, -1, 3, -1, 1, -1, 3, -1, -1, 0, 0, -1, 1 ] then
+>        Print( "problem with Irr( CharacterTable( \"WeylD\", 4 ) )[1]\n" );
+>      fi;
+>    fi;
+
+
+# 2005/08/23 (TB)
+gap> tbl:= CharacterTable( ElementaryAbelianGroup( 4 ) );;
+gap> IsElementaryAbelian( tbl );
+true
+gap> ClassPositionsOfMinimalNormalSubgroups( tbl );
+[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ] ]
+gap> if LoadPackage ("ctbllib", false) <> fail then
+>      tbl:= CharacterTableIsoclinic( CharacterTable( "2.A5.2" ) );
+>      if tbl mod 3 = fail then
+>        Error( CharacterTable( "Isoclinic(2.A5.2)" ), " mod 3" );
+>      fi;
+>      SourceOfIsoclinicTable( tbl );
+>    fi;
+gap> tbl:= CharacterTable( Group( () ) );;
+gap> ClassPositionsOfElementaryAbelianSeries( tbl );;
+
+
+# 2005/10/29 (TB)
+gap> if LoadPackage( "ctbllib", false ) <> fail then
+>      t:= CharacterTable( "S12(2)" );  p:= PrevPrimeInt( Exponent( t ) );
+>      if not IsSmallIntRep( p ) then
+>        PowerMap( t, p );
+>      fi;
+>    fi;
+
+
+# 2005/12/08 (TB)
+gap> if LoadPackage( "ctbllib", false ) <> fail then
+>      if List( Filtered( Irr( CharacterTable( "Sz(8).3" ) mod 3 ),
+>                         x -> x[1] = 14 ), ValuesOfClassFunction )
+>         <> [ [ 14, -2, 2*E(4), -2*E(4), -1, 0, 1 ],
+>              [ 14, -2, -2*E(4), 2*E(4), -1, 0, 1 ] ] then
+>        Print( "ordering problem in table of Sz(8).3 mod 3\n" );
+>      fi;
+>    fi;
+
+
+# 2005/12/08 (TB)
+gap> LoadPackage( "ctbllib", false );;
+gap> t:= CharacterTable( SymmetricGroup( 4 ) );;
+gap> SetIdentifier( t, "Sym(4)" );  Display( t,
+>     rec( powermap:= "ATLAS", centralizers:= "ATLAS", chars:= false ) );
+Sym(4)
+
+    24  4  8  3  4
+
+ p      A  A  A  B
+ p'     A  A  A  A
+    1A 2A 2B 3A 4A
+
+
+#############################################################################
+#
+# Tests requiring Crisp 
+
+# 2005/05/03 (BH)
+gap> if LoadPackage ("crisp", false) <> fail then
+>      F:=FreeGroup("a","b","c");;
+>      a:=F.1;;b:=F.2;;c:=F.3;;
+>      G:=F/[a^12,b^2*a^6,c^2*a^6,b^-1*a*b*a,c^-1*a*c*a^-7,c^-1*b*c*a^-9*b^-1];;
+>      pcgs := PcgsElementaryAbelianSeries (G);;
+>      ser := ChiefSeries (G);;
+>      if ForAny (ser, H -> ParentPcgs (InducedPcgs (pcgs, H))
+>                           <> ParentPcgs (pcgs)) then
+>        Print( "problem with crisp (1)\n" );
+>      fi;
+>      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
+>                           <>  ParentPcgs(HomePcgs (H))) then
+>        Print( "problem with crisp (2)\n" );
+>      fi;
+>      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
+>                           <> HomePcgs (H)) then
+>        Print( "problem with crisp (3)\n" );
+>      fi;
+>      G2:=Image(IsomorphismPermGroup(G));
+>      pcgs := PcgsElementaryAbelianSeries (G2);
+>      ser := ChiefSeries (G2);
+>      if ForAny (ser, H -> ParentPcgs (InducedPcgs (pcgs, H))
+>                           <> pcgs) then
+>        Print( "problem with crisp (4)\n" );
+>      fi;
+>      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
+>                           <> ParentPcgs(HomePcgs (H))) then
+>        Print( "problem with crisp (5)\n" );
+>      fi;
+>      if ForAny (ser, H -> ParentPcgs (InducedPcgsWrtHomePcgs (H))
+>                           <> HomePcgs (H)) then
+>        Print( "problem with crisp (6)\n" );
+>      fi;
+>    fi;
+
+
+# 2005/06/23 (AH)
+gap> if LoadPackage("crisp", false) <> fail then
+>     h:=Source(EpimorphismSchurCover(SmallGroup(64,150)));
+>     NormalSubgroups( Centre( h ) );
+>     fi;
+
+
+# 2005/10/14 (BH)
+gap> if LoadPackage ("crisp", "1.2.1", false) <> fail then
+>     G := DirectProduct(CyclicGroup(2), CyclicGroup(3), SymmetricGroup(4));
+>     AllInvariantSubgroupsWithQProperty (G, G, ReturnTrue, ReturnTrue, rec());
+>     if ( (1, 5) in EnumeratorByPcgs ( Pcgs( SymmetricGroup (4) ) ) ) then
+>      Print( "problem with crisp (7)\n" );
+>     fi;
+>    fi;
+
+#############################################################################
 
 gap> STOP_TEST( "bugfix.tst", 7621100000 );
-
-
-##  Reset `GAPInfo.CommandLineOptions.b'.
-gap> GAPInfo.CommandLineOptions.b:= BANNER_ORIG;;
 
 
 #############################################################################

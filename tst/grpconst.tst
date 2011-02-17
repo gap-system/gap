@@ -2,23 +2,15 @@
 ##
 #W  grpconst.tst              GAP Library                  Hans Ulrich Besche
 ##
-#H  @(#)$Id: grpconst.tst,v 4.7 2005/05/05 14:59:52 gap Exp $
+#H  @(#)$Id: grpconst.tst,v 4.11 2010/10/10 21:59:28 alexk Exp $
 ##
-#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: grpconst.tst,v 4.7 2005/05/05 14:59:52 gap Exp $");
-gap> if LoadPackage( "grpconst" )=fail then
-#I ------ The AutPGrp package version: 1.1 ------- 
-#I -- Computing automorphism groups of p-groups -- 
-    ----------------------------------------------- 
-    ---- Algorithms to construct finite groups ---- 
-    ----- Hans Ulrich Besche and Bettina Eick ----- 
-    ----------------------------------------------- 
-    --------------- See ?GrpConst ----------------- 
-    ----------------------------------------------- 
+gap> START_TEST("$Id: grpconst.tst,v 4.11 2010/10/10 21:59:28 alexk Exp $");
+gap> if LoadPackage( "grpconst", false )=fail then
 > Print("\n\n",
 > "*** Since you do not have the `grpconst' package installed,    ***\n",
 > "*** you will get some error messages. They should be ignored.  ***\n\n\n");

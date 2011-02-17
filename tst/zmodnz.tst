@@ -2,14 +2,14 @@
 ##
 #W  zmodnz.tst                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zmodnz.tst,v 4.15 2008/02/29 16:17:42 gap Exp $
+#H  @(#)$Id: zmodnz.tst,v 4.17 2010/10/10 21:59:41 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: zmodnz.tst,v 4.15 2008/02/29 16:17:42 gap Exp $");
+gap> START_TEST("$Id: zmodnz.tst,v 4.17 2010/10/10 21:59:41 alexk Exp $");
 
 
 # small prime field

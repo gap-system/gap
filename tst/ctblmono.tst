@@ -1,16 +1,16 @@
 #############################################################################
 ##
 #W  ctblmono.tst               GAP Library                      Thomas Breuer
-#W                                                         & Erzsebet Horvath
+#W                                                         & Erzsébet Horváth
 ##
-#H  @(#)$Id: ctblmono.tst,v 4.16 2009/09/24 14:02:36 alexk Exp $
+#H  @(#)$Id: ctblmono.tst,v 4.19 2010/10/10 21:59:26 alexk Exp $
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: ctblmono.tst,v 4.16 2009/09/24 14:02:36 alexk Exp $");
+gap> START_TEST("$Id: ctblmono.tst,v 4.19 2010/10/10 21:59:26 alexk Exp $");
 
 gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4");
 gap> Sl23:= SL( 2, 3 );;
@@ -45,7 +45,7 @@ Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
 [ 1, 4, 7 ]
 gap> TestHomogeneous( chi, cln );
-rec( isHomogeneous := true, comment := "restricts irreducibly" )
+rec( comment := "restricts irreducibly", isHomogeneous := true )
 gap> chi:= Irr( Sl23 )[4];;
 gap> TestQuasiPrimitive( chi );
 rec( comment := "all restrictions checked", isQuasiPrimitive := true )
@@ -62,11 +62,11 @@ gap> List( Irr( Sl23 ), IsInducedFromNormalSubgroup );
 [ false, false, false, false, false, false, true ]
 gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 >          TestInducedFromNormalSubgroup );
-[ rec( comment := "linear character", isInduced := false ),
-  rec( comment := "induced from component '.character'",
-      character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
-        [ 1, 1, E(3)^2, E(3) ] ), isInduced := true ),
-  rec( comment := "all maximal normal subgroups checked", isInduced := false
+[ rec( comment := "linear character", isInduced := false ), 
+  rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
+        [ 1, 1, E(3)^2, E(3) ] ), 
+      comment := "induced from component '.character'", isInduced := true ), 
+  rec( comment := "all maximal normal subgroups checked", isInduced := false 
      ) ]
 gap> TestMonomial( S4 );
 rec( comment := "abelian by supersolvable group", isMonomial := true )
@@ -81,9 +81,8 @@ rec( comment := "abelian by supersolvable group", isMonomial := true )
 gap> TestMonomialQuick( Sl23 );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
 gap> TestSubnormallyMonomial( S4 );
-rec( comment := "found non-SM character",
-  character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ),
-  isSubnormallyMonomial := false )
+rec( character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
+  comment := "found non-SM character", isSubnormallyMonomial := false )
 gap> TestSubnormallyMonomial( Irr( S4 )[4] );
 rec( comment := "all subnormal subgroups checked",
   isSubnormallyMonomial := false )

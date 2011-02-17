@@ -3,6 +3,7 @@
 #
 
 G:=MathieuGroup(24);
+OurNumberOfGenerators:=2;
  
 HashAddress:=function( point )
 return point;

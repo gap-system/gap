@@ -2,14 +2,14 @@
 ##
 #W  vspchom.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspchom.tst,v 4.25 2007/02/21 11:51:36 gap Exp $
+#H  @(#)$Id: vspchom.tst,v 4.27 2010/10/10 21:59:40 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: vspchom.tst,v 4.25 2007/02/21 11:51:36 gap Exp $");
+gap> START_TEST("$Id: vspchom.tst,v 4.27 2010/10/10 21:59:40 alexk Exp $");
 
 
 #############################################################################

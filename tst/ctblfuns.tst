@@ -2,14 +2,14 @@
 ##
 #W  ctblfuns.tst               GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id: ctblfuns.tst,v 1.8 2008/02/29 16:24:21 gap Exp $
+#H  @(#)$Id: ctblfuns.tst,v 1.10 2010/10/10 21:59:26 alexk Exp $
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: ctblfuns.tst,v 1.8 2008/02/29 16:24:21 gap Exp $");
+gap> START_TEST("$Id: ctblfuns.tst,v 1.10 2010/10/10 21:59:26 alexk Exp $");
 
 gap> S4:= SymmetricGroup( 4 );
 Sym( [ 1 .. 4 ] )

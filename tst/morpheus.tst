@@ -2,16 +2,16 @@
 ##
 #W  morpheus.tst                GAP tests                    Alexander Hulpke
 ##
-#H  @(#)$Id: morpheus.tst,v 4.20 2005/05/25 15:16:53 gap Exp $
+#H  @(#)$Id: morpheus.tst,v 4.22 2010/10/10 21:59:37 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file  tests the automorphism routines
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: morpheus.tst,v 4.20 2005/05/25 15:16:53 gap Exp $");
+gap> START_TEST("$Id: morpheus.tst,v 4.22 2010/10/10 21:59:37 alexk Exp $");
 
 gap> g:=Group((1,2,3,4),(1,3));;
 gap> a:=AutomorphismGroup(g);;

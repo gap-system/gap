@@ -2,14 +2,14 @@
 ##
 #W  set.tst                   GAP Library                    Alexander Hulpke
 ##
-#H  @(#)$Id: set.tst,v 4.7 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: set.tst,v 4.9 2010/10/10 21:59:39 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: set.tst,v 4.7 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: set.tst,v 4.9 2010/10/10 21:59:39 alexk Exp $");
 gap> a:=Set([(1,3,2),(4,5)]);;
 gap> b:=[(1,2),(5,9,7)];;
 gap> UniteSet(a,b);

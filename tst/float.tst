@@ -2,12 +2,13 @@
 ##
 #W  float.tst                   GAP Tests                         Stefan Kohl
 ##
-#H  @(#)$Id: float.tst,v 1.2 2009/09/24 15:47:35 alexk Exp $
+#H  @(#)$Id: float.tst,v 1.3 2010/09/22 14:15:27 alexk Exp $
 ##
 
-gap> START_TEST("$Id: float.tst,v 1.2 2009/09/24 15:47:35 alexk Exp $");
+gap> START_TEST("$Id: float.tst,v 1.3 2010/09/22 14:15:27 alexk Exp $");
 
 gap> if VERSION = "4.dev" then Float := MACFLOAT_STRING; fi;
+gap> if VERSION = "4.dev" then IsFloat := IS_MACFLOAT; fi;
 gap> Int(Float("2")/Float("3"));
 0
 gap> Int(Float("237")/Float("3"));
@@ -48,8 +49,6 @@ gap> Float("-1")/Float("2") < 1/4;
 true
 gap> Float("-1")/Float("2") > -2/3;
 true
-gap> # Float([[1/2,0],[-1,5/7]]);
-[ [ 0.5, 0 ], [ -1, 0.714286 ] ]
 gap> STOP_TEST( "float.tst", 1000000 );
 
 #############################################################################

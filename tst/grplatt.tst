@@ -2,16 +2,16 @@
 ##
 #W  grplatt.tst                GAP tests                     Alexander Hulpke
 ##
-#H  @(#)$Id: grplatt.tst,v 4.13 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: grplatt.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file  tests the subgroup lattice program
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: grplatt.tst,v 4.13 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: grplatt.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $");
 
 gap> g:=PerfectGroup(IsPermGroup,95040);;
 gap> l:=ConjugacyClassesSubgroups(g);;

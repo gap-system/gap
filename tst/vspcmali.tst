@@ -2,19 +2,19 @@
 ##
 #W  vspcmali.tst                GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspcmali.tst,v 4.18 2005/05/06 16:28:28 gap Exp $
+#H  @(#)$Id: vspcmali.tst,v 4.20 2010/10/10 21:59:40 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file ontains tests for vector spaces of Lie matrices.
 ##
 ##  (The test files 'vspcrow.tst' and 'vspcmat.tst' should contain the same
 ##  tests.)
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: vspcmali.tst,v 4.18 2005/05/06 16:28:28 gap Exp $");
+gap> START_TEST("$Id: vspcmali.tst,v 4.20 2010/10/10 21:59:40 alexk Exp $");
 
 
 #############################################################################

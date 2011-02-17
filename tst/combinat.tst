@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  combinat.tst                GAP tests                    Martin Schoenert
+#W  combinat.tst                GAP tests                    Martin Schönert
 ##
-#H  @(#)$Id: combinat.tst,v 4.11 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: combinat.tst,v 4.13 2010/10/10 21:59:25 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: combinat.tst,v 4.11 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: combinat.tst,v 4.13 2010/10/10 21:59:25 alexk Exp $");
 
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
 gap> Print(List( [0..10], Factorial ),"\n");

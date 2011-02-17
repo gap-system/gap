@@ -2,14 +2,14 @@
 ##
 #W  grpfp.tst                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: grpfp.tst,v 1.1 2005/11/30 15:15:04 gap Exp $
+#H  @(#)$Id: grpfp.tst,v 1.3 2010/10/10 21:59:28 alexk Exp $
 ##
-#Y  Copyright 2005,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+#Y  Copyright 2005,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: grpfp.tst,v 1.1 2005/11/30 15:15:04 gap Exp $");
+gap> START_TEST("$Id: grpfp.tst,v 1.3 2010/10/10 21:59:28 alexk Exp $");
 
 
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;

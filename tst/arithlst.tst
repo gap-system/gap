@@ -2,14 +2,14 @@
 ##
 #W  arithlst.tst                GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: arithlst.tst,v 1.17 2006/02/28 16:35:23 gap Exp $
+#H  @(#)$Id: arithlst.tst,v 1.19 2010/10/10 21:59:25 alexk Exp $
 ##
-#Y  Copyright (C)  2000,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  2000,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testall.g because it runs too long.
+##  Exclude from testinstall.g because it runs too long.
 ##
 
-gap> START_TEST("$Id: arithlst.tst,v 1.17 2006/02/28 16:35:23 gap Exp $");
+gap> START_TEST("$Id: arithlst.tst,v 1.19 2010/10/10 21:59:25 alexk Exp $");
 
 
 #############################################################################

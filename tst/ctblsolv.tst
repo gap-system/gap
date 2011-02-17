@@ -2,14 +2,14 @@
 ##
 #W  ctblsolv.tst               GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id: ctblsolv.tst,v 1.8 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: ctblsolv.tst,v 1.10 2010/10/10 21:59:27 alexk Exp $
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: ctblsolv.tst,v 1.8 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: ctblsolv.tst,v 1.10 2010/10/10 21:59:27 alexk Exp $");
 
 gap> CharacterDegrees( SmallGroup( 256, 529 ) );
 [ [ 1, 8 ], [ 2, 30 ], [ 4, 8 ] ]

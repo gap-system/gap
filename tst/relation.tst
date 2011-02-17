@@ -2,14 +2,14 @@
 ##
 #W  relation.tst                 GAP library                Robert F. Morse
 ##
-#H  @(#)$Id: relation.tst,v 4.7 2005/05/06 16:42:44 gap Exp $
+#H  @(#)$Id: relation.tst,v 4.9 2010/10/10 21:59:38 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: relation.tst,v 4.7 2005/05/06 16:42:44 gap Exp $");
+gap> START_TEST("$Id: relation.tst,v 4.9 2010/10/10 21:59:38 alexk Exp $");
 
 gap> ##################################################
 gap> ##

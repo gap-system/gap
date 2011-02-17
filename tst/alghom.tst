@@ -2,14 +2,14 @@
 ##
 #W  alghom.tst                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: alghom.tst,v 1.13 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: alghom.tst,v 1.15 2010/10/10 21:59:24 alexk Exp $
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: alghom.tst,v 1.13 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: alghom.tst,v 1.15 2010/10/10 21:59:24 alexk Exp $");
 
 
 # An example of a non-homomorphism.

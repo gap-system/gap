@@ -2,14 +2,14 @@
 ##
 #W  package.tst               GAP Library                       Thomas Breuer
 ##
-#H  @(#)$Id: package.tst,v 1.2 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: package.tst,v 1.4 2010/10/10 21:59:38 alexk Exp $
 ##
-#Y  Copyright (C)  2005,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: package.tst,v 1.2 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: package.tst,v 1.4 2010/10/10 21:59:38 alexk Exp $");
 
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )

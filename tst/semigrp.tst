@@ -2,14 +2,14 @@
 ##
 #W  semigrp.tst                 GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id: semigrp.tst,v 4.18 2007/08/14 11:13:52 alexk Exp $
+#H  @(#)$Id: semigrp.tst,v 4.21 2011/01/04 20:18:01 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: semigrp.tst,v 4.18 2007/08/14 11:13:52 alexk Exp $");
+gap> START_TEST("$Id: semigrp.tst,v 4.21 2011/01/04 20:18:01 alexk Exp $");
 gap> ###############################################
 gap> ##
 gap> ##  AsTransformation - changing representation
@@ -116,10 +116,10 @@ gap> O4 := Monoid([a,b,c,d,e,f]);;
 gap> 
 gap> J := MagmaIdealByGenerators(O4, [a*f]);;
 gap> C := SemigroupCongruenceByGeneratingPairs(O4, [[a*f, a*e]]);;
-gap> P := EquivalenceRelationPartition(C);;
-gap> AsSSortedList(J) = AsSSortedList(P[1]);     # true
+gap> erp := EquivalenceRelationPartition(C);;
+gap> AsSSortedList(J) = AsSSortedList(erp[1]);     # true
 true
-gap> Length(P);
+gap> Length(erp);
 1
 gap> IsReesCongruence(C);              # true
 true

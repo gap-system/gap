@@ -3,14 +3,14 @@
 #W  matrix.tst                  GAP Tests                     Robert F. Morse
 ##  
 ##
-#H  $Id: matrix.tst,v 1.8 2005/05/05 15:04:16 gap Exp $ 
+#H  $Id: matrix.tst,v 1.10 2011/01/20 14:42:45 alexk Exp $ 
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: matrix.tst,v 1.8 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: matrix.tst,v 1.10 2011/01/20 14:42:45 alexk Exp $");
 gap> ##
 gap> ##
 gap> ########################################################################
@@ -210,10 +210,10 @@ gap> #T Dimensions of malformed matrices
 gap> #T 
 gap> m := [[1,2,3],[2,3]];;
 gap> DimensionsMat(m);
-[ 2, 3 ]
+fail
 gap> m := [[1],[1,2]];;
 gap> DimensionsMat(m);
-[ 2, 1 ]
+fail
 gap> m := [[1,2,3,4],[1,2,3,4]];;
 gap> DimensionsMat(m);
 [ 2, 4 ]
@@ -453,7 +453,7 @@ gap> ##
 gap> ## Malformed construction
 gap> KroneckerProduct([[1,2],[1,2]],[[5],[9,2,3]]);;
 gap> DimensionsMat(last);
-[ 4, 2 ]
+fail
 gap> ##
 gap> rm:=ReflectionMat([1,2,3,4,5,6,7,8,9,10]);;
 gap> rm*[1,2,3,4,5,6,7,8,9,10]=[-1,-2,-3,-4,-5,-6,-7,-8,-9,-10];

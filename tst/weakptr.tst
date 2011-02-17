@@ -2,13 +2,13 @@
 ##
 #W  weakptr.tst                GAP Library                       Steve Linton
 ##
-#H  @(#)$Id: weakptr.tst,v 4.13 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: weakptr.tst,v 4.14 2010/10/10 21:59:40 alexk Exp $
 ##
 #Y  Copyright (C)  1997, 
 ##
-##  Exclude from testall.g: too sensitive to compiler idiosyncracies SL
+##  Exclude from testinstall.g: too sensitive to compiler idiosyncracies SL
 ##
-gap> START_TEST("$Id: weakptr.tst,v 4.13 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: weakptr.tst,v 4.14 2010/10/10 21:59:40 alexk Exp $");
 #
 # Low level access functions
 #

@@ -2,14 +2,14 @@
 ##
 #W  grppc.tst                 GAP tests                     Alexander Hulpke
 ##
-#H  @(#)$Id: grppc.tst,v 1.15 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: grppc.tst,v 1.17 2011/02/09 15:13:27 alexk Exp $
 ##
 #Y  Copyright (C)  1997
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: grppc.tst,v 1.15 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: grppc.tst,v 1.17 2011/02/09 15:13:27 alexk Exp $");
 gap> h:=Group((1,2,3,4),(1,2));;
 gap> m:=IsomorphismPcGroup(h);;
 gap> hh:=Image(m,h);;
@@ -64,6 +64,12 @@ gap> F := FittingSubgroup( G );;
 gap> S := SylowSubgroup( F, 2 );;
 gap> Length(Complementclasses( G, S ));
 1
+gap> c:=111738634087016687677581080419779823937672962105281999064930026947977838341505382863502660652163271927890657789545865354105698690880491419382732505129685548945886493976382779091529311779061982182942409366242406420035526825355893426176;
+111738634087016687677581080419779823937672962105281999064930026947977838341505\
+382863502660652163271927890657789545865354105698690880491419382732505129685548\
+945886493976382779091529311779061982182942409366242406420035526825355893426176
+gap> PcGroupCode (c, 43008);
+<pc group of size 43008 with 13 generators>
 
 # that's all, folks
 gap> STOP_TEST( "grppc.tst",116000670);

@@ -3,7 +3,7 @@
 #W  testutil.g                  GAP Library                     Thomas Breuer
 #W                                                               Frank Celler
 ##
-#H  @(#)$Id: testutil.g,v 4.17 2009/10/02 22:36:10 alexk Exp $
+#H  @(#)$Id: testutil.g,v 4.29 2010/10/21 15:02:56 alexk Exp $
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
@@ -11,7 +11,7 @@
 ##  It is not read with the library when {\GAP} is started.
 ##
 Revision.( "tst/testutil_g" ) :=
-    "@(#)$Id: testutil.g,v 4.17 2009/10/02 22:36:10 alexk Exp $";
+    "@(#)$Id: testutil.g,v 4.29 2010/10/21 15:02:56 alexk Exp $";
 
 
 #############################################################################
@@ -33,8 +33,8 @@ Revision.( "tst/testutil_g" ) :=
 ##  processed files are replaced by $10^5$ times the runtime in milliseconds.
 ##  Of course this runtime depends on the hardware, so this renormalization
 ##  should be executed on a ``typical'' machine, which should fit to the
-##  information in the file `tst/testall.g' and in the documentation file
-##  `doc/ref/install.tex'.
+##  information in the files `tst/testall.g' and `tst/testinstall.g' and 
+##  in the documentation file `doc/ref/install.xml'.
 ##
 BindGlobal( "RunStandardTests", function( arg )
     local testfiles, renormalize, sizescreen, stop_TEST, infoRead1,
@@ -90,7 +90,7 @@ BindGlobal( "RunStandardTests", function( arg )
                  "' in the `STOP_TEST' command of `", name, "'!\n" );
         fi;
         time:= info[3];
-        if 500 < time then
+        if 500 < time and IsPosRat(info[2]) then
           count:= count + 1;
           totaltime:= totaltime + time;
           totalprev:= totalprev + info[2];
@@ -212,27 +212,28 @@ end;
 
 #############################################################################
 ##
-#F  CreateTestallFile()
+#F  CreateTestinstallFile( )
 ##
-##  replaces the file `tst/testall.g' by a file that reflects the current
+##  replaces the file `tst/testinstall.g' by a file that reflects the current
 ##  contents of the `tst' directory, that is, all those files in `tst/*.tst'
-##  are listed that contain the substring `To be listed in testall.g';
+##  are listed that contain the substring `To be listed in testinstall.g';
 ##  the scaling factors in the `STOP_TEST' calls in the files are inserted
 ##  in the list entries.
 ##
-BindGlobal( "CreateTestallFile", function()
+##
+BindGlobal( "CreateTestinstallFile", function( )
     local dir, oldfile, oldcontents, pos, newcontents, error, name, file,
           filecontents, stoppos, stonepos;
 
     dir:= DirectoriesLibrary( "tst" );
-    oldfile:= Filename( dir, "testall.g" );
+    oldfile:= Filename( dir, "testinstall.g" );
     if oldfile = fail then
-      Error( "no file `testall.g' found" );
+      Error( "no file `testinstall.g' found" );
     fi;
     oldcontents:= StringFile( oldfile );
     pos:= PositionSublist( oldcontents, "RunStandardTests( [" );
     if pos = fail then
-      Print( "#E  no substring `RunStandardTests( [' in `testall.g'\n" );
+      Print( "#E  no substring `RunStandardTests( [' in `testinstall.g'\n" );
       return false;
     fi;
 
@@ -244,7 +245,7 @@ BindGlobal( "CreateTestallFile", function()
          and name{ [ Length( name ) - 3 .. Length( name ) ] } = ".tst" then
         file:= Filename( dir, name );
         filecontents:= StringFile( file );
-        if PositionSublist( filecontents, "To be listed in testall.g" )
+        if PositionSublist( filecontents, "To be listed in testinstall.g" )
            <> fail then
           if PositionSublist( filecontents, "START_TEST" ) = fail then
             error:= true;
@@ -277,18 +278,18 @@ BindGlobal( "CreateTestallFile", function()
     # Append the part behind the list.
     pos:= Position( oldcontents, ';', pos );
     if pos = fail then
-      Print( "#E  no semicolon behind the list in `testall.g'\n" );
+      Print( "#E  no semicolon behind the list in `testinstall.g'\n" );
       return false;
     fi;
     Append( newcontents, oldcontents{ [ pos .. Length( oldcontents ) ] } );
 
     if oldcontents = newcontents then
-      Print( "#I  `testall.g' unchanged\n" );
+      Print( "#I  `testinstall.g' unchanged\n" );
     else
-      # Save the old file as `testall.g~', and print a new `testall.g'.
+      # Save the old file as `testinstall.g~', and print a new `testinstall.g'.
       Exec( Concatenation( "mv ", oldfile, " ", oldfile, "~" ) );
       PrintTo( oldfile, newcontents );
-      Print( "#I  `testall.g' replaced:\n" );
+      Print( "#I  `testinstall.g' replaced:\n" );
       Exec( Concatenation( "diff ", oldfile, "~ ", oldfile ) );
     fi;
     return true;
@@ -309,27 +310,34 @@ BindGlobal( "CreateTestallFile", function()
 ##  and once with all available packages loaded.
 ##
 BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfiles, gap )
-    local result, name, entry, pair;
+    local result, name, entry, pair, testfile;
 
     SizeScreen( [ 1000 ] );
     InitializePackagesInfoRecords( false );
     result:= "";
+    
+    Append( result, "TIMESTAMP=`date -u +_%Y-%m-%d-%H-%M`\n" );
 
-    for name in GAPInfo.PackagesNames do
+    for name in SortedList(ShallowCopy(RecNames(GAPInfo.PackagesInfo))) do 
       if LoadPackage( name ) <> fail then
         for entry in GAPInfo.PackagesInfo.( name ) do
           if IsBound( entry.InstallationPath )
              and IsBound( entry.TestFile ) then
             for pair in TransposedMat( [ outfiles, [ "false", "true" ] ] ) do
-              Append( result, Concatenation(
-                  "echo 'Testing ", name, " ", entry.Version, ", test=", 
-		  Filename( DirectoriesPackageLibrary( name, "" ), entry.TestFile ), 
-		  ", all packages=", pair[2], "'\n" ) );
-              Append( result, Concatenation(
-                  "echo 'RunPackageTests( \"", name,
-                  "\", \"", entry.Version, "\", \"", entry.TestFile,
-                  "\", ", pair[2], " );' | ", gap, " > ",
-                  pair[1], ".", name, "\n" ) );
+              testfile := Filename( DirectoriesPackageLibrary( name, "" ), entry.TestFile );
+              if testfile <> fail then
+                Append( result, Concatenation(
+                        "echo 'Testing ", name, " ", entry.Version, ", test=", 
+		                testfile, ", all packages=", pair[2], "'\n" ) );
+                Append( result, Concatenation(
+                        "echo 'RunPackageTests( \"", name,
+                        "\", \"", entry.Version, "\", \"", entry.TestFile,
+                        "\", ", pair[2], " );' | ", gap, " > ",
+                        pair[1], "$TIMESTAMP.", name, "\n" ) );
+              else
+                Append( result, Concatenation(
+                        "echo 'failed to find test files for the ", name, " package'\n") );
+              fi;            
             od;
           fi;
         od;
@@ -367,7 +375,7 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
     fi;
     Print( "#I  RunPackageTests( \"", pkgname, "\", \"", version, "\", \"",
            testfile, "\", ", other, " ):\n" );
-    GAPInfo.SystemInformation( true, true );
+    ShowSystemInformation();
     file:= Filename( DirectoriesPackageLibrary( pkgname, "" ), testfile );
     str:= StringFile( file );
     if not IsString( str ) then
@@ -393,11 +401,11 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
 
 #############################################################################
 ##
-#F  CreatePackageLoadTestsInput( <scriptfile>, <outfile>, <gap>, <autoload> )
+#F  CreatePackageLoadTestsInput( <scriptfile>, <outfileprefix>, <gap>, <autoload> )
 ##
 ##  Writes the file <scriptfile> that tests loading each package
 ##
-BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfile, gap, autoload )
+BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfileprefix, gap, autoload )
     local result, name, entry, packagenames;
 
     SizeScreen( [ 1000 ] );
@@ -406,6 +414,8 @@ BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfile, gap, a
     
     packagenames := ShallowCopy( RecNames( GAPInfo.PackagesInfo ) );
     Sort( packagenames );
+    
+    Append( result, "TIMESTAMP=`date -u +_%Y-%m-%d-%H-%M`\n" );
     
     for name in packagenames do
         for entry in GAPInfo.PackagesInfo.( name ) do
@@ -418,10 +428,11 @@ BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfile, gap, a
                 Concatenation( "echo 'Testing ", name, " ", entry.Version, "'\n" ) );
             fi;    
             Append( result, 
-                Concatenation( "echo 'LoadPackage( \"", name, "\" );' | ", gap, " > ",
-                  outfile, ".", name, "\n" ) );
+                Concatenation( "echo 'LoadPackage( \"", name, "\" );",
+                               "Filtered(NamesUserGVars(),x->IsLowerAlphaChar(x[1]) or Length(x)<=3);' | ", 
+                               gap, " > ", outfileprefix, "$TIMESTAMP.", name, " 2>&1 \n" ) );
             Append( result, 
-                Concatenation( "cat ", outfile, ".", name, "\n" ) );
+                Concatenation( "cat ", outfileprefix, "$TIMESTAMP.", name, "\n" ) );
          od;
     od;
     Append( result, "echo '==========================================='\n" );
@@ -431,11 +442,12 @@ BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfile, gap, a
         Append( result, "echo 'Testing LoadAllPackages'\n" );
     fi;    
     Append( result, 
-        Concatenation( "echo 'LoadAllPackages();' | ", gap, " > ", outfile, ".all\n" ) );
+        Concatenation( "echo 'if VERSION=\"4.dev\" then SetInfoLevel(InfoPackageLoading,4);fi;LoadAllPackages();' | ", 
+                       gap, " > ", outfileprefix, "$TIMESTAMP.all 2>&1 \n" ) );
     Append( result, 
-        Concatenation( "cat ", outfile, ".all\n" ) );
+        Concatenation( "cat ", outfileprefix, "$TIMESTAMP.all\n" ) );
     Append( result, "echo '==========================================='\n" );
-    Append( result, Concatenation( "rm ", outfile, "*\n" ) );
+    Append( result, Concatenation( "rm ", outfileprefix, "$TIMESTAMP.*\n" ) );
     PrintTo( scriptfile, result );
     end );
     

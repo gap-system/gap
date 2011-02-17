@@ -2,14 +2,14 @@
 ##
 #W  mapping.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: mapping.tst,v 4.15 2009/10/02 16:33:29 alexk Exp $
+#H  @(#)$Id: mapping.tst,v 4.18 2011/01/23 10:41:52 gap Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: mapping.tst,v 4.15 2009/10/02 16:33:29 alexk Exp $");
+gap> START_TEST("$Id: mapping.tst,v 4.18 2011/01/23 10:41:52 gap Exp $");
 
 gap> M:= GF(3);
 GF(3)
@@ -300,6 +300,18 @@ gap> i := IdentityMapping( g );;
 gap> i2 := AsGroupGeneralMappingByImages(i);;
 gap> j:=GroupGeneralMappingByImages(g,g,AsSSortedList(g),AsSSortedList(g));;
 gap> i2 = j;
+true
+
+gap> A:=[[0,1,0],[0,0,1],[1,0,0]];;
+gap> B:=[[0,0,1],[0,1,0],[-1,0,0]];;
+gap> C:=[[E(4),0,0],[0,E(4)^(-1),0],[0,0,1]];;
+gap> g2:=GroupWithGenerators([A,B,C]);;
+gap> nice := NiceMonomorphism (g2);;
+gap> d  := DerivedSubgroup (g2);;
+gap> res := RestrictedMapping (nice, d);;
+gap> IsGroupHomomorphism(res);
+true
+gap> IsInjective(res);        
 true
 
 gap> STOP_TEST( "mapping.tst", 31000000 );

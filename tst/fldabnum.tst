@@ -2,14 +2,14 @@
 ##
 #W  fldabnum.tst                GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: fldabnum.tst,v 4.13 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: fldabnum.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: fldabnum.tst,v 4.13 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: fldabnum.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $");
 
 gap> CF( 1 ); CF( 6 ); CF( 4 ); CF( 5 ); CF( 36 );
 Rationals

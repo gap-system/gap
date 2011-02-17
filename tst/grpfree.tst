@@ -2,14 +2,14 @@
 ##
 #W  grpfree.tst                GAP-4 library                    Thomas Breuer
 ##
-#H  @(#)$Id: grpfree.tst,v 4.11 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: grpfree.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $
 ##
-#Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+#Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: grpfree.tst,v 4.11 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: grpfree.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $");
 
 gap> g:= FreeGroup( "a", "b" );
 <free group on the generators [ a, b ]>
@@ -22,60 +22,19 @@ infinity
 gap> gens:= GeneratorsOfGroup( g );
 [ a, b ]
 gap> a:= gens[1];; b:= gens[2];;
+gap> firstfifty:=[];;
 gap> iter:= Iterator( g );;
 gap> for i in [ 1 .. 50 ] do
->   Print( NextIterator( iter ), "\n" );
+>   Add( firstfifty, NextIterator( iter ) );
 > od;
-<identity ...>
-a
-a^-1
-b
-b^-1
-a^2
-a^-2
-b*a
-b^-1*a
-b*a^-1
-b^-1*a^-1
-a*b
-a^-1*b
-a*b^-1
-a^-1*b^-1
-b^2
-b^-2
-a^3
-a^-3
-b*a^2
-b^-1*a^2
-b*a^-2
-b^-1*a^-2
-a*b*a
-a^-1*b*a
-a*b^-1*a
-a^-1*b^-1*a
-a*b*a^-1
-a^-1*b*a^-1
-a*b^-1*a^-1
-a^-1*b^-1*a^-1
-b^2*a
-b^-2*a
-b^2*a^-1
-b^-2*a^-1
-a^2*b
-a^-2*b
-a^2*b^-1
-a^-2*b^-1
-b*a*b
-b^-1*a*b
-b*a^-1*b
-b^-1*a^-1*b
-b*a*b^-1
-b^-1*a*b^-1
-b*a^-1*b^-1
-b^-1*a^-1*b^-1
-a*b^2
-a^-1*b^2
-a*b^-2
+gap> firstfifty;     
+[ <identity ...>, a, a^-1, b, b^-1, a^2, a^-2, b*a, b^-1*a, b*a^-1, 
+  b^-1*a^-1, a*b, a^-1*b, a*b^-1, a^-1*b^-1, b^2, b^-2, a^3, a^-3, b*a^2, 
+  b^-1*a^2, b*a^-2, b^-1*a^-2, a*b*a, a^-1*b*a, a*b^-1*a, a^-1*b^-1*a, 
+  a*b*a^-1, a^-1*b*a^-1, a*b^-1*a^-1, a^-1*b^-1*a^-1, b^2*a, b^-2*a, 
+  b^2*a^-1, b^-2*a^-1, a^2*b, a^-2*b, a^2*b^-1, a^-2*b^-1, b*a*b, b^-1*a*b, 
+  b*a^-1*b, b^-1*a^-1*b, b*a*b^-1, b^-1*a*b^-1, b*a^-1*b^-1, b^-1*a^-1*b^-1, 
+  a*b^2, a^-1*b^2, a*b^-2 ]
 gap> IsDoneIterator( iter );
 false
 gap> enum:= Enumerator( g );;

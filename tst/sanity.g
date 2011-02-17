@@ -2,9 +2,9 @@
 ##
 #W  sanity.g                   GAP tests                     Alexander Hulpke
 ##
-#H  @(#)$Id: sanity.g,v 4.6 1998/07/16 14:16:32 ahulpke Exp $
+#H  @(#)$Id: sanity.g,v 4.7 2010/02/23 15:13:56 gap Exp $
 ##
-#Y  Copyright (C)  1997,  St. Andrews
+#Y  Copyright (C)  1997,  St Andrews
 ##
 ##  This file runs a vast number of sanity checks on a large number of
 ##  groups.

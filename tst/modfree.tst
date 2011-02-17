@@ -2,14 +2,14 @@
 ##
 #W  modfree.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: modfree.tst,v 4.16 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: modfree.tst,v 4.18 2010/10/10 21:59:37 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: modfree.tst,v 4.16 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: modfree.tst,v 4.18 2010/10/10 21:59:37 alexk Exp $");
 
 gap> u:= LeftModuleByGenerators( GF(3), [ [ Z(3), 0*Z(3) ] ] );
 <vector space over GF(3), with 1 generators>

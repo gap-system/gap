@@ -2,16 +2,16 @@
 ##
 #W  onecohom.tst                GAP tests                    Alexander Hulpke
 ##
-#H  @(#)$Id: onecohom.tst,v 1.11 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: onecohom.tst,v 1.13 2010/10/10 21:59:38 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file  tests the automorphism routines
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: onecohom.tst,v 1.11 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: onecohom.tst,v 1.13 2010/10/10 21:59:38 alexk Exp $");
 
 gap> g:=Group((16,18,17),(14,15)(17,18),(17,18),(13,14,15),
 > (11,12)(13,15)(16,18,17),

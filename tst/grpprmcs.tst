@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  grpprmcs.tst                GAP library                       Akos Seress
+#W  grpprmcs.tst                GAP library                       Ákos Seress
 ##
-#H  @(#)$Id: grpprmcs.tst,v 1.10 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: grpprmcs.tst,v 1.12 2010/10/10 21:59:29 alexk Exp $
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: grpprmcs.tst,v 1.10 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: grpprmcs.tst,v 1.12 2010/10/10 21:59:29 alexk Exp $");
 
 # we don't want `GroupString' to display the number of generators as this
 # may differ. We get the sizes anyhow from the composition factors. Thus

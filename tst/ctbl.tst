@@ -2,14 +2,14 @@
 ##
 #W  ctbl.tst                   GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id: ctbl.tst,v 1.4 2009/09/30 19:01:17 alexk Exp $
+#H  @(#)$Id: ctbl.tst,v 1.6 2010/10/10 21:59:26 alexk Exp $
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testall.g: why?
+##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id: ctbl.tst,v 1.4 2009/09/30 19:01:17 alexk Exp $");
+gap> START_TEST("$Id: ctbl.tst,v 1.6 2010/10/10 21:59:26 alexk Exp $");
 
 # `ClassPositionsOf...' for the trivial group (which usually causes trouble)
 gap> g:= TrivialGroup( IsPermGroup );;

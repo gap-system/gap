@@ -2,14 +2,14 @@
 ##
 #W  rwspcgrp.tst                GAP library                      Frank Celler
 ##
-#H  @(#)$Id: rwspcgrp.tst,v 4.12 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: rwspcgrp.tst,v 4.14 2010/10/10 21:59:38 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: rwspcgrp.tst,v 4.12 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: rwspcgrp.tst,v 4.14 2010/10/10 21:59:38 alexk Exp $");
 
 
 #############################################################################

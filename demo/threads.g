@@ -24,6 +24,19 @@ return CreateThread(
     end, func, chin, chout );
 end;
 
+CallFuncListThread:=function( func, args, chin, chout )
+SendChannel( chin, args );
+return CreateThread( 
+    function( func, chin, chout ) 
+    local input, result; 
+    input:=ReceiveChannel( chin );
+    Print("got input\n");
+    result:=CallFuncList( func, input );
+    Print("computed result\n");
+    SendChannel( chout, result );
+    Print("sent output\n");
+    end, func, chin, chout );
+end;
 
 #############################################################################
 #

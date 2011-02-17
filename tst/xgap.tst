@@ -1,15 +1,15 @@
 #############################################################################
 ##
-#W  xgap.tst                   GAP-4 library                  Max Neunhoeffer 
+#W  xgap.tst                   GAP-4 library                  Max Neunhöffer 
 ##
-#H  @(#)$Id: xgap.tst,v 4.9 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: xgap.tst,v 4.11 2010/10/10 21:59:40 alexk Exp $
 ##
-#Y  Copyright 1999,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+#Y  Copyright 1999,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: xgap.tst,v 4.9 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: xgap.tst,v 4.11 2010/10/10 21:59:40 alexk Exp $");
 
 gap> f := FreeGroup(2); 
 <free group on the generators [ f1, f2 ]>

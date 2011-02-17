@@ -2,14 +2,14 @@
 ##
 #W  ffe.tst                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ffe.tst,v 4.21 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: ffe.tst,v 4.23 2010/10/10 21:59:27 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: ffe.tst,v 4.21 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: ffe.tst,v 4.23 2010/10/10 21:59:27 alexk Exp $");
 
 gap> GaloisField( 13 );
 GF(13)

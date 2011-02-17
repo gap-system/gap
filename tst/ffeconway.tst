@@ -1,17 +1,17 @@
 #############################################################################
 ##
-#W  ffeconway.tst                GAP tests                   Martin Schoenert
+#W  ffeconway.tst                GAP tests                   Martin Schönert
 ##
-#H  @(#)$Id: ffeconway.tst,v 1.4 2008/08/13 08:32:47 sal Exp $
+#H  @(#)$Id: ffeconway.tst,v 1.7 2010/10/10 21:59:27 alexk Exp $
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file  tests  the large finite fields .
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ## 
 
-gap> START_TEST("$Id: ffeconway.tst,v 1.4 2008/08/13 08:32:47 sal Exp $");
+gap> START_TEST("$Id: ffeconway.tst,v 1.7 2010/10/10 21:59:27 alexk Exp $");
 #
 # Disable various warnings which depend on state of prime number and 
 # Conway Polynomial databases and on whether FactInt is loaded 
@@ -28,9 +28,10 @@ gap> SetInfoLevel(InfoWarning,0);
 # A range of field sizes to hit various cases for the underlying vector 
 # arithmetic.
 #
-gap> fieldsizes := [[2,17], [2,32], [2,60], [2,76], [2,87], [3,11], [3,20], [3,60], [17,4], [257,2],
->                [257,11], [65521,2], [65537,2], [268435399,2], [4294967291,2], 
-> 	       [1152921504606846883,3], [NextPrimeInt(2^64),2]];;
+gap> fieldsizes := [ [2,17], [2,32], [2,60], [2,76], [2,87], [3,11], 
+> [3,20], [3,60], [17,4], [257,2], [257,11], [65521,2], [65537,2], 
+> [268435399,2], [4294967291,2], [1152921504606846883,3] ];;
+gap> Add( fieldsizes, [NextPrimeInt(2^64),2] );
 #
 # When we come to test cross-field, we need to make sure we don't try and
 # create overlarge fields

@@ -2,14 +2,14 @@
 ##
 #W  ctblmoli.tst               GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id: ctblmoli.tst,v 4.13 2005/05/05 15:04:16 gap Exp $
+#H  @(#)$Id: ctblmoli.tst,v 4.15 2010/10/10 21:59:26 alexk Exp $
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testall.g
+##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: ctblmoli.tst,v 4.13 2005/05/05 15:04:16 gap Exp $");
+gap> START_TEST("$Id: ctblmoli.tst,v 4.15 2010/10/10 21:59:26 alexk Exp $");
 
 gap> G:= AlternatingGroup( 5 );;
 gap> psi:= First( Irr( G ), x -> Degree( x ) = 3 );;

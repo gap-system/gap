@@ -107,7 +107,7 @@ Print("Passed example 5\n");
 # Example 6. Usage of CallFuncListThread and FinaliseThread
 chin:=CreateChannel();
 chout:=CreateChannel();
-r:= CallFuncListThread( s -> Size(SmallGroup(s)), [[8,3]], chin, chout );
+r:=CallFuncListThread( s -> Size(SmallGroup(s)), [[8,3]], chin, chout);
 FinaliseThread( r, chin, chout );
 
 Print("Passed example 6\n");
@@ -163,6 +163,8 @@ fib_threads(6);
 
 Print("Passed example 8\n");
 
+QUIT;
+
 # Example 9. Compare standard, Fibonacci and threaded Fibonacci multiplication
 ReadGapRoot("demo/karatsuba.g");
 x:=Indeterminate(Rationals,"x");
@@ -180,7 +182,7 @@ Print("Testing Karatsuba multiplication of polynomials ... ");
 t2:=KaratsubaPolynomialMultiplication(f,g);; 
 Print("done\n");
 Print("Testing Karatsuba multiplication of polynomials in threads ... ");
-t3:=KaratsubaPolynomialMultiplicationThreaded(f,g);; 
+# t3:=KaratsubaPolynomialMultiplicationThreaded(f,g);; 
 Print("done\n");
 # t1=t2; t1=t3; # this causes crash 
 
