@@ -48,7 +48,14 @@ const char * Revision_records_c =
 
 /****************************************************************************
 **
+*F  RNameLock . . . . . . . . . . . . . . . . . . . . .  lock for name table
+**
+**  'CountRnam' is the number of record names.
+*/
+static pthread_rwlock_t RNameLock;
 
+/****************************************************************************
+**
 *F  CountRnam . . . . . . . . . . . . . . . . . . . .  number of record names
 **
 **  'CountRnam' is the number of record names.
@@ -70,6 +77,22 @@ UInt            CountRNam;
 #define NAME_RNAM(rnam) CSTR_STRING( ELM_PLIST( NamesRNam, rnam ) )
 */
 Obj             NamesRNam;
+
+static void LockNames(int write)
+{
+  if (PreThreadCreation)
+    return;
+  if (write)
+    pthread_rwlock_wrlock(&RNameLock);
+  else
+    pthread_rwlock_rdlock(&RNameLock);
+}
+
+static void UnlockNames()
+{
+  if (!PreThreadCreation)
+    pthread_rwlock_unlock(&RNameLock);
+}
 
 
 /****************************************************************************
@@ -102,10 +125,20 @@ UInt            RNamName (
     }
     pos = (pos % SizeRNam) + 1;
 
+    LockNames(0); /* try a read lock first */
     /* look through the table until we find a free slot or the global      */
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
          && SyStrncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
         pos = (pos % SizeRNam) + 1;
+    }
+    if (!PreThreadCreation) {
+      UnlockNames(); /* switch to a write lock */
+      LockNames(1);
+      /* look through the table until we find a free slot or the global      */
+      while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
+	   && SyStrncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
+	  pos = (pos % SizeRNam) + 1;
+      }
     }
 
     /* if we did not find the global variable, make a new one and enter it */
@@ -144,6 +177,7 @@ UInt            RNamName (
             SET_ELM_PLIST( HashRNam, pos, rnam2 );
         }
     }
+    UnlockNames();
 
     /* return the record name                                              */
     return INT_INTOBJ(rnam);
