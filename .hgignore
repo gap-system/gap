@@ -28,3 +28,6 @@ syntax: regexp
 ^bin/scons-local-1.2.0/.*\.pyc$
 ^\.scon
 ^\.scon
+^gen/
+^bin/current$
+^tags$
