@@ -252,6 +252,11 @@ static Int IsSmallListAList(Obj list)
   return 1;
 }
 
+static Int LenListAList(Obj list)
+{
+  return (Int)(ADDR_OBJ(list)[0]);
+}
+
 static Obj LengthAList(Obj list)
 {
   return INTOBJ_INT(ADDR_OBJ(list)[0]);
@@ -333,7 +338,7 @@ static Int InitKernel (
     /* install list functions */
     IsListFuncs[T_ALIST] = IsListAList;
     IsSmallListFuncs[T_ALIST] = IsSmallListAList;
-    LenListFuncs[T_ALIST] = LengthAList;
+    LenListFuncs[T_ALIST] = LenListAList;
     LengthFuncs[T_ALIST] = LengthAList;
     Elm0ListFuncs[T_ALIST] = Elm0AList;
     Elm0vListFuncs[T_ALIST] = Elm0AList;
