@@ -439,6 +439,59 @@ Obj FuncCurrentThread(Obj self) {
   return INTOBJ_INT(TLS->threadID);
 }
 
+/****************************************************************************
+**
+*F FuncDataSpace ... return data space of an object
+**
+*/
+
+
+Obj FuncDataSpace(Obj self, Obj obj) {
+  DataSpace *ds = GetDataSpaceOf(obj);
+  return ds == NULL ? Fail : ds->obj;
+}
+
+/****************************************************************************
+**
+*F FuncIsLockable ... return whether a dataspace can be locked
+**
+*/
+
+Obj FuncIsLockable(Obj self, Obj obj) {
+  DataSpace *ds = GetDataSpaceOf(obj);
+  return ds->not_shared ? False : True;
+}
+
+/****************************************************************************
+**
+*F FuncHaveWriteAccess ... return if we have a write lock on the data space
+**
+*/
+
+Obj FuncHaveWriteAccess(Obj self, Obj obj)
+{
+  DataSpace* ds = GetDataSpaceOf(obj);
+  if (ds != NULL && ds->owner == TLS)
+    return True;
+  else
+    return False;
+}
+
+/****************************************************************************
+**
+*F FuncHaveReadAccess ... return if we have a read lock on the data space
+**
+*/
+
+Obj FuncHaveReadAccess(Obj self, Obj obj)
+{
+  DataSpace* ds = GetDataSpaceOf(obj);
+  if (ds != NULL && (ds->owner == TLS || ds->readers[TLS->threadID+1]))
+    return True;
+  else
+    return False;
+}
+
 
 /****************************************************************************
 **
@@ -463,8 +516,7 @@ Obj FuncUnlock(Obj self, Obj target) {
 Obj FuncLockShared(Obj self, Obj target) {
   LockShared(target);
   return (Obj) 0;
-}
-
+} 
 Obj FuncUnlockShared(Obj self, Obj target) {
   UnlockShared(target);
   return (Obj) 0;
@@ -593,6 +645,18 @@ static StructGVarFunc GVarFuncs [] = {
     { "SynchronizedShared", 2, "object, function",
       FuncSynchronizedShared, "src/threadapi.c:SynchronizedShared" },
 
+    { "DataSpace", 1, "object",
+      FuncDataSpace, "src/threadapi.c:DataSpace" },
+
+    { "IsLockable", 1, "object",
+      FuncIsLockable, "src/threadapi.c:IsLockable" },
+
+    { "HaveWriteAccess", 1, "object",
+      FuncHaveWriteAccess, "src/threadapi.c:HaveWriteAccess" },
+
+    { "HaveReadAccess", 1, "object",
+      FuncHaveReadAccess, "src/threadapi.c:HaveReadAccess" },
+
     { "CreateChannel", -1, "[size]",
       FuncCreateChannel, "src/threadapi.c:CreateChannel" },
 
@@ -712,6 +776,7 @@ static StructGVarFunc GVarFuncs [] = {
 Obj TYPE_CHANNEL;
 Obj TYPE_BARRIER;
 Obj TYPE_SYNCVAR;
+Obj TYPE_DATASPACE;
 
 Obj TypeChannel(Obj obj)
 {
@@ -728,6 +793,11 @@ Obj TypeSyncVar(Obj obj)
   return TYPE_SYNCVAR;
 }
 
+Obj TypeDataSpace(Obj obj)
+{
+  return TYPE_DATASPACE;
+}
+
 static Int AlwaysMutable( Obj obj)
 {
   return 1;
@@ -740,6 +810,7 @@ static void FinalizeMonitor(Bag);
 static void PrintChannel(Obj);
 static void PrintBarrier(Obj);
 static void PrintSyncVar(Obj);
+static void PrintDataSpace(Obj);
 
 /****************************************************************************
 **
@@ -753,30 +824,37 @@ static Int InitKernel (
   InfoBags[T_CHANNEL].name = "channel";
   InfoBags[T_BARRIER].name = "barrier";
   InfoBags[T_SYNCVAR].name = "syncvar";
+  InfoBags[T_DATASPACE].name = "dataspace";
   
     /* install the kind methods */
     TypeObjFuncs[ T_CHANNEL ] = TypeChannel;
     TypeObjFuncs[ T_BARRIER ] = TypeBarrier;
     TypeObjFuncs[ T_SYNCVAR ] = TypeSyncVar;
+    TypeObjFuncs[ T_DATASPACE ] = TypeDataSpace;
     /* install global variables */
     InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
     InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
     InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
+    InitCopyGVar("TYPE_DATASPACE", &TYPE_DATASPACE);
     /* install mark functions */
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
     InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
     InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
+    InitMarkFuncBags(T_DATASPACE, MarkNoSubBags);
     InitFinalizerFuncBags(T_MONITOR, FinalizeMonitor);
     /* install print functions */
     PrintObjFuncs[ T_CHANNEL ] = PrintChannel;
     PrintObjFuncs[ T_BARRIER ] = PrintBarrier;
     PrintObjFuncs[ T_SYNCVAR ] = PrintSyncVar;
+    PrintObjFuncs[ T_DATASPACE ] = PrintDataSpace;
     /* install mutability functions */
     IsMutableObjFuncs [ T_CHANNEL ] = AlwaysMutable;
     IsMutableObjFuncs [ T_BARRIER ] = AlwaysMutable;
     IsMutableObjFuncs [ T_SYNCVAR ] = AlwaysMutable;
+    IsMutableObjFuncs [ T_DATASPACE ] = AlwaysMutable;
     MakeBagTypePublic(T_CHANNEL);
+    MakeBagTypePublic(T_DATASPACE);
     /* return success                                                      */
     return 0;
 }
@@ -1636,6 +1714,13 @@ static void PrintSyncVar(Obj obj)
   Pr(buffer, 0L, 0L);
 }
 
+static void PrintDataSpace(Obj obj)
+{
+  char buffer[32];
+  sprintf(buffer, "<data space %p>", GetDataSpaceOf(obj));
+  Pr(buffer, 0L, 0L);
+}
+
 Obj FuncIS_LOCKED(Obj self, Obj obj)
 {
   DataSpace *ds = IS_BAG_REF(obj) ? DS_BAG(obj) : NULL;
@@ -1720,7 +1805,7 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj)
 
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
-  DataSpace *targetDS = DS_BAG(target);
+  DataSpace *targetDS = GetDataSpaceOf(target);
   if (targetDS && IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target data space");
   if (!MigrateObjects(1, &obj, targetDS))
@@ -1775,7 +1860,7 @@ Obj FuncPUBLISH(Obj self, Obj obj)
 
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
 {
-  DataSpace *targetDS = DS_BAG(target);
+  DataSpace *targetDS = GetDataSpaceOf(target);
   Obj reachable;
   if (targetDS && IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE: Thread does not have exclusive access to target data space");

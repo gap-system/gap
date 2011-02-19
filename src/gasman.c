@@ -2681,6 +2681,7 @@ DataSpace *NewDataSpace(void)
 {
   DataSpace *result;
   pthread_rwlock_t *lock;
+  Obj dataspace_obj;
 #ifndef DISABLE_GC
   result = GC_malloc(sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
   lock = GC_malloc_atomic(sizeof(*lock));
@@ -2691,6 +2692,9 @@ DataSpace *NewDataSpace(void)
   lock = malloc(sizeof(*lock));
 #endif
   pthread_rwlock_init(lock, NULL);
+  dataspace_obj = NewBag(T_DATASPACE, sizeof(DataSpace *));
+  *(DataSpace **)(ADDR_OBJ(dataspace_obj)) = result;
+  result->obj = dataspace_obj;
   result->lock = lock;
   return result;
 }

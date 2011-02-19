@@ -341,6 +341,15 @@ int IsLocked(DataSpace *dataspace)
   return 0;
 }
 
+DataSpace *GetDataSpaceOf(Obj obj)
+{
+  if (!IS_BAG_REF(obj))
+    return NULL;
+  if (TNUM_OBJ(obj) == T_DATASPACE)
+    return *(DataSpace **)(ADDR_OBJ(obj));
+  return DS_BAG(obj);
+}
+
 void GetLockStatus(int count, Obj *objects, int *status)
 {
   int i;
@@ -377,7 +386,7 @@ int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
   for (i=0; i<count; i++)
   {
     order[i].obj = objects[i];
-    order[i].dataspace = DS_BAG(objects[i]);
+    order[i].dataspace = GetDataSpaceOf(objects[i]);
     order[i].mode = mode[i];
   }
   MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
@@ -407,7 +416,7 @@ int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
     if (locked)
       locked[result] = ds;
     result++;
-    if (DS_BAG(order[i].obj) != ds)
+    if (GetDataSpaceOf(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
       while (i >= 0)
@@ -426,7 +435,7 @@ void UnlockObjects(int count, Obj *objects)
   int i;
   for (i=0; i<count; i++)
   {
-    DataSpace *dataspace = DS_BAG(objects[i]);
+    DataSpace *dataspace = GetDataSpaceOf(objects[i]);
     if (dataspace && IsLocked(dataspace))
       DataSpaceUnlock(dataspace);
   }
