@@ -422,6 +422,7 @@ static Int InitKernel (
     EqFuncs[ T_BOOL ][ T_BOOL ] = EqBool;
     LtFuncs[ T_BOOL ][ T_BOOL ] = LtBool;
 
+    MakeBagTypePublic(T_BOOL);
     /* return success                                                      */
     return 0;
 }

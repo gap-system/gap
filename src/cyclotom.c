@@ -2143,6 +2143,7 @@ static Int InitKernel (
     ProdFuncs[ T_CYC    ][ T_INTNEG ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
 
+    MakeBagTypePublic(T_CYC);
     /* return success                                                      */
     return 0;
 }

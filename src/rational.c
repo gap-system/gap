@@ -1004,6 +1004,8 @@ static Int InitKernel (
     PowFuncs [ T_RAT    ][ T_INTPOS ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTNEG ] = PowRat;
 
+    MakeBagTypePublic(T_RAT);
+
     /* return success                                                      */
     return 0;
 }
