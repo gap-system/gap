@@ -216,11 +216,13 @@ void            AssGVar (
 
     /* if the value is a function, assign it to all the internal fopies    */
     cops = ELM_PLIST( FopiesGVars, gvar );
-    if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
-        for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            copy  = (Obj*) ELM_PLIST(cops,i);
-            *copy = val;
-        }
+    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public data space? */
+	if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
+	    for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
+		copy  = (Obj*) ELM_PLIST(cops,i);
+		*copy = val;
+	    }
+	}
     }
 
     /* if the values is not a function, assign the error function          */
@@ -240,15 +242,17 @@ void            AssGVar (
     }
 
     /* assign name to a function                                           */
-    if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        name = NameGVar(gvar);
-	/*CCC        onam = NEW_STRING(SyStrlen(name));
-	  SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) ); CCC*/
-	len = SyStrlen(name);
-	C_NEW_STRING(onam, len, name);
-        RESET_FILT_LIST( onam, FN_IS_MUTABLE );
-        NAME_FUNC(val) = onam;
-        CHANGED_BAG(val);
+    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public data space? */
+	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
+	    name = NameGVar(gvar);
+	    /*CCC        onam = NEW_STRING(SyStrlen(name));
+	      SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) ); CCC*/
+	    len = SyStrlen(name);
+	    C_NEW_STRING(onam, len, name);
+	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
+	    NAME_FUNC(val) = onam;
+	    CHANGED_BAG(val);
+	}
     }
 }
 
