@@ -492,6 +492,12 @@ static inline Obj ReplaceByCopy(Obj obj)
   UInt found = FindTraversedObj(obj);
   if (found)
     return ELM_PLIST(TLS->travMap, found);
+  else if (TLS->travDelimCopy) {
+    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == TLS->travDataSpace)
+      return obj;
+    else
+      return GetDataSpaceOf(obj)->obj;
+  }
   else
     return obj;
 }
@@ -733,15 +739,22 @@ static Obj CopyBag(Obj copy, Obj original)
   return copy;
 }
 
-Obj CopyReachableObjectsFrom(Obj obj)
+Obj CopyReachableObjectsFrom(Obj obj, int delimited)
 {
-  Obj* traversed = ADDR_OBJ(TraverseDataSpaceFrom(obj));
-  UInt len = (UInt) *traversed;
-  Obj copyList = NEW_PLIST(T_PLIST, len);
-  Obj *copies = ADDR_OBJ(copyList);
-  UInt i;
-  if (len == 0)
+  Obj *traversed, *copies, copyList;
+  UInt len, i;
+  if (!IS_BAG_REF(obj))
+    return obj;
+  traversed = ADDR_OBJ(TraverseDataSpaceFrom(obj));
+  len = (UInt) *traversed;
+  copyList = NEW_PLIST(T_PLIST, len);
+  copies = ADDR_OBJ(copyList);
+  TLS->travDelimCopy = delimited;
+  if (len == 0) {
+    if (delimited)
+      return GetDataSpaceOf(obj)->obj;
     ErrorQuit("Object not in a readable data space", 0L, 0L);
+  }
   TLS->travMap = NEW_PLIST(T_PLIST, LEN_PLIST(TLS->travHash));
   SET_LEN_PLIST(TLS->travMap, LEN_PLIST(TLS->travHash));
   for (i = 1; i<=len; i++)

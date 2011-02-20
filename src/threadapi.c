@@ -611,6 +611,7 @@ Obj FuncADOPT(Obj self, Obj obj);
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
 Obj FuncREACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
+Obj FuncCLONE_DELIMITED(Obj self, Obj obj);
 
 /****************************************************************************
 **
@@ -762,6 +763,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CLONE_REACHABLE", 1, "obj",
       FuncCLONE_REACHABLE, "src/threadapi.c:CLONE_REACHABLE" },
+
+    { "CLONE_DELIMITED", 1, "obj",
+      FuncCLONE_DELIMITED, "src/threadapi.c:CLONE_DELIMITED" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1827,7 +1831,12 @@ Obj FuncREACHABLE(Obj self, Obj obj)
 
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj)
 {
-  return CopyReachableObjectsFrom(obj);
+  return CopyReachableObjectsFrom(obj, 0);
+}
+
+Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
+{
+  return CopyReachableObjectsFrom(obj, 1);
 }
 
 

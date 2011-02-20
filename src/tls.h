@@ -24,6 +24,7 @@ typedef struct ThreadLocalStorage
   int travHashCapacity;
   int travHashBits;
   void *travDataSpace;
+  int travDelimCopy;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;

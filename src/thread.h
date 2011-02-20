@@ -48,7 +48,7 @@ extern TraversalFunction TraversalFunc[];
 
 Obj TraverseDataSpaceFrom(Obj obj);
 Obj ReachableObjectsFrom(Obj obj);
-Obj CopyReachableObjectsFrom(Obj obj);
+Obj CopyReachableObjectsFrom(Obj obj, int delimited);
 
 void Lock(void *obj);
 void LockShared(void *obj);
