@@ -252,8 +252,8 @@ static void PrintAtomicRecord(Obj record)
   UInt cap, size;
   Lock(record);
   AtomicObj *table = ARecordTable(record);
-  cap = table[0].atom;
-  size = table[2].atom;
+  cap = table[AR_CAP].atom;
+  size = table[AR_SIZE].atom;
   Unlock(record);
   Pr("<atomic record %d/%d full>", size, cap);
 }
@@ -262,14 +262,14 @@ static void PrintAtomicRecord(Obj record)
 static Obj GetARecordField(Obj record, UInt field)
 {
   AtomicObj *table = ARecordTable(record);
-  AtomicObj *data = table + 4;
+  AtomicObj *data = table + AR_DATA;
   UInt cap, bits, hash, n;
   /* We need a memory barrier to ensure that we see fields that
    * were updated before the table pointer was updated; there is
    * a matching write barrier in the set operation. */
   AO_nop_read();
-  cap = table[0].atom;
-  bits = table[1].atom;
+  cap = table[AR_CAP].atom;
+  bits = table[AR_BITS].atom;
   hash = FibHash(field, bits);
   n = cap;
   while (n-- > 0)
@@ -291,9 +291,9 @@ static Obj GetARecordField(Obj record, UInt field)
 
 static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
 {
-  AtomicObj *data = table + 4;
-  UInt cap = table[0].atom;
-  UInt bits = table[1].atom;
+  AtomicObj *data = table + AR_DATA;
+  UInt cap = table[AR_CAP].atom;
+  UInt bits = table[AR_BITS].atom;
   UInt hash = FibHash(field, bits);
   for (;;)
   {
@@ -301,7 +301,7 @@ static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
     key = data[hash*2].atom;
     if (!key)
     {
-      table[2].atom++; /* increase size */
+      table[AR_SIZE].atom++; /* increase size */
       data[hash*2].atom = field;
       return hash;
     }
@@ -320,10 +320,10 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   int have_room;
   LockShared(record);
   table = ARecordTable(record);
-  data = table + 4;
-  cap = table[0].atom;
-  bits = table[1].atom;
-  strat = table[3].atom;
+  data = table + AR_DATA;
+  cap = table[AR_CAP].atom;
+  bits = table[AR_BITS].atom;
+  strat = table[AR_STRAT].atom;
   hash = FibHash(field, bits);
   n = cap;
   /* case 1: key exists, we can replace it */
@@ -365,9 +365,9 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
       hash = 0;
   }
   do {
-    size = table[2].atom + 1;
+    size = table[AR_SIZE].atom + 1;
     have_room = (size * 3 / 2 < cap);
-  } while (have_room && !AO_compare_and_swap_full(&table[2].atom,
+  } while (have_room && !AO_compare_and_swap_full(&table[AR_SIZE].atom,
                          size-1, size));
   /* we're guaranteed to have a non-full table for the insertion step */
   /* if have_room is true */
@@ -376,8 +376,8 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
     if (old.atom == field) {
       /* we don't actually need a new entry, so revert the size update */
       do {
-	size = table[2].atom;
-      } while (!AO_compare_and_swap_full(&table[2].atom, size, size-1));
+	size = table[AR_SIZE].atom;
+      } while (!AO_compare_and_swap_full(&table[AR_SIZE].atom, size, size-1));
       /* continue below */
     } else if (!old.atom) {
       AtomicObj new;
@@ -427,13 +427,13 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   /* have_room is false at this point */
   UnlockShared(record);
   Lock(record);
-  newarec = NewBag(T_AREC2, sizeof(AtomicObj) * (4 + cap * 2 * 2));
+  newarec = NewBag(T_AREC2, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
   newtable = (AtomicObj *)(ADDR_OBJ(newarec));
-  newdata = newtable + 4;
-  newtable[0].atom = cap * 2;
-  newtable[1].atom = bits+1;
-  newtable[2].atom = 0; /* size */
-  newtable[3] = table[3]; /* strategy */
+  newdata = newtable + AR_DATA;
+  newtable[AR_CAP].atom = cap * 2;
+  newtable[AR_BITS].atom = bits+1;
+  newtable[AR_SIZE].atom = 0; /* size */
+  newtable[AR_STRAT] = table[AR_STRAT]; /* strategy */
   for (i=0; i<cap; i++) {
     UInt key = data[2*i].atom;
     if (key) {
@@ -493,13 +493,13 @@ static Obj CreateAtomicRecord(UInt capacity)
   while (capacity > (1 << bits))
     bits++;
   capacity = 1 << bits;
-  arec = NewBag(T_AREC2, sizeof(AtomicObj) * (4+2*capacity));
+  arec = NewBag(T_AREC2, sizeof(AtomicObj) * (AR_DATA+2*capacity));
   table = (AtomicObj *)(ADDR_OBJ(arec));
   result = NewBag(T_AREC, 2*sizeof(Obj));
-  table[0].atom = capacity;
-  table[1].atom = bits;
-  table[2].atom = 0;
-  table[3].atom = 1;
+  table[AR_CAP].atom = capacity;
+  table[AR_BITS].atom = bits;
+  table[AR_SIZE].atom = 0;
+  table[AR_STRAT].atom = 1;
   ADDR_OBJ(result)[1] = arec;
   return result;
 }
@@ -507,7 +507,7 @@ static Obj CreateAtomicRecord(UInt capacity)
 static void SetARecordUpdateStrategy(Obj record, UInt strat)
 {
   AtomicObj *table = ARecordTable(record);
-  table[3].atom = strat;
+  table[AR_STRAT].atom = strat;
 }
 
 Obj ElmARecord(Obj record, UInt rnam)
