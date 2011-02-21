@@ -1,3 +1,8 @@
+#
+# Workers communicate
+#
+#
+
 ParList1 := function(l, f, n)
     local   inch,  outch,  worker,  threads,  count,  res,  i,  x,  t;
     inch := CreateChannel();
@@ -6,10 +11,14 @@ ParList1 := function(l, f, n)
         local   x;
         while true do
             x := ReceiveChannel(inch);
+            # x should be mine now since it has come through the channel
+            # x[1] is always a public object
             if x[1] = fail then
-                    return;
+                return;
             fi;
-            x[2] := f(x[2]);    
+            atomic readonly x[2] do    
+                x[2] := f(x[2]);    
+            od;
             SendChannel(outch, x);
         od;
     end;
@@ -17,7 +26,10 @@ ParList1 := function(l, f, n)
     count := 0;
     res := [];
     for i in [1..Length(l)] do
-        SendChannel(inch, [i,l[i]]);
+        SHARE(l[i]);
+        atomic readonly l[i] do
+            SendChannel(inch, [i,l[i]]);
+        od;
         while true do
             x := TryReceiveChannel(outch,fail);
             if x = fail then
