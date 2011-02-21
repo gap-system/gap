@@ -2683,12 +2683,12 @@ DataSpace *NewDataSpace(void)
   pthread_rwlock_t *lock;
   Obj dataspace_obj;
 #ifndef DISABLE_GC
-  result = GC_malloc(sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
+  result = GC_malloc(sizeof(DataSpace) + (MAX_THREADS+1)*sizeof(unsigned char));
   lock = GC_malloc_atomic(sizeof(*lock));
   GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
 #else
-  result = malloc(sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
-  memset(result, 0, sizeof(DataSpace) + MAX_THREADS*sizeof(unsigned char));
+  result = malloc(sizeof(DataSpace) + (MAX_THREADS+1)*sizeof(unsigned char));
+  memset(result, 0, sizeof(DataSpace) + (MAX_THREADS+1)*sizeof(unsigned char));
   lock = malloc(sizeof(*lock));
 #endif
   pthread_rwlock_init(lock, NULL);

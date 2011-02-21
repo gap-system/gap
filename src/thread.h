@@ -3,7 +3,8 @@
 
 #include <pthread.h>
 
-#define MAX_THREADS 1024
+/* Maximum number of threads excluding the main thread */
+#define MAX_THREADS 1023
 
 typedef pthread_t ThreadID;
 extern int PreThreadCreation;
