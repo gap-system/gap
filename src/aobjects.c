@@ -231,6 +231,12 @@ static void PrintAtomicList(Obj obj)
  * ADDR_OBJ(rec)[3] == update strategy.
  */
 
+#define AR_CAP 0
+#define AR_BITS 1
+#define AR_SIZE 2
+#define AR_STRAT 3
+#define AR_DATA 4
+
 static inline Obj ARecordObj(Obj record)
 {
   return ADDR_OBJ(record)[1];
@@ -454,6 +460,31 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   Unlock(record);
 }
 
+static Obj FuncFromAtomicRecord(Obj self, Obj record)
+{
+  Obj result;
+  AtomicObj *table, *data;
+  UInt cap, i;
+  if (TNUM_OBJ(record) != T_AREC)
+    ArgumentError("FromAtomicRecord: First argument must be an atomic record");
+  table = ARecordTable(record);
+  data = table + AR_DATA;
+  AO_nop_read(); /* memory barrier */
+  cap = table[AR_CAP].atom;
+  result = NEW_PREC(table[AR_SIZE].atom);
+  for (i=0; i<cap; i++)
+  {
+    UInt key;
+    Obj value;
+    key = data[2*i].atom;
+    AO_nop_read();
+    value = data[2*i+1].obj;
+    if (key && value)
+      AssPRec(result, key, value);
+  }
+  return result;
+}
+
 static Obj CreateAtomicRecord(UInt capacity)
 {
   Obj arec, result;
@@ -595,6 +626,8 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ATOMIC_RECORD_REPLACEMENT", 2, "record, strategy",
       FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
+    { "FromAtomicRecord", 1, "record",
+      FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
 
     { 0 }
 
