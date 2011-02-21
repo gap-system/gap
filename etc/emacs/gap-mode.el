@@ -531,6 +531,7 @@ get a gap completion of the word."
       (concat "\\(;\\|\\<then\\>\\|\\<else\\>\\|\\<do\\>\\|"
 	      "\\<repeat\\>\\|\\<function\\>.*(.*)\\)"))
 
+
 (setq gap-increment-indentation-regexp (concat "^[ \t]*\\("
 					       "if\\>"
 					       "\\|else\\>"
@@ -538,6 +539,7 @@ get a gap completion of the word."
 					       "\\|for\\>"
 					       "\\|while\\>"
 					       "\\|repeat\\>"
+					       "\\|atomic\\>"
 					       "\\|.*\\<function\\>"
 					       "\\)"))
 
