@@ -35,6 +35,7 @@ void DataSpaceUnlock(DataSpace *dataspace);
 DataSpace *CurrentDataSpace();
 DataSpace *GetDataSpaceOf(Obj obj);
 extern DataSpace *limbo;
+extern Obj PublicDataSpace;
 
 int IsLocked(DataSpace *dataspace);
 void GetLockStatus(int count, Obj *objects, int *status);

@@ -35,6 +35,7 @@ typedef struct {
 } ThreadData;
 
 DataSpace *limbo;
+Obj PublicDataSpace;
 
 static ThreadData thread_data[MAX_THREADS];
 static int thread_free_list;

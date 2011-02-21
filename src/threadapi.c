@@ -448,7 +448,7 @@ Obj FuncCurrentThread(Obj self) {
 
 Obj FuncDataSpace(Obj self, Obj obj) {
   DataSpace *ds = GetDataSpaceOf(obj);
-  return ds == NULL ? Fail : ds->obj;
+  return ds == NULL ? PublicDataSpace : ds->obj;
 }
 
 /****************************************************************************
@@ -859,6 +859,7 @@ static Int InitKernel (
     IsMutableObjFuncs [ T_DATASPACE ] = AlwaysMutable;
     MakeBagTypePublic(T_CHANNEL);
     MakeBagTypePublic(T_DATASPACE);
+    PublicDataSpace = NewBag(T_DATASPACE, sizeof(DataSpace *));
     /* return success                                                      */
     return 0;
 }
@@ -1721,8 +1722,12 @@ static void PrintSyncVar(Obj obj)
 static void PrintDataSpace(Obj obj)
 {
   char buffer[32];
-  sprintf(buffer, "<data space %p>", GetDataSpaceOf(obj));
-  Pr(buffer, 0L, 0L);
+  DataSpace *ds = GetDataSpaceOf(obj);
+  if (ds) {
+    sprintf(buffer, "<data space %p>", GetDataSpaceOf(obj));
+    Pr(buffer, 0L, 0L);
+  } else
+    Pr("<public data space>", 0L, 0L);
 }
 
 Obj FuncIS_LOCKED(Obj self, Obj obj)
@@ -1810,7 +1815,7 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj)
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
   DataSpace *targetDS = GetDataSpaceOf(target);
-  if (targetDS && IsLocked(targetDS) != 1)
+  if (!targetDS || IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target data space");
   if (!MigrateObjects(1, &obj, targetDS))
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
@@ -1871,7 +1876,7 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
 {
   DataSpace *targetDS = GetDataSpaceOf(target);
   Obj reachable;
-  if (targetDS && IsLocked(targetDS) != 1)
+  if (!targetDS || IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE: Thread does not have exclusive access to target data space");
   reachable = TraverseDataSpaceFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
