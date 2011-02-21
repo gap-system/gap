@@ -49,6 +49,10 @@
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
 
+#include	"fibhash.h"
+
+#include	"string.h"
+
 #include        "thread.h"
 #include        "tls.h"
 
@@ -58,7 +62,7 @@
 #include        "compiler.h"            /* compiler                        */
 
 Obj TYPE_ALIST;
-Obj TYPE_ARECORD;
+Obj TYPE_AREC;
 
 #ifndef WARD_ENABLED
 
@@ -71,7 +75,7 @@ Obj TypeAList(Obj obj)
 Obj TypeARecord(Obj obj)
 {
   Obj result = ADDR_OBJ(obj)[0];
-  return result != NULL ? result : TYPE_ARECORD;
+  return result != NULL ? result : TYPE_AREC;
 }
 
 static Int AlwaysMutable( Obj obj)
@@ -193,8 +197,26 @@ static void MarkAtomicList(Bag bag)
 
 static void MarkAtomicRecord(Bag bag)
 {
-  /* TODO: Fill in */
-  return;
+  MARK_BAG(ADDR_OBJ(bag)[0]);
+}
+
+typedef union AtomicObj
+{
+  AO_t atom;
+  Obj obj;
+} AtomicObj;
+
+
+static void MarkAtomicRecord2(Bag bag)
+{
+  AtomicObj *p = (AtomicObj *)(ADDR_OBJ(bag));
+  UInt cap = p->atom;
+  p += 5;
+  while (cap) {
+    MARK_BAG(p->obj);
+    p += 2;
+    cap--;
+  }
 }
 
 static void PrintAtomicList(Obj obj)
@@ -202,16 +224,342 @@ static void PrintAtomicList(Obj obj)
   Pr("<atomic list of size %d>", (UInt)(ADDR_OBJ(obj)[0]), 0L);
 }
 
-static void PrintAtomicRecord(Obj obj)
+/* T_AREC2 substructure:
+ * ADDR_OBJ(rec)[0] == capacity, must be a power of 2.
+ * ADDR_OBJ(rec)[1] == log2(capacity).
+ * ADDR_OBJ(rec)[2] == estimated size (occupied slots).
+ * ADDR_OBJ(rec)[3] == update strategy.
+ */
+
+static inline Obj ARecordObj(Obj record)
 {
-  Pr("<atomic record>", 0L, 0L);
+  return ADDR_OBJ(record)[1];
+}
+
+static inline AtomicObj* ARecordTable(Obj record)
+{
+  return (AtomicObj *)(ADDR_OBJ(ARecordObj(record)));
+}
+
+static void PrintAtomicRecord(Obj record)
+{
+  UInt cap, size;
+  Lock(record);
+  AtomicObj *table = ARecordTable(record);
+  cap = table[0].atom;
+  size = table[2].atom;
+  Unlock(record);
+  Pr("<atomic record %d/%d full>", size, cap);
 }
 
 
-
-static Obj FuncNewAtomicRecord(Obj self)
+static Obj GetARecordField(Obj record, UInt field)
 {
-  return NULL;
+  AtomicObj *table = ARecordTable(record);
+  AtomicObj *data = table + 4;
+  UInt cap, bits, hash, n;
+  /* We need a memory barrier to ensure that we see fields that
+   * were updated before the table pointer was updated; there is
+   * a matching write barrier in the set operation. */
+  AO_nop_read();
+  cap = table[0].atom;
+  bits = table[1].atom;
+  hash = FibHash(field, bits);
+  n = cap;
+  while (n-- > 0)
+  {
+    UInt key = data[hash*2].atom;
+    if (key == field)
+    {
+      AO_nop_read(); /* memory barrier */
+      return data[hash*2+1].obj;
+    }
+    if (!key)
+      return (Obj) 0;
+    hash++;
+    if (hash == cap)
+      hash = 0;
+  }
+  return (Obj) 0;
+}
+
+static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
+{
+  AtomicObj *data = table + 4;
+  UInt cap = table[0].atom;
+  UInt bits = table[1].atom;
+  UInt hash = FibHash(field, bits);
+  table[2].atom++; /* increase size */
+  for (;;)
+  {
+    AO_t key;
+    key = data[hash*2].atom;
+    if (!key)
+    {
+      data[hash*2].atom = field;
+      return hash*2+1;
+    }
+    if (key == field)
+      return hash*2+1;
+    hash++;
+    if (hash == cap)
+      hash = 0;
+  }
+}
+
+static Obj SetARecordField(Obj record, UInt field, Obj obj)
+{
+  AtomicObj *table, *data, *newtable, *newdata;
+  Obj newarec, result;
+  UInt cap, bits, hash, i, n, size;
+  Int strat;
+  int have_room;
+  LockShared(record);
+  table = ARecordTable(record);
+  data = table + 4;
+  cap = table[0].atom;
+  bits = table[1].atom;
+  strat = table[3].atom;
+  hash = FibHash(field, bits);
+  n = cap;
+  /* case 1: key exists, we can replace it */
+  while (n-- > 0)
+  {
+    if (data[hash*2].atom == field)
+    {
+      AO_nop_full(); /* memory barrier */
+      if (strat < 0) {
+        UnlockShared(record);
+	return 0;
+      }
+      if (strat) {
+        AtomicObj old;
+	AtomicObj new;
+	new.obj = obj;
+	do {
+	  do {
+	    old = data[hash*2+1];
+	  } while (!old.obj);
+	} while (!AO_compare_and_swap_full(&data[hash*2+1].atom,
+	          old.atom, new.atom));
+	UnlockShared(record);
+	return obj;
+      } else {
+        Obj result;
+	do {
+	  result = data[hash*2+1].obj;
+	} while (!result);
+	UnlockShared(record);
+	return result;
+      }
+    }
+    hash++;
+    if (hash == cap)
+      hash = 0;
+  }
+  do {
+    size = table[2].atom + 1;
+    have_room = (size * 3 / 2 < cap);
+  } while (have_room && !AO_compare_and_swap_full(&table[2].atom,
+                         size-1, size));
+  /* we're guaranteed to have a non-full table for the insertion step */
+  /* if have_room is true */
+  if (have_room) for (;;) { /* hash iteration loop */
+    AtomicObj old = data[hash*2];
+    if (old.atom == field) {
+      /* we don't actually need a new entry, so revert the size update */
+      do {
+	size = table[2].atom;
+      } while (!AO_compare_and_swap_full(&table[2].atom, size, size-1));
+      /* continue below */
+    } else if (!old.atom) {
+      AtomicObj new;
+      new.atom = field;
+      if (!AO_compare_and_swap_full(&data[hash*2].atom, old.atom, new.atom))
+        continue;
+      /* else continue below */
+    } else {
+      hash++;
+      if (hash == cap)
+        hash = 0;
+      continue;
+    }
+    AO_nop_full(); /* memory barrier */
+    for (;;) { /* CAS loop */
+      old = data[hash*2+1];
+      if (old.obj) {
+        if (strat < 0) {
+	  result = 0;
+	  break;
+	}
+	if (strat) {
+	  AtomicObj new;
+	  new.obj = obj;
+	  if (AO_compare_and_swap_full(&data[hash*2+1].atom,
+	      old.atom, new.atom)) {
+	    result = obj;
+	    break;
+	  }
+	} else {
+	  result = old.obj;
+	  break;
+	}
+      } else {
+        AtomicObj new;
+	new.obj = obj;
+	if (AO_compare_and_swap_full(&data[hash*2+1].atom,
+	    old.atom, new.atom)) {
+	  result = obj;
+	  break;
+	}
+      }
+    } /* end CAS loop */
+    UnlockShared(record);
+    return result;
+  } /* end hash iteration loop */
+  /* have_room is false at this point */
+  UnlockShared(record);
+  Lock(record);
+  newarec = NewBag(T_AREC2, sizeof(AtomicObj) * (4 + cap * 2));
+  newtable = (AtomicObj *)(ADDR_OBJ(newarec));
+  newdata = newtable + 4;
+  newtable[0].atom = cap * 2;
+  newtable[1].atom = bits;
+  newtable[2].atom = table[2].atom+1; /* size */
+  newtable[3] = table[3]; /* strategy */
+  for (i=0; i<cap; i++) {
+    UInt key = table[2*i].atom;
+    if (key) {
+      n = ARecordFastInsert(newtable, key);
+      newtable[4+n].obj = data[2*i+1].obj;
+    }
+  }
+  n = ARecordFastInsert(newtable, field);
+  if (newtable[4+n].obj)
+  {
+    if (strat < 0)
+      result = (Obj) 0;
+    else {
+      if (strat)
+        newtable[4+n].obj = result = obj;
+      else
+        result = newtable[4+n].obj;
+    }
+  }
+  else
+    newtable[4+n].obj = obj;
+  AO_nop_write(); /* memory barrier */
+  ADDR_OBJ(record)[1] = newarec;
+  Unlock(record);
+}
+
+static Obj CreateAtomicRecord(UInt capacity)
+{
+  Obj arec, result;
+  AtomicObj *table;
+  UInt bits = 1;
+  while (capacity > (1 << bits))
+    bits++;
+  capacity = 1 << bits;
+  arec = NewBag(T_AREC2, sizeof(AtomicObj) * (4+capacity));
+  table = (AtomicObj *)(ADDR_OBJ(arec));
+  result = NewBag(T_AREC, 2*sizeof(Obj));
+  table[0].atom = capacity;
+  table[1].atom = bits;
+  table[2].atom = 0;
+  table[3].atom = 1;
+  ADDR_OBJ(result)[1] = arec;
+  return result;
+}
+
+static void SetARecordUpdateStrategy(Obj record, UInt strat)
+{
+  AtomicObj *table = ARecordTable(record);
+  table[3].atom = strat;
+}
+
+Obj ElmARecord(Obj record, UInt rnam)
+{
+   Obj result;
+   for (;;) {
+     result = GetARecordField(record, rnam);
+     if (result)
+       return result;
+     ErrorReturnVoid("Record: '<atomic record>.%s' must have an assigned value",
+       (UInt)NAME_RNAM(rnam), 0L,
+       "you can 'return;' after assigning a value" );
+    }
+}
+
+void AssARecord(Obj record, UInt rnam, Obj value)
+{
+   SetARecordField(record, rnam, value);
+}
+
+Int IsbARecord(Obj record, UInt rnam)
+{
+  return GetARecordField(record, rnam) != (Obj) 0;
+}
+
+static Obj FuncNewAtomicRecord(Obj self, Obj args)
+{
+  Obj cap;
+  switch (LEN_PLIST(args)) {
+    case 0:
+      return CreateAtomicRecord(8);
+    case 1:
+      cap = ELM_PLIST(args, 1);
+      if (!IS_INTOBJ(cap) || INT_INTOBJ(cap) <= 0)
+        ArgumentError("NewAtomicRecord: capacity must be a positive integer");
+      return CreateAtomicRecord(INT_INTOBJ(cap));
+    default:
+      ArgumentError("NewAtomicRecord: takes one optional argument");
+      return (Obj) 0;
+  }
+}
+
+static Obj FuncGET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj def)
+{
+  UInt fieldname;
+  Obj result;
+  if (TNUM_OBJ(record) != T_AREC)
+    ArgumentError("GET_ATOMIC_RECORD: First argument must be an atomic record");
+  if (TNUM_OBJ(field) != T_STRING)
+    ArgumentError("GET_ATOMIC_RECORD: Second argument must be a string");
+  fieldname = RNamName(CSTR_STRING(field));
+  result = GetARecordField(record, fieldname);
+  return result ? result : def;
+}
+
+static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
+{
+  UInt fieldname;
+  Obj result;
+  if (TNUM_OBJ(record) != T_AREC)
+    ArgumentError("SET_ATOMIC_RECORD: First argument must be an atomic record");
+  if (TNUM_OBJ(field) != T_STRING)
+    ArgumentError("SET_ATOMIC_RECORD: Second argument must be a string");
+  fieldname = RNamName(CSTR_STRING(field));
+  result = SetARecordField(record, fieldname, value);
+  if (!result)
+    ErrorQuit("SET_ATOMIC_RECORD: Field '%s' already exists",
+      (UInt) CSTR_STRING(field), 0L);
+  return result;
+}
+
+static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj strat)
+{
+  if (TNUM_OBJ(record) != T_AREC)
+    ArgumentError("ATOMIC_RECORD_REPLACEMENT: First argument must be an atomic record");
+  if (strat == Fail)
+    SetARecordUpdateStrategy(record, -1);
+  else if (strat == False)
+    SetARecordUpdateStrategy(record, 0);
+  else if (strat == True)
+    SetARecordUpdateStrategy(record, 1);
+  else
+    ArgumentError("ATOMIC_RECORD_REPLACEMENT: Second argument must be true, false, or fail");
+  return (Obj) 0;
 }
 
 #endif /* WARD_ENABLED */
@@ -235,8 +583,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "SET_ATOMIC_LIST", 3, "list, index, value",
       FuncSET_ATOMIC_LIST, "src/aobjects.c:SET_ATOMIC_LIST" },
 
-    { "NewAtomicRecord", 0, "",
+    { "NewAtomicRecord", -1, "[capacity]",
       FuncNewAtomicRecord, "src/aobjects.c:NewAtomicRecord" },
+
+    { "GET_ATOMIC_RECORD", 3, "record, field, default",
+      FuncGET_ATOMIC_RECORD, "src/aobjects.c:GET_ATOMIC_RECORD" },
+
+    { "SET_ATOMIC_RECORD", 3, "record, field, value",
+      FuncSET_ATOMIC_RECORD, "src/aobjects.c:SET_ATOMIC_RECORD" },
+
+    { "ATOMIC_RECORD_REPLACEMENT", 2, "record, strategy",
+      FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
 
     { 0 }
 
@@ -320,13 +677,14 @@ static Int InitKernel (
   
     /* install the kind methods */
     TypeObjFuncs[ T_ALIST ] = TypeAList;
-    TypeObjFuncs[ T_BARRIER ] = TypeARecord;
+    TypeObjFuncs[ T_AREC ] = TypeARecord;
     /* install global variables */
     InitCopyGVar("TYPE_ALIST", &TYPE_ALIST);
-    InitCopyGVar("TYPE_ARECORD", &TYPE_ARECORD);
+    InitCopyGVar("TYPE_AREC", &TYPE_AREC);
     /* install mark functions */
     InitMarkFuncBags(T_ALIST, MarkAtomicList);
     InitMarkFuncBags(T_AREC, MarkAtomicRecord);
+    InitMarkFuncBags(T_AREC, MarkAtomicRecord2);
     /* install print functions */
     PrintObjFuncs[ T_ALIST ] = PrintAtomicList;
     PrintObjFuncs[ T_AREC ] = PrintAtomicRecord;
@@ -347,6 +705,10 @@ static Int InitKernel (
     ElmwListFuncs[T_ALIST] = ElmAList;
     AssListFuncs[T_ALIST] = AssAList;
     /* AsssListFuncs[T_ALIST] = AsssAList; */
+    /* install record functions */
+    ElmRecFuncs[ T_AREC ] = ElmARecord;
+    IsbRecFuncs[ T_AREC ] = IsbARecord;
+    AssRecFuncs[ T_AREC ] = AssARecord;
     /* return success                                                      */
     return 0;
 }

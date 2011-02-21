@@ -33,3 +33,5 @@ TYPE_SYNCVAR := NewType(SynchronizationFamily, IsSyncVar);
 TYPE_DATASPACE := NewType(DataSpaceFamily, IsDataSpace);
 TYPE_ALIST := NewType(AtomicFamily, IsAtomicList);
 TYPE_AREC := NewType(AtomicFamily, IsAtomicRecord);
+
+AtomicRecord := NewAtomicRecord;
