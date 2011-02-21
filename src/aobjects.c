@@ -289,21 +289,19 @@ static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
   UInt cap = table[0].atom;
   UInt bits = table[1].atom;
   UInt hash = FibHash(field, bits);
-  table[2].atom++; /* increase size */
   for (;;)
   {
     AO_t key;
     key = data[hash*2].atom;
     if (!key)
     {
+      table[2].atom++; /* increase size */
       data[hash*2].atom = field;
-      return hash*2+1;
+      return hash;
     }
     if (key == field)
-      return hash*2+1;
+      return hash;
     hash++;
-    if (hash == cap)
-      hash = 0;
   }
 }
 
@@ -325,7 +323,10 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   /* case 1: key exists, we can replace it */
   while (n-- > 0)
   {
-    if (data[hash*2].atom == field)
+    UInt key = data[hash*2].atom;
+    if (!key)
+      break;
+    if (key == field)
     {
       AO_nop_full(); /* memory barrier */
       if (strat < 0) {
@@ -420,34 +421,34 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   /* have_room is false at this point */
   UnlockShared(record);
   Lock(record);
-  newarec = NewBag(T_AREC2, sizeof(AtomicObj) * (4 + cap * 2));
+  newarec = NewBag(T_AREC2, sizeof(AtomicObj) * (4 + cap * 2 * 2));
   newtable = (AtomicObj *)(ADDR_OBJ(newarec));
   newdata = newtable + 4;
   newtable[0].atom = cap * 2;
-  newtable[1].atom = bits;
-  newtable[2].atom = table[2].atom+1; /* size */
+  newtable[1].atom = bits+1;
+  newtable[2].atom = 0; /* size */
   newtable[3] = table[3]; /* strategy */
   for (i=0; i<cap; i++) {
-    UInt key = table[2*i].atom;
+    UInt key = data[2*i].atom;
     if (key) {
       n = ARecordFastInsert(newtable, key);
-      newtable[4+n].obj = data[2*i+1].obj;
+      newdata[2*n+1].obj = data[2*i+1].obj;
     }
   }
   n = ARecordFastInsert(newtable, field);
-  if (newtable[4+n].obj)
+  if (newdata[2*n+1].obj)
   {
     if (strat < 0)
       result = (Obj) 0;
     else {
       if (strat)
-        newtable[4+n].obj = result = obj;
+        newdata[2*n+1].obj = result = obj;
       else
-        result = newtable[4+n].obj;
+        result = newdata[2*n+1].obj;
     }
   }
   else
-    newtable[4+n].obj = obj;
+    newdata[2*n+1].obj = obj;
   AO_nop_write(); /* memory barrier */
   ADDR_OBJ(record)[1] = newarec;
   Unlock(record);
@@ -461,7 +462,7 @@ static Obj CreateAtomicRecord(UInt capacity)
   while (capacity > (1 << bits))
     bits++;
   capacity = 1 << bits;
-  arec = NewBag(T_AREC2, sizeof(AtomicObj) * (4+capacity));
+  arec = NewBag(T_AREC2, sizeof(AtomicObj) * (4+2*capacity));
   table = (AtomicObj *)(ADDR_OBJ(arec));
   result = NewBag(T_AREC, 2*sizeof(Obj));
   table[0].atom = capacity;
@@ -524,7 +525,7 @@ static Obj FuncGET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj def)
   Obj result;
   if (TNUM_OBJ(record) != T_AREC)
     ArgumentError("GET_ATOMIC_RECORD: First argument must be an atomic record");
-  if (TNUM_OBJ(field) != T_STRING)
+  if (!IsStringConv(field))
     ArgumentError("GET_ATOMIC_RECORD: Second argument must be a string");
   fieldname = RNamName(CSTR_STRING(field));
   result = GetARecordField(record, fieldname);
@@ -537,7 +538,7 @@ static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
   Obj result;
   if (TNUM_OBJ(record) != T_AREC)
     ArgumentError("SET_ATOMIC_RECORD: First argument must be an atomic record");
-  if (TNUM_OBJ(field) != T_STRING)
+  if (!IsStringConv(field))
     ArgumentError("SET_ATOMIC_RECORD: Second argument must be a string");
   fieldname = RNamName(CSTR_STRING(field));
   result = SetARecordField(record, fieldname, value);
