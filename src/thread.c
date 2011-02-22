@@ -134,7 +134,10 @@ void RunThreadedMain(
   char **argv,
   char **environ )
 {
-  int i;
+  /* 'i' must not be on the stack to not confuse the alloca() computation */
+  static int i;
+  static pthread_mutex_t main_thread_mutex;
+  static pthread_cond_t main_thread_cond;
 #ifdef STACK_GROWS_UP
 #error Upward growing stack not yet supported
 #else
@@ -153,6 +156,10 @@ void RunThreadedMain(
     thread_data[i].tls = 0;
   thread_free_list = 0;
   pthread_mutex_init(&master_lock, 0);
+  pthread_mutex_init(&main_thread_mutex, 0);
+  pthread_cond_init(&main_thread_cond, 0);
+  TLS->threadLock = &main_thread_mutex;
+  TLS->threadSignal = &main_thread_cond;
   InitTraversal();
   exit((*mainFunction)(argc, argv, environ));
 }
@@ -168,6 +175,8 @@ void CreateMainDataSpace()
 
 void *DispatchThread(void *arg)
 {
+  pthread_mutex_t thread_mutex;
+  pthread_cond_t thread_cond;
   ThreadData *this_thread = arg;
   InitializeTLS();
   TLS->threadID = this_thread - thread_data;
@@ -175,11 +184,17 @@ void *DispatchThread(void *arg)
   AddGCRoots();
 #endif
   InitTLS();
+  pthread_mutex_init(&thread_mutex, NULL);
+  pthread_cond_init(&thread_cond, NULL);
   TLS->currentDataSpace = NewDataSpace();
+  TLS->threadLock = &thread_mutex;
+  TLS->threadSignal = &thread_cond;
   ((DataSpace *)TLS->currentDataSpace)->not_shared = 1;
   DataSpaceWriteLock(TLS->currentDataSpace);
   this_thread->start(this_thread->arg);
   DataSpaceWriteUnlock(TLS->currentDataSpace);
+  pthread_mutex_destroy(&thread_mutex);
+  pthread_cond_destroy(&thread_cond);
   DestroyTLS();
 #ifndef DISABLE_GC
   RemoveGCRoots();

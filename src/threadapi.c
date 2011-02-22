@@ -138,22 +138,22 @@ Obj NewMonitor()
 
 void LockThread(ThreadLocalStorage *thread)
 {
-  pthread_mutex_lock(&thread->threadLock);
+  pthread_mutex_lock(thread->threadLock);
 }
 
 void UnlockThread(ThreadLocalStorage *thread)
 {
-  pthread_mutex_unlock(&thread->threadLock);
+  pthread_mutex_unlock(thread->threadLock);
 }
 
 void SignalThread(ThreadLocalStorage *thread)
 {
-  pthread_cond_signal(&thread->threadSignal);
+  pthread_cond_signal(thread->threadSignal);
 }
 
 void WaitThreadSignal()
 {
-  pthread_cond_wait(&TLS->threadSignal, &TLS->threadLock);
+  pthread_cond_wait(TLS->threadSignal, TLS->threadLock);
 }
 
 void LockMonitor(Monitor *monitor)
@@ -898,14 +898,10 @@ static Int InitLibrary (
 
 void InitThreadAPITLS()
 {
-  pthread_mutex_init(&TLS->threadLock, NULL);
-  pthread_cond_init(&TLS->threadSignal, NULL);
 }
 
 void DestroyThreadAPITLS()
 {
-  pthread_mutex_destroy(&TLS->threadLock);
-  pthread_cond_destroy(&TLS->threadSignal);
 }
 
 

@@ -9,8 +9,8 @@
 typedef struct ThreadLocalStorage
 {
   int threadID;
-  pthread_mutex_t threadLock;
-  pthread_cond_t threadSignal;
+  void *threadLock;
+  void *threadSignal;
   void *acquiredMonitor;
   unsigned multiplexRandomSeed;
   void *currentDataSpace;
