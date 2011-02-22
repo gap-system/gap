@@ -224,7 +224,7 @@ static void PrintAtomicList(Obj obj)
   Pr("<atomic list of size %d>", (UInt)(ADDR_OBJ(obj)[0]), 0L);
 }
 
-/* T_AREC2 substructure:
+/* T_AREC_INNER substructure:
  * ADDR_OBJ(rec)[0] == capacity, must be a power of 2.
  * ADDR_OBJ(rec)[1] == log2(capacity).
  * ADDR_OBJ(rec)[2] == estimated size (occupied slots).
@@ -427,7 +427,7 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   /* have_room is false at this point */
   UnlockShared(record);
   Lock(record);
-  newarec = NewBag(T_AREC2, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
+  newarec = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
   newtable = (AtomicObj *)(ADDR_OBJ(newarec));
   newdata = newtable + AR_DATA;
   newtable[AR_CAP].atom = cap * 2;
@@ -493,7 +493,7 @@ static Obj CreateAtomicRecord(UInt capacity)
   while (capacity > (1 << bits))
     bits++;
   capacity = 1 << bits;
-  arec = NewBag(T_AREC2, sizeof(AtomicObj) * (AR_DATA+2*capacity));
+  arec = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA+2*capacity));
   table = (AtomicObj *)(ADDR_OBJ(arec));
   result = NewBag(T_AREC, 2*sizeof(Obj));
   table[AR_CAP].atom = capacity;
