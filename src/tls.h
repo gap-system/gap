@@ -1,4 +1,4 @@
-#ifndef iTLS_H
+#ifndef _TLS_H
 #define _TLS_H
 
 #include <stdint.h>
