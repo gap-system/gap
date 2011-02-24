@@ -34,8 +34,27 @@ typedef struct {
   int next;
 } ThreadData;
 
+typedef struct TraversalState {
+  struct TraversalState *previousTraversal;
+  Obj list;
+  UInt listSize;
+  UInt listCurrent;
+  UInt listCapacity;
+  Obj hashTable;
+  Obj copyMap;
+  UInt hashSize;
+  UInt hashCapacity;
+  UInt hashBits;
+  DataSpace *dataSpace;
+  int delimitedCopy;
+} TraversalState;
+
 DataSpace *limbo;
 Obj PublicDataSpace;
+
+static inline TraversalState *currentTraversal() {
+  return TLS->traversalState;
+}
 
 static ThreadData thread_data[MAX_THREADS];
 static int thread_free_list;
@@ -505,11 +524,12 @@ static UInt FindTraversedObj(Obj);
 static inline Obj ReplaceByCopy(Obj obj)
 {
   Obj result;
+  TraversalState *traversal = currentTraversal();
   UInt found = FindTraversedObj(obj);
   if (found)
-    return ELM_PLIST(TLS->travMap, found);
-  else if (TLS->travDelimCopy) {
-    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == TLS->travDataSpace)
+    return ELM_PLIST(traversal->copyMap, found);
+  else if (traversal->delimitedCopy) {
+    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == traversal->dataSpace)
       return obj;
     else
       return GetDataSpaceOf(obj)->obj;
@@ -579,16 +599,23 @@ static void InitTraversal()
     TraversalMask[i] = TRAVERSE_NONE;
 }
 
-static void BeginTraversal()
+static void BeginTraversal(TraversalState *traversal)
 {
-  TLS->travHash = NewList(16);
-  TLS->travHashSize = 0;
-  TLS->travHashCapacity = 16;
-  TLS->travHashBits = 4;
-  TLS->travList = NewList(10);
-  TLS->travListSize = 0;
-  TLS->travListCapacity = 10;
-  TLS->travListCurrent = 0;
+  traversal->hashTable = NewList(16);
+  traversal->hashSize = 0;
+  traversal->hashCapacity = 16;
+  traversal->hashBits = 4;
+  traversal->list = NewList(10);
+  traversal->listSize = 0;
+  traversal->listCapacity = 10;
+  traversal->listCurrent = 0;
+  traversal->previousTraversal = currentTraversal();
+  TLS->traversalState = traversal;
+}
+
+static void EndTraversal()
+{
+  TLS->traversalState = currentTraversal()->previousTraversal;
 }
 
 #if SIZEOF_VOID_P == 4
@@ -603,57 +630,59 @@ static void TraversalRehash();
 static int SeenDuringTraversal(Obj obj)
 {
   Int type;
-  Obj *hashTable = ADDR_OBJ(TLS->travHash)+1;
+  TraversalState *traversal = currentTraversal();
+  Obj *hashTable = ADDR_OBJ(traversal->hashTable)+1;
   unsigned long hash;
   if (!IS_BAG_REF(obj))
     return 0;
   hash = ((unsigned long) obj) * TRAV_HASH_MULT;
-  hash >>= TRAV_HASH_BITS - TLS->travHashBits;
-  if (TLS->travHashSize * 3 / 2 >= TLS->travHashCapacity)
-    TraversalRehash();
+  hash >>= TRAV_HASH_BITS - traversal->hashBits;
+  if (traversal->hashSize * 3 / 2 >= traversal->hashCapacity)
+    TraversalRehash(traversal);
   for (;;)
   {
     if (hashTable[hash] == NULL)
     {
       hashTable[hash] = obj;
-      TLS->travHashSize++;
+      traversal->hashSize++;
       return 1;
     }
     if (hashTable[hash] == obj)
       return 0;
-    hash = (hash + 1) & (TLS->travHashCapacity-1);
+    hash = (hash + 1) & (traversal->hashCapacity-1);
   }
 }
 
 static UInt FindTraversedObj(Obj obj)
 {
   Int type;
-  Obj *hashTable = ADDR_OBJ(TLS->travHash)+1;
+  TraversalState *traversal = currentTraversal();
+  Obj *hashTable = ADDR_OBJ(traversal->hashTable)+1;
   UInt hash;
   if (!IS_BAG_REF(obj))
     return 0;
   hash = ((UInt) obj) * TRAV_HASH_MULT;
-  hash >>= TRAV_HASH_BITS - TLS->travHashBits;
+  hash >>= TRAV_HASH_BITS - traversal->hashBits;
   for (;;)
   {
     if (hashTable[hash] == obj)
       return (int) hash+1;
     if (hashTable[hash] == NULL)
       return 0;
-    hash = (hash + 1) & (TLS->travHashCapacity-1);
+    hash = (hash + 1) & (traversal->hashCapacity-1);
   }
 }
 
-static void TraversalRehash()
+static void TraversalRehash(TraversalState *traversal)
 {
-  Obj list = NewList(TLS->travHashCapacity * 2);
-  int oldsize = TLS->travHashCapacity;
+  Obj list = NewList(traversal->hashCapacity * 2);
+  int oldsize = traversal->hashCapacity;
   int i;
-  Obj oldlist = TLS->travHash;
-  TLS->travHashCapacity *= 2;
-  TLS->travHash = list;
-  TLS->travHashSize = 0;
-  TLS->travHashBits++;
+  Obj oldlist = traversal->hashTable;
+  traversal->hashCapacity *= 2;
+  traversal->hashTable = list;
+  traversal->hashSize = 0;
+  traversal->hashBits++;
   for (i = 1; i <= oldsize; i++)
   {
     Obj obj = ADDR_OBJ(oldlist)[i];
@@ -665,39 +694,39 @@ static void TraversalRehash()
 void QueueForTraversal(Obj obj)
 {
   int i;
+  TraversalState *traversal;
   if (!IS_BAG_REF(obj))
     return; /* skip ojects that aren't bags */
-  if (DS_BAG(obj) != TLS->travDataSpace)
+  traversal = currentTraversal();
+  if (DS_BAG(obj) != traversal->dataSpace)
     return; /* stop traversal at the border of a data space */
   if (!SeenDuringTraversal(obj))
     return; /* don't revisit objects that we've already seen */
-  if (TLS->travListSize == TLS->travListCapacity)
+  if (traversal->listSize == traversal->listCapacity)
   {
-    unsigned oldcapacity = TLS->travListCapacity;
+    unsigned oldcapacity = traversal->listCapacity;
     unsigned newcapacity = oldcapacity * 25/16; /* 25/16 < golden ratio */
-    Obj oldlist = TLS->travList;
+    Obj oldlist = traversal->list;
     Obj list = NewList(newcapacity);
     for (i=1; i<=oldcapacity; i++)
       ADDR_OBJ(list)[i] = ADDR_OBJ(oldlist)[i];
-    TLS->travList = list;
-    TLS->travListCapacity = newcapacity;
+    traversal->list = list;
+    traversal->listCapacity = newcapacity;
   }
-  ADDR_OBJ(TLS->travList)[++TLS->travListSize] = obj;
+  ADDR_OBJ(traversal->list)[++traversal->listSize] = obj;
 }
 
-Obj TraverseDataSpaceFrom(Obj obj)
+void TraverseDataSpaceFrom(TraversalState *traversal, Obj obj)
 {
-  Obj result;
-  if (!IS_BAG_REF(obj))
-    return NewList(0);
-  if (!CheckRead(obj))
-    return NewList(0);
-  TLS->travDataSpace = DS_BAG(obj);
-  BeginTraversal();
+  if (!IS_BAG_REF(obj) || !CheckRead(obj)) {
+    traversal->list = NewList(0);
+    return;
+  }
+  traversal->dataSpace = DS_BAG(obj);
   QueueForTraversal(obj);
-  while (TLS->travListCurrent < TLS->travListSize)
+  while (traversal->listCurrent < traversal->listSize)
   {
-    Obj current = ADDR_OBJ(TLS->travList)[++TLS->travListCurrent];
+    Obj current = ADDR_OBJ(traversal->list)[++traversal->listCurrent];
     int tnum = TNUM_BAG(current);
     int mask = TraversalMask[TNUM_BAG(current)];
     if (!mask)
@@ -717,17 +746,16 @@ Obj TraverseDataSpaceFrom(Obj obj)
       }
     }
   }
-  result = TLS->travList;
-  SET_LEN_PLIST(result, TLS->travListSize);
-  return result;
+  SET_LEN_PLIST(traversal->list, traversal->listSize);
 }
 
 Obj ReachableObjectsFrom(Obj obj)
 {
-  Obj result = TraverseDataSpaceFrom(obj);
-  TLS->travList = NULL;
-  TLS->travHash = NULL;
-  return result;
+  TraversalState traversal;
+  BeginTraversal(&traversal);
+  TraverseDataSpaceFrom(&traversal, obj);
+  EndTraversal();
+  return traversal.list;
 }
 
 static Obj CopyBag(Obj copy, Obj original)
@@ -758,21 +786,25 @@ static Obj CopyBag(Obj copy, Obj original)
 Obj CopyReachableObjectsFrom(Obj obj, int delimited)
 {
   Obj *traversed, *copies, copyList;
+  TraversalState traversal;
   UInt len, i;
   if (!IS_BAG_REF(obj))
     return obj;
-  traversed = ADDR_OBJ(TraverseDataSpaceFrom(obj));
-  len = (UInt) *traversed;
-  copyList = NEW_PLIST(T_PLIST, len);
+  BeginTraversal(&traversal);
+  TraverseDataSpaceFrom(&traversal, obj);
+  traversed = ADDR_OBJ(traversal.list);
+  len = LEN_PLIST(traversal.list);
+  copyList = NewList(len);
   copies = ADDR_OBJ(copyList);
-  TLS->travDelimCopy = delimited;
+  traversal.delimitedCopy = delimited;
   if (len == 0) {
+    EndTraversal();
     if (delimited)
       return GetDataSpaceOf(obj)->obj;
     ErrorQuit("Object not in a readable data space", 0L, 0L);
   }
-  TLS->travMap = NEW_PLIST(T_PLIST, LEN_PLIST(TLS->travHash));
-  SET_LEN_PLIST(TLS->travMap, LEN_PLIST(TLS->travHash));
+  traversal.copyMap = NEW_PLIST(T_PLIST, LEN_PLIST(traversal.hashTable));
+  SET_LEN_PLIST(traversal.copyMap, LEN_PLIST(traversal.hashTable));
   for (i = 1; i<=len; i++)
   {
     UInt loc = FindTraversedObj(traversed[i]);
@@ -781,16 +813,14 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited)
       Obj original = traversed[i];
       Obj copy;
       copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
-      SET_ELM_PLIST(TLS->travMap, loc, copy);
+      SET_ELM_PLIST(traversal.copyMap, loc, copy);
       copies[i] = copy;
     }
   }
   for (i=1; i<=len; i++)
     if (copies[i])
       CopyBag(copies[i], traversed[i]);
-  TLS->travList = NULL;
-  TLS->travHash = NULL;
-  TLS->travMap = NULL;
+  EndTraversal();
   return copies[1];
 }
 

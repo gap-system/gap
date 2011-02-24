@@ -45,7 +45,6 @@ typedef void (*TraversalFunction)(Obj);
 
 extern TraversalFunction TraversalFunc[];
 
-Obj TraverseDataSpaceFrom(Obj obj);
 Obj ReachableObjectsFrom(Obj obj);
 Obj CopyReachableObjectsFrom(Obj obj, int delimited);
 

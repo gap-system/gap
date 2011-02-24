@@ -1843,7 +1843,7 @@ Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 
 Obj FuncSHARE(Obj self, Obj obj)
 {
-  Obj reachable = TraverseDataSpaceFrom(obj);
+  Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, NewDataSpace()))
     ArgumentError("SHARE: Thread does not have exclusive access to objects");
@@ -1852,7 +1852,7 @@ Obj FuncSHARE(Obj self, Obj obj)
 
 Obj FuncADOPT(Obj self, Obj obj)
 {
-  Obj reachable = TraverseDataSpaceFrom(obj);
+  Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, TLS->currentDataSpace))
     ArgumentError("ADOPT: Thread does not have exclusive access to objects");
@@ -1861,7 +1861,7 @@ Obj FuncADOPT(Obj self, Obj obj)
 
 Obj FuncPUBLISH(Obj self, Obj obj)
 {
-  Obj reachable = TraverseDataSpaceFrom(obj);
+  Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, 0))
     ArgumentError("PUBLISH: Thread does not have exclusive access to objects");
@@ -1874,7 +1874,7 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
   Obj reachable;
   if (!targetDS || IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE: Thread does not have exclusive access to target data space");
-  reachable = TraverseDataSpaceFrom(obj);
+  reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, targetDS))
     ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
