@@ -34,4 +34,14 @@ TYPE_DATASPACE := NewType(DataSpaceFamily, IsDataSpace);
 TYPE_ALIST := NewType(AtomicFamily, IsAtomicList);
 TYPE_AREC := NewType(AtomicFamily, IsAtomicRecord);
 
+# Convenience aliases
+
 AtomicRecord := NewAtomicRecord;
+AtomicList := NewAtomicList;
+IsLockable := IsShared;
+
+# Legacy functionality
+
+SHARED_LIST := function()
+  return SHARE_NORECURSE([]);
+end;

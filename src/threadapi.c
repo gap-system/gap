@@ -453,13 +453,35 @@ Obj FuncDataSpace(Obj self, Obj obj) {
 
 /****************************************************************************
 **
-*F FuncIsLockable ... return whether a dataspace can be locked
+*F FuncIsShared ... return whether a dataspace is shared
 **
 */
 
-Obj FuncIsLockable(Obj self, Obj obj) {
+Obj FuncIsShared(Obj self, Obj obj) {
   DataSpace *ds = GetDataSpaceOf(obj);
-  return ds->not_shared ? False : True;
+  return (ds && !ds->not_shared) ? True : False;
+}
+
+/****************************************************************************
+**
+*F FuncIsPublic ... return whether a dataspace is public
+**
+*/
+
+Obj FuncIsPublic(Obj self, Obj obj) {
+  DataSpace *ds = GetDataSpaceOf(obj);
+  return ds == NULL ? True : False;
+}
+
+/****************************************************************************
+**
+*F FuncIsThreadLocal ... return whether a dataspace is thread-local
+**
+*/
+
+Obj FuncIsThreadLocal(Obj self, Obj obj) {
+  DataSpace *ds = GetDataSpaceOf(obj);
+  return (ds && ds->not_shared && ds->owner == TLS) ? True : False;
 }
 
 /****************************************************************************
@@ -600,7 +622,6 @@ Obj FuncReadSyncVar(Obj self, Obj var);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
-Obj FuncSHARED_LIST(Obj self);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
 Obj FuncPUBLISH_NORECURSE(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
@@ -649,8 +670,14 @@ static StructGVarFunc GVarFuncs [] = {
     { "DataSpace", 1, "object",
       FuncDataSpace, "src/threadapi.c:DataSpace" },
 
-    { "IsLockable", 1, "object",
-      FuncIsLockable, "src/threadapi.c:IsLockable" },
+    { "IsShared", 1, "object",
+      FuncIsShared, "src/threadapi.c:IsShared" },
+
+    { "IsPublic", 1, "object",
+      FuncIsPublic, "src/threadapi.c:IsPublic" },
+
+    { "IsThreadLocal", 1, "object",
+      FuncIsThreadLocal, "src/threadapi.c:IsThreadLocal" },
 
     { "HaveWriteAccess", 1, "object",
       FuncHaveWriteAccess, "src/threadapi.c:HaveWriteAccess" },
@@ -729,9 +756,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "UNLOCK", -1, "obj, ...",
       FuncUNLOCK, "src/threadapi.c:LOCK" },
-
-    { "SHARED_LIST", 0, "",
-      FuncSHARED_LIST, "src/threadapi.c:SHARED_LIST" },
 
     { "SHARE_NORECURSE", 1, "obj",
       FuncSHARE_NORECURSE, "src/threadapi.c:SHARE_NORECURSE" },
@@ -1773,14 +1797,6 @@ Obj FuncUNLOCK(Obj self, Obj args)
 {
   UnlockObjects(LEN_PLIST(args), ADDR_OBJ(args)+1);
   return (Obj) 0;
-}
-
-Obj FuncSHARED_LIST(Obj self)
-{
-  Obj result = NEW_PLIST(T_PLIST, 0);
-  SET_LEN_PLIST(result, 0);
-  DS_BAG(result) = NewDataSpace();
-  return result;
 }
 
 static int MigrateObjects(int count, Obj *objects, DataSpace *target)
