@@ -858,6 +858,15 @@ void            PrintObj (
         PrintObjDepth = i;
     }
 
+#ifndef WARD_ENABLED
+   if (IS_BAG_REF(obj) && !CheckWrite(obj)) {
+     char buffer[64];
+     sprintf(buffer, "<obj %p inaccessible in data space %p>", obj, DS_BAG(obj));
+     Pr(buffer, 0L, 0L);
+     return;
+   }
+#endif
+
     /* First check if <obj> is actually the current object being Viewed
        Since ViewObj(<obj>) may result in a call to PrintObj(<obj>) */
 

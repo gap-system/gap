@@ -783,13 +783,20 @@ static Obj CopyBag(Obj copy, Obj original)
   return copy;
 }
 
-Obj CopyReachableObjectsFrom(Obj obj, int delimited)
+Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
 {
   Obj *traversed, *copies, copyList;
   TraversalState traversal;
   UInt len, i;
-  if (!IS_BAG_REF(obj))
-    return obj;
+  if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
+  {
+    if (asList) {
+      copyList = NewList(1);
+      SET_ELM_PLIST(copyList, 1, obj);
+      return copyList;
+    } else
+      return obj;
+  }
   BeginTraversal(&traversal);
   TraverseDataSpaceFrom(&traversal, obj);
   traversed = ADDR_OBJ(traversal.list);
@@ -803,13 +810,10 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited)
       return GetDataSpaceOf(obj)->obj;
     ErrorQuit("Object not in a readable data space", 0L, 0L);
   }
-  traversal.copyMap = NEW_PLIST(T_PLIST, LEN_PLIST(traversal.hashTable));
-  SET_LEN_PLIST(traversal.copyMap, LEN_PLIST(traversal.hashTable));
-  for (i = 1; i<=len; i++)
-  {
+  traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));
+  for (i = 1; i<=len; i++) {
     UInt loc = FindTraversedObj(traversed[i]);
-    if (loc)
-    {
+    if (loc) {
       Obj original = traversed[i];
       Obj copy;
       copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
@@ -820,6 +824,41 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited)
   for (i=1; i<=len; i++)
     if (copies[i])
       CopyBag(copies[i], traversed[i]);
+  EndTraversal();
+  if (asList)
+    return copyList;
+  else
+    return copies[1];
+}
+
+Obj CopyTraversed(Obj traversedList)
+{
+  Obj copyList, *copies, *traversed;
+  TraversalState traversal;
+  UInt len, i;
+  traversed = ADDR_OBJ(traversedList);
+  BeginTraversal(&traversal);
+  len = LEN_PLIST(traversedList);
+  if (len == 1) {
+    Obj obj = traversed[1];
+    if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
+      return obj;
+  }
+  for (i=1; i<=len; i++)
+    SeenDuringTraversal(traversed[i]);
+  copyList = NewList(len);
+  copies = ADDR_OBJ(copyList);
+  traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));
+  for (i=1; i<=len; i++) {
+    Obj original = traversed[i];
+    UInt loc = FindTraversedObj(original);
+    Obj copy;
+    copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
+    SET_ELM_PLIST(traversal.copyMap, loc, copy);
+    copies[i] = copy;
+  }
+  for (i=1; i<=len; i++)
+    CopyBag(copies[i], traversed[i]);
   EndTraversal();
   return copies[1];
 }

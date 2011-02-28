@@ -26,6 +26,7 @@ DeclareFilter("IsSyncVar", IsObject);
 DeclareFilter("IsDataSpace", IsObject);
 DeclareFilter("IsAtomicList", IsObject);
 DeclareFilter("IsAtomicRecord", IsObject);
+DeclareFilter("IsThreadLocalRecord", IsObject);
 
 TYPE_CHANNEL := NewType(SynchronizationFamily, IsChannel);
 TYPE_BARRIER := NewType(SynchronizationFamily, IsBarrier);
@@ -33,6 +34,7 @@ TYPE_SYNCVAR := NewType(SynchronizationFamily, IsSyncVar);
 TYPE_DATASPACE := NewType(DataSpaceFamily, IsDataSpace);
 TYPE_ALIST := NewType(AtomicFamily, IsAtomicList);
 TYPE_AREC := NewType(AtomicFamily, IsAtomicRecord);
+TYPE_TLREC := NewType(AtomicFamily, IsThreadLocalRecord);
 
 # Convenience aliases
 

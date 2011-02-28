@@ -63,6 +63,7 @@
 
 Obj TYPE_ALIST;
 Obj TYPE_AREC;
+Obj TYPE_TLREC;
 
 #ifndef WARD_ENABLED
 
@@ -77,6 +78,12 @@ Obj TypeARecord(Obj obj)
   Obj result = ADDR_OBJ(obj)[0];
   return result != NULL ? result : TYPE_AREC;
 }
+
+Obj TypeTLRecord(Obj obj)
+{
+  return TYPE_TLREC;
+}
+
 
 static Int AlwaysMutable( Obj obj)
 {
@@ -195,10 +202,31 @@ static void MarkAtomicList(Bag bag)
     MARK_BAG(*ptr++);
 }
 
-static void MarkAtomicRecord(Bag bag)
-{
-  MARK_BAG(ADDR_OBJ(bag)[0]);
-}
+/* T_AREC_INNER substructure:
+ * ADDR_OBJ(rec)[0] == capacity, must be a power of 2.
+ * ADDR_OBJ(rec)[1] == log2(capacity).
+ * ADDR_OBJ(rec)[2] == estimated size (occupied slots).
+ * ADDR_OBJ(rec)[3] == update strategy.
+ * ADDR_OBJ(rec)[4..] == hash table of pairs of objects
+ */
+
+#define AR_CAP 0
+#define AR_BITS 1
+#define AR_SIZE 2
+#define AR_STRAT 3
+#define AR_DATA 4
+
+/* T_TLREC_INNER substructure:
+ * ADDR_OBJ(rec)[0] == number of subrecords
+ * ADDR_OBJ(rec)[1] == default values
+ * ADDR_OBJ(rec)[2] == constructors
+ * ADDR_OBJ(rec)[3..] == table of per-thread subrecords
+ */
+
+#define TLR_SIZE 0
+#define TLR_DEFAULTS 1
+#define TLR_CONSTRUCTORS 2
+#define TLR_DATA 3
 
 typedef union AtomicObj
 {
@@ -206,6 +234,39 @@ typedef union AtomicObj
   Obj obj;
 } AtomicObj;
 
+
+static void MarkTLRecordInner(Bag bag)
+{
+  Bag *ptr, *ptrend;
+  UInt n;
+  ptr = PTR_BAG(ptr);
+  n = (UInt) *ptr;
+  ptrend = ptr + n + TLR_DATA;
+  ptr++;
+  while (ptr < ptrend) {
+    MARK_BAG(*ptr);
+    ptr++;
+  }
+}
+
+static Obj GetTLInner(Obj obj)
+{
+  Obj contents = ((AtomicObj *)(ADDR_OBJ(obj)))->obj;
+  AO_nop_read(); /* read barrier */
+  return contents;
+}
+
+static void MarkTLRecord(Bag bag)
+{
+  Bag contents = GetTLInner(bag);
+  MARK_BAG(contents);
+}
+
+
+static void MarkAtomicRecord(Bag bag)
+{
+  MARK_BAG(GetTLInner(bag));
+}
 
 static void MarkAtomicRecord2(Bag bag)
 {
@@ -219,23 +280,31 @@ static void MarkAtomicRecord2(Bag bag)
   }
 }
 
+static void ExpandTLRecord(Obj obj)
+{
+  AtomicObj contents, newcontents;
+  Obj *table, *newtable;
+  do {
+    contents = *(AtomicObj *)(ADDR_OBJ(obj));
+    table = ADDR_OBJ(contents.obj);
+    UInt thread = TLS->threadID+1;
+    if (thread < (UInt)*table)
+      return;
+    newcontents.obj = NewBag(T_TLREC_INNER, sizeof(Obj) * (thread+TLR_DATA+1));
+    newtable = ADDR_OBJ(newcontents.obj);
+    newtable[TLR_SIZE] = (Obj)(thread+1);
+    newtable[TLR_DEFAULTS] = table[TLR_DEFAULTS];
+    newtable[TLR_CONSTRUCTORS] = table[TLR_CONSTRUCTORS];
+    memcpy(newtable + TLR_DATA, table + TLR_DATA,
+      (UInt)table[TLR_SIZE] * sizeof(Obj));
+  } while (!AO_compare_and_swap_full(&(((AtomicObj *)(ADDR_OBJ(obj)))->atom),
+    contents.atom, newcontents.atom));
+}
+
 static void PrintAtomicList(Obj obj)
 {
   Pr("<atomic list of size %d>", (UInt)(ADDR_OBJ(obj)[0]), 0L);
 }
-
-/* T_AREC_INNER substructure:
- * ADDR_OBJ(rec)[0] == capacity, must be a power of 2.
- * ADDR_OBJ(rec)[1] == log2(capacity).
- * ADDR_OBJ(rec)[2] == estimated size (occupied slots).
- * ADDR_OBJ(rec)[3] == update strategy.
- */
-
-#define AR_CAP 0
-#define AR_BITS 1
-#define AR_SIZE 2
-#define AR_STRAT 3
-#define AR_DATA 4
 
 static inline Obj ARecordObj(Obj record)
 {
@@ -256,6 +325,40 @@ static void PrintAtomicRecord(Obj record)
   size = table[AR_SIZE].atom;
   Unlock(record);
   Pr("<atomic record %d/%d full>", size, cap);
+}
+
+static void PrintTLRecord(Obj obj)
+{
+  Obj contents = GetTLInner(obj);
+  Obj *table = ADDR_OBJ(contents);
+  Obj record = 0;
+  Obj defrec = table[TLR_DEFAULTS];
+  int i;
+  if (TLS->threadID+1 < (UInt)table[TLR_SIZE]) {
+    record = table[TLR_DATA+TLS->threadID+1];
+  }
+  Pr("%2>rec( %2>", 0L, 0L);
+  if (record) {
+    for (i = 1; i <= LEN_PREC(record); i++) {
+      Pr("%I", (Int)NAME_RNAM(labs((Int)GET_RNAM_PREC(record, i))), 0L);
+      Pr ("%< := %>", 0L, 0L);
+      PrintObj(GET_ELM_PREC(record, i));
+      if (i < LEN_PREC(record))
+        Pr("%2<, %2>", 0L, 0L);
+    }
+  }
+  for (i = 1; i <= LEN_PREC(defrec); i++) {
+    Int key = (Int)NAME_RNAM(labs((Int)GET_RNAM_PREC(defrec, i)));
+    UInt dummy;
+    if (!record || !FindPRec(record, key, &dummy, 0)) {
+      Pr("%I", key, 0L);
+      Pr ("%< := %>", 0L, 0L);
+      PrintObj(CopyTraversed(GET_ELM_PREC(defrec, i)));
+      if (i < LEN_PREC(defrec))
+	Pr("%2<, %2>", 0L, 0L);
+    }
+  }
+  Pr(" %4<)", 0L, 0L);
 }
 
 
@@ -512,15 +615,15 @@ static void SetARecordUpdateStrategy(Obj record, UInt strat)
 
 Obj ElmARecord(Obj record, UInt rnam)
 {
-   Obj result;
-   for (;;) {
-     result = GetARecordField(record, rnam);
-     if (result)
-       return result;
-     ErrorReturnVoid("Record: '<atomic record>.%s' must have an assigned value",
-       (UInt)NAME_RNAM(rnam), 0L,
-       "you can 'return;' after assigning a value" );
-    }
+  Obj result;
+  for (;;) {
+    result = GetARecordField(record, rnam);
+    if (result)
+      return result;
+    ErrorReturnVoid("Record: '<atomic record>.%s' must have an assigned value",
+      (UInt)NAME_RNAM(rnam), 0L,
+      "you can 'return;' after assigning a value" );
+  }
 }
 
 void AssARecord(Obj record, UInt rnam, Obj value)
@@ -531,6 +634,77 @@ void AssARecord(Obj record, UInt rnam, Obj value)
 Int IsbARecord(Obj record, UInt rnam)
 {
   return GetARecordField(record, rnam) != (Obj) 0;
+}
+
+static void UpdateThreadRecord(Obj record, Obj tlrecord)
+{
+  Obj inner;
+  do {
+    inner = GetTLInner(record);
+    ADDR_OBJ(inner)[TLR_DATA+TLS->threadID+1] = tlrecord;
+    AO_nop_full(); /* memory barrier */
+  } while (inner != GetTLInner(record));
+}
+
+static Obj GetTLRecordField(Obj record, UInt rnam)
+{
+  Obj contents, *table;
+  Obj tlrecord;
+  Int pos;
+  ExpandTLRecord(record);
+  contents = GetTLInner(record);
+  table = ADDR_OBJ(contents);
+  tlrecord = table[TLR_DATA+TLS->threadID+1];
+  if (!tlrecord || !FindPRec(tlrecord, rnam, &pos, 1)) {
+    Obj defrec = table[TLR_DEFAULTS];
+    Int pos;
+    if (FindPRec(defrec, rnam, &pos, 0)) {
+      Obj result = CopyTraversed(GET_ELM_PREC(defrec, pos));
+      if (!tlrecord) {
+	tlrecord = NEW_PREC(0);
+	UpdateThreadRecord(record, tlrecord);
+      }
+      AssPRec(tlrecord, rnam, result);
+      return result;
+    }
+    else
+      return 0;
+    /* TODO: handle constructors */
+  }
+  return GET_ELM_PREC(tlrecord, pos);
+}
+
+Obj ElmTLRecord(Obj record, UInt rnam)
+{
+  Obj result;
+  for (;;) {
+    result = GetTLRecordField(record, rnam);
+    if (result)
+      return result;
+    ErrorReturnVoid("Record: '<atomic record>.%s' must have an assigned value",
+      (UInt)NAME_RNAM(rnam), 0L,
+      "you can 'return;' after assigning a value" );
+  }
+}
+
+void AssTLRecord(Obj record, UInt rnam, Obj value)
+{
+  Obj contents, *table;
+  Obj tlrecord;
+  ExpandTLRecord(record);
+  contents = GetTLInner(record);
+  table = ADDR_OBJ(contents);
+  tlrecord = table[TLR_DATA+TLS->threadID+1];
+  if (!tlrecord) {
+    tlrecord = NEW_PREC(0);
+    UpdateThreadRecord(record, tlrecord);
+  }
+  AssPRec(tlrecord, rnam, value);
+}
+
+Int IsbTLRecord(Obj record, UInt rnam)
+{
+  return GetTLRecordField(record, rnam) != (Obj) 0;
 }
 
 static Obj FuncNewAtomicRecord(Obj self, Obj args)
@@ -594,6 +768,52 @@ static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj strat)
   return (Obj) 0;
 }
 
+static Obj CreateTLDefaults(Obj defrec) {
+  DataSpace *savedDS = TLS->currentDataSpace;
+  Obj result;
+  UInt i;
+  TLS->currentDataSpace = limbo;
+  result = NewBag(T_PREC, SIZE_BAG(defrec));
+  memcpy(ADDR_OBJ(result), ADDR_OBJ(defrec), SIZE_BAG(defrec));
+  for (i = 1; i <= LEN_PREC(defrec); i++) {
+    SET_ELM_PREC(result, i,
+      CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1));
+  }
+  TLS->currentDataSpace = savedDS;
+  return result;
+}
+
+static Obj NewTLRecord(Obj defaults, Obj constructors) {
+  Obj result = NewBag(T_TLREC, sizeof(AtomicObj));
+  Obj inner = NewBag(T_TLREC_INNER, sizeof(Obj) * TLR_DATA);
+  ADDR_OBJ(inner)[TLR_SIZE] = 0;
+  ADDR_OBJ(inner)[TLR_DEFAULTS] = CreateTLDefaults(defaults);
+  ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = constructors;
+  ((AtomicObj *)(ADDR_OBJ(result)))->obj = inner;
+  return result;
+}
+
+static Obj FuncThreadLocal(Obj self, Obj args)
+{
+  Obj result;
+  switch (LEN_PLIST(args)) {
+    case 0:
+      return NewTLRecord(NEW_PREC(0), NEW_PREC(0));
+    case 1:
+      if (TNUM_OBJ(ELM_PLIST(args, 1)) != T_PREC)
+        ArgumentError("ThreadLocal: First argument must be a plain record");
+      return NewTLRecord(ELM_PLIST(args, 1), NEW_PREC(0));
+    case 2:
+      if (TNUM_OBJ(ELM_PLIST(args, 1)) != T_PREC)
+        ArgumentError("ThreadLocal: First argument must be a plain record");
+      if (TNUM_OBJ(ELM_PLIST(args, 2)) != T_PREC)
+        ArgumentError("ThreadLocal: Second argument must be a plain record");
+      return NewTLRecord(ELM_PLIST(args, 1), ELM_PLIST(args, 2));
+    default:
+      ArgumentError("ThreadLocal: Too many arguments");
+  }
+}
+
 #endif /* WARD_ENABLED */
 
 /****************************************************************************
@@ -628,6 +848,9 @@ static StructGVarFunc GVarFuncs [] = {
       FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
     { "FromAtomicRecord", 1, "record",
       FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
+
+    { "ThreadLocal", -1, "record [, record]",
+      FuncThreadLocal, "src/aobjects.c:ThreadLocal" },
 
     { 0 }
 
@@ -708,43 +931,54 @@ static Int InitKernel (
   /* install info string */
   InfoBags[T_ALIST].name = "atomic list";
   InfoBags[T_AREC].name = "atomic record";
+  InfoBags[T_TLREC].name = "thread-local record";
   
-    /* install the kind methods */
-    TypeObjFuncs[ T_ALIST ] = TypeAList;
-    TypeObjFuncs[ T_AREC ] = TypeARecord;
-    /* install global variables */
-    InitCopyGVar("TYPE_ALIST", &TYPE_ALIST);
-    InitCopyGVar("TYPE_AREC", &TYPE_AREC);
-    /* install mark functions */
-    InitMarkFuncBags(T_ALIST, MarkAtomicList);
-    InitMarkFuncBags(T_AREC, MarkAtomicRecord);
-    InitMarkFuncBags(T_AREC, MarkAtomicRecord2);
-    /* install print functions */
-    PrintObjFuncs[ T_ALIST ] = PrintAtomicList;
-    PrintObjFuncs[ T_AREC ] = PrintAtomicRecord;
-    /* install mutability functions */
-    IsMutableObjFuncs [ T_ALIST ] = AlwaysMutable;
-    IsMutableObjFuncs [ T_AREC ] = AlwaysMutable;
-    MakeBagTypePublic(T_ALIST);
-    MakeBagTypePublic(T_AREC);
-    /* install list functions */
-    IsListFuncs[T_ALIST] = IsListAList;
-    IsSmallListFuncs[T_ALIST] = IsSmallListAList;
-    LenListFuncs[T_ALIST] = LenListAList;
-    LengthFuncs[T_ALIST] = LengthAList;
-    Elm0ListFuncs[T_ALIST] = Elm0AList;
-    Elm0vListFuncs[T_ALIST] = Elm0AList;
-    ElmListFuncs[T_ALIST] = ElmAList;
-    ElmvListFuncs[T_ALIST] = ElmAList;
-    ElmwListFuncs[T_ALIST] = ElmAList;
-    AssListFuncs[T_ALIST] = AssAList;
-    /* AsssListFuncs[T_ALIST] = AsssAList; */
-    /* install record functions */
-    ElmRecFuncs[ T_AREC ] = ElmARecord;
-    IsbRecFuncs[ T_AREC ] = IsbARecord;
-    AssRecFuncs[ T_AREC ] = AssARecord;
-    /* return success                                                      */
-    return 0;
+  /* install the kind methods */
+  TypeObjFuncs[ T_ALIST ] = TypeAList;
+  TypeObjFuncs[ T_AREC ] = TypeARecord;
+  TypeObjFuncs[ T_TLREC ] = TypeTLRecord;
+  /* install global variables */
+  InitCopyGVar("TYPE_ALIST", &TYPE_ALIST);
+  InitCopyGVar("TYPE_AREC", &TYPE_AREC);
+  InitCopyGVar("TYPE_TLREC", &TYPE_TLREC);
+  /* install mark functions */
+  InitMarkFuncBags(T_ALIST, MarkAtomicList);
+  InitMarkFuncBags(T_AREC, MarkAtomicRecord);
+  InitMarkFuncBags(T_AREC, MarkAtomicRecord2);
+  InitMarkFuncBags(T_TLREC, MarkTLRecord);
+  /* install print functions */
+  PrintObjFuncs[ T_ALIST ] = PrintAtomicList;
+  PrintObjFuncs[ T_AREC ] = PrintAtomicRecord;
+  PrintObjFuncs[ T_TLREC ] = PrintTLRecord;
+  /* install mutability functions */
+  IsMutableObjFuncs [ T_ALIST ] = AlwaysMutable;
+  IsMutableObjFuncs [ T_AREC ] = AlwaysMutable;
+  MakeBagTypePublic(T_ALIST);
+  MakeBagTypePublic(T_AREC);
+  MakeBagTypePublic(T_AREC_INNER);
+  MakeBagTypePublic(T_TLREC);
+  MakeBagTypePublic(T_TLREC_INNER);
+  /* install list functions */
+  IsListFuncs[T_ALIST] = IsListAList;
+  IsSmallListFuncs[T_ALIST] = IsSmallListAList;
+  LenListFuncs[T_ALIST] = LenListAList;
+  LengthFuncs[T_ALIST] = LengthAList;
+  Elm0ListFuncs[T_ALIST] = Elm0AList;
+  Elm0vListFuncs[T_ALIST] = Elm0AList;
+  ElmListFuncs[T_ALIST] = ElmAList;
+  ElmvListFuncs[T_ALIST] = ElmAList;
+  ElmwListFuncs[T_ALIST] = ElmAList;
+  AssListFuncs[T_ALIST] = AssAList;
+  /* AsssListFuncs[T_ALIST] = AsssAList; */
+  /* install record functions */
+  ElmRecFuncs[ T_AREC ] = ElmARecord;
+  IsbRecFuncs[ T_AREC ] = IsbARecord;
+  AssRecFuncs[ T_AREC ] = AssARecord;
+  ElmRecFuncs[ T_TLREC ] = ElmTLRecord;
+  IsbRecFuncs[ T_TLREC ] = IsbTLRecord;
+  AssRecFuncs[ T_TLREC ] = AssTLRecord;
+  /* return success                                                      */
+  return 0;
 }
 
 
