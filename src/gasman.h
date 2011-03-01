@@ -1089,7 +1089,7 @@ typedef struct
 {
   void *lock; /* void * so that we don't have to include pthread.h always */
   Bag obj; /* references a unique T_DATASPACE object per data space */
-  int not_shared;
+  int fixed_owner;
   void *owner; /* opaque thread descriptor */
   unsigned char readers[0];
 } DataSpace;

@@ -772,7 +772,7 @@ static Obj CreateTLDefaults(Obj defrec) {
   DataSpace *savedDS = TLS->currentDataSpace;
   Obj result;
   UInt i;
-  TLS->currentDataSpace = limbo;
+  TLS->currentDataSpace = LimboDataSpace;
   result = NewBag(T_PREC, SIZE_BAG(defrec));
   memcpy(ADDR_OBJ(result), ADDR_OBJ(defrec), SIZE_BAG(defrec));
   for (i = 1; i <= LEN_PREC(defrec); i++) {

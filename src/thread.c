@@ -49,7 +49,7 @@ typedef struct TraversalState {
   int delimitedCopy;
 } TraversalState;
 
-DataSpace *limbo;
+DataSpace *LimboDataSpace, *FrozenDataSpace;
 Obj PublicDataSpace;
 
 static inline TraversalState *currentTraversal() {
@@ -185,11 +185,16 @@ void RunThreadedMain(
 
 void CreateMainDataSpace()
 {
+  int i;
   TLS->currentDataSpace = NewDataSpace();
-  ((DataSpace *)TLS->currentDataSpace)->not_shared = 1;
+  ((DataSpace *)TLS->currentDataSpace)->fixed_owner = 1;
   DataSpaceWriteLock(TLS->currentDataSpace);
-  limbo = NewDataSpace();
-  limbo->not_shared = 1;
+  LimboDataSpace = NewDataSpace();
+  LimboDataSpace->fixed_owner = 1;
+  FrozenDataSpace = NewDataSpace();
+  FrozenDataSpace->fixed_owner = 1;
+  for (i=0; i<=MAX_THREADS; i++)
+    FrozenDataSpace->readers[i] = 1;
 }
 
 void *DispatchThread(void *arg)
@@ -208,7 +213,7 @@ void *DispatchThread(void *arg)
   TLS->currentDataSpace = NewDataSpace();
   TLS->threadLock = &thread_mutex;
   TLS->threadSignal = &thread_cond;
-  ((DataSpace *)TLS->currentDataSpace)->not_shared = 1;
+  ((DataSpace *)TLS->currentDataSpace)->fixed_owner = 1;
   DataSpaceWriteLock(TLS->currentDataSpace);
   this_thread->start(this_thread->arg);
   DataSpaceWriteUnlock(TLS->currentDataSpace);
@@ -434,7 +439,7 @@ int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
      */
     if (i > 0 && ds == order[i-1].dataspace)
       continue; /* skip duplicates */
-    else if (IsLocked(ds) || ds->not_shared)
+    else if (IsLocked(ds) || ds->fixed_owner)
     {
       /* DataSpaces may not be locked twice. If that is attempted,
        * the entire lock operation is reverted. Similarly if one

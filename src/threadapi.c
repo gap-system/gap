@@ -459,7 +459,7 @@ Obj FuncDataSpace(Obj self, Obj obj) {
 
 Obj FuncIsShared(Obj self, Obj obj) {
   DataSpace *ds = GetDataSpaceOf(obj);
-  return (ds && !ds->not_shared) ? True : False;
+  return (ds && !ds->fixed_owner) ? True : False;
 }
 
 /****************************************************************************
@@ -481,7 +481,7 @@ Obj FuncIsPublic(Obj self, Obj obj) {
 
 Obj FuncIsThreadLocal(Obj self, Obj obj) {
   DataSpace *ds = GetDataSpaceOf(obj);
-  return (ds && ds->not_shared && ds->owner == TLS) ? True : False;
+  return (ds && ds->fixed_owner && ds->owner == TLS) ? True : False;
 }
 
 /****************************************************************************
@@ -633,6 +633,9 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
 Obj FuncREACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_DELIMITED(Obj self, Obj obj);
+Obj FuncFreeze(Obj self, Obj obj);
+Obj FuncFreezeObject(Obj self, Obj obj);
+Obj FuncIsFrozen(Obj self, Obj obj);
 
 /****************************************************************************
 **
@@ -790,6 +793,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CLONE_DELIMITED", 1, "obj",
       FuncCLONE_DELIMITED, "src/threadapi.c:CLONE_DELIMITED" },
+
+    { "Freeze", 1, "obj",
+      FuncFreeze, "src/threadapi.c:Freeze" },
+
+    { "FreezeObject", 1, "obj",
+      FuncFreezeObject, "src/threadapi.c:FreezeObject" },
+
+    { "IsFrozen", 1, "obj",
+      FuncIsFrozen, "src/threadapi.c:IsFrozen" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1344,7 +1356,7 @@ static Obj CreateChannel(int capacity)
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
-  DS_BAG(channel->queue) = limbo;
+  DS_BAG(channel->queue) = LimboDataSpace;
   SET_LEN_PLIST(channel->queue, channel->capacity);
   return channelBag;
 }
@@ -1744,6 +1756,13 @@ static void PrintDataSpace(Obj obj)
   char buffer[32];
   DataSpace *ds = GetDataSpaceOf(obj);
   if (ds) {
+    if (ds == LimboDataSpace) {
+      Pr("<limbo data space>", 0L, 0L);
+      return;
+    } else if (ds == FrozenDataSpace) {
+      Pr("<frozen data space>", 0L, 0L);
+      return;
+    }
     sprintf(buffer, "<data space %p>", GetDataSpaceOf(obj));
     Pr(buffer, 0L, 0L);
   } else
@@ -1895,4 +1914,34 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
        ADDR_OBJ(reachable)+1, targetDS))
     ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
   return obj;
+}
+
+Obj FuncFreeze(Obj self, Obj obj)
+{
+  DataSpace *ds = GetDataSpaceOf(obj);
+  Obj reachable;
+  if (!ds || ds == FrozenDataSpace)
+    return obj;
+  reachable = ReachableObjectsFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, FrozenDataSpace))
+    ArgumentError("Freeze: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncFreezeObject(Obj self, Obj obj)
+{
+  DataSpace *ds = GetDataSpaceOf(obj);
+  Obj reachable;
+  if (!ds || ds == FrozenDataSpace)
+    return obj;
+  if (!MigrateObjects(1, &obj, FrozenDataSpace))
+    ArgumentError("FreezeObject: Thread does not have exclusive access to object");
+  return obj;
+}
+
+Obj FuncIsFrozen(Obj self, Obj obj)
+{
+  DataSpace *ds = GetDataSpaceOf(obj);
+  return (ds == FrozenDataSpace) ? True : False;
 }
