@@ -994,6 +994,16 @@ void            ViewObj (
     /* No check for interrupts here, viewing should not take so long that
        it is necessary */
 
+#ifndef WARD_ENABLED
+   if (IS_BAG_REF(obj) && !CheckWrite(obj)) {
+     char buffer[64];
+     sprintf(buffer, "<obj %p inaccessible in data space %p>", obj, DS_BAG(obj));
+     Pr(buffer, 0L, 0L);
+     return;
+   }
+#endif
+
+
     lastPV = LastPV;
     LastPV = 2;
     
