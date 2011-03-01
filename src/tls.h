@@ -165,6 +165,11 @@ static inline Bag WriteGuard(Bag bag)
   return bag;
 }
 
+static inline Bag ImpliedWriteGuard(Bag bag)
+{
+  return bag;
+}
+
 static inline int CheckWrite(Bag bag)
 {
   DataSpace *dataspace;
@@ -186,6 +191,12 @@ static inline Bag ReadGuard(Bag bag)
     ReadGuardError();
   return bag;
 }
+
+static inline Bag ImpliedReadGuard(Bag bag)
+{
+  return bag;
+}
+
 
 static inline int CheckRead(Bag bag)
 {
