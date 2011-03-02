@@ -666,9 +666,22 @@ static Obj GetTLRecordField(Obj record, UInt rnam)
       }
       AssPRec(tlrecord, rnam, result);
       return result;
-    }
-    else
+    } else {
+      Obj constructors = table[TLR_CONSTRUCTORS];
+      Int pos;
+      if (FindPRec(constructors, rnam, &pos, 0)) {
+        Obj func, result;
+        func = GET_ELM_PREC(constructors, pos);
+	result = CALL_0ARGS(func);
+	if (!tlrecord) {
+	  tlrecord = NEW_PREC(0);
+	  UpdateThreadRecord(record, tlrecord);
+	}
+	AssPRec(tlrecord, rnam, result);
+	return result;
+      }
       return 0;
+    }
     /* TODO: handle constructors */
   }
   return GET_ELM_PREC(tlrecord, pos);
@@ -793,6 +806,17 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   return result;
 }
 
+static int OnlyConstructors(Obj precord) {
+  UInt i, len;
+  len = LEN_PREC(precord);
+  for (i=1; i<=len; i++) {
+    Obj elm = GET_ELM_PREC(precord, i);
+    if (TNUM_OBJ(elm) != T_FUNCTION || (Int) NARG_FUNC(elm) != 0)
+      return 0;
+  }
+  return 1;
+}
+
 static Obj FuncThreadLocal(Obj self, Obj args)
 {
   Obj result;
@@ -801,13 +825,14 @@ static Obj FuncThreadLocal(Obj self, Obj args)
       return NewTLRecord(NEW_PREC(0), NEW_PREC(0));
     case 1:
       if (TNUM_OBJ(ELM_PLIST(args, 1)) != T_PREC)
-        ArgumentError("ThreadLocal: First argument must be a plain record");
+        ArgumentError("ThreadLocal: First argument must be a record");
       return NewTLRecord(ELM_PLIST(args, 1), NEW_PREC(0));
     case 2:
       if (TNUM_OBJ(ELM_PLIST(args, 1)) != T_PREC)
-        ArgumentError("ThreadLocal: First argument must be a plain record");
-      if (TNUM_OBJ(ELM_PLIST(args, 2)) != T_PREC)
-        ArgumentError("ThreadLocal: Second argument must be a plain record");
+        ArgumentError("ThreadLocal: First argument must be a record");
+      if (TNUM_OBJ(ELM_PLIST(args, 2)) != T_PREC ||
+          !OnlyConstructors(ELM_PLIST(args, 2)))
+        ArgumentError("ThreadLocal: Second argument must be a record containing parameterless functions");
       return NewTLRecord(ELM_PLIST(args, 1), ELM_PLIST(args, 2));
     default:
       ArgumentError("ThreadLocal: Too many arguments");
