@@ -722,15 +722,27 @@ Int IsbTLRecord(Obj record, UInt rnam)
 
 static Obj FuncNewAtomicRecord(Obj self, Obj args)
 {
-  Obj cap;
+  Obj arg;
   switch (LEN_PLIST(args)) {
     case 0:
       return CreateAtomicRecord(8);
     case 1:
-      cap = ELM_PLIST(args, 1);
-      if (!IS_INTOBJ(cap) || INT_INTOBJ(cap) <= 0)
-        ArgumentError("NewAtomicRecord: capacity must be a positive integer");
-      return CreateAtomicRecord(INT_INTOBJ(cap));
+      arg = ELM_PLIST(args, 1);
+      if (IS_INTOBJ(arg)) {
+	if (INT_INTOBJ(arg) <= 0)
+          ArgumentError("NewAtomicRecord: capacity must be a positive integer");
+        return CreateAtomicRecord(INT_INTOBJ(arg));
+      }
+      if (TNUM_OBJ(arg) == T_PREC) {
+        Obj result;
+	UInt i, len;
+	len = LEN_PREC(arg);
+        result = CreateAtomicRecord(len * 3 / 2);
+	for (i=1; i<=len; i++)
+	  SetARecordField(result, GET_RNAM_PREC(arg, i), GET_ELM_PREC(arg, i));
+	return result;
+      }
+      ArgumentError("NewAtomicRecord: argument must be an integer or record");
     default:
       ArgumentError("NewAtomicRecord: takes one optional argument");
       return (Obj) 0;
