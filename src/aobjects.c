@@ -694,7 +694,7 @@ Obj ElmTLRecord(Obj record, UInt rnam)
     result = GetTLRecordField(record, rnam);
     if (result)
       return result;
-    ErrorReturnVoid("Record: '<atomic record>.%s' must have an assigned value",
+    ErrorReturnVoid("Record: '<thread-local record>.%s' must have an assigned value",
       (UInt)NAME_RNAM(rnam), 0L,
       "you can 'return;' after assigning a value" );
   }
