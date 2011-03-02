@@ -673,6 +673,8 @@ static Obj GetTLRecordField(Obj record, UInt rnam)
         Obj func, result;
         func = GET_ELM_PREC(constructors, pos);
 	result = CALL_0ARGS(func);
+	if (!result)
+	  return 0;
 	if (!tlrecord) {
 	  tlrecord = NEW_PREC(0);
 	  UpdateThreadRecord(record, tlrecord);
