@@ -644,6 +644,15 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
     ADDR_OBJ(inner)[TLR_DATA+TLS->threadID+1] = tlrecord;
     AO_nop_full(); /* memory barrier */
   } while (inner != GetTLInner(record));
+  if (tlrecord) {
+    if (TLS->tlRecords)
+      AssPlist(TLS->tlRecords, LEN_PLIST(TLS->tlRecords)+1, record);
+    else {
+      TLS->tlRecords = NEW_PLIST(T_PLIST, 1);
+      SET_LEN_PLIST(TLS->tlRecords, 1);
+      SET_ELM_PLIST(TLS->tlRecords, 1, record);
+    }
+  }
 }
 
 static Obj GetTLRecordField(Obj record, UInt rnam)
@@ -853,48 +862,6 @@ static Obj FuncThreadLocal(Obj self, Obj args)
   }
 }
 
-#endif /* WARD_ENABLED */
-
-/****************************************************************************
-**
-*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
-*/
-
-static StructGVarFunc GVarFuncs [] = {
-
-    { "NewAtomicList", -1, "list|count, obj",
-      FuncNewAtomicList, "src/aobjects.c:NewAtomicList" },
-
-    { "FromAtomicList", 1, "list",
-      FuncFromAtomicList, "src/aobjects.c:FromAtomicList" },
-
-    { "GET_ATOMIC_LIST", 2, "list, index",
-      FuncGET_ATOMIC_LIST, "src/aobjects.c:GET_ATOMIC_LIST" },
-
-    { "SET_ATOMIC_LIST", 3, "list, index, value",
-      FuncSET_ATOMIC_LIST, "src/aobjects.c:SET_ATOMIC_LIST" },
-
-    { "NewAtomicRecord", -1, "[capacity]",
-      FuncNewAtomicRecord, "src/aobjects.c:NewAtomicRecord" },
-
-    { "GET_ATOMIC_RECORD", 3, "record, field, default",
-      FuncGET_ATOMIC_RECORD, "src/aobjects.c:GET_ATOMIC_RECORD" },
-
-    { "SET_ATOMIC_RECORD", 3, "record, field, value",
-      FuncSET_ATOMIC_RECORD, "src/aobjects.c:SET_ATOMIC_RECORD" },
-
-    { "ATOMIC_RECORD_REPLACEMENT", 2, "record, strategy",
-      FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
-    { "FromAtomicRecord", 1, "record",
-      FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
-
-    { "ThreadLocal", -1, "record [, record]",
-      FuncThreadLocal, "src/aobjects.c:ThreadLocal" },
-
-    { 0 }
-
-};
-
 static Int IsListAList(Obj list)
 {
   return 1;
@@ -957,6 +924,63 @@ static void AssAList(Obj list, Int pos, Obj obj)
   ADDR_OBJ(list)[1+pos] = obj;
   AO_nop_write();
 }
+
+void InitAObjectsTLS() {
+  TLS->tlRecords = (Obj) 0;
+}
+
+void DestroyAObjectsTLS() {
+  Obj records;
+  UInt i, len;
+  records = TLS->tlRecords;
+  if (records) {
+    len = LEN_PLIST(records);
+    for (i=1; i<=len; i++)
+      UpdateThreadRecord(ELM_PLIST(records, i), (Obj) 0);
+  }
+}
+
+#endif /* WARD_ENABLED */
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+
+static StructGVarFunc GVarFuncs [] = {
+
+    { "NewAtomicList", -1, "list|count, obj",
+      FuncNewAtomicList, "src/aobjects.c:NewAtomicList" },
+
+    { "FromAtomicList", 1, "list",
+      FuncFromAtomicList, "src/aobjects.c:FromAtomicList" },
+
+    { "GET_ATOMIC_LIST", 2, "list, index",
+      FuncGET_ATOMIC_LIST, "src/aobjects.c:GET_ATOMIC_LIST" },
+
+    { "SET_ATOMIC_LIST", 3, "list, index, value",
+      FuncSET_ATOMIC_LIST, "src/aobjects.c:SET_ATOMIC_LIST" },
+
+    { "NewAtomicRecord", -1, "[capacity]",
+      FuncNewAtomicRecord, "src/aobjects.c:NewAtomicRecord" },
+
+    { "GET_ATOMIC_RECORD", 3, "record, field, default",
+      FuncGET_ATOMIC_RECORD, "src/aobjects.c:GET_ATOMIC_RECORD" },
+
+    { "SET_ATOMIC_RECORD", 3, "record, field, value",
+      FuncSET_ATOMIC_RECORD, "src/aobjects.c:SET_ATOMIC_RECORD" },
+
+    { "ATOMIC_RECORD_REPLACEMENT", 2, "record, strategy",
+      FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
+    { "FromAtomicRecord", 1, "record",
+      FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
+
+    { "ThreadLocal", -1, "record [, record]",
+      FuncThreadLocal, "src/aobjects.c:ThreadLocal" },
+
+    { 0 }
+
+};
 
 
 /****************************************************************************

@@ -15,6 +15,7 @@ typedef struct ThreadLocalStorage
   unsigned multiplexRandomSeed;
   void *currentDataSpace;
   void *traversalState;
+  Obj tlRecords;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;
