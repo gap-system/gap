@@ -476,7 +476,7 @@ void UnlockObjects(int count, Obj *objects)
   for (i=0; i<count; i++)
   {
     DataSpace *dataspace = GetDataSpaceOf(objects[i]);
-    if (dataspace && IsLocked(dataspace))
+    if (dataspace && IsLocked(dataspace) && !dataspace->fixed_owner)
       DataSpaceUnlock(dataspace);
   }
 }
