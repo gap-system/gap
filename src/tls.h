@@ -166,6 +166,21 @@ static inline Bag WriteGuard(Bag bag)
   return bag;
 }
 
+static inline Bag *WriteGuardByRef(Bag *bagref)
+{
+  extern void WriteGuardError();
+  Bag bag = *bagref;
+  DataSpace *dataspace;
+  if (!IS_BAG_REF(bag))
+    return bagref;
+  dataspace = DS_BAG(bag);
+  if (dataspace && dataspace->owner != TLS)
+    WriteGuardError();
+  return bagref;
+}
+
+#define WRITE_GUARD(bag) (*WriteGuardByRef(&(bag)))
+
 static inline Bag ImpliedWriteGuard(Bag bag)
 {
   return bag;
@@ -192,6 +207,22 @@ static inline Bag ReadGuard(Bag bag)
     ReadGuardError();
   return bag;
 }
+
+static inline Bag *ReadGuardByRef(Bag *bagref)
+{
+  extern void ReadGuardError();
+  Bag bag = *bagref;
+  DataSpace *dataspace;
+  if (!IS_BAG_REF(bag))
+    return bagref;
+  dataspace = DS_BAG(bag);
+  if (dataspace && dataspace->owner != TLS &&
+      !dataspace->readers[TLS->threadID+1])
+    ReadGuardError();
+  return bagref;
+}
+
+#define READ_GUARD(bag) (*ReadGuardByRef(&(bag)))
 
 static inline Bag ImpliedReadGuard(Bag bag)
 {
