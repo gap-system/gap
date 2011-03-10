@@ -65,6 +65,14 @@ Obj TYPE_ALIST;
 Obj TYPE_AREC;
 Obj TYPE_TLREC;
 
+typedef union AtomicObj
+{
+  AO_t atom;
+  Obj obj;
+} AtomicObj;
+
+#define ADDR_ATOM(bag) ((AtomicObj *)(ADDR_OBJ(bag)))
+
 #ifndef WARD_ENABLED
 
 Obj TypeAList(Obj obj)
@@ -97,14 +105,14 @@ static void ArgumentError(char *message)
 
 static Obj NewAtomicList(UInt length)
 {
-  return NewBag(T_ALIST, sizeof(Obj) * (length + 2));
+  return NewBag(T_ALIST, sizeof(AtomicObj) * (length + 2));
 }
 
 static Obj FuncNewAtomicList(Obj self, Obj args)
 {
   Obj init;
   Obj result;
-  Obj *data;
+  AtomicObj *data;
   UInt i, len;
   switch (LEN_PLIST(args)) {
     case 1:
@@ -113,11 +121,11 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
         ArgumentError("NewAtomicList: Argument must be dense list");
       len = LEN_LIST(init);
       result = NewAtomicList(len);
-      data = ADDR_OBJ(result);
-      *data++ = (Obj) len;
-      *data++ = NULL;
+      data = ADDR_ATOM(result);
+      data++->atom = len;
+      data++->obj = NULL;
       for (i=1; i<= len; i++)
-        *data++ = ELM_LIST(init, i);
+        data++->obj = ELM_LIST(init, i);
       AO_nop_write(); /* Should not be necessary, but better be safe. */
       return result;
     case 2:
@@ -128,11 +136,11 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
         ArgumentError("NewAtomicList: First argument must be a non-negative integer");
       result = NewAtomicList(len);
       init = ELM_PLIST(args, 2);
-      data = ADDR_OBJ(result);
-      *data++ = (Obj) len;
-      *data++ = NULL;
+      data = ADDR_ATOM(result);
+      data++->atom = len;
+      data++->obj = NULL;
       for (i=1; i<=len; i++)
-        *data++ = init;
+        data++->obj = init;
       AO_nop_write(); /* Should not be necessary, but better be safe. */
       return result;
     default:
@@ -147,14 +155,14 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
   Obj result;
   if (TNUM_OBJ(list) != T_ALIST)
     ArgumentError("GET_ATOMIC_LIST: First argument must be an atomic list");
-  len = (UInt) ADDR_OBJ(list)[0];
+  len = (UInt) ADDR_ATOM(list)[0].atom;
   if (!IS_INTOBJ(index))
     ArgumentError("GET_ATOMIC_LIST: Second argument must be an integer");
   n = INT_INTOBJ(index);
   if (n <= 0 || n > len)
     ArgumentError("GET_ATOMIC_LIST: Index out of range");
   AO_nop_read(); /* read barrier */
-  return ADDR_OBJ(list)[n+1];
+  return ADDR_ATOM(list)[n+1].obj;
 }
 
 static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
@@ -163,43 +171,62 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   UInt len;
   if (TNUM_OBJ(list) != T_ALIST)
     ArgumentError("SET_ATOMIC_LIST: First argument must be an atomic list");
-  len = (UInt) ADDR_OBJ(list)[0];
+  len = (UInt) ADDR_ATOM(list)[0].atom;
   if (!IS_INTOBJ(index))
     ArgumentError("SET_ATOMIC_LIST: Second argument must be an integer");
   n = INT_INTOBJ(index);
   if (n <= 0 || n > len)
     ArgumentError("SET_ATOMIC_LIST: Index out of range");
-  ADDR_OBJ(list)[n+1] = value;
+  ADDR_ATOM(list)[n+1].obj = value;
   AO_nop_write(); /* write barrier */
   return (Obj) 0;
+}
+
+static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
+{
+  UInt n;
+  UInt len;
+  AtomicObj aold, anew;
+  if (TNUM_OBJ(list) != T_ALIST)
+    ArgumentError("SET_ATOMIC_LIST: First argument must be an atomic list");
+  len = (UInt) ADDR_ATOM(list)[0].atom;
+  if (!IS_INTOBJ(index))
+    ArgumentError("SET_ATOMIC_LIST: Second argument must be an integer");
+  n = INT_INTOBJ(index);
+  if (n <= 0 || n > len)
+    ArgumentError("SET_ATOMIC_LIST: Index out of range");
+  aold.obj = old;
+  anew.obj = new;
+  return AO_compare_and_swap_full(&(ADDR_ATOM(list)[n+1].atom), aold.atom, anew.atom) ?
+    True : False;
 }
 
 static Obj FuncFromAtomicList(Obj self, Obj list)
 {
   Obj result;
-  Obj *data;
+  AtomicObj *data;
   UInt i, len;
   if (TNUM_OBJ(list) != T_ALIST)
     ArgumentError("FromAtomicList: First argument must be an atomic list");
-  data = ADDR_OBJ(list);
-  len = (UInt) *data++;
+  data = ADDR_ATOM(list);
+  len = (UInt) (data++->atom);
   result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   AO_nop_read();
   for (i=1; i<=len; i++)
-    SET_ELM_PLIST(result, i, data[i]);
+    SET_ELM_PLIST(result, i, data[i].obj);
   return result;
 }
 
 static void MarkAtomicList(Bag bag)
 {
-  UInt i, len;
-  Bag *ptr, *ptrend;
-  ptr = PTR_BAG(bag);
-  ptrend = ptr + SIZE_BAG(bag);
-  ptr++; /* skip length field */
+  UInt len;
+  AtomicObj *ptr, *ptrend;
+  ptr = ADDR_ATOM(bag);
+  len = ptr++->atom;
+  ptrend = ptr + len + 1;
   while (ptr < ptrend)
-    MARK_BAG(*ptr++);
+    MARK_BAG(ptr++->obj);
 }
 
 /* T_AREC_INNER substructure:
@@ -228,13 +255,6 @@ static void MarkAtomicList(Bag bag)
 #define TLR_CONSTRUCTORS 2
 #define TLR_DATA 3
 
-typedef union AtomicObj
-{
-  AO_t atom;
-  Obj obj;
-} AtomicObj;
-
-
 static void MarkTLRecordInner(Bag bag)
 {
   Bag *ptr, *ptrend;
@@ -251,7 +271,7 @@ static void MarkTLRecordInner(Bag bag)
 
 static Obj GetTLInner(Obj obj)
 {
-  Obj contents = ((AtomicObj *)(ADDR_OBJ(obj)))->obj;
+  Obj contents = ADDR_ATOM(obj)->obj;
   AO_nop_read(); /* read barrier */
   return contents;
 }
@@ -270,7 +290,7 @@ static void MarkAtomicRecord(Bag bag)
 
 static void MarkAtomicRecord2(Bag bag)
 {
-  AtomicObj *p = (AtomicObj *)(ADDR_OBJ(bag));
+  AtomicObj *p = ADDR_ATOM(bag);
   UInt cap = p->atom;
   p += 5;
   while (cap) {
@@ -285,7 +305,7 @@ static void ExpandTLRecord(Obj obj)
   AtomicObj contents, newcontents;
   Obj *table, *newtable;
   do {
-    contents = *(AtomicObj *)(ADDR_OBJ(obj));
+    contents = *ADDR_ATOM(obj);
     table = ADDR_OBJ(contents.obj);
     UInt thread = TLS->threadID+1;
     if (thread < (UInt)*table)
@@ -297,7 +317,7 @@ static void ExpandTLRecord(Obj obj)
     newtable[TLR_CONSTRUCTORS] = table[TLR_CONSTRUCTORS];
     memcpy(newtable + TLR_DATA, table + TLR_DATA,
       (UInt)table[TLR_SIZE] * sizeof(Obj));
-  } while (!AO_compare_and_swap_full(&(((AtomicObj *)(ADDR_OBJ(obj)))->atom),
+  } while (!AO_compare_and_swap_full(&(ADDR_ATOM(obj)->atom),
     contents.atom, newcontents.atom));
 }
 
@@ -313,7 +333,7 @@ static inline Obj ARecordObj(Obj record)
 
 static inline AtomicObj* ARecordTable(Obj record)
 {
-  return (AtomicObj *)(ADDR_OBJ(ARecordObj(record)));
+  return ADDR_ATOM(ARecordObj(record));
 }
 
 static void PrintAtomicRecord(Obj record)
@@ -531,7 +551,7 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   UnlockShared(record);
   Lock(record);
   newarec = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
-  newtable = (AtomicObj *)(ADDR_OBJ(newarec));
+  newtable = ADDR_ATOM(newarec);
   newdata = newtable + AR_DATA;
   newtable[AR_CAP].atom = cap * 2;
   newtable[AR_BITS].atom = bits+1;
@@ -597,7 +617,7 @@ static Obj CreateAtomicRecord(UInt capacity)
     bits++;
   capacity = 1 << bits;
   arec = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA+2*capacity));
-  table = (AtomicObj *)(ADDR_OBJ(arec));
+  table = ADDR_ATOM(arec);
   result = NewBag(T_AREC, 2*sizeof(Obj));
   table[AR_CAP].atom = capacity;
   table[AR_BITS].atom = bits;
@@ -884,16 +904,16 @@ static Obj LengthAList(Obj list)
 
 static Obj Elm0AList(Obj list, Int pos)
 {
-  UInt len = (UInt) ADDR_OBJ(list)[0];
+  UInt len = (UInt) ADDR_ATOM(list)[0].atom;
   if (pos < 1 || pos > len)
     return 0;
   AO_nop_read();
-  return ADDR_OBJ(list)[1+pos];
+  return ADDR_ATOM(list)[1+pos].obj;
 }
 
 static Obj ElmAList(Obj list, Int pos)
 {
-  UInt len = (UInt)ADDR_OBJ(list)[0];
+  UInt len = (UInt)ADDR_ATOM(list)[0].atom;
   while (pos < 1 || pos > len) {
     Obj posobj;
     do {
@@ -905,12 +925,12 @@ static Obj ElmAList(Obj list, Int pos)
     pos = INT_INTOBJ(posobj);
   }
   AO_nop_read();
-  return ADDR_OBJ(list)[1+pos];
+  return ADDR_ATOM(list)[1+pos].obj;
 }
 
 static void AssAList(Obj list, Int pos, Obj obj)
 {
-  UInt len = (UInt)ADDR_OBJ(list)[0];
+  UInt len = (UInt)ADDR_ATOM(list)[0].atom;
   while (pos < 1 || pos > len) {
     Obj posobj;
     do {
@@ -921,7 +941,7 @@ static void AssAList(Obj list, Int pos, Obj obj)
     } while (!IS_INTOBJ(posobj));
     pos = INT_INTOBJ(posobj);
   }
-  ADDR_OBJ(list)[1+pos] = obj;
+  ADDR_ATOM(list)[1+pos].obj = obj;
   AO_nop_write();
 }
 
@@ -960,6 +980,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SET_ATOMIC_LIST", 3, "list, index, value",
       FuncSET_ATOMIC_LIST, "src/aobjects.c:SET_ATOMIC_LIST" },
+
+    { "COMPARE_AND_SWAP", 4, "list, index, old, new",
+      FuncCOMPARE_AND_SWAP, "src/aobjects.c:COMPARE_AND_SWAP" },
 
     { "NewAtomicRecord", -1, "[capacity]",
       FuncNewAtomicRecord, "src/aobjects.c:NewAtomicRecord" },
