@@ -2255,6 +2255,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     else {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
+        PopDataSpaceLocks(lockSP);
     }
 
     /* switch back to the old reader context                               */
@@ -2270,7 +2271,6 @@ ExecStatus ReadEvalCommand ( Obj context )
     TLS->readEvalResult = TLS->intrResult;
 
     /* return whether a return-statement or a quit-statement were executed */
-    PopDataSpaceLocks(lockSP);
     return type;
 }
 

@@ -1795,8 +1795,8 @@ Obj FuncLOCK(Obj self, Obj args)
 
   if (numargs > 1024)
     ArgumentError("LOCK: Too many arguments");
-  objects = alloca(sizeof(Obj) * count);
-  modes = alloca(sizeof(int) * count);
+  objects = alloca(sizeof(Obj) * numargs);
+  modes = alloca(sizeof(int) * numargs);
   for (i=1; i<=numargs; i++)
   {
     Obj obj;
@@ -1821,9 +1821,8 @@ Obj FuncLOCK(Obj self, Obj args)
 
 Obj FuncUNLOCK(Obj self, Obj sp)
 {
-  printf("%d %d\n", IS_INTOBJ(sp), INT_INTOBJ(sp));
-  if (!IS_INTOBJ(sp) || INT_INTOBJ(sp) <= 0)
-    ArgumentError("UNLOCK: argument must be a positive integer");
+  if (!IS_INTOBJ(sp) || INT_INTOBJ(sp) < 0)
+    ArgumentError("UNLOCK: argument must be a non-negative integer");
   PopDataSpaceLocks(INT_INTOBJ(sp));
   return (Obj) 0;
 }
