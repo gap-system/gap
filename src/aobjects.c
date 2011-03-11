@@ -65,6 +65,8 @@ Obj TYPE_ALIST;
 Obj TYPE_AREC;
 Obj TYPE_TLREC;
 
+#ifndef WARD_ENABLED
+
 typedef union AtomicObj
 {
   AO_t atom;
@@ -72,8 +74,6 @@ typedef union AtomicObj
 } AtomicObj;
 
 #define ADDR_ATOM(bag) ((AtomicObj *)(ADDR_OBJ(bag)))
-
-#ifndef WARD_ENABLED
 
 Obj TypeAList(Obj obj)
 {
