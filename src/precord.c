@@ -1515,6 +1515,9 @@ static Int InitKernel (
     InitMarkFuncBags( T_PREC            +COPYING , MarkAllSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
 
+    /* Immutable records are public					   */
+    MakeBagTypePublic( T_PREC + IMMUTABLE );
+
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 

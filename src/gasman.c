@@ -1337,6 +1337,8 @@ void            RetypeBag (
     *(*bag-HEADER_SIZE) |= new_type;
 #else
     *(*bag-HEADER_SIZE) = new_type;
+    if (PublicBags[new_type])
+      DS_BAG(bag) = NULL;
 #endif
 }
 

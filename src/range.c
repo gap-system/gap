@@ -1604,6 +1604,10 @@ static Int InitKernel (
     InitMarkFuncBags(   T_RANGE_SSORT            +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
 
+    /* Make immutable bags public                                          */
+    MakeBagTypePublic( T_RANGE_NSORT + IMMUTABLE );
+    MakeBagTypePublic( T_RANGE_SSORT + IMMUTABLE );
+
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
                            &TYPE_RANGE_NSORT_MUTABLE );

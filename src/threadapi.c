@@ -895,6 +895,8 @@ static Int InitKernel (
     IsMutableObjFuncs [ T_DATASPACE ] = AlwaysMutable;
     MakeBagTypePublic(T_CHANNEL);
     MakeBagTypePublic(T_DATASPACE);
+    MakeBagTypePublic(T_SYNCVAR);
+    MakeBagTypePublic(T_BARRIER);
     PublicDataSpace = NewBag(T_DATASPACE, sizeof(DataSpace *));
     /* return success                                                      */
     return 0;

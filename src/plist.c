@@ -4874,6 +4874,10 @@ static Int InitKernel (
 
     /* mutable tables may have mutable rows */
       MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
+
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+        MakeBagTypePublic(t1 +IMMUTABLE);
+    }
     
 
 

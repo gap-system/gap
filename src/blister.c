@@ -2655,6 +2655,11 @@ static Int InitKernel (
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
     }
 
+    /* Make immutable blists public					   */
+    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
+        MakeBagTypePublic( t1 + IMMUTABLE );
+    }
+
     /* install the type methods                                            */
     TypeObjFuncs[ T_BLIST ] = TypeBlistMut;
     TypeObjFuncs[ T_BLIST +IMMUTABLE ] = TypeBlistImm;
