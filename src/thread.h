@@ -37,9 +37,10 @@ extern Obj PublicDataSpace;
 
 int IsLocked(DataSpace *dataspace);
 void GetLockStatus(int count, Obj *objects, int *status);
-int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked);
-void UnlockObjects(int count, Obj *objects);
-void UnlockDataSpaces(int count, DataSpace **dataspaces);
+int LockObjects(int count, Obj *objects, int *mode);
+void PushDataSpaceLock(DataSpace *dataspace);
+void PopDataSpaceLocks(int newSP);
+int DataSpaceLockSP();
 
 typedef void (*TraversalFunction)(Obj);
 

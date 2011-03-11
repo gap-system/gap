@@ -1026,7 +1026,7 @@ UInt ExecAtomic(
   int locktypes[MAX_ATOMIC_OBJS];
   int lockstatus[MAX_ATOMIC_OBJS];
   DataSpace *locked[MAX_ATOMIC_OBJS];
-  int nlockedDS;
+  int lockSP;
   UInt mode, nrexprs,i,j;
   Obj o;
   
@@ -1067,9 +1067,12 @@ UInt ExecAtomic(
 	  assert(0);
 	}
       }
-    nlockedDS = LockObjects(j, tolock, locktypes, locked);
-    EXEC_STAT(ADDR_STAT(stat)[0]);
-    UnlockDataSpaces(nlockedDS, locked);
+    lockSP = LockObjects(j, tolock, locktypes);
+    if (lockSP >= 0) {
+      EXEC_STAT(ADDR_STAT(stat)[0]);
+      PopDataSpaceLocks(lockSP);
+    } else
+      ErrorMayQuit("Cannot lock required data spaces", 0L, 0L);
     return 0;
 }
 

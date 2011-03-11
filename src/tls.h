@@ -16,6 +16,8 @@ typedef struct ThreadLocalStorage
   void *currentDataSpace;
   void *traversalState;
   Obj tlRecords;
+  Obj lockStack;
+  int lockStackPointer;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;

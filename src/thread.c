@@ -397,6 +397,15 @@ void GetLockStatus(int count, Obj *objects, int *status)
     status[i] = IsLocked(DS_BAG(objects[i]));
 }
 
+static Obj NewList(int size)
+{
+  Obj list;
+  list = NEW_PLIST(size == 0 ? T_PLIST_EMPTY : T_PLIST, size);
+  SET_LEN_PLIST(list, size);
+  return list;
+}
+
+
 #define MAX_LOCKS 1024
 
 typedef struct
@@ -415,13 +424,38 @@ static int LessThanLockRequest(const void *a, const void *b)
   return (char *)ds_a < (char *)ds_b;
 }
 
-int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
+void PushDataSpaceLock(DataSpace *dataspace) {
+  if (!TLS->lockStack) {
+    TLS->lockStack = NewList(16);
+    TLS->lockStackPointer = 0;
+  } else if (LEN_PLIST(TLS->lockStack) == TLS->lockStackPointer) {
+    int newlen = TLS->lockStackPointer * 3 / 2;
+    GROW_PLIST(TLS->lockStack, newlen);
+  }
+  TLS->lockStackPointer++;
+  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer, dataspace->obj);
+}
+
+void PopDataSpaceLocks(int newSP) {
+  while (newSP < TLS->lockStackPointer)
+  {
+    int p = TLS->lockStackPointer--;
+    DataSpaceUnlock(*(DataSpace **)(ADDR_OBJ(ELM_PLIST(TLS->lockStack, p))));
+    SET_ELM_PLIST(TLS->lockStack, p, (Obj) 0);
+  }
+}
+
+int DataSpaceLockSP() {
+  return TLS->lockStackPointer;
+}
+
+int LockObjects(int count, Obj *objects, int *mode)
 {
-  int result = 0;
+  int result;
   int i;
   LockRequest *order;
   if (count > MAX_LOCKS)
-    return 0;
+    return -1;
   order = alloca(sizeof(LockRequest)*count);
   for (i=0; i<count; i++)
   {
@@ -430,6 +464,7 @@ int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
     order[i].mode = mode[i];
   }
   MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
+  result = TLS->lockStackPointer;
   for (i=0; i<count; i++)
   {
     DataSpace *ds = order[i].dataspace;
@@ -447,57 +482,26 @@ int LockObjects(int count, Obj *objects, int *mode, DataSpace **locked)
        */
       while (--i >= 0)
         DataSpaceUnlock(order[i].dataspace);
-      return 0;
+      return -1;
     }
     if (order[i].mode)
       DataSpaceWriteLock(ds);
     else
       DataSpaceReadLock(ds);
-    if (locked)
-      locked[result] = ds;
-    result++;
+    PushDataSpaceLock(ds);
     if (GetDataSpaceOf(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
-      while (i >= 0)
-      {
-        DataSpaceUnlock(order[i].dataspace);
-	i--;
-      }
-      return 0;
+      PopDataSpaceLocks(result);
+      return -1;
     }
   }
   return result;
 }
 
-void UnlockObjects(int count, Obj *objects)
-{
-  int i;
-  for (i=0; i<count; i++)
-  {
-    DataSpace *dataspace = GetDataSpaceOf(objects[i]);
-    if (dataspace && IsLocked(dataspace) && !dataspace->fixed_owner)
-      DataSpaceUnlock(dataspace);
-  }
-}
-
-void UnlockDataSpaces(int count, DataSpace **dataspaces)
-{
-  while (count--)
-    DataSpaceUnlock(*dataspaces++);
-}
-
 DataSpace *CurrentDataSpace()
 {
   return TLS->currentDataSpace;
-}
-
-static Obj NewList(int size)
-{
-  Obj list;
-  list = NEW_PLIST(size == 0 ? T_PLIST_EMPTY : T_PLIST, size);
-  SET_LEN_PLIST(list, size);
-  return list;
 }
 
 void QueueForTraversal(Obj obj);

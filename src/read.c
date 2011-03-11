@@ -1814,11 +1814,13 @@ void ReadAtomic (
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nexprs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <TLS->nrError>          */
-    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>         */
+    volatile int        lockSP;         /* lock stack */
 
     /* remember the current variables in case of an error                  */
     currLVars = TLS->currLVars;
     nrError   = TLS->nrError;
+    lockSP    = DataSpaceLockSP();
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */    
     if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
@@ -1860,6 +1862,9 @@ void ReadAtomic (
         TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
         TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
+    /* This is a no-op if IntrAtomicEnd() succeeded, otherwise it restores
+     * locks to where they were before. */
+    PopDataSpaceLocks(lockSP);
 }
 
 
@@ -2173,6 +2178,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     UInt                currLHSGVar;
     Obj                 errorLVars;
     jmp_buf             readJmpError;
+    int			lockSP;
 
     /* get the first symbol from the input                                 */
     Match( TLS->symbol, "", 0UL );
@@ -2200,6 +2206,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     RecreateStackNams(context);
     errorLVars = TLS->errorLVars;
     TLS->errorLVars = context;
+    lockSP = DataSpaceLockSP();
 
     IntrBegin( context );
 
@@ -2263,6 +2270,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     TLS->readEvalResult = TLS->intrResult;
 
     /* return whether a return-statement or a quit-statement were executed */
+    PopDataSpaceLocks(lockSP);
     return type;
 }
 
@@ -2290,6 +2298,7 @@ UInt ReadEvalFile ( void )
     volatile Obj        nams;
     volatile Int        nloc;
     volatile Int        i;
+    volatile int	lockSP;
 
     /* get the first symbol from the input                                 */
     Match( TLS->symbol, "", 0UL );
@@ -2306,6 +2315,7 @@ UInt ReadEvalFile ( void )
     readTop     = TLS->readTop;
     readTilde   = TLS->readTilde;
     currLHSGVar = TLS->currLHSGVar;
+    lockSP      = DataSpaceLockSP();
     memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
 
     /* intialize everything and begin an interpreter                       */
@@ -2380,6 +2390,7 @@ UInt ReadEvalFile ( void )
 
     /* switch back to the old reader context                               */
     memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+    PopDataSpaceLocks(lockSP);
     TLS->stackNams   = stackNams;
     TLS->countNams   = countNams;
     TLS->readTop     = readTop;

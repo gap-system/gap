@@ -1116,6 +1116,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     Obj currLVars;
     Obj result;
     Stat currStat;
+    int lockSP;
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
@@ -1131,6 +1132,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     currLVars = TLS->currLVars;
     currStat = TLS->currStat;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
+    lockSP = DataSpaceLockSP();
     if (setjmp(TLS->readJmpError)) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
@@ -1141,6 +1143,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS->ptrLVars = PTR_BAG(TLS->currLVars);
       TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS->currStat = currStat;
+      PopDataSpaceLocks(lockSP);
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
@@ -1168,6 +1171,8 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 	break;
       default: result = CALL_XARGS(func, plain_args);
       }
+      /* There should be no locks to pop off the stack, but better safe than sorry. */
+      PopDataSpaceLocks(lockSP);
       SET_ELM_PLIST(res,1,True);
       if (result)
 	{

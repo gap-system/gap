@@ -1095,8 +1095,7 @@ void            IntrAtomicEnd ( void )
     Obj tolock[MAX_ATOMIC_OBJS];
     int locktypes[MAX_ATOMIC_OBJS];
     int lockstatus[MAX_ATOMIC_OBJS];
-    DataSpace *locked[MAX_ATOMIC_OBJS];
-    int nlockedDS;
+    int lockSP;
     Obj o;
 
     /* ignore or code                                                      */
@@ -1143,9 +1142,12 @@ void            IntrAtomicEnd ( void )
 	  assert(0);
 	}
       }
-    nlockedDS = LockObjects(j, tolock, locktypes, locked);
-    CALL_0ARGS( body );
-    UnlockDataSpaces(nlockedDS, locked);
+    lockSP = LockObjects(j, tolock, locktypes);
+    if (lockSP >= 0) {
+      CALL_0ARGS( body );
+      PopDataSpaceLocks(lockSP);
+    } else
+      ErrorMayQuit("Cannot lock required data spaces", 0L, 0L);
 
     /* push void                                                           */
     PushVoidObj();
