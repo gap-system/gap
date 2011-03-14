@@ -1589,6 +1589,8 @@ static inline Obj TYPE_OBJ_FEO (
 		Obj obj
 	)
 {
+  /* TODO: We need to be able to automatically derice this. */
+  ImpliedWriteGuard(obj);
   if ( TNUM_OBJ(obj) >= FIRST_EXTERNAL_TNUM &&
        TNUM_OBJ(obj) <= T_DATOBJ) /* avoid T_WPOBJ */
     return TYPE_ANYOBJ(obj);
