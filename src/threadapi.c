@@ -1057,11 +1057,20 @@ static void ExpandChannel(Channel *channel)
 
 static void AddToChannel(Channel *channel, Obj obj, int migrate)
 {
-  Obj children = migrate ? ReachableObjectsFrom(obj) : NULL;
+  Obj children;
   DataSpace *ds = DS_BAG(channel->queue);
-  UInt i, len = children ? LEN_PLIST(children) : 0;
-  for (i=1; i<= len; i++)
-    DS_BAG(ADDR_OBJ(children)[i]) = ds;
+  UInt i, len;
+  if (migrate && IS_BAG_REF(obj) && DS_BAG(obj) && DS_BAG(obj)->owner == TLS) {
+    children = ReachableObjectsFrom(obj);
+    len = children ? LEN_PLIST(children) : 0;
+  } else {
+    children = 0;
+    len = 0;
+  }
+  for (i=1; i<= len; i++) {
+    Obj item = ELM_PLIST(children, i);
+    DS_BAG(item) = ds;
+  }
   ADDR_OBJ(channel->queue)[++channel->tail] = obj;
   ADDR_OBJ(channel->queue)[++channel->tail] = children;
   if (channel->tail == channel->capacity)
@@ -1881,7 +1890,13 @@ Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 
 Obj FuncREACHABLE(Obj self, Obj obj)
 {
-  return ReachableObjectsFrom(obj);
+  Obj result = ReachableObjectsFrom(obj);
+  if (result == NULL) {
+    result = NEW_PLIST(T_PLIST, 1);
+    SET_LEN_PLIST(result, 1);
+    SET_ELM_PLIST(result, 1, obj);
+  }
+  return result;
 }
 
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj)

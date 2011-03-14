@@ -761,6 +761,8 @@ void TraverseDataSpaceFrom(TraversalState *traversal, Obj obj)
 Obj ReachableObjectsFrom(Obj obj)
 {
   TraversalState traversal;
+  if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
+    return NULL;
   BeginTraversal(&traversal);
   TraverseDataSpaceFrom(&traversal, obj);
   EndTraversal();
