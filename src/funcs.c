@@ -1349,7 +1349,7 @@ void             PrintFunccallOpts (
 *F  ExecBegin() . . . . . . . . . . . . . . . . . . . . .  begin an execution
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
-Obj             ExecState;
+/* TL: Obj             ExecState; */
 
 void            ExecBegin ( Obj frame )
 {
@@ -1358,12 +1358,12 @@ void            ExecBegin ( Obj frame )
     /* remember the old execution state                                    */
     execState = NewBag( T_PLIST, 4*sizeof(Obj) );
     ADDR_OBJ(execState)[0] = (Obj)3;
-    ADDR_OBJ(execState)[1] = ExecState;
+    ADDR_OBJ(execState)[1] = TLS->execState;
     ADDR_OBJ(execState)[2] = TLS->currLVars;
     /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
     CHANGED_BAG( TLS->currLVars );
     ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)TLS->currStat);
-    ExecState = execState;
+    TLS->execState = execState;
 
     /* set up new state                                                    */
     SWITCH_TO_OLD_LVARS( frame );
@@ -1380,9 +1380,9 @@ void            ExecEnd (
         assert( TLS->currStat  == 0 );
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
-        ExecState = ADDR_OBJ(ExecState)[1];
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS->execState)[3]) ));
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS->execState)[2] );
+        TLS->execState = ADDR_OBJ(TLS->execState)[1];
 
     }
 
@@ -1390,9 +1390,9 @@ void            ExecEnd (
     else {
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
-        ExecState = ADDR_OBJ(ExecState)[1];
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS->execState)[3]) ));
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS->execState)[2] );
+        TLS->execState = ADDR_OBJ(TLS->execState)[1];
 
     }
 }
@@ -1460,7 +1460,7 @@ static Int InitKernel (
   RecursionTrapInterval = 5000;
   
     /* make the global variable known to Gasman                            */
-    InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
+    /* TL: InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );           */
 
     /* Register the handler for our exported function                      */
     InitHdlrFuncsFromTable( GVarFuncs );

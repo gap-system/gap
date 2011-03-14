@@ -95,6 +95,7 @@ typedef struct ThreadLocalStorage
   Bag codeLVars;
   /* From funcs.h */
   Int recursionDepth;
+  Obj execState;
 
   /* From opers.c */
   Obj methodCache;
