@@ -1332,8 +1332,8 @@ static Obj InspectChannel(Channel *channel)
   Obj result;
   int i, p;
   LockChannel(channel);
-  result = NEW_PLIST(T_PLIST, channel->size);
-  SET_LEN_PLIST(result, channel->size);
+  result = NEW_PLIST(T_PLIST, channel->size/2);
+  SET_LEN_PLIST(result, channel->size/2);
   for (i = 0, p = channel->head; i < channel->size; i+=2) {
     SET_ELM_PLIST(result, i+1, ELM_PLIST(channel->queue, p+1));
     p++;
@@ -1367,7 +1367,7 @@ static Obj CreateChannel(int capacity)
   channel = ObjPtr(channelBag);
   channel->monitor = NewMonitor();
   channel->size = channel->head = channel->tail = 0;
-  channel->capacity = (capacity < 0) ? 20 : capacity;
+  channel->capacity = (capacity < 0) ? 20 : capacity * 2;
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
@@ -1730,7 +1730,7 @@ static void PrintChannel(Obj obj)
     Pr("%d elements, %d waiting>", size/2, waiting);
   else
   {
-    Pr("%d/%d elements, ", size, capacity/2);
+    Pr("%d/%d elements, ", size/2, capacity/2);
     Pr("%d waiting>", waiting, 0L);
   }
 }
