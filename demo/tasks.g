@@ -1,4 +1,4 @@
-InitialTasks := 4;
+InitialTasks := 0;
 TaskPool := CreateChannel();
 
 TaskWorker := function(channels)
@@ -38,13 +38,13 @@ InitializeTasks := function()
   od;
 end;
 
-RunTask := function(arg)
-  local i, channels, task, taskdata, args, adopt, adopted, ds;
+CreateTask := function(arglist)
+  local i, channels, task, request, args, adopt, adopted, ds;
   channels := TryReceiveChannel(TaskPool, fail);
   if IsIdenticalObj(channels, fail) then
     channels := StartNewWorkerThread();
   fi;
-  args := arg{[2..Length(arg)]};
+  args := arglist{[2..Length(arglist)]};
   adopt := [];
   adopted := false;
   for i in [1..Length(args)] do
@@ -61,18 +61,48 @@ RunTask := function(arg)
       adopt[i] := false;
     fi;
   od;
-  taskdata := rec( channels := channels,
-    func := arg[1], args := args, adopt := adopt);
-  SendChannel(channels.toworker, taskdata);
+  request := rec( channels := channels,
+    func := arglist[1], args := args, adopt := adopt);
   task :=rec(
     channel := channels.fromworker,
+    request := request,
     complete := false,
+    running := false,
     result := fail);
   return task;
 end;
 
+ExecuteTask := function(task)
+  if not task.running then
+    SendChannel(task.request.channels.toworker, task.request);
+    task.running := true;
+    Unbind(task.request);
+  fi;
+  return task;
+end;
+
+RunTask := function(arg)
+  local task;
+  task := CreateTask(arg);
+  ExecuteTask(task);
+  return task;
+end;
+
+DelayTask := function(arg)
+  local task;
+  return CreateTask(arg);
+end;
+
 WaitTask := function(arg)
   local task, taskresult;
+  if Length(arg) = 1 and IsList(arg[1]) then
+    arg := arg[1];
+  fi;
+  for task in arg do
+    if not task.running then
+      ExecuteTask(task);
+    fi;
+  od;
   for task in arg do
     if not task.complete then
       taskresult := ReceiveChannel(task.channel);
@@ -86,8 +116,17 @@ end;
 WaitTasks := WaitTask;
 
 WaitAnyTask := function(arg)
-  local i, taskresult, channels, ch;
-  for i in [1..Length(arg)] do
+  local i, len, taskresult, channels, ch;
+  if Length(arg) = 1 and IsList(arg[1]) then
+    arg := arg[1];
+  fi;
+  len := Length(arg);
+  for i in [1..len] do
+    if not arg[i].running then
+      ExecuteTask(arg[i]);
+    fi;
+  od;
+  for i in [1..len] do
     if arg[i].complete then
       return i;
     fi;
@@ -97,7 +136,7 @@ WaitAnyTask := function(arg)
   ch := taskresult.channels.fromworker;
   SendChannel(TaskPool, taskresult.channels);
   for i in [1..Length(channels)] do
-    if ch = channels[i].channel then
+    if ch = channels[i] then
       arg[i].result := taskresult.value;
       arg[i].complete := true;
       return i;
@@ -107,6 +146,9 @@ end;
 
 TaskResult := function(task)
   local taskresult;
+  if not task.running then
+    ExecuteTask(task);
+  fi;
   if not task.complete then
     taskresult := ReceiveChannel(task.channel);
     task.result := taskresult.value;
@@ -114,6 +156,10 @@ TaskResult := function(task)
     SendChannel(TaskPool, taskresult.channels);
   fi;
   return task.result;
+end;
+
+TaskFinished := function(task)
+  return task.complete or Length(InspectChannel(task.channel)) > 0;
 end;
 
 InitializeTasks();
