@@ -1088,8 +1088,10 @@ static Obj RetrieveFromChannel(Channel *channel)
   ADDR_OBJ(channel->queue)[channel->head-1] = 0;
   if (channel->head == channel->capacity)
     channel->head = 0;
-  for (i=1; i<= len; i++)
-    DS_BAG(ADDR_OBJ(children)[i]) = ds;
+  for (i=1; i<= len; i++) {
+    Obj item = ELM_PLIST(children, i);
+    DS_BAG(item) = ds;
+  }
   channel->size -= 2;
   return obj;
 }
