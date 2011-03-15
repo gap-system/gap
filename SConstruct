@@ -127,7 +127,7 @@ if "gmp" in libs:
   cflags += " -DUSE_GMP"
 
 if GAP["cflags"]:
-  cflags += " " + GAP["cflags"]
+  cflags += " " + string.replace(GAP["cflags"], "%", " ")
 
 
 GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags)
