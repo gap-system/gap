@@ -195,6 +195,8 @@ Obj FuncLENGTH (
     Obj             list )
 {
     /* internal list types                                                 */
+    ReadGuard(list);
+    ImpliedWriteGuard(list);
     if ( (FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM)
          || TNUM_OBJ(list) == T_ALIST) {
         return ObjInt_Int( LEN_LIST(list) );
