@@ -147,25 +147,43 @@ static void SetupTLS()
 
 static void InitTraversal();
 
+static void RunThreadedMain2(
+  int (*mainFunction)(int, char **, char **),
+  int argc,
+  char **argv,
+  char **environ )
+#ifdef __GNUC__
+  __attribute__((noinline))
+#endif
+;
+
 void RunThreadedMain(
   int (*mainFunction)(int, char **, char **),
   int argc,
   char **argv,
   char **environ )
 {
-  /* 'i' must not be on the stack to not confuse the alloca() computation */
-  static int i;
-  static pthread_mutex_t main_thread_mutex;
-  static pthread_cond_t main_thread_cond;
+#ifndef HAVE_NATIVE_TLS
 #ifdef STACK_GROWS_UP
 #error Upward growing stack not yet supported
 #else
-#ifndef HAVE_NATIVE_TLS
   int dummy[0];
   alloca(((uintptr_t) dummy) &~TLS_MASK);
 #endif
-  SetupTLS();
 #endif
+  RunThreadedMain2(mainFunction, argc, argv, environ);
+}
+
+static void RunThreadedMain2(
+  int (*mainFunction)(int, char **, char **),
+  int argc,
+  char **argv,
+  char **environ )
+{
+  int i;
+  static pthread_mutex_t main_thread_mutex;
+  static pthread_cond_t main_thread_cond;
+  SetupTLS();
   for (i=0; i<MAX_THREADS-1; i++)
     thread_data[i].next = i+1;
   for (i=0; i<NUM_LOCKS; i++)
