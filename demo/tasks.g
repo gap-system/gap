@@ -26,7 +26,7 @@ StartNewWorkerThread := function()
   toworker := CreateChannel(1);
   fromworker := CreateChannel(1);
   channels := rec(toworker := toworker, fromworker := fromworker);
-  Freeze(channels);
+  MakeReadOnly(channels);
   CreateThread(TaskWorker, channels);
   return channels;
 end;
