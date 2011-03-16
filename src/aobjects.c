@@ -105,7 +105,9 @@ static void ArgumentError(char *message)
 
 static Obj NewAtomicList(UInt length)
 {
-  return NewBag(T_ALIST, sizeof(AtomicObj) * (length + 2));
+  Obj result = NewBag(T_ALIST, sizeof(AtomicObj) * (length + 2));
+  AO_nop_write();
+  return result;
 }
 
 static Obj FuncNewAtomicList(Obj self, Obj args)
