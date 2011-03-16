@@ -32,7 +32,7 @@ void DataSpaceReadUnlock(DataSpace *dataspace);
 void DataSpaceUnlock(DataSpace *dataspace);
 DataSpace *CurrentDataSpace();
 DataSpace *GetDataSpaceOf(Obj obj);
-extern DataSpace *LimboDataSpace, *FrozenDataSpace;
+extern DataSpace *LimboDataSpace, *ReadOnlyDataSpace;
 extern Obj PublicDataSpace;
 
 int IsLocked(DataSpace *dataspace);

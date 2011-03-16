@@ -49,7 +49,7 @@ typedef struct TraversalState {
   int delimitedCopy;
 } TraversalState;
 
-DataSpace *LimboDataSpace, *FrozenDataSpace;
+DataSpace *LimboDataSpace, *ReadOnlyDataSpace;
 Obj PublicDataSpace;
 
 static inline TraversalState *currentTraversal() {
@@ -209,10 +209,10 @@ void CreateMainDataSpace()
   DataSpaceWriteLock(TLS->currentDataSpace);
   LimboDataSpace = NewDataSpace();
   LimboDataSpace->fixed_owner = 1;
-  FrozenDataSpace = NewDataSpace();
-  FrozenDataSpace->fixed_owner = 1;
+  ReadOnlyDataSpace = NewDataSpace();
+  ReadOnlyDataSpace->fixed_owner = 1;
   for (i=0; i<=MAX_THREADS; i++)
-    FrozenDataSpace->readers[i] = 1;
+    ReadOnlyDataSpace->readers[i] = 1;
 }
 
 void *DispatchThread(void *arg)

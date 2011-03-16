@@ -634,9 +634,9 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
 Obj FuncREACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_DELIMITED(Obj self, Obj obj);
-Obj FuncFreeze(Obj self, Obj obj);
-Obj FuncFreezeObject(Obj self, Obj obj);
-Obj FuncIsFrozen(Obj self, Obj obj);
+Obj FuncMakeReadOnly(Obj self, Obj obj);
+Obj FuncMakeReadOnlyObj(Obj self, Obj obj);
+Obj FuncIsReadOnly(Obj self, Obj obj);
 
 /****************************************************************************
 **
@@ -798,14 +798,14 @@ static StructGVarFunc GVarFuncs [] = {
     { "CLONE_DELIMITED", 1, "obj",
       FuncCLONE_DELIMITED, "src/threadapi.c:CLONE_DELIMITED" },
 
-    { "Freeze", 1, "obj",
-      FuncFreeze, "src/threadapi.c:Freeze" },
+    { "MakeReadOnly", 1, "obj",
+      FuncMakeReadOnly, "src/threadapi.c:MakeReadOnly" },
 
-    { "FreezeObject", 1, "obj",
-      FuncFreezeObject, "src/threadapi.c:FreezeObject" },
+    { "MakeReadOnlyObj", 1, "obj",
+      FuncMakeReadOnlyObj, "src/threadapi.c:MakeReadOnlyObj" },
 
-    { "IsFrozen", 1, "obj",
-      FuncIsFrozen, "src/threadapi.c:IsFrozen" },
+    { "IsReadOnly", 1, "obj",
+      FuncIsReadOnly, "src/threadapi.c:IsReadOnly" },
 
     { "IS_CHANNEL", 1, "obj",
       FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
@@ -1776,8 +1776,8 @@ static void PrintDataSpace(Obj obj)
     if (ds == LimboDataSpace) {
       Pr("<limbo data space>", 0L, 0L);
       return;
-    } else if (ds == FrozenDataSpace) {
-      Pr("<frozen data space>", 0L, 0L);
+    } else if (ds == ReadOnlyDataSpace) {
+      Pr("<read-only data space>", 0L, 0L);
       return;
     }
     sprintf(buffer, "<data space %p>", GetDataSpaceOf(obj));
@@ -1952,32 +1952,32 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
   return obj;
 }
 
-Obj FuncFreeze(Obj self, Obj obj)
+Obj FuncMakeReadOnly(Obj self, Obj obj)
 {
   DataSpace *ds = GetDataSpaceOf(obj);
   Obj reachable;
-  if (!ds || ds == FrozenDataSpace)
+  if (!ds || ds == ReadOnlyDataSpace)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, FrozenDataSpace))
-    ArgumentError("Freeze: Thread does not have exclusive access to objects");
+       ADDR_OBJ(reachable)+1, ReadOnlyDataSpace))
+    ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
   return obj;
 }
 
-Obj FuncFreezeObject(Obj self, Obj obj)
+Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
 {
   DataSpace *ds = GetDataSpaceOf(obj);
   Obj reachable;
-  if (!ds || ds == FrozenDataSpace)
+  if (!ds || ds == ReadOnlyDataSpace)
     return obj;
-  if (!MigrateObjects(1, &obj, FrozenDataSpace))
-    ArgumentError("FreezeObject: Thread does not have exclusive access to object");
+  if (!MigrateObjects(1, &obj, ReadOnlyDataSpace))
+    ArgumentError("MakeReadOnlyObj: Thread does not have exclusive access to object");
   return obj;
 }
 
-Obj FuncIsFrozen(Obj self, Obj obj)
+Obj FuncIsReadOnly(Obj self, Obj obj)
 {
   DataSpace *ds = GetDataSpaceOf(obj);
-  return (ds == FrozenDataSpace) ? True : False;
+  return (ds == ReadOnlyDataSpace) ? True : False;
 }
