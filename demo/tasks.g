@@ -1,12 +1,13 @@
-InitialTasks := 0;
-TaskPool := CreateChannel();
-RunningTaskCount := AtomicList(1, 0);
+Tasks := AtomicRecord( rec(
+  Initial := 0,
+  Pool := CreateChannel(),
+  Running := AtomicList(1, 0) ));
 
 RunningTasks := function()
-  return RunningTaskCount[1];
+  return Tasks.Running[1];
 end;
 
-TaskWorker := function(channels)
+Tasks.Worker := function(channels)
   local i, taskdata, result;
   while true do
     taskdata := ReceiveChannel(channels.toworker);
@@ -23,32 +24,32 @@ TaskWorker := function(channels)
     result := CallFuncList(taskdata.func, taskdata.args);
     SendChannel(channels.fromworker,
       rec(value := result, channels := channels));
-    ATOMIC_ADD(RunningTaskCount, 1, -1);
+    ATOMIC_ADD(Tasks.Running, 1, -1);
   od;
 end;
 
-StartNewWorkerThread := function()
+Tasks.StartNewWorkerThread := function()
   local toworker, fromworker, channels;
   toworker := CreateChannel(1);
   fromworker := CreateChannel(1);
   channels := rec(toworker := toworker, fromworker := fromworker);
   MakeReadOnly(channels);
-  CreateThread(TaskWorker, channels);
+  CreateThread(Tasks.Worker, channels);
   return channels;
 end;
 
-InitializeTasks := function()
+Tasks.Initialize := function()
   local i;
-  for i in [1..InitialTasks] do
-    SendChannel(TaskPool, StartNewWorkerThread());
+  for i in [1..Tasks.Initial] do
+    SendChannel(Tasks.Pool, Tasks.StartNewWorkerThread());
   od;
 end;
 
-CreateTask := function(arglist)
+Tasks.CreateTask := function(arglist)
   local i, channels, task, request, args, adopt, adopted, ds;
-  channels := TryReceiveChannel(TaskPool, fail);
+  channels := TryReceiveChannel(Tasks.Pool, fail);
   if IsIdenticalObj(channels, fail) then
-    channels := StartNewWorkerThread();
+    channels := Tasks.StartNewWorkerThread();
   fi;
   args := arglist{[2..Length(arglist)]};
   adopt := [];
@@ -81,7 +82,7 @@ end;
 ExecuteTask := function(task)
   if not task.started then
     SendChannel(task.request.channels.toworker, task.request);
-    ATOMIC_ADD(RunningTaskCount, 1, 1);
+    ATOMIC_ADD(Tasks.Running, 1, 1);
     task.started := true;
     Unbind(task.request);
   fi;
@@ -90,7 +91,7 @@ end;
 
 RunTask := function(arg)
   local task;
-  task := CreateTask(arg);
+  task := Tasks.CreateTask(arg);
   ExecuteTask(task);
   return task;
 end;
@@ -102,7 +103,7 @@ end;
 
 DelayTask := function(arg)
   local task;
-  return CreateTask(arg);
+  return Tasks.CreateTask(arg);
 end;
 
 WaitTask := function(arg)
@@ -120,7 +121,7 @@ WaitTask := function(arg)
       taskresult := ReceiveChannel(task.channel);
       task.result := taskresult.value;
       task.complete := true;
-      SendChannel(TaskPool, taskresult.channels);
+      SendChannel(Tasks.Pool, taskresult.channels);
     fi;
   od;
 end;
@@ -146,7 +147,7 @@ WaitAnyTask := function(arg)
   channels := List(arg, task -> task.channel);
   taskresult := ReceiveAnyChannel(channels);
   ch := taskresult.channels.fromworker;
-  SendChannel(TaskPool, taskresult.channels);
+  SendChannel(Tasks.Pool, taskresult.channels);
   for i in [1..Length(channels)] do
     if ch = channels[i] then
       arg[i].result := taskresult.value;
@@ -165,13 +166,17 @@ TaskResult := function(task)
     taskresult := ReceiveChannel(task.channel);
     task.result := taskresult.value;
     task.complete := true;
-    SendChannel(TaskPool, taskresult.channels);
+    SendChannel(Tasks.Pool, taskresult.channels);
   fi;
   return task.result;
+end;
+
+TaskStarted := function(task)
+  return task.started;
 end;
 
 TaskFinished := function(task)
   return task.complete or Length(InspectChannel(task.channel)) > 0;
 end;
 
-InitializeTasks();
+Tasks.Initialize();
