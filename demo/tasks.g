@@ -1,5 +1,10 @@
 InitialTasks := 0;
 TaskPool := CreateChannel();
+RunningTaskCount := AtomicList(1, 0);
+
+RunningTasks := function()
+  return RunningTaskCount[1];
+end;
 
 TaskWorker := function(channels)
   local i, taskdata, result;
@@ -18,6 +23,7 @@ TaskWorker := function(channels)
     result := CallFuncList(taskdata.func, taskdata.args);
     SendChannel(channels.fromworker,
       rec(value := result, channels := channels));
+    ATOMIC_ADD(RunningTaskCount, 1, -1);
   od;
 end;
 
@@ -67,15 +73,16 @@ CreateTask := function(arglist)
     channel := channels.fromworker,
     request := request,
     complete := false,
-    running := false,
+    started := false,
     result := fail);
   return task;
 end;
 
 ExecuteTask := function(task)
-  if not task.running then
+  if not task.started then
     SendChannel(task.request.channels.toworker, task.request);
-    task.running := true;
+    ATOMIC_ADD(RunningTaskCount, 1, 1);
+    task.started := true;
     Unbind(task.request);
   fi;
   return task;
@@ -86,6 +93,11 @@ RunTask := function(arg)
   task := CreateTask(arg);
   ExecuteTask(task);
   return task;
+end;
+
+ImmediateTask := function(arg)
+  return rec( started := true, complete := true,
+    result := CallFuncList(arg[1], arg{[2..Length(arg)]}));
 end;
 
 DelayTask := function(arg)
@@ -99,7 +111,7 @@ WaitTask := function(arg)
     arg := arg[1];
   fi;
   for task in arg do
-    if not task.running then
+    if not task.started then
       ExecuteTask(task);
     fi;
   od;
@@ -122,7 +134,7 @@ WaitAnyTask := function(arg)
   fi;
   len := Length(arg);
   for i in [1..len] do
-    if not arg[i].running then
+    if not arg[i].started then
       ExecuteTask(arg[i]);
     fi;
   od;
@@ -146,7 +158,7 @@ end;
 
 TaskResult := function(task)
   local taskresult;
-  if not task.running then
+  if not task.started then
     ExecuteTask(task);
   fi;
   if not task.complete then
