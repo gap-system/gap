@@ -21,9 +21,14 @@ Tasks.Worker := function(channels)
 	od;
       fi;
     od;
-    result := CallFuncList(taskdata.func, taskdata.args);
-    SendChannel(channels.fromworker,
-      rec(value := result, channels := channels));
+    if taskdata.detached then
+      CallFuncList(taskdata.func, taskdata.args);
+      SendChannel(Tasks.Pool, channels);
+    else
+      result := CallFuncList(taskdata.func, taskdata.args);
+      SendChannel(channels.fromworker,
+	rec(value := result, channels := channels));
+    fi;
     ATOMIC_ADD(Tasks.Running, 1, -1);
   od;
 end;
@@ -75,12 +80,14 @@ Tasks.CreateTask := function(arglist)
     request := request,
     complete := false,
     started := false,
+    detached := false,
     result := fail);
   return task;
 end;
 
 ExecuteTask := function(task)
   if not task.started then
+    task.request.detached := task.detached;
     SendChannel(task.request.channels.toworker, task.request);
     ATOMIC_ADD(Tasks.Running, 1, 1);
     task.started := true;
@@ -96,8 +103,23 @@ RunTask := function(arg)
   return task;
 end;
 
+RunDetachedTask := function(arg)
+  local task;
+  task := Tasks.CreateTask(arg);
+  task.detached := true;
+  ExecuteTask(task);
+  return task;
+end;
+
+DetachTask := function(task)
+  if task.started then
+    Error("Cannot detach a running task");
+  fi;
+  task.detached := true;
+end;
+
 ImmediateTask := function(arg)
-  return rec( started := true, complete := true,
+  return rec( started := true, complete := true, detached := false,
     result := CallFuncList(arg[1], arg{[2..Length(arg)]}));
 end;
 
@@ -111,6 +133,11 @@ WaitTask := function(arg)
   if Length(arg) = 1 and IsList(arg[1]) then
     arg := arg[1];
   fi;
+  for task in arg do
+    if task.detached then
+      Error("Cannot wait for a detached task");
+    fi;
+  od;
   for task in arg do
     if not task.started then
       ExecuteTask(task);
@@ -129,14 +156,19 @@ end;
 WaitTasks := WaitTask;
 
 WaitAnyTask := function(arg)
-  local i, len, taskresult, channels, ch;
+  local i, len, task, taskresult, channels, ch;
   if Length(arg) = 1 and IsList(arg[1]) then
     arg := arg[1];
   fi;
   len := Length(arg);
-  for i in [1..len] do
-    if not arg[i].started then
-      ExecuteTask(arg[i]);
+  for task in arg do
+    if task.detached then
+      Error("Cannot wait for a detached task");
+    fi;
+  od;
+  for task in arg do
+    if not task.started then
+      ExecuteTask(task);
     fi;
   od;
   for i in [1..len] do
@@ -159,6 +191,9 @@ end;
 
 TaskResult := function(task)
   local taskresult;
+  if task.detached then
+    Error("Cannot obtain the result of a detached task");
+  fi;
   if not task.started then
     ExecuteTask(task);
   fi;
@@ -177,6 +212,10 @@ end;
 
 TaskFinished := function(task)
   return task.complete or Length(InspectChannel(task.channel)) > 0;
+end;
+
+TaskDetached := function(task)
+  return task.detached;
 end;
 
 Tasks.Initialize();
