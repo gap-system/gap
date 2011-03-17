@@ -264,7 +264,9 @@ int RunThread(void (*start)(void *), void *arg)
   result = thread_free_list;
   thread_free_list = thread_data[thread_free_list].next;
 #ifndef HAVE_NATIVE_TLS
-  tls = thread_data[result].tls = AllocateTLS();
+  if (!thread_data[result].tls)
+    thread_data[result].tls = AllocateTLS();
+  tls = thread_data[result].tls;
 #endif
   thread_data[result].arg = arg;
   thread_data[result].start = start;
@@ -319,7 +321,10 @@ int JoinThread(int id)
   pthread_mutex_lock(&master_lock);
   thread_data[id].next = thread_free_list;
   thread_free_list = id;
+  /*
+  FreeTLS(thread_data[id].tls);
   thread_data[id].tls = NULL;
+  */
   thread_data[id].start = NULL;
   pthread_mutex_unlock(&master_lock);
 #ifndef HAVE_NATIVE_TLS
