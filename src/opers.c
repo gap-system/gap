@@ -1754,7 +1754,8 @@ Obj DoOperation1Args (
     Obj                 prec;
 
     /* get the kinds of the arguments                                      */
-    kind1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( kind1 );
+    kind1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( kind1 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
@@ -1845,8 +1846,10 @@ Obj DoOperation2Args (
     Obj                 prec;
 
     /* get the kinds of the arguments                                      */
-    kind1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( kind1 );
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
+    kind1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
@@ -1945,9 +1948,12 @@ Obj DoOperation3Args (
     Obj                 prec;
 
     /* get the kinds of the arguments                                      */
-    kind1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( kind1 );
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
+    kind1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
@@ -2050,10 +2056,14 @@ Obj DoOperation4Args (
 
 
     /* get the kinds of the arguments                                      */
-    kind1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( kind1 );
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
-    kind4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( kind4 );
+    kind1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( kind4 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -2165,11 +2175,16 @@ Obj DoOperation5Args (
 
 
     /* get the kinds of the arguments                                      */
-    kind1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( kind1 );
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
-    kind4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( kind4 );
-    kind5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( kind5 );
+    kind1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( kind5 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -2298,12 +2313,18 @@ Obj DoOperation6Args (
 
 
     /* get the kinds of the arguments                                      */
-    kind1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( kind1 );
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
-    kind4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( kind4 );
-    kind5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( kind5 );
-    kind6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( kind6 );
+    kind1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( kind1 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( kind5 );
+    kind6 = TYPE_OBJ_FEO( arg6 );
+    id6 = ID_TYPE( kind6 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
@@ -3297,7 +3318,8 @@ Obj DoConstructor2Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 );  
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
@@ -3400,8 +3422,10 @@ Obj DoConstructor3Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
@@ -3509,9 +3533,12 @@ Obj DoConstructor4Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
-    kind4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( kind4 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( kind4 );
 
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
@@ -3627,10 +3654,14 @@ Obj DoConstructor5Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
-    kind4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( kind4 );
-    kind5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( kind5 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( kind5 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
@@ -3762,11 +3793,16 @@ Obj DoConstructor6Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
-    kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
-    kind3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( kind3 );
-    kind4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( kind4 );
-    kind5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( kind5 );
-    kind6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( kind6 );
+    kind2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( kind2 );
+    kind3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( kind3 );
+    kind4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( kind4 );
+    kind5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( kind5 );
+    kind6 = TYPE_OBJ_FEO( arg6 );
+    id6 = ID_TYPE( kind6 );
     
     /* try to find an applicable method in the cache                       */
     cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );

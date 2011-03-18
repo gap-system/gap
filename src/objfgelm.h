@@ -125,10 +125,18 @@ const char * Revision_objfgelm_h =
 **  <npairs> pairs of generator number/exponent.  The new  word is return  in
 **  <word>.
 */
-#define NEW_WORD( word, kind, npairs ) \
- ((word)=NewBag(T_DATOBJ,2*sizeof(Obj)+((npairs)*BITS_WORDTYPE((kind))/8L)),\
-  (ADDR_OBJ((word))[1] = INTOBJ_INT((npairs))),\
-  SET_TYPE_DATOBJ( (word), (kind) ), (word) )
+
+static inline Obj NewWord(Obj kind, UInt npairs) {
+  Obj word;
+  word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(kind)/8L);
+  (ADDR_OBJ(word)[1] = INTOBJ_INT(npairs));
+  SET_TYPE_DATOBJ( word, kind);
+  return word;
+}
+
+#define NEW_WORD(word, kind, npairs) \
+  ReadGuard(kind), \
+  (word) = NewWord((kind), (npairs));
 
 
 /****************************************************************************

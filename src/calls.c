@@ -1600,9 +1600,10 @@ Obj FuncSET_NAME_FUNC(
 		      Obj func,
 		      Obj name )
 {
-  while (!IsStringConv(name))
+  while (!IsStringConv(name)) {
     name = ErrorReturnObj("SET_NAME_FUNC( <func>, <name> ): <name> must be a string, not a %s",
 			  (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
+  }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
     NAME_FUNC(func) = name;
     CHANGED_BAG(func);

@@ -435,8 +435,7 @@ void MakeFieldInfo8Bit( UInt q)
   
   /* simply invert the permutation to get the other one */
   for (i = 0; i < q; i++)
-    FFE_FELT_FIELDINFO_8BIT(info)[FELT_FFE_FIELDINFO_8BIT(info)[i]] =
-      NEW_FFE(gfq,i);
+    FFE_FELT_FIELDINFO_8BIT(info)[FELT_FFE_FIELDINFO_8BIT(info)[i]] = NEW_FFE(gfq,i);
 
 
   /* Now we need to store the position in Elements(GF(q)) of each field element

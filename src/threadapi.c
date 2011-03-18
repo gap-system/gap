@@ -369,6 +369,7 @@ Obj KeepAlive(Obj obj)
 
 void StopKeepAlive(Obj node)
 {
+#ifndef WARD_ENABLED
   Obj pred, succ;
   pthread_mutex_lock(&KeepAliveLock);
   pred = PREV_KEPT(node);
@@ -382,6 +383,7 @@ void StopKeepAlive(Obj node)
   else
     LastKeepAlive = pred;
   pthread_mutex_unlock(&KeepAliveLock);
+#endif
 }
 
 /****************************************************************************
@@ -1024,7 +1026,7 @@ static void WaitChannel(Channel *channel)
   channel->waiting--;
 }
 
-#ifndef ENABLE_WARD
+#ifndef WARD_ENABLED
 static void ExpandChannel(Channel *channel)
 {
   /* Growth ratio should be less than the golden ratio */

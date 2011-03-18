@@ -647,6 +647,11 @@ void CodeFuncExprBegin (
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg != -1 ? narg : 1), nloc, old );
 
+    /* Make the function expression bag immutable and public               */
+    /* TODO: Check if that's actually correct. */
+    RetypeBag(fexs, T_PLIST + IMMUTABLE);
+    DS_BAG(fexs) = NULL;
+
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
     assert( stat1 == FIRST_STAT_CURR_FUNC );
