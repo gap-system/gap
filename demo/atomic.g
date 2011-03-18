@@ -1,19 +1,19 @@
 z:=0;
 
 f:=function() 
-local l,k; 
+local l,k,t; 
 l:=SHARED_LIST(); 
 k:=SHARED_LIST();
-LOCK(k);
+t:=LOCK(k);
 k[1]:=1;
 atomic readwrite l do
  k[2]:=2;
  z:=k[1]+k[2];
  l[1]:=z;
- UNLOCK(k);
  l[2]:=z+1;
  z:=z+l[1]+l[2];
 od;
+UNLOCK(t);
 Print( "z=", z, "\n");
 end;
 
@@ -106,14 +106,17 @@ WaitThread(t);
 z:=0; # global variable to store the result
 
 ParSumMat:=function( nr, nrthreads )
-local l, map, threads, i, j, s;
+local l, row, map, threads, i, j, s;
 l:=SHARED_LIST(); # matrix
 s:=SHARED_LIST(); # list of sums over rows
 # populate square matrix nr x nr with numbers from [ 1.. nr^2 ] );
 atomic readwrite l do
   for i in [1..nr] do
     # this will be changed when we will have full recursive support
-    l[i]:=SHARED_LIST(); # create row
+    row:=SHARED_LIST(); # create row
+    atomic readonly row do
+      l[i]:=row;
+    od;
     atomic readwrite l[i] do # otherwise an error (no recursive)
       for j in [1..nr] do
         l[i][j]:=j+nr*(i-1);

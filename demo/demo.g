@@ -166,6 +166,10 @@ fib_threads(6);
 
 Print("Passed example 8\n");
 
+ReadGapRoot("demo/atomic.g");
+ReadGapRoot("demo/migrate.g");
+ReadGapRoot("demo/fibtasks.g");
+
 Print("*** END OF THE TEST ***\n");
 QUIT;
 
@@ -237,6 +241,4 @@ Print( "Barrier test 2 ", x1=x2, "\n");
 
 Print("Passed example 10\n");
 
-Read("atomic.g");
-Read("migrate.g");
 

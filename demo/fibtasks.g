@@ -1,4 +1,5 @@
-Read("demo/tasks.g");
+ReadGapRoot("demo/tasks.g");
+
 FibCache := AtomicList(1024, -1);
 
 DoTask := function(func, arg)
@@ -11,7 +12,7 @@ end;
 
 fib := function(n)
   local task1, task2, result;
-  if n <= 1 then
+  if n <= 2 then
     return 1;
   elif FibCache[n] > 0 then
     return FibCache[n];
@@ -23,3 +24,5 @@ fib := function(n)
     return result;
   fi;
 end;
+
+Print("fibtasks test : ", List([1..100],Fibonacci)=List([1..100],fib), "\n");
