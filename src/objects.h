@@ -475,6 +475,18 @@ extern Obj (*TypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 
 /****************************************************************************
 **
+*F  SET_TYPE_OBJ( <obj>, <kind> ) . . . . . . . . . . . set kind of an object
+**
+**  'SET_TYPE_OBJ' sets the kind <kind>of the object <obj>.
+*/
+#define SET_TYPE_OBJ(obj, kind) \
+  ((*SetTypeObjFuncs[ TNUM_OBJ(obj) ])( obj, kind ))
+
+extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
+
+
+/****************************************************************************
+**
 
 *F  MUTABLE_TNUM( <type> )  . . . . . . . . . . mutable type of internal type
 */

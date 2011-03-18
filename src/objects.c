@@ -92,6 +92,22 @@ Obj TypeObjError (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  SET_TYPE_OBJ( <obj> )  . . . . . . . . . . . . . . set kind of an object
+**
+**  'SET_TYPE_OBJ' sets the kind of the object <obj>.
+*/
+
+void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
+
+Obj SetTypeObjError ( Obj obj, Obj kind )
+{
+    ErrorQuit( "Panic: cannot change kind of object of type '%s'",
+               (Int)TNAM_OBJ(obj), 0L );
+    return 0;
+}
+
 
 /****************************************************************************
 **
@@ -103,6 +119,20 @@ Obj TypeObjHandler (
 {
     return TYPE_OBJ( obj );
 }
+
+/****************************************************************************
+**
+*F  SetTypeObjHandler( <self>, <obj>, <kind> ) . . handler for 'SET_TYPE_OBJ'
+*/
+Obj SetTypeObjHandler (
+    Obj                 self,
+    Obj                 obj,
+    Obj                 kind )
+{
+    SET_TYPE_OBJ( obj, kind );
+    return (Obj) 0;
+}
+
 
 
 /****************************************************************************
@@ -1100,6 +1130,12 @@ Obj             TypeComObj (
     return TYPE_COMOBJ( obj );
 }
 
+void SetTypeComObj( Obj obj, Obj kind)
+{
+    TYPE_COMOBJ(obj) = kind;
+    CHANGED_BAG(obj);
+}
+
 
 /*****************************************************************************
 **
@@ -1139,6 +1175,14 @@ Obj TypePosObj (
 {
     return TYPE_POSOBJ( obj );
 }
+
+void SetTypePosObj( Obj obj, Obj kind)
+{
+    TYPE_POSOBJ(obj) = kind;
+    CHANGED_BAG(obj);
+}
+
+
 
 
 /****************************************************************************
@@ -1191,6 +1235,14 @@ Obj             TypeDatObj (
 {
     return TYPE_DATOBJ( obj );
 }
+
+void SetTypeDatObj( Obj obj, Obj kind)
+{
+    TYPE_DATOBJ(obj) = kind;
+    CHANGED_BAG(obj);
+}
+
+
 
 
 /*****************************************************************************
@@ -1546,6 +1598,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "TYPE_OBJ", 1, "obj",
       TypeObjHandler, "src/objects.c:TYPE_OBJ" },
 
+    { "SET_TYPE_OBJ", 2, "obj, kind",
+      SetTypeObjHandler, "src/objects.c:SET_TYPE_OBJ" },
+
     { "FAMILY_OBJ", 1, "obj",
       FamilyObjHandler, "src/objects.c:FAMILY_OBJ" },
 
@@ -1617,12 +1672,18 @@ static Int InitKernel (
     InfoBags[         T_DATOBJ +COPYING ].name = "object (data,copied)";
     InitMarkFuncBags( T_DATOBJ +COPYING , MarkOneSubBags  );
 
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         TypeObjFuncs[ t ] = TypeObjError;
+        SetTypeObjFuncs [ t] = SetTypeObjError;
+    }
 
     TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
     TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
     TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
+
+    SetTypeObjFuncs [ T_COMOBJ ] = SetTypeComObj;
+    SetTypeObjFuncs [ T_POSOBJ ] = SetTypePosObj;
+    SetTypeObjFuncs [ T_DATOBJ ] = SetTypeDatObj;
 
     /* functions for 'to-be-defined' objects                               */
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );

@@ -79,19 +79,35 @@ typedef union AtomicObj
 
 Obj TypeAList(Obj obj)
 {
-  Obj result = ADDR_OBJ(obj)[1];
+  Obj result;
+  AO_nop_read();
+  result = ADDR_OBJ(obj)[1];
   return result != NULL ? result : TYPE_ALIST;
 }
 
 Obj TypeARecord(Obj obj)
 {
-  Obj result = ADDR_OBJ(obj)[0];
+  Obj result;
+  AO_nop_read();
+  result = ADDR_OBJ(obj)[0];
   return result != NULL ? result : TYPE_AREC;
 }
 
 Obj TypeTLRecord(Obj obj)
 {
   return TYPE_TLREC;
+}
+
+void SetTypeAList(Obj obj, Obj kind)
+{
+  ADDR_OBJ(obj)[1] = kind;
+  AO_nop_write();
+}
+
+void SetTypeARecord(Obj obj, Obj kind)
+{
+  ADDR_OBJ(obj)[0] = kind;
+  AO_nop_write();
 }
 
 
@@ -1067,6 +1083,8 @@ static Int InitKernel (
   TypeObjFuncs[ T_ALIST ] = TypeAList;
   TypeObjFuncs[ T_AREC ] = TypeARecord;
   TypeObjFuncs[ T_TLREC ] = TypeTLRecord;
+  SetTypeObjFuncs[ T_ALIST ] = SetTypeAList;
+  SetTypeObjFuncs[ T_AREC ] = SetTypeARecord;
   /* install global variables */
   InitCopyGVar("TYPE_ALIST", &TYPE_ALIST);
   InitCopyGVar("TYPE_AREC", &TYPE_AREC);

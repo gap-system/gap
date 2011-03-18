@@ -95,6 +95,19 @@ Obj TypePRecImm (
     return TYPE_PREC_IMMUTABLE;
 }
 
+/****************************************************************************
+**
+*F  SetTypePRecToComObj( <rec>, <kind> )  convert record to component object
+**
+*/
+
+void SetTypePRecToComObj( Obj rec, Obj kind )
+{
+  TYPE_COMOBJ(rec) = kind;
+  RetypeBag(rec, T_COMOBJ);
+  CHANGED_BAG(rec);
+}
+
 
 /****************************************************************************
 **
@@ -1565,6 +1578,8 @@ static Int InitKernel (
 
     TypeObjFuncs[ T_PREC            ] = TypePRecMut;
     TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
+
+    SetTypeObjFuncs [ T_PREC ] = SetTypePRecToComObj;
 
     MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 
