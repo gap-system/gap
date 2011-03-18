@@ -67,6 +67,8 @@ Obj TYPE_TLREC;
 
 #ifndef WARD_ENABLED
 
+static UInt UsageCap[sizeof(UInt)*8];
+
 typedef union AtomicObj
 {
   AO_t atom;
@@ -518,7 +520,7 @@ static Obj SetARecordField(Obj record, UInt field, Obj obj)
   }
   do {
     size = table[AR_SIZE].atom + 1;
-    have_room = (size * 3 / 2 < cap);
+    have_room = (size <= UsageCap[bits]);
   } while (have_room && !AO_compare_and_swap_full(&table[AR_SIZE].atom,
                          size-1, size));
   /* we're guaranteed to have a non-full table for the insertion step */
@@ -797,7 +799,7 @@ static Obj FuncNewAtomicRecord(Obj self, Obj args)
         Obj result;
 	UInt i, len;
 	len = LEN_PREC(arg);
-        result = CreateAtomicRecord(len * 3 / 2);
+        result = CreateAtomicRecord(len+1);
 	for (i=1; i<=len; i++)
 	  SetARecordField(result, GET_RNAM_PREC(arg, i), GET_ELM_PREC(arg, i));
 	return result;
@@ -1046,6 +1048,16 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  UInt i, cap;
+  /* compute UsageCap */
+  for (i=0; i<=3; i++)
+    UsageCap[i] = (1<<i)-1;
+  UsageCap[4] = 13;
+  UsageCap[5] = 24;
+  UsageCap[6] = 48;
+  UsageCap[7] = 96;
+  for (i=8; i<sizeof(UInt)*8; i++)
+    UsageCap[i] = (i<<1)/3 * 2;
   /* install info string */
   InfoBags[T_ALIST].name = "atomic list";
   InfoBags[T_AREC].name = "atomic record";
