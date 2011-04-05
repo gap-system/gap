@@ -22,10 +22,15 @@ Tasks.Worker := function(channels)
       fi;
     od;
     if taskdata.detached then
-      CallFuncList(taskdata.func, taskdata.args);
+      CALL_WITH_CATCH(taskdata.func, taskdata.args);
       SendChannel(Tasks.Pool, channels);
     else
-      result := CallFuncList(taskdata.func, taskdata.args);
+      result := CALL_WITH_CATCH(taskdata.func, taskdata.args);
+      if Length(result) = 1 or not result[1] then
+        result := fail;
+      else
+        result := result[2];
+      fi;
       SendChannel(channels.fromworker,
 	rec(value := result, channels := channels));
     fi;
@@ -119,8 +124,15 @@ DetachTask := function(task)
 end;
 
 ImmediateTask := function(arg)
+  local result;
+  result := CALL_WITH_CATCH(arg[1], arg{[2..Length(arg)]});
+  if Length(result) = 1 or not result[1] then
+    result := fail;
+  else
+    result := result[2];
+  fi;
   return rec( started := true, complete := true, detached := false,
-    result := CallFuncList(arg[1], arg{[2..Length(arg)]}));
+    result := result );
 end;
 
 DelayTask := function(arg)
