@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -48,7 +50,7 @@ gap> IsBijective( f );
 true
 
 
-gap> STOP_TEST( "alghom.tst", 58060000 );
+gap> STOP_TEST( "alghom.tst",63000568);
 
 
 #############################################################################

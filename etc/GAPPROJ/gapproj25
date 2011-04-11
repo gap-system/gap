@@ -6,6 +6,8 @@ GAP
 2001/11/1
 @Time
 2
+@Public
+Yes
 @Need
 1
 @NeedA
@@ -19,7 +21,7 @@ Fields, padic numbers
 @Descr
 <P>
 The existing code for p-adic numbers needs updating, cleaning and possibly
-performance engineering. The basic fundament is there, but in th ecurrent form
+performance engineering. The basic fundament is there, but in the current form
 it is not very convenient to use.
 </P>
 @Manual

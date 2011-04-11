@@ -4,7 +4,8 @@
 ##
 #H  $Id$
 ##
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This files implements a combinatorial collector as an extension of the
 ##  representation of a single collector as defined in rwspcsng.gi.
@@ -25,9 +26,9 @@ DeclareRepresentation(
 
 #############################################################################
 ##
-#M  SetConjugate( <cc>, <i>, <j>, <rhs> ) . . . . combinatorial collector rep
+#M  SetConjugate( <cc>, <j>, <i>, <rhs> ) . . . . combinatorial collector rep
 ##
-##  required: <i> > <j>
+##  required: <j> > <i>
 ##
 InstallMethod( SetConjugate,
     "combinatorial collector rep",
@@ -290,7 +291,12 @@ InstallMethod( CombinatorialCollectorByGenerators,
     0,
 
 function( efam, gens, orders )
-    local   cc;
+    local   co,  cc;
+
+    co := Collected( orders );
+    if Length( co ) <> 1 or not IsPrime( co[1][1] ) then
+        Error( "only prime orders allowed in combinatorial collector" );
+    fi;
 
     # create a single collector first
     cc := SingleCollectorByGenerators( efam, gens, orders );

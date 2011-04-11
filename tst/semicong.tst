@@ -4,7 +4,9 @@
 ##
 #H  $Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -107,9 +109,9 @@ gap> Size(ec);
 1
 gap> Size(ec[1]);
 9
-gap> STOP_TEST( "semicong.tst", 1000000000 );
+gap> STOP_TEST( "semicong.tst", 46000000 );
 
 #############################################################################
 ##
-#E  semicong.tst . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

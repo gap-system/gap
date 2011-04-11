@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  scanner.h                   GAP source                   Martin Schoenert
+*W  scanner.h                   GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the scanner, which is responsible for
 **  all input and output processing.
@@ -50,9 +51,6 @@ const char * Revision_scanner_h =
 #define S_TRYNEXT       ((1UL<< 3)+3)
 #define S_INFO          ((1UL<< 3)+4)
 #define S_ASSERT        ((1UL<< 3)+5)
-#define S_SAVEWS        ((1UL<< 3)+6)
-#define S_LOADWS        ((1UL<< 3)+7)
-
 #define S_LBRACK        ((1UL<< 4)+0)
 #define S_LBRACE        ((1UL<< 4)+1)
 #define S_BLBRACK       ((1UL<< 4)+2)
@@ -364,10 +362,25 @@ extern void Match (
 
 /****************************************************************************
 **
-
 *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
 */
 extern void ClearError ( void );
+
+/****************************************************************************
+**
+*F  BreakLoopPending()  . . . . . .report whether a break loop is pending due
+**                               to Ctrl-C, memory overflow, or similar cause
+**
+**  return  values 0 -- no break loop
+**                 BLP_CTRLC -- break loop due to ctrl-C
+**                 BLP_MEMORY -- due to -o 
+**
+*/
+
+
+extern Int BreakLoopPending( void );
+#define BLP_CTRLC 1
+#define BLP_MEMORY 2
 
 
 /****************************************************************************
@@ -782,18 +795,19 @@ extern UInt CloseAppend ( void );
 **
 */
 typedef struct {
-    UInt        isstream;
-    Int         file;
-    Char        name [256];
-    Char        line [32768];
-    Char *      ptr;
-    UInt        symbol;
-    Int         number;
-    Obj         stream;
-    UInt        isstringstream;
-    Obj         sline;
-    Int         spos;
-    UInt        echo;
+  UInt        isstream;
+  Int         file;
+  Char        name [256];
+  Obj         gapname;
+  Char        line [32768];
+  Char *      ptr;
+  UInt        symbol;
+  Int         number;
+  Obj         stream;
+  UInt        isstringstream;
+  Obj         sline;
+  Int         spos;
+  UInt        echo;
 } TypInputFile;
 
 
@@ -837,11 +851,12 @@ extern Char *          In;
 **  'Output' is a pointer to the current output file.  It points to  the  top
 **  of the stack 'OutputFiles'.
 */
+#define MAXLENOUTPUTLINE  4096
 typedef struct {
     UInt        isstream;
     UInt        isstringstream;
     Int         file;
-    Char        line [256];
+    Char        line [MAXLENOUTPUTLINE];
     Int         pos;
     Int         format;
     Int         indent;
@@ -892,6 +907,13 @@ extern  void            Pr (
 
 extern  void            PrTo (
             KOutputStream   stream,			      
+            const Char *    format,
+            Int                 arg1,
+            Int                 arg2 );
+
+extern  void            SPrTo (
+			       Char * buffer,
+			       UInt maxlen,
             const Char *    format,
             Int                 arg1,
             Int                 arg2 );
@@ -999,6 +1021,13 @@ extern  UInt            OpenInput (
 **  close the current output file, which will lead to very strange behaviour.
 */
 extern  UInt            CloseInput ( void );
+
+/****************************************************************************
+**
+*F  FlushRestOfInputLine()  . . . . . . . . . . . . discard remainder of line
+*/
+
+extern void FlushRestOfInputLine( void );
 
 
 /****************************************************************************

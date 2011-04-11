@@ -4,8 +4,8 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  Copyright (C)  2000,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  2000,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This is the main secondary file of the GAP library of irreducible maximal
 ##  finite (imf) integral matrix groups. It contains a list IMFList of length

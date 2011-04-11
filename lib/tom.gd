@@ -1,19 +1,20 @@
 #############################################################################
 ##
-#W  tom.gd                   GAP library                       Goetz Pfeiffer
+#W  tom.gd                   GAP library                       Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of the category and family of tables
 ##  of marks, and their properties, attributes, operations and functions.
 ##
 ##  1. Tables of Marks
 ##  2. More about Tables of Marks
-##  3. Table of Marks Objects in {\GAP}
+##  3. Table of Marks Objects in &GAP;
 ##  4. Constructing Tables of Marks
 ##  5. Printing Tables of Marks
 ##  6. Sorting Tables of Marks
@@ -32,154 +33,183 @@ Revision.tom_gd :=
 #############################################################################
 ##
 ##  1. Tables of Marks
-#1
-##  The concept of a *table of marks* was introduced by W.~Burnside in his
-##  book ``Theory of Groups of Finite  Order'', see~\cite{Bur55}.
-##  Therefore a table of marks is sometimes called a *Burnside matrix*.
 ##
-##  The table of marks of a finite group $G$ is a matrix whose rows and
-##  columns are labelled by the conjugacy classes of subgroups of $G$
-##  and where for two subgroups $A$ and $B$ the $(A, B)$--entry is
-##  the number of fixed points of $B$ in the transitive action of $G$
-##  on the cosets of $A$ in $G$.
+##  <#GAPDoc Label="[1]{tom}">
+##  The concept of a <E>table of marks</E> was introduced by W.&nbsp;Burnside
+##  in his book <Q>Theory of Groups of Finite Order</Q>,
+##  see&nbsp;<Cite Key="Bur55"/>.
+##  Therefore a table of marks is sometimes called a <E>Burnside matrix</E>.
+##  <P/>
+##  The table of marks of a finite group <M>G</M> is a matrix whose rows and
+##  columns are labelled by the conjugacy classes of subgroups of <M>G</M>
+##  and where for two subgroups <M>A</M> and <M>B</M> the <M>(A, B)</M>-entry
+##  is the number of fixed points of <M>B</M> in the transitive action of
+##  <M>G</M> on the cosets of <M>A</M> in <M>G</M>.
 ##  So the table of marks characterizes the set of all permutation
-##  representations of $G$.
-##
+##  representations of <M>G</M>.
+##  <P/>
 ##  Moreover, the table of marks gives a compact description of the subgroup
-##  lattice of $G$, since from the numbers of fixed points the numbers of
-##  conjugates of a subgroup $B$ contained in a subgroup $A$ can be derived.
-##
-##  A table of marks of a given group $G$ can be constructed from the
-##  subgroup lattice of $G$ (see~"Constructing Tables of Marks").
-##  For several groups, the table of marks can be restored from the {\GAP}
-##  library of tables of marks (see~"The Library of Tables of Marks").
-##
-##  Given the table of marks of $G$, one can display it
-##  (see~"Printing Tables of Marks")
-##  and derive information about $G$ and its Burnside ring from it
-##  (see~"Attributes of Tables of Marks", "Properties of Tables of Marks",
-##  "Other Operations for Tables of Marks").
-##  Moreover, tables of marks in {\GAP} provide an easy access to the classes
+##  lattice of <M>G</M>, since from the numbers of fixed points the numbers
+##  of conjugates of a subgroup <M>B</M> contained in a subgroup <M>A</M>
+##  can be derived.
+##  <P/>
+##  A table of marks of a given group <M>G</M> can be constructed from the
+##  subgroup lattice of <M>G</M>
+##  (see&nbsp;<Ref Sect="Constructing Tables of Marks"/>).
+##  For several groups, the table of marks can be restored from the &GAP;
+##  library of tables of marks
+##  (see&nbsp;<Ref Sect="The Library of Tables of Marks"/>).
+##  <P/>
+##  Given the table of marks of <M>G</M>, one can display it
+##  (see&nbsp;<Ref Sect="Printing Tables of Marks"/>)
+##  and derive information about <M>G</M> and its Burnside ring from it
+##  (see&nbsp;<Ref Sect="Attributes of Tables of Marks"/>,
+##  <Ref Sect="Properties of Tables of Marks"/>,
+##  <Ref Sect="Other Operations for Tables of Marks"/>).
+##  Moreover, tables of marks in &GAP; provide an easy access to the classes
 ##  of subgroups of their underlying groups
-##  (see~"Accessing Subgroups via Tables of Marks").
+##  (see&nbsp;<Ref Sect="Accessing Subgroups via Tables of Marks"/>).
+##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
 ##  2. More about Tables of Marks
-#2
-##  Let $G$ be a finite group with $n$ conjugacy classes of subgroups
-##  $C_1, C_2, \ldots, C_n$ and representatives $H_i \in  C_i$,
-##  $1 \leq i \leq n$.
-##  The *table of marks* of $G$ is defined to be the $n \times n$ matrix
-##  $M = (m_{ij})$ where the *mark* $m_{ij}$ is the number of fixed points
-##  of the subgroup $H_j$ in the action of $G$ on the right cosets of $H_i$
-##  in $G$.
 ##
-##  Since $H_j$ can only have fixed points if it is contained in a point
-##  stablizer the matrix $M$ is lower triangular if the classes $C_i$ are
-##  sorted according to the condition that if $H_i$ is contained in a
-##  conjugate of $H_j$ then $i \leq j$.
-##
-##  Moreover, the diagonal entries $m_{ii}$ are nonzero since $m_{ii}$ equals
-##  the index of $H_i$ in its normalizer in $G$.  Hence $M$ is invertible.
-##  Since any transitive action of $G$ is equivalent to an action on the
-##  cosets of a subgroup of $G$, one sees that the table of marks completely
-##  characterizes the set of all permutation representations of $G$.
-##
-##  The marks $m_{ij}$ have further meanings.
-##  If $H_1$ is the trivial subgroup of $G$ then each mark $m_{i1}$ in the
-##  first column of $M$ is equal to the index of $H_i$ in $G$
-##  since the trivial subgroup fixes all cosets of $H_i$.
-##  If $H_n = G$ then each $m_{nj}$ in the last row of $M$ is equal to $1$
-##  since there is only one coset of $G$ in $G$.
-##  In general, $m_{ij}$ equals the number of conjugates of $H_i$ containing
-##  $H_j$, multiplied by the index of $H_i$ in its normalizer in $G$.
-##  Moreover, the number $c_{ij}$ of conjugates of $H_j$ which are contained
-##  in $H_i$ can be derived from the marks $m_{ij}$ via the formula
-##  $$
-##  c_{ij} = \frac{m_{ij} m_{j1}}{m_{i1} m_{jj}}\.
-##  $$
-##
-##  Both the marks $m_{ij}$  and the numbers of subgroups $c_{ij}$ are needed
-##  for the functions described in this chapter.
-##
+##  <#GAPDoc Label="[2]{tom}">
+##  Let <M>G</M> be a finite group with <M>n</M> conjugacy classes of
+##  subgroups <M>C_1, C_2, \ldots, C_n</M> and representatives
+##  <M>H_i \in C_i</M>, <M>1 \leq i \leq n</M>.
+##  The <E>table of marks</E> of <M>G</M> is defined to be the
+##  <M>n \times n</M> matrix <M>M = (m_{ij})</M> where the
+##  <E>mark</E> <M>m_{ij}</M> is the number of fixed points of the subgroup
+##  <M>H_j</M> in the action of <M>G</M> on the right cosets of <M>H_i</M>
+##  in <M>G</M>.
+##  <P/>
+##  Since <M>H_j</M> can only have fixed points if it is contained in a point
+##  stablizer the matrix <M>M</M> is lower triangular if the classes
+##  <M>C_i</M> are sorted according to the condition that if <M>H_i</M>
+##  is contained in a conjugate of <M>H_j</M> then <M>i \leq j</M>.
+##  <P/>
+##  Moreover, the diagonal entries <M>m_{ii}</M> are nonzero
+##  since <M>m_{ii}</M> equals the index of <M>H_i</M> in its normalizer
+##  in <M>G</M>.  Hence <M>M</M> is invertible.
+##  Since any transitive action of <M>G</M> is equivalent to an action on the
+##  cosets of a subgroup of <M>G</M>, one sees that the table of marks
+##  completely characterizes the set of all permutation representations of
+##  <M>G</M>.
+##  <P/>
+##  The marks <M>m_{ij}</M> have further meanings.
+##  If <M>H_1</M> is the trivial subgroup of <M>G</M> then each mark
+##  <M>m_{i1}</M> in the first column of <M>M</M> is equal to the index of
+##  <M>H_i</M> in <M>G</M> since the trivial subgroup fixes all cosets of
+##  <M>H_i</M>.
+##  If <M>H_n = G</M> then each <M>m_{nj}</M> in the last row of <M>M</M> is
+##  equal to <M>1</M> since there is only one coset of <M>G</M> in <M>G</M>.
+##  In general, <M>m_{ij}</M> equals the number of conjugates of <M>H_i</M>
+##  containing <M>H_j</M>, multiplied by the index of <M>H_i</M> in its
+##  normalizer in <M>G</M>.
+##  Moreover, the number <M>c_{ij}</M> of conjugates of <M>H_j</M> which are
+##  contained in <M>H_i</M> can be derived from the marks <M>m_{ij}</M> via
+##  the formula
+##  <Display Mode="M">
+##  c_{ij} = ( m_{ij} m_{j1} ) / ( m_{i1} m_{jj} )
+##  </Display>.
+##  <P/>
+##  Both the marks <M>m_{ij}</M>  and the numbers of subgroups <M>c_{ij}</M>
+##  are needed for the functions described in this chapter.
+##  <P/>
 ##  A brief survey of properties of tables of marks and a description of
 ##  algorithms for the interactive construction of tables of marks using
-##  {\GAP} can be found in~\cite{Pfe97}.
+##  &GAP; can be found in&nbsp;<Cite Key="Pfe97"/>.
+##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
-##  3. Table of Marks Objects in {\GAP}
-#3
-##  A table of marks of a group $G$ in {\GAP} is represented by an immutable
-##  (see~"Mutability and Copyability") object <tom> in the category
-##  `IsTableOfMarks' (see~"IsTableOfMarks"), with defining attributes
-##  `SubsTom' (see~"SubsTom") and `MarksTom' (see~"MarksTom").
+##  3. Table of Marks Objects in &GAP;
+##
+##  <#GAPDoc Label="[3]{tom}">
+##  A table of marks of a group <M>G</M> in &GAP; is represented by an
+##  immutable (see&nbsp;<Ref Sect="Mutability and Copyability"/>) object
+##  <A>tom</A> in the category <Ref Func="IsTableOfMarks"/>,
+##  with defining attributes <Ref Func="SubsTom"/> and
+##  <Ref Func="MarksTom"/>.
 ##  These two attributes encode the matrix of marks in a compressed form.
-##  The `SubsTom' value of <tom> is a list where for each conjugacy class of
-##  subgroups the class numbers of its subgroups are stored.
+##  The <Ref Func="SubsTom"/> value of <A>tom</A> is a list where for each
+##  conjugacy class of subgroups the class numbers of its subgroups are
+##  stored.
 ##  These are exactly the positions in the corresponding row of the matrix of
 ##  marks which have nonzero entries.
-##  The marks themselves are stored via the `MarksTom' value of <tom>,
-##  which is a list that contains for each entry in `SubsTom( <tom> )' the
-##  corresponding nonzero value of the table of marks.
-##
+##  The marks themselves are stored via the <Ref Func="MarksTom"/> value of
+##  <A>tom</A>, which is a list that contains for each entry in
+##  <C>SubsTom( <A>tom</A> )</C> the corresponding nonzero value of the
+##  table of marks.
+##  <P/>
 ##  It is possible to create table of marks objects that do not store a
 ##  group, moreover one can create a table of marks object from a matrix of
-##  marks (see~"TableOfMarks").
-##  So it may happen that a table of marks object in {\GAP} is in fact *not*
-##  the table of marks of a group.
+##  marks (see&nbsp;<Ref Func="TableOfMarks" Label="for a matrix"/>).
+##  So it may happen that a table of marks object in &GAP; is in fact
+##  <E>not</E> the table of marks of a group.
 ##  To some extent, the consistency of a table of marks object can be checked
-##  (see~"Other Operations for Tables of Marks"),
-##  but {\GAP} knows no general way to prove or disprove that a given matrix
-##  of nonnegative  integers is the matrix of marks for a group.
+##  (see&nbsp;<Ref Sect="Other Operations for Tables of Marks"/>),
+##  but &GAP; knows no general way to prove or disprove that a given matrix
+##  of nonnegative integers is the matrix of marks for a group.
 ##  Many functions for tables of marks work well without access to the group
-##  --this is one of the arguments why tables of marks are so useful--,
-##  but for example normalizers (see~"NormalizerTom")
-##  and derived subgroups (see~"DerivedSubgroupTom") of subgroups
-##  are in general not uniquely determined by the matrix of marks.
-##
-##  {\GAP} tables of marks are assumed to be in lower triangular form,
+##  &ndash;this is one of the arguments why tables of marks are so
+##  useful&ndash;,
+##  but for example normalizers (see&nbsp;<Ref Func="NormalizerTom"/>)
+##  and derived subgroups (see&nbsp;<Ref Func="DerivedSubgroupTom"/>) of
+##  subgroups are in general not uniquely determined by the matrix of marks.
+##  <P/>
+##  &GAP; tables of marks are assumed to be in lower triangular form,
 ##  that is, if a subgroup from the conjugacy class corresponding to the
-##  $i$-th row is contained in a subgroup from the class corresponding to the
-##  $j$-th row j then $i \leq j$.
-##
-##  The `MarksTom' information can be computed from the values of the
-##  attributes `NrSubsTom', `LengthsTom', `OrdersTom', and `SubsTom'
-##  (see~"NrSubsTom", "LengthsTom", "OrdersTom").
-##  `NrSubsTom' stores a list containing for each entry in the `SubsTom'
-##  value the corresponding number of conjugates that are contained
-##  in a subgroup, `LengthsTom' a list containing for each conjugacy class
-##  of subgroups its length, and `OrdersTom' a list containing for each
-##  class of subgroups their order.
-##  So the `MarksTom' value of <tom> may be missing provided that the values
-##  of `NrSubsTom', `LengthsTom', and `OrdersTom' are stored in <tom>.
-##
+##  <M>i</M>-th row is contained in a subgroup from the class corresponding
+##  to the <M>j</M>-th row j then <M>i \leq j</M>.
+##  <P/>
+##  The <Ref Func="MarksTom"/> information can be computed from the values of
+##  the attributes <Ref Func="NrSubsTom"/>, <Ref Func="LengthsTom"/>,
+##  <Ref Func="OrdersTom"/>, and <Ref Func="SubsTom"/>.
+##  <Ref Func="NrSubsTom"/> stores a list containing for each entry in the
+##  <Ref Func="SubsTom"/> value the corresponding number of conjugates that
+##  are contained in a subgroup,
+##  <Ref Func="LengthsTom"/> a list containing for each conjugacy class
+##  of subgroups its length,
+##  and <Ref Func="OrdersTom"/> a list containing for each class of subgroups
+##  their order.
+##  So the <Ref Func="MarksTom"/> value of <A>tom</A> may be missing
+##  provided that the values of <Ref Func="NrSubsTom"/>,
+##  <Ref Func="LengthsTom"/>, and <Ref Func="OrdersTom"/> are stored in
+##  <A>tom</A>.
+##  <P/>
 ##  Additional information about a table of marks is needed by some
 ##  functions.
-##  The class numbers of normalizers in $G$ and the number of the derived
-##  subgroup of $G$ can be stored via appropriate attributes
-##  (see~"NormalizersTom", "DerivedSubgroupTom").
-##
-##  If <tom> stores its group $G$ and a bijection from the rows and columns
-##  of the matrix of marks of <tom> to the classes of subgroups of $G$ then
-##  clearly normalizers, derived subgroup etc.~can be computed from this
-##  information.
-##  But in general a table of marks need not have access to $G$,
-##  for example <tom> might have been constructed from a generic table of
-##  marks (see~"Generic Construction of Tables of Marks"),
+##  The class numbers of normalizers in <M>G</M> and the number of the
+##  derived subgroup of <M>G</M> can be stored via appropriate attributes
+##  (see&nbsp;<Ref Func="NormalizersTom"/>,
+##  <Ref Func="DerivedSubgroupTom"/>).
+##  <P/>
+##  If <A>tom</A> stores its group <M>G</M> and a bijection from the rows and
+##  columns of the matrix of marks of <A>tom</A> to the classes of subgroups
+##  of <M>G</M> then clearly normalizers, derived subgroup etc.&nbsp;can be
+##  computed from this information.
+##  But in general a table of marks need not have access to <M>G</M>,
+##  for example <A>tom</A> might have been constructed from a generic table
+##  of marks
+##  (see&nbsp;<Ref Sect="Generic Construction of Tables of Marks"/>),
 ##  or as table of marks of a factor group from a given table of marks
-##  (see~"FactorGroupTom").
-##  Access to the group $G$ is provided by the attribute `UnderlyingGroup'
-##  (see~"UnderlyingGroup!for tables of marks") if this value is set.
+##  (see&nbsp;<Ref Func="FactorGroupTom"/>).
+##  Access to the group <M>G</M> is provided by the attribute
+##  <Ref Attr="UnderlyingGroup" Label="for tables of marks"/>
+##  if this value is set.
 ##  Access to the relevant information about conjugacy classes of subgroups
-##  of $G$ --compatible with the ordering of rows and columns of the marks in
-##  <tom>-- is signalled by the filter `IsTableOfMarksWithGens'
-##  (see~"Accessing Subgroups via Tables of Marks").
+##  of <M>G</M>
+##  &ndash;compatible with the ordering of rows and columns of the marks in
+##  <A>tom</A>&ndash; is signalled by the filter
+##  <Ref Func="IsTableOfMarksWithGens"/>.
+##  <#/GAPDoc>
 ##
 
 
@@ -195,35 +225,113 @@ Revision.tom_gd :=
 #A  TableOfMarks( <string> )
 #A  TableOfMarks( <matrix> )
 ##
-##  In the first form, <G> must be a finite group, and `TableOfMarks'
-##  constructs the table of marks of <G>.
+##  <#GAPDoc Label="TableOfMarks">
+##  <ManSection>
+##  <Attr Name="TableOfMarks" Arg='G' Label="for a group"/>
+##  <Attr Name="TableOfMarks" Arg='string' Label="for a string"/>
+##  <Attr Name="TableOfMarks" Arg='matrix' Label="for a matrix"/>
+##
+##  <Description>
+##  In the first form, <A>G</A> must be a finite group,
+##  and <Ref Func="TableOfMarks" Label="for a group"/>
+##  constructs the table of marks of <A>G</A>.
 ##  This computation requires the knowledge of the complete subgroup lattice
-##  of <G> (see~"LatticeSubgroups").
+##  of <A>G</A> (see&nbsp;<Ref Func="LatticeSubgroups"/>).
 ##  If the lattice is not yet stored then it will be constructed.
-##  This may take a while if <G> is large.
-##  The result has the `IsTableOfMarksWithGens' value `true'
-##  (see~"Accessing Subgroups via Tables of Marks").
-##
-##  In the second form, <string> must be a string, and `TableOfMarks' gets
-##  the table of marks with name <string> from the {\GAP} library
-##  (see "The Library of Tables of Marks").
+##  This may take a while if <A>G</A> is large.
+##  The result has the <Ref Func="IsTableOfMarksWithGens"/> value
+##  <K>true</K>.
+##  <P/>
+##  In the second form, <A>string</A> must be a string,
+##  and <Ref Func="TableOfMarks" Label="for a string"/> gets
+##  the table of marks with name <A>string</A> from the &GAP; library
+##  (see <Ref Sect="The Library of Tables of Marks"/>).
 ##  If no table of marks with this name is contained in the library then
-##  `fail' is returned.
-##
-##  In the third form, <matrix> must be a matrix or a list of rows describing
-##  a lower triangular matrix where the part above the diagonal is omitted.
-##  For such an argument <matrix>, `TableOfMarks' returns
-##  a table of marks object (see~"Table of Marks Objects in GAP")
-##  for which <matrix> is the matrix of marks.
+##  <K>fail</K> is returned.
+##  <P/>
+##  In the third form, <A>matrix</A> must be a matrix or a list of rows
+##  describing a lower triangular matrix where the part above the diagonal is
+##  omitted.
+##  For such an argument <A>matrix</A>,
+##  <Ref Func="TableOfMarks" Label="for a matrix"/> returns
+##  a table of marks object
+##  (see&nbsp;<Ref Sect="Table of Marks Objects in GAP"/>)
+##  for which <A>matrix</A> is the matrix of marks.
 ##  Note that not every matrix
 ##  (containing only nonnegative integers and having lower triangular shape)
 ##  describes a table of marks of a group.
-##  Necessary conditions are checked with `IsInternallyConsistent'
-##  (see~"Other Operations for Tables of Marks"), and `fail' is returned if
-##  <matrix> is proved not to describe a matrix of marks;
-##  but if `TableOfMarks' returns a table of marks object created from a
-##  matrix then it may still happen that this object does not describe the
-##  table of marks of a group.
+##  Necessary conditions are checked with
+##  <Ref Func="IsInternallyConsistent" Label="for tables of marks"/>
+##  (see&nbsp;<Ref Sect="Other Operations for Tables of Marks"/>),
+##  and <K>fail</K> is returned if <A>matrix</A> is proved not to describe a
+##  matrix of marks;
+##  but if <Ref Func="TableOfMarks" Label="for a matrix"/> returns a table of
+##  marks object created from a matrix then it may still happen that this
+##  object does not describe the table of marks of a group.
+##  <P/>
+##  For an overview of operations for table of marks objects,
+##  see the introduction to Chapter&nbsp;<Ref Chap="Tables of Marks"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tom:= TableOfMarks( AlternatingGroup( 5 ) );
+##  TableOfMarks( Alt( [ 1 .. 5 ] ) )
+##  gap> TableOfMarks( "J5" );
+##  fail
+##  gap> a5:= TableOfMarks( "A5" );
+##  TableOfMarks( "A5" )
+##  gap> mat:=
+##  > [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+##  >   [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ], 
+##  >   [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ], 
+##  >   [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ], 
+##  >   [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ];;
+##  gap> TableOfMarks( mat );
+##  TableOfMarks( <9 classes> )
+##  ]]></Example>
+##  <P/>
+##  The following <Ref Func="TableOfMarks" Label="for a group"/> methods
+##  for a group are installed.
+##  <List>
+##  <Item>
+##    If the group is known to be cyclic then
+##    <Ref Func="TableOfMarks" Label="for a group"/> constructs the
+##    table of marks essentially without the group, instead the knowledge
+##    about the structure of cyclic groups is used.
+##  </Item>
+##  <Item>
+##    If the lattice of subgroups is already stored in the group then
+##    <Ref Func="TableOfMarks" Label="for a group"/> computes the
+##    table of marks from the lattice
+##    (see&nbsp;<Ref Func="TableOfMarksByLattice"/>).
+##  </Item>
+##  <Item>
+##    If the group is known to be solvable then
+##    <Ref Func="TableOfMarks" Label="for a group"/> takes the
+##    lattice of subgroups (see&nbsp;<Ref Func="LatticeSubgroups"/>) of the
+##    group &ndash;which means that the lattice is computed if it is not yet
+##    stored&ndash;
+##    and then computes the table of marks from it.
+##    This method is also accessible via the global function
+##    <Ref Func="TableOfMarksByLattice"/>.
+##  </Item>
+##  <Item>
+##    If the group doesn't know its lattice of subgroups or its conjugacy
+##    classes of subgroups then the table of marks and the conjugacy
+##    classes of subgroups are computed at the same time by the cyclic
+##    extension method.
+##    Only the table of marks is stored because the conjugacy classes of
+##    subgroups or the lattice of subgroups can be easily read off
+##    (see&nbsp;<Ref Func="LatticeSubgroupsByTom"/>).
+##  </Item>
+##  </List>
+##  <P/>
+##  Conversely, the lattice of subgroups of a group with known table of marks
+##  can be computed using the table of marks, via the function
+##  <Ref Func="LatticeSubgroupsByTom"/>.
+##  This is also installed as a method for <Ref Func="LatticeSubgroups"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "TableOfMarks", IsGroup );
 DeclareAttribute( "TableOfMarks", IsString );
@@ -232,53 +340,25 @@ DeclareAttribute( "TableOfMarks", IsTable );
 
 #############################################################################
 ##
-#4
-##  The following `TableOfMarks' methods for a group are installed.
-##  \beginlist%unordered
-##  \item{--}
-##      If the group is known to be cyclic then `TableOfMarks' constructs the
-##      table of marks essentially without the group, instead the knowledge
-##      about the structure of cyclic groups is used.
-##  \item{--}
-##      If the lattice of subgroups is already stored in the group then
-##      `TableOfMarks' computes the table of marks from the lattice
-##      (see~"TableOfMarksByLattice").
-##  \item{--}
-##      If the group is known to be solvable then `TableOfMarks' takes the
-##      lattice of subgroups (see~"LatticeSubgroups") of the group
-##      --which means that the lattice is computed if it is not yet stored--
-##      and then computes the table of marks from it.
-##      This method is also accessible via the global function
-##      `TableOfMarksByLattice' (see~"TableOfMarksByLattice").
-##  \item{--}
-##      If the group doesn't know its lattice of subgroups or its conjugacy
-##      classes of subgroups then the table of marks and the conjugacy
-##      classes of subgroups are computed at the same time by the cyclic
-##      extension method.
-##      Only the table of marks is stored because the conjugacy classes of
-##      subgroups or the lattice of subgroups can be easily read off
-##      (see~"LatticeSubgroupsByTom").
-##  \endlist
-##
-##  Conversely, the lattice of subgroups of a group with known table of marks
-##  can be computed using the table of marks, via the function
-##  `LatticeSubgroupsByTom'.
-##  This is also installed as a method for `LatticeSubgroups'.
-##
-
-
-#############################################################################
-##
 #F  TableOfMarksByLattice( <G> )
 ##
-##  `TableOfMarksByLattice' computes the table of marks of the group <G> from
-##  the lattice of subgroups of <G>.
-##  This lattice is computed via `LatticeSubgroups' (see~"LatticeSubgroups")
-##  if it is not yet stored in <G>.
-##  The function `TableOfMarksByLattice' is installed as a method for
-##  `TableOfMarks' for solvable groups and groups with stored subgroup
-##  lattice, and is available as a global variable only in order to provide
+##  <#GAPDoc Label="TableOfMarksByLattice">
+##  <ManSection>
+##  <Func Name="TableOfMarksByLattice" Arg='G'/>
+##
+##  <Description>
+##  <Ref Func="TableOfMarksByLattice"/> computes the table of marks of the
+##  group <A>G</A> from the lattice of subgroups of <A>G</A>.
+##  This lattice is computed via <Ref Func="LatticeSubgroups"/>
+##  if it is not yet stored in <A>G</A>.
+##  The function <Ref Func="TableOfMarksByLattice"/> is installed as a method
+##  for <Ref Func="TableOfMarks" Label="for a group"/> for solvable groups
+##  and groups with stored subgroup lattice,
+##  and is available as a global variable only in order to provide
 ##  explicit access to this method.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "TableOfMarksByLattice" );
 
@@ -287,9 +367,17 @@ DeclareGlobalFunction( "TableOfMarksByLattice" );
 ##
 #F  LatticeSubgroupsByTom( <G> )
 ##
-##  `LatticeSubgroupsByTom' computes the lattice of subgroups of <G> from the
-##  table of marks of <G>, using `RepresentativeTom'
-##  (see~"RepresentativeTom").
+##  <#GAPDoc Label="LatticeSubgroupsByTom">
+##  <ManSection>
+##  <Func Name="LatticeSubgroupsByTom" Arg='G'/>
+##
+##  <Description>
+##  <Ref Func="LatticeSubgroupsByTom"/> computes the lattice of subgroups of
+##  <A>G</A> from the table of marks of <A>G</A>,
+##  using <Ref Func="RepresentativeTom"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 
@@ -297,45 +385,112 @@ DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 #############################################################################
 ##
 ##  5. Printing Tables of Marks
-#5
-##  \indextt{ViewObj!for tables of marks}
-##  The default `ViewObj' (see~"ViewObj") method for tables of  marks  prints
-##  the string `\"TableOfMarks\"', followed by --if  known--  the  identifier
-##  (see~"Identifier!for tables of marks") or the group of the table of marks
-##  enclosed in brackets; if neither group nor identifier are known then just
+##
+##  <#GAPDoc Label="[5]{tom}">
+##  <ManSection>
+##  <Meth Name="ViewObj" Arg='tom' Label="for a table of marks"/>
+##
+##  <Description>
+##  The default <Ref Func="ViewObj"/> method for tables of marks prints
+##  the string <C>"TableOfMarks"</C>,
+##  followed by &ndash;if known&ndash; the identifier
+##  (see&nbsp;<Ref Attr="Identifier" Label="for tables of marks"/>)
+##  or the group of the table of marks enclosed in brackets;
+##  if neither group nor identifier are known then just
 ##  the number of conjugacy classes of subgroups is printed instead.
+##  </Description>
+##  </ManSection>
 ##
-##  \indextt{PrintObj!for tables of marks}
-##  The default `PrintObj' (see~"PrintObj") method for tables of marks
-##  does the same as `ViewObj',
-##  except that the group is is `Print'-ed instead of `View'-ed.
+##  <ManSection>
+##  <Meth Name="PrintObj" Arg='tom' Label="for a table of marks"/>
 ##
-##  \indextt{Display!for tables of marks}
-##  The default `Display' (see~"Display") method for a table of marks <tom>
-##  produces a formatted output of the marks in <tom>.
+##  <Description>
+##  The default <Ref Func="PrintObj"/> method for tables of marks
+##  does the same as <Ref Func="ViewObj"/>,
+##  except that <Ref Func="PrintObj"/> is used for the group instead of
+##  <Ref Func="ViewObj"/>.
+##  </Description>
+##  </ManSection>
+##
+##  <ManSection>
+##  <Meth Name="Display" Arg='tom[, arec]' Label="for a table of marks"/>
+##
+##  <Description>
+##  The default <Ref Func="Display"/> method for a table of marks <A>tom</A>
+##  produces a formatted output of the marks in <A>tom</A>.
 ##  Each line of output begins with the number of the corresponding class of
 ##  subgroups.
 ##  This number is repeated if the output spreads over several pages.
 ##  The number of columns printed at one time depends on the actual
 ##  line length, which can be accessed and changed by the function
-##  `SizeScreen' (see~"SizeScreen").
-##
-##  The optional second argument <arec> of `Display' can be used to change
-##  the default style for displaying a character as shown above.
-##  <arec> must be a record, its relevant components are the following.
-##
-##  \beginitems
-##  `classes' &
-##      a list of class numbers to select only the rows and columns of the
-##      matrix that correspond to this list for printing,
-##
-##  `form' &
-##      one of the strings `\"subgroups\"', `\"supergroups\"';
-##      in the former case, at position $(i,j)$ of the matrix the number of
-##      conjugates of $H_j$ contained in $H_i$ is printed,
-##      and in the latter case, at position $(i,j)$ the number of conjugates
-##      of $H_i$ which contain $H_j$ is printed.
-##  \enditems
+##  <Ref Func="SizeScreen"/>.
+##  <P/>
+##  The optional second argument <A>arec</A> of <Ref Func="Display"/> can be
+##  used to change the default style for displaying a table of marks.
+##  <A>arec</A> must be a record, its relevant components are the following.
+##  <P/>
+##  <List>
+##  <Mark><C>classes</C></Mark>
+##  <Item>
+##    a list of class numbers to select only the rows and columns of the
+##    matrix that correspond to this list for printing,
+##  </Item>
+##  <Mark><C>form</C></Mark>
+##  <Item>
+##    one of the strings <C>"subgroups"</C>, <C>"supergroups"</C>;
+##    in the former case, at position <M>(i,j)</M> of the matrix the number
+##    of conjugates of <M>H_j</M> contained in <M>H_i</M> is printed,
+##    and in the latter case, at position <M>(i,j)</M> the number of
+##    conjugates of <M>H_i</M> which contain <M>H_j</M> is printed.
+##  </Item>
+##  </List>
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tom:= TableOfMarks( "A5" );;
+##  gap> Display( tom );
+##  1:  60
+##  2:  30 2
+##  3:  20 . 2
+##  4:  15 3 . 3
+##  5:  12 . . . 2
+##  6:  10 2 1 . . 1
+##  7:   6 2 . . 1 . 1
+##  8:   5 1 2 1 . . . 1
+##  9:   1 1 1 1 1 1 1 1 1
+##  
+##  gap> Display( tom, rec( classes:= [ 1, 2, 3, 4, 8 ] ) );
+##  1:  60
+##  2:  30 2
+##  3:  20 . 2
+##  4:  15 3 . 3
+##  8:   5 1 2 1 1
+##  
+##  gap> Display( tom, rec( form:= "subgroups" ) );
+##  1:  1
+##  2:  1  1
+##  3:  1  .  1
+##  4:  1  3  . 1
+##  5:  1  .  . . 1
+##  6:  1  3  1 . .  1
+##  7:  1  5  . . 1  . 1
+##  8:  1  3  4 1 .  . . 1
+##  9:  1 15 10 5 6 10 6 5 1
+##  
+##  gap> Display( tom, rec( form:= "supergroups" ) );
+##  1:   1
+##  2:  15 1
+##  3:  10 . 1
+##  4:   5 1 . 1
+##  5:   6 . . . 1
+##  6:  10 2 1 . . 1
+##  7:   6 2 . . 1 . 1
+##  8:   5 1 2 1 . . . 1
+##  9:   1 1 1 1 1 1 1 1 1
+##  
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 
 
@@ -349,7 +504,15 @@ DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 ##
 #C  IsTableOfMarks( <obj> )
 ##
+##  <#GAPDoc Label="IsTableOfMarks">
+##  <ManSection>
+##  <Filt Name="IsTableOfMarks" Arg='obj' Type='Category'/>
+##
+##  <Description>
 ##  Each table of marks belongs to this category.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsTableOfMarks", IsObject );
 
@@ -358,19 +521,49 @@ DeclareCategory( "IsTableOfMarks", IsObject );
 ##
 #O  SortedTom( <tom>, <perm> )
 ##
-##  `SortedTom' returns a table of marks where the rows and columns of the
-##  table of marks <tom> are reordered according to the permutation <perm>.
+##  <#GAPDoc Label="SortedTom">
+##  <ManSection>
+##  <Oper Name="SortedTom" Arg='tom, perm'/>
 ##
-##  *Note* that in each table of marks in {\GAP},
+##  <Description>
+##  <Ref Func="SortedTom"/> returns a table of marks where the rows and
+##  columns of the table of marks <A>tom</A> are reordered according to the
+##  permutation <A>perm</A>.
+##  <P/>
+##  <E>Note</E> that in each table of marks in &GAP;,
 ##  the matrix of marks is assumed to have lower triangular shape
-##  (see~"Table of Marks Objects in GAP").
-##  If the permutation <perm> does *not* have this property then the
-##  functions for tables of marks might return wrong results when applied to
-##  the output of `SortedTom'.
-##
+##  (see&nbsp;<Ref Sect="Table of Marks Objects in GAP"/>).
+##  If the permutation <A>perm</A> does <E>not</E> have this property then
+##  the functions for tables of marks might return wrong results when applied
+##  to the output of <Ref Func="SortedTom"/>.
+##  <P/>
 ##  The returned table of marks has only those attribute values stored that
-##  are known for <tom> and listed in `TableOfMarksComponents'
-##  (see~"TableOfMarksComponents").
+##  are known for <A>tom</A> and listed in
+##  <Ref Var="TableOfMarksComponents"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tom:= TableOfMarksCyclic( 6 );;  Display( tom );
+##  1:  6
+##  2:  3 3
+##  3:  2 . 2
+##  4:  1 1 1 1
+##  
+##  gap> sorted:= SortedTom( tom, (2,3) );;  Display( sorted );
+##  1:  6
+##  2:  2 2
+##  3:  3 . 3
+##  4:  1 1 1 1
+##  
+##  gap> wrong:= SortedTom( tom, (1,2) );;  Display( wrong );
+##  1:  3
+##  2:  . 6
+##  3:  . 2 2
+##  4:  1 1 1 1
+##  
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "SortedTom", [ IsTableOfMarks, IsPerm ] );
 
@@ -379,21 +572,41 @@ DeclareOperation( "SortedTom", [ IsTableOfMarks, IsPerm ] );
 ##
 #A  PermutationTom( <tom> )
 ##
-##  For the table of marks <tom> of the group $G$ stored as `UnderlyingGroup'
-##  value of <tom> (see~"UnderlyingGroup!for tables of marks"),
-##  `PermutationTom' is a permutation $\pi$ such that the $i$-th conjugacy
-##  class of subgroups of $G$ belongs to the $i^\pi$-th column and row of
-##  marks in <tom>.
+##  <#GAPDoc Label="PermutationTom">
+##  <ManSection>
+##  <Attr Name="PermutationTom" Arg='tom'/>
 ##
-##  This attribute value is bound only if <tom> was obtained from another
-##  table of marks by permuting with `SortedTom' (see~"SortedTom"),
+##  <Description>
+##  For the table of marks <A>tom</A> of the group <M>G</M> stored as
+##  <Ref Attr="UnderlyingGroup" Label="for tables of marks"/>
+##  value of <A>tom</A>,
+##  <Ref Func="PermutationTom"/> is a permutation <M>\pi</M> such that the
+##  <M>i</M>-th conjugacy class of subgroups of <M>G</M> belongs to the
+##  <M>i^\pi</M>-th column and row of marks in <A>tom</A>.
+##  <P/>
+##  This attribute value is bound only if <A>tom</A> was obtained from
+##  another table of marks by permuting with <Ref Func="SortedTom"/>,
 ##  and there is no default method to compute its value.
-##
+##  <P/>
 ##  The attribute is necessary because the original and the sorted table of
 ##  marks have the same identifier and the same group,
 ##  and information computed from the group may depend on the ordering of
-##  marks, for example the fusion from the ordinary character table of $G$
-##  into <tom>.
+##  marks, for example the fusion from the ordinary character table of
+##  <M>G</M> into <A>tom</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> MarksTom( tom )[2];
+##  [ 3, 3 ]
+##  gap> MarksTom( sorted )[2];
+##  [ 2, 2 ]
+##  gap> HasPermutationTom( sorted );
+##  true
+##  gap> PermutationTom( sorted );
+##  (2,3)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "PermutationTom", IsTableOfMarks );
 
@@ -408,7 +621,15 @@ DeclareAttribute( "PermutationTom", IsTableOfMarks );
 ##
 #V  InfoTom
 ##
+##  <#GAPDoc Label="InfoTom">
+##  <ManSection>
+##  <InfoClass Name="InfoTom"/>
+##
+##  <Description>
 ##  is the info class for computations concerning tables of marks.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareInfoClass( "InfoTom" );
 
@@ -417,7 +638,15 @@ DeclareInfoClass( "InfoTom" );
 ##
 #V  TableOfMarksFamily
 ##
+##  <#GAPDoc Label="TableOfMarksFamily">
+##  <ManSection>
+##  <Var Name="TableOfMarksFamily"/>
+##
+##  <Description>
 ##  Each table of marks belongs to this family.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "TableOfMarksFamily",
     NewFamily( "TableOfMarksFamily", IsTableOfMarks ) );
@@ -427,9 +656,25 @@ BindGlobal( "TableOfMarksFamily",
 ##
 #F  ConvertToTableOfMarks( <record> )
 ##
-##  `ConvertToTableOfMarks' converts a record with components from
-##  `TableOfMarksComponents' into a table of marks object with the
-##  corresponding attributes.
+##  <#GAPDoc Label="ConvertToTableOfMarks">
+##  <ManSection>
+##  <Func Name="ConvertToTableOfMarks" Arg='record'/>
+##
+##  <Description>
+##  <Ref Func="ConvertToTableOfMarks"/> converts a record with components
+##  from <Ref Var="TableOfMarksComponents"/> into a table of marks object
+##  with the corresponding attributes.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> record:= rec( MarksTom:= [ [ 4 ], [ 2, 2 ], [ 1, 1, 1 ] ],
+##  >  SubsTom:= [ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ] ] );;
+##  gap> ConvertToTableOfMarks( record );;
+##  gap> record;
+##  TableOfMarks( <3 classes> )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConvertToTableOfMarks" );
 
@@ -445,20 +690,42 @@ DeclareGlobalFunction( "ConvertToTableOfMarks" );
 #A  MarksTom( <tom> ) . . . . . . . . . . . . . . . . . .  defining attribute
 #A  SubsTom( <tom> )  . . . . . . . . . . . . . . . . . .  defining attribute
 ##
-##  The matrix of marks (see~"More about Tables of Marks") of the table of
-##  marks <tom> is stored in a compressed form where zeros are omitted,
-##  using the attributes `MarksTom' and `SubsTom'.
-##  If $M$ is the square matrix of marks of <tom> (see~"MatTom") then the
-##  `SubsTom' value of <tom> is a list that contains at position $i$ the list
-##  of all positions of nonzero entries of the $i$-th row of $M$, and the
-##  `MarksTom' value of <tom> is a list that contains at position $i$ the
-##  list of the corresponding marks.
+##  <#GAPDoc Label="MarksTom">
+##  <ManSection>
+##  <Attr Name="MarksTom" Arg='tom'/>
+##  <Attr Name="SubsTom" Arg='tom'/>
 ##
-##  `MarksTom' and `SubsTom' are defining attributes of tables of marks
-##  (see~"Table of Marks Objects in GAP").
-##  There is no default method for computing the `SubsTom' value,
-##  and the default `MarksTom' method needs the values of `NrSubsTom' and
-##  `OrdersTom' (see~"NrSubsTom", "OrdersTom").
+##  <Description>
+##  The matrix of marks (see&nbsp;<Ref Sect="More about Tables of Marks"/>)
+##  of the table of marks <A>tom</A> is stored in a compressed form
+##  where zeros are omitted,
+##  using the attributes <Ref Func="MarksTom"/> and <Ref Func="SubsTom"/>.
+##  If <M>M</M> is the square matrix of marks of <A>tom</A>
+##  (see&nbsp;<Ref Func="MatTom"/>) then the <Ref Func="SubsTom"/> value of
+##  <A>tom</A> is a list that contains at position <M>i</M> the list
+##  of all positions of nonzero entries of the <M>i</M>-th row of <M>M</M>,
+##  and the <Ref Func="MarksTom"/> value of <A>tom</A> is a list
+##  that contains at position <M>i</M> the list of the corresponding marks.
+##  <P/>
+##  <Ref Func="MarksTom"/> and <Ref Func="SubsTom"/> are defining attributes
+##  of tables of marks (see&nbsp;<Ref Sect="Table of Marks Objects in GAP"/>).
+##  There is no default method for computing the <Ref Func="SubsTom"/> value,
+##  and the default <Ref Func="MarksTom"/> method needs the values of
+##  <Ref Func="NrSubsTom"/> and <Ref Func="OrdersTom"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> a5:= TableOfMarks( "A5" );
+##  TableOfMarks( "A5" )
+##  gap> MarksTom( a5 );
+##  [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ], [ 10, 2, 1, 1 ], 
+##    [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]
+##  gap> SubsTom( a5 );
+##  [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 4 ], [ 1, 5 ], [ 1, 2, 3, 6 ], 
+##    [ 1, 2, 5, 7 ], [ 1, 2, 3, 4, 8 ], [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MarksTom", IsTableOfMarks );
 DeclareAttribute( "SubsTom", IsTableOfMarks );
@@ -469,18 +736,37 @@ DeclareAttribute( "SubsTom", IsTableOfMarks );
 #A  NrSubsTom( <tom> )
 #A  OrdersTom( <tom> )
 ##
-##  Instead of storing the marks (see~"MarksTom") of the table of marks <tom>
-##  one can use a matrix which contains at position $(i,j)$ the number of
-##  subgroups of conjugacy class $j$ that are contained in one member of the
-##  conjugacy class $i$.
-##  These values are stored in the `NrSubsTom' value in the same way as
-##  the marks in the `MarksTom' value.
+##  <#GAPDoc Label="NrSubsTom">
+##  <ManSection>
+##  <Attr Name="NrSubsTom" Arg='tom'/>
+##  <Attr Name="OrdersTom" Arg='tom'/>
 ##
-##  `OrdersTom' returns a list that contains at position $i$ the order of a
-##  representative of the $i$-th conjugacy class of subgroups of <tom>.
-##
-##  One can compute the `NrSubsTom' and `OrdersTom' values from the
-##  `MarksTom' value of <tom> and vice versa.
+##  <Description>
+##  Instead of storing the marks (see&nbsp;<Ref Func="MarksTom"/>) of the
+##  table of marks <A>tom</A> one can use a matrix which contains at position
+##  <M>(i,j)</M> the number of subgroups of conjugacy class <M>j</M>
+##  that are contained in one member of the conjugacy class <M>i</M>.
+##  These values are stored in the <Ref Func="NrSubsTom"/> value in the same
+##  way as the marks in the <Ref Func="MarksTom"/> value.
+##  <P/>
+##  <Ref Func="OrdersTom"/> returns a list that contains at position <M>i</M>
+##  the order of a representative of the <M>i</M>-th conjugacy class of
+##  subgroups of <A>tom</A>.
+##  <P/>
+##  One can compute the <Ref Func="NrSubsTom"/> and <Ref Func="OrdersTom"/>
+##  values from the <Ref Func="MarksTom"/> value of <A>tom</A>
+##  and vice versa.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NrSubsTom( a5 );
+##  [ [ 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 3, 1 ], [ 1, 1 ], [ 1, 3, 1, 1 ], 
+##    [ 1, 5, 1, 1 ], [ 1, 3, 4, 1, 1 ], [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ] ]
+##  gap> OrdersTom( a5 );
+##  [ 1, 2, 3, 4, 5, 6, 10, 12, 60 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "NrSubsTom", IsTableOfMarks );
 DeclareAttribute( "OrdersTom", IsTableOfMarks );
@@ -490,8 +776,22 @@ DeclareAttribute( "OrdersTom", IsTableOfMarks );
 ##
 #A  LengthsTom( <tom> )
 ##
-##  For a table of marks <tom>, `LengthsTom' returns a list of the lengths of
+##  <#GAPDoc Label="LengthsTom">
+##  <ManSection>
+##  <Attr Name="LengthsTom" Arg='tom'/>
+##
+##  <Description>
+##  For a table of marks <A>tom</A>,
+##  <Ref Func="LengthsTom"/> returns a list of the lengths of
 ##  the conjugacy classes of subgroups.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> LengthsTom( a5 );
+##  [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "LengthsTom", IsTableOfMarks );
 
@@ -500,17 +800,32 @@ DeclareAttribute( "LengthsTom", IsTableOfMarks );
 ##
 #A  ClassTypesTom( <tom> )
 ##
-##  `ClassTypesTom' distinguishes isomorphism types of the classes of
-##  subgroups of the table of marks <tom> as far as this is possible
-##  from the `SubsTom' and `MarksTom' values of <tom>.
+##  <#GAPDoc Label="ClassTypesTom">
+##  <ManSection>
+##  <Attr Name="ClassTypesTom" Arg='tom'/>
 ##
+##  <Description>
+##  <Ref Attr="ClassTypesTom"/> distinguishes isomorphism types of the
+##  classes of subgroups of the table of marks <A>tom</A>
+##  as far as this is possible from the <Ref Func="SubsTom"/> and
+##  <Ref Func="MarksTom"/> values of <A>tom</A>.
+##  <P/>
 ##  Two subgroups are clearly not isomorphic if they have different orders.
 ##  Moreover, isomorphic subgroups must contain the same number of subgroups
 ##  of each type.
-##
+##  <P/>
 ##  Each type is represented by a positive integer.
-##  `ClassTypesTom' returns the list which contains for each class of
-##  subgroups its corresponding type.
+##  <Ref Attr="ClassTypesTom"/> returns the list which contains for each
+##  class of subgroups its corresponding type.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> a6:= TableOfMarks( "A6" );;
+##  gap> ClassTypesTom( a6 );
+##  [ 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 15, 15, 16 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ClassTypesTom", IsTableOfMarks );
 
@@ -519,29 +834,46 @@ DeclareAttribute( "ClassTypesTom", IsTableOfMarks );
 ##
 #A  ClassNamesTom( <tom> )
 ##
-##  `ClassNamesTom' constructs generic names for the conjugacy classes of
-##  subgroups of the table of marks <tom>.
-##  In general, the generic name of a class of non--cyclic subgroups consists
-##  of three parts and has the form `\"(<o>)_{<t>}<l>\"',
-##  where <o> indicates the order of the subgroup,
-##  <t> is a number that distinguishes different types of subgroups of the
-##  same order, and <l> is a letter that distinguishes classes of subgroups
-##  of the same type and order.
-##  The type of a subgroup is determined by the numbers of its subgroups of
-##  other types (see~"ClassTypesTom").
-##  This is slightly weaker than isomorphism.
+##  <#GAPDoc Label="ClassNamesTom">
+##  <ManSection>
+##  <Attr Name="ClassNamesTom" Arg='tom'/>
 ##
+##  <Description>
+##  <Ref Func="ClassNamesTom"/> constructs generic names for the conjugacy
+##  classes of subgroups of the table of marks <A>tom</A>.
+##  In general, the generic name of a class of non-cyclic subgroups consists
+##  of three parts and has the form
+##  <C>"(</C><A>o</A><C>)_{</C><A>t</A><C>}</C><A>l</A><C>"</C>,
+##  where <A>o</A> indicates the order of the subgroup,
+##  <A>t</A> is a number that distinguishes different types of subgroups of
+##  the same order, and <A>l</A> is a letter that distinguishes classes of
+##  subgroups of the same type and order.
+##  The type of a subgroup is determined by the numbers of its subgroups of
+##  other types (see&nbsp;<Ref Func="ClassTypesTom"/>).
+##  This is slightly weaker than isomorphism.
+##  <P/>
 ##  The letter is omitted if there is only one class of subgroups of that
 ##  order and type,
 ##  and the type is omitted if there is only one class of that order.
-##  Moreover, the braces `{}'  around the type are omitted if the type number
-##  has only one digit.
-##
+##  Moreover, the braces <C>{}</C>  around the type are omitted
+##  if the type number has only one digit.
+##  <P/>
 ##  For classes of cyclic subgroups, the parentheses round the order and the
 ##  type are omitted.
-##  Hence the most general form of their generic names is `\"<o>,<l>\"'.
+##  Hence the most general form of their generic names is
+##  <C>"<A>o</A>,<A>l</A>"</C>.
 ##  Again, the letter is omitted if there is only one class of cyclic
 ##  subgroups of that order.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ClassNamesTom( a6 );
+##  [ "1", "2", "3a", "3b", "5", "4", "(4)_2a", "(4)_2b", "(6)a", "(6)b", "(8)", 
+##    "(9)", "(10)", "(12)a", "(12)b", "(18)", "(24)a", "(24)b", "(36)", "(60)a", 
+##    "(60)b", "(360)" ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ClassNamesTom", IsTableOfMarks );
 
@@ -550,14 +882,30 @@ DeclareAttribute( "ClassNamesTom", IsTableOfMarks );
 ##
 #A  FusionsTom( <tom> )
 ##
-##  For a table of marks <tom>, `FusionsTom' is a list of fusions into  other
-##  tables of marks. Each fusion is a list of length  two,  the  first  entry
-##  being the `Identifier' (see~"Identifier!for tables of  marks")  value  of
-##  the image table, the second entry being the list of images of  the  class
-##  positions of <tom> in the image table.
+##  <#GAPDoc Label="FusionsTom">
+##  <ManSection>
+##  <Attr Name="FusionsTom" Arg='tom'/>
 ##
-##  This attribute is mainly used for tables of marks in the {\GAP} library
-##  (see~"The Library of Tables of Marks").
+##  <Description>
+##  For a table of marks <A>tom</A>,
+##  <Ref Func="FusionsTom"/> is a list of fusions into other tables of marks.
+##  Each fusion is a list of length  two, the  first  entry being the
+##  <Ref Attr="Identifier" Label="for tables of marks"/>) value
+##  of the image table, the second entry being the list of images of
+##  the class positions of <A>tom</A> in the image table.
+##  <P/>
+##  This attribute is mainly used for tables of marks in the &GAP; library
+##  (see&nbsp;<Ref Sect="The Library of Tables of Marks"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> fus:= FusionsTom( a6 );;
+##  gap> fus[1];
+##  [ "L3(4)", [ 1, 2, 3, 3, 14, 5, 9, 7, 15, 15, 24, 26, 27, 32, 33, 50, 57, 55, 
+##        63, 73, 77, 90 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "FusionsTom", IsTableOfMarks, "mutable" );
 
@@ -566,10 +914,24 @@ DeclareAttribute( "FusionsTom", IsTableOfMarks, "mutable" );
 ##
 #A  UnderlyingGroup( <tom> )
 ##
-##  `UnderlyingGroup' is used to access an underlying group that is stored on
-##  the table of marks <tom>.
+##  <#GAPDoc Label="UnderlyingGroup:tom">
+##  <ManSection>
+##  <Attr Name="UnderlyingGroup" Arg='tom' Label="for tables of marks"/>
+##
+##  <Description>
+##  <Ref Func="UnderlyingGroup" Label="for tables of marks"/> is used
+##  to access an underlying group that is stored on the table of marks
+##  <A>tom</A>.
 ##  There is no default method to compute an underlying group if it is not
 ##  stored.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> UnderlyingGroup( a6 );
+##  Group([ (1,2)(3,4), (1,2,4,5)(3,6) ])
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "UnderlyingGroup", IsTableOfMarks );
 
@@ -579,24 +941,47 @@ DeclareAttribute( "UnderlyingGroup", IsTableOfMarks );
 #A  IdempotentsTom( <tom> )
 #A  IdempotentsTomInfo( <tom> )
 ##
-##  `IdempotentsTom' encodes the idempotents of the integral Burnside ring
-##  described by the table of marks <tom>.
-##  The return value is a list $l$ of positive integers such that each row
-##  vector describing a primitive idempotent has value $1$ at all positions
-##  with the same entry in $l$, and $0$ at all other positions.
+##  <#GAPDoc Label="IdempotentsTom">
+##  <ManSection>
+##  <Attr Name="IdempotentsTom" Arg='tom'/>
+##  <Attr Name="IdempotentsTomInfo" Arg='tom'/>
 ##
-##  According to A.~Dress~\cite{Dre69} (see also~\cite{Pfe97}),
+##  <Description>
+##  <Ref Func="IdempotentsTom"/> encodes the idempotents of the integral
+##  Burnside ring described by the table of marks <A>tom</A>.
+##  The return value is a list <M>l</M> of positive integers such that each
+##  row vector describing a primitive idempotent has value <M>1</M> at all
+##  positions with the same entry in <M>l</M>, and <M>0</M> at all other
+##  positions.
+##  <P/>
+##  According to A.&nbsp;Dress&nbsp;<Cite Key="Dre69"/>
+##  (see also&nbsp;<Cite Key="Pfe97"/>),
 ##  these idempotents correspond to the classes of perfect subgroups,
 ##  and each such idempotent is the characteristic function of all those
 ##  subgroups that arise by cyclic extension from the corresponding perfect
-##  subgroup (see~"CyclicExtensionsTom").
-##
-##  `IdempotentsTomInfo' returns a record with components `fixpointvectors'
-##  and `primidems', both bound to lists.
-##  The $i$-th entry of the `fixpointvectors' list is the $0-1$-vector
-##  describing the $i$-th primitive idempotent,
-##  and the $i$-th entry of `primidems' is the decomposition of this
-##  idempotent in the rows of <tom>.
+##  subgroup
+##  (see&nbsp;<Ref Func="CyclicExtensionsTom" Label="for a prime"/>).
+##  <P/>
+##  <Ref Func="IdempotentsTomInfo"/> returns a record with components
+##  <C>fixpointvectors</C> and <C>primidems</C>, both bound to lists.
+##  The <M>i</M>-th entry of the <C>fixpointvectors</C> list is the
+##  <M>0-1</M>-vector describing the <M>i</M>-th primitive idempotent,
+##  and the <M>i</M>-th entry of <C>primidems</C> is the decomposition of this
+##  idempotent in the rows of <A>tom</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IdempotentsTom( a5 );
+##  [ 1, 1, 1, 1, 1, 1, 1, 1, 9 ]
+##  gap> IdempotentsTomInfo( a5 );
+##  rec( 
+##    fixpointvectors := [ [ 1, 1, 1, 1, 1, 1, 1, 1, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 
+##            0, 1 ] ], 
+##    primidems := [ [ 1, -2, -1, 0, 0, 1, 1, 1 ], [ -1, 2, 1, 0, 0, -1, -1, -1, 
+##            1 ] ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "IdempotentsTom", IsTableOfMarks );
 DeclareAttribute( "IdempotentsTomInfo", IsTableOfMarks );
@@ -606,16 +991,32 @@ DeclareAttribute( "IdempotentsTomInfo", IsTableOfMarks );
 ##
 #A  Identifier( <tom> )
 ##
-##  The identifier of a table of marks <tom> is a string.
-##  It is used for printing the table of marks
-##  (see~"Printing Tables of Marks")
-##  and in fusions between tables of marks (see~"FusionsTom").
+##  <#GAPDoc Label="Identifier:tom">
+##  <ManSection>
+##  <Attr Name="Identifier" Arg='tom' Label="for tables of marks"/>
 ##
-##  If <tom> is a table of marks from the {\GAP} library of tables of marks
-##  (see~"The Library of Tables of Marks") then it has an identifier,
-##  and if <tom> was constructed from a group with `Name' value (see~"Name")
-##  then this name is chosen as `Identifier' value.
+##  <Description>
+##  The identifier of a table of marks <A>tom</A> is a string.
+##  It is used for printing the table of marks
+##  (see&nbsp;<Ref Sect="Printing Tables of Marks"/>)
+##  and in fusions between tables of marks
+##  (see&nbsp;<Ref Func="FusionsTom"/>).
+##  <P/>
+##  If <A>tom</A> is a table of marks from the &GAP; library of tables of
+##  marks (see&nbsp;<Ref Sect="The Library of Tables of Marks"/>)
+##  then it has an identifier,
+##  and if <A>tom</A> was constructed from a group with <Ref Func="Name"/>
+##  then this name is chosen as
+##  <Ref Func="Identifier" Label="for tables of marks"/> value.
 ##  There is no default method to compute an identifier in all other cases.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Identifier( a5 );
+##  "A5"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "Identifier", IsTableOfMarks );
 
@@ -624,12 +1025,29 @@ DeclareAttribute( "Identifier", IsTableOfMarks );
 ##
 #A  MatTom( <tom> )
 ##
-##  `MatTom' returns the square matrix of marks
-##  (see~"More about Tables of Marks") of the table of marks <tom> which is
-##  stored in a compressed form using the attributes `MarksTom' and `SubsTom'
-##  (see~"MarksTom").
-##  This may need substantially more space than the values of `MarksTom' and
-##  `SubsTom'.
+##  <#GAPDoc Label="MatTom">
+##  <ManSection>
+##  <Attr Name="MatTom" Arg='tom'/>
+##
+##  <Description>
+##  <Ref Func="MatTom"/> returns the square matrix of marks
+##  (see&nbsp;<Ref Sect="More about Tables of Marks"/>) of the table of marks
+##  <A>tom</A> which is stored in a compressed form using the attributes
+##  <Ref Func="MarksTom"/> and <Ref Func="SubsTom"/>
+##  This may need substantially more space than the values of
+##  <Ref Func="MarksTom"/> and <Ref Func="SubsTom"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> MatTom( a5 );
+##  [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+##    [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ], 
+##    [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ], 
+##    [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ], 
+##    [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MatTom", IsTableOfMarks );
 
@@ -638,24 +1056,46 @@ DeclareAttribute( "MatTom", IsTableOfMarks );
 ##
 #A  MoebiusTom( <tom> )
 ##
-##  `MoebiusTom' computes the M{\accent127 o}bius values both of the subgroup
-##  lattice of the group $G$ with table of marks <tom> and of the poset of
-##  conjugacy classes of subgroups of $G$.
-##  It returns a record where the component
-##  `mu' contains the M{\accent127 o}bius values of the subgroup lattice,
-##  and the component `nu' contains the M{\accent127 o}bius values of the
-##  poset.
+##  <#GAPDoc Label="MoebiusTom">
+##  <ManSection>
+##  <Attr Name="MoebiusTom" Arg='tom'/>
 ##
-##  Moreover, according to an observation of Isaacs et al.~(see~\cite{HIO89},
-##  \cite{Pah93}), the values on the subgroup lattice often can be derived
+##  <Description>
+##  <Ref Func="MoebiusTom"/> computes the Möbius values both of the subgroup
+##  lattice of the group <M>G</M> with table of marks <A>tom</A>
+##  and of the poset of conjugacy classes of subgroups of <M>G</M>.
+##  It returns a record where the component
+##  <C>mu</C> contains the Möbius values of the subgroup lattice,
+##  and the component <C>nu</C> contains the Möbius values of the poset.
+##  <P/>
+##  Moreover, according to an observation of Isaacs et al.
+##  (see&nbsp;<Cite Key="HIO89"/>, <Cite Key="Pah93"/>),
+##  the values on the subgroup lattice often can be derived
 ##  from those of the poset of conjugacy classes.
-##  These ``expected values'' are returned in the component `ex',
+##  These <Q>expected values</Q> are returned in the component <C>ex</C>,
 ##  and the list of numbers of those subgroups where the expected value does
-##  not coincide with the actual value are returned in the component `hyp'.
+##  not coincide with the actual value are returned in the component
+##  <C>hyp</C>.
 ##  For the computation of these values, the position of the derived subgroup
-##  of $G$ is needed (see~"DerivedSubgroupTom").
+##  of <M>G</M> is needed (see&nbsp;<Ref Func="DerivedSubgroupTom"/>).
 ##  If it is not uniquely determined then the result does not have the
-##  components `ex' and `hyp'.
+##  components <C>ex</C> and <C>hyp</C>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> MoebiusTom( a5 );
+##  rec( ex := [ -60, 4, 2,,, -1, -1, -1, 1 ], hyp := [  ], 
+##    mu := [ -60, 4, 2,,, -1, -1, -1, 1 ], nu := [ -1, 2, 1,,, -1, -1, -1, 1 ] )
+##  gap> tom:= TableOfMarks( "M12" );;
+##  gap> moebius:= MoebiusTom( tom );;
+##  gap> moebius.hyp;
+##  [ 1, 2, 4, 16, 39, 45, 105 ]
+##  gap> moebius.mu[1];  moebius.ex[1];
+##  95040
+##  190080
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MoebiusTom", IsTableOfMarks );
 
@@ -664,9 +1104,32 @@ DeclareAttribute( "MoebiusTom", IsTableOfMarks );
 ##
 #A  WeightsTom( <tom> )
 ##
-##  `WeightsTom' extracts the *weights* from the table of marks <tom>,
-##  i.e., the diagonal entries of the matrix of marks (see~"MarksTom"),
+##  <#GAPDoc Label="WeightsTom">
+##  <ManSection>
+##  <Attr Name="WeightsTom" Arg='tom'/>
+##
+##  <Description>
+##  <Ref Attr="WeightsTom"/> extracts the <E>weights</E> from the table of
+##  marks <A>tom</A>, i.e., the diagonal entries of the matrix of marks
+##  (see&nbsp;<Ref Func="MarksTom"/>),
 ##  indicating the index of a subgroup in its normalizer.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> wt:= WeightsTom( a5 );
+##  [ 60, 2, 2, 3, 2, 1, 1, 1, 1 ]
+##  ]]></Example>
+##  <P/>
+##  This information may be used to obtain the numbers of conjugate
+##  supergroups from the marks.
+##  <Example><![CDATA[
+##  gap> marks:= MarksTom( a5 );;
+##  gap> List( [ 1 .. 9 ], x -> marks[x] / wt[x] );
+##  [ [ 1 ], [ 15, 1 ], [ 10, 1 ], [ 5, 1, 1 ], [ 6, 1 ], [ 10, 2, 1, 1 ],
+##    [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "WeightsTom", IsTableOfMarks );
 
@@ -674,105 +1137,170 @@ DeclareAttribute( "WeightsTom", IsTableOfMarks );
 #############################################################################
 ##
 ##  9. Properties of Tables of Marks
-#6
-##  For a table of marks <tom> of a group $G$, the following properties
-##  have the same meaning as the corresponding properties for $G$.
-##  Additionally, if a positive integer <sub> is given as the second argument
-##  then the value of the corresponding property for the <sub>-th class of
-##  subgroups of <tom> is returned.
-##  
-##  \>IsAbelianTom( <tom>[, <sub>] )
-##  \>IsCyclicTom( <tom>[, <sub>] )
-##  \>IsNilpotentTom( <tom>[, <sub>] )
-##  \>IsPerfectTom( <tom>[, <sub>] )
-##  \>IsSolvableTom( <tom>[, <sub>] )
+##
+##  <#GAPDoc Label="[6]{tom}">
+##  For a table of marks <A>tom</A> of a group <M>G</M>,
+##  the following properties have the same meaning as the corresponding
+##  properties for <M>G</M>.
+##  Additionally, if a positive integer <A>sub</A> is given
+##  as the second argument
+##  then the value of the corresponding property for the <A>sub</A>-th class
+##  of subgroups of <A>tom</A> is returned.
+##  <P/>
+##  <ManSection>
+##  <Prop Name="IsAbelianTom" Arg='tom[, sub]'/>
+##  <Prop Name="IsCyclicTom" Arg='tom[, sub]'/>
+##  <Prop Name="IsNilpotentTom" Arg='tom[, sub]'/>
+##  <Prop Name="IsPerfectTom" Arg='tom[, sub]'/>
+##  <Prop Name="IsSolvableTom" Arg='tom[, sub]'/>
+##
+##  <Description>
+##  <Example><![CDATA[
+##  gap> tom:= TableOfMarks( "A5" );;
+##  gap> IsAbelianTom( tom );  IsPerfectTom( tom );
+##  false
+##  true
+##  gap> IsAbelianTom( tom, 3 );  IsNilpotentTom( tom, 7 );
+##  true
+##  false
+##  gap> IsPerfectTom( tom, 7 );  IsSolvableTom( tom, 7 );
+##  false
+##  true
+##  gap> for i in [ 1 .. 6 ] do
+##  > Print( i, ": ", IsCyclicTom(a5, i), "  " );
+##  > od;  Print( "\n" );
+##  1: true  2: true  3: true  4: false  5: true  6: false  
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
-#A  IsAbelianTom( <tom> )
-#O  IsAbelianTom( <tom>, <sub> )
+#P  IsAbelianTom( <tom>[, <sub>] )
 ##
-##  `IsAbelianTom' tests if the underlying group of the table of marks
-##  <tom> is abelian.
-##  If a second argument <sub> is given then `IsAbelianTom' returns whether
-##  the groups in the <sub>-th class of subgroups in <tom> are abelian.
+##  <ManSection>
+##  <Prop Name="IsAbelianTom" Arg='tom[, sub]'/>
 ##
-DeclareAttribute( "IsAbelianTom", IsTableOfMarks );
+##  <Description>
+##  <Ref Func="IsAbelianTom"/> tests if the underlying group of the table of
+##  marks <A>tom</A> is abelian.
+##  If a second argument <A>sub</A> is given then <Ref Func="IsAbelianTom"/>
+##  returns whether the groups in the <A>sub</A>-th class of subgroups in
+##  <A>tom</A> are abelian.
+##  </Description>
+##  </ManSection>
+##
+DeclareProperty( "IsAbelianTom", IsTableOfMarks );
 DeclareOperation( "IsAbelianTom", [ IsTableOfMarks, IsPosInt ] );
 
 
 #############################################################################
 ##
-#A  IsCyclicTom( <tom> )
-#O  IsCyclicTom( <tom>, <sub> )
+#P  IsCyclicTom( <tom>[, <sub>] )
 ##
-##  `IsCyclicTom' tests if the underlying group of the table of marks
-##  <tom> is cyclic.
-##  If a second argument <sub> is given then `IsCyclicTom' returns whether
-##  the groups in the <sub>-th class of subgroups in <tom> are cyclic.
+##  <ManSection>
+##  <Prop Name="IsCyclicTom" Arg='tom[, sub]'/>
+##
+##  <Description>
+##  <Ref Func="IsCyclicTom"/> tests if the underlying group of the table of
+##  marks <A>tom</A> is cyclic.
+##  If a second argument <A>sub</A> is given then <Ref Func="IsCyclicTom"/>
+##  returns whether the groups in the <A>sub</A>-th class of subgroups in
+##  <A>tom</A> are cyclic.
+##  <P/>
 ##  A subgroup is cyclic if and only if the sum over the corresponding row of
-##  the inverse table of marks is nonzero (see~\cite{Ker91}, page 125).
+##  the inverse table of marks is nonzero
+##  (see&nbsp;<Cite Key="Ker91" Where="page 125"/>).
 ##  Thus we only have to decompose the corresponding idempotent.
+##  </Description>
+##  </ManSection>
 ##
-DeclareAttribute( "IsCyclicTom", IsTableOfMarks );
+DeclareProperty( "IsCyclicTom", IsTableOfMarks );
 DeclareOperation( "IsCyclicTom", [ IsTableOfMarks, IsPosInt ] );
 
 
 #############################################################################
 ##
-#A  IsNilpotentTom( <tom )
-#O  IsNilpotentTom( <tom>, <sub> )
+#P  IsNilpotentTom( <tom>[, <sub>] )
 ##
-##  `IsNilpotentTom' tests if the underlying group of the table of marks
-##  <tom> is nilpotent.
-##  If a second argument <sub> is given then `IsNilpotentTom' returns whether
-##  the groups in the <sub>-th class of subgroups in <tom> are nilpotent.
+##  <ManSection>
+##  <Prop Name="IsNilpotentTom" Arg='tom[, sub]'/>
 ##
-DeclareAttribute( "IsNilpotentTom", IsTableOfMarks );
+##  <Description>
+##  <Ref Func="IsNilpotentTom"/> tests if the underlying group of the table
+##  of marks <A>tom</A> is nilpotent.
+##  If a second argument <A>sub</A> is given then
+##  <Ref Func="IsNilpotentTom"/> returns whether the groups in the
+##  <A>sub</A>-th class of subgroups in <A>tom</A> are nilpotent.
+##  </Description>
+##  </ManSection>
+##
+DeclareProperty( "IsNilpotentTom", IsTableOfMarks );
 DeclareOperation( "IsNilpotentTom", [ IsTableOfMarks, IsPosInt ] );
 
 
 #############################################################################
 ##
-#A  IsPerfectTom( <tom> )
-#O  IsPerfectTom( <tom>, <sub> )
+#P  IsPerfectTom( <tom>[, <sub>] )
 ##
-##  `IsPerfectTom' tests if the underlying group of the table of marks
-##  <tom> is perfect.
-##  If a second argument <sub> is given then `IsPerfectTom' returns whether
-##  the groups in the <sub>-th class of subgroups in <tom> are perfect.
+##  <ManSection>
+##  <Prop Name="IsPerfectTom" Arg='tom[, sub]'/>
 ##
-DeclareAttribute( "IsPerfectTom", IsTableOfMarks );
+##  <Description>
+##  <Ref Func="IsPerfectTom"/> tests if the underlying group of the table of
+##  marks <A>tom</A> is perfect.
+##  If a second argument <A>sub</A> is given then <Ref Func="IsPerfectTom"/>
+##  returns whether the groups in the <A>sub</A>-th class of subgroups in
+##  <A>tom</A> are perfect.
+##  </Description>
+##  </ManSection>
+##
+DeclareProperty( "IsPerfectTom", IsTableOfMarks );
 DeclareOperation( "IsPerfectTom", [ IsTableOfMarks, IsPosInt ] );
 
 
 #############################################################################
 ##
-#A  IsSolvableTom( <tom> )
-#O  IsSolvableTom( <tom>, <sub> )
+#P  IsSolvableTom( <tom>[, <sub>] )
 ##
-##  `IsSolvableTom' tests if the underlying group of the table of marks
-##  <tom> is solvable.
-##  If a second argument <sub> is given then `IsSolvableTom' returns whether
-##  the groups in the <sub>-th class of subgroups in <tom> are solvable.
+##  <ManSection>
+##  <Prop Name="IsSolvableTom" Arg='tom[, sub]'/>
 ##
-DeclareAttribute( "IsSolvableTom", IsTableOfMarks );
+##  <Description>
+##  <Ref Func="IsSolvableTom"/> tests if the underlying group of the table of
+##  marks <A>tom</A> is solvable.
+##  If a second argument <A>sub</A> is given then <Ref Func="IsSolvableTom"/>
+##  returns whether the groups in the <A>sub</A>-th class of subgroups in
+##  <A>tom</A> are solvable.
+##  </Description>
+##  </ManSection>
+##
+DeclareProperty( "IsSolvableTom", IsTableOfMarks );
 DeclareOperation( "IsSolvableTom", [ IsTableOfMarks, IsPosInt ] );
 
 
 #############################################################################
 ##
 ##  10. Other Operations for Tables of Marks
-#7
-##  \>IsInternallyConsistent( <tom> )!{for tables of marks} O
 ##
-##  For a table of marks <tom>, `IsInternallyConsistent'
-##  decomposes all tensor products of rows of <tom>.
-##  It returns `true' if all decomposition numbers are nonnegative integers,
-##  and `false' otherwise.
+##  <#GAPDoc Label="[7]{tom}">
+##  <ManSection>
+##  <Meth Name="IsInternallyConsistent"
+##   Arg='tom' Label="for tables of marks"/>
+##
+##  <Description>
+##  For a table of marks <A>tom</A>,
+##  <Ref Func="IsInternallyConsistent" Label="for tables of marks"/>
+##  decomposes all tensor products of rows of <A>tom</A>.
+##  It returns <K>true</K> if all decomposition numbers are nonnegative
+##  integers, and <K>false</K> otherwise.
 ##  This provides a strong consistency check for a table of marks.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 
 
@@ -781,20 +1309,30 @@ DeclareOperation( "IsSolvableTom", [ IsTableOfMarks, IsPosInt ] );
 #O  DerivedSubgroupTom( <tom>, <sub> )
 #F  DerivedSubgroupsTom( <tom> )
 ##
-##  For a table of marks <tom> and a positive integer <sub>,
-##  `DerivedSubgroupTom' returns either a positive integer $i$ or a list $l$
-##  of positive integers.
+##  <#GAPDoc Label="DerivedSubgroupTom">
+##  <ManSection>
+##  <Oper Name="DerivedSubgroupTom" Arg='tom, sub'/>
+##  <Func Name="DerivedSubgroupsTom" Arg='tom'/>
+##
+##  <Description>
+##  For a table of marks <A>tom</A> and a positive integer <A>sub</A>,
+##  <Ref Oper="DerivedSubgroupTom"/> returns either a positive integer
+##  <M>i</M> or a list <M>l</M> of positive integers.
 ##  In the former case, the result means that the derived subgroups of the
-##  subgroups in the <sub>-th class of <tom> lie in the $i$-th class.
+##  subgroups in the <A>sub</A>-th class of <A>tom</A> lie in the
+##  <M>i</M>-th class.
 ##  In the latter case, the class of the derived subgroups could not be
 ##  uniquely determined, and the position of the class of derived subgroups
-##  is an entry of $l$.
-##
-##  Values computed with `DerivedSubgroupTom' are stored using the attribute
-##  `DerivedSubgroupsTomPossible' (see~"DerivedSubgroupsTomPossible").
-##
-##  `DerivedSubgroupsTom' is just the list of `DerivedSubgroupTom' values for
-##  all values of <sub>.
+##  is an entry of <M>l</M>.
+##  <P/>
+##  Values computed with <Ref Oper="DerivedSubgroupTom"/> are stored
+##  using the attribute <Ref Func="DerivedSubgroupsTomPossible"/>.
+##  <P/>
+##  <Ref Func="DerivedSubgroupsTom"/> is just the list of
+##  <Ref Oper="DerivedSubgroupTom"/> values for all values of <A>sub</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "DerivedSubgroupTom", [ IsTableOfMarks, IsPosInt ] );
 
@@ -806,24 +1344,48 @@ DeclareGlobalFunction( "DerivedSubgroupsTom");
 #A  DerivedSubgroupsTomPossible( <tom> )
 #A  DerivedSubgroupsTomUnique( <tom> )
 ##
-##  Let <tom> be a table of marks.
-##  The value of the attribute `DerivedSubgroupsTomPossible' is a list
-##  in which the value at position $i$ --if bound-- is a positive integer or
-##  a list; the meaning of the entry is the same as in `DerivedSubgroupTom'
-##  (see~"DerivedSubgroupTom").
+##  <#GAPDoc Label="DerivedSubgroupsTomPossible">
+##  <ManSection>
+##  <Attr Name="DerivedSubgroupsTomPossible" Arg='tom'/>
+##  <Attr Name="DerivedSubgroupsTomUnique" Arg='tom'/>
 ##
-##  If the value of the attribute `DerivedSubgroupsTomUnique' is known for
-##  <tom> then it is a list of positive integers, the value at position $i$
-##  being the position of the class of derived subgroups of the $i$-th class
-##  of subgroups in <tom>.
+##  <Description>
+##  Let <A>tom</A> be a table of marks.
+##  The value of the attribute <Ref Func="DerivedSubgroupsTomPossible"/> is
+##  a list in which the value at position <M>i</M> &ndash;if bound&ndash;
+##  is a positive integer or a list; the meaning of the entry is the same as
+##  in <Ref Func="DerivedSubgroupTom"/>.
+##  <P/>
+##  If the value of the attribute <Ref Func="DerivedSubgroupsTomUnique"/> is
+##  known for <A>tom</A> then it is a list of positive integers,
+##  the value at position <M>i</M> being the position of the class of derived
+##  subgroups of the <M>i</M>-th class of subgroups in <A>tom</A>.
 ##  The derived subgroups are in general not uniquely determined by the table
-##  of marks if no `UnderlyingGroup' value is stored,
-##  so there is no default method for `DerivedSubgroupsTomUnique'.
+##  of marks if no <Ref Attr="UnderlyingGroup" Label="for tables of marks"/>
+##  value is stored, so there is no default method for
+##  <Ref Func="DerivedSubgroupsTomUnique"/>.
 ##  But in some cases the derived subgroups are explicitly set when the table
 ##  of marks is constructed.
-##  The `DerivedSubgroupsTomUnique' value is automatically set when the last
-##  missing unique value is entered in the `DerivedSubgroupsTomPossible' list
-##  by `DerivedSubgroupTom'.
+##  The <Ref Func="DerivedSubgroupsTomUnique"/> value is automatically set
+##  when the last missing unique value is entered in the
+##  <Ref Func="DerivedSubgroupsTomPossible"/> list by
+##  <Ref Func="DerivedSubgroupTom"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> a5:= TableOfMarks( "A5" );
+##  TableOfMarks( "A5" )
+##  gap> DerivedSubgroupsTomPossible( a5 );
+##  [ ,, 1,,,,,, 9 ]
+##  gap> DerivedSubgroupTom( a5, 2 );
+##  1
+##  gap> DerivedSubgroupsTomPossible( a5 );
+##  [ , 1, 1,,,,,, 9 ]
+##  gap> DerivedSubgroupsTom( a5 );
+##  [ 1, 1, 1, 1, 1, 3, 5, 4, 9 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "DerivedSubgroupsTomPossible", IsTableOfMarks, "mutable" );
 DeclareAttribute( "DerivedSubgroupsTomUnique", IsTableOfMarks );
@@ -834,23 +1396,48 @@ DeclareAttribute( "DerivedSubgroupsTomUnique", IsTableOfMarks );
 #O  NormalizerTom( <tom>, <sub> )
 #A  NormalizersTom( <tom> )
 ##
-##  Let <tom> be the table of marks of a group $G$, say.
-##  `NormalizerTom' tries to find the conjugacy class of the normalizer $N$
-##  in $G$ of a subgroup $U$ in the <sub>-th class of <tom>.
+##  <#GAPDoc Label="NormalizerTom">
+##  <ManSection>
+##  <Oper Name="NormalizerTom" Arg='tom, sub'/>
+##  <Attr Name="NormalizersTom" Arg='tom'/>
+##
+##  <Description>
+##  Let <A>tom</A> be the table of marks of a group <M>G</M>, say.
+##  <Ref Oper="NormalizerTom"/> tries to find the conjugacy class of the
+##  normalizer <M>N</M> in <M>G</M> of a subgroup <M>U</M> in the
+##  <A>sub</A>-th class of <A>tom</A>.
 ##  The return value is either the list of class numbers of those subgroups
 ##  that have the right size and contain the subgroup and all subgroups that
 ##  clearly contain it as a normal subgroup, or the class number of the
 ##  normalizer if it is uniquely determined by these conditions.
-##  If <tom> knows the subgroup lattice of $G$ (see~"IsTableOfMarksWithGens")
+##  If <A>tom</A> knows the subgroup lattice of <M>G</M>
+##  (see&nbsp;<Ref Func="IsTableOfMarksWithGens"/>)
 ##  then all normalizers are uniquely determined.
-##  `NormalizerTom' should never return an empty list.
-##
-##  `NormalizersTom' returns the list of positions of the classes of
-##  normalizers of subgroups in <tom>.
+##  <Ref Oper="NormalizerTom"/> should never return an empty list.
+##  <P/>
+##  <Ref Attr="NormalizersTom"/> returns the list of positions of the classes
+##  of normalizers of subgroups in <A>tom</A>.
 ##  In addition to the criteria for a single class of subgroup used by
-##  `NormalizerTom', the approximations of normalizers for several classes
-##  are used and thus `NormalizersTom' may return better approximations
-##  than `NormalizerTom'.
+##  <Ref Oper="NormalizerTom"/>,
+##  the approximations of normalizers for several classes are used and thus
+##  <Ref Attr="NormalizersTom"/> may return better approximations than
+##  <Ref Oper="NormalizerTom"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NormalizerTom( a5, 4 );
+##  8
+##  gap> NormalizersTom( a5 );
+##  [ 9, 4, 6, 8, 7, 6, 7, 8, 9 ]
+##  ]]></Example>
+##  <P/>
+##  The example shows that a subgroup with class number 4 in <M>A_5</M>
+##  (which is a Kleinian four group)
+##  is normalized by a subgroup in class 8.
+##  This class contains the subgroups of <M>A_5</M> which are isomorphic to
+##  <M>A_4</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "NormalizerTom", [ IsTableOfMarks, IsPosInt ] );
 DeclareAttribute( "NormalizersTom", IsTableOfMarks );
@@ -860,9 +1447,23 @@ DeclareAttribute( "NormalizersTom", IsTableOfMarks );
 ##
 #O  ContainedTom( <tom>, <sub1>, <sub2> )
 ##
-##  `ContainedTom' returns the number of subgroups in class <sub1> of the
-##  table of marks <tom> that are contained in one fixed member of the class
-##  <sub2>.
+##  <#GAPDoc Label="ContainedTom">
+##  <ManSection>
+##  <Oper Name="ContainedTom" Arg='tom, sub1, sub2'/>
+##
+##  <Description>
+##  <Ref Func="ContainedTom"/> returns the number of subgroups in class
+##  <A>sub1</A> of the table of marks <A>tom</A> that are contained in one
+##  fixed member of the class <A>sub2</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ContainedTom( a5, 3, 5 );  ContainedTom( a5, 3, 8 );
+##  0
+##  4
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ContainedTom", [IsTableOfMarks, IsPosInt, IsPosInt ] );
 
@@ -871,34 +1472,66 @@ DeclareOperation( "ContainedTom", [IsTableOfMarks, IsPosInt, IsPosInt ] );
 ##
 #O  ContainingTom( <tom>, <sub1>, <sub2> )
 ##
-##  `ContainingTom' returns the number of subgroups in class <sub2> of the
-##  table of marks <tom> that contain one fixed member of the class <sub1>.
+##  <#GAPDoc Label="ContainingTom">
+##  <ManSection>
+##  <Oper Name="ContainingTom" Arg='tom, sub1, sub2'/>
+##
+##  <Description>
+##  <Ref Func="ContainingTom"/> returns the number of subgroups in class
+##  <A>sub2</A> of the table of marks <A>tom</A> that contain one fixed
+##  member of the class <A>sub1</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ContainingTom( a5, 3, 5 );  ContainingTom( a5, 3, 8 );
+##  0
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ContainingTom", [ IsTableOfMarks, IsPosInt, IsPosInt ] );
 
 
 #############################################################################
 ##
-#A  CyclicExtensionsTom( <tom> )
 #O  CyclicExtensionsTom( <tom>, <p> )
-#O  CyclicExtensionsTom( <tom>, <list> )
+#A  CyclicExtensionsTom( <tom>[, <list>] )
 ##
-##  According to A.~Dress~\cite{Dre69}, two columns of the table of marks
-##  <tom> are equal modulo the prime <p> if and only if the corresponding
-##  subgroups are connected by a chain of normal extensions of order <p>.
+##  <#GAPDoc Label="CyclicExtensionsTom">
+##  <ManSection>
+##  <Oper Name="CyclicExtensionsTom" Arg='tom, p' Label="for a prime"/>
+##  <Attr Name="CyclicExtensionsTom" Arg='tom[, list]'
+##   Label="for a list of primes"/>
 ##
-##  In the second form, `CyclicExtensionsTom' returns the classes of this
-##  equivalence relation.
-##  In the third form, <list> must be a list of primes, and the return value
-##  is the list of classes of the relation obtained by considering chains of
-##  normal extensions of prime order where all primes are in <list>.
-##  In the first form, the result is the same as in the third form,
-##  with second argument the set of prime divisors of the size of the group
-##  of <tom>.
-##
-##  (This information is not used by `NormalizerTom' (see~"NormalizerTom")
+##  <Description>
+##  According to A.&nbsp;Dress&nbsp;<Cite Key="Dre69"/>,
+##  two columns of the table of marks <A>tom</A> are equal modulo the prime
+##  <A>p</A> if and only if the corresponding subgroups are connected by a
+##  chain of normal extensions of order <A>p</A>.
+##  <P/>
+##  Called with <A>tom</A> and <A>p</A>,
+##  <Ref Func="CyclicExtensionsTom" Label="for a prime"/>
+##  returns the classes of this equivalence relation.
+##  <P/>
+##  In the second form, <A>list</A> must be a list of primes,
+##  and the return value is the list of classes of the relation obtained by
+##  considering chains of normal extensions of prime order where all primes
+##  are in <A>list</A>.
+##  The default value for <A>list</A> is the set of prime divisors of the
+##  order of the group of <A>tom</A>.
+##  <P/>
+##  (This information is <E>not</E> used by <Ref Func="NormalizerTom"/>
 ##  although it might give additional restrictions in the search of
 ##  normalizers.)
+##  <P/>
+##  <Example><![CDATA[
+##  gap> CyclicExtensionsTom( a5, 2 );
+##  [ [ 1, 2, 4 ], [ 3, 6 ], [ 5, 7 ], [ 8 ], [ 9 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "CyclicExtensionsTom", IsTableOfMarks );
 DeclareOperation( "CyclicExtensionsTom", [ IsTableOfMarks, IsPosInt ] );
@@ -911,12 +1544,21 @@ DeclareOperation( "CyclicExtensionsTom", [ IsTableOfMarks, IsList ] );
 #O  CyclicExtensionsTomOp( <tom>, <p> )
 #O  CyclicExtensionsTomOp( <tom>, <list> )
 ##
-##  The attribute `ComputedCyclicExtensionsTom' is used by the default
-##  `CyclicExtensionsTom' method to store the computed equivalence classes
-##  for the table of marks <tom> and access them in subsequent calls.
+##  <ManSection>
+##  <Attr Name="ComputedCyclicExtensionsTom" Arg='tom'/>
+##  <Oper Name="CyclicExtensionsTomOp" Arg='tom, p'/>
+##  <Oper Name="CyclicExtensionsTomOp" Arg='tom, list'/>
 ##
-##  The operation `CyclicExtensionsTomOp' does the real work for
-##  `CyclicExtensionsTom'.
+##  <Description>
+##  The attribute <Ref Func="ComputedCyclicExtensionsTom"/> is used by the
+##  default <Ref Func="CyclicExtensionsTom"/> method to store the computed
+##  equivalence classes for the table of marks <A>tom</A> and access them in
+##  subsequent calls.
+##  <P/>
+##  The operation <Ref Func="CyclicExtensionsTomOp"/> does the real work for
+##  <Ref Func="CyclicExtensionsTom"/>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "ComputedCyclicExtensionsTom", IsTableOfMarks, "mutable" );
 DeclareOperation( "CyclicExtensionsTomOp", [ IsTableOfMarks, IsPosInt ] );
@@ -927,15 +1569,35 @@ DeclareOperation( "CyclicExtensionsTomOp", [ IsTableOfMarks, IsList ] );
 ##
 #O  DecomposedFixedPointVector( <tom>, <fix> )
 ##
-##  Let <tom> be the table of marks of the group $G$, say,
-##  and let <fix> be a vector of fixed point numbers w.r.t.~an action of $G$,
-##  i.e., a vector which contains for each class of subgroups the number of
-##  fixed points under the given action.
-##  `DecomposedFixedPointVector' returns the decomposition of <fix> into rows
-##  of the table of marks.
+##  <#GAPDoc Label="DecomposedFixedPointVector">
+##  <ManSection>
+##  <Oper Name="DecomposedFixedPointVector" Arg='tom, fix'/>
+##
+##  <Description>
+##  Let <A>tom</A> be the table of marks of the group <M>G</M>, say,
+##  and let <A>fix</A> be a vector of fixed point numbers w.r.t.&nbsp;an
+##  action of <M>G</M>, i.e., a vector which contains for each class of
+##  subgroups the number of fixed points under the given action.
+##  <Ref Func="DecomposedFixedPointVector"/> returns the decomposition of
+##  <A>fix</A> into rows of the table of marks.
 ##  This decomposition  corresponds to a decomposition of the action into
 ##  transitive constituents.
-##  Trailing zeros in <fix> may be omitted.
+##  Trailing zeros in <A>fix</A> may be omitted.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> DecomposedFixedPointVector( a5, [ 16, 4, 1, 0, 1, 1, 1 ] );
+##  [ 0, 0, 0, 0, 0, 1, 1 ]
+##  ]]></Example>
+##  <P/>
+##  The vector <A>fix</A> may be any vector of integers.
+##  The resulting decomposition, however, will not be integral, in general.
+##  <Example><![CDATA[
+##  gap> DecomposedFixedPointVector( a5, [ 0, 0, 0, 0, 1, 1 ] );
+##  [ 2/5, -1, -1/2, 0, 1/2, 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "DecomposedFixedPointVector",
     [ IsTableOfMarks, IsList ] );
@@ -945,15 +1607,35 @@ DeclareOperation( "DecomposedFixedPointVector",
 ##
 #O  EulerianFunctionByTom( <tom>, <n>[, <sub>] )
 ##
-##  In the first form `EulerianFunctionByTom' computes the Eulerian
-##  function (see~"EulerianFunction") of the underlying group $G$ of the
-##  table of marks <tom>,
-##  that is, the number of <n>-tuples of elements in $G$ that generate $G$.
-##  In the second form `EulerianFunctionByTom' computes the Eulerian function
-##  of each subgroup in the <sub>-th class of subgroups of <tom>.
+##  <#GAPDoc Label="EulerianFunctionByTom">
+##  <ManSection>
+##  <Oper Name="EulerianFunctionByTom" Arg='tom, n[, sub]'/>
 ##
-##  For a group $G$ whose table of marks is known, `EulerianFunctionByTom'
-##  is installed as a method for `EulerianFunction' (see~"EulerianFunction").
+##  <Description>
+##  Called with two arguments, <Ref Func="EulerianFunctionByTom"/> computes
+##  the Eulerian function (see&nbsp;<Ref Func="EulerianFunction"/>) of the
+##  underlying group <M>G</M> of the table of marks <A>tom</A>,
+##  that is, the number of <A>n</A>-tuples of elements in <M>G</M> that
+##  generate <M>G</M>.
+##  If the optional argument <A>sub</A> is given then
+##  <Ref Func="EulerianFunctionByTom"/> computes the Eulerian function
+##  of each subgroup in the <A>sub</A>-th class of subgroups of <A>tom</A>.
+##  <P/>
+##  For a group <M>G</M> whose table of marks is known,
+##  <Ref Func="EulerianFunctionByTom"/>
+##  is installed as a method for <Ref Func="EulerianFunction"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> EulerianFunctionByTom( a5, 2 );
+##  2280
+##  gap> EulerianFunctionByTom( a5, 3 );
+##  200160
+##  gap> EulerianFunctionByTom( a5, 2, 3 );
+##  8
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "EulerianFunctionByTom", [ IsTableOfMarks, IsPosInt ] );
 DeclareOperation( "EulerianFunctionByTom",
@@ -964,13 +1646,32 @@ DeclareOperation( "EulerianFunctionByTom",
 ##
 #O  IntersectionsTom( <tom>, <sub1>, <sub2> )
 ##
-##  The intersections of the groups in the <sub1>-th conjugacy class of
-##  subgroups of the table of marks <tom> with the groups in the <sub2>-th
-##  conjugacy classes of subgroups of <tom> are determined up to conjugacy by
-##  the decomposition of the tensor product of their rows of marks.
-##  `IntersectionsTom' returns a list $l$ that describes this decomposition.
-##  The $i$-th entry in $l$ is the multiplicity of groups in the
-##  $i$-th conjugacy class as an intersection.
+##  <#GAPDoc Label="IntersectionsTom">
+##  <ManSection>
+##  <Oper Name="IntersectionsTom" Arg='tom, sub1, sub2'/>
+##
+##  <Description>
+##  The intersections of the groups in the <A>sub1</A>-th conjugacy class of
+##  subgroups of the table of marks <A>tom</A> with the groups in the
+##  <A>sub2</A>-th conjugacy classes of subgroups of <A>tom</A>
+##  are determined up to conjugacy by the decomposition of the tensor product
+##  of their rows of marks.
+##  <Ref Func="IntersectionsTom"/> returns a list <M>l</M> that describes
+##  this decomposition.
+##  The <M>i</M>-th entry in <M>l</M> is the multiplicity of groups in the
+##  <M>i</M>-th conjugacy class as an intersection.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IntersectionsTom( a5, 8, 8 );
+##  [ 0, 0, 1, 0, 0, 0, 0, 1 ]
+##  ]]></Example>
+##  Any two subgroups of class number 8 (<M>A_4</M>) of <M>A_5</M> are either
+##  equal and their intersection has again class number 8,
+##  or their intersection has class number <M>3</M>,
+##  and is a cyclic subgroup of order 3.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IntersectionsTom",
     [ IsTableOfMarks, IsPosInt, IsPosInt ] );
@@ -980,26 +1681,68 @@ DeclareOperation( "IntersectionsTom",
 ##
 #O  FactorGroupTom( <tom>, <n> )
 ##
-##  For a table of marks <tom> of the group $G$, say,
-##  and the normal subgroup $N$ of $G$ corresponding to the <n>-th class of
-##  subgroups of <tom>,
-##  `FactorGroupTom' returns the table of marks of the factor
-##  group $G / N$.
+##  <#GAPDoc Label="FactorGroupTom">
+##  <ManSection>
+##  <Oper Name="FactorGroupTom" Arg='tom, n'/>
+##
+##  <Description>
+##  For a table of marks <A>tom</A> of the group <M>G</M>, say,
+##  and the normal subgroup <M>N</M> of <M>G</M> corresponding to the
+##  <A>n</A>-th class of subgroups of <A>tom</A>,
+##  <Ref Func="FactorGroupTom"/> returns the table of marks of the factor
+##  group <M>G / N</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> s4:= TableOfMarks( SymmetricGroup( 4 ) );
+##  TableOfMarks( Sym( [ 1 .. 4 ] ) )
+##  gap> LengthsTom( s4 );
+##  [ 1, 3, 6, 4, 1, 3, 3, 4, 3, 1, 1 ]
+##  gap> OrdersTom( s4 );
+##  [ 1, 2, 2, 3, 4, 4, 4, 6, 8, 12, 24 ]
+##  gap> s3:= FactorGroupTom( s4, 5 );
+##  TableOfMarks( Group([ f1, f2 ]) )
+##  gap> Display( s3 );
+##  1:  6
+##  2:  3 1
+##  3:  2 . 2
+##  4:  1 1 1 1
+##  
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "FactorGroupTom", [ IsTableOfMarks, IsPosInt ] );
 
 
 #############################################################################
 ##
-#A  MaximalSubgroupsTom( <tom> )
-#O  MaximalSubgroupsTom( <tom>, <sub> )
+#A  MaximalSubgroupsTom( <tom>[, <sub>] )
 ##
-##  In the first form `MaximalSubgroupsTom' returns a list of length two,
+##  <#GAPDoc Label="MaximalSubgroupsTom">
+##  <ManSection>
+##  <Attr Name="MaximalSubgroupsTom" Arg='tom[, sub]'/>
+##
+##  <Description>
+##  Called with a table of marks <A>tom</A>,
+##  <Ref Func="MaximalSubgroupsTom"/> returns a list of length two,
 ##  the first entry being the list of positions of the classes of maximal
-##  subgroups of the whole group of the table of marks <tom>,
+##  subgroups of the whole group of <A>tom</A>,
 ##  the second entry being the list of class lengths of these groups.
-##  In the second form the same information for the <sub>-th class of
-##  subgroups is returned.
+##  <P/>
+##  Called with a table of marks <A>tom</A> and a position <A>sub</A>,
+##  the same information for the <A>sub</A>-th class of subgroups is
+##  returned.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> MaximalSubgroupsTom( s4 );
+##  [ [ 10, 9, 8 ], [ 1, 3, 4 ] ]
+##  gap> MaximalSubgroupsTom( s4, 10 );
+##  [ [ 5, 4 ], [ 1, 4 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MaximalSubgroupsTom", IsTableOfMarks );
 DeclareOperation( "MaximalSubgroupsTom", [ IsTableOfMarks, IsPosInt ] );
@@ -1009,11 +1752,25 @@ DeclareOperation( "MaximalSubgroupsTom", [ IsTableOfMarks, IsPosInt ] );
 ##
 #O  MinimalSupergroupsTom( <tom>, <sub> )
 ##
-##  For a table of marks <tom>, `MinimalSupergroupsTom' returns a list of
-##  length two, the first entry being the list of positions of the classes
-##  containing the minimal supergroups of the groups in the <sub>-th class
-##  of subgroups of <tom>,
+##  <#GAPDoc Label="MinimalSupergroupsTom">
+##  <ManSection>
+##  <Oper Name="MinimalSupergroupsTom" Arg='tom, sub'/>
+##
+##  <Description>
+##  For a table of marks <A>tom</A>,
+##  <Ref Func="MinimalSupergroupsTom"/> returns a list of length two,
+##  the first entry being the list of positions of the classes
+##  containing the minimal supergroups of the groups in the <A>sub</A>-th
+##  class of subgroups of <A>tom</A>,
 ##  the second entry being the list of class lengths of these groups.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> MinimalSupergroupsTom( s4, 5 );
+##  [ [ 9, 10 ], [ 3, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "MinimalSupergroupsTom", [ IsTableOfMarks, IsPosInt ] );
 
@@ -1021,37 +1778,42 @@ DeclareOperation( "MinimalSupergroupsTom", [ IsTableOfMarks, IsPosInt ] );
 #############################################################################
 ##
 ##  11. Accessing Subgroups via Tables of Marks
-#8
-##  Let <tom> be the table of marks of the group $G$,
-##  and assume that <tom> has access to $G$ via the `UnderlyingGroup' value
-##  (see~"UnderlyingGroup!for tables of marks").
-##  Then it makes sense to use <tom> and its ordering of conjugacy classes of
-##  subgroups of $G$ for storing information for constructing representatives
-##  of these classes.
-##  The group $G$ is in general not sufficient for this,
-##  <tom> needs more information;
-##  this is available if and only if the `IsTableOfMarksWithGens' value of
-##  <tom> is `true' (see~"IsTableOfMarksWithGens").
-##  In this case, `RepresentativeTom' (see~"RepresentativeTom") can be used
-##  to get a subgroup of the $i$-th class, for all $i$.
 ##
-##  {\GAP} provides two different possibilities to store generators of the
+##  <#GAPDoc Label="[8]{tom}">
+##  Let <A>tom</A> be the table of marks of the group <M>G</M>,
+##  and assume that <A>tom</A> has access to <M>G</M> via the
+##  <Ref Attr="UnderlyingGroup" Label="for tables of marks"/> value.
+##  Then it makes sense to use <A>tom</A> and its ordering of conjugacy
+##  classes of subgroups of <M>G</M> for storing information for constructing
+##  representatives of these classes.
+##  The group <M>G</M> is in general not sufficient for this,
+##  <A>tom</A> needs more information;
+##  this is available if and only if the <Ref Func="IsTableOfMarksWithGens"/>
+##  value of <A>tom</A> is <K>true</K>.
+##  In this case, <Ref Func="RepresentativeTom"/> can be used
+##  to get a subgroup of the <M>i</M>-th class, for all <M>i</M>.
+##  <P/>
+##  &GAP; provides two different possibilities to store generators of the
 ##  representatives of classes of subgroups.
-##  The first is implemented by the attribute `GeneratorsSubgroupsTom'
-##  (see~"GeneratorsSubgroupsTom"), which uses explicit generators.
-##  The second, more general, possibility is implemented by the attributes
-##  `StraightLineProgramsTom' (see~"StraightLineProgramsTom") and
-##  `StandardGeneratorsInfo' (see~"StandardGeneratorsInfo!for tables of marks").
-##  The `StraightLineProgramsTom' value encodes the generators as 
-##  straight line programs (see~"Straight Line Programs") that evaluate to
-##  the generators in question when applied to standard generators of $G$.
-##  This means that on the one hand, standard generators of $G$ must be known
-##  in order to use `StraightLineProgramsTom'.
+##  The first is implemented by the attribute
+##  <Ref Func="GeneratorsSubgroupsTom"/>, which uses explicit generators
+##  of the subgroups.
+##  The second, more general, possibility is implemented by the attribute
+##  <Ref Func="StraightLineProgramsTom"/>, which encodes the generators as
+##  straight line programs (see&nbsp;<Ref Sect="Straight Line Programs"/>)
+##  that evaluate to the generators in question when applied to
+##  <E>standard generators</E> of <M>G</M>.
+##  <!--, see <Ref Sect="Standard Generators of Groups" BookName="tomlib"/>. -->
+##  This means that on the one hand, standard generators of <M>G</M> must be
+##  known in order to use <Ref Func="StraightLineProgramsTom"/>.
 ##  On the other hand, the straight line programs allow one to compute easily
-##  generators not only of a subgroup $U$ of $G$ but also generators of the
-##  image of $U$ in any representation of $G$, provided that one knows
-##  standard generators of the image of $G$ under this representation
-##  (see~"RepresentativeTomByGenerators" for details and an example).
+##  generators not only of a subgroup <M>U</M> of <M>G</M> but also
+##  generators of the image of <M>U</M> in any representation of <M>G</M>,
+##  provided that one knows standard generators of the image of <M>G</M>
+##  under this representation.
+##  See the manual of the package <Package>TomLib</Package> for details
+##  and an example.
+##  <#/GAPDoc>
 ##
 
 
@@ -1059,18 +1821,29 @@ DeclareOperation( "MinimalSupergroupsTom", [ IsTableOfMarks, IsPosInt ] );
 ##
 #A  GeneratorsSubgroupsTom( <tom> )
 ##
-##  Let <tom> be a table of marks with `IsTableOfMarksWithGens' value `true'.
-##  Then `GeneratorsSubgroupsTom' returns a list of length two,
-##  the first entry being a list $l$ of elements of the group stored as
-##  `UnderlyingGroup' value of <tom>,
-##  the second entry being a list that contains at position $i$ a list of
-##  positions in $l$ of generators of a representative of a subgroup in class
-##  $i$.
+##  <#GAPDoc Label="GeneratorsSubgroupsTom">
+##  <ManSection>
+##  <Attr Name="GeneratorsSubgroupsTom" Arg='tom'/>
 ##
-##  The `GeneratorsSubgroupsTom' value is known for all tables of marks that
-##  have been computed with `TableOfMarks' (see~"TableOfMarks") from a group,
+##  <Description>
+##  Let <A>tom</A> be a table of marks with
+##  <Ref Func="IsTableOfMarksWithGens"/> value <K>true</K>.
+##  Then <Ref Func="GeneratorsSubgroupsTom"/> returns a list of length two,
+##  the first entry being a list <M>l</M> of elements of the group stored as
+##  <Ref Attr="UnderlyingGroup" Label="for tables of marks"/> value of
+##  <A>tom</A>,
+##  the second entry being a list that contains at position <M>i</M> a list
+##  of positions in <M>l</M> of generators of a representative of a subgroup
+##  in class <M>i</M>.
+##  <P/>
+##  The <Ref Func="GeneratorsSubgroupsTom"/> value is known for all tables of
+##  marks that have been computed with
+##  <Ref Func="TableOfMarks" Label="for a group"/> from a group,
 ##  and there is a method to compute the value for a table of marks that
-##  admits `RepresentativeTom' (see~"RepresentativeTom").
+##  admits <Ref Func="RepresentativeTom"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "GeneratorsSubgroupsTom", IsTableOfMarks );
 
@@ -1079,55 +1852,98 @@ DeclareAttribute( "GeneratorsSubgroupsTom", IsTableOfMarks );
 ##
 #A  StraightLineProgramsTom( <tom> )
 ##
-##  For a table of marks <tom> with `IsTableOfMarksWithGens' value `true',
-##  `StraightLineProgramsTom' returns a list that contains at position $i$
-##  either a list of straight line programs or a straight line program
-##  (see~"Straight Line Programs"), encoding the generators of
-##  a representative of the $i$-th conjugacy class of subgroups of
-##  `UnderlyingGroup( <tom> )';
+##  <#GAPDoc Label="StraightLineProgramsTom">
+##  <ManSection>
+##  <Attr Name="StraightLineProgramsTom" Arg='tom'/>
+##
+##  <Description>
+##  For a table of marks <A>tom</A> with <Ref Func="IsTableOfMarksWithGens"/>
+##  value <K>true</K>,
+##  <Ref Func="StraightLineProgramsTom"/> returns a list that contains at
+##  position <M>i</M> either a list of straight line programs or a
+##  straight line program (see&nbsp;<Ref Sect="Straight Line Programs"/>),
+##  encoding the generators of a representative of the <M>i</M>-th conjugacy
+##  class of subgroups of <C>UnderlyingGroup( <A>tom</A> )</C>;
 ##  in the former case, each straight line program returns a generator,
 ##  in the latter case, the program returns the list of generators.
-##
-##  There is no default method to compute the `StraightLineProgramsTom' value
+##  <P/>
+##  There is no default method to compute the
+##  <Ref Func="StraightLineProgramsTom"/> value
 ##  of a table of marks if they are not yet stored.
 ##  The value is known for all tables of marks that belong to the
-##  {\GAP} library of tables of marks (see~"The Library of Tables of Marks").
+##  &GAP; library of tables of marks
+##  (see&nbsp;<Ref Sect="The Library of Tables of Marks"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "StraightLineProgramsTom", IsTableOfMarks );
 
 
 #############################################################################
 ##
-#A  StandardGeneratorsInfo( <tom> )
-##
-##  For a table of marks <tom>, a stored  value  of  `StandardGeneratorsInfo'
-##  equals  the  value  of  this   attribute   for   the   underlying   group
-##  (see~"UnderlyingGroup!for     tables     of     marks")     of     <tom>,
-##  cf.~Section~"Standard Generators of Groups".
-##
-##  In this case, the `GeneratorsOfGroup' value of the underlying group $G$
-##  of <tom> is assumed to be in fact a list of standard generators for $G$;
-##  So one should be careful when setting the `StandardGeneratorsInfo' value
-##  by hand.
-##
-##  There is no default method to compute the `StandardGeneratorsInfo' value
-##  of a table of marks if it is not yet stored.
-##
-DeclareAttribute( "StandardGeneratorsInfo", IsTableOfMarks );
-
-
-#############################################################################
-##
 #F  IsTableOfMarksWithGens( <tom> )
 ##
+##  <#GAPDoc Label="IsTableOfMarksWithGens">
+##  <ManSection>
+##  <Func Name="IsTableOfMarksWithGens" Arg='tom'/>
+##
+##  <Description>
 ##  This filter shall express the union of the filters
-##  `IsTableOfMarks and HasStraightLineProgramsTom' and
-##  `IsTableOfMarks and HasGeneratorsSubgroupsTom'.
-##  If a table of marks <tom> has this filter set then <tom> can be asked to
-##  compute information that is in general not uniquely determined by a table
-##  of marks,
+##  <C>IsTableOfMarks and HasStraightLineProgramsTom</C> and
+##  <C>IsTableOfMarks and HasGeneratorsSubgroupsTom</C>.
+##  If a table of marks <A>tom</A> has this filter set then <A>tom</A> can be
+##  asked to compute information that is in general not uniquely determined
+##  by a table of marks,
 ##  for example the positions of derived subgroups or normalizers of
-##  subgroups (see~"DerivedSubgroupTom", "NormalizerTom").
+##  subgroups
+##  (see&nbsp;<Ref Func="DerivedSubgroupTom"/>, <Ref Func="NormalizerTom"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> a5:= TableOfMarks( "A5" );;  IsTableOfMarksWithGens( a5 );
+##  true
+##  gap> HasGeneratorsSubgroupsTom( a5 );  HasStraightLineProgramsTom( a5 );
+##  false
+##  true
+##  gap> alt5:= TableOfMarks( AlternatingGroup( 5 ) );;
+##  gap> IsTableOfMarksWithGens( alt5 );
+##  true
+##  gap> HasGeneratorsSubgroupsTom( alt5 );  HasStraightLineProgramsTom( alt5 );
+##  true
+##  false
+##  gap> progs:= StraightLineProgramsTom( a5 );;
+##  gap> OrdersTom( a5 );
+##  [ 1, 2, 3, 4, 5, 6, 10, 12, 60 ]
+##  gap> IsCyclicTom( a5, 4 );
+##  false
+##  gap> Length( progs[4] );
+##  2
+##  gap> progs[4][1];
+##  <straight line program>
+##  gap> Display( progs[4][1] );  # first generator of an el. ab group of order 4
+##  # input:
+##  r:= [ g1, g2 ];
+##  # program:
+##  r[3]:= r[2]*r[1];
+##  r[4]:= r[3]*r[2]^-1*r[1]*r[3]*r[2]^-1*r[1]*r[2];
+##  # return value:
+##  r[4]
+##  gap> x:= [ [ Z(2)^0, 0*Z(2) ], [ Z(2^2), Z(2)^0 ] ];;
+##  gap> y:= [ [ Z(2^2), Z(2)^0 ], [ 0*Z(2), Z(2^2)^2 ] ];;
+##  gap> res1:= ResultOfStraightLineProgram( progs[4][1], [ x, y ] );
+##  [ [ Z(2)^0, 0*Z(2) ], [ Z(2^2)^2, Z(2)^0 ] ]
+##  gap> res2:= ResultOfStraightLineProgram( progs[4][2], [ x, y ] );
+##  [ [ Z(2)^0, 0*Z(2) ], [ Z(2^2), Z(2)^0 ] ]
+##  gap> w:= y*x;;
+##  gap> res1 = w*y^-1*x*w*y^-1*x*y;
+##  true
+##  gap> subgrp:= Group( res1, res2 );;  Size( subgrp );  IsCyclic( subgrp );
+##  4
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareFilter( "IsTableOfMarksWithGens" );
 
@@ -1143,28 +1959,46 @@ InstallTrueMethod( IsTableOfMarksWithGens,
 #O  RepresentativeTomByGenerators( <tom>, <sub>, <gens> )
 #O  RepresentativeTomByGeneratorsNC( <tom>, <sub>, <gens> )
 ##
-##  Let <tom> be a table of marks with `IsTableOfMarksWithGens' value `true'
-##  (see~"IsTableOfMarksWithGens"), and <sub> a positive integer.
-##  `RepresentativeTom' returns a representative of the <sub>-th conjugacy
-##  class of subgroups of <tom>.
+##  <#GAPDoc Label="RepresentativeTom">
+##  <ManSection>
+##  <Oper Name="RepresentativeTom" Arg='tom, sub'/>
+##  <Oper Name="RepresentativeTomByGenerators" Arg='tom, sub, gens'/>
+##  <Oper Name="RepresentativeTomByGeneratorsNC" Arg='tom, sub, gens'/>
 ##
-##  `RepresentativeTomByGenerators' and `RepresentativeTomByGeneratorsNC'
-##  return a representative of the <sub>-th conjugacy class of subgroups of
-##  <tom>, as a subgroup of the group generated by <gens>.
-##  This means that the standard generators of <tom> are replaced by <gens>.
-##
-##  `RepresentativeTomByGenerators' checks whether mapping the standard
-##  generators of <tom> to <gens> extends to a group isomorphism,
-##  and returns `fail' if not.
-##  `RepresentativeTomByGeneratorsNC' omits all checks.
-##  So `RepresentativeTomByGenerators' is thought mainly for debugging
-##  purposes;
+##  <Description>
+##  Let <A>tom</A> be a table of marks with
+##  <Ref Func="IsTableOfMarksWithGens"/> value <K>true</K>,
+##  and <A>sub</A> a positive integer.
+##  <Ref Func="RepresentativeTom"/> returns a representative of the
+##  <A>sub</A>-th conjugacy class of subgroups of <A>tom</A>.
+##  <P/>
+##  <Ref Func="RepresentativeTomByGenerators"/> and
+##  <Ref Func="RepresentativeTomByGeneratorsNC"/>
+##  return a representative of the <A>sub</A>-th conjugacy class of subgroups
+##  of <A>tom</A>, as a subgroup of the group generated by <A>gens</A>.
+##  This means that the standard generators of <A>tom</A> are replaced by
+##  <A>gens</A>.
+##  <P/>
+##  <Ref Func="RepresentativeTomByGenerators"/> checks whether mapping the
+##  standard generators of <A>tom</A> to <A>gens</A> extends to a group
+##  isomorphism, and returns <K>fail</K> if not.
+##  <Ref Func="RepresentativeTomByGeneratorsNC"/> omits all checks.
+##  So <Ref Func="RepresentativeTomByGenerators"/> is thought mainly for
+##  debugging purposes;
 ##  note that when several representatives are constructed, it is cheaper to
 ##  construct (and check) the isomorphism once, and to map the groups
-##  returned by `RepresentativeTom' under this isomorphism.
-##  The idea behind `RepresentativeTomByGeneratorsNC', however, is to avoid
-##  the overhead of using isomorphisms when <gens> are known to be standard
-##  generators.
+##  returned by <Ref Func="RepresentativeTom"/> under this isomorphism.
+##  The idea behind <Ref Func="RepresentativeTomByGeneratorsNC"/>, however,
+##  is to avoid the overhead of using isomorphisms when <A>gens</A> are known
+##  to be standard generators.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> RepresentativeTom( a5, 4 );
+##  Group([ (2,3)(4,5), (2,4)(3,5) ])
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "RepresentativeTom", [ IsTableOfMarks, IsPosInt ] );
 
@@ -1186,46 +2020,79 @@ DeclareOperation( "RepresentativeTomByGeneratorsNC",
 #############################################################################
 ##
 #O  FusionCharTableTom( <tbl>, <tom> )  . . . . . . . . . . .  element fusion
-#O  PossibleFusionsCharTableTom( <tbl>, <tom>[, <quick>] )  .  element fusion
+#O  PossibleFusionsCharTableTom( <tbl>, <tom>[, <options>] ) .  element fusion
 ##
-##  Let <tbl> be the ordinary character table of the group $G$, and <tom> the
-##  table of marks of $G$.
-##  `FusionCharTableTom' determines the fusion of the classes of elements
-##  from <tbl> to the classes of cyclic subgroups on <tom>, that is,
-##  a list that contains at position $i$ the position of the class of cyclic
-##  subgroups in <tom> that are generated by elements in the $i$-th conjugacy
-##  class of elements in <tbl>.
+##  <#GAPDoc Label="FusionCharTableTom">
+##  <ManSection>
+##  <Oper Name="FusionCharTableTom" Arg='tbl, tom'/>
+##  <Oper Name="PossibleFusionsCharTableTom" Arg='tbl, tom[, options]'/>
 ##
+##  <Description>
+##  Let <A>tbl</A> be the ordinary character table of the group <M>G</M>,
+##  say, and <A>tom</A> the table of marks of <M>G</M>.
+##  <Ref Func="FusionCharTableTom"/> determines the fusion of the classes of
+##  elements from <A>tbl</A> to the classes of cyclic subgroups on
+##  <A>tom</A>, that is, a list that contains at position <M>i</M> the
+##  position of the class of cyclic subgroups in <A>tom</A> that are
+##  generated by elements in the <M>i</M>-th conjugacy class of elements in
+##  <A>tbl</A>.
+##  <P/>
 ##  Three cases are handled differently.
-##  \beginlist%ordered
-##  \item{1.}
-##       The fusion is explicitly stored on <tbl>.
-##       Then nothing has to be done.
-##       This happens only if both <tbl> and <tom> are tables from the {\GAP}
-##       library (see~"The Library of Tables of Marks" and the manual of
-##       the {\GAP} Character Table Library).
-##  \item{2.}
-##       The `UnderlyingGroup' values of <tbl> and <tom> are known and
-##       equal.
-##       Then the group is used to compute the fusion.
-##  \item{3.}
-##       There is neither fusion nor group information available.
-##       In this case only necessary conditions can be checked,
-##       and if they are not sufficient to detemine the fusion uniquely then
-##       `fail' is returned by `FusionCharTableTom'.
-##  \endlist
-##
-##  `PossibleFusionsCharTableTom' computes the list of possible fusions from
-##  <tbl> to <tom>, according to the criteria that have been checked.
-##  So if `FusionCharTableTom' returns a unique fusion then the list returned
-##  by `PossibleFusionsCharTableTom' for the same arguments contains exactly
-##  this fusion,
-##  and if `FusionCharTableTom' returns `fail' then the length of this list
-##  is different from $1$.
-##  The optional argument <quick>, a boolean, indicates whether a unique
-##  fusion shall be returned as soon as it has been determined,
-##  without further checks.
-##  The default value of <quick> is `false'.
+##  <Enum>
+##  <Item>
+##    The fusion is explicitly stored on <A>tbl</A>.
+##    Then nothing has to be done.
+##    This happens only if both <A>tbl</A> and <A>tom</A> are tables from the
+##    &GAP; library (see&nbsp;<Ref Sect="The Library of Tables of Marks"/>
+##    and the manual of the &GAP; Character Table Library).
+##  </Item>
+##  <Item>
+##    The <Ref Attr="UnderlyingGroup" Label="for tables of marks"/> values of
+##    <A>tbl</A> and <A>tom</A> are known and equal.
+##    Then the group is used to compute the fusion.
+##  </Item>
+##  <Item>
+##    There is neither fusion nor group information available.
+##    In this case only necessary conditions can be checked,
+##    and if they are not sufficient to detemine the fusion uniquely then
+##    <K>fail</K> is returned by <Ref Oper="FusionCharTableTom"/>.
+##  </Item>
+##  </Enum>
+##  <P/>
+##  <Ref Oper="PossibleFusionsCharTableTom"/> computes the list of possible
+##  fusions from <A>tbl</A> to <A>tom</A>,
+##  according to the criteria that have been checked.
+##  So if <Ref Oper="FusionCharTableTom"/> returns a unique fusion then the
+##  list returned by <Ref Oper="PossibleFusionsCharTableTom"/> for the same
+##  arguments contains exactly this fusion,
+##  and if <Ref Oper="FusionCharTableTom"/> returns <K>fail</K> then the
+##  length of this list is different from <M>1</M>.
+##  <!-- this is fishy!-->
+##  <P/>
+##  The optional argument <A>options</A> must be a record that may have the
+##  following components.
+##  <List>
+##  <Mark><C>fusionmap</C></Mark>
+##  <Item>
+##    a parametrized map which is an approximation of the desired map,
+##  </Item>
+##  <Mark><C>quick</C></Mark>
+##  <Item>
+##    a Boolean;
+##    if <K>true</K> then as soon as only one possibility remains
+##    this possibility is returned immediately;
+##    the default value is <K>false</K>.
+##  </Item>
+##  </List>
+##  <P/>
+##  <Example><![CDATA[
+##  gap> a5c:= CharacterTable( "A5" );;
+##  gap> fus:= FusionCharTableTom( a5c, a5 );
+##  [ 1, 2, 3, 5, 5 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "FusionCharTableTom",
     [ IsOrdinaryTable, IsTableOfMarks ] );
@@ -1234,7 +2101,7 @@ DeclareOperation( "PossibleFusionsCharTableTom",
     [ IsOrdinaryTable, IsTableOfMarks ] );
 
 DeclareOperation( "PossibleFusionsCharTableTom",
-    [ IsOrdinaryTable, IsTableOfMarks, IsBool ] );
+    [ IsOrdinaryTable, IsTableOfMarks, IsRecord ] );
 
 
 #############################################################################
@@ -1242,20 +2109,45 @@ DeclareOperation( "PossibleFusionsCharTableTom",
 #O  PermCharsTom( <fus>, <tom> )
 #O  PermCharsTom( <tbl>, <tom> )
 ##
-##  `PermCharsTom' returns the list of transitive permutation characters
-##  from the table of marks <tom>.
-##  In the first form, <fus> must be the fusion map from the ordinary
-##  character table of the group of <tom> to <tom>
-##  (see~"FusionCharTableTom").
-##  In the second form, <tbl> must be the character table of the group of
-##  which <tom> is the table of marks.
-##  If the fusion map is not uniquely determined (see~"FusionCharTableTom")
-##  then `fail' is returned.
+##  <#GAPDoc Label="PermCharsTom">
+##  <ManSection>
+##  <Oper Name="PermCharsTom" Arg='fus, tom' Label="via fusion map"/>
+##  <Oper Name="PermCharsTom" Arg='tbl, tom' Label="from a character table"/>
 ##
-##  If the fusion map <fus> is given as first argument then each transitive
-##  permutation character is represented by its values list.
-##  If the character table <tbl> is given then the permutation characters are
-##  class function objects (see Chapter~"Class Functions").
+##  <Description>
+##  <Ref Func="PermCharsTom" Label="via fusion map"/> returns the list of
+##  transitive permutation characters from the table of marks <A>tom</A>.
+##  In the first form, <A>fus</A> must be the fusion map from the ordinary
+##  character table of the group of <A>tom</A> to <A>tom</A>
+##  (see&nbsp;<Ref Func="FusionCharTableTom"/>).
+##  In the second form, <A>tbl</A> must be the character table of the group
+##  of which <A>tom</A> is the table of marks.
+##  If the fusion map is not uniquely determined
+##  (see&nbsp;<Ref Func="FusionCharTableTom"/>) then <K>fail</K> is returned.
+##  <P/>
+##  If the fusion map <A>fus</A> is given as first argument then each
+##  transitive permutation character is represented by its values list.
+##  If the character table <A>tbl</A> is given then the permutation
+##  characters are class function objects
+##  (see Chapter&nbsp;<Ref Chap="Class Functions"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PermCharsTom( a5c, a5 );
+##  [ Character( CharacterTable( "A5" ), [ 60, 0, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 30, 2, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 15, 3, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 12, 0, 0, 2, 2 ] ), 
+##    Character( CharacterTable( "A5" ), [ 10, 2, 1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 6, 2, 0, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 5, 1, 2, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ) ]
+##  gap> PermCharsTom( fus, a5 )[1];
+##  [ 60, 0, 0, 0, 0 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "PermCharsTom", [ IsList, IsTableOfMarks ] );
 DeclareOperation( "PermCharsTom", [ IsOrdinaryTable, IsTableOfMarks ] );
@@ -1264,9 +2156,11 @@ DeclareOperation( "PermCharsTom", [ IsOrdinaryTable, IsTableOfMarks ] );
 #############################################################################
 ##
 ##  13. Generic Construction of Tables of Marks
-#9
+##
+##  <#GAPDoc Label="[9]{tom}">
 ##  The following three operations construct a table of marks only from the
 ##  data given, i.e., without underlying group.
+##  <#/GAPDoc>
 ##
 
 
@@ -1274,11 +2168,28 @@ DeclareOperation( "PermCharsTom", [ IsOrdinaryTable, IsTableOfMarks ] );
 ##
 #O  TableOfMarksCyclic( <n> )
 ##
-##  `TableOfMarksCyclic' returns the table of marks of the cyclic group
-##  of order <n>.
+##  <#GAPDoc Label="TableOfMarksCyclic">
+##  <ManSection>
+##  <Oper Name="TableOfMarksCyclic" Arg='n'/>
 ##
-##  A cyclic group of order <n> has as its subgroups for each divisor $d$
-##  of <n> a cyclic subgroup of order $d$.
+##  <Description>
+##  <Ref Func="TableOfMarksCyclic"/> returns the table of marks of the cyclic
+##  group of order <A>n</A>.
+##  <P/>
+##  A cyclic group of order <A>n</A> has as its subgroups for each divisor
+##  <M>d</M> of <A>n</A> a cyclic subgroup of order <M>d</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Display( TableOfMarksCyclic( 6 ) );
+##  1:  6
+##  2:  3 3
+##  3:  2 . 2
+##  4:  1 1 1 1
+##  
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "TableOfMarksCyclic", [ IsPosInt ] );
 
@@ -1287,18 +2198,42 @@ DeclareOperation( "TableOfMarksCyclic", [ IsPosInt ] );
 ##
 #O  TableOfMarksDihedral( <n> )
 ##
-##  `TableOfMarksDihedral' returns the table of marks of the dihedral group
-##  of order <m>.
+##  <#GAPDoc Label="TableOfMarksDihedral">
+##  <ManSection>
+##  <Oper Name="TableOfMarksDihedral" Arg='n'/>
 ##
-##  For each divisor $d$ of <m>, a dihedral group of order $m = 2n$ contains
-##  subgroups of order $d$ according to the following rule.
-##  If $d$ is odd and divides $n$ then there is only one cyclic subgroup of
-##  order $d$.
-##  If $d$ is even and divides $n$ then there are a cyclic subgroup of order
-##  $d$ and two classes of dihedral subgroups of order $d$
-##  (which are cyclic, too, in the case $d = 2$, see the example below).
-##  Otherwise (i.e., if $d$ does not divide $n$) there is just one class of
-##  dihedral subgroups of order $d$.
+##  <Description>
+##  <Ref Func="TableOfMarksDihedral"/> returns the table of marks of the
+##  dihedral group of order <A>m</A>.
+##  <P/>
+##  For each divisor <M>d</M> of <A>m</A>, a dihedral group of order
+##  <M>m = 2n</M> contains subgroups of order <M>d</M> according to the
+##  following rule.
+##  If <M>d</M> is odd and divides <M>n</M> then there is only one cyclic
+##  subgroup of order <M>d</M>.
+##  If <M>d</M> is even and divides <M>n</M> then there are a cyclic subgroup
+##  of order <M>d</M> and two classes of dihedral subgroups of order <M>d</M>
+##  (which are cyclic, too, in the case <M>d = 2</M>, see the example below).
+##  Otherwise (i.e., if <M>d</M> does not divide <M>n</M>) there is just one
+##  class of dihedral subgroups of order <M>d</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Display( TableOfMarksDihedral( 12 ) );
+##   1:  12
+##   2:   6 6
+##   3:   6 . 2
+##   4:   6 . . 2
+##   5:   4 . . . 4
+##   6:   3 3 1 1 . 1
+##   7:   2 2 . . 2 . 2
+##   8:   2 . 2 . 2 . . 2
+##   9:   2 . . 2 2 . . . 2
+##  10:   1 1 1 1 1 1 1 1 1 1
+##  
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "TableOfMarksDihedral", [ IsPosInt ] );
 
@@ -1307,8 +2242,28 @@ DeclareOperation( "TableOfMarksDihedral", [ IsPosInt ] );
 ##
 #O  TableOfMarksFrobenius( <p>, <q> )
 ##
-##  `TableOfMarksFrobenius' computes the table of marks of a Frobenius group
-##  of order $p q$, where $p$ is a prime and $q$ divides $p-1$.
+##  <#GAPDoc Label="TableOfMarksFrobenius">
+##  <ManSection>
+##  <Oper Name="TableOfMarksFrobenius" Arg='p, q'/>
+##
+##  <Description>
+##  <Ref Func="TableOfMarksFrobenius"/> computes the table of marks of a
+##  Frobenius group of order <M>p q</M>, where <M>p</M> is a prime and
+##  <M>q</M> divides <M>p-1</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Display( TableOfMarksFrobenius( 5, 4 ) );
+##  1:  20
+##  2:  10 2
+##  3:   5 1 1
+##  4:   4 . . 4
+##  5:   2 2 . 2 2
+##  6:   1 1 1 1 1 1
+##  
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "TableOfMarksFrobenius", [ IsPosInt, IsPosInt ] );
 
@@ -1317,12 +2272,20 @@ DeclareOperation( "TableOfMarksFrobenius", [ IsPosInt, IsPosInt ] );
 ##
 #V  TableOfMarksComponents
 ##
-##  The list `TableOfMarksComponents' is used when a table of marks object is
-##  created from a record via `ConvertToTableOfMarks'
-##  (see~"ConvertToTableOfMarks").
-##  `TableOfMarksComponents' contains at position $2i-1$ a name of an
-##  attribute and at position $2i$ the corresponding attribute getter
-##  function.
+##  <#GAPDoc Label="TableOfMarksComponents">
+##  <ManSection>
+##  <Var Name="TableOfMarksComponents"/>
+##
+##  <Description>
+##  The list <Ref Var="TableOfMarksComponents"/> is used when a
+##  table of marks object is created from a record via
+##  <Ref Func="ConvertToTableOfMarks"/>.
+##  <Ref Var="TableOfMarksComponents"/> contains at position <M>2i-1</M>
+##  a name of an attribute and at position <M>2i</M> the corresponding
+##  attribute getter function.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "TableOfMarksComponents", [
       "Identifier",                 Identifier,
@@ -1335,7 +2298,6 @@ BindGlobal( "TableOfMarksComponents", [
       "UnderlyingGroup",            UnderlyingGroup,
       "StraightLineProgramsTom",    StraightLineProgramsTom,
       "GeneratorsSubgroupsTom",     GeneratorsSubgroupsTom,
-      "StandardGeneratorsInfo",     StandardGeneratorsInfo,
       "PermutationTom",             PermutationTom,
       "ClassNamesTom",              ClassNamesTom,
     ] );

@@ -1,12 +1,13 @@
 #############################################################################
 ##
-#W  coll.gi                     GAP library                  Martin Schoenert
+#W  coll.gi                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for collections in general.
 ##
@@ -20,7 +21,7 @@ Revision.coll_gi :=
 ##
 InstallMethod( CollectionsFamily,
     "for a family",
-    true, [ IsFamily ], 90,
+    [ IsFamily ], 90,
     function ( F )
     local   colls, coll_req, coll_imp, elms_flags, tmp;
     coll_req := IsCollection;
@@ -31,8 +32,18 @@ InstallMethod( CollectionsFamily,
             coll_imp := coll_imp and tmp[2];
         fi;
     od;
-    colls := NewFamily( "CollectionsFamily(...)", coll_req, coll_imp );
+
+    if    ( not HasElementsFamily( F ) )
+       or not IsOddAdditiveNestingDepthFamily( F ) then
+      colls := NewFamily( "CollectionsFamily(...)", coll_req,
+                          coll_imp and IsOddAdditiveNestingDepthObject );
+      SetFilterObj( colls, IsOddAdditiveNestingDepthFamily );
+    else
+      colls := NewFamily( "CollectionsFamily(...)", coll_req, coll_imp );
+    fi;
+
     SetElementsFamily( colls, F );
+
     return colls;
 end );
 
@@ -44,7 +55,13 @@ end );
     
 SetElementsFamily( StringFamily, CharsFamily);
 SetCollectionsFamily( CharsFamily, StringFamily);
-    
+
+
+#############################################################################
+##
+##  Iterators
+##
+
 #############################################################################
 ##
 #V  IteratorsFamily
@@ -54,35 +71,19 @@ BIND_GLOBAL( "IteratorsFamily", NewFamily( "IteratorsFamily", IsIterator ) );
 
 #############################################################################
 ##
-#M  ViewObj( <iter> ) . . . . . . . . . . . . . . . . . . .  view an iterator
-##
-InstallMethod( ViewObj,
-    "for an iterator",
-    true,
-    [ IsIterator ], 0,
-    function( iter )
-    if IsMutable( iter ) then
-      Print( "<iterator>" );
-    else
-      Print( "<iterator (immutable)>" );
-    fi;
-    end );
-
-
-#############################################################################
-##
 #M  PrintObj( <iter> )  . . . . . . . . . . . . . . . . . . print an iterator
+##
+##  This method is also the default for `ViewObj'.
 ##
 InstallMethod( PrintObj,
     "for an iterator",
-    true, [ IsIterator ], 0,
+    [ IsIterator ],
     function( iter )
     if IsMutable( iter ) then
       Print( "<iterator>" );
     else
       Print( "<iterator (immutable)>" );
     fi;
-#T this is not nice!
     end );
 
 
@@ -92,24 +93,17 @@ InstallMethod( PrintObj,
 ##
 InstallImmediateMethod( IsEmpty,
     IsCollection and HasSize, 0,
-    function ( C )
-    return (Size( C ) = 0);
-    end );
+    C -> Size( C ) = 0 );
 
 InstallMethod( IsEmpty,
     "for a collection",
-    true, [ IsCollection ], 0,
-    function ( C )
-    return (Size( C ) = 0);
-    end );
+    [ IsCollection ],
+    C -> Size( C ) = 0 );
 
 InstallMethod( IsEmpty,
     "for a list",
-    true, [ IsList ], 0,
-    function ( list )
-    return (Length( list ) = 0);
-    end );
-#T non-homogeneous lists should know that they are nonempty
+    [ IsList ],
+    list -> Length( list ) = 0 );
 
 
 #############################################################################
@@ -118,16 +112,12 @@ InstallMethod( IsEmpty,
 ##
 InstallImmediateMethod( IsTrivial,
     IsCollection and HasSize, 0,
-    function ( C )
-    return (Size( C ) = 1);
-    end );
+    C -> Size( C ) = 1 );
 
 InstallMethod( IsTrivial,
     "for a collection",
-    true, [ IsCollection ], 0,
-    function ( C )
-    return (Size( C ) = 1);
-    end );
+    [ IsCollection ],
+    C -> Size( C ) = 1 );
 
 InstallImmediateMethod( IsTrivial,
     IsCollection and HasIsNonTrivial, 0,
@@ -144,8 +134,7 @@ InstallImmediateMethod( IsNonTrivial,
 
 InstallMethod( IsNonTrivial,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
+    [ IsCollection ],
     C -> Size( C ) <> 1 );
 
 
@@ -155,17 +144,12 @@ InstallMethod( IsNonTrivial,
 ##
 InstallImmediateMethod( IsFinite,
     IsCollection and HasSize, 0,
-    function ( C )
-    return not IsIdenticalObj( Size( C ), infinity );
-    end );
+    C -> not IsIdenticalObj( Size( C ), infinity ) );
 
 InstallMethod( IsFinite,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
-    function ( C )
-    return Size( C ) < infinity;
-    end );
+    [ IsCollection ],
+    C -> Size( C ) < infinity );
 
 
 #############################################################################
@@ -174,8 +158,7 @@ InstallMethod( IsFinite,
 ##
 InstallMethod( IsWholeFamily,
     "default for a collection, print an error message",
-    true,
-    [ IsCollection ], 0,
+    [ IsCollection ],
     function ( C )
     Error( "cannot test whether <C> contains the family of its elements" );
     end );
@@ -196,14 +179,11 @@ InstallImmediateMethod( Size,
 
 InstallImmediateMethod( Size,
     IsCollection and HasAsList and IsAttributeStoringRep, 0,
-    function ( C )
-    return Length( AsList( C ) );
-    end );
+    C -> Length( AsList( C ) ) );
 
 InstallMethod( Size,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
+    [ IsCollection ],
     C -> Length( Enumerator( C ) ) ); 
 
 
@@ -213,8 +193,7 @@ InstallMethod( Size,
 ##
 InstallMethod( Representative,
     "for a collection that is a list",
-    true,
-    [ IsCollection and IsList ], 0,
+    [ IsCollection and IsList ],
     function ( C )
     if IsEmpty( C ) then
       Error( "<C> must be nonempty to have a representative" );
@@ -247,7 +226,7 @@ InstallImmediateMethod( RepresentativeSmallest,
 
 InstallMethod( RepresentativeSmallest,
     "for a collection",
-    true, [ IsCollection ], 0,
+    [ IsCollection ],
     function ( C )
     local   elm;
     for elm in EnumeratorSorted( C ) do
@@ -266,16 +245,9 @@ InstallMethod( RepresentativeSmallest,
 ##  an enumerator of <C> and selects a random element of this list using the
 ##  function `RANDOM_LIST', which is a pseudo random number generator.
 ##
-InstallMethod( Random, "for an internal list", true,
-    [ IsList and IsInternalRep ], 100,
-#T ?
-    RANDOM_LIST );
-
-InstallMethod( Random, "for a (finite) collection", true,
-    [ IsCollection and IsFinite ], 0,
-function ( C )
-  return RANDOM_LIST( Enumerator( C ) );
-end );
+InstallMethod( Random, "for a (finite) collection",
+    [ IsCollection and IsFinite ],
+    C -> RANDOM_LIST( Enumerator( C ) ) );
 
 RedispatchOnCondition(Random,true,[IsCollection],[IsFinite],0);
 
@@ -286,7 +258,6 @@ RedispatchOnCondition(Random,true,[IsCollection],[IsFinite],0);
 ##
 InstallMethod( PseudoRandom,
     "for an internal list",
-    true,
     [ IsList and IsInternalRep ], 100,
 #T ?
     RANDOM_LIST );
@@ -298,7 +269,7 @@ InstallMethod( PseudoRandom,
 ##
 InstallMethod( PseudoRandom,
     "for a list or collection (delegate to `Random')",
-    true, [ IsListOrCollection ], 0, Random );
+    [ IsListOrCollection ], Random );
 
 #############################################################################
 ##
@@ -306,16 +277,12 @@ InstallMethod( PseudoRandom,
 ##
 InstallMethod( AsList,
     "for a collection",
-    true,
     [ IsCollection ],
-    0,
     coll -> ConstantTimeAccessList( Enumerator( coll ) ) );
 
 InstallMethod( AsList,
     "for collections that are constant time access lists",
-    true,
     [ IsCollection and IsConstantTimeAccessList ],
-    0,
     Immutable );
 
 
@@ -325,29 +292,25 @@ InstallMethod( AsList,
 ##
 InstallMethod( AsSSortedList,
     "for a collection",
-    true,
     [ IsCollection ],
-    0,
     coll -> ConstantTimeAccessList( EnumeratorSorted( coll ) ) );
 
 InstallOtherMethod( AsSSortedList,
     "for a collection that is a constant time access list",
-    true,
     [ IsCollection and IsConstantTimeAccessList ],
-    0,
     l->AsSSortedListList(AsPlist(l)) );
 
 #############################################################################
 ##
 #M  AsSSortedListNonstored( <C> )
 ##
-InstallMethod(AsSSortedListNonstored,"if `AsSSortedList' is known",true,
+InstallMethod(AsSSortedListNonstored,"if `AsSSortedList' is known",
   [IsListOrCollection and HasAsSSortedList],
   # besser geht nicht
   SUM_FLAGS,
   AsSSortedList);
 
-InstallMethod(AsSSortedListNonstored,"if `AsList' is known:sort",true,
+InstallMethod(AsSSortedListNonstored,"if `AsList' is known:sort",
   [IsListOrCollection and HasAsList],
   # unless the construction constructs the elements already sorted, this
   # method is as good as it gets
@@ -368,10 +331,8 @@ InstallImmediateMethod( Enumerator,
     IsCollection and HasAsList and IsAttributeStoringRep, 0,
     AsList );
 
-
 InstallMethod( Enumerator,
     "for a collection with known `AsList' value",
-    true,
     [ IsCollection and HasAsList ], 
     SUM_FLAGS, # we don't want to compute anything anew -- this is already a
                # known result as good as any.
@@ -379,7 +340,6 @@ InstallMethod( Enumerator,
 
 InstallMethod( Enumerator,
     "for a collection with known `AsSSortedList' value",
-    true,
     [ IsCollection and HasAsSSortedList ],
     SUM_FLAGS, # we don't want to compute anything anew -- this is already a
                # known result as good as any.
@@ -387,8 +347,7 @@ InstallMethod( Enumerator,
 
 InstallMethod( Enumerator,
     "for a collection that is a list",
-    true,
-    [ IsCollection and IsList ], 0,
+    [ IsCollection and IsList ],
     Immutable );
 
 
@@ -405,7 +364,6 @@ InstallImmediateMethod( EnumeratorSorted,
 
 InstallMethod( EnumeratorSorted,
     "for a collection with known `AsSSortedList' value",
-    true,
     [ IsCollection and HasAsSSortedList ],
     SUM_FLAGS, # we don't want to compute anything anew -- this is already a
                # known result as good as any.
@@ -414,61 +372,279 @@ InstallMethod( EnumeratorSorted,
 
 #############################################################################
 ##
-#M  ViewObj( <enum> ) . . . . . . . . . . . . . . . . . .  view an enumerator
-##
-InstallMethod( ViewObj,
-    "for an enumerator",
-    true,
-    [ IsList and IsAttributeStoringRep ], 0,
-    function( enum )
-    Print( "<enumerator>" );
-    end );
-
-
-#############################################################################
-##
 #M  PrintObj( <enum> )  . . . . . . . . . . . . . . . . . print an enumerator
+##
+##  This is also the default method for `ViewObj'.
 ##
 InstallMethod( PrintObj,
     "for an enumerator",
-    true,
-    [ IsList and IsAttributeStoringRep ], 0,
+    [ IsList and IsAttributeStoringRep ],
     function( enum )
     Print( "<enumerator>" );
     end );
-#T this is not nice!
 
 
 #############################################################################
 ##
-#R  IsEnumeratorOfSubsetDefaultRep
+#F  EnumeratorByFunctions( <D>, <record> )
+#F  EnumeratorByFunctions( <Fam>, <record> )
 ##
-DeclareRepresentation( "IsEnumeratorOfSubsetDefaultRep",
-    IsAttributeStoringRep,
-    [ "list", "blist" ] );
+DeclareRepresentation( "IsEnumeratorByFunctionsRep", IsComponentObjectRep,
+    [ "ElementNumber", "NumberElement", "Length", "IsBound\\[\\]",
+      "Membership", "AsList", "ViewObj", "PrintObj" ] );
+
+DeclareSynonym( "IsEnumeratorByFunctions",
+    IsEnumeratorByFunctionsRep and IsDenseList and IsDuplicateFreeList );
+
+InstallGlobalFunction( EnumeratorByFunctions, function( D, record )
+    local filter, Fam, enum;
+
+    if not ( IsRecord( record ) and IsBound( record.ElementNumber )
+                                and IsBound( record.NumberElement ) ) then
+      Error( "<record> must be a record with components `ElementNumber'\n",
+             "and `NumberElement'" );
+    fi;
+    filter:= IsEnumeratorByFunctions and IsAttributeStoringRep;
+    if IsDomain( D ) then
+      Fam:= FamilyObj( D );
+    elif IsFamily( D ) then
+      if not IsBound( record.Length ) then
+        Error( "<record> must have the component `Length'" );
+      fi;
+      Fam:= D;
+    else
+      Error( "<D> must be a record or a family" );
+    fi;
+
+    enum:= Objectify( NewType( Fam, filter ), record );
+
+    if IsDomain( D ) then
+      SetUnderlyingCollection( enum, D );
+      if HasIsFinite( D ) then
+        SetIsFinite( enum, IsFinite( D ) );
+      fi;
+    fi;
+
+    return enum;
+    end );
 
 
-#############################################################################
-##
-#M  Length( <senum> ) . . . . . . . . . . . . . .  for enumerators of subsets
-##
+InstallOtherMethod( \[\],
+    "for enumerator by functions",
+    [ IsEnumeratorByFunctions, IsPosInt ],
+    function( enum, nr )
+    return enum!.ElementNumber( enum, nr );
+    end );
+
+InstallOtherMethod( Position,
+    "for enumerator by functions",
+    [ IsEnumeratorByFunctions, IsObject, IsZeroCyc ],
+    RankFilter( IsSmallList ), # override the generic method for those lists
+    function( enum, elm, zero )
+    return enum!.NumberElement( enum, elm );
+    end );
+
+InstallOtherMethod( PositionCanonical,
+    "for enumerator by functions",
+    [ IsEnumeratorByFunctions, IsObject ],
+    function( enum, elm )
+    if IsBound( enum!.PositionCanonical ) then
+      return enum!.PositionCanonical( enum, elm );
+    else
+      return enum!.NumberElement( enum, elm );
+    fi;
+    end );
+# (was defined for EnumeratorByBasis, IsExternalOrbitByStabilizerEnumerator,
+# IsRationalClassGroupEnumerator!)
+# I am still convinced that `PositionCanonical' is not a well-defined concept!
+
 InstallMethod( Length,
-    "for enumerator of subset in default repres.",
-    true,
-    [ IsList and IsEnumeratorOfSubsetDefaultRep ], 0,
-    senum -> SIZE_BLIST( senum!.blist ) );
+    "for an enumerator that perhaps has its own `Length' function",
+    [ IsEnumeratorByFunctions ],
+    function( enum )
+    if IsBound( enum!.Length ) then
+      return enum!.Length( enum );
+    elif HasUnderlyingCollection( enum ) then
+      return Size( UnderlyingCollection( enum ) );
+    else
+      Error( "neither `Length' function nor `UnderlyingCollection' found ",
+             "in <enum>" );
+    fi;
+    end );
+
+InstallMethod( IsBound\[\],
+    "for an enumerator that perhaps has its own `IsBound' function",
+    [ IsEnumeratorByFunctions, IsPosInt ],
+    function( enum, n )
+    if IsBound( enum!.IsBound\[\] ) then
+      return enum!.IsBound\[\]( enum, n );
+    else
+      return n <= Length( enum );
+    fi;
+    end );
+
+InstallOtherMethod( \in,
+    "for an enumerator that perhaps has its own membership test function",
+    [ IsObject, IsEnumeratorByFunctions ],
+    function( elm, enum )
+    if IsBound( enum!.Membership ) then
+      return enum!.Membership( elm, enum );
+    else
+      return enum!.NumberElement( enum, elm ) <> fail;
+    fi;
+    end );
+
+InstallMethod( AsList,
+    "for an enumerator that perhaps has its own `AsList' function",
+    [ IsEnumeratorByFunctions ],
+    function( enum )
+    if IsBound( enum!.AsList ) then
+      return enum!.AsList( enum );
+    else
+      return ConstantTimeAccessList( enum );
+    fi;
+    end );
+
+InstallMethod( ViewObj,
+    "for an enumerator that perhaps has its own `ViewObj' function",
+    [ IsEnumeratorByFunctions ], 20,
+    # override, e.g., the method for finite lists
+    # in the case of an enumerator of GF(q)^n
+    function( enum )
+    if   IsBound( enum!.ViewObj ) then
+      enum!.ViewObj( enum );
+    elif IsBound( enum!.PrintObj ) then
+      enum!.PrintObj( enum );
+    elif HasUnderlyingCollection( enum ) then
+      Print( "<enumerator of " );
+      View( UnderlyingCollection( enum ) );
+      Print( ">" );
+    else
+      Print( "<enumerator>" );
+    fi;
+    end );
+
+InstallMethod( PrintObj,
+    "for an enumerator that perhaps has its own `PrintObj' function",
+    [ IsEnumeratorByFunctions ],
+    function( enum )
+    if IsBound( enum!.PrintObj ) then
+      enum!.PrintObj( enum );
+    elif HasUnderlyingCollection( enum ) then
+      Print( "<enumerator of ", UnderlyingCollection( enum ), ">" );
+    else
+      Print( "<enumerator>" );
+    fi;
+    end );
+
+
+# #############################################################################
+# ##
+# #F  TestConsistencyOfEnumeratorByFunctions( <enum> )
+# ##
+# ##  This (currently undocumented) function is thought for checking newly
+# ##  implemented enumerators in `IsEnumeratorByFunctions'.
+# ##  Whenever a test fails then a message about this is printed, and `false'
+# ##  is returned in the end.
+# ##  If no obvious errors are found then `true' is returned.
+# ##  (Note that for enumerators of length up to 1000, also access to too large
+# ##  positions is checked.)
+# ##
+# BindGlobal( "TestConsistencyOfEnumeratorByFunctions", function( enum )
+#     local bound, filter, result, origlevel, elm, len, list;
+# 
+#     bound:= 1000;
+#     filter:= IsEnumeratorByFunctions;
+#     if not filter( enum ) then
+#       Print( "#E  enumerator is not in `IsEnumeratorByFunctions'\n" );
+#       return false;
+#     fi;
+#     result:= true;
+# 
+#     # Switch off warnings.
+#     origlevel:= InfoLevel( InfoWarning );
+#     SetInfoLevel( InfoWarning, 0 );
+# 
+#     # Check that the right methods are used.
+#     elm:= enum[1];
+#     if not IsIdenticalObj( ApplicableMethod( Position, [ enum, elm, 0 ] ),
+#                ApplicableMethodTypes( Position, [ filter, IsObject,
+#                    IsZeroCyc ] ) ) then
+#       Print( "#E  wrong `Position' method\n" );
+#       result:= false;
+#     fi;
+#     if not IsIdenticalObj( ApplicableMethod( \[\], [ enum, 1 ] ),
+#                ApplicableMethodTypes( \[\], [ filter, IsPosInt ] ) ) then
+#       Print( "#E  wrong `\\[\\]' method\n" );
+#       result:= false;
+#     fi;
+#     if not IsIdenticalObj( ApplicableMethod( IsBound\[\], [ enum, 1 ] ),
+#                ApplicableMethodTypes( IsBound\[\], [ filter, IsPosInt ] ) )
+#        then
+#       Print( "#E  wrong `IsBound\\[\\]' method\n" );
+#       result:= false;
+#     fi;
+#     if not IsIdenticalObj( ApplicableMethod( Length, [ enum ] ),
+#                ApplicableMethodTypes( Length, [ filter ] ) ) and
+#        not HasLength( enum ) then
+#       Print( "#E  wrong `Length' method\n" );
+#       result:= false;
+#     fi;
+#     if not IsIdenticalObj( ApplicableMethod( \in, [ elm, enum ] ),
+#                ApplicableMethodTypes( \in, [ IsObject, filter ] ) ) then
+#       Print( "#E  wrong `\\in' method\n" );
+#       result:= false;
+#     fi;
+#     if not IsIdenticalObj( ApplicableMethod( ViewObj, [ enum ] ),
+#                ApplicableMethodTypes( ViewObj, [ filter ] ) ) then
+#       Print( "#E  wrong `ViewObj' method\n" );
+#       result:= false;
+#     fi;
+#     if not IsIdenticalObj( ApplicableMethod( PrintObj, [ enum ] ),
+#                ApplicableMethodTypes( PrintObj, [ filter ] ) ) then
+#       Print( "#E  wrong `PrintObj' method\n" );
+#       result:= false;
+#     fi;
+# 
+#     # Check that the results computed by the methods are reasonable.
+#     len:= bound;
+#     if Length( enum ) < len then
+#       len:= Length( enum );
+#     fi;
+#     list:= List( [ 1 .. len ], i -> enum[i] );
+#     if List( list, x -> Position( enum, x ) ) <> [ 1 .. len ] then
+#       Print( "#E  `\\[\\]' and `Position' of <enum> do not fit together\n" );
+#       result:= false;
+#     fi;
+#     if not ForAll( list, x -> x in enum ) then
+#       Print( "#E  `\\[\\]' and `\\in' of <enum> do not fit together\n" );
+#       result:= false;
+#     fi;
+# 
+#     if ForAny( list, IsMutable ) then
+#       Print( "#E  the elements of <enum> must be immutable\n" );
+#       result:= false;
+#     fi;
+#     if HasIsSSortedList( enum ) and IsSSortedList( enum ) then
+#       if not IsSSortedList( list ) then
+#         Print( "#E  <enum> is not sorted\n" );
+#         result:= false;
+#       fi;
+#     fi;
+# 
+#     # Reset the info level.
+#     SetInfoLevel( InfoWarning, origlevel );
+#     return result;
+# end );
 
 
 #############################################################################
 ##
-#M  <senum>[ <num> ]  . . . . . . . . . . . . . .  for enumerators of subsets
+#F  EnumeratorOfSubset( <list>, <blist>[, <ishomog>] )
 ##
-InstallMethod( \[\],
-    "for enumerator of subset in default repres., and pos. integer",
-    true,
-    [ IsList and IsEnumeratorOfSubsetDefaultRep, IsPosInt ], 0,
-    function( senum, num )
+BIND_GLOBAL( "ElementNumber_Subset", function( senum, num )
     local pos;
+
     pos:= PositionNthTrueBlist( senum!.blist, num );
     if pos = fail then
       Error( "List Element: <list>[", num, "] must have an assigned value" );
@@ -477,16 +653,18 @@ InstallMethod( \[\],
     fi;
     end );
 
+BIND_GLOBAL( "NumberElement_Subset", function( senum, elm )
+    local pos;
+    
+    pos:= Position( senum!.list, elm );
+    if pos = fail or not senum!.blist[ pos ] then
+      return fail;
+    else
+      return SIZE_BLIST( senum!.blist{ [ 1 .. pos ] } );
+    fi;
+    end );
 
-#############################################################################
-##
-#M  PositionCanonical( <senum>, <elm> ) . . . . .  for enumerators of subsets
-##
-InstallMethod( PositionCanonical,
-    "for enumerator of subset in default repres., and object",
-    true,
-    [ IsList and IsEnumeratorOfSubsetDefaultRep, IsObject ], 0,
-    function( senum, elm )
+BIND_GLOBAL( "PositionCanonical_Subset", function( senum, elm )
     local pos;
     
     pos:= PositionCanonical( senum!.list, elm );
@@ -497,26 +675,14 @@ InstallMethod( PositionCanonical,
     fi;
     end );
 
+BIND_GLOBAL( "Length_Subset", senum -> SIZE_BLIST( senum!.blist ) );
 
-#############################################################################
-##
-#M  ConstantTimeAccessList( <senum> ) . . . . . .  for enumerators of subsets
-##
-InstallMethod( ConstantTimeAccessList,
-    "for enumerator of subset in default repres.",
-    true,
-    [ IsList and IsEnumeratorOfSubsetDefaultRep ], 0,
+BIND_GLOBAL( "AsList_Subset",
     senum -> senum!.list{ LIST_BLIST( [ 1 .. Length( senum!.list ) ],
-                                     senum!.blist ) } );
+                          senum!.blist ) } );
 
-
-#############################################################################
-##
-#F  EnumeratorOfSubset( <list>, <blist>[, <ishomog>] )
-##
 InstallGlobalFunction( EnumeratorOfSubset,
     function( arg )
-
     local list, blist, Fam;
 
     # Get and check the arguments.
@@ -538,10 +704,15 @@ InstallGlobalFunction( EnumeratorOfSubset,
     fi;
 
     # Construct the enumerator.
-    return Objectify( NewType( Fam,
-                               IsList and IsEnumeratorOfSubsetDefaultRep ),
-                      rec( list  := list,
-                           blist := blist ) );
+    return EnumeratorByFunctions( Fam, rec(
+               ElementNumber     := ElementNumber_Subset,
+               NumberElement     := NumberElement_Subset,
+               PositionCanonical := NumberElement_Subset,
+               Length            := Length_Subset,
+               AsList            := AsList_Subset,
+
+               list              := list,
+               blist             := blist ) );
     end );
 
 
@@ -564,7 +735,7 @@ InstallGlobalFunction( List,
         return ShallowCopy( C );
       else
         func:= arg[2];
-        res := [];
+        res := EmptyPlist(Length(C));
         i   := 0;
         for elm in C do
           i:= i+1;
@@ -610,6 +781,34 @@ InstallMethod( ListOp,
     for elm in C do
       i:= i+1;
       res[i]:= func( elm );
+    od;
+    return res;
+    end );
+InstallMethod( ListOp,
+    "for a list, and a function",
+    true,
+    [ IsList, IsFunction ], 0,
+    function ( C, func )
+    local   res, i, elm;
+    res := [];
+    i   := 0;
+    for elm in [1..Length(C)] do
+      if IsBound(C[elm]) then
+          i:= i+1;
+          res[i]:= func( C[elm] );
+      fi;
+    od;
+    return res;
+    end );
+InstallMethod( ListOp,
+    "for a dense list, and a function",
+    true,
+    [ IsDenseList, IsFunction ], 0,
+    function ( C, func )
+    local   res, elm;
+    res := 0*[1..Length(C)];
+    for elm in [1..Length(C)] do
+      res[elm]:= func( C[elm] );
     od;
     return res;
     end );
@@ -684,21 +883,35 @@ InstallOtherMethod( SSortedList,
 ##
 InstallMethod( Iterator,
     "for a collection",
-    true, [ IsCollection ], 0,
+    [ IsCollection ],
     C -> IteratorList( Enumerator( C ) ) );
 
 InstallMethod( Iterator,
     "for a collection that is a list",
-    true, [ IsCollection and IsList ], 0,
+    [ IsCollection and IsList ],
     C -> IteratorList( C ) );
 
 InstallOtherMethod( Iterator,
     "for a mutable iterator",
-    true,
-    [ IsIterator and IsMutable ], 0,
+    [ IsIterator and IsMutable ],
     IdFunc );
 #T or change the for-loop to accept iterators?
 
+#############################################################################
+##
+#M  List( <iter> ) . . . . . . return list of remaining objects in an iterator
+##  
+##  Does not change the iterator.
+##  
+InstallOtherMethod(ListOp, [IsIterator], function(it)
+  local l, a;
+  l := [];
+  it := ShallowCopy(it);
+  for a in it do 
+    Add(l,a);
+  od;
+  return l;
+end);
 
 #############################################################################
 ##
@@ -706,12 +919,12 @@ InstallOtherMethod( Iterator,
 ##
 InstallMethod( IteratorSorted,
     "for a collection",
-    true, [ IsCollection ], 0,
+    [ IsCollection ],
     C -> IteratorList( EnumeratorSorted( C ) ) );
 
 InstallMethod( IteratorSorted,
     "for a collection that is a list",
-    true, [ IsCollection and IsList ], 0,
+    [ IsCollection and IsList ],
     C -> IteratorList( SSortedListList( C ) ) );
 
 
@@ -721,8 +934,7 @@ InstallMethod( IteratorSorted,
 ##
 InstallOtherMethod( NextIterator,
     "for an immutable iterator (print a reasonable error message)",
-    true,
-    [ IsIterator ], 0,
+    [ IsIterator ],
     function( iter )
     if IsMutable( iter ) then
       TryNextMethod();
@@ -733,56 +945,125 @@ InstallOtherMethod( NextIterator,
 
 #############################################################################
 ##
-#R  IsTrivialIteratorRep( <iter> )
+#F  IteratorByFunctions( <record> )
 ##
-DeclareRepresentation( "IsTrivialIteratorRep",
-    IsComponentObjectRep, [ "element", "isDone" ] );
+DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep,
+    [ "NextIterator", "IsDoneIterator", "ShallowCopy" ] );
 
+DeclareSynonym( "IsIteratorByFunctions",
+    IsIteratorByFunctionsRep and IsIterator );
+
+InstallGlobalFunction( IteratorByFunctions, function( record )
+    local filter, Fam, enum;
+
+    if not ( IsRecord( record ) and IsBound( record.NextIterator )
+                                and IsBound( record.IsDoneIterator )
+                                and IsBound( record.ShallowCopy ) ) then
+      Error( "<record> must be a record with components `NextIterator',\n",
+             "`IsDoneIterator', and `ShallowCopy'" );
+    fi;
+    filter:= IsIteratorByFunctions and IsMutable;
+
+    return Objectify( NewType( IteratorsFamily, filter ), record );
+end );
+
+InstallMethod( IsDoneIterator,
+    "for `IsIteratorByFunctions'",
+    [ IsIteratorByFunctions ],
+    iter -> iter!.IsDoneIterator( iter ) );
+
+InstallMethod( NextIterator,
+    "for `IsIteratorByFunctions'",
+    [ IsIteratorByFunctions and IsMutable ],
+    iter -> iter!.NextIterator( iter ) );
+
+InstallMethod( ShallowCopy,
+    "for `IsIteratorByFunctions'",
+    [ IsIteratorByFunctions ],
+    function( iter )
+    local new;
+    new:= iter!.ShallowCopy( iter );
+    new.NextIterator   := iter!.NextIterator;
+    new.IsDoneIterator := iter!.IsDoneIterator;
+    new.ShallowCopy    := iter!.ShallowCopy;
+    return IteratorByFunctions( new );
+    end );
+
+
+#############################################################################
+##
+#F  ConcatenationIterators( <iters> ) . . . . . . . .combine list of iterators
+##  to one iterator
+##  
+BIND_GLOBAL("NextIterator_Concatenation", function(it)
+  local it1, res;
+  it1 := it!.iters[it!.i];
+  res := NextIterator(it1);
+  if IsDoneIterator(it1) then 
+    if it!.i = Length(it!.iters) then
+      it!.done := true;
+    else
+      it!.i := it!.i+1;
+    fi;
+  fi;
+  return res;
+end);
+BIND_GLOBAL("IsDoneIterator_Concatenation", function(it)
+  return it!.done;
+end);
+BIND_GLOBAL("ShallowCopy_Concatenation", function(it)
+  return rec(NextIterator := it!.NextIterator,
+    IsDoneIterator := it!.IsDoneIterator,
+    ShallowCopy := it!.ShallowCopy,
+    done := it!.done,
+    i := it!.i,
+    iters := List(it!.iters, ShallowCopy)
+    );
+end);
+BIND_GLOBAL("ConcatenationIterators", function(iters)
+  local i;
+  i := 1;
+  while i <= Length(iters) and IsDoneIterator(iters[i]) do
+    i := i+1;
+  od;
+  return IteratorByFunctions(rec(
+    NextIterator := NextIterator_Concatenation,
+    IsDoneIterator := IsDoneIterator_Concatenation,
+    ShallowCopy := ShallowCopy_Concatenation,
+    i := i,
+    iters := iters,
+    done := i > Length(iters)
+            ));
+end);  
 
 #############################################################################
 ##
 #F  TrivialIterator( <elm> )
 ##
-InstallGlobalFunction( TrivialIterator, function( elm )
-    return Objectify( NewType( IteratorsFamily,
-                                   IsIterator
-                               and IsMutable
-                               and IsTrivialIteratorRep ),
-                      rec( element := elm, isDone := false ) );
-end );
+BIND_GLOBAL( "IsDoneIterator_Trivial", iter -> iter!.isDone );
 
-InstallMethod( IsDoneIterator,
-    "for a trivial iterator",
-    true,
-    [ IsIterator and IsTrivialIteratorRep ], 0,
-    iter -> iter!.isDone );
-
-InstallMethod( NextIterator,
-    "for a mutable trivial iterator",
-    true,
-    [ IsIterator and IsMutable and IsTrivialIteratorRep ], 0,
-    function( iter )
+BIND_GLOBAL( "NextIterator_Trivial", function( iter )
     iter!.isDone:= true;
     return iter!.element;
     end );
 
+BIND_GLOBAL( "ShallowCopy_Trivial",
+    iter -> rec( element:= iter!.elm, isDone:= iter!.isDone ) );
+
+InstallGlobalFunction( TrivialIterator, function( elm )
+    return IteratorByFunctions( rec(
+               IsDoneIterator := IsDoneIterator_Trivial,
+               NextIterator   := NextIterator_Trivial,
+               ShallowCopy    := ShallowCopy_Trivial,
+
+               element := elm,
+               isDone  := false ) );
+end );
+
 InstallMethod( Iterator,
     "for a trivial collection",
-    true,
     [ IsCollection and IsTrivial ], SUM_FLAGS,
     D -> TrivialIterator( Enumerator( D )[1] ) );
-
-InstallMethod( ShallowCopy,
-    "for a trivial iterator",
-    true,
-    [ IsIterator and IsTrivialIteratorRep ], 0,
-    function( iter )
-    if iter!.isDone then
-      return iter;
-    else
-      return TrivialIterator( iter!.elm );
-    fi;
-    end );
 
 
 #############################################################################
@@ -848,8 +1129,7 @@ end );
 ##
 InstallMethod( SumOp,
     "for a list/collection",
-    true,
-    [ IsListOrCollection ], 0,
+    [ IsListOrCollection ],
     function ( C )
     local   sum;
     C := Iterator( C );
@@ -871,8 +1151,7 @@ InstallMethod( SumOp,
 ##
 InstallOtherMethod( SumOp,
     "for a list/collection, and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local   sum;
     C := Iterator( C );
@@ -894,8 +1173,7 @@ InstallOtherMethod( SumOp,
 ##
 InstallOtherMethod( SumOp,
     "for a list/collection, and init. value",
-    true,
-    [ IsListOrCollection, IsAdditiveElement ], 0,
+    [ IsListOrCollection, IsAdditiveElement ],
     function ( C, init )
     C := Iterator( C );
     while not IsDoneIterator( C ) do
@@ -911,8 +1189,7 @@ InstallOtherMethod( SumOp,
 ##
 InstallOtherMethod( SumOp,
     "for a list/collection, and a function, and an initial value",
-    true,
-    [ IsListOrCollection, IsFunction, IsAdditiveElement ], 0,
+    [ IsListOrCollection, IsFunction, IsAdditiveElement ],
     function ( C, func, init )
     C := Iterator( C );
     while not IsDoneIterator( C ) do
@@ -985,8 +1262,7 @@ end );
 ##
 InstallMethod( ProductOp,
     "for a list/collection",
-    true,
-    [ IsListOrCollection ], 0,
+    [ IsListOrCollection ],
     function ( C )
     local   prod;
     C := Iterator( C );
@@ -1008,8 +1284,7 @@ InstallMethod( ProductOp,
 ##
 InstallOtherMethod( ProductOp,
     "for a list/collection, and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local   prod;
     C := Iterator( C );
@@ -1031,8 +1306,7 @@ InstallOtherMethod( ProductOp,
 ##
 InstallOtherMethod( ProductOp,
     "for a list/collection, and initial value",
-    true,
-    [ IsListOrCollection, IsMultiplicativeElement ], 0,
+    [ IsListOrCollection, IsMultiplicativeElement ],
     function ( C, init )
     C := Iterator( C );
     while not IsDoneIterator( C ) do
@@ -1048,8 +1322,7 @@ InstallOtherMethod( ProductOp,
 ##
 InstallOtherMethod( ProductOp,
     "for a list/collection, a function, and an initial value",
-    true,
-    [ IsListOrCollection, IsFunction, IsMultiplicativeElement ], 0,
+    [ IsListOrCollection, IsFunction, IsMultiplicativeElement ],
     function ( C, func, init )
     C := Iterator( C );
     while not IsDoneIterator( C ) do
@@ -1108,8 +1381,7 @@ end );
 ##
 InstallMethod( FilteredOp,
     "for a list/collection, and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local res, elm;
     res := [];
@@ -1120,11 +1392,40 @@ InstallMethod( FilteredOp,
     od;
     return res;
     end );
+InstallMethod( FilteredOp,
+    "for a list, and a function",
+    [ IsList, IsFunction ],
+    function ( C, func )
+    local res, elm, ob;
+    res := [];
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            ob := C[elm];
+            if func( ob ) then
+                Add( res, ob );
+            fi;
+        fi;
+    od;
+    return res;
+    end );
+InstallMethod( FilteredOp,
+    "for a dense list, and a function",
+    [ IsDenseList, IsFunction ],
+    function ( C, func )
+    local res, elm, ob;
+    res := [];
+    for elm in [1..Length(C)] do
+        ob := C[elm];
+        if func( ob ) then
+            Add( res, ob );
+        fi;
+    od;
+    return res;
+    end );
 
 #T Is this useful compared to the previous method? (FL)
 InstallMethod( FilteredOp,
     "for an empty list/collection, and a function",
-    true,
     [ IsEmpty, IsFunction ], 
     SUM_FLAGS, # there is nothing to do
     function( list, func )
@@ -1175,13 +1476,40 @@ end );
 ##
 InstallMethod( NumberOp,
     "for a list/collection, and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local nr, elm;
     nr := 0;
     for elm in C do
         if func( elm ) then
+            nr:= nr + 1;
+        fi;
+    od;
+    return nr;
+    end );
+InstallMethod( NumberOp,
+    "for a list, and a function",
+    [ IsList, IsFunction ],
+    function ( C, func )
+    local nr, elm;
+    nr := 0;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            if func( C[elm] ) then
+                nr:= nr + 1;
+            fi;
+        fi;
+    od;
+    return nr;
+    end );
+InstallMethod( NumberOp,
+    "for a dense list, and a function",
+    [ IsDenseList, IsFunction ],
+    function ( C, func )
+    local nr, elm;
+    nr := 0;
+    for elm in [1..Length(C)] do
+        if func( C[elm] ) then
             nr:= nr + 1;
         fi;
     od;
@@ -1195,8 +1523,7 @@ InstallMethod( NumberOp,
 ##
 InstallOtherMethod( NumberOp,
     "for a list/collection",
-    true,
-    [ IsListOrCollection ], 0,
+    [ IsListOrCollection ],
     function ( C )
     local nr, elm;
     nr := 0;
@@ -1205,6 +1532,22 @@ InstallOtherMethod( NumberOp,
     od;
     return nr;
     end );
+InstallOtherMethod( NumberOp,
+    "for a list",
+    [ IsList ],
+    function ( C )
+    local nr, elm;
+    nr := 0;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            nr := nr + 1;
+        fi;
+    od;
+    return nr;
+    end );
+InstallOtherMethod( NumberOp,
+    "for a dense list",
+    [ IsDenseList ], Length );
 
 
 #############################################################################
@@ -1234,8 +1577,7 @@ end );
 ##
 InstallMethod( ForAllOp,
     "for a list/collection, and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local elm;
     for elm in C do
@@ -1245,10 +1587,35 @@ InstallMethod( ForAllOp,
     od;
     return true;
     end );
+InstallMethod( ForAllOp,
+    "for a list, and a function",
+    [ IsList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            if not func( C[elm] ) then
+                return false;
+            fi;
+        fi;
+    od;
+    return true;
+    end );
+InstallMethod( ForAllOp,
+    "for a dense list, and a function",
+    [ IsDenseList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if not func( C[elm] ) then
+            return false;
+        fi;
+    od;
+    return true;
+    end );
 
 InstallOtherMethod( ForAllOp,
     "for an empty list/collection, and a function",
-    true,
     [ IsEmpty, IsFunction ], 
     SUM_FLAGS, # there is nothing to do
     ReturnTrue );
@@ -1281,8 +1648,7 @@ end );
 ##
 InstallMethod( ForAnyOp,
     "for a list/collection, and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local elm;
     for elm in C do
@@ -1291,11 +1657,37 @@ InstallMethod( ForAnyOp,
         fi;
     od;
     return false;
+end );
+
+InstallMethod( ForAnyOp,
+    "for a list, and a function",
+    [ IsList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            if func( C[elm] ) then
+                return true;
+            fi;
+        fi;
+    od;
+    return false;
+    end );
+InstallMethod( ForAnyOp,
+    "for a dense list, and a function",
+    [ IsDenseList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if func( C[elm] ) then
+            return true;
+        fi;
+    od;
+    return false;
     end );
 
 InstallOtherMethod( ForAnyOp,
     "for an empty list/collection, and a function",
-    true,
     [ IsEmpty, IsFunction ],
     SUM_FLAGS, # there is nothing to do
     ReturnFalse );
@@ -1796,6 +2188,17 @@ InstallGlobalFunction( ProductX, function ( arg )
     return result;
 end );
 
+#############################################################################
+##
+#F  Perform( <list>, <func> )
+##
+InstallGlobalFunction( Perform, function(l, f)
+    local x;
+    for x in l do
+        f(x);
+    od;
+end);
+      
 
 #############################################################################
 ##
@@ -1806,25 +2209,20 @@ InstallMethod( IsSubset,
     IsNotIdenticalObj,
     [ IsCollection,
       IsCollection ],
-    0,
     ReturnFalse );
 
 InstallMethod( IsSubset,
     "for empty list and collection",
-    true,
     [ IsList and IsEmpty,
       IsCollection ],
-    0,
     function( empty, coll )
     return IsEmpty( coll );
     end );
 
 InstallMethod( IsSubset,
     "for collection and empty list",
-    true,
     [ IsCollection,
       IsList and IsEmpty ],
-    0,
     ReturnTrue );
 
 InstallMethod( IsSubset,
@@ -1867,12 +2265,10 @@ function ( D, E )
 end );
 
 
-InstallOtherMethod( IsSubset,
+InstallMethod( IsSubset,
     "for two internal lists",
-    IsIdenticalObj,
     [ IsList and IsInternalRep,
       IsList and IsInternalRep ],
-    0,
     IsSubsetSet );
 
 
@@ -1880,7 +2276,7 @@ InstallMethod( IsSubset,
     "for two collections that are internal lists",
     IsIdenticalObj,
     [ IsCollection and IsList and IsInternalRep,
-      IsCollection and IsList and IsInternalRep ], 0,
+      IsCollection and IsList and IsInternalRep ],
     IsSubsetSet );
 
 
@@ -1889,8 +2285,6 @@ InstallMethod( IsSubset,
     IsIdenticalObj,
     [ IsCollection and HasAsSSortedList,
       IsCollection and HasAsSSortedList ],
-    0,
-
 function ( D, E )
     return IsSubsetSet( AsSSortedList( D ), AsSSortedList( E ) );
 end );
@@ -1901,8 +2295,6 @@ InstallMethod( IsSubset,
     IsIdenticalObj,
     [ IsCollection,
       IsCollection ],
-    0,
-
 function( D, E )
     return ForAll( E, e -> e in D );
 end );
@@ -1926,29 +2318,28 @@ end );
 
 InstallOtherMethod( Intersection2,
     "for two lists (not necessarily in the same family)",
-    true,
-    [ IsList, IsList ], 0,
+    [ IsList, IsList ],
     IntersectionSet );
 
 InstallMethod( Intersection2,
     "for two collections in the same family, both lists",
     IsIdenticalObj,
-    [ IsCollection and IsList, IsCollection and IsList ], 0,
+    [ IsCollection and IsList, IsCollection and IsList ],
     IntersectionSet );
 
 InstallMethod( Intersection2,
     "for two collections in different families",
     IsNotIdenticalObj,
-    [ IsCollection, IsCollection ], 0,
+    [ IsCollection, IsCollection ],
     function( C1, C2 ) return []; end );
 
 InstallMethod( Intersection2,
     "for two collections in the same family, the second being a list",
     IsIdenticalObj,
-    [ IsCollection, IsCollection and IsList ], 0,
+    [ IsCollection, IsCollection and IsList ],
     function ( C1, C2 )
     local   I, elm;
-    if IsFinite( C1 ) then
+    if ( HasIsFinite( C1 ) or CanComputeSize( C1 ) ) and IsFinite( C1 ) then
         I := ShallowCopy( AsSSortedList( C1 ) );
         IntersectSet( I, C2 );
     else
@@ -1965,10 +2356,10 @@ InstallMethod( Intersection2,
 InstallMethod( Intersection2,
     "for two collections in the same family, the first being a list",
     IsIdenticalObj,
-    [ IsCollection and IsList, IsCollection ], 0,
+    [ IsCollection and IsList, IsCollection ],
     function ( C1, C2 )
     local   I, elm;
-    if IsFinite( C2 ) then
+    if ( HasIsFinite( C2 ) or CanComputeSize( C2 ) ) and IsFinite( C2 ) then
         I := ShallowCopy( AsSSortedList( C2 ) );
         IntersectSet( I, C1 );
     else
@@ -1985,7 +2376,7 @@ InstallMethod( Intersection2,
 InstallMethod( Intersection2,
     "for two collections in the same family",
     IsIdenticalObj,
-    [ IsCollection, IsCollection ], 0,
+    [ IsCollection, IsCollection ],
     function ( C1, C2 )
     local   I, elm;
     if IsFinite( C1 ) then
@@ -2042,8 +2433,12 @@ InstallGlobalFunction( Intersection, function ( arg )
     od;
 
     # return the intersection
-    if IsList( I ) and not IsSSortedList( I ) then
-        I := Set( I );
+    if IsSSortedList( I ) then
+      if not copied  then
+        I:= ShallowCopy( I );
+      fi;
+    elif IsList( I ) then
+      I:= Set( I );
     fi;
     return I;
 end );
@@ -2068,17 +2463,17 @@ end );
 InstallMethod( Union2,
     "for two collections that are lists",
     IsIdenticalObj,
-    [ IsCollection and IsList, IsCollection and IsList ], 0,
+    [ IsCollection and IsList, IsCollection and IsList ],
     UnionSet );
 
 InstallOtherMethod( Union2,
     "for two lists",
-    true, [ IsList, IsList ], 0,
+    [ IsList, IsList ],
     UnionSet );
 
 InstallMethod( Union2,
     "for two collections, the second being a list",
-    IsIdenticalObj, [ IsCollection, IsCollection and IsList ], 0,
+    IsIdenticalObj, [ IsCollection, IsCollection and IsList ],
     function ( C1, C2 )
     local   I;
     if IsFinite( C1 ) then
@@ -2092,7 +2487,7 @@ InstallMethod( Union2,
 
 InstallMethod( Union2,
     "for two collections, the first being a list",
-    IsIdenticalObj, [ IsCollection and IsList, IsCollection ], 0,
+    IsIdenticalObj, [ IsCollection and IsList, IsCollection ],
     function ( C1, C2 )
     local   I;
     if IsFinite( C2 ) then
@@ -2106,7 +2501,7 @@ InstallMethod( Union2,
 
 InstallMethod( Union2,
     "for two collections",
-    IsIdenticalObj, [ IsCollection, IsCollection ], 0,
+    IsIdenticalObj, [ IsCollection, IsCollection ],
     function ( C1, C2 )
     local   I;
     if IsFinite( C1 ) then
@@ -2192,25 +2587,25 @@ end );
 
 #############################################################################
 ##
-#M  Difference(<C1>,<C2>)
+#M  Difference( <C1>, <C2> )
 ##
 InstallOtherMethod( Difference,
     "for empty list, and collection",
-    true, [ IsList and IsEmpty, IsListOrCollection ], 0,
+    [ IsList and IsEmpty, IsListOrCollection ],
     function ( C1, C2 )
     return [];
     end );
 
 InstallOtherMethod( Difference,
     "for collection, and empty list",
-    true, [ IsCollection, IsList and IsEmpty ], 0,
+    [ IsCollection, IsList and IsEmpty ],
     function ( C1, C2 )
-    return ShallowCopy( C1 );
+    return Set( C1 );
     end );
 
 InstallOtherMethod( Difference,
     "for two lists (assume one can produce a sorted result)",
-    true, [ IsList, IsList ], 0,
+    [ IsList, IsList ],
     function ( C1, C2 )
     C1 := Set( C1 );
     SubtractSet( C1, C2 );
@@ -2219,7 +2614,7 @@ InstallOtherMethod( Difference,
 
 InstallMethod( Difference,
     "for two collections that are lists",
-    IsIdenticalObj, [ IsCollection and IsList, IsCollection and IsList ], 0,
+    IsIdenticalObj, [ IsCollection and IsList, IsCollection and IsList ],
     function ( C1, C2 )
     C1 := Set( C1 );
     SubtractSet( C1, C2 );
@@ -2228,7 +2623,7 @@ InstallMethod( Difference,
 
 InstallMethod( Difference,
     "for two collections",
-    IsIdenticalObj, [ IsCollection, IsCollection ], 0,
+    IsIdenticalObj, [ IsCollection, IsCollection ],
     function ( C1, C2 )
     local   D, elm;
     if IsFinite( C1 ) then
@@ -2251,7 +2646,7 @@ InstallMethod( Difference,
 
 InstallMethod( Difference,
     "for two collections, the first being a list",
-    IsIdenticalObj, [ IsCollection and IsList, IsCollection ], 0,
+    IsIdenticalObj, [ IsCollection and IsList, IsCollection ],
     function ( C1, C2 )
     local   D, elm;
     if IsFinite( C2 )  then
@@ -2270,7 +2665,7 @@ InstallMethod( Difference,
 
 InstallMethod( Difference,
     "for two collections, the second being a list",
-    IsIdenticalObj, [ IsCollection, IsCollection and IsList ], 0,
+    IsIdenticalObj, [ IsCollection, IsCollection and IsList ],
     function ( C1, C2 )
     local   D;
     if IsFinite( C1 ) then
@@ -2282,12 +2677,13 @@ InstallMethod( Difference,
     return D;
     end );
 
+
 #############################################################################
 ##
 #M  CanEasilyCompareElements( <obj> )
 ##
 InstallMethod(CanEasilyCompareElements,"generic: inherit `true' from family",
-  true, [IsObject],0,
+  [IsObject],
 function(obj)
   if not IsFamily(obj) then
     return CanEasilyCompareElementsFamily(FamilyObj(obj));
@@ -2304,13 +2700,13 @@ InstallGlobalFunction(CanEasilyCompareElementsFamily,function(fam)
 end);
 
 InstallMethod(CanEasilyCompareElements,"family: default false",
-  true, [IsFamily],0,
+  [IsFamily],
 function(obj)
   return false;
 end);
 
 InstallOtherMethod(SetCanEasilyCompareElements,"family setter",
-  true, [IsFamily,IsObject],0,
+  [IsFamily,IsObject],
 function(fam,val)
   # if the value is `true' we want to store it and to imply it for elements
   if val=true then
@@ -2325,7 +2721,7 @@ end);
 #M  CanEasilySortElements( <obj> )
 ##
 InstallMethod(CanEasilySortElements,"generic: inherit `true' from family",
-  true, [IsObject],0,
+  [IsObject],
 function(obj)
   if not IsFamily(obj) then
     return CanEasilySortElementsFamily(FamilyObj(obj));
@@ -2342,10 +2738,10 @@ InstallGlobalFunction(CanEasilySortElementsFamily,function(fam)
 end);
 
 InstallMethod(CanEasilySortElements,"family: default false",
-  true, [IsFamily],0,ReturnFalse);
+  [IsFamily],ReturnFalse);
 
 InstallOtherMethod(SetCanEasilySortElements,"family setter",
-  true, [IsFamily,IsObject],0,
+  [IsFamily,IsObject],
 function(fam,val)
   # if the value is `true' we want to store it and to imply it for elements
   if val=true then
@@ -2356,7 +2752,7 @@ function(fam,val)
 end);
 
 InstallMethod( CanComputeIsSubset,"default: no, unless identical",
-  true, [IsObject,IsObject],0,IsIdenticalObj);
+  [IsObject,IsObject],IsIdenticalObj);
 
 #############################################################################
 ##

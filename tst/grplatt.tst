@@ -4,9 +4,11 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file  tests the subgroup lattice program
+##
+##  Exclude from testinstall.g: why?
 ##
 
 gap> START_TEST("$Id$");
@@ -56,9 +58,10 @@ gap> AsSortedList(List(NormalSubgroups(g),Size));
 [ 1, 2, 4, 4, 4, 8 ]
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 5761430000 );
+gap> STOP_TEST( "grplatt.tst",4630000839);
+
 
 #############################################################################
 ##
-#E  grplatt.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

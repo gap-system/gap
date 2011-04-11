@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  type.g                      GAP library                  Martin Schoenert
+#W  type.g                      GAP library                  Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file defines the format of families and types. Some functions 
 ##  are moved to type1.g, which is compiled
@@ -20,8 +21,16 @@ Revision.type_g :=
 #V  POS_NUMB_TYPE . . . . . . . position where the number of a type is stored
 #V  POS_FIRST_FREE_TYPE . . . . .  first position that has no overall meaning
 ##
+##  <ManSection>
+##  <Var Name="POS_DATA_TYPE"/>
+##  <Var Name="POS_NUMB_TYPE"/>
+##  <Var Name="POS_FIRST_FREE_TYPE"/>
+##
+##  <Description>
 ##  Note that the family and the flags list are stored at positions 1 and 2,
 ##  respectively.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "POS_DATA_TYPE", 3 );
 BIND_GLOBAL( "POS_NUMB_TYPE", 4 );
@@ -32,12 +41,25 @@ BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
 ##
 #F  NEW_TYPE_NEXT_ID  . . . . . . . . . . . . GAP integer numbering the types
 ##
-NEW_TYPE_NEXT_ID := -(2^28);
+##  <ManSection>
+##  <Func Name="NEW_TYPE_NEXT_ID" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+if TNUM_OBJ(2^30) = 0 then
+    NEW_TYPE_NEXT_ID := -(2^60);
+    NEW_TYPE_ID_LIMIT:= 2^60-1;
+else
+    NEW_TYPE_NEXT_ID := -(2^28);
+    NEW_TYPE_ID_LIMIT := 2^28-1;
+#    NEW_TYPE_ID_LIMIT := NEW_TYPE_NEXT_ID + 1000000;
+fi;
 
 
 #############################################################################
 ##
-
 #F  DeclareCategoryKernel( <name>, <super>, <filter> )  create a new category
 ##
 BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
@@ -50,25 +72,57 @@ BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
         InstallTrueMethod( super, cat );
     fi;
     BIND_GLOBAL( name, cat );
+    SET_NAME_FUNC( cat, name );
 end );
 
 
 #############################################################################
 ##
-#F  NewCategory( <name>, <super> )  . . . . . . . . . . create a new category
+#F  NewCategory( <name>, <super>[, <rank>] )  . . . . . create a new category
 ##
-BIND_GLOBAL( "NewCategory", function ( name, super )
+##  <#GAPDoc Label="NewCategory">
+##  <ManSection>
+##  <Func Name="NewCategory" Arg='name, super[, rank]'/>
+##
+##  <Description>
+##  <Ref Func="NewCategory"/> returns a new category <A>cat</A> that has the
+##  name <A>name</A> and is contained in the filter <A>super</A>,
+##  see&nbsp;<Ref Sect="Filters"/>.
+##  This means that every object in <A>cat</A> lies automatically also in
+##  <A>super</A>.
+##  We say also that <A>super</A> is an implied filter of <A>cat</A>.
+##  <P/>
+##  For example, if one wants to create a category of group elements
+##  then <A>super</A> should be
+##  <Ref Func="IsMultiplicativeElementWithInverse"/>
+##  or a subcategory of it.
+##  If no specific supercategory of <A>cat</A> is known,
+##  <A>super</A> may be <Ref Func="IsObject"/>.
+##  <P/>
+##  The optional third argument <A>rank</A> denotes the incremental rank
+##  (see&nbsp;<Ref Sect="Filters"/>) of <A>cat</A>,
+##  the default value is 1.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "NewCategory", function ( arg )
     local   cat;
 
     # Create the filter.
-    cat := NEW_FILTER( name );
-    InstallTrueMethodNewFilter( super, cat );
+    cat:= NEW_FILTER( arg[1] );
+    InstallTrueMethodNewFilter( arg[2], cat );
 
     # Do some administrational work.
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
     FILTERS[ FLAG1_FILTER( cat ) ] := cat;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
-    RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+      RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
+    else
+      RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
+    fi;
     INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
 
     # Return the filter.
@@ -78,16 +132,34 @@ end );
 
 #############################################################################
 ##
-#F  DeclareCategory( <name>, <super> )  . . . . . . . . create a new category
+#F  DeclareCategory( <name>, <super>[, <rank>] )  . . . create a new category
 ##
-BIND_GLOBAL( "DeclareCategory", function ( name, super )
-    BIND_GLOBAL( name, NewCategory( name, super ) );
+##  <#GAPDoc Label="DeclareCategory">
+##  <ManSection>
+##  <Func Name="DeclareCategory" Arg='name, super[, rank]'/>
+##
+##  <Description>
+##  does the same as <Ref Func="NewCategory"/>
+##  and additionally makes the variable <A>name</A> read-only.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "DeclareCategory", function( arg )
+    BIND_GLOBAL( arg[1], CALL_FUNC_LIST( NewCategory, arg ) );
 end );
 
 
 #############################################################################
 ##
 #F  DeclareRepresentationKernel( <name>, <super>, <slots> [,<req>], <filt> )
+##
+##  <ManSection>
+##  <Func Name="DeclareRepresentationKernel" Arg='name, super, slots [,req], filt'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     local   rep, filt;
@@ -114,13 +186,61 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     InstallTrueMethod( arg[2], rep );
     BIND_GLOBAL( arg[1], rep );
+    SET_NAME_FUNC( rep, arg[1] );
 end );
 
 
 
 #############################################################################
 ##
-#F  NewRepresentation( <name>, <super>, <slots> [,<req>] )  .  representation
+#F  NewRepresentation( <name>, <super>, <slots>[, <req>] )  .  representation
+##
+##  <#GAPDoc Label="NewRepresentation">
+##  <ManSection>
+##  <Func Name="NewRepresentation" Arg='name, super, slots[, req]'/>
+##
+##  <Description>
+##  <Ref Func="NewRepresentation"/> returns a new representation <A>rep</A>
+##  that has the name <A>name</A> and is a subrepresentation of the
+##  representation <A>super</A>.
+##  This means that every object in <A>rep</A> lies automatically also in
+##  <A>super</A>.
+##  We say also that <A>super</A> is an implied filter of <A>rep</A>.
+##  <P/>
+##  Each representation in &GAP; is a subrepresentation of exactly one
+##  of the four representations <C>IsInternalRep</C>, <C>IsDataObjectRep</C>,
+##  <C>IsComponentObjectRep</C>, <C>IsPositionalObjectRep</C>.
+##  The data describing objects in the former two can be accessed only via
+##  &GAP; kernel functions, the data describing objects in the latter two
+##  is accessible also in library functions,
+##  see&nbsp;<Ref Sect="Component Objects"/>
+##  and&nbsp;<Ref Sect="Positional Objects"/> for the details.
+##  <P/>
+##  The third argument <A>slots</A> is a list either of integers or of
+##  strings.
+##  In the former case, <A>rep</A> must be <C>IsPositionalObjectRep</C> or a
+##  subrepresentation of it, and <A>slots</A> tells what positions of the
+##  objects in the representation <A>rep</A> may be bound.
+##  In the latter case, <A>rep</A> must be <C>IsComponentObjectRep</C> or a
+##  subrepresentation of, and <A>slots</A> lists the admissible names of
+##  components that objects in the representation <A>rep</A> may have.
+##  The admissible positions resp. component names of <A>super</A> need not
+##  be be listed in <A>slots</A>.
+##  <P/>
+##  The incremental rank (see&nbsp;<Ref Sect="Filters"/>)
+##  of <A>rep</A> is 1.
+##  <P/>
+##  Note that for objects in the representation <A>rep</A>,
+##  of course some of the component names and positions reserved via
+##  <A>slots</A> may be unbound.
+##  <P/>
+##  Examples for the use of <Ref Func="NewRepresentation"/> can be found
+##  in&nbsp;<Ref Sect="Component Objects"/>,
+##  <Ref Sect="Positional Objects"/>, and also in
+##  <Ref Sect="A Second Attempt to Implement Elements of Residue Class Rings"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewRepresentation", function ( arg )
     local   rep, filt;
@@ -162,10 +282,20 @@ end );
 ##
 #F  DeclareRepresentation( <name>, <super>, <slots> [,<req>] )
 ##
+##  <#GAPDoc Label="DeclareRepresentation">
+##  <ManSection>
+##  <Func Name="DeclareRepresentation" Arg='name, super, slots [,req]'/>
+##
+##  <Description>
+##  does the same as <Ref Func="NewRepresentation"/>
+##  and additionally makes the variable <A>name</A> read-only.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL( "DeclareRepresentation", function ( arg )
     BIND_GLOBAL( arg[1], CALL_FUNC_LIST( NewRepresentation, arg ) );
 end );
-
 
 
 #############################################################################
@@ -175,7 +305,16 @@ end );
 #R  IsComponentObjectRep
 #R  IsDataObjectRep
 ##
-##  the four basic representations in {\GAP}
+##  <ManSection>
+##  <Filt Name="IsInternalRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsPositionalObjectRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsComponentObjectRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsDataObjectRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  the four basic representations in &GAP;
+##  </Description>
+##  </ManSection>
 ##
 DeclareRepresentation( "IsInternalRep", IS_OBJECT, [], IS_OBJECT );
 DeclareRepresentation( "IsPositionalObjectRep", IS_OBJECT, [], IS_OBJECT );
@@ -187,14 +326,22 @@ DeclareRepresentation( "IsDataObjectRep", IS_OBJECT, [], IS_OBJECT );
 ##
 #R  IsAttributeStoringRep
 ##
+##  <#GAPDoc Label="IsAttributeStoringRep">
+##  <ManSection>
+##  <Filt Name="IsAttributeStoringRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
 ##  Objects in this representation have default  methods to get the values of
 ##  stored  attributes  and -if they  are immutable-  to store the  values of
 ##  attributes after their computation.
-##
+##  <P/>
 ##  The name of the  component that holds  the value of  an attribute is  the
 ##  name of the attribute, with the first letter turned to lower case.
-#T This will be changed eventually, in order to avoid conflicts between
-#T ordinary components and components corresponding to attributes.
+##  <!-- This will be changed eventually, in order to avoid conflicts between-->
+##  <!-- ordinary components and components corresponding to attributes.-->
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsAttributeStoringRep",
     IsComponentObjectRep, [], IS_OBJECT );
@@ -274,11 +421,11 @@ FamilyOfTypes!.TYPES_LIST_FAM  := [];
 FamilyOfTypes!.TYPES_LIST_FAM[27] := 0;
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
-TypeOfFamilyOfTypes     := [
+BIND_GLOBAL( "TypeOfFamilyOfTypes",  [
     FamilyOfFamilies,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfTypes and IsTypeDefaultRep ) ),
     false,
-    NEW_TYPE_NEXT_ID ];
+    NEW_TYPE_NEXT_ID ] );
 
 SET_TYPE_COMOBJ( FamilyOfFamilies, TypeOfFamilyOfFamilies );
 SET_TYPE_POSOBJ( TypeOfFamilies,   TypeOfTypes            );
@@ -289,8 +436,31 @@ SET_TYPE_POSOBJ( TypeOfTypes,      TypeOfTypes            );
 
 #############################################################################
 ##
-
 #O  CategoryFamily( <elms_filter> ) . . . . . .  category of certain families
+##
+##  <#GAPDoc Label="CategoryFamily">
+##  <ManSection>
+##  <Func Name="CategoryFamily" Arg='cat'/>
+##
+##  <Description>
+##  For a category <A>cat</A>,
+##  <Ref Func="CategoryFamily"/> returns the <E>family category</E>
+##  of <A>cat</A>.
+##  This is a category in which all families lie that know from their
+##  creation that all their elements are in the category <A>cat</A>,
+##  see&nbsp;<Ref Sect="Creating Families"/>.
+##  <P/>
+##  For example, a family of associative words is in the category
+##  <C>CategoryFamily( IsAssocWord )</C>,
+##  and one can distinguish such a family from others by this category.
+##  So it is possible to install methods for operations that require one
+##  argument to be a family of associative words.
+##  <P/>
+##  <Ref Func="CategoryFamily"/> is quite technical,
+##  and in fact of minor importance.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "CATEGORIES_FAMILY", [] );
 
@@ -331,9 +501,15 @@ end );
 ##
 #F  DeclareCategoryFamily( <name> )
 ##
+##  <ManSection>
+##  <Func Name="DeclareCategoryFamily" Arg='name'/>
+##
+##  <Description>
 ##  creates the family category of the category that is bound to the global
-##  variable with name <name>,
-##  and binds it to the global variable with name `<name>Family'.
+##  variable with name <A>name</A>,
+##  and binds it to the global variable with name <C><A>name</A>Family</C>.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "DeclareCategoryFamily", function( name )
     local nname;

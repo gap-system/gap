@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of functions and data around
 ##  Conway polynomials.
@@ -18,37 +19,38 @@ Revision.polyconw_gd :=
 ##
 #F  PowerModEvalPol( <f>, <g>, <xpownmodf> )
 ##
-##  computes the coefficients list of the polynomial $g( x^n ) \bmod f$, for
-##  the given coefficients lists of the two polynomials $f$ and $g$, and the
-##  coefficients list of $x^n \bmod f$.
+##  <ManSection>
+##  <Func Name="PowerModEvalPol" Arg='f, g, xpownmodf'/>
 ##
-##  We evaluate $g$ at $x^n \bmod f$, and use Horner\'s method and reduction
-##  modulo $f$ for computing the result.
-##  If $g = \sum_{i=0}^k g_i x^i$ then we compute
-##  $( \cdots (((c_k x^n + c_{k-1}) x^n + c_{k-2}) x^n + c_{k-3}) x^n
-##   + \cdots c_0$.
-##
-##  (this function is used in `ConwayPol'.)
+##  <Description>
+##  computes the coefficients list of the polynomial <M>g( x^n ) \bmod f</M>, for
+##  the given coefficients lists of the two polynomials <M>f</M> and <M>g</M>, and the
+##  coefficients list of <M>x^n \bmod f</M>.
+##  <P/>
+##  We evaluate <M>g</M> at <M>x^n \bmod f</M>, and use Horner's method and reduction
+##  modulo <M>f</M> for computing the result.
+##  If <M>g = \sum_{i=0}^k g_i x^i</M> then we compute
+##  <M>( \cdots (((c_k x^n + c_{k-1}) x^n + c_{k-2}) x^n + c_{k-3}) x^n
+##   + \cdots c_0</M>.
+##  <P/>
+##  (this function is used in <C>ConwayPol</C>.)
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "PowerModEvalPol" );
 
-
-############################################################################
-##
-#V  CONWAYPOLYNOMIALS
-##
-##  is a list that stores at position $p$, if bound,
-##  a list $l$ describing Conway polynomials in characteristic $p$.
-##  The $n$-th entry of $l$, if bound, is a list $[ i_0, i_1, \ldots, i_k ]$
-##  of integers such that the Conway polynomial for the field with $p^n$
-##  elements is $i_0 + i_1 X + \cdots + i_k X^k + X^n$.
-##
-DeclareGlobalVariable( "CONWAYPOLYNOMIALS" );
 
 
 ############################################################################
 ##
 #F  ConwayPol( <p>, <n> ) . . . . . <n>-th Conway polynomial in charact. <p>
+##
+##  <ManSection>
+##  <Func Name="ConwayPol" Arg='p, n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "ConwayPol" );
 
@@ -57,32 +59,130 @@ DeclareGlobalFunction( "ConwayPol" );
 ##
 #F  ConwayPolynomial( <p>, <n> ) .  <n>-th Conway polynomial in charact. <p>
 ##
-##  is the Conway polynomial of the finite field $GF(p^n)$ as
-##  polynomial over the prime field in characteristic <p>.
+##  <#GAPDoc Label="ConwayPolynomial">
+##  <ManSection>
+##  <Func Name="ConwayPolynomial" Arg='p, n'/>
 ##
-##  The *Conway polynomial* $\Phi_{n,p}$ of $GF(p^n)$ is defined by the
-##  following properties.
-##
-##  First define an ordering of polynomials of degree $n$ over $GF(p)$ as
-##  follows.  $f = \sum_{i=0}^n (-1)^i f_i x^i$ is smaller than
-##  $g = \sum_{i=0}^n (-1)^i g_i x^i$ if and only if there is an index
-##  $m \leq n$ such that $f_i = g_i$ for all $i > m$, and
-##  $\tilde{f_m} \< \tilde{g_m}$, where $\tilde{c}$ denotes the integer
-##  value in $\{ 0, 1, \ldots, p-1 \}$ that is mapped to $c\in GF(p)$ under
-##  the canonical epimorphism that maps the integers onto $GF(p)$.
-##
-##  $\Phi_{n,p}$ is *primitive* over $GF(p)$ (see~"IsPrimitivePolynomial").
-##  That is, $\Phi_{n,p}$ is irreducible, monic,
-##  and is the minimal polynomial of a primitive root of $GF(p^n)$.
-##
-##  For all divisors $d$ of $n$ the compatibility condition
-##  $\Phi_{d,p}( x^{\frac{p^n-1}{p^m-1}} ) \equiv 0 \pmod{\Phi_{n,p}(x)}$
-##  holds.
-##
-##  With respect to the ordering defined above, $\Phi_{n,p}$ shall be
+##  <Description>
+##  is the Conway polynomial of the finite field <M>GF(p^n)</M> as
+##  polynomial over the prime field in characteristic <A>p</A>.
+##  <P/>
+##  The <E>Conway polynomial</E> <M>\Phi_{{n,p}}</M> of <M>GF(p^n)</M>
+##  is defined by the following properties.
+##  <P/>
+##  First define an ordering of polynomials of degree <M>n</M> over
+##  <M>GF(p)</M>, as follows.
+##  <M>f = \sum_{{i = 0}}^n (-1)^i f_i x^i</M> is smaller than
+##  <M>g = \sum_{{i = 0}}^n (-1)^i g_i x^i</M> if and only if there is an index
+##  <M>m \leq n</M> such that <M>f_i = g_i</M> for all <M>i > m</M>, and
+##  <M>\tilde{{f_m}} &lt; \tilde{{g_m}}</M>,
+##  where <M>\tilde{{c}}</M> denotes the integer value in
+##  <M>\{ 0, 1, \ldots, p-1 \}</M> that is mapped to <M>c \in GF(p)</M> under
+##  the canonical epimorphism that maps the integers onto <M>GF(p)</M>.
+##  <P/>
+##  <M>\Phi_{{n,p}}</M> is <E>primitive</E> over <M>GF(p)</M>
+##  (see&nbsp;<Ref Func="IsPrimitivePolynomial"/>).
+##  That is, <M>\Phi_{{n,p}}</M> is irreducible, monic,
+##  and is the minimal polynomial of a primitive root of <M>GF(p^n)</M>.
+##  <P/>
+##  For all divisors <M>d</M> of <M>n</M> the compatibility condition
+##  <M>\Phi_{{d,p}}( x^{{\frac{{p^n-1}}{{p^m-1}}}} ) \equiv 0
+##  \pmod{{\Phi_{{n,p}}(x)}}</M>
+##  holds. (That is, the appropriate power of a zero of <M>\Phi_{{n,p}}</M>
+##  is a zero of the Conway polynomial <M>\Phi_{{d,p}}</M>.)
+##  <P/>
+##  With respect to the ordering defined above, <M>\Phi_{{n,p}}</M> shall be
 ##  minimal.
+##  <P/>
+##  The computation of Conway polynomials can be time consuming. Therefore,
+##  &GAP; comes with a list of precomputed polynomials. If a requested
+##  polynomial is not stored then &GAP; prints a warning and computes it by
+##  checking all polynomials in the order defined above for the defining
+##  conditions.
+##  If <M>n</M> is not a prime this is probably a very long computation.
+##  (Some previously known polynomials with prime <M>n</M> are not stored in
+##  &GAP; because they are quickly recomputed.)
+##  Use the function <Ref Func="IsCheapConwayPolynomial"/> to check in
+##  advance if <Ref Func="ConwayPolynomial"/> will give a result after a
+##  short time.
+##  <P/>
+##  Note that primitivity of a polynomial can only be checked if &GAP; can
+##  factorize <M>p^n-1</M>.
+##  A sufficiently new version of the <Package>FactInt</Package>
+##  package contains many precomputed factors of such numbers from various
+##  factorization projects.
+##  <P/>
+##  See&nbsp;<Cite Key="L03"/> for further information on known
+##  Conway polynomials.
+##  <P/>
+##  If <A>pol</A> is a result returned by <Ref Func="ConwayPolynomial"/> the
+##  command <C>Print( InfoText( <A>pol</A> ) );</C> will print some info on
+##  the origin of that particular polynomial.
+##  <P/>
+##  For some purposes it may be enough to have any primitive polynomial for
+##  an extension of a finite field instead of the Conway polynomial, 
+##  see&nbsp;<Ref Func="RandomPrimitivePolynomial"/> below.
+##  <Example><![CDATA[
+##  gap> ConwayPolynomial( 2, 5 );  ConwayPolynomial( 3, 7 );
+##  x_1^5+x_1^2+Z(2)^0
+##  x_1^7-x_1^2+Z(3)^0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConwayPolynomial" );
+
+############################################################################
+##
+#F  IsCheapConwayPolynomial( <p>, <n> ) . . . tell if Conway polynomial is cheap to obtain
+##
+##  <#GAPDoc Label="IsCheapConwayPolynomial">
+##  <ManSection>
+##  <Func Name="IsCheapConwayPolynomial" Arg='p, n'/>
+##
+##  <Description>
+##  Returns <K>true</K> if <C>ConwayPolynomial( <A>p</A>, <A>n</A> )</C>
+##  will give a result in <E>reasonable</E> time.
+##  This is either the case when this polynomial is pre-computed,
+##  or if <A>n</A> is a not too big prime.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "IsCheapConwayPolynomial" );
+
+############################################################################
+##
+#F  RandomPrimitivePolynomial( <F>, <n>[, <i> ] ) . . . . . random primitive polynomial over finite field 
+##
+##  <#GAPDoc Label="RandomPrimitivePolynomial">
+##  <ManSection>
+##  <Func Name="RandomPrimitivePolynomial" Arg='F, n[, i ]'/>
+##
+##  <Description>
+##  For a finite field <A>F</A> and a positive integer <A>n</A> this function
+##  returns a primitive polynomial of degree <A>n</A> over <A>F</A>,
+##  that is a zero of  this polynomial has maximal multiplicative order
+##  <M>|<A>F</A>|^n-1</M>. 
+##  If <A>i</A> is given then the polynomial is written in variable number
+##  <A>i</A> over <A>F</A>
+##  (see&nbsp;<Ref Func="Indeterminate" Label="for a ring (and a number)"/>),
+##  the default for <A>i</A> is 1.
+##  <P/>
+##  Alternatively, <A>F</A> can be a prime power q, then <A>F</A> = GF(q) is
+##  assumed.
+##  And <A>i</A> can be a univariate polynomial over <A>F</A>,
+##  then the result is a polynomial in the same variable.
+##  <P/>
+##  This function can work for much larger fields than those for which
+##  Conway polynomials are available, of course &GAP; must be able to
+##  factorize <M>|<A>F</A>|^n-1</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "RandomPrimitivePolynomial" );
 
 
 #############################################################################

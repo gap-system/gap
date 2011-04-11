@@ -1,11 +1,12 @@
 #############################################################################
 ##  
-#W  helpdef.gi                  GAP Library       Frank Celler / Frank L�beck
+#W  helpdef.gi                  GAP Library       Frank Celler / Frank Lübeck
 ##  
 #H  @(#)$Id$
 ##  
-#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  helpdef.g{d,i}  contain  the  `default'  help  book  handler
 ##  functions, which implement access of GAP's online help to help documents
@@ -94,7 +95,7 @@ end;
 InstallGlobalFunction(GapLibToc2Gap, function(file)
   local   stream,  str,  getarg,  p,  l,  res,  a,  s,  pos,  r;
   
-  stream := InputTextFile(file);
+  stream := StringStreamInputTextFile(file);
   if stream=fail then
     return fail;
   fi;
@@ -197,6 +198,7 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   repeat
     line := ReadLine(stream);
     if line <> fail  then
+      RemoveCharacters(line, "\r");
       subline:=line{[3..Length(line)-1]} ;
       if line[1] = 'C'  then
         Add( c, subline);
@@ -211,6 +213,8 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
         fi;
       else
         Print( "#W  corrupted 'manual.six': ", line );
+        Print( "#W (in stream: ", stream, ")\n");
+        break;
       fi;
     fi;
   until IsEndOfStream(stream);
@@ -358,7 +362,7 @@ InstallGlobalFunction(HELP_CHAPTER_INFO, function( book, chapter )
         if filename = fail  then
             return fail;
         fi;
-        stream := InputTextFile(filename);
+        stream := StringStreamInputTextFile(filename);
         poss   := [];
         secnum := 0;
         repeat
@@ -429,7 +433,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
     if IsDirectory(book) then
       path := Filename([Directory(d)], fn);
     else
-      path := Filename(List(GAP_ROOT_PATHS, Directory), 
+      path := Filename(List(GAPInfo.RootPaths, Directory), 
                      Concatenation(d, "/", fn));
     fi;
     if path = fail then
@@ -442,7 +446,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
       if IsDirectory(book) then
         path := Filename([Directory(d)], fn);
       else
-        path := Filename(List(GAP_ROOT_PATHS, Directory), 
+        path := Filename(List(GAPInfo.RootPaths, Directory), 
                        Concatenation(d, "/", fn));
       fi;
     fi;
@@ -518,7 +522,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_MAC_IC_URL, function(arg)
     if IsDirectory(book) then
       data.path := Filename([Directory(d)], fn);
     else
-      data.path := Filename(List(GAP_ROOT_PATHS, Directory), 
+      data.path := Filename(List(GAPInfo.RootPaths, Directory), 
                      Concatenation(d, "/", fn));
     fi;
     if data.path <> fail then
@@ -544,7 +548,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_MAC_IC_URL, function(arg)
     if IsDirectory(book) then
        data.path := Filename([Directory(d)], fn);
     else
-       data.path := Filename(List(GAP_ROOT_PATHS, Directory), 
+       data.path := Filename(List(GAPInfo.RootPaths, Directory), 
                        Concatenation(d, "/", fn));
     fi;
     if data.path <> fail then

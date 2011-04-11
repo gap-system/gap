@@ -1,0 +1,136 @@
+              README.first
+
+This directory contains the current release of GAP. It is version 4.3.
+
+All files are available in the following formats:
+
+  - with extension .tar.gz    ---    standard format for UNIX/Linux systems 
+                                     (use tar and gunzip for unpacking)
+
+  - with extension .zip       ---    standard format for Windows/DOS systems
+                                     (here text files have DOS-style line
+                                      breaks, they might not work under Unix)
+
+  - with extension .zoo       ---    all systems, use the provided
+                                     util/unzoo.c, (UNIX)
+                                     bin/win/unzoo.exe, (Windows)
+                                     bin/mac/unzoo4r3-68k.sit, (Mac 68K)
+                                     bin/mac/unzoo4r3-PPC.sit  (Mac PPC)
+                                     for unpacking
+
+The following contains brief installation  instructions. Please refer to the
+files INSTALL  (UNIX), INSTALL-MAC.TEX (Mac) or  INSTALL.WIN (Windows), also
+to be found in this directory, for more detailed instructions.
+
+For a complete installation fetch the files
+
+   gap4r3....               ---  UNIX/Linux
+     or
+   gapmac4r3....            ---  Mac
+     or
+   gappc4r3....             ---  Windows
+
+and  (probably some time after the first release of GAP 4.3)
+
+   bugfixes/fix*...
+     and
+   bugfixes/wbin*...  ---  these only for Windows
+
+and (Mac only, choose most recent, PPC or 68k version)
+
+   bin/mac/bin4r3...-PPC.sit
+   bin/mac/bin4r3...-68K.sit
+   
+and  (these contain the current versions of all packages)
+
+   accpkg4r3....
+   deppkg4r3....
+
+(with the extensions of your choice, see above).
+
+and  (optional additional tables of marks, need about 80 MB on disc)
+
+   xtom4r3....
+
+
+Note,  that certain  packages  will not  or  not fully  work  on Windows  or
+Macintosh systems, see the package infos on our Web pages for details.
+
+
+INSTALLATION UNDER UNIX
+
+While the first mentioned files must  be unpacked *above* the root directory
+you want to install GAP  in (say, '/usr/local/lib/', a subdirectory 'gap4r3'
+is created), the  last two package collections must be  unpacked *inside the
+'pkg'* subdirectory  of the distribution.  Bugfixes are unpacked  inside the
+GAP root directory ('gap4r3').
+
+To compile GAP on UNIX/Linux systems you can often just say
+
+  ./configure
+  make
+
+inside  GAP's root  directory and  copy  the start  script bin/gap.sh  under
+some  name (probably  'gap')  into  a generally  used  bin directory  (e.g.,
+/usr/local/bin).
+
+Note  that some  packages need  further installation/configuration.  See the
+README.* files in the 'pkg' subdirectory.
+
+You can  find further installation/setup  hints in the file  README.UNIX, it
+also includes a script which potentially automates the whole installation on
+Linux/UNIX systems.
+
+
+INSTALLATION UNDER WINDOWS
+
+Decompress  'gappc4r3.zip'   on  the  top-level  directory   of  drive  C:\.
+This  creates  a  directory  C:\gap4r3,   the  'GAP  root  directory'.  Then
+extract  'accpkg4r3.zoo'   and  'deppkg4r3'  in  C:\gap4r3\pkg\.   Click  on
+C:\gap4r3\bin\gap.pif to start GAP.
+
+To make  GAP accessible  from the  start menu,  create a  link 'GAP  4.3' to
+C:\gap4r3\bin\gap.pif in a submenu of the start menu of your choice.
+
+(If you want to install GAP in  another directory, you will have to create a
+suitable batch file  -- see the file INSTALL.WIN or  the chapter 'Installing
+GAP' of the reference manual.)
+
+For getting  access to the  documentation via the  start menu, you  can also
+create such  links to the manual books, e.g. to C:\gap4r3\doc\ref\manual.dvi
+resp. C:\gap4r3\doc\ref\manual.pdf  resp. C:\gap4r3\doc\htm\ref\chapters.htm
+for the  DVI-, PDF- resp. HTML  version of the  reference manual.  Of course,
+this requires viewers for the respective types of files to be installed.
+
+You can get  a considerably better user interface by  replacing the standard
+DOS shell by the rxvt shell (see http://www.rxvt.org/). However, please note
+that we cannot provide support for this shell.
+
+If there are bugfixes, move them  into the 'gap4r3' directory and decompress
+them there.
+
+
+INSTALLATION ON THE MAC
+
+Decompress  'bin4r3-...sit' and  'unzoo4r3-...sit' (using,  e. g.  , Stuffit
+Expander). You should now have applications 'GAP 4 ...' and 'unzoo 4.3 ...'.
+Note that .zoo  files can be decompressed by dragging  them onto the 'unzoo'
+application icon.
+
+Move gapmac4r3.zoo  into the  folder in  which you want  to install  GAP and
+decompress  it.  This  should  have  created  a  folder  'gap4r3'.  Move  the 
+'GAP 4 ...' application into the folder 'gap4r3'.
+
+If there  are bugfixes, move  them into  the 'gap4r3' folder  and decompress
+them there.
+
+To install the GAP packages,  move 'accpkg4r3.zoo' and  'deppkg4r3' into the  
+folder 'pkg'
+inside 'gap4r3' and decompress them.
+
+
+
+
+  The GAP Group
+
+

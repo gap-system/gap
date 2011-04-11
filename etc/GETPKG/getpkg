@@ -1,0 +1,47 @@
+#!/bin/sh
+# usage: getpkg type pkglistfile
+# type is C A D S
+
+echo "Getting type $1 packages from $2"
+
+# produce a getting file
+awk -v status=$1 'BEGIN{name="";sta="";ver="";readme="";FS="/";cnt=0;}\
+{ if (substr($0,1,4)=="PKG:") {\
+    name="";sta="";ver="";readme="";\
+    name=substr($0,6);\
+  }\
+  if (substr($0,1,7)=="STATUS:") {\
+    sta=substr($0,9,1);\
+  }\
+  if (substr($0,1,7)=="README:") {\
+    readme=substr($0,9);\
+  }\
+  if (substr($0,1,4)=="URL:") {\
+    url=substr($0,6);\
+    if (sta==status) {\
+      cnt+=1;
+      print "wget -N " url;\
+      if (length(readme)>0) {\
+	print "wget -N " readme;\
+      }\
+      else {\
+        print "mkdir " name;\
+	pkgfile = $NF;
+	print "zoo x " pkgfile;\
+	print "mv " name "/README* .";\
+	# is it only README? \
+        print "chmod -R u+rwx " name;\
+	print "rm -rf " name;\
+      }
+      print "if [ -a \"README\" ]; then";\
+      print "mv README README." name;\
+      print "fi";\
+    }\
+  }\
+}\
+END{print "echo \"you should have " cnt " archive files\"";\
+}' $2 >getscript
+
+# get the files
+sh getscript
+

@@ -9,6 +9,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Group Libraries}
 
@@ -23,8 +24,8 @@ initially knows the following groups:
   \item{$\bullet$} a library of groups of small order (see~"Small Groups"),
   \item{$\bullet$}  the  finite perfect  groups of   size  at most $10^6$
     (excluding 11 sizes) (see~"Finite perfect groups").
-  \item{$\bullet$}  a library of  primitive  permutation groups of degree
-    $\<1000$, complete  for degrees  $\<256$ (see~"Primitive  permutation
+  \item{$\bullet$}  the  primitive  permutation groups of degree
+    $\<2499$ (see~"Primitive  permutation
     groups"),
   \item{$\bullet$}  the  irreducible solvable subgroups of  $GL(n,p)$ for
     $n>1$ and $p^n \< 256$ (see "Irreducible Solvable Matrix Groups"),
@@ -268,31 +269,47 @@ InstallMethod( CyclicGroupCons,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Selection Functions}
 
+\indextt{AllPrimitiveGroups}\indextt{AllTransitiveGroups}
 \>`All<Library>Groups( <fun1>, <val1>, ... )'{AllLibraryGroups}%
 @{`All\noexpand<Library>Groups'}
 
-For each of the following group libraries there is a *selection function*.
-This function permits one to select all groups from the library that have a
-given set of properties.
+For a number  of  the  group  libraries  two  *selection  functions*  are
+provided. Each `All<Library>Groups' selection  function  permits  one  to
+select *all* groups from the library <Library> that have a given  set  of
+properties.
+%The name of the selection  functions always begins  with `All' and always
+%ends with `Groups'. In between is a  name that hints at the nature of the
+%group library. 
+Currently, the library selection functions provided, of  this  type,  are
+`AllSmallGroups', `AllIrreducibleSolvableGroups',  `AllTransitiveGroups',
+and `AllPrimitiveGroups'. Corresponding to  each  of  these  there  is  a
+`One<Library>Group' function  (see~"OneLibraryGroup")  which  returns  at
+most one group.
 
-The name of the selection  functions always begins  with `All' and always
-ends with `Groups'. In between is a  name that hints at the nature of the
-group library. For example, the selection function for the library of all
-transitive  groups (see~"Transitive permutation groups") is called
-`AllTransitiveGroups'.
+These functions take an arbitrary number of pairs (but at least one pair)
+of arguments. The first argument in such a pair is a function that can be
+applied to the groups in the library, and the second argument is either a
+single value that this function must return in order to have  this  group
+included in the selection, or a list of such  values.  For  the  function
+`AllSmallGroups' the first such function must be `Size', and, unlike  the
+other library selection functions,  it  supports  an  alternative  syntax
+where   `Size'   is    omitted    (see~"AllSmallGroups").    Also,    see
+"AllIrreducibleSolvableGroups",     for     details     pertaining     to
+`AllIrreducibleSolvableGroups'.
 
-These  functions take an  arbitrary number of  pairs of  arguments.   The
-first argument in such a pair  is a function  that can  be applied to the
-groups in the library,  and the second  argument is either a single value
-that this  function must return in  order  to have this group included in
-the selection, or a list of such values. For example,
-\begintt
-AllTransitiveGroups(NrMovedPoints,[10..15],
-		    Size,         [1..100],
-		    IsAbelian,    false    );
-\endtt
-returns a list of all transitive  groups with  degree between 10 and
-15 and size less than 100 that are not abelian.
+For an example, let us consider the selection function for the library of
+transitive  groups  (also  see~"Transitive  permutation   groups").   The
+command,
+
+%notest
+\beginexample
+gap> AllTransitiveGroups(NrMovedPoints,[10..15],
+>                        Size,         [1..100],
+>                        IsAbelian,    false    );
+\endexample
+
+returns a list of all transitive groups with degree between 10 and 15 and
+size less than 100 that are not abelian.
 
 Thus  the `AllTransitiveGroups'  behaves  as if   it was implemented  by a
 function similar to the one defined below, where `TransitiveGroupsList' is a
@@ -324,8 +341,9 @@ selection process.
 In the description of each library we will
 list the properties that are stored for this library.
 
-\>`One<Library>Groups( <fun1>, <val1>, ... )'{OneLibraryGroups}%
-@{`One\noexpand<Library>Groups'}
+\indextt{OnePrimitiveGroup}\indextt{OneTransitiveGroup}
+\>`One<Library>Group( <fun1>, <val1>, ... )'{OneLibraryGroup}%
+@{`One\noexpand<Library>Group'}
 
 % If you  do not want  all groups with the  prescribed properties, but only
 % one example, you should call the *example function*. It returns `fail' if
@@ -337,9 +355,14 @@ list the properties that are stored for this library.
 % characteristic) and  (2)~its  number  in  the list  of all   groups  with
 % property~(1).
 
-This function simply returns the first (in the stored order) group  in the
-library that has the prescribed properties.
-It returns `fail' if no such group exists in the library.
+For each `All<Library>Groups' function (see~"AllLibraryGroups") there  is
+a  corresponding  function  `One<Library>Group'  on  exactly   the   same
+arguments,        i.e.\        there         are         `OneSmallGroup',
+`OneIrreducibleSolvableGroup',         `OneTransitiveGroup',          and
+`OnePrimitiveGroup'. Each function simply returns the  *first*  group  in
+the library (in the stored order) that  has  the  prescribed  properties,
+instead of *all* such groups. It returns `fail' if no such  group  exists
+in the library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Transitive Permutation Groups}
@@ -366,7 +389,7 @@ This library was computed by  Gregory Butler, John McKay, Gordon Royle
 and Alexander Hulpke.  The list of transitive  groups up  to degree 11
 was published in \cite{BM83},  the list of degree  12 was published in
 \cite{Roy87}, degree 14 and  15 were published in  \cite{Butler93} and
-degrees 16--30 are dur to \cite{Hulpke96,HulpkeTG}.
+degrees 16--30 were published in \cite{Hulpke96} and \cite{HulpkeTG}.
 (Groups of prime degree of course are
 primitive and were known long before.)
 
@@ -403,61 +426,70 @@ Currently, the library contains the following groups:
 \beginlist%unordered
   \item{$\bullet$} those of order at most 2000 except 1024
                    \qquad ($423\;164\;062$ groups);
-  \item{$\bullet$} those of order $5^5$ and $7^4$
-                   \qquad ($92$ groups);
-  \item{$\bullet$} those of order $q^n \cdot p$ where $q^n$ divides
-                   $2^8$, $3^6$, $5^5$ or $7^4$ and $p$ is an
-                   arbitrary prime with $p \neq q$;
+  \item{$\bullet$} those of cubefree order at most 50 000
+                   \qquad ($395 \; 703$ groups);
+  \item{$\bullet$} those of order $p^7$ for the primes $p = 3,5,7,11$
+                   \qquad ($907 \; 489$ groups); 
+  \item{$\bullet$} those of order $p^n$ for $n \leq 6$ and all primes $p$; 
+  \item{$\bullet$} those of order $q^n \cdot p$ for $q^n$ dividing $2^8$, 
+                   $3^6$, $5^5$ or $7^4$ and all primes $p$ with $p \neq q$;
+  \item{$\bullet$} those of squarefree order;
   \item{$\bullet$} those whose order factorises into at most 3 primes.
 \endlist
-The first two items in this list cover an explicit range of orders; the 
-last two provide access to infinite families of groups having orders of 
+The first three items in this list cover an explicit range of orders; the 
+last four provide access to infinite families of groups having orders of 
 certain types.
 
 The library also has an identification function: it returns the library 
 number of a given group. This function determines library numbers using
 invariants of groups. The function is available for all orders in the 
-library except 512 and 1536.
+library except for the orders 512 and 1536 and except for the orders $p^5$, 
+$p^6$ and $p^7$ above 2000.
 
-The library is organised in 8 layers. Each layer contains the groups of
+The library is organised in 11 layers. Each layer contains the groups of
 certain orders and their corresponding group identification routines. It
 is possible to install the first $n$ layers of the group library and the
 first $m$ layers of the group identification for each $1 \leq m \leq n
-\leq 8$. This might be useful to save disk space. There is an extensive
-README file for the Small Groups library available in the `small' directory
+\leq 11$. This might be useful to save disk space. There is an extensive
+`README' file for the Small Groups library available in the `small' directory
 of the {\GAP} distribution containing detailed information on the layers.
-In summary, the layers are:
+A brief description of the layers is given here:
 \beginlist%ordered
    \item{(1)} the groups whose order factorises into at most 3 primes.
    \item{(2)} the remaining groups of order at most 1000 except 512 and 768.
    \item{(3)} the remaining groups of order $2^n * p$ with $n \leq 8$ and
               $p$ an odd prime.
-   \item{(4)} the groups of order $5^5$ and $7^4$ and the remaining groups
-              of order $q^n * p$ where $q^n$ divides $3^6$, $5^5$ or $7^4$
-              and $p$ is a prime with $p \neq q$.
+   \item{(4)} the remaining groups of order $5^5$, $7^4$ and of order 
+              $q^n \cdot p$ for $q^n$ dividing $3^6$, $5^5$ or $7^4$ and 
+              $p \neq q$ a prime.
    \item{(5)} the remaining groups of order at most 2000 except 1024,
               1152, 1536 and 1920.
    \item{(6)} the groups of orders 1152 and 1920.
    \item{(7)} the groups of order 512.
    \item{(8)} the groups of order 1536.
+   \item{(9)} the remaining groups of order $p^n$ for $4 \leq n \leq 6$.
+   \item{(10)} the remaining groups of cubefree order at most 50 000 and
+               of squarefree order.
+   \item{(11)} the remaining groups of order $p^7$ for $p = 3,5,7,11$.
 \endlist
 
 The data in this library has been carefully checked and cross-checked.
 It is believed to be reliable. However, no absolute guarantees are given
 and users should, as always, make their own checks in critical cases.
 
-The data occupies about 26 MB (storing over 400 million groups in about
-200 megabits). The group identification occupies about 42 MB of which
+The data occupies about 30 MB (storing over 400 million groups in about
+200 megabits). The group identification occupies about 47 MB of which
 18 MB is used for the groups in layer (6). More information on the Small 
 Groups library can be found on
-\URL{http://www.math.rwth-aachen.de/~{}Hans-Ulrich.Besche/small.html}
+\URL{http://www.tu-bs.de/~hubesche/small.html}
 
-This group library has been computed by Hans Ulrich Besche, Bettina Eick
-and E.~A.~O'Brien. A survey on this topic and an account of the history 
-of group constructions can be found in \cite{BEO01}. For further detailed 
-information on the construction of this library we refer to \cite{New77}, 
-\cite{OBr90}, \cite{OBr91}, \cite{BescheEick98}, \cite{BescheEick1000} and 
-\cite{BescheEick768}.
+This library has been constructed by Hans Ulrich Besche, Bettina Eick and 
+E.~A.~O'Brien. A survey on this topic and an account of the history of 
+group constructions can be found in \cite{BEO01}. Further detailed 
+information on the construction of this library is available in \cite{New77}, 
+\cite{OBr90}, \cite{OBr91}, \cite{BescheEick98}, \cite{BescheEick1000}, 
+\cite{BescheEick768}, \cite{BEO00}, \cite{EOB99}, \cite{EOB98}, \cite{NOV04}, 
+\cite{Gir03}, \cite{DEi05}, \cite{OV05}.
  
 \atindex{TwoGroup library}{@\noexpand`TwoGroup' library}
 \atindex{ThreeGroup library}{@\noexpand`ThreeGroup' library}
@@ -524,7 +556,9 @@ gap> NumberSmallGroups( 512 );
 gap> NumberSmallGroups( 2^8 * 23 );
 1083472
 \endexample
-\begintt
+
+%notest
+\beginexample
 gap> NumberSmallGroups( 2^9 * 23 );
 Error, the library of groups of size 11776 is not available called from
 <function>( <arguments> ) called from read-eval-loop
@@ -533,7 +567,7 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
 gap> 
-\endtt
+\endexample
 
 \beginexample
 gap> SmallGroupsInformation( 32 );
@@ -575,14 +609,16 @@ the following sizes:
       numbers which are 52, 46, and 54, respectively.
 \endlist
 
-Except for these eleven sizes, the list of altogether 1096 perfect groups
-in the  library is complete. It  relies  on results  of Derek~F. Holt and
-Wilhelm Plesken which  are published in their  book  {\it Perfect Groups}
+Except for these eleven sizes, the list of altogether 1097 perfect groups
+in the  library is complete.  It relies  on results of  Derek~F. Holt and
+Wilhelm Plesken which  are published in their  book    ``Perfect Groups''
 \cite{HP89}. Moreover,   they     have  supplied us    with    files with
 presentations of 488 of the groups. In terms of  these, the remaining 607
 nontrivial groups in the library can be described as 276 direct products,
 107  central   products, and 224  subdirect  products.  They are computed
-automatically by suitable {\GAP} functions whenever they are needed.
+automatically by suitable {\GAP} functions whenever they are needed.  Two
+additional groups omitted from the book ``Perfect Groups'' have also been
+included.
 
 We are grateful to Derek Holt and Wilhelm Plesken for making their groups
 available to the {\GAP} community  by contributing their files. It should
@@ -605,10 +641,10 @@ is obtained by coset enumeration. Note that some of the library groups do
 not have a   faithful   permutation  representation  of small     degree.
 Computations in these groups may be rather time consuming.
 \beginexample
-gap> G:=PerfectGroup(IsPermGroup,129024,2);
-L2(8) N ( 2^6 E 2^1 A ) C 2^1
+gap> G:=PerfectGroup(IsPermGroup,823080,2);
+A5 2^1 19^2 C 19^1
 gap> NrMovedPoints(G);
-14336
+6859
 \endexample
 
 \Declaration{PerfectIdentification}
@@ -790,33 +826,18 @@ this is necessary to make it unique.
 gap> NrPrimitiveGroups(25);
 28
 gap> PrimitiveGroup(25,19);
-5^2:((Q_8:3)`4
+5^2:((Q(8):3)'4)
 gap> PrimitiveGroup(25,20);
-ASL(2,5)
+ASL(2, 5)
 gap> PrimitiveGroup(25,22);
-AGL(2,5)
+AGL(2, 5)
 gap> PrimitiveGroup(25,23);
-(A_5xA_5):2
+(A(5) x A(5)):2
 \endexample
 
 \FileHeader[2]{prim/primitiv}
 
 \Declaration{PrimitiveGroupsIterator}
-
-\Declaration{PrimitiveIdentification}
-\beginexample
-gap> PrimitiveIdentification(Group((1,2),(1,2,3)));
-2
-\endexample
-
-\Declaration{SimsNo}
-
-\beginexample
-gap> g:=PrimitiveGroup(25,2);
-5^2:S_3
-gap> SimsNo(g);
-3
-\endexample
 
 \>`COHORTS_PRIMITIVE_GROUPS' V
 
@@ -832,15 +853,60 @@ For example in degree 49, we have four cohorts with socles $\F_7^2$,
 $L_2(7)^2$, $A_7^2$ and $A_{49}$ respectively. the group
 `PrimitiveGroup(49,36)', which is isomorphic to $(A_7\times A_7):2^2$, lies
 in the third cohort with socle $(A_7\times A_7)$.
-\begintt
+
+\beginexample
 gap> COHORTS_PRIMITIVE_GROUPS[49];
-[ [ rec( series := "Z", width := 2, parameter := 7 ),
-      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-          20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 ] ],
-  [ rec( series := "L", width := 2, parameter := [ 2, 7 ] ), [ 34 ] ],
-  [ rec( series := "A", width := 2, parameter := 7 ), [ 35, 36, 37, 38 ] ],
+[ [ rec( series := "Z", parameter := 7, width := 2 ), 
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+          20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 ] ], 
+  [ rec( series := "L", parameter := [ 2, 7 ], width := 2 ), [ 34 ] ], 
+  [ rec( series := "A", parameter := 7, width := 2 ), [ 35, 36, 37, 38 ] ], 
   [ rec( series := "A", parameter := 49, width := 1 ), [ 39, 40 ] ] ]
-\endtt
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Index numbers of primitive groups}
+
+\Declaration{PrimitiveIdentification}
+\beginexample
+gap> PrimitiveIdentification(Group((1,2),(1,2,3)));
+2
+\endexample
+
+\Declaration{SimsNo}
+
+\beginexample
+gap> g:=PrimitiveGroup(25,2);
+5^2:S(3)
+gap> SimsNo(g);
+3
+\endexample
+
+As mentioned in the previous section, the index numbers of primitive groups
+in {\GAP} are guaranteed to remain stable. (Thus, missing groups will be
+added to the library at the end of each degree.)
+In particular, it is safe to refer to a primitive group of type <deg>,<nr>
+in the {\GAP} library. 
+
+The system `Magma' also provides a list of primitive groups
+(see \cite{RoneyDougal02}). For historical
+reasons, its indexing up to degree 999 
+differs from the one used by {\GAP}. The
+variable
+
+\>`PRIMITIVE_INDICES_MAGMA' V
+
+can be used to obtain this correspondence. The magma index number of
+the {\GAP} group `PrimitiveGroup(<deg>,<nr>)' is stored in the entry
+`PRIMITIVE_INDICES_MAGMA[<deg>][<nr>]', for degree at most 999.
+
+Vice versa, the group of degree <deg> with `Magma' index number <nr> has the
+{\GAP} index 
+
+`Position(PRIMITIVE_INDICES_MAGMA[<deg>],<nr>)', in particular
+it can be obtained by the {\GAP} command
+
+`PrimitiveGroup(<deg>,Position(PRIMITIVE_INDICES_MAGMA[<deg>],<nr>));'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Irreducible Solvable Matrix Groups}
@@ -1346,8 +1412,8 @@ gap> phi := IsomorphismPermGroup( G );;
 gap> P := Image( phi );
 Group([ (1,7,6)(2,9)(4,5,10), (2,3,4,5)(6,9,8,7) ])
 gap> D := DerivedSubgroup( P );
-Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,3,10,8)(2,5)(4,7)(6,9), 
-  (1,2,8,7,5)(3,4,6,10,9) ])
+Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,9)(2,10)(3,6,8,5)(4,7), 
+  (1,7,10,4)(2,9)(3,6)(5,8) ])
 gap> Size( D );
 960
 gap> IsPerfectGroup( D );
@@ -1362,15 +1428,15 @@ gap> for m in GeneratorsOfGroup( R ) do PrintArray( m ); od;
   [   0,   0,   0,   1,   0 ],
   [   0,   0,   1,   0,   0 ],
   [  -1,  -1,   0,   0,   1 ] ]
-[ [   0,   0,   0,   1,   0 ],
-  [  -1,  -1,  -1,  -1,   2 ],
+[ [  -1,  -1,  -1,  -1,   2 ],
+  [   0,   0,   0,  -1,   0 ],
   [   0,   0,  -1,   0,   0 ],
-  [   1,   0,   0,   0,   0 ],
-  [   0,  -1,  -1,   0,   1 ] ]
-[ [   0,  -1,   0,   0,   0 ],
-  [   0,   0,   1,   0,   0 ],
+  [   0,   1,   0,   0,   0 ],
+  [   0,   0,  -1,  -1,   1 ] ]
+[ [  -1,   0,   0,   0,   0 ],
   [   0,   0,   0,  -1,   0 ],
   [   1,   1,   1,   1,  -2 ],
+  [   0,  -1,   0,   0,   0 ],
   [   0,   0,   1,   0,  -1 ] ]
 \endexample
 

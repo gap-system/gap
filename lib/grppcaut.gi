@@ -2,8 +2,9 @@
 ##
 #W  grppcaut.gi                 GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcaut_gi :=
     "@(#)$Id$";
@@ -32,9 +33,11 @@ CheckAuto := function( auto )
     return true;
 end;
 
+
 #############################################################################
 ##
 #F InducedActionFactor( mats, fac, low )
+# this function is used only in a package.
 ##
 InducedActionFactor := function( mats, fac, low )
     local sml, upp, d, i, b, t;
@@ -50,15 +53,262 @@ InducedActionFactor := function( mats, fac, low )
     return sml; 
 end;
 
-#############################################################################
-##
-#F CoefficientsOfVector( v, fac, low )
-##
-CoefficientsOfVector := function( v, fac, low )
-    local upp, d;
-    upp := Concatenation( fac, low );
-    d   := Length( fac );
-    return SolutionMat( upp, v ){[1..d]};
+VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
+  local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine, acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp, stabm, dict, orb, tp, tm, p, img, sch, incpermstop, sz, sel, nbas, offset, i;
+
+  #AAA:=[group,gens,mats,shadows,vec];
+  PrunedBasis:=function(p)
+  local b,q,i;
+    # prune too small factors
+    b:=[p[1]];
+    q:=0;
+    for i in [2..Length(p)] do
+      if i=Length(p) or Length(p[i+1])-q>lim then
+	Add(b,p[i]);
+	q:=Length(p[i]);
+      fi;
+    od;
+    return b;
+  end;
+
+  f:=FieldOfMatrixList(mats);
+  lim:=LogInt(1000,Size(f));
+  lim:=2;
+  mo:=GModuleByMats(mats,f);
+  dim:=mo.dimension;
+  bas:=PrunedBasis(MTX.BasesCompositionSeries(mo));
+
+  # form new basis of space
+  newbas:=ShallowCopy(bas[2]);
+  dims:=[0,Length(newbas)];
+  for i in [3..Length(bas)] do
+    q:=BaseSteinitzVectors(bas[i],newbas);
+    Append(newbas,q.factorspace);
+    Add(dims,Length(newbas));
+  od;
+
+  #base change newbas is matrix new -> old
+  q:=newbas^-1;
+  mats:=List(mats,i->newbas*i*q);
+  #bas:=List(bas{[2..Length(bas)]},i->i*q);
+  #bas:=Concatenation([[]],bas);
+  vec:=vec*q;
+
+  bp:=Length(dims)-1;
+  while bp>=1 do
+    ind:=[dims[bp]+1..dims[bp+1]];
+    q:=[dims[bp+1]+1..dim];
+    if bp+1=Length(dims) then
+      affine:=false;
+      ind:=[dims[bp]+1..dim];
+    else
+      affine:=List(mats,i->vec{q}*(i{q}{ind}));
+    fi;
+    Info(InfoMatOrb,2,"Acting dimension ",ind);
+    acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
+    nv:=vec{ind};
+    
+    if (affine=false and ForAny([1..Length(acts)],i->nv*acts[i]<>nv))
+    or (affine<>false and ForAny([1..Length(acts)],i->nv*acts[i]+affine[i]<>nv))
+      then
+      # orbit/stabilizer algorithm. We need to carry (pre)images through
+      #os:=OrbitStabilizer(group,nv,hocos,ind[2].generators,OnRight);
+      stb:=TrivialSubgroup(group);
+      idx:=Size(group);idxh:=idx/Factors(idx)[1];
+      incstb:=true;
+      incperm:=true;
+      notinc:=0;
+      free:=FreeGroup(Length(gens));
+      freegens:=GeneratorsOfGroup(free);
+      stabp:=[];
+      stabm:=[];
+      dict:=NewDictionary(nv,true,f^Length(nv));
+      orb:=[nv];
+      AddDictionary(dict,nv,1);
+      tp:=[One(group)];
+      tm:=[One(free)];
+      p:=1;
+      while incstb and p<=Length(orb) do
+	for i in [1..Length(gens)] do
+	  if affine=false then
+	    img:=orb[p]*acts[i];
+	  else
+	    img:=orb[p]*acts[i]+affine[i];
+	  fi;
+	  q:=LookupDictionary(dict,img);
+	  if q=fail then
+	    Add(orb,img);
+	    if incstb and idxh<Length(orb) then
+	      Info(InfoMatOrb,3,"stopped at orbit length ",
+		Length(orb),"/",idx);
+	      incstb:=false;
+	    else
+	      AddDictionary(dict,img,Length(orb));
+	      if incperm then
+		Add(tp,tp[p]*gens[i]);
+	      fi;
+	      Add(tm,tm[p]*freegens[i]);
+	    fi;
+	  elif incstb then
+	    if IsBound(tp[p]) and IsBound(tp[q]) then
+	      sch:=tp[p]*gens[i]/tp[q];
+	    elif Random([1..200])=1 then
+	      if IsBound(tp[p]) then
+		sch:=tp[p];
+	      else
+		sch:=MappedWord(tm[p],freegens,gens);
+	      fi;
+	      sch:=sch*gens[i];
+	      if IsBound(tp[q]) then
+		sch:=sch/tp[q];
+	      else
+		sch:=sch/MappedWord(tm[q],freegens,gens);
+	      fi;
+	    else
+	      sch:=false;
+	    fi;
+	    if sch<>false and not sch in stb then
+#Print("new schreiergen",Length(orb),"\n");
+	      stb:=ClosureSubgroupNC(stb,sch);
+	      idx:=Size(group)/Size(stb);idxh:=idx/Factors(idx)[1];
+	      if idxh<Length(orb) then
+		Info(InfoMatOrb,3,"stopped at orbit length ",
+		  Length(orb),"/",idx);
+		incstb:=false;
+	      fi;
+	      Add(stabp,sch);
+	      sch:=tm[p]*freegens[i]/tm[q];
+	      Add(stabm,sch);
+	      notinc:=0;
+	    elif incperm then
+	      notinc:=notinc+1;
+	      if 20*notinc>idxh and notinc>10000 then 
+		Info(InfoMatOrb,3, Length(orb),
+		" -- not incrementing perms again:",Size(group)/Size(stb));
+		incperm:=false;
+		incpermstop:=p;
+	      fi;
+#Print("old schreiergen",Length(orb),"\n");
+	    fi;
+	  fi;
+	od;
+	p:=p+1;
+      od;
+      #sz:=Maximum(Difference(DivisorsInt(sz),[sz]));
+      if Length(orb)<=idxh then
+	Info(InfoWarning,1,"too small stabilizer");
+	p:=incpermstop;
+	sz:=Size(group)/Length(orb);
+	while Size(stb)<sz do
+	  for i in [1..Length(gens)] do
+	    if affine=false then
+	      img:=orb[p]*acts[i];
+	    else
+	      img:=orb[p]*acts[i]+affine[i];
+	    fi;
+	    q:=LookupDictionary(dict,img);
+	    if q=fail then
+	      Error("error in orbit alg");
+	    else
+	      if IsBound(tp[p]) then
+		sch:=tp[p];
+	      else
+		sch:=MappedWord(tm[p],freegens,gens);
+	      fi;
+	      sch:=sch*gens[i];
+	      if IsBound(tp[q]) then
+		sch:=sch/tp[q];
+	      else
+		sch:=sch/MappedWord(tm[q],freegens,gens);
+	      fi;
+	      if not sch in stb then
+		stb:=ClosureSubgroupNC(stb,sch);
+		Add(stabp,sch);
+		sch:=tm[p]*freegens[i]/tm[q];
+		Add(stabm,sch);
+	      fi;
+	    fi;
+	  od;
+	  p:=p+1;
+	od;
+      fi;
+      sz:=Size(stb);
+      sel:=[];
+      stb:=TrivialSubgroup(group);
+      for i in Reversed([1..Length(stabp)]) do
+	if not stabp[i] in stb then
+	  Add(sel,i);
+	  stb:=ClosureSubgroupNC(stb,stabp[i]);
+	fi;
+      od;
+      stabp:=stabp{sel};
+      stabm:=stabm{sel};
+      sz:=Size(group)/Size(stb);
+      Info(InfoMatOrb,2,"Orbit length ",Length(orb),
+           " stabilizer index ",sz,", ",Length(sel)," generators");
+      Unbind(orb); Unbind(dict);Unbind(tp);Unbind(tm);
+      group:=stb;
+      gens:=stabp;
+      mats:=List(stabm,i->MappedWord(i,freegens,mats));
+      shadows:=List(stabm,i->MappedWord(i,freegens,shadows));
+      if AssertionLevel()>0 then
+	ind:=[dims[bp]+1..dim];
+	acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
+	nv:=vec{ind};
+	Assert(1,ForAll(acts,i->nv*i=nv));
+	Print("Assertion 1 passed\n");
+      fi;
+
+      # should we try to refine the next step?
+      if Length(mats)>0 and sz>1 and bp>1 and ForAny([2..bp],q->dims[q]-dims[q-1]>lim) then
+	mo:=GModuleByMats(mats,f);
+	ind:=[1..dims[bp]];
+	acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
+	mo:=GModuleByMats(acts,f);
+	#if not MTX.IsIrreducible(mo) then
+	nbas:=PrunedBasis(MTX.BasesCompositionSeries(mo));
+	offset:=Length(nbas)-bp;
+        if offset>0 then
+	  #nbas:=nbas{[2..Length(nbas)]};
+	  q:=IdentityMat(dim,f){ind};
+	  nbas:=List(nbas,i->List(i,j->j*q));
+	  Info(InfoMatOrb,2,"Reduction ",List(nbas,Length));
+	  newbas:=[];
+	  for i in nbas do
+	    q:=BaseSteinitzVectors(i,newbas);
+	    Append(newbas,q.factorspace);
+	  od;
+	  Append(newbas,IdentityMat(dim,f){[dims[bp]+1..dim]});
+	  newbas:=ImmutableMatrix(f,newbas);
+
+	  dims:=Concatenation(List(nbas{[1..Length(nbas)]},Length),
+		 dims{[bp+1..Length(dims)]});
+
+	  #Error("further reduction!");
+	  #base change newbas is matrix new -> old
+	  q:=newbas^-1;
+	  mats:=List(mats,i->newbas*i*q);
+	  vec:=vec*q;
+	  bp:=bp+offset;
+
+	fi;
+	if AssertionLevel()>0 then
+	  ind:=[dims[bp]+1..dim];
+	  acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
+	  nv:=vec{ind};
+	  Assert(1,ForAll(acts,i->nv*i=nv));
+	  Print("Assertion 2 passed\n");
+	fi;
+
+      fi;
+    fi;
+    bp:=bp-1;
+  od;
+  Assert(1,ForAll(mats,i->vec*i=vec));
+  return rec(stabilizer:=group,
+             gens:=gens,
+	     mats:=mats,
+	     shadows:=shadows);
 end;
 
 #############################################################################
@@ -66,73 +316,50 @@ end;
 #F StabilizerByMatrixOperation( C, v, cohom )
 ##
 StabilizerByMatrixOperation := function( C, v, cohom )
-    local modu, bases, l, m, incl, gens, ind, vec, tmp, upp,
-          low, fac, i,oper;
+local translate, gens, oper, fac, ind, vec, tmp;
 
     # the trivial case 
     if Size( C ) = 1 then return C; fi;
 
+    # can we get a permrep?
+    if IsBound(C!.permrep) then
+      translate:=C!.permrep;
+    else
+      translate:=EXPermutationActionPairs(C);
+    fi;
+
     # choose gens 
-    if HasPcgs( C ) then 
-        gens := Pcgs( C );
+    if translate<>false then
+      Unbind(translate.isomorphism);
+      EXReducePermutationActionPairs(translate);
+      gens:=translate.pairgens;
+    elif HasPcgs( C ) then 
+      gens := Pcgs( C );
     else 
-        gens := GeneratorsOfGroup( C ); 
+      gens := GeneratorsOfGroup( C ); 
     fi;
 
     # compute matrix operation
     oper := MatrixOperationOfCPGroup( cohom, gens );
 
-    # construct module to use meataxe
-    if CHOP then
-        modu  := GModuleByMats( oper, cohom.module.field );
-        bases := SMTX.BasesCompositionSeries( modu );
-        l     := Length( bases );
-        Info( InfoMatOrb, 1, " MO: found comp series of length ",l);
-        Info( InfoMatOrb, 1, " MO: with dimensions ",List(bases, Length));
-
-        # compute m
-        m := 1;
-        incl := false;
-        while not incl do
-            m := m + 1;
-            incl := IsList( SolutionMat( bases[m], v ) );
-        od;
-        Info( InfoMatOrb, 1, " MO: v is included in ",m,"th subspace");
+    if translate<>false then
+      tmp:=VectorStabilizerByFactors(translate.permgroup,translate.permgens,
+	                             oper,translate.pairgens,v);
+      translate:=rec(permgroup:=tmp.stabilizer,
+		     permgens:=tmp.gens,
+		     pairgens:=tmp.shadows);
+      C:=GroupByGenerators(translate.pairgens,One(C));
+      SetSize(C,Size(tmp.stabilizer));
     else
-        bases := [[], oper[1]^0];
-        m     := 2;
+      tmp := OrbitStabilizer( C, v, gens, oper, OnRight );
+      Info( InfoMatOrb, 1, " MO: found orbit of length ",Length(tmp.orbit) );
+      SetSize( tmp.stabilizer, Size( C ) / Length( tmp.orbit ) );
+      C   := tmp.stabilizer;
     fi;
 
-    # the first factor includes v
-    fac := BaseSteinitzVectors( bases[m], bases[m-1] ).factorspace;
-    ind := InducedActionFactor( oper, fac, bases[m-1] );
-    vec := CoefficientsOfVector( v, fac, bases[m-1] );
-    tmp := OrbitStabilizer( C, vec, gens, ind, OnRight );
-    SetSize( tmp.stabilizer, Size( C ) / Length( tmp.orbit ) );
-    C   := tmp.stabilizer;
-    Info( InfoMatOrb, 1, " MO: found orbit of length ",Length(tmp.orbit) );
-
-    # loop over the remaining factors
-    for i in Reversed( [1..m-2] ) do
-        if Length( tmp.orbit ) > 1 then 
-            if HasPcgs( C ) then
-                gens := Pcgs( C );
-            else
-                gens := GeneratorsOfGroup( C );
-            fi;
-            oper := MatrixOperationOfCPGroup( cohom, gens );
-        fi;
-        upp  := Concatenation( [v], bases[i+1] );
-        low  := bases[i];
-        fac  := BaseSteinitzVectors( upp, low ).factorspace;
-        ind  := InducedActionFactor( oper, fac, low );
-        vec  := CoefficientsOfVector( v, fac, low );
-        tmp  := OrbitStabilizer( C, vec, gens, ind, OnRight );
-        SetSize( tmp.stabilizer, Size( C ) / Length( tmp.orbit ) );
-        C    := tmp.stabilizer;
-        Info( InfoMatOrb, 1, " MO: found orbit of length ", 
-                                Length(tmp.orbit));
-    od;
+    if translate<>false then
+      C!.permrep:=translate;
+    fi;
     return C;
 end;
 
@@ -237,12 +464,12 @@ InducedActionAutGroup := function( epi, weights, s, n, A )
             exp := ExponentsOfPcElement( pcgsM, m ) * One( field );
             Add( mat, exp );
         od;
-        tup := Tuple( [aut, mat] );
+        tup := DirectProductElement( [aut, mat] );
         Add( comp, tup );
     od; 
 
     # add size and check solubility
-    D := GroupByGenerators( comp, Tuple( [ One( A ),
+    D := GroupByGenerators( comp, DirectProductElement( [ One( A ),
              Immutable( IdentityMat(Length(pcgsM), field) )]));
     SetSize( D, Size( A ) );
     if CanEasilyComputePcgs( A ) then
@@ -670,6 +897,7 @@ AutomorphismGroupSolvableGroup := function( G )
                   generators := [] );
     B     := NormalizingReducedGL( spec, 1, first[2], M );
     A     := AutomorphismGroupElAbGroup( F, B );
+    SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 
     # run down series
     for i in [2..Length(first)-1] do
@@ -678,9 +906,8 @@ AutomorphismGroupSolvableGroup := function( G )
         s := first[i];
         n := first[i+1];
         p := weights[s][3];
-        Info( InfoAutGrp, 2, "start ",i,"th layer with weight ",weights[s],
-                             "^", n-s,
-                             " and automorphism group of size ",Size(A));
+        Info( InfoAutGrp, 2, "start ",i,"th layer, weight ",weights[s],
+                             "^", n-s, ", aut.grp. size ",Size(A));
 
         # set up
         pcgsU := InducedPcgsByPcSequenceNC( spec, spec{[n..m]} );
@@ -715,9 +942,11 @@ AutomorphismGroupSolvableGroup := function( G )
 	      as:=Size(A);
 	      A:=Group(Pcgs(A),One(A));
 	      SetSize(A,as);
+	      SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 	    fi;
 
             D := DirectProduct( A, B ); 
+
             Info( InfoAutGrp, 2,"compute compatible pairs in group of size ",
                                   Size(A), " x ",Size(B),", ",
 				  Length(GeneratorsOfGroup(D))," generators");
@@ -732,6 +961,7 @@ AutomorphismGroupSolvableGroup := function( G )
 	     and Length(Pcgs(A))<Length(GeneratorsOfGroup(A)) then
 	      as:=Size(A);
 	      A:=Group(Pcgs(A),One(A));
+	      SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 	      SetSize(A,as);
 	    fi;
 
@@ -747,7 +977,7 @@ AutomorphismGroupSolvableGroup := function( G )
                   Size( D ));
             C := InduciblePairs( D, epi, M );
         fi;
-
+	Unbind(A);Unbind(B);Unbind(D);
 
         # lift
         Info( InfoAutGrp, 2, "lift back ");
@@ -781,6 +1011,7 @@ AutomorphismGroupSolvableGroup := function( G )
         # set up for iteration
         F := ShallowCopy( H );
         A := GroupByGenerators( autos );
+	SetIsGroupOfAutomorphismsFiniteGroup(A,true);
         SetSize( A, Size( C ) * p^Length(elms) );
         if Size(C) = 1 then
             rels := List( [1..Length(elms)], x-> p );
@@ -790,6 +1021,8 @@ AutomorphismGroupSolvableGroup := function( G )
                                    List( [1..Length(elms)], x-> p ) );
             TransferPcgsInfo( A, autos, rels );
         fi;
+	Unbind(C);
+	Unbind(gens);
 
         # if possible reduce the number of generators of A
         if Size( F ) <= 1000 and not CanEasilyComputePcgs( A ) then
@@ -940,14 +1173,17 @@ end;
 InstallMethod( AutomorphismGroup, 
                "finite solvable groups",
                true,
-               [IsGroup and IsFinite and 
-                CanEasilyComputePcgs],
+               [IsGroup and IsFinite],
                0,
 function( G )
     local A;
+    if not IsSolvableGroup(G) then
+      TryNextMethod();
+    fi;
     if IsAbelian( G ) then TryNextMethod(); fi;
     A := AutomorphismGroupSolvableGroup(G);
     SetIsAutomorphismGroup( A, true );
+    SetIsGroupOfAutomorphismsFiniteGroup( A, true );
     SetIsFinite( A, true );
     return A;
 end );

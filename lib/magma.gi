@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for magmas.
 ##
@@ -282,19 +283,37 @@ InstallOtherMethod( CentralizerOp,
 #M  Centre( <M> ) . . . . . . . . . . . . . . . . . . . . . centre of a magma
 ##
 InstallMethod( Centre,
-    "for a magma",
+    "generic method for a magma",
     [ IsMagma ],
     function( M )
-    M:= Centralizer( M, M );
-    Assert( 1, IsAbelian( M ) );
-    SetIsAbelian( M, true );
+    local T;
+    T:= Tuples( M, 2 );
+    M:= Filtered( M, x -> ForAll( M, y -> x * y = y * x ) and
+                          ForAll( T, p -> (p[1]*p[2])*x = p[1]*(p[2]*x) and
+                                          (p[1]*x)*p[2] = p[1]*(x*p[2]) and
+                                          (x*p[1])*p[2] = x*(p[1]*p[2]) ) );
+    if IsDomain( M ) then
+      Assert( 1, IsAbelian( M ) );
+      SetIsAbelian( M, true );
+    fi;
     return M;
     end );
 
 InstallMethod( Centre,
-    "for a commutative magma",
-    true,
-    [ IsMagma and IsCommutative ],
+    "for an associative magma",
+    [ IsMagma and IsAssociative ],
+    function( M )
+    M:= Centralizer( M, M );
+    if IsDomain( M ) then
+      Assert( 1, IsAbelian( M ) );
+      SetIsAbelian( M, true );
+    fi;
+    return M;
+    end );
+
+InstallMethod( Centre,
+    "for an associative and commutative magma",
+    [ IsMagma and IsAssociative and IsCommutative ],
     SUM_FLAGS, # for commutative magmas this is best possible
     IdFunc );
 
@@ -500,11 +519,22 @@ end );
 #F  SubmagmaWithInverses( <M>, <gens> )
 #F                    . . . . . . .  submagma-with-inv. of <M> gen. by <gens>
 ##
-InstallGlobalFunction( SubmagmaWithInverses, function( M, gens )
-
+InstallGlobalFunction( SubmagmaWithInverses, function(arg)
+local M,gens,S;
+    M:=arg[1];
     if not IsMagmaWithInverses( M ) then
         Error( "<M> must be a magma-with-inverses" );
-    elif IsEmpty( gens ) then
+    fi;
+    if Length(arg)=1 then
+      S:=Objectify(NewType( FamilyObj(M),
+			    IsMagmaWithInverses
+			    and IsAttributeStoringRep), rec() );
+      SetParent(S,M);
+      return S;
+    else
+      gens:=arg[2];
+    fi;
+    if IsEmpty( gens ) then
         return SubmagmaWithInversesNC( M, gens );
     elif not IsHomogeneousList(gens)  then
         Error( "<gens> must be a homogeneous list of elements" );
@@ -847,6 +877,16 @@ InstallMethod( Representative,
     true,
     [ IsMagmaWithOne and HasOne ], SUM_FLAGS,
     One );
+
+InstallMethod( Representative,
+    "for magma-with-one with stored parent",
+    [ IsMagmaWithOne and HasParentAttr ],
+    function( M )
+    if not IsIdenticalObj( M, Parent( M ) ) then
+      return One( Representative( Parent( M ) ) );
+    fi;
+    TryNextMethod();
+    end );
 
 
 #############################################################################

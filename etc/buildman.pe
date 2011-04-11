@@ -744,7 +744,7 @@ sub make_tex {
                 if ( $info{gdes} ) { print TEX "$info{gdes}\n"; }
  
             } elsif ( $line =~ /\\beginexample/ ) {
-                print TEX "\\beginexample \n";
+                print TEX "\\beginexample\n";
                 while ( !( ($line = <MSK>) =~ /\\endexample/ ) ) {
                     print TEX $line;
                 }

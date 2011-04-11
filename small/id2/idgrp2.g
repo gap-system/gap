@@ -99,7 +99,8 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
         fi;
 
         if not lookup and level >= 5 and ( not IsBound( coc ) ) then
-            classes := Orbits( G, asList );
+            classes := OrbitsDomain( G, asList );
+            # classes := Orbits( G, asList );
             classtyps := List( classes,
                                x -> [ Order( x[ 1 ] ), Length( x ) ] );
             sclasstyps := Set( classtyps );
@@ -117,13 +118,15 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
         if not lookup and IsBound( branch.desc ) then
             for desc in branch.desc do
                 # reconstruct orignial description list of the test
-                ldesc := [ desc mod 1000 ];
-                desc := QuoInt( desc, 1000 );
-                while desc > 0 do
-                    Add( ldesc, desc mod 100 );
-                    desc := QuoInt( desc, 100 );
-                od;
-                desc := Reversed( ldesc );
+                if IsInt( desc ) then
+                    ldesc := [ desc mod 1000 ];
+                    desc := QuoInt( desc, 1000 );
+                    while desc > 0 do
+                        Add( ldesc, desc mod 100 );
+                        desc := QuoInt( desc, 100 );
+                    od;
+                    desc := Reversed( ldesc );
+                fi;
     
                 # evaluate the test
                 fp := EvalFpCoc( coc, desc );
@@ -193,8 +196,9 @@ ID_GROUP_FUNCS[ 8 ] := function( arg )
             if lookup then
                 return fail;
             fi;
-            Error( "IdSmallGroup: fatal Error. Please mail group to\n",
-                   "Hans-Ulrich.Besche@math.rwth-aachen.de" );
+            Error( "IdSmallGroup: fatal Error. Please check group for ",
+                   "consistency.\nIf consistent mail group to ",
+                   "hubesche@tu-bs.de\n" );
         fi;
         Add( indices, pos );
 
@@ -284,7 +288,9 @@ end;
 ##  identification of the isomorphism type of a p-sylow-subgrop
 ##
 ID_GROUP_FUNCS[ 10 ] := function( G, inforec )
-    if Size( G ) in [ 486, 972 ] then
+    if IsBound( inforec.branch.p ) then
+        inforec.fp := IdGroup( HallSubgroup( G, inforec.branch.p ) )[ 2 ];
+    elif Size( G ) in [ 486, 972 ] then
         inforec.fp := IdGroup( SylowSubgroup( G, 3 ) )[ 2 ];
     else
         inforec.fp := IdGroup( SylowSubgroup( G, 2 ) )[ 2 ];

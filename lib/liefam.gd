@@ -4,40 +4,47 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of the family of Lie elements of a
 ##  family of ring elements.
 
-#1
-## Let $x$ be a ring element, then `LieObject(x)' wraps $x$ up into an
-## object that contains the same data (namely $x$). The multiplication
-## `*' for Lie objects is formed by taking the commutator. More exactly,
-## if $l_1$ and $l_2$ are the Lie objects corresponding to
-##  the ring elements $r_1$ and $r_2$, then $l_1 * l_2$ is equal to the
-##  Lie object corresponding to $r_1 * r_2 - r_2 * r_2$. Two rules
-##  for Lie objects are worth noting:
-##  \beginlist%unordered
-##  \item{--}
-##    An element is *not* equal to its Lie element.
+
+#############################################################################
 ##
-##  \item{--}
+##  <#GAPDoc Label="[1]{liefam}">
+##  Let <C>x</C> be a ring element, then <C>LieObject(x)</C> 
+##  (see&nbsp;<Ref Func="LieObject"/>) wraps <C>x</C> up into an
+##  object that contains the same data (namely <C>x</C>). The multiplication
+##  <C>*</C> for Lie objects is formed by taking the commutator. More exactly,
+##  if <C>l1</C> and <C>l2</C> are the Lie objects corresponding to
+##  the ring elements <C>r1</C> and <C>r2</C>, then <C>l1 * l2</C> 
+##  is equal to the Lie object corresponding to <C>r1 * r2 - r2 * r1</C>. 
+##  Two rules for Lie objects are worth noting:
+##  <P/>
+##  <List>
+##  <Item>
+##    An element is <E>not</E> equal to its Lie element.
+##  </Item>
+##  <Item>
 ##    If we take the Lie object of an ordinary (associative) matrix
 ##    then this is again a matrix;
 ##    it is therefore a collection (of its rows) and a list.
-##    But it is *not* a collection of collections of its entries,
-##    and its family is *not* a collections family.
-## \endlist
-
-##
-##  Given a family $F$ of ring elements, we can form its Lie family $L$.
-##  The elements of $F$ and $L$ are in bijection, only the multiplications
-##  via `\*' differ for both families.
-##  More exactly, if $l_1$ and $l_2$ are the Lie elements corresponding to
-##  the elements $f_1$ and $f_2$ in $F$, we have $l_1 * l_2$ equal to the
-##  Lie element corresponding to $f_1 * f_2 - f_2 * f_2$.
-##
+##    But it is <E>not</E> a collection of collections of its entries,
+##    and its family is <E>not</E> a collections family.
+##  </Item>
+##  </List>
+##  <P/>
+##  Given a family <C>F</C> of ring elements, we can form its Lie family 
+##  <C>L</C>. The elements of <C>F</C> and <C>L</C> are in bijection, only 
+##  the multiplications via <C>*</C> differ for both families.
+##  More exactly, if <C>l1</C> and <C>l2</C> are the Lie elements 
+##  corresponding to the elements <C>f1</C> and <C>f2</C> in <C>F</C>, 
+##  we have <C>l1 * l2</C> equal to the Lie element corresponding to 
+##  <C>f1 * f2 - f2 * f1</C>.
+##  <P/>
 ##  The main reason to distinguish elements and Lie elements on the family
 ##  level is that this helps to avoid forming domains that contain
 ##  elements of both types.
@@ -46,21 +53,11 @@
 ##  in it, but as soon as we find out that the space is in fact an algebra
 ##  (e.g., because its dimension is that of the full matrix algebra),
 ##  we would run into strange problems.
-##
+##  <P/>
 ##  Note that the family situation with Lie families may be not familiar.
-##
-##  \beginlist%unordered
-##  \item{--}
-##    An element is *not* equal to its Lie element.
-##
-##  \item{--}
-##    If we take the Lie object of an ordinary (associative) matrix
-##    then this is again a matrix;
-##    it is therefore a collection (of its rows) and a list.
-##    But it is *not* a collection of collections of its entries,
-##    and its family is *not* a collections family.
-##
-##  \item{--}
+##  <P/>
+##  <List>
+##  <Item>
 ##    We have to be careful when installing methods for certain types
 ##    of domains that may involve Lie elements.
 ##    For example, the zero element of a matrix space is either an ordinary
@@ -69,14 +66,16 @@
 ##    selection must distinguish the two cases.
 ##    In the latter situation, only one method may be applicable to each
 ##    case; this means that it is not sufficient to treat the Lie case
-##    with the additional requirement `IsLieObjectCollection' but that
+##    with the additional requirement <C>IsLieObjectCollection</C> but that
 ##    we must explicitly require non-Lie elements for the non-Lie case.
-##
-##  \item{--}
+##  </Item>
+##  <Item>
 ##    Being a full matrix space is a property that may hold for a space
 ##    of ordinary matrices or a space of Lie matrices.
 ##    So methods for full matrix spaces must also be aware of Lie matrices.
-##  \endlist
+##  </Item>
+##  </List>
+##  <#/GAPDoc>
 ##
 Revision.liefam_gd :=
     "@(#)$Id$";
@@ -87,8 +86,28 @@ Revision.liefam_gd :=
 #C  IsLieObject( <obj> )
 #C  IsLieObjectCollection( <obj> )
 ##
-##  An object lies in `IsLieObject' if and only if it lies in a family
-##  constructed by `LieFamily'.
+##  <#GAPDoc Label="IsLieObject">
+##  <ManSection>
+##  <Filt Name="IsLieObject" Arg='obj' Type='Category'/>
+##  <Filt Name="IsLieObjectCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsRestrictedLieObject" Arg='obj' Type='Category'/>
+##  <Filt Name="IsRestrictedLieObjectCollection" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  An object lies in <Ref Filt="IsLieObject"/> if and only if 
+##  it lies in a family constructed by <Ref Attr="LieFamily"/>.
+##  <Example><![CDATA[
+##  gap> m:= [ [ 1, 0 ], [ 0, 1 ] ];;
+##  gap> lo:= LieObject( m );
+##  LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )
+##  gap> IsLieObject( m );
+##  false
+##  gap> IsLieObject( lo );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsLieObject",
         IsRingElement
@@ -97,21 +116,36 @@ DeclareCategory( "IsLieObject",
 
 DeclareCategoryCollections( "IsLieObject" );
 
+DeclareSynonym( "IsRestrictedLieObject",
+	IsLieObject and IsRestrictedJacobianElement);
+
+DeclareCategoryCollections( "IsRestrictedLieObject" );
 
 #############################################################################
 ##
 #A  LieFamily( <Fam> )
 ##
-##  is a family $F$ in bijection with the family <Fam>,
+##  <#GAPDoc Label="LieFamily">
+##  <ManSection>
+##  <Attr Name="LieFamily" Arg='Fam'/>
+##
+##  <Description>
+##  is a family <C>F</C> in bijection with the family <A>Fam</A>,
 ##  but with the Lie bracket as infix multiplication.
-##  That is, for $x$, $y$ in <Fam>, the product of the images in $F$ will be
-##  the image of $x \* y - y \* x$.
-##
-##  The standard type of objects in a Lie family <F> is `<F>!.packedType'.
-##
-##  \indextt{Embedding!for Lie algebras}
-##  The bijection from <Fam> to $F$ is given by `Embedding( <Fam>, $F$ )';
+##  That is, for <C>x</C>, <C>y</C> in <A>Fam</A>, the product of 
+##  the images in <C>F</C> will be the image of <C>x * y - y * x</C>.
+##  <P/>
+##  The standard type of objects in a Lie family <C>F</C> is 
+##  <C><A>F</A>!.packedType</C>.
+##  <P/>
+##  <Index Key="Embedding" Subkey="for Lie algebras"><C>Embedding</C></Index>
+##  The bijection from <A>Fam</A> to <C>F</C> is given by 
+##  <C>Embedding( <A>Fam</A>, F )</C> 
+##  (see&nbsp;<Ref Oper="Embedding" Label="for two domains"/>);
 ##  this bijection respects addition and additive inverses.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "LieFamily", IsFamily );
 
@@ -120,8 +154,16 @@ DeclareAttribute( "LieFamily", IsFamily );
 ##
 #A  UnderlyingFamily( <Fam> )
 ##
-##  If <Fam> is a Lie family then `UnderlyingFamily( <Fam> )'
-##  is a family $F$ such that `<Fam> = LieFamily( $F$ )'.
+##  <#GAPDoc Label="UnderlyingFamily">
+##  <ManSection>
+##  <Attr Name="UnderlyingFamily" Arg='Fam'/>
+##
+##  <Description>
+##  If <A>Fam</A> is a Lie family then <C>UnderlyingFamily( <A>Fam</A> )</C>
+##  is a family <C>F</C> such that <C><A>Fam</A> = LieFamily( F )</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "UnderlyingFamily", IsObject );
 
@@ -130,10 +172,27 @@ DeclareAttribute( "UnderlyingFamily", IsObject );
 ##
 #A  LieObject( <obj> )
 ##
-##  Let <obj> be a ring element. Then `LieObject( <obj> )' is the
-##  corresponding Lie object. If <obj> lies in the family <F>,
-##  then `LieObject( <obj> )' lies in the family LieFamily( <F> )
-##  (see~"LieFamily").
+##  <#GAPDoc Label="LieObject">
+##  <ManSection>
+##  <Attr Name="LieObject" Arg='obj'/>
+##
+##  <Description>
+##  Let <A>obj</A> be a ring element. Then <C>LieObject( <A>obj</A> )</C> is the
+##  corresponding Lie object. If <A>obj</A> lies in the family <C>F</C>,
+##  then <C>LieObject( <A>obj</A> )</C> lies in the family <C>LieFamily( F )</C>
+##  (see&nbsp;<Ref Func="LieFamily"/>).
+##  <Example><![CDATA[
+##  gap> m:= [ [ 1, 0 ], [ 0, 1 ] ];;
+##  gap> lo:= LieObject( m );
+##  LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )
+##  gap> m*m;
+##  [ [ 1, 0 ], [ 0, 1 ] ]
+##  gap> lo*lo;
+##  LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "LieObject", IsRingElement );
 
@@ -142,15 +201,21 @@ DeclareAttribute( "LieObject", IsRingElement );
 ##
 #F  IsLieObjectsModule( <V> )
 ##
-##  If a free $F$-module <V> is in the filter `IsLieObjectsModule' then
-##  this expresses that <V> consists of Lie objects (see~"..."),
-##  and that <V> is handled via the mechanism of nice bases (see~"...")
+##  <ManSection>
+##  <Func Name="IsLieObjectsModule" Arg='V'/>
+##
+##  <Description>
+##  If a free <M>F</M>-module <A>V</A> is in the filter <C>IsLieObjectsModule</C> then
+##  this expresses that <A>V</A> consists of Lie objects (see&nbsp;<Ref ???="..."/>),
+##  and that <A>V</A> is handled via the mechanism of nice bases (see&nbsp;<Ref ???="..."/>)
 ##  in the following way.
-##  Let $K$ be the default field generated by the vector space generators of
-##  <V>.
-##  Then the `NiceFreeLeftModuleInfo' value of <V> is irrelevant,
-##  and the `NiceVector' value of $v \in <V>$ is defined as the underlying
-##  element for which <v> is obtained as `LieObject' value.
+##  Let <M>K</M> be the default field generated by the vector space generators of
+##  <A>V</A>.
+##  Then the <C>NiceFreeLeftModuleInfo</C> value of <A>V</A> is irrelevant,
+##  and the <C>NiceVector</C> value of <M>v \in <A>V</A></M> is defined as the underlying
+##  element for which <A>v</A> is obtained as <C>LieObject</C> value.
+##  </Description>
+##  </ManSection>
 ##
 DeclareHandlingByNiceBasis( "IsLieObjectsModule",
     "for free left modules of Lie objects" );

@@ -1,0 +1,90 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  copyrigh.xml              GAP documentation                      LDFM -->
+<!-- %W                                                                 & SMCS -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: copyrigh.msk,v 1.6 2004/02/13 17:38:52 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,   RWTH Aachen, Germany -->
+<!-- %Y  Copyright (C) 2002, The GAP Group -->
+<!-- %% -->
+
+
+Copyright &copyright; (1987-&RELEASEYEAR;) by the &GAP; Group, 
+<P/>
+incorporating the Copyright &copyright; 1999, 2000  by
+        School of Mathematical and Computational Sciences,
+        University of St&nbsp;Andrews,
+        North Haugh, St&nbsp;Andrews, Fife KY16 9SS, Scotland
+<P/>
+being the Copyright &copyright; 1992 by
+        Lehrstuhl D für Mathematik, RWTH,
+        52056 Aachen, Germany,
+transferred to St&nbsp;Andrews on July 21st, 1997.
+<P/>
+except for files in the distribution, which have an explicit different
+copyright statement. In particular, the copyright of packages distributed
+with &GAP; is usually with the package authors or their institutions.
+<P/>
+<P/>
+<P/>
+&GAP; is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version. For details, see 
+the file <F>GPL</F> in the <F>etc</F> directory of the &GAP; distribution or see
+<URL>http://www.gnu.org/licenses/gpl.html</URL>.
+<P/>
+If you obtain &GAP; please send us  a short notice to that effect, e.g.,
+an  e-mail  message   to  the  address  <Email>support@gap-system.org</Email>,
+containing your full  name and address.  This  allows us to keep track of
+the number of &GAP; users.
+<P/>
+If you  publish  a mathematical  result  that  was  partly obtained using
+&GAP;, please cite &GAP;, just as you would cite another paper that you
+used (see below for sample citation). Also   we would appreciate if you
+could inform us  about such a paper.
+<P/>
+Specifically, please refer to
+<P/>
+<Log>
+[GAP] The GAP Group, GAP - Groups, Algorithms, and Programming,
+      Version &VERSIONNUMBER;; &RELEASEYEAR;      (http://www.gap-system.org)
+</Log>
+<P/>
+&GAP; is distributed by us without any warranty, to the extent permitted
+by applicable state law.  We  distribute &GAP; <E>as is</E> without  warranty
+of any kind, either expressed or implied, including,  but not limited to,
+the implied  warranties  of merchantability and  fitness for a particular
+purpose.
+<P/>
+The entire risk as to the quality and performance of the program is  with
+you.  Should &GAP; prove defective, you assume the cost of all necessary
+servicing, repair or correction.
+<P/>
+In no  case  unless  required by applicable law will we, and/or any other
+party who  may  modify  and  redistribute  &GAP;  as permitted above, be
+liable  to you for damages, including lost profits, lost monies or  other
+special, incidental or consequential damages  arising out  of the  use or
+inability to use &GAP;.
+<P/>
+You  are permitted  to modify and  redistribute  &GAP;,  but you are not
+allowed  to restrict further redistribution.  That is to say  proprietary
+modifications will  not  be allowed.  We want all  versions  of &GAP; to
+remain free.
+<P/>
+If you  modify any part of &GAP; and redistribute it,  you must supply a
+<F>README</F>  document.   This should specify what modifications you made  in
+which  files.  We do  not  want  to take  credit  or  be blamed  for your
+modifications.
+<P/>
+Of course we are interested in all of your modifications.  In  particular
+we would like to see bug-fixes, improvements and new functions.  So again
+we would appreciate it if you would inform us about all modifications you
+make.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

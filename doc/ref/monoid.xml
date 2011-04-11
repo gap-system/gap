@@ -1,0 +1,41 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  monoid.msk                 GAP documentation                Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: monoid.msk,v 1.4 2002/04/15 10:02:31 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Monoids">
+<Heading>Monoids</Heading>
+
+This chapter describes functions for monoids.
+Currently there are only few of them.
+More general functions for magmas and semigroups can be found in
+Chapters&nbsp;<Ref Chap="Magmas"/> and <Ref Chap="Semigroups"/>.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsMonoid">
+<Heading>Functions for Monoids</Heading>
+
+<#Include Label="IsMonoid">
+<#Include Label="Monoid">
+<#Include Label="Submonoid">
+<#Include Label="MonoidByGenerators">
+<#Include Label="AsMonoid">
+<#Include Label="AsSubmonoid">
+<#Include Label="GeneratorsOfMonoid">
+<#Include Label="TrivialSubmonoid">
+<#Include Label="FreeMonoid">
+<#Include Label="MonoidByMultiplicationTable">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

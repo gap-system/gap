@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  clas.gd                     GAP library                    Heiko Thei"sen
+#W  clas.gd                     GAP library                    Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.clas_gd :=
     "@(#)$Id$";
@@ -16,24 +17,31 @@ DeclareInfoClass( "InfoClasses" );
 ##
 #R  IsExternalOrbitByStabilizerRep  . . . . .  external orbit via transversal
 ##
+##  <ManSection>
+##  <Filt Name="IsExternalOrbitByStabilizerRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareRepresentation( "IsExternalOrbitByStabilizerRep",
     IsExternalOrbit, [  ] );
 
-#############################################################################
-##
-#R  IsExternalOrbitByStabilizerEnumerator . . . . . . . . enumerator for such
-##
-DeclareRepresentation ( "IsExternalOrbitByStabilizerEnumerator",
-      IsDomainEnumerator and IsAttributeStoringRep,
-      [ "rightTransversal" ] );
 
 #############################################################################
 ##
 #R  IsConjugacyClassGroupRep( <obj> )
 #R  IsConjugacyClassPermGroupRep( <obj> )
 ##
+##  <ManSection>
+##  <Filt Name="IsConjugacyClassGroupRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsConjugacyClassPermGroupRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
 ##  is a representation of conjugacy classes, a subrepresentation for
-##  permutation groups is `IsConjugacyClassPermGroupRep'
+##  permutation groups is <C>IsConjugacyClassPermGroupRep</C>
+##  </Description>
+##  </ManSection>
 ##
 DeclareRepresentation( "IsConjugacyClassGroupRep",
     IsExternalOrbitByStabilizerRep, [  ] );
@@ -43,22 +51,34 @@ DeclareRepresentation( "IsConjugacyClassPermGroupRep",
 
 #############################################################################
 ##
-#C  ConjugacyClass( <G>, <g> )  . . . . . . . . . conjugacy class constructor
+#O  ConjugacyClass( <G>, <g> )  . . . . . . . . . conjugacy class constructor
 ##
-##  creates the conjugacy class in $G$ with representative $g$.
+##  <#GAPDoc Label="ConjugacyClass">
+##  <ManSection>
+##  <Oper Name="ConjugacyClass" Arg='G, g'/>
+##
+##  <Description>
+##  creates the conjugacy class in <A>G</A> with representative <A>g</A>.
 ##  This class is an external set, so functions such as
-##  `Representative' (which returns <g>),
-##  `ActingDomain' (which returns <G>),
-##  `StabilizerOfExternalSet' (which returns the centralizer of <g>)
-##  and `AsList' work for it.
+##  <Ref Func="Representative"/> (which returns <A>g</A>),
+##  <Ref Func="ActingDomain"/> (which returns <A>G</A>),
+##  <Ref Func="StabilizerOfExternalSet"/> (which returns the centralizer of
+##  <A>g</A>) and <Ref Func="AsList"/> work for it.
+##  <P/>
+##  A conjugacy class is an external orbit (see <Ref Func="ExternalOrbit"/>)
+##  of group elements with the group acting by conjugation on it.
+##  Thus element tests or operation representatives can be computed.
+##  The attribute
+##  <Ref Func="Centralizer" Label="for a class of objects in a magma"/>
+##  gives the centralizer of the representative (which is the same result as
+##  <Ref Func="StabilizerOfExternalSet"/>).
+##  (This is a slight abuse of notation: This is <E>not</E> the centralizer
+##  of the class as a <E>set</E> which would be the standard behaviour of
+##  <Ref Func="Centralizer" Label="for a class of objects in a magma"/>.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  A conjugacy class is an external orbit ("ExternalOrbit") of group
-##  elements with the group acting by conjugation on it. Thus element tests
-##  or operation representatives can be computed.  The attribute
-##  `Centralizer' gives the centralizer of the representative (which is the
-##  same result as `StabilizerOfExternalSet'). (This is a slight abuse of
-##  notation: This is *not* the centralizer of the class as a *set* which
-##  would be the standard behaviour of `Centralizer'.)
 DeclareOperation( "ConjugacyClass", [ IsGroup, IsObject ] );
 
 
@@ -67,8 +87,15 @@ DeclareOperation( "ConjugacyClass", [ IsGroup, IsObject ] );
 #R  IsRationalClassGroupRep . . . . . . . . . . . . . rational class in group
 #R  IsRationalClassPermGroupRep . . . . . . . . rational class in perm. group
 ##
+##  <ManSection>
+##  <Filt Name="IsRationalClassGroupRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsRationalClassPermGroupRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
 ##  is a representation of rational classes, a subrepresentation for
-##  permutation groups is `IsRationalClassPermGroupRep'
+##  permutation groups is <C>IsRationalClassPermGroupRep</C>
+##  </Description>
+##  </ManSection>
 ##
 DeclareRepresentation( "IsRationalClassGroupRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
@@ -90,62 +117,142 @@ InstallTrueMethod( IsFinite, IsRationalClassGroupRep and IsDomain );
 
 #############################################################################
 ##
-#C  RationalClass( <G>, <g> ) . . . . . . . . . .  rational class constructor
+#O  RationalClass( <G>, <g> ) . . . . . . . . . .  rational class constructor
 ##
-##  creates the rational class in $G$ with representative $g$.
+##  <#GAPDoc Label="RationalClass">
+##  <ManSection>
+##  <Oper Name="RationalClass" Arg='G, g'/>
+##
+##  <Description>
+##  creates the rational class in <A>G</A> with representative <A>g</A>.
 ##  A rational class consists of all elements that are conjugate to
-##  $g$ or to a power $g^i$ where $i$ is coprime to the order of $g$. Thus a
-##  rational class can be interpreted as a conjugacy class of cyclic
-##  subgroups.  A rational class is an external set ("IsExternalSet") of
+##  <A>g</A> or to an <M>i</M>-th power of <A>g</A> where <M>i</M> is coprime
+##  to the order of <M>g</M>.
+##  Thus a rational class can be interpreted as a conjugacy class of cyclic
+##  subgroups.
+##  A rational class is an external set (<Ref Func="IsExternalSet"/>) of
 ##  group elements with the group acting by conjugation on it, but not an
 ##  external orbit.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "RationalClass", [ IsGroup, IsObject ] );
 
 #############################################################################
 ##
+#O  DecomposedRationalClass( <c> )
+##
+##  <ManSection>
+##  <Oper Name="DecomposedRationalClass" Arg='c'/>
+##
+##  <Description>
+##  For a rational class <A>c</A> this attribute contains a list of the ordinary
+##  classes contained therein.
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "DecomposedRationalClass",IsRationalClassGroupRep );
+
+#############################################################################
+##
 #A  GaloisGroup( <ratcl> )
 ##
-##  Suppose that <ratcl> is a rational class of a group <G> with
-##  representative <g>.
-##  The exponents $i$  for which $<g>^i$ lies  already in the ordinary
-##  conjugacy  class of  <g>, form a  subgroup of the *prime residue class
-##  group* $P_n$ (see "PrimitiveRootMod"), the so-called *Galois group*  of
-##  the rational class. The prime residue class group $P_n$ is obtained in
-##  {\GAP}  as `Units( Integers mod <n> )', the  unit group of a residue
-##  class ring. The Galois group of a rational class <rcl> is stored in the
-##  attribute `GaloisGroup(<rcl>)' as a subgroup of this group.
+##  <#GAPDoc Label="GaloisGroup:clas">
+##  <ManSection>
+##  <Attr Name="GaloisGroup" Arg='ratcl'
+##   Label="of rational class of a group"/>
+##
+##  <Description>
+##  Suppose that <A>ratcl</A> is a rational class of a group <M>G</M> with
+##  representative <M>g</M>.
+##  The exponents <M>i</M> for which <M>g^i</M> lies already in the ordinary
+##  conjugacy class of <M>g</M>, form a subgroup of the
+##  <E>prime residue class group</E> <M>P_n</M>
+##  (see <Ref Func="PrimitiveRootMod"/>),
+##  the so-called <E>Galois group</E>  of the rational class.
+##  The prime residue class group <M>P_n</M> is obtained in
+##  &GAP; as <C>Units( Integers mod <A>n</A> )</C>,
+##  the unit group of a residue class ring.
+##  The Galois group of a rational class <A>ratcl</A> is stored in the
+##  attribute <Ref Func="GaloisGroup" Label="of rational class of a group"/>
+##  as a subgroup of this group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "GaloisGroup", IsRationalClassGroupRep );
+
 
 #############################################################################
 ##
 #F  ConjugacyClassesByRandomSearch( <G> )
 ##
-##  computes the classes of the group <G> by random search.
-##  This works very efficiently for almost simple groups.
+##  <#GAPDoc Label="ConjugacyClassesByRandomSearch">
+##  <ManSection>
+##  <Func Name="ConjugacyClassesByRandomSearch" Arg='G'/>
 ##
-##  This function is also accessible via the option `random' to
-##  `ConjugacyClass'.
+##  <Description>
+##  computes the classes of the group <A>G</A> by random search.
+##  This works very efficiently for almost simple groups.
+##  <P/>
+##  This function is also accessible via the option <C>random</C> to
+##  the function <Ref Func="ConjugacyClass"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "ConjugacyClassesByRandomSearch" );
 
 #############################################################################
 ##
 #F  ConjugacyClassesByOrbits( <G> )
 ##
-##  computes the classes of the group <G> as orbits of <G> on its elements.
-##  This can be quick but unsurprisingly may also take a lot of memory if
-##  <G> becomes larger. All the classes will store their element list and
-##  thus a membership test will be quick as well.
+##  <#GAPDoc Label="ConjugacyClassesByOrbits">
+##  <ManSection>
+##  <Func Name="ConjugacyClassesByOrbits" Arg='G'/>
 ##
-##  This function is also accessible via the option `action' to
-##  `ConjugacyClass'.
+##  <Description>
+##  computes the classes of the group <A>G</A> as orbits of <A>G</A> on its
+##  elements.
+##  This can be quick but unsurprisingly may also take a lot of memory if
+##  <A>G</A> becomes larger.
+##  All the classes will store their element list and
+##  thus a membership test will be quick as well.
+##  <P/>
+##  This function is also accessible via the option <C>action</C> to
+##  the function <Ref Func="ConjugacyClass"/>.
+##  <P/>
+##  Typically, for small groups (roughly of order up to <M>10^3</M>)
+##  the computation of classes as orbits under the action is fastest;
+##  memory restrictions (and the increasing cost of eliminating duplicates)
+##  make this less efficient for larger groups.
+##  <P/>
+##  Calculation by random search has the smallest memory requirement, but in
+##  generally performs worse, the more classes are there.
+##  <P/>
+##  The following example shows the effect of this for a small group
+##  with many classes:
+##  <P/>
+##  <!-- this example is time and load-status dependent. No point in testing -->
+##  <Log><![CDATA[
+##  gap> h:=Group((4,5)(6,7,8),(1,2,3)(5,6,9));;ConjugacyClasses(h:noaction);;time;
+##  110
+##  gap> h:=Group((4,5)(6,7,8),(1,2,3)(5,6,9));;ConjugacyClasses(h:random);;time;
+##  300
+##  gap> h:=Group((4,5)(6,7,8),(1,2,3)(5,6,9));;ConjugacyClasses(h:action);;time;
+##  30
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "ConjugacyClassesByOrbits" );
 
 # This function computes the classes by orbits if the group is small and the
 # `noaction' option is not set, otherwise it returns `fail'.
 DeclareGlobalFunction( "ConjugacyClassesForSmallGroup" );
 
-DeclareGlobalFunction( "DecomposedRationalClass" );
 DeclareGlobalFunction( "GroupByPrimeResidues" );
 
 DeclareGlobalFunction( "ConjugacyClassesTry" );
@@ -163,94 +270,125 @@ DeclareGlobalFunction( "GeneralStepClEANS" );
 
 #############################################################################
 ##
-#F  ClassesSolvableGroup(<G>, <mode> [,<opt>])  . . . . .
+#F  ClassesSolvableGroup(<G>, <mode>[, <opt>])  . . . . .
 ##
-##  computes conjugacy classes and centralizers in solvable groups. <G> is
-##  the acting group. <mode> indicates the type of the calculation:
+##  <#GAPDoc Label="ClassesSolvableGroup">
+##  <ManSection>
+##  <Func Name="ClassesSolvableGroup" Arg='G, mode[, opt]'/>
 ##
+##  <Description>
+##  computes conjugacy classes and centralizers in solvable groups. <A>G</A> is
+##  the acting group. <A>mode</A> indicates the type of the calculation:
+##  <P/>
 ##  0 Conjugacy classes
-##
-##  4 Conjugacy test for the two elements in <opt>`.candidates'
-##
+##  <P/>
+##  4 Conjugacy test for the two elements in <A>opt</A><C>.candidates</C>
+##  <P/>
 ##  In mode 0 the function returns a list of records containing components
-##  <representative> and <centralizer>. In mode <4> it returns a
-##  conjugating element.
-##
-##  The optional record <opt> may contain the following components that will
-##  affect the algorithms behaviour:
-##  
-##  \beginitems
-##  `pcgs'&is a pcgs that will be used for the calculation. In the case of
-##  the calculation of rational classes, it must be a pcgs refining a
-##  central series. The attribute `NormalSeriesByPcgs' must return an
+##  <A>representative</A> and <A>centralizer</A>.
+##  In mode 4 it returns a conjugating element.
+##  <P/>
+##  The optional record <A>opt</A> may contain the following components
+##  that will affect the algorithm's behaviour:
+##  <P/>
+##  <List>
+##  <Mark><C>pcgs</C></Mark>
+##  <Item>
+##  is a pcgs that will be used for the calculation.
+##  The attribute <Ref Func="EANormalSeriesByPcgs"/> must return an
 ##  appropriate series of normal subgroups with elementary abelian factors
-##  among them. The algorithm will step down this series. By default an
-##  `ElementaryAbelianSeries' is used.
-##
-##  `candidates'&is a list of elements for which canonical representatives
+##  among them. The algorithm will step down this series.
+##  In the case of
+##  the calculation of rational classes, it must be a pcgs refining a
+##  central series.
+##  </Item>
+##  <Mark><C>candidates</C></Mark>
+##  <Item>
+##  is a list of elements for which canonical representatives
 ##  are to be computed or for which a conjugacy test is performed. They must
 ##  be given in mode 4. In mode 0 a list of classes corresponding to
-##  <candidates> is returned (which may contain duplicates). The
-##  <representative>s chosen are canonical with respect to <pcgs>. The
-##  records returned also contain components <operator>
+##  <C>candidates</C> is returned (which may contain duplicates). The
+##  <C>representative</C>s chosen are canonical with respect to <C>pcgs</C>.
+##  The records returned also contain components <C>operator</C>
 ##  such that
-##  (<candidate> `^' <operator>) =<representative>.
-##
-##  `consider'&is a function <consider>(<fhome>,<rep>,<cenp>,<K>,<L>). Here
-##  <fhome> is a home pcgs for the factor group <F> in which the calculation
-##  currently takes place, <rep> is an element of the factor and <cenp> is a
-##  pcgs for the centralizer of <rep> modulo <K>. In mode 0, when lifting
-##  from <F>/<K> to <F>/<L> (note: for efficiency reasons, <F> can be
-##  different from <G> or <L> might be not trivial) this function is called
+##  <C>candidate ^ operator = representative</C>.
+##  </Item>
+##  <Mark><C>consider</C></Mark>
+##  <Item>
+##  is a function <C>consider( fhome, rep, cenp, K, L )</C>. Here
+##  <C>fhome</C> is a home pcgs for the factor group <M>F</M> in which the
+##  calculation currently takes place,
+##  <C>rep</C> is an element of the factor and <C>cenp</C> is a
+##  pcgs for the centralizer of <C>rep</C> modulo <C>K</C>.
+##  In mode 0, when lifting from <M>F</M>/<C>K</C> to <M>F</M>/<C>L</C>
+##  (note: for efficiency reasons, <M>F</M> can be different from <A>G</A> or
+##  <C>L</C> might be not trivial) this function is called
 ##  before performing the actual lifting and only those representatives for
-##  which it returns `true' are passed to the next level. This permits for
-##  example the calculation of only those classes with small centralizers or
-##  classes of restricted orders.
-##  \enditems
+##  which it returns <K>true</K> are passed to the next level.
+##  This permits for example the calculation of only those classes
+##  with small centralizers or classes of restricted orders.
+##  </Item>
+##  </List>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "ClassesSolvableGroup" );
 
 #############################################################################
 ##
 #F  RationalClassesSolvableGroup(<G>, <mode> [,<opt>])  . . . . .
 ##
-##  computes rational classes and centralizers in solvable groups. <G> is
-##  the acting group. <mode> indicates the type of the calculation:
+##  <ManSection>
+##  <Func Name="RationalClassesSolvableGroup" Arg='G, mode [,opt]'/>
 ##
-##  1 Rational classes of a $p$-group (mode 3 is used internally as well)
-##
+##  <Description>
+##  computes rational classes and centralizers in solvable groups. <A>G</A> is
+##  the acting group. <A>mode</A> indicates the type of the calculation:
+##  <P/>
+##  1 Rational classes of a <M>p</M>-group (mode 3 is used internally as well)
+##  <P/>
 ##  In mode 0 the function returns a list of records containing components
-##  <representative> and <centralizer>. In mode 1 the records in addition
-##  contain the component <galoisGroup>.
-##
-##  The optional record <opt> may contain the following components that will
+##  <A>representative</A> and <A>centralizer</A>. In mode 1 the records in addition
+##  contain the component <A>galoisGroup</A>.
+##  <P/>
+##  The optional record <A>opt</A> may contain the following components that will
 ##  affect the algorithms behaviour:
-##  
-##  \beginitems
-##  `pcgs'&is a pcgs that will be used for the calculation. In the case of
+##  <P/>
+##  <List>
+##  <Mark><C>pcgs</C></Mark>
+##  <Item>
+##  s a pcgs that will be used for the calculation. In the case of
 ##  the calculation of rational classes, it must be a pcgs refining a
-##  central series. The attribute `NormalSeriesByPcgs' must return an
+##  central series. The attribute <C>CentralNormalSeriesByPcgs</C> must return an
 ##  appropriate series of normal subgroups with elementary abelian factors
-##  among them. The algorithm will step down this series. By default an
-##  `ElementaryAbelianSeries' is used for modes 0 and 4 and a
-##  `CentralSeries' for mode 1.
-##
-##  `candidates'&is a list of elements for which canonical representatives
+##  among them. The algorithm will step down this series.
+##  </Item>
+##  <Mark><C>candidates</C></Mark>
+##  <Item>
+##  s a list of elements for which canonical representatives
 ##  are to be computed or for which a conjugacy test is performed. They must
 ##  be given in mode 4. In modes 0 and 1 a list of classes corresponding to
-##  <candidates> is returned (which may contain duplicates). The
-##  <representative>s chosen are canonical with respect to <pcgs>. The
-##  records returned also contain components <operator> and (in mode 1)
-##  <exponent> such that
-##  (<candidate> `^' <operator>) `^' <exponent>=<representative>.
-##
-##  %`consider'&is a function <consider>(<rep>,<cen>,<K>,<L>). Here <rep> is
-##  %an element of <G> and <cen>/<K> is the centralizer of <rep><K> modulo
-##  %<K>. In mode 0 when lifting from <G>/<K> to <G>/<L> this function is
-##  %called before performing the actual lifting and only those
-##  %representatives for which it returns `true' are passed to the next
-##  %level. This permits the calculation of only those classes with say small
+##  <A>candidates</A> is returned (which may contain duplicates). The
+##  <A>representative</A>s chosen are canonical with respect to <A>pcgs</A>. The
+##  records returned also contain components <A>operator</A> and (in mode 1)
+##  <A>exponent</A> such that
+##  (<A>candidate</A> <C>^</C> <A>operator</A>) <C>^</C> <A>exponent</A>=<A>representative</A>.
+##  </Item>
+##  <Mark>%<C>consider</C></Mark>
+##  <Item>
+##  s a function <A>consider</A>(<A>rep</A>,<A>cen</A>,<A>K</A>,<A>L</A>). Here <A>rep</A> is
+##  <!-- %an element of <A>G</A> and <A>cen</A>/<A>K</A> is the centralizer of <A>rep</A><A>K</A> modulo -->
+##  <!-- %<A>K</A>. In mode 0 when lifting from <A>G</A>/<A>K</A> to <A>G</A>/<A>L</A> this function is -->
+##  <!-- %called before performing the actual lifting and only those -->
+##  <!-- %representatives for which it returns <K>true</K> are passed to the next -->
+##  <!-- %level. This permits the calculation of only those classes with say small -->
 ##  %centralizers or classes of restricted orders.
-##  \enditems
+##  </Item>
+##  </List>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "RationalClassesSolvableGroup" );
 
 
@@ -258,10 +396,24 @@ DeclareGlobalFunction( "RationalClassesSolvableGroup" );
 ##
 #F  CentralizerSizeLimitConsiderFunction(<sz>)
 ##
-##  returns a function  (of the form func(<fhome>,<rep>,<cen>,<K>,<L>)
-##  )that can be used in `ClassesSolvableGroup' as the <consider> component
-##  of the options record. It will restrict the lifting to those classes,
-##  for which the size of the centralizer (in the factor) is at most <sz>.
+##  <#GAPDoc Label="CentralizerSizeLimitConsiderFunction">
+##  <ManSection>
+##  <Func Name="CentralizerSizeLimitConsiderFunction" Arg='sz'/>
+##
+##  <Description>
+##  returns a function (with arguments <C>fhome</C>, <C>rep</C>, <C>cen</C>,
+##  <C>K</C>, <C>L</C>)
+##  that can be used in <Ref Func="ClassesSolvableGroup"/> as the
+##  <C>consider</C> component of the options record.
+##  It will restrict the lifting to those classes,
+##  for which the size of the centralizer (in the factor) is at most
+##  <A>sz</A>.
+##  <P/>
+##  See also <Ref Func="SubgroupsSolvableGroup"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 
 DeclareGlobalFunction( "CentralizerSizeLimitConsiderFunction" );
 
@@ -275,4 +427,5 @@ DeclareGlobalFunction( "RationalClassesPermGroup" );
 
 #############################################################################
 ##
-#E  clas.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

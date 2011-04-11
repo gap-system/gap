@@ -10,277 +10,111 @@
 \Chapter{GAP Packages}
 
 \index{package}
-A {\GAP} package is the way  to  make software written by  (groups of)
-{\GAP} users  available to the  computational community  together with
-{\GAP}.
 
-A {\GAP} package extends the functionality of {\GAP} as defined by the
-{\GAP}  kernel, the  {\GAP} library and   the various  data libraries.
-Some {\GAP} packages are written entirely in the {\GAP} language, while
-others include one  or more standalone  programs written in C or  some
-other  language which either  perform tasks that  are not available in
-{\GAP} or work particularly fast.
+The  functionality  of  {\GAP}  can  be  extended  by  loading  {\GAP}
+packages. Many packages are distributed  together with the core system
+of {\GAP} consisting of the {\GAP}  kernel, the {\GAP} library and the
+various data libraries.
 
-The responsibility and  copyright of a {\GAP} package remains with the
-original author while the responsibility   of the rest of {\GAP}  lies
-with  the {\GAP} developer team.  
+{\GAP} packages are written by (groups  of) {\GAP} users which may not
+be  members  of the  {\GAP}  developer  team. The  responsibility  and
+copyright of a {\GAP} package remains with the original author(s).
 
-A {\GAP}  package  undergoes  a formal  refereeing   process before it
-becomes part of the {\GAP} distribution.  This process is in many ways
-similar to the  refereeing process of a  paper submitted to a journal.
-It assesses the  quality and usefulness  of the submitted  package, it
-makes sure that it can be started and  runs  smoothly together with
-{\GAP} and it ensures that binary parts are portable to other architectures.
-{\GAP} packages should be submitted  to  the chairman of the
-{\GAP} Council, Prof.~Charles Wright.
-See the {\GAP} Web site (see~"Getting GAP") for more
-details and addresses.
+{\GAP}  packages  have  their  own  documentation  which  is  smoothly
+integrated into the {\GAP} help system.
 
-While much effort has been spent on making {\GAP} available on as many
-platforms as possible, the same is not always true for {\GAP} packages.
-{\GAP} packages that consist entirely of {\GAP} code can be used on any
-platform where   {\GAP}  runs.  However, {\GAP}  packages that contain
-standalone programs often run only in a UNIX environment.
+All  {\GAP}  users   who  develop  new  code  are   invited  to  share
+the  results  of their  efforts  with  other  {\GAP} users  by  making
+the  code  and its  documentation  available  in  form of  a  package.
+Information how  to do  this is  available from  the {\GAP}  Web pages
+(\URL{http://www.gap-system.org}) and in the extension manual 
+"ext:Writing a GAP Package".
+There  are  possibilities  to get  a  package  distributed together  with
+{\GAP}  and it  is possible  to submit  a package  to a formal refereeing
+process.
+
+In this Chapter we describe how to use existing packages.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Installing GAP Packages}
+\Section{Installing a GAP Package}
 
-Typically, a {\GAP} package is installed  by copying its directory (or
-unpacking its distribution file using `unzoo') into the
-`pkg' directory of the {\GAP} distribution. 
-The files `acceptedpkg{{versionsuffix}}.zoo' and `deppkg{{versionsuffix}}.zoo'
-each contain several {\GAP} packages, but each package can also be
-obtained individually from each of the {\GAP} web sites; just follow the
-links from the `GAP Packages' link. The easiest procedure is to change 
-directory to the `pkg' directory; then download or move the `<package>.zoo'
-file to that directory and do:
+Before a  package can be  used it must  be installed. With  a standard
+installation of  {\GAP} there should  be quite a few  packages already
+available. But since {\GAP} packages are released independently of the
+main  {\GAP} system  it  may be  sensible to  upgrade  or install  new
+packages between  upgrades of your {\GAP} installation.
 
-\){\kernttindent}unzoo <package>.zoo
+A package consists of a collection  of files within a single directory
+that must  be a subdirectory of  the `pkg'  directory   in one  of the
+{\GAP} root directories, see "ref:GAP Root Directory". (If you don't
+have access  to the `pkg'  directory in your main  {\GAP} installation
+you can add private root directories as explained in that section.)
 
-This   typically   creates   a   subdirectory   <package>   (or   several
-subdirectories    in    the    case    of    the    omnibus     archives:
-`acceptedpkg{{versionsuffix}}.zoo'  and  `deppkg{{versionsuffix}}.zoo')
-in the directory `pkg'. Such subdirectories of `pkg' are called the *home
-directories* for these {\GAP} packages. It is possible  to  have  several
-{\GAP} root directories (see~"GAP Root Directory"); therefore it is  easy
-to install a package locally even if a user  has  no  permission  to  add
-files to the main {\GAP} installation. Thus, {\GAP} packages also provide
-an easy way to add optional components to the functionality of {\GAP}.
-
-If the {\GAP} package uses external binaries, additional compilation is
-necessary. The documentation of  each {\GAP} package will describe how
-to do this, the following paragraph describes a suggested procedure
-for compiling binaries on a UNIX system:
-
-Go to the directory of the {\GAP} package, i.e. for package <package>
-do:
-
-\){\kernttindent}cd <package>
-
-Then call:
-
-\){\kernttindent}./configure <path>
-
-where <path> is the path to the root directory of the {\GAP} installation.
-So for example if the {\GAP} package is in the main {\GAP} path, simply call
-
-\begintt
-./configure ../..
-\endtt
-
-This will fetch the name of the system architecture on which  {\GAP}  has
-been compiled. Finally call:
-
-\begintt
-make
-\endtt
-
-to invoke the actual compilation. You should check the package's `README'
-in case there are any departures from this procedure.
-
-The standard {\GAP} distribution contains a {\GAP} package `example' which
-makes use of a default path mechanism. The  `configure'  script  in  this
-package permits one to omit the path, using `../..' as a default.
-
-*Note:*
-If {\GAP} is installed  on  different  architectures  on  a  common  file
-system,  this  configuration  process  will  only  work  for  the  *last*
-architecture for which {\GAP} was compiled. Therefore compile  the {\GAP}
-package  binaries  always  immediately   after   compiling   the   system
-architecture. If you want to add {\GAP} packages later,  you should  call
-`configure' again in the main  {\GAP}  directory  for  each  architecture
-before configuring the {\GAP} package for this architecture.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Installing a GAP Package in your home directory}
-
-\atindex{GAP package!permissions}{@GAP package!permissions}
-\index{superuser}\index{administrator}
-If you are using {\GAP} on a multi-user system installing a {\GAP} package
-globally in the way described in  the  last  section  might  require  the
-cooperation of your system administrator.
-
-If your administrator is absent/unwilling/incapable you can still install
-the {\GAP} package in your local home directory: Create a directory that will
-serve as ``your'' personal {\GAP} home directory. We will assume now that
-you are using a UNIX system and that this directory is called
-\begintt
-/home/user/mygap
-\endtt
-Go to this directory and create a subdirectory `pkg'
-\begintt
-you@unix> cd /home/user/mygap
-you@unix> mkdir pkg
-\endtt
-Now extract the {\GAP} package  in  the  `pkg'  subdirectory,  creating  a
-directory with the package name. Configure the package as usual.  However
-you now have to give the correct path to the main {\GAP}  home  directory
-(start up {\GAP} and look at the variable `GAP_ROOT_PATHS'  to  find  out
-where this is, e.g.
-
-\begintt
-gap> GAP_ROOT_PATHS;
-[ "/usr/local/lib/{{gapdirname}}/" ]
-\endtt
-
-indicates that the main {\GAP} directory is `/usr/local/lib/{{gapdirname}}/'),
-so your commands would look something like:
-\begintt
-you@unix> cd /home/user/mygap/pkg/thepackage
-you@unix> ./configure /usr/local/lib/{{gapdirname}}
-you@unix> make
-\endtt
-
-Now the {\GAP} package is installed locally. Finally, to use  the  package
-you only need to tell {\GAP} to look in the right place. You can  achieve
-this by giving two paths to home directories, the old one  and  your  new
-one, separated by a semicolon as  arguments  to  the  `-l'  command  line
-option to your usual `gap4'  command.  (See~"Command  Line  Options"  for
-details.)
-
-\begintt
-you@unix> gap4 -l "/usr/local/lib/{{gapdirname}};/home/user/mygap"
-\endtt
-
-Now {\GAP} starts as usual, and the new package ought to be available.
-
-Of course, it may be a little tedious to type this each time, and you may
-be tempted to create an alias and put this in your `.cshrc' (or `.bashrc'
-or whatever) file. In general, this is not the best solution. It  is  far
-better to create a shell script (let's call it `mygap'), put this  script
-into your private `bin' directory and add that `bin'  directory  to  your
-path. The easy way to create `mygap' is to copy the one  that  runs  your
-`gap4' (it better be a script! \dots~if not tell  your  administrator  to
-read Section~"Installation of GAP for UNIX"), e.g. 
-
-\begintt
-you@unix> mkdir /home/user/bin
-you@unix> cd /home/user/bin
-you@unix> which gap4
-/usr/local/bin/gap4
-you@unix> cp /usr/local/bin/gap4 mygap
-\endtt
-
-(If you already have a `bin' directory you can, of course, skip the first
-step).
-
-Now edit the `-l' part of the last line of `mygap' which should initially
-look something like:
-
-\begintt
-exec $GAP_DIR/bin/$GAP_PRG -m $GAP_MEM -o 970m -l $GAP_DIR $*
-\endtt
-
-so that it becomes:
-
-\begintt
-exec $GAP_DIR/bin/$GAP_PRG -m $GAP_MEM -o 970m -l "$GAP_DIR;/home/user/mygap" $*
-\endtt
-
-Then to start `gap4' with your locally installed package you only need to
-type `mygap'. 
-
-For the {\GAP} package \package{ANUPQ} the  above  strategy  is  actually
-necessary if one wants to run the binary as a stand-alone; when computing
-stabilisers it needs to call a  {\GAP}  that  knows  where  the  packages
-\package{ANUPQ} and \package{AutPGrp} are installed. So, take  the  hint,
-always use an appropriate script when running {\GAP}; don't use  aliases.
-(Most of the time aliases work ok; but when that  approach  doesn't  work
-you will be left puzzling!!)
+Whenever  you  get from  somewhere  an  archive  of a  {\GAP}  package
+it  should be  accompanied  with  a `README'  file  that explains  its
+installation.  Some packages  just  consist  of  {\GAP}  code and  the
+installation  is  done  by  unpacking   the  archive  in  one  of  the
+places  described above.  There are  also packages  that need  further
+installation steps,  there may be  for example some  external programs
+which  have  to  be  compiled  (this is  often  done  by  just  saying
+`./configure; make'  inside the unpacked package  directory, but check
+the individual `README' files).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Loading a GAP Package}
 
 \index{automatic loading of GAP packages}
 \index{disable automatic loading}
-Some {\GAP} packages will be prepared for *automatic loading*,
+Some {\GAP} packages are prepared for *automatic loading*,
 that is they will be loaded automatically with {\GAP},
-others must in each case be separately loaded by a call to
-`RequirePackage'.
+others must in each case be separately loaded by a call to `LoadPackage'.
 
-\Declaration{RequirePackage}
+\Declaration{LoadPackage}
 
-After a package has been loaded its  code  and  documentation  should  be
-available as other parts of the {\GAP} library are. Each  package  has  a
-`doc' directory containing the package's  documentation;  generally  this
-contains `.tex' files, and  `manual.dvi'  and  `manual.six'  files.  Some
-packages have an `htm'  directory  containing  an  HTML  version  of  the
-manual. If the documentation was produced  using  \package{GAPDoc}  there
-will be `.txt' files (plain text files that are read by {\GAP}  when  one
-types `?<topic>' commands) and `.html' files  (which  contains  the  HTML
-version of the manual) as well as `manual.dvi' (the {\TeX} `.dvi' version
-of the manual), all in the package's `doc' directory. In  any  case,  the
-`manual.six' file must be present to  enable  {\GAP}'s  on-line  help  to
-display a {\GAP}  package's  documentation  by  reading  from  either  the
-package's `.txt' or `.tex' files;  if  it  is  not  check  the  package's
-`README' for instructions on how to obtain it.
+After a package  has been loaded its code and  documentation should be
+available as other parts of the {\GAP} library are.
 
-The documentation of each {\GAP} package will tell  you  if  the  package
-loads automatically or not. Also, {\GAP} prints the list of names of  all
-{\GAP} packages which have been loaded (either by automatic loading or via
-`RequirePackage' commands in one's `.gaprc' file or the like) at the  end
-of the initialization process.
+The documentation of each {\GAP} package  will tell you if the package
+loads automatically or  not. Also, {\GAP} prints the list  of names of
+all  {\GAP}  packages which  have  been  loaded (either  by  automatic
+loading or  via `LoadPackage' commands  in one's `.gaprc' file  or the
+like) at the end of the initialization process.
 
-A {\GAP} package may also install only its documentation automatically but
-still need loading by `RequirePackage'. In this situation the online help
-displays `(not loaded)' in the header lines of the manual pages belonging
-to this {\GAP} package.
+A {\GAP} package may also install only its documentation automatically
+but still need loading by  `LoadPackage'. In this situation the online
+help displays `(not  loaded)' in the header lines of  the manual pages
+belonging to this {\GAP} package.
 
-\indextt{ALLPKG}
-(At the moment automatic loading is only possible for the packages listed
-in the file `pkg/ALLPKG'. (This is due to  the  fact  that  there  is  no
-standard C-Function that will list the contents of a subdirectory.)  This
-file must list each package name on a line of its own without any heading
-or trailing extra characters. Under UNIX  you  can  create  such  a  file
-easily by issuing the command
-\begintt
-find * -type d -maxdepth 0 -print > ALLPKG
-\endtt
-in the `pkg' directory.)
-
-\indextt{AUTOLOAD_PACKAGES}
-If  the  {\GAP}  installation  you  are  using   loads  {\GAP}   packages
-automatically which (for example for reasons of memory usage) you do  not
-want to load automatically, you can  disable  the  automatic  loading  of
-{\GAP} packages by putting a line
-
-\){\kernttindent}RemoveSet(AUTOLOAD_PACKAGES, "<name>");
-
-where <name> is the name of the {\GAP} package, in your `.gaprc' file (see
-"The .gaprc file").
+If for some reason you don't want certain packages to be automatically
+loaded, {\GAP} provides three levels for disabling autoloading:
 
 \indextt{NOAUTO}
-You can disable automatic loading globally, by listing the  name  of  the
-{\GAP} package in a file `NOAUTO' in the `pkg' directory.
+The autoloading of  specific packages can be overwritten for the whole
+{\GAP} installation by putting a file `NOAUTO' into a `pkg'  directory
+that contains lines with the names  of packages  which  should  not be
+automatically loaded.
+
+Furthermore, individual users can disable the autoloading of specific
+packages by using the following command in their `.gaprc' file
+(see~"The .gaprc file").
+
+\){\kernttindent}ExcludeFromAutoload( <pkgnames> );
+
+where <pkgnames> is the list of names of the {\GAP} packages in question.
+
+Using  the  `-A' command  line  option  when  starting up  {\GAP}
+(see~"Command Line Options"), automatic loading is switched off,
+and the scanning of the `pkg' directories containing the installed
+packages is delayed until the first call of "LoadPackage".
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Functions for GAP Packages}
 
-\Declaration{DeclarePackage}
+The  following functions  are  mainly  used in  files  contained in  a
+package and not by users of a package.
 
-\Declaration{DeclarePackageDocumentation}
-
-\Declaration{ReadPkg}
+\Declaration{ReadPackage}
 
 \Declaration{TestPackageAvailability}
 
@@ -289,13 +123,15 @@ You can disable automatic loading globally, by listing the  name  of  the
 \Declaration{DirectoriesPackageLibrary}
 
 As an example, the following returns a directory object for the library
-functions of the {\GAP} package `example':
-\begintt
-gap> DirectoriesPackageLibrary( "example", "gap" );
-[ dir("/home/werner/Gap/4.0/pkg/example/gap/") ]
-\endtt
+functions of the {\GAP} package `Example':
 
-Observe that we needed the second argument `"gap"' here, since `example''s
+%notest
+\beginexample
+gap> DirectoriesPackageLibrary( "Example", "gap" );
+[ dir("/home/werner/gap/4.0/pkg/example/gap/") ]
+\endexample
+
+Observe that we needed the second argument `"gap"' here, since `Example''s
 library functions are in the sub-directory `gap' rather than `lib'.
 
 In order to  find  a  subdirectory  deeper  than  one  level  in  a  package
@@ -306,16 +142,24 @@ Windows, which use `\\' as the directory separator).  For  example,  suppose
 there is a package `somepackage' with a subdirectory `m11' in the  directory
 `data', then we might expect the following:
 
-\begintt
-gap> DirectoriesPackageLibrary( "somepackage", "data/m11" )
-[ dir("/home/werner/Gap/4.0/pkg/somepackage/data/m11") ]
-\endtt
+%notest
+\beginexample
+gap> DirectoriesPackageLibrary( "somepackage", "data/m11" );
+[ dir("/home/werner/gap/4.0/pkg/somepackage/data/m11") ]
+\endexample
 
 \Declaration{DirectoriesPackagePrograms}
-\begintt
+
+%notest
+\beginexample
 gap> DirectoriesPackagePrograms( "nq" );
-[ dir("/home/werner/Gap/4.0/pkg/nq/bin/i686-unknown-linux2.0.30-gcc/") ]
-\endtt
+[ dir("/home/werner/gap/4.0/pkg/nq/bin/i686-unknown-linux2.0.30-gcc/") ]
+\endexample
 
 \Declaration{CompareVersionNumbers}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
 

@@ -6,10 +6,12 @@ AH
 2001/9/24
 @Time
 4
+@Public
+No
 @Need
-4
+0
 @NeedA
-3
+0
 @Math
 5
 @Prog
@@ -26,3 +28,5 @@ group.
 @Rem
 The MAGMA implementation is based on ideas by Leedham-Green, but apparently
 little has been published.
+<P>
+Implemented for 4.5. AH

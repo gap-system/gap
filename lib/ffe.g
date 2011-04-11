@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with internal finite field elements.
 ##
@@ -59,7 +60,7 @@ BIND_GLOBAL( "TYPE_FFE", function ( p )
     IS_FFE,CanEasilySortElements,CanEasilySortElements );
     SetIsUFDFamily( fam, true );
     SetCharacteristic( fam, p );
-    type:= NewType( fam, IS_FFE and IsInternalRep );
+    type:= NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
     TYPES_FFE[p]:= type;
 #T     SetElmWPObj( TYPES_FFE, p, type );
     return type;
@@ -84,7 +85,8 @@ BIND_GLOBAL( "TYPE_FFE0", function ( p )
 #T       fi;
 #T     fi;
     fam:= FamilyType(TYPE_FFE(p));
-    type:= NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero );
+    type:= NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
+                   and HasDegreeFFE );
     TYPES_FFE0[p]:= type;
 #T     SetElmWPObj( TYPES_FFE, p, type );
     return type;
@@ -153,16 +155,16 @@ InstallOtherMethod( \*,
     else
       return PROD_INT_OBJ( int, ffe );
     fi;
-    end );
+end );
         
 
 #############################################################################
 ##
-#F  SUM_FFE_LARGE
-#F  DIFF_FFE_LARGE
-#F  PROD_FFE_LARGE
-#F  QUO_FFE_LARGE
-#F  LOG_FFE_LARGE
+#O  SUM_FFE_LARGE
+#O  DIFF_FFE_LARGE
+#O  PROD_FFE_LARGE
+#O  QUO_FFE_LARGE
+#O  LOG_FFE_LARGE
 ##
 ##  If the {\GAP} kernel cannot handle the addition, multiplication etc.
 ##  of internally represented FFEs then it delegates to the library without
@@ -175,36 +177,58 @@ InstallOtherMethod( \*,
 #T  then either <z> can be represented in the field of <r> or the logarithm
 #T  does not exist.
 ##
-BIND_GLOBAL( "SUM_FFE_LARGE", function( x, y )
-    if Characteristic( x ) <> Characteristic( y ) then
-      Error( "<x> and <y> have different characteristic" );
-    fi;
-    Error( "not supported yet" );
-end );
+    
+DeclareOperation("SUM_FFE_LARGE", [IsFFE and IsInternalRep,
+        IsFFE and IsInternalRep]);
 
-BIND_GLOBAL( "DIFF_FFE_LARGE", function( x, y )
+InstallOtherMethod(SUM_FFE_LARGE,  [IsFFE,
+        IsFFE],
+        function( x, y )
     if Characteristic( x ) <> Characteristic( y ) then
       Error( "<x> and <y> have different characteristic" );
-    fi;
-    Error( "not supported yet" );
-end );
+  fi;
+  TryNextMethod();
+end);
 
-BIND_GLOBAL( "PROD_FFE_LARGE", function( x, y )
-    if Characteristic( x ) <> Characteristic( y ) then
-      Error( "<x> and <y> have different characteristic" );
-    fi;
-    Error( "not supported yet" );
-end );
+DeclareOperation("DIFF_FFE_LARGE", [IsFFE and IsInternalRep,
+        IsFFE and IsInternalRep]);
 
-BIND_GLOBAL( "QUO_FFE_LARGE", function( x, y )
+InstallOtherMethod(DIFF_FFE_LARGE,  [IsFFE,
+        IsFFE],
+        function( x, y )
     if Characteristic( x ) <> Characteristic( y ) then
       Error( "<x> and <y> have different characteristic" );
-    fi;
-    Error( "not supported yet" );
-end );
+  fi;
+  TryNextMethod();
+end);
+
+DeclareOperation("PROD_FFE_LARGE", [IsFFE and IsInternalRep,
+        IsFFE and IsInternalRep]);
+
+InstallOtherMethod(PROD_FFE_LARGE,  [IsFFE,
+        IsFFE ],
+        function( x, y )
+    if Characteristic( x ) <> Characteristic( y ) then
+      Error( "<x> and <y> have different characteristic" );
+  fi;
+  TryNextMethod();
+end);
+
+DeclareOperation("QUO_FFE_LARGE", [IsFFE,
+        IsFFE]);
+
+InstallOtherMethod(QUO_FFE_LARGE,  [IsFFE and IsInternalRep,
+        IsFFE and IsInternalRep],
+        function( x, y )
+    if Characteristic( x ) <> Characteristic( y ) then
+      Error( "<x> and <y> have different characteristic" );
+  fi;
+  TryNextMethod();
+end);
+
 
 BIND_GLOBAL( "LOG_FFE_LARGE", function( x, y )
-    Error( "not supported yet" );
+    Error( "not supported yet -- this should never happen" );
 end );
 
 #############################################################################

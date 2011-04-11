@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains generic     methods   for groups handled    by  nice
 ##  monomorphisms..
@@ -18,9 +19,19 @@ Revision.grpnice_gd :=
 ##
 #A  NiceMonomorphism( <obj> )
 ##
-##  is a homomorphism that is defined (at least) on the whole of <obj> and
-##  whose restriction to <obj> is injective. The concrete morphism (and also
-##  the image group) will depend on the representation of <obj>.
+##  <#GAPDoc Label="NiceMonomorphism">
+##  <ManSection>
+##  <Attr Name="NiceMonomorphism" Arg='obj'/>
+##
+##  <Description>
+##  is a homomorphism that is defined (at least) on the whole of <A>obj</A>
+##  and whose restriction to <A>obj</A> is injective.
+##  The concrete morphism (and also the image group) will depend on the
+##  representation of <A>obj</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute(
     "NiceMonomorphism",
     IsObject );
@@ -33,57 +44,119 @@ InstallSubsetMaintenance( NiceMonomorphism,
 ##
 #F  IsNiceMonomorphism( <nhom> )
 ##
-##  This filter indicates that a mappping has been installed as a
-##  `NiceMonomorphism'. (Such mappings may need to be handled specially
-##  because they should not refer to the `NiceMonomorphism' of the source
-##  group again.)
+##  <ManSection>
+##  <Func Name="IsNiceMonomorphism" Arg='nhom'/>
+##
+##  <Description>
+##  This filter indicates that a mappping has been installed as the
+##  <Ref Func="NiceMonomorphism"/> value of an object.
+##  (Such mappings may need to be handled specially
+##  because they should not refer to the <Ref Func="NiceMonomorphism"/> value
+##  of the source again.)
+##  </Description>
+##  </ManSection>
+##
 DeclareFilter("IsNiceMonomorphism");
 
 #############################################################################
 ##
 #O  RestrictedNiceMonomorphism(<hom>,<G>)
 ##
-##  returns the restriction of the nice monomorphism <hom> onto <G>. In
-##  contrast to `RestrictedMapping', this operation returns a result which has
-##  the filter `IsNiceMonomorphism' set. (This is important for some operations
-##  like `CompositionMapping': We do not want to compute the
-##  `AsGroupGeneralMappingByImages' of a nice monomorphism -- this would
-##  counteract the intention of a nice monomorphism. Therefore some methods
-##  explicitly test whether a mapping is a nice monomorphism.
-##  
-##  However for example in `NaturalHomomorphismByNormalSubgroupOp' a restriction
-##  of the nice monomorphism has to be taken because the nice monomorphism might
-##  be defined on too large a source, in this case `RestrictedNiceMonomorphism'
-##  must be used!)
+##  <ManSection>
+##  <Oper Name="RestrictedNiceMonomorphism" Arg='hom, G'/>
+##
+##  <Description>
+##  returns the restriction of the nice monomorphism <A>hom</A> onto
+##  <A>G</A>.
+##  In contrast to <Ref Func="RestrictedMapping"/>,
+##  this operation returns an object which has the filter
+##  <Ref Func="IsNiceMonomorphism"/> set.
+##  (This is important for some operations like
+##  <Ref Func="CompositionMapping"/>:
+##  We do not want to compute the <Ref Func="AsGroupGeneralMappingByImages"/>
+##  value of a nice monomorphism
+##  &ndash;this would counteract the intention of a nice monomorphism.
+##  Therefore some methods explicitly test whether a mapping is a nice
+##  monomorphism.
+##  <P/>
+##  However for example in
+##  <Ref Func="NaturalHomomorphismByNormalSubgroupOp"/>,
+##  a restriction of the nice monomorphism has to be taken
+##  because the nice monomorphism might be defined on too large a source,
+##  in this case <Ref Func="RestrictedNiceMonomorphism"/> must be used!)
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction("RestrictedNiceMonomorphism");
 
 #############################################################################
 ##
 #P  IsCanonicalNiceMonomorphism( <nhom> )
 ##
-##  A `NiceMonomorphism' <nhom> is canonical if the image set will only
-##  depend on the set of group elements but not on the generating set and
-##  `\<' comparison of group elements translates through the nice
-##  monomorphism. This
-##  implies that equal objects will always have equal `NiceObject's.
+##  <#GAPDoc Label="IsCanonicalNiceMonomorphism">
+##  <ManSection>
+##  <Prop Name="IsCanonicalNiceMonomorphism" Arg='nhom'/>
+##
+##  <Description>
+##  A nice monomorphism (see <Ref Func="NiceMonomorphism"/> <A>nhom</A> is
+##  canonical if the image set will only depend on the set of group elements
+##  but not on the generating set and <Ref Func="\&lt;"/> comparison
+##  of group elements translates through the nice monomorphism.
+##  This implies that equal objects will always have equal
+##  <Ref Func="NiceObject"/> values.
 ##  In some situations however this condition would be expensive to
 ##  achieve, therefore it is not guaranteed for every nice monomorphism.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty("IsCanonicalNiceMonomorphism",IsGroupGeneralMapping);
 
 #############################################################################
 ##
 #A  CanonicalNiceMonomorphism( <obj> )
 ##
-##  returns a `NiceMonomorphism' which is canonical (see
-##  `IsCanonicalNiceMonomorphism').
+##  <ManSection>
+##  <Attr Name="CanonicalNiceMonomorphism" Arg='obj'/>
+##
+##  <Description>
+##  returns a <C>NiceMonomorphism</C> which is canonical (see
+##  <C>IsCanonicalNiceMonomorphism</C>).
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "CanonicalNiceMonomorphism", IsObject );
 
 #############################################################################
 ##
 #A  NiceObject( <obj> )
 ##
-##  The `NiceObject' of <obj> is the image of <obj> under its
-##  `NiceMonomorphism'.
+##  <#GAPDoc Label="NiceObject">
+##  <ManSection>
+##  <Attr Name="NiceObject" Arg='obj'/>
+##
+##  <Description>
+##  The <Ref Func="NiceObject"/> value of <A>obj</A> is the image of
+##  <A>obj</A> under the mapping stored as the value of
+##  <Ref Func="NiceMonomorphism"/> for <A>obj</A>.
+##  <P/>
+##  A typical example are finite matrix groups, which use a faithful action
+##  on vectors to translate all calculations in a permutation group.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> gl:=GL(3,2);
+##  SL(3,2)
+##  gap> IsHandledByNiceMonomorphism(gl);
+##  true
+##  gap> NiceObject(gl);
+##  Group([ (5,7)(6,8), (2,3,5)(4,7,6) ])
+##  gap> Image(NiceMonomorphism(gl),Z(2)*[[1,0,0],[0,1,1],[1,0,1]]);
+##  (2,6)(3,4,7,8)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute(
     "NiceObject",
     IsObject );
@@ -93,9 +166,19 @@ DeclareAttribute(
 ##
 #P  IsHandledByNiceMonomorphism( <obj> )
 ##
-##  If this property is `true', high-valued methods that translate all
-##  calculations in <obj> in the image under the `NiceMonomorphism' become
-##  available for <obj>.
+##  <#GAPDoc Label="IsHandledByNiceMonomorphism">
+##  <ManSection>
+##  <Prop Name="IsHandledByNiceMonomorphism" Arg='obj'/>
+##
+##  <Description>
+##  If this property is <K>true</K>, high-valued methods that translate all
+##  calculations in <A>obj</A> in the image under the
+##  <Ref Func="NiceMonomorphism"/> value of <A>obj</A>
+##  become available for <A>obj</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty(
     "IsHandledByNiceMonomorphism",
     IsObject,NICE_FLAGS );
@@ -115,6 +198,13 @@ RUN_IN_GGMBI:=false; # If somebody would call `GHBI' to make a
 ##
 #O  GroupByNiceMonomorphism( <nice>, <grp> )
 ##
+##  <ManSection>
+##  <Oper Name="GroupByNiceMonomorphism" Arg='nice, grp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "GroupByNiceMonomorphism",
     [ IsGroupHomomorphism, IsGroup ] );
@@ -123,6 +213,13 @@ DeclareOperation(
 #############################################################################
 ##
 #F  AttributeMethodByNiceMonomorphism( <oper>, <par> )
+##
+##  <ManSection>
+##  <Func Name="AttributeMethodByNiceMonomorphism" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BindGlobal( "AttributeMethodByNiceMonomorphism", function( oper, par )
 
@@ -135,7 +232,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: Attribute",
         true,
         par,
         0,
@@ -148,6 +245,13 @@ end );
 #############################################################################
 ##
 #F  AttributeMethodByNiceMonomorphismCollColl( <oper>, <par> )
+##
+##  <ManSection>
+##  <Func Name="AttributeMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BindGlobal( "AttributeMethodByNiceMonomorphismCollColl",
     function( oper, par )
@@ -162,7 +266,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismCollColl",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: attribute CollColl",
         IsIdenticalObj,
         par,
 	0,
@@ -181,6 +285,13 @@ end );
 ##
 #F  AttributeMethodByNiceMonomorphismCollElm( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="AttributeMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "AttributeMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # check the argument length
@@ -192,14 +303,17 @@ BindGlobal( "AttributeMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: attribute CollElm",
         IsCollsElms,
         par,
         0,
         function( obj1, obj2 )
-            local   img;
-            img := ImagesRepresentative( NiceMonomorphism(obj1), obj2 );
-            if img = fail  then
+            local   nice,img;
+	    nice:=NiceMonomorphism(obj1);
+            img := ImagesRepresentative( nice, obj2:actioncanfail:=true );
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             return oper( NiceObject(obj1), img );
@@ -209,6 +323,13 @@ end );
 #############################################################################
 ##
 #F  AttributeMethodByNiceMonomorphismElmColl( <oper>, <par> )
+##
+##  <ManSection>
+##  <Func Name="AttributeMethodByNiceMonomorphismElmColl" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BindGlobal( "AttributeMethodByNiceMonomorphismElmColl", function( oper, par )
 
@@ -221,14 +342,17 @@ BindGlobal( "AttributeMethodByNiceMonomorphismElmColl", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: attributeElmColl",
         IsElmsColls,
         par,
         0,
         function( obj1, obj2 )
-            local   img;
-            img := ImagesRepresentative( NiceMonomorphism(obj2), obj1 );
-            if img = fail  then
+            local   nice,img;
+	    nice:=NiceMonomorphism(obj2);
+            img := ImagesRepresentative( nice, obj1 );
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj1) then
                 TryNextMethod();
             fi;
             return oper( img,NiceObject(obj2));
@@ -238,7 +362,6 @@ end );
 
 #############################################################################
 ##
-
 #F  GroupMethodByNiceMonomorphism( <oper>, <par> )
 ##
 BindGlobal( "GroupMethodByNiceMonomorphism", function( oper, par )
@@ -252,7 +375,7 @@ BindGlobal( "GroupMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism:group",
         true,
         par,
         0,
@@ -269,6 +392,13 @@ end );
 ##
 #F  GroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="GroupMethodByNiceMonomorphismCollOther" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "GroupMethodByNiceMonomorphismCollOther", function( oper, par )
 
     # check the argument length
@@ -280,7 +410,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollOther", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: group CollOther",
         true,
         par,
         0,
@@ -297,6 +427,13 @@ end );
 ##
 #F  GroupMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="GroupMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "GroupMethodByNiceMonomorphismCollColl", function( oper, par )
 
     # check the argument length
@@ -309,7 +446,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollColl", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism:group CollColl",
         IsIdenticalObj,
         par,
         0,
@@ -329,6 +466,13 @@ end );
 ##
 #F  GroupMethodByNiceMonomorphismCollElm( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="GroupMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "GroupMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # check the argument length
@@ -340,15 +484,17 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: group CollElm",
         IsCollsElms,
         par,
         0,
         function( obj1, obj2 )
             local   nice,  img,  img1;
             nice := NiceMonomorphism(obj1);
-            img  := ImagesRepresentative( nice, obj2 );
-            if img = fail  then
+            img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             img1 := oper( NiceObject(obj1), img );
@@ -361,6 +507,13 @@ end );
 ##
 #F  SubgroupMethodByNiceMonomorphism( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="SubgroupMethodByNiceMonomorphism" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "SubgroupMethodByNiceMonomorphism", function( oper, par )
 
     # check the argument length
@@ -372,7 +525,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: Subgroup",
         true,
         par,
         0,
@@ -390,6 +543,13 @@ end );
 ##
 #F  SubgroupsMethodByNiceMonomorphism( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="SubgroupsMethodByNiceMonomorphism" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "SubgroupsMethodByNiceMonomorphism", function( oper, par )
 
     # check the argument length
@@ -401,7 +561,7 @@ BindGlobal( "SubgroupsMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: subgroups",
         true,
         par,
         0,
@@ -423,6 +583,13 @@ end );
 ##
 #F  SubgroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="SubgroupMethodByNiceMonomorphismCollOther" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "SubgroupMethodByNiceMonomorphismCollOther",
     function( oper, par )
 
@@ -435,7 +602,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollOther",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: subgroup CollOther",
         true,
         par,
         0,
@@ -454,6 +621,13 @@ end );
 ##
 #F  SubgroupMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="SubgroupMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
 
     # check the argument length
@@ -466,7 +640,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: Subgroup CollColl",
         IsIdenticalObj,
         par,
 	0,
@@ -476,7 +650,13 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
                 TryNextMethod();
             fi;
             nice := NiceMonomorphism(obj1);
-            img := oper( NiceObject(obj1), Image(nice,obj2) );
+	    img:=ImagesSet(nice,obj2);
+            if img = fail or 
+	      not (IsSubset(ImagesSource(nice),img) and
+		PreImagesSet(nice,img)=obj2) then
+                TryNextMethod();
+            fi;
+            img := oper( NiceObject(obj1), img );
             sub := GroupByNiceMonomorphism( nice, img );
             SetParent( sub, obj1 );
             return sub;
@@ -487,6 +667,13 @@ end );
 #############################################################################
 ##
 #F  SubgroupMethodByNiceMonomorphismCollElm( <oper>, <par> )
+##
+##  <ManSection>
+##  <Func Name="SubgroupMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
 
@@ -499,15 +686,17 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: subgroup CollElm",
         IsCollsElms,
         par,
         0,
         function( obj1, obj2 )
             local   nice,  img,  img1,  sub;
             nice := NiceMonomorphism(obj1);
-            img  := ImagesRepresentative( nice, obj2 );
-            if img = fail  then
+            img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             img1 := oper( NiceObject(obj1), img );
@@ -520,7 +709,6 @@ end );
 
 #############################################################################
 ##
-
 #F  PropertyMethodByNiceMonomorphism( <oper>, <par> )
 ##
 DeclareSynonym( "PropertyMethodByNiceMonomorphism",
@@ -531,6 +719,13 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphism",
 ##
 #F  PropertyMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="PropertyMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareSynonym( "PropertyMethodByNiceMonomorphismCollColl",
     AttributeMethodByNiceMonomorphismCollColl );
 
@@ -538,6 +733,13 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphismCollColl",
 #############################################################################
 ##
 #F  PropertyMethodByNiceMonomorphismCollElm( <oper>, <par> )
+##
+##  <ManSection>
+##  <Func Name="PropertyMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonym( "PropertyMethodByNiceMonomorphismCollElm",
     AttributeMethodByNiceMonomorphismCollElm );
@@ -547,6 +749,13 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphismCollElm",
 ##
 #F  PropertyMethodByNiceMonomorphismElmColl( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="PropertyMethodByNiceMonomorphismElmColl" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareSynonym( "PropertyMethodByNiceMonomorphismElmColl",
     AttributeMethodByNiceMonomorphismElmColl );
 
@@ -554,6 +763,13 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphismElmColl",
 #############################################################################
 ##
 #F  GroupSeriesMethodByNiceMonomorphism( <oper>, <par> )
+##
+##  <ManSection>
+##  <Func Name="GroupSeriesMethodByNiceMonomorphism" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphism", function( oper, par )
 
@@ -566,7 +782,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: GroupSeries",
         true,
         par,
         0,
@@ -587,6 +803,13 @@ end );
 ##
 #F  GroupSeriesMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="GroupSeriesMethodByNiceMonomorphismCollOther" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollOther",
     function( oper, par )
 
@@ -599,7 +822,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollOther",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: GroupSeries CollOther",
         true,
         par,
         0,
@@ -620,6 +843,13 @@ end );
 ##
 #F  GroupSeriesMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="GroupSeriesMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollColl",
     function( oper, par )
 
@@ -633,7 +863,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollColl",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: GroupSeries CollColl",
         IsIdenticalObj,
         par,
 	0,
@@ -657,6 +887,13 @@ end );
 ##
 #F  GroupSeriesMethodByNiceMonomorphismCollElm( <oper>, <par> )
 ##
+##  <ManSection>
+##  <Func Name="GroupSeriesMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
     function( oper, par )
 
@@ -669,15 +906,17 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism:GroupSeries CollElm",
         IsCollsElms,
         par,
         0,
         function( obj1, obj2 )
             local   nice,  img,  list,  i;
             nice := NiceMonomorphism(obj1);
-            img  := ImagesRepresentative( nice, obj2 );
-            if img = fail  then
+            img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             list := ShallowCopy( oper( NiceObject(obj1), img ) );
@@ -689,8 +928,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
         end );
 end );
 
-
 #############################################################################
 ##
-#E  grpnice.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

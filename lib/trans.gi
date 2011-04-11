@@ -4,18 +4,23 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for transformations
 ##
 ##  Further Maintanence and development by:
-##  Andrew Solomon
-##  Robert F. Morse
+##  James D. Mitchell
 ##
 
 Revision.trans_gi :=
     "@(#)$Id$";
+
+## Functions altered JDM
+## 1) KernelOfTransformation
+## 2) PermLeftQuoTransformation
+## 3) RandomTransformation is an operation
 
 #############################################################################
 ##  
@@ -61,11 +66,9 @@ InstallGlobalFunction(IdentityTransformation,
         return Transformation([1..n]);
     end);
 
-InstallGlobalFunction(RandomTransformation,
+InstallMethod(RandomTransformation, "<trans>", true,
+        [IsPosInt], 0,
     function(n)
-        if not IsPosInt(n) then
-            Error("error -- <n> must be a positive integer");
-        fi;
         return Transformation(List([1..n], i-> Random([1..n])));
     end);
 
@@ -135,21 +138,30 @@ InstallMethod(RestrictedTransformation, "for transformation", true,
 #A  KernelOfTransformation(<trans>)
 ##  
 ##  Equivalence relation on [1 .. n] 
-##  
-InstallMethod(KernelOfTransformation, "<trans>", true,
-        [IsTransformation and IsTransformationRep], 0,
-    function(trans) 
+##  JDM
 
-        local range;  # n points
-        
-        range := [1..DegreeOfTransformation(trans)];
+InstallMethod(KernelOfTransformation, "to give a kernel of a transformation as a partition of its domain including singletons!!", true, [IsTransformation and IsTransformationRep], 0, 
+function(trans)
 
-        ## Return the equivalence relation induced by the 
-        ##     preimage of each point.
-        ##
-        return EquivalenceRelationByPartitionNC(Domain(range),
-            List(range, i->PreimagesOfTransformation(trans,i)));
-    end);
+local ker, imgs, i;
+
+# initialize.
+ker:= []; imgs:= ImageListOfTransformation(trans);
+   for i in imgs do 
+      ker[i]:= [];
+   od;
+
+   # compute preimages.
+   for i in [1..Length(imgs)] do
+      Add(ker[imgs[i]], i);
+   od;
+
+   # return kernel.
+   return Set(ker);
+
+end);
+
+
 
 #############################################################################
 ##  
@@ -159,28 +171,27 @@ InstallMethod(KernelOfTransformation, "<trans>", true,
 ##  we compute the permutation induced by <tr1>^-1*<tr2> on the set of 
 ##  images of <tr1>. If the kernels and images are not equal, an error 
 ##  is signaled.
-##
+##  JDM
+
 InstallMethod(PermLeftQuoTransformation, "for two transformations", true,
         [IsTransformation, IsTransformation], 0,
-    function(t1,t2)
-        local i,     # index variable 
-              pl,    # permutation list 
-              pr,    # product <tr1>^-1*<tr2>
-              tmp;   # temporary variable
+function(t1,t2)
+local pl, i, deg;
 
-        if KernelOfTransformation(t1)<>KernelOfTransformation(t2) and 
-           ImageSetOfTransformation(t1)<>ImageSetOfTransformation(t2) then
-            Error("error, transformations must have the same kernel and image set");
-        fi;
 
-        pl := [1..DegreeOfTransformation(t1)];
-        pr := t1^-1*t2;
-        for i in ImageSetOfTransformation(t1) do
-           tmp := i^pr; 
-           pl[i]:= tmp[1];
-        od;
-        return PermList(pl);
-    end);
+if KernelOfTransformation(t1)<>KernelOfTransformation(t2) and 
+  ImageSetOfTransformation(t1)<>ImageSetOfTransformation(t2) then
+  Error("error, transformations must have the same kernel and image set");
+fi;
+deg:=DegreeOfTransformation(t1);
+
+pl:=[1..deg];
+
+for i in [1..deg] do 
+  pl[i^t1]:=i^t2;
+od;
+  return PermList(pl);
+end);
 
 #############################################################################
 ##  
@@ -261,9 +272,13 @@ InstallMethod(DegreeOfTransformation, "for a transformation", true,
 ##
 #M  AsTransformation( <perm> )
 #M  AsTransformation( <rel> )     -- relation on n points
+#M  AsTransformation( <trans> )
 ##
 #M  AsTransformation( <perm>, <n> )
 #M  AsTransformationNC( <perm>, <n> )
+##
+#M  AsTransformation( <trans>, <n> )
+#M  AsTransformationNC( <trans>, <n> )
 ##
 ##  returns the <perm> as a transformation.   In the second form, it
 ##  returns <perm> as a transformation of degree <n>, signalling an error
@@ -277,7 +292,7 @@ InstallMethod(AsTransformation, "for a permutation", true,
 InstallOtherMethod(AsTransformation, "for a permutation and degree", true,
         [IsPerm, IsPosInt], 0,
     function(perm, n)
-        if perm = () then
+        if IsOne( perm ) then
             return TransformationNC([1..n]);
         fi;
         if n < LargestMovedPoint(perm) then
@@ -294,12 +309,92 @@ InstallOtherMethod(AsTransformationNC, "for a permutation and degree", true,
 
 InstallOtherMethod(AsTransformation, "for binary relations on points", true,
         [IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
-    function(rel)
-        if not IsMapping(rel) then
+function(rel)
+    if not IsMapping(rel) then
              Error("error, <rel> must be a mapping"); 
+    fi;
+    return Transformation(Flat(Successors(rel)));
+end);
+
+InstallOtherMethod(AsTransformation, "for a transformation",
+       [IsTransformation], t->t); 
+
+InstallOtherMethod(AsTransformation, "for a transformation and degree", true,
+        [IsTransformation, IsPosInt], 0,
+function(t, n)
+    local d;
+    if IsOne( t ) then
+        return TransformationNC([1..n]);
+    fi;
+    d := DegreeOfTransformation(t);
+    if d=n then
+        return t;
+    elif d<n then
+        return TransformationNC(Concatenation(ImageListOfTransformation(t),
+                       [d+1..n]));
+    else
+        if ForAny([n+1..d],i->i^t<>i) then
+            Error("Transformation moves points over the degree specified");
         fi;
-        return Transformation(Flat(Successors(rel)));
-    end);
+        return TransformationNC(ImageListOfTransformation(t){[1..n]});
+    fi;
+end);
+
+InstallOtherMethod(AsTransformationNC, "for a transformation and degree", true,
+        [IsTransformation, IsPosInt], 0,
+function(t, n)
+    local d;
+    d := DegreeOfTransformation(t);
+    if d=n then
+        return t;
+    elif d<n then
+        return TransformationNC(Concatenation(ImageListOfTransformation(t),
+                       [d+1..n]));
+    else
+        return TransformationNC(ImageListOfTransformation(t){[1..n]});
+    fi;
+end);
+
+############################################################################
+###
+#M  AsPermutation(<trans>)
+#M  AsPermutation(<perm>)
+##   
+##  If trans is a permutation, then allow it to be converted into one.
+##  return fail if the transformation is not a permutation.
+##
+InstallMethod(AsPermutation, "for a transformation", [IsTransformation],
+       t->PermList(ImageListOfTransformation(t))); 
+
+InstallMethod(AsPermutation, "for a permutation", [IsPerm],
+       p->p);
+
+InstallMethod(AsPermutation, "for binary relations on points", true,
+        [IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
+function(rel)
+    if not IsMapping(rel) then
+             Error("error, <rel> must be a mapping");
+    fi;
+    return AsPermutation(Transformation(Flat(Successors(rel))));
+end);
+
+###########################################################################
+##
+#M  Permuted(<list>,<trans>)
+##
+##  If the transformtation is a permutation then permute the 
+##  list as indicated otherwise return fail
+##
+##  
+InstallOtherMethod(Permuted, "for a list and a transformation",
+       [IsList, IsTransformation],
+function(l,t)
+    if AsPermutation(t) = fail then 
+        return fail;
+    else
+        return Permuted(l,AsPermutation(t));
+    fi;
+end); 
 
 ############################################################################
 ##
@@ -321,6 +416,20 @@ function(rel)
     return Transformation(List(ims, x->x[1]));
 end);
 
+############################################################################
+## 
+#M  Return the largest moved point of a transformation. 
+##  If the transformation is the identity (no moved points) return 0.
+##
+InstallOtherMethod(LargestMovedPoint, "for a transformation",
+       [IsTransformation],
+       function(t)
+   if t=One(t) then
+       return 0;
+   fi;
+   return Maximum(Filtered([1..DegreeOfTransformation(t)], i->not i^t= i));
+end); 
+
 #############################################################################
 ##
 #M  BinaryRelationTransformation( <trans> )
@@ -339,6 +448,7 @@ InstallMethod( BinaryRelationTransformation, "for a transformation", true,
 ##  or in functional notation, (a*b)(i) = b(a(i)), which is to say
 ##  that transformations act on the set [1 .. n] on the right.
 ## 
+## JDM changed this too.
 
 InstallMethod(\*, "trans * trans", IsIdenticalObj,
         [IsTransformation and IsTransformationRep, 
@@ -347,7 +457,8 @@ InstallMethod(\*, "trans * trans", IsIdenticalObj,
         local a,b;
 
         a:= x![1]; b := y![1];
-        return TransformationNC(List([1 .. Length(a)], i -> b[a[i]]));
+        #return TransformationNC(List([1 .. Length(a)], i -> b[a[i]]));
+        return TransformationNC(b{a});
     end);
 
 ############################################################################
@@ -359,6 +470,18 @@ InstallMethod(\*, "trans * perm", true,
 function(t, p)
 	return t * AsTransformation(p, DegreeOfTransformation(t));
 end);
+
+############################################################################
+##
+#M  <trans>^perm
+##
+##  Makes sense in that permutations have inverses and are transformations
+##
+InstallOtherMethod(\^, "for a transformation and a permutation",
+       [IsTransformation, IsPerm],
+       function(t,p)
+   return p^-1*t*p;
+end); 
 
 ############################################################################
 ##
@@ -405,6 +528,14 @@ InstallMethod(\<, "<trans> < <trans>", IsIdenticalObj,
         return x![1] < y![1];
     end);
 
+InstallMethod(\<, "for a transformation and a permutation",
+        [IsTransformation, IsPerm],
+        ReturnFalse);
+
+InstallMethod(\<, "for a permutation and a transformation",
+        [IsPerm, IsTransformation],
+        ReturnTrue);
+
 ############################################################################
 ##
 #M  One(<trans>)
@@ -432,7 +563,8 @@ InstallMethod(\=, "for two transformations of the same set", IsIdenticalObj,
     function(x, y) 
         return  x![1] = y![1];
     end);
-
+    
+    
 ############################################################################
 ##
 #M  <i> ^ <trans>

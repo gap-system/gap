@@ -2,10 +2,9 @@
 ##
 #W  pcgsspec.gi                 GAP library                      Bettina Eick
 ##
-#H  @(#)$Id$
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.pcgsspec_gi :=
     "@(#)$Id$";
@@ -155,6 +154,7 @@ PcgsSystemWithWf := function( pcgs, wf )
         newpcgs := pcgs;
     else
         newpcgs := PcgsByPcSequenceNC( FamilyObj(OneOfPcgs(pcgs)), list );
+        SetRelativeOrders(newpcgs, List(weights, x -> x[3]));
         SetOneOfPcgs( newpcgs, OneOfPcgs(pcgs) );
     fi;
 
@@ -605,14 +605,22 @@ function( pcgs )
 
 	w:=pcgssys.weights;
 	if w[Length(w)][1]=1 then
-	  SetIsPcgsCentralSeries(newpcgs,true);
+	  SetIndicesCentralNormalSteps( newpcgs, pcgssys.first );
+	  if Length(Set(RelativeOrders(newpcgs)))=1 then
+	    SetIndicesPCentralNormalStepsPGroup( newpcgs, pcgssys.first );
+	  fi;
 	fi;
 
         SetLGWeights( newpcgs, pcgssys.weights );
         SetLGLayers( newpcgs, pcgssys.layers );
         SetLGFirst( newpcgs, pcgssys.first );
+        SetIndicesEANormalSteps( newpcgs, pcgssys.first );
+        SetIndicesChiefNormalSteps( newpcgs, pcgssys.first );
         SetIsFiniteOrdersPcgs( newpcgs, true );
         SetIsPrimeOrdersPcgs( newpcgs, true );
+    fi;
+    if HasGroupOfPcgs (pcgs) then
+	SetGroupOfPcgs (newpcgs, GroupOfPcgs (pcgs));
     fi;
     return newpcgs;
 end );
@@ -678,6 +686,7 @@ function( group )
         spec := SpecialPcgs( Pcgs( group ) );
         SetPcgs( group, spec );
     fi;
+    SetGroupOfPcgs (spec, group);
     return spec;
 end );
 
@@ -704,7 +713,7 @@ end);
 InstallMethod( IsomorphismSpecialPcGroup, "method for pc groups",
     true, [ IsPcGroup ], 0,
 function(G)
-local s,H,iso,pc;
+local s,H,iso,pc,w;
   s:=SpecialPcgs(G);
   H:=PcGroupWithPcgs(s);
   pc:=FamilyPcgs(H);
@@ -712,12 +721,25 @@ local s,H,iso,pc;
   SetLGLayers(pc,LGLayers(s));
   SetLGFirst(pc,LGFirst(s));
   SetIsSpecialPcgs(pc,true);
+  if Length(LGWeights(pc)) = 0 or LGWeights(pc)[Length(LGWeights(pc))][1]=1 then
+	SetIsPcgsCentralSeries(pc,true);
+  fi;
+  SetIndicesEANormalSteps( pc, LGFirst(pc) );
+  SetIndicesChiefNormalSteps( pc, LGFirst(pc) );
+  w:=LGWeights(pc);
+  if Length(w) > 0 and w[Length(w)][1]=1 then
+    SetIndicesCentralNormalSteps( pc, LGFirst(pc));
+    if Length(Set(RelativeOrders(pc)))=1 then
+      SetIndicesPCentralNormalStepsPGroup( pc, LGFirst(pc) );
+    fi;
+  fi;
+
 
   iso:=GroupHomomorphismByImagesNC(G,H,s,pc);
   SetIsBijective( iso, true );
   SetSpecialPcgs(H,pc);
   SetPcgs(H,pc);
-  # note: `ImagesSource' might bei
+  # note: `ImagesSource' might be
   # physically a different group than the `Range' H.
   SetSpecialPcgs(ImagesSource(iso),pc);
   SetPcgs(ImagesSource(iso),pc);
@@ -739,31 +761,38 @@ end);
 InstallOtherMethod( InducedPcgsWrtSpecialPcgs, "method for pc groups",
     true, [ IsPcGroup ], 0,
 function( U )
-local spec;
+local spec, ind;
     spec := SpecialPcgs( FamilyPcgs( U ) );
     if HasPcgs(U) and spec=HomePcgs(U) then
       return InducedPcgsWrtHomePcgs(U);
     fi;
-    return InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+    ind := InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+    SetGroupOfPcgs (ind, U);
+    return ind;
 end );
 
 InstallOtherMethod( InducedPcgsWrtSpecialPcgs, "generic method for groups",
     true, [ IsGroup ], 0,
 function( U )
-local spec;
+local spec, ind;
   spec := SpecialPcgs( Parent( U ) );
-  return InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+  ind := InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+  SetGroupOfPcgs (ind, U);
+  return ind;
 end );
 
 IndPcgsWrtSpecFromFamOrHome:=function( U )
-local spec;
+local spec, ind;
   spec := SpecialPcgs( FamilyPcgs( U ) );
   if spec=HomePcgs(U) then
     return InducedPcgsWrtHomePcgs(U);
   elif IsSortedPcgsRep(spec) and spec!.sortingPcgs=HomePcgs(U) then
-    return InducedPcgsByPcSequenceNC(spec,AsList(InducedPcgsWrtHomePcgs(U)));
+    ind := InducedPcgsByPcSequenceNC(spec,AsList(InducedPcgsWrtHomePcgs(U)));
+  else
+     ind := InducedPcgsByGeneratorsNC( spec, InducedPcgsWrtHomePcgs(U) );
   fi;
-  return InducedPcgsByGeneratorsNC( spec, InducedPcgsWrtHomePcgs(U) );
+  SetGroupOfPcgs (ind, U);
+  return ind;
 end;
 
 InstallOtherMethod( InducedPcgsWrtSpecialPcgs,
@@ -918,9 +947,9 @@ end;
 
 #############################################################################
 ##
-#M  IndicesNormalSteps( <pcgs> )
+#M  IndicesEANormalSteps( <pcgs> )
 ##
-InstallMethod( IndicesNormalSteps, "special pcgs: LGFirst", true,
+InstallMethod( IndicesEANormalSteps, "special pcgs: LGFirst", true,
         [ IsSpecialPcgs ], 0, LGFirst );
 
 DoCentralSeriesPcgsIfNilpot:=function(G)
@@ -940,6 +969,13 @@ InstallOtherMethod( PcgsCentralSeries, "for pc groups use SpecialPcgs",
 
 InstallOtherMethod( PcgsPCentralSeriesPGroup, "for pc groups use SpecialPcgs",
   true,[IsPcGroup],0,DoCentralSeriesPcgsIfNilpot);
+
+InstallOtherMethod( PcgsCentralSeries, "for pcgs computable use SpecialPcgs",
+  true,[CanEasilyComputePcgs],0,DoCentralSeriesPcgsIfNilpot);
+
+InstallOtherMethod( PcgsPCentralSeriesPGroup,
+  "for pcgs computable use SpecialPcgs",
+  true,[CanEasilyComputePcgs],0,DoCentralSeriesPcgsIfNilpot);
 
 PcgsElAbSerFromSpecPcgs:=function(G)
 local s;

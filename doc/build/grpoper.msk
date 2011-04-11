@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Group Actions}
 
@@ -108,6 +109,9 @@ element of <Omega> which is to be acted on.
 group.  For built-in operations such as `Stabilizer' special methods are
 available for many of these actions.
 
+This section also shows how to implement different actions. (Note that every
+action must be from the right.)
+
 \Declaration{OnPoints}
 \Declaration{OnRight}
 \Declaration{OnLeftInverse}
@@ -183,13 +187,39 @@ conforms to the syntax
 \)actfun(<omega>,<g>)
 
 For example one could define the following function that acts on pairs of
-polynomials via `OnIntereminates':
+polynomials via `OnIndeterminates':
 \begintt
 OnIndeterminatesPairs:=function(polypair,g)
   return [OnIndeterminates(polypair[1],g),
           OnIndeterminates(polypair[2],g)];
 end;
 \endtt
+
+Note that this function *must* implement an action from the *right*. This is
+not verified by {\GAP} and results are unpredicatble otherwise.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Action on canonical representatives}
+
+A variety of action functions assumes that the objects on which it acts are
+given in a particular form, for example canonical representatives.
+Affected actions are for example `OnSetsSets', `OnSetsDisjointSets',
+`OnSetsTuples', `OnTuplesSets', `OnLines' and `OnSubspacesByCanonicalBasis'.
+
+If orbit seeds or domain elements are not given in the required form {\GAP}
+will issue an error message:
+\begintt
+gap> Orbit(SymmetricGroup(5),[[2,4],[1,3]],OnSetsSets);
+Error, Action not well-defined. See the manual section
+``Action on canonical representatives''.
+\endtt
+In this case the affected domain elements have to be brought in canonical
+form, as documented for the respective action function.
+For interactive use this is most easily done by acting with the identity
+element of the group.
+
+(A similar error could arise if a user-defined action function is used which
+actually does not implement an action from the right.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Orbits}
@@ -578,8 +608,7 @@ Group([ (1,2,3), (2,3,4) ])
 gap> FunctionAction(e)=OnRight;
 true
 gap> HomeEnumerator(e);
-[ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,3,4), (1,2,4), (1,3,2), (1,4,3), 
-  (2,4,3), (1,2,3), (1,3,4), (1,4,2) ]
+<enumerator of perm group>
 \endexample
 
 Most operations for actions are applicable as an attribute for an external
@@ -639,49 +668,23 @@ gap> FunctionAction(e)((1,2)(3,4),last);
 External sets also are implicitly underlying action homomorphisms:
 
 \Declaration{UnderlyingExternalSet}
-\begintt
+\beginexample
 gap> g:=Group((1,2,3),(1,2));;
 gap> hom:=ActionHomomorphism(g,Arrangements([1..4],3),OnTuples);;
-gap> UnderlyingExternalSet(hom);
-[ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 3, 4 ], [ 1, 4, 2 ],
-  [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 1, 4 ], [ 2, 3, 1 ], [ 2, 3, 4 ],
-  [ 2, 4, 1 ], [ 2, 4, 3 ], [ 3, 1, 2 ], [ 3, 1, 4 ], [ 3, 2, 1 ],
-  [ 3, 2, 4 ], [ 3, 4, 1 ], [ 3, 4, 2 ], [ 4, 1, 2 ], [ 4, 1, 3 ],
+gap> s:=UnderlyingExternalSet(hom);
+<xset:[[ 1, 2, 3 ],[ 1, 2, 4 ],[ 1, 3, 2 ],[ 1, 3, 4 ],[ 1, 4, 2 ],
+[ 1, 4, 3 ],[ 2, 1, 3 ],[ 2, 1, 4 ],[ 2, 3, 1 ],[ 2, 3, 4 ],[ 2, 4, 1 ],
+[ 2, 4, 3 ],[ 3, 1, 2 ],[ 3, 1, 4 ],[ 3, 2, 1 ], ...]>
+gap> Print(s,"\n");
+[ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 3, 4 ], [ 1, 4, 2 ], 
+  [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 1, 4 ], [ 2, 3, 1 ], [ 2, 3, 4 ], 
+  [ 2, 4, 1 ], [ 2, 4, 3 ], [ 3, 1, 2 ], [ 3, 1, 4 ], [ 3, 2, 1 ], 
+  [ 3, 2, 4 ], [ 3, 4, 1 ], [ 3, 4, 2 ], [ 4, 1, 2 ], [ 4, 1, 3 ], 
   [ 4, 2, 1 ], [ 4, 2, 3 ], [ 4, 3, 1 ], [ 4, 3, 2 ] ]
-\endtt
+\endexample
 
 \Declaration{SurjectiveActionHomomorphismAttr}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Legacy Operations}
-
-\index{group operations}
-The concept of a group action is sometimes referred to as a ``group
-operation''.
-In {\GAP}~3 as well as in older versions of {\GAP}~4 the term `Operation' was
-used instead of `Action'. We decided to change the names to avoid confusion
-with the term ``operation'' as in `DeclareOperation' and ``Operations for Xyz''.
-
-The old names still exist as synonyms, however we do not guarantee that they
-will remain indefinitely in the system and strongly discourage their further
-use. They are listed here mainly as a help to users who are still accustomed
-to the old names:
-
-\>RepresentativeOperation(<args>) *obsolete*
-
-Obsolete synonym, see~"RepresentativeAction".
-
-\>Operation(<args>) *obsolete*
-
-Obsolete synonym, see~"Action".
-
-\>OperationHomomorphism(<args>) *obsolete*
-
-Obsolete synonym, see~"ActionHomomorphism".
-
-\>FunctionOperation(<args>) *obsolete*
-
-Obsolete synonym, see~"FunctionAction".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

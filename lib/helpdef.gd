@@ -1,11 +1,12 @@
 #############################################################################
 ##  
-#W  helpdef.gd                  GAP Library       Frank Celler / Frank L�beck
+#W  helpdef.gd                  GAP Library       Frank Celler / Frank Lübeck
 ##  
 #H  @(#)$Id$
 ##  
-#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  helpdef.g{d,i}  contain  the  `default'  help  book  handler
 ##  functions, which implement access of GAP's online help to help documents

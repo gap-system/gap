@@ -6,18 +6,31 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Matrices}
 
 Matrices are represented in {\GAP} by lists of row vectors (see "Row Vectors").
 The vectors must all have the same length, and their elements must lie in
-a common ring.
+a common ring. However, since checking rectangularness can be expensive
+functions and methods of operations for matrices often will not give an error
+message for non-rectangular lists of lists -- in such cases the result is
+undefined.
 
 Because matrices are just a special case of lists, all operations and
 functions for lists are applicable to matrices also (see chapter
 "Lists"). This especially includes accessing elements of a matrix (see
 "List Elements"), changing elements of a matrix (see "List Assignment"),
 and comparing matrices (see "Comparisons of Lists").
+
+Note that, since a matrix is a list of lists, the behaviour of `ShallowCopy'
+for matrices is just a special case of `ShallowCopy' for lists
+(see~"Duplication of Lists");
+called with an immutable matrix <mat>, `ShallowCopy' returns a mutable matrix
+whose rows are identical to the rows of <mat>.
+In particular the rows are still immutable.
+To get a matrix whose rows are mutable,
+one can use `List( <mat>, ShallowCopy )'.
 
 \Declaration{InfoMatrix}
 
@@ -123,8 +136,8 @@ or the product of a finite field element and an integer matrix.
 
 returns the product of the row vector <vec> and the matrix <mat>.
 Probably the most usual situation is that <vec> and <mat> have the same
-lengths and are defined over a common field, and that all rows have the
-same length $m$, say;
+lengths and are defined over a common field,
+and that all rows of <mat> have the same length $m$, say;
 in this case the product is a new row vector of length $m$ over the same
 field which is the sum of the scalar multiples of the rows of <mat> with the
 corresponding entries of <vec>.
@@ -361,12 +374,12 @@ gap> KroneckerProduct([[1,2]],[[5,7],[9,2]]);
 \Declaration{RandomMat}
 \Declaration{RandomInvertibleMat}
 \Declaration{RandomUnimodularMat}
-\begintt
+\beginexample
 gap> RandomMat(2,3,GF(3));
-[ [ Z(3)^0, Z(3), Z(3)^0 ], [ Z(3), Z(3)^0, Z(3)^0 ] ]
+[ [ 0*Z(3), Z(3), Z(3)^0 ], [ Z(3), 0*Z(3), Z(3)^0 ] ]
 gap> RandomInvertibleMat(4);
-[ [ -1, 0, 1, -1 ], [ 2, 1, 3, 0 ], [ 1, 4, 0, 2 ], [ -3, 2, 1, 0 ] ]
-\endtt
+[ [ 5, 1, 0, -2 ], [ 4, 3, 5, 3 ], [ 1, -2, 1, -1 ], [ -2, 4, -1, -3 ] ]
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Matrices Representing Linear Equations and the Gaussian Algorithm}
@@ -427,11 +440,26 @@ gap> BaseFixedSpace([[[1,2],[0,1]]]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Elementary Divisors}
 
+See also chapter "Integral Matrices and Lattices".
+
 \Declaration{ElementaryDivisorsMat}
 \beginexample
 gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 gap> ElementaryDivisorsMat(mat);
 [ 1, 3, 0 ]
+gap> x:=X(Rationals,"x");;
+gap> mat:=mat*One(x)-x*mat^0;       
+[ [ -x+1, 2, 3 ], [ 4, -x+5, 6 ], [ 7, 8, -x+9 ] ]
+gap> ElementaryDivisorsMat(PolynomialRing(Rationals,1),mat);
+[ 1, 1, x^3-15*x^2-18*x ]
+gap> mat:=KroneckerProduct(CompanionMat((x-1)^2),CompanionMat((x^3-1)*(x-1)));;
+gap> mat:=mat*One(x)-x*mat^0;                                                 
+[ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ], 
+  [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ], 
+  [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ], 
+  [ 0, 1, 0, 0, 0, 2, -x, 0 ], [ 0, 0, 1, 1, 0, 0, 2, -x+2 ] ]
+gap> ElementaryDivisorsMat(PolynomialRing(Rationals,1),mat);
+[ 1, 1, 1, 1, 1, 1, x-1, x^7-x^6-2*x^4+2*x^3+x-1 ]
 \endexample
 \Declaration{DiagonalizeMat}
 \beginexample
@@ -439,8 +467,6 @@ gap> m:=[[1,2],[2,1]];;
 gap> DiagonalizeMat(Integers,m);m;
 [ [ 1, 0 ], [ 0, 3 ] ]
 \endexample
-
-See also chapter "Integral Matrices and Lattices"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Echelonized Matrices}
@@ -470,6 +496,7 @@ rec( heads := [ 1, 0, 2 ], vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ],
 \Declaration{BaseMat}
 \Declaration{BaseMatDestructive}
 \beginexample
+gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 gap> BaseMat(mat);
 [ [ 1, 2, 3 ], [ 0, 1, 2 ] ]
 gap> mm:= [[1,2,3],[4,5,6],[5,7,9]];;
@@ -524,17 +551,17 @@ gap> DepthOfUpperTriangularMatrix([[0,0,2],[0,0,0],[0,0,0]]);
 \Declaration{CharacteristicPolynomial}
 \beginexample
 gap> CharacteristicPolynomial( [ [ 1, 1 ], [ 0, 1 ] ] );
-1-2*x_1+x_1^2
+x^2-2*x+1
 gap> mat := [[0,1],[E(4)-1,E(4)]];;
 gap> CharacteristicPolynomial( mat );
-1-E(4)+-E(4)*x_1+x_1^2
-gap> CharacteristicPolynomial( Rationals, mat );
-2+2*x_1+3*x_1^2+x_1^4
+x^2+-E(4)*x+1-E(4)
+gap> CharacteristicPolynomial( Rationals, CF(4), mat );
+x^4+3*x^2+2*x+2
 gap> mat:= [ [ E(4), 1 ], [ 0, -E(4) ] ];;
 gap> CharacteristicPolynomial( mat );
-1+x_1^2
-gap> CharacteristicPolynomial( Rationals, mat );
-1+2*x_1^2+x_1^4
+x^2+1
+gap> CharacteristicPolynomial( Rationals, CF(4), mat );
+x^4+2*x^2+1
 \endexample
 
 \Declaration{JordanDecomposition}
@@ -602,7 +629,7 @@ gap> m := [v,v,v,v];; ConvertToMatrixRep(m,GF(3));; m;
 
 All compressed matrices over GF(2) are viewed as `\<a <n>x<m> matrix
 over GF2>', while over fields GF(q) for q between 3 and 256, matrices
-with 25 or more entries are views in this way, and smaller ones as
+with 25 or more entries are viewed in this way, and smaller ones as
 lists of lists.
 
 Matrices can be converted to this special representation via
@@ -671,10 +698,12 @@ gap> ProjectiveOrder([[1,4],[5,2]]*Z(11)^0);
 \Declaration{SimultaneousEigenvalues}
 
 
+
 Finally, there are two operations that deal with matrices over a ring,
-but only care about the residues of their entries modulo some ring
-element. In the case of the integers and a prime number, this is
-effectively computation in a matrix over a finite field.
+but only care about the residues of their entries modulo some ring element.
+In the case of the integers and a prime number $p$, say,
+this is effectively computation in a matrix over the prime field
+in characteristic $p$.
 
 \Declaration{InverseMatMod}
 \beginexample
@@ -690,6 +719,39 @@ gap> mat:= [ [ 1, 3 ], [ 1, 2 ], [ 1, 1 ] ];;  NullspaceModQ( mat, 5 );
 [ [ 0, 0, 0 ], [ 1, 3, 1 ], [ 2, 1, 2 ], [ 4, 2, 4 ], [ 3, 4, 3 ] ]
 \endexample
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special Multiplication Algorithms for Matrices over GF(2)}
+
+When multiplying two compressed matrices $M$ and $N$ over GF(2) of dimensions
+$a\times b$ and $b\times c$, say, where $a$, $b$ and $c$ are all
+greater than or equal to 128, \GAP\ by default uses a more
+sophisticated matrix multiplication algorithm, in which linear
+combinations of groups of 8 rows of $M$ are remembered and re-used in
+constructing various rows of the product. This is called level 8
+grease. To optimise memory access patterns, these combinations are
+stored for $(b+255)/256$ sets of 8 rows at once. This number is called
+the blocking level.
+
+These levels of grease and blocking are found experimentally to give
+good performance across a range of processors and matrix sizes, but
+other levels may do even better in some cases. You can control the
+levels exactly using the functions below:
+
+\>PROD_GF2MAT_GF2MAT_SIMPLE( <m1>, <m2> ) F
+
+This function performs the standard unblocked and ungreased matrix
+multiplication for matrices of any size.
+
+\>PROD_GF2MAT_GF2MAT_ADVANCED( <m1>, <m2>, <g>, <b> ) F
+
+This function computes the product of <m1> and <m2>, which must be
+compressed matrices over GF(2) of compatible dimensions, using level <g>
+grease and level <b> blocking.
+
+We plan to include greased blocked matrix multiplication for other
+finite fields, and greased blocked algorithms for inversion and other
+matrix operations in a future release.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Block Matrices}
@@ -698,10 +760,20 @@ gap> mat:= [ [ 1, 3 ], [ 1, 2 ], [ 1, 1 ] ];;  NullspaceModQ( mat, 5 );
 
 \Declaration{AsBlockMatrix}
 \Declaration{BlockMatrix}
+\beginexample
+gap> M := BlockMatrix([[1,1,[[1, 2],[ 3, 4]]],
+>                      [1,2,[[9,10],[11,12]]],
+>                      [2,2,[[5, 6],[ 7, 8]]]],2,2);
+<block matrix of dimensions (2*2)x(2*2)>
+gap> Display(M);
+[ [   1,   2,   9,  10 ],
+  [   3,   4,  11,  12 ],
+  [   0,   0,   5,   6 ],
+  [   0,   0,   7,   8 ] ]
+\endexample
 
 \Declaration{MatrixByBlockMatrix}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E
-

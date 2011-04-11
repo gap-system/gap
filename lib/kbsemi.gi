@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  kbsemi.gi           GAP library         Isabel Araujo and Andrew Solomon
+#W  kbsemi.gi           GAP library         Isabel Araújo and Andrew Solomon
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains code for the Knuth-Bendix rewriting system for semigroups
 ##  and monoids.
@@ -385,7 +386,7 @@ local u,v,m,k,a,c,lsu,lsv,lu,eq,i,j;
 
       #we change rws, if necessary, so a=c is verified
       if a <> c then
-	# `AddRuleReduced' might affect the pairs. So firsth throw away the
+	# `AddRuleReduced' might affect the pairs. So first throw away the
 	# `old' pairs
 	kbrws!.pairs2check:=
 	  kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]};
@@ -457,12 +458,12 @@ function(kbrws)
   # if the semigroup of the kbrws does not have a 
   # ReducedConfluentRws build one from kbrws and then store it in 
   # the semigroup
- # if not HasReducedConfluentRewritingSystem(
- #           SemigroupOfRewritingSystem(kbrws)) then
-#   rws := ReducedConfluentRewritingSystemFromKbrwsNC(kbrws);
-#   SetReducedConfluentRewritingSystem(SemigroupOfRewritingSystem(kbrws),
-#         rws);
-#  fi;
+  if not HasReducedConfluentRewritingSystem(
+           SemigroupOfRewritingSystem(kbrws)) then
+   rws := ReducedConfluentRwsFromKbrwsNC(kbrws);
+   SetReducedConfluentRewritingSystem(SemigroupOfRewritingSystem(kbrws),
+         rws);
+  fi;
 
 end);
 
@@ -478,12 +479,12 @@ function(kbrws)
   # if the monoid of the kbrws does not have a 
   # ReducedConfluentRws build one from kbrws and then store it in 
   # the monoid 
-#  if not HasReducedConfluentRewritingSystem(
-#            MonoidOfRewritingSystem(kbrws)) then
-#   rws := ReducedConfluentRewritingSystemFromKbrwsNC(kbrws);
-#   SetReducedConfluentRewritingSystem(SemigroupOfRewritingSystem(kbrws),
-#         rws);
-#  fi;
+  if not HasReducedConfluentRewritingSystem(
+            MonoidOfRewritingSystem(kbrws)) then
+   rws := ReducedConfluentRwsFromKbrwsNC(kbrws);
+   SetReducedConfluentRewritingSystem(MonoidOfRewritingSystem(kbrws),
+         rws);
+  fi;
 
 end);
 

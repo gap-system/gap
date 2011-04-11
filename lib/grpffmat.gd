@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for matrix groups over finite fields.
 ##
@@ -16,6 +17,13 @@ Revision.grpffmat_gd :=
 #############################################################################
 ##
 #C  IsFFEMatrixGroup
+##
+##  <ManSection>
+##  <Filt Name="IsFFEMatrixGroup" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonym( "IsFFEMatrixGroup", IsFFECollCollColl and IsMatrixGroup );
 
@@ -35,6 +43,13 @@ InstallTrueMethod( IsFinite,
 ##
 #F  NicomorphismOfFFEMatrixGroup
 ##
+##  <ManSection>
+##  <Func Name="NicomorphismOfFFEMatrixGroup" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction( "NicomorphismOfFFEMatrixGroup" );
 
 
@@ -42,19 +57,35 @@ DeclareGlobalFunction( "NicomorphismOfFFEMatrixGroup" );
 ##
 #F  ProjectiveActionOnFullSpace( <G>, <F>, <n> )
 ##
-##  Let <G> be a group of <n> by <n> matrices over a field contained in the
-##  finite field <F>.
-#T why is <n> an argument?
-#T (it should be read off from the group!)
-##  `ProjectiveActionOnFullSpace' returns the image of the projective action
-##  of <G> on the full row space $<F>^<n>$.
+##  <#GAPDoc Label="ProjectiveActionOnFullSpace">
+##  <ManSection>
+##  <Func Name="ProjectiveActionOnFullSpace" Arg='G, F, n'/>
+##
+##  <Description>
+##  Let <A>G</A> be a group of <A>n</A> by <A>n</A> matrices over a field
+##  contained in the finite field <A>F</A>.
+##  <!-- why is <A>n</A> an argument?-->
+##  <!-- (it should be read off from the group!)-->
+##  <Ref Func="ProjectiveActionOnFullSpace"/> returns the image of the
+##  projective action of <A>G</A> on the full row space
+##  <M><A>F</A>^{<A>n</A>}</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ProjectiveActionOnFullSpace" );
 
 
 #############################################################################
 ##
-#F  ConjugacyClassesOfNaturalGroup 
+#F  ConjugacyClassesOfNaturalGroup
+##
+##  <ManSection>
+##  <Func Name="ConjugacyClassesOfNaturalGroup" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "ConjugacyClassesOfNaturalGroup" );
 
@@ -63,8 +94,14 @@ DeclareGlobalFunction( "ConjugacyClassesOfNaturalGroup" );
 ##
 #F  Phi2( <n> ) . . . . . . . . . . . .  Modification of Euler's Phi function
 ##
+##  <ManSection>
+##  <Func Name="Phi2" Arg='n'/>
+##
+##  <Description>
 ##  This is needed for the computation of the class numbers of SL(n,q),
 ##  PSL(n,q), SU(n,q) and PSU(n,q)
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction("Phi2");
 
@@ -81,29 +118,60 @@ DeclareGlobalFunction("Phi2");
 #F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> ) . . for SL(n,q) isogeneous
 #F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> ) . . for SU(n,q) isogeneous
 ##
-##  The first of  these functions compute for given $<n>  \in N$ and prime
-##  power $<q>$  the number of  conjugacy classes in the  classical groups
-##  $GL( <n>, <q>  )$, $GU( <n>, <q>  )$, $SL( <n>, <q> )$,  $SU( <n>, <q>
-##  )$, $PGL(  <n>, <q> )$,  $PGU( <n>, <q> )$,  $PSL( <n>, <q>  )$, $PSL(
-##  <n>, <q> )$, respectively. (See also "ConjugacyClasses!attribute"  and
-##  Section~"Classical Groups".)
-##  
-##  For  each  divisor  $<f>$ of  $<n>$  there  is  a  group of  Lie  type
-##  with  the same  order  as $SL(  <n>,  <q> )$,  such  that its  derived
-##  subgroup  modulo  its center  is  isomorphic  to  $PSL( <n>,  <q>  )$.
-##  The  various  such  groups  with  fixed $<n>$  and  $<q>$  are  called
-##  *isogeneous*. (Depending  on congruence conditions on  $<q>$ and $<n>$
-##  several of  these groups  may actually  be isomorphic.)  The  function
-##  `NrConjugacyClassesSLIsogeneous'  computes  the  number  of  conjugacy
-##  classes in this group. The extreme cases  $<f> = 1$ and $<f> = n$ lead
-##  to the groups $SL( <n>, <q> )$ and $PGL( <n>, <q> )$, respectively.
-## 
-##  The function `NrConjugacyClassesSUIsogeneous' is the analogous one for
-##  the corresponding unitary groups.
-##  
-##  The  formulae   for  the  number   of  conjugacy  classes   are  taken
-##  from~\cite{Mac81}.
-##  
+##  <#GAPDoc Label="NrConjugacyClassesGL">
+##  <ManSection>
+##  <Func Name="NrConjugacyClassesGL" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesGU" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesSL" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesSU" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesPGL" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesPGU" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesPSL" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesPSU" Arg='n, q'/>
+##  <Func Name="NrConjugacyClassesSLIsogeneous" Arg='n, q, f'/>
+##  <Func Name="NrConjugacyClassesSUIsogeneous" Arg='n, q, f'/>
+##
+##  <Description>
+##  The first of these functions compute for given positive integer <A>n</A>
+##  and prime power <A>q</A> the number of conjugacy classes in the classical
+##  groups GL( <A>n</A>, <A>q</A> ), GU( <A>n</A>, <A>q</A> ),
+##  SL( <A>n</A>, <A>q</A> ), SU( <A>n</A>, <A>q</A> ),
+##  PGL( <A>n</A>, <A>q</A> ), PGU( <A>n</A>, <A>q</A> ),
+##  PSL( <A>n</A>, <A>q</A> ), PSL( <A>n</A>, <A>q</A> ), respectively.
+##  (See also <Ref Attr="ConjugacyClasses" Label="attribute"/>  and
+##  Section&nbsp;<Ref Sect="Classical Groups"/>.)
+##  <P/>
+##  For each divisor <A>f</A> of <A>n</A> there is a group of Lie type
+##  with the same order as SL( <A>n</A>, <A>q</A> ), such that its derived
+##  subgroup modulo its center is isomorphic to PSL( <A>n</A>, <A>q</A> ).
+##  The various such groups with fixed <A>n</A> and <A>q</A> are called
+##  <E>isogeneous</E>.
+##  (Depending on congruence conditions on <A>q</A> and <A>n</A> several of
+##  these groups may actually be isomorphic.)
+##  The function <Ref Func="NrConjugacyClassesSLIsogeneous"/> computes the
+##  number of conjugacy classes in this group.
+##  The extreme cases <A>f</A> <M>= 1</M> and <A>f</A> <M>= n</M> lead
+##  to the groups SL( <A>n</A>, <A>q</A> ) and PGL( <A>n</A>, <A>q</A> ),
+##  respectively.
+##  <P/>
+##  The function <Ref Func="NrConjugacyClassesSUIsogeneous"/> is the
+##  analogous one for the corresponding unitary groups.
+##  <P/>
+##  The formulae for the number of conjugacy classes are taken
+##  from&nbsp;<Cite Key="Mac81"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NrConjugacyClassesGL(24,27);
+##  22528399544939174406067288580609952
+##  gap> NrConjugacyClassesPSU(19,17);
+##  15052300411163848367708
+##  gap> NrConjugacyClasses(SL(16,16));
+##  1229782938228219920
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("NrConjugacyClassesGL");
 DeclareGlobalFunction("NrConjugacyClassesGU");
 DeclareGlobalFunction("NrConjugacyClassesSL");

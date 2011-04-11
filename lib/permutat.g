@@ -5,41 +5,85 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with permutations.
 ##
 Revision.permutat_g :=
     "@(#)$Id$";
 
-#1
-##  Internally, {\GAP}  stores a permutation as a  list of the  <d> images of
-##  the  integers  $1,\ldots, d$,  where the ``internal  degree'' <d>  is the
-##  largest integer moved by the permutation or bigger. When a permutation is
-##  read  in  in  cycle  notation, <d> is  always  set  to  the largest moved
-##  integer,   but a bigger   <d> can  result  from  a multiplication of  two
-##  permutations, because the product is  not shortened if it fixes~<d>.  The
-##  images are either all stored as 16-bit integers or all as 32-bit integers
-##  (actually as {\GAP} immediate integers less  than $2^{28}$), depending on
-##  whether  $d\le 65536$  or not. This  means that  the identity permutation
-##  `()' takes $4<m>$ bytes if it was  calculated as  `(1, \dots, <m>) \* (1,
-##  \dots, <m>)^-1'. It  can take even more  because the internal list  has
-##  sometimes room for more than <d> images.  For example, the maximal degree
-##  of   any permutation in  {\GAP}  is  $m  = 2^{22}-1024 =  4{,}193{,}280$,
-##  because  bigger permutations  would have  an  internal list with room for
-##  more than $2^{22}$ images, requiring  more than $2^{24}$~bytes. $2^{24}$,
-##  however, is  the  largest possible size   of  an object that  the  {\GAP}
-##  storage manager can deal with.
+
+#############################################################################
 ##
-##  Permutations  do  not belong to  a specific group.   That means
-##  that one can work  with permutations without defining a permutation group
-##  that contains them.
+##  <#GAPDoc Label="[1]{permutat}">
+##  Internally, &GAP; stores a permutation as a list of the <M>d</M> images
+##  of the integers <M>1, \ldots, d</M>, where the <Q>internal degree</Q>
+##  <M>d</M> is the largest integer moved by the permutation or bigger.
+##  When a permutation is read in in cycle notation, <M>d</M> is always set
+##  to the largest moved integer, but a bigger <M>d</M> can result from a
+##  multiplication of two permutations, because the product is not shortened
+##  if it fixes&nbsp;<M>d</M>.
+##  The images are stored all as <M>16</M>-bit integers or all as
+##  <M>32</M>-bit integers, depending on whether <M>d \leq 65536</M> or not.
+##  For example, if <M>m\geq 65536</M>, the permutation 
+##  <M>(1, 2, \ldots, m)</M> has internal degree <M>d=m</M> and takes
+##  <M>4m</M> bytes of memory for storage. But --- since the internal degree
+##  is not reduced  --- this
+##  means that the identity permutation <C>()</C> calculated as
+##  <M>(1, 2, \ldots, m) * (1, 2, \ldots, m)^{{-1}}</M> also
+##  takes <M>4m</M> bytes of storage.
+##  It can take even more because the internal list has sometimes room for
+##  more than <M>d</M> images.
+##  <P/>
+##  The operation <Ref Func="RestrictedPerm"/> reduces the storage degree of
+##  its result and therefore can be used to save memory if intermediate
+##  calculations in large degree result in a small degree result.
+##  <P/>
+##  Permutations do not belong to a specific group.
+##  That means that one can work with permutations without defining
+##  a permutation group that contains them.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> (1,2,3);
+##  (1,2,3)
+##  gap> (1,2,3) * (2,3,4);
+##  (1,3)(2,4)
+##  gap> 17^(2,5,17,9,8);
+##  9
+##  gap> OnPoints(17,(2,5,17,9,8));
+##  9
+##  ]]></Example>
+##  <P/>
+##  The operation <Ref Func="Permuted"/> can be used to permute the entries
+##  of a list according to a permutation.
+##  <#/GAPDoc>
+##
 
 
 #############################################################################
 ##
 #C  IsPerm( <obj> )
+##
+##  <#GAPDoc Label="IsPerm">
+##  <ManSection>
+##  <Filt Name="IsPerm" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Each <E>permutation</E> in &GAP; lies in the category
+##  <Ref Func="IsPerm"/>.
+##  Basic operations for permutations are
+##  <Ref Func="LargestMovedPoint" Label="for a permutation"/>,
+##  multiplication of two permutations via <C>*</C>,
+##  and exponentiation <C>^</C> with first argument a positive integer
+##  <M>i</M> and second argument a permutation <M>\pi</M>,
+##  the result being the image <M>i^{\pi}</M> of the point <M>i</M>
+##  under <M>\pi</M>.
+##  <!-- other arith. ops.?-->
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategoryKernel( "IsPerm",
     IsMultiplicativeElementWithInverse and IsAssociativeElement and
@@ -52,8 +96,17 @@ DeclareCategoryKernel( "IsPerm",
 #C  IsPermCollection( <obj> )
 #C  IsPermCollColl( <obj> )
 ##
+##  <#GAPDoc Label="IsPermCollection">
+##  <ManSection>
+##  <Filt Name="IsPermCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsPermCollColl" Arg='obj' Type='Category'/>
+##
+##  <Description>
 ##  are the categories for collections of permutations and collections of
 ##  collections of permutations, respectively.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategoryCollections( "IsPerm" );
 DeclareCategoryCollections( "IsPermCollection" );
@@ -63,11 +116,27 @@ DeclareCategoryCollections( "IsPermCollection" );
 ##
 #F  SmallestGeneratorPerm( <perm> )
 ##
+##  <#GAPDoc Label="SmallestGeneratorPerm">
+##  <ManSection>
+##  <Func Name="SmallestGeneratorPerm" Arg='perm'/>
+##
+##  <Description>
 ##  is the smallest permutation that generates the same cyclic group
-##  as the permutation <perm>.
-##  This is very efficient, even when <perm> has large order.
+##  as the permutation <A>perm</A>.
+##  This is very efficient, even when <A>perm</A> has large order.
+##  <Example><![CDATA[
+##  gap> SmallestGeneratorPerm( (1,4,3,2) );
+##  (1,2,3,4)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "SmallestGeneratorPerm",IsPerm);
 
-# DeclareGlobalFunction( "SmallestGeneratorPerm");
+InstallMethod( SmallestGeneratorPerm,"for internally represented permutation",
+    [ IsPerm and IsInternalRep ],
+    SMALLEST_GENERATOR_PERM );
 
 
 #############################################################################
@@ -75,11 +144,24 @@ DeclareCategoryCollections( "IsPermCollection" );
 #A  SmallestMovedPoint( <perm> )
 #A  SmallestMovedPoint( <C> )
 ##
-##  is the smallest positive integer that is moved by <perm>
-##  if such an integer exists, and `infinity' if `<perm> = ()'.
-##  For <C> a collection or list of permutations, the smallest value of
-##  `SmallestMovedPoint' for the elements of <C> is returned (and `infinity'
-##  if <C> is empty).
+##  <#GAPDoc Label="SmallestMovedPoint">
+##  <ManSection>
+##  <Attr Name="SmallestMovedPoint" Arg='perm' Label="for a permutation"/>
+##  <Attr Name="SmallestMovedPoint" Arg='C'
+##   Label="for a list or collection of permutations"/>
+##
+##  <Description>
+##  is the smallest positive integer that is moved by <A>perm</A>
+##  if such an integer exists, and <Ref Var="infinity"/> if
+##  <A>perm</A> is the identity.
+##  For <A>C</A> a collection or list of permutations,
+##  the smallest value of
+##  <Ref Func="SmallestMovedPoint" Label="for a permutation"/> for the
+##  elements of <A>C</A> is returned
+##  (and <Ref Var="infinity"/> if <A>C</A> is empty).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "SmallestMovedPoint", IsPerm );
 DeclareAttribute( "SmallestMovedPoint", IsPermCollection );
@@ -93,12 +175,23 @@ DeclareSynonymAttr( "SmallestMovedPointPerm", SmallestMovedPoint );
 #A  LargestMovedPoint( <perm> ) . . . . . . . . . . . . . . largest point
 #A  LargestMovedPoint( <C> )
 ##
-##  For a permutation <perm>, this attribute contains
-##  the largest positive integer which is moved by <perm>
-##  if such an integer exists, and 0 if `<perm> = ()'.
-##  For <C> a collection or list of permutations, the largest value of
-##  `LargestMovedPoint' for the elements of <C> is returned (and 0 if <C> is
-##  empty).
+##  <#GAPDoc Label="LargestMovedPoint">
+##  <ManSection>
+##  <Attr Name="LargestMovedPoint" Arg='perm' Label="for a permutation"/>
+##  <Attr Name="LargestMovedPoint" Arg='C'
+##   Label="for a list or collection of permutations"/>
+##
+##  <Description>
+##  For a permutation <A>perm</A>, this attribute contains
+##  the largest positive integer which is moved by <A>perm</A>
+##  if such an integer exists, and <C>0</C> if <A>perm</A> is the identity.
+##  For <A>C</A> a collection or list of permutations,
+##  the largest value of
+##  <Ref Func="LargestMovedPoint" Label="for a permutation"/> for the
+##  elements of <A>C</A> is returned (and <C>0</C> if <A>C</A> is empty).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "LargestMovedPoint", IsPerm );
 DeclareAttribute( "LargestMovedPoint", IsPermCollection );
@@ -112,10 +205,38 @@ DeclareSynonymAttr( "LargestMovedPointPerm", LargestMovedPoint );
 #A  NrMovedPoints( <perm> )
 #A  NrMovedPoints( <C> )
 ##
-##  is the number of positive integers that are moved by <perm>,
-##  respectively by at least one element in the collection <C>.
-##  (The actual moved points are returned by `MovedPoints',
-##  see~"MovedPoints")
+##  <#GAPDoc Label="NrMovedPoints">
+##  <ManSection>
+##  <Attr Name="NrMovedPoints" Arg='perm' Label="for a permutation"/>
+##  <Attr Name="NrMovedPoints" Arg='C'
+##   Label="for a list or collection of permutations"/>
+##
+##  <Description>
+##  is the number of positive integers that are moved by <A>perm</A>,
+##  respectively by at least one element in the collection <A>C</A>.
+##  (The actual moved points are returned by
+##  <Ref Func="MovedPoints" Label="for a permutation"/>.)
+##  <Example><![CDATA[
+##  gap> SmallestMovedPointPerm((4,5,6)(7,2,8));
+##  2
+##  gap> LargestMovedPointPerm((4,5,6)(7,2,8));
+##  8
+##  gap> NrMovedPointsPerm((4,5,6)(7,2,8));
+##  6
+##  gap> MovedPoints([(2,3,4),(7,6,3),(5,47)]);
+##  [ 2, 3, 4, 5, 6, 7, 47 ]
+##  gap> NrMovedPoints([(2,3,4),(7,6,3),(5,47)]);
+##  7
+##  gap> SmallestMovedPoint([(2,3,4),(7,6,3),(5,47)]);
+##  2
+##  gap> LargestMovedPoint([(2,3,4),(7,6,3),(5,47)]);
+##  47
+##  gap> LargestMovedPoint([()]);
+##  0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "NrMovedPoints", IsPerm );
 DeclareAttribute( "NrMovedPoints", IsPermCollection );
@@ -131,9 +252,19 @@ DeclareSynonymAttr( "DegreeOperation", NrMovedPoints );
 #A  MovedPoints( <perm> )
 #A  MovedPoints( <C> )
 ##
+##  <#GAPDoc Label="MovedPoints">
+##  <ManSection>
+##  <Attr Name="MovedPoints" Arg='perm' Label="for a permutation"/>
+##  <Attr Name="MovedPoints" Arg='C'
+##   Label="for a list or collection of permutations"/>
+##
+##  <Description>
 ##  is the proper set of the positive integers moved by at least one
-##  permutation in the collection <C>, respectively by the permutation
-##  <perm>.
+##  permutation in the collection <A>C</A>, respectively by the permutation
+##  <A>perm</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MovedPoints", IsPerm);
 DeclareAttribute( "MovedPoints", IsPermCollection );
@@ -144,26 +275,55 @@ DeclareAttribute( "MovedPoints", IsList and IsEmpty );
 ##
 #A  SignPerm( <perm> )
 ##
-##  The *sign* of a permutation <perm> is defined as $(-1)^k$
-##  where $k$ is the number of cycles of <perm> of even length.
+##  <#GAPDoc Label="SignPerm">
+##  <ManSection>
+##  <Attr Name="SignPerm" Arg='perm'/>
 ##
+##  <Description>
+##  The <E>sign</E> of a permutation <A>perm</A> is defined as <M>(-1)^k</M>
+##  where <M>k</M> is the number of cycles of <A>perm</A> of even length.
+##  <P/>
 ##  The sign is a homomorphism from the symmetric group onto the
-##  multiplicative  group $\{ +1, -1 \}$,
+##  multiplicative  group <M>\{ +1, -1 \}</M>,
 ##  the kernel of which is the alternating group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "SignPerm", IsPerm );
 
-# DeclareAttribute( "SignPerm", IsPerm );
+InstallMethod( SignPerm,
+    "for internally represented permutation",
+    [ IsPerm and IsInternalRep ],
+    SIGN_PERM );
 
 
 #############################################################################
 ##
 #A  CycleStructurePerm( <perm> )  . . . . . . . . . . . . . . cycle structure
 ##
-##  is the cycle structure (i.e. the numbers of cycles of different
-##  lengths) of <perm>. This is encoded in a list <l> in the following form:
-##  The <i>-th entry of <l> contains the number of cycles of <perm> of
-##  length <i+1>. If <perm> contains no cycles of length <i+1> it is not
+##  <#GAPDoc Label="CycleStructurePerm">
+##  <ManSection>
+##  <Attr Name="CycleStructurePerm" Arg='perm'/>
+##
+##  <Description>
+##  is the cycle structure (i.e. the numbers of cycles of different lengths)
+##  of the permutation <A>perm</A>.
+##  This is encoded in a list <M>l</M> in the following form:
+##  The <M>i</M>-th entry of <M>l</M> contains the number of cycles of
+##  <A>perm</A> of length <M>i+1</M>.
+##  If <A>perm</A> contains no cycles of length <M>i+1</M> it is not
 ##  bound.
 ##  Cycles of length 1 are ignored.
+##  <Example><![CDATA[
+##  gap> SignPerm((1,2,3)(4,5));
+##  -1
+##  gap> CycleStructurePerm((1,2,3)(4,5,9,7,8));
+##  [ , 1,, 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "CycleStructurePerm", IsPerm );
 
@@ -172,12 +332,26 @@ DeclareAttribute( "CycleStructurePerm", IsPerm );
 ##
 #R  IsPerm2Rep  . . . . . . . . . . . . . .  permutation with 2 bytes entries
 ##
+##  <ManSection>
+##  <Filt Name="IsPerm2Rep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareRepresentation( "IsPerm2Rep", IsInternalRep, [] );
 
 
 #############################################################################
 ##
 #R  IsPerm4Rep  . . . . . . . . . . . . . .  permutation with 4 bytes entries
+##
+##  <ManSection>
+##  <Filt Name="IsPerm4Rep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareRepresentation( "IsPerm4Rep", IsInternalRep, [] );
 
@@ -186,16 +360,32 @@ DeclareRepresentation( "IsPerm4Rep", IsInternalRep, [] );
 ##
 #V  PermutationsFamily  . . . . . . . . . . . . .  family of all permutations
 ##
+##  <#GAPDoc Label="PermutationsFamily">
+##  <ManSection>
+##  <Var Name="PermutationsFamily"/>
+##
+##  <Description>
 ##  is the family of all permutations.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "PermutationsFamily",
     NewFamily( "PermutationsFamily",
     IsPerm,CanEasilySortElements,CanEasilySortElements ) );
+#    IsMultiplicativeElementWithOne,CanEasilySortElements,CanEasilySortElements ) );
 
 
 #############################################################################
 ##
 #V  TYPE_PERM2  . . . . . . . . . .  type of permutation with 2 bytes entries
+##
+##  <ManSection>
+##  <Var Name="TYPE_PERM2"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_PERM2",
     NewType( PermutationsFamily, IsPerm and IsPerm2Rep ) );
@@ -204,6 +394,13 @@ BIND_GLOBAL( "TYPE_PERM2",
 #############################################################################
 ##
 #V  TYPE_PERM4  . . . . . . . . . .  type of permutation with 4 bytes entries
+##
+##  <ManSection>
+##  <Var Name="TYPE_PERM4"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_PERM4",
     NewType( PermutationsFamily, IsPerm and IsPerm4Rep ) );
@@ -220,95 +417,154 @@ SetOne( PermutationsFamily, () );
 ##
 #F  PermList( <list> )
 ##
-##  is the permutation <perm>  that moves points as described by the
-##  list <list>.  That means that  `<i>^<perm>  = <list>[<i>]' if  <i> lies
-##  between 1 and the length of <list>, and `<i>^<perm> = <i>' if <i> is
-##  larger than  the length of  the list <list>. It will  signal an  error
-##  if <list> does  not define a permutation,  i.e., if <list> is  not a
-##  list of integers  without holes, or  if <list> contains  an  integer
-##  twice, or if <list> contains an integer not in the range
-##  `[1..Length(<list>)]'.
-
-# DeclareGlobalFunction( "PermList" );
+##  <#GAPDoc Label="PermList">
+##  <ManSection>
+##  <Func Name="PermList" Arg='list'/>
+##
+##  <Description>
+##  is the permutation <M>\pi</M> that moves points as described by the
+##  list <A>list</A>.
+##  That means that <M>i^{\pi} =</M> <A>list</A><C>[</C><M>i</M><C>]</C> if
+##  <M>i</M> lies between <M>1</M> and the length of <A>list</A>,
+##  and <M>i^{\pi} = i</M> if <M>i</M> is
+##  larger than the length of the list <A>list</A>.
+##  <Ref Func="PermList"/> will return <K>fail</K> 
+##  if <A>list</A> does not define a permutation,
+##  i.e., if <A>list</A> is not dense,
+##  or if <A>list</A> contains a positive integer twice,
+##  or if <A>list</A> contains an
+##  integer not in the range <C>[ 1 .. Length( <A>list</A> ) ]</C>.
+##  If <A>list</A> contains non-integer entries an error is raised.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 
 
 #############################################################################
 ##
-#F  ListPerm( <perm> )  . . . . . . . . . . . . . . . . . . .  list of images
+#F  ListPerm( <perm>[, <length>] )  . . . . . . . . . . . . .  list of images
 ##
-##  is a list <list> that contains the images of the positive integers
-##  under the permutation <perm>.
-##  That means that `<list>[<i>] = <i>^<perm>', where <i> lies between 1
-##  and the largest point moved by <perm> (see~"LargestMovedPoint").
+##  <#GAPDoc Label="ListPerm">
+##  <ManSection>
+##  <Func Name="ListPerm" Arg='perm[, length]'/>
 ##
-BIND_GLOBAL( "ListPerm", function( perm )
-    if IsOne( perm ) then
-      return [];
+##  <Description>
+##  is a list <M>l</M> that contains the images of the positive integers
+##  under the permutation <A>perm</A>.
+##  That means that
+##  <M>l</M><C>[</C><M>i</M><C>]</C> <M>= i</M><C>^</C><A>perm</A>,
+##  where <M>i</M> lies between 1
+##  and the largest point moved by <A>perm</A>
+##  (see&nbsp;<Ref Func="LargestMovedPoint" Label="for a permutation"/>).
+##  <P/>
+##  An optional second argument specifies the length of the desired list.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "ListPerm", function( arg )
+    local n;
+    if Length(arg)=2 then
+        n := arg[2];
     else
-      return OnTuples( [ 1 .. LargestMovedPoint( perm ) ], perm );
+        n := LargestMovedPoint(arg[1]);
+    fi;
+    if IsOne(arg[1]) then
+        return [1..n];
+    else
+        return OnTuples( [1..n], arg[1] );
     fi;
 end );
 
 
 #############################################################################
 ##
-#F  RestrictedPerm(<perm>,<list>)  restriction of a perm. to an invariant set
+#O  RestrictedPerm(<perm>,<list>)  restriction of a perm. to an invariant set
+#O  RestrictedPermNC(<perm>,<list>)  restriction of a perm. to an invariant set
 ##
-##  `RestrictedPerm' returns  the new permutation <new>  that acts on the
-##  points in the list <list> in the same  way as the permutation <perm>,
-##  and that fixes those points that are not in <list>.
-##  <list> must be a list of positive integers such that for each <i> in
-##  <list> the image `<i>^<perm>' is also in <list>,
-##  i.e., <list> must be the union of cycles of <perm>.
+##  <#GAPDoc Label="RestrictedPerm">
+##  <ManSection>
+##  <Oper Name="RestrictedPerm" Arg='perm, list'/>
+##  <Oper Name="RestrictedPermNC" Arg='perm, list'/>
 ##
-BIND_GLOBAL( "RestrictedPerm", function( g, D )
-    local   res, d, e, max;
+##  <Description>
+##  <Ref Func="RestrictedPerm"/> returns the new permutation
+##  that acts on the points in the list <A>list</A> in the same way as
+##  the permutation <A>perm</A>,
+##  and that fixes those points that are not in <A>list</A>. The resulting
+##  permutation is stored internally of degree given by the maximal entry of
+##  <A>list</A>.
+##  <A>list</A> must be a list of positive integers such that for each
+##  <M>i</M> in <A>list</A> the image <M>i</M><C>^</C><A>perm</A> is also in
+##  <A>list</A>,
+##  i.e., <A>list</A> must be the union of cycles of <A>perm</A>.
+##  <P/>
+##  <Ref Func="RestrictedPermNC"/> does not check whether <A>list</A>
+##  is a union of cycles.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ListPerm((3,4,5));
+##  [ 1, 2, 4, 5, 3 ]
+##  gap> PermList([1,2,4,5,3]);
+##  (3,4,5)
+##  gap> MappingPermListList([2,5,1,6],[7,12,8,2]);
+##  (1,8,5,12,11,10,9,6,2,7,4,3)
+##  gap> RestrictedPerm((1,2)(3,4),[3..5]);
+##  (3,4)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "RestrictedPerm", [ IsPerm, IsList ] );
+DeclareOperation( "RestrictedPermNC", [ IsPerm, IsList ] );
 
-    # check the arguments
-    if not IsPerm( g )  then
-        Error("<g> must be a permutation");
-    elif not IsList( D )  then
-        Error("<D> must be a list");
-    fi;
+InstallMethod(RestrictedPermNC,"kernel method",true,
+  [IsPerm and IsInternalRep, IsList],0,
+function(g,D)
+local p;
+  p:=RESTRICTED_PERM(g,D,false);
+  if p=fail then
+    Error("<g> must be a permutation and <D> a plain list or range,\n",
+	  "   consisting of a union of cycles of <g>");
+  fi;
+  return p;
+end);
 
-    # special case for the identity
-    if g = ()  then return ();  fi;
-
-    # compute the largest point that we must consider
-    max := 1;
-    for d  in D  do
-        e := d ^ g;
-        if d <> e  and max < d  then
-            max := d;
-        fi;
-    od;
-
-    # compute the restricted permutation <res>
-    res := [ 1 .. max ];
-    for d  in D  do
-        e := d ^ g;
-        if d <= max  then
-            res[d] := e;
-        fi;
-    od;
-
-    # return the restricted permutation <res>
-    return PermList( res );
-end );
-
+InstallMethod( RestrictedPerm,"use kernel method, test",true,
+  [IsPerm and IsInternalRep, IsList],0,
+function(g,D)
+  local p;
+  p:=RESTRICTED_PERM(g,D,true);
+  if p=fail then
+    Error("<g> must be a permutation and <D> a plain list or range,\n",
+	  "   consisting of a union of cycles of <g>");
+  fi;
+  return p;
+end);
 
 #############################################################################
 ##
 #F  MappingPermListList( <src>, <dst> ) . . perm. mapping one list to another
 ##
-##  Let <src> and <dst> be lists of positive integers of the same length,
-##  such that neither may contain an element twice.
-##  `MappingPermListList' returns a permutation <perm> such that
-##  `<src>[<i>]^<perm> = <dst>[<i>]'.
-##  <perm> fixes all points larger than the maximum of the entries in <src>
-##  and <dst>.
+##  <#GAPDoc Label="MappingPermListList">
+##  <ManSection>
+##  <Func Name="MappingPermListList" Arg='src, dst'/>
+##
+##  <Description>
+##  Let <A>src</A> and <A>dst</A> be lists of positive integers of the same
+##  length, such that neither may contain an element twice.
+##  <Ref Func="MappingPermListList"/> returns a permutation <M>\pi</M> such
+##  that <A>src</A><C>[</C><M>i</M><C>]^</C><M>\pi =</M>
+##  <A>dst</A><C>[</C><M>i</M><C>]</C>.
+##  The permutation <M>\pi</M> fixes all points larger than the maximum of
+##  the entries in <A>src</A> and <A>dst</A>.
 ##  If there are several such permutations, it is not specified which of them
-##  `MappingPermListList' returns.
+##  <Ref Func="MappingPermListList"/> returns.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "MappingPermListList", function( src, dst )
 
@@ -333,8 +589,7 @@ end );
 ##
 InstallMethod( SmallestMovedPoint,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     function( p )
     local   i;
 
@@ -355,8 +610,7 @@ end );
 ##
 InstallMethod( LargestMovedPoint,
     "for an internal permutation",
-    true,
-    [ IsPerm and IsInternalRep ], 0,
+    [ IsPerm and IsInternalRep ],
     LARGEST_MOVED_POINT_PERM );
 
 
@@ -366,12 +620,11 @@ InstallMethod( LargestMovedPoint,
 ##
 InstallMethod( NrMovedPoints,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     function( perm )
     local mov, pnt;
     mov:= 0;
-    if perm <> () then
+    if not IsOne( perm ) then
       for pnt in [ SmallestMovedPoint( perm )
                    .. LargestMovedPoint( perm ) ] do
         if pnt ^ perm <> pnt then
@@ -387,12 +640,10 @@ InstallMethod( NrMovedPoints,
 ##
 #m  CycleStructurePerm( <perm> )  . . . . . . . . .  length of cycles of perm
 ##
-InstallMethod( CycleStructurePerm,
-    "default method",
-    true,
-    [ IsPerm ],
-    0,
+InstallMethod( CycleStructurePerm, "internal", [ IsPerm and IsInternalRep],0,
+  CycleStructPerm);
 
+InstallMethod( CycleStructurePerm, "generic method", [ IsPerm ],0,
 function ( perm )
     local   cys,    # collected cycle lengths, result
             degree, # degree of perm
@@ -434,8 +685,7 @@ end );
 ##
 InstallMethod( String,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     function( perm )
     local   str,  i,  j;
 
@@ -470,15 +720,15 @@ InstallMethod( String,
 ##
 InstallMethod( Order,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     OrderPerm );
+
 
 #############################################################################
 ##
 #m  ViewObj( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
 ##
-InstallMethod( ViewObj, "for a permutation", true, [ IsPerm ], 0,
+InstallMethod( ViewObj, "for a permutation", [ IsPerm ],
 function( perm )
 local dom,l,i,n,p,c;
   dom:=[];

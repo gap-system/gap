@@ -4,12 +4,14 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file is being maintained by Thomas Breuer.
 ##  Please do not make any changes without consulting him.
 ##  (This holds also for minor changes such as the removal of whitespace or
 ##  the correction of typos.)
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -115,20 +117,20 @@ gap> EK(31);
 E(31)+E(31)^5-E(31)^6+E(31)^25-E(31)^26-E(31)^30
 gap> EJ(17,3);
 E(17)-E(17)^2+E(17)^4-E(17)^8-E(17)^9+E(17)^13-E(17)^15+E(17)^16
-gap> r:= ER(2); r^2 = 2;
+gap> r:= Sqrt(2); r^2 = 2;
 E(8)-E(8)^3
 true
-gap> r:= ER(-6); r^2 = -6;
+gap> r:= Sqrt(-6); r^2 = -6;
 E(24)+E(24)^11-E(24)^17-E(24)^19
 true
-gap> r:= ER(75); r^2 = 75;
+gap> r:= Sqrt(75); r^2 = 75;
 -5*E(12)^7+5*E(12)^11
 true
-gap> r:= ER(13); r^2 = 13;
+gap> r:= Sqrt(13); r^2 = 13;
 E(13)-E(13)^2+E(13)^3+E(13)^4-E(13)^5-E(13)^6-E(13)^7-E(13)^8+E(13)^9+E(13)^10
  -E(13)^11+E(13)^12
 true
-gap> r:= ER(80); r^2 = 80;
+gap> r:= Sqrt(80); r^2 = 80;
 4*E(5)-4*E(5)^2-4*E(5)^3+4*E(5)^4
 true
 gap> EI(17); EI(16); EI(23);
@@ -165,51 +167,54 @@ gap> AtlasIrrationality( "3y'''24&7" );
 
 gap> StarCyc( EB(7) );
 E(7)^3+E(7)^5+E(7)^6
-gap> StarCyc( ER(13) );
+gap> StarCyc( Sqrt(13) );
 -E(13)+E(13)^2-E(13)^3-E(13)^4+E(13)^5+E(13)^6+E(13)^7+E(13)^8-E(13)^9
  -E(13)^10+E(13)^11-E(13)^12
 
 gap> Quadratic( 4 );
-rec( a := 4, b := 0, root := 1, d := 1, ATLAS := "4", display := "4" )
+rec( ATLAS := "4", a := 4, b := 0, d := 1, display := "4", root := 1 )
 gap> Quadratic( EB(7) );
-rec( a := -1, b := 1, root := -7, d := 2, ATLAS := "b7", 
-  display := "(-1+ER(-7))/2" )
+rec( ATLAS := "b7", a := -1, b := 1, d := 2, display := "(-1+Sqrt(-7))/2", 
+  root := -7 )
 gap> Quadratic( E(4) );
-rec( a := 0, b := 1, root := -1, d := 1, ATLAS := "i", display := "ER(-1)" )
+rec( ATLAS := "i", a := 0, b := 1, d := 1, display := "Sqrt(-1)", root := -1 )
 gap> Quadratic( E(3) );
-rec( a := -1, b := 1, root := -3, d := 2, ATLAS := "b3", 
-  display := "(-1+ER(-3))/2" )
-gap> Quadratic( ER(12) );
-rec( a := 0, b := 2, root := 3, d := 1, ATLAS := "2r3", display := "2*ER(3)" )
+rec( ATLAS := "b3", a := -1, b := 1, d := 2, display := "(-1+Sqrt(-3))/2", 
+  root := -3 )
+gap> Quadratic( Sqrt(12) );
+rec( ATLAS := "2r3", a := 0, b := 2, d := 1, display := "2*Sqrt(3)", 
+  root := 3 )
 gap> Quadratic( StarCyc( EB(5) ) );
-rec( a := -1, b := -1, root := 5, d := 2, ATLAS := "-1-b5", 
-  display := "(-1-ER(5))/2" )
+rec( ATLAS := "-1-b5", a := -1, b := -1, d := 2, display := "(-1-Sqrt(5))/2", 
+  root := 5 )
 
 gap> GeneratorsPrimeResidues( 7^4 );
-rec( primes := [ 7 ], exponents := [ 4 ], generators := [ 3 ] )
+rec( exponents := [ 4 ], generators := [ 3 ], primes := [ 7 ] )
 gap> GeneratorsPrimeResidues( 27*125 );
-rec( primes := [ 3, 5 ], exponents := [ 3, 3 ], generators := [ 1001, 2377 ] )
+rec( exponents := [ 3, 3 ], generators := [ 1001, 2377 ], primes := [ 3, 5 ] )
 gap> GeneratorsPrimeResidues( 2*9*5 );
-rec( primes := [ 2, 3, 5 ], exponents := [ 1, 2, 1 ], 
-  generators := [ 1, 11, 37 ] )
+rec( exponents := [ 1, 2, 1 ], generators := [ 1, 11, 37 ], 
+  primes := [ 2, 3, 5 ] )
 gap> GeneratorsPrimeResidues( 4*3*25 );
-rec( primes := [ 2, 3, 5 ], exponents := [ 2, 1, 2 ], 
-  generators := [ 151, 101, 277 ] )
+rec( exponents := [ 2, 1, 2 ], generators := [ 151, 101, 277 ], 
+  primes := [ 2, 3, 5 ] )
 gap> GeneratorsPrimeResidues( 8*49*11 );
-rec( primes := [ 2, 7, 11 ], exponents := [ 3, 2, 1 ], 
-  generators := [ [ 1079, 2157 ], 3433, 3137 ] )
+rec( exponents := [ 3, 2, 1 ], generators := [ [ 1079, 2157 ], 3433, 3137 ], 
+  primes := [ 2, 7, 11 ] )  
 gap> GeneratorsPrimeResidues( 16*13*29 );
-rec( primes := [ 2, 13, 29 ], exponents := [ 4, 1, 1 ], 
-  generators := [ [ 5279, 1509 ], 1393, 1249 ] )
+rec( exponents := [ 4, 1, 1 ], generators := [ [ 5279, 1509 ], 1393, 1249 ], 
+  primes := [ 2, 13, 29 ] )
 
-gap> mat:= [ [       1333, EB(7),        -1,       0,      0 ],
->            [  259775040,     0,         0, 2*ER(3),      0 ],
->            [  885257856,     0, 2*ER(5)-1,       0,      0 ],
->            [ 1445942610,     0,         0,       0, EC(43) ] ];;
+gap> mat:= [ [       1333, EB(7),          -1,         0,      0 ],
+>            [  259775040,     0,           0, 2*Sqrt(3),      0 ],
+>            [  885257856,     0, 2*Sqrt(5)-1,         0,      0 ],
+>            [ 1445942610,     0,           0,         0, EC(43) ] ];;
 gap> gm:= GaloisMat( mat );
-rec( 
-  mat := [ [ 1333, E(7)+E(7)^2+E(7)^4, -1, 0, 0 ], [ 259775040, 0, 0, -2*E(12)
-              ^7+2*E(12)^11, 0 ], 
+rec( galoisfams := [ [ [ 1, 5 ], [ 1, 10321 ] ], [ [ 2, 6 ], [ 1, 9031 ] ], 
+      [ [ 3, 7 ], [ 1, 10837 ] ], [ [ 4, 8, 9 ], [ 1, 7141, 10501 ] ], 0, 0, 
+      0, 0, 0 ], generators := [ (4,8,9), (3,7), (2,6), (1,5) ], 
+  mat := [ [ 1333, E(7)+E(7)^2+E(7)^4, -1, 0, 0 ], 
+      [ 259775040, 0, 0, -2*E(12)^7+2*E(12)^11, 0 ], 
       [ 885257856, 0, 3*E(5)-E(5)^2-E(5)^3+3*E(5)^4, 0, 0 ], 
       [ 1445942610, 0, 0, 0, 
           E(43)+E(43)^2+E(43)^4+E(43)^8+E(43)^11+E(43)^16+E(43)^21+E(43)^22
@@ -223,15 +228,13 @@ rec(
       [ 1445942610, 0, 0, 0, 
           E(43)^7+E(43)^9+E(43)^13+E(43)^14+E(43)^15+E(43)^17+E(43)^18
              +E(43)^25+E(43)^26+E(43)^28+E(43)^29+E(43)^30+E(43)^34+E(43)^36 
-         ] ], 
-  galoisfams := [ [ [ 1, 5 ], [ 1, 10321 ] ], [ [ 2, 6 ], [ 1, 9031 ] ], 
-      [ [ 3, 7 ], [ 1, 10837 ] ], [ [ 4, 8, 9 ], [ 1, 7141, 10501 ] ], 0, 0, 
-      0, 0, 0 ], generators := [ (4,8,9), (3,7), (2,6), (1,5) ] )
+         ] ] )
 gap> Print(RationalizedMat( gm.mat ),"\n");
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
 
-gap> STOP_TEST( "cyclotom.tst", 5832500 );
+gap> STOP_TEST( "cyclotom.tst",5832500);
+
 
 #############################################################################
 ##

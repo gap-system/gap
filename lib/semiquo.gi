@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  semiquo.gi           GAP library          Andrew Solomon and Isabel Araujo
+#W  semiquo.gi           GAP library          Andrew Solomon and Isabel Araújo
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for quotient semigroups.
 ##

@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains  the methods for  subgroup presentations  in finitely
 ##  presented groups (fp groups).
@@ -30,7 +31,8 @@ local M;
   if Length(M)=0 then
     return [];
   else
-    return AbelianInvariantsOfList( ElementaryDivisorsMat(M));
+    DiagonalizeMat( Integers, M );
+    return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
 end );
 
@@ -50,7 +52,8 @@ local M;
   if Length(M)=0 then
     return [];
   else
-    return AbelianInvariantsOfList( ElementaryDivisorsMat(M));
+    DiagonalizeMat( Integers, M );
+    return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
 end );
 
@@ -74,7 +77,8 @@ local M;
   if Length(M)=0 then
     return [];
   else
-    return AbelianInvariantsOfList( ElementaryDivisorsMat(M));
+    DiagonalizeMat( Integers, M );
+    return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
 end );
 
@@ -185,6 +189,953 @@ function( H )
   # augmented coset table of N in G
   aug := AugmentedCosetTableRrs( G, costab, 2, "%" );
 
+  return aug;
+end );
+
+
+# Determine a good definition sequence for TC, using the sortcut method
+BindGlobal("GTC_GoodDefinitionSequence",function(arg)
+    local   fgens,grels,fsgens,
+            next,  prev,            # next and previous coset on lists
+            firstFree,  lastFree,   # first and last free coset
+            firstDef,   lastDef,    # first and last defined coset
+            table,                  # columns in the table for gens
+            rels,                   # representatives of the relators
+            relsGen,                # relators sorted by start generator
+            subgroup,               # rows for the subgroup gens
+            i, gen, inv,            # loop variables for generator
+            g,                      # loop variable for generator col
+            rel,                    # loop variables for relation
+            p, p1, p2,              # generator position numbers
+            app,                    # arguments list for 'MakeConsequences'
+            limit,                  # limit of the table
+            maxlimit,               # maximal size of the table
+            j,                      # integer variable
+            length, length2,        # length of relator (times 2)
+            cols,
+            nums,
+            l,
+            nrdef,                  # number of defined cosets
+            nrmax,                  # maximal value of the above
+	    nd,
+            nrdel,                  # number of deleted cosets
+            nrinf,                  # number for next information message
+	    infstep,
+	    silent,		    # do we want the algorithm to silently
+	                            # return `fail' if the algorithm did not
+				    # finish in the permitted size?
+	    getword,
+	    rebuildimgl,
+	    tblinit,
+	    imgl,
+	    defs,word,
+	    lastrace,wp,
+	    defp,happen,better,
+            TCEOnBreakMessage,      # to provide a local OnBreakMessage
+            SavedOnBreakMessage;    # the value of OnBreakMessage before
+                                    # this function was called
+
+    defs:=[];
+    imgl:=[0];
+
+    rebuildimgl:=function()
+    local i,x,y,process,done;
+      Info(InfoFpGroup,3,"rebuild imagelist"); 
+      imgl:=[0];
+      process:=[1];
+      done:=[];
+      for y in process do
+	AddSet(done,y);
+	for i in [1..Length(table)] do
+	  x:=table[i][y];
+	  if not IsBound(imgl[x]) then
+	    imgl[x]:=y;
+	    if not x in done then
+	      Add(process,x);
+	    fi;
+	  fi;
+	od;
+      od;
+    end;
+
+    getword:=function(x)
+    local start,w,y,i,r;
+      r:=false;
+      start:=x;
+      w:=[];
+      while x<>1 do
+        y:=imgl[x];
+	i:=1;
+	while i<=Length(table) and table[i][y]<>x do
+	  i:=i+1;
+	od;
+	if i>Length(table) or x=y then 
+	  if r then Error("repeated rebuild");fi;
+	  # The original coset has been deleted -- rebuild imgl
+	  r:=true;
+	  rebuildimgl();
+	  x:=start;
+	  w:=[];
+	  y:=imgl[x];
+	  i:=1;
+	  while i<=Length(table) and table[i][y]<>x do
+	    i:=i+1;
+	  od;
+	  if i>Length(table) then 
+	    Error("Wrong!");
+	  fi;
+	fi;
+	Add(w,i);
+	if Length(w)>20 then Error("long");fi;
+	x:=y;
+      od;
+      return Reversed(w);
+    end;
+
+    fgens:=arg[1];
+    grels:=arg[2];
+    fsgens:=arg[3];
+    # give some information
+    Info( InfoFpGroup, 2, "    defined deleted alive   maximal");
+    nrdef := 1;
+    nrmax := 1;
+    nrdel := 0;
+    # to give tidy instructions if one enters a break-loop
+    SavedOnBreakMessage := OnBreakMessage;
+    TCEOnBreakMessage := function(n)
+      Print( "type 'return;' if you want to continue with a new limit of ", 
+             n, " cosets,\n",   
+             "type 'quit;' if you want to quit the coset enumeration,\n",
+             "type 'maxlimit := 0; return;' in order to continue without a ",
+             "limit\n" );
+      OnBreakMessage := SavedOnBreakMessage;
+    end;
+
+    # initialize size of the table
+    maxlimit := ValueOption("max");
+    if maxlimit = fail or not (IsInt(maxlimit) or maxlimit=infinity) then
+      maxlimit := CosetTableDefaultMaxLimit;
+    fi;
+    infstep:=QuoInt(maxlimit,10);
+    nrinf := infstep;
+    limit := CosetTableDefaultLimit;
+    if limit > maxlimit and maxlimit > 0 then
+      limit := maxlimit;
+    fi;
+
+    silent := ValueOption("silent") = true;
+
+    tblinit:=function()
+      # define one coset (1)
+      firstDef  := 1;  lastDef  := 1;
+      firstFree := 2;  lastFree := limit;
+
+      # make the lists that link together all the cosets
+      next := [ 2 .. limit + 1 ];  next[1] := 0;  next[limit] := 0;
+      prev := [ 0 .. limit - 1 ];  prev[2] := 0;
+
+      # compute the representatives for the relators
+      rels := RelatorRepresentatives( grels );
+
+      # make the columns for the generators
+      table := [];
+      for gen  in fgens  do
+	  g := ListWithIdenticalEntries( limit, 0 );
+	  Add( table, g );
+	  if not ( gen^2 in rels or gen^-2 in rels ) then
+	      g := ListWithIdenticalEntries( limit, 0 );
+	  fi;
+	  Add( table, g );
+      od;
+
+      # make the rows for the subgroup generators
+      subgroup := [];
+      for rel  in fsgens  do
+	#T this code should use ExtRepOfObj -- its faster
+	# cope with SLP elms
+	if IsStraightLineProgElm(rel) then
+	  rel:=EvalStraightLineProgElm(rel);
+	fi;
+	length := Length( rel );
+        if length>0 then
+	  length2 := 2 * length;
+	  nums := [ ]; nums[length2] := 0;
+	  cols := [ ]; cols[length2] := 0;
+
+	  # compute the lists.
+	  i := 0;  j := 0;
+	  while i < length do
+	      i := i + 1;  j := j + 2;
+	      gen := Subword( rel, i, i );
+	      p := Position( fgens, gen );
+	      if p = fail then
+		  p := Position( fgens, gen^-1 );
+		  p1 := 2 * p;
+		  p2 := 2 * p - 1;
+	      else
+		  p1 := 2 * p - 1;
+		  p2 := 2 * p;
+	      fi;
+	      nums[j]   := p1;  cols[j]   := table[p1];
+	      nums[j-1] := p2;  cols[j-1] := table[p2];
+	  od;
+	  Add( subgroup, [ nums, cols ] );
+	fi;
+      od;
+
+      # make the rows for the relators and distribute over relsGen
+      relsGen := RelsSortedByStartGen( fgens, rels, table, true );
+
+      # make the structure that is passed to 'MakeConsequences'
+      app := [ table, next, prev, relsGen, subgroup ];
+
+      # we do not want minimal gaps to be marked in the coset table
+      app[12] := 0;
+
+    end;
+    tblinit();
+
+    defs:=[];
+
+    # run over all the cosets
+    while firstDef <> 0  do
+
+        # run through all the rows and look for undefined entries
+        for i  in [ 1 .. Length( table ) ]  do
+            gen := table[i];
+
+            if gen[firstDef] <= 0  then
+
+                inv := table[i + 2*(i mod 2) - 1];
+
+                # if necessary expand the table
+                if firstFree = 0  then
+                    if 0 < maxlimit and  maxlimit <= limit  then
+			if silent then
+			  if ValueOption("returntable")=true then
+			    return table;
+			  else
+			    return fail;
+			  fi;
+			fi;
+                        maxlimit := Maximum(maxlimit*2,limit*2);
+                        OnBreakMessage := function()
+                          TCEOnBreakMessage(maxlimit);
+                        end;
+                        Error( "the coset enumeration has defined more ",
+                               "than ", limit, " cosets\n");
+                    fi;
+                    next[2*limit] := 0;
+                    prev[2*limit] := 2*limit-1;
+                    for g  in table  do g[2*limit] := 0;  od;
+                    for l  in [ limit+2 .. 2*limit-1 ]  do
+                        next[l] := l+1;
+                        prev[l] := l-1;
+                        for g  in table  do g[l] := 0;  od;
+                    od;
+                    next[limit+1] := limit+2;
+                    prev[limit+1] := 0;
+                    for g  in table  do g[limit+1] := 0;  od;
+                    firstFree := limit+1;
+                    limit := 2*limit;
+                    lastFree := limit;
+                fi;
+
+                # update the debugging information
+                nrdef := nrdef + 1;
+                if nrmax <= firstFree  then
+                    nrmax := firstFree;
+                fi;
+
+                # define a new coset
+                gen[firstDef]   := firstFree;
+                inv[firstFree]  := firstDef;
+
+		#Print("Define ",firstDef," under ",i," = ",firstFree,"\n");
+		imgl[firstFree]:=firstDef;
+		word:=getword(firstFree);
+
+
+                next[lastDef]   := firstFree;
+                prev[firstFree] := lastDef;
+                lastDef         := firstFree;
+                firstFree       := next[firstFree];
+                next[lastDef]   := 0;
+
+
+                # set up the deduction queue and run over it until it's empty
+                app[6] := firstFree;
+                app[7] := lastFree;
+                app[8] := firstDef;
+                app[9] := lastDef;
+                app[10] := i;
+                app[11] := firstDef;
+                nd:=MakeConsequences( app );
+                nrdel := nrdel + nd;
+                firstFree := app[6];
+                lastFree := app[7];
+                firstDef := app[8];
+                lastDef  := app[9];
+
+		Add(defs,Concatenation([-nd],word));
+
+                # give some information
+                if nrinf <= nrdef+nrdel then
+                    Info( InfoFpGroup, 3, "\t", nrdef, "\t", nrinf-nrdef,
+                          "\t", 2*nrdef-nrinf, "\t", nrmax );
+                    nrinf := ( Int(nrdef+nrdel)/infstep + 1 ) * infstep;
+                fi;
+
+            fi;
+        od;
+
+        firstDef := next[firstDef];
+    od;
+
+    Info( InfoFpGroup, 2, "\t", nrdef, "\t", nrdel, "\t", nrdef-nrdel, "\t",
+          nrmax );
+  Info(InfoFpGroup,2,"definition length=",Length(defs));
+
+  if Length(defs)>2 then # very short def sequences do not improve
+    repeat
+      Sort(defs);
+      limit:=Minimum(limit,Length(defs));
+      #Error();
+      tblinit();
+      defp:=1;
+
+      happen:=0;
+      better:=false;
+      # iteration with used definition list
+      while defp<=Length(defs) do
+
+	word:=defs[defp];
+	defp:=defp+1;
+
+	# trace as far as possible
+	lastrace:=1;
+	wp:=2; # pos 1 is value
+	
+	while wp<=Length(word) do
+	  firstDef:=lastrace;
+	  i:=word[wp];
+
+	  gen := table[i];
+	  if gen[firstDef]<=0  then
+	    happen:=defp;
+
+	    inv := table[i + 2*(i mod 2) - 1];
+
+	    # if necessary expand the table
+	    if firstFree = 0  then
+		if 0 < maxlimit and  maxlimit <= limit  then
+		    if silent then
+		      if ValueOption("returntable")=true then
+			return table;
+		      else
+			return fail;
+		      fi;
+		    fi;
+		    maxlimit := Maximum(maxlimit*2,limit*2);
+		    OnBreakMessage := function()
+		      TCEOnBreakMessage(maxlimit);
+		    end;
+		    Error( "the coset enumeration has defined more ",
+			    "than ", limit, " cosets\n");
+		fi;
+		next[2*limit] := 0;
+		prev[2*limit] := 2*limit-1;
+		for g  in table  do g[2*limit] := 0;  od;
+		for l  in [ limit+2 .. 2*limit-1 ]  do
+		    next[l] := l+1;
+		    prev[l] := l-1;
+		    for g  in table  do g[l] := 0;  od;
+		od;
+		next[limit+1] := limit+2;
+		prev[limit+1] := 0;
+		for g  in table  do g[limit+1] := 0;  od;
+		firstFree := limit+1;
+		limit := 2*limit;
+		lastFree := limit;
+	    fi;
+
+	    # update the debugging information
+	    nrdef := nrdef + 1;
+	    if nrmax <= firstFree  then
+		nrmax := firstFree;
+	    fi;
+
+	    # define a new coset
+	    gen[firstDef]   := firstFree;
+	    inv[firstFree]  := firstDef;
+
+	    next[lastDef]   := firstFree;
+	    prev[firstFree] := lastDef;
+	    lastDef         := firstFree;
+	    firstFree       := next[firstFree];
+	    next[lastDef]   := 0;
+
+	    # set up the deduction queue and run over it until it's empty
+	    app[6] := firstFree;
+	    app[7] := lastFree;
+	    app[8] := firstDef;
+	    app[9] := lastDef;
+	    app[10] := i;
+	    app[11] := firstDef;
+
+	    nd:=MakeConsequences( app );
+	    if nd>-word[1] then
+	      better:=true;
+	      word[1]:=-nd;
+	    fi;
+	    nrdel := nrdel + nd;
+
+	    firstFree := app[6];
+	    lastFree := app[7];
+	    firstDef := app[8];
+	    lastDef  := app[9];
+
+	  else
+	    nd:=0;
+	  fi;
+
+	  if nd>0 then
+	    # deletions -- reset word
+	    lastrace:=1;
+	    wp:=2;
+	  else
+	    lastrace:=table[word[wp]][lastrace];
+	    wp:=wp+1;
+	  fi;
+
+	od;
+      od;
+      Info(InfoFpGroup,2,"Definition length improved to ",happen-1);
+      defs:=defs{[1..happen-1]};
+    until better=false;
+  fi;
+
+  return defs;
+end);
+
+
+#############################################################################
+##
+#M  AugmentedCosetTableMtc( <G>, <H>, <type>, <string> )  . . . . . . . . . .
+#M  . . . . . . . . . . . . .  do an MTC and return the augmented coset table
+##
+##  is an internal function used by the subgroup presentation functions
+##  described in "Subgroup Presentations". It applies a Modified Todd-Coxeter
+##  coset representative enumeration to construct an augmented coset table
+##  (see "Subgroup presentations") for the given subgroup <H> of <G>. The
+##  subgroup generators will be named <string>1, <string>2, ... .
+##
+##  Valid types are 1 (for the one generator case), 0 (for the abelianized
+##  case), and 2 (for the general case). A type value of -1 is handled in
+##  the same way as the case type = 1, but the function will just return the
+##  the exponent <aug>.exponent of the given cyclic subgroup <H> and its
+##  index <aug>.index in <G> as the only components of the resulting record
+##  <aug>.
+##
+BindGlobal( "New_AugmentedCosetTableMtc",
+    function ( G, H, ttype, string )
+
+    local   fgens,                  # generators of asscociated free group
+            grels,                  # relators of G
+            sgens,                  # subgroup generators of H
+            fsgens,                 # preimages of subgroup generators in F
+            involutions,            # indices of involutory gens of G
+            next,  prev,            # next and previous coset on lists
+            fact,                   # factor to previous coset rep
+            firstFree,  lastFree,   # first and last free coset
+            firstDef,   lastDef,    # first and last defined coset
+            table,                  # coset table to be built up
+            coFacTable,             # coset factor table
+            rels,                   # representatives for the relators
+            relsGen,                # relators sorted by start generator
+            subgroup,               # rows for the subgroup gens
+            tree,                   # tree of generators
+            tree1, tree2,           # components of tree of generators
+            treelength,             # number of gens (primary + secondary)
+            type,                   # type
+            deductions,             # deduction queue
+            i, gen, inv,            # loop variables for generators
+            g, f,                   # loop variables for generator cols
+            rel,                    # loop variable for relations
+            p, p1, p2,              # generator position numbers
+            app,                    # arguments list for 'MakeConsequences2'
+            limit,                  # limit of the table
+            maxlimit,               # maximal size of the table
+            j,                      # integer variable
+            length, length2,        # length of relator
+            cols,                   #
+            nums,                   #
+            l,                      #
+            nrdef,                  # number of defined cosets
+            nrmax,                  # maximal value of the above
+            nrdel,                  # number of deleted cosets
+            nrinf,                  # number for next information message
+            numgens,                # number of generators
+	    defseq,                 # definition sequence
+	    lastrace,nd,word,wp,
+            F,                      # a new free group
+            gens,                   # new generators
+            ngens,                  # number of new generators
+            defs,                   # definitions of primary subgroup gens
+            index,                  # index of H in G
+            numcols,                # number of columns in the tables
+            numoccs,                # number of gens which occur in the table
+            occur,                  #
+            treeNums,               #
+            exponent,               # order of subgroup in case type = 1
+            convert,                # conversion list for subgroup generators
+            aug,                    # augmented coset table
+            field,                  # loop variable for record field names
+	    silent;		    # do we want the algorithm to silently
+	                            # return `fail' if the algorithm did not
+				    # finish in the permitted size?
+
+    # check the arguments
+    if not ( IsSubgroupFpGroup( G ) and IsGroupOfFamily( G ) ) then
+        Error( "<G> must be a finitely presented group" );
+    fi;
+    if FamilyObj( H ) <> FamilyObj( G ) then
+        Error( "<H> must be a subgroup of <G>" );
+    fi;
+
+    # get some local variables
+    fgens := FreeGeneratorsOfFpGroup( G );
+    grels := RelatorsOfFpGroup( G );
+    sgens := GeneratorsOfGroup( H );
+    fsgens := List( sgens, gen -> UnderlyingElement( gen ) );
+
+    # get definition sequence from ordinary TC
+    defseq:=GTC_GoodDefinitionSequence(fgens,grels,fsgens);
+
+    # check the given type for being -1, 0, 1, or 2.
+    if ttype < -1 or ttype > 2 then
+        Error( "invalid type value; it should be -1, 0, 1, or 2" );
+    fi;
+    type := ttype;
+    if type = -1 then type := 1; fi;
+
+    # check the number of generators and the type for being consistent.
+    numgens := Length( sgens );
+    if type = 1 and numgens > 1 then
+        Error( "type 1 is illegal for more than 1 generators" );
+    fi;
+
+    # give some information
+    Info( InfoFpGroup, 2, "AugmentedCosetTableMtc called:" );
+    Info( InfoFpGroup, 2, "    defined deleted alive   maximal");
+    nrdef := 1;
+    nrmax := 1;
+    nrdel := 0;
+    nrinf := 1000;
+
+    # initialize size of the table
+    limit := CosetTableDefaultLimit;
+    maxlimit:=ValueOption("max");
+    if maxlimit=fail or not IsInt(maxlimit) then
+      maxlimit := CosetTableDefaultMaxLimit;
+    fi;
+
+    silent:=ValueOption("silent")=true;
+
+    # define one coset (1)
+    firstDef  := 1;  lastDef  := 1;
+    firstFree := 2;  lastFree := limit;
+
+    # make the lists that link together all the cosets
+    next := [ 2 .. limit+1 ];  next[1] := 0;  next[limit] := 0;
+    prev := [ 0 .. limit-1 ];  prev[2] := 0;
+    fact := [ 1 .. limit ];  fact[1] := 0;  fact[2] := 0;
+
+    # get the representatives of the relators
+    rels := RelatorRepresentatives( grels );
+
+    # make the columns for the generators
+    involutions := IndicesInvolutaryGenerators( G );
+    table := [ ];                                           
+    coFacTable := [ ];                                                    
+    for i in [ 1 .. Length( fgens ) ] do           
+        g := ListWithIdenticalEntries( limit, 0 );            
+        f := ListWithIdenticalEntries( limit, 0 );                         
+        Add( table, g );                                              
+        Add( coFacTable, f );                                     
+        if not i in involutions then
+            g := ListWithIdenticalEntries( limit, 0 );            
+            f := ListWithIdenticalEntries( limit, 0 );                
+        fi;                                                        
+        Add( table, g );                                                 
+        Add( coFacTable, f );                                         
+    od;
+
+    # construct the list relsGen which for each generator or inverse
+    # generator contains a list of all cyclically reduced relators,
+    # starting with that element, which can be obtained by conjugating or
+    # inverting given relators. The relators in relsGen are represented as
+    # lists of the coset table columns corresponding to the generators and,
+    # in addition, as lists of the respective column numbers.
+    relsGen := RelsSortedByStartGen( fgens, rels, table, true );
+
+    # make the rows for the subgroup generators
+    subgroup := [ ];
+    for rel  in fsgens  do
+      #T this code should use ExtRepOfObj -- its faster
+      # cope with SLP elms
+      if IsStraightLineProgElm(rel) then
+        rel:=EvalStraightLineProgElm(rel);
+      fi;
+      length := Length( rel );
+      nums := [ ]; 
+      cols := [ ]; 
+      if length>0 then
+        length2 := 2 * length;
+	nums[length2] := 0;
+	cols[length2] := 0;
+
+        # compute the lists.
+        i := 0;  j := 0;
+        while i < length do
+            i := i + 1;  j := j + 2;
+            gen := Subword( rel, i, i );
+            p := Position( fgens, gen );
+            if p = fail then
+                p := Position( fgens, gen^-1 );
+                p1 := 2 * p;
+                p2 := 2 * p - 1;
+            else
+                p1 := 2 * p - 1;
+                p2 := 2 * p;
+            fi;
+            nums[j]   := p1;  cols[j]   := table[p1];
+            nums[j-1] := p2;  cols[j-1] := table[p2];
+        od;
+      fi;
+      Add( subgroup, [ nums, cols ] );
+    od;
+
+    # define the primary subgroup generators.
+    ngens := numgens;
+    defs := fsgens;
+
+    # initialize the tree of secondary generators.
+    if type = 1 then
+        treelength := 1;
+        tree1 := [ 1 ];
+        tree2 := [ 0 ];
+    elif type = 0 then
+        treelength := numgens;
+        length := treelength + 100;
+        tree1 := ListWithIdenticalEntries( length, 0 );
+        for i in [ 1 .. numgens ] do
+            tree1[i] := ListWithIdenticalEntries( i, 0 );
+            tree1[i][i] := 1;
+        od;
+        tree2 := ListWithIdenticalEntries( numgens, 0 );
+    else
+        treelength := numgens;
+        length := treelength + 100;
+        tree1 := ListWithIdenticalEntries( length, 0 );
+        tree2 := ListWithIdenticalEntries( length, 0 );
+    fi;
+    tree := [ tree1, tree2, treelength, numgens, type ];
+
+    # add an empty deduction list
+    deductions := [ ];
+
+    # initialize the subgroup exponent (which is needed in case type = 1)
+    exponent := 0;
+
+    # check if the subgroup generator is an involution?
+    if type = 1 and NumberSyllables(fsgens[1])=1 then
+        i := Position( fgens, fsgens[1] );
+        if i <> fail then
+            if IsIdenticalObj( table[2*i-1], table[2*i] ) then
+               exponent := 2;
+            fi;
+
+	    # do we have power relators for this generator?
+	    i:=GeneratorSyllable(fsgens[1],1);
+	    for j in rels do
+	      if NumberSyllables(j)=1 and GeneratorSyllable(j,1)=i then
+	        exponent:=Gcd(exponent,AbsInt(ExponentSyllable(j,1)));
+	      fi;
+	    od;
+        fi;
+    fi;
+
+    # make the structure that is passed to 'MakeConsequences2'
+    app := ListWithIdenticalEntries( 16, 0 );
+    app[1] := table;
+    app[2] := next;
+    app[3] := prev;
+    app[4] := relsGen;
+    app[5] := subgroup;
+    app[12] := coFacTable;
+    app[13] := fact;
+    app[14] := tree;
+    app[15] := numgens;
+    app[16] := exponent;
+
+    # follow definition sequence
+    for word in defseq do
+
+      # trace as far as possible
+      lastrace:=1;
+      wp:=2; # pos 1 is value
+      
+      while wp<=Length(word) do
+        firstDef:=lastrace;
+	i:=word[wp];
+
+	gen := table[i];
+
+	if gen[firstDef] = 0  then
+
+	    inv := i + 2*(i mod 2) - 1;
+
+	    # if necessary expand the table
+	    if firstFree = 0  then
+		if 0 < maxlimit and  maxlimit <= limit  then
+		    if silent then
+		      return fail;
+		    fi;
+		    maxlimit := Maximum(maxlimit*2,limit*2);
+		    Error( "the coset enumeration has defined more ",
+			    "than ", limit, " cosets:\ntype 'return;' ",
+			    "if you want to continue with a new limit ",
+			    "of ", maxlimit, " cosets,\ntype 'quit;' ",
+			    "if you want to quit the coset ",
+			    "enumeration,\ntype 'maxlimit := 0; return;'",
+			    " in order to continue without a limit,\n" );
+		fi;
+		next[2*limit] := 0;
+		prev[2*limit] := 2*limit-1;
+		fact[2*limit] := 0;
+		for g  in table  do g[2*limit] := 0;  od;
+		for g  in coFacTable  do g[2*limit] := 0;  od;
+		for l  in [ limit+2 .. 2*limit-1 ]  do
+		    next[l] := l+1;
+		    prev[l] := l-1;
+		    fact[l] := 0;
+		    for g  in table  do g[l] := 0;  od;
+		    for g  in coFacTable  do g[l] := 0;  od;
+		od;
+		next[limit+1] := limit+2;
+		prev[limit+1] := 0;
+		fact[limit+1] := 0;
+		for g  in table  do g[limit+1] := 0;  od;
+		for g  in coFacTable  do g[limit+1] := 0;  od;
+		firstFree := limit+1;
+		limit := 2*limit;
+		lastFree := limit;
+	    fi;
+
+	    # update the debugging information
+	    nrdef := nrdef + 1;
+	    if nrmax <= firstFree  then
+		nrmax := firstFree;
+	    fi;
+
+	    # define a new coset
+	    gen[firstDef]              := firstFree;
+	    coFacTable[i][firstDef]    := 0;
+	    table[inv][firstFree]      := firstDef;
+	    coFacTable[inv][firstFree] := 0;
+	    next[lastDef]              := firstFree;
+	    prev[firstFree]            := lastDef;
+	    fact[firstFree]            := 0;
+	    lastDef                    := firstFree;
+	    firstFree                  := next[firstFree];
+	    next[lastDef]              := 0;
+
+	    # set up the deduction queue and run over it until it's empty
+	    app[6]  := firstFree;
+	    app[7]  := lastFree;
+	    app[8]  := firstDef;
+	    app[9]  := lastDef;
+	    app[10] := i;
+	    app[11] := firstDef;
+	    nd:=MakeConsequences2( app );
+	    nrdel := nrdel + nd;
+	    firstFree := app[6];
+	    lastFree  := app[7];
+	    firstDef  := app[8];
+	    lastDef   := app[9];
+
+	    # give some information
+	    while nrinf <= nrdef+nrdel  do
+		Info( InfoFpGroup, 2, "\t", nrdef, "\t", nrinf-nrdef,
+		    "\t", 2*nrdef-nrinf, "\t", nrmax );
+		nrinf := nrinf + 1000;
+	    od;
+
+	else
+	  nd:=0;
+	fi;
+
+	if nd>0 then
+	  # deletions -- reset word
+	  lastrace:=1;
+	  wp:=2;
+	else
+	  lastrace:=table[word[wp]][lastrace];
+	  wp:=wp+1;
+	fi;
+
+      od;
+
+  od;
+
+  Info( InfoFpGroup, 2, "\t", nrdef, "\t", nrdel, "\t", nrdef-nrdel,
+      "\t", nrmax );
+
+  # In case of type = -1 return just index and exponent of the given cyclic
+  # subroup.
+  if ttype = -1 then
+      index := nrdef - nrdel;
+      SetIndexInWholeGroup( H, index );
+      Info( InfoFpGroup, 1, "index = ", index, "  total = ", nrdef,
+	  "  max = ", nrmax );
+      aug := rec( );
+      aug.index := index;
+      exponent := app[16];
+      if exponent = 0 then
+	  exponent := infinity;
+      elif exponent < 0 then
+	  exponent := - exponent;
+      fi;
+      aug.exponent := exponent;
+      return aug;
+  fi;
+
+  # separate pairs of identical columns in the coset tables.
+  for i in [ 1 .. Length( fgens ) ] do                         
+      if i in involutions then
+	  table[2*i] := StructuralCopy( table[2*i-1] );       
+	  coFacTable[2*i] := StructuralCopy( coFacTable[2*i-1] );       
+      fi;                                        
+  od;
+
+  # standardize the tables.
+  StandardizeTable2( table, coFacTable );
+
+  # save coset table and index in the group record of H.
+  if not HasCosetTableInWholeGroup( H ) then
+      SetCosetTableInWholeGroup( H, table );
+  fi;
+  index := IndexCosetTab( table );
+  if not HasIndexInWholeGroup( H ) then
+      SetIndexInWholeGroup( H, index );
+      Info( InfoFpGroup, 1, "index = ", index, "  total = ", nrdef,
+	  "  max = ", nrmax );
+  elif IndexInWholeGroup( H ) <> index then
+      Error( "inconsistent values for the index of H in G" );
+  fi;
+
+  if type = 2 then
+
+      # reduce the tree to its proper length.
+      treelength := tree[3];
+      length := Length( tree1 );
+      while length > treelength do
+	  Unbind( tree1[length] );
+	  Unbind( tree2[length] );
+	  length := length - 1;
+      od;
+
+      # determine which generators occur in the augmented table.
+      occur := ListWithIdenticalEntries( treelength, 0 );
+      for i in [ 1 .. numgens ] do
+	  occur[i] := 1;
+      od;
+      numcols := Length( coFacTable );
+      numoccs := numgens;
+      i := 1;
+      while i < numcols do
+	  for next in coFacTable[i] do
+	      if next <> 0 then
+		  j := AbsInt( next );
+		  if occur[j] = 0 then
+		      occur[j] := 1;  numoccs := numoccs + 1;
+		  fi;
+	      fi;
+	  od;
+	  i := i + 2;
+      od;
+
+      # build up a list of pointers from the occurring generators to the
+      # tree, and define names for the occurring secondary generators.
+      treeNums := [ 1 .. numoccs ];
+      for j in [ numgens+1 .. treelength ] do
+	  if occur[j] <> 0 then
+	      ngens := ngens + 1;
+	      treeNums[ngens] := j;
+	  fi;
+      od;
+  fi;
+
+  # get ngens new generators
+  F := FreeGroup( ngens, string );
+  gens := GeneratorsOfGroup( F );
+
+  # create the augmented coset table record.
+  aug := rec( );
+  aug.isAugmentedCosetTable := true;
+  aug.type := type;
+  aug.tableType := TABLE_TYPE_MTC;
+  aug.groupGenerators := fgens;
+  aug.groupRelators := grels;
+  aug.cosetTable := table;
+  aug.cosetFactorTable := coFacTable;
+  aug.primaryGeneratorWords := defs;
+  aug.numberOfSubgroupGenerators := ngens;
+  aug.nameOfSubgroupGenerators := Immutable( string );
+  aug.subgroupGenerators := gens;
+  aug.tree := tree;
+
+  if type = 1 then
+      exponent := app[16];
+      if exponent = 0 then
+	  aug.exponent := infinity;
+	  aug.subgroupRelators := [ [ ] ];
+      else
+	  if exponent < 0 then  exponent := - exponent;  fi;
+	  aug.exponent := exponent;
+	  aug.subgroupRelators :=
+	      [ ListWithIdenticalEntries( exponent, 1 ) ];
+      fi;
+
+  elif type = 2 then
+      aug.treeNumbers := treeNums;
+
+      # prepare a conversion list for the subgroup generator numbers if
+      # they do not all occur in the subgroup relators.
+      numgens := Length( gens );
+      if numgens < treelength then
+	  convert := ListWithIdenticalEntries( treelength, 0 );
+	  for i in [ 1 .. numgens ] do
+	      convert[treeNums[i]] := i;
+	  od;
+	  aug.conversionList := convert;
+      fi;
+  fi;
+
+  # ensure that all components of the augmented coset table are immutable.
+  for field in RecFields( aug ) do
+    MakeImmutable( aug.(field) );
+  od;
+
+  # display a message
+  if treelength > 0 then
+      numgens := Length( defs );
+      Info( InfoFpGroup, 1, "MTC defined ", numgens, " primary and ",
+	  treelength - numgens, " secondary subgroup generators" );
+  fi;
+
+  # return the augmented coset table.
   return aug;
 end );
 
@@ -352,10 +1303,13 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
       if IsStraightLineProgElm(rel) then
         rel:=EvalStraightLineProgElm(rel);
       fi;
-        length := Length( rel );
+      length := Length( rel );
+      nums := [ ]; 
+      cols := [ ]; 
+      if length>0 then
         length2 := 2 * length;
-        nums := [ ]; nums[length2] := 0;
-        cols := [ ]; cols[length2] := 0;
+	nums[length2] := 0;
+	cols[length2] := 0;
 
         # compute the lists.
         i := 0;  j := 0;
@@ -374,7 +1328,8 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
             nums[j]   := p1;  cols[j]   := table[p1];
             nums[j-1] := p2;  cols[j-1] := table[p2];
         od;
-        Add( subgroup, [ nums, cols ] );
+      fi;
+      Add( subgroup, [ nums, cols ] );
     od;
 
     # define the primary subgroup generators.
@@ -681,6 +1636,9 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
     # return the augmented coset table.
     return aug;
 end );
+
+
+
 
 
 #############################################################################
@@ -1162,7 +2120,7 @@ local column, gens, i, range, table, transversal;
   # construct a permutations representation of G on the cosets of H.
   gens := GeneratorsOfGroup(G);
   if not (IsPermGroup(G) and IsPermGroup(H) and
-          Length(Orbit(G,1))=NrMovedPoints(G) and H=Stabilizer(G,1)) then
+          IsEqualSet(Orbit(G,1),[1..NrMovedPoints(G)]) and H=Stabilizer(G,1)) then
     transversal := RightTransversal( G, H );
     gens := List( gens, gen -> Permutation( gen, transversal,OnRight ) );
     range := [ 1 .. Length( transversal ) ];
@@ -1190,7 +2148,9 @@ end);
 InstallMethod(CosetTableBySubgroup,"use `CosetTableInWholeGroup",
   IsIdenticalObj, [IsSubgroupFpGroup,IsSubgroupFpGroup],0,
 function(G,H)
-  if IndexInWholeGroup(G)>1 then
+  if IndexInWholeGroup(G)>1 or not IsIdenticalObj(G,Parent(G))
+      or List(GeneratorsOfGroup(G),UnderlyingElement)
+         <>FreeGeneratorsOfFpGroup(Parent(G)) then
     TryNextMethod();
   fi;
   return CosetTableInWholeGroup(H);
@@ -2096,7 +3056,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
 
     local app2, coFacTable, cols, cosTable, factor, ggensi, grel,greli, i,
           index, j, length, nums, numgens, numrels, p, rels, total, tree,
-          treelength, type,si,ei,nneg;
+          treelength, type,si,ei,nneg,word;
 
     # check the type for being zero.
     type := aug.type;
@@ -2105,7 +3065,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     fi;
 
     # initialize some local variables.
-    ggensi := List(aug.groupGenerators,i->GeneratorSyllable(i,1));
+    ggensi := List(aug.groupGenerators,i->AbsInt(LetterRepAssocWord(i)[1]));
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
@@ -2133,31 +3093,49 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
       CompletionBar(InfoFpGroup,2,"Relator Loop:",greli/Length(prels));
       grel:=prels[greli];
 
-        # get two copies of the group relator, one as a list of words in the
-        # factor table columns and one as a list of words in the coset table
-        # column numbers.
-        length := Length( grel );
+      # get two copies of the group relator, one as a list of words in the
+      # factor table columns and one as a list of words in the coset table
+      # column numbers.
+      length := Length( grel );
+      if length>0 then
+
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#	od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
 	od;
 
         # loop over all cosets and determine the subgroup relators which are
@@ -2181,6 +3159,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
             # add the resulting subgroup relator to rels.
             numrels := AddAbelianRelator( rels, numrels );
         od;
+      fi;
     od;
     CompletionBar(InfoFpGroup,2,"Relator Loop:",false);
 
@@ -2188,33 +3167,52 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     for j in [ 1 .. numgens ] do
       CompletionBar(InfoFpGroup,2,"Generator Loop:",j/numgens);
 
-        # get two copies of the subgroup generator, one as a list of words in
-        # the factor table columns and one as a list of words in the coset
-        # table column numbers.
-        grel := aug.primaryGeneratorWords[j];
-        length := Length( grel );
+      # get two copies of the subgroup generator, one as a list of words in
+      # the factor table columns and one as a list of words in the coset
+      # table column numbers.
+      grel := aug.primaryGeneratorWords[j];
+      length := Length( grel );
+
+      if length>0 then
+
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
-        od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#        od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
+	od;
 
         # scan coset 1 through the current subgroup generator and collect the
         # factors of its invers (!) in rel.
@@ -2230,11 +3228,20 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
         app2[4] := 1;
         ApplyRel2( app2, cols, nums );
 
-        # add as last factor the generator number j.
-        rels[numrels][j] := rels[numrels][j] + 1;
+      else
+        # trivial generator
+        numrels := numrels + 1;
+        if numrels > total then
+            total := total + 1;
+            rels[total] := ListWithIdenticalEntries( numgens, 0 );
+        fi;
+      fi;
 
-        # add the resulting subgroup relator to rels.
-        numrels := AddAbelianRelator( rels, numrels );
+      # add as last factor the generator number j.
+      rels[numrels][j] := rels[numrels][j] + 1;
+
+      # add the resulting subgroup relator to rels.
+      numrels := AddAbelianRelator( rels, numrels );
     od;
 
     # reduce the relator list to its proper size.
@@ -2269,14 +3276,14 @@ InstallGlobalFunction( RewriteSubgroupRelators,
 
     local app2, coFacTable, cols, convert, cosTable, factor, ggensi,
           greli,grel, i, index, j, last, length, nums, numgens, p, rel, rels,
-          treelength, type,si,nneg,ei;
+          treelength, type,si,nneg,ei,word;
 
     # check the type.
     type := aug.type;
     if type <> 2 then  Error( "invalid type; it should be 2" );  fi;
 
     # initialize some local variables.
-    ggensi := List(aug.groupGenerators,i->GeneratorSyllable(i,1));
+    ggensi := List(aug.groupGenerators,i->AbsInt(LetterRepAssocWord(i)[1]));
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
@@ -2302,23 +3309,39 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#	od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
 	od;
 
         # loop over all cosets and determine the subgroup relators which are
@@ -2352,33 +3375,51 @@ InstallGlobalFunction( RewriteSubgroupRelators,
     for j in [ 1 .. numgens ] do
       CompletionBar(InfoFpGroup,2,"Generator Loop:",j/numgens);
 
-        # get two copies of the subgroup generator, one as a list of words in
-        # the factor table columns and one as a list of words in the coset
-        # table column numbers.
-        grel := aug.primaryGeneratorWords[j];
-        length := Length( grel );
+      # get two copies of the subgroup generator, one as a list of words in
+      # the factor table columns and one as a list of words in the coset
+      # table column numbers.
+      grel := aug.primaryGeneratorWords[j];
+      length := Length( grel );
+
+      if length>0 then
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
-        od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#        od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
+	od;
 
         # scan coset 1 through the current subgroup generator and collect the
         # factors of its inverse (!) in rel.
@@ -2405,6 +3446,10 @@ InstallGlobalFunction( RewriteSubgroupRelators,
                 AddSet( rels, CopyRel( rel ) );
             fi;
         fi;
+      else
+        # trivial generator
+	AddSet(rels,[j]);
+      fi;
     od;
     CompletionBar(InfoFpGroup,2,"Generator Loop:",false);
 
@@ -2527,7 +3572,7 @@ end );
 #F  RewriteWord( <aug>, <word> )
 ##
 InstallGlobalFunction(RewriteWord,function ( aug, word )
-local cft, ct, w,c,i,j,g,e,ind;
+local cft, ct, w,l,c,i,j,g,e,ind;
 
   # check the type.
   Assert(1,aug.type=2);
@@ -2539,28 +3584,44 @@ local cft, ct, w,c,i,j,g,e,ind;
   # translation table for group generators to numbers
   if not IsBound(aug.transtab) then
     # should do better, also cope with inverses
-    aug.transtab:=List(aug.groupGenerators,i->GeneratorSyllable(i,1));
+    aug.transtab:=List(aug.groupGenerators,i->AbsInt(LetterRepAssocWord(i)[1]));
   fi;
 
   w:=[];
   c:=1; # current coset
-  for i in [1..NrSyllables(word)] do
-    g:=GeneratorSyllable(word,i);
-    e:=ExponentSyllable(word,i);
-    if e<0 then
+
+  #for i in [1..NrSyllables(word)] do
+  #  g:=GeneratorSyllable(word,i);
+  #  e:=ExponentSyllable(word,i);
+  #  if e<0 then
+  #    ind:=2*aug.transtab[g];
+  #    e:=-e;
+  #  else
+  #    ind:=2*aug.transtab[g]-1;
+  #  fi;
+  #  for j in [1..e] do
+  #    # apply the generator, collect cofactor
+  #    if cft[ind][c]<>0 then
+#	Add(w,cft[ind][c]); #cofactor
+#      fi;
+#      c:=ct[ind][c]; # new coset number
+#    od;
+#  od;
+  l:=LetterRepAssocWord(word);
+  for i in l do
+    g:=AbsInt(i);
+    if i<0 then
       ind:=2*aug.transtab[g];
-      e:=-e;
     else
       ind:=2*aug.transtab[g]-1;
     fi;
-    for j in [1..e] do
-      # apply the generator, collect cofactor
-      if cft[ind][c]<>0 then
-	Add(w,cft[ind][c]); #cofactor
-      fi;
-      c:=ct[ind][c]; # new coset number
-    od;
+    # apply the generator, collect cofactor
+    if cft[ind][c]<>0 then
+      Add(w,cft[ind][c]); #cofactor
+    fi;
+    c:=ct[ind][c]; # new coset number
   od;
+
   # make sure we got back to start
   if c<>1 then 
     return fail;
@@ -2605,7 +3666,7 @@ end);
 ## decode the secondary generators as words in the primary generators, using
 ## the `.subgroupGenerators' and their subset `.primarySubgroupGenerators'.
 InstallGlobalFunction(GeneratorTranslationAugmentedCosetTable,function(aug)
-local tt,i,t1,t2;
+local tt,i,t1,t2,tn;
   if not IsBound(aug.translationTable) then
     if not IsBound(aug.primarySubgroupGenerators) then
       aug.primarySubgroupGenerators:=
@@ -2616,10 +3677,13 @@ local tt,i,t1,t2;
     tt:=ShallowCopy(aug.primarySubgroupGenerators);
     t1:=aug.tree[1];
     t2:=aug.tree[2];
-    for i in [Length(tt)+1..Maximum(aug.treeNumbers)] do
-      tt[i]:=tt[AbsInt(t1[i])]^SignInt(t1[i])
-            *tt[AbsInt(t2[i])]^SignInt(t2[i]);
-    od;
+    tn:=aug.treeNumbers;
+    if Length(tn)>0 then
+      for i in [Length(tt)+1..Maximum(tn)] do
+	tt[i]:=tt[AbsInt(t1[i])]^SignInt(t1[i])
+	      *tt[AbsInt(t2[i])]^SignInt(t2[i]);
+      od;
+    fi;
     aug.translationTable:=Immutable(tt);
   fi;
   return aug.translationTable;

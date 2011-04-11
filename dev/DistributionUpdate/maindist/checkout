@@ -1,0 +1,44 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+# create and go to build directory
+if ! mkdir -p ${DISTROOT}; then
+  echo 'Cannot create temporary directory '${DISTROOT}
+  exit 1
+fi
+
+echo 'cd '${DISTROOT}
+cd ${DISTROOT}
+rm -rf ${DISTNAME}
+
+
+# checkout the files
+echo "$0: exporting out version $FULLVERSION of $DATE"
+line='cvs -q -Q export '${GAPCVSVERSION}' -d '${DISTNAME}' 4.0'
+echo $line
+$line
+if [ \! -d ${DISTNAME} ];  then
+    echo "PANIC: cvs did not create a distribution directory"
+    exit 1
+fi
+
+# Removing all .cvsignore files
+echo 'Removing all .cvsignore files'
+find ${DISTNAME} -name .cvsignore -exec rm -f {} ";"
+
+# get the packages archive
+cd ${DISTROOT}
+
+wget -O pkgnow.tgz ${PKGLOC}
+cd ${DISTROOT}/${DISTNAME}/pkg
+tar zxf ../../pkgnow.tgz
+
+# that's it
+exit 0

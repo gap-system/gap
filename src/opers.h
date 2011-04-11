@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  opers.h                     GAP source                   Martin Schoenert
+*W  opers.h                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the  filters, operations, attributes,
 **  and properties package.
@@ -183,7 +184,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the `and' cache of a flags list
 */
-#define SET_AND_CACHE_FLAGS(flags,and)  (ADDR_OBJ(flags)[3]=(and))
+#define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[3]=(andc))
 
 
 /****************************************************************************

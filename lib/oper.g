@@ -2,12 +2,13 @@
 ##
 #W  oper.g                      GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
-#W                                                         & Martin Schoenert
+#W                                                          & Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file defines operations and such. Some functions have moved
 ##  to oper1.g so as to be compiled in the default kernel
@@ -18,11 +19,37 @@ Revision.oper_g :=
 
 INSTALL_METHOD := false;
 
+
+#############################################################################
+##
+#F  INFO_DEBUG( <level>, ... )
+##
+##  <ManSection>
+##  <Func Name="INFO_DEBUG" Arg='level, ...'/>
+##
+##  <Description>
+##  This will delegate to the proper info class <C>InfoDebug</C>
+##  as soon as the info classes are available.
+##  </Description>
+##  </ManSection>
+##
+BIND_GLOBAL( "INFO_DEBUG", function( arg )
+    Print( "#I  " );
+    CALL_FUNC_LIST( Print, arg{ [ 2 .. LEN_LIST( arg ) ] } );
+end );
+
+
 #############################################################################
 ##
 #V  CATS_AND_REPS
 ##
+##  <ManSection>
+##  <Var Name="CATS_AND_REPS"/>
+##
+##  <Description>
 ##  a list of filter numbers of categories and representations
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "CATS_AND_REPS", [] );
 
@@ -31,6 +58,13 @@ BIND_GLOBAL( "CATS_AND_REPS", [] );
 ##
 #V  CONSTRUCTORS
 ##
+##  <ManSection>
+##  <Var Name="CONSTRUCTORS"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "CONSTRUCTORS", [] );
 
 
@@ -38,23 +72,30 @@ BIND_GLOBAL( "CONSTRUCTORS", [] );
 ##
 #V  IMMEDIATES
 ##
-##  is a list  that  contains at position   <i> the description of all  those
-##  immediate methods for that `FILTERS[<i>]' belongs to the requirements.
+##  <ManSection>
+##  <Var Name="IMMEDIATES"/>
 ##
-##  So   each entry of  `IMMEDIATES'  is a  zipped list,  where 6 consecutive
-##  positions  are ..., and the  position of  the  method itself  in the list
-##  `IMMEDIATE_METHODS'.
-##
+##  <Description>
+##  is a list that contains at position <M>i</M> the description of all those
+##  immediate methods for which <C>FILTERS</C><M>[i]</M> belongs to the
+##  requirements.
+##  <P/>
+##  So each entry of <C>IMMEDIATES</C> is a zipped list, where 6 consecutive
+##  positions are ..., and the  position of  the  method itself  in the list
+##  <C>IMMEDIATE_METHODS</C>.
+##  <P/>
 ##  Note:
-##  1. If a method requires two filters $F_1$ and $F_2$ such that $F_1$
-##     implies $F_2$, it will *not* be installed for $F_2$.
+##  1. If a method requires two filters <M>F_1</M> and <M>F_2</M> such that
+##     <M>F_1</M> implies <M>F_2</M>,
+##     it will <E>not</E> be installed for <M>F_2</M>.
 ##  2. If not all requirements are categories/representations then
 ##     the category/representation part of the requirements will be ignored;
-#T and if only cats are required? Does this make sense?
-#T and what about representations that may change?
+##  <!-- and if only cats are required? Does this make sense?-->
+##  <!-- and what about representations that may change?-->
 ##     in other words, the only information that may cause to run immediate
 ##     methods is acquired information.
-##  
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "IMMEDIATES", [] );
 
@@ -63,7 +104,13 @@ BIND_GLOBAL( "IMMEDIATES", [] );
 ##
 #V  IMMEDIATE_METHODS
 ##
+##  <ManSection>
+##  <Var Name="IMMEDIATE_METHODS"/>
+##
+##  <Description>
 ##  is a list of functions that are installed as immediate methods.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "IMMEDIATE_METHODS", [] );
 
@@ -72,6 +119,13 @@ BIND_GLOBAL( "IMMEDIATE_METHODS", [] );
 ##
 #V  NUMBERS_PROPERTY_GETTERS
 ##
+##  <ManSection>
+##  <Var Name="NUMBERS_PROPERTY_GETTERS"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 
 
@@ -79,14 +133,20 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##
 #V  OPERATIONS
 ##
-##  is a list that stores all {\GAP} operations at the odd positions,
+##  <ManSection>
+##  <Var Name="OPERATIONS"/>
+##
+##  <Description>
+##  is a list that stores all &GAP; operations at the odd positions,
 ##  and the corresponding list of requirements at the even positions.
-##  More precisely, if the operation `OPERATIONS[<n>]' has been declared
-##  by several calls of `DeclareOperation',
-##  with second arguments <req1>, <req2>, \ldots,
-##  each being a list of filters, then `OPERATIONS[ <n>+1 ]' is the list
-##  $`[' <flags1>, <flags2>, \ldots, `]'$,
-##  where <flagsi> is the list of flags of the filters in <reqi>.
+##  More precisely, if the operation <C>OPERATIONS[<A>n</A>]</C> has been declared
+##  by several calls of <C>DeclareOperation</C>,
+##  with second arguments <A>req1</A>, <A>req2</A>, \ldots,
+##  each being a list of filters, then <C>OPERATIONS[ <A>n</A>+1 ]</C> is the list
+##  <C>[</C> <A>flags1</A>, <A>flags2</A>, <M>\ldots</M>, <C>]</C>,
+##  where <A>flagsi</A> is the list of flags of the filters in <A>reqi</A>.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "OPERATIONS", [] );
 
@@ -95,11 +155,17 @@ BIND_GLOBAL( "OPERATIONS", [] );
 ##
 #V  WRAPPER_OPERATIONS
 ##
-##  is a list that stores all those {\GAP} operations for which the default
+##  <ManSection>
+##  <Var Name="WRAPPER_OPERATIONS"/>
+##
+##  <Description>
+##  is a list that stores all those &GAP; operations for which the default
 ##  method is to call a related operation if necessary,
 ##  and to store and look up the result using an attribute.
-##  An example is `SylowSubgroup', which calls `SylowSubgroupOp' if the
-##  required Sylow subgroup is not yet stored in `ComputedSylowSubgroups'.
+##  An example is <C>SylowSubgroup</C>, which calls <C>SylowSubgroupOp</C> if the
+##  required Sylow subgroup is not yet stored in <C>ComputedSylowSubgroups</C>.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "WRAPPER_OPERATIONS", [] );
 
@@ -108,20 +174,36 @@ BIND_GLOBAL( "WRAPPER_OPERATIONS", [] );
 ##
 #F  IsNoImmediateMethodsObject(<obj>)
 ##
-##  If this filter is set immediate methods will be ignored for <obj>. This
+##  <ManSection>
+##  <Func Name="IsNoImmediateMethodsObject" Arg='obj'/>
+##
+##  <Description>
+##  If this filter is set immediate methods will be ignored for <A>obj</A>. This
 ##  can be crucial for performance for objects like PCGS, of which many are
 ##  created, which are collections, but for which all those immediate
-##  methods for `IsTrivial' et cetera do not really make sense.
+##  methods for <C>IsTrivial</C> et cetera do not really make sense.
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL("IsNoImmediateMethodsObject",
   NewFilter("IsNoImmediateMethodsObject"));
+
 
 #############################################################################
 ##
 #V  IGNORE_IMMEDIATE_METHODS
 ##
-##  is usually `false'.  Only inside a call of `RunImmediateMethods' it is
-##  set to `true', which causes that `RunImmediateMethods' does not suffer
+##  <ManSection>
+##  <Var Name="IGNORE_IMMEDIATE_METHODS"/>
+##
+##  <Description>
+##  is usually <K>false</K>.
+##  Only inside a call of <C>RunImmediateMethods</C> it is set to
+##  <K>true</K>,
+##  which causes that <C>RunImmediateMethods</C> does not suffer
 ##  from recursion.
+##  </Description>
+##  </ManSection>
 ##
 IGNORE_IMMEDIATE_METHODS := false;
 
@@ -129,6 +211,13 @@ IGNORE_IMMEDIATE_METHODS := false;
 #############################################################################
 ##
 #F  INSTALL_IMMEDIATE_METHOD( <oper>, <name>, <filter>, <rank>, <method> )
+##
+##  <ManSection>
+##  <Func Name="INSTALL_IMMEDIATE_METHOD" Arg='oper, name, filter, rank, method'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     function( oper, name, filter, rank, method )
@@ -220,6 +309,9 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       IMM_FLAGS:= SUB_FLAGS( IMM_FLAGS, FLAGS_FILTER( FILTERS[j] ) );
 #T here it would be better to subtract a flag list
 #T with `true' exactly at position `j'!
+#T means: When an immed. method gets installed for a property then
+#T the property tester should remain in IMM_FLAGS.
+#T (This would make an if statement in `RunImmediateMethods' unnecessary!)
 
       # Find the place to put the new method.
       if not IsBound( IMMEDIATES[j] ) then
@@ -271,23 +363,94 @@ end );
 ##
 #F  InstallImmediateMethod( <opr>[, <name>], <filter>, <rank>, <method> )
 ##
-##  installs  <method>  as  immediate  method for <opr>,   which  must  be an
-##  operation of one argument, with requirement <filter> and rank <rank>.
+##  <#GAPDoc Label="InstallImmediateMethod">
+##  <ManSection>
+##  <Func Name="InstallImmediateMethod"
+##   Arg='opr[, name], filter, rank, method'/>
 ##
-##  Since the whole system shall work also after completely disabling the
-##  immediate methods stuff, we also install <method> as an ordinary method
-##  for <opr>, with requirement <filter>.
+##  <Description>
+##  Usually a method is called only if its operation has been called
+##  and if this method has been selected.
+##  <P/>
+##  For attributes and properties,
+##  one can install also <E>immediate methods</E>.
+##  An immediate method is called automatically as soon as it is applicable
+##  to an object, provided that the value is not yet known.
+##  Afterwards the attribute setter is called in order to store the value.
+##  <P/>
+##  Note that in such a case &GAP; executes a computation for which
+##  it was not explicitly asked by the user.
+##  So one should install only those methods as immediate methods
+##  that are <E>extremely cheap</E>.
+##  To emphasize this,
+##  immediate methods are also called <E>zero cost methods</E>.
+##  The time for their execution should really be approximately zero.
+##  <P/>
+##  For example, the size of a permutation group can be computed very cheaply
+##  if a stabilizer chain of the group is known.
+##  So it is reasonable to install an immediate method for
+##  <Ref Func="Size"/> with requirement
+##  <C>IsGroup and Tester( <A>stab</A> )</C>,
+##  where <A>stab</A> is the attribute corresponding to the stabilizer chain.
+##  <P/>
+##  Another example would be the implementation of the conclusion that
+##  every finite group of prime power order is nilpotent.
+##  This could be done by installing an immediate method for the attribute
+##  <Ref Func="IsNilpotentGroup"/> with requirement
+##  <C>IsGroup and Tester( Size )</C>.
+##  This method would then check whether the size is a finite prime power,
+##  return <K>true</K> in this case and otherwise call
+##  <Ref Func="TryNextMethod"/>.
+##  But this requires factoring of an integer,
+##  which cannot be guaranteed to be very cheap,
+##  so one should not install this method as an immediate method.
+##  <P/>
+##  <Ref Func="InstallImmediateMethod"/> installs <A>method</A> as an
+##  immediate method for <A>opr</A>, which must be an operation of one
+##  argument, with requirement <A>filter</A> and rank <A>rank</A>.
+##  The rank must be an integer value that measures the priority of
+##  <A>method</A> among the immediate methods for <A>opr</A>.
+##  <P/>
+##  Note the difference to <Ref Func="InstallMethod"/>
+##  that no family predicate occurs
+##  because <A>opr</A> expects only one argument,
+##  and that <A>filter</A> is not a list of requirements but the argument
+##  requirement itself.
+##  <P/>
+##  Immediate methods are thought of as a possibility for objects to gain
+##  useful knowledge.
+##  They must not be used to force the storing of <Q>defining information</Q>
+##  in an object.
+##  In other words, &GAP; should work even if all immediate methods are
+##  completely disabled.
+##  Therefore, the call to <Ref Func="InstallImmediateMethod"/> installs
+##  <A>method</A> also as an ordinary method for <A>opr</A>,
+##  with requirement <A>filter</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "InstallImmediateMethod", function( arg )
     local name;
 
-    if LEN_LIST(arg) = 4  then
+    if     LEN_LIST( arg ) = 4
+       and IS_OPERATION( arg[1] )
+       and IsFilter( arg[2] )
+       and IS_RAT( arg[3] )
+       and IS_FUNCTION( arg[4] ) then
         name := NAME_FUNC(arg[1]);
         INSTALL_IMMEDIATE_METHOD( arg[1], name, arg[2], arg[3], arg[4] );
         INSTALL_METHOD( [ arg[1], [ arg[2] ], arg[4] ], false );
-    elif LEN_LIST(arg) = 5  then
+    elif   LEN_LIST( arg ) = 5
+       and IS_OPERATION( arg[1] )
+       and IS_STRING( arg[2] )
+       and IsFilter( arg[3] )
+       and IS_RAT( arg[4] )
+       and IS_FUNCTION( arg[5] ) then
         INSTALL_IMMEDIATE_METHOD( arg[1], arg[2], arg[3], arg[4], arg[5] );
         INSTALL_METHOD( [ arg[1], [ arg[3] ], arg[5] ], false );
+    else
+      Error("usage: InstallImmediateMethod(<opr>,<filter>,<rank>,<method>)");
     fi;
 end );
 
@@ -296,9 +459,45 @@ end );
 ##
 #F  TraceImmediateMethods( <flag> )
 ##
-##  If <flag> is true, tracing for all immediate methods is turned on.
-##  If <flag> is false it is turned off.
-##  (There is no facility to trace *specific* immediate methods.)
+##  <#GAPDoc Label="TraceImmediateMethods">
+##  <ManSection>
+##  <Func Name="TraceImmediateMethods" Arg='flag'/>
+##
+##  <Description>
+##  If <A>flag</A> is true, tracing for all immediate methods is turned on.
+##  If <A>flag</A> is false it is turned off.
+##  (There is no facility to trace <E>specific</E> immediate methods.)
+##  <Example><![CDATA[
+##  gap> TraceImmediateMethods( true );
+##  gap> g:= Group( (1,2,3), (1,2) );;
+##  #I  immediate: Size
+##  #I  immediate: IsCyclic
+##  #I  immediate: IsCommutative
+##  #I  immediate: IsTrivial
+##  gap> Size( g );
+##  #I  immediate: IsNonTrivial
+##  #I  immediate: Size
+##  #I  immediate: IsNonTrivial
+##  #I  immediate: GeneralizedPcgs
+##  #I  immediate: IsPerfectGroup
+##  #I  immediate: IsEmpty
+##  6
+##  gap> TraceImmediateMethods( false );
+##  gap> UntraceMethods( [ Size ] );
+##  ]]></Example>
+##  <P/>
+##  This example gives an explanation for the two calls of the
+##  <Q>system getter</Q> for <Ref Func="Size"/>.
+##  Namely, there are immediate methods that access the known size
+##  of the group.
+##  Note that the group <C>g</C> was known to be finitely generated already
+##  before the size was computed,
+##  the calls of the immediate method for
+##  <Ref Func="IsFinitelyGeneratedGroup"/> after the call of
+##  <Ref Func="Size"/> have other arguments than <C>g</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 TRACE_IMMEDIATE_METHODS := false;
 
@@ -311,15 +510,41 @@ BIND_GLOBAL( "TraceImmediateMethods", function( flag )
 end );
 
 
-
-
 #############################################################################
 ##
-#F  NewOperation( <name>, <filters> )
+#F  NewOperation( <name>, <args-filts> )
+##
+##  <#GAPDoc Label="NewOperation">
+##  <ManSection>
+##  <Func Name="NewOperation" Arg='name, args-filts'/>
+##
+##  <Description>
+##  <Ref Func="NewOperation"/> returns an operation <A>opr</A> with name
+##  <A>name</A>.
+##  The list <A>args-filts</A> describes requirements about the arguments
+##  of <A>opr</A>, namely the number of arguments must be equal to the length
+##  of <A>args-filts</A>, and the <M>i</M>-th argument must lie in the filter
+##  <A>args-filts</A><M>[i]</M>.
+##  <P/>
+##  Each method that is installed for <A>opr</A> via
+##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
+##  lies in the filter <A>args-filts</A><M>[i]</M>.
+##  <P/>
+##  One can install methods for other arguments tuples via
+##  <Ref Func="InstallOtherMethod"/>,
+##  this way it is also possible to install methods for a different number
+##  of arguments than the length of <A>args-filts</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewOperation", function ( name, filters )
     local   oper,  filt,  filter;
 
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
     oper := NEW_OPERATION( name );
     filt := [];
     for filter  in filters  do
@@ -338,9 +563,20 @@ end );
 ##
 #F  NewConstructor( <name>, <filters> )
 ##
+##  <ManSection>
+##  <Func Name="NewConstructor" Arg='name, filters'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "NewConstructor", function ( name, filters )
     local   oper,  filt,  filter;
 
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
     oper := NEW_CONSTRUCTOR( name );
     filt := [];
     for filter  in filters  do
@@ -360,11 +596,24 @@ end );
 ##
 #F  DeclareOperation( <name>, <filters> )
 ##
+##  <#GAPDoc Label="DeclareOperation">
+##  <ManSection>
+##  <Func Name="DeclareOperation" Arg='name, filters'/>
+##
+##  <Description>
+##  does the same as <Ref Func="NewOperation"/> and
+##  additionally makes the variable <A>name</A> read-only.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL( "DeclareOperation", function ( name, filters )
-
     local gvar, pos, filt, filter;
 
-    if ISB_GVAR( name ) then
+    if   GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    elif ISB_GVAR( name ) then
 
       gvar:= VALUE_GLOBAL( name );
 
@@ -383,7 +632,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 
         # `gvar' is an attribute (tester) or property (tester).
         pos:= POS_LIST_DEFAULT( FILTERS, gvar, 0 );
-        if pos = 0 then
+        if pos = fail then
 
           # `gvar' is an attribute.
           Error( "operation `", name,
@@ -418,8 +667,8 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
       if filt in OPERATIONS[ pos+1 ] then
         if not REREADING then
-          Print( "#W  equal requirements in multiple declarations ",
-                 "for operation `", name, "'\n" );
+          INFO_DEBUG( 1, "equal requirements in multiple declarations ",
+              "for operation `", name, "'\n" );
         fi;
       else
         ADD_LIST( OPERATIONS[ pos+1 ], filt );
@@ -438,14 +687,26 @@ end );
 ##
 #F  DeclareOperationKernel( <name>, <filters>, <kernel-oper> )
 ##
+##  <ManSection>
+##  <Func Name="DeclareOperationKernel" Arg='name, filters, kernel-oper'/>
+##
+##  <Description>
 ##  This function must not be used to re-declare an operation
 ##  that has already been declared.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
     local   filt,  filter;
 
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
+
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, oper );
+    SET_NAME_FUNC( oper, name );
 
     filt := [];
     for filter  in filters  do
@@ -464,11 +725,21 @@ end );
 ##
 #F  DeclareConstructor( <name>, <filters> )
 ##
+##  <ManSection>
+##  <Func Name="DeclareConstructor" Arg='name, filters'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 
     local gvar, pos, filt, filter;
 
-    if ISB_GVAR( name ) then
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    elif ISB_GVAR( name ) then
 
       gvar:= VALUE_GLOBAL( name );
 
@@ -509,14 +780,26 @@ end );
 ##
 #F  DeclareConstructorKernel( <name>, <filter>, <kernel-oper> )
 ##
+##  <ManSection>
+##  <Func Name="DeclareConstructorKernel" Arg='name, filter, kernel-oper'/>
+##
+##  <Description>
 ##  This function must not be used to re-declare a constructor
 ##  that has already been declared.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
     local   filt,  filter;
 
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
+
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, oper );
+    SET_NAME_FUNC( oper, name );
 
     filt := [];
     for filter  in filters  do
@@ -536,9 +819,15 @@ end );
 ##
 #F  InstallAttributeFunction( <func> )  . . . run function for each attribute
 ##
-##  `InstallAttributeFunction' installs <func>, so that
-##  `<func>( <name>, <filter>, <getter>, <setter>, <tester>, <mutflag> )'
+##  <ManSection>
+##  <Func Name="InstallAttributeFunction" Arg='func'/>
+##
+##  <Description>
+##  <C>InstallAttributeFunction</C> installs <A>func</A>, so that
+##  <C><A>func</A>( <A>name</A>, <A>filter</A>, <A>getter</A>, <A>setter</A>, <A>tester</A>, <A>mutflag</A> )</C>
 ##  is called for each attribute.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "ATTRIBUTES", [] );
 
@@ -567,14 +856,21 @@ end );
 ##
 #F  DeclareAttributeKernel( <name>, <filter>, <getter> )  . . . new attribute
 ##
+##  <ManSection>
+##  <Func Name="DeclareAttributeKernel" Arg='name, filter, getter'/>
+##
+##  <Description>
 ##  This function must not be used to re-declare an attribute
 ##  that has already been declared.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     local setter, tester, nname;
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, getter );
+    SET_NAME_FUNC( getter, name );
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -615,22 +911,58 @@ end );
 
 #############################################################################
 ##
-#F  NewAttribute( <name>, <filter> [,"mutable"] [,<rank>] ) . . new attribute
+#F  NewAttribute( <name>, <filter>[, "mutable"][, <rank>] ) . . new attribute
 ##
-##  is a new attribute getter with name  <name> that is applicable to objects
-##  with the property <filter>.  If the optional third argument is given then
-##  there are  two possibilities.  Either it is  an integer <rank>,  then the
-##  attribute tester has this rank.  Or it  is the string "mutable", then the
-##  values of the attribute shall be mutable; more precisely, when a value of
-##  such a mutable attribute is set then this value itself is stored, not an
-##  immutable copy of it.
+##  <#GAPDoc Label="NewAttribute">
+##  <ManSection>
+##  <Func Name="NewAttribute" Arg='name, filter[, "mutable"][, rank]'/>
+##
+##  <Description>
+##  <Ref Func="NewAttribute"/> returns a new attribute getter with name
+##  <A>name</A> that is applicable to objects with the property
+##  <A>filter</A>.
+##  <P/>
+##  Contrary to the situation with categories and representations,
+##  the tester of the new attribute does <E>not</E> imply <A>filter</A>.
+##  This is exactly because of the possibility to install methods
+##  that do not require <A>filter</A>.
+##  <P/>
+##  For example, the attribute <Ref Func="Size"/> was created
+##  with second argument a list or a collection,
+##  but there is also a method for <Ref Func="Size"/> that is
+##  applicable to a character table,
+##  which is neither a list nor a collection.
+##  <P/>
+##  If the optional third argument is given then there are two possibilities.
+##  Either it is an integer <A>rank</A>,
+##  then the attribute tester has this incremental rank
+##  (see&nbsp;<Ref Sect="Filters"/>).
+##  Or it is the string <C>"mutable"</C>,
+##  then the values of the attribute shall be mutable;
+##  more precisely, when a value of such a mutable attribute is set
+##  then this value itself is stored, not an immutable copy of it.
 ##  (So it is the user's responsibility to set an object that is in fact
 ##  mutable.)
-#T in the current implementation, one can overwrite values of mutable
-#T attributes; is this really intended?
-#T if yes then it should be documented!
-##
+##  This is useful for an attribute whose value is some partial information
+##  that may be completed later.
+##  For example, there is an attribute <C>ComputedSylowSubgroups</C>
+##  for the list holding those Sylow subgroups of a group that have been
+##  computed already by the function
+##  <Ref Func="SylowSubgroup"/>,
+##  and this list is mutable because one may want to enter groups into it
+##  as they are computed.
+##  <!-- in the current implementation, one can overwrite values of mutable-->
+##  <!-- attributes; is this really intended?-->
+##  <!-- if yes then it should be documented!-->
+##  <P/>
 ##  If no third argument is given then the rank of the tester is 1.
+##  <P/>
+##  Each method for the new attribute that does <E>not</E> require
+##  its argument to lie in <A>filter</A> must be installed using
+##  <Ref Func="InstallOtherMethod"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewAttribute", function ( arg )
     local   name, filter, flags, mutflag, getter, setter, tester;
@@ -694,19 +1026,34 @@ end );
 
 #############################################################################
 ##
-#F  DeclareAttribute( <name>, <filter> [,"mutable"] [,<rank>] ) new attribute
+#F  DeclareAttribute( <name>, <filter>[, "mutable"][, <rank>] ) new attribute
+##
+##  <#GAPDoc Label="DeclareAttribute">
+##  <ManSection>
+##  <Func Name="DeclareAttribute" Arg='name, filter[, "mutable"][, rank]'/>
+##
+##  <Description>
+##  does the same as <Ref Func="NewAttribute"/>,
+##  additionally makes the variable <A>name</A> read-only
+##  and also binds read-only global variables with names
+##  <C>Has<A>name</A></C> and <C>Set<A>name</A></C>
+##  for the tester and setter of the attribute (see Section
+##  <Ref Sect="Setter and Tester for Attributes"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareAttribute", function ( arg )
-
-    local attr, name, nname, gvar, pos, filter;
+    local name, gvar, filter, pos, attr, nname;
 
     name:= arg[1];
 
     if ISB_GVAR( name ) then
 
+      # The variable exists already.
       gvar:= VALUE_GLOBAL( name );
 
-      # Check that the variable is in fact an operation.
+      # Check that the variable is in fact bound to an operation.
       if not IS_OPERATION( gvar ) then
         Error( "variable `", name, "' is not bound to an operation" );
       fi;
@@ -758,28 +1105,39 @@ end );
 ##
 #V  LENGTH_SETTER_METHODS_2
 ##
-##  is the current length of `METHODS_OPERATION( <attr>, 2 )'
-##  for an attribute <attr> for which no individual setter methods
+##  <ManSection>
+##  <Var Name="LENGTH_SETTER_METHODS_2"/>
+##
+##  <Description>
+##  is the current length of <C>METHODS_OPERATION( <A>attr</A>, 2 )</C>
+##  for an attribute <A>attr</A> for which no individual setter methods
 ##  are installed.
-##  (This is used for `ObjectifyWithAttributes'.)
+##  (This is used for <C>ObjectifyWithAttributes</C>.)
+##  </Description>
+##  </ManSection>
 ##
 LENGTH_SETTER_METHODS_2 := 0;
-
-
 
 
 #############################################################################
 ##
 #F  DeclarePropertyKernel( <name>, <filter>, <getter> ) . . . .  new property
 ##
+##  <ManSection>
+##  <Func Name="DeclarePropertyKernel" Arg='name, filter, getter'/>
+##
+##  <Description>
 ##  This function must not be used to re-declare a property
 ##  that has already been declared.
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     local setter, tester, nname;
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, getter );
+    SET_NAME_FUNC( getter, name );
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -827,11 +1185,26 @@ end );
 
 #############################################################################
 ##
-#F  NewProperty( <name>, <filter> [,<rank>] ) . . . . . . . . .  new property
+#F  NewProperty( <name>, <filter>[, <rank>] ) . . . . . . . . .  new property
 ##
-##  is a new property  getter with name <name>  that is applicable to objects
-##  with property <filter>.  If  the optional argument  <rank> is  given then
-##  the property getter has this rank, otherwise its rank is 1.
+##  <#GAPDoc Label="NewProperty">
+##  <ManSection>
+##  <Func Name="NewProperty" Arg='name, filter[, rank]'/>
+##
+##  <Description>
+##  <Ref Func="NewProperty"/> returns a new property <A>prop</A> with name
+##  <A>name</A> (see also&nbsp;<Ref Sect="Properties"/>).
+##  The filter <A>filter</A> describes the involved filters of <A>prop</A>.
+##  As in the case of attributes,
+##  <A>filter</A> is not implied by <A>prop</A>.
+##  <P/>
+##  The optional third argument <A>rank</A> denotes the incremental rank
+##  (see&nbsp;<Ref Sect="Filters"/>) of the property
+##  <A>prop</A> itself, i.e. <E>not</E> of its tester;
+##  the default value is 1.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewProperty", function ( arg )
     local   name, filter, flags, getter, setter, tester;
@@ -893,6 +1266,21 @@ end );
 ##
 #F  DeclareProperty( <name>, <filter> [,<rank>] ) . . . . . . .  new property
 ##
+##  <#GAPDoc Label="DeclareProperty">
+##  <ManSection>
+##  <Func Name="DeclareProperty" Arg='name, filter [,rank]'/>
+##
+##  <Description>
+##  does the same as <Ref Func="NewProperty"/>,
+##  additionally makes the variable <A>name</A> read-only
+##  and also binds read-only global variables with names
+##  <C>Has<A>name</A></C> and <C>Set<A>name</A></C>
+##  for the tester and setter of the property (see Section
+##  <Ref Sect="Setter and Tester for Attributes"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL( "DeclareProperty", function ( arg )
 
     local prop, name, nname, gvar, pos, filter;
@@ -947,11 +1335,9 @@ end );
 
 #############################################################################
 ##
-
 #F  InstallAtExit( <func> ) . . . . . . . . . . function to call when exiting
 ##
 BIND_GLOBAL( "InstallAtExit", function( func )
-
     if not IS_FUNCTION(func)  then
         Error( "<func> must be a function" );
     fi;
@@ -960,8 +1346,7 @@ BIND_GLOBAL( "InstallAtExit", function( func )
             Error( "<func> must accept zero arguments" );
         fi;
     fi;
-    ADD_LIST( AT_EXIT_FUNCS, func );
-
+    ADD_LIST( GAPInfo.AtExitFuncs, func );
 end );
 
 
@@ -969,33 +1354,65 @@ end );
 ##
 #O  ViewObj( <obj> )  . . . . . . . . . . . . . . . . . . . .  view an object
 ##
-##  `ViewObj' prints information about the object <obj>.
+##  <ManSection>
+##  <Oper Name="ViewObj" Arg='obj'/>
+##
+##  <Description>
+##  <Ref Oper="ViewObj"/> prints information about the object <A>obj</A>.
 ##  This information is thought to be short and human readable,
-##  in particular *not* necessarily detailed enough for defining <obj>,
-##  an in general *not* {\GAP} readable.
+##  in particular <E>not</E> necessarily detailed enough for defining <A>obj</A>,
+##  an in general <E>not</E> &GAP; readable.
+##  <P/>
+##  More detailed information can be obtained by <Ref Func="PrintObj"/>,
+##  and &GAP; readable data can be produced with <Ref Func="SaveObj"/>.
+##  </Description>
+##  </ManSection>
 ##
-##  More detailed information can be obtained by `PrintObj',
-##  and {\GAP} readable data can be produced with `SaveObj'.
-##
-##DeclareOperation( "ViewObj", [ IS_OBJECT ] );
-
-##ViewObj := VIEW_OBJ;
-
 DeclareOperationKernel( "ViewObj", [ IS_OBJECT ], VIEW_OBJ );
 
 
+#############################################################################
+##
+#O  ViewString( <obj> )  . . . . . . . . . . . . . . . . . . . view an object
+##
+##  <#GAPDoc Label="ViewString">
+##  <ManSection>
+##  <Oper Name="ViewString" Arg='obj'/>
+##
+##  <Description>
+##  <Ref Oper="ViewString"/> returns a string which would be displayed 
+##  by <Ref Oper="ViewObj"/> for an
+##  object. Note that no method for <Ref Oper="ViewString"/> may 
+##  delegate to any of
+##  the operations <Ref Oper="Display"/>, <Ref Oper="ViewObj"/>,
+##  <Ref Oper="DisplayString"/> or <Ref Oper="PrintObj"/> to avoid 
+##  circular delegations.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ViewString", [ IS_OBJECT ]);
 
 
 #############################################################################
 ##
 #F  View( <obj1>, <obj2>... ) . . . . . . . . . . . . . . . . .  view objects
-##  
-##  `View' shows the objects <obj1>, <obj2>... etc. *in a short form*
-##  on the standard output.
-##  `View' is called in the read--eval--print loop,
+##
+##  <#GAPDoc Label="View">
+##  <ManSection>
+##  <Func Name="View" Arg='obj1, obj2...'/>
+##
+##  <Description>
+##  <Ref Func="View"/> shows the objects <A>obj1</A>, <A>obj2</A>... etc.
+##  <E>in a short form</E> on the standard output by calling the
+##  <Ref Oper="ViewObj"/> operation on each of them.
+##  <Ref Func="View"/> is called in the read-eval-print loop,
 ##  thus the output looks exactly like the representation of the
 ##  objects shown by the main loop.
 ##  Note that no space or newline is printed between the objects.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "View", function( arg )
     local   obj;
@@ -1010,68 +1427,22 @@ end );
 ##
 #F  ViewLength( <len> )
 ##
-##  `View' will usually display objects in short form if they would need
-##  more than <len> lines.
-##  The default is 3.
+##  <ManSection>
+##  <Func Name="ViewLength" Arg='len'/>
 ##
-VIEWLEN := 3;
-
+##  <Description>
+##  <Ref Func="View"/> will usually display objects in short form if they would need
+##  more than <A>len</A> lines.
+##  The default is 3.
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "ViewLength", function(arg)
   if LEN_LIST( arg ) = 0 then
-    return VIEWLEN;
+    return GAPInfo.ViewLength;
   else
-    VIEWLEN:= arg[1];
+    GAPInfo.ViewLength:= arg[1];
   fi;
-end );
-
-
-#############################################################################
-##
-#O  TeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . . . TeX an object
-##
-DeclareOperation( "TeXObj", [ IS_OBJECT ] );
-
-
-#############################################################################
-##
-#F  TeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . . . TeX objects
-##
-BIND_GLOBAL( "TeX", function( arg )
-    local   str,  res,  obj;
-
-    str := "";
-    for obj  in arg  do
-        res := TeXObj(obj);
-        APPEND_LIST_INTR( str, res );
-        APPEND_LIST_INTR( str, "%\n" );
-    od;
-    CONV_STRING(str);
-    return str;
-end );
-
-
-#############################################################################
-##
-#O  LaTeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . LaTeX an object
-##
-DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
-
-
-#############################################################################
-##
-#F  LaTeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . LaTeX objects
-##
-BIND_GLOBAL( "LaTeX", function( arg )
-    local   str,  res,  obj;
-
-    str := "";
-    for obj  in arg  do
-        res := LaTeXObj(obj);
-        APPEND_LIST_INTR( str, res );
-        APPEND_LIST_INTR( str, "%\n" );
-    od;
-    CONV_STRING(str);
-    return str;
 end );
 
 
@@ -1079,9 +1450,17 @@ end );
 ##
 #F  TraceMethods( <oprs> )
 ##
-##  After the call of `TraceMethods' with a list <oprs> of operations,
-##  whenever a method of one of the operations in <oprs> is called the
+##  <#GAPDoc Label="TraceMethods">
+##  <ManSection>
+##  <Func Name="TraceMethods" Arg='oprs'/>
+##
+##  <Description>
+##  After the call of <C>TraceMethods</C> with a list <A>oprs</A> of operations,
+##  whenever a method of one of the operations in <A>oprs</A> is called the
 ##  information string used in the installation of the method is printed.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "TraceMethods", function( arg )
     local   fun;
@@ -1100,7 +1479,26 @@ end );
 ##
 #F  UntraceMethods( <oprs>)
 ##
-##  turns the tracing off for all operations in <oprs>.
+##  <#GAPDoc Label="UntraceMethods">
+##  <ManSection>
+##  <Func Name="UntraceMethods" Arg='oprs'/>
+##
+##  <Description>
+##  turns the tracing off for all operations in <A>oprs</A>.
+##  <Example><![CDATA[
+##  gap> TraceMethods( [ Size ] );
+##  gap> g:= Group( (1,2,3), (1,2) );;
+##  gap> Size( g );
+##  #I  Size: for a permutation group
+##  #I  Setter(Size): system setter
+##  #I  Size: system getter
+##  #I  Size: system getter
+##  6
+##  gap> UntraceMethods( [ Size ] );
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "UntraceMethods", function( arg )
     local   fun;
@@ -1118,11 +1516,56 @@ end );
 #############################################################################
 ##
 #F  DeclareGlobalFunction( <name>, <info> ) . .  create a new global function
-#F  InstallGlobalFunction( <oprname>[, <info>], <func> )
-#F  InstallGlobalFunction( <oper>[, <info>], <func> )
+#F  InstallGlobalFunction( <oper>, <func> )
 ##
-##  Global functions of the {\GAP} library must be distinguished from other
-##  global variables (see `variable.g') because of the completion mechanism.
+##  <#GAPDoc Label="DeclareGlobalFunction">
+##  <ManSection>
+##  <Func Name="DeclareGlobalFunction" Arg='name, info'/>
+##  <Func Name="InstallGlobalFunction" Arg='oper, func'/>
+##
+##  <Description>
+##  <Ref Func="DeclareGlobalFunction"/> 
+##  &GAP; functions that are not operations and that are intended to be
+##  called by users should be notified to &GAP; in the declaration part
+##  of the respective package
+##  (see Section&nbsp;<Ref Sect="Declaration and Implementation Part"/>)
+##  via <Ref Func="DeclareGlobalFunction"/>, which returns a function that
+##  serves as a place holder for the function that will be installed later,
+##  and that will print an error message if it is called.
+##  See also&nbsp;<Ref Func="DeclareSynonym"/>.
+##  <P/>
+##  A global function declared with <Ref Func="DeclareGlobalFunction"/>
+##  can be given its value <A>func</A> via
+##  <Ref Func="InstallGlobalFunction"/>;
+##  <A>gvar</A> is the global variable (or a string denoting its name)
+##  named with the <A>name</A> argument of the call to
+##  <Ref Func="DeclareGlobalFunction"/>.
+##  For example, a declaration like
+##  <P/>
+##  <Log><![CDATA[
+##  DeclareGlobalFunction( "SumOfTwoCubes" );
+##  ]]></Log>
+##  <P/>
+##  in the <Q>declaration part</Q>
+##  (see Section&nbsp;<Ref Sect="Declaration and Implementation Part"/>)
+##  might have a corresponding <Q>implementation part</Q> of:
+##  <P/>
+##  <Log><![CDATA[
+##  InstallGlobalFunction( SumOfTwoCubes, function(x, y) return x^3 + y^3; end);
+##  ]]></Log>
+##  <P/>
+##  <!-- Commented out by AK after the withdrowal of completion files:
+##  <E>Note:</E> <A>func</A> must be a function which has <E>not</E> been
+##  declared with <Ref Func="DeclareGlobalFunction"/> itself.
+##  Otherwise completion files
+##  (see&nbsp;<Ref Sect="Completion Files"/>) get confused! -->
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  Global functions of the &GAP; library must be distinguished from other
+##  global variables (see <C>variable.g</C>) because of the completion
+##  mechanism.
 ##
 BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", [] );
 
@@ -1155,6 +1598,16 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     INSTALL_METHOD_ARGS( oper, func );
 end );
 
+
+BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
+    local i,j;
+    for i in [1,3..LEN_LIST(OPERATIONS)-1] do
+        for j in [1..6] do
+            CHANGED_METHODS_OPERATION(OPERATIONS[i],j);
+        od;
+    od;
+end);
+        
 
 #############################################################################
 ##

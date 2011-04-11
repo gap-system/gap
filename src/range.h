@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  range.h                     GAP source                   Martin Schoenert
+*W  range.h                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions that deal with ranges.
 **
@@ -150,13 +151,15 @@ const char * Revision_range_h =
 *F  PosRange(<list>,<val>,<start>)  . . . . position of an element in a range
 **
 **  'PosRange' returns the position  of the value <val>  in the range  <list>
-**  after the first position <start> as a C integer.   0 is returned if <val>
+**  after the first position <start> as a GAP integer. Fail is returned if <val>
 **  is not in the list.
+**
+**  'PosRange' is the function in 'PosListFuncs' for ranges.
 */
-extern  Int             PosRange (
+extern  Obj             PosRange (
             Obj                 list,
             Obj                 val,
-            Int                 start );
+            Obj                 start );
 
 
 /****************************************************************************

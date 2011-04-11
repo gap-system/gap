@@ -4,8 +4,9 @@
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This  file contains the  C functions for free  group elements.  There are
 **  basically three different (internal) types: 8  bits, 16 bits, and 32 bits
@@ -3142,7 +3143,7 @@ Obj FuncMultWorLettrep (
   /* fi; */
   }
   /* make the new list */
-  n=NEW_PLIST(TNUM_OBJ(a),newlen);
+  n=NEW_PLIST(T_PLIST_CYC,newlen);
   q=ADDR_OBJ(n);
   q++;
   j=as;

@@ -1,10 +1,12 @@
 #############################################################################
 ##
-#W  grpmat.tst                  GAP tests                   Heiko Thei{\ss}en
+#W  grpmat.tst                  GAP tests                   Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -54,8 +56,10 @@ gap> img:=Image( iso );;
 gap> Size(img);
 67010895544320000
 
-gap> STOP_TEST( "grpmat.tst", 1553569776 );
+gap> STOP_TEST( "grpmat.tst",1560006131);
+
 
 #############################################################################
 ##
-#E  grpmat.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

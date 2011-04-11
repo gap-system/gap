@@ -1,11 +1,12 @@
 #############################################################################
 ##  
-#W  helpview.gi                 GAP Library                      Frank L�beck
+#W  helpview.gi                 GAP Library                      Frank Lübeck
 ##  
 #H  @(#)$Id$
 ##  
-#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  helpview.g{d,i} contain the configuration mechanism  for  the
 ##  different help viewer.
@@ -48,33 +49,136 @@ type := "text",
 show := Pager
 );
 
-# html version with netscape
-HELP_VIEWER_INFO.netscape := rec(
-type := "url",
-show := function(url)
-  Exec(Concatenation("netscape -remote \"openURL(", url, ")\""));
-end
-);
+#if ARCH_IS_MAC() then
+#  # html version on MAC
+#  HELP_VIEWER_INFO.("mac default browser") := rec(
+#  type := "macurl",
+#  show := function(data)
+#    if IsBound (data.path) then
+#       ExecuteProcess ("./", "Internet Config", 1, 0, [data.protocol, data.path, data.section]);
+#    else
+#       ExecuteProcess ("", "Internet Config", 1, 0, [data.url, "", data.section]);
+#    fi;
+#  end
+#  );
+#  
+#  # old name for for backward compatibility
+#  HELP_VIEWER_INFO.("internet config") :=
+#  	HELP_VIEWER_INFO.("mac default browser"); 
+# fi
 
-# html version with lynx
-HELP_VIEWER_INFO.lynx := rec(
-type := "url",
-show := function(url)
-  Exec(Concatenation("lynx \"", url, "\""));
-end
-);
+if ARCH_IS_WINDOWS() then
+  # html version on Windows
+  HELP_VIEWER_INFO.browser := rec(
+  type := "url",
+  show := function( filename )
+    Print( "Opening help page in default windows browser ... \c" );
+    Process( DirectoryCurrent(),
+             Filename( Directory( Concatenation( GAPInfo.KernelInfo.GAP_ROOT_PATHS[1], 
+                                                 "bin" ) ),
+                       "cygstart.exe" ),
+             InputTextNone(),
+             OutputTextNone(),
+             [ , Concatenation( "file:///", filename ) ] );
+    Print( "done! \n" );         
+  end
+  );
+  	
+else
+  # html version with netscape
+  HELP_VIEWER_INFO.netscape := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("netscape -remote \"openURL(file:", url, ")\""));
+  end
+  );
 
-# html version on MAC
-HELP_VIEWER_INFO.("internet config") := rec(
-type := "macurl",
-show := function(data)
-  if IsBound (data.path) then
-     ExecuteProcess ("./", "Internet Config", 1, 0, [data.protocol, data.path, data.section]);
-  else
-     ExecuteProcess ("", "Internet Config", 1, 0, [data.url, "", data.section]);
-  fi;
-end
-);
+  # html version with mozilla
+  HELP_VIEWER_INFO.mozilla := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("mozilla -remote \"openURL(file:", url, ")\""));
+  end
+  );
+
+  # html version with firefox
+  HELP_VIEWER_INFO.firefox := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("firefox -remote \"openURL(file:", url, ")\""));
+  end
+  );
+
+  # html version with konqueror  - doesn't work with 'file://...#...' URLs
+  HELP_VIEWER_INFO.konqueror := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("konqueror \"file://", url,"\" >/dev/null 2>1 &"));
+  end
+  );
+
+  # html version with lynx
+  HELP_VIEWER_INFO.lynx := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("lynx \"", url, "\""));
+  end
+  );
+
+  # html version with w3m
+  HELP_VIEWER_INFO.w3m := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("w3m \"", url, "\""));
+  end
+  );
+
+  HELP_VIEWER_INFO.elinks := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("elinks \"", url, "\""));
+  end
+  );
+
+  HELP_VIEWER_INFO.links2ng := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("links2 \"", url, "\""));
+  end
+  );
+
+  HELP_VIEWER_INFO.links2 := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("links2 -g \"", url, "\""));
+  end
+  );
+
+  # html version using Mac OS X default browser
+  HELP_VIEWER_INFO.("mac default browser") := rec (
+    type := "url", 
+    show := function (url)
+            Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
+                                  "open location \"file://", url, "\"\n",
+                                  "ENDSCRIPT\n" ) );
+            return;
+        end
+  );
+
+  # html version using Mac OS X browser Safari
+  HELP_VIEWER_INFO.safari := rec (
+    type := "url", 
+    show := function (url)
+            Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
+                                  "tell application \"Safari\"\n",
+                                  "activate\n",
+                                  "open location \"file://", url, "\"\n",
+                                  "end tell\n",
+                                  "ENDSCRIPT\n" ) );
+            return;
+        end);
+
+fi;
 
 # Function to find the X-windows window ID of a program accessing file
 # <bookf>. Used for a hack below: xdvi doesn't provide a -remote control.
@@ -142,11 +246,10 @@ end);
 XRMTCMD:=false;
 
 ##  dvi version with xdvi
-##  default options, can be adjusted in .gaprc file or by environment
+##  default options, can be adjusted in gap.ini file or by environment
 ##  variables
-XDVI_OPTIONS := "";
 ##  longer example:
-#XDVI_OPTIONS := " -geometry 739x577 -paper a4 -s 6 -fg \"#111111\" -bg \"#dddddd\" -margins 1cm -gamma 0.8";
+#GAPInfo.UserPreferences.XdviOptions:= " -geometry 739x577 -paper a4 -s 6 -fg \"#111111\" -bg \"#dddddd\" -margins 1cm -gamma 0.8";
 
 HELP_VIEWER_INFO.xdvi := rec(
 type := "dvi",
@@ -169,8 +272,8 @@ show := function(file)
     wnum:=fail;
   fi;
   if wnum=fail or XRMTCMD=fail then
-    Exec(Concatenation("xdvi ", XDVI_OPTIONS, " +", String(page), " ",
-	    file, " &"));
+    Exec(Concatenation("xdvi ", GAPInfo.UserPreferences.XdviOptions, " +",
+            String(page), " ", file, " &"));
   else
     #Print("Window: ",wnum,"\n");
     # command for xdvi: a (to \relax), pagenumber, goto
@@ -181,20 +284,24 @@ end
 );
 
 # pdf version with xpdf (very good with well configured fonts!)
-XPDF_OPTIONS := "";
 HELP_VIEWER_INFO.xpdf := rec(
 type := "pdf",
 show := function(file)
   local   page;
   page := 1;
   if IsRecord(file) then
-    if IsBound(file.page) then
-      page := file.page;
+    if IsBound(file.label) then
+      page := Concatenation("+", file.label);
+    elif IsBound(file.page) then
+      page := String(file.page);
+    else
+      page := "";
     fi;
     file := file.file;
   fi;
-  Exec(Concatenation("xpdf -remote gap4 -raise ", XPDF_OPTIONS, 
-                        " ", file, " ", String(page), " 2>/dev/null &"));
+  Exec(Concatenation("xpdf -remote gap4 -raise ",
+                        GAPInfo.UserPreferences.XpdfOptions, 
+                        " ", file, " ", page, " 2>/dev/null &"));
 end
 );
 
@@ -231,36 +338,39 @@ end
 #F  SetHelpViewer(<viewer>):  Set the viewer used for help
 ##
 
-##  This variable contains the list of preferred help viewers for a user.
-##  It should be set by using `SetHelpViewer'.  The default is  "screen".
-HELP_VIEWER := ["screen"];
-
 # Can give one or more strings for the preferred help viewer;
 # the HELP tries to get the data for the viewer in the order given here.
 # No argument shows current setting.
 InstallGlobalFunction(SetHelpViewer, function(arg)
   local   view,  i,  a;
+
+  if Length(arg) = 0 then
+    return GAPInfo.UserPreferences.HelpViewers;
+  fi;
+
   view := List(arg, LowercaseString);
   
   for i in [1..Length(view)] do 
     a := view[i];
     # special handling of help viewer `less'
     if a = "less" then
-      Info(InfoWarning, 1, 
+      Info(InfoWarning, 2, 
       "Help viewer \"less\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
-      "PAGER := \"less\"; ",
-      "PAGER_OPTIONS := [\"-f\", \"-r\", \"-a\", \"-i\", \"-M\", \"-j2\"];");
-      PAGER := "less";
-      PAGER_OPTIONS := ["-f", "-r", "-a", "-i", "-M", "-j2"];
+      "GAPInfo.UserPreferences.Pager := \"less\";\n#I  ",
+      "GAPInfo.UserPreferences.PagerOptions:= ",
+      "[\"-f\",\"-r\",\"-a\",\"-i\",\"-M\",\"-j2\"];");
+      GAPInfo.UserPreferences.Pager := "less";
+      GAPInfo.UserPreferences.PagerOptions:= ["-f","-r","-a","-i","-M","-j2"];
       view[i] := "screen";
     elif a = "more" then
-      Info(InfoWarning, 1, 
+      Info(InfoWarning, 2, 
       "Help viewer \"more\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
-      "PAGER := \"more\"; PAGER_OPTIONS := [];");
-      PAGER := "more";
-      PAGER_OPTIONS := [];
+      "GAPInfo.UserPreferences.Pager := \"more\";\n#I  ",
+      "GAPInfo.UserPreferences.PagerOptions := [];");
+      GAPInfo.UserPreferences.Pager := "more";
+      GAPInfo.UserPreferences.PagerOptions := [];
       view[i] := "screen";
     elif not IsBound(HELP_VIEWER_INFO.(a)) then
       Info(InfoWarning, 1, Concatenation(
@@ -268,18 +378,18 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
       view[i] := fail;
     fi;
   od;
-  if Length(view) = 0 or view[Length(view)] <> "screen" then
+  if not "screen" in view then
     Add(view, "screen");
   fi;
-  if Length(arg) > 0 then
-    HELP_VIEWER := Filtered(view, a-> a<>fail);  
-  fi;
-  if Length(HELP_VIEWER) > 1 then
-    Info(InfoWarning, 1, "Trying to use\n#I  ", HELP_VIEWER, 
+  GAPInfo.UserPreferences.HelpViewers := Filtered(view, a-> a<>fail);  
+  if Length( GAPInfo.UserPreferences.HelpViewers ) > 1 then
+    Info( InfoWarning, 2, "Trying to use\n#I  ",
+          GAPInfo.UserPreferences.HelpViewers, 
           "\n#I  (in this order) as help viewer.");
   else
-    Info(InfoWarning, 1, Concatenation(
-          "Using ", HELP_VIEWER[1], " as help viewer."));
+    Info(InfoWarning, 2, Concatenation(
+          "Using ", GAPInfo.UserPreferences.HelpViewers[1],
+          " as help viewer."));
   fi;
 end);
 

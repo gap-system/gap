@@ -4,11 +4,11 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for lattices.
-##
 ##
 Revision.zlattice_gi :=
     "@(#)$Id$";
@@ -21,7 +21,7 @@ Revision.zlattice_gi :=
 InstallMethod( ScalarProduct,
     "method for two row vectors",
     IsIdenticalObj,
-    [ IsRowVector, IsRowVector ], 0,
+    [ IsRowVector, IsRowVector ],
     function( v, w )
     return v * w;
     end );
@@ -45,8 +45,7 @@ end );
 ##
 InstallMethod( InverseMatMod,
     "method for a matrix, and an integer",
-    true,
-    [ IsMatrix, IsPosInt ], 0,
+    [ IsMatrix, IsPosInt ],
     function( intmat, p )
 
     local i, j, k,              # loop variables
@@ -155,7 +154,6 @@ InstallMethod( InverseMatMod,
 ##
 InstallGlobalFunction( PadicCoefficients,
     function( A, Amodpinv, b, prime, depth )
-
     local i, n, coeff, step, p2, val;
 
     n:= Length( b );
@@ -185,7 +183,6 @@ end );
 #F  LinearIndependentColumns( <mat> )
 ##
 InstallGlobalFunction( LinearIndependentColumns, function( mat )
-
     local   m, n,       # dimensions of `mat'
             maxrank,    # maximal possible rank of `mat'
             i, j, k, q,
@@ -283,7 +280,6 @@ end );
 ##  and $'Length( <A> )' \leq `Length( <A>[1] )'$.
 ##
 InstallGlobalFunction( DecompositionInt, function( A, B, depth )
-
     local i,       # loop variables
           Aqinv,      # inverse of matrix modulo p
           b,          # vector
@@ -384,7 +380,6 @@ end );
 #F  IntegralizedMat( <A>, <inforec> )
 ##
 InstallGlobalFunction( IntegralizedMat, function( arg )
-
     local i, A, inforec, tr, f,
           stab,       # Galois stabilizer of `f'
           galaut, repr, aut, conj, pos, row, intA,
@@ -510,8 +505,9 @@ end );
 ##  even if there might be a unique integral solution for some equation
 ##  system.
 ##
-InstallGlobalFunction( Decomposition, function( A, B, depth_or_nonnegative )
-
+InstallMethod( Decomposition, "for a matrix of cyclotomics, a vector and a depth",
+	[IsMatrix,IsList,IsObject],
+        function( A, B, depth_or_nonnegative )
     local i, intA, intB, newintA, newintB, result, choice, inforec;
 
     # Check the input parameters.
@@ -573,11 +569,13 @@ InstallGlobalFunction( Decomposition, function( A, B, depth_or_nonnegative )
         fi;
       od;
     else
-      result:= DecompositionInt( newintA , newintB, depth_or_nonnegative );
+      result:= DecompositionInt( newintA, newintB, depth_or_nonnegative );
     fi;
 
-    # if `intA' is not square test if the result is correct
-    if Length( intA ) < Length( intA[1] ) then
+    # If `A' is not integral or `intA' is not square
+    # then test if the result is correct.
+    if Length( intA ) < Length( intA[1] )
+       or not IsEmpty( inforec.irratcols) then
       for i in [ 1 .. Length( result ) ] do
         if result[i] <> fail and result[i] * A <> B[i] then
           result[i]:= fail;
@@ -594,7 +592,6 @@ end );
 #F  LLLReducedBasis( [<L>, ]<vectors>[, <y>][, \"linearcomb\"][, <lllout>] )
 ##
 InstallGlobalFunction( LLLReducedBasis, function( arg )
-
       local mmue,      # buffer $\mue$
             L,         # the lattice
             y,         # sensitivity $y$ (default $y = \frac{3}{4}$)
@@ -708,12 +705,12 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
         i:= i+1;
       od;
       if n < i then
-  
+
         r:= n;
         k:= n+1;
-  
+
       elif 1 < i then
-  
+
         q    := b[i];
         b[i] := b[1];
         b[1] := q;
@@ -722,9 +719,9 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
           H[i] := H[1];
           H[1] := q;
         fi;
-  
+
       fi;
-  
+
       if 0 < n then
         B:= [ scpr( L, b[1], b[1] ) ];
       else
@@ -733,7 +730,7 @@ InstallGlobalFunction( LLLReducedBasis, function( arg )
 
       Info( InfoZLattice, 1,
             "LLLReducedBasis called with ", n, " vectors, y = ", y );
-  
+
     else
 
       # Note that the first $k_{max}$ vectors are all nonzero.
@@ -957,7 +954,6 @@ end );
 #F  LLLReducedGramMat( <G>[, <y>] ) . . . . . . . . . LLL reduced Gram matrix
 ##
 InstallGlobalFunction( LLLReducedGramMat, function( arg )
-
       local gram,      # the Gram matrix
             mmue,      # buffer $\mue$
             y,         # sensitivity $y$ (default $y = \frac{3}{4}$)
@@ -1276,7 +1272,6 @@ end );
 #F  ShortestVectors( <mat>, <bound> [, \"positive\" ] )
 ##
 InstallGlobalFunction( ShortestVectors, function( arg )
-
     local
     # variables
           n,  checkpositiv, a, llg, nullv, m, c, anz, con, b, v,
@@ -1400,13 +1395,13 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
     local
     # sonstige prozeduren
           Symmatinv,
-    # variablen fuer Embed
+    # variablen für Embed
           maxdim, M, D, s, phi, mult, m, x, t, x2, sumg, sumh,
           f, invg, sol, solcount, out,
           l, g, i, j, k, n, a, IdMat, chpo,
     # booleans
           checkpositiv, checkdim,
-    # prozeduren fuer Embed
+    # prozeduren für Embed
           comp1, comp2, scp2, multiples, solvevDMtr,
           Dextend, Mextend, inca, rnew,
           deca;

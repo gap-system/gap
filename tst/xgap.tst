@@ -1,10 +1,12 @@
 #############################################################################
 ##
-#W  xgap.tst                   GAP-4 library                  Max Neunhoeffer 
+#W  xgap.tst                   GAP-4 library                  Max Neunhöffer 
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright 1999,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+#Y  Copyright 1999,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -64,10 +66,10 @@ gap> g:=f/[f.1^2,f.2^3];;
 gap> g.1^5=g.1;
 true
 
-gap> STOP_TEST( "xgap.tst", 310142500 );
+gap> STOP_TEST( "xgap.tst",562000888);
+
 
 #############################################################################
 ##
-#E  xgap.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
 

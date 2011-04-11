@@ -4,7 +4,8 @@
 **
 *H  @(#)$Id$
 **
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **
 **  This file will contains the functions for communicating with other
@@ -291,6 +292,21 @@ static UInt GetMasterPty ( int * pty, Char * nametty, Char *namepty )
         if ( (*pty = open( "/dev/ptmx", O_RDWR )) < 0 )
             return 1;
         return 0;
+#   else
+#   ifdef __CYGWIN__
+ /* NOTE: #define SYS_PTYDEV to "/dev/ptmx" */
+ /*            around line 246 ifdef __CYGWIN__    */
+ /*            instead of doing the following strcpy  */
+ /*            may be better.                                */
+        strcpy(namepty, "/dev/ptmx");
+        if ( (*pty = open( namepty, O_RDWR )) > 0 ) {
+            strcpy(nametty, ptsname(*pty));
+            /*revoke(nametty);*/
+            return 0;
+        }
+        errno = ENOENT; /* out of ptys */
+        perror(" Failed on open CYGWIN pty");
+        return 1;
 
 #   else
 #   if HAVE_GETPSEUDOTTY
@@ -339,18 +355,22 @@ static UInt GetMasterPty ( int * pty, Char * nametty, Char *namepty )
                 namepty[strlen(namepty)-1] = SYS_PTYCHAR2[devindex];
                         
                 if ( (*pty = open( namepty, O_RDWR )) >= 0 )
+                {
                     if ( (slave = open( nametty, O_RDWR, 0 )) >= 0 )
                     {
                         close(slave);
                         (void) devindex++;
                         return 0;
                     }
+                    else close(*pty);
+                } 
                 devindex++;
             }
             devindex = 0;
             (void) letter++;
         }
         return 1;
+#   endif
 #   endif
 #   endif
 #   endif
@@ -498,13 +518,6 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 
 	/* set input to non blocking operation */
 	/* Not any more */
-#if 0
-	if ( fcntl( PtyIOStreams[stream].ptyFD, F_SETFL, O_NDELAY ) < 0 )
-	  {
-	    Pr( "Panic: cannot set non blocking operation.\n", 0, 0);
-	    goto cleanup;
-	  }
-#endif
 
 	PtyIOStreams[stream].inuse = 1;
 	PtyIOStreams[stream].alive = 1;
@@ -669,64 +682,6 @@ Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
   
   
 
-#if 0
-Int ReadFromPty( UInt stream, Char *buf, Int len )
-{
-  Int         n;
-  Int         old;
-
- 
-  /* with a negative length, make one attempt (now blocking until there are some
-     bytes, or an end-of-file condition.
-
-     with a positive length, keep trying until we get that many bytes or an end condition
-
-     we're now using blocking reads, so there is no need to put a select in the loop */
-
-  Pr("RFP %d %d\n",stream, len);
-  if ( len < 0 )
-    {
-      n = read( PtyIOStreams[stream].ptyFD, buf, -len ); /* don't wait */
-      if (n == -1)
-	{
-	  Pr("  %d %s\n",n,(Int)strerror(errno));
-	}
-      else
-	{
-	  Pr("  %d read\n",n,0);
-	}
-      return n;
-    }
-  else
-    {
-      old = len;
-      while ( 0 < len )
-        {
-	  
-	  n = read(PtyIOStreams[stream].ptyFD , buf, len );
-	  if (n == -1)
-	    {
-	      Pr("  %d %s\n",n,(Int)strerror(errno));
-	    }
-	  else
-	    {
-	      Pr("  %d read\n",n,0);
-	    }
-	  if (n <= 0)
-	    {
-	      if (len < old )
-		return old-len;
-	      else
-		return n;
-	    }
-	    
-	  buf  += n;
-	  len  -= n;
-        }
-      return old;
-    }
-}
-#endif
 extern int errno;
 
 UInt WriteToPty ( UInt stream, Char *buf, Int len )
@@ -1007,6 +962,5 @@ StructInitInfo * InitInfoIOStream ( void )
 
 /****************************************************************************
 **
-
-*E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  iostream.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

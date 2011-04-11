@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  records.c                   GAP source                   Martin Schoenert
+*W  records.c                   GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the generic record package.
 **
@@ -154,14 +155,23 @@ UInt            RNamName (
 UInt            RNamIntg (
     Int                 intg )
 {
-    Char                name [16];      /* integer converted to a string   */
+    Char                name [32];      /* integer converted to a string   */
     Char *              p;              /* loop variable                   */
+    UInt negative;
 
     /* convert the integer to a string                                     */
     p = name + sizeof(name);  *--p = '\0';
+    negative = (intg < 0);
+    if ( negative ) {
+        intg = -intg;
+    }
+   
     do {
         *--p = '0' + intg % 10;
     } while ( (intg /= 10) != 0 );
+    if( negative ) {
+        *--p = '-';
+    }
 
     /* return the name                                                     */
     return RNamName( p );
@@ -540,6 +550,22 @@ UInt            completion_rnam (
     return next != 0;
 }
 
+Obj FuncALL_RNAMES (
+    Obj                 self )
+{
+    Obj                 copy, s;
+    UInt                i;
+    Char*               name;
+
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, CountRNam );
+    for ( i = 1;  i <= CountRNam;  i++ ) {
+        name = NAME_RNAM( i );
+        C_NEW_STRING(s, strlen(name), name);
+        SET_ELM_PLIST( copy, i, s );
+    }
+    SET_LEN_PLIST( copy, CountRNam );
+    return copy;
+}
 
 /****************************************************************************
 **
@@ -596,6 +622,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "NameRNam", 1, "rnam",
       NameRNamHandler, "src/records.c:NameRNam" },
+
+    { "ALL_RNAMES", 0, "",
+      FuncALL_RNAMES, "src/records.c:ALL_RNAMES" },
 
     { 0 }
 

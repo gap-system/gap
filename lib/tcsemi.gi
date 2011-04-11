@@ -7,11 +7,12 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains implementations for Todd-Coxeter procedure for 
-##  fp semigroups. This uses the code written by Goetz Pfeiffer
+##  fp semigroups. This uses the code written by Götz Pfeiffer
 ##  based on the thesis of T. Walker.
 ##
 Revision.tcsemi_gi :=

@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for elements of algebras given by structure
 ##  constants (s.~c.).
@@ -28,6 +29,17 @@
 Revision.algsc_gi :=
     "@(#)$Id$";
 
+
+#T need for the norm of a quaternion?
+#T (note: returns an element in the coefficients domain, not in the algebra!
+#T f( a b[1] + b b[2] + c b[3] + d b[4] ) = a^2 +b^2 +c^2 + d^2.)
+#T
+#T     NormQuat := function( quat )
+#T         if not IsQuaternion( quat ) then
+#T           Error( "<quat> must be a quaternion" );
+#T         fi;
+#T         return Sum( List( ExtRepOfObj( quat ), c -> c^2 ) );
+#T     end;
 
 #############################################################################
 ##
@@ -182,6 +194,72 @@ InstallMethod( PrintObj,
       od;
 
     fi;
+    end );
+
+#############################################################################
+##
+#M  String( <elm> )  . . . . . . . . . . . . . . .  for s.~c. algebra elements
+##
+InstallMethod( String,
+    "for s. c. algebra element",
+    [ IsSCAlgebraObj ],
+    function( elm )
+
+    local F,      # family of `elm'
+          s,      # string
+          names,  # generators names
+          len,    # dimension of the algebra
+          zero,   # zero element of the ring
+          depth,  # first nonzero position in coefficients list
+          one,    # identity element of the ring
+          i;      # loop over the coefficients list
+
+    F     := FamilyObj( elm );
+    names := F!.names;
+    elm   := ExtRepOfObj( elm );
+    len   := Length( elm );
+
+    # Treat the case that the algebra is trivial.
+    if len = 0 then
+      return "<zero of trivial s.c. algebra>";
+    fi;
+
+    zero  := Zero( elm[1] );
+    depth := PositionNot( elm, zero );
+
+    s:="";
+    if len < depth then
+
+      # Print the zero element.
+      # (Note that the unique element of a zero algebra has a name.)
+      Append(s, "0*");
+      Append(s,names[1]);
+
+    else
+
+      one:= One(  elm[1] );
+
+      if elm[ depth ] <> one then
+	Add(s,'(');
+	Append(s,String(elm[ depth ]));
+	Append(s, ")*" );
+      fi;
+      Append(s, names[ depth ] );
+
+      for i in [ depth+1 .. len ] do
+        if elm[i] <> zero then
+          Add(s, '+' );
+          if elm[i] <> one then
+	    Add(s,'(');
+	    Append(s,String(elm[ i ]));
+	    Append(s, ")*" );
+          fi;
+	  Append(s, names[ i ] );
+        fi;
+      od;
+
+    fi;
+    return s;
     end );
 
 
@@ -445,7 +523,6 @@ InstallMethod( \in,
 ##  and `<sctable>[i][j][2][i_k] = k'.
 ##
 BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
-
     local T,      # structure constants table
           n,      # dimensions of structure matrices
           R,      # coefficients ring
@@ -491,7 +568,7 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
       MakeImmutable( names );
     elif Length( arglist ) = 3 and IsString( arglist[3] ) then
       names:= List( [ 1 .. n ],
-                    x -> Concatenation( "v.", arglist[3] ) );
+                    x -> Concatenation( arglist[3], String(x) ) );
       MakeImmutable( names );
     elif Length( arglist ) = 3 and IsHomogeneousList( arglist[3] )
                                and Length( arglist[3] ) = n
@@ -564,26 +641,74 @@ end );
 
 InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
     local A;
-    A:= AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj );
+    A:= AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj and IsJacobianElement );
     SetIsLieAlgebra( A, true );
     return A;
 end );
 
+InstallGlobalFunction( RestrictedLieAlgebraByStructureConstants, function( arg )
+    local A, fam, pmap, i, j, v;
+    A := AlgebraByStructureConstantsArg( arg{[1..Length(arg)-1]}, IsSCAlgebraObj and IsRestrictedJacobianElement );
+    SetIsLieAlgebra( A, true );
+    SetIsRestrictedLieAlgebra( A, true );
+    fam := FamilyObj(Representative(A));
+    fam!.pMapping := [];
+    pmap := arg[Length(arg)];
+    while Length(pmap)<>Dimension(A) do
+        Error("Pth power images list should have length ",Dimension(A));
+    od;
+    for i in [1..Length(pmap)] do
+        v := List(pmap,i->fam!.zerocoeff);
+        for j in [2,4..Length(pmap[i])] do
+            v[pmap[i][j]] := One(v[1])*pmap[i][j-1];
+        od;
+        v := ObjByExtRep(fam,v);
+#        while AdjointMatrix(Basis(A),A.(i))^Characteristic(A)<>AdjointMatrix(Basis(A),v) do
+#            Error("p-mapping at position ",i," doesn't satisfy the axioms of a restricted Lie algebra");
+#        od;
+        Add(fam!.pMapping,v);
+    od;
+    SetPthPowerImages(Basis(A),fam!.pMapping);
+    return A;
+end );
 
 #############################################################################
 ##
-#F  QuaternionAlgebra( <F>, <a>, <b> )
-#F  QuaternionAlgebra( <F> )
+#M  \.( <A>, <n> )  . . . . . . . access to generators of a full s.c. algebra
+##
+InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
+    "s.c. algebra containing the whole family",
+    GeneratorsOfAlgebra );
+
+
+#############################################################################
+##
+#V  QuaternionAlgebraData
+##
+InstallFlushableValue( QuaternionAlgebraData, [] );
+
+
+#############################################################################
+##
+#F  QuaternionAlgebra( <F>[, <a>, <b>] )
 ##
 InstallGlobalFunction( QuaternionAlgebra, function( arg )
-    local F, a, b, e, filter, A;
+    local F, a, b, e, stored, filter, A;
 
-    if Length( arg ) = 1 and IsRing( arg[1] ) then
+    if   Length( arg ) = 1 and IsRing( arg[1] ) then
       F:= arg[1];
+      a:= AdditiveInverse( One( F ) );
+      b:= a;
+    elif Length( arg ) = 1 and IsCollection( arg[1] ) then
+      F:= Field( arg[1] );
       a:= AdditiveInverse( One( F ) );
       b:= a;
     elif Length( arg ) = 3 and IsRing( arg[1] ) then
       F:= arg[1];
+      a:= arg[2];
+      b:= arg[3];
+    elif Length( arg ) = 3 and IsCollection( arg[1] ) then
+      F:= Field( arg[1] );
       a:= arg[2];
       b:= arg[3];
     else
@@ -594,37 +719,56 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
       Error( "<F> must have an identity element" );
     fi;
 
-    # Construct a filter describing element properties,
-    # which will be stored in the family.
-    filter:= IsSCAlgebraObj and IsQuaternion;
-    if HasIsAssociative( F ) and IsAssociative( F ) then
-      filter:= filter and IsAssociativeElement;
-    fi;
-    if     IsCyclotomicCollection( F ) and IsField( F )
-       and ForAll( GeneratorsOfDivisionRing( F ),
-                   x -> x = ComplexConjugate( x ) ) then
-      filter:= filter and IsZDFRE;
-#T holds more generally?
+    # Generators in the right family may be already available.
+    stored:= First( QuaternionAlgebraData,
+                    t ->     t[1] = a and t[2] = b
+                         and IsIdenticalObj( t[3], FamilyObj( F ) ) );
+    if stored <> fail then
+      A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
+      SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
+    else
+
+      # Construct a filter describing element properties,
+      # which will be stored in the family.
+      filter:= IsSCAlgebraObj and IsQuaternion;
+      if HasIsAssociative( F ) and IsAssociative( F ) then
+        filter:= filter and IsAssociativeElement;
+      fi;
+      if     IsNegRat( a ) and IsNegRat( b )
+#T it suffices if the parameters are real and negative
+         and IsCyclotomicCollection( F ) and IsField( F )
+         and ForAll( GeneratorsOfDivisionRing( F ),
+                     x -> x = ComplexConjugate( x ) ) then
+        filter:= filter and IsZDFRE;
+      fi;
+
+      # Construct the algebra.
+      A:= AlgebraByStructureConstantsArg(
+              [ F,
+                [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
+                  [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
+                  [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
+                  [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
+                  0, Zero(F) ],
+                "e", "i", "j", "k" ],
+              filter );
+      SetFilterObj( A, IsAlgebraWithOne );
+#T better introduce AlgebraWithOneByStructureConstants?
+
+      # Store the data for the next call.
+      Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
+
     fi;
 
-    # Construct the algebra.
-    A:= AlgebraByStructureConstantsArg(
-            [ F,
-              [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
-                [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
-                [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
-                [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
-                0, Zero(F) ],
-              "e", "i", "j", "k" ],
-            filter );
-
-    # A quaternion algebra with parameters $-1$ over a real field
+    # A quaternion algebra with negative parameters over a real field
     # is a division ring.
-    if     a = -1 and b = -1
+    if     IsNegRat( a ) and IsNegRat( b )
+       and IsCyclotomicCollection( F ) and IsField( F )
        and ForAll( GeneratorsOfDivisionRing( F ),
                    x -> x = ComplexConjugate( x ) ) then
       SetFilterObj( A, IsMagmaWithInversesIfNonzero );
-#T better: use `DivisionRingByGenerators' !
+#T better use `DivisionRingByGenerators'?
+      SetGeneratorsOfDivisionRing( A, GeneratorsOfAlgebraWithOne( A ) );
     fi;
 
     # Return the quaternion algebra.
@@ -647,17 +791,21 @@ InstallMethod( OneOp,
 ##
 #M  InverseOp( <quat> ) . . . . . . . . . . . . . . . . . .  for a quaternion
 ##
+##  Let $a$ and $b$ be the parameters from which the algebra of <quat> was
+##  constructed.
 ##  The inverse of $c_1 e + c_2 i + c_3 j + c_4 k$ is
 ##  $c_1/z e - c_2/z i - c_3/z j - c_4/z k$
-##  where $z = c_1^2 + c_2^2 + c_3^2 + c_4^2$.
+##  where $z = c_1^2 - c_2^2 a - c_3^2 b + c_4^2 a b$.
 ##
 InstallMethod( InverseOp,
     "for a quaternion",
     [ IsQuaternion and IsSCAlgebraObj ],
     function( quat )
-    local data, z;
+    local data, z, a, b;
     data:= ExtRepOfObj( quat );
-    z:= data[1]^2 + data[2]^2 + data[3]^2 + data[4]^2;
+    a:= FamilyObj( quat )!.sctable[2][2][2][1];
+    b:= FamilyObj( quat )!.sctable[3][3][2][1];
+    z:= data[1]^2 - data[2]^2 * a - data[3]^2 * b + data[4]^2 * a * b;
     if IsZero( z ) then
       return fail;
     fi;
@@ -676,12 +824,42 @@ InstallMethod( ComplexConjugate,
     "for a quaternion",
     [ IsQuaternion and IsSCAlgebraObj ],
     function( quat )
-    local data;
-    data:= ShallowCopy( ExtRepOfObj( quat ) );
-    data[2]:= AdditiveInverse( data[2] );
-    data[3]:= AdditiveInverse( data[3] );
-    data[4]:= AdditiveInverse( data[4] );
-    return ObjByExtRep( FamilyObj( quat ), data );
+    local v;
+
+    v:= ExtRepOfObj( quat );
+    return ObjByExtRep( FamilyObj( quat ), [ v[1], -v[2], -v[3], -v[4] ] );
+    end );
+
+
+#############################################################################
+##
+#M  RealPart( <quat> )  . . . . . . . . . . . . . . . . . .  for a quaternion
+##
+InstallMethod( RealPart,
+    "for a quaternion",
+    [ IsQuaternion and IsSCAlgebraObj ],
+    function( quat )
+    local v, z;
+
+    v:= ExtRepOfObj( quat );
+    z:= Zero( v[1] );
+    return ObjByExtRep( FamilyObj( quat ), [ v[1], z, z, z ] );
+    end );
+
+
+#############################################################################
+##
+#M  ImaginaryPart( <quat> ) . . . . . . . . . . . . . . . .  for a quaternion
+##
+InstallMethod( ImaginaryPart,
+    "for a quaternion",
+    [ IsQuaternion and IsSCAlgebraObj ],
+    function( quat )
+    local v, z;
+
+    v:= ExtRepOfObj( quat );
+    z:= Zero( v[1] );
+    return ObjByExtRep( FamilyObj( quat ), [ v[2], z, v[4], -v[3] ] );
     end );
 
 
@@ -691,7 +869,6 @@ InstallMethod( ComplexConjugate,
 #F  ComplexificationQuat( <matrix> )
 ##
 InstallGlobalFunction( ComplexificationQuat, function( matrixorvector )
-
     local result,
           i, e,
           M,
@@ -763,7 +940,7 @@ InstallGlobalFunction( OctaveAlgebra, F -> AlgebraByStructureConstants(
         [[2],[-1]] ],
       [ [[],[]],[[8],[1]],[[6],[-1]],[[],[]],[[4],[1]],[[],[]],[[1],[-1]],
         [[],[]] ],
-      0, Zero(F) ],
+      0, 0 ],
     "s1", "t1", "s2", "t2", "s3", "t3", "s4", "t4" ) );
 
 
@@ -899,6 +1076,73 @@ InstallMethod( IsCanonicalBasisFullSCAlgebra,
 #T change implementation: bases of their own right, as for Gaussian row spaces,
 #T if the algebra is Gaussian
 
+
+#############################################################################
+##
+#M  Intersection2( <V>, <W> )
+##
+##  Contrary to the generic case that is handled by `Intersection2Spaces',
+##  we know initially a (finite dimensional) common coefficient space,
+##  so we can avoid the intermediate construction of such a space.
+##
+InstallMethod( Intersection2,
+    "for two spaces in a common s.c. algebra",
+    IsIdenticalObj,
+    [ IsVectorSpace and IsSCAlgebraObjCollection,
+      IsVectorSpace and IsSCAlgebraObjCollection ],
+    function( V, W )
+    local F,       # coefficients field
+          gensV,   # list of generators of 'V'
+          gensW,   # list of generators of 'W'
+          Fam,     # family of an element
+          inters;  # intersection, result
+
+    F:= LeftActingDomain( V );
+    if F <> LeftActingDomain( W ) then
+      # The generic method is good enough for this.
+      TryNextMethod();
+    fi;
+
+    gensV:= GeneratorsOfLeftModule( V );
+    gensW:= GeneratorsOfLeftModule( W );
+    if IsEmpty( gensV ) or IsEmpty( gensW ) then
+      inters:= [];
+    else
+      gensV:= List( gensV, ExtRepOfObj );
+      gensW:= List( gensW, ExtRepOfObj );
+      if not (     ForAll( gensV, v -> IsSubset( F, v ) )
+               and ForAll( gensW, v -> IsSubset( F, v ) ) ) then
+        # We are not in a Gaussian situation.
+        TryNextMethod();
+      fi;
+      Fam:= ElementsFamily( FamilyObj( V ) );
+      inters:= List( SumIntersectionMat( gensV, gensW )[2],
+                     x -> ObjByExtRep( Fam, x ) );
+    fi;
+
+    # Construct the intersection space, if possible with a parent,
+    # and with as much structure as possible.
+    if IsEmpty( inters ) then
+      inters:= TrivialSubFLMLOR( V );
+    elif IsFLMLOR( V ) and IsFLMLOR( W ) then
+      inters:= FLMLOR( F, inters, "basis" );
+    else
+      inters:= VectorSpace( F, inters, "basis" );
+    fi;
+    if     HasParent( V ) and HasParent( W )
+       and IsIdenticalObj( Parent( V ), Parent( W ) ) then
+      SetParent( inters, Parent( V ) );
+    fi;
+
+    # Run implications by the subset relation.
+    UseSubsetRelation( V, inters );
+    UseSubsetRelation( W, inters );
+
+    # Return the result.
+    return inters;
+    end );
+
+# analogous for closure?
 
 #############################################################################
 ##

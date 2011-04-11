@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  Exclude from testinstall.g: why?
 ##
 
 gap> START_TEST("$Id$");
@@ -1042,10 +1044,10 @@ gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
 
 #############################################################################
 
-gap> STOP_TEST( "rwspcsng.tst", 403645000 );
+gap> STOP_TEST( "rwspcsng.tst",346001450);
 
 
 #############################################################################
 ##
-#E  rwspcsng.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

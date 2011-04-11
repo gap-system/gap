@@ -2,8 +2,9 @@
 ##
 #W  gprdpc.gi                   GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprdpc_gi :=
     "@(#)$Id$";
@@ -37,7 +38,7 @@ InstallMethod( DirectProductOp,
 
         pcgsG := Pcgs( G );
         isoG  := IsomorphismFpGroupByPcgs( pcgsG, "F" );
-        FG    := Image( isoG );
+        FG    := Range( isoG );
         relsG := RelatorsOfFpGroup( FG );
         gensG := GeneratorsOfGroup( FreeGroupOfFpGroup( FG ) );
         n     := s + Length( pcgsG );
@@ -279,15 +280,15 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
   for i in [1..Length(fp)] do
     pow:=fp[i]^RelativeOrders(fp)[i];
     e:=ExponentsOfPcElement(fp,pow);
-    w:=LinearCombinationPcgs(fpgens,e);
+    w:=LinearCombinationPcgs(fpgens,e,One(F));
 
     # the rest in kg
     pow:=LeftQuotient(PcElementByExponentsNC(fp,e),pow);
-    w:=w*LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,pow));
+    w:=w*LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,pow),One(F));
 
     # rest in kh
-    pow:=LeftQuotient(LinearCombinationPcgs(fh,e),fh[i]^RelativeOrders(fp)[i]);
-    w:=w*LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,pow));
+    pow:=LeftQuotient(LinearCombinationPcgs(fh,e,One(H)),fh[i]^RelativeOrders(fp)[i]);
+    w:=w*LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,pow),One(F));
 
     if w<>id then
       SetPower(coll,i,w);
@@ -298,7 +299,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
   for i in [1..Length(pkg)] do
     pow:=pkg[i]^RelativeOrders(pkg)[i];
     e:=ExponentsOfPcElement(pkg,pow);
-    w:=LinearCombinationPcgs(pggens,e);
+    w:=LinearCombinationPcgs(pggens,e,One(F));
     if w<>id then
       SetPower(coll,i+b2,w);
     fi;
@@ -308,7 +309,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
   for i in [1..Length(pkh)] do
     pow:=pkh[i]^RelativeOrders(pkh)[i];
     e:=ExponentsOfPcElement(pkh,pow);
-    w:=LinearCombinationPcgs(phgens,e);
+    w:=LinearCombinationPcgs(phgens,e,One(F));
     if w<>id then
       SetPower(coll,i+b3,w);
     fi;
@@ -321,15 +322,15 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
     for j in [i+1..Length(fp)] do
       comm:=Comm(fp[j],fp[i]);
       e:=ExponentsOfPcElement(fp,comm);
-      w:=LinearCombinationPcgs(fpgens,e);
+      w:=LinearCombinationPcgs(fpgens,e,One(F));
 
       # the rest in kg
       comm:=LeftQuotient(PcElementByExponentsNC(fp,e),comm);
-      w:=w*LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,comm));
+      w:=w*LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,comm),One(F));
 
       # rest in kh
-      comm:=LeftQuotient(LinearCombinationPcgs(fh,e),Comm(fh[j],fh[i]));
-      w:=w*LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm));
+      comm:=LeftQuotient(LinearCombinationPcgs(fh,e,One(H)),Comm(fh[j],fh[i]));
+      w:=w*LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm),One(F));
 
       if w<>id then
 	SetCommutator(coll,j,i,w);
@@ -339,7 +340,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
     #on pkg
     for j in [1..Length(pkg)] do
       comm:=Comm(pkg[j],fp[i]);
-      w:=LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,comm));
+      w:=LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,comm),One(F));
 
       if w<>id then
 	SetCommutator(coll,j+b2,i,w);
@@ -349,7 +350,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
     #on pkh
     for j in [1..Length(pkh)] do
       comm:=Comm(pkh[j],fh[i]);
-      w:=LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm));
+      w:=LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm),One(F));
 
       if w<>id then
 	SetCommutator(coll,j+b3,i,w);
@@ -363,7 +364,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
     for j in [i+1..Length(pkg)] do
       comm:=Comm(pkg[j],pkg[i]);
       e:=ExponentsOfPcElement(pkg,comm);
-      w:=LinearCombinationPcgs(pggens,e);
+      w:=LinearCombinationPcgs(pggens,e,One(F));
 
       if w<>id then
 	SetCommutator(coll,j+b2,i+b2,w);
@@ -376,7 +377,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
     for j in [i+1..Length(pkh)] do
       comm:=Comm(pkh[j],pkh[i]);
       e:=ExponentsOfPcElement(pkh,comm);
-      w:=LinearCombinationPcgs(phgens,e);
+      w:=LinearCombinationPcgs(phgens,e,One(F));
 
       if w<>id then
 	SetCommutator(coll,j+b3,i+b3,w);
@@ -394,11 +395,11 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
   comm:=[];
   for i in [1..Length(gi)] do
     e:=ExponentsOfPcElement(fp,gi[i]);
-    Add(comm,LinearCombinationPcgs(fpgens,e)
+    Add(comm,LinearCombinationPcgs(fpgens,e,One(w))
             *LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,
-	               LeftQuotient(LinearCombinationPcgs(fp,e),gi[i])))
+	      LeftQuotient(LinearCombinationPcgs(fp,e,One(G)),gi[i])),One(w))
             *LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,
-	               LeftQuotient(LinearCombinationPcgs(fh,e),hi[i]))));
+	      LeftQuotient(LinearCombinationPcgs(fh,e,One(H)),hi[i])),One(w)));
   od;
 
   return [w,comm];

@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains those functions that mainly deal with matrix algebras,
 ##  that is, associative matrix algebras and matrix Lie algebras.
@@ -931,7 +932,7 @@ InstallMethod( RadicalOfAlgebra,
       dim := Length( bas[1] );
       pexp := 1;
       invFrob := InverseGeneralMapping(FrobeniusAutomorphism(F));
-      invFrobexp := invFrob;
+      invFrobexp := IdentityMapping(F);
       minusOne := -One(F);
       ident := IdentityMat( dim, F );
       changed := true;
@@ -952,7 +953,7 @@ InstallMethod( RadicalOfAlgebra,
               for i in [1..r] do
                   for j in [1..r_prime] do
                       charPoly[i][j] :=
-                          CoefficientsOfUnivariatePolynomial( CharacteristicPolynomial( F, I[i]*I_prime[j] ) );
+                          CoefficientsOfUnivariatePolynomial( CharacteristicPolynomial( F, F, I[i]*I_prime[j] ) );
                   od;
               od;
               changed := false;
@@ -971,9 +972,7 @@ InstallMethod( RadicalOfAlgebra,
           elif Length( G ) <> r then
               # $I_i <> I_{i-1}$, so compute the basis for $I_i$
               changed := true;
-              if 1 < pexp and pexp < q then
-                  G := List( G, x -> List( x, y -> y^invFrobexp ) );
-              fi;
+              G := List( G, x -> List( x, y -> y^invFrobexp ) );
               I := List( G, x -> LinearCombination( I, x ) );
           fi;
 
@@ -1106,7 +1105,6 @@ InstallMethod( CentralizerOp,
 ##  matrix algebra over <F>.
 ##
 InstallGlobalFunction( FullMatrixAlgebraCentralizer, function( F, lst )
-
     local len,      # length of `lst'
           dims,     # dimensions of the matrices
           n,        # number of rows/columns
@@ -1120,6 +1118,8 @@ InstallGlobalFunction( FullMatrixAlgebraCentralizer, function( F, lst )
     len:= Length( lst );
     if len = 0 then
       Error( "cannot compute the centralizer of an empty set" );
+    elif not IsSubset( F, FieldOfMatrixList( lst ) ) then
+      Error( "not all entries of the matrices in <lst> lie in <F>" );
     fi;
 
     dims:= DimensionsMat( lst[1] );
@@ -1129,7 +1129,6 @@ InstallGlobalFunction( FullMatrixAlgebraCentralizer, function( F, lst )
     # In the equations matrices are viewed as vectors of length `n*n'.
     # Position `(i,j)' in the matrix corresponds with position `(i-1)*n+j'
     # in the vector.
-
     eq:= NullMat( n2, n2 * len, F );
     for u in [ 1 .. len ] do
       for i in [1..n] do
@@ -1156,7 +1155,6 @@ InstallGlobalFunction( FullMatrixAlgebraCentralizer, function( F, lst )
     od;
 
     return AlgebraWithOne( F, Bcen, "basis" );
-
 end );
 
 

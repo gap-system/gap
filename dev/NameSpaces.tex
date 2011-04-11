@@ -1,0 +1,128 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage{times}
+\parindent=0pt
+\parskip=\medskipamount
+\def\GAP{\textsf{GAP}}
+\let\code\texttt
+\def\var#1{{\rmfamily\slshape#1}}
+\def\bs{$\backslash$}
+\title{Namespaces}
+\author{Steve Linton}
+\begin{document}
+\maketitle
+
+This is working notes towards a scheme for reducing the pressure on
+the global namespace, in the light of the increasing number of
+packages, and also, perhaps, the partial modularisation of the
+library.
+
+\section{Changes to GAP Syntax}
+
+The general form of a  global variable name in GAP would become
+\textit{namespace\/}\verb|$|\textit{name}. Every global variable would
+be uniquely identified by its \textit{(namespace,name)} pair.
+
+The forms \verb|$|\textit{name} (which would always denote a global
+variable) and \textit{name} (which might be a local or higher
+variable) would also be allowed. We call these ``unqualified global
+variable names''.  To resolve such names, one or more namespaces would
+be open for access to existing variables (open for access), and just one namespace would
+be open for creation of new variables (open for creation). If an
+unqalified variable name was referred to, and more than one of the
+namespaces open for access contained a variable with the given name,
+then this would be an error (``ambiguous variable reference'' or some
+such).
+
+This can be achieved by kernel functions
+\verb|OpenNamespaceForAccess|, \verb|CloseNamespaceForAccess|,
+\verb|OpenNamespaceForCreation|, etc. Note that a namespace is
+\emph{not} a GAP object. These functions would take a string as
+argument. 
+
+There might be a separate \verb|CreateNamespace| or it might be a side
+effect of \verb|OpenNamespaceForCreation|. Similarly, assignment to a
+variable in a non-existant namespace may, or may not, create that namespace.
+
+Importantly, the resolution of global variable names would take place,
+as now, at the time code is parsed, not at the time it is executed
+(except via calls to functions like \verb|BindGlobal|). This is
+essential for performance, and will do what people expect with regard
+to library code, but may confuse people interactively.
+
+\begin{verbatim}
+gap> foo := function() ......  var .... end;
+gap> foo();
+
+<error because var defaults to incorrect namespace bar>
+
+gap> CloseNamespaceForAccess(``bar'');
+gap> OpenNamespaceForAccess(``therightone'');
+gap> foo();
+
+<same error, var was resolved when foo was parsed>
+\end{verbatim}
+\section{Use of Namespaces}
+
+\subsection{In the library}
+
+Clearly, there will be a default global namespace, which I propose to
+call GLOBAL. Initially this will be open for access and for creation
+and nothing else will.
+
+Library authors, especially perhaps library module authors, may wish
+to create private namespaces in parts of the library for functions not
+intended to be documented or used interactively. This might be
+something like:
+
+
+In a .gd file:
+\begin{verbatim}
+CreateNamespace(``XyzInternals'');
+OpenNamespaceForCreation(``XyzInternals'');
+
+DeclareOperation(``DoTechnicalStuff''...);
+
+DeclareGlobalVariable(``TechnicalData''...);
+
+OpenNameSpaceForCreation(``GLOBAL'');
+\end{verbatim}
+
+In a .gi file
+\begin{verbatim}
+OpenNamespaceForAccess(``XyzInternals'');
+
+InstallMethod(DoTechnicalStuff,...)
+
+InstallMethod(Size,.... function()......TechnicalData.....end);
+
+CloseNamespaceForAccess(``XyzInternals'');
+\end{verbatim}
+
+\subsection{In Packages}
+
+I suggest that each package should get one namespace automatically
+with the same name as the package. 
+
+When packages files are read, that namespace should be open for
+Creation and Access, so that all variables created in a package,
+unless either they are refered to as \verb|GLOBAL$|\textit{name}, or
+the package calls the namespace management functions to open some
+other namespace for creation. The package may define further private
+namespaces just like library code can. Packages can refer to variables
+from other packages using \verb|$| or by opening the namespace (most
+likely via \verb|RequirePackage|).
+
+I suggest that explicit \verb|RequirePackage| should read in the
+package files and open the package namespace for access. I am not sure
+whether autoloading of a package should do this, however. If it didn't
+then autoloading would still give access to new methods installed in
+the package for existing operations, but would not see any new
+operations.
+
+
+
+
+
+\end{document}
+

@@ -1,12 +1,12 @@
 #############################################################################
 ##
 #W  irredsol.gi                 GAP group library                  Mark Short
-#W                                                           Burkhard Hofling
+#W                                                           Burkhard Höfling
 ##
 #H  @(#)$Id$
 ##
 #Y  Copyright (C) 1993, Murdoch University, Perth, Australia
-#Y  Copyright (C) 2001, Technische Universitaet, Braunschweig, Germany
+#Y  Copyright (C) 2001, Technische Universität, Braunschweig, Germany
 ##
 ##  This file contains the  functions and  data for the  irreducible solvable
 ##  matrix group library.  It contains  exactely one member  for each of  the

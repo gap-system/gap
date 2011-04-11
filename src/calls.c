@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  calls.c                     GAP source                   Martin Schoenert
+*W  calls.c                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for the function call mechanism package.
 **
@@ -894,10 +895,10 @@ typedef struct {
 }
 TypeHandlerInfo;
 
-static UInt HandlerSortingStatus = 0;
+static UInt HandlerSortingStatus;
 
 static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
-static UInt NHandlerFuncs = 0;
+static UInt NHandlerFuncs;
  
 void InitHandlerFunc (
     ObjFunc             hdlr,
@@ -927,6 +928,17 @@ void InitHandlerFunc (
 **
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
+
+void InitHandlerRegistration()
+{
+  /* initialize these here rather than statically to allow for restart */
+  /* can't do them in InitKernel of this module because it's called too late
+     so make it a function and call it from an earlier InitKernel */
+  HandlerSortingStatus = 0;
+  NHandlerFuncs = 0;
+
+}
+
 static void CheckHandlersBag(
     Bag         bag )
 {
@@ -1019,7 +1031,6 @@ const Char * CookieOfHandler (
             if ( hdlr == HandlerFuncs[i].hdlr )
                 return HandlerFuncs[i].cookie;
         }
-        ErrorQuit( "No Cookie for Handler", 0L, 0L );
         return (Char *)0L;
     }
     else {
@@ -1034,7 +1045,6 @@ const Char * CookieOfHandler (
             else
                 return HandlerFuncs[middle].cookie;
         }
-        ErrorQuit( "No Cookie for Handler", 0L, 0L );
         return (Char *)0L;
     }
 }
@@ -1042,7 +1052,7 @@ const Char * CookieOfHandler (
 ObjFunc HandlerOfCookie(
        const Char * cookie )
 {
-  UInt i,top,bottom,middle;
+  Int i,top,bottom,middle;
   Int res;
   if (HandlerSortingStatus != 2) 
     {
@@ -1051,8 +1061,6 @@ ObjFunc HandlerOfCookie(
           if (SyStrcmp(cookie, HandlerFuncs[i].cookie) == 0)
             return HandlerFuncs[i].hdlr;
         }
-      Pr("Function Handler %s Missing from Kernel\n", (Int)cookie, 0L);
-      SyExit(1);
       return (ObjFunc)0L;
     }
   else
@@ -1069,8 +1077,6 @@ ObjFunc HandlerOfCookie(
         else
           return HandlerFuncs[middle].hdlr;
       }
-      Pr("Function Handler %s Missing from Kernel\n", (Int)cookie, 0L);
-      SyExit(1);
       return (ObjFunc)0L;
     }
 }
@@ -1332,8 +1338,8 @@ void PrintFunction (
         if ( IS_UNCOMPLETED_FUNC(func) )  {
             Pr( "<<uncompletable function>>", 0L, 0L );
         }
-        else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0 ) {
-            Pr("<<compiled code>>",0L,0L);
+        else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
+            Pr("<<kernel or compiled code>>",0L,0L);
         }
         else {
             SWITCH_TO_NEW_LVARS( func, NARG_FUNC(func), NLOC_FUNC(func),
@@ -1389,6 +1395,8 @@ Obj FuncIS_FUNCTION (
 **  i.e., it is equivalent to '<func>( <arg1>, <arg2>... )'.
 */
 Obj CallFunctionOper;
+
+
 
 Obj FuncCALL_FUNC (
     Obj                 self,
@@ -1494,53 +1502,48 @@ Obj FuncCALL_FUNC_LIST (
             "you can replace <list> via 'return <list>;'" );
     }
 
-    /* check that the first argument is a function                         */
-    /*N 1996/06/26 mschoene this should be done by 'CALL_<i>ARGS'          */
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "CallFuncList: <func> must be a function",
-            0L, 0L,
-            "you can replace function <func> via 'return <func>;'" );
-    }
+    if (TNUM_OBJ(func) == T_FUNCTION) {
 
-    /* call the function                                                   */
-    if      ( LEN_LIST(list) == 0 ) {
+      /* call the function                                                   */
+      if      ( LEN_LIST(list) == 0 ) {
         result = CALL_0ARGS( func );
-    }
-    else if ( LEN_LIST(list) == 1 ) {
+      }
+      else if ( LEN_LIST(list) == 1 ) {
         result = CALL_1ARGS( func, ELMV_LIST(list,1) );
-    }
-    else if ( LEN_LIST(list) == 2 ) {
+      }
+      else if ( LEN_LIST(list) == 2 ) {
         result = CALL_2ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2) );
-    }
-    else if ( LEN_LIST(list) == 3 ) {
+      }
+      else if ( LEN_LIST(list) == 3 ) {
         result = CALL_3ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3) );
-    }
-    else if ( LEN_LIST(list) == 4 ) {
+			     ELMV_LIST(list,3) );
+      }
+      else if ( LEN_LIST(list) == 4 ) {
         result = CALL_4ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3), ELMV_LIST(list,4) );
-    }
-    else if ( LEN_LIST(list) == 5 ) {
+			     ELMV_LIST(list,3), ELMV_LIST(list,4) );
+      }
+      else if ( LEN_LIST(list) == 5 ) {
         result = CALL_5ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3), ELMV_LIST(list,4),
-                                   ELMV_LIST(list,5) );
-    }
-    else if ( LEN_LIST(list) == 6 ) {
+			     ELMV_LIST(list,3), ELMV_LIST(list,4),
+			     ELMV_LIST(list,5) );
+      }
+      else if ( LEN_LIST(list) == 6 ) {
         result = CALL_6ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3), ELMV_LIST(list,4),
-                                   ELMV_LIST(list,5), ELMV_LIST(list,6) );
-    }
-    else {
+			     ELMV_LIST(list,3), ELMV_LIST(list,4),
+			     ELMV_LIST(list,5), ELMV_LIST(list,6) );
+      }
+      else {
         list2 = NEW_PLIST( T_PLIST, LEN_LIST(list) );
         SET_LEN_PLIST( list2, LEN_LIST(list) );
         for ( i = 1; i <= LEN_LIST(list); i++ ) {
-            arg = ELMV_LIST( list, (Int)i );
-            SET_ELM_PLIST( list2, i, arg );
+	  arg = ELMV_LIST( list, (Int)i );
+	  SET_ELM_PLIST( list2, i, arg );
         }
         result = CALL_XARGS( func, list2 );
+      }
+    } else {
+      result = DoOperation2Args(self, func, list);
     }
-
     /* return the result                                                   */
     return result;
 }
@@ -1554,10 +1557,10 @@ Obj FuncCALL_FUNC_LIST (
 
 /****************************************************************************
 **
-
 *F  FuncNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
 Obj NAME_FUNC_Oper;
+Obj SET_NAME_FUNC_Oper;
 
 Obj FuncNAME_FUNC (
     Obj                 self,
@@ -1574,6 +1577,7 @@ Obj FuncNAME_FUNC (
 	    C_NEW_STRING(name, 7, "unknown");
             RESET_FILT_LIST( name, FN_IS_MUTABLE );
             NAME_FUNC(func) = name;
+            CHANGED_BAG(func);
 
         }
         return name;
@@ -1581,6 +1585,22 @@ Obj FuncNAME_FUNC (
     else {
         return DoOperation1Args( self, func );
     }
+}
+
+Obj FuncSET_NAME_FUNC(
+		      Obj self,
+		      Obj func,
+		      Obj name )
+{
+  while (!IsStringConv(name))
+    name = ErrorReturnObj("SET_NAME_FUNC( <func>, <name> ): <name> must be a string, not a %s",
+			  (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
+  if (TNUM_OBJ(func) == T_FUNCTION ) {
+    NAME_FUNC(func) = name;
+    CHANGED_BAG(func);
+  } else
+    DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
+  return (Obj) 0;
 }
 
 
@@ -1795,6 +1815,45 @@ Obj FuncIS_PROFILED_FUNC(
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
+Obj FuncFILENAME_FUNC(Obj self, Obj func) {
+  if (BODY_FUNC(func))
+    {
+      Obj fn =  FILENAME_BODY(BODY_FUNC(func));
+      if (fn)
+	return fn;
+      else
+	return Fail;
+    }
+  else
+    return Fail;
+}
+
+Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
+  if (BODY_FUNC(func)) 
+    {
+      Obj sl = STARTLINE_BODY(BODY_FUNC(func));
+      if (sl)
+	return sl;
+      else
+	return Fail;
+    }
+  else
+    return Fail;
+}
+
+Obj FuncENDLINE_FUNC(Obj self, Obj func) {
+  if (BODY_FUNC(func)) 
+    {
+      Obj el = ENDLINE_BODY(BODY_FUNC(func));
+      if (el)
+	return el;
+      else
+	return Fail;
+    }
+  else
+    return Fail;
+}
+
 
 /****************************************************************************
 **
@@ -1838,6 +1897,32 @@ Obj FuncUNPROFILE_FUNC(
     }
 
     return (Obj)0;
+}
+
+Obj FuncIsKernelFunction(Obj self, Obj func) {
+  if (!IS_FUNC(func))
+    return Fail;
+  else return (BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0) ? True : False;
+}
+
+Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
+{
+  Int narg;
+  ObjFunc hdlr;
+  const Char *cookie;
+  Obj cookieStr;
+  UInt len;
+  if (!IS_FUNC(func))
+    return Fail;
+  narg = NARG_FUNC(func);
+  if (narg == -1)
+    narg = 7;
+  hdlr = HDLR_FUNC(func, narg);
+  cookie = CookieOfHandler(hdlr);
+  len = SyStrlen(cookie);
+  cookieStr = NEW_STRING(len);
+  COPY_CHARS(cookieStr, cookie, len);
+  return cookieStr;
 }
 
 /****************************************************************************
@@ -1922,6 +2007,9 @@ static StructGVarOper GVarOpers [] = {
     { "NAME_FUNC", 1, "func", &NAME_FUNC_Oper,
       FuncNAME_FUNC, "src/calls.c:NAME_FUNC" },
 
+    { "SET_NAME_FUNC", 2, "func, name", &SET_NAME_FUNC_Oper,
+      FuncSET_NAME_FUNC, "src/calls.c:SET_NAME_FUNC" },
+
     { "NARG_FUNC", 1, "func", &NARG_FUNC_Oper,
       FuncNARG_FUNC, "src/calls.c:NARG_FUNC" },
 
@@ -1930,6 +2018,7 @@ static StructGVarOper GVarOpers [] = {
 
     { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
       FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
+
 
     { 0 }
 
@@ -1954,6 +2043,20 @@ static StructGVarFunc GVarFuncs [] = {
     { "UNPROFILE_FUNC", 1, "func",
       FuncUNPROFILE_FUNC, "src/calls.c:UNPROFILE_FUNC" },
 
+    { "IsKernelFunction", 1, "func",
+      FuncIsKernelFunction, "src/calls.c:IsKernelFunction" },
+
+    { "HandlerCookieOfFunction", 1, "func",
+      FuncHandlerCookieOfFunction, "src/calls.c:HandlerCookieOfFunction" },
+
+    { "FILENAME_FUNC", 1, "func", 
+      FuncFILENAME_FUNC, "src/calls.c:FILENAME_FUNC" },
+
+    { "STARTLINE_FUNC", 1, "func", 
+      FuncSTARTLINE_FUNC, "src/calls.c:STARTLINE_FUNC" },
+
+    { "ENDLINE_FUNC", 1, "func", 
+      FuncENDLINE_FUNC, "src/calls.c:ENDLINE_FUNC" },
     { 0 }
 
 };
@@ -1967,6 +2070,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  
     /* install the marking functions                                       */
     InfoBags[ T_FUNCTION ].name = "function";
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
@@ -1988,6 +2092,7 @@ static Int InitKernel (
     /* install the printer                                                 */
     InitFopyGVar( "PRINT_OPERATION", &PrintOperation );
     PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
+
 
     /* initialise all 'Do<Something><N>args' handlers, give the most       */
     /* common ones short cookies to save space in in the saved workspace   */
@@ -2027,8 +2132,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
-{
+    StructInitInfo *    module ){
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarOpersFromTable( GVarOpers );

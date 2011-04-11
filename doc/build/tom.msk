@@ -6,10 +6,11 @@
 %H  @(#)$Id$
 %%
 %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 %%  This file describes the functions dealing with tables of marks.
 %%  The corresponding {\GAP} code is contained in the files `lib/tom.g[di]'
-%%  and `tom/tmadmin.g[di]'.
+%%  and `pkg/tomlib/gap/tmadmin.tm[di]'.
 %%
 \Chapter{Tables of Marks}
 
@@ -29,6 +30,15 @@
 
 \FileHeader[3]{tom}
 
+Several examples in this chapter require
+the {\GAP} Library of Tables of Marks to be available.
+If it is not yet loaded then we load it now.
+
+\beginexample
+gap> LoadPackage( "tomlib" );
+true
+\endexample
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Constructing Tables of Marks}
@@ -36,7 +46,7 @@
 \Declaration{TableOfMarks}
 \beginexample
 gap> tom:= TableOfMarks( AlternatingGroup( 5 ) );
-TableOfMarks( AlternatingGroup( [ 1 .. 5 ] ) )
+TableOfMarks( Alt( [ 1 .. 5 ] ) )
 gap> TableOfMarks( "J5" );
 fail
 gap> a5:= TableOfMarks( "A5" );
@@ -311,12 +321,8 @@ gap> for i in [ 1 .. 6 ] do
 \beginexample
 gap> a5:= TableOfMarks( "A5" );
 TableOfMarks( "A5" )
-gap> DerivedSubgroupsTomPossible( a5 );
-[ ,, 1,,,,,, 9 ]
 gap> DerivedSubgroupTom( a5, 2 );
 1
-gap> DerivedSubgroupsTomPossible( a5 );
-[ , 1, 1,,,,,, 9 ]
 gap> DerivedSubgroupsTom( a5 );
 [ 1, 1, 1, 1, 1, 3, 5, 4, 9 ]
 \endexample
@@ -384,13 +390,13 @@ class number $3$, and is a cyclic subgroup of order 3.
 \Declaration{FactorGroupTom}
 \beginexample
 gap> s4:= TableOfMarks( SymmetricGroup( 4 ) );
-TableOfMarks( SymmetricGroup( [ 1 .. 4 ] ) )
+TableOfMarks( Sym( [ 1 .. 4 ] ) )
 gap> LengthsTom( s4 );
 [ 1, 3, 6, 4, 1, 3, 3, 4, 3, 1, 1 ]
 gap> OrdersTom( s4 );
 [ 1, 2, 2, 3, 4, 4, 4, 6, 8, 12, 24 ]
 gap> s3:= FactorGroupTom( s4, 5 );
-TableOfMarks( Group( [ f1, f2 ] ) )
+TableOfMarks( Group([ f1, f2 ]) )
 gap> Display( s3 );
 1:  6
 2:  3 1
@@ -541,8 +547,8 @@ gap> repeat
 > until Order( y ) = 3 and Order( x*y ) = 5;
 gap> # Compute a representative w.r.t. these generators.
 gap> RepresentativeTomByGenerators( a5, 4, [ x, y ] );
-Group([ [ [ Z(2^2), Z(2^2)^2 ], [ Z(2^2)^2, Z(2^2) ] ], 
-  [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ])
+Group([ [ [ Z(2)^0, Z(2^2)^2 ], [ 0*Z(2), Z(2)^0 ] ], 
+  [ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ] ])
 gap> # Show that the new generators are really good.
 gap> grp:= UnderlyingGroup( a5 );;
 gap> iso:= GroupGeneralMappingByImages( grp, g,
@@ -556,6 +562,16 @@ true
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Interface between Tables of Marks and Character Tables}
+
+The following examples require the {\GAP} Character Table Library
+to be available.
+If it is not yet loaded then we load it now.
+
+\beginexample
+gap> LoadPackage( "ctbllib" );
+true
+\endexample
+
 
 \Declaration{FusionCharTableTom}
 \beginexample
@@ -623,28 +639,23 @@ gap> Display( TableOfMarksFrobenius( 5, 4 ) );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Library of Tables of Marks}
 
-*@The description of the contents of the library of tables of marks
-is currently missing.@*
+The {\GAP} package `TomLib' provides access to several hundred tables of
+marks of almost simple groups and their maximal subgroups.
+If this package is installed then the tables from this database can be
+accessed via `TableOfMarks' with argument a string (see~"TableOfMarks").
+If also the {\GAP} Character Table Library is installed and contains the
+ordinary character table of the group for which one wants to fetch the table
+of marks then one can also call `TableOfMarks' with argument the character
+table.
 
-%T only if installed!
-%T 
-%T 
-%T This  package  of  functions comes together  with a library of tables  of
-%T marks.   The library files are stored in a directory 'TOMNAME'.  The file
-%T 'TOMNAME/\"tmprimar.tom\"' is the  primary file of the library  of tables
-%T of  marks.   It contains the  information where  to find  a table and the
-%T function 'TomLibrary' which restores a table from the library.
-%T 
-%T The secondary files are
-%T 
-%T |    tmaltern.tom  tmmath24.tom  tmsuzuki.tom  tmunitar.tom
-%T     tmlinear.tom  tmmisc.tom    tmsporad.tom  tmsymple.tom |
-%T 
-%T The list 'TOMLIST' contains for each table an entry with its name and the
-%T name of the file where it is stored.
-%T 
-%T A table  of marks which is restored from  the library will be stored as a
-%T component of the record 'TOM'.
+A list of all names of tables of marks in the database can be obtained via
+`AllLibTomNames'.
+
+\beginexample
+gap> names:= AllLibTomNames();;
+gap> "A5" in names;
+true
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

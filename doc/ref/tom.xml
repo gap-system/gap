@@ -1,0 +1,224 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  tom.msk                     GAP documentation              Götz Pfeiffer -->
+<!-- %W                                                            Thomas Merkwitz -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: tom.msk,v 1.25 2004/03/30 09:27:45 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<!-- %%  This file describes the functions dealing with tables of marks. -->
+<!-- %%  The corresponding &GAP; code is contained in the files <C>lib/tom.g[di]</C>. -->
+<!-- %% -->
+<Chapter Label="Tables of Marks">
+<Heading>Tables of Marks</Heading>
+
+<#Include Label="[1]{tom}">
+
+<!-- %%  The code for tables of marks has been designed and implemented by G{\"o}tz -->
+<!-- %%  Pfeiffer and Thomas Merkwitz. -->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="More about Tables of Marks">
+<Heading>More about Tables of Marks</Heading>
+
+<#Include Label="[2]{tom}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Table of Marks Objects in GAP">
+<Heading>Table of Marks Objects in GAP</Heading>
+
+<#Include Label="[3]{tom}">
+<P/>
+Several examples in this chapter require
+the &GAP; package <Package>TomLib</Package>
+(the &GAP; Library of Tables of Marks) to be available.
+If it is not yet loaded then we load it now.
+<P/>
+<Example><![CDATA[
+gap> LoadPackage( "tomlib" );
+true
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Constructing Tables of Marks">
+<Heading>Constructing Tables of Marks</Heading>
+
+<#Include Label="TableOfMarks">
+<#Include Label="TableOfMarksByLattice">
+<#Include Label="LatticeSubgroupsByTom">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Printing Tables of Marks">
+<Heading>Printing Tables of Marks</Heading>
+
+<#Include Label="[5]{tom}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Sorting Tables of Marks">
+<Heading>Sorting Tables of Marks</Heading>
+
+<#Include Label="SortedTom">
+<#Include Label="PermutationTom">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Technical Details about Tables of Marks">
+<Heading>Technical Details about Tables of Marks</Heading>
+
+<#Include Label="InfoTom">
+<#Include Label="IsTableOfMarks">
+<#Include Label="TableOfMarksFamily">
+<#Include Label="TableOfMarksComponents">
+<#Include Label="ConvertToTableOfMarks">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Attributes of Tables of Marks">
+<Heading>Attributes of Tables of Marks</Heading>
+
+<#Include Label="MarksTom">
+<#Include Label="NrSubsTom">
+<#Include Label="LengthsTom">
+<#Include Label="ClassTypesTom">
+<#Include Label="ClassNamesTom">
+<#Include Label="FusionsTom">
+<#Include Label="UnderlyingGroup:tom">
+<#Include Label="IdempotentsTom">
+<#Include Label="Identifier:tom">
+<#Include Label="MatTom">
+<#Include Label="MoebiusTom">
+<#Include Label="WeightsTom">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties of Tables of Marks">
+<Heading>Properties of Tables of Marks</Heading>
+
+<#Include Label="[6]{tom}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Other Operations for Tables of Marks">
+<Heading>Other Operations for Tables of Marks</Heading>
+
+<#Include Label="[7]{tom}">
+<#Include Label="DerivedSubgroupTom">
+<#Include Label="DerivedSubgroupsTomPossible">
+<#Include Label="NormalizerTom">
+<#Include Label="ContainedTom">
+<#Include Label="ContainingTom">
+<#Include Label="CyclicExtensionsTom">
+<#Include Label="DecomposedFixedPointVector">
+<#Include Label="EulerianFunctionByTom">
+<#Include Label="IntersectionsTom">
+<#Include Label="FactorGroupTom">
+<#Include Label="MaximalSubgroupsTom">
+<#Include Label="MinimalSupergroupsTom">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Accessing Subgroups via Tables of Marks">
+<Heading>Accessing Subgroups via Tables of Marks</Heading>
+
+<#Include Label="[8]{tom}">
+<#Include Label="GeneratorsSubgroupsTom">
+<#Include Label="StraightLineProgramsTom">
+<#Include Label="IsTableOfMarksWithGens">
+<#Include Label="RepresentativeTom">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The Interface between Tables of Marks and Character Tables">
+<Heading>The Interface between Tables of Marks and Character Tables</Heading>
+
+The following examples require the &GAP; Character Table Library
+to be available.
+If it is not yet loaded then we load it now.
+<P/>
+<Example><![CDATA[
+gap> LoadPackage( "ctbllib" );
+true
+]]></Example>
+<P/>
+<#Include Label="FusionCharTableTom">
+<#Include Label="PermCharsTom">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Generic Construction of Tables of Marks">
+<Heading>Generic Construction of Tables of Marks</Heading>
+
+<#Include Label="[9]{tom}">
+<#Include Label="TableOfMarksCyclic">
+<#Include Label="TableOfMarksDihedral">
+<#Include Label="TableOfMarksFrobenius">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The Library of Tables of Marks">
+<Heading>The Library of Tables of Marks</Heading>
+
+The &GAP; package <Package>TomLib</Package> provides access to several
+hundred tables of marks of almost simple groups and their maximal subgroups.
+If this package is installed then the tables from this database can be
+accessed via <Ref Func="TableOfMarks" Label="for a string"/> with argument
+a string.
+If also the &GAP; Character Table Library is installed and contains the
+ordinary character table of the group for which one wants to fetch the table
+of marks then one can also call
+<Ref Func="TableOfMarks" Label="for a string"/>
+<!-- This reference is not correct.
+     The Character Table Library or the ``Interface'' section above
+     should document this method,
+     and then an external reference should be created. -->
+with argument the character table.
+<P/>
+A list of all names of tables of marks that are provided by the
+<Package>TomLib</Package> package can be obtained via
+<Ref Func="AllLibTomNames" BookName="tomlib"/>.
+<P/>
+<Example><![CDATA[
+gap> names:= AllLibTomNames();;
+gap> "A5" in names;
+true
+]]></Example>
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

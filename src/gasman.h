@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  gasman.h                    GAP source                   Martin Schoenert
+*W  gasman.h                    GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares  the functions of  Gasman,  the  GAP  storage manager.
 **
@@ -42,7 +43,24 @@ extern const char * Revision_gasman_c;
 /* This definition switches to the bigger bag header, supporting bags up to
    4GB in length (lists limited to 1GB for other reasons) */
 
-#define NEWSHAPE
+/* Experimental 16+48 bit type/size word for 64 bit systems */
+
+/****************************************************************************
+**
+
+*V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
+*/
+#ifdef CONFIG_H
+
+#include "config.h"
+
+#endif
+/* on 64 bit systems use only two words for bag header */
+
+#if SIZEOF_VOID_P == 8
+#define USE_NEWSHAPE 
+#endif
+
 
 /****************************************************************************
 **
@@ -101,11 +119,11 @@ typedef UInt * *        Bag;
 **  Note  that 'TNUM_BAG' is a macro, so do not call  it with arguments  that
 **  have sideeffects.
 */
-#ifdef NEWSHAPE
-#define TNUM_BAG(bag)   (*(*(bag)-3) & 0xFFL)
-#define FLAGS_BAG(bag)  (*(*(bag)-3) >> 16)
+
+#ifdef USE_NEWSHAPE
+#define TNUM_BAG(bag)  (*(*(bag)-2) & 0xFFFFL)
 #else
-#define TNUM_BAG(bag)   (*(*(bag)-2) & 0xFFL)
+#define TNUM_BAG(bag)   (*(*(bag)-3))
 #endif
 
 /****************************************************************************
@@ -125,7 +143,12 @@ typedef UInt * *        Bag;
 **  Note that  'SIZE_BAG' is  a macro,  so do not call it with arguments that
 **  have sideeffects.
 */
+#ifdef USE_NEWSHAPE
+#define SIZE_BAG(bag)   (*(*(bag)-2) >> 16)
+#else
 #define SIZE_BAG(bag)   (*(*(bag)-2))
+#endif
+
 #define LINK_BAG(bag)   (*(Bag *)(*(bag)-1))
 /****************************************************************************
 **
@@ -822,11 +845,8 @@ extern Bag * GlobalByCookie(
 
 extern void StartRestoringBags( UInt nBags, UInt maxSize);
 
-#ifndef NEWSHAPE
-extern Bag NextBagRestoring( UInt sizetype);
-#else
+
 extern Bag NextBagRestoring( UInt size,  UInt type);
-#endif
 
 
 extern void FinishedRestoringBags( void );
@@ -1015,6 +1035,13 @@ extern  void            InitBags (
             UInt                cache_size,
             UInt                dirty,
             TNumAbortFuncBags   abort_func );
+
+/****************************************************************************
+**
+*F  FinishBags() end GASMAN and free memory
+*/
+
+extern void FinishBags( void );
 
 /****************************************************************************
 **

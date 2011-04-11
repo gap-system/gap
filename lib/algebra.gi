@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for algebras and algebras-with-one.
 ##
@@ -121,7 +122,6 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
 #F  Algebra( <F>, <gens>, <zero>, "basis" )
 ##
 InstallGlobalFunction( FLMLOR, function( arg )
-
     local A;
 
     # ring and list of generators
@@ -225,7 +225,6 @@ end );
 #F  AlgebraWithOne( <F>, <gens>, <zero>, "basis" )
 ##
 InstallGlobalFunction( FLMLORWithOne, function( arg )
-
     local A;
 
     # ring and list of generators
@@ -333,7 +332,6 @@ InstallMethod( LieAlgebraByDomain,
     "for an algebra",
     [ IsAlgebra ],
     function( A )
-
        local T, n, zero, nullvec, S, i, j, k, m, cfs, cij, cji;
 
        if not IsAssociative( A ) then TryNextMethod(); fi;
@@ -375,8 +373,8 @@ InstallMethod( LieAlgebraByDomain,
        od;
 
        return LieAlgebraByStructureConstants( LeftActingDomain( A ), S );
-
   end );
+
 
 #############################################################################
 ##
@@ -387,7 +385,6 @@ InstallMethod( LieAlgebraByDomain,
 #F  LieAlgebra( <F>, <gens>, <zero>, "basis" )
 ##
 InstallGlobalFunction( LieAlgebra, function( arg )
-
 #T check that the families have the same characteristic?
 #T `CharacteristicFamily' ?
     local A,gens;
@@ -444,7 +441,6 @@ end );
 #F  EmptySCTable( <dim>, <zero>, \"antisymmetric\" )
 ##
 InstallGlobalFunction( EmptySCTable, function( arg )
-
     local dim, T, entry, i;
 
     if     2 <= Length( arg )
@@ -479,7 +475,6 @@ InstallGlobalFunction( EmptySCTable, function( arg )
     fi;
 
     return T;
-
 end );
 
 
@@ -488,7 +483,6 @@ end );
 #F  SetEntrySCTable( <T>, <i>, <j>, <list> )
 ##
 InstallGlobalFunction( SetEntrySCTable, function( T, i, j, list )
-
     local range, zero, Fam, entry, k, val, pos;
 
     # Check that `i' and `j' are admissible.
@@ -552,7 +546,6 @@ end );
 #F  ReducedSCTable( <T>, <one> )
 ##
 InstallGlobalFunction( ReducedSCTable, function( T, one )
-
     local new, n, i, j, entry;
 
     new:= [];
@@ -570,8 +563,8 @@ InstallGlobalFunction( ReducedSCTable, function( T, one )
     od;
 
     # Store zero coefficient and symmetry flag.
-    new[ n+1 ]:= T[ n+1 ] * one;
-    new[ n+2 ]:= T[ n+2 ];
+    new[ n+1 ]:= T[ n+1 ];
+    new[ n+2 ]:= T[ n+2 ] * one;
 
     # Return the immutable new table.
     MakeImmutable( new );
@@ -586,27 +579,23 @@ end );
 InstallGlobalFunction( GapInputSCTable, function( T, varnam )
     local dim, str, lower, i, j, entry, k;
 
-    # Initialize.
+    # Initialize, and set the ranges for the loops.
     dim:= Length( T ) - 2;
     str:= Concatenation( varnam, ":= EmptySCTable( ",
                          String( dim ), ", ", String( T[ Length( T ) ] ) );
+    lower:= [ 1 .. dim ];
     if   T[ dim+1 ] =  1 then
       Append( str, ", \"symmetric\"" );
     elif T[ dim+1 ] = -1 then
       Append( str, ", \"antisymmetric\"" );
+    else
+      lower:= ListWithIdenticalEntries( dim, 1 );
     fi;
     Append( str, " );\n" );
 
-    # Set the ranges for the loops.
-    if T[ dim+1 ] <> 0 then
-      lower:= List( [ 1 .. dim ], i -> i+1 );
-    else
-      lower:= List( [ 1 .. dim ], i -> 1 );
-    fi;
-
     # Fill up the table.
     for i in [ 1 .. dim ] do
-      for j in [ 1 .. dim ] do
+      for j in [ lower[i] .. dim ] do
         entry:= T[i][j];
         if not IsEmpty( entry[1] ) then
           Append( str, "SetEntrySCTable( " );
@@ -641,7 +630,6 @@ end );
 #F  IdentityFromSCTable( <T> )
 ##
 InstallGlobalFunction( IdentityFromSCTable, function( T )
-
     local n,       # dimension of the underlying algebra
           equ,     # equation system to solve
           zero,    # zero of the field
@@ -733,7 +721,6 @@ end );
 ##  This means $a = x M$ with $M_{ik} = \sum_{j=1}^n c_{ijk} c_j$.
 ##
 InstallGlobalFunction( QuotientFromSCTable, function( T, x, c )
-
     local M,        # matrix of the equation system
           n,        # dimension of the algebra
           zero,     # zero vector
@@ -777,7 +764,6 @@ end );
 ##  holds.
 ##
 InstallGlobalFunction( TestJacobi, function( T )
-
     local zero,           # the zero of the field
           n,              # dimension of the algebra
           i, j, k, m,     # loop variables
@@ -841,7 +827,6 @@ end );
 InstallMethod( MultiplicativeNeutralElement,
     [ IsFLMLOR and IsFiniteDimensional ],
     function( A )
-
     local B,       # basis of `A'
           one;     # result
 
@@ -873,7 +858,6 @@ InstallMethod( IsAssociative,
     "generic method for a (finite dimensional) FLMLOR",
     [ IsFLMLOR ],
     function( A )
-
     local T,            # structure constants table w.r.t. a basis of `A'
           zero,
           range,
@@ -947,7 +931,6 @@ InstallMethod( IsAnticommutative,
     "generic method for a (finite dimensional) FLMLOR",
     [ IsFLMLOR ],
     function( A )
-
     local n,      # dimension of `A'
           T,      # table of structure constants for `A'
           zero,   # zero coefficient
@@ -1063,7 +1046,6 @@ InstallMethod( IsJacobianRing,
     "for a (finite dimensional) FLMLOR",
     [ IsFLMLOR ],
     function( A )
-
     local n,   # dimension of `A'
           T,   # table of structure constants for `A'
           i;   # loop over the diagonal of `T'
@@ -1205,7 +1187,6 @@ InstallMethod( AsFLMLOR,
     "for a division ring and a free left module",
     [ IsDivisionRing, IsFreeLeftModule ],
     function( F, V )
-
     local L, A;
 
     if   LeftActingDomain( V ) = F then
@@ -1273,7 +1254,6 @@ InstallMethod( AsFLMLOR,
     "for a division ring and an algebra",
     [ IsDivisionRing, IsFLMLOR ],
     function( F, D )
-
     local L, A;
 
     if   LeftActingDomain( D ) = F then
@@ -1336,7 +1316,6 @@ InstallMethod( AsFLMLORWithOne,
     "for a division ring and a free left module",
     [ IsDivisionRing, IsFreeLeftModule ],
     function( F, V )
-
     local L, A;
 
     # Check that `V' contains the identity.
@@ -1407,7 +1386,6 @@ InstallMethod( AsFLMLORWithOne,
     "for a division ring and an algebra",
     [ IsDivisionRing, IsFLMLOR ],
     function( F, D )
-
     local L, A;
 
     # Check that `D' contains the identity.
@@ -1469,7 +1447,6 @@ InstallMethod( AsFLMLORWithOne,
     "for a division ring and a algebra-with-one",
     [ IsDivisionRing, IsFLMLORWithOne ],
     function( F, D )
-
     local L, A;
 
     if   LeftActingDomain( D ) = F then
@@ -1698,7 +1675,6 @@ InstallMethod( ClosureLeftOperatorRing,
 ##
 InstallGlobalFunction( MutableBasisOfClosureUnderAction,
     function( F, Agens, from, init, opr, zero, maxdim )
-
     local MB,        # mutable basis, result
           gen,       # loop over generators
           v,         #
@@ -1759,7 +1735,6 @@ end );
 ##
 InstallGlobalFunction( MutableBasisOfNonassociativeAlgebra,
     function( F, Agens, zero, maxdim )
-
     local MB,        # mutable basis, result
           dim,       # dimension of the current left module
           bv,        # current basis vectors
@@ -1794,7 +1769,6 @@ end );
 ##
 InstallGlobalFunction( MutableBasisOfIdealInNonassociativeAlgebra,
     function( F, Vgens, Igens, zero, from, maxdim )
-
     local MB,        # mutable basis, result
           dim,       # dimension of the current left module
           bv,        # current basis vectors
@@ -1836,84 +1810,59 @@ InstallGlobalFunction( MutableBasisOfIdealInNonassociativeAlgebra,
     # Return the mutable basis.
     return MB;
 end );
-    
-
-#############################################################################
-##
-#M  \=( <A1>, <A2> ) . . . . . . . . . . . . .  test if two FLMLORs are equal
-##
-InstallMethod( \=,
-    "for two FLMLORs",
-    IsIdenticalObj,
-    [ IsFLMLOR, IsFLMLOR ],
-    function( A1, A2 )
-    local inters;
-    if LeftActingDomain( A1 ) = LeftActingDomain( A2 ) then
-      return   GeneratorsOfAlgebra( A1 ) = GeneratorsOfAlgebra( A2 )
-        or (     ForAll( GeneratorsOfAlgebra( A1 ), gen -> gen in A2 )
-             and ForAll( GeneratorsOfAlgebra( A2 ), gen -> gen in A1 ) );
-    else
-      inters:= Intersection2( LeftActingDomain( A1 ),
-                              LeftActingDomain( A2 ) );
-      return AsFLMLOR( inters, A1 ) = AsFLMLOR( inters, A2 );
-    fi;
-    end );
 
 
 #############################################################################
 ##
-#M  \=( <A1>, <A2> )  . . . . . . . .  test if two FLMLORs-with-one are equal
+#M  IsSubset( <A>, <B> )  . . . . . . . . . . . .  test for subset of FLMLORs
 ##
-InstallMethod( \=,
-    "for two FLMLORs-with-one",
-    IsIdenticalObj,
-    [ IsFLMLORWithOne, IsFLMLORWithOne ],
-    function( A1, A2 )
-    local inters;
-    if LeftActingDomain( A1 ) = LeftActingDomain( A2 ) then
-      return   GeneratorsOfAlgebraWithOne( A1 )
-             = GeneratorsOfAlgebraWithOne( A2 )
-        or (     ForAll( GeneratorsOfAlgebraWithOne( A1 ), a -> a in A2 )
-             and ForAll( GeneratorsOfAlgebraWithOne( A2 ), a -> a in A1 ) );
-    else
-      inters:= Intersection2( LeftActingDomain( A1 ),
-                              LeftActingDomain( A2 ) );
-      return AsFLMLORWithOne( inters, A1 ) = AsFLMLORWithOne( inters, A2 );
-    fi;
-    end );
-
-
-#############################################################################
+##  These methods are preferable to that for free left modules because they
+##  use algebra generators.
 ##
-#M  IsSubset( <G>, <H> )  . . . . . . . . . . . .  test for subset of FLMLORs
+##  We assume that generators of an extension of the left acting domains can
+##  be computed if they are fields; note that infinite field extensions do
+##  not (yet) occur in {\GAP} as `LeftActingDomain' values.
 ##
 InstallMethod( IsSubset,
     "for two FLMLORs",
     IsIdenticalObj,
     [ IsFLMLOR, IsFLMLOR ],
     function( D1, D2 )
-    local inters;
-    if LeftActingDomain( D1 ) = LeftActingDomain( D2 ) then
-      return      GeneratorsOfLeftOperatorRing( D1 )
-                = GeneratorsOfLeftOperatorRing( D2 )
-             or ( Dimension( D2 ) <= Dimension( D1 )
-                  and IsSubset( D1, GeneratorsOfAlgebra( D2 ) ) );
-    else
-      inters:= Intersection2( LeftActingDomain( D1 ),
-                              LeftActingDomain( D2 ) );
-      return IsSubset( AsFLMLOR( inters, D1 ), AsFLMLOR( inters, D2 ) );
+    local F1, F2;
+
+    F1:= LeftActingDomain( D1 );
+    F2:= LeftActingDomain( D2 );
+    if not ( HasIsDivisionRing( F1 ) and IsDivisionRing( F1 ) and 
+             HasIsDivisionRing( F2 ) and IsDivisionRing( F2 ) ) then
+      TryNextMethod();
     fi;
+
+    # catch trivial case
+    if IsSubset(GeneratorsOfLeftOperatorRing(D1),
+                  GeneratorsOfLeftOperatorRing(D2)) then
+	return true;
+    fi;
+    return IsSubset( D1, GeneratorsOverIntersection( D2,
+                             GeneratorsOfLeftOperatorRing( D2 ),
+                             F2, F1 ) );
     end );
 
 InstallMethod( IsSubset,
     "for two FLMLORs-with-one",
     IsIdenticalObj,
     [ IsFLMLORWithOne, IsFLMLORWithOne ],
-    function( G, H )
-    return     GeneratorsOfLeftOperatorRingWithOne( G )
-             = GeneratorsOfLeftOperatorRingWithOne( H )
-          or ( Dimension( H ) <= Dimension( G )
-               and IsSubset( G, GeneratorsOfLeftOperatorRingWithOne( H ) ) );
+    function( D1, D2 )
+    local F1, F2;
+
+    F1:= LeftActingDomain( D1 );
+    F2:= LeftActingDomain( D2 );
+    if not ( HasIsDivisionRing( F1 ) and IsDivisionRing( F1 ) and 
+             HasIsDivisionRing( F2 ) and IsDivisionRing( F2 ) ) then
+      TryNextMethod();
+    fi;
+    return IsSubset( D1, GeneratorsOverIntersection( D2,
+                             GeneratorsOfLeftOperatorRingWithOne( D2 ),
+                             F2, F1 ) );
     end );
 
 
@@ -2505,7 +2454,6 @@ InstallMethod( CentralizerOp,
 ##  $\sum_{i=1}^n a_i ( c_{ijk} - c_{jik} ) = 0$ for $1 \leq j, k \leq n$.
 ##
 BindGlobal( "CentreFromSCTable", function( T )
-
     local n,       # the dimension
           M,       # matrix of the equation system
           i, j, k, # loop variables
@@ -2545,7 +2493,6 @@ InstallMethod( Centre,
     "for a finite dimensional FLMLOR",
     [ IsFLMLOR ],
     function( A )
-
     local   C,        # centre of `A', result
             B,        # a basis of `A'
             M;        # matrix of the equation system
@@ -2616,7 +2563,6 @@ InstallMethod( Centre,
 ##  the computation of basis vectors is done by `MutableBasisOfProductSpace'.
 ##
 BindGlobal( "MutableBasisOfProductSpace", function( U, V )
-
     local inter, # intersection of left acting domains
           u, v,  # loop over the bases
           MB;    # mutable basis of the commutator subspace, result
@@ -2715,7 +2661,7 @@ InstallMethod( ProductSpace,
     C:= SubalgebraNC( P, BasisVectors( MB ), "basis" );
 
     SetIsTwoSidedIdealInParent( C, true );
-    SetBasis( C, ImmutableBasis( MB ) );
+    SetBasis( C, ImmutableBasis( MB, C ) );
 
     # Return the result.
     return C;
@@ -2743,7 +2689,7 @@ InstallMethod( ProductSpace,
     C:= SubalgebraNC( Parent( U ), BasisVectors( MB ), "basis" );
 
     SetIsTwoSidedIdealInParent( C, true );
-    SetBasis( C, ImmutableBasis( MB ) );
+    SetBasis( C, ImmutableBasis( MB, C ) );
 
     # Return the result.
     return C;
@@ -2772,7 +2718,6 @@ InstallMethod( RadicalOfAlgebra,
     "for an associative algebra",
     [ IsAlgebra ],
     function( A )
-
     local bb,    # list of matrices representing the basis elements of <A>
           n,     # dimension of <A>
           BA,    # basis of `A'
@@ -2901,7 +2846,6 @@ InstallMethod( Basis,
     "for an associative FLMLOR",
     [ IsFLMLOR and IsAssociative ],
         function( A )
-    
     local  mb;    
 
     # If generators as left module are known
@@ -2961,8 +2905,7 @@ InstallMethod( Basis,
 InstallMethod( Basis,
     "for a Lie algebra",
     [ IsLieAlgebra ],
-        function( A )
-    
+    function( A )
     local  mb;    
 
     # If generators as left module are known
@@ -2991,7 +2934,6 @@ InstallOtherMethod( PowerSubalgebraSeries,
     "for an algebra",
     [ IsAlgebra ],
     function ( A )
-
     local   S,          # power subalgebra series of <A>, result
             D;          # power subalgebras
 
@@ -3022,7 +2964,6 @@ InstallMethod( IsNilpotentElement,
     IsCollsElms,
     [ IsAlgebra, IsRingElement ],
     function( L, x )
-
     local B,     # a basis of `L'
           A,     # adjoint matrix of `x w.r. to `B'
           n,     # dimension of `L'
@@ -3095,7 +3036,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
     "for two algebras",
     [ IsAlgebra, IsAlgebra ],
     function( A1, A2 )
-
     local n,     # The dimension of the resulting algebra.
           i,j,   # Loop variables.
           T,     # The table of structure constants of the direct sum.
@@ -3105,7 +3045,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
           ll,    # A list of structure constants.
           L,     # result.
           sym,   # if both products are (anti)symmetric, then the result
-                 # will have the sam property.
+                 # will have the same property.
           R1,R2, # Root systems of A1,A2.
           f1,f2, # Embeddings of A1,A2 in L.
           R,     # Root system of L.
@@ -3132,8 +3072,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     scT:= StructureConstantsTable( Basis( A2 ) );
 
-    if scT[n2+1] = sym then T[ n+1 ]:= sym; fi;
-
     for i in [1..n2] do
       for j in [1..n2] do
         ll:= ShallowCopy( scT[i][j] );
@@ -3141,6 +3079,17 @@ InstallOtherMethod( DirectSumOfAlgebras,
         T[n1+i][n1+j]:= ll;
       od;
     od;
+
+
+    # Set the (anti)symmetric flag
+    if scT[n2 + 1] = sym  then
+        T[n + 1] := sym;
+    fi;
+    if Characteristic( LeftActingDomain( A1 ) ) = 2 and sym in [ 1, -1 ]
+        and scT[n2 + 1] in [ 1, -1 ]  then
+        T[n + 1] := 1;
+    fi;
+
 
     L:= AlgebraByStructureConstants( LeftActingDomain( A1 ), T );
 
@@ -3222,6 +3171,33 @@ InstallOtherMethod( DirectSumOfAlgebras,
                SetChevalleyBasis( L, RV );
            fi;
        fi;
+       
+       if HasSemiSimpleType( A1 ) and HasSemiSimpleType( A2 ) then
+           SetSemiSimpleType( L, Concatenation( SemiSimpleType(A1)," ",
+                   SemiSimpleType( A2 ) ) );
+       fi;
+
+       if HasIsRestrictedLieAlgebra ( A1 ) and HasIsRestrictedLieAlgebra ( A2 )
+         and IsRestrictedLieAlgebra ( A1 ) and IsRestrictedLieAlgebra ( A2 )
+       then
+          SetIsRestrictedLieAlgebra( L, true );
+          if HasPthPowerImages( Basis ( A1 ) )
+             and HasPthPowerImages( Basis ( A2 ) ) then
+             if not IsBound (f1) then
+                f1:= LeftModuleGeneralMappingByImages( A1, L,
+                     CanonicalBasis(A1),
+                     CanonicalBasis(L){[1..Dimension(A1)]} );
+                f2:= LeftModuleGeneralMappingByImages( A2, L,
+                     CanonicalBasis(A2),
+                     CanonicalBasis(L){[Dimension(A1)+1..Dimension(L)]});
+             fi;
+
+             SetPthPowerImages( Basis ( L ),
+               Concatenation ( List (PthPowerImages( Basis ( A1 ) ), x->x^f1),
+                          List (PthPowerImages( Basis ( A2 ) ), x->x^f2) ) );
+
+          fi;
+       fi;
 
     fi;
     if     HasIsAssociative( A1 ) and HasIsAssociative( A2 )
@@ -3242,7 +3218,6 @@ InstallMethod( DirectSumOfAlgebras,
     "for list of algebras",
     [ IsDenseList ],
     function( list )
-
     local R, A, i;
 
     if IsEmpty( list ) then
@@ -3307,9 +3282,12 @@ InstallMethod( IsCentral,
 ##
 BindGlobal( "FreeAlgebraConstructor", function( name, magma )
     return function( arg )
-
     local   R,          # coefficients ring
-            names;      # names of the algebra generators
+            names,      # names of the algebra generators
+            M,          # magma
+            A,          # algebra
+            F,          # family
+            i;
 
     # Check the argument list.
     if Length( arg ) = 0 or not IsRing( arg[1] ) then
@@ -3337,15 +3315,50 @@ BindGlobal( "FreeAlgebraConstructor", function( name, magma )
       Error( "usage: ", name, "( <R>, <rank> )\n",
                  "or ", name, "( <R>, <name1>, ... )" );
     fi;
-
+    
+    M := magma( names );
+    
     # Construct the algebra as free magma algebra of a free magma over `R'.
-    R:= FreeMagmaRing( R, magma( names ) );
+    A := FreeMagmaRing( R, M );
 
     # Store the names.
-    ElementsFamily( FamilyObj( R ) )!.names:= names;
+    F := ElementsFamily( FamilyObj( A ) );
+    F!.names:= names;
+    
+    # Install grading
+    if HasOne(M) then i := 0; else i := 1; fi;
+    SetGrading( A, rec(min_degree := i,
+                                     max_degree := infinity,
+                                     source := Integers,
+                                     hom_components := function(degree)
+        local i, d, B, x, y;
+        if HasOne(M) then
+            B := [[One(M)],GeneratorsOfMagmaWithOne(M)];
+        else
+            B := [[],GeneratorsOfMagma(M)];
+        fi;
+        for d in [2..degree] do
+            Add(B,[]);
+            if IsAssociative(M) then
+                for x in B[2] do for y in B[d] do
+                    Add(B[d+1],x*y);
+                od; od;
+            else
+                for i in [2..d] do
+                    for x in B[i] do for y in B[d+2-i] do
+                        Add(B[d+1],x*y);
+                    od; od;
+                od;
+            fi;
+        od;
+        x := Zero(R);
+        y := [One(R)];
+        return VectorSpace(R, List(B[degree+1],
+                       p->ElementOfMagmaRing( F, x, y, [p] )));
+    end));
 
     # Return the result.
-    return R;
+    return A;
     end;
 end );
 
@@ -3448,7 +3461,6 @@ InstallMethod( CentralIdempotentsOfAlgebra,
     "for an associative algebra",
     [ IsAlgebra ],
     function( A )
-
     local F,B,Rad,Q,bQ,ids,ideals,id,i,j,k,l,set,cf,e,vv,sp,x,f,q,sol,
           eq,facs,hlist,c,p,g,gcd,bb,E,ei,ni,hom,qq;
 
@@ -3664,8 +3676,8 @@ InstallMethod( CentralIdempotentsOfAlgebra,
       od;
 
       return AsSSortedList(id);
-
 end );
+
 
 ##############################################################################
 ##
@@ -3706,7 +3718,6 @@ InstallMethod( LeviMalcevDecomposition,
     "for an associative or a Lie algebra",
     [ IsAlgebra ],
     function( L )
-
     local R,             # The solvable radical of `L'.
           s,             # The dimension of the Levi subalgebra.
           F,             # coefficients domain of `L'
@@ -3919,12 +3930,10 @@ InstallMethod( LeviMalcevDecomposition,
 ##
 #M  DirectSumDecomposition( <A> )   ........direct sum decomposition of <A>
 ##
-
 InstallMethod( DirectSumDecomposition,
         "for semisimple associative algebras",
         [ IsAlgebra and IsAssociative ],
-        function( A )
-
+    function( A )
     local R;
 
     R:= RadicalOfAlgebra( A );
@@ -3932,7 +3941,6 @@ InstallMethod( DirectSumDecomposition,
         TryNextMethod();
     fi;
     return List( CentralIdempotentsOfAlgebra( A ), x -> Ideal( A, [ x ] ) );
-
 end );
 
 

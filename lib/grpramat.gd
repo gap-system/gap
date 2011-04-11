@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  grpramat.gd                 GAP Library                     Franz G"ahler
+#W  grpramat.gd                 GAP Library                     Franz Gähler
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for matrix groups over the rationals
 ##
@@ -16,109 +17,204 @@ Revision.grpramat_gd :=
 ##
 #P  IsCyclotomicMatrixGroup( <G> )
 ##
-##  tests whether all matrices in <G> have cyclotomic entries.
+##  <#GAPDoc Label="IsCyclotomicMatrixGroup">
+##  <ManSection>
+##  <Prop Name="IsCyclotomicMatrixGroup" Arg='G'/>
+##
+##  <Description>
+##  tests whether all matrices in <A>G</A> have cyclotomic entries.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 IsCyclotomicMatrixGroup := IsCyclotomicCollCollColl and IsMatrixGroup;
 
 #############################################################################
 ##
 #P  IsRationalMatrixGroup( <G> )
 ##
-##  tests whether all matrices in <G> have rational entries.
+##  <#GAPDoc Label="IsRationalMatrixGroup">
+##  <ManSection>
+##  <Prop Name="IsRationalMatrixGroup" Arg='G'/>
+##
+##  <Description>
+##  tests whether all matrices in <A>G</A> have rational entries.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty("IsRationalMatrixGroup", IsCyclotomicMatrixGroup);
 
 #############################################################################
 ##
 #P  IsIntegerMatrixGroup( <G> )
 ##
-##  tests whether all matrices in <G> have integer entries.
-#T  Not `IsIntegralMatrixGroup' to avoid confusion with matrix groups of
-#T  integral cyclotomic numbers.  
+##  <#GAPDoc Label="IsIntegerMatrixGroup">
+##  <ManSection>
+##  <Prop Name="IsIntegerMatrixGroup" Arg='G'/>
+##
+##  <Description>
+##  tests whether all matrices in <A>G</A> have integer entries.
+##  <!--  Not <C>IsIntegralMatrixGroup</C> to avoid confusion with matrix groups of-->
+##  <!--  integral cyclotomic numbers. -->
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty("IsIntegerMatrixGroup", IsCyclotomicMatrixGroup);
 
 #############################################################################
 ##
 #P  IsNaturalGLnZ( <G> )
 ##
-##  tests whether <G> is $GL_n(\Z)$ in its natural representation by
-##  $n\times n$ integer matrices. (The dimension $n$ will be read off the
-##  generating matrices.)
+##  <#GAPDoc Label="IsNaturalGLnZ">
+##  <ManSection>
+##  <Prop Name="IsNaturalGLnZ" Arg='G'/>
+##
+##  <Description>
+##  tests whether <A>G</A> is <M>GL_n(&ZZ;)</M> in its natural representation
+##  by <M>n \times n</M> integer matrices.
+##  (The dimension <M>n</M> will be read off the generating matrices.)
+##  <Example><![CDATA[
+##  gap> IsNaturalGLnZ( GL( 2, Integers ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 IsNaturalGLnZ := IsNaturalGL and IsIntegerMatrixGroup;
 
 #############################################################################
 ##
 #P  IsNaturalSLnZ( <G> )
 ##
-##  tests whether <G> is $SL_n(\Z)$ in its natural representation by
-##  $n\times n$ integer matrices. (The dimension $n$ will be read off the
-##  generating matrices.)
+##  <#GAPDoc Label="IsNaturalSLnZ">
+##  <ManSection>
+##  <Prop Name="IsNaturalSLnZ" Arg='G'/>
+##
+##  <Description>
+##  tests whether <A>G</A> is <M>SL_n(&ZZ;)</M> in its natural representation
+##  by <M>n \times n</M> integer matrices.
+##  (The dimension <M>n</M> will be read off the generating matrices.)
+##  <Example><![CDATA[
+##  gap> IsNaturalSLnZ( SL( 2, Integers ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 IsNaturalSLnZ := IsNaturalSL and IsIntegerMatrixGroup;
 
 #############################################################################
 ##
 #A  ZClassRepsQClass( G ) . . . . . . . . . . .  Z-class reps in Q-class of G
 ##
-##  The conjugacy class in $GL_n(\Q)$ of the finite integer matrix 
-##  group <G> splits into finitely many conjugacy classes in $GL_n(\Z)$.
-##  `ZClassRepsQClass( <G> )' returns representative groups for these.
+##  <#GAPDoc Label="ZClassRepsQClass">
+##  <ManSection>
+##  <Attr Name="ZClassRepsQClass" Arg='G'/>
+##
+##  <Description>
+##  The conjugacy class in <M>GL_n(&QQ;)</M> of the finite integer matrix
+##  group <A>G</A> splits into finitely many conjugacy classes in
+##  <M>GL_n(&ZZ;)</M>.
+##  <C>ZClassRepsQClass( <A>G</A> )</C> returns representative groups for these.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "ZClassRepsQClass", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
 #A  NormalizerInGLnZ( G ) . . . . . . . . . . . . . . . . .  NormalizerInGLnZ
 ##
-##  is an attribute used to store the normalizer of <G> in $GL_n(\Z)$,
-##  where <G> is an integer matrix group of dimension <n>. This attribute
-##  is used by `Normalizer( GL( n, Integers ), G )'. 
+##  <#GAPDoc Label="NormalizerInGLnZ">
+##  <ManSection>
+##  <Attr Name="NormalizerInGLnZ" Arg='G'/>
+##
+##  <Description>
+##  is an attribute used to store the normalizer of <A>G</A> in
+##  <M>GL_n(&ZZ;)</M>, where <A>G</A> is an integer matrix group of dimension
+##  <A>n</A>. This attribute
+##  is used by <C>Normalizer( GL( n, Integers ), G )</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "NormalizerInGLnZ", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
 #A  CentralizerInGLnZ( G ) . . . . . . . . . . . . . . . . .CentralizerInGLnZ
 ##
-##  is an attribute used to store the centralizer of <G> in $GL_n(\Z)$,
-##  where <G> is an integer matrix group of dimension <n>. This attribute
-##  is used by `Centralizer( GL( n, Integers ), G )'. 
+##  <#GAPDoc Label="CentralizerInGLnZ">
+##  <ManSection>
+##  <Attr Name="CentralizerInGLnZ" Arg='G'/>
+##
+##  <Description>
+##  is an attribute used to store the centralizer of <A>G</A> in
+##  <M>GL_n(&ZZ;)</M>, where <A>G</A> is an integer matrix group of dimension
+##  <A>n</A>. This attribute
+##  is used by <C>Centralizer( GL( n, Integers ), G )</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "CentralizerInGLnZ", IsCyclotomicMatrixGroup );
+
 
 #############################################################################
 ##
 ##  RightAction or LeftAction
 ##
-
-#1
-##  In {\GAP}, matrices by convention act on row vectors from the right,
+##  <#GAPDoc Label="[1]{grpramat}">
+##  In &GAP;, matrices by convention act on row vectors from the right,
 ##  whereas in crystallography the convention is to act on column vectors
 ##  from the left. The definition of certain algebraic objects important
 ##  in crystallography implicitly depends on which action is assumed.
 ##  This holds true in particular for quadratic forms invariant under
-##  a matrix group. In a similar way, the representation of affine 
-##  crystallographic groups, as they are provided by the {\GAP} package
-##  CrystGap, depends on which action is assumed. Crystallographers
-##  are used to the action from the left, whereas the action from the
-##  right is the natural one for {\GAP}. For this reason, a number of 
-##  functions which are important in crystallography, and whose result 
-##  depends on which action is assumed, are provided in two versions, 
-##  one for the usual action from the right, and one for the 
-##  crystallographic action from the left. 
+##  a matrix group. In a similar way, the representation of affine
+##  crystallographic groups, as they are provided by the &GAP; package
+##  <Package>CrystGap</Package>, depends on which action is assumed.
+##  Crystallographers are used to the action from the left,
+##  whereas the action from the right is the natural one for &GAP;.
+##  For this reason, a number of functions which are important in
+##  crystallography, and whose result depends on which action is assumed,
+##  are provided in two versions,
+##  one for the usual action from the right, and one for the
+##  crystallographic action from the left.
+##  <P/>
+##  For every such function, this fact is explicitly mentioned.
+##  The naming scheme is as follows: If <C>SomeThing</C> is such a function,
+##  there will be functions <C>SomeThingOnRight</C> and <C>SomeThingOnLeft</C>,
+##  assuming action from the right and from the left, respectively.
+##  In addition, there is a generic function <C>SomeThing</C>, which returns
+##  either the result of <C>SomeThingOnRight</C> or <C>SomeThingOnLeft</C>,
+##  depending on the global variable <Ref Var="CrystGroupDefaultAction"/>.
+##  <#/GAPDoc>
 ##
-##  For every such function, this fact is explicitly mentioned. 
-##  The naming scheme is as follows: If `SomeThing' is such a function, 
-##  there will be functions `SomeThingOnRight' and `SomeThingOnLeft', 
-##  assuming action from the right and from the left, respectively. 
-##  In addition, there is a generic function `SomeThing', which returns 
-##  either the result of `SomeThingOnRight' or `SomeThingOnLeft', 
-##  depending on the global variable `CrystGroupDefaultAction'.
+
 
 #############################################################################
 ##
 #V  CrystGroupDefaultAction
 ##
-##  can have either of the two values `RightAction' and `LeftAction'. 
-##  The initial value is `RightAction'. For functions which have 
-##  variants OnRight and OnLeft, this variable determines which 
-##  variant is returned by the generic form. The value of 
-##  `CrystGroupDefaultAction' can be changed with with the 
-##  function `SetCrystGroupDefaultAction'.
+##  <#GAPDoc Label="CrystGroupDefaultAction">
+##  <ManSection>
+##  <Var Name="CrystGroupDefaultAction"/>
+##
+##  <Description>
+##  can have either of the two values <C>RightAction</C> and <C>LeftAction</C>.
+##  The initial value is <C>RightAction</C>. For functions which have
+##  variants OnRight and OnLeft, this variable determines which
+##  variant is returned by the generic form. The value of
+##  <Ref Var="CrystGroupDefaultAction"/> can be changed with with the
+##  function <Ref Func="SetCrystGroupDefaultAction"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalVariable( "CrystGroupDefaultAction" );
 
@@ -129,72 +225,139 @@ BindGlobal( "RightAction", Immutable( "RightAction" ) );
 ##
 #F  SetCrystGroupDefaultAction( <action> ) . . . . .RightAction or LeftAction
 ##
-##  allows to set the value of the global variable `CrystGroupDefaultAction'.
-##  Only the arguments `RightAction' and `LeftAction' are allowed.
-##  Initially, the value of `CrystGroupDefaultAction' is `RightAction'
+##  <#GAPDoc Label="SetCrystGroupDefaultAction">
+##  <ManSection>
+##  <Func Name="SetCrystGroupDefaultAction" Arg='action'/>
+##
+##  <Description>
+##  allows one to set the value of the global variable
+##  <Ref Var="CrystGroupDefaultAction"/>.
+##  Only the arguments <C>RightAction</C> and <C>LeftAction</C> are allowed.
+##  Initially, the value of <Ref Var="CrystGroupDefaultAction"/> is
+##  <C>RightAction</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "SetCrystGroupDefaultAction" );
 
 #############################################################################
 ##
 #P  IsBravaisGroup( <G> ) . . . . . . . . . . . . . . . . . . .IsBravaisGroup
 ##
-##  test whether <G> coincides with its Bravais group (see "BravaisGroup").
+##  <#GAPDoc Label="IsBravaisGroup">
+##  <ManSection>
+##  <Prop Name="IsBravaisGroup" Arg='G'/>
+##
+##  <Description>
+##  test whether <A>G</A> coincides with its Bravais group
+##  (see <Ref Func="BravaisGroup"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty( "IsBravaisGroup", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
 #A  BravaisGroup( <G> ) . . . . . . . . Bravais group of integer matrix group
 ##
-##  returns the Bravais group of a finite integer matrix group <G>. 
-##  If <C> is the cone of positive definite quadratic forms <Q> invariant 
-##  under $g \to g*Q*g^{tr}$ for all $g \in G$, then the Bravais group 
-##  of <G> is the maximal subgroup of $GL_n(\Z)$ leaving the forms in
-##  that same cone invariant. Alternatively, the Bravais group of <G> 
-##  can also be defined with respect to the action $g \to g^{tr}*Q*g$
-##  on positive definite quadratic forms <Q>. This latter definition 
-##  is appropriate for groups <G> acting from the right on row vectors, 
-##  whereas the former definition is appropriate for groups acting from 
-##  the left on column vectors. Both definitions yield the same 
+##  <#GAPDoc Label="BravaisGroup">
+##  <ManSection>
+##  <Attr Name="BravaisGroup" Arg='G'/>
+##
+##  <Description>
+##  returns the Bravais group of a finite integer matrix group <A>G</A>.
+##  If <M>C</M> is the cone of positive definite quadratic forms <M>Q</M>
+##  invariant under <M>g \mapsto g Q g^{tr}</M> for all <M>g \in <A>G</A></M>,
+##  then the Bravais group of <A>G</A> is the maximal subgroup of
+##  <M>GL_n(&ZZ;)</M> leaving the forms in that same cone invariant.
+##  Alternatively, the Bravais group of <A>G</A>
+##  can also be defined with respect to the action <M>g \mapsto g^{tr} Q g</M>
+##  on positive definite quadratic forms <M>Q</M>. This latter definition
+##  is appropriate for groups <A>G</A> acting from the right on row vectors,
+##  whereas the former definition is appropriate for groups acting from
+##  the left on column vectors. Both definitions yield the same
 ##  Bravais group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "BravaisGroup", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
 #A  BravaisSubgroups( <G> ) . . . . . . . .Bravais subgroups of Bravais group
 ##
-##  returns the subgroups of the Bravais group of <G>, which are 
+##  <#GAPDoc Label="BravaisSubgroups">
+##  <ManSection>
+##  <Attr Name="BravaisSubgroups" Arg='G'/>
+##
+##  <Description>
+##  returns the subgroups of the Bravais group of <A>G</A>, which are
 ##  themselves Bravais groups.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "BravaisSubgroups", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
 #A  BravaisSupergroups( <G> ) . . . . . .Bravais supergroups of Bravais group
 ##
-##  returns the subgroups of $GL_n(\Z)$ that contain the Bravais group 
-##  of <G> and are Bravais groups themselves.
+##  <#GAPDoc Label="BravaisSupergroups">
+##  <ManSection>
+##  <Attr Name="BravaisSupergroups" Arg='G'/>
+##
+##  <Description>
+##  returns the subgroups of <M>GL_n(&ZZ;)</M> that contain the Bravais group
+##  of <A>G</A> and are Bravais groups themselves.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "BravaisSupergroups", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
 #A  NormalizerInGLnZBravaisGroup( <G> ) . norm. of Bravais group of G in GLnZ
 ##
-##  returns the normalizer of the Bravais group of <G> in the 
-##  appropriate $GL_n(\Z)$.
+##  <#GAPDoc Label="NormalizerInGLnZBravaisGroup">
+##  <ManSection>
+##  <Attr Name="NormalizerInGLnZBravaisGroup" Arg='G'/>
+##
+##  <Description>
+##  returns the normalizer of the Bravais group of <A>G</A> in the
+##  appropriate <M>GL_n(&ZZ;)</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "NormalizerInGLnZBravaisGroup", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
 #A  InvariantLattice( G )
 ##
-##  returns a matrix <B>, whose rows form a basis of a $\Z$-lattice that 
-##  is invariant under the rational matrix group <G> acting from the right. 
-##  It returns `fail' if the group is not unimodular. The columns of the
-##  inverse of <B> span a $\Z$-lattice invariant under <G> acting from 
-##  the left.
+##  <#GAPDoc Label="InvariantLattice">
+##  <ManSection>
+##  <Attr Name="InvariantLattice" Arg='G'/>
+##
+##  <Description>
+##  returns a matrix <M>B</M>, whose rows form a basis of a
+##  <M>&ZZ;</M>-lattice that is invariant under the rational matrix group
+##  <A>G</A> acting from the right.
+##  It returns <K>fail</K> if the group is not unimodular. The columns of the
+##  inverse of <M>B</M> span a <M>&ZZ;</M>-lattice invariant under <A>G</A>
+##  acting from  the left.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "InvariantLattice", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
-#E  grpramat.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
 

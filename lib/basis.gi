@@ -4,13 +4,47 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for bases.
 ##
 Revision.basis_gi :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+#M  IsSmallList( <B> )  . . . . . . . . . . . . . . . . . . . . for any basis
+##
+#T  preliminary fix:
+#T  Set `IsSmallList' whenever a `BasisVectors' value is entered that knows
+#T  whether it is in `IsSmallList', and whenever a `UnderlyingLeftModule' is
+#T  entered that knows its dimension.
+#T  (This is not sufficient, since immediate methods may be switched off,
+#T  but I do not like the idea to add this kind of code in each method that
+#T  creates a basis object.)
+##
+InstallImmediateMethod( IsSmallList,
+    IsBasis and HasBasisVectors and IsAttributeStoringRep, 0,
+    function( B )
+    B:= BasisVectors( B );
+    if HasIsSmallList( B ) then
+      return IsSmallList( B );
+    fi;
+    TryNextMethod();
+    end );
+
+InstallImmediateMethod( IsSmallList,
+    IsBasis and HasUnderlyingLeftModule and IsAttributeStoringRep, 0,
+    function( B )
+    B:= UnderlyingLeftModule( B );
+    if HasDimension( B ) then
+      return Dimension( B ) <= MAX_SIZE_LIST_INTERNAL;
+    fi;
+    TryNextMethod();
+    end );
 
 
 #############################################################################
@@ -340,58 +374,32 @@ InstallOtherMethod( LinearCombination,
 
 #############################################################################
 ##
-#R  IsBasisSpaceEnumeratorRep
+#M  EnumeratorByBasis( <B> )  . . . . . . . . . . . enumerator w.r.t. a basis
 ##
-##  An enumerator of a basis <B> that is *not* basis of a full row space
-##  delegates the task to an enumerator <E> for the corresponding coefficient
-##  space (which is a full row space).
+##  An enumerator w.r.t. a basis <B> that is *not* (known to be) the
+##  canonical basis of a full row space delegates the task to an enumerator
+##  <E> for the canonical basis of the corresponding coefficient space;
+##  a special method is installed for this case.
 ##
-##  For this new representation, the following components are provided.
+##  For this purpose, the following components are provided.
 ##  `coeffspaceenum':
 ##        (with value <E>)
 ##  `basis':
 ##        (with value <B>)
 ##
-DeclareRepresentation( "IsBasisSpaceEnumeratorRep",
-    IsAttributeStoringRep,
-    [ "coeffsspaceenum", "basis" ] );
+BindGlobal( "ElementNumber_Basis", function( enum, n )
+    if Length( enum!.coeffspaceenum ) < n then
+      Error( "<enum>[", n, "] must have an assigned value" );
+    fi;
+    return LinearCombination( enum!.basis, enum!.coeffspaceenum[ n ] );
+    end );
 
-
-#############################################################################
-##
-#M  EnumeratorByBasis( <B> )  . . . . . . . . . . . enumerator w.r.t. a basis
-##
-InstallMethod( Position,
-    "for an enumerator-by-basis, a vector, and zero",
-    [ IsDomainEnumerator and IsBasisSpaceEnumeratorRep,
-      IsVector, IsZeroCyc ],
-    function( enum, elm, zero )
+BindGlobal( "NumberElement_Basis", function( enum, elm )
     elm:= Coefficients( enum!.basis, elm );
     if elm <> fail then
       elm:= Position( enum!.coeffspaceenum, elm );
     fi;
     return elm;
-    end );
-
-InstallMethod( PositionCanonical,
-    "for an enumerator-by-basis and a vector",
-    [ IsDomainEnumerator and IsBasisSpaceEnumeratorRep,
-      IsVector ],
-    function( enum, elm )
-    elm:= Coefficients( enum!.basis, elm );
-    if elm <> fail then
-      elm:= Position( enum!.coeffspaceenum, elm );
-    fi;
-    return elm;
-    end );
-
-InstallMethod( \[\],
-    "for an enumerator-by-basis and a positive integer",
-    [ IsDomainEnumerator and IsBasisSpaceEnumeratorRep,
-      IsPosInt ],
-    function( enum, n )
-    n:= enum!.coeffspaceenum[ n ];
-    return LinearCombination( enum!.basis, n );
     end );
 
 InstallMethod( EnumeratorByBasis,
@@ -406,52 +414,43 @@ InstallMethod( EnumeratorByBasis,
     fi;
 
     # Return the enumerator.
-    B:= Objectify( NewType( FamilyObj( V ),
-                                IsDomainEnumerator
-                            and IsBasisSpaceEnumeratorRep ),
-                   rec(
-                        basis          := B,
-                        coeffspaceenum := Enumerator(
-                     FullRowModule( LeftActingDomain(V), Dimension(V) ) ) )
+    return EnumeratorByFunctions( V,
+               rec( ElementNumber  := ElementNumber_Basis,
+                    NumberElement  := NumberElement_Basis,
+
+                    basis          := B,
+                    coeffspaceenum := EnumeratorByBasis( CanonicalBasis(
+                     FullRowModule( LeftActingDomain(V), Dimension(V) ) ) ) )
                    );
-    SetUnderlyingCollection( B, V );
-
-    return B;
     end );
-
-
-#############################################################################
-##
-#R  IsBasisSpaceIteratorRep
-##
-##  An iterator of a free left module w.r.t. a basis <B> that is *not* basis
-##  of a full row space delegates the task to an iterator <E> for the
-##  corresponding coefficient space (which is a full row space).
-##
-##  For this new representation, the components
-##  `coeffspaceiter' (with value <E>)
-##  and `basis' (with value <B>)
-##  are provided.
-##
-DeclareRepresentation( "IsBasisSpaceIteratorRep",
-    IsComponentObjectRep,
-    [ "coeffspaceiter", "basis" ] );
 
 
 #############################################################################
 ##
 #M  IteratorByBasis( <B> )  . . . . . . . . . . . . . iterator w.r.t. a basis
 ##
-InstallMethod( IsDoneIterator,
-    "for an iterator-by-basis",
-    [ IsIterator and IsBasisSpaceIteratorRep ],
+##  An iterator of a free left module w.r.t. a basis <B> that is *not*
+##  (known to be) the basis of a full row space delegates the task to an
+##  iterator <E> for the corresponding coefficient space;
+##  a special method is installed for this case.
+##
+##  For this purpose, the following components are provided.
+##  `coeffspaceiter':
+##        (with value <E>)
+##  `basis':
+##        (with value <B>)
+##
+BindGlobal( "IsDoneIterator_Basis",
     iter -> IsDoneIterator( iter!.coeffspaceiter ) );
 
-InstallMethod( NextIterator,
-    "for a mutable iterator-by-basis",
-    [ IsIterator and IsMutable and IsBasisSpaceIteratorRep ],
+BindGlobal( "NextIterator_Basis",
     iter -> LinearCombination( iter!.basis,
-                               NextIterator( iter!.coeffspaceiter ) ) );
+                NextIterator( iter!.coeffspaceiter ) ) );
+
+BindGlobal( "ShallowCopy_Basis",
+    iter -> rec( basis          := iter!.basis,
+                 coeffspaceiter := ShallowCopy(
+                                       iter!.coeffspaceiter ) ) );
 
 InstallMethod( IteratorByBasis,
     "for basis of a finite dimensional left module",
@@ -473,25 +472,17 @@ InstallMethod( IteratorByBasis,
       TryNextMethod();
     fi;
 
-    return Objectify(
-                      NewType( IteratorsFamily,
-                                   IsIterator
-                               and IsMutable
-                               and IsBasisSpaceIteratorRep ),
-                      rec( basis          := B,
-                           coeffspaceiter := IteratorByBasis( CanonicalBasis(
-                                  FullRowModule( LeftActingDomain( V ),
-                                                Dimension( V ) ) ) ) )
+    return IteratorByFunctions( rec(
+               IsDoneIterator := IsDoneIterator_Basis,
+               NextIterator   := NextIterator_Basis,
+               ShallowCopy    := ShallowCopy_Basis,
+
+               basis          := B,
+               coeffspaceiter := IteratorByBasis( CanonicalBasis(
+                                     FullRowModule( LeftActingDomain( V ),
+                                         Dimension( V ) ) ) ) )
                      );
     end );
-
-InstallMethod( ShallowCopy,
-    "for an iterator-by-basis",
-    [ IsIterator and IsBasisSpaceIteratorRep ],
-    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
-                rec( basis          := iter!.basis,
-                     coeffspaceiter := ShallowCopy(
-                                           iter!.coeffspaceiter ) ) ) );
 
 
 #############################################################################
@@ -502,58 +493,113 @@ InstallMethod( StructureConstantsTable,
     "for a basis",
     [ IsBasis ],
     function( B )
-
     local A,        # underlying algebra
           vectors,  # basis vectors of `A'
-          i, j,
-          n,
+          dim,      # dimension (length of basis)
           zero,     # zero of the field
-          prod,
-          pos,
+          sctable,  # structure constants table, result
           empty,    # zero product, this entry is shared in the table
-          sctable;  # structure constants table, result
+          symmetry, # symmetry flag
+          calc_val, # local function
+          triv,     # is the multiplication trivial?
+          i, j;     # loop variables
 
     A:= UnderlyingLeftModule( B );
-
     vectors:= BasisVectors( B );
-    n:= [ 1 .. Length( vectors ) ];
+    dim:= Length( vectors );
     zero:= Zero( LeftActingDomain( A ) );
+
+    if     HasIsZeroMultiplicationRing( A )
+       and IsZeroMultiplicationRing( A ) then
+      return EmptySCTable( dim, zero, "symmetric" );
+    fi;
+
     sctable:= [];
     empty:= Immutable( [ [], [] ] );
 
-    # Fill the table.
-    for i in n do
+    # Obtain (anti)symmetry information.
+    if   HasIsCommutative( A ) and IsCommutative( A ) then
+      symmetry:= 1;
+    elif HasIsAnticommutative( A ) and IsAnticommutative( A ) then
+      symmetry:= -1;
+    else
+      symmetry:= 0;
+    fi;
+
+    calc_val:= function ( i, j )
+      local prod, pos;
+      prod:= vectors[i] * vectors[j];
+      prod:= Coefficients( B, prod );
+      if prod = fail  then
+        Error( "the module of the basis <B> must be closed ",
+               "under multiplication" );
+      fi;
+      pos:= Filtered( [ 1 .. dim ], x -> prod[x] <> zero );
+      if IsEmpty( pos ) then
+        sctable[i][j]:= empty;
+        return true;
+      else
+        sctable[i][j]:= Immutable( [ pos, prod{ pos } ] );
+        return false;
+      fi;
+    end;
+
+    # Compute the table entries above the diagonal.
+    triv:= true;
+    for i in [ 1 .. dim ] do
       sctable[i]:= [];
-      for j in n do
-        prod:= vectors[i] * vectors[j];
-        prod:= Coefficients( B, prod );
-        if prod = fail then
-          Error( "the module of the basis <B> must be closed ",
-                 "under multiplication" );
-        fi;
-        pos:= Filtered( n, x -> prod[x] <> zero );
-        if IsEmpty( pos ) then
-          sctable[i][j]:= empty;
-        else
-          sctable[i][j]:= Immutable( [ pos, prod{ pos } ] );
-        fi;
+      for j  in [ i+1 .. dim ]  do
+        triv:= calc_val( i, j ) and triv;
       od;
     od;
 
-    # Add the identification entries (symmetry flag and zero).
-    n:= Length( n );
-    if HasIsCommutative( A ) and IsCommutative( A ) then
-      sctable[ n+1 ]:= 1;
-    elif HasIsAnticommutative( A ) and IsAnticommutative( A ) then
-      sctable[ n+1 ]:= -1;
+    # Compute the table entries on the diagonal if necessary.
+    if HasIsZeroSquaredRing( A ) and IsZeroSquaredRing( A ) then
+#T or (characteristic <> 2 and anticommutative)!
+      for i in [ 1 .. dim ] do
+        sctable[i][i] := empty;
+      od;
     else
-      sctable[ n+1 ]:= 0;
+      for i in [ 1 .. dim ] do
+        triv:= calc_val( i, i ) and triv;
+      od;
     fi;
-    sctable[ n+2 ]:= zero;
+
+    # Compute/set the table entries below the diagonal.
+    if   symmetry = 1 then
+      for i in [ 1 .. dim ] do
+        for j in [ 1 .. i-1 ] do
+          sctable[i][j]:= sctable[j][i];
+        od;
+      od;
+    elif symmetry = -1 then
+      for i in [ 1 .. dim ] do
+        for j in [ 1 .. i-1 ] do
+          sctable[i][j]:= Immutable(
+                              [ sctable[j][i][1], -sctable[j][i][2] ] );
+        od;
+      od;
+    else
+      for i in [ 1 .. dim ] do
+        for j in [ 1 .. i-1 ] do
+          triv:= calc_val( i, j ) and triv;
+        od;
+      od;
+    fi;
+
+    # If the multiplication is trivial then the table is symmetric.
+    if triv then
+      SetIsZeroMultiplicationRing( A, true );
+      symmetry:= 1;
+    fi;
+
+    # Add the identification entries (symmetry flag and zero).
+    sctable[ dim+1 ]:= symmetry;
+    sctable[ dim+2 ]:= zero;
 
     # Return the table.
-    return Immutable( sctable );
-#T how to avoid this copy?
+    MakeImmutable( sctable );
+    return sctable;
     end );
 
 
@@ -635,8 +681,8 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
     entry:= First( NiceBasisFiltersInfo,
                    x -> IsIdenticalObj( filter, x[1] ) );
     Add( entry, record.detect );
-    filter:= IsLeftModule and filter;
     InstallTrueMethod( IsHandledByNiceBasis, filter );
+    filter:= IsFreeLeftModule and filter;
 
     # Install the methods.
     InstallMethod( NiceFreeLeftModuleInfo,
@@ -683,10 +729,15 @@ end );
 #F  NiceVector( <V>, <v> )
 #F  UglyVector( <V>, <r> )
 ##
+##  A finite vector space can be handled via the mechanism of nice bases.
+##  We exclude the situation that all given generators are zero (and thus the
+##  vector space is trivial) because such a space should be handled be the
+##  mechanism that deals with nontrivial spaces caontaining it,
+##  for example in order to admit a consistent ordering of spaces via `\<'.
+##
 InstallHandlingByNiceBasis( "IsGenericFiniteSpace", rec(
     detect:= function( R, gens, V, zero )
-      return    ( IsFinite( R ) and IsFinite( gens ) )
-             or ForAll( gens, IsZero );
+      return not IsMagma( V ) and IsFinite( R ) and IsFinite( gens );
       end,
 
     NiceFreeLeftModuleInfo:= function( V )
@@ -775,6 +826,109 @@ InstallMethod( NiceFreeLeftModule,
     [ IsFreeLeftModule and IsGenericFiniteSpace ],
     V -> FullRowSpace( LeftActingDomain( V ),
                        Length( NiceFreeLeftModuleInfo( V ).base ) ) );
+
+
+#############################################################################
+##
+#M  NiceFreeLeftModuleInfo( <V> )
+#M  NiceVector( <V>, <v> )
+#M  UglyVector( <V>, <r> )
+##
+##  A finite dimensional vector space of rational functions is handled via
+##  the mechanism of nice bases.
+##
+InstallHandlingByNiceBasis( "IsSpaceOfRationalFunctions", rec(
+    detect := function( F, gens, V, zero )
+      return     IsRationalFunctionCollection( V ) and
+         ( not IsFLMLOR( V ) or ( HasGeneratorsOfFLMLOR( V )
+               and ForAll( GeneratorsOfFLMLOR( V ),
+                           IsConstantRationalFunction ) ) );
+      end,
+
+    NiceFreeLeftModuleInfo := function( V )
+      local gens,
+            nums,
+            dens,
+            denom,
+            monomials,
+            gen,
+            list,
+            i,
+            zero,
+            info;
+
+      gens:= GeneratorsOfLeftModule( V );
+
+      # Compute the product of denominators.
+      nums:= List( gens, NumeratorOfRationalFunction );
+      dens:= List( gens, DenominatorOfRationalFunction );
+      denom:= Product( dens, One( Zero( V ) ) );
+
+      monomials:= [];
+
+      for gen in gens do
+        list:= ExtRepPolynomialRatFun( gen * denom );
+        UniteSet( monomials, list{ [ 1, 3 .. Length( list ) - 1 ] } );
+      od;
+
+      zero:= Zero( LeftActingDomain( V ) );
+      info:= rec( monomials := monomials,
+                  denom     := denom,
+                  zerocoeff := zero,
+                  family    := ElementsFamily( FamilyObj( V ) ) );
+
+      # For the zero row vector, catch the case of empty `monomials' list.
+      if IsEmpty( monomials ) then
+        info.zerovector := [ zero ];
+      else
+        info.zerovector := ListWithIdenticalEntries( Length( monomials ),
+                                                     zero );
+      fi;
+
+      return info;
+      end,
+
+    NiceVector := function( V, v )
+      local info, c, monomials, i, pos;
+      info:= NiceFreeLeftModuleInfo( V );
+      c:= ShallowCopy( info.zerovector );
+      v:= v * info.denom;
+      if not IsPolynomial( v ) then
+        return fail;
+      fi;
+      v:= ExtRepPolynomialRatFun( v );
+      monomials:= info.monomials;
+      for i in [ 2, 4 .. Length( v ) ] do
+        pos:= Position( monomials, v[ i-1 ] );
+        if pos = fail then
+          return fail;
+        fi;
+        c[ pos ]:= v[i];
+      od;
+      return c;
+      end,
+
+    UglyVector := function( V, r )
+      local info, list, i;
+      info:= NiceFreeLeftModuleInfo( V );
+      if Length( r ) <> Length( info.zerovector ) then
+        return fail;
+      elif IsEmpty( info.monomials ) then
+        if IsZero( r ) then
+          return Zero( V );
+        else
+          return fail;
+        fi;
+      fi;
+      list:= [];
+      for i in [ 1 .. Length( r ) ] do
+        if r[i] <> info.zerocoeff then
+          Add( list, info.monomials[i] );
+          Add( list, r[i] );
+        fi;
+      od;
+      return PolynomialByExtRep( info.family, list ) / info.denom;
+      end ) );
 
 
 #############################################################################
@@ -906,19 +1060,7 @@ InstallMethod( IsCanonicalBasis,
 ##
 #M  Basis( <V> )  . . . . . . . . . . . for free module handled by nice basis
 ##
-InstallMethod( Basis,
-    "for free module that is handled by a nice basis",
-    [ IsFreeLeftModule and IsHandledByNiceBasis ], NICE_FLAGS,
-    # This method shall be called also for FLMLORs
-    # that are handled by nice bases.
-    # Note that the default method for a FLMLOR
-    # without left module generators is to call
-    # `MutableBasisOfClosureUnderAction',
-    # and the `ImmutableBasis' call will use a function
-#T what is really going on here??
-    # that may again call `MutableBasisOfClosureUnderAction';
-    # so it is cheaper to create the basis object directly.
-    function( V )
+BasisForFreeModuleByNiceBasis:= function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
                                 IsFiniteBasisDefault
@@ -927,7 +1069,12 @@ InstallMethod( Basis,
                    rec() );
     SetUnderlyingLeftModule( B, V );
     return B;
-    end );
+end;
+
+InstallMethod( Basis,
+    "for free module that is handled by a nice basis",
+    [ IsFreeLeftModule and IsHandledByNiceBasis ],
+    BasisForFreeModuleByNiceBasis );
 
 
 #############################################################################
@@ -938,7 +1085,7 @@ InstallMethod( Basis,
 InstallMethod( Basis,
     "for free module that is handled by a nice basis, and hom. list",
     IsIdenticalObj,
-    [ IsFreeLeftModule and IsHandledByNiceBasis, IsHomogeneousList ], 10,
+    [ IsFreeLeftModule and IsHandledByNiceBasis, IsHomogeneousList ],
     function( V, vectors )
     local B;
 
@@ -966,7 +1113,7 @@ InstallMethod( Basis,
 InstallMethod( BasisNC,
     "for free module that is handled by a nice basis, and hom. list",
     IsIdenticalObj,
-    [ IsFreeLeftModule and IsHandledByNiceBasis, IsHomogeneousList ], 10,
+    [ IsFreeLeftModule and IsHandledByNiceBasis, IsHomogeneousList ],
     function( V, vectors )
     local B;
 
@@ -1026,7 +1173,7 @@ BindGlobal( "NiceFreeLeftModuleForFLMLOR", function( A, side )
           MB,        # mutable basis, result
           Vgens,     # left module generators
           v;         # loop variable
-    
+
     # No closure under action is necessary if module generators are known.
     if HasGeneratorsOfLeftModule( A ) then
       TryNextMethod();

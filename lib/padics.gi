@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation part of the padic numbers.
 ##
@@ -369,6 +370,10 @@ end );
 ##  prime  <p> with  <precision>  "digits".  For the  representation  of pure
 ##  p-adic numbers see "PadicNumber" below.
 ##
+
+InstallValue(PADICS_FAMILIES,[]);
+
+
 InstallGlobalFunction( PurePadicNumberFamily, function( p, precision )
     local   str,  fam;
 
@@ -378,18 +383,24 @@ InstallGlobalFunction( PurePadicNumberFamily, function( p, precision )
     if (not IsInt( precision )) or (precision < 0) then
         Error( "<precision> must be a positive integer" );
     fi;
-    str := "PurePadicNumberFamily(";
-    Append( str, String(p) );
-    Append( str, "," );
-    Append( str, String(precision) );
-    Append( str, ")" );
-    fam := NewFamily( str, IsPurePadicNumber );
-    fam!.prime:= p;
-    fam!.precision:= precision;
-    fam!.modulus:= p^precision;
-    fam!.printPadicSeries:= true;
-    fam!.defaultType := NewType( fam, IsPurePadicNumber );
-    return fam;
+    if not IsBound(PADICS_FAMILIES[p]) then
+        PADICS_FAMILIES[p] := [];
+    fi;
+    if not IsBound(PADICS_FAMILIES[p][precision]) then
+        str := "PurePadicNumberFamily(";
+        Append( str, String(p) );
+        Append( str, "," );
+        Append( str, String(precision) );
+        Append( str, ")" );
+        fam := NewFamily( str, IsPurePadicNumber );
+        fam!.prime:= p;
+        fam!.precision:= precision;
+        fam!.modulus:= p^precision;
+        fam!.printPadicSeries:= true;
+        fam!.defaultType := NewType( fam, IsPurePadicNumber );
+        PADICS_FAMILIES[p][precision] := fam;
+    fi;
+    return PADICS_FAMILIES[p][precision];
 end );
 
 

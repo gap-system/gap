@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  plist.h                     GAP source                   Martin Schoenert
+*W  plist.h                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions that deal with plain lists.
 **
@@ -64,10 +65,10 @@ extern  Int             GrowPlist (
 **
 *F  SHRINK_PLIST(<list>,<plen>) . . . . . . . . . . . . . shrink a plain list
 **
-**  'SHINK_PLIST' shrinks  the plain list <list>  if possible  so that it has
+**  'SHRINK_PLIST' shrinks  the plain list <list>  if possible  so that it has
 **  still room for at least <plen> elements.
 **
-**  Note that 'SHINK_PLIST' is a macro, so do not call it with arguments that
+**  Note that 'SHRINK_PLIST' is a macro, so do not call it with arguments that
 **  have sideeffects.
 */
 #define SHRINK_PLIST(list,plen)         ResizeBag(list,((plen)+1)*sizeof(Obj))

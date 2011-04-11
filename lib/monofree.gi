@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for free monoids.
 ##
@@ -40,22 +41,23 @@ InstallMethod( Iterator,
     [ IsAssocWordWithOneCollection and IsWholeFamily ],
     function( M )
 
-    # A free free group needs another method.
+    # A free group needs another method.
     # A trivial group needs another method.
     if IsAssocWordWithInverseCollection( M ) or IsTrivial( M ) then
       TryNextMethod();
     fi;
 
-    return Objectify( NewType( IteratorsFamily, IsFreeSemigroupIteratorRep ),
-            rec(
-                 family       := ElementsFamily( FamilyObj( M ) ),
-                 nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ),
-                 exp          := 0,
-                 word         := [],
-                 counter      := [ 0, 0 ],
-                 length       := 0
-                )
-           );
+    return IteratorByFunctions( rec(
+               IsDoneIterator := ReturnFalse,
+               NextIterator   := NextIterator_FreeSemigroup,
+               ShallowCopy    := ShallowCopy_FreeSemigroup,
+
+               family         := ElementsFamily( FamilyObj( M ) ),
+               nrgenerators   := Length( GeneratorsOfMagmaWithOne( M ) ),
+               exp            := 0,
+               word           := [],
+               counter        := [ 0, 0 ],
+               length         := 0 ) );
     end );
 
 
@@ -63,26 +65,10 @@ InstallMethod( Iterator,
 ##
 #M  Enumerator( <M> ) . . . . . . . . . . . . .  enumerator for a free monoid
 ##
-DeclareRepresentation( "IsFreeMonoidEnumeratorRep",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "family", "nrgenerators" ] );
-
-InstallMethod( \[\],
-    "for enumerator of a free monoid",
-    [ IsFreeMonoidEnumeratorRep, IsPosInt ],
-    FreeMonoid_ElementNumber );
-
-InstallMethod( Position,
-    "for enumerator of a free monoid",
-    IsCollsElmsX,
-    [ IsFreeMonoidEnumeratorRep, IsObject, IsZeroCyc ],
-    FreeMonoid_NumberElement );
-
 InstallMethod( Enumerator,
     "for a free monoid",
     [ IsAssocWordWithOneCollection and IsWholeFamily and IsMonoid ],
     function( M )
-    local enum;
 
     # A free group needs another method.
     # A trivial group needs another method.
@@ -90,11 +76,13 @@ InstallMethod( Enumerator,
       TryNextMethod();
     fi;
 
-    enum:= Objectify( NewType( FamilyObj( M ), IsFreeMonoidEnumeratorRep ),
-           rec( family       := ElementsFamily( FamilyObj( M ) ),
-                nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ) ) );
-    SetUnderlyingCollection( enum, M );
-    return enum;
+    return EnumeratorByFunctions( M, rec(
+               ElementNumber := ElementNumber_FreeMonoid,
+               NumberElement := NumberElement_FreeMonoid,
+
+               family        := ElementsFamily( FamilyObj( M ) ),
+               nrgenerators  := Length( ElementsFamily( 
+                                            FamilyObj( M ) )!.names ) ) );
     end );
 
 
@@ -176,7 +164,13 @@ InstallMethod( MagmaGeneratorsOfFamily,
     # Return the magma generators.
     return gens;
     end );
-
+    
+# GeneratorsOfMonoid returns the generators in ascending order
+    
+InstallMethod( GeneratorsSmallest,
+        "for a free monoid",
+        [ IsFreeMonoid ],
+        GeneratorsOfMonoid);
 
 #############################################################################
 ##
@@ -266,7 +260,7 @@ InstallGlobalFunction( FreeMonoid, function( arg )
       M:= MonoidByGenerators( InfiniteListOfGenerators( F ) );
     fi;
 
-		SetIsFreeMonoid(M,true);
+    SetIsFreeMonoid(M,true);
 
     SetIsWholeFamily( M, true );
     SetIsTrivial( M, false );
@@ -289,7 +283,7 @@ InstallMethod( ViewObj,
     "for a free monoid containing the whole family",
     [ IsMonoid and IsAssocWordCollection and IsWholeFamily ],
     function( M )
-    if VIEWLEN * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
+    if GAPInfo.ViewLength * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
       Print( "<free monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
              " generators>" );
     else

@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Functions moved from oper.g, so as to be compiled in the default kernel
 ##
@@ -36,9 +37,9 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
             res,        # result of an immediate method
             newflags;   # newly  found filters
 
-    # Avoid recursive calls from inside a setter, permit coplete switch-off
-    # of immediate methods, ignore immediate methods for objects which have
-    # it turned off.
+    # Avoid recursive calls from inside a setter,
+    # permit complete switch-off of immediate methods,
+    # ignore immediate methods for objects which have it turned off.
     if IGNORE_IMMEDIATE_METHODS then return; fi;
 
     # intersect the flags with those for which immediate methods
@@ -235,19 +236,46 @@ end );
 
 #############################################################################
 ##
-#F  INFO_INSTALL( <level>, ... )
-##
-##  This will delegate to `InfoWarning' as soon as this is available.
-##
-BIND_GLOBAL( "INFO_INSTALL", function( arg )
-    CALL_FUNC_LIST( Print, arg{ [ 2 .. LEN_LIST( arg ) ] } );
-end );
-
-
-
-#############################################################################
-##
 #F  InstallMethod( <opr>[,<info>][,<relation>],<filters>[,<rank>],<method> )
+##
+##  <#GAPDoc Label="InstallMethod">
+##  <ManSection>
+##  <Func Name="InstallMethod"
+##   Arg="opr[,info][,famp],args-filts[,val],method"/>
+##
+##  <Description>
+##  installs a function method <A>method</A> for the operation <A>opr</A>;
+##  <A>args-filts</A> should be a list of requirements for the arguments,
+##  each entry being a filter;
+##  if supplied <A>info</A> should be a short but informative string
+##  that describes for what situation the method is installed,
+##  <A>famp</A> should be a function to be applied to the families
+##  of the arguments,
+##  and <A>val</A> should be an integer that measures the priority
+##  of the method.
+##  <P/>
+##  The default values for <A>info</A>, <A>famp</A>, and <A>val</A> are
+##  the empty string,
+##  the function <Ref Func="ReturnTrue"/>,
+##  and the integer zero, respectively.
+##  <P/>
+##  The exact meaning of the arguments <A>famp</A>, <A>args-filts</A>,
+##  and <A>val</A> is explained in
+##  Section&nbsp;<Ref Sect="Applicable Methods and Method Selection"/>.
+##  <P/>
+##  <A>opr</A> expects its methods to require certain filters for their
+##  arguments.
+##  For example, the argument of a method for the operation
+##  <Ref Func="Zero"/> must be
+##  in the category <Ref Func="IsAdditiveElementWithZero"/>.
+##  It is not possible to use <Ref Func="InstallMethod"/> to install
+##  a method for which the entries of <A>args-filts</A> do not imply
+##  the respective requirements of the operation <A>opr</A>.
+##  If one wants to override this restriction,
+##  one has to use <Ref Func="InstallOtherMethod"/> instead.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "InstallMethod",
     function( arg )
@@ -260,6 +288,22 @@ BIND_GLOBAL( "InstallMethod",
 #F  InstallOtherMethod( <opr>[,<info>][,<relation>],<filters>[,<rank>],
 #F                      <method> )
 ##
+##  <#GAPDoc Label="InstallOtherMethod">
+##  <ManSection>
+##  <Func Name="InstallOtherMethod"
+##   Arg="opr[,info][,famp],args-filts[,val],method"/>
+##
+##  <Description>
+##  installs a function method <A>method</A> for the operation <A>opr</A>,
+##  in the same way as for <Ref Func="InstallMethod"/>,
+##  but without the restriction that the number of arguments must match
+##  a declaration of <A>opr</A>
+##  and without the restriction that <A>args-filts</A> imply the respective
+##  requirements of the operation <A>opr</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL( "InstallOtherMethod",
     function( arg )
     INSTALL_METHOD( arg, false );
@@ -270,6 +314,8 @@ BIND_GLOBAL( "InstallOtherMethod",
 ##
 #F  INSTALL_METHOD( <arglist>, <check> )  . . . . . . . . .  install a method
 ##
+DeclareGlobalFunction( "EvalString" );
+
 Unbind(INSTALL_METHOD);
 BIND_GLOBAL( "INSTALL_METHOD",
     function( arglist, check )
@@ -279,6 +325,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
           pos,
           rel,
           filters,
+          info1,
+          isstr,
           flags,
           i,
           rank,
@@ -287,7 +335,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
     # Check the arguments.
     len:= LEN_LIST( arglist );
-    if   len < 3 then
+    if len < 3 then
       Error( "too few arguments given in <arglist>" );
     fi;
 
@@ -297,8 +345,9 @@ BIND_GLOBAL( "INSTALL_METHOD",
       Error( "<opr> is not an operation" );
     fi;
 
-    # Check whether an info string is given.
-    if IS_STRING( arglist[2] ) then
+    # Check whether an info string is given,
+    # or whether the list of argument filters is given by a list of strings.
+    if IS_STRING_REP( arglist[2] ) then
       info:= arglist[2];
       pos:= 3;
     else
@@ -319,6 +368,35 @@ BIND_GLOBAL( "INSTALL_METHOD",
       Error( "<arglist>[", pos, "] must be a list of filters" );
     fi;
     filters:= arglist[ pos ];
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
+
+    # If the filters list is given by a list of strings then evaluate them
+    # and set `info' if this is not set.
+    if 0 < LEN_LIST( filters ) then
+      info1:= "[ ";
+      isstr:= true;
+      for i in [ 1 .. LEN_LIST( filters ) ] do
+        if IS_STRING_REP( filters[i] ) then
+          APPEND_LIST_INTR( info1, filters[i] );
+          APPEND_LIST_INTR( info1, ", " );
+          filters[i]:= EvalString( filters[i] );
+          if not IS_FUNCTION( filters[i] ) then
+            Error( "string does not evaluate to a function" );
+          fi;
+        else
+          isstr:= false;
+          break;
+        fi;
+      od;
+      if isstr and info = false then
+        info1[ LEN_LIST( info1 ) - 1 ]:= ' ';
+        info1[ LEN_LIST( info1 ) ]:= ']';
+        info:= info1;
+      fi;
+    fi;
     pos:= pos + 1;
 
     # Compute the flags lists for the filters.
@@ -344,7 +422,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
     method:= arglist[ pos ];
 
     # For a property, check whether this in fact installs an implication.
-    if     FLAG1_FILTER( opr ) <> 0
+    if FLAG1_FILTER( opr ) <> 0
        and ( rel = true or rel = RETURN_TRUE )
        and LEN_LIST( filters ) = 1
        and ( method = true or method = RETURN_TRUE ) then
@@ -354,93 +432,92 @@ BIND_GLOBAL( "INSTALL_METHOD",
     # Test if `check' is `true'.
     if CHECK_INSTALL_METHOD and check then
 
-        # Signal a warning if the operation is only a wrapper operation.
-        if opr in WRAPPER_OPERATIONS then
-          INFO_INSTALL( 1,
+      # Signal a warning if the operation is only a wrapper operation.
+      if opr in WRAPPER_OPERATIONS then
+        INFO_DEBUG( 1,
               "a method is installed for the wrapper operation ",
               NAME_FUNC( opr ), "\n",
               "#I  probably it should be installed for (one of) its\n",
               "#I  underlying operation(s)" );
-        fi;
+      fi;
 
-        # find the operation
-        req := false;
-        for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
-            if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
-                req := OPERATIONS[i+1];
-                break;
+      # find the operation
+      req := false;
+      for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
+        if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
+          req := OPERATIONS[i+1];
+          break;
+        fi;
+      od;
+      if req = false  then
+        Error( "unknown operation ", NAME_FUNC(opr) );
+      fi;
+
+      # do check with implications
+      imp := [];
+      for i in flags  do
+        ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
+      od;
+
+      # Check that the requirements of the method match
+      # (at least) one declaration.
+      j:= 0;
+      match:= false;
+	  notmatch:=0;
+      while j < LEN_LIST( req ) and not match do
+        j:= j+1;
+        reqs:= req[j];
+        if LEN_LIST( reqs ) = LEN_LIST( imp ) then
+          match:= true;
+          for i  in [ 1 .. LEN_LIST(reqs) ]  do
+            if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
+              match:= false;
+		      notmatch:=i;
+              break;
             fi;
-        od;
-        if req = false  then
-            Error( "unknown operation ", NAME_FUNC(opr) );
+          od;
+          if match then 
+            break; 
+          fi;
+        fi;
+      od;
+
+      if not match then
+
+        # If the requirements do not match any of the declarations
+        # then something is wrong or `InstallOtherMethod' should be used.
+	    if notmatch=0 then
+	      Error("the number of arguments does not match a declaration of ",
+	            NAME_FUNC(opr) );
+        else
+	      Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
+	            Ordinal(notmatch)," argument do not match a declaration of ",
+		        NAME_FUNC(opr) );
         fi;
 
-        # do check with implications
-        imp := [];
-        for i  in flags  do
-            ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
-        od;
+      else
 
-        # Check that the requirements of the method match
-        # (at least) one declaration.
-        j:= 0;
-        match:= false;
-	notmatch:=0;
-        while j < LEN_LIST( req ) and not match do
-          j:= j+1;
-          reqs:= req[j];
+        # If the requirements match *more than one* declaration
+        # then a warning is raised by `INFO_DEBUG'.
+        for k in [ j+1 .. LEN_LIST( req ) ] do
+          reqs:= req[k];
           if LEN_LIST( reqs ) = LEN_LIST( imp ) then
             match:= true;
             for i  in [ 1 .. LEN_LIST(reqs) ]  do
               if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
                 match:= false;
-		notmatch:=i;
                 break;
               fi;
             od;
-            if match then break; fi;
+            if match then
+              INFO_DEBUG( 1,
+              		"method installed for ", NAME_FUNC(opr), 
+                    " matches more than one declaration" );
+            fi;
           fi;
         od;
 
-        if not match then
-
-          # If the requirements do not match any of the declarations
-          # then something is wrong or `InstallOtherMethod' should be used.
-	  if notmatch=0 then
-	    Error("the number of arguments does not match a declaration of ",
-	           NAME_FUNC(opr) );
-          else
-	    Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
-	          Ordinal(notmatch)," argument do not match a declaration of ",
-		   NAME_FUNC(opr) );
-          fi;
-
-        else
-
-          # If the requirements match *more than one* declaration
-          # then a warning is raised;
-          # this is done by calling `INFO_INSTALL',
-          # which delegates to `Print' until `InfoWarning' is defined,
-          # and delegates to `InfoWarning' (with level 2) afterwards.
-          for k in [ j+1 .. LEN_LIST( req ) ] do
-            reqs:= req[k];
-            if LEN_LIST( reqs ) = LEN_LIST( imp ) then
-              match:= true;
-              for i  in [ 1 .. LEN_LIST(reqs) ]  do
-                if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
-                  match:= false;
-                  break;
-                fi;
-              od;
-              if match then
-                INFO_INSTALL( 1,
-                      "method installed for ", NAME_FUNC(opr),
-                      " matches more than one declaration" );
-              fi;
-            fi;
-          od;
-
-        fi;
+      fi;
     fi;
 
     # Install the method in the operation.
@@ -534,83 +611,115 @@ InstallAttributeFunction(
 ##
 #F  KeyDependentOperation( <name>, <dom-req>, <key-req>, <key-test> )
 ##
+##  <#GAPDoc Label="KeyDependentOperation">
+##  <ManSection>
+##  <Func Name="KeyDependentOperation"
+##   Arg='name, dom-req, key-req, key-test'/>
+##
+##  <Description>
 ##  There are several functions that require as first argument a domain,
 ##  e.g., a  group, and as second argument something much simpler,
 ##  e.g., a prime.
-##  `SylowSubgroup' is an example.
+##  <Ref Func="SylowSubgroup"/> is an example.
 ##  Since its value depends on two arguments, it cannot be an attribute,
 ##  yet one would like to store the Sylow subgroups once they have been
 ##  computed.
-##
+##  <P/>
 ##  The idea is to provide an attribute of the group,
-##  called `ComputedSylowSubgroups', and to store the groups in this list.
+##  called <C>ComputedSylowSubgroups</C>,
+##  and to store the groups in this list.
 ##  The name implies that the value of this attribute may change in the
-##  course of a {\GAP} session,
+##  course of a &GAP; session,
 ##  whenever a newly-computed Sylow subgroup is put into the list.
-##  Therefore, this is a *mutable attribute*
-##  (see~"prg:Creating Attributes and Properties" in ``Programming in GAP'').
+##  Therefore, this is a <E>mutable attribute</E>
+##  (see <Ref Sect="Creating Attributes and Properties"/>).
 ##  The list contains primes in each bound odd position and a corresponding
 ##  Sylow subgroup in the following even position.
-##  More precisely, if `<p> = ComputedSylowSubgroups( <G> )[ <even> - 1 ]'
-##  then `ComputedSylowSubgroups( <G> )[ <even> ]' holds the value
-##  of `SylowSubgroup( <G>, <p> )'.
-##  The pairs are sorted in increasing order of <p>,
-##  in particular at most one Sylow <p> subgroup of <G> is stored for each
-##  prime <p>.
-##  This attribute value is maintained by the operation `SylowSubgroup',
-##  which calls the operation `SylowSubgroupOp( <G>, <p> )' to do the real
-##  work, if the prime <p> cannot be found in the list.
+##  More precisely, if
+##  <C><A>p</A> = ComputedSylowSubgroups( <A>G</A> )[ <A>even</A> - 1 ]</C>
+##  then <C>ComputedSylowSubgroups( <A>G</A> )[ <A>even</A> ]</C> holds the
+##  value of <C>SylowSubgroup( <A>G</A>, <A>p</A> )</C>.
+##  The pairs are sorted in increasing order of <A>p</A>,
+##  in particular at most one Sylow <A>p</A> subgroup of <A>G</A> is stored
+##  for each prime <A>p</A>.
+##  This attribute value is maintained by the function
+##  <Ref Func="SylowSubgroup"/>,
+##  which calls the operation <C>SylowSubgroupOp( <A>G</A>, <A>p</A> )</C>
+##  to do the real work, if the prime <A>p</A> cannot be found in the list.
 ##  So methods that do the real work should be installed
-##  for `SylowSubgroupOp' and not for `SylowSubgroup'.
-##
-##  The same mechanism works for other functions as well, e.g., for `PCore',
-##  but also for `HallSubgroup',
+##  for <C>SylowSubgroupOp</C>
+##  and not for <Ref Func="SylowSubgroup"/>.
+##  <P/>
+##  The same mechanism works for other functions as well,
+##  e.g., for <Ref Func="PCore"/>,
+##  but also for <Ref Func="HallSubgroup"/>,
 ##  where the second argument is not a prime but a set of primes.
-##
-##  `KeyDependentOperation' declares the two operations and the attribute
-##  as described above, with names <name>, `<name>Op', and `Computed<name>s'.
-##  <dom-req> and <key-req> specify the required filters for the first and
-##  second argument of the operation `<name>Op',
-##  which are needed to create this operation with `NewOperation'
-##  (see~"prg:NewOperation").
-##  <dom-req> is also the required filter for the corresponding attribute
-##  `Computed<name>s'.
-##  The fourth argument <key-test> is in general a function to which the
-##  second argument <info> of `<name>(  <D>, <info> )' will be passed.
-##  This function can perform tests on <info>,
+##  <P/>
+##  <Ref Func="KeyDependentOperation"/> declares the two operations and the
+##  attribute as described above,
+##  with names <A>name</A>, <A>name</A><C>Op</C>,
+##  and <C>Computed</C><A>name</A><C>s</C>.
+##  <A>dom-req</A> and <A>key-req</A> specify the required filters for the
+##  first and second argument of the operation <A>name</A><C>Op</C>,
+##  which are needed to create this operation with
+##  <Ref Func="DeclareOperation"/>.
+##  <A>dom-req</A> is also the required filter for the corresponding
+##  attribute <C>Computed</C><A>name</A><C>s</C>.
+##  The fourth argument <A>key-test</A> is in general a function to which the
+##  second argument
+##  <A>info</A> of <C><A>name</A>( <A>D</A>, <A>info</A> )</C> will be
+##  passed.
+##  This function can perform tests on <A>info</A>,
 ##  and raise an error if appropriate.
-##
-##  For example, to set up the three objects `SylowSubgroup',
-##  `SylowSubgroupOp', and `ComputedSylowSubgroups' together,
-##  the declaration file ``lib/grp.gd'' contains the following line of code.
-##  \begintt
+##  <P/>
+##  For example, to set up the three objects
+##  <Ref Func="SylowSubgroup"/>,
+##  <C>SylowSubgroupOp</C>,
+##  <C>ComputedSylowSubgroups</C> together,
+##  the declaration file <F>lib/grp.gd</F> contains the following line of
+##  code.
+##  <Log><![CDATA[
 ##  KeyDependentOperation( "SylowSubgroup", IsGroup, IsPosInt, "prime" );
-##  \endtt
-##  In this example, <key-test> has the value `"prime"',
+##  ]]></Log>
+##  In this example, <A>key-test</A> has the value <C>"prime"</C>,
 ##  which is silently replaced by a function that tests whether its argument
-##  is a prime integer.
-##
-##  \beginexample
+##  is a prime.
+##  <P/>
+##  <Example><![CDATA[
 ##  gap> s4 := Group((1,2,3,4),(1,2));;
 ##  gap> SylowSubgroup( s4, 5 );;  ComputedSylowSubgroups( s4 );
 ##  [ 5, Group(()) ]
 ##  gap> SylowSubgroup( s4, 2 );;  ComputedSylowSubgroups( s4 );
-##  [ 2, Group([ (3,4), (1,2), (1,3)(2,4) ]), 5, Group(()) ]
+##  [ 2, Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ]), 5, Group(()) ]
+##  ]]></Example>
+##  <P/>
+##  <Log><![CDATA[
 ##  gap> SylowSubgroup( s4, 6 );
-##  Error SylowSubgroup: <p> must be a prime at
-##  Error( name, ": <p> must be a prime" );
-##  keytest( key ); called from
+##  Error, SylowSubgroup: <p> must be a prime called from
+##  <compiled or corrupted call value>  called from
 ##  <function>( <arguments> ) called from read-eval-loop
-##  Entering break read-eval-print loop, you can 'quit;' to quit to outer \
-##  loop,
-##  or you can return to continue
+##  Entering break read-eval-print loop ...
+##  you can 'quit;' to quit to outer loop, or
+##  you can 'return;' to continue
 ##  brk> quit;
-##  \endexample
-##
+##  ]]></Log>
+##  <P/>
 ##  Thus the prime test need not be repeated in the methods for the operation
-##  `SylowSubgroupOp' (which are installed to do the real work).
-##  Note that no methods can/need be installed for `SylowSubgroup' and
-##  `ComputedSylowSubgroups'.
+##  <C>SylowSubgroupOp</C> (which are installed to do
+##  the real work).
+##  Note that no methods need be installed for
+##  <Ref Func="SylowSubgroup"/> and
+##  <C>ComputedSylowSubgroups</C>.
+##  If a method is installed with <Ref Func="InstallMethod"/>
+##  for a wrapper operation such as
+##  <Ref Func="SylowSubgroup"/> then a warning is signalled
+##  provided the <Ref InfoClass="InfoWarning"/> level
+##  is at least <C>1</C>.
+##  (Use <Ref Func="InstallMethod"/> in order to suppress the
+##  warning.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 IsPrimeInt := "2b defined";
 
@@ -682,21 +791,32 @@ end );
 ##
 #F  RedispatchOnCondition( <oper>, <fampred>, <reqs>, <cond>, <val> )
 ##
-##  This function installs a method for the operation <oper> under the
-##  conditions <fampred> and <reqs> which has absolute value <val>;
-##  that is, the value of the filters <reqs> is disregarded.
-##  <cond> is a list of filters.
+##  <#GAPDoc Label="RedispatchOnCondition">
+##  <ManSection>
+##  <Func Name="RedispatchOnCondition" Arg="oper, fampred, reqs, cond, val"/>
+##
+##  <Description>
+##  This function installs a method for the operation <A>oper</A> under the
+##  conditions <A>fampred</A> and <A>reqs</A> which has absolute value
+##  <A>val</A>;
+##  that is, the value of the filters <A>reqs</A> is disregarded.
+##  <A>cond</A> is a list of filters.
 ##  If not all the values of properties involved in these filters are already
 ##  known for actual arguments of the method,
-##  they are explicitly tested and if they are fulfilled *and* stored after
-##  this test, the operation is dispatched again.
-##  Otherwise the method exits with `TryNextMethod'.
-##  This can be used to enforce tests like `IsFinite' in situations when all
+##  they are explicitly tested and if they are fulfilled <E>and</E> stored
+##  after this test, the operation is dispatched again.
+##  Otherwise the method exits with <Ref Func="TryNextMethod"/>.
+##  This can be used to enforce tests like
+##  <Ref Func="IsFinite"/> in situations when all
 ##  existing methods require this property.
-##  The list <cond> may have unbound entries in which case the corresponding
-##  argument is ignored for further tests.
+##  The list <A>cond</A> may have unbound entries in which case
+##  the corresponding argument is ignored for further tests.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 CallFuncList:="2b defined";
+
 BIND_GLOBAL( "RedispatchOnCondition", function(oper,fampred,reqs,cond,val)
     local re,i;
 

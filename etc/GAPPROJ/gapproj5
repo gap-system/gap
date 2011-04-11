@@ -6,8 +6,10 @@ TB
 1999/5/19
 @Time
 0
+@Public
+Yes
 @Need
-1
+0
 @NeedA
 0
 @Math
@@ -34,6 +36,12 @@ The necessary theory is written down in the `sisyphos' manual
 which is available in the GAP 3 share package,
 and (besides Matrin Wursthorn's thesis) at least in one paper
 of Martin, namely in JSC 15, 211-227, 1993.
+
+<P> 
+Remark by Alexander Konovalov (June 2004): advanced computations with 
+units of modular group algebras of finite p-groups, based on the
+mentioned ideas, are available now with the LAGUNA package 
+(http://ukrgap.exponenta.ru/laguna.htm), firstly released in 2003.
 @Manual
 @Ref
 @Rem

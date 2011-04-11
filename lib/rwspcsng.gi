@@ -2,8 +2,9 @@
 ##
 #W  rwspcsng.gi                 GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This files implement a single collector as representation of a polycyclic
 ##  collector with power/conjugate presentation.
@@ -714,7 +715,7 @@ end );
 ##
 #M  UpdatePolycyclicCollector( <sc> )
 ##
-##  The 'Avector' routine was taken from the NQ share package.
+##  The `Avector' routine was taken from the \package{NQ} package.
 ##
 SingleCollector_MakeAvector := function( sc )
     local   com,  cnj,  n,  g,  again,  h;

@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for *row modules*, that is,
 ##  free left modules consisting of row vectors.
@@ -23,7 +24,6 @@ Revision.modulrow_gi :=
 #F  FullRowModule( <R>, <n> )
 ##
 InstallGlobalFunction( FullRowModule, function( R, n )
-
     local M;   # the free module record, result
 
     if not ( IsRing( R ) and IsInt( n ) and 0 <= n ) then
@@ -63,17 +63,26 @@ InstallOtherMethod( \^,
 
 #############################################################################
 ##
+#M  IsRowModule .  return `false' for objects which are not free left modules 
+##
+InstallOtherMethod( IsRowModule,
+                    Concatenation("return `false' for objects which are ",
+                                  "not free left modules"),
+                    true, [ IsObject ], 0,
+
+  function ( obj )
+    if not IsFreeLeftModule(obj) then return false; else TryNextMethod(); fi;
+  end );
+
+
+#############################################################################
+##
 #M  IsRowModule( <M> )
 ##
 InstallMethod( IsRowModule,
     "for a free left module",
     [ IsFreeLeftModule ],
-    function( M )
-    local gens;
-    gens:= GeneratorsOfLeftModule( M );
-    return    ( IsEmpty( gens ) and IsRowVector( Zero( M ) ) )
-           or IsMatrix( gens );
-    end );
+    M -> IsRowVector( Zero( M ) ) );
 
 
 #############################################################################
@@ -154,6 +163,14 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
+#M  ViewString( <M> ) . . . . . . . . . . . . . . . . .  for full row modules
+##
+InstallMethod( ViewString, "for full row modules", true,
+               [ IsFreeLeftModule and IsFullRowModule ], 0, String );
+
+
+#############################################################################
+##
 #M  PrintObj( <M> )
 ##
 InstallMethod( PrintObj,
@@ -162,6 +179,16 @@ InstallMethod( PrintObj,
     function( M )
     Print( "( ", LeftActingDomain( M ), "^", DimensionOfVectors( M ), " )" );
     end );
+
+
+#############################################################################
+##
+#M  String( <M> ) . . . . . . . . . . . . . . . . . . .  for full row modules
+##
+InstallMethod( String, "for full row modules", true,
+               [ IsFreeLeftModule and IsFullRowModule ], 0,
+  M -> Concatenation(List(["( ",LeftActingDomain(M),"^",
+                                DimensionOfVectors(M)," )"], String)) );
 
 
 #############################################################################
@@ -254,31 +281,18 @@ InstallMethod( IsCanonicalBasisFullRowModule,
 
 #############################################################################
 ##
-#R  IsEnumeratorOfFiniteFullRowModuleRep( <iter> )
+#M  EnumeratorByBasis( <B> )  . . . .  for canonical basis of full row module
 ##
-DeclareRepresentation( "IsEnumeratorOfFiniteFullRowModuleRep",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "coeffsenum", "q", "zerovector", "coeffszero" ] );
+BindGlobal( "NumberElement_FiniteFullRowModule", function( e, v )
+    local len, n, i, pos;
 
-#############################################################################
-##
-#R  IsEnumeratorOfFiniteFullRowModuleFFRep( <iter> )
-##
-DeclareRepresentation( "IsEnumeratorOfFiniteFullRowModuleFFRep",
-    IsEnumeratorOfFiniteFullRowModuleRep,
-    [ "coeffsenum", "q", "zerovector", "coeffszero" ] );
-
-
-#############################################################################
-##
-#M  Position( <enum>, <elm>, 0 )  .  for enumerator of finite full row module
-##
-BindGlobal( "PosVecEnum", function( arg )
-    local e, v, len, n, i, pos;
-
-    e:= arg[1];
-    v:= arg[2];
+    if not IsDenseList( v ) then
+      return fail;
+    fi;
     len:= Length( v );
+    if len <> e!.dimension then
+      return fail;
+    fi;
     n:= 0;
     i:= 1;
 
@@ -298,103 +312,69 @@ BindGlobal( "PosVecEnum", function( arg )
     return n + 1;
 end );
 
-InstallMethod( Position,
-    "for enumerator via canonical basis of a finite full row module",
-    [ IsList and IsEnumeratorOfFiniteFullRowModuleRep, IsList,
-      IsZeroCyc ], 0,PosVecEnum);
+BindGlobal( "PosVecEnumFF", function( enum, v )
+    local i,l;
 
-InstallMethod( PositionCanonical,
-    "for enumerator via canonical basis of a finite full row module",
-    [ IsList and IsEnumeratorOfFiniteFullRowModuleRep, IsList ],
-    PosVecEnum);
+    if    not IsCollsElms( FamilyObj( enum ), FamilyObj( v ) )
+       or not IsRowVector( v )
+       or Length( v ) <> enum!.dimension then
+      return fail;
+    fi;
 
-BindGlobal("PosVecEnumFF",function(arg)
-local v,i,l;
-  v:=arg[2];
   # test whether the vector is indeed compact over a finite field
   if not IsDataObjectRep(v) then
 
     # the degree of the field extension q provides
-    l:=LogInt(arg[1]!.q,Characteristic(v));
+    l:= LogInt( enum!.q, Characteristic(v) );
     for i in v do
       if not (IsFFE(i) and IsInt(l/DegreeFFE(i))) then
-	TryNextMethod(); # cannot convert, wrong type of object
+        # cannot convert, wrong type of object
+	return NumberElement_FiniteFullRowModule( enum, v );
       fi;
     od;
 
-    if ConvertToVectorRep(v,arg[1]!.q)=fail then
-      TryNextMethod(); # cannot convert, wrong type of object
+    if ConvertToVectorRep( v, enum!.q ) = fail then
+      # cannot convert, wrong type of object
+      return NumberElement_FiniteFullRowModule( enum, v );
     fi;
   fi;
   # Problem with GF(4) vectors over GF(2)
-  if (IsGF2VectorRep(v) and arg[1]!.q<>2)
-     or (Is8BitVectorRep(v) and arg[1]!.q=2) then
-    TryNextMethod();
+  if ( IsGF2VectorRep(v) and enum!.q <> 2 )
+     or ( Is8BitVectorRep(v) and enum!.q = 2 ) then
+    return NumberElement_FiniteFullRowModule( enum, v );
   fi;
 
   # compute index via number
-  v:=NumberFFVector(v,arg[1]!.q);
-  if v=fail then
-    return v;
-  else
-    return v+1;
+  v:= NumberFFVector( v, enum!.q );
+  if v <> fail then
+    v:= v+1;
   fi;
+  return v;
 end);
 
-InstallMethod( Position,
-    "for enumerator via canonical basis, over built-in finite field",
-    [ IsList and IsEnumeratorOfFiniteFullRowModuleFFRep, IsRowVector,
-      IsZeroCyc ],
-    PosVecEnumFF);
-
-InstallMethod( PositionCanonical,
-    "for enumerator via canonical basis, over built-in finite field",
-    [ IsList and IsEnumeratorOfFiniteFullRowModuleFFRep, IsRowVector ],
-    PosVecEnumFF);
-
-#############################################################################
-##
-#M  \[\]( <enum>, <n> ) . . . . . .  for enumerator of finite full row module
-##
-InstallMethod( \[\],
-    "for enumerator via canonical basis of a finite full row module",
-    [ IsList and IsEnumeratorOfFiniteFullRowModuleRep,
-      IsPosInt ],
-    function( e, n )
+BindGlobal( "ElementNumber_FiniteFullRowModule", function( enum, n )
     local v, i;
-    v:= ShallowCopy( e!.zerovector );
+
+    if Size( enum ) < n then
+      Error( "<enum>[", n, "] must have an assigned value" );
+    fi;
+    v:= ShallowCopy( enum!.zerovector );
     i:= Length( v );
     n:= n-1;
     while 0 < n do
-      v[i]:= e!.coeffsenum[ RemInt( n, e!.q ) + 1 ];
-      n:= QuoInt( n, e!.q );
+      v[i]:= enum!.coeffsenum[ RemInt( n, enum!.q ) + 1 ];
+      n:= QuoInt( n, enum!.q );
       i:= i-1;
     od;
-    if IsFFE(e!.coeffszero) then
-      ConvertToVectorRep(v,e!.q);
+    if IsFFE( enum!.coeffszero ) then
+      ConvertToVectorRep( v, enum!.q );
     fi;
+    MakeImmutable( v );
     return v;
     end );
 
 
-#############################################################################
-##
-#R  IsEnumeratorOfInfiniteFullRowModuleRep( <iter> )
-##
-DeclareRepresentation( "IsEnumeratorOfInfiniteFullRowModuleRep",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "dim", "coeffsenum" ] );
-
-
-#############################################################################
-##
-#M  Position( <enum>, <elm>, 0 )  . .  for enumerator of inf. full row module
-##
-InstallOtherMethod( Position,
-    "for enumerator via canonical basis of an inf. full row module",
-    [ IsList and IsEnumeratorOfInfiniteFullRowModuleRep, IsRowVector,
-      IsZeroCyc ],
-    function( enum, vector, zero )
+BindGlobal( "NumberElement_InfiniteFullRowModule", function( enum, vector )
     local n,
           i,
           max,
@@ -402,13 +382,21 @@ InstallOtherMethod( Position,
           pos,
           len;
 
+    if not IsCollsElms( FamilyObj( enum ), FamilyObj( vector ) )
+       or not IsList( vector ) then
+      return fail;
+    fi;
     n:= Length( vector );
-    if n <> enum!.dim then
+    if n <> enum!.dimension then
       return fail;
     fi;
 
     # Replace the entries of `vector' by their positions.
-    vector:= List( vector, x -> Position( enum!.coeffsenum, x, 0 ) - 1 );
+    vector:= List( vector, x -> Position( enum!.coeffsenum, x, 0 ) );
+    if fail in vector then
+      return fail;
+    fi;
+    vector:= vector - 1;
 
     # Find the maximal entry in the vector, and its number.
     max:= vector[1];
@@ -443,7 +431,7 @@ InstallOtherMethod( Position,
     # of `max'.
     # Consider the following example.
     # 1   3 4     7
-    # m ? m m ? ? m ? ... ?       ('vector', the `?' mean entries < `m')
+    # m ? m m ? ? m ? ... ?       (`vector', the `?' mean entries < `m')
     # * * * * * * ? ? ... ?       gives (m+1)^6 m^{n-6}
     # * * * ? ? ? m ? ... ?       gives (m+1)^3 m^{n-3-1}
     # * * ? m ? ? m ? ... ?       gives (m+1)^2 m^{n-2-2}
@@ -458,16 +446,7 @@ InstallOtherMethod( Position,
     end );
 
 
-#############################################################################
-##
-#M  \[\]( <enum>, <n> ) . . . . .  for enumerator of infinite full row module
-##
-InstallMethod( \[\],
-    "for enumerator via canonical basis of a inf. full row module",
-    [ IsList and IsEnumeratorOfInfiniteFullRowModuleRep,
-      IsPosInt ],
-    function( enum, N )
-
+BindGlobal( "ElementNumber_InfiniteFullRowModule", function( enum, N )
     local n,
           val,
           max,
@@ -478,7 +457,7 @@ InstallMethod( \[\],
           quorem;
 
     # Catch the special case.
-    n:= enum!.dim;
+    n:= enum!.dimension;
     if N = 1 then
       val:= enum!.coeffsenum[1];
       return List( [ 1 .. n ], x -> val );
@@ -525,83 +504,62 @@ InstallMethod( \[\],
     od;
 
     # Return the element.
-    return vector;
+    return Immutable( vector );
     end );
 
 
-#############################################################################
-##
-#M  EnumeratorByBasis( <B> )  . . . .  for canonical basis of full row module
-##
 InstallMethod( EnumeratorByBasis,
     "for enumerator via canonical basis of a full row module",
     [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullRowModule ],
     function( B )
-
-    local V, F,filter;
+    local V, F, enum;
 
     V:= UnderlyingLeftModule( B );
     F:= LeftActingDomain( V );
 
     if IsFinite( F ) then
 
-      # By construction, the enumerator is sorted.
-      filter:= IsEnumeratorOfFiniteFullRowModuleRep and IsSSortedList;
+      enum:= EnumeratorByFunctions( V, rec(
+                 ElementNumber := ElementNumber_FiniteFullRowModule,
+                 NumberElement := NumberElement_FiniteFullRowModule,
 
-      if IsField(LeftActingDomain(V)) and IsFinite(LeftActingDomain(V)) 
-        and IsPrimePowerInt(Size(LeftActingDomain(V)))
-        and Size(LeftActingDomain(V))<256
-	and IsInternalRep(One(LeftActingDomain(V))) then
-	filter:=IsEnumeratorOfFiniteFullRowModuleFFRep and IsQuickPositionList;
+                 coeffsenum    := Enumerator( F ),
+                 q             := Size( F ),
+                 coeffszero    := Zero( F ),
+                 zerovector    := Zero( V ),
+                 dimension     := Dimension( V ) ) );
+
+      if IsField( F ) and Size( F ) < 256 and IsInternalRep( One( F ) ) then
+        # Use a more efficient method for `Position'.
+        enum!.NumberElement:= PosVecEnumFF;
+        SetFilterObj( enum, IsQuickPositionList );
       fi;
+#T SetFilterObj( enum, IsSSortedList ) ?
 
-      F:= Objectify( NewType( FamilyObj( V ), filter ),
-                     rec(
-                          coeffsenum := Enumerator( F ),
-                          q          := Size( F ),
-			  coeffszero := Zero(F),
-                          zerovector := Zero( V )
-                         ) );
-      SetUnderlyingCollection( F, V );
-      return F;
+      return enum;
 
     elif IsFiniteDimensional( V ) then
 
       # The ring is infinite, use the canonical ordering of $\N_0^n$
       # as defined for the iterator.
-      F:= Objectify( NewType( FamilyObj( V ),
-                              IsEnumeratorOfInfiniteFullRowModuleRep ),
-                     rec(
-                          dim        := Dimension( V ),
-                          coeffsenum := Enumerator( F )
-                         ) );
-      SetUnderlyingCollection( F, V );
-      return F;
+      return EnumeratorByFunctions( V, rec(
+                 ElementNumber := ElementNumber_InfiniteFullRowModule,
+                 NumberElement := NumberElement_InfiniteFullRowModule,
+
+                 dimension     := Dimension( V ),
+                 coeffsenum    := Enumerator( F ) ) );
 
     else
       Error( "not implemented for infinite dimensional free modules" );
     fi;
-
     end );
 
 
 #############################################################################
 ##
-#R  IsIteratorOfFiniteFullRowModuleRep( <iter> )
+#M  IteratorByBasis( <B> )  . . . . . . for canon. basis of a full row module
 ##
-DeclareRepresentation( "IsIteratorOfFiniteFullRowModuleRep",
-    IsComponentObjectRep,
-    [ "dimension", "counter", "position", "q", "limit", "ringelements" ] );
-
-
-#############################################################################
-##
-#M  NextIterator( <iter> )  . . . . .  for iterator of finite full row module
-##
-InstallMethod( NextIterator,
-    "for mutable iterator w.r.t. canonical basis of finite full row module",
-    [ IsIterator and IsMutable and IsIteratorOfFiniteFullRowModuleRep ],
-    function( iter )
+BindGlobal( "NextIterator_FiniteFullRowModule", function( iter )
     local pos;
 
     # Increase the counter.
@@ -616,51 +574,18 @@ InstallMethod( NextIterator,
     return iter!.ringelements{ iter!.counter };
     end );
 
-
-#############################################################################
-##
-#M  IsDoneIterator( <iter> )  . . . .  for iterator of finite full row module
-##
-InstallMethod( IsDoneIterator,
-    "for iterator w.r.t. canonical basis of finite full row module",
-    [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ],
+BindGlobal( "IsDoneIterator_FiniteFullRowModule",
     iter -> iter!.counter = iter!.limit );
 
+BindGlobal( "ShallowCopy_FiniteFullRowModule",
+    iter -> rec( dimension    := iter!.dimension,
+                 counter      := ShallowCopy( iter!.counter ),
+                 position     := iter!.position,
+                 q            := iter!.q,
+                 limit        := ShallowCopy( iter!.limit ),
+                 ringelements := iter!.ringelements ) );
 
-#############################################################################
-##
-#M  ShallowCopy( <iter> ) . . . . . .  for iterator of finite full row module
-##
-InstallMethod( ShallowCopy,
-    "for iterator w.r.t. canonical basis of finite full row module",
-    [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ],
-    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
-                       rec( dimension    := iter!.dim,
-                            counter      := ShallowCopy( iter!.counter ),
-                            position     := iter!.position,
-                            q            := iter!.q,
-                            limit        := ShallowCopy( iter!.limit ),
-                            ringelements := iter!.ringelements ) ) );
-
-
-#############################################################################
-##
-#R  IsIteratorOfInfiniteFullRowModuleRep( <iter> )
-##
-DeclareRepresentation( "IsIteratorOfInfiniteFullRowModuleRep",
-    IsComponentObjectRep,
-    [ "dim", "maxentry", "vector", "coeffsenum", "result", "firstval",
-      "maxval" ] );
-
-
-#############################################################################
-##
-#M  NextIterator( <iter> )  . . . . .  for iterator of finite full row module
-##
-InstallMethod( NextIterator,
-    "for mutable iterator w.r.t. canon. basis of infinite full row module",
-    [ IsIterator and IsMutable and IsIteratorOfInfiniteFullRowModuleRep ],
-    function( iter )
+BindGlobal( "NextIterator_InfiniteFullRowModule", function( iter )
     local dim,        # dimension of the free module
           vector,     # positions of the coefficients in `iter!.coeffsenum'
                       # of the previous element
@@ -672,7 +597,7 @@ InstallMethod( NextIterator,
 
     # (Increase the counter.)
 
-    dim      := iter!.dim;
+    dim      := iter!.dimension;
     vector   := iter!.vector;
     result   := iter!.result;
     max1     := iter!.maxentry - 1;
@@ -724,45 +649,19 @@ InstallMethod( NextIterator,
             "there should be a position with value different from `max'" );
     end );
 
+BindGlobal( "ShallowCopy_InfiniteFullRowModule",
+    iter -> rec( dim        := iter!.dimension,
+                 vector     := ShallowCopy( iter!.vector ),
+                 result     := ShallowCopy( iter!.result ),
+                 coeffsenum := iter!.coeffsenum,
+                 maxentry   := iter!.maxentry,
+                 firstval   := iter!.firstval,
+                 maxval     := iter!.maxval ) );
 
-#############################################################################
-##
-#M  IsDoneIterator( <iter> )  . . . .  for iterator of finite full row module
-##
-InstallMethod( IsDoneIterator,
-    "for iterator w.r.t. canonical basis of finite full row module",
-    [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ],
-    ReturnFalse );
-
-
-#############################################################################
-##
-#M  ShallowCopy( <iter> ) . . . . . .  for iterator of finite full row module
-##
-InstallMethod( ShallowCopy,
-    "for iterator w.r.t. canonical basis of finite full row module",
-    [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ],
-    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
-                       rec(
-                             dim        := iter!.dim,
-                             vector     := ShallowCopy( iter!.vector ),
-                             result     := ShallowCopy( iter!.result ),
-                             coeffsenum := iter!.coeffsenum,
-                             maxentry   := iter!.maxentry,
-                             firstval   := iter!.firstval,
-                             maxval     := iter!.maxval
-                           ) ) );
-
-
-#############################################################################
-##
-#M  IteratorByBasis( <B> )  . . . . . . for canon. basis of a full row module
-##
 InstallMethod( IteratorByBasis,
     "for canonical basis of a full row module",
     [ IsBasis and IsCanonicalBasisFullRowModule ],
     function( B )
-
     local V,
           F,
           dim,
@@ -787,18 +686,17 @@ InstallMethod( IteratorByBasis,
       counter[ Length( counter ) ]:= 0;
       q:= Size( F );
 
-      return Objectify( NewType( IteratorsFamily,
-                                     IsIterator
-                                 and IsMutable
-                                 and IsIteratorOfFiniteFullRowModuleRep ),
-                        rec(
-                            dimension    := dim,
-                            counter      := counter,
-                            position     := 1,
-                            q            := q,
-                            limit        := List( [ 1 .. dim ], x -> q ),
-                            ringelements := EnumeratorSorted( F )
-                           ) );
+      return IteratorByFunctions( rec(
+                 IsDoneIterator := IsDoneIterator_FiniteFullRowModule,
+                 NextIterator   := NextIterator_FiniteFullRowModule,
+                 ShallowCopy    := ShallowCopy_FiniteFullRowModule,
+
+                 dimension      := dim,
+                 counter        := counter,
+                 position       := 1,
+                 q              := q,
+                 limit          := List( [ 1 .. dim ], x -> q ),
+                 ringelements   := EnumeratorSorted( F ) ) );
 
     else
 
@@ -808,19 +706,18 @@ InstallMethod( IteratorByBasis,
       firstval:= enum[1];
       result:= List( [ 1 .. dim ], x -> firstval );
 
-      return Objectify( NewType( IteratorsFamily,
-                                     IsIterator
-                                 and IsMutable
-                                 and IsIteratorOfInfiniteFullRowModuleRep ),
-                        rec(
-                             dim        := dim,
-                             vector     := vector,
-                             result     := result,
-                             coeffsenum := enum,
-                             maxentry   := 0,
-                             firstval   := firstval,
-                             maxval     := firstval
-                           ) );
+      return IteratorByFunctions( rec(
+                 IsDoneIterator := ReturnFalse,
+                 NextIterator   := NextIterator_InfiniteFullRowModule,
+                 ShallowCopy    := ShallowCopy_InfiniteFullRowModule,
+
+                 dimension      := dim,
+                 vector         := vector,
+                 result         := result,
+                 coeffsenum     := enum,
+                 maxentry       := 0,
+                 firstval       := firstval,
+                 maxval         := firstval ) );
 
     fi;
     end );

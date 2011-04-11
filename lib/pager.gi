@@ -1,11 +1,12 @@
 #############################################################################
 ##  
-#W  pager.gi                     GAP Library                     Frank L�beck
+#W  pager.gi                     GAP Library                     Frank Lübeck
 ##  
 #H  @(#)$Id$
 ##  
-#Y  Copyright  (C) 2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen, Germany 
-#Y (C) 2001 School Math and  Comp. Sci., University of St. Andrews, Scotland
+#Y  Copyright  (C) 2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen, Germany 
+#Y (C) 2001 School Math and  Comp. Sci., University of St Andrews, Scotland
+#Y Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  pager.g{d,i}  contain  the `Pager'  utility.  A  rudimentary
 ##  version of this  was integrated in first versions of  GAP's help system.
@@ -15,11 +16,13 @@ Revision.pager_gi :=
   "@(#)$Id$";
 ##  
 ##  There is a builtin pager `PAGER_BUILTIN', but  at least under UNIX one
-##  should use an external one.  This can be  set via the variable `PAGER'
-##  (e.g., PAGER :=  "less";). Here,  `less'  should be  in the executable
+##  should use an external one.  This can be  set via the variable
+##  `GAPInfo.UserPreferences.Pager'
+##  (e.g., GAPInfo.UserPreferences.Pager :=  "less";).
+##  Here,  `less'  should be  in the executable
 ##  PATH of the user and we assume that it supports an argument `+num' for
 ##  starting display in   line number `num'.   Additional options  can  be
-##  assigned to `PAGER_OPTIONS' as list of strings.
+##  assigned to `GAPInfo.UserPreferences.PagerOptions' as list of strings.
 ##  
 ##  The user function is `Pager'.
 ##  
@@ -50,10 +53,12 @@ if not IsBound(ANSI_COLORS) then
 fi;
 BindGlobal("PAGER_BUILTIN", function( lines )
   local   formatted,  linepos,  size,  wd,  pl,  count,  i,  stream,  
-          halt,  delhaltline,  from,  len,  char;
+          halt,  delhaltline,  from,  len,  char, out;
   
   formatted := false;
   linepos := 1;
+  # don't print this to LOG files
+  out := OutputTextUser();
   
   if IsRecord(lines) then
     if IsBound(lines.formatted) then
@@ -76,13 +81,13 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     local   r;
     r := 1;
     while r*wd<=Length(l) do
-      Print(l{[(r-1)*wd+1..r*wd]}, "\c");
+      PrintTo(out, l{[(r-1)*wd+1..r*wd]}, "\c");
       r := r+1;
     od;
     if (r-1)*wd < Length(l) then
-      Print(l{[(r-1)*wd+1..Length(l)]});
+      PrintTo(out, l{[(r-1)*wd+1..Length(l)]});
     fi;
-    Print("\n");
+    PrintTo(out, "\n");
   end;
   
   if not formatted then
@@ -119,7 +124,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     local i;
     for i  in halt  do 
       if i <> '\c' then
-        Print( "\b\c \c\b\c" );
+        PrintTo(out,  "\b\c \c\b\c" );
       fi;
     od;
   end;
@@ -129,13 +134,10 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     for i in [from..Minimum(len, from+size[2]-2)] do
       pl(lines[i]);
     od;
-    if len = i+1 then
-      pl(lines[len]);
-      char := 'q';
-    elif len = i then
+    if len = i then
       char := 'q';
     else
-      Print(halt);
+      PrintTo(out, halt);
       char := CHAR_INT(ReadByte(stream));
       while not char in " nbpq" do
         char := CHAR_INT(ReadByte(stream));
@@ -156,18 +158,17 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   CloseStream(stream);
 end);
 
-# for using `more' or `less' or ... (read from `PAGER')
-# we assume that PAGER allows command line option +num for starting
-# display in line num
-PAGER := "builtin";
-PAGER_OPTIONS := [];
+# for using `more' or `less' or ... (read from `GAPInfo.UserPreferences.Pager')
+# we assume that GAPInfo.UserPreferences.Pager allows command line option
+# +num for starting display in line num
 
 BindGlobal("PAGER_EXTERNAL",  function( lines )
   local   path,  pager,  linepos,  str,  i,  cmdargs,  stream;
   path := DirectoriesSystemPrograms();
-  pager := Filename(path, PAGER);
+  pager := Filename( path, GAPInfo.UserPreferences.Pager );
   if pager=fail then
-    Error("Pager ", PAGER, " not found, change `PAGER'.");
+    Error( "Pager ", GAPInfo.UserPreferences.Pager,
+           " not found, change `GAPInfo.UserPreferences.Pager'." );
   fi;
   linepos := 1;
   if IsRecord(lines) then
@@ -192,11 +193,11 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
   fi;
   stream:=InputTextString(lines);
   Process(path[1], pager, stream, OutputTextUser(),
-          Concatenation(PAGER_OPTIONS, cmdargs));
+          Concatenation( GAPInfo.UserPreferences.PagerOptions, cmdargs ));
 end);
 
 InstallGlobalFunction("Pager",  function(lines)
-  if PAGER="builtin" then
+  if GAPInfo.UserPreferences.Pager = "builtin" then
     PAGER_BUILTIN(lines);
   else
     PAGER_EXTERNAL(lines);

@@ -1,0 +1,26 @@
+@Name
+Code for Large Base Permutation groups
+@Contact
+SL
+@Date
+August 14, 2006
+@Time
+3
+@Public
+Yes
+@Need
+3
+@NeedA
+4
+@Math
+4
+@Prog
+3
+@Descr
+Much of the existing permutation group code assumes a small-base group. Add
+methods (similar to the special S<sub>n</sub>/A<sub>n</sub> methods) for
+large base groups. 
+@Manual
+@Ref
+@Rem
+@Application

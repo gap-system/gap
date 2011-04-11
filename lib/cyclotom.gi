@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is being maintained by Thomas Breuer.
 ##  Please do not make any changes without consulting him.
@@ -42,64 +43,137 @@ InstallOtherMethod( Conductor,
 ##
 #M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##
-InstallMethod( RoundCyc, "general cyclotomic", [ IsCyclotomic],
-        function ( x )
-    local i, int, n, cfs, e;
+InstallMethod( RoundCyc, "general cyclotomic", [ IsCyclotomic ],
+    function ( x )
+    local n, cfs, int, i, c;
     n:= Conductor( x );
-    e:= E(n);
     cfs:= ExtRepOfObj( x );
-    int:= 0;
-    for i in [ 1 .. n ]  do
-      if cfs[i] < 0 then
-        int:= int + Int( cfs[i]-1/2 ) * e^(i-1);
+    int:= EmptyPlist( n );
+    for i in [ 1 .. n ] do
+      c:= cfs[i];
+      if IsInt( c ) then
+        int[i]:= c;
+      elif c < 0 then
+        int[i]:= Int( c - 1/2 );
       else
-        int:= int + Int( cfs[i]+1/2 ) * e^(i-1);
-#T use `Round' for the coefficients, too!
+        int[i]:= Int( c + 1/2 );
       fi;
     od;
-    return int;
+    return CycList( int );
 end );
-
-#T operation `Round' ?
-#T made RoundCyc an operation at least 7/12/98 SL
-
 
 
 #############################################################################
 ##
-#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
-##				rounding halves down
+#M  RoundCycDown( <cyc> ) . . . . . . . . .  cyclotomic integer near to <cyc>
+##                                                       rounding halves down
 ##
-InstallMethod( RoundCycDown, "general cyclotomic", [ IsCyclotomic],
-        function ( x )
-    local i, int, n, cfs, e;
-    n:= Conductor( x );
-    e:= E(n);
-    cfs:= ExtRepOfObj( x );
-    int:= 0;
-    for i in [ 1 .. n ]  do
-        int:= int + RoundCycDown( cfs[i]) * e^(i-1);
-    od;
-    return int;
-end );
+InstallMethod( RoundCycDown, "general cyclotomic", [ IsCyclotomic ],
+    x -> CycList( List( ExtRepOfObj( x ), RoundCycDown ) ) );
+
 
 #############################################################################
 ##
 #M  ComplexConjugate( <cyc> )
+#M  ComplexConjugate( <list> )
 ##
 InstallMethod( ComplexConjugate,
     "for a cyclotomic",
     [ IsCyc ],
     cyc -> GaloisCyc( cyc, -1 ) );
 
+InstallMethod( ComplexConjugate,
+    "for a list",
+    [ IsList ],
+    function( list )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= ComplexConjugate( list[i] );
+      fi;
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  RealPart( <z> )
+#M  RealPart( <list> )
+##
+InstallMethod( RealPart,
+    "for a scalar",
+    [ IsScalar ],
+    z -> ( z + ComplexConjugate( z ) ) / 2 );
+
+InstallMethod( RealPart,
+    "for a list",
+    [ IsList ],
+    function( list )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= RealPart( list[i] );
+      fi;
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  ImaginaryPart( <z> )
+#M  ImaginaryPart( <list> )
+##
+InstallMethod( ImaginaryPart,
+    "for a cyclotomic",
+    [ IsCyc ],
+    z -> E(4) * ( ComplexConjugate( z ) - z ) / 2 );
+
+InstallMethod( ImaginaryPart,
+    "for a list",
+    [ IsList ],
+    function( list )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= ImaginaryPart( list[i] );
+      fi;
+    od;
+    return result;
+    end );
+
 
 #############################################################################
 ##
 #M  ExtRepOfObj( <cyc> )
 ##
-#+  Let <cyc> be a cyclotomic with conductor <n>.
-#+  The external representation of <cyc> is defined as
-#+  `CoeffsCyc( <cyc>, <n> )'.
+##  <#GAPDoc Label="ExtRepOfObj:cyclotomics">
+##  <ManSection>
+##  <Meth Name="ExtRepOfObj" Arg='cyc' Label="for a cyclotomic"/>
+##  
+##  <Description>
+##  The external representation of a cyclotomic <A>cyc</A> with conductor
+##  <M>n</M> (see <Ref Func="Conductor" Label="for a cyclotomic"/> is
+##  the list returned by <Ref Func="CoeffsCyc"/>,
+##  called with <A>cyc</A> and <M>n</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ExtRepOfObj( E(5) ); CoeffsCyc( E(5), 5 );
+##  [ 0, 1, 0, 0, 0 ]
+##  [ 0, 1, 0, 0, 0 ]
+##  gap> CoeffsCyc( E(5), 15 );
+##  [ 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 InstallMethod( ExtRepOfObj,
     "for an internal cyclotomic",
@@ -272,29 +346,10 @@ end );
 
 #############################################################################
 ##
-#F  CycList( <coeffs> ) . . . . .  cyclotomic of Zumbroich base coeff. vector
-##
-##  (mainly to read tables produced by the `ctoc' script used to translate
-##  character tables in CAS format to {\GAP})
-##
-##  *Note*\: `CycList( ExtRepOfObj( <cyc> ) )' = <cyc>, but
-##          `ExtRepOfObj( CycList(<coeffs>) )' need not be equal to <coeffs>.
-##
-BindGlobal( "CycList", function( coeffs )
-    local e, n;
-
-    n:= Length( coeffs );
-    e:= E(n);
-    return Sum( [ 1 .. n ], i -> coeffs[i] * e^(i-1), 0 );
-end );
-
-
-#############################################################################
-##
 #F  IsGaussInt(<x>) . . . . . . . . . test if an object is a Gaussian integer
 ##
 InstallGlobalFunction( IsGaussInt,
-    x ->  IsCycInt( x ) and (Conductor( x ) = 1 or Conductor( x ) = 4) );
+    x -> IsCycInt( x ) and (Conductor( x ) = 1 or Conductor( x ) = 4) );
 
 
 #############################################################################
@@ -327,7 +382,7 @@ InstallGlobalFunction( IsGaussRat,
 ##  $(-1)^r \sum_{j_1=1}^{p_1-1} \cdots \sum_{j_r=1}^{p_r-1}
 ##  \zeta^{i + \sum_{k=1}^r j_k n/p_k}$.
 ##  The number of summands is $m = \prod_{k=1}^r (p_k-1)$.
-##  Since these root are all distinct, we can compute the sum $s$ of their
+##  Since these roots are all distinct, we can compute the sum $s$ of their
 ##  exponents modulo $n$ from the known coefficients of $\zeta^i$,
 ##  and we get $s \equiv m ( i + r n/2 ) \pmod{n}$.
 ##  Either $m = 1$ or $m$ is even,
@@ -460,8 +515,8 @@ end );
 ##
 #F  Atlas1( <n>, <i> )  . . . . . . . . . . . . . . . utility for EB, ..., EH
 ##
-##  is the value $\frac{1}{i}\sum{j=1}^{n-1}z_n^{j^i}$ for $2 \leq i \leq 8$
-##  and $<n> \equiv 1 \pmod{i}$;
+##  is the value $\frac{1}{i} \sum{j=1}^{n-1} z_n^{j^i}$
+##  for $2 \leq i \leq 8$ and $<n> \equiv 1 \pmod{i}$;
 ##  if $i > 2$, <n> should be a prime to get sure that the result is
 ##  well-defined;
 ##  `Atlas1' returns the value given above if it is a cyclotomic integer.
@@ -469,7 +524,7 @@ end );
 ##        Chapter 7, Section 10)
 ##
 BindGlobal( "Atlas1", function( n, i )
-    local k,atlas, En;
+    local atlas, k, pos;
 
     if not IsInt( n ) or n < 1 then
       Error( "usage: EB(<n>), EC(<n>), ..., EH(<n>) with appropriate ",
@@ -482,22 +537,30 @@ BindGlobal( "Atlas1", function( n, i )
       return 0;
     fi;
 
-    atlas:= 0;
-    En:= E(n);
+    atlas:= [ 1 .. n ] * 0;
 
     if i mod 2 = 0 then
+      # Note that `n' is odd in this case.
       for k in [ 1 .. QuoInt( n-1, 2 ) ] do
-        atlas:= atlas + 2 * En ^ ( (k^i) mod n );
+        # summand `2 * E(n)^(k^i)'
+        pos:= ( (k^i) mod n ) + 1;
+        atlas[ pos ]:= atlas[ pos ] + 2;
       od;
     else
       for k in [ 1 .. QuoInt( n-1, 2 ) ] do
-        atlas:= atlas + En^( ( k^i ) mod n ) + En^( n - ( k^i ) mod n );
+        # summand `E(n)^(k^i) + E(n)^(n - k^i)'
+        pos:= ( (k^i) mod n ) + 1;
+        atlas[ pos ]:= atlas[ pos ] + 1;
+        pos:= ( n - pos + 1 ) mod n + 1;
+        atlas[ pos ]:= atlas[ pos ] + 1;
       od;
       if n mod 2 = 0 then
-        atlas:= atlas + En ^ ( ( ( n / 2 ) ^ i )  mod  n );
+        # summand `E(n)^( (n/2)^i )'
+        pos:= ( ( (n/2)^i ) mod n ) + 1;
+        atlas[ pos ]:= atlas[ pos ] + 1;
       fi;
     fi;
-    atlas:= atlas / i;
+    atlas:= CycList( atlas / i );
     if not IsCycInt( atlas ) then
       Error( "result divided by ", i, " is not a cyclotomic integer" );
     fi;
@@ -522,69 +585,171 @@ InstallGlobalFunction( EH, n -> Atlas1( n, 8 ) );
 ##
 #F  NK( <n>, <k>, <d> ) . . . . . . . . . . utility for ATLAS irrationalities
 ##
+##  Find the (<d>+1)-st automorphism *nk of order <k> on primitive <n>-th
+##  roots of unity.
+##
+##  Optimization steps:
+##  - Since <k> is very small, `PowerModInt' should be avoided, compared to
+##    powering and then reducing mod <n>.
+##  - Do not call `Phi' but look at the prime factors of <n> directly.
+##  - Use multiplication instead of powering for computing squares.
+##
 InstallGlobalFunction( NK, function( n, k, deriv )
-    local  nk;
+    local nk,
+          nkn,   # nk mod n
+          n1,    # n-1
+          pow, pow2, pow3;
 
-    if n <= 2 or ( k in [ 2, 3, 5, 6, 7 ] and Phi( n ) mod k <> 0 )
-              or k < 2 or k > 8 then
+    if n <= 2 then
       return fail;
     fi;
-    if k mod 4 = 0 then
 
-      # an automorphism of order 4 exists if 4 divides $p-1$ for an odd
-      # prime divisor $p$ of `n', or if 16 divides `n';
-      # an automorphism of order 8 exists if 8 divides $p-1$ for an odd
-      # prime divisor $p$ of `n', or if 32 divides `n';
-      if ForAll(Set(FactorsInt(n)),x->(x-1) mod k<>0) and n mod (4*k)<>0 then
+    nk:= 1;
+    nkn:= 1;
+    n1:= n-1;
+    if k = 2 then
+      # We have always `Phi( n ) mod k = 0'.
+      while true do
+        if nkn <> 1 then
+          # `*nk' has order larger than 1.
+          pow:= (nkn * nkn) mod n;
+          if pow = 1 then
+            # `*nk' has order 2.
+            if deriv = 0 then return nk; fi;
+            deriv:= deriv - 1;
+            if nkn <> n1 then
+              # `**nk' has order larger than 1 and thus equal to 2.
+              if deriv = 0 then return -nk; fi;
+              deriv:= deriv - 1;
+            fi;
+          fi;
+        elif nkn <> n1 then
+          # `**nk' has order larger than 1.
+          pow:= (nkn * nkn) mod n;
+          if pow = 1 then
+            # `**nk' has order dividing 2.
+            if deriv = 0 then return -nk; fi;
+            deriv:= deriv - 1;
+          fi;
+        fi;
+        nk:= nk + 1;
+        nkn:= nk mod n;
+      od;
+    elif k in [ 3, 5, 7 ] then   # for odd primes
+      if ( n mod ( k*k ) <> 0 ) and
+         ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod k <> 0 ) then
         return fail;
       fi;
-    fi;
-    nk:= 1;
-    if k in [ 2, 3, 5, 7 ] then   # for primes
       while true do
-        if ( nk ^ k ) mod n = 1 and nk mod n <> 1 then
-          if deriv = 0 then return nk; fi;
-          deriv:= deriv - 1;
-        fi;
-        if ( ( (-nk) ^ k ) - 1 ) mod n = 0 and ( -nk -1 ) mod n <> 0 then
-          if deriv = 0 then return -nk; fi;
-          deriv:= deriv - 1;
+        if nkn <> 1 then
+          # `*nk' has order larger than 1.
+          pow:= (nkn ^ k) mod n;
+          if pow = 1 then
+            # `*nk' has order dividing `k'.
+            if deriv = 0 then return nk; fi;
+            deriv:= deriv - 1;
+          fi;
+          if nkn <> n1 and pow = n1 then
+            # `**nk' has order larger than 1 and dividing `k'.
+            if deriv = 0 then return -nk; fi;
+            deriv:= deriv - 1;
+          fi;
+        elif nkn <> n1 then
+          # `**nk' has order larger than 1.
+          pow:= (nkn ^ k) mod n;
+          if pow = n1 then
+            # `**nk' has order dividing `k'.
+            if deriv = 0 then return -nk; fi;
+            deriv:= deriv - 1;
+          fi;
         fi;
         nk:= nk + 1;
+        nkn:= nk mod n;
       od;
     elif k = 4 then
+      # An automorphism of order 4 exists if 4 divides $p-1$ for an odd
+      # prime divisor $p$ of `n', or if 16 divides `n'.
+      if ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod k <> 0 )
+         and n mod 16 <> 0 then
+        return fail;
+      fi;
       while true do
-        if ( nk ^ 4 ) mod n = 1 and ( nk ^ 2 ) mod n <> 1 then
-          if deriv = 0 then return nk; fi;
-          deriv:= deriv - 1;
-          if deriv = 0 then return -nk; fi;
-          deriv:= deriv - 1;
+        if nkn <> 1 and nkn <> n1 then
+          # `*nk' and `**nk' have order at least 2.
+          pow:= (nkn * nkn) mod n;
+          if pow <> 1 and ( pow * pow ) mod n = 1 then
+            # `*nk' (and thus also `**nk') has order 4.
+            if deriv = 0 then
+              return nk;
+            elif deriv = 1 then
+              return -nk;
+            fi;
+            deriv:= deriv - 2;
+          fi;
         fi;
         nk:= nk + 1;
+        nkn:= nk mod n;
       od;
     elif k = 6 then
+      # An automorphism of order 6 exists if automorphisms of the orders
+      # 2 and 3 exist; the former is always true.
+      if ( n mod 9 <> 0 ) and
+         ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod 3 <> 0 ) then
+        return fail;
+      fi;
       while true do
-        if (nk^6) mod n = 1 and (nk^2) mod n <> 1 and (nk^3) mod n <> 1 then
-          if deriv = 0 then return nk; fi;
-          deriv:= deriv - 1;
-        fi;
-        if (nk^6) mod n=1 and (nk^2) mod n<>1 and (-(nk^3) mod n)+n<>1 then
-          if deriv = 0 then return -nk; fi;
-          deriv:= deriv - 1;
+        if nkn <> 1 and nkn <> n1 then
+          # `*nk' and `**nk' have order at least 2.
+          pow2:= (nkn * nkn) mod n;
+          if pow2 <> 1 then
+            # `*nk' (and thus `**nk') has order larger than 2.
+            pow:= (pow2 ^ 3) mod n;
+            if pow = 1 then
+              # `*nk' (and thus `**nk') has order dividing 6.
+              pow3:= (nkn * pow2) mod n;
+              if pow3 <> 1 then
+                if deriv = 0 then return nk; fi;
+                deriv:= deriv - 1;
+              fi;
+              if pow3 <> n1 then
+                if deriv = 0 then return -nk; fi;
+                deriv:= deriv - 1;
+              fi;
+            fi;
+          fi;
         fi;
         nk:= nk + 1;
+        nkn:= nk mod n;
       od;
     elif k = 8 then
+      # An automorphism of order 8 exists if 8 divides $p-1$ for an odd
+      # prime divisor $p$ of `n', or if 32 divides `n'.
+      if ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod k <> 0 )
+         and n mod 32 <> 0 then
+        return fail;
+      fi;
       while true do
-        if ( nk ^ 8 ) mod n = 1 and ( nk ^ 4 ) mod n <> 1 then
-          if deriv = 0 then return nk; fi;
-          deriv:= deriv - 1;
-          if deriv = 0 then return -nk; fi;
-          deriv:= deriv - 1;
+        if nkn <> 1 and nkn <> n1 then
+          # `*nk' and `**nk' have order at least 2.
+          pow:= (nkn ^ 4) mod n;
+          if pow <> 1 and ( pow * pow ) mod n = 1 then
+            # `*nk' (and thus also `**nk') has order 8.
+            if deriv = 0 then
+              return nk;
+            elif deriv = 1 then
+              return -nk;
+            fi;
+            deriv:= deriv - 2;
+          fi;
+
         fi;
         nk:= nk + 1;
+        nkn:= nk mod n;
       od;
     fi;
+
+    # We have `k < 2' or `k > 8'.
+    return fail;
 end );
 
 
@@ -593,19 +758,24 @@ end );
 #F  Atlas2( <n>, <k>, <deriv> ) . . . . . . utility for ATLAS irrationalities
 ##
 BindGlobal( "Atlas2", function( n, k, deriv )
-    local i, e, nk, result;
+    local nk, result, i, pos;
 
     if not ( IsInt( n ) and IsInt( k ) and IsInt( deriv ) ) then
       Error( "usage: ATLAS irrationalities require integral arguments" );
     fi;
 
     nk:= NK( n, k, deriv );
-    e:= E(n);
-    result:= 0;
+    if nk = fail then
+      return fail;
+    fi;
+
+    result:= [ 1 .. n ] * 0;
     for i in [ 0 .. k-1 ] do
-      result:= result + e^( (nk^i) mod n );
+      # summand `E(n)^(nk^i);
+      pos:= ( (nk^i) mod n ) + 1;
+      result[ pos ]:= result[ pos ] + 1;
     od;
-    return result;
+    return CycList( result );
 end );
 
 
@@ -660,84 +830,97 @@ end );
 
 #############################################################################
 ##
-#F  EM( <n> ), EM( <n>, <deriv> ) . . . . ATLAS irrationality $m_{<n>}$ resp.
+#F  Atlas3( <n>, <k>, <deriv> ) . . . . . . utility for ATLAS irrationalities
+##
+BindGlobal( "Atlas3", function( n, k, deriv )
+    local nk, l, pow, val, i;
+
+    nk:= NK( n, k, deriv );
+    if nk = fail then
+      return fail;
+    fi;
+    l:= 0 * [ 1 .. n ];
+    pow:= 1;
+    val:= 1;
+    for i in [ 1 .. k ] do
+      l[ pow + 1 ]:= val;
+      pow:= (nk * pow) mod n;
+      val:= -val;
+    od;
+
+    return CycList( l );
+end );
+
+
+#############################################################################
+##
+#F  EM( <n>[, <deriv>] )  . . . . . . . . ATLAS irrationality $m_{<n>}$ resp.
 ##                                                        $m_{<n>}^{<deriv>}$
 InstallGlobalFunction( EM, function( arg )
     local n;
 
     n:= arg[1];
-    if Length( arg ) = 1 then
-      return E(n) - E(n)^(-1);
-    elif Length( arg ) = 2 and IsInt( n ) then
-      return E(n) - E(n)^( NK( n, 2, arg[2] ) mod n );
+    if 2 < Length( arg ) or not IsInt( n ) or n < 3 then
+      Error( "usage: EM( <n>[, <deriv>] )" );
+    elif Length( arg ) = 1 then
+      return Atlas3( n, 2, 0 );
     else
-      Error( "usage: EM(<n>) resp. EM(<n>,<deriv>)" );
+      return Atlas3( n, 2, arg[2] );
     fi;
 end );
 
 
 #############################################################################
 ##
-#F  EL( <n> ), EL( <n>, <deriv> ) . . . . ATLAS irrationality $l_{<n>}$ resp.
+#F  EL( <n>[, <deriv>] )  . . . . . . . . ATLAS irrationality $l_{<n>}$ resp.
 ##                                                        $l_{<n>}^{<deriv>}$
 InstallGlobalFunction( EL, function( arg )
-    local n, nk;
+    local n;
 
     n:= arg[1];
-    if Length( arg ) > 2 or not IsInt( n ) then
-      Error( "usage: EL( <n> ) resp. EL( <n>, <deriv> )" );
-    fi;
-    if Length(arg)=1 then
-      nk:= NK(n,4,0) mod n;
+    if 2 < Length( arg ) or not IsInt( n ) or n < 3 then
+      Error( "usage: EL( <n>[, <deriv>] )" );
+    elif Length( arg ) = 1 then
+      return Atlas3( n, 4, 0 );
     else
-      nk:= NK(n,4,arg[2]) mod n;
+      return Atlas3( n, 4, arg[2] );
     fi;
-    return E(n)-E(n)^nk+E(n)^((nk^2) mod n)-E(n)^((nk^3) mod n);
 end );
 
 
 #############################################################################
 ##
-#F  EK( <n> ), EK( <n>, <deriv> ) . . . . ATLAS irrationality $k_{<n>}$ resp.
+#F  EK( <n>[, <deriv>] )  . . . . . . . . ATLAS irrationality $k_{<n>}$ resp.
 ##                                                        $k_{<n>}^{<deriv>}$
 InstallGlobalFunction( EK, function( arg )
-    local n, nk, e;
+    local n;
 
     n:= arg[1];
-    if Length( arg ) > 2 or not IsInt( n ) then
-      Error( "usage: EK( <n> ) resp. EK( <n>, <deriv> )" );
-    fi;
-    if Length(arg)=1 then
-      nk:= NK(n,6,0) mod n;
+    if 2 < Length( arg ) or not IsInt( n ) or n < 3 then
+      Error( "usage: EK( <n>[, <deriv>] )" );
+    elif Length( arg ) = 1 then
+      return Atlas3( n, 6, 0 );
     else
-      nk:= NK(n,6,arg[2]) mod n;
+      return Atlas3( n, 6, arg[2] );
     fi;
-    e:= E(n);
-    return e-e^nk+e^((nk^2) mod n)-e^((nk^3) mod n)+
-           e^((nk^4) mod n)-e^((nk^5) mod n);
 end );
 
 
 #############################################################################
 ##
-#F  EJ( <n> ), EJ( <n>, <deriv> ) . . . . ATLAS irrationality $j_{<n>}$ resp.
+#F  EJ( <n>[, <deriv>] )  . . . . . . . . ATLAS irrationality $j_{<n>}$ resp.
 ##                                                        $j_{<n>}^{<deriv>}$
 InstallGlobalFunction( EJ, function( arg )
-    local n, nk, e;
+    local n;
 
     n:= arg[1];
-    if Length( arg ) > 2 or not IsInt( n ) then
-      Error( "usage: EJ( <n> ) resp. EJ( <n>, <deriv> )" );
-    fi;
-    if Length(arg)=1 then
-      nk:= NK(n,8,0) mod n;
+    if 2 < Length( arg ) or not IsInt( n ) or n < 3 then
+      Error( "usage: EJ( <n>[, <deriv>] )" );
+    elif Length( arg ) = 1 then
+      return Atlas3( n, 8, 0 );
     else
-      nk:= NK(n,8,arg[2]) mod n;
+      return Atlas3( n, 8, arg[2] );
     fi;
-    e:= E(n);
-    return e-e^nk+e^((nk^2) mod n)-e^((nk^3) mod n)+
-           e^((nk^4) mod n)-e^((nk^5) mod n)+e^((nk^6) mod n)-
-           e^((nk^7) mod n);
 end );
 
 
@@ -782,8 +965,6 @@ InstallGlobalFunction( ER, function( n )
         return factor * ( E(8) - E(8)^3 ) * ER( n / 2 );
       elif n mod 4 = 3 then
         return factor * (-E(4)) * ( 2 * EB(n) + 1 );
-      else
-        return factor * 2 * ER( n / 4 );
       fi;
 
     elif IsRat( n ) then
@@ -814,20 +995,35 @@ InstallMethod( Sqrt,
 
 #############################################################################
 ##
-#F  StarCyc( <cyc> )  . . . . the unique nontrivial galois conjugate of <cyc>
+#F  StarCyc( <cyc> )  . . . . the unique nontrivial Galois conjugate of <cyc>
 ##
 InstallGlobalFunction( StarCyc, function( cyc )
-    local i, conj;
-    conj:= [];
-    for i in PrimeResidues( Conductor( cyc ) ) do
-      AddSet( conj, GaloisCyc( cyc, i ) );
-    od;
-    if Length( conj ) = 2 then
-      return Difference( conj, [ cyc ] )[1];
-    else
+    local n, gens, cand, exp, img;
+
+    n:= Conductor( cyc );
+    if n = 1 then
       return fail;
     fi;
-end );
+    gens:= Flat( GeneratorsPrimeResidues( n ).generators );
+    cand:= fail;
+    for exp in gens do
+      img:= GaloisCyc( cyc, exp );
+      if img <> cyc then
+        if cand = fail then
+          cand:= img;
+        elif cand <> img then
+          return fail;
+        fi;
+      fi;
+    od;
+    for exp in gens do
+      img:= GaloisCyc( cand, exp );
+      if img <> cyc and img <> cand then
+        return fail;
+      fi;
+    od;
+    return cand;
+    end );
 
 
 #############################################################################
@@ -870,9 +1066,8 @@ InstallGlobalFunction( AtlasIrrationality, function( irratname )
     fi;
 
     # Get the first atomic irrationality (with dashes).
-    letts:= "bcdefghijklmrstuvwxy";
+    letts:= "bcdefghijklmrstuvwxyz";
     funcs:= List( "BCDEFGHIJKLMRSTUVWXY", x -> ValueGlobal( [ 'E', x ] ) );
-    Add( letts, 'z' );
     Add( funcs, E );
 
     # Is the coefficient an integer summand?
@@ -1010,10 +1205,13 @@ end );
 
 #############################################################################
 ##
-#F  Quadratic( <cyc> ) . . . . .  information about quadratic irrationalities
+#F  Quadratic( <cyc>[, <rat>] ) . information about quadratic irrationalities
 ##
-InstallGlobalFunction( Quadratic, function( cyc )
-    local coeffs,     # Zumbroich basis coefficients of `cyc'
+InstallGlobalFunction( Quadratic, function( arg )
+    local cyc,
+          rat,
+          denom,
+          coeffs,     # Zumbroich basis coefficients of `cyc'
           facts,      # factors of conductor of `cyc'
           factsset,   # set of `facts'
           two_part,   # 2-part of the conductor of `cyc'
@@ -1025,17 +1223,28 @@ InstallGlobalFunction( Quadratic, function( cyc )
           ATLAS2,     # another string, maybe shorter ...
           display;    # string that shows a way to input `cyc'
 
-    if not IsCycInt( cyc ) then
+    cyc:= arg[1];
+    rat:= Length( arg ) = 2 and arg[2] = true;
+
+    if not IsCyc( cyc ) then
       return fail;
-    elif IsInt( cyc ) then
+    fi;
+    denom:= DenominatorCyc( cyc );
+    if not ( rat or denom = 1 ) then
+      return fail;
+    fi;
+    if IsRat( cyc ) then
       return rec(
-                  a       := cyc,
+                  a       := NumeratorRat( cyc ),
                   b       := 0,
                   root    := 1,
-                  d       := 1,
+                  d       := denom,
                   ATLAS   := String( cyc ),
                   display := String( cyc )
                  );
+    fi;
+    if denom <> 1 then
+      cyc:= cyc * denom;
     fi;
 
     coeffs:= ExtRepOfObj( cyc );
@@ -1192,6 +1401,10 @@ InstallGlobalFunction( Quadratic, function( cyc )
       fi;
 
     fi;
+    if denom <> 1 then
+      ATLAS:= Concatenation( "(", ATLAS, ")/", String( denom ) );
+    fi;
+    ConvertToStringRep( ATLAS );
 
     # Compute a string used by the `Display' function for character tables.
     if a = 0 then
@@ -1211,12 +1424,14 @@ InstallGlobalFunction( Quadratic, function( cyc )
     else
       display:= Concatenation( String( a ), String( b ), "*" );
     fi;
-    Append( display, Concatenation( "ER(", String( root ), ")" ) );
+    Append( display, Concatenation( "Sqrt(", String( root ), ")" ) );
+    d:= d * denom;
     if d <> 1 then
-      display:= Concatenation( "(", display, ")/", String( d ) );
+      if a <> 0 then
+        display:= Concatenation( "(", display, ")" );
+      fi;
+      display:= Concatenation( display, "/", String( d ) );
     fi;
-
-    ConvertToStringRep( ATLAS );
     ConvertToStringRep( display );
 
     # Return the result.
@@ -1328,10 +1543,7 @@ InstallMethod( GaloisMat,
         for j in [ i+1 .. ncha ] do
           if mat[j] = X then
             galoisfams[j]:= Unknown();
-
-            Print( "#E GaloisMat: row ", i, " is equal to row ", j, "\n" );
-#T InfoWarning?
-
+            InfoWarning( 1, "GaloisMat: row ", i, " is equal to row ", j );
           fi;
         od;
 
@@ -1385,10 +1597,8 @@ InstallMethod( GaloisMat,
                   conj[l]:= image[ fusion[l] ];
                 fi;
               od;
-              l:= i+1;
-              while l <= ncha and mat[l] <> conj do l:= l+1; od;
-#T use Position!
-              if l <= ncha then
+              l:= Position( mat, conj, i );
+              if l <> fail then
 
                 galoisfams[l]:= 0;
                 Add( family, l );
@@ -1470,9 +1680,9 @@ InstallMethod( GaloisMat,
 
     # Convert the `generators' component to a set of generating permutations.
     generators:= Set( List( generators, PermList ) );
-    RemoveSet( generators, () );
+    RemoveSet( generators, () );  # `generators' arose from `PermList'
     if IsEmpty( generators ) then
-      generators:= [ () ];
+      generators:= [ () ];  # `generators' arose from `PermList'
     fi;
 
     # Return the result.
@@ -1523,7 +1733,10 @@ InstallOtherMethod( RationalizedMat,
 ##
 ##  Disallow to create groups of cyclotomics because the `\^' operator has
 ##  a meaning for cyclotomics that makes it not compatible with that for
-##  groups.
+##  groups:
+##  `E(4)^-1' is the *inverse* of `E(4)',
+##  but in the group generated by `E(4)',
+##  {\GAP} would use this term for the *conjugate* of `E(4)' by `-1'.
 ##
 InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of cyclotomics (return false)",
@@ -1679,7 +1892,7 @@ InstallMethod( Factors,
 
       # The polynomial is a linear polynomial times a power of the indet.
       factors[1]:= coeffs[2] * factors[1];
-      factors[ val+1 ]:= LaurentPolynomialByExtRep( FamilyObj( pol ),
+      factors[ val+1 ]:= LaurentPolynomialByExtRepNC( FamilyObj( pol ),
                              [ coeffs[1] / coeffs[2], 1 ], 0, ind );
       StoreFactorsPol( coeffring, pol, factors );
       return factors;
@@ -1695,7 +1908,7 @@ InstallMethod( Factors,
     if val = 0 then
       pol:= pol / lc;
     else
-      pol:= LaurentPolynomialByExtRep( FamilyObj( pol ), coeffs, 0, ind );
+      pol:= LaurentPolynomialByExtRepNC( FamilyObj( pol ), coeffs, 0, ind );
     fi;
 
     # Now compute the quotient of `pol' by the g.c.d. with its derivative,
@@ -1737,15 +1950,17 @@ InstallMethod( Factors,
     end );
 
 
-InstallGlobalFunction(DenominatorCyc,function(c)
-local n;
-  n:=Conductor(c);
-  if n=1 then
-     return DenominatorRat(c);
-  else
-     return Lcm(List(CoeffsCyc(c,n),DenominatorRat));
-  fi;
-end);
+#############################################################################
+##
+#F  DenominatorCyc( <cyc> )
+##
+InstallGlobalFunction( DenominatorCyc, function( cyc )
+    if IsRat( cyc ) then
+      return DenominatorRat( cyc );
+    else
+      return Lcm( List( COEFFS_CYC( cyc ), DenominatorRat ) );
+    fi;
+    end );
 
 
 #############################################################################

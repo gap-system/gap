@@ -5,7 +5,6 @@
 ReadLib( "tuples.gd"   );
 ReadLib( "rvecempt.gd" );
 
-ReadLib( "domain.gd"   );
 ReadLib( "extaset.gd"  );
 ReadLib( "extlset.gd"  );
 ReadLib( "extrset.gd"  );
@@ -53,12 +52,18 @@ ReadLib( "algrep.gd"   );
 ReadLib( "lierep.gd"   );
 ReadLib( "integer.gd"  );
 ReadLib( "numtheor.gd" );
-ReadLib( "string.gd"   );
+ReadLib( "primality.gd");
+ReadLib( "contfrac.gd" );
+ReadLib( "ringsc.gd"    );
+ReadLib( "ringhom.gd"    );
+
+ReadLib( "combinat.gd" );
 
 ReadLib( "ratfun.gd"   );
 
 ReadLib( "field.gd"    );
 ReadLib( "zmodnz.gd"   );
+ReadLib( "zmodnze.gd"  );
 ReadLib( "cyclotom.gd" );
 ReadLib( "fldabnum.gd" );
 ReadLib( "padics.gd"   );
@@ -75,12 +80,15 @@ ReadLib( "unknown.gd"  );
 ReadLib( "word.gd"     );
 ReadLib( "wordass.gd"  );
 
+ReadLib( "matobj2.gd"  );
+ReadLib( "matobjplist.gd" );
 
 # files dealing with rewriting systems
 ReadLib( "rws.gd"      );
 ReadLib( "rwspcclt.gd" );
 ReadLib( "rwsgrp.gd"   );
 ReadLib( "rwspcgrp.gd" );
+ReadLib( "groebner.gd" );
 
 
 # files dealing with polycyclic generating systems
@@ -109,6 +117,9 @@ ReadLib( "gpprmsya.gd" );
 
 ReadLib( "addgphom.gd" );
 
+ReadLib( "grpnames.g"  );
+ReadLib( "grpnames.gd" );
+
 # files dealing with quotient computations
 ReadLib( "quotsys.gd" );
 ReadLib( "pquot.gd" );
@@ -121,6 +132,7 @@ ReadLib( "partitio.gd" );
 ReadLib( "stbc.gd"     );
 ReadLib( "clas.gd"     );
 ReadLib( "clashom.gd"  );
+ReadLib( "permdeco.gd"  );
 ReadLib( "csetgrp.gd"  );
 ReadLib( "factgrp.gd"  );
 ReadLib( "grpreps.gd" );
@@ -130,11 +142,12 @@ ReadLib( "onecohom.gd" );
 ReadLib( "grppccom.gd" );
 
 ReadLib( "twocohom.gd" );
-ReadLib( "grppcext.gd");
-ReadLib( "grppcfp.gd");
-ReadLib( "randiso.gd");
+ReadLib( "grppcext.gd" );
+ReadLib( "grppcfp.gd" );
+ReadLib( "randiso.gd" );
 
 ReadLib( "schur.gd" );
+ReadLib( "schursym.gd" );
 
 ReadLib( "grplatt.gd"  );
 ReadLib( "oprtglat.gd" );
@@ -142,7 +155,8 @@ ReadLib( "grppclat.gd" );
 
 ReadLib( "grppcaut.gd" );
 
-ReadLib( "straight.gd");
+ReadLib( "straight.gd" );
+ReadLib( "memory.gd"  );
 
 # files dealing with fp groups
 ReadLib( "grpfp.gd"    );
@@ -163,6 +177,9 @@ ReadLib( "integer.gi"  ); # needed for CoefficientsQadic
 ReadLib( "list.gi"     ); # was too early
 ReadLib( "set.gi"      );
 ReadLib( "wpobj.gi"    );
+##  ReadLib( "random.gd"   );
+##  ReadLib( "random.gi"   );
+##  ReadLib( "random.g"    );
 
 # files dealing with nice monomorphism
 # grpnice uses some family predicates, so fampred.g must be known
@@ -194,10 +211,11 @@ ReadLib( "fpmon.gd");
 ReadLib( "rwssmg.gd");
 ReadLib( "kbsemi.gd");
 ReadLib( "tcsemi.gd");
+ReadLib( "adjoin.gd");
 ReadLib( "semirel.gd");
 ReadLib( "semitran.gd");
 ReadLib( "reesmat.gd");
-ReadLib("semiquo.gd");
+ReadLib( "semiquo.gd");
 
 # the help system
 ReadLib( "pager.gd"    );
@@ -206,25 +224,38 @@ ReadLib( "helpview.gd" );
 ReadLib( "helpt2t.gd" );
 ReadLib( "helpdef.gd" );
 
-#X  files dealing with character tables and class functions
-# (this needs to be here for using `CharacterDegrees' in the library.)
-ReadLib( "ctbl.gd"     );
+# files dealing with character tables, class functions, tables of marks
+ReadLib( "ctbl.gd" );
+ReadLib( "ctblfuns.gd" );
+ReadLib( "ctblmaps.gd" );
+ReadLib( "ctblauto.gd" );
+ReadLib( "ctbllatt.gd" );
+ReadLib( "ctblsymm.gd" );
+ReadLib( "ctblsolv.gd" );
+ReadLib( "ctblpope.gd" );
+ReadLib( "ctblmoli.gd" );
+ReadLib( "ctblmono.gd" );
+ReadLib( "ctblgrp.gd" );
+ReadLib( "tom.gd" );
 
 # prototyping utilities
 ReadLib("proto.gd");
 
 ReadLib("other.gd");
 
+ReadLib("gasman.gd");
+
+# random sources
+ReadLib("random.gi");
 
 #############################################################################
 ##
 #X  files dealing with subgroup chains
 ##
-ReadLib("utils.gd");
-ReadLib("quogphom.gd");
-ReadLib("gptransv.gd");
-ReadLib("grpchain.gd");
-ReadLib("rss.gd");
-ReadLib("basicim.gd");
-ReadLib("solmxgrp.gd");
-
+#ReadLib("utils.gd");
+#ReadLib("quogphom.gd");
+#ReadLib("gptransv.gd");
+#ReadLib("grpchain.gd");
+#ReadLib("rss.gd");
+#ReadLib("basicim.gd");
+#ReadLib("solmxgrp.gd");

@@ -2,15 +2,17 @@
 ##
 #W  integer.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
+#W                                                              & Stefan Kohl
 #W                                                            & Werner Nickel
 #W                                                           & Alice Niemeyer
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 #W                                                              & Alex Wegner
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.integer_gi :=
     "@(#)$Id$";
@@ -26,6 +28,7 @@ InstallValue( Integers, Objectify( NewType(
     rec() ) );
 
 SetName( Integers, "Integers" );
+SetString( Integers, "Integers" );
 SetIsLeftActedOnByDivisionRing( Integers, false );
 SetSize( Integers, infinity );
 SetLeftActingDomain( Integers, Integers );
@@ -45,6 +48,7 @@ InstallValue( NonnegativeIntegers, Objectify( NewType(
     rec() ) );
 
 SetName( NonnegativeIntegers, "NonnegativeIntegers" );
+SetString( NonnegativeIntegers, "NonnegativeIntegers" );
 SetSize( NonnegativeIntegers, infinity );
 SetGeneratorsOfSemiringWithZero( NonnegativeIntegers, [ 1 ] );
 SetGeneratorsOfAdditiveMagmaWithZero( NonnegativeIntegers, [ 1 ] );
@@ -61,6 +65,7 @@ InstallValue( PositiveIntegers, Objectify( NewType(
     rec() ) );
 
 SetName( PositiveIntegers, "PositiveIntegers" );
+SetString( PositiveIntegers, "PositiveIntegers" );
 SetSize( PositiveIntegers, infinity );
 SetGeneratorsOfSemiring( PositiveIntegers, [ 1 ] );
 SetGeneratorsOfAdditiveMagma( PositiveIntegers, [ 1 ] );
@@ -78,6 +83,7 @@ InstallValue( GaussianIntegers, Objectify( NewType(
 
 SetLeftActingDomain( GaussianIntegers, Integers );
 SetName( GaussianIntegers, "GaussianIntegers" );
+SetString( GaussianIntegers, "GaussianIntegers" );
 SetIsLeftActedOnByDivisionRing( GaussianIntegers, false );
 SetSize( GaussianIntegers, infinity );
 SetGeneratorsOfRing( GaussianIntegers, [ E(4) ] );
@@ -164,14 +170,15 @@ MakeImmutable( Primes );
 #############################################################################
 ##
 #V  Primes2 . . . . . . . . . . . . . . . . . . . . . . additional prime list
+#V  ProbablePrimes2 . . . . . . . . . . . . . . . . . . additional prime list
 ##
-##  Some primes in this list are taken from the tables of Richard Brent,
+##  Some primes in `Primes2' are taken from the tables of Richard Brent,
 ##  which are available at
 ##  ftp://ftp.comlab.ox.ac.uk/pub/Documents/techpapers/Richard.Brent/factors/
 ##
-##  These primes were added for the purpose to admit checking the Conway
-##  polynomials available in `CONWAYPOLYNOMIALS' with {\GAP}.
-##
+##  More factors of cyclotomic numbers are now available via the FactInt
+##  package. This should be cleaned up.
+##  
 InstallFlushableValue( Primes2, [
 10047871, 10567201, 10746341, 12112549, 12128131, 12207031, 12323587,
 12553493, 12865927, 13097927, 13264529, 13473433, 13821503, 13960201,
@@ -350,7 +357,16 @@ InstallFlushableValue( Primes2, [
 1051153199500053598403188407217590190707671147285551702341089650185945215953
 ] );
 IsSSortedList( Primes2 );
+# for 41^41-1
+ADD_SET(Primes2, 5926187589691497537793497756719);
+# for 89^89-1
+ADD_SET(Primes2, 4330075309599657322634371042967428373533799534566765522517);
+# for 97^97-1
+ADD_SET(Primes2, 549180361199324724418373466271912931710271534073773);
+ADD_SET(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877); 
 
+InstallFlushableValue(ProbablePrimes2, []);
+IsSSortedList( ProbablePrimes2 );
 
 #############################################################################
 ##
@@ -521,7 +537,9 @@ end);
 ##  D. Knuth, Seminumerical Algorithms  (TACP II),  AddiWesl,  1973,  369-371
 ##
 FactorsRho := function ( n, inc, cluster, limit )
-    local   i, sign,  factors,  composite,  x,  y,  k,  z,  g,  tmp;
+
+    local   i,  sign,  factors,  composite,  x,  y,  k,  z,  g,  tmp,
+            IsPrimeOrProbablyPrimeInt;
 
     # make $n$ positive and handle trivial cases
     sign := 1;
@@ -531,7 +549,12 @@ FactorsRho := function ( n, inc, cluster, limit )
     composite := [];
     while n mod 2 = 0  do Add( factors, 2 );  n := n / 2;  od;
     while n mod 3 = 0  do Add( factors, 3 );  n := n / 3;  od;
-    if IsPrimeInt(n)  then Add( factors, n );  n := 1;  fi;
+
+    if   ValueOption("UseProbabilisticPrimalityTest") = true
+    then IsPrimeOrProbablyPrimeInt := IsProbablyPrimeInt;
+    else IsPrimeOrProbablyPrimeInt := IsPrimeInt; fi;
+
+    if IsPrimeOrProbablyPrimeInt(n)  then Add( factors, n );  n := 1;  fi;
 
     # initialize $x_0$
     x := 1;  z := 1;  i := 0;
@@ -563,7 +586,9 @@ FactorsRho := function ( n, inc, cluster, limit )
                     composite := Concatenation( composite, tmp[2] );
 
                     n := n / g;
-                    if IsPrimeInt(n)  then Add( factors, n );  n := 1;  fi;
+                    if IsPrimeOrProbablyPrimeInt(n)  then
+                        Add( factors, n );  n := 1;
+                    fi;
                 fi;
             fi;
         od;
@@ -592,12 +617,19 @@ MakeReadOnlyGlobal( "FactorsRho" );
 ##
 #F  FactorsInt( <n> ) . . . . . . . . . . . . . . prime factors of an integer
 #F  FactorsInt( <n> : RhoTrials := <trials>) 
+#F  FactorsInt( <n> : quiet) 
 ##
 ##  In the second form, FactorsRho is called with a limit of <trials>
 ##  on the number of trials is performs. The  default is 8192.
 ##
+##  The option `quiet' makes the function return even if the `rho'
+##  factorization failed and return the factorization found so far.
+##
 InstallGlobalFunction(FactorsInt,function ( n )
-    local  sign,  factors,  p,  tmp;
+
+    local  sign,  factors,  p,  tmp, n_orig, len, rt, tmp2;
+
+    n_orig := n;
 
     # make $n$ positive and handle trivial cases
     sign := 1;
@@ -613,11 +645,32 @@ InstallGlobalFunction(FactorsInt,function ( n )
         if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
     od;
 
-    # do trial divisions by known factors
+    # do trial divisions by known primes
     for p  in Primes2  do
         while n mod p = 0  do Add( factors, p );  n := n / p;  od;
+        if p^2 > n then break; fi;
         if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
     od;
+    
+    # do trial divisions by known probable primes (and issue warning, if found)
+    tmp := [];
+    for p  in ProbablePrimes2  do
+        while n mod p = 0  do 
+          AddSet(tmp, p); 
+          Add( factors, p );  
+          n := n / p;  
+        od;
+        if n = 1  then break; fi;
+    od;
+    if Length(tmp) > 0 then
+        Info(InfoPrimeInt, 1 , 
+        "FactorsInt: used the following factor(s) which are probably primes:");
+        for p in tmp do
+          Info(InfoPrimeInt, 1, "      ", p);
+        od;
+    fi;
+    if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
+          
 
     # handle perfect powers
     p := SmallestRootInt( n );
@@ -632,20 +685,179 @@ InstallGlobalFunction(FactorsInt,function ( n )
     fi;
 
     # let `FactorsRho' do the work
-		if ValueOption("RhoTrials") <> fail then
-			tmp := FactorsRho( n, 1, 16,  ValueOption("RhoTrials") );
-		else
-			tmp := FactorsRho( n, 1, 16, 8192 );
-		fi;
+      if ValueOption("RhoTrials") <> fail then
+	tmp := FactorsRho( n, 1, 16,  ValueOption("RhoTrials") );
+      else
+	tmp := FactorsRho( n, 1, 16, 8192 );
+      fi;
     if 0 < Length(tmp[2])  then
-        Error( "sorry,  cannot factor ", tmp[2], 
-					" try increasing trials in Rho method by option RhoTrials" );
+      if ValueOption("quiet")<>true then
+        len := Length(tmp[2]);
+        if LoadPackage("FactInt") = true then
+##            # in general cases we should proceed with the found factors:
+##            while len > 0 do
+##              Append(tmp[1], Factors(tmp[2][len]));
+##              Unbind(tmp[2][len]);
+##              len := len-1;
+##            od;
+          # but this way we miss that FactInt can detect certain numbers of
+          # special shape for which it uses lookup tables, therefore for the
+          # moment:
+          return Factors(n_orig);
+        else
+          Error( "sorry,  cannot factor ", tmp[2], 
+            "\ntype 'return;' to try again with a larger number of trials in\n",
+            "FactorsRho (or use option 'RhoTrials')\n");
+          if ValueOption("RhoTrials") <> fail then
+            rt := 5 * ValueOption("RhoTrials");
+          else
+            rt := 5 * 8192;
+          fi;
+          while len > 0 do
+            tmp2 := FactorsInt(tmp[2][len]: RhoTrials := rt);
+            Append(tmp[1], tmp2);
+            Unbind(tmp[2][len]);
+            len := len-1;
+          od;
+        fi;
+      else
+	factors := Concatenation( factors, tmp[2] );
+      fi;
     fi;
     factors := Concatenation( factors, tmp[1] );
     Sort( factors );
     factors[1] := sign * factors[1];
     return factors;
 end);
+
+#############################################################################
+##
+#F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . list of prime divisors
+##  
+##  delegating to FactorsInt
+##  
+InstallGlobalFunction(PrimeDivisors, function(n)
+  if n = 0 then
+    Error("PrimeDivisors: 0 has an infinite number of prime divisors.");
+    return;
+  fi;
+  if n < 0 then
+    n := -n;
+  fi;
+  if n = 1 then
+    return [];
+  fi;
+  return Set(FactorsInt(n));
+end);
+
+#############################################################################
+##
+#M  PartialFactorization( <n>, <effort> ) . . . . . . . . . .  generic method
+##
+InstallMethod( PartialFactorization,
+               "generic method", true, [ IsInt, IsInt ], 0,
+
+  function ( n, effort )
+
+    local  N, sign, factors, p, k, root, rootfactors, rhotrials,
+           tmp, CheckAndSortFactors;
+
+    CheckAndSortFactors := function ( )
+      factors    := SortedList(factors);
+      factors[1] := sign*factors[1];
+      if   Product(factors) <> N
+      then Error("PartialFactorization: Internal error, wrong result!"); fi;
+    end;
+
+    N := n;
+    if effort < 0 then effort := 5; fi;
+
+    # make $n$ positive and handle trivial cases
+    sign := 1;
+    if n < 0  then sign := -sign;  n := -n;  fi;
+    if n < 4  then return [ sign * n ];  fi;
+    factors := [];
+
+    # least effort: do trial divisions by the primes less than 100
+    if effort = 0 then
+      for p in Primes{[1..25]} do
+        while n mod p = 0 do Add( factors, p ); n := n / p; od;
+        if n < (p+1)^2 and 1 < n then Add(factors,n); n := 1; fi;
+        if n = 1 then CheckAndSortFactors(); return factors; fi;
+      od;
+      Add(factors,n); CheckAndSortFactors(); return factors;
+    fi;
+
+    # do trial divisions by the primes less than 1000
+    # faster than anything fancier because $n$ mod <small int> is very fast
+    for p in Primes do
+      while n mod p = 0 do Add( factors, p ); n := n / p; od;
+      if n < (p+1)^2 and 1 < n then Add(factors,n);  n := 1; fi;
+      if n = 1 then CheckAndSortFactors(); return factors; fi;
+    od;
+
+    if effort <= 1 then
+      Add(factors,n); CheckAndSortFactors();
+      return factors;
+    fi;
+
+    # do trial divisions by known primes
+    for p in Primes2 do
+      while n mod p = 0 do Add( factors, p ); n := n / p; od;
+      if n = 1 then CheckAndSortFactors(); return factors; fi;
+    od;
+
+    # do trial divisions by known probable primes
+    tmp := [];
+    for p in ProbablePrimes2 do
+      while n mod p = 0 do 
+        AddSet(tmp, p); 
+        Add( factors, p );  
+        n := n / p;  
+      od;
+      if n = 1 then break; fi;
+    od;
+
+    if n = 1 then CheckAndSortFactors(); return factors; fi;
+          
+    # handle perfect powers
+    root := SmallestRootInt( n );
+    if root < n then
+      rootfactors := PartialFactorization(root,effort);
+      k           := LogInt(n,root);
+      rootfactors := Concatenation(List([1..k],i->rootfactors));
+      factors     := SortedList(Concatenation(factors,rootfactors));
+      CheckAndSortFactors();
+      return factors;
+    fi;
+
+    if effort = 2 or IsProbablyPrimeInt(n) then
+      Add(factors,n); CheckAndSortFactors(); return factors;
+    fi;
+
+    # if effort >= 3, use `FactorsRho'
+    if ValueOption("RhoTrials") <> fail then
+      tmp := FactorsRho(n,1,16,ValueOption("RhoTrials"):
+                        UseProbabilisticPrimalityTest);
+    else
+      if   effort  = 3 then rhotrials := 256;
+      elif effort  = 4 then rhotrials := 2048;
+      elif effort >= 5 then rhotrials := 8192; fi;
+      tmp := FactorsRho(n,1,16,rhotrials:UseProbabilisticPrimalityTest);
+    fi;
+    factors := SortedList(Concatenation(factors,tmp[1],tmp[2]));
+    CheckAndSortFactors();
+    return factors;
+  end );
+
+
+#############################################################################
+##
+#M  PartialFactorization( <n> ) . . . . . partial factorization of an integer
+##
+InstallOtherMethod( PartialFactorization,
+                    "for integers", true, [ IsInt ], 0,
+                    n -> PartialFactorization(n,5) );
 
 
 #############################################################################
@@ -724,28 +936,43 @@ InstallGlobalFunction( IsOddInt, n -> n mod 2 = 1 );
 ##  R. Baillie, S. Wagstaff, Lucas Pseudoprimes, MathComp 35 1980,  1391-1417
 ##  R. Pinch, Some Primality Testing Algorithms, Notic. AMS 9 1993, 1203-1210
 ##
-TraceModQF := function ( p, k, n )
-    local  trc;
-    if k = 1  then
-        trc := [ p, 2 ];
-    elif k mod 2 = 0  then
-        trc := TraceModQF( p, k/2, n );
-        trc := [ (trc[1]^2 - 2) mod n, (trc[1]*trc[2] - p) mod n ];
+# a non-recursive version,  nowadays the algorithm can be applied to
+# numbers with many thousand digits
+InstallGlobalFunction(TraceModQF, function ( p, k, n )
+  local kb, trc, i;
+  kb := [];
+  while k <> 1 do
+    if k mod 2 = 0 then
+      k := k/2;
+      Add(kb, 0);
     else
-        trc := TraceModQF( p, (k+1)/2, n );
-        trc := [ (trc[1]*trc[2] - p) mod n, (trc[2]^2 - 2) mod n ];
+      k := (k+1)/2;
+      Add(kb, 1);
     fi;
-    return trc;
-end;
-MakeReadOnlyGlobal( "TraceModQF" );
+  od;
+  trc := [p, 2];
+  i := Length(kb);
+  while i >= 1 do
+    if kb[i] = 0 then
+      trc := [ (trc[1]^2 - 2) mod n, (trc[1]*trc[2] - p) mod n ];
+    else
+      trc := [ (trc[1]*trc[2] - p) mod n, (trc[2]^2 - 2) mod n ];
+    fi;
+    i := i-1;
+  od;
+  return trc;
+end);
 
-InstallGlobalFunction( IsProbablyPrimeInt, function( n )
+##  returns `false' for proven composite, `true' for proven prime and
+##  `fail' for probable prime.
+BindGlobal( "IsProbablyPrimeIntWithFail", function( n )
     local  p, e, o, x, i;
 
     # make $n$ positive and handle trivial cases
     if n < 0         then n := -n;       fi;
     if n in Primes   then return true;   fi;
     if n in Primes2  then return true;   fi;
+    if n in ProbablePrimes2  then return fail;   fi;
     if n <= 1000     then return false;  fi;
 
     # do trial divisions by the primes less than 1000
@@ -757,6 +984,10 @@ InstallGlobalFunction( IsProbablyPrimeInt, function( n )
 
     # do trial division by the other known primes
     for p  in Primes2  do
+        if n mod p = 0  then return false;  fi;
+    od;
+    # do trial division by the other known probable primes
+    for p  in ProbablePrimes2  do
         if n mod p = 0  then return false;  fi;
     od;
 
@@ -776,11 +1007,12 @@ InstallGlobalFunction( IsProbablyPrimeInt, function( n )
         return false;
     fi;
 
-    # there are no strong pseudo-primes to base 2 smaller than 2047
-    if n < 2047  then
-        AddSet( Primes2, n );
-        return true;
-    fi;
+##      # there are no strong pseudo-primes to base 2 smaller than 2047
+##  FL: never used
+##      if n < 2047  then
+##          AddSet( Primes2, n );
+##          return true;
+##      fi;
 
     # make sure that $n$ is not a perfect power (especially not a square)
     if SmallestRootInt(n) < n  then
@@ -793,26 +1025,33 @@ InstallGlobalFunction( IsProbablyPrimeInt, function( n )
     # for a prime $n$ the trace of $(p/2+\sqrt{d})^n$ must be $p$
     # and the trace of $(p/2+\sqrt{d})^{n+1}$ must be 2
     if TraceModQF( p, n+1, n ) = [ 2, p ]  then
-        return true;
+        # n < 10^13 fulfilling the tests so far are prime
+        if n < 10^13 then
+          return true;
+        else
+          return fail;
+        fi;
     fi;
 
     # $n$ is not a prime
     return false;
 end);
 
-InstallGlobalFunction(IsPrimeInt,function ( n )
-local p;
-  p:=IsProbablyPrimeInt(n);
-  if p then
-    if n>10^13 then
-      Info(InfoWarning,1,
-	"beyond the guaranteed bound of the probabilistic primality test");
-    fi;
-    if 1000 < n then
+InstallGlobalFunction(IsPrimeIntOld,function ( n )
+  local res;
+  res := IsProbablyPrimeIntWithFail(n);
+  if res = false then
+    return false;
+  else
+    if res = fail then
+      Info(InfoPrimeInt, 1,
+           "IsPrimeInt: probably prime, but not proven: ", n);
+      AddSet( ProbablePrimes2, n );
+    else
       AddSet( Primes2, n );
     fi;
+    return true;
   fi;
-  return p;
 end);
 
 
@@ -1113,17 +1352,42 @@ end);
 #M  RingByGenerators( <elms> ) . . . . . . .  ring generated by some integers
 ##
 InstallMethod( RingByGenerators,
-    "method that catches the cases of `Integers'",
+    "method that catches the cases of `Integers' and subrings of `Integers'",
     [ IsCyclotomicCollection ], 
     SUM_FLAGS, # test this before doing anything else
     function( elms )
-      if ForAll( elms, IsInt ) and Gcd( elms ) = 1 then
-        return Integers;
+      if ForAll( elms, IsInt ) then
+        # check that the number of generators is bigger than one
+        # to avoid infinite recursion    
+        if Length( elms ) > 1 then
+          return RingByGenerators( [ Gcd(elms) ] );
+        elif elms[1] = 1 then
+          return Integers;
+        else
+          TryNextMethod();        
+        fi;
       else
         TryNextMethod();
       fi;
     end );
-
+    
+    
+#############################################################################
+##
+#M  RingWithOneByGenerators( <elms> ) . . . . ring generated by some integers
+##
+InstallMethod( RingWithOneByGenerators,
+    "method that catches the cases of `Integers'",
+    [ IsCyclotomicCollection ], 
+    SUM_FLAGS, # test this before doing anything else
+    function( elms )
+      if ForAll( elms, IsInt ) then
+        return Integers;
+      else
+        TryNextMethod();
+      fi;
+    end );    
+    
 
 #############################################################################
 ##
@@ -1131,7 +1395,6 @@ InstallMethod( RingByGenerators,
 ##
 InstallMethod( DefaultRingByGenerators,
     "method that catches the cases of `(Gaussian)Integers' and cycl. fields",
-    true,
     [ IsCyclotomicCollection ], 
     SUM_FLAGS, # test this before doing anything else
     function( elms )
@@ -1152,49 +1415,32 @@ InstallMethod( DefaultRingByGenerators,
 ##  $a_n = \frac{n}{2}$ if $n$ is even, and
 ##  $a_n = \frac{1-n}{2}$ otherwise.
 ##
-DeclareRepresentation( "IsIntegersEnumerator",
-    IsDomainEnumerator and IsAttributeStoringRep, [] );
-
 InstallMethod( Enumerator,
     "for integers",
-    true,
-    [ IsIntegers ], 0,
-    function( Integers )
-    local enum;
-    enum:= Objectify( NewType( FamilyObj( Integers ), IsIntegersEnumerator ),
-                      rec() );
-    SetUnderlyingCollection( enum, Integers );
-    return enum;
-    end );
+    [ IsIntegers ],
+    Integers -> EnumeratorByFunctions( Integers,
+        rec( ElementNumber := function( e, n )
+               if n mod 2 = 0 then
+                 return n / 2;
+               else
+                 return ( 1 - n ) / 2;
+               fi;
+               end,
 
-InstallMethod( \[\],
-    "for enumerator of `Integers'",
-    true,
-    [ IsIntegersEnumerator, IsPosInt ], 0,
-    function( e, n )
-    if n mod 2 = 0 then
-      return n / 2;
-    else
-      return ( 1 - n ) / 2;
-    fi;
-    end );
-
-InstallMethod( Position,
-    "for enumerator of `Integers'",
-    true,
-    [ IsIntegersEnumerator, IsCyc, IsZeroCyc ], 0,
-    function( e, x, zero )
-    if not IsInt( x ) then
-      return fail;
-    elif 0 < x then
-      return 2 * x;
-    else
-      return -2 * x + 1;
-    fi;
-    end );
+             NumberElement := function( e, x )
+               local pos;
+               if not IsInt( x ) then
+                 return fail;
+               elif 0 < x then
+                 pos:= 2 * x;
+               else
+                 pos:= -2 * x + 1;
+               fi;
+               return pos;
+               end ) ) );
 
 
-############################################################################
+#############################################################################
 ##
 #M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolut value
 ##
@@ -1297,49 +1543,22 @@ InstallMethod( IsPrime,
 ##  $a_n = \frac{n}{2}$ if $n$ is even, and $a_n = \frac{1-n}{2}$
 ##  otherwise.
 ##
-DeclareRepresentation( "IsIntegersIteratorRep", IsComponentObjectRep,
-    [ "structure", "counter" ] );
-
 InstallMethod( Iterator,
     "for `Integers'",
-    true,
-    [ IsIntegers ], 0,
-    function( Integers )
-    return Objectify( NewType( IteratorsFamily,
-                                   IsIterator
-                               and IsMutable
-                               and IsIntegersIteratorRep ),
-                      rec(
-                           structure := Integers,
-                           counter   := 0         ) );
-    end );
+    [ IsIntegers ],
+    Integers -> IteratorByFunctions( rec(
+        NextIterator := function( iter )
+            iter!.counter:= iter!.counter + 1;
+            if iter!.counter mod 2 = 0 then
+              return iter!.counter / 2;
+            else
+              return ( 1 - iter!.counter ) / 2;
+            fi;
+            end,
+        IsDoneIterator := ReturnFalse,
+        ShallowCopy := iter -> rec( counter:= iter!.counter ),
 
-InstallMethod( IsDoneIterator,
-    "for iterator of `Integers'",
-    true,
-    [ IsIterator and IsIntegersIteratorRep ], 0,
-    ReturnFalse );
-
-InstallMethod( NextIterator,
-    "for iterator of `Integers'",
-    true,
-    [ IsIterator and IsMutable and IsIntegersIteratorRep ], 0,
-    function( iter )
-    iter!.counter:= iter!.counter + 1;
-    if iter!.counter mod 2 = 0 then
-      return iter!.counter / 2;
-    else
-      return ( 1 - iter!.counter ) / 2;
-    fi;
-    end );
-
-InstallMethod( ShallowCopy,
-    "for iterator of `Integers'",
-    true,
-    [ IsIterator and IsIntegersIteratorRep ], 0,
-    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
-                       rec( structure := Integers,
-                            counter   := iter!.counter ) ) );
+        counter := 0 ) ) );
 
 
 #############################################################################
@@ -1469,41 +1688,6 @@ InstallMethod( Random,
     return NrBitsInt( Random( [0..2^20-1] ) ) - 10;
     end );
 
-
-#############################################################################
-##
-#M  Random( <low>, <high> )
-##
-InstallOtherMethod( Random,
-    "for two integers",
-    IsIdenticalObj,
-    [ IsInt,
-      IsInt ],
-    0,
-
-function( a, b )
-    local   d,  x,  r,  y;
-
-    d := b-a;
-    if d < 0  then
-        return fail;
-    elif a = b  then
-        return a;
-    else
-        x := LogInt( d, 2 ) + 1;
-        r := 0;
-        while 0 < x  do
-            y := Minimum( 10, x );
-            x := x - y;
-            r := r*2^y + Random([0..2^y-1]);
-        od;
-        if d < r  then
-            return Random( a, b );
-        else
-            return a+r;
-        fi;
-    fi;
-end );
 
 
 #############################################################################
@@ -1675,4 +1859,3 @@ end);
 #############################################################################
 ##
 #E
-

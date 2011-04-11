@@ -6,10 +6,12 @@ AH
 2001/9/21
 @Time
 3
+@Public
+Yes
 @Need
-5
+0
 @NeedA
-4
+0
 @Math
 3
 @Prog
@@ -42,3 +44,5 @@ A. Hulpke, J. Symbolic Comput. {\bf 27} (1999), no.~4, 415--427; MR 2000a:20001
 J. J. Cannon, B. C. Cox\ and\ D. F. Holt, J. Symbolic Comput. {\bf 31}
 (2001), no.~1-2, 149--161; see MR 2001h:00021 
 </UL>
+@Rem
+Implemented for 4.5 AH

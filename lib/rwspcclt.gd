@@ -2,8 +2,9 @@
 ##
 #W  rwspcclt.gd                 GAP Library                      Frank Celler
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains operations for  polycyclic rewriting systems, with  or
 ##  without torsion free  generators.   There are  two  subcategories, namely
@@ -45,8 +46,14 @@ Revision.rwspcclt_gd :=
 
 #############################################################################
 ##
-
 #C  IsPolycyclicCollector( <obj> )
+##
+##  <ManSection>
+##  <Filt Name="IsPolycyclicCollector" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategory(
     "IsPolycyclicCollector",
@@ -57,6 +64,13 @@ DeclareCategory(
 ##
 #C  IsPowerConjugateCollector( <obj> )
 ##
+##  <ManSection>
+##  <Filt Name="IsPowerConjugateCollector" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareCategory(
     "IsPowerConjugateCollector",
     IsPolycyclicCollector );
@@ -65,6 +79,13 @@ DeclareCategory(
 #############################################################################
 ##
 #C  IsPowerCommutatorCollector( <obj> )
+##
+##  <ManSection>
+##  <Filt Name="IsPowerCommutatorCollector" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategory(
     "IsPowerCommutatorCollector",
@@ -75,13 +96,19 @@ DeclareCategory(
 ##
 #A  RelativeOrders( <col> )
 ##
-##  The list of relative orders corresponding to <col>.
+##  <ManSection>
+##  <Attr Name="RelativeOrders" Arg='col'/>
+##
+##  <Description>
+##  The list of relative orders corresponding to <A>col</A>.
+##  </Description>
+##  </ManSection>
+##
 DeclareAttribute( "RelativeOrders", IsRewritingSystem );
 
 
 #############################################################################
 ##
-
 #P  IsUpToDatePolycyclicCollector( <col> )
 ##
 DeclareFilter("IsUpToDatePolycyclicCollector");
@@ -90,6 +117,13 @@ DeclareFilter("IsUpToDatePolycyclicCollector");
 #############################################################################
 ##
 #O  OutdatePolycyclicCollector( <col> )
+##
+##  <ManSection>
+##  <Oper Name="OutdatePolycyclicCollector" Arg='col'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "OutdatePolycyclicCollector",
@@ -100,6 +134,13 @@ DeclareOperation(
 ##
 #O  UpdatePolycyclicCollector( <col> )
 ##
+##  <ManSection>
+##  <Oper Name="UpdatePolycyclicCollector" Arg='col'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "UpdatePolycyclicCollector",
     [ IsPolycyclicCollector ] );
@@ -107,7 +148,6 @@ DeclareOperation(
 
 #############################################################################
 ##
-
 #O  CollectWord( <col>, <v>, <w> )
 ##
 DeclareOperation(
@@ -119,6 +159,13 @@ DeclareOperation(
 ##
 #O  CollectWordOrFail( <col>, <v>, <w> )
 ##
+##  <ManSection>
+##  <Oper Name="CollectWordOrFail" Arg='col, v, w'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "CollectWordOrFail",
     [ IsPolycyclicCollector, IsList, IsObject ] );
@@ -127,6 +174,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  NonTrivialRightHandSides( <col> )
+##
+##  <ManSection>
+##  <Oper Name="NonTrivialRightHandSides" Arg='col'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "NonTrivialRightHandSides",
@@ -137,6 +191,13 @@ DeclareOperation(
 ##
 #O  ObjByExponents( <col>, <data> )
 ##
+##  <ManSection>
+##  <Oper Name="ObjByExponents" Arg='col, data'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "ObjByExponents",
     [ IsPolycyclicCollector, IsObject ] );
@@ -145,6 +206,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  SetCommutator( <col>, <i>, <j>, <rhs> )
+##
+##  <ManSection>
+##  <Oper Name="SetCommutator" Arg='col, i, j, rhs'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "SetCommutator",
@@ -163,6 +231,13 @@ DeclareOperation(
 ##
 #O  SetConjugate( <col>, <i>, <j>, <rhs> )
 ##
+##  <ManSection>
+##  <Oper Name="SetConjugate" Arg='col, i, j, rhs'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "SetConjugate",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
@@ -179,6 +254,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  SetPower( <col>, <i>, <rhs> )
+##
+##  <ManSection>
+##  <Oper Name="SetPower" Arg='col, i, rhs'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "SetPower",
@@ -197,6 +279,13 @@ DeclareOperation(
 ##
 #O  SetRelativeOrder( <col>, <i>, <order> )
 ##
+##  <ManSection>
+##  <Oper Name="SetRelativeOrder" Arg='col, i, order'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "SetRelativeOrder",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
@@ -210,6 +299,13 @@ DeclareOperation(
 ##
 #O  GetCommutatorNC( <col>, <h>, <g> )
 ##
+##  <ManSection>
+##  <Oper Name="GetCommutatorNC" Arg='col, h, g'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
         "GetCommutatorNC",
         [ IsPolycyclicCollector, IsObject, IsObject ] );
@@ -217,6 +313,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  GetConjugateNC( <col>, <h>, <g> )
+##
+##  <ManSection>
+##  <Oper Name="GetConjugateNC" Arg='col, h, g'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
         "GetConjugateNC",
@@ -226,17 +329,24 @@ DeclareOperation(
 ##
 #O  GetPowerNC( <col>, <g> )
 ##
+##  <ManSection>
+##  <Oper Name="GetPowerNC" Arg='col, g'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation( 
         "GetPowerNC",
         [ IsPolycyclicCollector, IsObject ] );
 
 #############################################################################
 ##
-
 #O  SingleCollector( <fgrp>, <orders> )
 ##
 ##  creates a single collector to the free group <fgrp> and the relative
 ##  orders <orders>.
+##
 DeclareOperation(
     "SingleCollector",
     [ IsObject, IsObject ] );
@@ -245,6 +355,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  SingleCollectorByGenerators( <fam>, <gens>, <orders> )
+##
+##  <ManSection>
+##  <Oper Name="SingleCollectorByGenerators" Arg='fam, gens, orders'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "SingleCollectorByGenerators",
@@ -255,6 +372,13 @@ DeclareOperation(
 ##
 #O  CombinatorialCollector( <fgrp>, <orders> )
 ##
+##  <ManSection>
+##  <Oper Name="CombinatorialCollector" Arg='fgrp, orders'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "CombinatorialCollector",
     [ IsObject, IsObject ] );
@@ -263,6 +387,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  CombinatorialCollectorByGenerators( <fam>, <gens>, <orders> )
+##
+##  <ManSection>
+##  <Oper Name="CombinatorialCollectorByGenerators" Arg='fam, gens, orders'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "CombinatorialCollectorByGenerators",
@@ -273,6 +404,13 @@ DeclareOperation(
 ##
 #O  DeepThoughtCollector( <fgrp>, <orders> )
 ##
+##  <ManSection>
+##  <Oper Name="DeepThoughtCollector" Arg='fgrp, orders'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation(
     "DeepThoughtCollector",
     [ IsObject, IsObject ] );
@@ -281,6 +419,13 @@ DeclareOperation(
 #############################################################################
 ##
 #O  DeepThoughtCollectorByGenerators( <fam>, <gens>, <orders> )
+##
+##  <ManSection>
+##  <Oper Name="DeepThoughtCollectorByGenerators" Arg='fam, gens, orders'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation(
     "DeepThoughtCollectorByGenerators",
@@ -294,6 +439,16 @@ DeclareOperation(
 #O  EvaluateOverlapBAN  . . . . . . . . . . . . . evaluate a consistency test
 #O  EvaluateOverlapANA  . . . . . . . . . . . . . evaluate a consistency test
 ##
+##  <ManSection>
+##  <Oper Name="EvaluateOverlapCBA" Arg='...'/>
+##  <Oper Name="EvaluateOverlapBNA" Arg='...'/>
+##  <Oper Name="EvaluateOverlapBAN" Arg='...'/>
+##  <Oper Name="EvaluateOverlapANA" Arg='...'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareOperation( "EvaluateOverlapCBA",
         [ IsPolycyclicCollector, IsList, IsList, IsInt, IsInt, IsInt ] );
 DeclareOperation( "EvaluateOverlapBNA",
@@ -306,6 +461,5 @@ DeclareOperation( "EvaluateOverlapANA",
 
 #############################################################################
 ##
+#E
 
-#E  rwspcclt.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

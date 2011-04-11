@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  matint.gd                GAP library                            A. Hulpke
-#W                                                            & R. Wainwright
+#W  matint.gd                GAP library                        A. Storjohann
+#W                                                              R. Wainwright
+#W                                                                  A. Hulpke
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  St. Andrews
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2003 The GAP Group
 ##
 ##  This file contains declarations for the operations of normal forms for
 ##  integral matrices.
@@ -18,310 +18,551 @@ Revision.matint_gd:=
 ##
 #V  InfoMatInt
 ##
-##  The info class for Integer matrix operations is `InfoMatInt'.
+##  <ManSection>
+##  <InfoClass Name="InfoMatInt"/>
+##
+##  <Description>
+##  The info class for Integer matrix operations is <C>InfoMatInt</C>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareInfoClass( "InfoMatInt" );
 
-
 #############################################################################
 ##
-#O  SNFNormDriven(<mat>[,<trans>])
-#O  SNFChouCollins(<mat>[,<trans>])
-#O  SNFLLLDriven(<mat>[,<trans>])
+#O  TriangulizedIntegerMat(<mat>)
 ##
-##  These operations have been superceded for most purposes by
-##  `NormalFormIntMat' (see~"NormalFormIntMat") which should in most cases
-##  be faster than any
-##  of them, and produce smaller transforming matrix entries.
+##  <#GAPDoc Label="TriangulizedIntegerMat">
+##  <ManSection>
+##  <Oper Name="TriangulizedIntegerMat" Arg='mat'/>
 ##
-##  These operations compute the Smith normal form of a matrix with
-##  integer entries, using the strategy specified in the name. If no optional 
-##  argument <trans> is given <mat> must be a mutable matrix which will 
-##  be changed by the algorithm.
-##
-##  If the optional integer argument <trans> is given, it determines which
-##  transformation matrices will be computed. It is interpreted binary as:
-##  \beginlist
-##  \item{1} Row transformations.
-##
-##  \item{2} Inverse row transformations.
-##
-##  \item{4} Column transformations.
-##
-##  \item{8} Inverse column transformations.
-##  \endlist
-##
-##  The operation then returns a record with the component `normal' containing 
-##   the  computed normal form and optional components `rowtrans', `rowinverse',
-##  `coltrans', and `invcoltrans' which hold the computed transformation
-##  matrices. Note, if <trans> is given the operation does not change <mat>.
-##
-##  This functionality is still to be fully implemented for SNF with transforms.
-##   However, `NormalFormIntMat' performs this calculation.
-##
-DeclareGlobalFunction("SNFNormDriven");
-DeclareGlobalFunction("SNFChouCollins");
-DeclareGlobalFunction("SNFLLLDriven");
-
-
-#############################################################################
-##
-#O  HNFNormDriven(<mat>[,<trans>[,<reduction>]])
-#O  HNFChouCollins(<mat>[,<trans>[,<reduction>]])
-#O  HNFLLLDriven(<mat>[,<trans>[,<reduction>]])
-##
-##  These operations have been superceded for most purposes by
-##  `NormalFormIntMat' (see~"NormalFormIntMat")
-##  which should in most cases be faster than any
-##  of them, and produce smaller transforming matrix entries.
-##
-##  These operations compute the Hermite normal form of a matrix with
-##  integer entries, using the strategy specified in the name. If no optional 
-##  argument <trans> is given <mat> must be a  mutable matrix which will 
-##  be changed by the algorithm.
-##
-##  If the optional integer argument <trans> is given, it determines which
-##  transformation matrices will be computed. It is interpreted binary as
-##  for the Smith normal form (see "SNFNormDriven") but note that only 
-##  row operations are performed. The function then returns a  record with 
-##  components as specified for the Smith normal form.
-##
-##  If the further optional argument <reduction> (a rational in the range
-##  `[0..1]')
-##  is given, it specifies which representatives
-##  are used for entries modulo $c$ when cleaning column entries to the top. 
-##  Off-diagonal entries are reduced to the range
-##  \quad$\lfloor c(r-1)\rfloor\ldots \lfloor cr\rfloor$,
-##  where $r$ is the value of <reduction>.
-##  If <reduction> is not given, a value of 1 is assumed.
-##  Note, if <trans> is given the operation does not change <mat>.
-##
-##  \beginexample
-##  gap> m:=[ [ 14, 20 ], [ 6, 9 ] ];;
-##  gap> HNFNormDriven(m);
-##  [ [ 2, 2 ], [ 0, 3 ] ]
-##  gap> m;
-##  [ [ 2, 2 ], [ 0, 3 ] ]
-##  \endexample
-##
-##  \beginexample
-##  gap> m:=[[14,20],[6,9]];; 
-##  gap> HNFNormDriven(m,1);
-##  rec( normal := [ [ 2, 2 ], [ 0, 3 ] ], rowtrans := [ [ 1, -2 ], [ -3, 7 ] ] )
-##  gap> m;
-##  [ [ 14, 20 ], [ 6, 9 ] ]
-##  gap> last2.rowtrans*m;
-##  [ [ 2, 2 ], [ 0, 3 ] ]
-##  \endexample
-##
-DeclareGlobalFunction("HNFNormDriven");
-DeclareGlobalFunction("HNFChouCollins");
-DeclareGlobalFunction("HNFLLLDriven");
-
-
-#############################################################################
-##
-#O  TriangulizeIntegerMat(<mat>[,<trans>])
-##
+##  <Description>
 ##  Computes an upper triangular form of a matrix with integer entries.
-##  If no optional  argument <trans> is given <mat> must be a
-##  mutable matrix which will be changed by the algorithm.
+##  It returns a immutable matrix in upper triangular form.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  If the optional integer argument <trans> is given, it determines which
-##  transformation matrices will be computed. It is interpreted binary as
-##  for the Smith normal form (see "SNFNormDriven") but note that only 
-##  row operations are performed. The function then returns a record with 
-##  components as specified for the Smith normal form.
-##  Note, if <trans> is given the operation does not change <mat>.
+DeclareOperation("TriangulizedIntegerMat",[IsMatrix]);
+
+#############################################################################
 ##
-DeclareGlobalFunction("TriangulizeIntegerMat");
+#O  TriangulizeIntegerMat(<mat>)
+##
+##  <#GAPDoc Label="TriangulizeIntegerMat">
+##  <ManSection>
+##  <Oper Name="TriangulizeIntegerMat" Arg='mat'/>
+##
+##  <Description>
+##  Changes <A>mat</A> to be in upper triangular form.
+##  (The result is the same as that of <Ref Func="TriangulizedIntegerMat"/>,
+##  but <A>mat</A> will be modified, thus using less memory.)
+##  If <A>mat</A> is immutable an error will be triggered.
+##  <Example><![CDATA[
+##  gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+##  gap> TriangulizedIntegerMat(m);
+##  [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
+##  gap> n:=TriangulizedIntegerMatTransform(m);
+##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
+##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    rowQ := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    rowtrans := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], signdet := 1 )
+##  gap> n.rowtrans*m=n.normal;
+##  true
+##  gap> TriangulizeIntegerMat(m); m;
+##  [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("TriangulizeIntegerMat",[IsMatrix]);
+
+#############################################################################
+##
+#O  TriangulizedIntegerMatTransform(<mat>)
+##
+##  <#GAPDoc Label="TriangulizedIntegerMatTransform">
+##  <ManSection>
+##  <Oper Name="TriangulizedIntegerMatTransform" Arg='mat'/>
+##
+##  <Description>
+##  Computes an upper triangular form of a matrix with integer entries.
+##  It returns a record with a component <C>normal</C> (an immutable matrix
+##  in upper triangular form) and a component <C>rowtrans</C> that gives the
+##  transformations done to the original matrix to bring it into upper
+##  triangular form.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("TriangulizedIntegerMatTransform",[IsMatrix]);
+DeclareSynonym("TriangulizedIntegerMatTransforms",
+  TriangulizedIntegerMatTransform);
+
+#############################################################################
+##
+#O  HermiteNormalFormIntegerMat(<mat>)
+##
+##  <#GAPDoc Label="HermiteNormalFormIntegerMat">
+##  <ManSection>
+##  <Oper Name="HermiteNormalFormIntegerMat" Arg='mat'/>
+##
+##  <Description>
+##  This operation computes the Hermite normal form of a matrix <A>mat</A>
+##  with integer entries. It returns a immutable matrix in HNF.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("HermiteNormalFormIntegerMat",[IsMatrix]);
+
+#############################################################################
+##
+#O  HermiteNormalFormIntegerMatTransform(<mat>)
+##
+##  <#GAPDoc Label="HermiteNormalFormIntegerMatTransform">
+##  <ManSection>
+##  <Oper Name="HermiteNormalFormIntegerMatTransform" Arg='mat'/>
+##
+##  <Description>
+##  This operation computes the Hermite normal form of a matrix <A>mat</A>
+##  with integer entries.
+##  It returns a record with components <C>normal</C> (a matrix <M>H</M>) and
+##  <C>rowtrans</C> (a matrix <M>Q</M>) such that <M>Q A = H</M>.
+##  <Example><![CDATA[
+##  gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+##  gap> HermiteNormalFormIntegerMat(m);          
+##  [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
+##  gap> n:=HermiteNormalFormIntegerMatTransform(m);
+##  rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
+##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1 )
+##  gap> n.rowtrans*m=n.normal;
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("HermiteNormalFormIntegerMatTransform",[IsMatrix]);
+DeclareSynonym("HermiteNormalFormIntegerMatTransforms",
+  HermiteNormalFormIntegerMatTransform);
 
 
 #############################################################################
 ##
 #O  SmithNormalFormIntegerMat(<mat>)
-#O  SmithNormalFormIntegerMatTransforms(<mat>)
-#O  SmithNormalFormIntegerMatInverseTransforms(<mat>)
 ##
-##  The Smith Normal Form,$S$, of an integer matrix $A$ is the unique 
-##  equivalent diagonal form with $S_i$ dividing $S_j$ for $i \< j$. There 
-##  exist unimodular integer matrices $P, Q$ such that $PAQ = S.$ 
+##  <#GAPDoc Label="SmithNormalFormIntegerMat">
+##  <ManSection>
+##  <Oper Name="SmithNormalFormIntegerMat" Arg='mat'/>
 ##
-##  These operations compute the Smith normal form of a matrix <mat> with
-##  integer entries. The operations will try to select a suitable strategy.
-##  The first operation returns a new immutable matrix in the Smith normal
-##  form. The other  operations also compute matrices for the row and
-##  column transformations or inverses thereof respectively.
-##  They return a record with the component `normal' containing the
-##  computed normal form and optional components `rowtrans' and `coltrans', or 
-##  `invrowtrans' and `invcoltrans' which hold the computed transformation
-##  matrices.
-##
-##  \beginexample
-##  gap> m:=[[14,20],[6,9]];
-##  [ [ 14, 20 ], [ 6, 9 ] ]
-##  gap> SmithNormalFormIntegerMat(m);
-##  [ [ 1, 0 ], [ 0, 6 ] ]
-##  \endexample
+##  <Description>
+##  This operation computes the Smith normal form of a matrix <A>mat</A> with
+##  integer entries. It returns a new immutable matrix in the Smith normal
+##  form.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("SmithNormalFormIntegerMat",[IsMatrix]);
+
+#############################################################################
+##
+#O  SmithNormalFormIntegerMatTransforms(<mat>)
+##
+##  <#GAPDoc Label="SmithNormalFormIntegerMatTransforms">
+##  <ManSection>
+##  <Oper Name="SmithNormalFormIntegerMatTransforms" Arg='mat'/>
+##
+##  <Description>
+##  This operation computes the Smith normal form of a matrix <A>mat</A> with
+##  integer entries.
+##  It returns a record with components <C>normal</C> (a matrix <M>S</M>),
+##  <C>rowtrans</C> (a matrix <M>P</M>),
+##  and <C>coltrans</C> (a matrix <M>Q</M>) such that <M>P A Q = S</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation("SmithNormalFormIntegerMatTransforms",[IsMatrix]);
-DeclareOperation("SmithNormalFormIntegerMatInverseTransforms",[IsMatrix]);
 
 
 #############################################################################
 ##
-#O  HermiteNormalFormIntegerMat(<mat>[,<reduction>])
-#O  HermiteNormalFormIntegerMatTransforms(<mat>[,<reduction>])
-#O  HermiteNormalFormIntegerMatInverseTransforms(<mat>[,<reduction>])
+#O  DiagonalizeIntMat(<mat>)
 ##
-##  The Hermite Normal Form, $H$ of an integer matrix, $A$  is a row equivalent
-##  upper triangular form such that all off-diagonal entries are reduced modulo
-##  the diagonal entry of the column they are in.  There exists a unique 
-##  unimodular matrix $Q$ such that $QA = H$. 
+##  <#GAPDoc Label="DiagonalizeIntMat">
+##  <ManSection>
+##  <Oper Name="DiagonalizeIntMat" Arg='mat'/>
 ##
-##  These operations compute the Hermite normal form of a matrix <mat> with
-##  integer entries. The operations will try to select a suitable strategy.
-##  The first operation returns a immutable matrix which is the Hermite normal
-##  form of <mat>. 
+##  <Description>
+##  This function changes <A>mat</A> to its SNF.
+##  (The result is the same as
+##  that of <Ref Func="SmithNormalFormIntegerMat"/>,
+##  but <A>mat</A> will be modified, thus using less memory.)
+##  If <A>mat</A> is immutable an error will be triggered.
+##  <Example><![CDATA[
+##  gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+##  gap> SmithNormalFormIntegerMat(m);          
+##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]
+##  gap> n:=SmithNormalFormIntegerMatTransforms(m);  
+##  rec( colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
+##    coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
+##    normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], rank := 3, 
+##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1 )
+##  gap> n.rowtrans*m*n.coltrans=n.normal;
+##  true
+##  gap> DiagonalizeIntMat(m);m;
+##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  The other two operations also compute matrices for the row 
-##  transformations or inverses respectively.
-##  They return a record with the component `normal' containing the
-##  computed normal form and optional components `rowtrans' or 'invrowtrans'
-##  which hold the computed transformation matrix.
-##
-##  If the optional argument <reduction> (a rational in the range `[0..1]')
-##  is given, it specifies which representatives are used for entries modulo $c$
-##  when cleaning column entries to the top. 
-##  Off-diagonal entries are reduced to the range
-##  \quad$\lfloor c(r-1)\rfloor\ldots \lfloor cr\rfloor$
-##  where $r$ is the value of <reduction>.
-##  If <reduction> is not given, a value of 1 is assumed.
-##
-##  \beginexample
-##  gap> m;
-##  [ [ 14, 20 ], [ 6, 9 ] ]
-##  gap> HermiteNormalFormIntegerMat(m);
-##  [ [ 2, 2 ], [ 0, 3 ] ]
-##  gap> HermiteNormalFormIntegerMatTransforms(m);
-##  rec( normal := [ [ 2, 2 ], [ 0, 3 ] ], rowtrans := [ [ 1, -2 ], [ -3, 7 ] ] )
-##  \endexample
-##
-DeclareOperation("HermiteNormalFormIntegerMat",[IsMatrix]);
-DeclareOperation("HermiteNormalFormIntegerMatTransforms",[IsMatrix]);
-DeclareOperation("HermiteNormalFormIntegerMatInverseTransforms",[IsMatrix]);
+DeclareGlobalFunction( "DiagonalizeIntMat" );
 
 #############################################################################
 ##
-#O  TriangulizedIntegerMat(<mat>[,<trans>])
-#O  TriangulizedIntegerMatTransform(<mat>[,<trans>])
-#O  TriangulizedIntegerMatInverseTransform(<mat>[,<trans>])
+#O  NormalFormIntMat(<mat>, <options>)
 ##
-##  The first operation computes a row equivalent upper triangular form 
-##  of a matrix <mat> with integer entries.  It returns an immutable 
-##  matrix in upper  triangular form.
+##  <#GAPDoc Label="NormalFormIntMat">
+##  <ManSection>
+##  <Oper Name="NormalFormIntMat" Arg='mat, options'/>
 ##
-##  The other two operations also compute matrices for the row 
-##  transformations or inverses respectively.
-##  They return a record with the component `normal' containing the
-##  computed normal form and optional components `rowtrans' or `invrowtrans'
-##  which hold the computed transformation matrix.
+##  <Description>
+##  This general operation for computation of various Normal Forms
+##  is probably the most efficient.  
+##  <P/>
+##  Options bit values:
+##  <List>
+##  <Mark>0/1</Mark>
+##  <Item>
+##   Triangular Form / Smith Normal Form.
+##  </Item>
+##  <Mark>2</Mark>
+##  <Item>
+##     Reduce off diagonal entries.
+##  </Item>
+##  <Mark>4</Mark>
+##  <Item>
+##     Row Transformations.
+##  </Item>
+##  <Mark>8</Mark>
+##  <Item>
+##     Col Transformations.
+##  </Item>
+##  <Mark>16</Mark>
+##  <Item>
+##     Destructive (the original matrix may be destroyed)
+##  </Item>
+##  </List>
+##  <P/>
+##  Compute a Triangular, Hermite or Smith form of the <M>n \times m</M> 
+##  integer input matrix <M>A</M>.  Optionally, compute <M>n \times n</M> and 
+##  <M>m \times m</M> unimodular transforming matrices <M>Q, P</M>
+##  which satisfy  <M>Q A = H</M> or <M>Q A P = S</M>.
+##  <!-- %The routines used are based on work by Arne Storjohann -->
+##  <!-- %and were implemented in &GAP;&nbsp;4 by A.&nbsp;Storjohann and R.&nbsp;Wainwright. -->
+##  <P/>
+##  Note option is a value ranging from 0 to 15 but not all options make sense 
+##  (e.g., reducing off diagonal entries with SNF option selected already).  
+##  If an option makes no sense it is ignored.
+##  <P/>
+##  Returns a record with component <C>normal</C> containing the
+##  computed normal form and optional components <C>rowtrans</C> 
+##  and/or <C>coltrans</C> which hold the respective transformation matrix.
+##  Also in the record are components holding the sign of the determinant, 
+##  <C>signdet</C>, and the rank of the matrix, <C>rank</C>.
+##  <Example><![CDATA[
+##  gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+##  gap> NormalFormIntMat(m,0);  # Triangular, no transforms
+##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
+##    signdet := 1 )
+##  gap> NormalFormIntMat(m,6);  # Hermite Normal Form with row transforms
+##  rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
+##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1 )
+##  gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforms       
+##  rec( colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
+##    coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
+##    normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], rank := 3, 
+##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1 )
+##  gap> last.rowtrans*m*last.coltrans;
+##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareOperation("TriangulizedIntegerMat",[IsMatrix]);
-DeclareOperation("TriangulizedIntegerMatTransforms",[IsMatrix]);
-DeclareOperation("TriangulizedIntegerMatInverseTransforms",[IsMatrix]);
-
-
+DeclareGlobalFunction("NormalFormIntMat");
 
 #############################################################################
 ##
-#O  SNFofREF (<mat>)
+#A  BaseIntMat( <mat> )
 ##
+##  <#GAPDoc Label="BaseIntMat">
+##  <ManSection>
+##  <Attr Name="BaseIntMat" Arg='mat'/>
+##
+##  <Description>
+##  If <A>mat</A> is a matrix with integral entries, this function returns a
+##  list of vectors that forms a basis of the integral row space of <A>mat</A>, 
+##  i.e. of the set of integral linear combinations of the rows of <A>mat</A>.
+##  <Example><![CDATA[
+##  gap> mat:=[[1,2,7],[4,5,6],[10,11,19]];;
+##  gap> BaseIntMat(mat);                  
+##  [ [ 1, 2, 7 ], [ 0, 3, 7 ], [ 0, 0, 15 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "BaseIntMat", 
+  IsMatrix and IsCyclotomicCollColl );
+
+#############################################################################
+##
+#A  BaseIntersectionIntMats( <m>,<n> )
+##
+##  <#GAPDoc Label="BaseIntersectionIntMats">
+##  <ManSection>
+##  <Attr Name="BaseIntersectionIntMats" Arg='m,n'/>
+##
+##  <Description>
+##  If <A>m</A> and <A>n</A> are matrices with integral entries,
+##  this function returns a list of vectors that forms a basis of the
+##  intersection of the integral row spaces of <A>m</A> and <A>n</A>.
+##  <Example><![CDATA[
+##  gap> nat:=[[5,7,2],[4,2,5],[7,1,4]];;
+##  gap> BaseIntMat(nat);
+##  [ [ 1, 1, 15 ], [ 0, 2, 55 ], [ 0, 0, 64 ] ]
+##  gap> BaseIntersectionIntMats(mat,nat);
+##  [ [ 1, 5, 509 ], [ 0, 6, 869 ], [ 0, 0, 960 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "BaseIntersectionIntMats", 
+  [IsMatrix and IsCyclotomicCollColl,
+   IsMatrix and IsCyclotomicCollColl] );
+
+#############################################################################
+##
+#A  ComplementIntMat( <full>, <sub> )
+##
+##  <#GAPDoc Label="ComplementIntMat">
+##  <ManSection>
+##  <Attr Name="ComplementIntMat" Arg='full, sub'/>
+##
+##  <Description>
+##  Let <A>full</A> be a list of integer vectors generating an integral row
+##  module <M>M</M> and <A>sub</A> a list of vectors defining a submodule
+##  <M>S</M> of <M>M</M>.
+##  This function computes a free basis for <M>M</M> that extends <M>S</M>. 
+##  I.e., if the dimension of <M>S</M> is <M>n</M> it
+##  determines a basis
+##  <M>B = \{ b_1, \ldots, b_m \}</M> for <M>M</M>,
+##  as well as <M>n</M> integers <M>x_i</M> such that the <M>n</M> vectors
+##  <M>s_i:= x_i \cdot b_i</M> form a basis for <M>S</M>.
+##  <P/>
+##  It returns a record with the following components:
+##  <List>
+##  <Mark><C>complement</C></Mark>
+##  <Item>
+##     the vectors <M>b_{{n+1}}</M> up to <M>b_m</M>
+##     (they generate a complement to <M>S</M>).
+##  </Item>
+##  <Mark><C>sub</C></Mark>
+##  <Item>
+##     the vectors <M>s_i</M> (a basis for <M>S</M>).
+##  </Item>
+##  <Mark><C>moduli</C></Mark>
+##  <Item>
+##     the factors <M>x_i</M>.
+##  </Item>
+##  </List>
+##  <Example><![CDATA[
+##  gap> m:=IdentityMat(3);;
+##  gap> n:=[[1,2,3],[4,5,6]];;
+##  gap> ComplementIntMat(m,n);
+##  rec( complement := [ [ 0, 0, 1 ] ], moduli := [ 1, 3 ], 
+##    sub := [ [ 1, 2, 3 ], [ 0, 3, 6 ] ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ComplementIntMat", 
+  [IsMatrix and IsCyclotomicCollColl,
+   IsMatrix and IsCyclotomicCollColl] );
+
+#############################################################################
+##
+#A  NullspaceIntMat( <mat> )
+##
+##  <#GAPDoc Label="NullspaceIntMat">
+##  <ManSection>
+##  <Attr Name="NullspaceIntMat" Arg='mat'/>
+##
+##  <Description>
+##  If <A>mat</A> is a matrix with integral entries, this function returns a
+##  list of vectors that forms a basis of the integral nullspace of
+##  <A>mat</A>, i.e., of those vectors in the nullspace of <A>mat</A> that
+##  have integral entries.
+##  <Example><![CDATA[
+##  gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+##  gap> NullspaceMat(mat);   
+##  [ [ -7/4, 9/2, -15/4, 1, 0 ], [ -3/4, -3/2, 1/4, 0, 1 ] ]
+##  gap> NullspaceIntMat(mat);                              
+##  [ [ 1, 18, -9, 2, -6 ], [ 0, 24, -13, 3, -7 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "NullspaceIntMat", 
+  IsMatrix and IsCyclotomicCollColl );
+
+#############################################################################
+##
+#O  SolutionIntMat( <mat>, <vec> )
+##
+##  <#GAPDoc Label="SolutionIntMat">
+##  <ManSection>
+##  <Oper Name="SolutionIntMat" Arg='mat, vec'/>
+##
+##  <Description>
+##  If <A>mat</A> is a matrix with integral entries and <A>vec</A> a vector
+##  with integral entries, this function returns a vector <M>x</M> with
+##  integer entries that is a solution of the equation
+##  <M>x</M> <C>* <A>mat</A> = <A>vec</A></C>.
+##  It returns <K>fail</K> if no such vector exists.
+##  <Example><![CDATA[
+##  gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+##  gap> SolutionMat(mat,[95,115,182]);
+##  [ 47/4, -17/2, 67/4, 0, 0 ]
+##  gap> SolutionIntMat(mat,[95,115,182]);   
+##  [ 2285, -5854, 4888, -1299, 0 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "SolutionIntMat", 
+  [IsMatrix and IsCyclotomicCollColl,
+    IsList and IsCyclotomicCollection]);
+
+#############################################################################
+##
+#O  SolutionNullspaceIntMat( <mat>,<vec> )
+##
+##  <#GAPDoc Label="SolutionNullspaceIntMat">
+##  <ManSection>
+##  <Oper Name="SolutionNullspaceIntMat" Arg='mat,vec'/>
+##
+##  <Description>
+##  This function returns a list of length two, its first entry being the
+##  result of a call to <Ref Func="SolutionIntMat"/> with same arguments,
+##  the second the result of <Ref Func="NullspaceIntMat"/> applied to the
+##  matrix <A>mat</A>.
+##  The calculation is performed faster than if two separate calls would be
+##  used.
+##  <Example><![CDATA[
+##  gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+##  gap> SolutionNullspaceIntMat(mat,[95,115,182]);
+##  [ [ 2285, -5854, 4888, -1299, 0 ], 
+##    [ [ 1, 18, -9, 2, -6 ], [ 0, 24, -13, 3, -7 ] ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "SolutionNullspaceIntMat", 
+  [IsMatrix and IsCyclotomicCollColl,
+    IsList and IsCyclotomicCollection]);
+
+#############################################################################
+##
+#A  AbelianInvariantsOfList( <list> ) . . . . .  abelian invariants of a list
+##
+##  <#GAPDoc Label="AbelianInvariantsOfList">
+##  <ManSection>
+##  <Attr Name="AbelianInvariantsOfList" Arg='list'/>
+##
+##  <Description>
+##  Given a list of positive integers, this routine returns a list of prime
+##  powers, such that the prime power factors of the entries in the list are
+##  returned in sorted form.
+##  <Example><![CDATA[
+##  gap> AbelianInvariantsOfList([4,6,2,12]);
+##  [ 2, 2, 3, 3, 4, 4 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "AbelianInvariantsOfList", IsCyclotomicCollection );
+
+#############################################################################
+##
+#O  DeterminantIntMat(<mat>)
+##
+##  <#GAPDoc Label="DeterminantIntMat">
+##  <ManSection>
+##  <Oper Name="DeterminantIntMat" Arg='mat'/>
+##
+##  <Description>
+##  <Index Subkey="integer matrix">determinant</Index>
+##  Computes the determinant of an integer matrix using the  
+##  same strategy as <Ref Func="NormalFormIntMat"/>.
+##  This method is 
+##  faster in general for matrices greater than <M>20 \times 20</M> but 
+##  quite a lot slower for smaller matrices.  It therefore passes 
+##  the work to the more general <Ref Func="DeterminantMat"/>
+##  for these smaller matrices.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("DeterminantIntMat");
+
+# ``technical'' routines.
+
+#############################################################################
+##
+#O  SNFofREF(<mat>,<destroy>)
+##
+##  <ManSection>
+##  <Oper Name="SNFofREF" Arg='mat,destroy'/>
+##
+##  <Description>
 ##  Computes the Smith Normal Form of an integer matrix in row echelon 
 ##  (RE) form.
-##  Caveat -- No testing is done to ensure that <mat> is in RE form.  
+##  If <A>destroy</A> is set to <K>true</K> <A>mat</A> will be changed in-place.
+##  Caveat
+##  &ndash;No testing is done to ensure that <A>mat</A> is in RE form.  
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction("SNFofREF");
 
 
 #############################################################################
 ##
-#O  NormalFormIntMat (<mat>, <options>)
-##
-##  This general operation for computation of various Normal Forms
-##  is probably the most efficient.  
-##
-##  Options bit values:
-##  \beginlist
-##  \item{0/1} Triangular Form / Smith Normal Form.
-##
-##  \item{2}   Reduce off diagonal entries.
-##
-##  \item{4}   Row Transformations.
-##
-##  \item{8}   Col Transformations.
-##  \endlist
-##
-##  Compute a Triangular, Hermite or Smith form of the $n \times m$ 
-##  integer input matrix $A$.  Optionally, compute $n \times n$ and 
-##  $m \times m$ unimodular transforming matrices $Q, P$ which satisfy 
-##  $QA = H$ or $QAP = S$.
-##  The routines used are based on work by Arne Storjohann
-##  and were implemented in {\GAP}~4 by A.~Storjohann and R.~Wainwright.
-##  
-##  Note option is a value ranging from 0 - 15 but not all options make sense 
-##  (eg reducing off diagonal entries with SNF option selected already).  
-##  If an option makes no sense it is ignored.
-##
-##  Returns a record with component `normal' containing the
-##  computed normal form and optional components `rowtrans' 
-##  and/or `coltrans' which hold the respective transformation matrix.
-##  Also in the record are components holding  the sign of the determinant, 
-##  signdet, and the Rank of the matrix, rank.
-##
-##  \beginexample
-##  gap> m:=[[14,20],[6,9]];;
-##  gap> NormalFormIntMat(m,0);  # Triangular, no transforms
-##  rec( normal := [ [ 2, 2 ], [ 0, 3 ] ], rank := 2, signdet := 1 )
-##  \endexample
-##
-##  \beginexample
-##  gap> NormalFormIntMat(m,6);  # Hermite Normal Form with row transforms
-##  rec( normal := [ [ 2, 2 ], [ 0, 3 ] ], rank := 2, signdet := 1, 
-##    rowtrans := [ [ 1, -2 ], [ -3, 7 ] ] )
-##  \endexample
-##
-##  \beginexample
-##  gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforming matrices
-##  rec( normal := [ [ 1, 0 ], [ 0, 6 ] ], rank := 2, signdet := 1, 
-##    rowtrans := [ [ -11, 25 ], [ -15, 34 ] ], 
-##    coltrans := [ [ 1, -5 ], [ 1, -4 ] ] )
-##  gap> last.rowtrans*m*last.coltrans;
-##  [ [ 1, 0 ], [ 0, 6 ] ]
-##  \endexample
-##
-DeclareGlobalFunction("NormalFormIntMat");
+#E
 
-
-#############################################################################
-##
-#O  DeterminantIntMat(<mat>)
-##
-##  Computes the determinant of an integer matrix using the  
-##  same strategy as `NormalFormIntMat' (see~"NormalFormIntMat").
-##  This method is 
-##  faster in general for matrices greater than $20 \times 20$ but 
-##  quite a lot slower for smaller matrices.  It therefore passes 
-##  the work to the more general `DeterminantMat' (see~"DeterminantMat")
-##  for these smaller matrices.
-##
-DeclareGlobalFunction("DeterminantIntMat");
-
-
-
-
-#############################################################################
-##
-#E  matint.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

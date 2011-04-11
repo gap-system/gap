@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the profiling functions.
 ##
@@ -16,15 +17,11 @@ Revision.profile_g :=
 #############################################################################
 ##
 #V  PROFILED_FUNCTIONS  . . . . . . . . . . . . . . list of profiled function
+#V  PREV_PROFILED_FUNCTIONS . . . . . . list of previously profiled functions
 ##
 PROFILED_FUNCTIONS := [];
 PROFILED_FUNCTIONS_NAMES := [];
 
-
-#############################################################################
-##
-#V  PREV_PROFILED_FUNCTIONS . . . . . . list of previously profiled functions
-##
 PREV_PROFILED_FUNCTIONS := [];
 PREV_PROFILED_FUNCTIONS_NAMES := [];
 
@@ -33,7 +30,16 @@ PREV_PROFILED_FUNCTIONS_NAMES := [];
 ##
 #F  ClearProfile()  . . . . . . . . . . . . . . clear all profile information
 ##
-##  clears all stored profiling information.
+##  <#GAPDoc Label="ClearProfile">
+##  <ManSection>
+##  <Func Name="ClearProfile" Arg=''/>
+##
+##  <Description>
+##  clears all stored profile information.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("ClearProfile",function()
     local   i;
 
@@ -42,38 +48,178 @@ BIND_GLOBAL("ClearProfile",function()
     od;
 end);
 
-#############################################################################
-##
-#V  PROFILETHRESHOLD
-##
-##  This variable is a list $[<cnt>,<time>]$ of length two. `DisplayProfile'
-##  will only display lines for functions which are called at least <cnt>
-##  times or whose *total* time (``self''+``child'') is at least <time>.
-##  The default value of `PROFILETHRESHOLD' is [10000,30].
-PROFILETHRESHOLD:=[10000,30]; # cnt, time
 
 #############################################################################
 ##
-#F  DisplayProfile( )
-#F  DisplayProfile( <funcs> )
+#F  ProfileInfo( <functions>, <mincount>, <mintime> )
 ##
-##  In the first form, `DisplayProfile' displays the profiling information
-##  for profiled operations, methods and functions. If an argument
-##  <funcs> is given, only profiling information for the functions in
-##  <funcs> is given.  The information for a profiled  function is only
-##  displayed if the number of calls to the function or the total time spent
-##  in the function exceeds a given threshold (see~"PROFILETHRESHOLD").
+##  This function collects the information about the currently profiled
+##  functions in a table.
+##  It is assumed that profiling has been switched off before the function
+##  gets called, in order not to mess up the shown data by the function
+##  calls inside `ProfileInfo' or inside the function that called it.
 ##
-##  Profiling information is displayed in a list of lines for all functions
-##  (also operations and methods) which are profiled. For each function,
-##  ``count'' gives the number of times the function has been called.
-##  ``self'' gives the time spent in the function itself, ``child'' the time
-##  spent in profiled functions called from within this function.
-##  The list is sorted according to the total time spent, that is the sum
-##  ``self''+``child''.
+##  The differences between this function and the corresponding code used in
+##  the GAP 4.4 function `DisplayProfile' are that
+##  - negative values in the columns 3 and 5 are replaced by zero,
+##  - the footer line showing ``OTHER'' contains a value (total memory
+##    allocated) in column 4,
+##  - the table really contains the rows for those functions that satisfy the
+##    conditions defined for `GAPInfo.ProfileThreshold' (its definition 
+##    says `<=' but the old implementation checked `<'),
+##  - the ``TOTAL'' and ``OTHER'' lines show the summation over all profiled
+##    functions, including the ones for which no line is shown due to the
+##    restrictions imposed by `GAPInfo.ProfileThreshold'.
+##
+##  This function, in particular the component `funs' in the record it
+##  returns, is used also in the package `Browse'.
+##
+BindGlobal( "ProfileInfo", function( funcs, mincount, mintime )
+    local all, nam, pkgnames, pkgpaths, prof, sort, funs, ttim, tsto,
+          otim, osto, i, tmp, str, v3, v5, pkg, pi;
+
+    all:= Concatenation( PROFILED_FUNCTIONS,
+                         PREV_PROFILED_FUNCTIONS );
+    nam:= Concatenation( PROFILED_FUNCTIONS_NAMES,
+                         PREV_PROFILED_FUNCTIONS_NAMES );
+
+    if funcs = "all" then
+      funcs:= all;
+    fi;
+
+    # (Similar code is in `app/methods.g' of the `Browse' package.)
+    pkgnames:= ShallowCopy( RecNames( GAPInfo.PackagesLoaded ) );
+    pkgpaths:= List( pkgnames, nam -> GAPInfo.PackagesLoaded.( nam )[1] );
+    pkgnames:= List( pkgnames, nam -> GAPInfo.PackagesLoaded.( nam )[3] );
+    Append( pkgnames, List( GAPInfo.RootPaths, x -> "GAP" ) );
+    Append( pkgpaths, GAPInfo.RootPaths );
+    Add( pkgnames, "GAP" );
+    Add( pkgpaths, "GAPROOT/" ); # used for compiled functions in lib
+
+    prof:= [];
+    sort:= [];
+    funs:= [];
+    ttim:= 0;
+    tsto:= 0;
+    otim:= 0;
+    osto:= 0;
+    for i in [ 1 .. Length( all ) ] do
+      tmp:= PROF_FUNC( all[i] );
+      if ( mincount <= tmp[1] or mintime <= tmp[2] ) and all[i] in funcs then
+        if IsString( nam[i] ) then
+          str:= nam[i];
+        else
+          str:= Concatenation( nam[i] );
+        fi;
+        v3:= tmp[2] - tmp[3];
+        if v3 < 0 then
+          v3:= 0;
+        fi;
+        v5:= tmp[4] - tmp[5];
+        if v5 < 0 then
+          v5:= 0;
+        fi;
+        pkg:= FilenameFunc( all[i] );
+        if pkg <> fail then
+          pkg:= PositionProperty( pkgpaths,
+                    path -> Length( path ) < Length( pkg )
+                    and pkg{ [ 1 .. Length( path ) ] } = path );
+        fi;
+        if pkg <> fail then
+          pkg:= pkgnames[ pkg ];
+        elif IsOperation( all[i] ) then
+          pkg:= "(oprt.)";
+        else
+          pkg:= "";
+        fi;
+        Add( prof, [ tmp[1], tmp[3], v3, tmp[5], v5, pkg, str ] );
+        Add( funs, all[i] );
+        Add( sort, tmp[2] );
+      else
+        otim:= otim + tmp[3];
+        osto:= osto + tmp[5];
+      fi;
+      ttim:= ttim + tmp[3];
+      tsto:= tsto + tmp[5];
+    od;
+
+    # sort functions according to total time spent
+    pi:= Sortex( sort );
+    prof:= Permuted( prof, pi );
+    funs:= Permuted( funs, pi );
+
+    return rec( prof:= prof, ttim:= ttim, tsto:= tsto,
+                funs:= funs, otim:= otim, osto:= osto,
+                denom:= [ 1, 1, 1, 1024, 1024, 1, 1 ],
+                widths:= [ 7, 7, 7, 7, 7, -7, -1 ],
+                labelsCol:= [ "  count", "self/ms", "chld/ms", "stor/kb",
+                              "chld/kb", "package", "function" ],
+                sepCol:= "  " );
+end );
+
+
+#############################################################################
+##
+#F  DisplayProfile( [<functions>][,][<mincount>, <mintime>] )
+#V  GAPInfo.ProfileThreshold
+##
+##  <#GAPDoc Label="DisplayProfile">
+##  <ManSection>
+##  <Func Name="DisplayProfile" Arg="[functions][,][mincount, mintime]"/>
+##  <Var Name="GAPInfo.ProfileThreshold"/>
+##
+##  <Description>
+##  Called without arguments, <Ref Func="DisplayProfile"/> displays the
+##  profile information for profiled operations, methods and functions.
+##  If an argument <A>functions</A> is given, only profile information for
+##  the functions in the list <A>functions</A> is shown.
+##  If two integer values <A>mincount</A>, <A>mintime</A> are given as
+##  arguments then the output is restricted to those functions that were
+##  called at least <A>mincount</A> times or for which the total time spent
+##  (see below) was at least <A>mintime</A> milliseconds.
+##  The defaults for <A>mincount</A> and <A>mintime</A> are the entries of
+##  the list stored in the global variable
+##  <Ref Var="GAPInfo.ProfileThreshold"/>.
+##  <P/>
+##  The default value of <Ref Var="GAPInfo.ProfileThreshold"/> is
+##  <C>[ 10000, 30 ]</C>.
+##  <P/>
+##  Profile information is displayed in a list of lines for all functions
+##  (including operations and methods) which are profiled.
+##  For each function,
+##  <Q>count</Q> gives the number of times the function has been called.
+##  <Q>self/ms</Q> gives the time (in milliseconds) spent in the function
+##  itself,
+##  <Q>chld/ms</Q> the time (in milliseconds) spent in profiled functions
+##  called from within this function,
+##  <Q>stor/kb</Q> the amount of storage (in kilobytes) allocated by the
+##  function itself,
+##  <Q>chld/kb</Q> the amount of storage (in kilobytes) allocated by
+##  profiled functions called from within this function, and
+##  <Q>package</Q> the name of the &GAP; package to which the function
+##  belongs; the entry <Q>GAP</Q> in this column means that the function
+##  belongs to the &GAP; library, the entry <Q>(oprt.)</Q> means that the
+##  function is an operation (which may belong to several packages),
+##  and an empty entry means that <Ref Func="FilenameFunc"/> cannot
+##  determine in which file the function is defined.
+##  <P/>
+##  The list is sorted according to the total time spent in the functions,
+##  that is the sum of the values in the columns
+##  <Q>self/ms</Q> and <Q>chld/ms</Q>.
+##  <P/>
+##  At the end of the list, two lines are printed that show the total time
+##  used and the total memory allocated by the profiled functions not shown
+##  in the list (label <C>OTHER</C>)
+##  and by all profiled functions (label <C>TOTAL</C>), respectively.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+GAPInfo.ProfileThreshold:=[10000,30]; # cnt, time
+
 BIND_GLOBAL("DisplayProfile",function( arg )
-    local    prof,  tmp,  i,  p,  w,  j,  line,  str,  n,  s,  tsum,  other,
-             funcs,  k,  all,  nam,  tsto,  sum;
+    local i, funcs, mincount, mintime, prof, w, n, s, j, k, line, str, denom,
+          qotim, qosto;
 
     # stop profiling of functions needed below
     for i  in PROFILED_FUNCTIONS  do
@@ -81,91 +227,49 @@ BIND_GLOBAL("DisplayProfile",function( arg )
     od;
 
     # unravel the arguments
-    all := Concatenation( PROFILED_FUNCTIONS,
-                          PREV_PROFILED_FUNCTIONS );
-    nam := Concatenation( PROFILED_FUNCTIONS_NAMES,
-                          PREV_PROFILED_FUNCTIONS_NAMES );
     if 0 = Length(arg)  then
-      funcs := all;
-    elif Length(arg)=1 and not IsFunction(arg[1]) then
-      funcs:=arg[1];
+      funcs:= "all";
+      mincount:= GAPInfo.ProfileThreshold[1];
+      mintime:= GAPInfo.ProfileThreshold[2];
+    elif Length( arg ) = 1 and IsList( arg[1] ) then
+      funcs:= arg[1];
+      mincount:= GAPInfo.ProfileThreshold[1];
+      mintime:= GAPInfo.ProfileThreshold[2];
+    elif Length( arg ) = 2 and IsInt( arg[1] ) and IsInt( arg[2] ) then
+      funcs:= "all";
+      mincount:= arg[1];
+      mintime:= arg[2];
+    elif Length( arg ) = 3 and IsList( arg[1] ) and IsInt( arg[2] )
+                           and IsInt( arg[3] ) then
+      funcs:= arg[1];
+      mincount:= arg[2];
+      mintime:= arg[3];
+    elif ForAll( arg, IsFunction ) then
+      funcs:= arg;
+      mincount:= GAPInfo.ProfileThreshold[1];
+      mintime:= GAPInfo.ProfileThreshold[2];
     else
-      funcs:=arg;
+      # Start profiling again.
+      for i in PROFILED_FUNCTIONS do
+        PROFILE_FUNC( i );
+      od;
+      Error(
+        "usage: DisplayProfile( [<functions>][,][<mincount>, <mintime>] )" );
     fi;
 
-    # get all operations called at least once
-    prof  := [];
-    tsum  := 0;
-    tsto  := 0;
-    other := 0;
-    for i  in [ 1 .. Length(all) ]  do
-	tmp := PROF_FUNC(all[i]);
-	if tmp[1] > 0  then
-            if all[i] in funcs  then
-                n := [];
-                if IsString(nam[i])  then
-                    str := nam[i];
-                else
-                    str := ShallowCopy(nam[i][1]);
-                    for  k  in [ 2 .. Length(nam[i]) ]  do
-                        Append( str, nam[i][k] );
-                    od;
-                fi;
-                Add( n, str );
-                Add( n, tmp[1] );
-                if 0 < tmp[2]  then Add(n,tmp[2]);  else Add(n,0);  fi;
-                if 0 < tmp[3]  then Add(n,tmp[3]);  else Add(n,0);  fi;
-                Add( n, QuoInt(tmp[4],1024) );
-                Add( n, QuoInt(tmp[5],1024) );
-                Add( prof, n );
-            elif 0 < tmp[3]  then
-                other := other + tmp[3];
-            fi;
-            if 0 < tmp[3]  then
-                tsum := tsum + tmp[3];
-            fi;
-            if 0 < tmp[5]  then
-                tsto := tsto + QuoInt(tmp[5],1024);
-            fi;
-	fi;
-    od;
-
-    # take only those which are not to be ignored
-    prof:=Filtered(prof,i->i[2]>PROFILETHRESHOLD[1]
-			or i[3]>PROFILETHRESHOLD[2]);
-
-    # sort functions according to time spent in self
-    #Sort( prof, function(a,b)
-    #    return ( a[4] = b[4] and a[2] > b[2] ) or a[4] > b[4];
-    #end );
-    #prof := Reversed(prof);
-
-    # sort functions according to total time spent
-    Sort( prof, function(a,b)
-	return a[3]<b[3];
-    end );
+    prof:= ProfileInfo( funcs, mincount, mintime );
 
     # set width and names
-    if ForAll( prof, i -> i[5] = 0 )  then
-        w := [ 7, 7, 7, -43 ];
-        p := [ 2, 4,-2,   1 ];
-
-        n := [ "count", "self/ms", "chld/ms", "function" ];
-    else
-        w := [ 7, 7,  7, 7,  7, -30 ];
-        p := [ 2, 4, -2, 6, -3,   1 ];
-        n := [ "count", "self/ms", "chld/ms", "stor/kb", "chld/kb",
-               "function" ];
-    fi;
-    s := "  ";
+    w:= prof.widths;
+    n:= prof.labelsCol;
+    s:= prof.sepCol;
 
     # use screen size for the name
     j := 0;
-    for i  in [ 1 .. Length(w) ]  do
-        if p[i] <> 1  then
+    k:= Length( w );
+    for i  in [ 1 .. k ]  do
+        if i <> k then
             j := j + AbsInt(w[i]) + Length(s);
-        else
-            k := i;
         fi;
     od;
     if w[k] < 0  then
@@ -176,81 +280,88 @@ BIND_GLOBAL("DisplayProfile",function( arg )
 
     # print a nice header
     line := "";
-    for j  in [ 1 .. Length(p) ]  do
-	str := FormattedString( n[j], w[j] );
-	if Length(str) > AbsInt(w[j])  then
-	    str := str{[1..AbsInt(w[j])-1]};
-	    Add( str, '*' );
-	fi;
-	Append( line, str );
-        Append( line, s   );
+    for j  in [ 1 .. k ]  do
+        if j <> 1 then
+          Append( line, s );
+        fi;
+        str := String( n[j], w[j] );
+        if Length(str) > AbsInt(w[j])  then
+            str := str{[1..AbsInt(w[j])-1]};
+            Add( str, '*' );
+        fi;
+        Append( line, str );
     od;
     Print( line, "\n" );
 
     # print profile
-    sum := 0;
-    for i  in prof  do
-	line := "";
-	for j  in [ 1 .. Length(p) ]  do
-            if p[j] = -1  then
-                sum := sum + i[4];
-                str := FormattedString( sum, w[j] );
-            elif p[j] = -2  then
-                str := FormattedString( i[3]-i[4], w[j] );
-            elif p[j] = -3  then
-                str := FormattedString( i[5]-i[6], w[j] );
-            else
-                str := FormattedString( i[p[j]], w[j] );
-            fi;
-            if Length(str) > AbsInt(w[j])  then
-                str := str{[1..AbsInt(w[j])-1]};
-                Add( str, '*' );
-	    fi;
-	    Append( line, str );
-	    Append( line, s   );
-	od;
-        Print( line, "\n" );
-    od;
-
-    # print other
-    if other > 0  then
+    denom:= prof.denom;
+    for i in prof.prof do
         line := "";
-        for j  in [ 1 .. Length(p) ]  do
-            if p[j] = 4  then
-                str := FormattedString( other, w[j] );
-            elif p[j] = 1  then
-                str := FormattedString( "OTHER", w[j] );
+        for j  in [ 1 .. k ]  do
+            if j <> 1 then
+                Append( line, s );
+            fi;
+            if denom[j] <> 1 then
+              str:= String( QuoInt( i[j], denom[j] ), w[j] );
             else
-                str := FormattedString( " ", w[j] );
+              str:= String( i[j], w[j] );
             fi;
             if Length(str) > AbsInt(w[j])  then
                 str := str{[1..AbsInt(w[j])-1]};
                 Add( str, '*' );
             fi;
             Append( line, str );
-            Append( line, s   );
+        od;
+        Print( line, "\n" );
+    od;
+
+    # print other
+    qotim:= QuoInt( prof.otim, denom[2] );
+    qosto:= QuoInt( prof.osto, denom[4] );
+    if 0 < qotim or 0 < qosto then
+        line := "";
+        for j  in [ 1 .. k ]  do
+            if j <> 1 then
+              Append( line, s   );
+            fi;
+            if j = 2  then
+                str := String( qotim, w[j] );
+            elif j = 4  then
+                str := String( qosto, w[j] );
+            elif j = k  then
+                str := String( "OTHER", w[j] );
+            else
+                str := String( " ", w[j] );
+            fi;
+            if Length(str) > AbsInt(w[j])  then
+                str := str{[1..AbsInt(w[j])-1]};
+                Add( str, '*' );
+            fi;
+            Append( line, str );
         od;
         Print( line, "\n" );
     fi;
 
     # print total
     line := "";
-    for j  in [ 1 .. Length(p) ]  do
-	if p[j] = 4  then
-	    str := FormattedString( tsum, w[j] );
-        elif p[j] = 6  then
-            str := FormattedString( tsto, w[j] );
-        elif p[j] = 1  then
-            str := FormattedString( "TOTAL", w[j] );
-	else
-	    str := FormattedString( " ", w[j] );
-	fi;
-  	if Length(str) > AbsInt(w[j])  then
-	    str := str{[1..AbsInt(w[j])-1]};
-	    Add( str, '*' );
-	fi;
-	Append( line, str );
-	Append( line, s   );
+    for j  in [ 1 .. k ]  do
+        if j <> 1 then
+          Append( line, s   );
+        fi;
+        if j = 2  then
+          str := String( prof.ttim, w[j] );
+        elif j = 4  then
+            str := String( QuoInt( prof.tsto, 1024 ), w[j] );
+        elif j = k  then
+            str := String( "TOTAL", w[j] );
+        else
+            str := String( " ", w[j] );
+        fi;
+        if Length(str) > AbsInt(w[j])  then
+            str := str{[1..AbsInt(w[j])-1]};
+            Add( str, '*' );
+        fi;
+        Append( line, str );
     od;
     Print( line, "\n" );
 
@@ -258,18 +369,167 @@ BIND_GLOBAL("DisplayProfile",function( arg )
     for i  in PROFILED_FUNCTIONS  do
         PROFILE_FUNC(i);
     od;
-
 end);
+
+
+#############################################################################
+##
+#F  DisplayProfileSummaryForPackages( [<functions>][,]
+#F                                    [<mincount>, <mintime>][,][<mode>] )
+##
+BIND_GLOBAL( "DisplayProfileSummaryForPackages", function( arg )
+    local i, modes, funcs, mincount, mintime, mode, prof, n, pkgpos, timepos,
+          storpos, pkgnames, sumtime, sumstor, denom, pkg, pos, range, sep,
+          widths;
+
+    # Stop profiling of functions needed below.
+    for i in PROFILED_FUNCTIONS do
+      UNPROFILE_FUNC( i );
+    od;
+
+    modes:= [ "time", "stor", "name", "Name" ];
+
+    # Unravel the arguments.
+    funcs:= "all";
+    mincount:= GAPInfo.ProfileThreshold[1];
+    mintime:= GAPInfo.ProfileThreshold[2];
+    mode:= "time";
+    if 0 = Length(arg)  then
+      # Keep these defaults.
+    elif Length( arg ) = 1 and arg[1] in modes then
+      mode:= arg[1];
+    elif Length( arg ) = 1 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction ) then
+      funcs:= arg[1];
+    elif Length( arg ) = 2 and IsInt( arg[1] ) and IsInt( arg[2] ) then
+      mincount:= arg[1];
+      mintime:= arg[2];
+    elif Length( arg ) = 2 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction )
+                           and arg[2] in modes then
+      funcs:= arg[1];
+      mode:= arg[2];
+    elif Length( arg ) = 3 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction )
+                           and IsInt( arg[2] ) and IsInt( arg[3] ) then
+      funcs:= arg[1];
+      mincount:= arg[2];
+      mintime:= arg[3];
+    elif Length( arg ) = 3 and IsInt( arg[1] ) and IsInt( arg[2] )
+                           and arg[3] in modes then
+      mincount:= arg[1];
+      mintime:= arg[2];
+      mode:= arg[3];
+    elif Length( arg ) = 4 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction )
+                           and IsInt( arg[2] ) and IsInt( arg[3] )
+                           and arg[4] in modes then
+      funcs:= arg[1];
+      mincount:= arg[2];
+      mintime:= arg[3];
+      mode:= arg[4];
+    elif ForAll( arg, IsFunction ) then
+      funcs:= arg;
+    else
+      # Start profiling again.
+      for i in PROFILED_FUNCTIONS do
+        PROFILE_FUNC( i );
+      od;
+      Error( "usage: DisplayProfileSummaryForPackages( ",
+             "[<functions>][,][<mincount>, <mintime>][,][<mode>] )" );
+    fi;
+
+    # Collect the data.
+    prof:= ProfileInfo( funcs, mincount, mintime );
+
+    # Initialize values.
+    n:= prof.labelsCol;
+    pkgpos:= Position( n, "package" );
+    timepos:= Position( n, "self/ms" );
+    storpos:= Position( n, "stor/kb" );
+    pkgnames:= [ "GAP" ];
+    sumtime:= [ 0 ];
+    sumstor:= [ 0 ];
+
+    # Distribute values.
+    denom:= prof.denom;
+    for i in prof.prof do
+      pkg:= i[ pkgpos ];
+      if pkg = "GAP" or pkg = "" then
+        pos:= 1;
+      else
+        pos:= Position( pkgnames, pkg );
+        if pos = fail then
+          Add( pkgnames, pkg );
+          pos:= Length( pkgnames );
+          sumtime[ pos ]:= 0;
+          sumstor[ pos ]:= 0;
+        fi;
+      fi;
+      sumtime[ pos ]:= sumtime[ pos ] + i[ timepos ];
+      sumstor[ pos ]:= sumstor[ pos ] + i[ storpos ];
+    od;
+    sumtime:= List( sumtime, x -> QuoInt( x, denom[ timepos ] ) );
+    sumstor:= List( sumstor, x -> QuoInt( x, denom[ storpos ] ) );
+
+    # Sort data.
+    range:= [ 1 .. Length( pkgnames ) ];
+    if   mode = "time" then
+      SortParallel( - sumtime, range );
+    elif mode = "stor" then
+      SortParallel( - sumstor, range );
+    elif mode = "name" then
+      SortParallel( List( pkgnames, LowercaseString ), range );
+    else      # "Name"
+      SortParallel( ShallowCopy( pkgnames ), range );
+    fi;
+
+    # Print profile information.
+    sep:= "  ";
+    widths:= [ - Maximum( Length( "package" ),
+                          Maximum( List( pkgnames, Length ) ) ),
+               Maximum( Length( "self/ms" ),
+                        Length( String( Maximum( sumtime ) ) ) ),
+               Maximum( Length( "stor/kb" ),
+                        Length( String( Maximum( sumstor ) ) ) ) ];
+    Print( "Profile information by packages:\n",
+           sep, String( "package", widths[1] ),
+           sep, String( "self/ms", widths[2] ),
+           sep, String( "stor/kb", widths[3] ), "\n" );
+    for i in range do
+      Print( sep, String( pkgnames[i], widths[1] ),
+             sep, String( sumtime[i], widths[2] ),
+             sep, String( sumstor[i], widths[3] ), "\n" );
+    od;
+
+    # Start profiling of functions needed above.
+    for i in PROFILED_FUNCTIONS do
+      PROFILE_FUNC( i );
+    od;
+end );
+
 
 #############################################################################
 ##
 #F  ProfileFunctions( <funcs> )
 ##
-##  turns profiling on for all function in <funcs>. You can use
-##  `ProfileGlobalFunctions' (see~"ProfileGlobalFunctions") to turn
-##  profiling on for all globally declared functions simultaneously.
+##  <#GAPDoc Label="ProfileFunctions">
+##  <ManSection>
+##  <Func Name="ProfileFunctions" Arg='funcs'/>
+##
+##  <Description>
+##  starts profiling for all function in the list <A>funcs</A>.
+##  You can use <Ref Func="ProfileGlobalFunctions"/>
+##  to turn profiling on for all globally declared functions simultaneously.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("ProfileFunctions",function( arg )
-local funcs,names,i,pos;
+    local   funcs,  names,  hands,  pi,  OLD_PROFILED_FUNCTIONS,
+            OLD_PROFILED_FUNCTIONS_NAMES,
+            i,  phands,  pi2,  j,  x,  y,
+                        f;
 
   if Length(arg)=2 and IsList(arg[1]) and IsList(arg[2]) then
     funcs:=arg[1];
@@ -283,21 +543,47 @@ local funcs,names,i,pos;
     names:=List(funcs,NameFunction);
   fi;
 
-    for i  in [ 1 .. Length(funcs) ]  do
-        if not funcs[i] in PROFILED_FUNCTIONS  then
-            Add( PROFILED_FUNCTIONS,       funcs[i] );
-            Add( PROFILED_FUNCTIONS_NAMES, names[i] );
-            PROFILE_FUNC(funcs[i]);
-        fi;
-        pos := Position( PREV_PROFILED_FUNCTIONS, funcs[i] );
-        if pos <> fail  then
-            Unbind( PREV_PROFILED_FUNCTIONS[pos] );
-            Unbind( PREV_PROFILED_FUNCTIONS_NAMES[pos] );
-        fi;
-        CLEAR_PROFILE_FUNC(funcs[i]);
-    od;
-    PREV_PROFILED_FUNCTIONS      :=Compacted(PREV_PROFILED_FUNCTIONS);
-    PREV_PROFILED_FUNCTIONS_NAMES:=Compacted(PREV_PROFILED_FUNCTIONS_NAMES);
+  Append(PROFILED_FUNCTIONS, funcs);
+  Append(PROFILED_FUNCTIONS_NAMES, names);
+  hands := List(PROFILED_FUNCTIONS, HANDLE_OBJ);
+  pi := Sortex(hands);
+  OLD_PROFILED_FUNCTIONS := Permuted(PROFILED_FUNCTIONS, pi);
+  OLD_PROFILED_FUNCTIONS_NAMES := Permuted(PROFILED_FUNCTIONS_NAMES, pi);
+  PROFILED_FUNCTIONS := [OLD_PROFILED_FUNCTIONS[1]];
+  PROFILED_FUNCTIONS_NAMES := [OLD_PROFILED_FUNCTIONS_NAMES[1]];
+  for i in [2..Length(OLD_PROFILED_FUNCTIONS)] do
+      if hands[i-1] <> hands[i] then
+          Add(PROFILED_FUNCTIONS, OLD_PROFILED_FUNCTIONS[i]);
+          Add(PROFILED_FUNCTIONS_NAMES, OLD_PROFILED_FUNCTIONS_NAMES[i]);
+      fi;
+  od;
+
+  hands := List(funcs, HANDLE_OBJ);
+  Sort(hands);
+  phands := List(PREV_PROFILED_FUNCTIONS, HANDLE_OBJ);
+  pi2 := Sortex(phands)^-1;
+  i := 1;
+  j := 1;
+  while i <= Length(hands) and j <= Length(phands) do
+      x := hands[i];
+      y := phands[j];
+      if x < y then
+          i := i+1;
+      elif y < x then
+          j := j+1;
+      else
+          Unbind(PREV_PROFILED_FUNCTIONS[j^pi2]);
+          Unbind(PREV_PROFILED_FUNCTIONS_NAMES[j^pi2]);
+          j := j+1;
+      fi;
+  od;
+  PREV_PROFILED_FUNCTIONS      :=Compacted(PREV_PROFILED_FUNCTIONS);
+  PREV_PROFILED_FUNCTIONS_NAMES:=Compacted(PREV_PROFILED_FUNCTIONS_NAMES);
+  for f in funcs do
+      PROFILE_FUNC(f);
+      CLEAR_PROFILE_FUNC(f);
+  od;
+
 end);
 
 
@@ -305,9 +591,18 @@ end);
 ##
 #F  UnprofileFunctions( <funcs> ) . . . . . . . . . . . . unprofile functions
 ##
-##  turns profiling off for all function in <funcs>. Recorded information is
-##  still kept, so you can  display it even after turning the profiling off.
-
+##  <#GAPDoc Label="UnprofileFunctions">
+##  <ManSection>
+##  <Func Name="UnprofileFunctions" Arg='funcs'/>
+##
+##  <Description>
+##  stops profiling for all function in the list <A>funcs</A>.
+##  Recorded information is still kept, so you can  display it even after
+##  turning the profiling off.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("UnprofileFunctions",function( arg )
 local list,  f,  pos;
 
@@ -336,6 +631,13 @@ end);
 ##
 #V  PROFILED_METHODS  . . . . . . . . . . . . . . .  list of profiled methods
 ##
+##  <ManSection>
+##  <Var Name="PROFILED_METHODS"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 PROFILED_METHODS := [];
 
 
@@ -343,11 +645,20 @@ PROFILED_METHODS := [];
 ##
 #F  ProfileMethods( <ops> ) . . . . . . . . . . . . . start profiling methods
 ##
-##  starts profiling of the methods for all operations in <ops>.
-
+##  <#GAPDoc Label="ProfileMethods">
+##  <ManSection>
+##  <Func Name="ProfileMethods" Arg='ops'/>
+##
+##  <Description>
+##  starts profiling of the methods for all operations in the list
+##  <A>ops</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("ProfileMethods",function( arg )
-    local   funcs,  names,  op,  i,  meth,  j,  name;
-
+    local   funcs,  names,  op,  name,  i,  meth,  j,  hands,
+            NEW_PROFILED_METHODS;
     arg := Flat(arg);
     funcs := [];
     names := [];
@@ -368,11 +679,16 @@ BIND_GLOBAL("ProfileMethods",function( arg )
         od;
     od;
     ProfileFunctions( funcs,names );
-    for op  in funcs  do
-        if not op in PROFILED_METHODS  then
-            Add( PROFILED_METHODS, op );
+    Append(PROFILED_METHODS, funcs);
+    hands := List(PROFILED_METHODS, HANDLE_OBJ);
+    SortParallel(hands, PROFILED_METHODS);
+    NEW_PROFILED_METHODS := [PROFILED_METHODS[1]];
+    for i in [2..Length(hands)] do
+        if hands[i] <> hands[i-1] then
+            Add(NEW_PROFILED_METHODS, PROFILED_METHODS[i]);
         fi;
     od;
+    PROFILED_METHODS := NEW_PROFILED_METHODS;
 end);
 
 
@@ -380,9 +696,18 @@ end);
 ##
 #F  UnprofileMethods( <ops> ) . . . . . . . . . . . .  stop profiling methods
 ##
-##  stops profiling of the methods for all operations in <ops>. Recorded
-##  information is still kept, so you can  display it even after turning the
-##  profiling off.
+##  <#GAPDoc Label="UnprofileMethods">
+##  <ManSection>
+##  <Func Name="UnprofileMethods" Arg='ops'/>
+##
+##  <Description>
+##  stops profiling of the methods for all operations in the list <A>ops</A>.
+##  Recorded information is still kept, so you can  display it even after
+##  turning the profiling off.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("UnprofileMethods",function( arg )
     local   funcs,  op,  i,  meth,  j;
 
@@ -404,56 +729,41 @@ end);
 
 #############################################################################
 ##
-#V  PROFILED_OPERATIONS . . . . . . . . . . . . . list of profiled operations
+#F  ProfileOperations( [<true/false>] ) . . . . . . . . .  start/stop/display
 ##
-
+##  <#GAPDoc Label="ProfileOperations">
+##  <ManSection>
+##  <Func Name="ProfileOperations" Arg='[bool]'/>
+##
+##  <Description>
+##  Called with argument <K>true</K>,
+##  <Ref Func="ProfileOperations"/>
+##  starts profiling of all operations.
+##  Old profile information for all operations is cleared.
+##  A function call with the argument <K>false</K>
+##  stops profiling of all operations.
+##  Recorded information is still kept,
+##  so you can display it even after turning the profiling off.
+##  <P/>
+##  When <Ref Func="ProfileOperations"/> is called without argument,
+##  profile information for all operations is displayed
+##  (see&nbsp;<Ref Func="DisplayProfile"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 PROFILED_OPERATIONS := [];
 
-
-#############################################################################
-##
-#F  ProfileOperationsOn() . . . . . . . . . . . start profiling of operations
-##
-##  starts profiling of all operations.
-
 BIND_GLOBAL("ProfileOperationsOn",function()
-    local   prof,  nams;
+    local   prof;
 
+    # Note that the list of operations may have grown since the last call.
     prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
-    nams := List( prof, NameFunction );
     PROFILED_OPERATIONS := prof;
     UnprofileMethods(prof);
     ProfileFunctions( prof );
 end);
 
-
-#############################################################################
-##
-#F  ProfileOperationsAndMethodsOn() . . start profiling of operations/methods
-##
-##  starts profiling of all operations and their methods. Old profiling
-##  information is cleared.
-BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
-    local   prof,  nams;
-
-    prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
-    nams := List( prof, NameFunction );
-    PROFILED_OPERATIONS := prof;
-    ProfileMethods(prof);
-    ProfileFunctions( prof );
-
-    # methods for the kernel functions
-    ProfileMethods(\+,\-,\*,\/,\^,\mod,\<,\=,\in,
-                     \.,\.\:\=,IsBound\.,Unbind\.,
-                     \[\],\[\]\:\=,IsBound\[\],Unbind\[\]);
-end);
-
-
-#############################################################################
-##
-#F  ProfileOperationsOff()  . . . . . . . . . .  stop profiling of operations
-##
-##  stops profiling of all operations.
 BIND_GLOBAL("ProfileOperationsOff",function()
     UnprofileFunctions(PROFILED_OPERATIONS);
     UnprofileMethods(PROFILED_OPERATIONS);
@@ -462,40 +772,16 @@ BIND_GLOBAL("ProfileOperationsOff",function()
     UnprofileMethods(\+,\-,\*,\/,\^,\mod,\<,\=,\in,
                      \.,\.\:\=,IsBound\.,Unbind\.,
                      \[\],\[\]\:\=,IsBound\[\],Unbind\[\]);
+#T Why?  These operations are listed in PFOFILED_OPERATIONS!
 end);
 
-
-#############################################################################
-##
-#F  ProfileOperationsAndMethodsOff()  .  stop profiling of operations/methods
-##
-##  stops profiling of all operations and their methods.
-ProfileOperationsAndMethodsOff := ProfileOperationsOff;
-
-
-#############################################################################
-##
-#F  ProfileOperations( [<true/false>] ) . . . . . . . . .  start/stop/display
-##
-##  When called with argument <true>, this function starts profiling of all
-##  operations.
-##  Old profiling information is cleared.
-##  When called with <false> it stops profiling of all operations.
-##  Recorded information is still kept,
-##  so you can display it even after turning the profiling off.
-##
-##  When called without argument, profiling information for all profiled
-##  operations is displayed (see~"DisplayProfile").
-##
 BIND_GLOBAL("ProfileOperations",function( arg )
     if 0 = Length(arg)  then
-	DisplayProfile(PROFILED_OPERATIONS);
-    elif 1 = Length(arg)  then
-        if arg[1]  then
-            ProfileOperationsOn();
-        else
-            ProfileOperationsOff();
-        fi;
+        DisplayProfile(PROFILED_OPERATIONS);
+    elif arg[1] = true then
+      ProfileOperationsOn();
+    elif arg[1] = false then
+      ProfileOperationsOff();
     else
         Print( "usage: ProfileOperations( [<true/false>] )" );
     fi;
@@ -506,39 +792,83 @@ end);
 ##
 #F  ProfileOperationsAndMethods( [<true/false>] ) . . . .  start/stop/display
 ##
-##  When called with argument <true>, this function starts profiling of all
-##  operations and their methods.
-##  Old profiling information is cleared.
-##  When called with <false> it stops profiling of all operations and their
-##  methods.
+##  <#GAPDoc Label="ProfileOperationsAndMethods">
+##  <ManSection>
+##  <Func Name="ProfileOperationsAndMethods" Arg='[bool]'/>
+##
+##  <Description>
+##  Called with argument <K>true</K>,
+##  <Ref Func="ProfileOperationsAndMethods"/>
+##  starts profiling of all operations and their methods.
+##  Old profile information for these functions is cleared.
+##  A function call with the argument <K>false</K>
+##  stops profiling of all operations and their methods.
 ##  Recorded information is still kept,
 ##  so you can display it even after turning the profiling off.
+##  <P/>
+##  When <Ref Func="ProfileOperationsAndMethods"/> is called without
+##  argument,
+##  profile information for all operations and their methods is displayed,
+##  see&nbsp;<Ref Func="DisplayProfile"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  When called without argument, profiling information for all profiled
-##  operations and their methods is displayed (see~"DisplayProfile").
-##
+BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
+    local   prof;
+
+    prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
+    PROFILED_OPERATIONS := prof;
+    ProfileFunctions( prof );
+    ProfileMethods(prof);
+
+    # methods for the kernel functions
+    ProfileMethods(\+,\-,\*,\/,\^,\mod,\<,\=,\in,
+                     \.,\.\:\=,IsBound\.,Unbind\.,
+                     \[\],\[\]\:\=,IsBound\[\],Unbind\[\]);
+#T Why?  These operations are listed in PFOFILED_OPERATIONS!
+end);
+
+ProfileOperationsAndMethodsOff := ProfileOperationsOff;
+
 BIND_GLOBAL("ProfileOperationsAndMethods",function( arg )
     if 0 = Length(arg)  then
-	DisplayProfile(Concatenation(PROFILED_OPERATIONS,PROFILED_METHODS));
-    elif 1 = Length(arg)  then
-        if arg[1]  then
-            ProfileOperationsAndMethodsOn();
-        else
-            ProfileOperationsAndMethodsOff();
-        fi;
+        DisplayProfile(Concatenation(PROFILED_OPERATIONS,PROFILED_METHODS));
+    elif arg[1] = true then
+      ProfileOperationsAndMethodsOn();
+    elif arg[1] = false then
+      ProfileOperationsAndMethodsOff();
     else
         Print( "usage: ProfileOperationsAndMethods( [<true/false>] )" );
     fi;
-end);
+end );
+
 
 #############################################################################
 ##
-#F  ProfileGlobalFunctions(true)
-#F  ProfileGlobalFunctions(false)
+#F  ProfileGlobalFunctions( [<true/false>] )
 ##
-##  `ProfileGlobalFunctions(true)' turns on profiling for all functions that
-##  have been declared via `DeclareGlobalFunction'. A function call with the
-##  argument `false' turns it off again.
+##  <#GAPDoc Label="ProfileGlobalFunctions">
+##  <ManSection>
+##  <Func Name="ProfileGlobalFunctions" Arg='[bool]'/>
+##
+##  <Description>
+##  Called with argument <K>true</K>,
+##  <Ref Func="ProfileGlobalFunctions"/>
+##  starts profiling of all functions that have been declared via
+##  <Ref Func="DeclareGlobalFunction"/>.
+##  Old profile information for all these functions is cleared.
+##  A function call with the argument <K>false</K>
+##  stops profiling of all these functions.
+##  Recorded information is still kept,
+##  so you can display it even after turning the profiling off.
+##  <P/>
+##  When <Ref Func="ProfileGlobalFunctions"/> is called without argument,
+##  profile information for all global functions is displayed,
+##  see&nbsp;<Ref Func="DisplayProfile"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 PROFILED_GLOBAL_FUNCTIONS := [];
 
@@ -546,7 +876,7 @@ BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
     local name, func, funcs;
     if 0 = Length(arg) then
         DisplayProfile( PROFILED_GLOBAL_FUNCTIONS );
-    elif arg[1] then
+    elif arg[1] = true then
         PROFILED_GLOBAL_FUNCTIONS  := [];
         for name in GLOBAL_FUNCTION_NAMES do
             if IsBoundGlobal(name) then
@@ -557,16 +887,24 @@ BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
             fi;
         od;
         ProfileFunctions(PROFILED_GLOBAL_FUNCTIONS);
-    else
+    elif arg[1] = false then
         UnprofileFunctions(PROFILED_GLOBAL_FUNCTIONS);
-        PROFILED_GLOBAL_FUNCTIONS := [];
+    else
+      Print( "usage: ProfileGlobalFunctions( [<true/false>] )" );
     fi;
 end);
-        
+
+
 #############################################################################
 ##
 #F  ProfileFunctionsInGlobalVariables()
 ##
+##  <ManSection>
+##  <Func Name="ProfileFunctionsInGlobalVariables" Arg=''/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 PROFILED_GLOBAL_VARIABLE_FUNCTIONS := [];
 
@@ -590,81 +928,23 @@ BIND_GLOBAL( "ProfileFunctionsInGlobalVariables", function( arg )
         PROFILED_GLOBAL_VARIABLE_FUNCTIONS := [];
     fi;
 end);
-        
-        
-
-#############################################################################
-##
-#F  DisplayRevision() . . . . . . . . . . . . . . .  display revision entries
-##
-##  Displays the revision numbers of all loaded files from the library.
-BIND_GLOBAL("DisplayRevision",function()
-    local   names,  source,  library,  unknown,  name,  p,  s,  type,  
-            i,  j;
-
-    names   := RecNames( Revision );
-    source  := [];
-    library := [];
-    unknown := [];
-
-    for name  in names  do
-        p := Position( name, '_' );
-        if p = fail  then
-            Add( unknown, name );
-        else
-            s := name{[p+1..Length(name)]};
-            if s = "c" or s = "h"  then
-                Add( source, name );
-            elif s = "g" or s = "gi" or s = "gd"  then
-                Add( library, name );
-            else
-                Add( unknown, name );
-            fi;
-        fi;
-    od;
-    Sort( source );
-    Sort( library );
-    Sort( unknown );
-
-    for type  in [ source, library, unknown ]  do
-        if 0 < Length(type)  then
-            if IsIdenticalObj(type,source)  then
-                Print( "Source Files\n" );
-            elif IsIdenticalObj(type,library)  then
-                Print( "Library Files\n" );
-            else
-                Print( "Unknown Files\n" );
-            fi;
-            j := 1;
-            for name  in type  do
-                s := Revision.(name);
-                p := Position( s, ',' )+3;
-                i := p;
-                while s[i] <> ' '  do i := i + 1;  od;
-                s := Concatenation( FormattedString( Concatenation(
-                         name, ":" ), -15 ), FormattedString( s{[p..i]},
-                         -5 ) );
-                if j = 3  then
-                    Print( s, "\n" );
-                    j := 1;
-                else
-                    Print( s, "    " );
-                    j := j + 1;
-                fi;
-            od;
-            if j <> 1  then Print( "\n" );  fi;
-            Print( "\n" );
-        fi;
-    od;
-end);
 
 
 #############################################################################
 ##
 #F  DisplayCacheStats() . . . . . . . . . . . . . .  display cache statistics
 ##
+##  <#GAPDoc Label="DisplayCacheStats">
+##  <ManSection>
+##  <Func Name="DisplayCacheStats" Arg=''/>
+##
+##  <Description>
 ##  displays statistics about the different caches used by the method
 ##  selection.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("DisplayCacheStats",function()
     local   cache,  names,  pos,  i;
 
@@ -706,8 +986,8 @@ BIND_GLOBAL("DisplayCacheStats",function()
     fi;
 
     for i  in pos  do
-        Print( FormattedString( Concatenation(names[i],":"), -30 ),
-               FormattedString( String(cache[i]), 12 ), "\n" );
+        Print( String( Concatenation(names[i],":"), -30 ),
+               String( String(cache[i]), 12 ), "\n" );
     od;
 
 end);
@@ -717,8 +997,17 @@ end);
 ##
 #F  ClearCacheStats() . . . . . . . . . . . . . . . .  clear cache statistics
 ##
+##  <#GAPDoc Label="ClearCacheStats">
+##  <ManSection>
+##  <Func Name="ClearCacheStats" Arg=''/>
+##
+##  <Description>
 ##  clears all statistics about the different caches used by the method
 ##  selection.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("ClearCacheStats",function()
     CLEAR_CACHE_INFO();
     WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := 0;
@@ -733,35 +1022,85 @@ end);
 #############################################################################
 ##
 #F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
-##
-START_TIME := 0;
-START_NAME := "";
-
-START_TEST := function( name )
-    GASMAN("collect");
-    START_TIME := Runtime();
-    START_NAME := name;
-end;
-
-
-#############################################################################
-##
 #F  STOP_TEST( <file>, <fac> )  . . . . . . . . . . . . . . .  stop test file
 ##
-STOP_TEST := function( file, fac )
-    local   time;
+##  <#GAPDoc Label="StartStopTest">
+##  <ManSection>
+##  <Heading>Starting and stopping test</Heading>
+##  <Func Name="START_TEST" Arg='id'/>
+##  <Func Name="STOP_TEST" Arg='file, fac'/>
+##
+##  <Description>
+##  <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> may be optionally
+##  used in files that are read via <Ref Func="ReadTest"/>. If used,
+##  <Ref Func="START_TEST"/> reinitialize the caches and the global
+##  random number generator, in order to be independent of the reading
+##  order of several test files. Furthermore, the assertion level
+##  (see&nbsp;<Ref Func="Assert"/>) is set to <M>2</M> by
+##  <Ref Func="START_TEST"/> and set back to the previous value in the
+##  subsequent <Ref Func="STOP_TEST"/> call.
+##  <P/>
+##  To use these options, a test file should be started with a line
+##  <P/>
+##  <Log><![CDATA[
+##  gap> START_TEST( "arbitrary identifier string" );
+##  ]]></Log>
+##  <P/>
+##  (Note that the <C>gap> </C> prompt is part of the line!)
+##  <P/>
+##  and should be finished with a line
+##  <P/>
+##  <Log><![CDATA[
+##  gap> STOP_TEST( "filename", 10000 );
+##  ]]></Log>
+##  <P/>
+##  Here the string <C>"filename"</C> should give the name of the test file.
+##  The number is a proportionality factor that is used to output a
+##  <Q>&GAP;stone</Q> speed ranking after the file has been completely
+##  processed.
+##  For the files provided with the distribution this scaling is roughly
+##  equalized to yield the same numbers as produced by the test file
+##  <F>tst/combinat.tst</F>.
+##  <P/>
+##  Note that the functions in <F>tst/testutil.g</F> temporarily replace
+##  <Ref Func="STOP_TEST"/> before they call <Ref Func="ReadTest"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+START_TEST := function( name )
+    FlushCaches();
+    RANDOM_SEED(1);
+    Reset(GlobalMersenneTwister, 1);
+    GASMAN( "collect" );
+    GAPInfo.TestData.START_TIME := Runtime();
+    GAPInfo.TestData.START_NAME := name;
+    GAPInfo.TestData.AssertionLevel:= AssertionLevel();
+    SetAssertionLevel( 2 );
+end;
 
-    time := Runtime() - START_TIME;
-    Print( START_NAME, "\n" );
-    if time <> 0 then
+STOP_TEST := function( file, fac )
+    local time;
+
+    if not IsBound( GAPInfo.TestData.START_TIME ) then
+      Error( "`STOP_TEST' command without `START_TEST' command for `",
+             file, "'" );
+    fi;
+    time:= Runtime() - GAPInfo.TestData.START_TIME;
+    Print( GAPInfo.TestData.START_NAME, "\n" );
+    if time <> 0 and IsInt( fac ) then
       Print( "GAP4stones: ", QuoInt( fac, time ), "\n" );
     else
       Print( "GAP4stones: infinity\n" );
     fi;
+    SetAssertionLevel( GAPInfo.TestData.AssertionLevel );
+    Unbind( GAPInfo.TestData.AssertionLevel );
+    Unbind( GAPInfo.TestData.START_TIME );
+    Unbind( GAPInfo.TestData.START_NAME );
 end;
 
 
 #############################################################################
 ##
-#E  profile.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

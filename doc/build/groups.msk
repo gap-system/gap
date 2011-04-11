@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Groups}
 
@@ -13,6 +14,9 @@ groups, that is operations whose definition does not depend on the
 representation used.
 However methods for these operations in most cases will make use of the
 representation.
+In fact, the efficiency of computations with groups and group elements
+may heavily depend on the representation of the group elements,
+see Section~"Representation Dependent Issues".
 
 If not otherwise specified, in all examples in this chapter the group `g'
 will be the symmetric group $S_4$ acting on the letters $\{1,\ldots,4\}$.
@@ -42,10 +46,11 @@ infinity
 The next example may run into an infinite loop
 because the given matrix in fact has infinite order.
 
-\begintt
+%notest
+\beginexample
 gap> Order( [ [ 1, 1 ], [ 0, 1 ] ] * Indeterminate( Rationals ) );
 #I  Order: warning, order of <mat> might be infinite
-\endtt
+\endexample
 
 \index{order! of a group}
 Since groups are domains, the recommended command to compute the order
@@ -175,6 +180,21 @@ true
 
 \FileHeader{grp}[2]
 
+\Declaration{SubgroupByProperty}
+\Declaration{SubgroupShell}
+\beginexample
+gap> u:=SubgroupByProperty(g,i->3^i=3);
+<subgrp of Group([ (1,2,3,4), (1,2) ]) by property>
+gap> (1,3) in u; (1,4) in u; (1,5) in u;
+false
+true
+false
+gap> GeneratorsOfGroup(u);
+[ (1,2), (1,4,2) ]
+gap> u:=SubgroupShell(g);
+<group>
+\endexample
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Closures of (Sub)groups}
 
@@ -207,75 +227,75 @@ express group elements as words in given generators: Create a free group
 (see~"FreeGroup") on the correct number of generators and create a
 homomorphism from this free group onto the group <G> in whose generators you
 want to factorize. Then the preimage of an element of <G> is a word in the
-free generators, that will map on this element again. The following example
-shows how to decompose elements of $S_4$ in the generators `(1,2,3,4)' and
-`(1,2)':
+free generators, that will map on this element again.
+
+\Declaration{EpimorphismFromFreeGroup}
+
+The following example shows how to decompose elements of $S_4$ in the
+generators `(1,2,3,4)' and `(1,2)':
 
 \beginexample
 gap> g:=Group((1,2,3,4),(1,2));
 Group([ (1,2,3,4), (1,2) ])
-gap> f:=FreeGroup("x","y");
-<free group on the generators [ x, y ]>
-gap> hom:=GroupHomomorphismByImagesNC(f,g,GeneratorsOfGroup(f),
-> GeneratorsOfGroup(g));
+gap> hom:=EpimorphismFromFreeGroup(g:names:=["x","y"]);
 [ x, y ] -> [ (1,2,3,4), (1,2) ]
 gap> PreImagesRepresentative(hom,(1,4));
-x*y^-1*x^-1
+y^-1*x^-2*y^-1*x^-1*y^-1*x
 \endexample
 
 The following example stems from a real request to the {\GAP} Forum. In
 September 2000 a {\GAP} user working with puzzles wanted to express the
-permutation `(15,16)' as a word as short as possible in the generators of a
-particular permutation group of degree 16.
+permutation `(1,2)' as a word as short as possible in particular generators
+of the symmetric group $S_{16}$.
 
 \beginexample
 gap> perms := [ (1,2,3,7,11,10,9,5), (2,3,4,8,12,11,10,6),
 >   (5,6,7,11,15,14,13,9), (6,7,8,12,16,15,14,10) ];;
-gap> puzzle := Group( perms );;
-gap> Size( puzzle );
+gap> puzzle := Group( perms );;Size( puzzle );
 20922789888000
-gap> F := FreeGroup( "a", "b", "c", "d" );;
-gap> gens := GeneratorsOfGroup( F );;
-gap> hom := GroupHomomorphismByImages( F, puzzle, gens, perms );;
-gap> word := PreImagesRepresentative( hom, (15,16) );;
+gap> hom:=EpimorphismFromFreeGroup(puzzle:names:=["a", "b", "c", "d"]);;
+gap> word := PreImagesRepresentative( hom, (1,2) );
+a^-1*c*b*c^-1*a*b^-1*a^-2*c^-1*a*b^-1*c*b
 gap> Length( word );
-113
+13
 \endexample
 
-Because of the random methods involved in the function
-`GroupHomomorphismByImages' we may even get shorter words for the given
-permutation if we try it a few more times.
-
-\beginexample
-gap> words := [];;
-gap> for i in [ 1 .. 10 ] do
->   hom := GroupHomomorphismByImages( F, puzzle, gens, perms );
->   word := PreImagesRepresentative( hom, (15,16) );
->   Add( words, word );
-> od;
-gap> List( words, word -> Length( word ) );
-[ 33, 61, 53, 33, 33, 33, 49, 53, 75, 33 ]
-gap> words[1];
-c^-1*d^-1*c*b*d*b^-1*a^-1*b^-1*a^2*c*a^-1*d^-1*b*c^-1*b^-1*c*d*a^-1*b^
--1*a*d*a*c^-1*a^-1*b*d^-1*b^-1*d^-1*b*c^-1*b^-1*c
-\endexample
+% randomization effect is now gone.
 
 \Declaration{Factorization}
 
 \beginexample
 gap> G:=SymmetricGroup( 6 );;
-gap> r:=(3,4); s:=(1,2,3,4,5,6);
-(3,4)
-(1,2,3,4,5,6)
+gap> r:=(3,4);; s:=(1,2,3,4,5,6);;
 gap> # create a subgroup to force the system to use the generators r and s.
 gap> H:= Subgroup(G, [ r, s ] );
 Group([ (3,4), (1,2,3,4,5,6) ])
 gap> Factorization( H, (1,2,3) );
-x2*x1*x2*x1*x2^4
-gap> s*r*s*r*s^4;
+x2*x1*x2*x1*x2^-2
+gap> s*r*s*r*s^-2;
 (1,2,3)
+gap> MappingGeneratorsImages(EpimorphismFromFreeGroup(H));
+[ [ x1, x2 ], [ (3,4), (1,2,3,4,5,6) ] ]
 \endexample
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Structure Descriptions}
+
+\Declaration{StructureDescription}
+
+\beginexample
+gap> l := AllSmallGroups(12);;
+gap> List(l,StructureDescription);; l;
+[ C3 : C4, C12, A4, D12, C6 x C2 ]
+gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
+[ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", "20x2",
+  "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
+gap> List(AllTransitiveGroups(DegreeAction,6),G->StructureDescription(G:short));
+[ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", "(3^2):4",
+  "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
+gap> StructureDescription(PSL(4,2));
+"A8"
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Cosets}
@@ -415,16 +435,33 @@ gap> Size(cl[2]);
 6
 \endexample
 
+In general, you will not need to have to influence the method, but simply
+call `ConjugacyClasses' -- GAP will try to select a suitable method on its
+own. The method specifications are provided here mainly for expert use. 
+
 \Declaration{ConjugacyClassesByRandomSearch}
 \Declaration{ConjugacyClassesByOrbits}
-\beginexample
-gap> h:=Group((4,6)(5,7),(1,2,4)(3,6,5));;ConjugacyClasses(h:noaction);;time;
-190
-gap> h:=Group((4,6)(5,7),(1,2,4)(3,6,5));;ConjugacyClasses(h:random);;time;
-130
-gap> h:=Group((4,6)(5,7),(1,2,4)(3,6,5));;ConjugacyClasses(h:action);;time;
-70
-\endexample
+
+Typically, for small groups (roughly of order up to $10^3$) the computation
+of classes as orbits under the action is fastest; memory restrictions (and
+the increasing cost of eliminating duplicates) make this less efficient for
+larger groups.
+
+Calculation by random search has the smallest memory requirement, but in
+generally performs worse, the more classes are there.
+
+The folowing example shows the effect of this for a small group with many
+classes:
+
+% this example is time and load-status dependent. No point in testing
+\begintt
+gap> h:=Group((4,5)(6,7,8),(1,2,3)(5,6,9));;ConjugacyClasses(h:noaction);;time;
+110
+gap> h:=Group((4,5)(6,7,8),(1,2,3)(5,6,9));;ConjugacyClasses(h:random);;time;
+300
+gap> h:=Group((4,5)(6,7,8),(1,2,3)(5,6,9));;ConjugacyClasses(h:action);;time;
+30
+\endtt
 
 \Declaration{NrConjugacyClasses}
 \beginexample
@@ -456,6 +493,13 @@ gap> RepresentativeAction(g,(1,2),(3,4));
 (1,3)(2,4)
 \endexample
 
+\Declaration{NthRootsInGroup}
+\beginexample
+gap> NthRootsInGroup(g,(1,2)(3,4),2);
+[ (1,3,2,4), (1,4,2,3) ]
+\endexample
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Normal Structure}
 
@@ -477,13 +521,13 @@ Group(())
 \Declaration{PCore}
 \beginexample
 gap> PCore(g,2);
-Group([ (1,4)(2,3), (1,3)(2,4) ])
+Group([ (1,4)(2,3), (1,2)(3,4) ])
 \endexample
 
 \Declaration{NormalClosure}
 \beginexample
 gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-Group([ (1,2,3), (1,3,4) ])
+Group([ (1,2,3), (2,3,4) ])
 \endexample
 
 \Declaration{NormalIntersection}
@@ -537,7 +581,7 @@ gap> CommutatorLength( g );
 \Declaration{FittingSubgroup}
 \beginexample
 gap> FittingSubgroup(g);
-Group([ (1,3)(2,4), (1,4)(2,3) ])
+Group([ (1,2)(3,4), (1,4)(2,3) ])
 \endexample
 
 \Declaration{FrattiniSubgroup}
@@ -565,7 +609,7 @@ Group([  ])
 \Declaration{PerfectResiduum}
 \beginexample
 gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-Group([ (1,3,2), (1,4,3), (2,4,5) ])
+Group([ (1,3,2), (2,4,3), (2,3)(4,5) ])
 \endexample
 
 \Declaration{RadicalGroup}
@@ -812,7 +856,7 @@ gap> CompositionSeries(g);
   Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
   Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) ]
 gap> DisplayCompositionSeries(Group((1,2,3,4,5,6,7),(1,2)));
-G (6 gens, size 5040)
+G (2 gens, size 5040)
  || Z(2)
 S (5 gens, size 2520)
  || A(7)
@@ -934,9 +978,9 @@ Group([ (2,3) ])
 \Declaration{ConjugacyClassesSubgroups}
 \beginexample
 gap> ConjugacyClassesSubgroups(g);
-[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (1,2) ] )^G, 
+[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
   Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-  Group( [ (1,2)(3,4), (1,2) ] )^G, Group( [ (1,2)(3,4), (1,4,2,3) ] )^G, 
+  Group( [ (1,2)(3,4), (3,4) ] )^G, Group( [ (1,2)(3,4), (1,3,2,4) ] )^G, 
   Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,3)(2,4), (1,4)(2,3), (1,2) ] )^G,
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3) ] )^G, 
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ] )^G ]
@@ -965,16 +1009,22 @@ gap> MaximalSubgroups(Group((1,2,3),(1,2)));
 \Declaration{NormalSubgroups}
 \beginexample
 gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
-[ Group(()), Group([ (1,4)(2,3), (1,3)(2,4) ]), 
-  Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), Sym( [ 1 .. 4 ] ) ]
+[ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,2)(3,4), (1,3)(2,4) ]), 
+  Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()) ]
 \endexample
-The algorithm for the computation of normal subgroups is described in
-\cite{Hulpke98}.
+The algorithm used for the computation of normal subgroups of permutation
+groups and pc groups is described in \cite{Hulpke98}.
 
 \Declaration{MaximalNormalSubgroups}
 \beginexample
 gap> MaximalNormalSubgroups( g );
-[ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]) ]
+[ Group([ (2,4,3), (1,2)(3,4), (1,3)(2,4) ]) ]
+\endexample
+
+\Declaration{MinimalNormalSubgroups}
+\beginexample
+gap> MinimalNormalSubgroups( g );
+[ Group([ (1,4)(2,3), (1,2)(3,4) ]) ]
 \endexample
 
 %%  Bettina Eick designed and wrote the code for maximal subgroups of a solvable
@@ -984,30 +1034,35 @@ gap> MaximalNormalSubgroups( g );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Subgroup Lattice}
 
-The {\GAP} package \package{XGAP} permits a graphical display of the lattice
-of subgroups in a nice way.
-
 \Declaration{LatticeSubgroups}
 \beginexample
 gap> g:=SymmetricGroup(4);;
 gap> l:=LatticeSubgroups(g);
 <subgroup lattice of Sym( [ 1 .. 4 ] ), 11 classes, 30 subgroups>
 gap> ConjugacyClassesSubgroups(l);
-[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (1,2) ] )^G, 
+[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
   Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-  Group( [ (1,2)(3,4), (1,2) ] )^G, Group( [ (1,2)(3,4), (1,4,2,3) ] )^G, 
+  Group( [ (1,2)(3,4), (3,4) ] )^G, Group( [ (1,2)(3,4), (1,3,2,4) ] )^G,
   Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,3)(2,4), (1,4)(2,3), (1,2) ] )^G,
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3) ] )^G, 
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ] )^G ]
 \endexample
 \Declaration{ClassElementLattice}
 
+The {\GAP} package \package{XGAP} permits a graphical display of the lattice
+of subgroups in a nice way.
+
+\Declaration{DotFileLatticeSubgroups}
+\begintt
+gap> DotFileLatticeSubgroups(l,"s4lat.dot");
+\endtt
+
 \Declaration{MaximalSubgroupsLattice}
 \beginexample
 gap> MaximalSubgroupsLattice(l);
 [ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
   [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ], 
-  [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 4 ], [ 3, 5 ], [ 3, 6 ] ], 
+  [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ],
   [ [ 7, 1 ], [ 6, 1 ], [ 5, 1 ] ], 
   [ [ 5, 1 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
   [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ], [ 8, 3 ], 
@@ -1015,7 +1070,7 @@ gap> MaximalSubgroupsLattice(l);
 gap> last[6];
 [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ]
 gap> u1:=Representative(ConjugacyClassesSubgroups(l)[6]);
-Group([ (1,2)(3,4), (1,2) ])
+Group([ (1,2)(3,4), (3,4) ])
 gap> u2:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],1);;
 gap> u3:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],6);;
 gap> u4:=ClassElementLattice(ConjugacyClassesSubgroups(l)[2],3);;
@@ -1030,16 +1085,16 @@ true
 gap> MinimalSupergroupsLattice(l);
 [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
       [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
-  [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], [ [ 6, 1 ], [ 8, 2 ], [ 8, 3 ] ], 
-  [ [ 8, 1 ], [ 10, 1 ] ], [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ], 
+  [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ], 
+  [ [ 8, 1 ], [ 10, 1 ] ], [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ],
   [ [ 9, 1 ] ], [ [ 9, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], 
   [  ] ]
 gap> last[3];
-[ [ 6, 1 ], [ 8, 2 ], [ 8, 3 ] ]
-gap> u5:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],2);
-Group([ (1,2), (1,4,2) ])
+[ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ]
+gap> u5:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],1);
+Group([ (3,4), (2,4,3) ])
 gap> u6:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],3);
-Group([ (1,2), (1,2,3) ])
+Group([ (1,3), (1,3,4) ])
 gap> IsSubgroup(u5,u2);
 true
 gap> IsSubgroup(u6,u2);
@@ -1051,11 +1106,19 @@ true
 gap> m11:=TransitiveGroup(11,6);
 M(11)
 gap> r:=RepresentativesPerfectSubgroups(m11);
-[ Group([ (1,6,8)(3,5,11)(7,9,10), (1,7)(4,9)(5,10)(8,11) ]), 
-  Group([ (1,5,7)(2,9,11)(3,10,6), (1,7)(4,9)(5,10)(8,11) ]), 
-  Group([ (1,11)(3,8)(5,6)(9,10), (1,10,7,5)(4,11,9,8) ]), 
-  Group([ (1,10,11)(2,7,6)(3,8,9), (1,7)(4,9)(5,10)(8,11) ]), M(11), 
-  Group(()) ]
+<<<<<<< groups.msk
+[ Group([ (3,5,8)(4,11,7)(6,9,10), (1,6)(2,9)(3,5)(8,11) ]), 
+  Group([ (2,3,4)(5,6,8)(7,11,9), (1,6)(2,9)(3,5)(8,11) ]), 
+  Group([ (3,10)(5,9)(6,8)(7,11), (1,3,6,5)(2,8,9,11) ]), 
+  Group([ (3,4,10)(5,11,6)(7,9,8), (1,6)(2,9)(3,5)(8,11) ]), M(11), Group(()) 
+ ]
+=======
+[ Group([ (3,6,7)(4,5,9)(8,10,11), (1,10)(2,8)(4,7)(5,9) ]),
+  Group([ (2,3,7)(4,11,9)(5,8,10), (1,10)(2,8)(4,7)(5,9) ]),
+  Group([ (4,9,10,11)(5,6,8,7), (1,10)(2,8)(4,7)(5,9) ]),
+  Group([ (3,4,10)(5,11,6)(7,9,8), (1,10)(2,8)(4,7)(5,9) ]), M(11), Group(()) 
+ ]
+>>>>>>> 1.109
 gap> List(r,Size);
 [ 60, 60, 360, 660, 7920, 1 ]
 \endexample
@@ -1063,10 +1126,17 @@ gap> List(r,Size);
 \Declaration{ConjugacyClassesPerfectSubgroups}
 \beginexample
 gap> ConjugacyClassesPerfectSubgroups(m11);
-[ Group( [ ( 1, 6, 8)( 3, 5,11)( 7, 9,10), ( 1, 7)( 4, 9)( 5,10)( 8,11) ] )^G,
-  Group( [ ( 1, 5, 7)( 2, 9,11)( 3,10, 6), ( 1, 7)( 4, 9)( 5,10)( 8,11) ] )^G,
-  Group( [ ( 1,11)( 3, 8)( 5, 6)( 9,10), ( 1,10, 7, 5)( 4,11, 9, 8) ] )^G, 
-  Group( [ ( 1,10,11)( 2, 7, 6)( 3, 8, 9), ( 1, 7)( 4, 9)( 5,10)( 8,11) ] )^G,
+<<<<<<< groups.msk
+[ Group( [ ( 3, 5, 8)( 4,11, 7)( 6, 9,10), ( 1, 6)( 2, 9)( 3, 5)( 8,11) ] )^G,
+  Group( [ ( 2, 3, 4)( 5, 6, 8)( 7,11, 9), ( 1, 6)( 2, 9)( 3, 5)( 8,11) ] )^G,
+  Group( [ ( 3,10)( 5, 9)( 6, 8)( 7,11), ( 1, 3, 6, 5)( 2, 8, 9,11) ] )^G, 
+  Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), ( 1, 6)( 2, 9)( 3, 5)( 8,11) ] )^G,
+=======
+[ Group( [ ( 3, 6, 7)( 4, 5, 9)( 8,10,11), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
+  Group( [ ( 2, 3, 7)( 4,11, 9)( 5, 8,10), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
+  Group( [ ( 4, 9,10,11)( 5, 6, 8, 7), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
+  Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
+>>>>>>> 1.109
   M(11)^G, Group( () )^G ]
 \endexample
 
@@ -1178,6 +1248,15 @@ gap> SmallGeneratingSet(g);
 gap> g:=AbelianGroup(IsPermGroup,[15,14,22,78]);;
 gap> List(IndependentGeneratorsOfAbelianGroup(g),Order);
 [ 2, 2, 2, 3, 3, 5, 7, 11, 13 ]
+\endexample
+
+\Declaration{IndependentGeneratorExponents}
+\beginexample
+gap> g:=AbelianGroup([16,9,625]);;   
+gap> gens:=IndependentGeneratorsOfAbelianGroup(g);;
+gap> r:=gens[1]^12*gens[2]^4*gens[3]^128;;
+gap> IndependentGeneratorExponents(g,r);
+[ 12, 4, 128 ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1316,6 +1395,115 @@ function `OCOneCocycles'.
 %T Is dealt with in section on group homomorphisms!
 
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \Section{Representation Dependent Issues}
+% 
+% This section could list permutation, pc, and matrix groups as
+% examples (plus crossreferences to the corresponding manual chapters),
+% and discuss the case of solvable permutation groups as an example
+% where concurrent methods can occur of which GAP may choose a bad one.
+% The section could also show ways to influence the choice of
+% methods.
+% For example, users who want to force pcgs methods when dealing with
+% permutation groups could be told about filters such as `CanComputePcgs';
+% if the canonical pcgs (which played a role in the `\=' method called
+% for solvable permutation groups) is of importance for making pcgs methods
+% applicable then one could give the hint to compute the canonical pcgs
+% explicitly in advance.
+% 
+% In this section, one could also give examples how to switch between
+% different representations using homomorphisms.
+% 
+% Finally, this section should be crossreferenced by statements in the
+% chapters about permutation, matrix, and pc groups.
+% 
+% ..............
+% 
+% The problem recently reported by Laurent Bartholdi
+% is based on concurrent methods (here: for the operation `\=')
+% using essentially different algorithms (here: membership testsvs. computation and comparison of canonical pcgs).
+% The fact that such situations can occur and that they may
+% cause efficiency problems could be mentioned in the Reference Manual.
+% (Of course it is not obvious how to manage that such remarks can
+% be found easily.)
+% 
+% > Steve wrote:
+% > Agreed. Perhaps we could put something early in the tutorial manual, which 
+% > might be noticed by, at least, new users. We could also write something for 
+% > the proposed newsletter to the forum.
+% > 
+% > I guess the general message is:
+% > 
+% > GAP4 often has more than one way to compute the answer to a problem. The 
+% > method selection system <cross-ref> is designed to ensure that the chosen 
+% > method is one that can be applied to the given arguments and will give the 
+% > correct answer, and to endeavour to choose the method that is likely to give 
+% > the best performance. As suggested by the word "endeavour" the latter goal is 
+% > not always achieved perfectly. For example, given a nilpotent permutation 
+% > group, GAP has no general way to know if a method specialised to nilpotent 
+% > groups, or a method specialised to permutation groups is the better choice. It 
+% > will never though use a method specialized to abelian groups, since this might 
+% > give the wrong answer.
+% > 
+% > The consequence of this is that the system may occasionally be unexpectedly 
+% > slow to do some computation, even when an "obviously" mathematically 
+% > equivalent computation is much faster. For example it might be slower do 
+% > decide if a group and a subgroup are equal, than if the subgroup has index 
+% > one. If you encounter such a situation please let us know, and we will try to 
+% > correct it.
+% > 
+% > 
+% > 
+% > I would suggest that the next place to put something is the chapter on 
+% > domains, with appropriate cross-references from other places.
+% 
+% > > For example, the introduction to the chapter ``Groups'' could
+% > > mention that the efficiency of operations for arbitrary groups
+% > > may depend on the representation of group elements,
+% > 
+% > Also, although more rarely, the availability of any method at all may depend 
+% > on the representation (or do we regard that as something to fix).
+% > 
+% > > and give a crossreference to a later section on representation
+% > > dependent issues.
+% > > 
+% > > This section could list permutation, pc, and matrix groups as
+% > > examples (plus crossreferences to the corresponding manual chapters),
+% > > and discuss the case of solvable permutation groups as an example
+% > > where concurrent methods can occur of which GAP may choose a bad one.
+% > 
+% > 
+% > **********
+% > > The section could also show ways to influence the choice of
+% > > methods.
+% > > For example, users who want to force pcgs methods when dealing with
+% > > permutation groups could be told about filters such as `CanComputePcgs';
+% > > if the canonical pcgs (which played a role in the `\=' method called
+% > > for solvable permutation groups) is of importance for making pcgs methods
+% > > applicable then one could give the hint to compute the canonical pcgs
+% > > explicitly in advance.
+% > > 
+% > 
+% > **************
+% > > In this section, one could also give examples how to switch between
+% > > different representations using homomorphisms.
+% > > 
+% > 
+% > ***************
+% > 
+% > I would reverse the order of these two topics. In my view the easy thing that 
+% > we should first encourage users to do, is to use Isomorphism<Structure> to 
+% > transfer their question to an easier setting. Subtler concepts relating to the 
+% > details of the method selection systems "endeavour" to choose the fastest 
+% > method should come later, for the more advanced user.
+% > 
+% > > Finally, this section should be crossreferenced by statements in the
+% > > chapters about permutation, matrix, and pc groups.
+% > > 
+% > Agreed. The same can probably be done with some merit for algebras and for 
+% > semigroups and monoids, where very similar issues arise.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Schur Covers and Multipliers}
 
@@ -1349,13 +1537,26 @@ gap> AbelianInvariantsMultiplier(MathieuGroup(22));
 
 Note that the following example will take some time.
 
-\begintt
+%notest
+\beginexample
 gap> AbelianInvariantsMultiplier(PSU(6,2));
 [ 2, 2, 3 ]
-\endtt
+\endexample
 
 At the moment, this operation will not give any information about how to
 extend the multiplier to a Schur Cover.
+
+
+Additional attributes and properties of a group can be derived 
+from computing its Schur Cover. For example, if $G$ is a 
+finitely presented group, the
+derived subgroup a Schur Cover of $G$ is invariant and isomorphic to 
+the NonabelianExteriorSquare of $G$ \cite{BJR87}. 
+
+\Declaration{Epicentre}
+\Declaration{NonabelianExteriorSquare}
+\Declaration{EpimorphismNonabelianExteriorSquare}
+\Declaration{IsCentralFactor}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1374,4 +1575,3 @@ extend the multiplier to a Schur Cover.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E
-

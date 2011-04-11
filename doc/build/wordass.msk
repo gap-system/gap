@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Associative Words}
 
@@ -243,8 +244,8 @@ representation is specified explicitly when creating the free group/monoid
 or semigroup, a letter representation is used by default.
 
 Depending on the task in mind, either of these two representations will
-perform better in time or in memeory use and algorithms that are syllable or
-letter absed (for example `GeneratorSyllable' and `Subword') perform
+perform better in time or in memory use and algorithms that are syllable or
+letter based (for example `GeneratorSyllable' and `Subword') perform
 substantially better in the corresponding representation.
 For example when creating pc groups (see~"Pc groups"), it is advantageous to
 use a syllable representation while calculations in free groups usually
@@ -354,6 +355,11 @@ gap> ResultOfStraightLineProgram( prg, gens );
 [ x^3*y^4, x^4*y^-1, x^3*y^4 ]
 \endexample
 
+\Declaration{RestrictOutputsOfSLP}
+\Declaration{IntermediateResultOfSLP}
+\Declaration{IntermediateResultOfSLPWithoutOverwrite}
+\Declaration{IntermediateResultsOfSLPWithoutOverwrite}
+\Declaration{ProductOfStraightLinePrograms}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Straight Line Program Elements}
@@ -366,8 +372,7 @@ gap> ResultOfStraightLineProgram( prg, gens );
 \Declaration{EvalStraightLineProgElm}
 \Declaration{StretchImportantSLPElement}
 
-% no manual check -- the Random is just too bothersome.
-\begintt
+\beginexample
 gap> gens:=StraightLineProgGens([(1,2,3,4),(1,2)]);
 [ <[ [ 2, 1 ] ]||(1,2,3,4)>, <[ [ 1, 1 ] ]||(1,2)> ]
 gap> g:=Group(gens);;
@@ -377,9 +382,8 @@ gap> Size(g);
 24
 gap> Random(g);
 <[ [ 1, -1, 2, -1, 1, 1, 2, -1, 1, -1, 2, 1, 1, 1, 2, 1, 1, -1, 2, 2, 1, 1 ], 
-   [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1, 2, -1, 3, -2, 1, -1, 2, -2, 1, 1 ] ]
-  || (1,4,3,2)>
-\endtt
+  [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1 ], [ 4, 1, 2, -1, 4, 1 ] ]||(1,2,3,4)>
+\endexample
 
 See also Section~"Working with large degree permutation groups".
 

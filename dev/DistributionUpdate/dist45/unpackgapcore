@@ -1,0 +1,34 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export GAPCORE=${DISTROOT}/gapcore
+export GAPSOURCE=${DISTROOT}/gapsourcedistro
+
+# create and go to the GAP core directory
+if ! mkdir -p ${GAPSOURCE}; then
+  echo 'Cannot create temporary directory '${GAPSOURCE}
+  exit 1
+fi
+
+line='cd '${GAPSOURCE}
+echo $line
+$line
+rm -rf *
+
+unzip -q `ls ${GAPCORE}/metainfo*|tail -1`
+
+source ./core_checkout_time.txt
+
+unzip -q ${GAPCORE}/${ARCHNAME}_core${CORETIME}.zip
+
+exit 0
+
+
+

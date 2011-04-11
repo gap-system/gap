@@ -1,10 +1,12 @@
 #############################################################################
 ##
-#W  grpprmcs.tst                GAP library                       Akos Seress
+#W  grpprmcs.tst                GAP library                       Ákos Seress
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  Exclude from testinstall.g: why?
 ##
 
 gap> START_TEST("$Id$");
@@ -1853,7 +1855,7 @@ gap> CompositionSeries( h );
   <permutation group of size 60 with 2 generators>, Group(()) ]
 
 
-gap> STOP_TEST( "grpprmcs.tst", 18790865000 );
+gap> STOP_TEST( "grpprmcs.tst",12735051238);
 
 
 #############################################################################

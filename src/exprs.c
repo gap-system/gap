@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  exprs.c                     GAP source                   Martin Schoenert
+*W  exprs.c                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the expressions package.
 **
@@ -30,6 +31,7 @@ const char * Revision_exprs_c =
 #include        "lists.h"               /* generic lists                   */
 
 #include        "bool.h"                /* booleans                        */
+#include        "integer.h"             /* integers                        */
 
 #include        "permutat.h"            /* permutations                    */
 
@@ -41,6 +43,7 @@ const char * Revision_exprs_c =
 
 #include        "code.h"                /* coder                           */
 #include        "vars.h"                /* variables                       */
+#include        "stats.h"
 
 #define INCLUDE_DECLARATION_PART
 #include        "exprs.h"               /* expressions                     */
@@ -359,6 +362,7 @@ Obj             EvalEq (
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (EQ( opL, opR ) ? True : False);
 
     /* return the value                                                    */
@@ -392,6 +396,7 @@ Obj             EvalNe (
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (EQ( opL, opR ) ? False : True);
 
     /* return the value                                                    */
@@ -425,6 +430,7 @@ Obj             EvalLt (
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opL, opR ) ? True : False);
 
     /* return the value                                                    */
@@ -458,6 +464,7 @@ Obj             EvalGe (
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opL, opR ) ? False : True);
 
     /* return the value                                                    */
@@ -491,6 +498,7 @@ Obj             EvalGt (
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opR, opL ) ? True : False);
 
     /* return the value                                                    */
@@ -524,6 +532,7 @@ Obj             EvalLe (
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opR, opL ) ? False : True);
 
     /* return the value                                                    */
@@ -557,6 +566,7 @@ Obj             EvalIn (
     opR = EVAL_EXPR( tmp );
 
     /* perform the test                                                    */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (IN( opL, opR ) ? True : False);
 
     /* return the value                                                    */
@@ -593,6 +603,7 @@ Obj             EvalSum (
     if ( ! ARE_INTOBJS( opL, opR ) || ! SUM_INTOBJS( val, opL, opR ) ) {
 
         /* if that doesn't work, dispatch to the addition function         */
+        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
         val = SUM( opL, opR );
 
     }
@@ -624,6 +635,7 @@ Obj             EvalAInv (
     opL = EVAL_EXPR( tmp );
 
     /* compute the additive inverse                                        */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = AINV( opL );
 
     /* return the value                                                    */
@@ -660,6 +672,7 @@ Obj             EvalDiff (
     if ( ! ARE_INTOBJS( opL, opR ) || ! DIFF_INTOBJS( val, opL, opR ) ) {
 
         /* if that doesn't work, dispatch to the subtraction function      */
+        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
         val = DIFF( opL, opR );
 
     }
@@ -698,6 +711,7 @@ Obj             EvalProd (
     if ( ! ARE_INTOBJS( opL, opR ) || ! PROD_INTOBJS( val, opL, opR ) ) {
 
         /* if that doesn't work, dispatch to the multiplication function   */
+        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
         val = PROD( opL, opR );
 
     }
@@ -729,6 +743,7 @@ Obj             EvalInv (
     opL = EVAL_EXPR( tmp );
 
     /* compute the multiplicative inverse                                  */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = INV_MUT( opL );
 
     /* return the value                                                    */
@@ -762,6 +777,7 @@ Obj             EvalQuo (
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the division function                                   */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = QUO( opL, opR );
 
     /* return the value                                                    */
@@ -795,6 +811,7 @@ Obj             EvalMod (
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the remainder function                                  */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = MOD( opL, opR );
 
     /* return the value                                                    */
@@ -828,6 +845,7 @@ Obj             EvalPow (
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the powering function                                   */
+    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = POW( opL, opR );
 
     /* return the value                                                    */
@@ -848,9 +866,14 @@ Obj             EvalIntExpr (
     Expr                expr )
 {
     Obj                 val;            /* integer, result                 */
+#if 0
     UInt                i;              /* loop variable                   */
+#endif
 
+    
     /* allocate the integer                                                */
+    val = NewBag( ((UInt *)ADDR_EXPR(expr))[0], SIZE_EXPR(expr)-sizeof(UInt));
+#if 0
     if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
         val = NewBag( T_INTPOS, SIZE_EXPR(expr) - sizeof(UInt2) );
     }
@@ -859,9 +882,14 @@ Obj             EvalIntExpr (
     }
 
     /* copy over                                                           */
+    /* Need to fix this for GMP integers */
     for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
         ((UInt2*)ADDR_OBJ(val))[i-1] = ((UInt2*)ADDR_EXPR(expr))[i];
     }
+    */
+#endif
+
+      memcpy((void *)ADDR_OBJ(val), (void *)(((UInt *)ADDR_EXPR(expr))+1), (size_t) (SIZE_EXPR(expr)-sizeof(UInt)));
 
     /* return the value                                                    */
     return val;
@@ -1209,8 +1237,8 @@ Obj             EvalRangeExpr (
     val = EVAL_EXPR( ADDR_EXPR(expr)[0] );
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
-            "Range: <first> must be an integer less than 2^28 (not a %s)",
-            (Int)TNAM_OBJ(val), 0L,
+            "Range: <first> must be an integer less than 2^%d (not a %s)",
+            NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val),
             "you can replace <first> via 'return <first>;'" );
     }
     low = INT_INTOBJ( val );
@@ -1221,8 +1249,8 @@ Obj             EvalRangeExpr (
         while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) == low ) {
             if ( ! IS_INTOBJ(val) ) {
                 val = ErrorReturnObj(
-                    "Range: <second> must be an integer less than 2^28 (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L,
+                    "Range: <second> must be an integer less than 2^%d (not a %s)",
+                    NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val),
                     "you can replace <second> via 'return <second>;'" );
             }
             else {
@@ -1243,8 +1271,8 @@ Obj             EvalRangeExpr (
     while ( ! IS_INTOBJ(val) || (INT_INTOBJ(val) - low) % inc != 0 ) {
         if ( ! IS_INTOBJ(val) ) {
             val = ErrorReturnObj(
-                "Range: <last> must be an integer less than 2^28 (not a %s)",
-                (Int)TNAM_OBJ(val), 0L,
+                "Range: <last> must be an integer less than 2^%d (not a %s)",
+                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val),
                 "you can replace <last> via 'return <last>;'" );
         }
         else {
@@ -1271,6 +1299,11 @@ Obj             EvalRangeExpr (
 
     /* else make the range                                                 */
     else {
+        /* the length must be a small integer as well */
+        if ((high-low) / inc + 1 >= (1L<<NR_SMALL_INT_BITS)) {
+             ErrorQuit("Range: the length of a range must be less than 2^%d.",
+                        NR_SMALL_INT_BITS, 0L);
+        }
         if ( 0 < inc )
             range = NEW_RANGE_SSORT();
         else
@@ -1432,7 +1465,6 @@ void            RecExpr2 (
         else {
             rnam = RNamObj( EVAL_EXPR(tmp) );
         }
-        SET_RNAM_PREC( rec, i, rnam );
 
         /* if the subexpression is empty (cannot happen for records)       */
         tmp = ADDR_EXPR(expr)[2*i-1];
@@ -1443,27 +1475,24 @@ void            RecExpr2 (
         /* special case if subexpression is a list expression             */
         else if ( TNUM_EXPR( tmp ) == T_LIST_EXPR ) {
             sub = ListExpr1( tmp );
-            SET_ELM_PREC( rec, i, sub );
-            CHANGED_BAG( rec );
+            AssPRec(rec,rnam,sub);
             ListExpr2( sub, tmp );
         }
 
         /* special case if subexpression is a record expression            */
         else if ( TNUM_EXPR( tmp ) == T_REC_EXPR ) {
             sub = RecExpr1( tmp );
-            SET_ELM_PREC( rec, i, sub );
-            CHANGED_BAG( rec );
+            AssPRec(rec,rnam,sub);
             RecExpr2( sub, tmp );
         }
 
         /* general case                                                    */
         else {
             sub = EVAL_EXPR( tmp );
-            SET_ELM_PREC( rec, i, sub );
-            CHANGED_BAG( rec );
+            AssPRec(rec,rnam,sub);
         }
-
     }
+    SortPRecRNam(rec,0);
 
 }
 
@@ -1561,10 +1590,20 @@ void            PrintAInv (
     UInt                oldPrec;
 
     oldPrec = PrintPreceedence;
-    PrintPreceedence = 14;
+    PrintPreceedence = 11;
+    
+    /* if necessary print the opening parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%>(%>",0L,0L);
+    else Pr("%2>",0L,0L);
+    
     Pr("-%> ",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<",0L,0L);
+    
+    /* if necessary print the closing parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%2<)",0L,0L);
+    else Pr("%2<",0L,0L);
+    
     PrintPreceedence = oldPrec;
 }
 
@@ -1586,7 +1625,6 @@ void            PrintBinop (
 {
     UInt                oldPrec;        /* old preceedence level           */
     Char *              op;             /* operand                         */
-
     /* remember the current preceedence level                              */
     oldPrec = PrintPreceedence;
 
@@ -1658,7 +1696,7 @@ void            PrintIntExpr (
         Pr( "%d", INT_INTEXPR(expr), 0L );
     }
     else {
-        Pr( "<<not yet implemented>>", 0L, 0L );
+        PrintInt(EvalIntExpr(expr));
     }
 }
 

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  St. Andrews
+#Y  Copyright (C)  1997,  St Andrews
 ##
 ##  This file runs a vast number of sanity checks on a large number of
 ##  groups.

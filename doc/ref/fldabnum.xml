@@ -1,0 +1,211 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  fldabnum.msk                 GAP documentation              Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: fldabnum.msk,v 1.12 2003/10/28 07:47:33 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Abelian Number Fields">
+<Heading>Abelian Number Fields</Heading>
+
+<#Include Label="[1]{fldabnum}">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Construction of Abelian Number Fields">
+<Heading>Construction of Abelian Number Fields</Heading>
+
+Besides the usual construction using
+<Ref Func="Field" Label="for several generators"/> or
+<Ref Func="DefaultField" Label="for cyclotomics"/>
+(see&nbsp;<Ref Meth="DefaultField" Label="for cyclotomics"/>),
+abelian number fields consisting of cyclotomics can be created with
+<Ref Func="CyclotomicField" Label="for (subfield and) conductor"/>
+and <Ref Func="AbelianNumberField"/>.
+
+<#Include Label="CyclotomicField">
+<#Include Label="AbelianNumberField">
+<#Include Label="GaussianRationals">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Abelian Number Fields">
+<Heading>Operations for Abelian Number Fields</Heading>
+
+For operations for elements of abelian number fields, e.g.,
+<Ref Func="Conductor" Label="for a cyclotomic"/> or
+<Ref Func="ComplexConjugate"/>,
+see Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/>.
+
+<ManSection>
+<Meth Name="Factors" Arg='F'
+ Label="for polynomials over abelian number fields"/>
+
+<Description>
+Factoring of polynomials over abelian number fields consisting of cyclotomics
+works in principle but is not very efficient if the degree of the field
+extension is large.
+<P/>
+<Example><![CDATA[
+gap> x:= Indeterminate( CF(5) );
+x_1
+gap> Factors( PolynomialRing( Rationals ), x^5-1 );
+[ x_1-1, x_1^4+x_1^3+x_1^2+x_1+1 ]
+gap> Factors( PolynomialRing( CF(5) ), x^5-1 );
+[ x_1-1, x_1+(-E(5)), x_1+(-E(5)^2), x_1+(-E(5)^3), x_1+(-E(5)^4) ]
+]]></Example>
+</Description>
+</ManSection>
+
+<#Include Label="IsNumberField">
+<#Include Label="IsAbelianNumberField">
+<#Include Label="IsCyclotomicField">
+<#Include Label="GaloisStabilizer">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Integral Bases of Abelian Number Fields">
+<Heading>Integral Bases of Abelian Number Fields</Heading>
+
+<#Include Label="[2]{fldabnum}">
+<#Include Label="ZumbroichBase">
+<#Include Label="LenstraBase">
+<!-- %T missing: <C>IsIntegralBasis</C>, <C>NormalBasis</C>, <C>IsNormalBasis</C>, -->
+<!-- %T rings of integers in abelian number fields -->
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Galois Groups of Abelian Number Fields">
+<Heading>Galois Groups of Abelian Number Fields</Heading>
+
+<Index Subkey="Galois group">abelian number fields</Index>
+<Index Subkey="Galois group">number fields</Index>
+<Index Subkey="of number fields">automorphism group</Index>
+The field automorphisms of the cyclotomic field <M>&QQ;_n</M>
+(see Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/>)
+are given by the linear maps <M>*k</M> on <M>&QQ;_n</M>
+that are defined by <C>E</C><M>(n)^{{*k}} = </M><C>E</C><M>(n)^k</M>,
+where <M>1 \leq k &lt; n</M> and <C>Gcd</C><M>( n, k ) = 1</M> hold
+(see&nbsp;<Ref Func="GaloisCyc" Label="for a cyclotomic"/>).
+Note that this action is <E>not</E> equal to exponentiation of cyclotomics,
+i.e., for general cyclotomics <M>z</M>, <M>z^{{*k}}</M> is different from
+<M>z^k</M>.
+<P/>
+(In &GAP;, the image of a cyclotomic <M>z</M> under <M>*k</M> can be
+computed as <C>GaloisCyc( </C><M>z, k</M><C> )</C>.)
+<P/>
+<Example><![CDATA[
+gap> ( E(5) + E(5)^4 )^2; GaloisCyc( E(5) + E(5)^4, 2 );
+-2*E(5)-E(5)^2-E(5)^3-2*E(5)^4
+E(5)^2+E(5)^3
+]]></Example>
+<P/>
+For <C>Gcd</C><M>( n, k ) \neq 1</M>,
+the map <C>E</C><M>(n) \mapsto</M> <C>E</C><M>(n)^k</M> does <E>not</E>
+define a field automorphism of <M>&QQ;_n</M>
+but only a <M>&QQ;</M>-linear map.
+<P/>
+<Example><![CDATA[
+gap> GaloisCyc( E(5)+E(5)^4, 5 ); GaloisCyc( ( E(5)+E(5)^4 )^2, 5 );
+2
+-6
+]]></Example>
+
+<ManSection>
+<Meth Name="GaloisGroup" Arg='F' Label="for abelian number fields"/>
+
+<Description>
+The Galois group <M>Gal( &QQ;_n, &QQ; )</M> of the field extension
+<M>&QQ;_n / &QQ;</M> is isomorphic to the group
+<M>(&ZZ; / n &ZZ;)^{*}</M>
+of prime residues modulo <M>n</M>, via the isomorphism
+<M>(&ZZ; / n &ZZ;)^{*} \rightarrow Gal( &QQ;_n, &QQ; )</M>
+that is defined by
+<M>k + n &ZZ; \mapsto ( z \mapsto z^{*k} )</M>.
+<P/>
+The Galois group of the field extension <M>&QQ;_n / L</M> with
+any abelian number field <M>L \subseteq &QQ;_n</M> is simply the
+factor group of <M>Gal( &QQ;_n, &QQ; )</M> modulo the stabilizer of <M>L</M>,
+and the Galois group of <M>L / L'</M>, with <M>L'</M> an abelian
+number field contained in <M>L</M>, is the subgroup in this group that stabilizes
+<M>L'</M>.
+These groups are easily described in terms of <M>(&ZZ; / n &ZZ;)^{*}</M>.
+Generators of <M>(&ZZ; / n &ZZ;)^{*}</M> can be computed using
+<Ref Func="GeneratorsPrimeResidues"/>.
+<P/>
+In &GAP;, a field extension <M>L / L'</M> is given by the field
+object <M>L</M> with <Ref Func="LeftActingDomain"/> value <M>L'</M>
+(see&nbsp;<Ref Sect="Integral Bases of Abelian Number Fields"/>).
+<P/>
+<Example><![CDATA[
+gap> f:= CF(15);
+CF(15)
+gap> g:= GaloisGroup( f );
+<group with 2 generators>
+gap> Size( g ); IsCyclic( g ); IsAbelian( g );
+8
+false
+true
+gap> Action( g, NormalBase( f ), OnPoints );
+Group([ (1,6)(2,4)(3,8)(5,7), (1,4,3,7)(2,8,5,6) ])
+]]></Example>
+<P/>
+The following example shows Galois groups of a cyclotomic field
+and of a proper subfield that is not a cyclotomic field.
+<P/>
+<Example><![CDATA[
+gap> gens1:= GeneratorsOfGroup( GaloisGroup( CF(5) ) );
+[ ANFAutomorphism( CF(5), 2 ) ]
+gap> gens2:= GeneratorsOfGroup( GaloisGroup( Field( Sqrt(5) ) ) );
+[ ANFAutomorphism( NF(5,[ 1, 4 ]), 2 ) ]
+gap> Order( gens1[1] );  Order( gens2[1] );
+4
+2
+gap> Sqrt(5)^gens1[1] = Sqrt(5)^gens2[1];
+true
+]]></Example>
+<P/>
+The following example shows the Galois group of a cyclotomic field
+over a non-cyclotomic field.
+<P/>
+<Example><![CDATA[
+gap> g:= GaloisGroup( AsField( Field( [ Sqrt(5) ] ), CF(5) ) );
+<group with 1 generators>
+gap> gens:= GeneratorsOfGroup( g );
+[ ANFAutomorphism( AsField( NF(5,[ 1, 4 ]), CF(5) ), 4 ) ]
+gap> x:= last[1];;  x^2;
+IdentityMapping( AsField( NF(5,[ 1, 4 ]), CF(5) ) )
+]]></Example>
+</Description>
+</ManSection>
+
+<#Include Label="ANFAutomorphism">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Gaussians">
+<Heading>Gaussians</Heading>
+
+<#Include Label="GaussianIntegers">
+<#Include Label="IsGaussianIntegers">
+
+<!-- % Gcd and Euclidean... for the rings of integers in CF(4) and CF(3) ! -->
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

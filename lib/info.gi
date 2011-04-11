@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This package sets up a GAP level prototype of the new Info messages
 ##  system, parts of which will eventually have to be moved into
@@ -45,10 +46,11 @@ DeclareRepresentation("IsInfoClassListRep", IsPositionalObjectRep,[]);
 ##
 #V  InfoData                 record of private stuff
 #V  InfoData.CurrentLevels   the current desired verbosity levels set by user
-#V  InfoData.ClassNames          names of all info classes, used for printing
+#V  InfoData.ClassNames      names of all info classes, used for printing
+#V  InfoData.Handler         optional handler for InfoDoPrint
 ##
-##  these are both lists, and should have the same length, which defines the
-##  number of Info classes that exist
+##  these are all lists, and the first two should have the same length, 
+##  which defines the number of Info classes that exist
 ##
 
 if not IsBound(InfoData) then
@@ -56,6 +58,7 @@ if not IsBound(InfoData) then
     BIND_GLOBAL( "InfoData", rec() );
     InfoData.CurrentLevels := [];
     InfoData.ClassNames := [];
+    InfoData.Handler := [];
 fi;
 
 
@@ -112,6 +115,13 @@ InstallGlobalFunction( DeclareInfoClass, function( name )
     fi;
 end );
 
+#############################################################################
+##
+#F  SetInfoHandler( <class>, <handler> )
+##
+InstallGlobalFunction( SetInfoHandler, function(class, handler)
+  InfoData.Handler[class![1]] := handler;
+end);
 
 #############################################################################
 ##
@@ -238,7 +248,15 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
             Error(usage);
         fi;
     fi;
-    
+   
+    # store the class an level
+    if IsInfoClass(selectors) then
+      InfoData.LastClass := selectors;
+    else
+      InfoData.LastClass := selectors[1];
+    fi;
+    InfoData.LastLevel := level;
+
     if IsInfoClass(selectors) then
         return InfoLevel(selectors) >= level;
     elif IsInfoSelector(selectors)  then
@@ -258,9 +276,14 @@ end );
 ##
 
 BIND_GLOBAL( "InfoDoPrint", function(arglist)
-    Print("#I  ");
-    CallFuncList(Print, arglist);
-    Print("\n");
+    if IsBound(InfoData.Handler[InfoData.LastClass![1]]) then
+      InfoData.Handler[InfoData.LastClass![1]](InfoData.LastClass,
+                       InfoData.LastLevel, arglist);
+    else
+      Print("#I  ");
+      CallFuncList(Print, arglist);
+      Print("\n");
+    fi;
 end );
 
 
@@ -289,8 +312,30 @@ end );
 ##
 #V  InfoDebug
 ##
-if not IsBound(InfoDebug) then
-    DeclareInfoClass( "InfoDebug" );
+##  This info class has a default level of 1.
+##  Warnings can be switched off by setting its level to zero.
+##
+##  The files `lib/oper.g', `lib/oper1.g', `lib/variable.g' contain
+##  calls to `INFO_DEBUG' (a plain function delegating to `Print').
+##  Here we define the proper info class `InfoDebug',
+##  and replace `INFO_DEBUG' by a function that calls `Info'
+##  and respects the user defined info level of `InfoDebug'.
+##
+if not IsBound( InfoDebug ) then
+  DeclareInfoClass( "InfoDebug" );
+  SetInfoLevel( InfoDebug, 1 );
+
+  MAKE_READ_WRITE_GLOBAL( "INFO_DEBUG" );
+  INFO_DEBUG:= function( arg )
+    local string, i;
+
+    string:= [];
+    for i in [ 2 .. LEN_LIST( arg ) ] do
+      APPEND_LIST_INTR( string, arg[i] );
+    od;
+    Info( InfoDebug, arg[1], string );
+  end;
+  MAKE_READ_ONLY_GLOBAL( "INFO_DEBUG" );
 fi;
 
 
@@ -316,24 +361,11 @@ fi;
 #V  InfoWarning
 ##
 ##  This info class has a default level of 1.
-##  Warnings can be switched off by setting its level to zero
+##  Warnings can be switched off by setting its level to zero.
 ##
 if not IsBound(InfoWarning) then
     DeclareInfoClass( "InfoWarning" );
     SetInfoLevel( InfoWarning, 1 );
-
-    # The call of `INFO_INSTALL' in `oper.g' (with level 2)
-    # is thought as a call to `InfoWarning'.
-    MAKE_READ_WRITE_GLOBAL( "INFO_INSTALL" );
-    INFO_INSTALL:= function( arg )
-        local string, i;
-        string:= [];
-        for i in [ 2 .. LEN_LIST( arg ) ] do
-          APPEND_LIST_INTR( string, arg[i] );
-        od;
-        Info( InfoWarning, arg[1], string );
-    end;
-    MAKE_READ_ONLY_GLOBAL( "INFO_INSTALL" );
 fi;
 
 #############################################################################
@@ -347,29 +379,44 @@ fi;
 DeclareInfoClass( "InfoPerformance" );
 SetInfoLevel( InfoPerformance, 1 );
 
+#############################################################################
+##
+#V  InfoTeaching
+##
+##  This info class has a default level of 1.
+##  Warnings can be switched off by setting its level to zero
+##
+if not IsBound(InfoTeaching) then
+  DeclareInfoClass( "InfoTeaching" );
+  if not TEACHING_MODE then
+    SetInfoLevel( InfoTeaching, 1 );
+  fi;
+fi;
+
 InstallGlobalFunction(CompletionBar,function(c,a,s,v)
-local w,i;
+local out,w,i;
   if InfoLevel(c)>=a then
+    out:=OutputTextUser();
     if not IsRat(v) then
-      Print("\n");
+      PrintTo(out,"\n");
       return;
     fi;
     w:=SizeScreen()[1];
     for i in [1..w] do
-      Print("\r");
+      PrintTo(out,"\r");
     od;
-    Print("\c");
+    PrintTo(out,"\c");
     w:=w-Length(s)-5;
     v:=v*w;
-    Print(s," ");
+    PrintTo(out,s," ");
     for i in [1..w] do
       if v>0 then
-	Print("#");
+	PrintTo(out,"#");
       else
-	Print(" ");
+	PrintTo(out," ");
       fi;
       v:=v-1;
     od;
-    Print("|\c");
+    PrintTo(out,"|\c");
   fi;
 end);

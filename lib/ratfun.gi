@@ -7,8 +7,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains    methods  for    rational  functions,  laurent
 ##  polynomials and polynomials and their families.
@@ -23,7 +24,7 @@ Revision.ratfun_gi :=
 #M  SetIndeterminateName(<fam>,<nr>,<name>)
 ##
 InstallMethod(IndeterminateName,"for rational function families",true,
-  [IsRationalFunctionsFamily,IsPosInt],0,
+  [IsPolynomialFunctionsFamily,IsPosInt],0,
 function(fam,nr)
   if IsBound(fam!.namesIndets[nr]) then
     return fam!.namesIndets[nr];
@@ -33,13 +34,13 @@ function(fam,nr)
 end);
 
 InstallMethod(HasIndeterminateName,"for rational function families",true,
-  [IsRationalFunctionsFamily,IsPosInt],0,
+  [IsPolynomialFunctionsFamily,IsPosInt],0,
 function(fam,nr)
   return IsBound(fam!.namesIndets[nr]);
 end);
 
 InstallMethod(SetIndeterminateName,"for rational function families",true,
-  [IsRationalFunctionsFamily,IsPosInt,IsString],0,
+  [IsPolynomialFunctionsFamily,IsPosInt,IsString],0,
 function(fam,nr,str)
   if IsBound(fam!.namesIndets[nr]) and fam!.namesIndets[nr]<>str then
     Error("indeterminate number ",nr,
@@ -66,39 +67,82 @@ end);
 
 #############################################################################
 ##
-#F  LaurentPolynomialByExtRep(<rfam>,<coeffs>,<inum>)
+#F  LaurentPolynomialByExtRepNC(<rfam>,<coeffs>,<inum>)
 ##
-InstallGlobalFunction(LaurentPolynomialByExtRep, LAUR_POL_BY_EXTREP);
+InstallGlobalFunction(LaurentPolynomialByExtRepNC, LAUR_POL_BY_EXTREP);
 
 #############################################################################
 ##
-#F  UnivariateRationalFunctionByExtRep(<rfam>,<ncof>,<dcof>,<val>,<inum>)
+#F  UnivariateRationalFunctionByExtRepNC(<rfam>,<ncof>,<dcof>,<val>,<inum>)
 ##
-InstallGlobalFunction(UnivariateRationalFunctionByExtRep, UNIV_FUNC_BY_EXTREP);
+InstallGlobalFunction(UnivariateRationalFunctionByExtRepNC, UNIV_FUNC_BY_EXTREP);
+
+BindGlobal("SortedPolExtrepRatfun",function(fam,ext)
+local d, e, cfam, mo, d1, e1, i, j;
+  d:=[];
+  e:=[];
+  cfam:=CoefficientsFamily(fam);
+  for i in [2,4..Length(ext)] do
+    if not IsIdenticalObj(FamilyObj(ext[i]),cfam) then
+      Error("invalid coefficient ",ext[i]);
+    fi;
+    mo:=ext[i-1];
+    if ForAny(mo,j->not IsInt(j) or j<1) then
+      Error("invalid monomial ",mo);
+    fi;
+    if ForAny([3,5..Length(mo)-1],i->mo[i]<=mo[i-2]) then
+      # sort the monomial
+      d1:=mo{[1,3..Length(mo)-1]};
+      e1:=mo{[2,4..Length(mo)]};
+      SortParallel(d1,e1);
+      mo:=[];
+      for j in [1..Length(e1)] do
+	Add(mo,d1[j]);
+	Add(mo,e1[j]);
+      od;
+      if ForAny([3,5..Length(mo)-1],i->mo[i]=mo[i-2]) then
+	Error("duplicate variable in monomial ",mo);
+      fi;
+    fi;
+    Add(d,ext[i]);
+    Add(e,mo);
+  od;
+  SortParallel(e,d,fam!.zippedSum[1]);
+  ext:=[];
+  for i in [1..Length(e)] do
+    Add(ext,e[i]);
+    Add(ext,d[i]);
+  od;
+  if ForAny([3,5..Length(ext)-1],i->ext[i]=ext[i-2]) then
+    Error("duplicate monomial in ",ext);
+  fi;
+  return ext;
+end);
 
 #############################################################################
 ##
-#F  PolynomialByExtRep(<rfam>,<ext>)
+#F  PolynomialByExtRepNC(<rfam>,<ext>)
 ##
-InstallGlobalFunction(PolynomialByExtRep,
-function(rfam,ext)
+InstallGlobalFunction(PolynomialByExtRepNC,function(rfam,ext)
 local f;
-
   # objectify
   f := rec();
   ObjectifyWithAttributes(f,rfam!.defaultPolynomialType,
     ExtRepPolynomialRatFun, ext);
-
   # and return the polynomial
   return f;
 end );
 
+InstallGlobalFunction(PolynomialByExtRep,function(rfam,ext)
+  return PolynomialByExtRepNC(rfam,SortedPolExtrepRatfun(rfam,ext));
+end);
+
 #############################################################################
 ##
-#F  RationalFunctionByExtRep(<rfam>,<num>,<den>)
+#F  RationalFunctionByExtRepNC(<rfam>,<num>,<den>)
 ##
 ##
-InstallGlobalFunction(RationalFunctionByExtRep,
+InstallGlobalFunction(RationalFunctionByExtRepNC,
 function(rfam,num,den)
 local f;
   # objectify
@@ -111,6 +155,11 @@ local f;
   return f;
 end );
 
+InstallGlobalFunction(RationalFunctionByExtRep,function(rfam,num,den)
+  return RationalFunctionByExtRepNC(rfam,SortedPolExtrepRatfun(rfam,num),
+                                   SortedPolExtrepRatfun(rfam,den));
+end);
+
 # basic operations to compute attribute values for the properties
 # This is the only place where methods should be installed based on the
 # representation.
@@ -120,11 +169,7 @@ end );
 ##
 #M  IsLaurentPolynomial( <rat-fun> )
 ##
-InstallMethod( IsLaurentPolynomial,
-    true,
-    [ IsUnivariateRationalFunction ],
-    0,
-
+InstallMethod(IsLaurentPolynomial,true,[ IsUnivariateRationalFunction ], 0,
 function( obj )
     local   den;
    
@@ -141,7 +186,7 @@ end );
 #M  IsConstantRationalFunction(<ulaurent>)
 ##
 InstallMethod(IsConstantRationalFunction,"polynomial",true,
-  [IsRationalFunction and IsPolynomial],0,
+  [IsPolynomialFunction and IsPolynomial],0,
 function(f)
 local extf;
   extf := ExtRepPolynomialRatFun(f);
@@ -153,7 +198,7 @@ end);
 #M  IsConstantRationalFunction(<ulaurent>)
 ##
 InstallMethod(IsConstantRationalFunction,"rational function",true,
-  [IsRationalFunction],0,
+  [IsPolynomialFunction],0,
 function(f)
 local extf;
   if not IsPolynomial(f) then
@@ -178,6 +223,26 @@ local q;
   else
     SetExtRepPolynomialRatFun(f,q);
     return true;
+  fi;
+end);
+
+InstallOtherMethod(IsPolynomial,"fallback for non-ratfun",true,
+  [IsObject],0,
+function(o)
+  if IsRationalFunction(o) then
+    TryNextMethod();
+  else
+    return false;
+  fi;
+end);
+
+InstallOtherMethod(IsLaurentPolynomial,"fallback for non-ratfun",true,
+  [IsObject],0,
+function(o)
+  if IsRationalFunction(o) then
+    TryNextMethod();
+  else
+    return false;
   fi;
 end);
 
@@ -212,7 +277,7 @@ InstallMethod(ExtRepNumeratorRatFun,"polynomial rep -> ExtRepPolynomialRatFun",
 #M  ExtRepDenominatorRatFun(<poly>)
 ##
 InstallMethod(ExtRepDenominatorRatFun,"polynomial, return constant",true,
-  [IsPolynomialDefaultRep],0,
+  [IsRationalFunction],0,
 function(f)
 local fam;
   fam:=FamilyObj(f);
@@ -275,7 +340,7 @@ end);
 #M  IsUnivariateRationalFunction
 ##
 ##
-InstallMethod( IsUnivariateRationalFunction,"ratfun", true,
+InstallMethod(IsUnivariateRationalFunction,"ratfun", true,
 [ IsRationalFunction ], 0, f->DoUnivTestRatfun(f)[1]);
 
 #############################################################################
@@ -283,7 +348,7 @@ InstallMethod( IsUnivariateRationalFunction,"ratfun", true,
 #M  IsLaurentPolynomial
 ##
 ##
-InstallMethod( IsLaurentPolynomial,"ratfun", true,
+InstallMethod(IsLaurentPolynomial,"ratfun", true,
   [ IsRationalFunction ], 0, f->DoUnivTestRatfun(f)[3]);
 
 #############################################################################
@@ -291,7 +356,7 @@ InstallMethod( IsLaurentPolynomial,"ratfun", true,
 #M  IndeterminateNumberOfUnivariateRationalFunction
 ##
 ##
-InstallMethod( IndeterminateNumberOfUnivariateRationalFunction,"ratfun", true,
+InstallMethod(IndeterminateNumberOfUnivariateRationalFunction,"ratfun", true,
   [ IsUnivariateRationalFunction ], 0,
 function(f)
 local l;
@@ -308,7 +373,7 @@ end);
 ##
 #M  CoefficientsOfLaurentPolynomial( <rat-fun> )
 ##
-InstallMethod( CoefficientsOfLaurentPolynomial,"ratfun",true,
+InstallMethod(CoefficientsOfLaurentPolynomial,"ratfun",true,
     [ IsRationalFunction and IsLaurentPolynomial ], 0,
 function(f)
 local l;
@@ -347,7 +412,7 @@ end);
 InstallMethod( NumeratorOfRationalFunction,"call ExtRepNumerator",true,
   [ IsRationalFunction ],0,
 function( f )
-  return PolynomialByExtRep(FamilyObj(f),ExtRepNumeratorRatFun(f));
+  return PolynomialByExtRepNC(FamilyObj(f),ExtRepNumeratorRatFun(f));
 end );
 
 #############################################################################
@@ -357,7 +422,31 @@ end );
 InstallMethod( DenominatorOfRationalFunction,"call ExtRepDenominator",true,
   [ IsRationalFunction ],0,
 function( f )
-  return PolynomialByExtRep(FamilyObj(f),ExtRepDenominatorRatFun(f));
+  return PolynomialByExtRepNC(FamilyObj(f),ExtRepDenominatorRatFun(f));
+end );
+
+#############################################################################
+##
+#M  NumeratorOfRationalFunction( <ratfun> )
+##
+InstallMethod( NumeratorOfRationalFunction,"univariate using ExtRepNumerator",true,
+  [ IsRationalFunction ],0,
+function( f )
+  f:= PolynomialByExtRepNC(FamilyObj(f),ExtRepNumeratorRatFun(f));
+  IsUnivariatePolynomial(f);
+  return f;
+end );
+
+#############################################################################
+##
+#M  DenominatorOfRationalFunction( <ratfun> )
+##
+InstallMethod( DenominatorOfRationalFunction,"univariate using ExtRepDenominator",true,
+  [ IsRationalFunction ],0,
+function( f )
+  f:= PolynomialByExtRepNC(FamilyObj(f),ExtRepDenominatorRatFun(f));
+  IsUnivariatePolynomial(f);
+  return f;
 end );
 
 #############################################################################
@@ -367,7 +456,7 @@ end );
 InstallMethod( AsPolynomial,"call ExtRepPolynomial",true,
   [ IsRationalFunction and IsPolynomial],0,
 function( f )
-  return PolynomialByExtRep(FamilyObj(f),ExtRepPolynomialRatFun(f));
+  return PolynomialByExtRepNC(FamilyObj(f),ExtRepPolynomialRatFun(f));
 end );
 
 
@@ -381,8 +470,8 @@ end );
 ##  If the optional fourth argument is `true' then brackets are put around
 ##  the expression if at least one `\*' sign occurs in the string.
 ##
-ExtRepOfPolynomial_String := function(arg)
-local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra;
+BindGlobal("ExtRepOfPolynomial_String",function(arg)
+local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra,le;
 
   fam:=arg[1];
   ext:=arg[2];
@@ -392,18 +481,19 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra;
   zero := fam!.zeroCoefficient;
   one := fam!.oneCoefficient;
   mone := -one;
-  if Length(ext)=0 then
+  le:=Length(ext);
+
+  if le=0 then
     return String(zero);
   fi;
-  for i  in [ 1, 3 .. Length(ext)-1 ]  do
-
-    if i>1 then
+  for i  in [ le-1,le-3..1] do
+    if i<le-1 then
       # this is the second summand, so arithmetic will occur
       bra:=true;
     fi;
 
     if ext[i+1]=one then
-      if i>1 then
+      if i<le-1 then
 	Add(str,'+');
       fi;
       c:=false;
@@ -431,7 +521,7 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra;
 	fi;
       fi;
 
-      if i>1 and s[1]<>'-' then
+      if i<le-1 and s[1]<>'-' then
 	Add(str,'+');
       fi;
       Append(str,s);
@@ -473,7 +563,7 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra;
     str:=Concatenation("(",str,")");
   fi;
   return str;
-end;
+end);
 
 
 #############################################################################
@@ -524,7 +614,7 @@ end );
 #M  OneOp( <rat-fun> )
 ##
 InstallMethod( OneOp, "defer to family", true,
-    [ IsRationalFunction ], 0,
+    [ IsPolynomialFunction ], 0,
 function(obj)
   return One(FamilyObj(obj));
 end);
@@ -534,7 +624,7 @@ end);
 #M  ZeroOp( <rat-fun> )
 ##
 InstallMethod( ZeroOp, "defer to family", true,
-    [ IsRationalFunction ], 0,
+    [ IsPolynomialFunction ], 0,
 function(obj)
   return Zero(FamilyObj(obj));
 end);
@@ -550,57 +640,9 @@ end);
 
 #############################################################################
 ##
-#F  MonomialTotalDegreeLess  . . . . . . total degree ordering for monomials
+#F  MonomialExtGrlexLess
 ##
-InstallGlobalFunction( MonomialTotalDegreeLess,MONOM_TOT_DEG_LEX);
-BindGlobal("MONOM_TOT_DEG_LEX_LIBRARY",function( u, v )
-    local   lu, lv,      # length of u/v as a list
-            len,         # difference in length of u/v as words
-            i,           # loop variable
-            lexico;      # flag for the lexicoghraphic ordering of u and v
-
-    lu := Length(u); lv := Length(v);
-
-    ##  Discard a common prefix in u and v and decide if u is
-    ##  lexicographically smaller than v.
-    i := 1; while i <= lu and i <= lv and u[i] = v[i] do
-        i := i+1;
-    od;
-
-    if i > lu then  ## u is a prefix of v.
-        return lu < lv;
-    fi;
-    if i > lv then  ## v is a prefix of u, but not equal to u.
-        return false;
-    fi;
-
-    ##  Decide if u is lexicographically smaller than v.
-    if i mod 2 = 1 then         ##  the indeterminates in u and v differ
-        lexico := u[i] < v[i]; i := i+1;
-    else                        ##  the exponents in u and v differ
-        lexico := u[i] > v[i];
-    fi;
-
-    ##  Now compute the difference of the lengths
-    len := 0; while i <= lu and i <= lv do
-        len := len + u[i];
-        len := len - v[i];
-        i := i+2;
-    od;
-    ##  Only one of the following while loops will be executed.
-    while i <= lu do len := len + u[i]; i := i+2; od;
-    while i <= lv do len := len - v[i]; i := i+2; od;
-
-    if len = 0 then return lexico; fi;
-
-    return len < 0;
-end );
-
-#############################################################################
-##
-#F  MonomialRevLexicoLess(mon1,mon2) . . . .  reverse lexicographic ordering
-##
-InstallGlobalFunction( MonomialRevLexicoLess, MONOM_REV_LEX);
+InstallGlobalFunction( MonomialExtGrlexLess,MONOM_GRLEX);
 
 
 #############################################################################
@@ -618,15 +660,27 @@ InstallMethod( ZippedSum,
       IsList,
       IsObject,
       IsList ],
-    0, ZIPPED_SUM_LISTS);
+    0, 
+    ZIPPED_SUM_LISTS);
+#function(a,b,c,d)
+#local x,y;
+#  x:=ZIPPED_SUM_LISTS_LIB(a,b,c,d);
+#  y:=ZIPPED_SUM_LISTS(a,b,c,d);
+#  if x<>y then 
+#    Error("ZS");
+#  fi;
+#  return y;
+#end);
 
-#############################################################################
-##
-#F  ZippedListProduct . . . . . . . . . . . . . . . .  multiply two monomials
-##
-ZippedListProduct := function( l, r )
-    return ZippedSum( l, r, 0, [ \<, \+ ] );
-end;
+#ZippedListProduct := function( l, r )
+#local a,b;
+#    a:=ZippedSum( l, r, 0, [ \<, \+ ] );
+#    b:=MONOM_PROD(l,r);
+#    if a<>b then
+#      Error("prod");
+#    fi;
+#    return b;
+#end;
 
 #############################################################################
 ##
@@ -636,7 +690,7 @@ end;
 ##  Eg.  ZippedProduct([[1,2,2,3],2,[2,4],3],[[1,3,2,1],5],0,f);
 ##  gives [ [ 1, 3, 2, 5 ], 15, [ 1, 5, 2, 4 ], 10 ]
 ##  where
-##  f :=[ ZippedListProduct,  MONOM_TOT_DEG_LEX, \+, \* ]; 
+##  f :=[ MONOM_PROD,  MONOM_GRLEX, \+, \* ]; 
 ##
 InstallMethod( ZippedProduct,
     true,
@@ -649,29 +703,31 @@ InstallMethod( ZippedProduct,
 # Function to create the rational functions family and store the 
 # default types
 
+
 #############################################################################
 ##
 #M  RationalFunctionsFamily( <fam> )
 ##
 InstallMethod( RationalFunctionsFamily,
     true,
-    [ IsUFDFamily ],
+    [ IsFamily ],
     1,
 
 function( efam )
-  local   fam;
+  local   fam,elmfilt,filt;
+
+  # filter
+  elmfilt:=IsPolynomialFunction and IsPolynomialFunctionsFamilyElement;
+  filt:= IsPolynomialFunctionsFamily and CanEasilySortElements;
+  if IsUFDFamily(efam) then
+    elmfilt:=elmfilt and IsRationalFunction and IsRationalFunctionsFamilyElement;
+    filt:=filt and IsUFDFamily and IsRationalFunctionsFamily;
+  fi;
 
   # create a new family in the category <IsRationalFunctionsFamily>
   fam := NewFamily(
     "RationalFunctionsFamily(...)",
-    IsRationalFunction and IsRationalFunctionsFamilyElement,
-    CanEasilySortElements,
-    IsUFDFamily and IsRationalFunctionsFamily and CanEasilySortElements);
-	      
-  # default type for rational functions
-  fam!.defaultRatFunType := NewType( fam,
-	  IsRationalFunctionDefaultRep and
-	  HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
+    elmfilt, CanEasilySortElements,filt);
 
   # default type for polynomials
   fam!.defaultPolynomialType := NewType( fam,
@@ -704,17 +760,27 @@ function( efam )
 	  IsUnivariateRationalFunctionDefaultRep  and
 	  HasIndeterminateNumberOfLaurentPolynomial and
 	  HasCoefficientsOfUnivariateRationalFunction);
+	      
+  if IsUFDFamily(efam) then
+    # default type for rational functions
+    fam!.defaultRatFunType := NewType( fam,
+	    IsRationalFunctionDefaultRep and
+	    HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
+  fi;
 
   # functions to add zipped lists
-  fam!.zippedSum := [ MONOM_TOT_DEG_LEX, \+ ];
+  fam!.zippedSum := [ MONOM_GRLEX, \+ ];
 
   # functions to multiply zipped lists
-  fam!.zippedProduct := [ ZippedListProduct,
-			  MONOM_TOT_DEG_LEX, \+, \* ];
+  fam!.zippedProduct := [ MONOM_PROD,
+			  MONOM_GRLEX, \+, \* ];
 
   # set the one and zero coefficient
   fam!.zeroCoefficient := Zero(efam);
   fam!.oneCoefficient  := One(efam);
+  if fam!.oneCoefficient=fail then
+    Info(InfoWarning,1,"The polynomial is created over a ring without one.");
+  fi;
   fam!.oneCoefflist  := Immutable([fam!.oneCoefficient]);
 
   # set the coefficients
@@ -727,8 +793,8 @@ function( efam )
 
 
   # and set one and zero
-  SetZero( fam, PolynomialByExtRep(fam,[]));
-  SetOne( fam, PolynomialByExtRep(fam,[[],fam!.oneCoefficient]));
+  SetZero( fam, PolynomialByExtRepNC(fam,[]));
+  SetOne( fam, PolynomialByExtRepNC(fam,[[],fam!.oneCoefficient]));
 
   # we will store separate `one's for univariate polynomials. This will
   # allow to keep univariate calculations in this one indeterminate.
@@ -786,7 +852,7 @@ local   num;
       Error("division by zero");
     fi;
 
-    return RationalFunctionByExtRep(FamilyObj(obj),
+    return RationalFunctionByExtRepNC(FamilyObj(obj),
       ExtRepDenominatorRatFun(obj) , num);
 end );
 
@@ -798,20 +864,20 @@ end );
 InstallMethod( \+, "polynomial + polynomial", IsIdenticalObj,
     [ IsPolynomial, IsPolynomial ], 0,
 function( left, right )
-local   fam;
+local   fam,el,er;
 
-  if IsZero(right) then
+  el:=ExtRepPolynomialRatFun(left);
+  er:=ExtRepPolynomialRatFun(right);
+  if Length(er)=0 then
     return left;
-  elif IsZero(left) then
+  elif Length(el)=0 then
     return right;
   fi;
 
   fam   := FamilyObj(left);
 
-  return PolynomialByExtRep(fam, 
-	  ZippedSum(ExtRepPolynomialRatFun(left),
-                    ExtRepPolynomialRatFun(right),
-	            fam!.zeroCoefficient, fam!.zippedSum));
+  return PolynomialByExtRepNC(fam, 
+	  ZippedSum(el,er,fam!.zeroCoefficient, fam!.zippedSum));
 end );
 
 #############################################################################
@@ -839,7 +905,7 @@ local   fam;
   # get the family and check the zeros
   fam   := FamilyObj(left);
 
-  return PolynomialByExtRep(fam, ZippedProduct(
+  return PolynomialByExtRepNC(fam, ZippedProduct(
 	    ExtRepPolynomialRatFun(left),
 	    ExtRepPolynomialRatFun(right),
 	    fam!.zeroCoefficient, fam!.zippedProduct));
@@ -887,7 +953,7 @@ end);
 #M  <ratfun> < <ratfun>
 ##
 InstallMethod(\<,"rational functions",IsIdenticalObj,
-  [IsRationalFunction,IsRationalFunction],0, SMALLER_RATFUN);
+  [IsPolynomialFunction,IsPolynomialFunction],0, SMALLER_RATFUN);
 
 
 #############################################################################
@@ -924,9 +990,9 @@ local   fam,  i, extnum,pol;
   # We can do this because a/b is cancelled <=> c*a/b is cancelled
   # where c is a constant.
   if pol then
-    return PolynomialByExtRep( fam, extnum);
+    return PolynomialByExtRepNC( fam, extnum);
   else
-    return RationalFunctionByExtRep( fam, extnum, 
+    return RationalFunctionByExtRepNC( fam, extnum, 
 	  ExtRepDenominatorRatFun(ratfun));
   fi;
 
@@ -939,7 +1005,7 @@ end);
 ##
 ##
 InstallMethod( \*, "coeff * rat-fun", IsCoeffsElms,
-    [ IsRingElement, IsRationalFunction ],
+    [ IsRingElement, IsPolynomialFunction ],
     3, # so we dont call  positive integer * additive element
 function(c, r)
   return ProdCoefRatfun(c,r);
@@ -951,7 +1017,7 @@ end);
 ##
 ##
 InstallMethod( \*, "rat-fun * coeff", IsElmsCoeffs,
-    [ IsRationalFunction, IsRingElement ],
+    [ IsPolynomialFunction, IsRingElement ],
     3, # so we dont call  positive integer * additive element
 function(r, c)
   return ProdCoefRatfun(c,r);
@@ -998,9 +1064,9 @@ function(fam,num,den)
 local t;
   t:=TryGcdCancelExtRepPolynomials(fam,num,den);
   if Length(t[2])=2 and Length(t[2][1])=0 and IsOne(t[2][2]) then
-    return PolynomialByExtRep(fam,t[1]);
+    return PolynomialByExtRepNC(fam,t[1]);
   else
-    return RationalFunctionByExtRep(fam,t[1],t[2]);
+    return RationalFunctionByExtRepNC(fam,t[1],t[2]);
   fi;
 end);
 
@@ -1028,9 +1094,9 @@ local fam,t,num,ii,tt,den;
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(right),
 	    fam!.zeroCoefficient,fam!.zippedProduct);  
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
-	  return PolynomialByExtRep(fam,num);
+	  return PolynomialByExtRepNC(fam,num);
       else
-	  return RationalFunctionByExtRep(fam,num,t[2]);
+	  return RationalFunctionByExtRepNC(fam,num,t[2]);
       fi;
   elif HasIsPolynomial(right) and IsPolynomial(right) then
       t:=TryGcdCancelExtRepPolynomials(fam,
@@ -1039,9 +1105,9 @@ local fam,t,num,ii,tt,den;
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(left),
 	    fam!.zeroCoefficient,fam!.zippedProduct);  
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
-	  return PolynomialByExtRep(fam,num);
+	  return PolynomialByExtRepNC(fam,num);
       else
-	  return RationalFunctionByExtRep(fam,num,t[2]);
+	  return RationalFunctionByExtRepNC(fam,num,t[2]);
       fi;
   else
       t:=TryGcdCancelExtRepPolynomials(fam,
@@ -1053,9 +1119,9 @@ local fam,t,num,ii,tt,den;
       den:=ZippedProduct(t[2],tt[2],fam!.zeroCoefficient,
 		    fam!.zippedProduct);
       if Length(den)=2 and den[1]=[] and den[2]=fam!.oneCoefficient then
-	  return PolynomialByExtRep(fam,num);
+	  return PolynomialByExtRepNC(fam,num);
       else
-	  return RationalFunctionByExtRep(fam,num,den);
+	  return RationalFunctionByExtRepNC(fam,num,den);
       fi;
   fi;
 
@@ -1077,7 +1143,7 @@ function( p, q )
   q:=QuotientPolynomialsExtRep(FamilyObj(p),ExtRepPolynomialRatFun(p),
                                             ExtRepPolynomialRatFun(q));
   if q<>fail then
-    q:=PolynomialByExtRep(FamilyObj(p),q);
+    q:=PolynomialByExtRepNC(FamilyObj(p),q);
   fi;
   return q;
 end );
@@ -1098,14 +1164,14 @@ local fam,num,den,lnum,rnum,lden,rden,q,t,tmp,tmpp,i;
 		      fam!.zeroCoefficient,fam!.zippedProduct);
     num:=ZippedSum(num,ExtRepNumeratorRatFun(right),
 		      fam!.zeroCoefficient,fam!.zippedSum);
-    return RationalFunctionByExtRep(fam,num,den);
+    return RationalFunctionByExtRepNC(fam,num,den);
   elif HasIsPolynomial(right) and IsPolynomial(right) then
     den:=ExtRepDenominatorRatFun(left);
     num:=ZippedProduct(ExtRepPolynomialRatFun(right),den,
 		      fam!.zeroCoefficient,fam!.zippedProduct);
     num:=ZippedSum(num,ExtRepNumeratorRatFun(left),
 		      fam!.zeroCoefficient,fam!.zippedSum);
-    return RationalFunctionByExtRep(fam,num,den);
+    return RationalFunctionByExtRepNC(fam,num,den);
   else
     lnum:=ExtRepNumeratorRatFun(left);
     rnum:=ExtRepNumeratorRatFun(right);
@@ -1121,9 +1187,9 @@ local fam,num,den,lnum,rnum,lden,rden,q,t,tmp,tmpp,i;
       t:=TryGcdCancelExtRepPolynomials(fam,num,lden);
       if Length(t[2])=2 and Length(t[2][1])=0 and t[2][2]=fam!.oneCoefficient 
 	then
-	  return PolynomialByExtRep(fam,t[1]);
+	  return PolynomialByExtRepNC(fam,t[1]);
       else
-	  return RationalFunctionByExtRep(fam,t[1],t[2]);
+	  return RationalFunctionByExtRepNC(fam,t[1],t[2]);
       fi;
     else
       t:=TryGcdCancelExtRepPolynomials(fam,lden,rden);
@@ -1148,9 +1214,9 @@ local fam,num,den,lnum,rnum,lden,rden,q,t,tmp,tmpp,i;
 	    tmpp[1][i]:=tmpp[1][i]/den[2];
 	  od;
 	fi;
-	return PolynomialByExtRep(fam,tmpp[1]);
+	return PolynomialByExtRepNC(fam,tmpp[1]);
       else
-	return RationalFunctionByExtRep(fam,tmpp[1],den);
+	return RationalFunctionByExtRepNC(fam,tmpp[1],den);
       fi;
     fi;
   fi;
@@ -1187,27 +1253,27 @@ local   fam,  i, num,den;
 end );
 
 InstallMethod( \+, "ratfun + coeff", IsElmsCoeffs,
-    [ IsRationalFunction, IsRingElement ], 0,
+    [ IsPolynomialFunction, IsRingElement ], 0,
 function( left, right )
   return SumCoefRatfun(right, left);
 end );
 
 InstallMethod( \+, "coeff + ratfun ", IsCoeffsElms,
-    [ IsRingElement, IsRationalFunction], 0,
+    [ IsRingElement, IsPolynomialFunction], 0,
 function( left, right )
   return SumCoefRatfun(left, right);
 end);
 
 InstallMethod( \+, "ratfun + rat", true,
-    [ IsRationalFunction, IsRat ],-RankFilter(IsRat),
+    [ IsPolynomialFunction, IsRat ],-RankFilter(IsRat),
 function( left, right )
   return left+right*One(CoefficientsFamily(FamilyObj(left)));
 end );
 
 InstallMethod( \+, "rat + ratfun ", true,
-    [ IsRat, IsRationalFunction], -RankFilter(IsRat),
+    [ IsRat, IsPolynomialFunction], -RankFilter(IsRat),
 function( left, right )
-  return left*One(CoefficientsFamily(FamilyObj(left)))+right;
+  return left*One(CoefficientsFamily(FamilyObj(right)))+right;
 end);
 
 #############################################################################
@@ -1255,7 +1321,7 @@ end);
 #M  Value
 ##                               
 InstallOtherMethod(Value,"rat.fun., with one",
-  true,[IsRationalFunction,IsList,IsList,IsRingElement],0,
+  true,[IsPolynomialFunction,IsList,IsList,IsRingElement],0,
 function(rf,inds,vals,one)
 local i,fam,ivals,valextrep,d;
 
@@ -1316,7 +1382,7 @@ local i,fam,ivals,valextrep,d;
 end );
 
 InstallMethod(Value,"rational function: supply `one'",
-  true,[IsRationalFunction,IsList,IsList],0,
+  true,[IsPolynomialFunction,IsList,IsList],0,
 function(rf,inds,vals)
   return Value(rf,inds,vals,One(CoefficientsFamily(FamilyObj(rf))));
 end);
@@ -1360,7 +1426,7 @@ end );
 InstallOtherMethod(LeadingCoefficient,"multivariate",true,
   [IsPolynomial,IsPosInt],0,
 function(pol,ind)
-  return PolynomialByExtRep(FamilyObj(pol),
+  return PolynomialByExtRepNC(FamilyObj(pol),
           LEAD_COEF_POL_IND_EXTREP(ExtRepPolynomialRatFun(pol),ind));
 end);
 
@@ -1369,7 +1435,7 @@ end);
 #M  PolynomialCoefficientsOfPolynomial(<pol>,<ind>)
 ##
 InstallMethod(PolynomialCoefficientsOfPolynomial,"polynomial,integer",true,
-  [IsRationalFunction and IsPolynomial,IsPosInt],0,
+  [IsPolynomialFunction and IsPolynomial,IsPosInt],0,
 function(pol,ind)
 local c,i;
   c:=POL_COEFFS_POL_EXTREP(ExtRepPolynomialRatFun(pol),ind);
@@ -1378,7 +1444,8 @@ local c,i;
     if not IsBound(c[i]) then
       c[i]:=Zero(pol);
     else
-      c[i]:=PolynomialByExtRep(pol,c[i]);
+      c[i]:=PolynomialByExtRepNC(pol,c[i]);
+      IsLaurentPolynomial(c[i]);
     fi;
   od;
   return c;
@@ -1386,7 +1453,7 @@ end);
 
 InstallOtherMethod(PolynomialCoefficientsOfPolynomial,"polynomial,indet",
   IsIdenticalObj,
-  [IsRationalFunction and IsPolynomial,IsRationalFunction and IsPolynomial],0,
+  [IsPolynomialFunction and IsPolynomial,IsPolynomialFunction and IsPolynomial],0,
 function(pol,ind)
   return PolynomialCoefficientsOfPolynomial(pol,
            IndeterminateNumberOfLaurentPolynomial(ind));
@@ -1396,7 +1463,7 @@ end);
 ##
 #M  ZeroCoefficientRatFun( <ratfun> )
 ##
-InstallMethod(ZeroCoefficientRatFun,"via family",[IsRationalFunction],0,
+InstallMethod(ZeroCoefficientRatFun,"via family",[IsPolynomialFunction],0,
   p->FamilyObj(p)!.zeroCoefficient);
 
 #############################################################################
@@ -1405,7 +1472,7 @@ InstallMethod(ZeroCoefficientRatFun,"via family",[IsRationalFunction],0,
 ##
 BindGlobal("ConstantInBaseRingPol",function(pol,ind)
 local e;
-  if IsRationalFunction(pol) and IsConstantRationalFunction(pol) and
+  if IsPolynomialFunction(pol) and IsConstantRationalFunction(pol) and
     (not HasIndeterminateNumberOfUnivariateRationalFunction(pol) or
     IndeterminateNumberOfUnivariateRationalFunction(pol)=ind) then
     # constant polynomial represented as univariate: take coefficient
@@ -1425,7 +1492,7 @@ end);
 #M  Discriminant(<pol>,<ind>)
 ##
 InstallOtherMethod(Discriminant,"poly,inum",true,
-  [IsRationalFunction and IsPolynomial,IsPosInt],0,
+  [IsPolynomialFunction and IsPolynomial,IsPosInt],0,
 function(f,ind)
 local d,l;
   d:=DegreeIndeterminate(f,ind);
@@ -1438,7 +1505,7 @@ local d,l;
 end);
 
 InstallOtherMethod(Discriminant,"poly,ind",true,
-  [IsRationalFunction and IsPolynomial,IsRationalFunction and IsPolynomial],0,
+  [IsPolynomialFunction and IsPolynomial,IsPolynomialFunction and IsPolynomial],0,
 function(pol,ind)
   return Discriminant(pol,IndeterminateNumberOfLaurentPolynomial(ind));
 end);
@@ -1449,7 +1516,7 @@ end);
 ##
 # (this way around because we need the indeterminate
 InstallOtherMethod(Derivative,"ratfun,inum",true,
-  [IsRationalFunction,IsPosInt],0,
+  [IsPolynomialFunction,IsPosInt],0,
 function(ratfun,ind)
 local fam;
   fam:=CoefficientsFamily(FamilyObj(ratfun));
@@ -1458,7 +1525,7 @@ local fam;
 end);
 
 InstallOtherMethod(Derivative,"poly,ind",true,
-  [IsRationalFunction and IsPolynomial,IsRationalFunction and IsPolynomial],0,
+  [IsPolynomialFunction and IsPolynomial,IsPolynomialFunction and IsPolynomial],0,
 function(pol,ind)
 local d,c,i;
   d:=Zero(pol);
@@ -1470,7 +1537,7 @@ local d,c,i;
 end);
 
 InstallOtherMethod(Derivative,"ratfun,ind",true,
-  [IsRationalFunction,IsRationalFunction and IsPolynomial],0,
+  [IsPolynomialFunction,IsPolynomialFunction and IsPolynomial],0,
 function(ratfun,ind)
 local num,den;
   num:=NumeratorOfRationalFunction(ratfun);
@@ -1499,9 +1566,9 @@ local e,f,i,j,l,ll,cmp;
     f[i]:=Concatenation(l);
   od;
   if Length(f)=1 then
-    return PolynomialByExtRep(FamilyObj(p),f[1]);
+    return PolynomialByExtRepNC(FamilyObj(p),f[1]);
   else
-    return RationalFunctionByExtRep(FamilyObj(p),f[1],f[2]);
+    return RationalFunctionByExtRepNC(FamilyObj(p),f[1],f[2]);
   fi;
 end);
 
@@ -1510,7 +1577,7 @@ end);
 #M  Resultant( <f>, <g>, <ind> )
 ##
 InstallMethod(Resultant,"pol,pol,inum",IsFamFamX,
-  [IsRationalFunction and IsPolynomial,IsRationalFunction and IsPolynomial,
+  [IsPolynomialFunction and IsPolynomial,IsPolynomialFunction and IsPolynomial,
   IsPosInt],0,
 function(f,g,ind)
 local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
@@ -1524,6 +1591,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
   #  may not work
   m:=DegreeIndeterminate(f,ind);
   n:=DegreeIndeterminate(g,ind);
+  if n=infinity or m=infinity then return Zero(CoefficientsFamily(fam));fi;
 
   if n>m then
     # force f to be of larger degee
@@ -1552,7 +1620,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
 
     d:=LeadingCoefficient(g,ind);
 
-    px:=LaurentPolynomialByExtRep(fam,fam!.oneCoefflist,1,ind);
+    px:=LaurentPolynomialByExtRepNC(fam,fam!.oneCoefflist,1,ind);
 
     r:=f;
     e:=m-n+1;
@@ -1590,8 +1658,8 @@ end);
 
 
 InstallOtherMethod(Resultant,"pol,pol,indet",IsFamFamFam,
-  [IsRationalFunction and IsPolynomial,IsRationalFunction and IsPolynomial,
-  IsRationalFunction and IsPolynomial],0,
+  [IsPolynomialFunction and IsPolynomial,IsPolynomialFunction and IsPolynomial,
+  IsPolynomialFunction and IsPolynomial],0,
 function(a,b,ind)
   return Resultant(a,b,
            IndeterminateNumberOfLaurentPolynomial(ind));
@@ -1603,7 +1671,7 @@ end);
 #F  LeadingMonomialPosExtRep    position of leading monomial in external rep.
 ##                              list
 ##
-InstallGlobalFunction( LeadingMonomialPosExtRep, function(fam,e,order)
+InstallGlobalFunction(LeadingMonomialPosExtRep, function(fam,e,order)
 local bp,p;
   # is the order the one in which the monomials are stored anyhow?
   if order=fam!.zippedSum[1] then
@@ -1621,13 +1689,281 @@ local bp,p;
   return bp;
 end );
 
+
 #############################################################################
 ##
-#F  PolynomialReduction(poly,plist,order)     reduces poly with the ideal
-##                                 generated by plist, according to order
-##  The routine returns a list [remainder,[quotients]]
+#F  ConstituentsPolynomial
 ##
-InstallGlobalFunction( PolynomialReduction, POLYNOMIAL_REDUCTION );
+InstallGlobalFunction(ConstituentsPolynomial,
+function(p)
+  local fam, e, c, m, v, i;
+  fam:=FamilyObj(p);
+  e:=ExtRepPolynomialRatFun(p);
+  c:=[];
+  m:=[];
+  v:=[];
+  for i in [2,4..Length(e)] do
+    Add(c,e[i]);
+    Add(m,PolynomialByExtRepNC(fam,[ShallowCopy(e[i-1]),fam!.oneCoefficient]));
+    UniteSet(v,e[i-1]{[1,3..Length(e[i-1])-1]});
+  od;
+  v:=List(v,i->PolynomialByExtRepNC(fam,[[i,1],fam!.oneCoefficient]));
+  List(v,IsUnivariatePolynomial);
+  return rec(coefficients:=c,
+             monomials:=m,
+             variables:=v);
+end);
+
+
+#####################################################################
+#
+# routines provide a simple multivariate factorization
+# as in MCA exercise 16.10.
+#
+#  11-15-04,  WDJ and AH
+
+# n is the number of terms in m. n1 is the number of variable occuring
+# in each monomial term of m. returns the degrees of each variable in the
+# monomial m.
+BindGlobal("MVFactorDegreeMonomialTerm",function(m)
+local degrees, e, n0, i, j, l, n1, n;
+  e:=ExtRepPolynomialRatFun(m);
+  n0:=Length(e);
+  n:=Int(n0/2);
+  degrees:=[];
+  for i in [1..n] do
+  l:=e[2*i-1];
+  n1:=Length(l);
+  for j  in [1..Int(n1/2)] do
+    degrees:=Concatenation(degrees,[l[2*j]]);
+  od;
+  od;
+  return degrees;
+end);
+
+
+BindGlobal("MVFactorKroneckerMap",function(f,vars,var,p)
+# maps polys in x1,...,xn to polys in x 
+# induced by xi -> x^(p^(i-1))
+local g;
+  g:=Value(f,vars, List([1..Length(vars)],i->var[1]^(p^(i-1))));
+  return g;
+end);
+
+BindGlobal("MVFactorInverseKroneckerMapUnivariate",function(g,varpow)
+local coeffs,d,f,i;
+
+  if not IsUnivariatePolynomial(g) then
+    Error("this function assumes polynomial is univariate");
+  fi;
+  coeffs:=CoefficientsOfUnivariateLaurentPolynomial(g);
+  coeffs:=ShiftedCoeffs(coeffs[1],coeffs[2]);
+  d:=Length(coeffs)-1;
+  f:=Zero(g);
+  for i in [1..Length(coeffs)] do
+    if not IsZero(coeffs[i]) then
+      f:=f+coeffs[i]*varpow[i];
+    fi;
+  od;
+  return f;
+end);
+
+InstallGlobalFunction(MultivariateFactorsPolynomial,function(R,f)
+local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p, 
+      forig, cnt, vals, bv, bd, g, varpow, fam, fex, N, cand, ti, 
+      terms, div, ediv, r, ffactors, i, j, k;
+
+# input: f is a poly in R=F[x1,...,xn]
+# output: all divisors of f
+
+  cp:=ConstituentsPolynomial(f);
+  mons:=cp.monomials;
+  # count variable frequencies
+  L:=ListWithIdenticalEntries(
+    Maximum(List(cp.variables,
+      IndeterminateNumberOfUnivariateRationalFunction)),0);
+  for i in mons do
+    T:=ExtRepPolynomialRatFun(i)[1];
+    for j in [1,3..Length(T)-1] do
+      L[T[j]]:=L[T[j]]+T[j+1];
+    od;
+  od;
+  T:=[1..Length(L)];
+  SortParallel(L,T);
+  T:=Reversed(T);
+  L:=Reversed(L);
+  if ForAny([1..Length(L)],i->L[i]>0 and L[T[i]]<>L[i]) then
+    perm:=PermList(T)^-1;
+    Info(InfoPoly,2,"Variable swap: ",perm);
+    f:=OnIndeterminates(f,perm);
+    cp:=ConstituentsPolynomial(f);
+    mons:=cp.monomials;
+  else
+    perm:=(); # irrelevant swap
+  fi;
+
+  vars:=cp.variables;
+  nvars:=Length(vars);
+  F:=CoefficientsRing(R);
+  R1:=PolynomialRing(F,1);
+  var:=IndeterminatesOfPolynomialRing(R1);
+  degrees:=List([1..Length(mons)],i->MVFactorDegreeMonomialTerm(mons[i]));
+  d:=Maximum(Flat(degrees));
+  p:=NextPrimeInt(d);
+  p:=Maximum(d+1,2);
+
+  forig:=f;
+
+  # coefficient shift to remove duplicate roots
+  cnt:=0;
+  vals:=List(vars,i->Zero(F));
+  bv:=vals;
+  bd:=infinity;
+  repeat
+    if cnt>0 then
+      vals:=List(vars,i->Random(F));
+      f:=Value(forig,vars,List([1..nvars],i->vars[i]-vals[i]));
+    fi;
+    g:=MVFactorKroneckerMap(f,vars,var,p);
+    cnt:=cnt+1;
+    L:=DegreeOfUnivariateLaurentPolynomial(Gcd(g,Derivative(g)));
+    if L<bd then
+      bv:=vals;
+      bd:=L;
+    fi;
+    Info(InfoPoly,3,"Trying shift: ",vals,": ",L);
+  until cnt>DegreeOfUnivariateLaurentPolynomial(g) or L=0;
+  if bv<>vals then
+    vals:=bv;
+    f:=Value(forig,vars,List([1..nvars],i->vars[i]-vals[i]));
+    g:=MVFactorKroneckerMap(f,vars,var,p);
+  fi;
+
+
+  # prepare padic representations of powers
+  L:=ListWithIdenticalEntries(nvars,0);
+  varpow:=List([0..DegreeOfUnivariateLaurentPolynomial(g)],
+		i->Concatenation(CoefficientsQadic(i,p),L){[1..nvars]});
+  varpow:=List(varpow,i->Product(List([1..nvars],j->vars[j]^i[j])));
+
+  L:=Factors(R1,g);
+  Info(InfoPoly,1,"Factors of degrees ",
+       List(L,DegreeOfUnivariateLaurentPolynomial));
+
+  fam:=FamilyObj(f);
+  fex:=ExtRepPolynomialRatFun(f);
+  N:=Length(L);
+  cand:=[1..N];
+  for k in [1..QuoInt(N,2)] do
+    T:=NrCombinations(cand,k);
+    if T>100000 then
+      Info(InfoWarning,1,
+      "need to try ",T," combinations -- this might take very long");
+    fi;
+    T:=Combinations(cand,k);
+    Info(InfoPoly,2,"Length ",k,": ",Length(T)," candidates");
+    ti:=1;
+    while ti<=Length(T) do;
+      terms:=T[ti];
+      div:=Product(L{terms});
+      div:=MVFactorInverseKroneckerMapUnivariate(div,varpow);
+      ediv:=ExtRepPolynomialRatFun(div);
+      #if not IsOne(ediv[Length(ediv)]) then
+      #  div:=div/ediv[Length(ediv)];
+      #	 ediv:=ExtRepPolynomialRatFun(div);
+      #fi;
+      # call the library routine used to test quotient of polynomials
+      r:=QuotientPolynomialsExtRep(fam,fex,ediv);
+      if r<>fail then
+	fex:=r;
+	f:=PolynomialByExtRepNC(fam,fex);
+	Info(InfoPoly,1,"found factor ",terms," ",div," remainder ",f);
+	ffactors:=MultivariateFactorsPolynomial(R,f);
+	Add(ffactors,div);
+	if ForAny(vals,i->not IsZero(i)) then
+	  ffactors:=List(ffactors,
+	                 i->Value(i,vars,List([1..nvars],j->vars[j]+vals[j])));
+	fi;
+
+	if not IsOne(perm) then
+	  ffactors:=List(ffactors,i->OnIndeterminates(i,perm^-1));
+	fi;
+	return ffactors;
+      fi;
+      ti:=ti+1;
+    od;
+  od;
+
+  if ForAny(vals,i->not IsZero(i)) then
+    f:=Value(f,vars,List([1..nvars],j->vars[j]+vals[j]));
+  fi;
+
+  if not IsOne(perm) then
+    f:=OnIndeterminates(f,perm^-1);
+  fi;
+  return [f];
+end);
+
+#############################################################################
+##
+#M  Factors(<R>,<f> ) . .  factors of polynomial
+##
+InstallMethod(Factors,"reduce to univariate case",IsCollsElms,
+  [IsPolynomialRing,IsPolynomial],0,
+function(R,f)
+local cr, irf, i, opt, r,cp;
+
+  if not HasIsUnivariateRationalFunction(f) and
+    IsUnivariateRationalFunction(f) then
+    return Factors(R,f);
+  fi;
+  cr:=CoefficientsRing(R);
+  irf:=IrrFacsPol(f);
+  i:=PositionProperty(irf,i->i[1]=cr);
+  if i<>fail then
+    # if we know the factors,return
+    return irf[i][2];
+  fi;
+
+  opt:=ValueOption("factoroptions");
+  PushOptions(rec(factoroptions:=rec())); # options do not hold for
+                                          # subsequent factorizations
+  if opt=fail then
+    opt:=rec();
+  fi;
+
+  cp:=ConstituentsPolynomial(f);
+  if not IsSubset(IndeterminatesOfPolynomialRing(R),cp.variables) then
+    PopOptions();
+    TryNextMethod();
+  fi;
+
+  r:=MultivariateFactorsPolynomial(R,f);
+  if r=fail then
+    PopOptions();
+    TryNextMethod();
+  fi;
+
+  # convert into standard associates and sort
+  r:=List(r,x -> StandardAssociate(R,x));
+  Sort(r);
+
+  if Length(r)>0 then
+    # correct leading term
+    r[1]:=r[1]*Quotient(R,f,Product(r));
+  fi;
+
+  # and return
+  if not IsBound(opt.onlydegs) and not IsBound(opt.stopdegs) then
+    StoreFactorsPol(cr,f,r);
+    for i in r do
+      StoreFactorsPol(cr,i,[i]);
+    od;
+  fi;
+  PopOptions();
+  return r;
+
+end);
 
 #############################################################################
 ##

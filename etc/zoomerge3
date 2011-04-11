@@ -21,7 +21,7 @@ zoo lc $2 >infile
 rm -f awkprog
 cat << 'EOF' > awkprog
 BEGIN{com=0; text = 0;}
-/^ /{if (substr ($0,2,1) == "\|" ) { 
+/^[ 0123456789]/{if (substr ($0,2,1) == "|" ) { 
   print "echo \"" substr($0,3) "\" > comment";
   print "echo \"/END\" >>comment";
   com=1;
@@ -43,8 +43,14 @@ name=substr($0,48);com=0;
 while ((length(name)>0)&&(substr(name,1,1)==" ") ) { 
   name=substr(name,2); 
 } 
+  uname=name;
+if (substr(name,1,2) == "./") {
+  name=substr(name,3);
+}
 EOF
-echo if \(name !=\"\"\) {print \"unzoo -x -o $2 \\\"\" name \"\\\" \>\& /dev/null\"\; >> awkprog
+echo if \(name !=\"\"\) {print \"unzoo -x -o $2 \\\"\" uname \"\\\" \>\& /dev/null\"\; >> awkprog
+echo  print \"chmod a+r \" name \; >> awkprog
+echo  print \"chmod go-w \" name \; >> awkprog
 if [ "x$3" != "x" ]; then
    echo print \"mkdir -p \`dirname $3/\" name \"\`\" \; >> awkprog
    echo print \"mv \" name \" $3/\" name \; >> awkprog

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains the methods  for  the construction  of the basic perm
 ##  group types.
@@ -54,6 +54,9 @@ function( filter, ints )
     grp  := CallFuncList( DirectProduct, grps );
     SetSize( grp, Product(ints) );
     SetIsAbelian( grp, true );
+    if ForAll(ints,IsPrimePowerInt) then
+      SetIndependentGeneratorsOfAbelianGroup(grp,GeneratorsOfGroup(grp));
+    fi;
     return grp;
 end );
 
@@ -139,7 +142,6 @@ function( filter, dom )
             SetIsSimpleGroup(  alt, true );
             SetIsPerfectGroup( alt, true );
         elif 2 < Length(dom)  then
-            SetIsSimpleGroup(  alt, false );
             SetIsPerfectGroup( alt, false );
         fi;
         SetIsPrimitiveAffine( alt, Length( dom ) < 5 );
@@ -200,11 +202,17 @@ InstallMethod( CyclicGroupCons,
     0,
 
 function( filter, n )
-    local   c;
+    local   g, c;
 
-    c := GroupByGenerators( [ PermList( Concatenation( [2..n], [1] ) ) ] );
+    g := PermList( Concatenation( [2..n], [1] ) );
+    c := GroupByGenerators( [g] );    
     SetSize( c, n );
     SetIsCyclic( c, true );
+    if n > 1 then
+        SetMinimalGeneratingSet (c, [g]);
+    else
+        SetMinimalGeneratingSet (c, []);
+    fi;
     return c;
 end );
 
@@ -234,6 +242,22 @@ InstallMethod( DihedralGroupCons,
     return D;
     end );
 
+#############################################################################
+##
+#M  QuaternionGroupCons( <IsPermGroup>, <4n> )
+##
+InstallMethod( QuaternionGroupCons,
+    "perm. group",
+    true,
+    [ IsPermGroup, IsPosInt ], 0,
+function( filter, n )
+  local y, z, x;
+  if 0 <> n mod 4 then TryNextMethod(); fi;
+  y := PermList( Concatenation( [2..n/2], [1], [n/2+2..n], [n/2+1] ) );
+  x := PermList( Concatenation( Cycle( y^-1, [n/2+1..n], n/2+1 ), Cycle( y^-1, [1..n/2], n/4+1 ) ) );
+  return Group(x,y);
+end );
+
 
 #############################################################################
 ##
@@ -248,11 +272,8 @@ InstallMethod( DihedralGroupCons,
 ##
 InstallMethod( MathieuGroupCons,
     "perm group with degree",
-    true,
     [ IsPermGroup and IsFinite, IsPosInt ],
-    0,
     function( filter, degree )
-
     local M;
 
     # degree 9, base 1 2, indices 9 8
@@ -275,6 +296,7 @@ InstallMethod( MathieuGroupCons,
             (1,2,3,4,5,6,7,8,9,10,11),
             (3,7,11,8)(4,10,5,6) );
       SetSize( M, 7920 );
+      SetIsSimpleGroup( M, true );
 
     # degree 12, base 1 2 3 4 5, indices 12 11 10 9 8
     elif degree = 12  then
@@ -283,6 +305,7 @@ InstallMethod( MathieuGroupCons,
             (3,7,11,8)(4,10,5,6),
             (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) );
       SetSize( M, 95040 );
+      SetIsSimpleGroup( M, true );
 
     # degree 21, base 1 2 3 4, indices 21 20 16 3
     elif degree = 21  then
@@ -290,6 +313,7 @@ InstallMethod( MathieuGroupCons,
              (1,4,5,9,3)(2,8,10,7,6)(12,15,16,20,14)(13,19,21,18,17),
              (1,21,5,12,20)(2,16,3,4,17)(6,18,7,19,15)(8,13,9,14,11) );
       SetSize( M, 20160 );
+      SetIsSimpleGroup( M, true );
 
     # degree 22, base 1 2 3 4 5, indices 22 21 20 16 3
     elif degree = 22  then
@@ -298,6 +322,7 @@ InstallMethod( MathieuGroupCons,
             (1,4,5,9,3)(2,8,10,7,6)(12,15,16,20,14)(13,19,21,18,17),
             (1,21)(2,10,8,6)(3,13,4,17)(5,19,9,18)(11,22)(12,14,16,20) );
       SetSize( M, 443520 );
+      SetIsSimpleGroup( M, true );
 
     # degree 23, base 1 2 3 4 5 6, indices 23 22 21 20 16 3
     elif degree = 23  then
@@ -305,6 +330,7 @@ InstallMethod( MathieuGroupCons,
             (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23),
             (3,17,10,7,9)(4,13,14,19,5)(8,18,11,12,23)(15,20,22,21,16) );
       SetSize( M, 10200960 );
+      SetIsSimpleGroup( M, true );
 
     # degree 24, base 1 2 3 4 5 6 7, indices 24 23 22 21 20 16 3
     elif degree = 24  then
@@ -314,6 +340,7 @@ InstallMethod( MathieuGroupCons,
             (1,24)(2,23)(3,12)(4,16)(5,18)(6,10)(7,20)(8,14)(9,21)(11,17)
             (13,22)(19,15) );
       SetSize( M, 244823040 );
+      SetIsSimpleGroup( M, true );
 
     # error
     else

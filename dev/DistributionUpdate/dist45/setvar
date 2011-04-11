@@ -1,0 +1,43 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+# where to put the temporary export tree and archives
+export DISTROOT=/mnt/raid/hudson-slave/workspace/GAP-source-distro/wrap/gap45beta
+
+# the cvs repository (login once, before using these scripts) 
+export CVSROOT=":pserver:visitor@cvs.gap-system.org:/gap/CVS"
+
+# the version to wrap, "-D now" for current, for the release first tag
+# all files when the status of a release candidate is reached, say:
+#      cvs tag -b -D now GAP4r4
+# (the -b flag created a CVS branch such that (bugfix) changes can be
+# applied independently of the changes in the main branch.)
+export GAPCVSVERSION="-D now"
+# export GAPCVSVERSION="-r GAP4R4"
+
+# version to wrap
+export VERSION="5"
+export FULLVERSION="$VERSION.0"
+
+# directory name
+export DISTNAME="gap4r$VERSION"
+
+# archive name
+export RBVERSION="4r5p0"
+export ARCHNAME="gap$RBVERSION"
+
+# package archive URL
+export PKGLOC="ftp://ftp.gap-system.org/pub/gap/gap4/tar.gz/packages-2011_03_01-11_17_UTC.tar.gz"
+
+#-----------------------------------------------------------------------------
+# everything below should be system independent.
+
+# unset locale settings
+export LANG="C"
+export LC_ALL="C"
+
+umask 022
+
+echo "*** Environment set for creating Version GAP 4."${FULLVERSION}

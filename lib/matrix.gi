@@ -3,13 +3,14 @@
 #W  matrix.gi                   GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 #W                                                         & Alexander Hulpke
-#W                                                           & Heiko Theissen
-#W                                                         & Martin Schoenert
+#W                                                           & Heiko Theißen
+#W                                                         & Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for matrices.
 ##
@@ -22,7 +23,7 @@ Revision.matrix_gi :=
 #
 
 InstallMethod(Zero,
-        [IsRectangularTable and IsAdditiveElementWithZeroCollColl],
+        [IsRectangularTable and IsAdditiveElementWithZeroCollColl and IsInternalRep],
         ZERO_ATTR_MAT);
 
 
@@ -43,9 +44,9 @@ elif array = [[]]  then
 elif not ForAll( array, IsList )  then
     arr := List( array, String );
 	max := Maximum( List( arr, Length ) );
-	Print( "[ ", FormattedString( arr[ 1 ], max + 1 ) );
+	Print( "[ ", String( arr[ 1 ], max + 1 ) );
 	for l  in [ 2 .. Length( arr ) ]  do
-	    Print( ", ", FormattedString( arr[ l ], max + 1 ) );
+	    Print( ", ", String( arr[ l ], max + 1 ) );
 	od;
 	Print( " ]\n" );
     else
@@ -69,7 +70,7 @@ elif not ForAll( array, IsList )  then
          else
              
              for k  in [ 1 .. Length( arr[ l ] ) ]  do
-                 Print( FormattedString( arr[ l ][ k ], max + 1 ) );
+                 Print( String( arr[ l ][ k ], max + 1 ) );
                  if k = Length( arr[ l ] )  then
                      Print( " ]" );
                  else
@@ -238,6 +239,49 @@ InstallMethod( Length,
     [ IsNullMapMatrix ],
     null -> 0 );
 
+InstallMethod( ZERO,
+    "for null map matrix",
+    [ IsNullMapMatrix ],
+    null -> null );
+
+InstallMethod( \+,
+    "for two null map matrices",
+    [ IsNullMapMatrix, IsNullMapMatrix ],
+    function(null,null2)
+    return null;
+end );
+
+InstallMethod( AINV,
+    "for a null map matrix",
+    [ IsNullMapMatrix ],
+    null -> null );
+
+InstallMethod( AdditiveInverseOp,
+    "for a null map matrix",
+    [ IsNullMapMatrix ],
+    null -> null );    
+
+InstallMethod( \*,
+    "for two null map matrices",
+    [ IsNullMapMatrix, IsNullMapMatrix ],
+    function(null,null2)
+    return null;
+end );
+
+InstallMethod( \*,
+    "for a scalar and a null map matrix",
+    [ IsScalar, IsNullMapMatrix ],
+    function(s,null)
+    return null;
+end );
+
+InstallMethod( \*,
+    "for a null map matrix and a scalar",
+    [ IsNullMapMatrix, IsScalar ],
+    function(null,s)
+    return null;
+end );
+
 InstallMethod( \*,
     "for vector and null map matrix",
     [ IsVector, IsNullMapMatrix ],
@@ -322,7 +366,7 @@ Matrix_OrderPolynomialInner :=
         w := ShallowCopy(vec);
         p := ShallowCopy(zeroes);
         Add(p,one);
-        ConvertToVectorRep(p,fld);
+        ConvertToVectorRepNC(p,fld);
         piv := PositionNot(w,zero,0);
 
         #
@@ -371,7 +415,7 @@ Matrix_OrderPolynomialSameField := function( fld, mat, vec, ind )
     local imat, ivec, coeffs;
     imat:=ImmutableMatrix(fld,mat);
     ivec := Immutable(vec);
-    ConvertToVectorRep(ivec, fld);
+    ConvertToVectorRepNC(ivec, fld);
     coeffs := Matrix_OrderPolynomialInner( fld, imat, ivec, []);
     return UnivariatePolynomialByCoefficients(ElementsFamily(FamilyObj(fld)), coeffs, ind );
 end;
@@ -395,7 +439,7 @@ Matrix_CharacteristicPolynomialSameField := function( fld, mat, ind)
     cp:=[one];
     if Is8BitMatrixRep(mat) and Length(mat)>0 then
       # stay in the same field as matrix
-      ConvertToVectorRep(cp,Q_VEC8BIT(mat[1]));
+      ConvertToVectorRepNC(cp,Q_VEC8BIT(mat[1]));
     fi;
     cp := UnivariatePolynomialByCoefficients(fam,cp,ind);
     for i in [1..n] do
@@ -419,7 +463,7 @@ end;
 ##
 Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
     local i, n, ords, base, imat, vec, one,cp,zero, fam,
-          processVec, mp, dim, span,op,w, piv,j;
+          processVec, mp, dim, span,op,w, piv,j,ring;
 
     Info(InfoMatrix,1,"Minimal Polynomial called on ",
          Length(mat[1])," x ",Length(mat)," matrix over ",fld);
@@ -433,21 +477,29 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
     mp:=[one];
     if Is8BitMatrixRep(mat) and Length(mat)>0 then
       # stay in the same field as matrix
-      ConvertToVectorRep(mp,Q_VEC8BIT(mat[1]));
+      ConvertToVectorRepNC(mp,Q_VEC8BIT(mat[1]));
     fi;
-    mp := UnivariatePolynomialByCoefficients( fam, mp,ind);
+    #keep coeffs
+    #mp := UnivariatePolynomialByCoefficients( fam, mp,ind);
     while dim < n do
-        vec := [];
+	vec := ShallowCopy(mat[1]);
         for i in [1..n] do
-            Add(vec,Random([one,zero]));
+	  #Add(vec,Random([one,zero]));
+	  vec[i]:=Random([one,zero]);
         od;
         vec[Random([1..n])] := one; # make sure it's not zero
+        #ConvertToVectorRepNC(vec,fld);
         MakeImmutable(vec);
-        ConvertToVectorRep(vec,fld);
         span := [];
         op := Matrix_OrderPolynomialInner( fld, imat, vec, span);
-        op := UnivariatePolynomialByCoefficients(fam, op, ind);
-        mp := Lcm(mp, op);
+        #op := UnivariatePolynomialByCoefficients(fam, op, ind);
+        #mp := Lcm(mp, op);
+	# this command takes much time since a polynomial ring is created.
+	# Instead use the quick gcd-based method (avoiding the dispatcher):
+        #mp := (mp*op)/GcdOp(mp, op);
+	#mp:=mp/LeadingCoefficient(mp);
+	mp:=QUOTREM_LAURPOLS_LISTS(ProductCoeffs(mp,op),GcdCoeffs(mp,op))[1];
+	mp:=mp/mp[Length(mp)];
 
         for j in [1..Length(span)] do
             if IsBound(span[j]) then
@@ -473,6 +525,7 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
             fi;
         od;
     od;
+    mp := UnivariatePolynomialByCoefficients( fam, mp,ind);
     Assert(3, IsZero(Value(mp,imat)));
     Info(InfoMatrix,1,"Minimal Polynomial returns ", mp);
     return mp;
@@ -515,10 +568,10 @@ function( m )
         # create strings
         t := [];
         for x  in [ 2 .. chr ]  do
-            t[x] := FormattedString( x-1, w );
+            t[x] := String( x-1, w );
         od;
 #T useful only for (very) small characteristic, or?
-        t[1] := FormattedString( ".", w );
+        t[1] := String( ".", w );
 
         # print matrix
         for v  in m  do
@@ -544,13 +597,13 @@ function( m )
         for x  in [ 0 .. Size(f)-2 ]  do
             y := z^x;
             if DegreeFFE(y) = 1  then
-                t[x+2] := FormattedString( IntFFE(y), w );
+                t[x+2] := String( IntFFE(y), w );
 #T !
             else
-                t[x+2] := FormattedString(Concatenation("z^",String(x)),w);
+                t[x+2] := String(Concatenation("z^",String(x)),w);
             fi;
         od;
-        t[1] := FormattedString( ".", w );
+        t[1] := String( ".", w );
 
         # print matrix
         for v  in m  do
@@ -576,18 +629,27 @@ end );
 InstallMethod( CharacteristicPolynomial,
     "supply field and indeterminate 1",
     [ IsMatrix ],
-    mat -> CharacteristicPolynomialMatrixNC( DefaultFieldOfMatrix( mat ), mat, 1 ) );
+    mat -> CharacteristicPolynomialMatrixNC( 
+            DefaultFieldOfMatrix( mat ), mat, 1 ) );
 
 
 #############################################################################
 ##
-#M  CharacteristicPolynomial( <F>, <mat> )
+#M  CharacteristicPolynomial( <F>, <E>, <mat> )
 ##
 InstallMethod( CharacteristicPolynomial,
     "supply indeterminate 1",
-    [ IsField, IsMatrix ],
-    function( F, mat )
-    return CharacteristicPolynomial( F, mat, 1);
+    function (famF, famE, fammat)
+        local fam;
+        if HasElementsFamily (fammat) then
+            fam := ElementsFamily (fammat);
+            return IsIdenticalObj (famF, fam) and IsIdenticalObj (famE, fam);
+        fi;
+        return false;
+    end,
+    [ IsField, IsField, IsMatrix ],
+    function( F, E, mat )
+    return CharacteristicPolynomial( F, E, mat, 1);
     end );
 
 
@@ -599,37 +661,41 @@ InstallMethod( CharacteristicPolynomial,
     "supply field",
     [ IsMatrix, IsPosInt ],
     function( mat, indnum )
-    return CharacteristicPolynomial( DefaultFieldOfMatrix( mat ), mat,
-                                     indnum );
+        local F;
+        F := DefaultFieldOfMatrix( mat );
+        return CharacteristicPolynomial( F, F, mat, indnum );
     end );
 
 
 #############################################################################
 ##
-#M  CharacteristicPolynomial( <field>, <matrix>, <indnum> )
+#M  CharacteristicPolynomial( <subfield>, <field>, <matrix>, <indnum> )
 ##
 InstallMethod( CharacteristicPolynomial, "spinning over field",
-    IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
-function( F, mat,inum )
-    local fld, B;
+    function (famF, famE, fammat, famid)
+        local fam;
+        if HasElementsFamily (fammat) then
+            fam := ElementsFamily (fammat);
+            return IsIdenticalObj (famF, fam) and IsIdenticalObj (famE, fam);
+        fi;
+        return false;
+    end,
+    [ IsField, IsField, IsOrdinaryMatrix, IsPosInt ],
+    function( F, E, mat, inum )
+        local fld, B;
 
-    fld:= DefaultFieldOfMatrix( mat );
+        if not IsSubset (E, F) then
+            Error ("<F> must be a subfield of <E>.");
+        elif F <> E then
+          # Replace the matrix by a matrix with the same char. polynomial
+          # but with entries in `F'.
+          B:= Basis( AsVectorSpace( F, E ) );
+          mat:= BlownUpMat( B, mat );
+        fi;
 
-    if fld <> fail and not IsSubset( F, fld ) then
+        return CharacteristicPolynomialMatrixNC( F, mat, inum);
+    end );
 
-      # Replace the matrix by a matrix with the same char. polynomial
-      # but with entries in `F'.
-      if not IsSubset( fld, F ) then
-        fld:= ClosureField( fld, F );
-      fi;
-      B:= Basis( AsField( F, fld ) );
-      mat:= BlownUpMat( B, mat );
-
-    fi;
-
-    return CharacteristicPolynomialMatrixNC( F, mat,inum);
-end );
 
 InstallMethod( CharacteristicPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
@@ -664,6 +730,20 @@ function( F, mat,inum )
 
     return MinimalPolynomialMatrixNC( F, mat,inum);
 end );
+
+InstallOtherMethod( MinimalPolynomial,
+    "supply field",
+    [ IsMatrix,IsPosInt ],
+function(m,n)
+  return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, n );
+end);
+
+InstallOtherMethod( MinimalPolynomial,
+    "supply field and indeterminate 1",
+    [ IsMatrix ],
+function(m)
+  return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, 1 );
+end);
 
 InstallMethod( MinimalPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
@@ -743,7 +823,7 @@ local ord,i,vec,v,o;
     mat := mat ^ o;
     ord := ord * o;
   od;
-  return ord;
+  if IsOne(mat) then return ord; else return fail; fi;
 end);
 
 
@@ -882,50 +962,62 @@ end);
 #M  Order( <mat> )  . . . . . . . . . . . .  order of a matrix of cyclotomics
 ##
 InstallMethod( Order,
-    "for a matrix of cyclotomics, with Minkowski kernel",
-    [ IsOrdinaryMatrix and IsCyclotomicCollColl ],
-    function ( mat )
-    local dim, F, lat, red, order, I;
+               "for a matrix of cyclotomics, with Minkowski kernel",
+               [ IsOrdinaryMatrix and IsCyclotomicCollColl ],
+
+  function ( mat )
+
+    local dim, F, tracemat, lat, red, det, trace, order, orddet, powdet,
+          ordpowdet, I;
 
     # Check that the argument is an invertible square matrix.
     dim:= Length( mat );
     if dim <> Length( mat[1] ) then
       Error( "Order: <mat> must be a square matrix" );
-    elif RankMat( mat ) <> dim then
-      Error( "Order: <mat> must be invertible" );
     fi;
 
     # Before we start with expensive calculations,
-    # we check whether the matrix has a *small* order.
-    # Our assumption/prejudice is that `Order' will *usually* be called
-    # for matrices of finite order, and that the *usual* situation is that
-    # of matrices taken from a matrix representation of an interesting
-    # (i.e., almost simple) group, hence the order is usually small.
-    # If this assumption does not hold then it might be more efficient to
-    # omit the check for small order.
-    order:= OrderMatTrial( mat, OrderMatLimit - 1 );
-    if order <> fail then
-      return order;
+    # we check whether the matrix has a *very small* order.
+    order:= OrderMatTrial( mat, 6 );
+    if order <> fail then return order; fi;
+
+    # We compute the determinant <det>, issue an error message in case <mat>
+    # is not invertible, compute the order <orddet> of <det> and check
+    # whether <mat>^<orddet> has small order.
+    det := DeterminantMat( mat );
+    if det = 0 then Error( "Order: <mat> must be invertible" ); fi;
+    orddet := Order(det);
+    if orddet = infinity then return infinity; fi;
+    powdet := mat^orddet;
+    ordpowdet := OrderMatTrial( powdet, 12 );
+    if ordpowdet <> fail then return orddet * ordpowdet; fi;
+
+    # If the order is finite then the trace must be an algebraic integer.
+    trace := TraceMat( mat );
+    if not IsIntegralCyclotomic( trace ) then return infinity; fi;
+
+    # If the order is finite then the absolute value of the trace
+    # is bounded by the dimension of the matrix.
+    if IsInt( trace ) and Length( mat ) < AbsInt( trace ) then
+      return infinity;
     fi;
 
-    # Convert to a rational matrix if necessary.
     F:= DefaultFieldOfMatrix( mat );
+
+    # Convert to a rational matrix if necessary.
     if 1 < Conductor( F ) then
+
+      # Check whether the trace is larger than the dimension.
+      tracemat := BlownUpMat( Basis(F), [[ trace ]] );
+      if   AbsInt(Trace(tracemat)) > Length(mat) * Length(tracemat)
+      then return infinity; fi;
+
       mat:= BlownUpMat( Basis( F ), mat );
       dim:= Length( mat );
     fi;
 
     # Convert to an integer matrix if necessary.
-    if ForAll( mat, row -> ForAll( row, IsInt ) ) then
-
-      # If the order is finite then the trace must be an integer,
-      # and the determinant must be $\pm 1$.
-      if    ( not IsInt( TraceMat( mat ) ) )
-         or AbsInt( DeterminantMat( mat ) ) <> 1 then
-        return infinity;
-      fi;
-
-    else
+    if not ForAll( mat, row -> ForAll( row, IsInt ) ) then
 
       # The following checks trace and determinant.
       lat:= InvariantLattice( GroupWithGenerators( [ mat ] ) );
@@ -955,8 +1047,7 @@ InstallMethod( Order,
     else
       return infinity;
     fi;
-    end );
-
+  end );
 
 #############################################################################
 ##
@@ -1011,33 +1102,6 @@ InstallMethod( IsZero,
     end );
 
 
-#############################################################################
-##
-#M  AbelianInvariantsOfList( <list> ) . . . . .  abelian invariants of a list
-##
-InstallMethod( AbelianInvariantsOfList,
-    [ IsCyclotomicCollection ],
-function ( list )
-    local   invs, elm;
-
-    invs := [];
-    for elm  in list  do
-        if elm = 0  then
-            Add( invs, 0 );
-        elif 1 < elm  then
-            Append( invs, List( Collected(FactorsInt(elm)), x->x[1]^x[2] ) );
-        elif elm < -1 then
-            Append( invs, List( Collected(FactorsInt(-elm)), x->x[1]^x[2] ) );
-        fi;
-    od;
-    Sort(invs);
-    return invs;
-end );
-
-InstallOtherMethod( AbelianInvariantsOfList,
-    [ IsList and IsEmpty ],
-    list -> [] );
-
 
 #############################################################################
 ##
@@ -1052,7 +1116,7 @@ InstallMethod( BaseMat,
     "generic method for matrices",
     [ IsMatrix ],
     function ( mat )
-    return BaseMatDestructive( List( mat, ShallowCopy ) );
+    return BaseMatDestructive( MutableCopyMat( mat ) );
     end );
 
 
@@ -1128,7 +1192,7 @@ end);
 InstallOtherMethod( SumIntersectionMat,
     [ IsEmpty, IsMatrix ],
 function(a,b)
-  b:=List(b,ShallowCopy);
+  b:=MutableCopyMat(b);
   TriangulizeMat(b);
   b:=Filtered(b,i->not IsZero(i));
   return [b,a];
@@ -1137,7 +1201,7 @@ end);
 InstallOtherMethod( SumIntersectionMat,
     [ IsMatrix, IsEmpty ],
 function(a,b)
-  a:=List(a,ShallowCopy);
+  a:=MutableCopyMat(a);
   TriangulizeMat(a);
   a:=Filtered(a,i->not IsZero(i));
   return [a,b];
@@ -1315,9 +1379,13 @@ InstallMethod( DeterminantMat,
     "for matrices",
     [ IsMatrix ],
     function( mat )
-    return DeterminantMatDestructive( List( mat, ShallowCopy ) );
+    return DeterminantMatDestructive( MutableCopyMat( mat ) );
     end );
 
+InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
+    [ IsOrdinaryMatrix and
+    CategoryCollections(CategoryCollections(IsZmodnZObjNonprime)) and IsMutable],
+  DeterminantMatDivFree);
 
 #############################################################################
 ##
@@ -1457,18 +1525,232 @@ InstallMethod( DeterminantMatDivFree,
 ##
 InstallMethod( DimensionsMat,
     [ IsMatrix ],
-    A -> [ Length(A), Length(A[1]) ] );
+    function( A )
+    if IsRectangularTable(A) then
+    	return [ Length(A), Length(A[1]) ];
+    else
+    	return fail;
+    fi;
+	end	);
+
+BindGlobal("DoDiagonalizeMat",function(R,M,transform,divide)
+local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
+      typ, ed, posi,posj, a, b, qr, c, i,j,left,right,cleanout,
+      alldivide;
+
+  swaprow:=function(a,b)
+  local r;
+    r:=M[a];
+    M[a]:=M[b];
+    M[b]:=r;
+    if transform then
+      r:=left[a];
+      left[a]:=left[b];
+      left[b]:=r;
+    fi;
+  end;
+
+  swapcol:=function(a,b)
+  local c;
+    c:=M{[1..l]}[a];
+    M{[1..l]}[a]:=M{[1..l]}[b];
+    M{[1..l]}[b]:=c;
+    if transform then
+      c:=right{[1..l]}[a];
+      right{[1..l]}[a]:=right{[1..l]}[b];
+      right{[1..l]}[b]:=c;
+    fi;
+  end;
+
+  addcol:=function(a,b,m)
+  local i;
+    for i in [1..l] do
+      M[i][a]:=M[i][a]+m*M[i][b];
+      if transform then
+	right[i][a]:=right[i][a]+m*right[i][b];
+      fi;
+    od;
+  end;
+
+  addrow:=function(a,b,m)
+    AddCoeffs(M[a],M[b],m);
+    if transform then
+      AddCoeffs(left[a],left[b],m);
+    fi;
+  end;
+
+  multcol:=function(a,m)
+  local i;
+    for i in [1..l] do
+      M[i][a]:=M[i][a]*m;
+      if transform then
+	right[i][a]:=right[i][a]*m;
+      fi;
+    od;
+  end;
+
+  multrow:=function(a,m)
+    MultRowVector(M[a],m);
+    if transform then
+      MultRowVector(left[a],m);
+    fi;
+  end;
+
+  # clean out row and column
+  cleanout:=function()
+  local a,i,b,c,qr;
+    repeat
+      # now do the GCD calculations only in row/column
+      for i in [start+1..n] do
+	a:=i;
+	b:=start;
+	if not IsZero(M[start][b]) then
+	  repeat
+	    qr:=QuotientRemainder(R,M[start][a],M[start][b]);
+	    addcol(a,b,-qr[1]);
+	    c:=a;a:=b;b:=c;
+	  until IsZero(qr[2]);
+	  if b=start then
+	    swapcol(start,i);
+	  fi;
+	fi;
+
+	# normalize
+	qr:=StandardAssociate(R,M[start][start])/M[start][start];
+	multcol(start,qr);
+
+      od;
+
+      for i in [start+1..l] do
+	a:=i;
+	b:=start;
+	if not IsZero(M[b][start]) then
+	  repeat
+	    qr:=QuotientRemainder(R,M[a][start],M[b][start]);
+	    addrow(a,b,-qr[1]);
+	    c:=a;a:=b;b:=c;
+	  until IsZero(qr[2]);
+	  if b=start then
+	    swaprow(start,i);
+	  fi;
+	fi;
+
+	qr:=StandardAssociate(R,M[start][start])/M[start][start];
+	multrow(start,qr);
+
+      od;
+    until ForAll([start+1..n],i->IsZero(M[start][i]));
+  end;
+
+  l:=Length(M);
+  n:=Length(M[1]);
+
+  if transform then
+    left:=IdentityMat(l,R);
+    right:=IdentityMat(n,R);
+  fi;
+
+  start:=1;
+  while start<Length(M) and start<n do
+
+    # find element of lowest degree and move it into pivot
+    # hope is this will reduce the total number of iterations by making
+    # it small in the first place
+    if IsZero(M[start][start]) then
+      d:=infinity;
+    else
+      d:=EuclideanDegree(R,M[start][start]);
+    fi;
+    posi:=start;
+    posj:=start;
+
+    for i in [start..l] do
+      for j in [start..n] do
+        if not IsZero(M[i][j]) then
+	  ed:=EuclideanDegree(R,M[i][j]);
+	  if ed<d then
+	    d:=ed;
+	    posi:=i;
+	    posj:=j;
+	  fi;
+	fi;
+      od;
+    od;
+
+    if d<>infinity then # there is at least one nonzero entry
+
+      if posi<>start then
+        swaprow(start,posi);
+      fi;
+      if posj<>start then
+	swapcol(start,posj);
+      fi;
+      cleanout();
+
+      if divide then
+	repeat
+	  alldivide:=true;
+	  #make sure the pivot also divides the rest
+	  for i in [start+1..l] do
+	    for j in [start+1..n] do
+	      if Quotient(M[i][j],M[start][start])=fail then
+		alldivide:=false;
+		# do gcd
+		addrow(start,j,1);
+		cleanout();
+	      fi;
+	    od;
+	  od;
+	until alldivide;
+
+      fi;
+
+      # normalize
+      qr:=StandardAssociate(R,M[start][start])/M[start][start];
+      multcol(start,qr);
+
+    fi;
+    start:=start+1;
+  od;
+
+  # normalize last entry
+  if not IsZero(M[start][start]) then
+    qr:=StandardAssociate(R,M[start][start])/M[start][start];
+    multcol(start,qr);
+  fi;
+
+  if transform then
+   return rec(rowtrans:=left,coltrans:=right,normal:=M);
+  else
+    return M;
+  fi;
+end);
 
 #############################################################################
 ##
-#M  DiagonalizeMat(<integers>,<mat>)
+#M  DiagonalizeMat(<euclring>,<mat>)
 ##
-InstallMethod( DiagonalizeMat,
-    "over the integers",
-    [ IsIntegers, IsMatrix and IsMutable ],
-    function(I,mat)
-    DiagonalizeIntMat(mat);
-    end );
+# this is a very naive implementation but it should work for any euclidean
+# ring.
+InstallMethod( DiagonalizeMat, 
+  "method for general Euclidean Ring",
+  true, [ IsEuclideanRing,IsMatrix and IsMutable], 0,function(R,M)
+  return DoDiagonalizeMat(R,M,false,false);
+end);
+
+#############################################################################
+##
+#M  EuclideanDegree( <pring>, <upol> )
+##
+InstallOtherMethod(EuclideanDegree,"laurent,ring",IsCollsElms,
+  [IsPolynomialRing,IsLaurentPolynomial],0,
+function(R,a) 
+  return DegreeOfLaurentPolynomial(a);
+end);
+
+InstallOtherMethod(EuclideanDegree,"laurent",true,
+  [IsLaurentPolynomial],0,DegreeOfLaurentPolynomial);
+
 
 #############################################################################
 ##
@@ -1478,56 +1760,108 @@ InstallMethod( DiagonalizeMat,
 ##  unique <d> with '<d>[<i>]' divides '<d>[<i>+1]' and <mat>  is  equivalent
 ##  to a diagonal matrix with the elements '<d>[<i>]' on the diagonal.
 ##
-InstallMethod( ElementaryDivisorsMat,
-    "generic method for euclidean rings",
-    [ IsEuclideanRing,IsMatrix ],
-function ( ring,mat )
-    local  divs, gcd, zero, m, n, i, k;
 
-    # make a copy to avoid changing the original argument
-    mat := List( mat, ShallowCopy );
+InstallGlobalFunction(ElementaryDivisorsMatDestructive,function(ring,mat)
+local  divs, gcd, zero, m, n, i, k;
+
     m := Length(mat);  n := Length(mat[1]);
 
     # diagonalize the matrix
-    DiagonalizeMat(ring, mat );
+    DoDiagonalizeMat(ring, mat,false,true );
 
     # get the diagonal elements
     divs := [];
     for i  in [1..Minimum(m,n)]  do
         divs[i] := mat[i][i];
     od;
-    if divs <> []  then zero := divs[1] - divs[1];  fi;
-
-    # transform the divisors so that every divisor divides the next
-    for i  in [1..Length(divs)-1]  do
-        for k  in [i+1..Length(divs)]  do
-            if divs[i] = zero and divs[k] <> zero  then
-                divs[i] := divs[k];
-                divs[k] := zero;
-            elif divs[i] <> zero
-              and EuclideanRemainder(ring, divs[k], divs[i] ) <> zero  then
-                gcd     := Gcd(ring, divs[i], divs[k] );
-                divs[k] := divs[k] / gcd * divs[i];
-                divs[i] := gcd;
-            fi;
-        od;
-        divs[i] := StandardAssociate( ring,divs[i] );
-    od;
+#    #if divs <> []  then zero := divs[1] - divs[1];  fi;
+#
+#    # transform the divisors so that every divisor divides the next
+#    for i  in [1..Length(divs)-1]  do
+#        for k  in [i+1..Length(divs)]  do
+#            if divs[i] = zero and divs[k] <> zero  then
+#                divs[i] := divs[k];
+#                divs[k] := zero;
+#            elif divs[i] <> zero
+#              and EuclideanRemainder(ring, divs[k], divs[i] ) <> zero  then
+#                gcd     := Gcd(ring, divs[i], divs[k] );
+#                divs[k] := divs[k] / gcd * divs[i];
+#                divs[i] := gcd;
+#            fi;
+#        od;
+#        divs[i] := StandardAssociate( ring,divs[i] );
+#    od;
 
     return divs;
 end );
 
-InstallOtherMethod( ElementaryDivisorsMat,
-    "compatibility method for integers",
-    [ IsMatrix ],
-    mat->ElementaryDivisorsMat(Integers,mat));
+InstallMethod( ElementaryDivisorsMat,
+    "generic method for euclidean rings",
+    [ IsEuclideanRing,IsMatrix ],
+function ( ring,mat )
+  # make a copy to avoid changing the original argument
+  mat := MutableCopyMat( mat );
+  if IsIdenticalObj(ring,Integers) then
+    DiagonalizeMat(Integers,mat);
+    return DiagonalOfMat(mat);
+  fi;
+  return ElementaryDivisorsMatDestructive(ring,mat);
+end);
 
+InstallOtherMethod( ElementaryDivisorsMat,
+    "compatibility method -- supply ring",
+    [ IsMatrix ],
+function(mat)
+local ring;
+  if ForAll(mat,row->ForAll(row,IsInt)) then
+    return ElementaryDivisorsMat(Integers,mat);
+  fi;
+  ring:=DefaultRing(Flat(mat));
+  return ElementaryDivisorsMat(ring,mat);
+end);
 
 #############################################################################
 ##
-#F  MutableCopyMat( <mat> )
+#M  ElementaryDivisorsTransformationsMat(<mat>) elem. divisors of a matrix
 ##
-InstallGlobalFunction( MutableCopyMat, mat -> List( mat, ShallowCopy ) );
+##  'ElementaryDivisorsTransformationsMat' does not only compute the
+##  elementary divisors, but also transforming matrices.
+
+InstallGlobalFunction(ElementaryDivisorsTransformationsMatDestructive,
+function(ring,mat)
+
+    # diagonalize the matrix
+    return DoDiagonalizeMat(ring, mat,true,true );
+
+end );
+
+InstallMethod( ElementaryDivisorsTransformationsMat,
+    "generic method for euclidean rings",
+    [ IsEuclideanRing,IsMatrix ],
+function ( ring,mat )
+  # make a copy to avoid changing the original argument
+  mat := MutableCopyMat( mat );
+  return ElementaryDivisorsTransformationsMatDestructive(ring,mat);
+end);
+
+InstallOtherMethod( ElementaryDivisorsTransformationsMat,
+    "compatibility method -- supply ring",
+    [ IsMatrix ],
+function(mat)
+local ring;
+  if ForAll(mat,row->ForAll(row,IsInt)) then
+    return ElementaryDivisorsTransformationsMat(Integers,mat);
+  fi;
+  ring:=DefaultRing(Flat(mat));
+  return ElementaryDivisorsTransformationsMat(ring,mat);
+end);
+
+#############################################################################
+##
+#M  MutableCopyMat( <mat> )
+##
+InstallMethod( MutableCopyMat, "generic method", [IsList],
+  mat -> List( mat, ShallowCopy ) );
 
 
 #############################################################################
@@ -1551,7 +1885,7 @@ InstallMethod( MutableTransposedMat,
     # copy the entries
     for j in n do
       trn[j]:= mat{ m }[j];
-#      ConvertToVectorRep( trn[j] );
+#      ConvertToVectorRepNC( trn[j] );
     od;
 
     # return the transposed
@@ -1729,7 +2063,7 @@ InstallMethod( TriangulizedNullspaceMatNT,
             for i  in [1..k-1]  do row[n-i+1] := -mat[i][k];  od;
             row[n-k+1] := one;
             for i  in [k+1..n]  do row[n-i+1] := zero;  od;
-            ConvertToVectorRep( row );
+            ConvertToVectorRepNC( row );
             Add( nullspace, row );
         fi;
     od;
@@ -1762,7 +2096,7 @@ InstallMethod( GeneralisedEigenvalues,
     "for a matrix",
     [ IsField, IsMatrix ],
     function( F, A )
-    	return Set( Factors( UnivariatePolynomialRing(F), MinimalPolynomial(F, A) ) );
+    	return Set( Factors( UnivariatePolynomialRing(F), MinimalPolynomial(F, A,1) ) );
     end );
 
 #############################################################################
@@ -1827,7 +2161,7 @@ function( mat )
     local   p,  c;
 
     # construct the minimal polynomial of <A>
-    p := MinimalPolynomial( DefaultFieldOfMatrix(mat), mat );
+    p := MinimalPolynomialMatrixNC( DefaultFieldOfMatrix(mat), mat,1 );
 
     # check if <A> is invertible
     c := CoefficientsOfUnivariatePolynomial(p);
@@ -1858,7 +2192,7 @@ InstallMethod( RankMatDestructive,
 InstallMethod( RankMat,
     "generic method for matrices",
     [ IsMatrix ],
-    mat -> RankMatDestructive( List( mat, ShallowCopy ) ) );
+    mat -> RankMatDestructive( MutableCopyMat( mat ) ) );
 
 
 #############################################################################
@@ -1931,7 +2265,7 @@ InstallMethod( SemiEchelonMat,
     f := DefaultFieldOfMatrix(mat);
     for v in mat do
         vc := ShallowCopy(v);
-        ConvertToVectorRep(vc,f);
+        ConvertToVectorRepNC(vc,f);
         Add(copymat, vc);
     od;
     return SemiEchelonMatDestructive( copymat );
@@ -1951,7 +2285,7 @@ InstallMethod( SemiEchelonMatTransformation,
     f := DefaultFieldOfMatrix(mat);
     for v in mat do
         vc := ShallowCopy(v);
-        ConvertToVectorRep(vc,f);
+        ConvertToVectorRepNC(vc,f);
         Add(copymat, vc);
     od;
     return SemiEchelonMatTransformationDestructive( copymat );
@@ -1971,17 +2305,21 @@ InstallMethod( SemiEchelonMatTransformationDestructive,
           T,         # transformation matrix
           coeffs,    # list of coefficient vectors for 'vectors'
           relations, # basis vectors of the null space of 'mat'
-          row, head, x, row2;
+          row, head, x, row2,f;
 
     nrows := Length( mat );
     ncols := Length( mat[1] );
-
-    zero  := Zero( mat[1][1] );
-
+    
+    f := DefaultFieldOfMatrix(mat);
+    if f = fail then
+        f := mat[1][1];
+    fi;
+    zero := Zero(f);
+    
     heads   := ListWithIdenticalEntries( ncols, 0 );
     vectors := [];
 
-    T         := IdentityMat( nrows, zero );
+    T         := IdentityMat( nrows, f );
     coeffs    := [];
     relations := [];
 
@@ -2114,7 +2452,7 @@ InstallMethod( SemiEchelonMats,
         "for list of matrices",
         [ IsList ],
         function( mats )
-    return SemiEchelonMatsNoCo( List( mats, x -> List( x, ShallowCopy ) ) );
+    return SemiEchelonMatsNoCo( List( mats, x -> MutableCopyMat(x) ) );
 end );
 
 InstallMethod( SemiEchelonMatsDestructive,
@@ -2259,7 +2597,7 @@ function ( mat1, mat2 )
                 Append( row, i * row2 );
             od;
 #T application of the new 'AddRowVector' function?
-            ConvertToVectorRep( row );
+            ConvertToVectorRepNC( row );
             Add( kroneckerproduct, row );
         od;
     od;
@@ -2283,7 +2621,7 @@ InstallMethod( SolutionMatDestructive,
     ncols := Length(vec);
     z := Zero(mat[1][1]);
     sol := ListWithIdenticalEntries(Length(mat),z);
-    ConvertToVectorRep(sol);
+    ConvertToVectorRepNC(sol);
     if ncols <> Length(mat[1]) then
         Error("SolutionMat: matrix and vector incompatible");
     fi;
@@ -2442,13 +2780,13 @@ function( M1, M2 )
     for v in M1 do
       v:= ShallowCopy( v );
       Append( v, v );
-      ConvertToVectorRep( v );
+      ConvertToVectorRepNC( v );
       Add( mat, v );
     od;
     for v in M2 do
       v:= ShallowCopy( v );
       Append( v, zero );
-      ConvertToVectorRep( v );
+      ConvertToVectorRepNC( v );
       Add( mat, v );
     od;
 
@@ -2560,6 +2898,13 @@ InstallOtherMethod( TriangulizeMat,
     [ IsList and IsEmpty],
     function( m ) return; end );
 
+InstallMethod( TriangulizedMat, "generic method for matrices", [ IsMatrix ],
+function ( mat )
+local m;
+  m:=List(mat,ShallowCopy);
+  TriangulizeMat(m);
+  return m;
+end);
 
 #############################################################################
 ##
@@ -2641,10 +2986,10 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
   z:=Zero(bas[1][1]);
   zv:=Zero(bas[1]);
   if Length(mat)>0 then
-    mat:=List(mat,ShallowCopy);
+    mat:=MutableCopyMat(mat);
     TriangulizeMat(mat);
   fi;
-  bas:=List(bas,ShallowCopy);
+  bas:=MutableCopyMat(bas);
   dim:=Length(bas[1]);
   l:=Length(bas)-Length(mat); # missing dimension
   b:=[];
@@ -2724,7 +3069,7 @@ InstallGlobalFunction( BlownUpMat, function ( B, mat )
         for entry in row do
           Append( resrow, Coefficients( B, entry * b ) );
         od;
-        ConvertToVectorRep( resrow );
+        ConvertToVectorRepNC( resrow );
         Add( result, resrow );
       od;
     od;
@@ -2746,327 +3091,12 @@ InstallGlobalFunction( BlownUpVector, function ( B, vector )
     for entry in vector do
       Append( result, Coefficients( B, entry ) );
     od;
-    ConvertToVectorRep( result );
+    ConvertToVectorRepNC( result );
 
     # Return the result.
     return result;
 end );
 
-
-#############################################################################
-##
-#F  DiagonalizeIntMatNormDriven(<mat>)  . . . . diagonalize an integer matrix
-##
-##  'DiagonalizeIntMatNormDriven'  diagonalizes  the  integer  matrix  <mat>.
-##
-##  It tries to keep the entries small  through careful  selection of pivots.
-##
-##  First it selects a nonzero entry for which the  product of row and column
-##  norm is minimal (this need not be the entry with minimal absolute value).
-##  Then it brings this pivot to the upper left corner and makes it positive.
-##
-##  Next it subtracts multiples of the first row from the other rows, so that
-##  the new entries in the first column have absolute value at most  pivot/2.
-##  Likewise it subtracts multiples of the 1st column from the other columns.
-##
-##  If afterwards not  all new entries in the  first column and row are zero,
-##  then it selects a  new pivot from those  entries (again driven by product
-##  of norms) and reduces the first column and row again.
-##
-##  If finally all offdiagonal entries in the first column  and row are zero,
-##  then it  starts all over again with the submatrix  '<mat>{[2..]}{[2..]}'.
-##
-##  It is  based  upon  ideas by  George Havas  and code by  Bohdan Majewski.
-##  G. Havas and B. Majewski, Integer Matrix Diagonalization, JSC, to appear
-##
-#T  Should this test for mutability? SL
-
-InstallGlobalFunction( DiagonalizeIntMatNormDriven, function ( mat )
-    local   nrrows,     # number of rows    (length of <mat>)
-            nrcols,     # number of columns (length of <mat>[1])
-            rownorms,   # norms of rows
-            colnorms,   # norms of columns
-            d,          # diagonal position
-            pivk, pivl, # position of a pivot
-            norm,       # product of row and column norms of the pivot
-            clear,      # are the row and column cleared
-            row,        # one row
-            col,        # one column
-            ent,        # one entry of matrix
-            quo,        # quotient
-            h,          # gap width in shell sort
-            k, l,       # loop variables
-            max, omax;  # maximal entry and overall maximal entry
-
-    # give some information
-    Info( InfoMatrix, 1, "DiagonalizeMat called" );
-    omax := 0;
-
-    # get the number of rows and columns
-    nrrows := Length( mat );
-    if nrrows <> 0  then
-        nrcols := Length( mat[1] );
-    else
-        nrcols := 0;
-    fi;
-    rownorms := [];
-    colnorms := [];
-
-    # loop over the diagonal positions
-    d := 1;
-    Info( InfoMatrix, 2, "  divisors:" );
-
-    while d <= nrrows and d <= nrcols  do
-
-        # find the maximal entry
-        Info( InfoMatrix, 3, "    d=", d );
-        if 3 <= InfoLevel( InfoMatrix ) then
-            max := 0;
-            for k  in [ d .. nrrows ]  do
-                for l  in [ d .. nrcols ]  do
-                    ent := mat[k][l];
-                    if   0 < ent and max <  ent  then
-                        max :=  ent;
-                    elif ent < 0 and max < -ent  then
-                        max := -ent;
-                    fi;
-                od;
-            od;
-            Info( InfoMatrix, 3, "    max=", max );
-            if omax < max  then omax := max;  fi;
-        fi;
-
-        # compute the Euclidean norms of the rows and columns
-        for k  in [ d .. nrrows ]  do
-            row := mat[k];
-            rownorms[k] := row * row;
-        od;
-        for l  in [ d .. nrcols ]  do
-            col := mat{[d..nrrows]}[l];
-            colnorms[l] := col * col;
-        od;
-        Info( InfoMatrix, 3, "    n" );
-
-        # push rows containing only zeroes down and forget about them
-        for k  in [ nrrows, nrrows-1 .. d ]  do
-            if k < nrrows and rownorms[k] = 0  then
-                row         := mat[k];
-                mat[k]      := mat[nrrows];
-                mat[nrrows] := row;
-                norm             := rownorms[k];
-                rownorms[k]      := rownorms[nrrows];
-                rownorms[nrrows] := norm;
-            fi;
-            if rownorms[nrrows] = 0  then
-                nrrows := nrrows - 1;
-            fi;
-        od;
-
-        # quit if there are no more nonzero entries
-        if nrrows < d  then
-            #N  1996/04/30 mschoene should 'break'
-            Info( InfoMatrix, 3, "  overall maximal entry ", omax );
-            Info( InfoMatrix, 1, "DiagonalizeMat returns" );
-            return;
-        fi;
-
-        # push columns containing only zeroes right and forget about them
-        for l  in [ nrcols, nrcols-1 .. d ]  do
-            if l < nrcols and colnorms[l] = 0  then
-                col                      := mat{[d..nrrows]}[l];
-                mat{[d..nrrows]}[l]      := mat{[d..nrrows]}[nrcols];
-                mat{[d..nrrows]}[nrcols] := col;
-                norm             := colnorms[l];
-                colnorms[l]      := colnorms[nrcols];
-                colnorms[nrcols] := norm;
-            fi;
-            if colnorms[nrcols] = 0  then
-                nrcols := nrcols - 1;
-            fi;
-        od;
-
-        # sort the rows with respect to their norms
-        h := 1;  while 9 * h + 4 < nrrows-(d-1)  do h := 3 * h + 1;  od;
-        while 0 < h  do
-            for l  in [ h+1 .. nrrows-(d-1) ]  do
-                norm := rownorms[l+(d-1)];
-                row := mat[l+(d-1)];
-                k := l;
-                while h+1 <= k  and norm < rownorms[k-h+(d-1)]  do
-                    rownorms[k+(d-1)] := rownorms[k-h+(d-1)];
-                    mat[k+(d-1)] := mat[k-h+(d-1)];
-                    k := k - h;
-                od;
-                rownorms[k+(d-1)] := norm;
-                mat[k+(d-1)] := row;
-            od;
-            h := QuoInt( h, 3 );
-        od;
-
-        # choose a pivot in the '<mat>{[<d>..]}{[<d>..]}' submatrix
-        # the pivot must be the topmost nonzero entry in its column,
-        # now that the rows are sorted with respect to their norm
-        pivk := 0;  pivl := 0;
-        norm := Maximum(rownorms) * Maximum(colnorms) + 1;
-        for l  in [ d .. nrcols ]  do
-            k := d;
-            while mat[k][l] = 0  do
-                k := k + 1;
-            od;
-            if rownorms[k] * colnorms[l] < norm  then
-                pivk := k;  pivl := l;
-                norm := rownorms[k] * colnorms[l];
-            fi;
-        od;
-        Info( InfoMatrix, 3, "    p" );
-
-        # move the pivot to the diagonal and make it positive
-        if d <> pivk  then
-            row       := mat[d];
-            mat[d]    := mat[pivk];
-            mat[pivk] := row;
-        fi;
-        if d <> pivl  then
-            col                    := mat{[d..nrrows]}[d];
-            mat{[d..nrrows]}[d]    := mat{[d..nrrows]}[pivl];
-            mat{[d..nrrows]}[pivl] := col;
-        fi;
-        if mat[d][d] < 0  then
-            MultRowVector(mat[d],-1);
-        fi;
-
-        # now perform row operations so that the entries in the
-        # <d>-th column have absolute value at most pivot/2
-        clear := true;
-        row := mat[d];
-        for k  in [ d+1 .. nrrows ]  do
-            quo := BestQuoInt( mat[k][d], mat[d][d] );
-            if quo = 1  then
-                AddRowVector(mat[k], row, -1);
-            elif quo = -1  then
-                AddRowVector(mat[k], row);
-            elif quo <> 0  then
-                AddRowVector(mat[k], row, -quo);
-            fi;
-            clear := clear and mat[k][d] = 0;
-        od;
-        Info( InfoMatrix, 3, "    c" );
-
-        # now perform column operations so that the entries in
-        # the <d>-th row have absolute value at most pivot/2
-        col := mat{[d..nrrows]}[d];
-        for l  in [ d+1 .. nrcols ]  do
-            quo := BestQuoInt( mat[d][l], mat[d][d] );
-            if quo = 1  then
-                mat{[d..nrrows]}[l] := mat{[d..nrrows]}[l] - col;
-            elif quo = -1  then
-                mat{[d..nrrows]}[l] := mat{[d..nrrows]}[l] + col;
-            elif quo <> 0  then
-                mat{[d..nrrows]}[l] := mat{[d..nrrows]}[l] - quo * col;
-            fi;
-            clear := clear and mat[d][l] = 0;
-        od;
-        Info( InfoMatrix, 3, "    r" );
-
-        # repeat until the <d>-th row and column are totally cleared
-        while not clear  do
-
-            # compute the Euclidean norms of the rows and columns
-            # that have a nonzero entry in the <d>-th column resp. row
-            for k  in [ d .. nrrows ]  do
-                if mat[k][d] <> 0  then
-                    row := mat[k];
-                    rownorms[k] := row * row;
-                fi;
-            od;
-            for l  in [ d .. nrcols ]  do
-                if mat[d][l] <> 0  then
-                    col := mat{[d..nrrows]}[l];
-                    colnorms[l] := col * col;
-                fi;
-            od;
-            Info( InfoMatrix, 3, "    n" );
-
-            # choose a pivot in the <d>-th row or <d>-th column
-            pivk := 0;  pivl := 0;
-            norm := Maximum(rownorms) * Maximum(colnorms) + 1;
-            for l  in [ d+1 .. nrcols ]  do
-                if 0 <> mat[d][l] and rownorms[d] * colnorms[l] < norm  then
-                    pivk := d;  pivl := l;
-                    norm := rownorms[d] * colnorms[l];
-                fi;
-            od;
-            for k  in [ d+1 .. nrrows ]  do
-                if 0 <> mat[k][d] and rownorms[k] * colnorms[d] < norm  then
-                    pivk := k;  pivl := d;
-                    norm := rownorms[k] * colnorms[d];
-                fi;
-            od;
-            Info( InfoMatrix, 3, "    p" );
-
-            # move the pivot to the diagonal and make it positive
-            if d <> pivk  then
-                row       := mat[d];
-                mat[d]    := mat[pivk];
-                mat[pivk] := row;
-            fi;
-            if d <> pivl  then
-                col                    := mat{[d..nrrows]}[d];
-                mat{[d..nrrows]}[d]    := mat{[d..nrrows]}[pivl];
-                mat{[d..nrrows]}[pivl] := col;
-            fi;
-            if mat[d][d] < 0  then
-                MultRowVector(mat[d],-1);
-            fi;
-
-            # now perform row operations so that the entries in the
-            # <d>-th column have absolute value at most pivot/2
-            clear := true;
-            row := mat[d];
-            for k  in [ d+1 .. nrrows ]  do
-                quo := BestQuoInt( mat[k][d], mat[d][d] );
-	        if quo = 1  then
-                    AddRowVector(mat[k],row,-1);
-                elif quo = -1  then
-                    AddRowVector(mat[k],row);
-                elif quo <> 0  then
-                    AddRowVector(mat[k], row, -quo);
-                fi;
-                clear := clear and mat[k][d] = 0;
-            od;
-            Info( InfoMatrix, 3, "    c" );
-
-            # now perform column operations so that the entries in
-            # the <d>-th row have absolute value at most pivot/2
-            col := mat{[d..nrrows]}[d];
-            for l  in [ d+1.. nrcols ]  do
-                quo := BestQuoInt( mat[d][l], mat[d][d] );
-                if quo = 1  then
-                    mat{[d..nrrows]}[l] := mat{[d..nrrows]}[l] - col;
-                elif quo = -1  then
-                    mat{[d..nrrows]}[l] := mat{[d..nrrows]}[l] + col;
-                elif quo <> 0  then
-                    mat{[d..nrrows]}[l] := mat{[d..nrrows]}[l] - quo * col;
-                fi;
-                clear := clear and mat[d][l] = 0;
-            od;
-            Info( InfoMatrix, 3, "    r" );
-
-        od;
-
-        # print the diagonal entry (for information only)
-        Info( InfoMatrix, 3, "    div=" );
-        Info( InfoMatrix, 2, "      ", mat[d][d] );
-
-        # go on to the next diagonal position
-        d := d + 1;
-
-    od;
-
-    # close with some more information
-    Info( InfoMatrix, 3, "  overall maximal entry ", omax );
-    Info( InfoMatrix, 1, "DiagonalizeMat returns" );
-end );
 
 
 #############################################################################
@@ -3121,11 +3151,16 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         id[i] := ShallowCopy( row );
         id[i][i] := one;
         if f <> false then
-           ConvertToVectorRep( id[i], f );
+           ConvertToVectorRepNC( id[i], f );
         else
-            ConvertToVectorRep( id[i] );
+            ConvertToVectorRepNC( id[i] );
         fi;
     od;
+    if f <> false then
+        ConvertToMatrixRep(id,f);
+    else
+        ConvertToMatrixRep(id);
+    fi;
 
     # return the identity matrix
     return id;
@@ -3159,13 +3194,14 @@ InstallGlobalFunction( NullMat, function ( arg )
     # make an empty row
     row := [];
     for k  in [1..n]  do row[k] := zero;  od;
-    ConvertToVectorRep( row, f );
+    ConvertToVectorRepNC( row, f );
 
     # make the null matrix
     null := [];
     for i  in [1..m]  do
         null[i] := ShallowCopy( row );
     od;
+    ConvertToMatrixRep(null,f);
 
     # return the null matrix
     return null;
@@ -3322,11 +3358,16 @@ InstallGlobalFunction( PermutationMat, function( arg )
     for i in [ 1 .. dim ] do
         mat[i][ i^perm ]:= One( F );
        if IsFFECollection(F) and IsField(F) then
-           ConvertToVectorRep( mat[i], F );
+           ConvertToVectorRepNC( mat[i], F );
        elif IsFFE(F) or IsFFECollection(F) then
-           ConvertToVectorRep( mat[i], Field(F));
+           ConvertToVectorRepNC( mat[i], Field(F));
        fi;
     od;
+    if IsFFECollection(F) and IsField(F) then
+        ConvertToMatrixRepNC( mat, F );
+    elif IsFFE(F) or IsFFECollection(F) then
+        ConvertToMatrixRepNC( mat, Field(F));
+    fi;
 
     return mat;
 end );
@@ -3344,11 +3385,13 @@ InstallGlobalFunction( DiagonalMat, function( vector )
     M:= [];
     zerovec:= Zero( vector[1] );
     zerovec:= List( vector, x -> zerovec );
+
     for i in [ 1 .. Length( vector ) ] do
       M[i]:= ShallowCopy( zerovec );
       M[i][i]:= vector[i];
+      ConvertToVectorRepNC(M[i]);
     od;
-    ConvertToVectorRep( M[i] );
+    ConvertToMatrixRep( M );
     return M;
 end );
 
@@ -3414,9 +3457,10 @@ InstallGlobalFunction( ReflectionMat, function( arg )
         row[j]:= conj[i] * c * coeffs[j];
       od;
       row[i]:= row[i] + one;
-      ConvertToVectorRep( row );
+      ConvertToVectorRepNC( row );
       M[i]:= row;
     od;
+    ConvertToMatrixRep( M );
 
     # Return the result.
     return M;
@@ -3453,11 +3497,11 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
             for k  in [1..m]  do
                 row[k] := Random( R );
             od;
-            ConvertToVectorRep( row, R );
+            ConvertToVectorRepNC( row, R );
             mat[i] := row;
         until NullspaceMat( mat ) = [];
     od;
-
+    ConvertToMatrixRep( mat, R );
     return mat;
 end );
 
@@ -3492,7 +3536,7 @@ InstallGlobalFunction( RandomMat, function ( arg )
         for k  in [1..n]  do
             row[k] := Random( R );
         od;
-        ConvertToVectorRep( row, R );
+        ConvertToVectorRepNC( row, R );
         mat[i] := row;
     od;
 
@@ -3540,7 +3584,7 @@ InstallGlobalFunction( RandomUnimodularMat, function ( m )
             v := mat[i][k];  w := mat[i][l];
             mat[i][k] := gcd.coeff1 * v + gcd.coeff2 * w;
             mat[i][l] := gcd.coeff3 * v + gcd.coeff4 * w;
-            ConvertToVectorRep( mat[i] );
+            ConvertToVectorRepNC( mat[i] );
         od;
 
     od;
@@ -3710,7 +3754,8 @@ end );
 ##
 #F  TraceMat( <mat> ) . . . . . . . . . . . . . . . . . . . trace of a matrix
 ##
-InstallGlobalFunction( TraceMat, function ( mat )
+InstallMethod( TraceMat, "method for lists", [ IsList ],
+    function ( mat )
     local   trc, m, i;
 
     # check that the element is a square matrix
@@ -3761,7 +3806,7 @@ function( mat )
 
 # First we determine a squarefree polynomial 'g' such that 'g^d(mat)=0'.
 
-  f:= CharacteristicPolynomial( F, mat );
+  f:= CharacteristicPolynomial( F, F, mat );
   if p = 0 or p > Length( mat ) then
     g:= f/Gcd( f, Derivative( f ) );
   else
@@ -3799,7 +3844,7 @@ InstallGlobalFunction(OnSubspacesByCanonicalBasis,function( mat, obj )
     local row;
     mat:=mat*obj;
     if not IsMutable(mat) then
-        mat := List(mat, ShallowCopy);
+        mat := MutableCopyMat(mat);
     else
         for row in [1..Length(mat)] do
             if not IsMutable(mat[row]) then
@@ -3839,33 +3884,6 @@ local i,j,k,fg,f;
   return f;
 end);
 
-#############################################################################
-##
-#M  LaTeXObj
-##
-InstallMethod(LaTeXObj,"matrix",
-  [IsMatrix],
-function(m)
-local i,j,l,n,s;
-  l:=Length(m);
-  n:=Length(m[1]);
-  s:="\\left(\\begin{array}{";
-  for i in [1..n] do
-    Add(s,'r');
-  od;
-  Append(s,"}%\n");
-  for i in [1..l] do
-    for j in [1..n] do
-      Append(s,LaTeXObj(m[i][j]));
-      if j<n then
-        Add(s,'&');
-      fi;
-    od;
-    Append(s,"\\\\%\n");
-  od;
-  Append(s,"\\end{array}\\right)");
-  return s;
-end);
 
 #############################################################################
 ##
@@ -3968,25 +3986,15 @@ end);
 
 #############################################################################
 ##
-#F  NOT READY: BaseOrthogonalSpaceMat( <mat> )
+#F  BaseOrthogonalSpaceMat( <mat> )
 ##
-#T # ##  Let $V$ be the row space generated by the rows of <mat> (over any field
-#T # ##  that contains all entries of <mat>).  'BaseOrthogonalSpaceMat( <mat> )'
-#T # ##  computes a base of the orthogonal space of $V$.
-#T # ##
-#T # ##  The rows of <mat> need not be linearly independent.
-#T # ##
-#T # #T  Note that this means to transpose twice ...
-#T # ##
-#T # BaseOrthogonalSpaceMat := function( mat )
-#T #     return NullspaceMat( TransposedMat( mat ) );
-#T #     end;
-
-
+InstallMethod( BaseOrthogonalSpaceMat,
+    "for a matrix",
+    [ IsMatrix ],
+    mat -> NullspaceMat( TransposedMat( mat ) ) );
 
 
 
 #############################################################################
 ##
 #E
-

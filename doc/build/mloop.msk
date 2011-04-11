@@ -72,7 +72,7 @@ error message of the following form
 gap> 1 * ;
 Syntax error: expression expected
 1 * ;
-    ^ 
+    ^
 \endtt
 
 The first line tells you what is wrong about the input, in this case the
@@ -129,18 +129,50 @@ that produced a value is available in the variable `last'. The next to
 previous result is available in `last2' and the result produced before
 that is available in `last3'.
 
-\begintt
+\beginexample
 gap> 1; 2; 3;
 1
 2
 3
 gap> last3 + last2 * last;
-7 
-\endtt
+7
+\endexample
 
 Also in each statement the time spent by the last statement, whether it
 produced a value or not, is available in the variable `time'. This is an
 integer that holds the number of milliseconds.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special Rules for Input Lines}
+
+The input for some {\GAP} objects may not fit on one line, in particular 
+big integers, long strings or long identifiers. In these cases you can still
+type or paste them in long single lines, but on screen you will only
+see the last part (with a `\$' character in front). For nicer display you
+can also specify  the input on several lines. This is achieved by ending a
+line  by a backslash or by a backslash and a carriage return character, then
+continue the input on the beginning of the next line. When reading this 
+{\GAP} will ignore such continuation backslashes, carriage return characters 
+and newline characters. {\GAP} also prints long strings and integers this way.
+
+\beginexample
+gap> n := 1234\
+> 567890;
+1234567890
+gap> "This is a very long string that does not fit on a line \
+gap> and is therefore continued on the next line.";
+"This is a very long string that does not fit on a line and is therefore conti\
+nued on the next line."
+gap> bla\
+gap> bla := 5;; blabla;
+5
+\endexample
+
+There is a special rule about {\GAP} prompts in input lines: In line editing 
+mode (usual user input and {\GAP} started without `-n')  in lines starting 
+with `gap> ', `> ' or `brk> ' this beginning part is removed. This rule is very convenient because it allows to cut and paste input from other {\GAP} sessions
+or manual examples easily into your current session.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{View and Print}
@@ -159,14 +191,16 @@ and that in many cases the form shown by `Print' is {\GAP} readable.
 % the full matrix, while `View' may only display the dimensions and the
 % characteristic.
 
-\begintt
+\beginexample
 gap> z:= Z(2);
 Z(2)^0
 gap> v:= [ z, z, z, z, z, z, z ];
+[ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]
+gap> ConvertToVectorRep(v);; v;
 <a GF2 vector of length 7>
 gap> Print( v );
 [ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]gap> 
-\endtt
+\endexample
 
 Another difference is that `Print' shows strings without the enclosing
 quotes, so `Print' can be used to produce formatted text on the
@@ -175,7 +209,7 @@ Some characters preceded by a backslash, such as `\\n', are processed
 specially (see chapter~"Special Characters").
 `PrintTo' can be used to print to a file (see~"PrintTo").
 
-\begintt
+\beginexample
 gap> for i in [1..5] do
 >      Print( i, " ", i^2, " ", i^3, "\n" );
 >    od;
@@ -183,17 +217,17 @@ gap> for i in [1..5] do
 2 4 8
 3 9 27
 4 16 64
-5 25 125 
-\endtt
+5 25 125
+\endexample
 
-\begintt
+\beginexample
 gap> g:= SmallGroup(12,5);
-<pc group with 3 generators>
-gap> Print(g);
-Group( [ f1, f2, f3 ] )gap> 
-gap> View(g);
-<pc group with 3 generators>gap> 
-\endtt
+<pc group of size 12 with 3 generators>
+gap> Print( g, "\n" );
+Group( [ f1, f2, f3 ] )
+gap> View( g );
+<pc group of size 12 with 3 generators>gap> 
+\endexample
 
 \>ViewObj( <obj> ) O
 \>PrintObj( <obj> ) O
@@ -202,7 +236,7 @@ The functions `View' and `Print' actually call the operations
 `ViewObj' and~`PrintObj', respectively, for each argument.
 By installing special methods for these operations,
 it is possible to achieve special printing behavior for certain objects
-(see chapter~"prg:Method Selection" in the programmer's manual).
+(see chapter~"prg:Method Selection" in the Programmer's Manual).
 The only exceptions are strings (see Chapter~"Strings and Characters"),
 for which the default `PrintObj' and `ViewObj' methods as well as the
 function `View' print also the enclosing doublequotes, whereas `Print'
@@ -215,41 +249,25 @@ If one wants to supply a ``short form'' for `View',
 one can install additionally a method for `ViewObj'.
 
 \Declaration{Display}
-\begintt
-gap> c:= CharacterTable( "A5" );
-CharacterTable( "A5" )
-gap> Display(c);
-     2  2  2  .  .  .
-     3  1  .  1  .  .
-     5  1  .  .  1  1
-
-       1a 2a 3a 5a 5b
-    2P 1a 1a 3a 5b 5a
-    3P 1a 2a 1a 5b 5a
-    5P 1a 2a 3a 1a 1a
-
-X.1     1  1  1  1  1
-X.2     3 -1  .  A *A
-X.3     3 -1  . *A  A
-X.4     4  .  1 -1 -1
-X.5     5  1 -1  .  .
-
-A = -E(5)-E(5)^4 = (1-ER(5))/2 = -b5
-\endtt
+\beginexample
+gap> Display( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] * Z(5) );
+ 2 4 1
+ 3 . 2
+\endexample
 
 One can assign a string to an object that `Print' will use instead of
-the default used by `Print', via `SetName' (see~"SetName"). Also,
-`Name' (see~"Name") returns the string previously assigned to an object
-for printing, via `SetName'. The following is an example in the current
-context of character tables.
+the default used by `Print', via `SetName' (see~"SetName").
+Also, `Name' (see~"Name") returns the string previously assigned to
+the object for printing, via `SetName'.
+The following is an example in the context of domains.
 
 \beginexample
-gap> c:= CharacterTable( "A5" );
-CharacterTable( "A5" )
-gap> SetName( c, "tblA5" );  c;
-tblA5
-gap> Name( c );
-"tblA5"
+gap> g:= Group( (1,2,3,4) );
+Group([ (1,2,3,4) ])
+gap> SetName( g, "C4" ); g;
+C4
+gap> Name( g );
+"C4"
 \endexample
 
 
@@ -266,19 +284,21 @@ variables of the functions that were active when the error happened and
 even change them. The prompt is changed from `gap>' to `brk>' to
 indicate that you are in a break loop.
 
-\begintt
+%notest
+\beginexample
 gap> 1/0;
 Rational operations: <divisor> must not be zero
 not in any function
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can replace <divisor> via 'return <divisor>;' to continue
-\endtt
+\endexample
 
 If errors occur within a break loop {\GAP} enters another break loop at a
 *deeper level*. This is indicated by a number appended to `brk':
 
-\begintt
+%notest
+\beginexample
 brk> 1/0;
 Rational operations: <divisor> must not be zero
 not in any function
@@ -286,7 +306,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can replace <divisor> via 'return <divisor>;' to continue
 brk_02>
-\endtt
+\endexample
 
 There are two ways to leave a break loop.
 
@@ -299,10 +319,11 @@ Section~"Command Line Options").
 Note that {\GAP} code between `quit;' and the end of the input line
 is ignored.
 
-\begintt
+%notest
+\beginexample
 brk_02> quit;
 brk>
-\endtt
+\endexample
 
 In this case control returns to the break loop one level above or
 to the main loop, respectively.
@@ -338,11 +359,12 @@ For example, if the break loop was entered because a variable had no
 assigned value, the value to be returned is often a value that this 
 variable should have to continue the computation.
 
-\begintt
+%notest
+\beginexample
 brk> return 9;  # we had tried to enter the divisor 9 but typed 0 ...
 1/9
 gap> 
-\endtt
+\endexample
 
 \>`OnBreak' V
 
@@ -357,7 +379,9 @@ default, the value of `OnBreak' is `Where' (see "Where").
 gap> OnBreak := function() Print("Hello\n"); end;
 function(  ) ... end
 \endexample
-\begintt
+
+%notest
+\beginexample
 gap> Error("!\n");
 Error, !
 Hello
@@ -365,7 +389,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
-\endtt
+\endexample
 
 In cases where a break loop is entered during a function that was  called
 with options (see Chapter~"Options Stack"), a `quit;' will also cause the
@@ -420,18 +444,20 @@ function( arg ) ... end
 
 Here is a somewhat trivial demonstration of the use of `ErrorNoTraceBack'.
 
-\begintt
+%notest
+\beginexample
 gap> ErrorNoTraceBack("Gidday!", " How's", " it", " going?\n");
 Error, Gidday! How's it going?
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
-\endtt
+\endexample
 
 Now we call `Error' with the same arguments to show the difference.
 
-\begintt
+%notest
+\beginexample
 gap> Error("Gidday!", " How's", " it", " going?\n");
 Error, Gidday! How's it going?
 Hello
@@ -439,7 +465,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
-\endtt
+\endexample
 
 Observe that the value of `OnBreak' before the `ErrorNoTraceBack' call
 was restored. However, we had changed `OnBreak' from its default value;
@@ -478,13 +504,14 @@ function(  ) ... end
 With `OnBreak' still set away from its default value, calling `Error'
 as we did above, now produces:
 
-\begintt
+%notest
+\beginexample
 gap> Error("!\n");
 Error, !
 Hello
 Entering break read-eval-print loop ...
 brk> quit; # to get back to outer loop
-\endtt
+\endexample
 
 However, suppose you are writing a function which detects an error
 condition and `OnBreakMessage' needs to be changed only *locally*,
@@ -503,7 +530,8 @@ the error occurred. If not given, <nr> defaults to 5. (Assume, for the
 following example, that after the last example `OnBreak' (see~"OnBreak") 
 has been set back to its default value.)
 
-\begintt
+%notest
+\beginexample
 gap> StabChain(SymmetricGroup(100)); # After this we typed ^C  
 user interrupt at
 bpt := S.orbit[1];
@@ -523,7 +551,7 @@ brk> Where(2);
 SiftedPermutation( S, (g * rep) ^ -1 ) called from
 StabChainStrong( S.stabilizer, [ sch ], options ); called from
 ...
-\endtt
+\endexample
 
 Note that the variables displayed even in the first line of the `Where' list
 (after the `called from' line) may be already one environment level higher 
@@ -562,7 +590,8 @@ but in the reverse direction. (The names of `DownEnv' and `UpEnv' are the
 wrong way 'round; I guess it all depends on which direction defines is
 ``up'' -- just use `DownEnv' and get used to that.)
 
-\begintt
+%notest
+\beginexample
 gap> OnBreak := function() Where(0); end;; # eliminate back-tracing on
 gap>                                       # entry to break loop
 gap> test:= function( n )
@@ -599,7 +628,7 @@ brk> n;
 3
 brk> quit;
 gap> OnBreak := Where;; # restore OnBreak to its default value
-\endtt
+\endexample
 
 Note that the change of the environment caused by `DownEnv' only affects
 variable access in the break loop. If you use `return' to continue a
@@ -611,7 +640,8 @@ functions which enclosed the definition of a currently executing
 function, before it looks at the chain of calling functions which led
 to the current invocation of the function. 
 
-\begintt
+%notest
+\beginexample
 gap> foo := function()
 > local x; x := 1;
 > return function() local y; y := x*x; Error("!!\n"); end;
@@ -634,7 +664,7 @@ brk> x;
 brk> DownEnv(1);
 brk> x;
 3
-\endtt
+\endexample
 
 Here the `x' of `foo' which contained the definition of `bar' is found 
 before that of `fun' which caused its execution. Using `DownEnv' we
@@ -692,11 +722,11 @@ during the session, and closing open files. If an error occurs during
 the execution of one of these functions, that function is simply
 abandoned, no break loop is entered. 
 
-\begintt
+\beginexample
 gap> InstallAtExit(function() Print("bye\n"); end);
 gap> quit;
 bye
-\endtt
+\endexample
 
 During execution of these functions, the global variable `QUITTING'
 will be set to `true' if {\GAP} is exiting because the user typed
@@ -723,16 +753,21 @@ Below we denote control keys by <ctrl>-<key> and escape keys by
 <esc>-<key>. The case of <key> does not matter, i.e., <ctrl>-`A' and
 <ctrl>-`a' are equivalent.
 
+Normally, line editing will be enabled if the input is connected to a
+terminal. Line editing can be enabled or disabled using the command line
+options `-f' and `-n' respectively (see~"Command Line Options"), however
+this is a machine dependent feature of {\GAP}.
+
 Typing <ctrl>-<key> or <esc>-<key> for characters not mentioned below
 always inserts <ctrl>-<key> resp.~<esc>-<key> at the current cursor position.
 
 The first few commands allow you to move the cursor on the current line.
 
-<ctrl>-`A' move the cursor to the beginning of the line. 
+<ctrl>-`A' move the cursor to the beginning of the line.
 
-<esc>-`B' move the cursor to the beginning of the previous word. 
+<esc>-`B' move the cursor to the beginning of the previous word.
 
-<ctrl>-`B' move the cursor backward one character. 
+<ctrl>-`B' move the cursor backward one character.
 
 <ctrl>-`F' move the cursor forward one character. 
 

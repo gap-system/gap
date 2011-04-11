@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 
 BUILD = ../../etc/buildman.pe
@@ -24,7 +24,7 @@ test:
 ../ref/manual.dvi: ._coll ._basic ._groups ._grppc ._rings ._number \
 	._mapping ._oper ._ratfun ._grplib ._alg ._linalg ._fp \
 	._install ._environ ._options ._system ._relation ._rws ._trans \
-	._fpsemi ._tom ._ctbl ._orders
+	._fpsemi ._tom ._ctbl ._orders ../ref/obsolete.tex
 	(cd ../ref;tex manual)
 	fgrep "undefined" ../ref/manual.log
 
@@ -101,14 +101,15 @@ test:
 	$(BUILD) -f config.alg
 	touch ._alg
 
-._environ: config.environ language.msk debug.msk objects.msk types.msk mloop.msk function.msk process.msk
+._environ: config.environ language.msk debug.msk objects.msk types.msk mloop.msk function.msk process.msk hash2.msk
 	$(BUILD) -f config.environ
 	touch ._environ
 
 ._install: config.install install.msk run.msk gappkg.msk \
 	refcover.msk tutcover.msk prgcover.msk extcover.msk ficover.msk\
-	copyrigh.msk
+	newcover.msk copyrigh.msk
 	$(BUILD) -f config.install
+	mv ../ref/newcover.tex ../new/newcover.tex
 	touch ._install
 
 ._relation: config.relation relation.msk
@@ -136,7 +137,7 @@ test:
 	$(BUILD) -f config.ctbl
 	touch ._ctbl
 
-._grpchain: config.grpchain hash2.msk quogphom.msk gptransv.msk \
+._grpchain: config.grpchain quogphom.msk gptransv.msk \
         grpchain.msk
 	$(BUILD) -f config.grpchain
 	touch ._grpchain
@@ -145,7 +146,7 @@ test:
 	$(BUILD) -f config.prog
 	touch ._prog
 
-._new: config.new newcover.msk streams.msk
+._new: config.new streams.msk
 	$(BUILD) -f config.new
 	touch ._new
 

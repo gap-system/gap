@@ -1,0 +1,44 @@
+#!/bin/sh
+
+##  $Id$ (Frank Lübeck)
+## 
+##  This is the script for syncronizing the CVS repository
+##     gap@cvs-gap.dcs.st-and.ac.uk:CVS
+## 
+## To setup this backup: 
+##     -  edit MIRRORDIR below and create that directory
+##     -  get CVS  access to St Andrews (and login there or put
+##        an appropiate line in your ~/.cvspath file)
+##     -  copy this script somewhere 
+##     -  call it daily (nightly) via cron
+##        (say, call 'crontab -e' and add a line like
+##        '7 7 * * *   /home/daniel/gap/syncst-and' without the ''s)
+##        
+## The script syncronizes the repository and saves changed files in a 
+## .tar.bz2 archive before overwriting them.
+## 
+
+MIRRORDIR=/export/home/gap/backup-st-and
+cd $MIRRORDIR
+
+DATE=`date -u "+%Y_%m_%d-%H_%M_UTC"`
+BACKUPNAME=changedFiles_$DATE
+LOGNAME=Log/log_$DATE
+
+echo '===========    Collecting changed files in '$BACKUPNAME  >> $LOGNAME
+
+echo '===========    Starting rsync ...'  >> $LOGNAME
+
+rsync -avz -e 'ssh -x -c blowfish' --timeout=3600 --backup --backup-dir=$MIRRORDIR/$BACKUPNAME --delete gap@cvs-gap.dcs.st-and.ac.uk:CVS .  2>&1 >> $LOGNAME
+
+echo '===========    Archiving changed files ...'  >> $LOGNAME
+
+tar cvjf $BACKUPNAME'.tar.bz2' $BACKUPNAME >> $LOGNAME
+
+echo '===========    Cleaning up  ...'  >> $LOGNAME
+
+rm -rf $BACKUPNAME
+mv $BACKUPNAME'.tar.bz2' ChangedFiles
+
+echo '===========    Done.'  >> $LOGNAME
+

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 Revision.glzmodmz_gd :=
     "@(#)$Id$";

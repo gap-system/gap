@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  Exclude from testinstall.g: too trivial?
 ##
 
 gap> START_TEST("$Id$");
@@ -50,12 +52,9 @@ false
 gap> false and false;
 false
 
-gap> STOP_TEST( "boolean.tst", 3000000 );
+gap> STOP_TEST( "boolean.tst", 39000 );
 
 #############################################################################
 ##
-#E  boolean.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
-
+#E
 

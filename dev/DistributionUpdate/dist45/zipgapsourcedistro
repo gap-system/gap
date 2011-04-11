@@ -1,0 +1,32 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export GAPSOURCE=${DISTROOT}/gapsourcedistro
+
+line='cd '${GAPSOURCE}
+echo $line
+$line 
+
+source ./core_checkout_time.txt
+
+ziparchive=${ARCHNAME}_${CORETIME}.zip
+rm -f $ziparchive
+
+echo 'Creating the GAP source distribution '${GAPSOURCE}/$ziparchive
+
+echo 'Adding text files to the archive '${GAPSOURCE}/$ziparchive
+
+cat listtextfiles.txt | zip -q ${ziparchive} -@
+
+echo 'Adding binary files to the archive '${GAPSOURCE}/$ziparchive
+
+cat listbinaryfiles.txt | zip -q ${ziparchive} -@
+             
+exit 0

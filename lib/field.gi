@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  field.gi                    GAP library                  Martin Schoenert
+#W  field.gi                    GAP library                  Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for division rings.
 ##
@@ -486,29 +487,6 @@ InstallMethod( Representative,
 
 #############################################################################
 ##
-#M  GeneratorsOfRing( <F> ) . . . . . . .  ring generators of a division ring
-##
-InstallMethod( GeneratorsOfRing,
-    "for a division ring with known generators",
-    [ IsDivisionRing and HasGeneratorsOfDivisionRing ],
-    F -> Concatenation( GeneratorsOfDivisionRing( F ),
-                        [ One( F ) ],
-                        List( GeneratorsOfDivisionRing( F ), Inverse ) ) );
-
-
-#############################################################################
-##
-#M  GeneratorsOfRingWithOne( <F> )  . . . . . . . . . . . for a division ring
-##
-InstallMethod( GeneratorsOfRingWithOne,
-    "for a division ring with known generators",
-    [ IsDivisionRing and HasGeneratorsOfDivisionRing ],
-    F -> Concatenation( GeneratorsOfDivisionRing( F ),
-                        List( GeneratorsOfDivisionRing( F ), Inverse ) ) );
-
-
-#############################################################################
-##
 #M  Enumerator( <F> ) . . . . . . . . . .  elements of a (finite) prime field
 #M  EnumeratorSorted( <F> ) . . . . . . .  elements of a (finite) prime field
 ##
@@ -517,11 +495,16 @@ InstallMethod( GeneratorsOfRingWithOne,
 ##
 EnumeratorOfPrimeField := function( F )
     local one;
-    if not IsFinite( F ) then
-      Error( "sorry, cannot compute elements list of infinite field <F>" );
+    if   not IsFinite( F ) then
+      TryNextMethod();
     fi;
     one:= One( F );
-    return AsSSortedListList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
+    if   Size( F ) <= MAXSIZE_GF_INTERNAL then
+      return AsSSortedListList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
+    elif IsZmodnZObj( one ) then
+      return EnumeratorOfZmodnZ( F );
+    fi;
+    TryNextMethod();
 end;
 
 InstallMethod( Enumerator,
@@ -529,17 +512,15 @@ InstallMethod( Enumerator,
     [ IsField and IsPrimeField ],
     EnumeratorOfPrimeField );
 
-InstallMethod( AsList,
+InstallMethod( EnumeratorSorted,
     "for a prime field",
     [ IsField and IsPrimeField ],
     EnumeratorOfPrimeField );
 
-
-#T InstallMethod( EnumeratorSorted, [ IsField and IsPrimeField ],
-#T     EnumeratorOfPrimeField );
-#T 
-#T InstallMethod( AsSSortedList, [ IsField and IsPrimeField ],
-#T     EnumeratorOfPrimeField );
+InstallMethod( AsList,
+    "for a prime field",
+    [ IsField and IsPrimeField ],
+    F -> AsList( EnumeratorOfPrimeField( F ) ) );
 
 
 #############################################################################
@@ -555,7 +536,6 @@ InstallMethod( AsList,
 ##  of <F>.
 ##
 BindGlobal( "DivisionRing_IsSubset", function( D, F )
-
     local CF;
 
     CF:= LeftActingDomain( F );

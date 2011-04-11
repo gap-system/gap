@@ -121,8 +121,8 @@ perl -e 'while (<>) { push(@index, $_) } print (sort sortfunc @index);'\
       tempfile2 >>$2
 
 echo "</dl><p>" >> $2
-echo "[<a href=\"../index.html\">Top</a>]" >> $2
-echo "[<a href=\"chapters.htm\">Up</a>]" >> $2
+echo "[<a href=\"./index.htm\">Top</a>]" >> $2
+echo "[<a href=\"./index.htm\">Up</a>]" >> $2
 echo "<p><P>" >> $2
 echo "<address>GAP 4 manual<br></address>" >> $2
 echo "</body></html>" >>$2

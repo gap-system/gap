@@ -1,20 +1,21 @@
 #############################################################################
 ##
-#W  rwssmg.gi           GAP library                             Isabel Araujo
+#W  rwssmg.gi           GAP library                             Isabel Araújo
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for semigroups defined by rws.
-##
+## JDM
 Revision.rwssmg_gi :=
     "@(#)$Id$";
 
 ############################################################################
 ##
-#A  ReducedConfluentSemigroupRws( <kbrws>)
+#F  ReducedConfluentSemigroupRwsNC( <kbrws>)
 ##
 ##  if we have a knuth bendix rws that we know is reduced and
 ##  confluent we can certainly transform it into a reduced
@@ -82,47 +83,64 @@ end);
 ##
 #A  ReducedConfluentRewritingSystem( <S>,<ordering>)
 ##
-##  returns a reduced confluent rewriting system of the fp semigroup
+##  returns a reduced confluent rewriting system of the fp semigroup/monoid
 ##  <S> with respect to a supplied reduction order.
 ##
 InstallOtherMethod(ReducedConfluentRewritingSystem,
-"for an fp semigroup and an ordering on the underlying free semigroup", true,
-[IsFpSemigroup, IsOrdering], 0,
+  "for an fp semigroup and an ordering on the underlying free semigroup", true,
+  [IsFpSemigroup, IsOrdering], 0,
 function(S,ordering)
   local kbrws,rws;
+
+  if HasReducedConfluentRewritingSystem(S) and
+    IsIdenticalObj(ordering,
+      OrderingOfRewritingSystem(ReducedConfluentRewritingSystem(S))) then
+    return ReducedConfluentRewritingSystem(S);
+  fi;
 
   # we start by building a knuth bendix rws for the semigroup 
   kbrws := KnuthBendixRewritingSystem(S,ordering);
   # then we make it confluent (and reduced)
   MakeConfluent(kbrws);
 
-  # now we are sure we have a Knuth Bendix rws which is both confluent and
-  # reduced so we make into a ReducedConfluentRewritingSystem
+  # we now check whether the attribute is already set
+  # (for example, there is an implementation of MakeConfluent that
+  # stores it immediately)
+  # if the attribute is not set we set it here
   rws := ReducedConfluentRwsFromKbrwsNC(kbrws);
-
-  # we now set the attribute
-  SetReducedConfluentRewritingSystem(S, rws);
+  if not(HasReducedConfluentRewritingSystem(S)) then
+    SetReducedConfluentRewritingSystem(S, rws);
+  fi;
 
   return rws;
+
 end);
 
 InstallOtherMethod(ReducedConfluentRewritingSystem,
-"for an fp monoid and an ordering on the underlying free monoid", true,
-[IsFpMonoid, IsOrdering], 0,
+  "for an fp monoid and an ordering on the underlying free monoid", true,
+  [IsFpMonoid, IsOrdering], 0,
 function(M,ordering)
   local kbrws, rws;
+
+  if HasReducedConfluentRewritingSystem(M) and
+    IsIdenticalObj(ordering,
+      OrderingOfRewritingSystem(ReducedConfluentRewritingSystem(M))) then
+    return ReducedConfluentRewritingSystem(M);
+  fi;
 
   # we start by building a knuth bendix rws for the monoid
   kbrws := KnuthBendixRewritingSystem(M,ordering);
   # then we make it confluent (and reduced)
   MakeConfluent(kbrws);
 
-  # now we are sure we have a Knuth Bendix rws which is both confluent and
-  # reduced so we make into a ReducedConfluentRewritingSystem
+  # we now check whether the attribute is already set
+  # (for example, there is an implementation of MakeConfluent that
+  # stores it immediately)
+  # if the attribute is not set we set it here
   rws := ReducedConfluentRwsFromKbrwsNC(kbrws);
-
-  # we now set the attribute
-  SetReducedConfluentRewritingSystem(M, rws);
+  if not(HasReducedConfluentRewritingSystem(M)) then
+    SetReducedConfluentRewritingSystem(M, rws);
+  fi;
 
   return rws;
 
@@ -321,6 +339,32 @@ InstallMethod(FreeMonoidOfRewritingSystem,
 function(rws)
   return FreeMonoidOfFpMonoid(
     MonoidOfRewritingSystem(rws));
+end);
+
+#############################################################################
+##
+#M  GeneratorsOfRws(<RWS>)
+##
+
+InstallOtherMethod(GeneratorsOfRws, 
+"for a monoid rewriting system", true, 
+[IsRewritingSystem and IsBuiltFromSemigroup], 0, 
+function(rws) 
+return GeneratorsOfSemigroup(FreeSemigroupOfRewritingSystem(rws));
+
+end);
+
+#############################################################################
+##
+#M  GeneratorsOfRws(<RWS>)
+##
+
+InstallOtherMethod(GeneratorsOfRws, 
+"for a monoid rewriting system", true, 
+[IsRewritingSystem and IsBuiltFromMonoid], 0, 
+function(rws) 
+return GeneratorsOfMonoid(FreeMonoidOfRewritingSystem(rws));
+
 end);
 
 #############################################################################

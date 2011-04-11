@@ -1,13 +1,14 @@
 /****************************************************************************
 **
 *W  sysfiles.c                  GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                         & Martin Schönert
+*W                                                  & Burkhard Höfling (MAC)
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  The  files  "system.c" and  "sysfiles.c"   contain  all operating  system
 **  dependent functions.  File and  stream operations are implemented in this
@@ -40,9 +41,14 @@ const char * Revision_sysfiles_c =
 #include        "string.h"              /* strings                         */
 
 #include        "records.h"             /* generic records                 */
+#include        "bool.h"                /* Global True and False           */
 
 #include <assert.h>
 #include <fcntl.h>
+
+#if HAVE_LIBREADLINE
+#include        <readline/readline.h>   /* readline for interactive input  */
+#endif
 
 #if !SYS_MAC_MWC
 #if HAVE_SELECT
@@ -155,6 +161,17 @@ extern int             kill ( int, int );
 
 extern OSErr SyLastMacErrorCode; /* MacOS error code, similar to errno on Unix */
 #endif
+
+/* utility to check return value of 'write'  */
+ssize_t writeandcheck(int fd, const char *buf, size_t count) {
+  int ret;
+  ret = write(fd, buf, count);
+  if (ret < 0) 
+    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
+               fd, 0L);
+  return ret;
+}
+    
 
 /****************************************************************************
 **
@@ -291,7 +308,7 @@ Int SyFindOrLinkGapRootFile (
         module[0] = '\0';
         SyStrncat( module, "bin/", 4 );
         SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
-        SyStrncat( module, "/compiled/", 1 );
+        SyStrncat( module, "/compiled/", 10 );
         SyStrncat( module, filename, SyStrlen(filename) );
 #if SYS_MAC_MWC
         SyStrncat( module, ".shlb", 5 );
@@ -533,10 +550,75 @@ Int4 SyGAPCRC( Char * name )
 }
 
 
+/* 
+<#GAPDoc Label="CrcString">
+<ManSection>
+<Func Name="CrcString" Arg='str'/>
+<Returns>an integer</Returns>
+
+<Description>
+This function computes a cyclic redundancy check number from a string 
+<A>str</A>. See also <Ref Func="CrcFile"/>.
+<Example>
+gap> CrcString("GAP example string");
+-50451670
+</Example>
+</Description>
+</ManSection>
+
+<#/GAPDoc>
+*/
+
+/* And here we include a variant working on a GAP string */
+Obj FuncCrcString( Obj self, Obj str ) {
+    UInt4       crc;
+    UInt4       old;
+    UInt4       new;
+    UInt4       i, len;
+    Char        *ptr;
+    Int4        ch;
+    Int         seen_nl;
+  
+    /* check the argument                                                  */
+    while ( ! IsStringConv( str ) ) {
+        str = ErrorReturnObj(
+            "<str> must be a string (not a %s)",
+            (Int)TNAM_OBJ(str), 0L,
+            "you can replace <filename> via 'return <str>;'" );
+    }
+    
+    ptr = CSTR_STRING(str);
+    len = GET_LEN_STRING(str);
+    crc = 0x12345678L;
+    seen_nl = 0;
+    for (i = 0; i < len; i++) {
+        ch = (Int4)(ptr[i]);
+        if ( ch == '\377' || ch == '\n' || ch == '\r' )
+            ch = '\n';
+        if ( ch == '\n' ) {
+            if ( seen_nl )
+                continue;
+            else
+                seen_nl = 1;
+        }
+        else
+            seen_nl = 0;
+        old = (crc >> 8) & 0x00FFFFFFL;
+        new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
+        crc = old ^ new;
+    }
+    if ( crc == 0 ) {
+        crc = 1;
+    }
+    return INTOBJ_INT(((Int4) crc) >> 4);
+}
+
+
 /****************************************************************************
 **
 *F  SyLoadModule( <name> )  . . . . . . . . . . . . link a module dynamically
 */
+
 #ifndef SYS_INIT_DYNAMIC
 #define SYS_INIT_DYNAMIC        "_Init__Dynamic"
 #endif
@@ -758,7 +840,9 @@ InitInfoFunc SyLoadModule ( Char * name )
 **
 *F  ESC( <V> )  . . . . . . . . . . . . . . . . . convert <V> into escape-<V>
 */
+#if !HAVE_LIBREADLINE
 #define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
+#endif
 
 
 /****************************************************************************
@@ -799,7 +883,7 @@ void syWinPut (
     else                         fd = syBuf[fid].fp;
 
     /* print the cmd                                                       */
-    write( fd, cmd, SyStrlen(cmd) );
+    writeandcheck( fd, cmd, SyStrlen(cmd) );
 
     /* print the output line, duplicate '@' and handle <ctr>-<chr>         */
     s = str;  t = tmp;
@@ -814,12 +898,12 @@ void syWinPut (
             *t++ = *s++;
         }
         if ( 128 <= t-tmp ) {
-            write( fd, tmp, t-tmp );
+            writeandcheck( fd, tmp, t-tmp );
             t = tmp;
         }
     }
     if ( 0 < t-tmp ) {
-        write( fd, tmp, t-tmp );
+        writeandcheck( fd, tmp, t-tmp );
     }
 }
 
@@ -870,6 +954,9 @@ Char * SyWinCmd (
     const Char *        bb;             /* pointer into the temporary      */
     Char *              b;              /* pointer into the temporary      */
     UInt                i;              /* loop variable                   */
+#if SYS_IS_CYGWIN32
+    UInt                len1;           /* temporary storage for len       */
+#endif
 
     /* if not running under a window handler, don't do nothing             */
     if ( ! SyWindow )
@@ -911,11 +998,22 @@ Char * SyWinCmd (
     /* read the arguments of the answer                                    */
     b = WinCmdBuffer;
     i = len;
+#if SYS_IS_CYGWIN32
+    len1 = len;
+    while ( 0 < i ) {
+        len = read( 0, b, i );
+        b += len;
+        i  -= len;
+        s  += len;
+    }
+    len = len1;
+#else
     while ( 0 < i ) {
         len = read( 0, b, i );
         i  -= len;
         s  += len;
     }
+#endif
 
     /* shrink '@@' into '@'                                                */
     for ( bb = b = WinCmdBuffer;  0 < len;  len-- ) {
@@ -1068,6 +1166,10 @@ Int SyFopen (
 	SyExit(2);
       }
     
+#if SYS_IS_CYGWIN32
+    if(SyStrlen(mode) >= 2 && mode[1] == 'b')
+       flags |= O_BINARY;
+#endif
     /* try to open the file                                                */
     if ( 0 <= (syBuf[fid].fp = open(name,flags, 0644)) ) {
         syBuf[fid].pipe = 0;
@@ -1216,7 +1318,6 @@ Int SyFopen (
     syBuf[fid].fsspec = fsspec;  
     syBuf[fid].bufno = -1;  /* no buffer allocated */
 	syBuf[fid].isTTY = 0;
-//    SySetBuffering (fid);
     return fid;
 }
 
@@ -1301,35 +1402,6 @@ Int SyFclose (
 
 Int 			SyInFid, SyOutFid; /* for i/o redirection */
 
-#if 0 /* no write buffering */
-void syFlushWriteBuffer (Int fid)
-{
-	long i, count;
-	char * p;
-	count = syBuf[fid].bufLen;
-	if (!syBuf[fid].binary) {  /* convert newline characters in text files */
-#if DYNAMIC_BUFFER
-		HLock (syBuf[fid].bufH);
-		p = *syBuf[fid].bufH;
-#else
-		p = syBuf[fid].buf;
-#endif
-		for (i=0; i < count;i++, p++)
-			if (*p == '\n')
-				*p = '\r';
-	}
-#if DYNAMIC_BUFFER
-	SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &count,  *syBuf[fid].bufH);   /* let the Mac OS do the write */
-	HUnlock (syBuf[fid].bufH);
-#else
-	SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &count,  syBuf[fid].buf);   /* let the Mac OS do the write */
-#endif
-	if (SyLastMacErrorCode || syBuf[fid].bufLen != count) 
-		SyFputs ("Error writing to file\n", 3);
-	syBuf[fid].bufLen = 0;
-	syBuf[fid].bufPos = 0;
-}
-#endif
 
 Int SyFclose (
     Int                 fid )
@@ -1359,11 +1431,6 @@ Int SyFclose (
     }
 
 	if (syBuf[fid].fromDoc == (char*)0) {
-#if 0 /* no write buffering */
-		if (syBuf[fid].permission != fsRdPerm) 
-			if ((count=syBuf[fid].bufLen)) /* data in buffer? */
-				syFlushWriteBuffer (fid);
-#endif
 	    /* try to close the file                                               */
 		if ((SyLastMacErrorCode = FSClose ((short)syBuf[fid].fp))) {
         	SyFputs("gap: 'SyFclose' cannot close file, ",3); 
@@ -1449,17 +1516,13 @@ Int SyIsEndOfFile (
 			GetFPos ( (short) syBuf[fid].fp, &fpos);
 			GetEOF ( (short) syBuf[fid].fp, &eofpos);
 			return (fpos < eofpos) ? 0 : 1;
-#if 0 /* no write buffering */
-			else  /* writing */
-				return (fpos +  syBuf[fid].bufLen < eofpos) ? 0 : 1;
-#endif
 		}
 }
 #endif
 
+
 /****************************************************************************
 **
-
 *F  syStartraw( <fid> ) . . . . . . start raw mode on input file <fid>, local
 **
 **  The  following four  functions are  the  actual system  dependent part of
@@ -1480,6 +1543,7 @@ Int SyIsEndOfFile (
 **  echoing.  Note that if the user redirected 'stdout' but not 'stdin',  the
 **  echo for 'stdin' must go to 'ttyname(fileno(stdin))' instead of 'stdout'.
 */
+
 extern UInt syStartraw (
             Int                 fid );
 
@@ -1503,7 +1567,7 @@ extern void syStopraw (
 **  to cooked mode before stopping GAP and back to raw mode when continueing.
 */
 
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
+#if !SYS_IS_DARWIN && (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 #ifndef SYS_SGTTY_H                     /* terminal control functions      */
 # include       <sgtty.h>
@@ -2044,7 +2108,6 @@ UInt syStartraw (
 
 /****************************************************************************
 **
-
 *F  syStopraw( <fid> )  . . . . . .  stop raw mode on input file <fid>, local
 */
 
@@ -2053,7 +2116,7 @@ UInt syStartraw (
 **
 *f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
+#if !SYS_IS_DARWIN && (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 void syStopraw (
     Int                 fid )
@@ -2294,11 +2357,19 @@ extern  long            time ( long * buf );
 UInt            syLastIntr;             /* time of the last interrupt      */
 
 
+#if HAVE_LIBREADLINE
+Int doingReadline;
+#endif
 
 SYS_SIG_T syAnswerIntr (
     int                 signr )
 {
     UInt                nowIntr;
+
+#if HAVE_LIBREADLINE
+    /* ignore during readline */
+    if (doingReadline) return;
+#endif
 
     /* get the current wall clock time                                     */
     nowIntr = time(0);
@@ -2609,12 +2680,14 @@ UInt SyIsIntr ( void )
  */
 extern  char *  getenv ( const char *);
 
-#if SYS_BSD || linux
+#if SYS_BSD || linux|| SYS_IS_CYGWIN32
 #include <sys/ioctl.h>             /* for TIOCGWINSZ */
 #endif
 
 #define CO SyNrCols
 #define LI SyNrRows
+/* SyNrCols can be at most MAXLENOUTPUTLINE */
+#define ML MAXLENOUTPUTLINE
 
 #ifdef TIOCGWINSZ
 /* signal routine: window size changed */
@@ -2627,6 +2700,8 @@ SYS_SIG_T syWindowChangeIntr (
             LI = win.ws_row;
         if(!SyNrColsLocked && win.ws_col > 0)
           CO = win.ws_col - 1;        /* never trust last column */
+        if (CO < 20) CO = 20;
+        if (CO > ML) CO = ML;
     }
 
 #if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
@@ -2672,17 +2747,19 @@ void getwindowsize( void )
 	}
       }
 #endif
-      
-      /* if nothing worked, use 24x80 */
+      /* if nothing worked, use 80x24 */
       if (CO <= 0)
 	CO = 80;
       if (LI <= 0)
 	LI = 24;
+      /* reset CO if value is strange */
+      if (CO < 20) CO = 20;
+      if (CO > ML) CO = ML;
 }
 
 #undef CO
 #undef LI
-
+#undef ML
 
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2740,7 +2817,7 @@ UInt            SyIsIntr ( void )
 **
 *f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
+#if (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 void syEchoch (
     Int                 ch,
@@ -2750,12 +2827,12 @@ void syEchoch (
 
     /* write the character to the associate echo output device             */
     ch2 = ch;
-    write( syBuf[fid].echo, (char*)&ch2, 1 );
+    writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
 
     /* if running under a window handler, duplicate '@'                    */
     if ( SyWindow && ch == '@' ) {
         ch2 = ch;
-        write( syBuf[fid].echo, (char*)&ch2, 1 );
+        writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
     }
 }
 
@@ -2766,7 +2843,7 @@ void syEchoch (
 **
 *f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG || HAVE_TERMIO_H
+#if SYS_USG || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 void syEchoch (
     Int                 ch,
@@ -2776,12 +2853,12 @@ void syEchoch (
 
     /* write the character to the associate echo output device             */
     ch2 = ch;
-    write( syBuf[fid].echo, (char*)&ch2, 1 );
+    writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
 
     /* if running under a window handler, duplicate '@'                    */
     if ( SyWindow && ch == '@' ) {
         ch2 = ch;
-        write( syBuf[fid].echo, (char*)&ch2, 1 );
+        writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
     }
 }
 
@@ -2802,12 +2879,12 @@ void syEchoch (
 
     /* write the character to the associate echo output device             */
     ch2 = ch;
-    write( syBuf[fid].echo, (char*)&ch2, 1 );
+    writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
 
     /* if running under a window handler, duplicate '@'                    */
     if ( SyWindow && ch == '@' ) {
         ch2 = ch;
-        write( syBuf[fid].echo, (char*)&ch2, 1 );
+        writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
     }
 }
 
@@ -2860,7 +2937,7 @@ void syEchoch (
 
     /* write the character to the associate echo output device             */
     ch2 = ch;
-    write( syBuf[fid].echo, (char*)&ch2, 1 );
+    writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
 }
 
 #endif
@@ -2905,19 +2982,6 @@ void syEchoch (
 		count = 1;
 		SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &count, &ch2);  
 	}
-#if 0 /* no write buffering */
-    
-# if DYNAMIC_BUFFER
-		if (GetHandleSize (syBuf[fid].bufH) <= syBuf[fid].bufLen)
-			syFlushWriteBuffer(fid);
-		*syBuf[fid].bufH[syBuf[fid].bufLen++] = ch;
-# else
-	    if (sizeof (syBuf[fid].buf) <= syBuf[fid].bufLen)
-			syFlushWriteBuffer(fid);
-	  	syBuf[fid].buf[syBuf[fid].bufLen++] = ch;
-# endif
-	}
-#endif
 }
 
 #endif
@@ -2954,7 +3018,7 @@ Int SyEchoch (
 **
 *f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
+#if (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 void syEchos (
     Char *              str,
@@ -2966,7 +3030,7 @@ void syEchos (
 
     /* otherwise, write it to the associate echo output device             */
     else
-        write( syBuf[fid].echo, str, SyStrlen(str) );
+        writeandcheck( syBuf[fid].echo, str, SyStrlen(str) );
 }
 
 #endif
@@ -2976,7 +3040,7 @@ void syEchos (
 **
 *f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG || HAVE_TERMIO_H
+#if SYS_USG || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 void syEchos (
     Char *              str,
@@ -2988,7 +3052,7 @@ void syEchos (
 
     /* otherwise, write it to the associate echo output device             */
     else
-        write( syBuf[fid].echo, str, SyStrlen(str) );
+        writeandcheck( syBuf[fid].echo, str, SyStrlen(str) );
 }
 
 #endif
@@ -3010,7 +3074,7 @@ void syEchos (
 
     /* otherwise, write it to the associate echo output device             */
     else
-        write( syBuf[fid].echo, str, SyStrlen(str) );
+        writeandcheck( syBuf[fid].echo, str, SyStrlen(str) );
 }
 
 #endif
@@ -3072,7 +3136,7 @@ void            syEchos (
     Char *              str,
     Int                 fid )
 {
-    write( syBuf[fid].echo, str, SyStrlen(str) );
+    writeandcheck( syBuf[fid].echo, str, SyStrlen(str) );
 }
 
 #endif
@@ -3129,7 +3193,7 @@ Char   syPrompt [256];                  /* characters already on the line   */
 **
 *f  SyFputs( <line>, <fid> )  . . . . . . .  BSD/MACH/USG/OS2 EMX/VMS/MAC MPW
 */
-#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||SYS_MAC_MPW||HAVE_SGTTY_H||HAVE_TERMIO_H
+#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||SYS_MAC_MPW||HAVE_SGTTY_H||HAVE_TERMIO_H||HAVE_TERMIOS_H
 
 void SyFputs (
     Char *              line,
@@ -3160,7 +3224,7 @@ void SyFputs (
     /* otherwise, write it to the output file                              */
     else
 #if ! SYS_MAC_MPW
-        write( syBuf[fid].fp, line, i );
+        writeandcheck( syBuf[fid].fp, line, i );
 #else
         fputs( line, syBuf[fid].fp );
 #endif
@@ -3206,32 +3270,6 @@ Int syFputs (
 		if (SyLastMacErrorCode || i != size)
 			return 2;
 	}
-#if 0 /* disable write buffering */
-        while (i) {
-	        size = sizeof (syBuf[fid].buf) - syBuf[fid].bufLen;
-	        if (i < size) { /* just move data into buffer */
-	  			BlockMove (line, syBuf[fid].buf + syBuf[fid].bufLen, i);
-				syBuf[fid].bufLen += i;
-				i = 0;
-			} else { /* fill buffer and write */
-	  			BlockMove (line, syBuf[fid].buf + syBuf[fid].bufLen, size);
-				syBuf[fid].bufLen = sizeof (syBuf[fid].buf);
-				syFlushWriteBuffer(fid);
-				i -= size;  /* bytes remaining to be written */
-				line += size; /* they start at line */
-				if (syBuf[fid].binary && i > sizeof (syBuf[fid].buf)) 
-				{	/* write large amounts of binary data as one block */
-					size = i;
-					SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &size, line);   /* let the Mac OS do the write */
-					if (SyLastMacErrorCode || i != size)
-						return 2;
-					i = 0;
-				}
-			}
-			
-		}
-	}
-#endif
 	return 0;
 }
 
@@ -3289,7 +3327,7 @@ void SyFputs (
 
     /* ordinary file                                                       */
     else {
-        write( syBuf[fid].fp, line, SyStrlen(line) );
+        writeandcheck( syBuf[fid].fp, line, SyStrlen(line) );
     }
 
 }
@@ -3423,10 +3461,6 @@ Int SyFseek (
 			syBuffers[bufno].buflen = 0;
 			syBuffers[bufno].bufstart = 0; /* clear data in i/o buffer */
 		} 
-#if 0 /* no write buffering */
-		else
-			syFlushWriteBuffer (fid);
-#endif
 		if (SetFPos ( (short) syBuf[fid].fp, fsFromStart, pos) == noErr)
 			return 0;
 	}
@@ -3456,7 +3490,7 @@ Int SyFseek (
 **  that return odd things rather than waiting for a key
 **  
 */
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H ||SYS_USG || HAVE_TERMIO_H
+#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H ||SYS_USG || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 /* In the cygwin environment it is not predictable if text files get the
  * '\r' in their line ends filtered out *before* GAP sees them. This leads
@@ -3470,7 +3504,7 @@ Int SyFseek (
  * (actually linux missing)
  */
 
-#if CYGWIN
+#if SYS_IS_CYGWIN32
 #  define LINE_END_HACK 1
 #endif
 
@@ -3478,28 +3512,30 @@ Int SyFseek (
 Int syGetchTerm (
     Int                 fid )
 {
-    Char                ch;
+    UChar                ch;
     Char                str[2];
-
+    Int ret;
 
     /* retry on errors or end-of-file. Ignore 0 bytes */
 
 #if LINE_END_HACK
  tryagain:
 #endif
-    while ( read( syBuf[fid].fp, &ch, 1 ) != 1 || ch == '\0' ) 
-	   ; 
+    while ( (ret = read( syBuf[fid].fp, &ch, 1 )) == -1 && errno == EAGAIN ) ;
+    if (ret <= 0) return EOF;
 
     /* if running under a window handler, handle special characters        */
     if ( SyWindow && ch == '@' ) {
         do {
-            while ( read(syBuf[fid].fp, &ch, 1) != 1 || ch == '\0' )
-                ;
+            while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 && 
+                    errno == EAGAIN ) ;
+            if (ret <= 0) return EOF;
         } while ( ch < '@' || 'z' < ch );
         if ( ch == 'y' ) {
 	    do {
-		while ( read(syBuf[fid].fp, &ch, 1) != 1 || ch == '\0' )
-		    ;
+		while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 && 
+                        errno == EAGAIN );
+                if (ret <= 0) return EOF;
 	    } while ( ch < '@' || 'z' < ch );
 	    str[0] = ch;
 	    str[1] = 0;
@@ -3538,7 +3574,7 @@ Int syGetchTerm (
 Int syGetchNonTerm (
     Int                 fid )
 {
-    Char                ch;
+    UChar                ch;
     UInt                bufno;
     int                 ret;
 
@@ -3976,7 +4012,7 @@ extern Int SyPutc
     Int                 fid,
     Char                c )
 {
-  write(syBuf[fid].fp,&c,1);
+  writeandcheck(syBuf[fid].fp,&c,1);
   return 0;         
 }
 #endif
@@ -4001,11 +4037,6 @@ Int SyPutc
 	} else {
 		count = 1;
 		SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &count,  buf);   /* let the Mac OS do the write */
-#if 0 /* no write buffering */
-		if (syBuf[fid].bufLen >= sizeof(syBuf[fid].buf))
-			syFlushWriteBuffer (fid);
-		syBuf[fid].buf[syBuf[fid].bufLen++] = c;
-#endif
 	}	
 	return 0;
 }
@@ -4015,7 +4046,7 @@ Int SyPutc
 
 /****************************************************************************
 **
-*F  SyFgets( <line>, <lenght>, <fid> )  . . . . .  get a line from file <fid>
+*F  SyFgets( <line>, <length>, <fid> )  . . . . .  get a line from file <fid>
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.
 **  'SyFgets' (like 'fgets') reads characters until either  <length>-1  chars
@@ -4070,9 +4101,9 @@ Int SyPutc
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-Char   syHistory [8192];                /* history of command lines        */
-Char * syHi = syHistory;                /* actual position in history      */
+
 UInt   syCTRO;                          /* number of '<ctr>-O' pending     */
+UInt   syESCN;                          /* number of '<Esc>-N' pending     */
 
 #if !SYS_MAC_MWC
 
@@ -4289,6 +4320,251 @@ Char * syFgetsNoEdit (
     return NULL;
 }
 
+/* will be imported from library, first is generic function which does some
+   checks before returning result to kernel, the second is the list of handler
+   functions which do the actual work. */
+Obj LineEditKeyHandler;
+Obj LineEditKeyHandlers;
+
+#if HAVE_LIBREADLINE
+
+/* we import GAP level functions from GAPInfo components */
+Obj GAPInfo;
+Obj CLEFuncs;
+Obj KeyHandler;
+
+static int GAPMacroNumber = 0;
+
+int GAP_set_macro(int count, int key)
+{
+ GAPMacroNumber = count;
+ return 0;
+}
+/* a generic rl_command_func_t that delegates to GAP level */
+int GAP_rl_func(int count, int key)
+{
+   Obj   rldata, linestr, okey, res, obj, data, beginchange, endchange, m;
+   Int   len, n, hook, dlen, max, i;
+
+   /* we shift indices 0-based on C-level and 1-based on GAP level */
+   C_NEW_STRING(linestr, strlen(rl_line_buffer), rl_line_buffer);
+   okey = INTOBJ_INT(key + 1000*GAPMacroNumber);
+   GAPMacroNumber = 0;
+   rldata = NEW_PLIST(T_PLIST, 6);
+   if (GAP_rl_func == rl_last_func) {
+     SET_LEN_PLIST(rldata, 6);
+     SET_ELM_PLIST(rldata, 6, True);
+   }
+   else
+     SET_LEN_PLIST(rldata, 5);
+   SET_ELM_PLIST(rldata, 1, INTOBJ_INT(count));
+   SET_ELM_PLIST(rldata, 2, okey);
+   SET_ELM_PLIST(rldata, 3, linestr);
+   SET_ELM_PLIST(rldata, 4, INTOBJ_INT(rl_point+1));
+   SET_ELM_PLIST(rldata, 5, INTOBJ_INT(rl_mark+1));
+   res = Call1ArgsInNewReader(KeyHandler, rldata);
+   if (!res) return 0;
+   if (!IS_LIST(res)) return 0;
+   len = LEN_LIST(res);
+   if (len == 0) return 0;
+   obj = ELM_LIST(res, 1);
+   if (IsStringConv(obj)) {
+      /* insert txt */
+      rl_insert_text(CSTR_STRING(obj));
+      n = 1;
+   } else if ((obj == True || obj == False) && len > 2) {
+      /* kill or delete text */
+      beginchange = ELM_LIST(res, 2);
+      if (!IS_INTOBJ(beginchange)) return 0;
+      endchange = ELM_LIST(res, 3);
+      if (!IS_INTOBJ(endchange)) return 0;
+      if (obj == True)
+         rl_kill_text(INT_INTOBJ(beginchange)-1, INT_INTOBJ(endchange)-1);
+      else
+         rl_delete_text(INT_INTOBJ(beginchange)-1, INT_INTOBJ(endchange)-1);
+      n = 3;
+   }  else if (IS_INTOBJ(obj) && len > 2) {
+      /* delete some text and insert */
+      beginchange = obj;
+      endchange = ELM_LIST(res, 2);
+      if (!IS_INTOBJ(endchange)) return 0;
+      obj = ELM_LIST(res, 3);
+      if (!IsStringConv(obj)) return 0;
+      rl_begin_undo_group();
+      rl_delete_text(INT_INTOBJ(beginchange)-1, INT_INTOBJ(endchange)-1);
+      rl_point = INT_INTOBJ(beginchange)-1;
+      rl_insert_text(CSTR_STRING(obj));
+      rl_end_undo_group();
+      n = 3;
+   } else if (IS_INTOBJ(obj) && len == 2) {
+      /* several hooks to particular rl_ functions with data */
+      hook = INT_INTOBJ(obj);
+      data = ELM_LIST(res, 2);
+      if (hook == 1) {
+         /* display matches */
+         if (!IS_LIST(data)) return 0;
+         dlen = LEN_LIST(data);
+         char **strs = (char**)malloc((dlen+1) * sizeof(char*));
+         max = 0;
+         for (i=1; i <= dlen; i++) {
+            if (!IsStringConv(ELM_LIST(data, i))) {
+               free(strs);
+               return 0;
+            }
+            strs[i] = CSTR_STRING(ELM_LIST(data, i));
+            if (max < strlen(strs[i])) max = strlen(strs[i]);
+         }
+         rl_display_match_list(strs, dlen, max);
+         free(strs);
+         rl_on_new_line();
+      }
+      else if (hook == 2) {
+         /* put these characters into sequence of input keys */
+         if (!IsStringConv(data)) return 0;
+         dlen = strlen(CSTR_STRING(data));
+         for (i=0; i < dlen; i++)
+             rl_stuff_char(CSTR_STRING(data)[i]);
+      }
+      n = 2;
+   } else if (IS_INTOBJ(obj) && len == 1) {
+      /* several hooks to particular rl_ functions with no data */
+      hook = INT_INTOBJ(obj);
+      /* ring bell */
+      if (hook == 100) rl_ding();
+      /* return line (execute Ctrl-m) */
+      else if (hook == 101) rl_execute_next(13);
+      n = 1;
+   } else
+      n = 0;
+
+   /* optionally we can return the new point, or new point and mark */
+   if (len > n) {
+      n++;
+      m = ELM_LIST(res, n);
+      if IS_INTOBJ(m) rl_point = INT_INTOBJ(m)-1;
+   }
+   if (len > n) {
+      n++;
+      m = ELM_LIST(res, n);
+      if IS_INTOBJ(m) rl_mark = INT_INTOBJ(m)-1;
+   }
+   return 0;
+}
+
+Obj FuncBINDKEYSTOGAPHANDLER (Obj self, Obj keys)
+{  
+  Char*  seq;
+
+  if (!IsStringConv(keys)) return False;
+  seq = CSTR_STRING(keys);
+  rl_bind_keyseq(seq, GAP_rl_func);
+
+  return True;
+}
+
+Obj FuncBINDKEYSTOMACRO (Obj self, Obj keys, Obj macro)
+{  
+  Char   *seq, *macr;
+
+  if (!IsStringConv(keys)) return False;
+  if (!IsStringConv(macro)) return False;
+  seq = CSTR_STRING(keys);
+  macr = CSTR_STRING(macro);
+  rl_generic_bind(ISMACR, seq, macr, rl_get_keymap());
+  return True;
+}
+
+Obj FuncREADLINEINITLINE (Obj self, Obj line)
+{  
+  Char   *cline;
+
+  if (!IsStringConv(line)) return False;
+  cline = CSTR_STRING(line);
+  rl_parse_and_bind(cline);
+  return True;
+}
+
+/* init is needed once */
+Int ISINITREADLINE = 0;
+/* a hook function called regularly while waiting on input */
+Int current_rl_fid;
+int charreadhook_rl ( )
+{  
+  if (OnCharReadHookActive != (Obj) 0)
+    HandleCharReadHook(syBuf[current_rl_fid].fp);
+  return 0;
+}
+void initreadline ( )
+{
+   
+  /* allows users to configure GAP specific settings in their ~/.inputrc like:
+       $if GAP
+          ....
+       $endif                                                             */
+  rl_readline_name = "GAP";
+  /* this should pipe signals through to GAP  */
+  rl_already_prompted = 1 ;
+
+  rl_catch_signals = 0;
+  rl_catch_sigwinch = 1;
+  /* hook to read from other channels */
+  rl_event_hook = charreadhook_rl;
+  /* give GAP_rl_func a name that can be used in .inputrc */
+  rl_add_defun( "handled-by-GAP", GAP_rl_func, -1 );
+
+  rl_bind_keyseq("\\C-x\\C-g", GAP_set_macro);
+
+  CLEFuncs = ELM_REC(GAPInfo, RNamName("CommandLineEditFunctions"));
+  KeyHandler = ELM_REC(CLEFuncs, RNamName("KeyHandler"));
+  ISINITREADLINE = 1;
+}
+
+Char * readlineFgets (
+    Char *              line,
+    UInt                length,
+    Int                 fid,
+    UInt                block)
+{ 
+  char *                 rlres = (char*)NULL;
+  UInt                   len;
+
+  current_rl_fid = fid;
+  if (!ISINITREADLINE) initreadline();
+  
+  /* read at most as much as we can buffer */
+  rl_num_chars_to_read = length-2;
+  /* now do the real work */
+  doingReadline = 1;
+  rlres = readline(Prompt);
+  doingReadline = 0;
+  /* we get a NULL pointer on EOF, say by pressing Ctr-d  */
+  if (!rlres) {
+    if (!SyCTRD) {
+      while (!rlres)
+        rlres = readline(Prompt);
+    } 
+    else {
+      printf("\n");fflush(stdout);
+      line[0] = '\0';
+      return (Char*)0;
+    }
+  }
+  /* maybe add to history, we use key 0 for this function */
+  GAP_rl_func(0, 0);
+  len = strlen(rlres);
+  strncpy(line, rlres, len);
+  free(rlres);
+  line[len] = '\n';
+  line[len+1] = '\0';
+
+  /* send the whole line (unclipped) to the window handler               */
+  syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
+
+  return line;
+}
+
+#endif
+
 
 Char * syFgets (
     Char *              line,
@@ -4296,16 +4572,20 @@ Char * syFgets (
     Int                 fid,
     UInt                block)
 {
+#if HAVE_LIBREADLINE
+    Char *  p;
+#else
     Int                 ch,  ch2,  ch3, last;
     Char                * p,  * q,  * r,  * s,  * t;
-    Char                * h;
-    static Char         yank [512];
+    static Char         yank [32768];
     Char                old [512],  new [512];
     Int                 oldc,  newc;
-    Int                 rep;
+    Int                 rep, len;
     Char                buffer [512];
     Int                 rn;
     Int			rubdel;
+    Obj                 linestr, yankstr, args, res;
+#endif
 
     /* check file identifier                                               */
     if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
@@ -4331,24 +4611,68 @@ Char * syFgets (
         return p;
     }
 
+    
+#if HAVE_LIBREADLINE
+    /* switch back to cooked mode                                          */
+    if ( SyLineEdit == 1 )
+        syStopraw(fid);
 
     /* stop the clock, reading should take no time                         */
     SyStopTime = SyTime();
 
+    p = readlineFgets(line, length, fid, block);
+    /* start the clock again                                               */
+    SyStartTime += SyTime() - SyStopTime;
+    if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
+    if (!p)
+      return p;
+    else
+      return line;
+#else
+
+/*  EXPERIMENT    */
+    if ( LEN_PLIST(LineEditKeyHandlers) > 999 && 
+                         ELM_PLIST(LineEditKeyHandlers, 1000) != 0) {
+      linestr = Call0ArgsInNewReader(ELM_PLIST(LineEditKeyHandlers, 1000));
+      len = GET_LEN_STRING(linestr);
+      memcpy(line,CHARS_STRING(linestr),len);
+      line[len] = '\0';
+      /* switch back to cooked mode                                          */
+      if ( SyLineEdit == 1 )
+          syStopraw(fid);
+
+      /* return the line (or '0' at end-of-file)                             */
+      if ( *line == '\0' )
+          return (Char*)0;
+      return line;
+    }
+
+/*  END EXPERIMENT    */
+    
+    /* In line editing mode 'length' is not allowed bigger than the
+      yank buffer (= length of line buffer for input files).*/
+    if (length > 32768)
+       ErrorQuit("Cannot handle lines with more than 32768 characters in line edit mode.",0,0);
+    /* stop the clock, reading should take no time                         */
+    SyStopTime = SyTime();
+
     /* the line starts out blank                                           */
-    line[0] = '\0';  p = line;  h = syHistory;
+    line[0] = '\0';  p = line;  
     for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
     oldc = 0;
     last = 0;
+    ch = 0;
     rubdel=0; /* do we want to east a `del' character? */
 
     while ( 1 ) {
 
         /* get a character, handle <ctr>V<chr>, <esc><num> and <ctr>U<num> */
-        rep = 1;  ch2 = 0;
+        rep = 1; ch2 = 0;
         do {
-            if ( syCTRO % 2 == 1  )  { ch = CTR('N'); syCTRO = syCTRO - 1; }
-            else if ( syCTRO != 0 )  { ch = CTR('O'); rep = syCTRO / 2; }
+            if ( syESCN > 0 ) { if (ch == ESC('N')) {ch = '\n'; syESCN--; } 
+                                else {ch = ESC('N'); } }
+            else if ( syCTRO % 2 == 1 ) { ch = CTR('N'); syCTRO = syCTRO - 1; }
+            else if ( syCTRO != 0 ) { ch = CTR('O'); rep = syCTRO / 2; }
             else {
 #if HAVE_SELECT
               if (OnCharReadHookActive != (Obj) 0)
@@ -4393,6 +4717,42 @@ Char * syFgets (
 
         /* now perform the requested action <rep> times in the input line  */
         while ( rep-- > 0 ) {
+          /* check for key handler on GAP level */
+          if (ch >= 0 && ch < LEN_PLIST(LineEditKeyHandlers) && 
+                         ELM_PLIST(LineEditKeyHandlers, ch+1) != 0) {
+            /* prepare data for GAP handler: 
+                   [linestr, ch, ppos, length, yankstr]
+               GAP handler must return new
+                   [linestr, ppos, yankstr]
+               or an integer, interpreted as number of ESC('N') 
+               calls for the next lines.                                  */
+            C_NEW_STRING(linestr,strlen(line),line);
+            C_NEW_STRING(yankstr,strlen(yank),yank);
+            args = NEW_PLIST(T_PLIST, 5);
+            SET_LEN_PLIST(args, 5);
+            SET_ELM_PLIST(args,1,linestr);
+            SET_ELM_PLIST(args,2,INTOBJ_INT(ch));
+            SET_ELM_PLIST(args,3,INTOBJ_INT((p-line)+1));
+            SET_ELM_PLIST(args,4,INTOBJ_INT(length));
+            SET_ELM_PLIST(args,5,yankstr);
+            res = Call1ArgsInNewReader(LineEditKeyHandler, args);
+            if (IS_INTOBJ(res)){
+               syESCN = INT_INTOBJ(res);
+               ch = ESC('N');
+               SET_ELM_PLIST(args,2,INTOBJ_INT(ch));
+               res = Call1ArgsInNewReader(LineEditKeyHandler, args);
+            }
+            linestr = ELM_PLIST(res,1);
+            len = GET_LEN_STRING(linestr);
+            memcpy(line,CHARS_STRING(linestr),len);
+            line[len] = '\0';
+            p = line + (INT_INTOBJ(ELM_PLIST(res,2)) - 1);
+            yankstr = ELM_PLIST(res,3);
+            len = GET_LEN_STRING(yankstr);
+            memcpy(yank,CHARS_STRING(yankstr),len);
+            yank[len] = '\0';
+          }
+          else {
             switch ( ch ) {
 
             case CTR('A'): /* move cursor to the start of the line         */
@@ -4495,105 +4855,17 @@ Char * syFgets (
                 ++p;
                 break;
 
-            case CTR('L'): /* insert last input line                       */
-                for ( r = syHistory; *r != '\0' && *r != '\n'; ++r ) {
-                    ch2 = *r;
-                    for ( q = p; ch2; ++q ) {
-                        ch3 = *q; *q = ch2; ch2 = ch3;
-                    }
-                    *q = '\0'; ++p;
-                }
-                break;
-
             case CTR('Y'): /* insert (yank) deleted text                   */
+                if (strlen(yank) + strlen(line) - 2 > length) {
+                    syEchoch(CTR('G'), fid);
+                    break;
+                }
                 for ( r = yank; *r != '\0' && *r != '\n'; ++r ) {
                     ch2 = *r;
                     for ( q = p; ch2; ++q ) {
                         ch3 = *q; *q = ch2; ch2 = ch3;
                     }
                     *q = '\0'; ++p;
-                }
-                break;
-
-            case CTR('P'): /* fetch old input line                         */
-                while ( *h != '\0' ) {
-                    for ( q = line; q < p; ++q )
-                        if ( *q != h[q-line] )  break;
-                    if ( q == p )  break;
-                    while ( *h != '\n' && *h != '\0' )  ++h;
-                    if ( *h == '\n' ) ++h;
-                }
-                q = p;
-                while ( *h!='\0' && h[q-line]!='\n' && h[q-line]!='\0' ) {
-                    *q = h[q-line];  ++q;
-                }
-                *q = '\0';
-                while ( *h != '\0' && *h != '\n' )  ++h;
-                if ( *h == '\n' ) ++h;  else h = syHistory;
-                syHi = h;
-                break;
-
-            case CTR('N'): /* fetch next input line                        */
-                h = syHi;
-                if ( h > syHistory ) {
-                    do {--h;} while (h>syHistory && *(h-1)!='\n');
-                    if ( h==syHistory )  while ( *h != '\0' ) ++h;
-                }
-                while ( *h != '\0' ) {
-                    if ( h==syHistory )  while ( *h != '\0' ) ++h;
-                    do {--h;} while (h>syHistory && *(h-1)!='\n');
-                    for ( q = line; q < p; ++q )
-                        if ( *q != h[q-line] )  break;
-                    if ( q == p )  break;
-                    if ( h==syHistory )  while ( *h != '\0' ) ++h;
-                }
-                q = p;
-                while ( *h!='\0' && h[q-line]!='\n' && h[q-line]!='\0' ) {
-                    *q = h[q-line];  ++q;
-                }
-                *q = '\0';
-                while ( *h != '\0' && *h != '\n' )  ++h;
-                if ( *h == '\n' ) ++h;  else h = syHistory;
-                syHi = h;
-                break;
-
-            case ESC('<'): /* goto beginning of the history                */
-                while ( *h != '\0' ) ++h;
-                do {--h;} while (h>syHistory && *(h-1)!='\n');
-                q = p = line;
-                while ( *h!='\0' && h[q-line]!='\n' && h[q-line]!='\0' ) {
-                    *q = h[q-line];  ++q;
-                }
-                *q = '\0';
-                while ( *h != '\0' && *h != '\n' )  ++h;
-                if ( *h == '\n' ) ++h;  else h = syHistory;
-                syHi = h;
-                break;
-
-            case ESC('>'): /* goto end of the history                      */
-                h = syHistory;
-                p = line;
-                *p = '\0';
-                syHi = h;
-                break;
-
-            case CTR('S'): /* search for a line forward                    */
-                /* search for a line forward, not fully implemented !!!    */
-                if ( *p != '\0' ) {
-                    ch2 = syGetch(fid);
-                    q = p+1;
-                    while ( *q != '\0' && *q != ch2 )  ++q;
-                    if ( *q == ch2 )  p = q;
-                }
-                break;
-
-            case CTR('R'): /* search for a line backward                   */
-                /* search for a line backward, not fully implemented !!!   */
-                if ( p > line ) {
-                    ch2 = syGetch(fid);
-                    q = p-1;
-                    while ( q > line && *q != ch2 )  --q;
-                    if ( *q == ch2 )  p = q;
                 }
                 break;
 
@@ -4631,7 +4903,7 @@ Char * syFgets (
             case EOF:     /* end of file on input                          */
                 break;
 
-            case CTR('M'): /* append \n and exit                           */
+            case CTR('M'): /* (same as '\r', '\n') append \n and exit      */
             case CTR('J'):
                 while ( *p != '\0' )  ++p;
                 *p++ = '\n'; *p = '\0';
@@ -4647,6 +4919,7 @@ Char * syFgets (
 
             case CTR('I'): /* try to complete the identifier before dot    */
                 if ( p == line || IS_SEP(p[-1]) ) {
+		  /* If we don't have an identifier to complete, insert a tab */
                     ch2 = ch & 0xff;
                     for ( q = p; ch2; ++q ) {
                         ch3 = *q; *q = ch2; ch2 = ch3;
@@ -4654,72 +4927,122 @@ Char * syFgets (
                     *q = '\0'; ++p;
                 }
                 else {
+  /* Here is actually a bug, because it is not checked if the results 
+     leaves 'line' shorter than 'length'. But we ignore this problem
+     assuming that interactive input lines are much shorter than
+     32768 characters.                                                       */
+
+		  /* Locate in q the current identifier */
                     if ( (q = p) > line ) do {
                         --q;
                     } while ( q>line && (!IS_SEP(*(q-1)) || IS_SEP(*q)));
+
+		    /* determine if the thing immediately before the 
+                       current identifier is a . */
                     rn = (line < q && *(q-1) == '.' 
                                    && (line == q-1 || *(q-2) != '.'));
+
+		    /* Copy the current identifier into buffer */
                     r = buffer;  s = q;
                     while ( s < p )  *r++ = *s++;
                     *r = '\0';
+
                     if ( (rn ? iscomplete_rnam( buffer, p-q )
-                             : iscomplete_gvar( buffer, p-q )) ) {
-                           if ( last != CTR('I') )
-                            syEchoch( CTR('G'), fid );
-                        else {
-                            syWinPut( fid, "@c", "" );
-                            syEchos( "\n    ", fid );
-                            syEchos( buffer, fid );
-                            while ( (rn ? completion_rnam( buffer, p-q )
-                                        : completion_gvar( buffer, p-q )) ) {
-                                syEchos( "\n    ", fid );
-                                syEchos( buffer, fid );
-                            }
-                            syEchos( "\n", fid );
-                            for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
-                            for ( q = old; q < old+sizeof(old); ++q )
-                                *q = ' ';
-                            oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
-                        }
+			  : iscomplete_gvar( buffer, p-q )) ) {
+		      /* Complete already, just beep for single tab */
+		      if ( last != CTR('I') )
+			syEchoch( CTR('G'), fid );
+		      else {
+			
+			/* Double tab after a complete identifier
+			   print list of completions */
+			syWinPut( fid, "@c", "" );
+			syEchos( "\n    ", fid );
+			syEchos( buffer, fid );
+			while ( (rn ? completion_rnam( buffer, p-q )
+				 : completion_gvar( buffer, p-q )) ) {
+			  syEchos( "\n    ", fid );
+			  syEchos( buffer, fid );
+			}			
+			syEchos( "\n", fid );
+
+			/* Reprint the prompt and input line so far */
+			for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
+			  syEchoch( *q, fid );
+			for ( q = old; q < old+sizeof(old); ++q )
+			  *q = ' ';
+			oldc = 0;
+			syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
+		      }
                     }
                     else if ( (rn ? ! completion_rnam( buffer, p-q )
                                   : ! completion_gvar( buffer, p-q )) ) {
+		      
+		      /* Not complete, and there are no completions */
                         if ( last != CTR('I') )
+			  
+			  /* beep after 1 tab */
                             syEchoch( CTR('G'), fid );
                         else {
-                            syWinPut( fid, "@c", "" );
-                            syEchos("\n    identifier has no completions\n",
-                                    fid);
-                            for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
-                            for ( q = old; q < old+sizeof(old); ++q )
-                                *q = ' ';
-                            oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
+			  
+			  /* print a message otherwise */
+			  syWinPut( fid, "@c", "" );
+			  syEchos("\n    identifier has no completions\n",
+				  fid);
+			  for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
+			    syEchoch( *q, fid );
+			  for ( q = old; q < old+sizeof(old); ++q )
+			    *q = ' ';
+			  oldc = 0;
+			  syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
                         }
                     }
                     else {
+
+		      /*not complete and we have a completion. Now we have to 
+                        find the longest common prefix of all the completions*/
+		        
                         t = p;
+
+		      /* Insert the necessary part of the current completion */
                         for ( s = buffer+(p-q); *s != '\0'; s++ ) {
+			  
+		      /* Insert character from buffer into the line, I think */
                             ch2 = *s;
                             for ( r = p; ch2; r++ ) {
                                 ch3 = *r; *r = ch2; ch2 = ch3;
                             }
                             *r = '\0'; p++;
                         }
+
+			/* Now we work through the alternative
+			   completions reducing p, each time to point
+			   just after the longest common stem t
+			   meanwhile still points to the place where
+			   we started this batch of completion, so if
+			   p gets down to t, we have nothing
+			   unambiguous to add */
+			
                         while ( t < p
                              && (rn ? completion_rnam( buffer, t-q )
                                     : completion_gvar( buffer, t-q )) ) {
+
+			  /* check the length of common prefix */
                             r = t;  s = buffer+(t-q);
                             while ( r < p && *r == *s ) {
                                 r++; s++;
                             }
                             s = p;  p = r;
+			    
+			    /* Now close up over the part of the
+			       completion which turned out to be
+			       ambiguous */
                             while ( *s != '\0' )  *r++ = *s++;
                             *r = '\0';
                         }
+
+			/* OK, now we have done the largest possible completion.
+			   If it was nothing then we can't complete. Deal appropriately */
                         if ( t == p ) {
                             if ( last != CTR('I') )
                                 syEchoch( CTR('G'), fid );
@@ -4741,6 +5064,8 @@ Char * syFgets (
                                 syWinPut( fid, (fid == 0 ? "@i" : "@e"), "");
                             }
                         }
+
+                      /* If we managed to do some completion then we're happy */
                     }
                 }
                 break;
@@ -4754,14 +5079,14 @@ Char * syFgets (
                 break;
 
             } /* switch ( ch ) */
+          } /* key handler hook */
 
-            last = ch;
-
+          last = ch;
         }
 
         if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
             /* if there is a hook for line ends, call it before echoing */
-            if ( EndLineHook ) CALL_0ARGS( EndLineHook );
+            if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
             syEchoch('\r',fid);  syEchoch('\n',fid);  break;
         }
 
@@ -4799,33 +5124,26 @@ Char * syFgets (
         }
         while ( oldc < newc ) { syEchoch(old[oldc],fid);  ++oldc; }
         while ( oldc > newc ) { syEchoch('\b',fid);       --oldc; }
+        
 
     }
 
     if (line[1] != '\0') {
-      /* Now we put the new string into the history,  first all old strings  */
-      /* are moved backwards,  then we enter the new string in syHistory[].  */
-      for ( q = syHistory+sizeof(syHistory)-3; q >= syHistory+(p-line); --q )
-	  *q = *(q-(p-line));
-      for ( p = line, q = syHistory; *p != '\0'; ++p, ++q )
-	  *q = *p;
-      syHistory[sizeof(syHistory)-3] = '\n';
-      if ( syHi != syHistory )
-	  syHi = syHi + (p-line);
-      if ( syHi > syHistory+sizeof(syHistory)-2 )
-	  syHi = syHistory+sizeof(syHistory)-2;
+      /* Now we put the new string into the history,  
+         we use key handler with key 0 to update the command line history */
+        C_NEW_STRING(linestr,strlen(line),line);
+        args = NEW_PLIST(T_PLIST, 5);
+        SET_LEN_PLIST(args, 5);
+        SET_ELM_PLIST(args,1,linestr);
+        SET_ELM_PLIST(args,2,INTOBJ_INT(0));
+        SET_ELM_PLIST(args,3,INTOBJ_INT(1));
+        SET_ELM_PLIST(args,4,INTOBJ_INT(length));
+        SET_ELM_PLIST(args,5,linestr);
+        Call1ArgsInNewReader(LineEditKeyHandler, args);
     }
 
     /* send the whole line (unclipped) to the window handler               */
     syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
-
-    /* strip away prompts (useful for pasting old stuff)                  */
-    if (line[0]=='g'&&line[1]=='a'&&line[2]=='p'&&line[3]=='>'&&line[4]==' ')
-        for ( p = line, q = line+5; q[-1] != '\0'; p++, q++ )  *p = *q;
-    if (line[0]=='b'&&line[1]=='r'&&line[2]=='k'&&line[3]=='>'&&line[4]==' ')
-        for ( p = line, q = line+5; q[-1] != '\0'; p++, q++ )  *p = *q;
-    if (line[0]=='>'&&line[1]==' ')
-        for ( p = line, q = line+2; q[-1] != '\0'; p++, q++ )  *p = *q;
 
     /* switch back to cooked mode                                          */
     if ( SyLineEdit == 1 )
@@ -4838,6 +5156,8 @@ Char * syFgets (
     if ( *line == '\0' )
         return (Char*)0;
     return line;
+
+#endif
 }
 
 Char * SyFgets (
@@ -4855,6 +5175,23 @@ Char *SyFgetsSemiBlock (
     Int                 fid)
 {
   return syFgets( line, length, fid, 0);
+}
+
+Obj FuncEchoLine(Obj self, Obj line, Obj len, Obj off, Obj pos, Obj gfid) {
+  Int i, clen, coff, cpos, fid;
+  Char *ptr;
+  clen = INT_INTOBJ(len);
+  coff = INT_INTOBJ(off);
+  ptr = CSTR_STRING(line);
+  cpos = INT_INTOBJ(pos);
+  fid = INT_INTOBJ(gfid);
+  for (i=0; i < coff; syEchoch('\b', fid), i++);
+  for (i=0; i < clen; i++) {
+    syEchoch(ptr[i], fid);
+  }
+  for (; cpos<0; syEchoch('\b', fid), cpos++);
+  for (; cpos>0; syEchoch('\6', fid), cpos--);
+  return (Obj)0;
 }
 
 #endif
@@ -5982,6 +6319,18 @@ Char * SyFindGapRootFile ( Char * filename )
 extern  char * tmpnam ( char * );
 #endif
 
+#if HAVE_MKSTEMP
+Char *SyTmpname ( void )
+{
+  static char name[1024];
+  static char *base = "/tmp/gaptempfile.XXXXXX";
+  name[0] = 0;
+  SyStrncat(name, base, SyStrlen(base)+1);
+  close(mkstemp(name));
+  return name;
+}
+
+#else
 Char * SyTmpname ( void )
 {
     static Char   * base = 0;
@@ -6017,6 +6366,7 @@ Char * SyTmpname ( void )
     *s = (Char)0;
     return name;
 }
+#endif
 #endif
 
 /****************************************************************************
@@ -6115,6 +6465,29 @@ Char * SyTmpname ( void )
 **
 *f  SyTmpdir( <hint> )  . . . . . . . . . . . . . . . . . . . . using `mkdir'
 */
+
+#if SYS_IS_CYGWIN32
+#define TMPDIR_BASE "/cygdrive/c/WINDOWS/Temp/"
+#else
+#define TMPDIR_BASE "/tmp/"
+#endif
+
+
+#if HAVE_MKDTEMP
+Char * SyTmpdir( Char * hint )
+{
+  static char name[1024];
+  static char *base = TMPDIR_BASE;
+  name[0] = 0;
+  SyStrncat(name, base, SyStrlen(base)+1);
+  if (hint)
+      SyStrncat(name, hint, SyStrlen(hint)+1);
+  else
+    SyStrncat(name, "gaptempdir", 11);
+  SyStrncat(name, ".XXXXXX", 7);
+  return mkdtemp(name);
+}
+#else
 #if HAVE_MKDIR
 
 Char * SyTmpdir ( Char * hint )
@@ -6128,6 +6501,7 @@ Char * SyTmpdir ( Char * hint )
         return 0;
 
     /* create a new directory                                              */
+    unlink( tmp ); 
     res = mkdir( tmp, 0777 );
     if ( res == -1 ) {
         SySetErrorNo();
@@ -6139,7 +6513,7 @@ Char * SyTmpdir ( Char * hint )
 
 
 #endif
-
+#endif
 #if SYS_MAC_MWC
 
 Char * SyTmpdir ( Char * hint )
@@ -6178,6 +6552,34 @@ Char * SyTmpdir ( Char * hint )
 
 #endif
 
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "CrcString", 1, "string",
+      FuncCrcString, "src/sysfiles.c:FuncCrcString" },
+
+    { "EchoLine", 5, "line, len, off, pos, fid",
+      FuncEchoLine, "src/sysfiles.c:FuncEchoLine" },
+
+#if HAVE_LIBREADLINE
+    { "BINDKEYSTOGAPHANDLER", 1, "keyseq",
+       FuncBINDKEYSTOGAPHANDLER, "src/sysfiles.c:FuncBINDKEYSTOGAPHANDLER" },
+
+    { "BINDKEYSTOMACRO", 2, "keyseq, macro",
+       FuncBINDKEYSTOMACRO, "src/sysfiles.c:FuncBINDKEYSTOMACRO" },
+
+    { "READLINEINITLINE", 1, "line",
+       FuncREADLINEINITLINE, "src/sysfiles.c:FuncREADLINEINITLINE" },
+#endif
+
+    { 0 } };
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
@@ -6194,117 +6596,33 @@ Char * SyTmpdir ( Char * hint )
 static Int postRestore (
     StructInitInfo *    module )
 {
-    Obj             list;
-    Obj             tmp;
-    UInt            gvar;
-    Int             len;
-    Int             i;
-    Int             j;
-    Char *          p;
-    Char *          q;
-
-    /* GAP_ARCHITECTURE                                                    */
-    tmp = NEW_STRING(SyStrlen(SyArchitecture));
-    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-    SyStrncat( CSTR_STRING(tmp), SyArchitecture, SyStrlen(SyArchitecture) );
-    gvar = GVarName("GAP_ARCHITECTURE");
-    MakeReadWriteGVar( gvar);
-    AssGVar( gvar, tmp );
-    MakeReadOnlyGVar(gvar);
-
-    /* KERNEL_VERSION */
-    tmp = NEW_STRING(SyStrlen(SyKernelVersion));
-    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-    SyStrncat( CSTR_STRING(tmp), SyKernelVersion, SyStrlen(SyKernelVersion) );
-    gvar = GVarName("KERNEL_VERSION");
-    MakeReadWriteGVar( gvar);
-    AssGVar( gvar, tmp );
-    MakeReadOnlyGVar(gvar);
-
-    /* GAP_ROOT_PATH                                                       */
-    list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
-    for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
-        if ( SyGapRootPaths[i][0] ) {
-            len = SyStrlen(SyGapRootPaths[i]);
-            tmp = NEW_STRING(len);
-            RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-            SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
-            SET_ELM_PLIST( list, j, tmp );
-            j++;
-        }
-    }
-    SET_LEN_PLIST( list, j-1 );
-    gvar = GVarName("GAP_ROOT_PATHS");
-    MakeReadWriteGVar( gvar);
-    AssGVar( gvar, list );
-    MakeReadOnlyGVar(gvar);
-
-    /* DIRECTORIES_SYSTEM_PROGRAMS                                         */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_PATH_ENV
-    list = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( list, 0 );
-    for ( p = getenv("PATH"), i = 0, q = p;  ;  p++, i++ ) {
-        if ( *p == ':' || *p == '\0' ) {
-            if ( i == 0 ) {
-                tmp = NEW_STRING(2);
-                RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-                SyStrncat( CSTR_STRING(tmp), "./", 2 );
-            }
-            else {
-                if ( q[-1] == '/' ) {
-                    tmp = NEW_STRING(i);
-                    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-                    SyStrncat( CSTR_STRING(tmp), q, i );
-                }
-                else {
-                    tmp = NEW_STRING(i+1);
-                    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-                    SyStrncat( CSTR_STRING(tmp), q, i );
-                    SyStrncat( CSTR_STRING(tmp), "/", 1 );
-                }
-            }
-            AddPlist( list, tmp );
-            i = -1;
-            q = p+1;
-        }
-        if ( *p == '\0' )
-            break;
-    }
-#endif
-    RetypeBag( list, IMMUTABLE_TNUM(TNUM_OBJ(list)) );
-    gvar = GVarName("DIRECTORIES_SYSTEM_PROGRAMS");
-    MakeReadWriteGVar( gvar);
-    AssGVar( gvar, list );
-    MakeReadOnlyGVar(gvar);
-
-    /* GAP_RC_FILE                                                    */
-    tmp = NEW_STRING(SyStrlen(SyGapRCFilename));
-    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-    SyStrncat( CSTR_STRING(tmp), SyGapRCFilename, SyStrlen(SyGapRCFilename) );
-    gvar = GVarName("GAP_RC_FILE");
-    MakeReadWriteGVar( gvar);
-    AssGVar( gvar, tmp );
-    MakeReadOnlyGVar(gvar);
-
-    /* User home, if available */
-    if (SyHasUserHome) {
-        tmp = NEW_STRING(SyStrlen(SyUserHome));
-        RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-        SyStrncat( CSTR_STRING(tmp), SyUserHome, SyStrlen(SyUserHome) );
-    }
-    else {
-        tmp = NEW_STRING(0);
-    }
-    gvar = GVarName("USER_HOME");
-    MakeReadWriteGVar( gvar);
-    AssGVar( gvar, tmp );
-    MakeReadOnlyGVar(gvar);
-        
 
     /* return success                                                      */
     return 0;
 }
 
+/****************************************************************************
+**
+*F  InitKernel( <module> ) . . . . . . .  initialise kernel data structures
+*/
+
+static Int InitKernel( 
+      StructInitInfo * module )
+{
+  /* init filters and functions                                          */
+  InitHdlrFuncsFromTable( GVarFuncs );
+
+  /* line edit key handler from library                                  */
+#if HAVE_LIBREADLINE
+  ImportGVarFromLibrary("GAPInfo", &GAPInfo);
+#else
+  ImportFuncFromLibrary("LineEditKeyHandler", &LineEditKeyHandler);
+  ImportGVarFromLibrary("LineEditKeyHandlers", &LineEditKeyHandlers);
+#endif
+  /* return success                                                      */
+  return 0;
+
+}
 
 /****************************************************************************
 **
@@ -6314,6 +6632,9 @@ static Int postRestore (
 static Int InitLibrary( 
       StructInitInfo * module )
 {
+  /* init filters and functions                                          */
+  InitGVarFuncsFromTable( GVarFuncs );
+
   return postRestore( module );
 }
 		       
@@ -6328,7 +6649,7 @@ static StructInitInfo module = {
     0,                                  /* revision entry of h file       */
     0,                                  /* version                        */
     0,                                  /* crc                            */
-    0,                                  /* initKernel                     */
+    InitKernel,                         /* initKernel                     */
     InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */

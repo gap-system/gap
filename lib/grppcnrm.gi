@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for normalizers of polycylic groups.
 ##
@@ -876,7 +877,8 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
             fi;
 
             # check the stabilizer
-            Assert( 2, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(ui_1) )
+            Assert( 3, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(ui_1),
+	               function(U,g) return U^g;end)
                      = GroupOfPcgs(s) );
 
             # now <ui_1> must be stabilized by <s>
@@ -953,7 +955,8 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
                 fi;
 
                 # check the stabilizer
-                Assert( 2, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(uj) )
+                Assert( 3, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(uj),
+			 function(U,g) return U^g;end)
                          = GroupOfPcgs(s) );
 
                 # now <uj> must be stabilized by <s>

@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -107,9 +109,10 @@ gap> Factors( GaussianIntegers, 1+2*E(4) );
 gap> Factors( GaussianIntegers, 5-E(4) );
 [ 1-E(4), 3+2*E(4) ]
 
-gap> STOP_TEST( "gaussian.tst", 3032500 );
+gap> STOP_TEST( "gaussian.tst", 640000 );
 
 
 #############################################################################
 ##
-#E  gaussian.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

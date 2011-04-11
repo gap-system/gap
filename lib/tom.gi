@@ -1,12 +1,13 @@
 #############################################################################
 ##
-#W  tom.gi                   GAP library                       Goetz Pfeiffer
+#W  tom.gi                   GAP library                       Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for tables of marks.
 ##
@@ -64,8 +65,7 @@ InstallMethod( TableOfMarks,
     "for a cyclic group",
     [ IsGroup and IsCyclic ],
     function( G )
-
-    local n, tom, gens, gen, subs, marks, classNames,
+    local n, c, tom, gens, gen, subs, marks, classNames,
           name, i, j, divs, index;
 
     n:= Size( G );
@@ -74,27 +74,26 @@ InstallMethod( TableOfMarks,
 
     # initialize
     divs:= DivisorsInt( n );
+    c:= Length( divs );
     subs:= [];
     marks:= [];
     classNames:=[];
 
     # Compute generators for each subgroup.
-    #gens:= GeneratorsOfGroup( G );
-    #if 1 < Length( gens ) then
-    #  gens:= MinimalGeneratingSet( G );
-    #fi;
-    #if Length(gens)>0 then
-    #  gen:= gens[1];
-    #else
-    #  gen:=One(G);
-    #fi;
-    gen:=GeneratorOfCyclicGroup(G);
-
+    gens:= GeneratorsOfGroup( G );
+    if 1 < Length( gens ) then
+      gens:= MinimalGeneratingSet( G );
+    fi;
+    if 0 < Length( gens ) then
+      gen:= gens[1];
+    else
+      gen:= One( G );
+    fi;
     gens:= [ List( divs, d -> gen^(n/d) ),
-             List( [ 1 .. Length( divs ) ], i -> [ i ] ) ];
+             List( [ 1 .. c ], i -> [ i ] ) ];
 
     # construct each subgroup (each divisor)
-    for i in [ 1 .. Length( divs ) ] do
+    for i in [ 1 .. c ] do
 
       classNames[i]:= String( divs[i] );
       ConvertToStringRep( classNames[i] );
@@ -122,8 +121,8 @@ InstallMethod( TableOfMarks,
     tom:= rec( Identifier                := name,
                SubsTom                   := subs,
                MarksTom                  := marks,
-               NormalizersTom            := List( [ 1 .. n ], x -> n ),
-               DerivedSubgroupsTomUnique := List( [ 1 .. n ], x -> 1 ),
+               NormalizersTom            := List( [ 1 .. c ], x -> c ),
+               DerivedSubgroupsTomUnique := List( [ 1 .. c ], x -> 1 ),
                UnderlyingGroup           := G,
                GeneratorsSubgroupsTom    := gens );
 
@@ -138,7 +137,6 @@ InstallMethod( TableOfMarks,
 #F  TableOfMarksByLattice( <G> )
 ##
 InstallGlobalFunction( TableOfMarksByLattice, function( G )
-
     local marks,             # components of the table of marks
           subs,
           normalizers,
@@ -338,7 +336,6 @@ InstallMethod( TableOfMarks,
     "cyclic extension method",
     [ IsGroup ],
     function( G )
-
     local factors,           # factorization of <G>'s size
           zuppos,            # generators of prime power order
           ll,
@@ -928,11 +925,14 @@ InstallMethod( TableOfMarks,
 #F  TableOfMarksFromLibrary( <name> )
 ##
 ##  The `TableOfMarks' method for a string calls `TableOfMarksFromLibrary'.
-##  We bind this to a dummy function that signals an error.
+##  If the library of tables of marks is not available then we bind this
+##  to a dummy function that signals an error.
 ##
-BindGlobal( "TableOfMarksFromLibrary", function( arg )
-    Error( "sorry, the GAP Tables Of Marks Library is not installed" );
-    end );
+#if not IsBoundGlobal( "TableOfMarksFromLibrary" ) then
+#  BindGlobal( "TableOfMarksFromLibrary", function( arg )
+#      Error( "sorry, the GAP Tables Of Marks Library is not installed" );
+#      end );
+#fi;
 
 
 #############################################################################
@@ -1019,7 +1019,7 @@ InstallMethod( ViewObj,
 ##
 #M  PrintObj( <tom> )
 ##
-InstallMethod( ViewObj,
+InstallMethod( PrintObj,
     [ IsTableOfMarks ],
     function( tom )
     Print( "TableOfMarks( " );
@@ -1051,7 +1051,6 @@ InstallOtherMethod( Display,
     "for a table of marks and an options record",
     [ IsTableOfMarks, IsRecord ],
     function( tom, options )
-
     local i, j, k, l, pr1, ll, lk, von, bis, pos, llength, pr, vals, subs,
           classes, lc, ci, wt;
 
@@ -1208,7 +1207,6 @@ InstallMethod( SortedTom,
 ##
 InstallGlobalFunction( ConvertToTableOfMarks, function( record )
     local i, names;
-
     names:= RecNames( record );
 
     # Make the object.
@@ -1242,7 +1240,6 @@ InstallMethod( MarksTom,
     "for a table of marks with known `NrSubsTom' and `OrdersTom'",
     [ IsTableOfMarks and HasNrSubsTom and HasOrdersTom ],
     function( tom )
-
     local i, j, ll, order, length, nrSubs, subs, marks, ord;
 
     # get the attributes and initialize
@@ -1278,7 +1275,6 @@ InstallMethod( NrSubsTom,
     "for a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-
     local i, j, nrSubs, subs, marks, length, index;
 
     # initialize
@@ -1490,7 +1486,6 @@ InstallMethod( IdempotentsTom,
     "for a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-
     local i, c, classes, p, ext, marks;
 
     marks:= MarksTom( tom );
@@ -1521,7 +1516,6 @@ InstallMethod( IdempotentsTomInfo,
     "for a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-
     local ext, ll, result, class, idem;
 
     ext:= CyclicExtensionsTom( tom );
@@ -1576,7 +1570,6 @@ InstallMethod( MoebiusTom,
     "for a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-
     local i, j, mline, nline, ll, mdec, ndec, expec, done, no, comsec,
           order, subs, nrsubs, length, der, result;
 
@@ -1809,7 +1802,6 @@ InstallMethod( IsCyclicTom,
     "for a table of marks and a positive integer",
     [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
-
     local mline;
 
     mline:= 0 * [ 1 .. sub ];
@@ -1919,7 +1911,6 @@ InstallMethod( IsSolvableTom,
 ##  rows of the table of marks with integer coefficients.
 ##
 BindGlobal( "TestRow", function( tom, n )
-
     local i, j, k, a, b, dec, test, marks, subs;
 
     test:= true;
@@ -1965,9 +1956,17 @@ InstallMethod( IsInternallyConsistent,
     "for a table of marks, decomposition test",
     [ IsTableOfMarks ],
     function( tom )
-    local i, test;
+    local test, g, i;
 
     test:= true;
+
+    # Check that the underlying group has the right order.
+    if HasUnderlyingGroup( tom ) then
+      g:= UnderlyingGroup( tom );
+      if Size( g ) <> Size( Group( GeneratorsOfGroup( g ), One( g ) ) ) then
+        return false;
+      fi;
+    fi;
 
     for i in [ 1 .. Length( SubsTom( tom ) ) ] do
       if not TestRow( tom, i ) then
@@ -1987,7 +1986,6 @@ InstallMethod( DerivedSubgroupTom,
     "for a table of marks, and a positive integer",
     [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
-
     local set, primes, normalsubs, minindex, p, nrsubs, ext, pos, extp,
           extps, sub1, sub2, result, i, j, indexsub1, indexsub2, index, int,
           notnormal, res, factorel, normsub1, norm, res1, oddord, order,
@@ -1998,9 +1996,8 @@ InstallMethod( DerivedSubgroupTom,
       return DerivedSubgroupsTomUnique( tom )[ sub ];
     fi;
 
-    poss:= DerivedSubgroupsTomPossible( tom );
-
     # Perhaps this is not the first time one has asked for this value.
+    poss:= DerivedSubgroupsTomPossible( tom );
     if IsBound( poss[ sub ] ) then
       return poss[ sub ];
     fi;
@@ -2217,13 +2214,12 @@ InstallMethod( DerivedSubgroupTom,
     if IsTableOfMarksWithGens( tom ) and IsList( result ) then
       der:= DerivedSubgroup( RepresentativeTom( tom, sub ) );
       result:= Filtered( result, x -> OrdersTom( tom )[x] = Size( der ) );
-      i:= 1;
-      while IsList( result ) do
-        grd:=RepresentativeTom( tom, poss[ sub ][i] );
+      for i in [ 1 .. Length( result ) ] do
+        grd:= RepresentativeTom( tom, result[i] );
         if IsConjugate( UnderlyingGroup( tom ), der, grd ) then
           result:= result[i];
+          break;
         fi;
-        i:= i+1;
       od;
     fi;
 
@@ -2232,9 +2228,9 @@ InstallMethod( DerivedSubgroupTom,
 
     # Are all derived subgroups known and uniquely determined?
     if     IsInt( result )
+       and IsDenseList( poss )
        and Length( poss ) = Length( SubsTom( tom ) )
-       and ForAll( [ 1 .. Length( poss ) ],
-                   i -> IsBound( poss[i] ) and IsInt( poss[i] ) ) then
+       and ForAll( poss, IsInt ) then
       SetDerivedSubgroupsTomUnique( tom, poss );
     fi;
 
@@ -2269,7 +2265,6 @@ InstallMethod( NormalizerTom,
     "for a table of marks, and a positive integer",
     [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
-
     local nord, subs, order, nrsubs, length, ll, res, i, nn;
 
     # If normalizers are stored already then fetch the value.
@@ -2361,7 +2356,6 @@ InstallMethod( NormalizersTom,
     "all normalizers of a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-
     local result, subs, order, nrsubs, length, ll, impr, d, der, bool,
           NormalizerTom, sub, nn, nn1,  sub1, norm;
 
@@ -2635,7 +2629,6 @@ InstallMethod( CyclicExtensionsTomOp,
 InstallMethod( DecomposedFixedPointVector,
     [ IsTableOfMarks, IsList ],
     function( tom, fixpointvector )
-
     local fix, i, j, dec, marks, subs, working, oo;
 
     # get the attributes
@@ -2718,6 +2711,23 @@ InstallMethod( EulerianFunction,
 
 #############################################################################
 ##
+#M  EulerianFunction( <G>, <s> )
+##
+InstallMethod( EulerianFunction,
+    "for a group, compute table of marks",
+    [ IsGroup, IsPosInt ], 
+    -RankFilter (IsGroup)-RankFilter (IsPosInt), # rank 0
+    function( G, s )
+        if not HasTableOfMarks( G ) then
+          Info( InfoWarning, 1, "EulerianFunction computes ",
+                "the table of marks. This may be slow." );
+        fi;
+        return EulerianFunctionByTom( TableOfMarks( G ), s );
+    end );
+
+
+#############################################################################
+##
 #M  IntersectionsTom( <tom>, <a>, <b> ) . . . . .  intersections of subgroups
 ##
 InstallMethod( IntersectionsTom,
@@ -2762,7 +2772,6 @@ InstallMethod( FactorGroupTom,
     "for a table of marks, and a positive integer",
     [ IsTableOfMarks, IsPosInt ],
     function( tom, nor )
-
     local marks, subs, sub, pos, pos1, subsf, marksf, facmarks, facsubs,
           members, hom, facgens, facpos, facnorms, facgroup, elm, result;
 
@@ -2809,7 +2818,7 @@ InstallMethod( FactorGroupTom,
 
     if IsTableOfMarksWithGens( tom ) then
 
-      hom:= NaturalHomomorphismByNormalSubgroup( UnderlyingGroup( tom ),
+      hom:= NaturalHomomorphismByNormalSubgroupNC( UnderlyingGroup( tom ),
                 RepresentativeTom( tom, nor ) );
       facgroup:= ImagesSource( hom );
 
@@ -2922,7 +2931,6 @@ InstallMethod( GeneratorsSubgroupsTom,
     "default method for a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-
     local sub, gen, pos;
 
     sub:= List( [ 1 .. Length( OrdersTom( tom ) ) ],
@@ -2947,7 +2955,6 @@ InstallMethod( RepresentativeTom,
     "for a table of marks with stored `GeneratorsSubgroupsTom' value",
     [ IsTableOfMarks and HasGeneratorsSubgroupsTom, IsPosInt ],
     function( tom, sub )
-
     local gens, result;
 
     if sub = Length( OrdersTom( tom ) ) then
@@ -2965,7 +2972,6 @@ InstallMethod( RepresentativeTom,
     "for a table of marks with stored `StraightLineProgramsTom' value",
     [ IsTableOfMarks and HasStraightLineProgramsTom, IsPosInt ],
     function( tom, sub )
-
     local gens, subgroup, group;
 
     if sub = Length( OrdersTom( tom ) ) then
@@ -3052,26 +3058,28 @@ InstallMethod( PossibleFusionsCharTableTom,
     "for ordinary character table and table of marks",
     [ IsOrdinaryTable, IsTableOfMarks ],
     function( tbl, tom )
-    return PossibleFusionsCharTableTom( tbl, tom, false );
+    return PossibleFusionsCharTableTom( tbl, tom, rec() );
     end );
 
 
 #############################################################################
 ##
-#M  PossibleFusionsCharTableTom( <tbl>, <tom>, <quick> )  . .  element fusion
+#M  PossibleFusionsCharTableTom( <tbl>, <tom>, <options> )  .  element fusion
 ##
 InstallMethod( PossibleFusionsCharTableTom,
-    "for ordinary character table, table of marks, and boolean",
-    [ IsOrdinaryTable, IsTableOfMarks, IsBool ],
-    function( tbl, tom, quick )
-
-    local fus,
+    "for ordinary character table, table of marks, and record",
+    [ IsOrdinaryTable, IsTableOfMarks, IsRecord ],
+    function( tbl, tom, options )
+    local quick,
+          approxfus,
+          fus,
           ccl,
           G,
           orderstbl,
           orderstom,
           i,
           u,
+          flag,
           j, h, hh,
           cycstom,
           cycstbl,
@@ -3094,7 +3102,19 @@ InstallMethod( PossibleFusionsCharTableTom,
           descend,
           powertbl,
           powertom,
-          invcycfus;
+          invcycfus,
+          proj,
+          invcycstom,
+          parameters,
+          allfus;
+
+    # Evaluate the optional parameters.
+    quick:= IsBound( options.quick ) and options.quick = true;
+    if IsBound( options.fusionmap ) then
+      approxfus:= options.fusionmap;
+    else
+      approxfus:= [];
+    fi;
 
     # If `tbl' stores a group whose table of marks is `tom'
     # then use the conjugacy classes of the group.
@@ -3114,6 +3134,13 @@ InstallMethod( PossibleFusionsCharTableTom,
                      j -> orderstom[j] = Size( u ) and
                           IsCyclicTom( tom, j ) and
                           IsConjugate( G, u, RepresentativeTom( tom, j ) ) );
+        if IsBound( approxfus[i] ) and
+           ( ( IsInt( approxfus[i] ) and fus[i] <> approxfus[i] ) or
+             ( IsList( approxfus[i] ) and not ( fus[i] in approxfus[i] ) ) ) then
+          Info( InfoTom, 1,
+                "contradiction to prescribed fusion <tbl> -> <tom>" );
+          return [];
+        fi;
       od;
       if HasPermutationTom( tom ) then
         fus:= OnTuples( fus, PermutationTom( tom ) );
@@ -3124,7 +3151,7 @@ InstallMethod( PossibleFusionsCharTableTom,
 
     # Use necessary conditions.
     Info( InfoTom, 1,
-          "computing fusion <tbl> -> <tom> using nec. conditions" );
+          "computing fusion(s) <tbl> -> <tom> using nec. conditions" );
 
     # Get orders of elements.
     orderstbl:= OrdersClassRepresentatives( tbl );
@@ -3170,12 +3197,22 @@ InstallMethod( PossibleFusionsCharTableTom,
       fus[i]:= Filtered( cycstom, j -> orderstbl[i] = orderstom[j] );
       if IsEmpty( fus[i] ) then
         Info( InfoTom, 1,
-              "PossibleFusionsCharTableTom: incompat. element orders" );
-        return [];;
+              "PossibleFusionsCharTableTom: incompat. element orders",
+              " at class ", i );
+        return [];
       elif Length( fus[i] ) = 1 then
         fus[i]:= fus[i][1];
       fi;
     od;
+
+    # Use `approxfus'.
+    flag:= MeetMaps( fus, approxfus );
+    if flag <> true then
+      Info( InfoTom, 2,
+            "PossibleFusionsCharTableTom: possible maps incompatible with ",
+            "<approxfus> at class ", flag );
+      return [];
+    fi;
 
     # Maybe the map is already unique.
     if quick and IsRowVector( fus ) then
@@ -3219,7 +3256,6 @@ InstallMethod( PossibleFusionsCharTableTom,
     ambigim:= Difference( cycstom, uniquim );
 
     clean:= function( fus, uniques, uniquim, ambig, ambigim )
-
       local newunique, i, diff, numb, pos;
 
       repeat
@@ -3292,7 +3328,7 @@ InstallMethod( PossibleFusionsCharTableTom,
     powertom:= [];
     invcycfus:= InverseMap( cycfus );
     for p in [ 2 .. Length( powertbl ) ] do
-      if IsBound( powertbl[p] ) and IsPrime( p )
+      if IsBound( powertbl[p] ) and IsPrimeInt( p )
                                 and Size( tbl ) mod p = 0 then
 
         # Rewrite the `p'-th power map of `tbl'.
@@ -3408,75 +3444,62 @@ InstallMethod( PossibleFusionsCharTableTom,
     Info( InfoTom, 1,
           "PossibleFusionsCharTableTom: starting a backtrack search" );
 
-    descend:= function( fus, uniques, uniquim, ambig, ambigim )
-
-      local pos, allfusions, val, locfus, loc1, loc2, loc3, loc4;
-
-      pos:= First( [ 1 .. Length( fus ) ], i -> IsList( fus[i] ) );
-
-      if pos = fail then
-
-        fus:= CompositionMaps( fus, cycfus );
-        allfusions:= [ fus ];
-        if     not quick
-           and not ForAll( PermCharsTom( fus, tom ),
-                       pi -> IsCharacter( ClassFunction( tbl, pi ) ) ) then
-          allfusions:= [];
-        fi;
-
-      else
-
-        allfusions:= [];
-        for val in fus[ pos ] do
-
-          locfus:= List( fus, ShallowCopy );
-          locfus[ pos ]:= val;
-          loc1:= Union( uniques, [ pos ] );
-          loc2:= Union( uniquim, [ val ] );
-          loc3:= Difference( ambig, [ pos ] );
-          loc4:= Difference( ambigim, [ val ] );
-          if clean( locfus, loc1, loc2, loc3, loc4 ) then
-            Append( allfusions, descend( locfus, loc1, loc2, loc3, loc4 ) );
-          fi;
-
-        od;
-
+    proj:= ProjectionMap( cycfus );
+    invcycstom:= InverseMap( cycstom );
+    for i in [ 1 .. Length( powertom ) ] do
+      if IsBound( powertom[i] ) then
+        powertom[i]:= CompositionMaps( invcycstom,
+                          CompositionMaps( powertom[i], cycstom ) );
       fi;
+    od;
+    parameters:= rec(
+        maxlen:= 10,
+        contained:= function( tbl, chars, paracharacter )
+            return List( ContainedPossibleCharacters( tbl, chars,
+                             CompositionMaps( paracharacter, cycfus ) ),
+                         x -> x{ proj } );
+            end,
+        minamb:= 1,
+        maxamb:= infinity,
+        quick:= quick,
+        testdec:= function( tbl, subchars, restricted )
+            return NonnegIntScalarProducts( tbl, subchars,
+                       CompositionMaps( restricted, cycfus ) );
+            end,
+        powermaps:= powertom,
+        subpowermaps:= powertbl );
 
-      return allfusions;
-    end;
+    fus:= FusionsAllowedByRestrictions( tbl, tom, Irr( tbl ),
+              PermCharsTom( cycstom, tom ),
+              CompositionMaps( invcycstom, fus ),
+              parameters );
+    fus:= List( fus, map -> cycstom{ map{ cycfus } } );
 
-    fus:= descend( fus, uniques, uniquim, ambig, ambigim );
-
-    # Maybe the permutation characters impose more conditions.
-    if quick and 1 < Length( fus ) then
-      Info( InfoTom, 1, "use permutation characters" );
-      for i in [ 1 .. Length( fus ) ] do
-        if not ForAll( PermCharsTom( fus[i], tom ),
-                   pi -> IsCharacter( ClassFunction( tbl, pi ) ) ) then
-          Unbind( fus[i] );
-        fi;
-      od;
-      fus:= Compacted( fus );
-    fi;
-
-    if   IsEmpty( fus ) then
+    if IsEmpty( fus ) then
       Info( InfoTom, 1,
             "PossibleFusionsCharTableTom: no solution" );
+      return fus;
+    fi;
+
+    # Apply table automorphisms in order to get all possible fusions.
+    auttbl:= AutomorphismsOfTable( tbl );
+    allfus:= Concatenation( List( fus,
+                 ffus -> OrbitFusions( auttbl, ffus, Group( () ) ) ) );
+    fus:= RepresentativesFusions( auttbl, fus, Group( () ) );
+    if Length( allfus ) = 1 then
+      Info( InfoTom, 1,
+            "PossibleFusionsCharTableTom: fusion map is unique" );
     elif Length( fus ) = 1 then
       Info( InfoTom, 1,
             "PossibleFusionsCharTableTom: ",
-            "map is unique up to table autom." );
+            "fusion map is unique up to table autom." );
     else
       Info( InfoTom, 1,
             "PossibleFusionsCharTableTom: ",
             Length( fus ), " orbits under table autom." );
     fi;
 
-    # Apply the automorphisms in order to get all possible fusions.
-    auttbl:= AutomorphismsOfTable( tbl );
-    return Concatenation( List( fus,
-               ffus -> OrbitFusions( auttbl, ffus, Group( () ) ) ) );
+    return allfus;
     end );
 
 
@@ -3486,13 +3509,14 @@ InstallMethod( PossibleFusionsCharTableTom,
 ##
 ##  The case of a fusion between a library character table
 ##  and a library table of marks is dealt with in a method installed in the
-##  file `tom/tmadmin.tmi'.
+##  file `pkg/tomlib/gap/tmadmin.tmi'.
 ##
 InstallMethod( FusionCharTableTom,
     "for ordinary character table and table of marks",
     [ IsOrdinaryTable, IsTableOfMarks ],
     function( tbl, tom )
     local fus;
+
     fus:= PossibleFusionsCharTableTom( tbl, tom );
     if Length( fus ) = 1 then
       return fus[1];
@@ -3512,7 +3536,6 @@ InstallMethod( PermCharsTom,
     "for explicit fusion map and table of marks",
     [ IsList, IsTableOfMarks ],
     function( fus, tom )
-
     local pc, i, j, line, marks, subs;
 
     pc:= [];
@@ -3544,6 +3567,7 @@ InstallMethod( PermCharsTom,
     [ IsOrdinaryTable, IsTableOfMarks ],
     function( tbl, tom )
     local fus;
+
     fus:= FusionCharTableTom( tbl, tom );
     if fus = fail then
       Info( InfoTom, 1,
@@ -3568,7 +3592,6 @@ InstallMethod( TableOfMarksCyclic,
     "for a positive integer",
     [ IsPosInt ],
     function( n )
-
     local obj, progs, subs, marks, classNames, derivedSubgroups,
           normalizer, i, j, divs, index, group;
 
@@ -3629,7 +3652,6 @@ InstallMethod( TableOfMarksDihedral,
     "for a positive integer",
     [ IsPosInt ],
     function( m )
-
     local i, j, divs, n, name, marks, subs, type, nrs, pt, d, construct, ord,
           tom;
 
@@ -3768,7 +3790,6 @@ InstallMethod( TableOfMarksFrobenius,
     "tom of a Frobenius group",
     [ IsPosInt, IsPosInt ],
     function( p, q )
-
     local tom, classNames,marks, subs, normalizers,
           derivedSubgroups,i, j, n, ind, divs;
 

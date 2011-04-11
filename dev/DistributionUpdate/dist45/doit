@@ -1,0 +1,34 @@
+#!/bin/csh
+#############################################################################
+##
+##  $Id$
+
+# STAGE 1 - checkout and archive the release branch
+./setvar
+./checkoutcvs
+./classifyfiles
+./zipreleasebranch
+./zipmetainfo
+
+# STAGE 2 - make preprations in the GAP core
+# (note that the next script also unpacks the meta-information archive)
+./unpackreleasebranch
+# Version number and release date are inserted here, and they will never go 
+# into the repository; instead, we will use the checkout time to tag what
+# was released based on that timestamp
+./updateversioninfo
+# TODO: generate the release-specific documentation (i.e. info about update)
+./fixpermissions
+./zipgapcore
+./updatemetainfo
+
+# STAGE 3 - merge GAP core with packages 
+# (note that the next script also unpacks the meta-information archive)
+./unpackgapcore
+./unpackpackages
+# TODO: check package permissions in order to report strange cases to authors
+# ./checkpkgpermissions
+./makedoc
+./addmanualfiles
+./zipgapsourcedistro
+./finalisemetainfo

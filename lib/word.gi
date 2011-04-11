@@ -2,8 +2,9 @@
 ##
 #W  word.gi                     GAP library                     Thomas Breuer
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 #H  @(#)$Id$
 ##
@@ -148,7 +149,7 @@ InstallMethod( MappedWord,
 #M  MappedWord( <x>, <empty>, <empty> )
 ##
 InstallOtherMethod( MappedWord, "empty generators list", true,
-    [ IsWord, IsEmpty, IsList ], 0,
+    [ IsObject, IsEmpty, IsList ], 0,
 function( x, gens1, gens2 )
   return x;
 end);

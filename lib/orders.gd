@@ -1,26 +1,38 @@
 #############################################################################
 ##
-#W  orders.gd           GAP library                           Isabel Araujo 
+#W  orders.gd           GAP library                           Isabel Araújo
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  These file contains declarations for orderings.
 ##
 Revision.orders_gd :=
     "@(#)$Id$";
 
-#1
-##  In {\GAP} an ordering is a relation defined on a family, which is 
+
+##  <#GAPDoc Label="[1]{orders}">
+##  In &GAP; an ordering is a relation defined on a family, which is
 ##  reflexive, anti-symmetric and transitive.
+##  <#/GAPDoc>
+
 
 #############################################################################
 ##
-#C  IsOrdering( <ord>) 
+#C  IsOrdering( <ord> )
 ##
-##  returns `true' if and only if the object <ord> is an ordering.
+##  <#GAPDoc Label="IsOrdering">
+##  <ManSection>
+##  <Filt Name="IsOrdering" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  returns <K>true</K> if and only if the object <A>ord</A> is an ordering.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsOrdering" ,IsObject);
 
@@ -28,28 +40,44 @@ DeclareCategory( "IsOrdering" ,IsObject);
 ##
 #A  OrderingsFamily( <fam> )  . . . . . . . . . . make an orderings  family
 ##
-##  for a family <fam>, returns the family of all
-##  orderings on elements of <fam>.
+##  <#GAPDoc Label="OrderingsFamily">
+##  <ManSection>
+##  <Attr Name="OrderingsFamily" Arg='fam'/>
+##
+##  <Description>
+##  for a family <A>fam</A>, returns the family of all
+##  orderings on elements of <A>fam</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "OrderingsFamily", IsFamily );
 
 
 #############################################################################
 ##
-##  General Properties for orderings  
+##  General Properties for orderings
 ##
 
 #############################################################################
 ##
-#P  IsWellFoundedOrdering( <ord>) 
+#P  IsWellFoundedOrdering( <ord>)
 ##
-##  for an ordering <ord>,
-##  returns `true' if and only if the ordering is well founded.
-##  An ordering <ord> is well founded if it admits no infinite descending
+##  <#GAPDoc Label="IsWellFoundedOrdering">
+##  <ManSection>
+##  <Prop Name="IsWellFoundedOrdering" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A>,
+##  returns <K>true</K> if and only if the ordering is well founded.
+##  An ordering <A>ord</A> is well founded if it admits no infinite descending
 ##  chains.
 ##  Normally this property is set at the time of creation of the ordering
 ##  and there is no general method to check whether a certain ordering
 ##  is well founded.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsWellFoundedOrdering" ,IsOrdering);
 
@@ -57,28 +85,44 @@ DeclareProperty( "IsWellFoundedOrdering" ,IsOrdering);
 ##
 #P  IsTotalOrdering( <ord> )
 ##
-##  for an ordering <ord>,
+##  <#GAPDoc Label="IsTotalOrdering">
+##  <ManSection>
+##  <Prop Name="IsTotalOrdering" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A>,
 ##  returns true if and only if the ordering is total.
-##  An ordering <ord> is total if any two elements of the family 
-##  are comparable under <ord>. 
+##  An ordering <A>ord</A> is total if any two elements of the family
+##  are comparable under <A>ord</A>.
 ##  Normally this property is set at the time of creation of the ordering
 ##  and there is no general method to check whether a certain ordering
 ##  is total.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsTotalOrdering" ,IsOrdering);
 
 
 #############################################################################
 ##
-##  General attributes and operations 
+##  General attributes and operations
 ##
 
 #############################################################################
 ##
 #A  FamilyForOrdering( <ord> )
-##  
-##  for an ordering <ord>,
-##  returns the family of elements that the ordering <ord> compares.
+##
+##  <#GAPDoc Label="FamilyForOrdering">
+##  <ManSection>
+##  <Attr Name="FamilyForOrdering" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A>,
+##  returns the family of elements that the ordering <A>ord</A> compares.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "FamilyForOrdering" ,IsOrdering);
 
@@ -86,11 +130,19 @@ DeclareAttribute( "FamilyForOrdering" ,IsOrdering);
 ##
 #A  LessThanFunction( <ord> )
 ##
-##  for an ordering <ord>, 
-##  returns a function <f> which takes two elements <el1>, <el2> in the 
-##  `FamilyForOrdering'(<ord>) and returns `true' if <el1> is 
-##  strictly less than <el2> (with respect to <ord>) and returns `false' 
-##  otherwise.
+##  <#GAPDoc Label="LessThanFunction">
+##  <ManSection>
+##  <Attr Name="LessThanFunction" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A>,
+##  returns a function <M>f</M> which takes two elements <M>el1</M>,
+##  <M>el2</M> in <C>FamilyForOrdering</C>(<A>ord</A>) and returns
+##  <K>true</K> if <M>el1</M> is strictly less than <M>el2</M>
+##  (with respect to <A>ord</A>), and returns <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "LessThanFunction" ,IsOrdering);
 
@@ -98,11 +150,19 @@ DeclareAttribute( "LessThanFunction" ,IsOrdering);
 ##
 #A  LessThanOrEqualFunction( <ord> )
 ##
-##  for an ordering <ord>,
-##  returns a function that takes two elements <el1>, <el2> in the 
-##  `FamilyForOrdering'(<ord>) and returns `true' if <el1> is 
-##  less than *or equal to* <el2> (with respect to <ord>) and returns `false' 
-##  otherwise.
+##  <#GAPDoc Label="LessThanOrEqualFunction">
+##  <ManSection>
+##  <Attr Name="LessThanOrEqualFunction" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A>,
+##  returns a function that takes two elements <M>el1</M>, <M>el2</M> in
+##  <C>FamilyForOrdering</C>(<A>ord</A>) and returns <K>true</K>
+##  if <M>el1</M> is less than <E>or equal to</E> <M>el2</M>
+##  (with respect to <A>ord</A>), and returns <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "LessThanOrEqualFunction" ,IsOrdering);
 
@@ -110,9 +170,17 @@ DeclareAttribute( "LessThanOrEqualFunction" ,IsOrdering);
 ##
 #O  IsLessThanUnder( <ord>, <el1>, <el2> )
 ##
-##  for an ordering <ord> on the elements of the family of <el1> and <el2>,
-##  returns `true' if <el1> is (strictly) less than <el2> with
-##  respect to <ord>, and `false' otherwise.
+##  <#GAPDoc Label="IsLessThanUnder">
+##  <ManSection>
+##  <Oper Name="IsLessThanUnder" Arg='ord, el1, el2'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A> on the elements of the family of <A>el1</A>
+##  and <A>el2</A>, returns <K>true</K> if <A>el1</A> is (strictly) less than
+##  <A>el2</A> with respect to <A>ord</A>, and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsLessThanUnder" ,[IsOrdering,IsObject,IsObject]);
 
@@ -120,20 +188,47 @@ DeclareOperation( "IsLessThanUnder" ,[IsOrdering,IsObject,IsObject]);
 ##
 #O  IsLessThanOrEqualUnder( <ord>, <el1>, <el2> )
 ##
-##  for an ordering <ord> on the elements of the family of <el1> and <el2>,
-##  returns `true' if <el1> is less than or equal to <el2> with
-##  respect to <ord>, and `false' otherwise.
-## 
+##  <#GAPDoc Label="IsLessThanOrEqualUnder">
+##  <ManSection>
+##  <Oper Name="IsLessThanOrEqualUnder" Arg='ord, el1, el2'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A> on the elements of the family of <A>el1</A>
+##  and <A>el2</A>, returns <K>true</K> if <A>el1</A> is less than or equal
+##  to <A>el2</A> with respect to <A>ord</A>, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsLessThanUnder(ord,a,a*b);
+##  true
+##  gap> IsLessThanOrEqualUnder(ord,a*b,a*b);
+##  true
+##  gap> IsIncomparableUnder(ord,a,b);
+##  true
+##  gap> FamilyForOrdering(ord) = FamilyObj(a);
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "IsLessThanOrEqualUnder" ,[IsOrdering,IsObject,IsObject]);
 
 #############################################################################
 ##
 #O  IsIncomparableUnder( <ord>, <el1>, <el2> )
 ##
-##  for an ordering <ord> on the elements of the family of <el1> and <el2>,
-##  returns `true' if $el1\neq el2$ and  `IsLessThanUnder'(<ord>,<el1>,<el2>), 
-##  `IsLessThanUnder'(<ord>,<el2>,<el1>) are both false; and
-##  returns `false' otherwise.
+##  <#GAPDoc Label="IsIncomparableUnder">
+##  <ManSection>
+##  <Oper Name="IsIncomparableUnder" Arg='ord, el1, el2'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A> on the elements of the family of <A>el1</A>
+##  and <A>el2</A>, returns <K>true</K> if <A>el1</A> <M>\neq</M> <A>el2</A>
+##  and <C>IsLessThanUnder</C>(<A>ord</A>,<A>el1</A>,<A>el2</A>),
+##  <C>IsLessThanUnder</C>(<A>ord</A>,<A>el2</A>,<A>el1</A>) are both
+##  <K>false</K>; and returns <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsIncomparableUnder" ,[IsOrdering,IsObject,IsObject]);
 
@@ -144,85 +239,123 @@ DeclareOperation( "IsIncomparableUnder" ,[IsOrdering,IsObject,IsObject]);
 
 #############################################################################
 ##
-#O  OrderingByLessThanFunctionNC( <fam>,<lt> )
-#O  OrderingByLessThanFunctionNC( <fam>,<lt>,<l> )
+#O  OrderingByLessThanFunctionNC( <fam>, <lt>[, <l>] )
 ##
-##  In the first form, `OrderingByLessThanFunctionNC' returns the ordering on
-##  the elements of the  elements  of  the  family  <fam>  according  to  the
-##  `LessThanFunction' given by <lt>, where <lt> is a function that takes two
-##  arguments in <fam> and returns `true' or `false'.
+##  <#GAPDoc Label="OrderingByLessThanFunctionNC">
+##  <ManSection>
+##  <Oper Name="OrderingByLessThanFunctionNC" Arg='fam, lt[, l]'/>
 ##
-##  In the second form, for a family <fam>, a function <lt> that takes 
-##  two arguments in <fam> and returns `true' or `false', and a list <l>
-##  of properties of orderings, `OrderingByLessThanFunctionNC'
-##  returns the ordering on the elements of <fam> with
-##  `LessThanFunction' given by <lt> and with the properties
-##  from <l> set to `true'.
+##  <Description>
+##  Called with two arguments, <Ref Func="OrderingByLessThanFunctionNC"/>
+##  returns the ordering on the elements of the elements of the family
+##  <A>fam</A>, according to the <Ref Func="LessThanFunction"/> value given
+##  by <A>lt</A>,
+##  where <A>lt</A> is a function that takes two
+##  arguments in <A>fam</A> and returns <K>true</K> or <K>false</K>.
+##  <P/>
+##  Called with three arguments, for a family <A>fam</A>,
+##  a function <A>lt</A> that takes two arguments in <A>fam</A> and returns
+##  <K>true</K> or <K>false</K>, and a list <A>l</A>
+##  of properties of orderings, <Ref Func="OrderingByLessThanFunctionNC"/>
+##  returns the ordering on the elements of <A>fam</A> with
+##  <Ref Func="LessThanFunction"/> value given by <A>lt</A>
+##  and with the properties from <A>l</A> set to <K>true</K>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "OrderingByLessThanFunctionNC" ,[IsFamily,IsFunction]);
 
 #############################################################################
 ##
-#O  OrderingByLessThanOrEqualFunctionNC( <fam>,<lteq> )
-#O  OrderingByLessThanOrEqualFunctionNC( <fam>,<lteq>,<l> )
+#O  OrderingByLessThanOrEqualFunctionNC( <fam>, <lteq>[, <l>] )
 ##
-##  In the  first  form,  `OrderingByLessThanOrEqualFunctionNC'  returns  the
-##  ordering on the elements of the elements of the family <fam> according to
-##  the `LessThanOrEqualFunction' given by <lteq>, where <lteq> is a function
-##  that takes two arguments in <fam> and returns `true' or `false'.
+##  <#GAPDoc Label="OrderingByLessThanOrEqualFunctionNC">
+##  <ManSection>
+##  <Oper Name="OrderingByLessThanOrEqualFunctionNC" Arg='fam, lteq[, l]'/>
 ##
-##  In the second form, for a family <fam>, a function <lteq> that takes 
-##  two arguments in <fam> and returns `true' or `false', and a list <l>
-##  of properties of orderings, `OrderingByLessThanOrEqualFunctionNC'
-##  returns the ordering on the elements of <fam> with
-##  `LessThanOrEqualFunction' given by <lteq> and with the properties
-##  from <l> set to `true'.
-##
-##  Notice that these functions do not check whether <fam> and <lt> or <lteq>
-##  are compatible, and whether the properties listed in <l> are indeed
-##  true.
+##  <Description>
+##  Called with two arguments,
+##  <Ref Func="OrderingByLessThanOrEqualFunctionNC"/> returns the ordering on
+##  the elements of the elements of the family <A>fam</A> according to
+##  the <Ref Func="LessThanOrEqualFunction"/> value given by <A>lteq</A>,
+##  where <A>lteq</A> is a function that takes two arguments in <A>fam</A>
+##  and returns <K>true</K> or <K>false</K>.
+##  <P/>
+##  Called with three arguments, for a family <A>fam</A>,
+##  a function <A>lteq</A> that takes two arguments in <A>fam</A> and returns
+##  <K>true</K> or <K>false</K>, and a list <A>l</A>
+##  of properties of orderings,
+##  <Ref Func="OrderingByLessThanOrEqualFunctionNC"/>
+##  returns the ordering on the elements of <A>fam</A> with
+##  <Ref Func="LessThanOrEqualFunction"/> value given by <A>lteq</A>
+##  and with the properties from <A>l</A> set to <K>true</K>.
+##  <P/>
+##  Notice that these functions do not check whether <A>fam</A> and <A>lt</A>
+##  or <A>lteq</A> are compatible,
+##  and whether the properties listed in <A>l</A> are indeed satisfied.
+##  <Example><![CDATA[
+##  gap> f := FreeSemigroup("a","b");;
+##  gap> a := GeneratorsOfSemigroup(f)[1];;
+##  gap> b := GeneratorsOfSemigroup(f)[2];;
+##  gap> lt := function(x,y) return Length(x)<Length(y); end;
+##  function( x, y ) ... end
+##  gap> fam := FamilyObj(a);;
+##  gap> ord := OrderingByLessThanFunctionNC(fam,lt);
+##  Ordering
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "OrderingByLessThanOrEqualFunctionNC" ,
     [IsFamily,IsFunction]);
-
 
 
 ############################################################################
 ##
 ##  Orderings on families of associative words
 ##
-
-#2  
+##  <#GAPDoc Label="[2]{orders}">
 ##  We now consider orderings on families of associative words.
-
-#3
+##  <P/>
 ##  Examples of families of associative words are the families of elements
 ##  of a free semigroup or a free monoid;
 ##  these are the two cases that we consider mostly.
 ##  Associated with those families is
 ##  an alphabet, which is the semigroup (resp. monoid) generating set
 ##  of the correspondent free semigroup (resp. free monoid).
-##  For definitions of the orderings considered see Sims \cite{Sims94}.
-
-#4
+##  For definitions of the orderings considered,
+##  see Sims <Cite Key="Sims94"/>.
+##  <#/GAPDoc>
+##
 ##  The ordering on the letters of the alphabet is important when
 ##  defining an order in such a family.
 ##  An alphabet has a default ordering: the generators of a free semigroup
-##  or free monoid are indexed on $[1,2,\ldots,n]$, where $n$ is the size of
-##  the alphabet. Another ordering on the alphabet will always be given in terms
-##  of this one, either in terms of a list of length $n$, where position
-##  $i$ ($1\leq i\leq n$) indicates what is the $i$-th generator in the 
-##  ordering, or else as a list of the generators, starting from the
-##  smallest one.
+##  or free monoid are indexed on <M>[ 1, 2, \ldots, n ]</M>,
+##  where <M>n</M> is the size of the alphabet.
+##  Another ordering on the alphabet will always be given in terms
+##  of this one, either in terms of a list of length <M>n</M>, where position
+##  <M>i</M> (<M>1 \leq i \leq n</M>) indicates what is the <M>i</M>-th
+##  generator in the ordering, or else as a list of the generators,
+##  starting from the smallest one.
 ##
 
 #############################################################################
 ##
 #P  IsOrderingOnFamilyOfAssocWords( <ord>)
 ##
-##  for an ordering <ord>,
-##  returns true if <ord> is an ordering over a family of associative
+##  <#GAPDoc Label="IsOrderingOnFamilyOfAssocWords">
+##  <ManSection>
+##  <Prop Name="IsOrderingOnFamilyOfAssocWords" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A>,
+##  returns true if <A>ord</A> is an ordering over a family of associative
 ##  words.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsOrderingOnFamilyOfAssocWords",IsOrdering);
 
@@ -230,9 +363,16 @@ DeclareProperty("IsOrderingOnFamilyOfAssocWords",IsOrdering);
 ##
 #A  LetterRepWordsLessFunc( <ord> )
 ##
-##  If <ord> is an ordering for associative words, this attribute (if known)
-##  will hold a function which implements a ``less than'' function for words
-##  given by a list of letters (see~"LetterRepAssocWord").
+##  <ManSection>
+##  <Attr Name="LetterRepWordsLessFunc" Arg='ord'/>
+##
+##  <Description>
+##  If <A>ord</A> is an ordering for associative words,
+##  this attribute (if known) will hold a function which implements a
+##  <Q>less than</Q> function for words given by a list of letters
+##  (see&nbsp;<Ref Func="LetterRepAssocWord"/>).
+##  </Description>
+##  </ManSection>
 ##
 DeclareAttribute( "LetterRepWordsLessFunc" ,IsOrderingOnFamilyOfAssocWords);
 
@@ -240,198 +380,219 @@ DeclareAttribute( "LetterRepWordsLessFunc" ,IsOrderingOnFamilyOfAssocWords);
 ##
 #P  IsTranslationInvariantOrdering( <ord> )
 ##
-##  for an ordering <ord> on a family of associative words,
-##  returns `true' if and only if the ordering is translation invariant.
-##  This is a property of orderings on families of associative words.
-##  An ordering <ord> over a family <fam>, with alphabet <X> is
-##  translation invariant if
-##  `IsLessThanUnder(<ord>, <u>, <v>)' implies that for any $a,b\in X^\*$
-##  `IsLessThanUnder(<ord>, $a*u*b, a*v*b$)'.
+##  <#GAPDoc Label="IsTranslationInvariantOrdering">
+##  <ManSection>
+##  <Prop Name="IsTranslationInvariantOrdering" Arg='ord'/>
 ##
-DeclareProperty( "IsTranslationInvariantOrdering" ,IsOrdering and 
+##  <Description>
+##  for an ordering <A>ord</A> on a family of associative words,
+##  returns <K>true</K> if and only if the ordering is translation invariant.
+##  <P/>
+##  This is a property of orderings on families of associative words.
+##  An ordering <A>ord</A> over a family <M>F</M>, with alphabet <M>X</M>
+##  is translation invariant if
+##  <C>IsLessThanUnder(</C> <A>ord</A>, <M>u</M>, <M>v</M> <C>)</C> implies
+##  that for any <M>a, b \in X^*</M>,
+##  <C>IsLessThanUnder(</C> <A>ord</A>, <M>a*u*b</M>, <M>a*v*b</M> <C>)</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsTranslationInvariantOrdering" ,IsOrdering and
                                     IsOrderingOnFamilyOfAssocWords);
 
 #############################################################################
 ##
 #P  IsReductionOrdering( <ord> )
 ##
-##  for an ordering <ord> on a family of associative words,
-##  returns `true' if and only if the ordering is a reduction ordering.
-##  An ordering <ord> is a reduction ordering 
+##  <#GAPDoc Label="IsReductionOrdering">
+##  <ManSection>
+##  <Prop Name="IsReductionOrdering" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A> on a family of associative words,
+##  returns <K>true</K> if and only if the ordering is a reduction ordering.
+##  An ordering <A>ord</A> is a reduction ordering
 ##  if it is founded and translation invariant.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsReductionOrdering",
     IsTranslationInvariantOrdering and IsWellFoundedOrdering );
 
-#4
+
 ##  The ordering on the letters of the alphabet is important when
 ##  defining an order in a family of associative words.
 ##  An alphabet has a default ordering: the generators of a free semigroup
-##  or free monoid are indexed on $[1,2,\ldots,n]$, where $n$ is the size of
+##  or free monoid are indexed on <M>[1,2,\ldots,n]</M>, where <M>n</M> is the size of
 ##  the alphabet. Another ordering on the alphabet will always be given in terms
-##  of this one, either in terms of a list <gensord> of length $n$, 
-##  where position $i$ ($1\leq i\leq n$) indicates what is the $i$-th 
-##  generator in the ordering, or else as a list <alphabet> of the generators, 
+##  of this one, either in terms of a list <A>gensord</A> of length <M>n</M>,
+##  where position <M>i</M> (<M>1 \leq i \leq n</M>) indicates what is the <M>i</M>-th
+##  generator in the ordering, or else as a list <A>alphabet</A> of the generators,
 ##  starting from the smallest one.
+
 
 #############################################################################
 ##
 #A  OrderingOnGenerators( <ord>)
-##  
-##  for an ordering <ord> on a family of associative words,
-##  returns a list <alphabet> in which the generators are considered.
+##
+##  <#GAPDoc Label="OrderingOnGenerators">
+##  <ManSection>
+##  <Attr Name="OrderingOnGenerators" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A> on a family of associative words,
+##  returns a list in which the generators are considered.
 ##  This could be indeed the ordering of the generators in the ordering,
 ##  but, for example, if a weight is associated to each generator
-##  then this is not true anymore. See the example for `WeightLexOrdering'
-##  ("WeightLexOrdering").
+##  then this is not true anymore.
+##  See the example for <Ref Func="WeightLexOrdering"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("OrderingOnGenerators",IsOrdering and
                     IsOrderingOnFamilyOfAssocWords);
 
 #############################################################################
 ##
-#O  LexicographicOrdering( <fam> )
-#O  LexicographicOrdering( <fam>, <gensord> )
-#O  LexicographicOrdering( <fam>, <alphabet> )
-#O  LexicographicOrdering( <f> )
-#O  LexicographicOrdering( <f>, <alphabet> )
-#O  LexicographicOrdering( <f>, <gensord> )
+#O  LexicographicOrdering( <D>[, <gens>] )
 ##
-##  In the first form, for a family <fam> of associative words,
-##  `LexicographicOrdering'
-##  returns the lexicographic ordering on the elements of <fam>.
+##  <#GAPDoc Label="LexicographicOrdering">
+##  <ManSection>
+##  <Oper Name="LexicographicOrdering" Arg='D[, gens]'/>
 ##
-##  In the second form, for a family <fam> of associate words and
-##  a list <alphabet> which is the actual list of generators in the
-##  desired order, `LexicographicOrdering' 
-##  returns the lexicographic ordering on the elements of
-##  <fam> with the ordering on the alphabet as given.
+##  <Description>
+##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
+##  family of such a domain.
+##  Called with only argument <A>D</A>,
+##  <Ref Func="LexicographicOrdering"/> returns the lexicographic
+##  ordering on the elements of <A>D</A>.
+##  <P/>
+##  The optional argument <A>gens</A> can be either the list of free
+##  generators of <A>D</A>, in the desired order,
+##  or a list of the positions of these generators,
+##  in the desired order,
+##  and <Ref Func="LexicographicOrdering"/> returns the lexicographic
+##  ordering on the elements of <A>D</A> with the ordering on the
+##  generators as given.
+##  <Example><![CDATA[
+##  gap> f := FreeSemigroup(3);
+##  <free semigroup on the generators [ s1, s2, s3 ]>
+##  gap> lex := LexicographicOrdering(f,[2,3,1]);
+##  Ordering
+##  gap> IsLessThanUnder(lex,f.2*f.3,f.3);
+##  true
+##  gap> IsLessThanUnder(lex,f.3,f.2);
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  In the third form, for a family <fam> of associative words and
-##  a list <gensorder> of the length of the alphabet,
-##  `LexicographicOrdering' returns the lexicographic 
-##  ordering on the elements of <fam> with the order on the alphabet
-##  given by <gensord>.
-##
-##  In the fourth form, for a free semigroup of a free monoid <f>,
-##  `LexicographicOrdering'
-##  returns the lexicographic ordering on the family of the elements of <f>
-##  with the order in the alphabet being the default one.
-##
-##  In the fifth form, for a free semigroup or a free monoid <f> and
-##  a list <alphabet> which is the actual list of generators in the
-##  desired order, `LexicographicOrdering'
-##  returns the lexicographic ordering on the elements of
-##  <f> with the ordering on the alphabet as given.
-##
-##  In the sixth form, for a free semigroup of a free monoid <f>,
-##  and a list <gensorder>, `LexicographicOrdering'
-##  returns the lexicographic ordering on the elements of <f> with the order
-##  on the alphabet given by <gensord>.
-##
-DeclareOperation("LexicographicOrdering", [IsFamily and IsAssocWordFamily,
-IsList and IsAssocWordCollection]);
+DeclareOperation("LexicographicOrdering",
+    [IsFamily and IsAssocWordFamily, IsList and IsAssocWordCollection]);
 
 
 #############################################################################
 ##
-#O  ShortLexOrdering( <fam>)
-#O  ShortLexOrdering( <fam>, <alphabet> )
-#O  ShortLexOrdering( <fam>, <gensord>)
-#O  ShortLexOrdering( <f>)
-#O  ShortLexOrdering( <f>, <alphabet> )
-#O  ShortLexOrdering( <f>, <gensord>)
+#O  ShortLexOrdering( <D>[, <gens>] )
 ##
-##  In the first form, for a family <fam> of associative words,
-##  `ShortLexOrdering'
-##  returns the ShortLex ordering on the elements of <fam>
-##  with the order in the alphabet being the default one.
-##  
-##  In the second form, for a family <fam> of associate words and
-##  a list <alphabet> which is the actual list of generators in the 
-##  desired order, `ShortLexOrdering'
-##  returns the ShortLex ordering on the elements of
-##  <fam> with the ordering on the alphabet as given.
+##  <#GAPDoc Label="ShortLexOrdering">
+##  <ManSection>
+##  <Oper Name="ShortLexOrdering" Arg='D[, gens]'/>
 ##
-##  In the third form, for a family <fam> of associative words and
-##  a list <gensorder> of the length of the alphabet,
-##  `ShortLexOrdering' returns the ShortLex
-##  ordering on the elements of <fam> with the order on the alphabet
-##  given by <gensord>. 
-##
-##  In the fourth form, for a free semigroup of a free monoid <f>,
-##  `ShortLexOrdering'
-##  returns the ShortLex ordering on the family of the elements of <f> 
-##  with the order in the alphabet being the default one.
-##
-##  In the fifth form, for a free semigroup or a free monoid <f> and
-##  a list <alphabet> which is the actual list of generators in the 
-##  desired order, `ShortLexOrdering'
-##  returns the ShortLex ordering on the elements of
-##  <f> with the ordering on the alphabet as given.
-##
-##  In the sixth form, for a free semigroup of a free monoid <f>,
-##  and a list <gensorder>, `ShortLexOrdering' 
-##  returns the ShortLex ordering on the elements of <f> with the order 
-##  on the alphabet given by <gensord>.
+##  <Description>
+##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
+##  family of such a domain.
+##  Called with only argument <A>D</A>,
+##  <Ref Func="ShortLexOrdering"/> returns the shortlex
+##  ordering on the elements of <A>D</A>.
+##  <P/>
+##  The optional argument <A>gens</A> can be either the list of free
+##  generators of <A>D</A>, in the desired order,
+##  or a list of the positions of these generators,
+##  in the desired order,
+##  and <Ref Func="ShortLexOrdering"/> returns the shortlex
+##  ordering on the elements of <A>D</A> with the ordering on the
+##  generators as given.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("ShortLexOrdering",[IsFamily and IsAssocWordFamily,
                                      IsList and IsAssocWordCollection]);
 
 #############################################################################
 ##
-#P  IsShortLexOrdering( <ord>) 
+#P  IsShortLexOrdering( <ord>)
 ##
-##  for an ordering <ord> of a family of associative words,
-##  returns `true' if and only if <ord> is a ShortLex ordering.
+##  <#GAPDoc Label="IsShortLexOrdering">
+##  <ManSection>
+##  <Prop Name="IsShortLexOrdering" Arg='ord'/>
 ##
-DeclareProperty("IsShortLexOrdering",IsOrdering and 
+##  <Description>
+##  for an ordering <A>ord</A> of a family of associative words,
+##  returns <K>true</K> if and only if <A>ord</A> is a shortlex ordering.
+##  <Example><![CDATA[
+##  gap> f := FreeSemigroup(3);
+##  <free semigroup on the generators [ s1, s2, s3 ]>
+##  gap> sl := ShortLexOrdering(f,[2,3,1]);
+##  Ordering
+##  gap> IsLessThanUnder(sl,f.1,f.2);
+##  false
+##  gap> IsLessThanUnder(sl,f.3,f.2);
+##  false
+##  gap> IsLessThanUnder(sl,f.3,f.1);
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty("IsShortLexOrdering",IsOrdering and
                           IsOrderingOnFamilyOfAssocWords);
 
 #############################################################################
 ##
 #F  IsShortLexLessThanOrEqual( <u>, <v> )
 ##
-##  returns `IsLessThanOrEqualUnder(<ord>, <u>, <v>)' where <ord> is the 
-##  short less ordering for the family of <u> and <v>.
-##  (This is here for compatibility with {\GAP}~4.2.)
+##  <#GAPDoc Label="IsShortLexLessThanOrEqual">
+##  <ManSection>
+##  <Func Name="IsShortLexLessThanOrEqual" Arg='u, v'/>
+##
+##  <Description>
+##  returns <C>IsLessThanOrEqualUnder(<A>ord</A>, <A>u</A>, <A>v</A>)</C>
+##  where <A>ord</A> is the short less ordering for the family of <A>u</A>
+##  and <A>v</A>.
+##  (This is here for compatibility with &GAP;&nbsp;4.2.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IsShortLexLessThanOrEqual" );
 
 #############################################################################
 ##
-#O  WeightLexOrdering( <fam>,<alphabet>,<wt>)
-#O  WeightLexOrdering( <fam>,<gensord>,<wt>)
-#O  WeightLexOrdering( <f>,<alphabet>,<wt>)
-#O  WeightLexOrdering( <f>,<gensord>,<wt>)
+#O  WeightLexOrdering( <D>, <gens>, <wt> )
 ##
-##  In the first form, for a family <fam> of associative words
-##  and a list <wt>, `WeightLexOrdering'
-##  returns the WeightLex ordering on the elements of <fam>
-##  with the order in the alphabet being the default one
-##  and the weights of the letters in the alphabet being given
-##  by <wt>.
+##  <#GAPDoc Label="WeightLexOrdering">
+##  <ManSection>
+##  <Oper Name="WeightLexOrdering" Arg='D, gens, wt'/>
 ##
-##  In the second form, for a family <fam> of associative words,
-##  a list <wt> and a list <gensorder> of the length of the alphabet, 
-##  `WeightLexOrdering' returns the WeightLex  
-##  ordering on the elements of <fam> with the order on the alphabet
-##  given by <gensord> and the weights of the letters in the alphabet 
-##  being given by <wt>. 
-##
-##  In the third form, for a free semigroup of a free monoid <f>
-##  and a list <wt>, `WeightLexOrdering'
-##  returns the WeightLex ordering on the family of the elements of <f>
-##  with the order in the alphabet being the default one
-##  and  the weights of the letters in the alphabet being given
-##  by <wt>.
-##
-##  In the fourth form, for a free semigroup of a free monoid <f>,
-##  a list <wt> and a list <gensorder> of the length of the alphabet,
-##  `WeightLexOrdering' returns the WeightLex  
-##  ordering on the elements of <f> with the order on the alphabet
-##  given by <gensord> and the weights of the letters in the alphabet 
-##  being given by <wt>. 
+##  <Description>
+##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
+##  family of such a domain. <A>gens</A> can be either the list of free
+##  generators of <A>D</A>, in the desired order,
+##  or a list of the positions of these generators, in the desired order.
+##  Let <A>wt</A> be a list of weights.
+##  <Ref Func="WeightLexOrdering"/> returns the weightlex
+##  ordering on the elements of <A>D</A> with the ordering on the
+##  generators and weights of the generators as given.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("WeightLexOrdering",
   [IsFamily and IsAssocWordFamily,IsList and IsAssocWordCollection,IsList]);
@@ -440,64 +601,82 @@ DeclareOperation("WeightLexOrdering",
 ##
 #A  WeightOfGenerators( <ord>)
 ##
-##  for a WeightLex ordering <ord>,
-##  returns a list <l> with length the size of the alphabet of the family.
+##  <#GAPDoc Label="WeightOfGenerators">
+##  <ManSection>
+##  <Attr Name="WeightOfGenerators" Arg='ord'/>
+##
+##  <Description>
+##  for a weightlex ordering <A>ord</A>,
+##  returns a list with length the size of the alphabet of the family.
 ##  This list gives the weight of each of the letters of the alphabet
-##  which are used for WeightLex orderings with respect to the
-##  ordering given by `OrderingOnGenerators' (see~"OrderingOnGenerators").
-##  
-DeclareAttribute("WeightOfGenerators",IsOrdering and 
+##  which are used for weightlex orderings with respect to the
+##  ordering given by <Ref Func="OrderingOnGenerators"/>.
+##  <Example><![CDATA[
+##  gap> f := FreeSemigroup(3);
+##  <free semigroup on the generators [ s1, s2, s3 ]>
+##  gap> wtlex := WeightLexOrdering(f,[f.2,f.3,f.1],[3,2,1]);
+##  Ordering
+##  gap> IsLessThanUnder(wtlex,f.1,f.2);
+##  true
+##  gap> IsLessThanUnder(wtlex,f.3,f.2);
+##  true
+##  gap> IsLessThanUnder(wtlex,f.3,f.1);
+##  false
+##  gap> OrderingOnGenerators(wtlex);
+##  [ s2, s3, s1 ]
+##  gap> WeightOfGenerators(wtlex);
+##  [ 3, 2, 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute("WeightOfGenerators",IsOrdering and
                     IsOrderingOnFamilyOfAssocWords);
 
 #############################################################################
-##  
+##
 #P  IsWeightLexOrdering( <ord>)
 ##
-##  for an ordering <ord> on a family of associative words,
-##  returns `true' if and only if <ord> is a WeightLex ordering.
+##  <#GAPDoc Label="IsWeightLexOrdering">
+##  <ManSection>
+##  <Prop Name="IsWeightLexOrdering" Arg='ord'/>
+##
+##  <Description>
+##  for an ordering <A>ord</A> on a family of associative words,
+##  returns <K>true</K> if and only if <A>ord</A> is a weightlex ordering.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty("IsWeightLexOrdering",IsOrdering and
                       IsOrderingOnFamilyOfAssocWords);
 
 #############################################################################
 ##
-#O  BasicWreathProductOrdering( <fam>)
-#O  BasicWreathProductOrdering( <fam>, <alphabet>)
-#O  BasicWreathProductOrdering( <fam>, <gensord>)
-#O  BasicWreathProductOrdering( <f>)
-#O  BasicWreathProductOrdering( <f>, <alphabet>) 
-#O  BasicWreathProductOrdering( <f>, <gensord>)
+#O  BasicWreathProductOrdering( <D>[, <gens>] )
 ##
-##  In the first form, for a family of associative words,
-##  `BasicWreathProductOrdering'
-##  returns the basic wreath product ordering on the elements of <fam>
-##  with the order in the alphabet being the default one.
+##  <#GAPDoc Label="BasicWreathProductOrdering">
+##  <ManSection>
+##  <Oper Name="BasicWreathProductOrdering" Arg='D[, gens]'/>
 ##
-##  In the second form, for a family of associative words and
-##  a list <alphabet>, `BasicWreathProductOrdering' returns the
-##  basic wreath product ordering on the elements of <fam> with the order 
-##  on the alphabet given by <alphabet>. 
-##
-##  In the third form, for a family of associative words and
-##  a list <gensorder> of the length of the alphabet,
-##  `BasicWreathProductOrdering' returns the 
-##  basic wreath product ordering on the elements of <fam> with the order 
-##  on the alphabet given by <gensord>. 
-##
-##  In the fourth form, for a free semigroup of a free monoid <f>,
-##  `BasicWreathProductOrdering'
-##  returns the basic wreath product ordering on the family of the 
-##  elements of <f> with the order in the alphabet being the default one.
-##
-##  In the fifth form, for a free semigroup or a free monoid <f>,
-##  and a list <alphabet> of generators, `BasicWreathProductOrdering' 
-##  returns the basic wreath product ordering on the family of the elements 
-##  of <f> with the order on the alphabet given by <alphabet>. 
-##
-##  In the sixth form, for a free semigroup or a free monoid <f>,
-##  and a list <gensorder>, `BasicWreathProductOrdering' 
-##  returns the basic wreath product ordering on the family of the elements 
-##  of <f> with the order on the alphabet given by <gensord>. 
+##  <Description>
+##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
+##  family of such a domain.
+##  Called with only argument <A>D</A>,
+##  <Ref Func="BasicWreathProductOrdering"/> returns the basic wreath product
+##  ordering on the elements of <A>D</A>.
+##  <P/>
+##  The optional argument <A>gens</A> can be either the list of free
+##  generators of <A>D</A>, in the desired order,
+##  or a list of the positions of these generators,
+##  in the desired order,
+##  and <Ref Func="BasicWreathProductOrdering"/> returns the lexicographic
+##  ordering on the elements of <A>D</A> with the ordering on the
+##  generators as given.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("BasicWreathProductOrdering",[IsAssocWordFamily,IsList]);
 
@@ -505,38 +684,70 @@ DeclareOperation("BasicWreathProductOrdering",[IsAssocWordFamily,IsList]);
 ##
 #P  IsBasicWreathProductOrdering( <ord>)
 ##
+##  <#GAPDoc Label="IsBasicWreathProductOrdering">
+##  <ManSection>
+##  <Prop Name="IsBasicWreathProductOrdering" Arg='ord'/>
+##
+##  <Description>
+##  <Example><![CDATA[
+##  gap> f := FreeSemigroup(3);
+##  <free semigroup on the generators [ s1, s2, s3 ]>
+##  gap> basic := BasicWreathProductOrdering(f,[2,3,1]);
+##  Ordering
+##  gap> IsLessThanUnder(basic,f.3,f.1);
+##  true
+##  gap> IsLessThanUnder(basic,f.3*f.2,f.1);
+##  true
+##  gap> IsLessThanUnder(basic,f.3*f.2*f.1,f.1*f.3);
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty("IsBasicWreathProductOrdering",IsOrdering);
 
 #############################################################################
 ##
 #F  IsBasicWreathLessThanOrEqual( <u>, <v> )
-##  
-##  returns `IsLessThanOrEqualUnder(<ord>, <u>, <v>)' where <ord> is the
-##  basic wreath product ordering for the family of <u> and <v>.
-##  (This is here for compatibility with {\GAP}~4.2.)
-##  
+##
+##  <#GAPDoc Label="IsBasicWreathLessThanOrEqual">
+##  <ManSection>
+##  <Func Name="IsBasicWreathLessThanOrEqual" Arg='u, v'/>
+##
+##  <Description>
+##  returns <C>IsLessThanOrEqualUnder(<A>ord</A>, <A>u</A>, <A>v</A>)</C>
+##  where <A>ord</A> is the basic wreath product ordering for the family of
+##  <A>u</A> and <A>v</A>.
+##  (This is here for compatibility with &GAP;&nbsp;4.2.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "IsBasicWreathLessThanOrEqual" );
 
 #############################################################################
 ##
-#O  WreathProductOrdering( <fam>, <levels>) 
-#O  WreathProductOrdering( <fam>, <alphabet>, <levels>)
-#O  WreathProductOrdering( <fam>, <gensord>, <levels>)
-#O  WreathProductOrdering( <f>, <levels>)      
-#O  WreathProductOrdering( <f>, <alphabet>, <levels>)
-#O  WreathProductOrdering( <f>, <gensord>, <levels>)
+#O  WreathProductOrdering( <D>[, <gens>], <levels>)
 ##
-##  returns the wreath product ordering of the
-##  family <fam> of associative words or a free semigroup/monoid <f>.
-##  The ordering on the generators may be omitted (in which case the default
-##  one is considered), or may be given either by a list
-##  <alphabet> consisting of the alphabet of the family in the appropriate
-##  ordering, or by a list <gensord>  giving the permutation of the alphabet. 
-##  It also needs a list <levels> giving the levels of each generator.
-##  Notice that this list gives the levels of the generators in the new 
-##  ordering (not necessarily the default one),
-##  i.e. `<levels>[<i>]' is the level of the generator that comes <i>-th
-##  in the ordering of generators given by <alphabet> or <gensord>.
+##  <#GAPDoc Label="WreathProductOrdering">
+##  <ManSection>
+##  <Oper Name="WreathProductOrdering" Arg='D[, gens], levels'/>
+##
+##  <Description>
+##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
+##  family of such a domain,
+##  let <A>gens</A> be either the list of free generators of <A>D</A>,
+##  in the desired order,
+##  or a list of the positions of these generators, in the desired order,
+##  and let <A>levels</A> be a list of levels for the generators.
+##  If <A>gens</A> is omitted then the default ordering is taken.
+##  <Ref Func="WreathProductOrdering"/> returns the wreath product
+##  ordering on the elements of <A>D</A> with the ordering on the
+##  generators as given.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation("WreathProductOrdering",[IsFamily,IsList,IsList]);
 
@@ -544,15 +755,51 @@ DeclareOperation("WreathProductOrdering",[IsFamily,IsList,IsList]);
 ##
 #P  IsWreathProductOrdering( <ord>)
 ##
+##  <#GAPDoc Label="IsWreathProductOrdering">
+##  <ManSection>
+##  <Prop Name="IsWreathProductOrdering" Arg='ord'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareProperty("IsWreathProductOrdering",IsOrdering);
 
 #############################################################################
 ##
 #A  LevelsOfGenerators( <ord>)
 ##
-##  for a wreath product ordering <ord>, returns the levels 
-##  of the generators as given at creation (with
-##  respect to `OrderingOnGenerators'; see~"OrderingOnGenerators").
+##  <#GAPDoc Label="LevelsOfGenerators">
+##  <ManSection>
+##  <Attr Name="LevelsOfGenerators" Arg='ord'/>
+##
+##  <Description>
+##  for a wreath product ordering <A>ord</A>, returns the levels
+##  of the generators as given at creation
+##  (with respect to <Ref Func="OrderingOnGenerators"/>).
+##  <Example><![CDATA[
+##  gap> f := FreeSemigroup(3);
+##  <free semigroup on the generators [ s1, s2, s3 ]>
+##  gap> wrp := WreathProductOrdering(f,[1,2,3],[1,1,2,]);
+##  Ordering
+##  gap> IsLessThanUnder(wrp,f.3,f.1);
+##  false
+##  gap> IsLessThanUnder(wrp,f.3,f.2);
+##  false
+##  gap> IsLessThanUnder(wrp,f.1,f.2);
+##  true
+##  gap> LevelsOfGenerators(wrp);
+##  [ 1, 1, 2 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute("LevelsOfGenerators",IsOrdering and IsWreathProductOrdering);
+
+
+#############################################################################
+##
+#E
 

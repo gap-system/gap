@@ -1,6 +1,6 @@
 
 # this script produces a file 'fullindex.ind' that contains the index of all
-# four manual books.
+# five (main) GAP manual books (i.e. ref, tut, ext, prg, new).
 echo "Collecting indices"
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' ref/manual.idx >fullindex.idl.pre
 awk '{i=0;a=$0;\

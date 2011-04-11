@@ -9,11 +9,16 @@
 ##  sanity test for primitive groups library -- takes 30-40 minutes on
 ##  a PIII/500, and need 400MB of RAM
 ##
-##  Do NOT add this to testall untill the typical developers desktop
-##  is big and fast enough
+##  Exclude from testinstall.g until the typical developer's desktop
+##  is big and fast enough.
 ##
 
 gap> START_TEST("$Id$");
+#
+# Disable warnings which depend on Conway Polynomial databases 
+#
+gap> iW := InfoLevel(InfoWarning);;
+gap> SetInfoLevel(InfoWarning,0);
 
 
 #############################################################################
@@ -29,12 +34,12 @@ gap> checkdegree := function(n)
 >             Error("Failure at ",g," degree ",n,"\n");
 >         fi;
 >     od;
-> end;
-function( n ) ... end
+> end;;
 gap> for n in [2..999] do 
 >     checkdegree(n);
 > od;
 
+gap> SetInfoLevel(InfoWarning,iW);
 gap> STOP_TEST( "primsan.tst", 105797500 );
 
 

@@ -1,0 +1,28 @@
+#!/bin/sh
+# $Id$    (C) Frank Lübeck
+
+
+mypath=`dirname  $0`/
+
+source ${mypath}setup
+
+mkdir -p ${PkgCacheDir}
+mkdir -p ${PkgMergeTmpDir}
+mkdir -p ${PkgMergedArchiveDir}
+mkdir -p ${PkgWebFtpDir}
+
+
+$GAP -r -b -q  ${mypath}PackageInfoTools.g  << EOI
+ANSI_COLORS := false;;
+Unbind(PrintPromptHook);
+Print("\n");
+
+MergePackageArchives(
+  "${PkgCacheDir}", 
+  "${PkgMergeTmpDir}",
+  "${PkgMergedArchiveDir}",
+  "${PkgWebFtpDir}",
+  true);
+quit;
+EOI
+

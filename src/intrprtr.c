@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  intrprtr.c                  GAP source                   Martin Schoenert
+*W  intrprtr.c                  GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the immediate interpreter package.
 **
@@ -38,6 +39,7 @@ const char * Revision_intrprtr_c =
 #include        "lists.h"               /* generic lists                   */
 
 #include        "bool.h"                /* booleans                        */
+#include        "integer.h"             /* integers                        */
 
 #include        "permutat.h"            /* permutations                    */
 
@@ -410,25 +412,33 @@ void            IntrFuncCallEnd (
     /* get and check the function from the stack                           */
     func = PopObj();
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit(
-            "<func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L );
+      args = NEW_PLIST( T_PLIST_DENSE, nr );
+      SET_LEN_PLIST( args, nr );
+      switch(nr) {
+      case 6: SET_ELM_PLIST(args,6,a6);
+      case 5: SET_ELM_PLIST(args,5,a5);
+      case 4: SET_ELM_PLIST(args,4,a4);
+      case 3: SET_ELM_PLIST(args,3,a3);
+      case 2: SET_ELM_PLIST(args,2,a2);
+      case 1: SET_ELM_PLIST(args,1,a1);
+      }
+      val = DoOperation2Args(CallFuncListOper, func, args);
+    } else {
+      /* call the function                                                   */
+      if      ( 0 == nr ) { val = CALL_0ARGS( func ); }
+      else if ( 1 == nr ) { val = CALL_1ARGS( func, a1 ); }
+      else if ( 2 == nr ) { val = CALL_2ARGS( func, a1, a2 ); }
+      else if ( 3 == nr ) { val = CALL_3ARGS( func, a1, a2, a3 ); }
+      else if ( 4 == nr ) { val = CALL_4ARGS( func, a1, a2, a3, a4 ); }
+      else if ( 5 == nr ) { val = CALL_5ARGS( func, a1, a2, a3, a4, a5 ); }
+      else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
+      else                { val = CALL_XARGS( func, args ); }
+      
+      if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+					 READ() and the user quit from a break
+					 loop inside it */
+	ReadEvalError();
     }
-
-    /* call the function                                                   */
-    if      ( 0 == nr ) { val = CALL_0ARGS( func ); }
-    else if ( 1 == nr ) { val = CALL_1ARGS( func, a1 ); }
-    else if ( 2 == nr ) { val = CALL_2ARGS( func, a1, a2 ); }
-    else if ( 3 == nr ) { val = CALL_3ARGS( func, a1, a2, a3 ); }
-    else if ( 4 == nr ) { val = CALL_4ARGS( func, a1, a2, a3, a4 ); }
-    else if ( 5 == nr ) { val = CALL_5ARGS( func, a1, a2, a3, a4, a5 ); }
-    else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
-    else                { val = CALL_XARGS( func, args ); }
-
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
-      ReadEvalError();
 
     /* check the return value                                              */
     if ( funccall && val == 0 ) {
@@ -466,14 +476,15 @@ void            IntrFuncCallEnd (
 void            IntrFuncExprBegin (
     Int                 narg,
     Int                 nloc,
-    Obj                 nams )
+    Obj                 nams,
+    Int                 startLine)
 {
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
     if ( IntrCoding    > 0 ) {
         IntrCoding++;
-        CodeFuncExprBegin( narg, nloc, nams );
+        CodeFuncExprBegin( narg, nloc, nams, startLine );
         return;
     }
 
@@ -482,7 +493,7 @@ void            IntrFuncExprBegin (
     IntrCoding = 1;
 
     /* code a function expression                                          */
-    CodeFuncExprBegin( narg, nloc, nams );
+    CodeFuncExprBegin( narg, nloc, nams, startLine );
 }
 
 void            IntrFuncExprEnd (
@@ -711,7 +722,7 @@ void IntrForBegin ( void )
 	SET_LEN_PLIST(StackNams, CountNams);
       }
 
-    CodeFuncExprBegin( 0, 0, nams );
+    CodeFuncExprBegin( 0, 0, nams, 0 );
 
     /* code a for loop                                                     */
     CodeForBegin();
@@ -724,6 +735,8 @@ void IntrForIn ( void )
     if ( IntrIgnoring  > 0 ) { return; }
     if ( CompNowFuncs != 0 ) { return; }
 
+    
+    
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
     CodeForIn();
@@ -847,7 +860,7 @@ void            IntrWhileBegin ( void )
 	SET_LEN_PLIST(StackNams, CountNams);
       }
     
-    CodeFuncExprBegin( 0, 0, nams );
+    CodeFuncExprBegin( 0, 0, nams, 0 );
 
     /* code a while loop                                                   */
     CodeWhileBegin();
@@ -978,7 +991,7 @@ void            IntrRepeatBegin ( void )
 	SET_LEN_PLIST(StackNams, CountNams);
       }
 
-    CodeFuncExprBegin( 0, 0, nams );
+    CodeFuncExprBegin( 0, 0, nams, Input->number );
 
     /* code a repeat loop                                                  */
     CodeRepeatBegin();
@@ -2205,8 +2218,8 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, 1 );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <first> must be an integer less than 2^28 (not a %s)",
-                (Int)TNAM_OBJ(val), 0L );
+                "Range: <first> must be an integer less than 2^%d (not a %s)",
+                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
         }
         low = INT_INTOBJ( val );
 
@@ -2215,8 +2228,8 @@ void            IntrListExprEnd (
             val = ELM_LIST( list, 2 );
             if ( ! IS_INTOBJ(val) ) {
                 ErrorQuit(
-                    "Range: <second> must be an integer less than 2^28 (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L );
+                    "Range: <second> must be an integer less than 2^%d (not a %s)",
+                    NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
             }
             if ( INT_INTOBJ(val) == low ) {
                 ErrorQuit(
@@ -2233,8 +2246,8 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, LEN_LIST(list) );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <last> must be an integer less than 2^28 (not a %s)",
-                (Int)TNAM_OBJ(val), 0L );
+                "Range: <last> must be an integer less than 2^%d (not a %s)",
+                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
         }
         if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
             ErrorQuit(
@@ -2258,6 +2271,12 @@ void            IntrListExprEnd (
 
         /* else make the range                                             */
         else {
+            /* length must be a small integer as well */
+            if ((high-low) / inc + 1 >= (1L<<NR_SMALL_INT_BITS)) {
+                ErrorQuit("Range: the length of a range must be less than 2^%d",
+                           NR_SMALL_INT_BITS, 0L);
+            }
+            
             if ( 0 < inc )
                 list = NEW_RANGE_SSORT();
             else
@@ -2268,6 +2287,12 @@ void            IntrListExprEnd (
         }
 
         /* push the list again                                             */
+        PushObj( list );
+    }
+    else {
+        /* give back unneeded memory */
+        list = PopObj( );
+        SHRINK_PLIST( list, LEN_PLIST(list) );
         PushObj( list );
     }
 }
@@ -2572,6 +2597,7 @@ void            IntrUnbLVar (
     else
       {
 	ASS_LVAR(lvar,0);
+	PushVoidObj();
       }
 }
 
@@ -2666,6 +2692,7 @@ void            IntrUnbHVar (
     else
       {
 	ASS_HVAR(hvar, 0);
+	PushVoidObj();
       }
 }
 
@@ -2723,12 +2750,11 @@ void            IntrIsbHVar (
 extern  Obj             ErrorLVars;
 
 void            IntrAssDVar (
-    UInt                dvar )
+    UInt                dvar,
+    UInt                depth )
 {
     Obj                 rhs;            /* right hand side                 */
     Obj                 currLVars;
-    UInt                upstack;
-    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2748,12 +2774,10 @@ void            IntrAssDVar (
     /* assign the right hand side                                          */
     currLVars = CurrLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    upstack = dvar >>20;
-    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    while (upstack--)
+    while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
-    ASS_HVAR( ashvar, rhs );
+    ASS_HVAR( dvar, rhs );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push the right hand side again                                      */
@@ -2761,11 +2785,10 @@ void            IntrAssDVar (
 }
 
 void            IntrUnbDVar (
-    UInt                dvar )
+    UInt                dvar,
+    UInt                depth )
 {
     Obj                 currLVars;
-    UInt                upstack;
-    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2781,12 +2804,10 @@ void            IntrUnbDVar (
     /* assign the right hand side                                          */
     currLVars = CurrLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    upstack = dvar >>20;
-    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    while (upstack--)
+    while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
-    ASS_HVAR( ashvar, (Obj)0 );
+    ASS_HVAR( dvar, (Obj)0 );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push void                                                           */
@@ -2799,12 +2820,11 @@ void            IntrUnbDVar (
 *F  IntrRefDVar(<dvar>) . . . . . . . . . . . .  interpret reference to debug
 */
 void            IntrRefDVar (
-    UInt                dvar )
+    UInt                dvar,
+    UInt                depth )
 {
     Obj                 val;            /* value, result                   */
     Obj                 currLVars;
-    UInt                upstack;
-    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2819,12 +2839,10 @@ void            IntrRefDVar (
 
     /* get and check the value                                             */
     currLVars = CurrLVars;
-    upstack = dvar >>20;
-    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    while (upstack--)
+    while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
-    val = OBJ_HVAR( ashvar );
+    val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> must have a value",
@@ -2836,12 +2854,11 @@ void            IntrRefDVar (
 }
 
 void            IntrIsbDVar (
-    UInt                dvar )
+    UInt                dvar,
+    UInt                depth )
 {
     Obj                 val;            /* value, result                   */
     Obj                 currLVars;
-    UInt                upstack;
-    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2852,12 +2869,10 @@ void            IntrIsbDVar (
     /* get the value                                                       */
     currLVars = CurrLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    upstack = dvar >>20;
-    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    while (upstack--)
+    while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
-    val = OBJ_HVAR( ashvar );
+    val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push the value                                                      */
@@ -2925,7 +2940,7 @@ void            IntrRefGVar (
     /* get and check the value                                             */
     if ( (val = ValAutoGVar( gvar )) == 0 ) {
         ErrorQuit(
-            "Variable: '%s' must have a value\n",
+            "Variable: '%s' must have a value",
             (Int)NameGVar(gvar), 0L );
     }
 
@@ -3179,25 +3194,13 @@ void            IntrElmList ( void )
     list = PopObj();
 
     
-    if ( ! IS_INTOBJ(pos))
+    if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0)
       {
-	if (TNUM_OBJ(pos) != T_INTPOS)
-	  {
-	    ErrorQuit("List Element: <position> must be a positive integer (not a %s)",
-		      (Int)TNAM_OBJ(pos), 0);
-	  }
+	/* This mostly dispatches to the library */
 	elm = ELMB_LIST( list, pos);
       }
     else
       {
-	if (INT_INTOBJ(pos) <= 0 ) {
-	  ErrorQuit(
-		    "List Element: <position> must be positive (not a %d)",
-		    INT_INTOBJ(pos), 0L );
-	}
-	p = INT_INTOBJ( pos );
-	
-	
 	/* get the element of the list                                         */
 	elm = ELM_LIST( list, p );
       }
@@ -4420,49 +4423,6 @@ void             IntrAssertEnd3Args ( void )
       PushVoidObj();
   return;
 }
-
-/****************************************************************************
-**
-*F  IntrSaveWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
-**
-*F  IntrSaveWSEnd() . . . . . . . . . . . . . . Actually save the workspace
-**
-**  'IntrSaveWSBegin' is called when the reader starts reading a
-**  SaveWorkspace command. Unusually, there is something to do,
-**  because we must signal an error if we are coding, as the SaveWS
-**  cannot be at the outer level
-*/
-
-void              IntrSaveWSBegin ( void )
-{
-    /* ignore or signal an error
-       perhaps we should signal an error more often?? */
-  
-    if ( IntrReturning > 0 ) { return; }
-    if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { ErrorQuit("SaveWorkspace not at outer level",
-                                         0L,0L); }
-    if ( CompNowFuncs != 0 ) { return; }
-}
-
-void              IntrSaveWSEnd ( void )
-{
-  Obj filename;
-  /* ignore or signal an error
-     perhaps we should signal an error more often?? */
-  
-  if ( IntrReturning > 0 ) { return; }
-  if ( IntrIgnoring  > 0 ) { return; }
-  if ( IntrCoding    > 0 ) {
-    ErrorQuit("Panic: SaveWorkspace end not at outer level",
-                                       0L,0L); }
-  if ( CompNowFuncs != 0 ) { return; }
-  
-  filename = PopObj();
-  PushObj(SaveWorkspace( filename ));
-}
-
-
 
 
 /****************************************************************************

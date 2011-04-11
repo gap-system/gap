@@ -1,12 +1,13 @@
 #############################################################################
 ##
 #W  mapphomo.gi                 GAP library                     Thomas Breuer
-#W                                                         and Heiko Thei"sen
+#W                                                         and Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for properties of mappings preserving
 ##  algebraic structure.
@@ -51,7 +52,7 @@ InstallMethod( RespectsMultiplication,
     enum:= Enumerator( map );
     for pair1 in enum do
       for pair2 in enum do
-        if not Tuple( [ pair1[1] * pair2[1], pair1[2] * pair2[2] ] )
+        if not DirectProductElement( [ pair1[1] * pair2[1], pair1[2] * pair2[2] ] )
            in map then
           return false;
         fi;
@@ -100,7 +101,7 @@ InstallMethod( RespectsInverses,
 
     enum:= Enumerator( map );
     for pair in enum do
-      if not Tuple( [ Inverse( pair[1] ), Inverse( pair[2] ) ] )
+      if not DirectProductElement( [ Inverse( pair[1] ), Inverse( pair[2] ) ] )
              in map then
         return false;
       fi;
@@ -180,7 +181,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
       oneS:= One( Source( mapp ) );
       rel:= UnderlyingRelation( mapp );
       cokernel:= Filtered( Enumerator( R ),
-                           r -> Tuple( [ oneS, r ] ) in rel );
+                           r -> DirectProductElement( [ oneS, r ] ) in rel );
 
     elif   IsFinite( UnderlyingRelation( mapp ) )
        and HasAsList( UnderlyingRelation( mapp ) ) then
@@ -272,20 +273,23 @@ InstallMethod( ImagesSet,
     CollFamSourceEqFamElms,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ],
-    function( map, elms )
-    local genimages,  img;
-    genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
-                      gen -> ImagesRepresentative( map, gen ) );
-    if fail in genimages then
-      TryNextMethod();
-    fi;
+function( map, elms )
+  local genimages,  img;
+  genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
+		    gen -> ImagesRepresentative( map, gen ) );
+  if fail in genimages then
+    TryNextMethod();
+  fi;
 
-    img := SubgroupNC( Range( map ), Concatenation(
-               GeneratorsOfMagmaWithInverses(
-                   CoKernelOfMultiplicativeGeneralMapping( map ) ),
-               genimages ) );
-    return img;
-    end );
+  img := SubgroupNC( Range( map ), Concatenation(
+	      GeneratorsOfMagmaWithInverses(
+		  CoKernelOfMultiplicativeGeneralMapping( map ) ),
+	      genimages ) );
+  if IsPermGroup(img) and HasSize(elms) then
+    StabChainOptions(img).limit:=Size(elms);
+  fi;
+  return img;
+end );
 
 InstallMethod( ImagesSet,
     "method for injective s.p. mapping respecting mult. & inv., and group",
@@ -420,7 +424,7 @@ InstallMethod( RespectsAddition,
     enum:= Enumerator( map );
     for pair1 in enum do
       for pair2 in enum do
-        if not Tuple( [ pair1[1] + pair2[1], pair1[2] + pair2[2] ] )
+        if not DirectProductElement( [ pair1[1] + pair2[1], pair1[2] + pair2[2] ] )
            in map then
           return false;
         fi;
@@ -470,7 +474,7 @@ InstallMethod( RespectsAdditiveInverses,
 
     enum:= Enumerator( map );
     for pair in enum do
-      if not Tuple( [ AdditiveInverse( pair[1] ),
+      if not DirectProductElement( [ AdditiveInverse( pair[1] ),
                       AdditiveInverse( pair[2] ) ] )
              in map then
         return false;
@@ -497,7 +501,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
       zeroR:= Zero( Range( mapp ) );
       rel:= UnderlyingRelation( mapp );
       kernel:= Filtered( Enumerator( S ),
-                         s -> Tuple( [ s, zeroR ] ) in rel );
+                         s -> DirectProductElement( [ s, zeroR ] ) in rel );
 
     elif IsFinite( UnderlyingRelation( mapp ) ) then
 
@@ -564,7 +568,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
       zeroS:= Zero( Source( mapp ) );
       rel:= UnderlyingRelation( mapp );
       cokernel:= Filtered( Enumerator( R ),
-                           r -> Tuple( [ zeroS, r ] ) in rel );
+                           r -> DirectProductElement( [ zeroS, r ] ) in rel );
 
     elif   IsFinite( UnderlyingRelation( mapp ) )
        and HasAsList( UnderlyingRelation( mapp ) ) then
@@ -755,7 +759,7 @@ InstallMethod( RespectsScalarMultiplication,
       D:= Enumerator( D );
       for pair in Enumerator( map ) do
         for c in D do
-          if not Tuple( [ c * pair[1], c * pair[2] ] ) in map then
+          if not DirectProductElement( [ c * pair[1], c * pair[2] ] ) in map then
             return false;
           fi;
         od;
@@ -789,7 +793,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
       zeroR:= Zero( Range( mapp ) );
       rel:= UnderlyingRelation( mapp );
       kernel:= Filtered( Enumerator( S ),
-                         s -> Tuple( [ s, zeroR ] ) in rel );
+                         s -> DirectProductElement( [ s, zeroR ] ) in rel );
 
     elif IsFinite( UnderlyingRelation( mapp ) ) then
 
@@ -833,7 +837,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
       zeroS:= Zero( Source( mapp ) );
       rel:= UnderlyingRelation( mapp );
       cokernel:= Filtered( Enumerator( R ),
-                           r -> Tuple( [ zeroS, r ] ) in rel );
+                           r -> DirectProductElement( [ zeroS, r ] ) in rel );
 
     elif IsFinite( UnderlyingRelation( mapp ) ) then
 
@@ -1171,7 +1175,15 @@ InstallEqMethodForMappingsFromGenerators( IsLeftOperatorRingWithOne,
     RespectsMultiplication and RespectsOne and RespectsScalarMultiplication,
     " that respect add.,add.inv.,mult.,one,scal. mult." );
 
-#T no methods that use 'GeneratorsOfDivisionRing' ?
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )   s.v.g.m. resp. add.,add.inv.,mult.,one,scal. mult.
+##
+InstallEqMethodForMappingsFromGenerators( IsField,
+    GeneratorsOfField,
+    IsFieldHomomorphism,
+    " that is a field homomorphism" );
 
 
 #############################################################################

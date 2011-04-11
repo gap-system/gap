@@ -7,6 +7,9 @@
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
+##  Exclude from testinstall.g: why?
+##
+
 gap> START_TEST("$Id$");
 gap> ##
 gap> ##
@@ -207,10 +210,10 @@ gap> #T Dimensions of malformed matrices
 gap> #T 
 gap> m := [[1,2,3],[2,3]];;
 gap> DimensionsMat(m);
-[ 2, 3 ]
+fail
 gap> m := [[1],[1,2]];;
 gap> DimensionsMat(m);
-[ 2, 1 ]
+fail
 gap> m := [[1,2,3,4],[1,2,3,4]];;
 gap> DimensionsMat(m);
 [ 2, 4 ]
@@ -278,7 +281,7 @@ gap> ##
 gap> x := Indeterminate(Integers,1);;
 gap> hm := [[x,x^0,0*x,0*x], [x^0,x,x^0,0*x], [0*x,x^0,x,x^0], [0*x,0*x,x^0,x]];;
 gap> DeterminantMatDivFree(hm);
-1-3*x_1^2+x_1^4
+x_1^4-3*x_1^2+1
 gap> ##
 gap> ## Simple matrix functions for testing
 gap> ##
@@ -450,7 +453,7 @@ gap> ##
 gap> ## Malformed construction
 gap> KroneckerProduct([[1,2],[1,2]],[[5],[9,2,3]]);;
 gap> DimensionsMat(last);
-[ 4, 2 ]
+fail
 gap> ##
 gap> rm:=ReflectionMat([1,2,3,4,5,6,7,8,9,10]);;
 gap> rm*[1,2,3,4,5,6,7,8,9,10]=[-1,-2,-3,-4,-5,-6,-7,-8,-9,-10];
@@ -537,7 +540,9 @@ gap> ## Matrices as Linear Mappings
 gap> ##
 gap> ##
 gap> ########################################################################
-gap> STOP_TEST( "matrix.tst", 1000000000 );
+gap> STOP_TEST( "matrix.tst",3721017553);
+
 #############################################################################
 ##
-#E  matrix.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

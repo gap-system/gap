@@ -44,20 +44,26 @@
 ##
 ##  The option '-fno-check-types' tells 'gac' to  emit  no  error checks  for
 ##  list access, which makes it faster but may dump core if an error happens.
-##
+#
 ##  The option '-p <option>' tells 'gac' to pass the option  <option> to  the
 ##  C compiler.
 ##
 ##  The option '-P <option>' tells 'gac' to pass the option  <option> to  the
 ##  C linker.
 ##
-gap_bin=`echo $0 | sed -e 's:/[^/]*$::'`
+##  The option '-L <option>' tells 'gac' to pass the option  <option>
+##  to the C linker when linking dynamic modules. Contrary to -P the
+##  option is appended at the end of the link command after the .o
+##  files to link.
+##
+gap_bin=@gapbin@
+
 if [ "X${gap_bin}" = "X$0" ];  then
-    gap_dir="../../";
+    gap_dir="../../../";
     gap_compiler="./gap";
     gap_binary="./";
 else
-    gap_dir="${gap_bin}/../..";
+    gap_dir="${gap_bin}/../../..";
     gap_compiler="${gap_bin}/gap";
     gap_binary="${gap_bin}";
 fi
@@ -67,16 +73,17 @@ stat_identifier="USER";
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="@CC@"
-c_options="@CFLAGS@" 
+c_options="@CFLAGS@"
 c_linker="@CC@"
-c_link_options=""
-c_libs="@LIBS@"
+c_link_options="@LDFLAGS@"
+c_libs="@LIBS@ @GMP_LIBS@"
 
 # These three will need special care 
 c_dyn_options="@CDYNOPTIONS@"
 c_dyn_linker="@CDYNLINKER@"
 c_dyn_linking="@CDYNLINKING@"
 c_dynlibs="@C_DYNLIBS@"
+c_addlibs=""
 
 # hardwire this for now. There is probably a nicer way 
 
@@ -85,14 +92,17 @@ OBJECTS="\
     ariths.o    blister.o   bool.o      calls.o      code.o      \
     compiler.o  costab.o    cyclotom.o  dt.o         dteval.o    \
     exprs.o     finfield.o  funcs.o     gap.o        gasman.o    \
-    gvars.o     integer.o   intrprtr.o  listfunc.o   listoper.o  \
-    lists.o     objcftl.o   objects.o   objfgelm.o   objpcgel.o  \
-    objscoll.o  objccoll.o  opers.o     permutat.o   plist.o     \
-    precord.o   range.o     rational.o  read.o       records.o   \
-    saveload.o  scanner.o   sctable.o   set.o        stats.o     \
-    streams.o   string.o    sysfiles.o  system.o     tietze.o    \
-    vars.o      vecgf2.o    vecffe.o    vec8bit.o    vector.o    \
-    weakptr.o   iostream.o  float.o "
+    gmpints.o   gvars.o     integer.o   intrprtr.o   listfunc.o  \
+    listoper.o  lists.o     objcftl.o   objects.o    objfgelm.o  \
+    objpcgel.o  objscoll.o  objccoll.o  opers.o      permutat.o  \
+    plist.o     precord.o   range.o     rational.o   read.o      \
+    records.o   saveload.o  scanner.o   sctable.o    set.o       \
+    stats.o     streams.o   string.o    sysfiles.o   system.o    \
+    tietze.o    vars.o      vecgf2.o    vecffe.o     vec8bit.o   \
+    vector.o    weakptr.o   iostream.o  macfloat.o "
+
+EXTOBJS=bin/@target@-@CC@/@BUILD_MODE@-bit/extern/jenkins/jhash.o
+
 
 #############################################################################
 ##
@@ -121,8 +131,8 @@ c_compile () {
 #F  c_link_dyn <output> <input>
 ##
 c_link_dyn () {
-    echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2
-    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_link_options}
+    echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs}
+    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs}
 }
 
 
@@ -131,8 +141,8 @@ c_link_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
-    echo ${c_linker} $c_dynlibs  -o $1 $2 -lm ${c_libs}
-    ${c_linker} $c_dynlibs -o $1 $2 ${c_link_options} -lm ${c_libs}
+    echo ${c_linker} ${c_dynlibs}  -o $1 $2 ${c_link_options} -lm ${c_libs}
+    ${c_linker} ${c_dynlibs} -o $1 $2 ${c_link_options} -lm ${c_libs}
 }
 
 #############################################################################
@@ -148,18 +158,9 @@ c_link () {
 process_o_file () {
   name=$1
   o_file=$2
-  if [ $comp_mode = comp_static ]; then
-    # just remember for the linking stage later
-    names="${names} ${name}"
-    objects="${objects} $o_file"
-  else
-     if [ "X$output" != "X" ]; then
-	so_file=$output
-     else
-	so_file=${name}.so
-     fi
-     c_link_dyn $so_file $o_file
-  fi
+  # just remember for the linking stage later
+  names="${names} ${name}"
+  objects="${objects} $o_file"
 }
 
 #############################################################################
@@ -176,7 +177,7 @@ process_c_file () {
     name=$1
     c_file=$2
     if [ $comp_howfar != "object" ]; then
-       o_file=/tmp/$$_${name}.o
+       o_file=${gactmp}/$$_${name}.o
         temps_o="${temps_o} ${o_file}"
     elif [ "X$output" != "X" ]; then
        o_file=$output
@@ -191,10 +192,6 @@ process_c_file () {
     c_compile $o_file $c_file "$c_compile_opts"
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
-      if [ $comp_mode != "comp_static" ]; then
-	echo rm -f $o_file
-	rm -f $o_file
-      fi
     fi 
 }
 
@@ -212,7 +209,7 @@ process_gap_file () {
   name=`basename $1 $2`
 
   if [ $comp_howfar != "c_code" ]; then
-    c_file=/tmp/$$_${name}.c
+    c_file=${gactmp}/$$_${name}.c
     temps_c="${temps_c} $gap_compile_to"
   elif [ "X$output" = "X" ]; then
      c_file=${name}.c
@@ -319,9 +316,11 @@ while [ $# -gt 0 ]; do
 
     -l|--gap-binary)      shift; gap_binary="$1";;
 
-    -p)                   shift; c_options="${c_options} $1";;
+    -p)                   shift; c_options="${c_options} $1" c_dyn_options="${c_dyn_options} $1";;
 
-    -P)                   shift; c_link_options="${c_link_options} $1";;
+    -P)                   shift; c_link_options="${c_link_options} $1" c_dyn_linking="${c_dyn_linking} $1";;
+
+    -L|--addlibs)         shift; c_addlibs="${c_addlibs} $1";;
 
     *.g|*.gap|*.gd|*.gi|*.c|*.o)
                           inputs="${inputs} $1";;
@@ -348,49 +347,63 @@ fi
 
 make_compstat () {
     # make 'compstat.c' and compile it
-    temps_c="${temps_c} /tmp/$$compstat.c"
-    echo     "/* made by 'gac', can be thrown away */"   >  /tmp/$$compstat.c
-    echo     "#include \"src/compiled.h\""                   >> /tmp/$$compstat.c
+    temps_c="${temps_c} ${gactmp}/$$compstat.c"
+    echo     "/* made by 'gac', can be thrown away */"   >  ${gactmp}/$$compstat.c
+    echo     "#include \"src/compiled.h\" "                   >> ${gactmp}/$$compstat.c
 
-    echo     "#ifndef AVOID_PRECOMPILED"                         >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__type1 ( void );"     >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__filter1 ( void );"   >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__oper1( void );"      >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__random( void );"     >> /tmp/$$compstat.c
-    echo     "#endif"                                            >> /tmp/$$compstat.c
+    echo     "#ifndef AVOID_PRECOMPILED"                         >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__type1 ( void );"     >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__filter1 ( void );"   >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__oper1( void );"      >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__random( void );"     >> ${gactmp}/$$compstat.c
+    echo     "#endif"                                            >> ${gactmp}/$$compstat.c
 
     for name in ${names}; do
         echo "extern StructInitInfo * Init__${name} ( void );" \
-						         >> /tmp/$$compstat.c
+						         >> ${gactmp}/$$compstat.c
     done
 
-    echo     "InitInfoFunc CompInitFuncs [] = {"         >> /tmp/$$compstat.c
-    echo     "#ifndef AVOID_PRECOMPILED"                 >> /tmp/$$compstat.c
-    echo     "    Init__methsel1,"                       >> /tmp/$$compstat.c
-    echo     "    Init__type1,"                          >> /tmp/$$compstat.c
-    echo     "    Init__oper1,"                          >> /tmp/$$compstat.c
-    echo     "    Init__filter1,"                        >> /tmp/$$compstat.c
-    echo     "    Init__random,"                         >> /tmp/$$compstat.c
-    echo     "#endif"                                    >> /tmp/$$compstat.c
+    echo     "InitInfoFunc CompInitFuncs [] = {"         >> ${gactmp}/$$compstat.c
+    echo     "#ifndef AVOID_PRECOMPILED"                 >> ${gactmp}/$$compstat.c
+    echo     "    Init__methsel1,"                       >> ${gactmp}/$$compstat.c
+    echo     "    Init__type1,"                          >> ${gactmp}/$$compstat.c
+    echo     "    Init__oper1,"                          >> ${gactmp}/$$compstat.c
+    echo     "    Init__filter1,"                        >> ${gactmp}/$$compstat.c
+    echo     "    Init__random,"                         >> ${gactmp}/$$compstat.c
+    echo     "#endif"                                    >> ${gactmp}/$$compstat.c
 
     for name in ${names}; do
-        echo "    Init__${name},"                        >> /tmp/$$compstat.c
+        echo "    Init__${name},"                        >> ${gactmp}/$$compstat.c
     done
-    echo "    0"                                         >> /tmp/$$compstat.c
-    echo "};"                                            >> /tmp/$$compstat.c
-    temps_o="/tmp/$$compstat.o ${temps_o}"
-    c_compile /tmp/$$compstat.o /tmp/$$compstat.c
-    echo rm -f /tmp/$$compstat.c
-    rm -f /tmp/$$compstat.c
-    objects="/tmp/$$compstat.o ${objects}"
+    echo "    0"                                         >> ${gactmp}/$$compstat.c
+    echo "};"                                            >> ${gactmp}/$$compstat.c
+    temps_o="${gactmp}/$$compstat.o ${temps_o}"
+    c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c "${c_options}"
+    echo rm -f ${gactmp}/$$compstat.c
+    rm -f ${gactmp}/$$compstat.c
+    objects="${gactmp}/$$compstat.o ${objects}"
 }
 
+make_tmpdir () {
+    basetmp=${TMPDIR:-/tmp}; #honor the TMPDIR environment variable.
+    gactmp="$basetmp/gac$$";
+    mkdir "$gactmp" || exit 1;
+}
+
+#On systems with mktemp(1) this function is better:
+#make_tmpdir ()
+#{
+#    gactmp=`mktemp -d -t "gacXXXXXXX"`;
+#}
 
 #############################################################################
 ##
 ##  main loop
 ##
+
+#Make temporary directory
+make_tmpdir;
 
 # loop over the input files
 for input in ${inputs}; do
@@ -413,16 +426,31 @@ for input in ${inputs}; do
 
 
 #  static link phase
-if [ $comp_mode = "comp_static" -a $comp_howfar = "link" ]; then
-    make_compstat
+if [ $comp_howfar = "link" ]; then
+    if [ $comp_mode = "comp_static" ]; then
+        make_compstat
 
-    # link everything together
-    if [ "X${output}" = "X" ]; then output="gacout"; fi
-    for object in $OBJECTS;  do
-        objects="${gap_binary}/${object} ${objects}"
-    done
-    c_link ${output} "${objects}"
+        # link everything together
+        if [ "X${output}" = "X" ]; then output="gacout"; fi
+
+        for object in $OBJECTS;  do
+            objects="${gap_binary}/${object} ${objects}"
+        done
+        for object in $EXTOBJS;  do
+            objects="${gap_dir}/${object} ${objects}"
+        done
+
+        c_link ${output} "${objects}"
+
+    else
+        c_link_dyn ${output} "${objects}"
+    fi
+    
     echo rm -f ${temps_o}
     rm -f ${temps_o}
 fi
+
+#Remove temporary directory.
+#We may assume it is empty at this stage.
+rmdir "${gactmp}"
 

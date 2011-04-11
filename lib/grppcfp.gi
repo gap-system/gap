@@ -2,8 +2,9 @@
 ##
 #W  grppcfp.gi                  GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some functions to convert a pc group into an
 ##  fp group and vice versa.
@@ -37,6 +38,11 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
 
     n:=Length(pcgs);
     F    := FreeGroup( n, str );
+    if n=0 then
+      phi:=GroupHomomorphismByImagesNC(GroupOfPcgs(pcgs),F/[],[],[]);
+      SetIsBijective( phi, true );
+      return phi;
+    fi;
     gens := GeneratorsOfGroup( F );
     pis  := RelativeOrders( pcgs );
     rels := [ ];
@@ -106,20 +112,6 @@ function( G,p,nam )
     Error("pcgs does not generate the group");
   fi;
   return IsomorphismFpGroupByPcgs( p, nam);
-end );
-               
-#############################################################################
-##
-#F  SmithNormalFormSQ( mat )
-##
-##  returns D = diagonalised form, D = P * M * Q, I = Q^-1
-##
-InstallGlobalFunction( SmithNormalFormSQ, function( M )
-local r;
-  Info(InfoWarning,1,"Obsolete function  `SmithNormalFormSQ',\n",
-  "use `NormalFormIntMat' instead");
-  r:=NormalFormIntMat(M,15);
-  return rec(P:=r.rowtrans,Q:=r.coltrans,D:=r.normal,I:=r.coltrans^-1);
 end );
 
 #############################################################################
@@ -245,7 +237,7 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
                 imgs   := imgs,
                 prei   := prei );
   elif IsMapping(F) then
-    if IsWholeFamily(Image(F)) then
+    if IsSurjective(F) and IsWholeFamily(Range(F)) then
       return rec(source:=Source(F),
 		image:=Parent(Image(F)), # parent will replace full group
 		                         # with other gens.
@@ -711,7 +703,6 @@ local field, dim, rep, lift,all,dims,allmo,mo,start,found,genum,genepi;
   field := GF(prime);
   start:=epi;
   dims:=List(CharacterDegrees(epi.image,prime),i->i[1]);
-dims:=[1..4];
 
   genum:=Length(Pcgs(epi.image)); # number of generators of the starting
                                   # group. (We need to consider nontrivial
@@ -777,10 +768,13 @@ end );
 #F  SQ( <F>, <...> ) / SolvableQuotient( <F>, <...> )
 ##
 InstallGlobalFunction( SolvableQuotient, function ( F, primes )
-    local G, epi, tup, lift, i, found, fac, j, p;
+    local G, epi, tup, lift, i, found, fac, j, p, iso;
 
     # initialise epimorphism
     epi := InitEpimorphismSQ(F);
+    iso := IsomorphismSpecialPcGroup( epi.image );
+    epi.image := Image( iso );
+    epi.imgs := List( epi.imgs, x -> Image( iso, x ) );
     G   := epi.image;
     Info(InfoSQ,1,"init done, quotient has size ",Size(G));
 
@@ -798,6 +792,9 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
                 return epi;
             else
                 epi := ShallowCopy( lift );
+                iso := IsomorphismSpecialPcGroup( epi.image );
+                epi.image := Image( iso );
+                epi.imgs := List( epi.imgs, x -> Image( iso, x ) );
                 G   := epi.image;
             fi;
             Info(InfoSQ,1,"found quotient of size ", Size(G));
@@ -815,6 +812,9 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
             lift := TryLayerSQ( epi, tup );
             if not IsBool( lift ) then
                 epi := ShallowCopy( lift );
+                iso := IsomorphismSpecialPcGroup( epi.image );
+                epi.image := Image( iso );
+                epi.imgs := List( epi.imgs, x -> Image( iso, x ) );
                 G := epi.image;
                 found := true;
                 i := 1; 
@@ -839,6 +839,9 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
                 lift := TryLayerSQ( epi, fac[j] );
                 if not IsBool( lift ) then
                     epi := ShallowCopy( lift );
+                    iso := IsomorphismSpecialPcGroup( epi.image );
+                    epi.image := Image( iso );
+                    epi.imgs := List( epi.imgs, x -> Image( iso, x ) );
                     G := epi.image;
                     found := true;
                     i := primes / Size( G );
@@ -854,5 +857,12 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
     return epi;
 end );
 
-#InstallGlobalFunction( SQ, SolvableQuotient );
+InstallGlobalFunction(EpimorphismSolvableQuotient,function(arg)
+local g, sq, hom;
+  g:=arg[1];
+  sq:=CallFuncList(SQ,arg);
+  hom:=GroupHomomorphismByImages(g,sq.image,GeneratorsOfGroup(g),sq.imgs);
+  return hom;
+end);
+
 

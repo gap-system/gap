@@ -1,12 +1,13 @@
 #############################################################################
 ##
-#W  stbc.gi                     GAP library                    Heiko Thei"sen
-#W                                                               'Akos Seress
+#W  stbc.gi                     GAP library                    Heiko Theißen
+#W                                                               Ákos Seress
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.stbc_gi :=
     "@(#)$Id$";
@@ -41,8 +42,8 @@ InstallOtherMethod( StabChainOp,"empty base", true,
     return StabChainOp( G, rec( base := base ) );
 end );
 
-InstallMethod( StabChainOp,"trivial group", true,
-  [ IsPermGroup and IsTrivial, IsRecord ], 0,
+InstallMethod( StabChainOp,"trivial group",
+  [ IsPermGroup and IsTrivial, IsRecord ],
     function( G, options )
     local   S,  T,  pnt;
     
@@ -61,8 +62,8 @@ InstallMethod( StabChainOp,"trivial group", true,
     return S;
 end );
 
-InstallMethod( StabChainOp,"group and option", true,
-  [ IsPermGroup, IsRecord ], 0,
+InstallMethod( StabChainOp,"group and option",
+  [ IsPermGroup, IsRecord ],
     function( G, options )
     local   S,  T,  degree,  pcgs;
     
@@ -133,8 +134,9 @@ InstallMethod( StabChainOp,"group and option", true,
             if degree > 100  then
                 
                 # random Schreier-Sims
-                S := StabChainRandomPermGroup
-                     ( ShallowCopy( GeneratorsOfGroup( G ) ), options );
+                S := StabChainRandomPermGroup(
+                         ShallowCopy( GeneratorsOfGroup( G ) ), One( G ),
+                         options );
                 
             else
             
@@ -185,6 +187,22 @@ end );
 
 #############################################################################
 ##
+#F  TrimStabChain( <C>,<n> )
+##
+##
+InstallGlobalFunction(TrimStabChain,function( C,n )
+local i;
+  # typically all permutations in a stabilizer chain are just links to the
+  # `labels' component. Thus reducing here will make them all small.
+  for i in C.labels do
+    if IsInternalRep(i) then
+      TRIM_PERM(i,n);
+    fi;
+  od;
+end);
+
+#############################################################################
+##
 #F  CopyStabChain( <C> )  . . . . . . . . . . . . . . . . . . . copy function
 ##
 ##  This function produces a memory-disjoint copy of a stabilizer chain, with
@@ -196,11 +214,11 @@ end );
 ##  This is useful for  stabiliser sub-chains that  have been obtained as the
 ##  (iterated) `stabilizer' component of a bigger chain.
 ##
-InstallGlobalFunction(CopyStabChain,function( C )
-    local   Xlabels,  S,  len,  xlab,  need,  poss,  i;
-    
+InstallGlobalFunction(CopyStabChain,function( C1 )
+    local   C,Xlabels,  S,  len,  xlab,  need,  poss,  i;
+
     # To begin with, make a deep copy.
-    C := StructuralCopy( C );
+    C := StructuralCopy( C1 );
     
     # First pass: Collect the necessary genlabels.
     Xlabels := [  ];
@@ -324,33 +342,31 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
     
     # In the case of random construction, see whether  we know an upper limit
     # for the size.
-    if options.random < 1000  then
-        if IsBound( options.size ) then
-            options.limit := options.size;
-        elif not IsBound( options.limit )  then
-            if IsBound( StabChainOptions( G ).limit )  then
-                options.limit := StabChainOptions( G ).limit;
-            else
-                P := Parent( G );
-                while     not HasSize( P )
-                      and not IsBound( StabChainOptions( P ).limit )
-                      and not IsIdenticalObj( P, Parent( P ) )  do
-                    P := Parent( P );
-                od;
-                if HasSize( P )  then
-                    options.limit := Size( P );
-                elif IsBound( StabChainOptions( P ).limit )  then
-                    options.limit := StabChainOptions( P ).limit;
-                fi;
-            fi;
-        fi;
+    if IsBound( options.size ) then
+	options.limit := options.size;
+    elif not IsBound( options.limit )  then
+	if IsBound( StabChainOptions( G ).limit )  then
+	    options.limit := StabChainOptions( G ).limit;
+	else
+	    P := Parent( G );
+	    while     not HasSize( P )
+		  and not IsBound( StabChainOptions( P ).limit )
+		  and not IsIdenticalObj( P, Parent( P ) )  do
+		P := Parent( P );
+	    od;
+	    if HasSize( P )  then
+		options.limit := Size( P );
+	    elif IsBound( StabChainOptions( P ).limit )  then
+		options.limit := StabChainOptions( P ).limit;
+	    fi;
+	fi;
     fi;
 
 end);
 
 #############################################################################
 ##
-#F  StabChainBaseStrongGenerators( <base>, <sgs>,<one> )
+#F  StabChainBaseStrongGenerators( <base>, <sgs>[, <one>] )
 ##
 InstallGlobalFunction(StabChainBaseStrongGenerators,function(arg)
 local   base,sgs,one,S,  T,  pnt;
@@ -360,7 +376,7 @@ local   base,sgs,one,S,  T,  pnt;
     if Length(arg)=3 then
       one:=arg[3];
     else
-      one:=();
+      one:= One(arg[2][1]);
     fi;
     S := EmptyStabChain( [  ], one );
     T := S;
@@ -717,7 +733,7 @@ InstallGlobalFunction( StabChainSwap, function( S )
     # set $T = S$ and compute $b^T$ and a transversal $T/T_b$
     T := EmptyStabChain( S.labels, S.identity, b );
     Unbind( T.generators );
-    AddGeneratorsExtendSchreierTree( T, S.labels{ S.genlabels } );
+    AddGeneratorsExtendSchreierTree( T, S.generators );
 
     # initialize $Tstab$, which will become $T_b$
     Tstab := EmptyStabChain( [  ], S.identity, a );
@@ -774,7 +790,6 @@ InstallGlobalFunction( StabChainSwap, function( S )
     # copy everything back into the stabchain
     S.labels      := T.labels;
     S.genlabels   := T.genlabels;
-    S.generators  := S.labels{ S.genlabels };
     S.orbit       := T.orbit;
     S.translabels := T.translabels;
     S.transversal := T.transversal;
@@ -783,7 +798,10 @@ InstallGlobalFunction( StabChainSwap, function( S )
     else
         S.stabilizer.labels      := Tstab.labels;
         S.stabilizer.genlabels   := Tstab.genlabels;
-        S.stabilizer.generators  := Tstab.labels{ Tstab.genlabels };
+	if not IsBound(Tstab.generators) then
+	  Tstab.generators:=Tstab.labels{Tstab.genlabels};
+	fi;
+        S.stabilizer.generators  := Tstab.generators;
         S.stabilizer.orbit       := Tstab.orbit;
         S.stabilizer.translabels := Tstab.translabels;
         S.stabilizer.transversal := Tstab.transversal;
@@ -792,31 +810,6 @@ InstallGlobalFunction( StabChainSwap, function( S )
     return true;
 end );
 
-#############################################################################
-##
-#F  InsertElmList( <list>, <pos>, <elm> ) . . . insert an element into a list
-##
-##  Perhaps this should be an internal function?
-##
-InstallGlobalFunction( InsertElmList, function( list, pos, elm )
-    local   len;
-    
-    len := Length( list );
-    list{ [ pos + 1 .. len + 1 ] } := list{ [ pos .. len ] };
-    list[ pos ] := elm;
-end );
-
-#############################################################################
-##
-#F  RemoveElmList( <list>, <pos> )  . . . . . . . .  remove element from list
-##
-InstallGlobalFunction( RemoveElmList, function( list, pos )
-    local   len;
-    
-    len := Length( list );
-    list{ [ pos .. len - 1 ] } := list{ [ pos + 1 .. len ] };
-    Unbind( list[ len ] );
-end );
 
 #############################################################################
 ##
@@ -830,9 +823,9 @@ InstallGlobalFunction( LabsLims, function( lab, hom, labs, lims )
         AddSet( labs, lab );
         pos := Position( labs, lab );
         if IsFunction( hom )  then
-            InsertElmList( lims, pos, hom( lab ) );
+            Add(lims, hom(lab), pos);
         else
-            InsertElmList( lims, pos, lab ^ hom );
+            Add(lims, lab ^ hom, pos);
         fi;
     fi;
     return lims[ pos ];
@@ -1118,7 +1111,7 @@ local   S;
            generators := [  ],
              identity := arg[ 2 ] );
     if Length( S.labels ) = 0  or  S.labels[ 1 ] <> S.identity  then
-        InsertElmList( S.labels, 1, S.identity );
+        Add( S.labels, S.identity, 1);
     fi;
     if Length( arg ) >= 4  then
         S.labelimages := arg[ 3 ];
@@ -1303,7 +1296,8 @@ local   p,i,a,bp,pp;
     
     while not IsEmpty( S.genlabels )  do
 	
-	if IsPlistRep(S.orbit) and IsPosInt(S.orbit[1]) then
+	if IsPlistRep(S.orbit) and IsPosInt(S.orbit[1]) 
+	  and IsInternalRep(g) then
 	  p:=SMALLEST_IMG_TUP_PERM(S.orbit,g);
 	else
 	  p:=infinity;
@@ -1695,18 +1689,13 @@ end);
 InstallMethod( ViewObj,"stabilizer chain records", true,
   [ IsRecord ], 0,
 function(r)
-local s,sz;
+local sz;
   if not (IsBound(r.stabilizer) and IsBound(r.generators) and 
           IsBound(r.orbit) and IsBound(r.identity) and
           IsBound(r.transversal)) then
     TryNextMethod();
   fi;
-  s:=r;
-  sz:=1;
-  while IsBound(s.stabilizer) and Length(s.orbit)>1 do
-    sz:=sz*Length(s.orbit);
-    s:=s.stabilizer;
-  od;
+  sz:= SizeStabChain(r);
 
   Print("<stabilizer chain record, Base ",BaseStabChain(r),
         ", Orbit length ",Length(r.orbit),", Size: ",sz,">");
@@ -1714,4 +1703,5 @@ end);
 
 #############################################################################
 ##
-#E  stbc.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

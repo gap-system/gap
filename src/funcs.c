@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  funcs.c                     GAP source                   Martin Schoenert
+*W  funcs.c                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the function interpreter package.
 **
@@ -96,6 +97,36 @@ UInt ExecProccallOpts(
 **  'FUNC_CALL(<call>)'   with   the   arguments   'ARGI_CALL(<call>,1)'   to
 **  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
 */
+
+static Obj DispatchFuncCall( Obj func, Int nargs, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6) 
+{ 
+  Obj arglist;
+  if (nargs != -1) {
+    arglist = NEW_PLIST(T_PLIST_DENSE, nargs);
+    SET_LEN_PLIST(arglist, nargs);
+    switch(nargs) {
+    case 6: 
+      SET_ELM_PLIST(arglist,6, arg6);
+    case 5:
+      SET_ELM_PLIST(arglist,5, arg5);
+    case 4: 
+      SET_ELM_PLIST(arglist,4, arg4);
+    case 3:
+      SET_ELM_PLIST(arglist,3, arg3);
+    case 2: 
+      SET_ELM_PLIST(arglist,2, arg2);
+    case 1:
+      SET_ELM_PLIST(arglist,1, arg1);
+    case 0:
+      CHANGED_BAG(arglist);
+    }
+  } else {
+    arglist = arg1;
+  }
+  return DoOperation2Args(CallFuncListOper, func, arglist);
+}
+
+
 UInt            ExecProccall0args (
     Stat                call )
 {
@@ -104,16 +135,14 @@ UInt            ExecProccall0args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
 
     /* call the function                                                   */
     SET_BRK_CALL_TO( call );
-    CALL_0ARGS( func );
+    if (TNUM_OBJ(func) != T_FUNCTION)
+      DispatchFuncCall(func, 0, (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+    else {
+      CALL_0ARGS( func );
+    }
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
 				       READ() and the user quit from a break
 				       loop inside it */
@@ -132,20 +161,19 @@ UInt            ExecProccall1args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
+  
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-
+ 
     /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    CALL_1ARGS( func, arg1 );
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+    if (TNUM_OBJ(func) != T_FUNCTION)
+      DispatchFuncCall(func, 1, (Obj) arg1,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+    else {
+      SET_BRK_CALL_TO( call );
+      CALL_1ARGS( func, arg1 );
+    } 
+   if (UserHasQuit || UserHasQUIT) /* the procedure must have called
 				       READ() and the user quit from a break
 				       loop inside it */
       ReadEvalError();
@@ -164,21 +192,19 @@ UInt            ExecProccall2args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
+ 
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
     /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    CALL_2ARGS( func, arg1, arg2 );
-
+   if (TNUM_OBJ(func) != T_FUNCTION)
+      DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+   else {
+     SET_BRK_CALL_TO( call );
+     CALL_2ARGS( func, arg1, arg2 );
+   }
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
 				       READ() and the user quit from a break
 				       loop inside it */
@@ -198,22 +224,19 @@ UInt            ExecProccall3args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
-
+ 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
 
     /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    CALL_3ARGS( func, arg1, arg2, arg3 );
-
+    if (TNUM_OBJ(func) != T_FUNCTION)
+      DispatchFuncCall(func, 3, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+    else {
+      SET_BRK_CALL_TO( call );
+      CALL_3ARGS( func, arg1, arg2, arg3 );
+    }
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
 				       READ() and the user quit from a break
 				       loop inside it */
@@ -234,12 +257,7 @@ UInt            ExecProccall4args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
+ 
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
@@ -248,9 +266,12 @@ UInt            ExecProccall4args (
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
 
     /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
-
+    if (TNUM_OBJ(func) != T_FUNCTION)
+      DispatchFuncCall(func, 4, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) 0,  (Obj) 0);    
+    {
+      SET_BRK_CALL_TO( call );
+      CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
+    }
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
 				       READ() and the user quit from a break
 				       loop inside it */
@@ -287,11 +308,14 @@ UInt            ExecProccall5args (
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
 
     /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
-
+    if (TNUM_OBJ(func) != T_FUNCTION)
+      DispatchFuncCall(func, 5, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) 0L);    
+    else {
+      SET_BRK_CALL_TO( call );
+      CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
+    }
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
+					 READ() and the user quit from a break
 				       loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -312,13 +336,7 @@ UInt            ExecProccall6args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
-
+ 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
@@ -328,9 +346,12 @@ UInt            ExecProccall6args (
     arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
 
     /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
-
+    if (TNUM_OBJ(func) != T_FUNCTION)
+      DispatchFuncCall(func, 6, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) arg6);    
+    else {
+      SET_BRK_CALL_TO( call );
+      CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
+    }
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
 				       READ() and the user quit from a break
 				       loop inside it */
@@ -350,12 +371,7 @@ UInt            ExecProccallXargs (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
+ 
 
     /* evaluate the arguments                                              */
     args = NEW_PLIST( T_PLIST, NARG_SIZE_CALL(SIZE_STAT(call)) );
@@ -367,8 +383,12 @@ UInt            ExecProccallXargs (
     }
 
     /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    CALL_XARGS( func, args );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      DoOperation2Args(CallFuncListOper, func, args);
+    } else {
+      SET_BRK_CALL_TO( call );
+      CALL_XARGS( func, args );
+    }
 
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
 				       READ() and the user quit from a break
@@ -419,6 +439,7 @@ Obj EvalFunccallOpts(
 **  'FUNC_CALL(<call>)'    with  the   arguments    'ARGI_CALL(<call>,1)'  to
 **  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
 */
+
 Obj             EvalFunccall0args (
     Expr                call )
 {
@@ -427,13 +448,9 @@ Obj             EvalFunccall0args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_0ARGS( func );
@@ -459,17 +476,15 @@ Obj             EvalFunccall1args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
-
-    /* evaluate the arguments                                              */
+      /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
 
-    /* call the function and return the result                             */
+ 
+   if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    }
+
+   /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     result = CALL_1ARGS( func, arg1 );
     if (UserHasQuit || UserHasQUIT) /* the procedure must have called
@@ -495,16 +510,14 @@ Obj             EvalFunccall2args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
+
+   if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    }
 
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
@@ -533,17 +546,15 @@ Obj             EvalFunccall3args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
+
+   if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
+    }
 
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
@@ -573,18 +584,15 @@ Obj             EvalFunccall4args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
-
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
+
+   if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
+    }
 
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
@@ -615,12 +623,6 @@ Obj             EvalFunccall5args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
@@ -628,6 +630,10 @@ Obj             EvalFunccall5args (
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
+
+  if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
+    }
 
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
@@ -659,12 +665,6 @@ Obj             EvalFunccall6args (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
@@ -673,6 +673,10 @@ Obj             EvalFunccall6args (
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
     arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
+
+  if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
+    }
 
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
@@ -701,12 +705,6 @@ Obj             EvalFunccallXargs (
 
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
 
     /* evaluate the arguments                                              */
     args = NEW_PLIST( T_PLIST, NARG_SIZE_CALL(SIZE_EXPR(call)) );
@@ -716,6 +714,11 @@ Obj             EvalFunccallXargs (
         SET_ELM_PLIST( args, i, argi );
         CHANGED_BAG( args );
     }
+
+  if (TNUM_OBJ(func) != T_FUNCTION) {
+      return DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    }
+
 
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
@@ -765,19 +768,24 @@ Obj             EvalFunccallXargs (
 **
 */
 
-
-static Int RecursionDepth;
-static UInt RecursionTrapInterval = 5000;
+Int RecursionDepth;
+static UInt RecursionTrapInterval;
 
 static void RecursionDepthTrap( void )
 {
     Int recursionDepth;
-    recursionDepth = RecursionDepth;
-    RecursionDepth = 0;
-    ErrorReturnVoid( "recursion depth trap (%d)\n",         
-		     (Int)recursionDepth, 0L,               
-		     "you may 'return;'" );
-    RecursionDepth = recursionDepth;
+    /* in interactive work the RecursionDepth could become slightly negative
+     * when quit-ting a higher level brk-loop to a lower level one.
+     * Therefore we don't do anything if  RecursionDepth <= 0
+    */
+    if (RecursionDepth > 0) {
+        recursionDepth = RecursionDepth;
+        RecursionDepth = 0;
+        ErrorReturnVoid( "recursion depth trap (%d)\n",         
+                         (Int)recursionDepth, 0L,               
+                         "you may 'return;'" );
+        RecursionDepth = recursionDepth;
+    }
 }
      
 #ifndef SYS_IS_MAC_MWC
@@ -845,13 +853,23 @@ Obj DoExecFunc0args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
-    /* switch back to the old values bag                                   */
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* Switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
-    /* return the result                                                   */
-    return ReturnObjStat;
+      /* return the result                                                   */
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc1args (
@@ -874,13 +892,22 @@ Obj             DoExecFunc1args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc2args (
@@ -905,13 +932,22 @@ Obj             DoExecFunc2args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc3args (
@@ -938,13 +974,22 @@ Obj             DoExecFunc3args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc4args (
@@ -973,13 +1018,22 @@ Obj             DoExecFunc4args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc5args (
@@ -1010,13 +1064,22 @@ Obj             DoExecFunc5args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc6args (
@@ -1049,13 +1112,22 @@ Obj             DoExecFunc6args (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFuncXargs (
@@ -1092,13 +1164,22 @@ Obj             DoExecFuncXargs (
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 
@@ -1281,7 +1362,7 @@ void            ExecBegin ( Obj frame )
     ADDR_OBJ(execState)[2] = CurrLVars;
     /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
     CHANGED_BAG( CurrLVars );
-    ADDR_OBJ(execState)[3] = (Obj)(Int)CurrStat;
+    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)CurrStat);
     ExecState = execState;
 
     /* set up new state                                                    */
@@ -1299,7 +1380,7 @@ void            ExecEnd (
         assert( CurrStat  == 0 );
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)(Int)(ADDR_OBJ(ExecState)[3]) );
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
         SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 
@@ -1309,7 +1390,7 @@ void            ExecEnd (
     else {
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)(Int)(ADDR_OBJ(ExecState)[3]) );
+        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(ExecState)[3]) ));
         SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 
@@ -1376,6 +1457,8 @@ static Int InitLibrary (
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  RecursionTrapInterval = 5000;
+  
     /* make the global variable known to Gasman                            */
     InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
 

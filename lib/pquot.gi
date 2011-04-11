@@ -177,7 +177,7 @@ AddVectorLTM := function( LTM, v )
 
         i := PositionSorted( LTM.bound, trailingEntry, 
                      function( a,b ) return a > b; end );
-        InsertElmList( LTM.bound, i, trailingEntry );
+        Add( LTM.bound, trailingEntry, i );
     fi;
     
 end;
@@ -309,7 +309,7 @@ end );
 
 #############################################################################
 ##
-#M  NumberOfNewGenerators . . . . . . .number of generators in the next layer
+#M  NumberOfNewGenerators . . . . . . number of generators in the next layer
 ##
 NumberOfNewGenerators := function( qs )
     local   nong,  d,  cl,  i;
@@ -531,6 +531,11 @@ function( qs )
     gens := GeneratorsOfRws( qs!.collector );
     n := GeneratorNumberOfQuotient(qs);
 
+    if n + NumberOfNewGenerators( qs ) >
+       qs!.collector![SCP_NUMBER_RWS_GENERATORS] then
+        return fail;
+    fi;
+
     ##  Add new generators to the p-quotient.
     for cl in Reversed([1..LengthOfDescendingSeries(qs)]) do
 
@@ -581,6 +586,9 @@ function( qs )
           qs!.numberOfHighestWeightGenerators, " new generators" );
 
     UpdateWeightInfo( qs );
+
+    return true;
+
 end );
 
 #############################################################################
@@ -1373,7 +1381,7 @@ end );
 InstallGlobalFunction( PQuotient,
 function( arg )
 
-    local   G,  p,  cl,  ngens,  collector,  qs,  t;
+    local   G,  p,  cl,  ngens,  collector,  qs,  t,noninteractive;
 
 
     ##  First we parse the arguments to this function
@@ -1435,8 +1443,10 @@ function( arg )
         fi;
     fi;
 
+    # do we call the routine within code (and want a `fail' returned if not
+    # enough generators can be created, instead of an error message.
+    noninteractive:=ValueOption("noninteractive")=true;
 
-    
     ClearPQuotientStatistics();
     qs := QuotientSystem( G, p, ngens, collector );
 
@@ -1461,7 +1471,19 @@ function( arg )
               "Class ", LengthOfDescendingSeries(qs)+1, " quotient" );
 
         Info( InfoQuotientSystem, 2, "  Define new generators." );
-        DefineNewGenerators( qs );
+        if DefineNewGenerators( qs ) = fail then
+          if noninteractive then
+	    return fail;
+	  else
+            Error( "Collector not large enough ",
+                   "to define generators for the next class.\n",
+                   "To return the current quotient (of class ",
+                   LengthOfDescendingSeries(qs), ") type `return;' ",
+                   "and `quit;' otherwise.\n" );
+
+            return qs;
+	  fi;
+        fi;
 
         Info( InfoQuotientSystem, 2, "  Compute tails." );
         ComputeTails( qs );
@@ -1508,14 +1530,16 @@ InstallMethod( EpimorphismPGroup,
 end );
 
 InstallMethod( EpimorphismPGroup,
-        "for finitely presented groups, class bound",
-        true,
-        [IsSubgroupFpGroup and IsWholeFamily, IsPosInt, IsPosInt],
-        0,
+        "for finitely presented groups, class bound", true,
+        [IsSubgroupFpGroup and IsWholeFamily, IsPosInt, IsPosInt], 0,
 function( G, p, c )
-local m;
-  m:=Minimum(30000,Maximum(256,(c*Length(GeneratorsOfGroup(G)))^2));
-  return EpimorphismQuotientSystem( PQuotient( G, p, c, m) );
+local ngens,pq;
+  ngens:=32;
+  repeat
+    ngens:=ngens*8;
+    pq:=PQuotient(G,p,c,ngens:noninteractive);
+  until pq<>fail;
+  return EpimorphismQuotientSystem(pq);
 end );
 
 
@@ -1529,24 +1553,26 @@ function( U, p )
 end );    
 
 InstallMethod( EpimorphismPGroup,
-        "for subgroups of finitely presented groups, class bound",
-        true,
-        [IsSubgroupFpGroup, IsPosInt, IsPosInt ],
-        0,
-        function( U, p, c )
+  "for subgroups of finitely presented groups, class bound",true,
+  [IsSubgroupFpGroup, IsPosInt, IsPosInt ],0,
+function( U, p, c )
+local phi, ngens, qs, psi, images, eps;
 
-    local   phi,  qs,  psi,  images,  eps;
-
-    phi := IsomorphismFpGroup( U );
+    phi:=IsomorphismFpGroup( U );
     
-    qs  := PQuotient( Image( phi ), p, c );
-    psi := EpimorphismQuotientSystem( qs );
+    ngens:=32;
+    repeat
+      ngens:=ngens*8;
+      qs:=PQuotient(Image(phi),p,c,ngens:noninteractive );
+    until qs<>fail;
+
+    psi:=EpimorphismQuotientSystem( qs );
 
 #    images := GeneratorsOfGroup( U );
 #    images := List( images , g->Image( phi, g ) );
 
-    images := MappingGeneratorsImages(phi)[2];
-    images := List( images , g->Image( psi, g ) );
+    images:=MappingGeneratorsImages(phi)[2];
+    images:=List( images , g->Image( psi, g ) );
   
     eps:=CompositionMapping2(psi,phi);
 
@@ -1598,7 +1624,12 @@ end );
 PCover := function( qs )
     local   G,  range,  defByEpim,  g;
 
-    DefineNewGenerators( qs );
+    if DefineNewGenerators( qs ) = fail then
+        Error( "Collector not large enough ",
+               "to define generators for the next class.\n" );
+        return fail;
+    fi;
+
     ComputeTails( qs );
     EvaluateConsistency( qs );
     IncorporateCentralRelations( qs );
@@ -1646,7 +1677,9 @@ end;
 ##
 #F  Nucleus . . . . . . . . . . . . . . . . . . . .  the nucleus of a p-cover
 ##
-Nucleus := function( qs, G )
+InstallMethod(Nucleus, "for a p-quotient system and a group",
+    [IsPQuotientSystem,IsGroup],
+    function( qs, G )
     local   n,  gens,  m;
 
     n    := GeneratorNumberOfQuotient( qs );
@@ -1659,7 +1692,7 @@ Nucleus := function( qs, G )
 
     return Subgroup( G, gens{[n+1..n+m]} );
     
-end;
+end);
 
 #############################################################################
 ##
@@ -1742,6 +1775,7 @@ InstallMethod(EpimorphismQuotientSystem,
     local   H,  l,  hom;
 
     H := GroupByQuotientSystem( qs );
+    SetIsPGroup( H, true );
 
     # now we write the images of the generators of G in H from qs:
     l := List(qs!.images,x->ObjByExtRep(FamilyObj(One(H)),ExtRepOfObj(x)));
@@ -1800,12 +1834,12 @@ local a,h,i,q,d,img,geni,gen,hom,lcs,c,sqa,cnqs,genum;
 	  # p-class to get the corresponding nilpotency class
 	  c:=n;
 	  cnqs:=1;
-	  genum:=Minimum(8192,(c*Length(GeneratorsOfGroup(g)))^2);
 	  #T the way we run the pq iteratively is a bit stupid. Once the
 	  #T interface is documented it would be better to run it iteratively
 	  repeat
 	    sqa:=cnqs;
 	    c:=c+1;
+            genum:=Minimum(8192,(c*Length(GeneratorsOfGroup(g)))^2);
             q := PQuotient(g,i,c,genum);
 
 	    # try to increase the number of generators in time

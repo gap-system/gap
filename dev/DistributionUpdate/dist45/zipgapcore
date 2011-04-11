@@ -1,0 +1,44 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export GAPCORE=${DISTROOT}/gapcore
+
+line='cd '${GAPCORE}
+echo $line
+$line 
+
+source ./core_checkout_time.txt
+
+ziparchive=${ARCHNAME}_core${CORETIME}.zip
+toolsarchive=tools.tar.gz
+# we clean previous attempts to wrap the same checkout
+rm -f ${ziparchive}
+rm -f ${toolsarchive}
+echo 'Creating the GAP core archive '${GAPCORE}/$ziparchive
+
+pre=${DISTNAME}
+echo $pre/etc/README.tools >> listtextfilesfortools.txt
+echo 'Adding text tools files to the archive '${GAPCORE}/$toolsarchive
+tar cfz ${toolsarchive} -T listtextfilesfortools.txt
+
+# so far we have no binary tools files, otherwise we need a step to add them
+
+mv ${toolsarchive} $pre/etc/
+echo $pre/etc/${toolsarchive} >> listbinaryfiles.txt
+       
+echo 'Adding text files to the archive '${GAPCORE}/$ziparchive
+cat listtextfiles.txt | zip -q ${ziparchive} -@
+
+echo 'Adding binary files to the archive '${GAPCORE}/$ziparchive
+cat listbinaryfiles.txt | zip -q ${ziparchive} -@
+             
+exit 0
+
+

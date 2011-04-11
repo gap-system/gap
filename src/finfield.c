@@ -1,12 +1,13 @@
 /****************************************************************************
 **
 *W  finfield.c                  GAP source                      Werner Nickel
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the  functions  to compute  with elements  from  small
 **  finite fields.
@@ -871,9 +872,6 @@ Int             LtFFE (
 **
 **  'PrFFV' prints the value <val> from the finite field <fld>.
 **
-**  This procedure is called by the 'PrVector' printing procedure, which  can
-**  not call 'PrFFE' because it would have to create  finite  field  elements
-**  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
 void            PrFFV (
     FF                  fld,
@@ -1391,13 +1389,7 @@ Obj             InvFFE (
 
     /* get the operand                                                     */
     v = VAL_FFE( op );
-    if ( v == 0 ) {
-        op = ErrorReturnObj(
-            "FFE operations: <divisor> must not be zero",
-            0L, 0L,
-            "you can replace <divisor> via 'return <divisor>;'" );
-        return INV( op );
-    }
+    if ( v == 0 ) return Fail;
 
     /* compute and return the result                                       */
     vX = QUO_FFV( 1, v, sX ); 
@@ -1680,7 +1672,7 @@ Obj FuncLOG_FFE_DEFAULT (
     FFV                 vZ, vR;         /* value of left, right            */
     FF                  fZ, fR, fX;     /* field of left, right, common    */
     UInt                qZ, qR, qX;     /* size  of left, right, common    */
-    UInt                a, b, c, d, t;  /* temporaries                     */
+    Int                 a, b, c, d, t;  /* temporaries                     */
 
     /* check the arguments                                                 */
     if ( ! IS_FFE(opZ) || VAL_FFE(opZ) == 0 ) {
@@ -1735,22 +1727,18 @@ Obj FuncLOG_FFE_DEFAULT (
 
     /* now solve <l> * (<vR>-1) = (<vZ>-1) % (<qX>-1)                      */
     /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
-    a = 1;     b = 0;
-    c = vR-1;  d = qX-1;
+    a = 1;             b = 0;
+    c = (Int) (vR-1);  d = (Int) (qX-1);
     while ( d != 0 ) {
         t = b;  b = a - (c/d) * b;  a = t;
         t = d;  d = c - (c/d) * d;  c = t;
     }
-    if ( (vZ-1) % c != 0 ) {
-        opZ = ErrorReturnObj(
-            "LogFFE: <z> must be a power of <r>",
-             0L, 0L,
-             "you can replace <z> via 'return <z>;'" );
-        return FuncLOG_FFE_DEFAULT( self, opZ, opR );
+    if ( ((Int) (vZ-1)) % c != 0 ) {
+      return Fail;
     }
 
     /* return the logarithm                                                */
-    return INTOBJ_INT( (vZ-1) / c * a );
+    return INTOBJ_INT( (((Int) (vZ-1) / c) * a) % ((Int) (qX-1)) );
 
 }
 
@@ -1853,6 +1841,9 @@ Obj FuncINT_FFE_DEFAULT (
 */
 static Obj ZOp;
 
+
+
+
 Obj FuncZ (
     Obj                 self,
     Obj                 q )
@@ -1904,6 +1895,34 @@ Obj FuncZ (
 
     /* make the root                                                       */
     return NEW_FFE( ff, (p == 2 && d == 1 ? 1 : 2) );
+}
+
+Obj FuncZ2 ( Obj self, Obj p, Obj d)
+{
+  FF ff;
+  Int ip,id,id1;
+  UInt q;
+  if (ARE_INTOBJS(p,d))
+    {
+      ip = INT_INTOBJ(p);
+      id = INT_INTOBJ(d);
+      if (ip > 1 && id > 0 && id <= 16 && ip <= 65536)
+	{
+	  id1 = id;
+	  q = ip;
+	  while (--id1 > 0 && q <= 65536)
+	    q *= ip;
+	  if (q <= 65536)
+	    {
+	      /* get the finite field                                                */
+	      ff = FiniteField( ip, id );
+	      
+	      /* make the root                                                       */
+	      return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
+	    }
+	}
+    }
+  return CALL_2ARGS(ZOp, p, d);
 }
 
 
@@ -1991,6 +2010,8 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
+    InitHandlerFunc( FuncZ2, "src/finfield.c: Z (2 args)");
+
 
     /* install the printing method                                         */
     PrintObjFuncs[ T_FFE ] = PrFFE;
@@ -2057,6 +2078,7 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
+    HDLR_FUNC(VAL_GVAR(GVarName("Z")),2) = FuncZ2;
 
     /* return success                                                      */
     return 0;

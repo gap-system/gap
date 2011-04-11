@@ -3,13 +3,15 @@ Windows Version
 @Contact
 GAP
 @Date
-2001/9/24
+2006/8/14
 @Time
 3
+@Public
+Yes
 @Need
 5
 @NeedA
-1
+3
 @Math
 0
 @Prog
@@ -23,8 +25,7 @@ possible incorporating the XGAP features.
 </P>
 
 <P>
-Provide a standard Windows installer.
+This should work together with the windows installer produced by 
+A. Konovalov (http://ukrgap.exponenta.ru/wininst/wininst.htm). 
 </P>
 @Ref
-@Rem
-The WISE uninstaller has a free license for open-source projects

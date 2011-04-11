@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for modules over Lie algebras.
 ##
@@ -188,7 +189,7 @@ InstallMethod( \+,
           while i < Length( list ) do  # take equal things together.
             if list[i][1] = list[i+1][1] then
                list[i][2]:= list[i][2]+list[i+1][2];
-               RemoveElmList( list, i+1 );
+               Remove( list, i+1 );
             else
                i:= i+1;
             fi;
@@ -401,6 +402,7 @@ InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
       for k in [1..Length(l)] do
         for i in [1..Length(l[k])] do
           p:= Position( tt, l[k][i][1] );
+          if p = fail then return fail; fi;
           v[(k-1)*Length(tt)+p]:= l[k][i][2];
         od;
       od;
@@ -575,7 +577,7 @@ InstallGlobalFunction( LieCoboundaryOperator,
          for q in [1..s+1] do
            elts:= bL{t};
            z:= elts[q];
-           RemoveElmList( elts, q );
+           Remove( elts, q );
            inp:= [c]; Append( inp, elts );
            if IsLeftAlgebraModuleElementCollection( V ) then
              val:= val - sn*( z^ValueCochain( inp ) );
@@ -818,11 +820,10 @@ InstallMethod( ConjugateDominantWeightWithWord,
           return [ ww, word ];
 end);
 
+
 #############################################################################
 ##
-#R  IsWeylOrbitIteratorRep( <it> )
-##
-##  Is the representation of the iterator of an orbit of a Weyl group.
+#M  WeylOrbitIterator( <w>, <wt> )
 ##
 ##  stack is a stack of weights, i.e., a list of elts of the form [ w, ind ]
 ##  the last elt of this list [w1,i1] is such that the i1-th refl app to
@@ -839,65 +840,13 @@ end);
 ##  permuteMidLen is true if we have to map the weights of length
 ##  midLen with the longest Weyl element...
 ##
-DeclareRepresentation( "IsWeylOrbitIteratorRep", IsComponentObjectRep,
-              [ "root", "currentWeight", "stack", "RMat",
-                "perm", "status", "permuteMidLen", "midLen",
-                "curLen", "noPosR", "isDone" ] );
 
-##############################################################################
+############################################################################
 ##
-#M
+#M  IsDoneIterator( <it> ) . . . . . . . . . . . . for Weyl orbit iterator
 ##
-##
-InstallMethod( WeylOrbitIterator,
-        "for weights of a W-orbit",
-        true,
-        [ IsWeylGroup, IsList ], 0,
+BindGlobal( "IsDoneIterator_WeylOrbit", it -> it!.isDone );
 
-        function( W, wt )
-
-    local   mu,  perm,  nu,  len,  i;
-
-    # The iterator starts at the dominant weight of the orbit.
-
-    mu:= ConjugateDominantWeight( W, wt );
-
-    # We calculate the maximum length occurring in an orbit (the length of
-    # an element of the orbit being defined as the minimum number of
-    # simple reflections that have to be applied in order to get from the
-    # dominant weight to the particular orbit element). This will determine
-    # whether we also have to apply the longest Weyl element to the elements
-    # of "middle" length.
-
-    perm:= LongestWeylWordPerm(W);
-    nu:= -Permuted( mu, perm );
-    len:= 0;
-    while nu <> mu do
-        i:= PositionProperty( nu, x -> x < 0 );
-        ApplySimpleReflection( SparseCartanMatrix(W), i, nu );
-        len:= len+1;
-    od;
-
-
-    return Objectify( NewType( IteratorsFamily,
-                   IsIterator
-                   and IsMutable
-                   and IsWeylOrbitIteratorRep ),
-                   rec( root:= mu,
-                        currentWeight:= mu,
-                        stack:= [ ],
-                        RMat:= SparseCartanMatrix(W),
-                        perm:= perm,
-                        status:= 1,
-                        permuteMidLen:=  IsOddInt( len ),
-                        midLen:=  EuclideanQuotient( len, 2 ),
-                        curLen:= 0,
-                        maxlen:= len,
-                        noPosR:= Length( PositiveRoots(
-                                RootSystem(W) ) ),
-                        isDone:= false ) );
-
-end );
 
 ############################################################################
 ##
@@ -906,11 +855,7 @@ end );
 ##  The algorithm is due to D. M. Snow (`Weyl group orbits',
 ##  ACM Trans. Math. Software, 16, 1990, 94--108).
 ##
-InstallMethod( NextIterator,
-        "for iterator of a Weyl orbit",
-        true, [ IsIterator and IsMutable and IsWeylOrbitIteratorRep ], 0,
-        function( it )
-
+BindGlobal( "NextIterator_WeylOrbit", function( it )
     local   output,  mu,  rank,  len,  stack,  bound,  foundsucc,
             pos,  i,  nu,  a;
 
@@ -970,7 +915,7 @@ InstallMethod( NextIterator,
                 a:= stack[Length(stack)];
                 mu:= a[1]; bound:= a[2]+1;
                 len:= len-1;
-                RemoveElmList( stack, Length(stack) );
+                Remove( stack, Length(stack) );
             fi;
 
         fi;
@@ -990,20 +935,66 @@ InstallMethod( NextIterator,
 
 end );
 
-############################################################################
-##
-#M  IsDoneIterator( <it> ) . . . . . . . . . . . . for Weyl orbit iterator
-##
-##
-InstallMethod( IsDoneIterator,
-        "for iterator of a Weyl orbit",
-        true, [ IsIterator and IsMutable and IsWeylOrbitIteratorRep ], 0,
-        function( it )
+InstallMethod( WeylOrbitIterator,
+        "for weights of a W-orbit",
+        [ IsWeylGroup, IsList ],
 
-    return it!.isDone;
+        function( W, wt )
 
+    local   mu,  perm,  nu,  len,  i;
+
+    # The iterator starts at the dominant weight of the orbit.
+
+    mu:= ConjugateDominantWeight( W, wt );
+
+    # We calculate the maximum length occurring in an orbit (the length of
+    # an element of the orbit being defined as the minimum number of
+    # simple reflections that have to be applied in order to get from the
+    # dominant weight to the particular orbit element). This will determine
+    # whether we also have to apply the longest Weyl element to the elements
+    # of "middle" length.
+
+    perm:= LongestWeylWordPerm(W);
+    nu:= -Permuted( mu, perm );
+    len:= 0;
+    while nu <> mu do
+        i:= PositionProperty( nu, x -> x < 0 );
+        ApplySimpleReflection( SparseCartanMatrix(W), i, nu );
+        len:= len+1;
+    od;
+
+    return IteratorByFunctions( rec(
+               IsDoneIterator := IsDoneIterator_WeylOrbit,
+               NextIterator   := NextIterator_WeylOrbit,
+#T no `ShallowCopy'!
+               ShallowCopy:= function( iter ) 
+                      return rec( root:= ShallowCopy( iter!.root ),
+                        currentWeight:= ShallowCopy( iter!.currentWeight ),
+                        stack:= ShallowCopy( iter!.stack ),
+                        RMat:= iter!.RMat,
+                        perm:= iter!.perm,
+                        status:= iter!.status,
+                        permuteMidLen:=  iter!.permuteMidLen,
+                        midLen:=  iter!.midLen,
+                        curLen:= iter!.curLen,
+                        maxlen:= iter!.maxlen,
+                        noPosR:= iter!.noPosR,
+                        isDone:= iter!.isDone );
+                     end,
+                        root:= mu,
+                        currentWeight:= mu,
+                        stack:= [ ],
+                        RMat:= SparseCartanMatrix(W),
+                        perm:= perm,
+                        status:= 1,
+                        permuteMidLen:=  IsOddInt( len ),
+                        midLen:=  EuclideanQuotient( len, 2 ),
+                        curLen:= 0,
+                        maxlen:= len,
+                        noPosR:= Length( PositiveRoots(
+                                RootSystem(W) ) ),
+                        isDone:= false ) );
 end );
-
 
 
 #############################################################################
@@ -1313,8 +1304,8 @@ InstallMethod( DecomposeTensorProduct,
                 else
                     mlts[p]:= mlts[p]+mult;
                     if mlts[p] = 0 then
-                        RemoveElmList( mlts, p );
-                        RemoveElmList( wts, p );
+                        Remove( mlts, p );
+                        Remove( wts, p );
                     fi;
 
                 fi;
@@ -1492,34 +1483,9 @@ InstallMethod( \+,
                 IsUEALatticeElement and IsPackedElementDefaultRep], 0,
         function( x, y )
 
-    local   ex,  ey,  mons,  cfs,  i,  lst, len;
-
-    ex:= x![1]; ey:= y![1];
-    mons:= [ ]; cfs:= [ ];
-    for i in [1,3..Length(ex)-1] do
-        Add( mons, ex[i] ); Add( cfs, ex[i+1] );
-    od;
-
-    for i in [1,3..Length(ey)-1] do
-        Add( mons, ey[i] ); Add( cfs, ey[i+1] );
-    od;
-    SortParallel( mons, cfs );
-    lst:= [ ];
-    for i in [1..Length( mons )] do
-        len:= Length(lst);
-        if len > 0 and lst[len-1] = mons[i] then
-            lst[len]:= lst[len]+cfs[i];
-            if lst[len] = 0*lst[len] then
-                Unbind( lst[len-1] ); Unbind( lst[len] );
-                lst:= Filtered( lst, x -> IsBound(x) );
-            fi;
-
-        else
-            Add( lst, mons[i] ); Add( lst, cfs[i] );
-        fi;
-    od;
-    return ObjByExtRep( FamilyObj(x), lst );
+    return ObjByExtRep( FamilyObj(x), ZippedSum( x![1], y![1], 0, [\<,\+] ) );
 end );
+
 
 
 InstallMethod( AdditiveInverseOp,
@@ -1642,8 +1608,8 @@ InstallGlobalFunction( CollectUEALatticeElement,
          e:= Filtered( e, x-> IsBound(x) );
          # `e' now contains the rest of the polynomial.
 
-         p:= PolynomialByExtRep( fam, fac )/(vars[1]^d);
-         q:= PolynomialByExtRep( fam, e );
+         p:= PolynomialByExtRepNC( fam, fac )/(vars[1]^d);
+         q:= PolynomialByExtRepNC( fam, e );
 
          # So now we have `pol = vars[1]^d*p+q', where `p' does not contain
          # `vars[1]' and `q' has lower degree in `vars[1]'. We can also
@@ -2817,23 +2783,20 @@ InstallMethod(\+,
 
         # See whether in `lu' there is a vector with the same number as
         # `lv[k]'. If not, then insert...
-
+        
+#        p := PositionFirstComponent(vecs, lv[k]);
         p:= PositionSorted( vecs, lv[k], function( a, b ) return a[1] < b[1];
                                                                 end );
-        if p > Length( vecs ) then
-            Add( vecs, lv[k] );
-            Add( lu, lv[k] );
-            Add( lu, lv[k+1] );
-        elif vecs[p][1] <> lv[k][1] then
-            InsertElmList( vecs, p, lv[k] );
-            InsertElmList( lu, 2*p-1, lv[k] );
-            InsertElmList( lu, 2*p, lv[k+1] );
+        if p > Length( vecs ) or vecs[p][1] <> lv[k][1] then
+            Add(vecs, lv[k],p);
+            Add(lu, lv[k], 2*p-1);
+            Add(lu, lv[k+1], 2*p);
         else
             cf:= lu[2*p]+lv[k+1];
             if cf = 0*cf then
-                RemoveElmList( lu, 2*p-1 );
-                RemoveElmList( lu, 2*p-1 );
-                RemoveElmList( vecs, p );
+                Remove( lu, 2*p-1 );
+                Remove( lu, 2*p-1 );
+                Remove( vecs, p );
             else
                 lu[2*p]:= cf;
             fi;
@@ -3118,12 +3081,10 @@ TriangulizeWeightRepElementList:= function( ww )
                     ww[i]:= ww[i] - cf*ww[k];
                     for b in basechange[k] do
                         b1:= [ b[1], -cf*b[2] ];
-                        pos:= PositionSorted( basechange[i], b1,
-                                      function( x, y ) return x[1] < y[1];
-                                  end );
+                        pos := PositionFirstComponent( basechange[i], b1[1]);
                         if Length( basechange[i] ) < pos or 
-                                     basechange[i][pos][1] <> b1[1] then
-                            InsertElmList( basechange[i], pos, b1 );
+                           basechange[i][pos][1] <> b1[1] then
+                            Add(basechange[i], b1, pos);
                         else
                             basechange[i][pos][2]:= basechange[i][pos][2]+
                                                               b1[2];
@@ -3494,14 +3455,10 @@ InstallMethod( HighestWeightModule,
                       # We search for the position in `z' where to insert y_i.
 
                         pos1:= PositionSorted( z, i );
-                        if pos1 > Length( z ) then
-                            Add( em, i );
-                            Add( em, 1 );
-                        elif z[pos1] <> i then
-
+                        if pos1 > Length( z ) or z[pos1] <> i then
                             # There is no y_i in `m', so insert it.
-                            InsertElmList( em, 2*pos1-1, i );
-                            InsertElmList( em, 2*pos1, 1 );
+                            Add(em, i, 2*pos1-1);
+                            Add(em, 1, 2*pos1);
                         else
                             # We increase the exponent of y_i by 1.
                             em[2*pos1]:= em[2*pos1]+1;

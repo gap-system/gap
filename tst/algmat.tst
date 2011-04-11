@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -204,9 +206,9 @@ gap> fullcen:= FullMatrixAlgebraCentralizer( CF(5),
 gap> Dimension( fullcen );
 2
 
-gap> fullcen:= FullMatrixAlgebraCentralizer( GF(9),
+gap> fullcen:= FullMatrixAlgebraCentralizer( GF(3^6),
 >                  GeneratorsOfAlgebra( a ) );
-<algebra-with-one of dimension 1 over GF(3^2)>
+<algebra-with-one of dimension 1 over GF(3^6)>
 gap> Dimension( fullcen );
 1
 
@@ -327,7 +329,7 @@ true
 
 #############################################################################
 
-gap> STOP_TEST( "algmat.tst", 880820000 );
+gap> STOP_TEST( "algmat.tst",1441013704);
 
 
 #############################################################################

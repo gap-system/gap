@@ -3,8 +3,9 @@
 #W  ghompcgs.gi                 GAP library                      Bettina Eick
 #W							     Alexander Hulpke
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghompcgs_gi :=
     "@(#)$Id$";
@@ -510,30 +511,40 @@ end);
 InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         [ IsPcGroup, IsPcGroup ], 0,
     function( G, N )
-    local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom,pF;
+    local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom,pF,i,imgs;
     
-    pcgsG := Pcgs( G );  pcgsN := Pcgs( N );
-    if IsInducedPcgs( pcgsN )  then
-        if ParentPcgs( pcgsN ) = pcgsG  then
-            pcgsK := pcgsN;
-        elif     IsInducedPcgs( pcgsG )
-             and ParentPcgs( pcgsN ) = ParentPcgs( pcgsG )  then
-            pcgsK := NormalIntersectionPcgs( ParentPcgs( pcgsG ),
-                             pcgsN, pcgsG );
-        fi;
+    if HasSpecialPcgs(G) and HasInducedPcgsWrtSpecialPcgs(N) then
+      pcgsG := SpecialPcgs( G );
+      pcgsN := InducedPcgs(pcgsG, N ); 
+      pcgsK:=pcgsN;
+    else
+      pcgsG := Pcgs( G );
+      pcgsN := Pcgs( N );
+      if IsInducedPcgs( pcgsN )  then
+	  if ParentPcgs( pcgsN ) = pcgsG  then
+	      pcgsK := pcgsN;
+	  elif     IsInducedPcgs( pcgsG )
+	      and ParentPcgs( pcgsN ) = ParentPcgs( pcgsG )  then
+	      pcgsK := NormalIntersectionPcgs( ParentPcgs( pcgsG ),
+			      pcgsN, pcgsG );
+	  fi;
+      fi;
+      if not IsBound( pcgsK )  then
+	  pcgsK := InducedPcgsByGenerators( pcgsG, GeneratorsOfGroup( N ) );
+      fi;
     fi;
-    if not IsBound( pcgsK )  then
-        pcgsK := InducedPcgsByGenerators( pcgsG, GeneratorsOfGroup( N ) );
-    fi;
+
     pcgsF := pcgsG mod pcgsK;
     F := PcGroupWithPcgs( pcgsF );
     pF:=Pcgs(F);
+    imgs:=List(pcgsG,i->PcElementByExponents(pF,
+	      ExponentsOfPcElement(pcgsF,i)));
     hom:=Objectify( NewType( GeneralMappingsFamily
                   ( ElementsFamily( FamilyObj( G ) ),
                     ElementsFamily( FamilyObj( F ) ) ),
                   IsPcgsToPcgsHomomorphism ),
-	  rec(  sourcePcgs:= pcgsF,
-		sourcePcgsImages:= pF,
+	  rec(  sourcePcgs:= pcgsG,
+		sourcePcgsImages:= imgs,
 # the following components are not really needed but expensive to compute.
 #		generators:=pcgsG,
 #		genimages:=List(pcgsG,  i->
@@ -544,35 +555,6 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
     SetSource( hom, G );
     SetRange ( hom, F );
     SetKernelOfMultiplicativeGeneralMapping( hom, GroupOfPcgs( pcgsK ) );
-    return hom;
-end );
-
-InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
-        [ IsGroup and HasSpecialPcgs, 
-          IsGroup and HasInducedPcgsWrtSpecialPcgs ], 0,
-    function( G, N )
-    local   pcgsG,  pcgsN,  pcgsF,  F,  hom,pF;
-    
-    pcgsG := SpecialPcgs( G );
-    pcgsN := InducedPcgs(pcgsG, N ); 
-    pcgsF := pcgsG mod pcgsN;
-    F     := PcGroupWithPcgs( pcgsF );
-    pF:=Pcgs(F);
-    hom := Objectify( NewType( GeneralMappingsFamily
-                   ( ElementsFamily( FamilyObj( G ) ),
-                     ElementsFamily( FamilyObj( F ) ) ),
-                   IsPcgsToPcgsHomomorphism ),
-	  rec(  sourcePcgs:= pcgsF,
-		sourcePcgsImages:= pF,
-# the following components are not really needed but expensive to compute.
-#		generators:=pcgsG,
-#		genimages:=List(pcgsG,  i->
-#		  PcElementByExponentsNC(pF,ExponentsOfPcElement(pcgsF,i))),
-		rangePcgs:= pF,
-		rangePcgsPreImages:= pcgsF));
-    SetSource( hom, G );
-    SetRange ( hom, F );
-    SetKernelOfMultiplicativeGeneralMapping( hom, N );
     return hom;
 end );
 
@@ -614,7 +596,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
 function( hom, elm )
 local   exp;
   exp := ExponentsOfPcElement( hom!.sourcePcgs, elm );
-  return PcElementByExponentsNC( hom!.rangePcgs, exp );
+  return PcElementByExponentsNC( hom!.sourcePcgsImages, exp );
 end );
 
 #############################################################################
@@ -626,7 +608,7 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
 function( hom, elm )
 local   exp;
     exp := ExponentsOfPcElement( hom!.rangePcgs, elm );
-    return PcElementByExponentsNC( hom!.sourcePcgs, exp );
+    return PcElementByExponentsNC( hom!.rangePcgsPreImages, exp );
 end );
 
 #############################################################################

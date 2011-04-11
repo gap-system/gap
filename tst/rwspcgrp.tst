@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -905,10 +907,10 @@ gap> Print(ExtRepOfObj( w / l[1] ),"\n");
 
 #############################################################################
 
-gap> STOP_TEST( "rwspcgrp.tst", 304775000 );
+gap> STOP_TEST( "rwspcgrp.tst",252000906);
 
 
 #############################################################################
 ##
-#E  rwspcgrp.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

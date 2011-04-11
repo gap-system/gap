@@ -2,10 +2,9 @@
 ##
 #W  process.gi                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for process.
 ##
@@ -157,25 +156,37 @@ InstallMethod( Process,
       IsOutputTextStream,
       IsList ],
 function( dir, prg, input, output, args )
-    local   name_input,  new,  name_output,  res,  new_output;
+    local   name_input,  new,  name_output,  res,  new_output, alloutput,allinput;
 
     # convert input into a file
     if not IsInputTextFileRep(input)  then
-        while PROCESS_INPUT_TEMPORARY = fail or
-          IsExistingFile( PROCESS_INPUT_TEMPORARY ) = true do
+	if (IsString(PROCESS_INPUT_TEMPORARY) and
+	  (IsReadableFile(PROCESS_INPUT_TEMPORARY) or
+	  IsWritableFile(PROCESS_INPUT_TEMPORARY))) then
+	  PROCESS_INPUT_TEMPORARY:=fail;
+	fi;
+        while PROCESS_INPUT_TEMPORARY = fail do
             PROCESS_INPUT_TEMPORARY := TmpName();
         od;
-        name_input := PROCESS_INPUT_TEMPORARY;
+	name_input := PROCESS_INPUT_TEMPORARY;
         new := OutputTextFile( name_input, true );
-        WriteAll( new, ReadAll(input) );
+        allinput := ReadAll(input);
+        if allinput= fail then
+            allinput := "";
+        fi;
+        WriteAll( new, allinput );
         CloseStream(new);
         input := InputTextFile( name_input );
     fi;
 
     # convert output into a file
     if not IsOutputTextFileRep(output)  then
-        while PROCESS_OUTPUT_TEMPORARY = fail or
-          IsExistingFile( PROCESS_OUTPUT_TEMPORARY ) = true do
+	if (IsString(PROCESS_OUTPUT_TEMPORARY) and
+	  (IsReadableFile(PROCESS_OUTPUT_TEMPORARY) or
+	  IsWritableFile(PROCESS_OUTPUT_TEMPORARY))) then
+	  PROCESS_OUTPUT_TEMPORARY:=fail;
+	fi;
+        while PROCESS_OUTPUT_TEMPORARY = fail do
             PROCESS_OUTPUT_TEMPORARY := TmpName();
         od;
         name_output := PROCESS_OUTPUT_TEMPORARY;
@@ -196,9 +207,12 @@ function( dir, prg, input, output, args )
     if IsBound(name_output)  then
         CloseStream(new_output);
         new := InputTextFile(name_output);
-        WriteAll( output, ReadAll(new) );
+        alloutput := ReadAll(new);
         CloseStream(new);
         RemoveFile(name_output);
+        if alloutput <> fail then
+            WriteAll( output, alloutput );
+        fi;
     fi;
 
     # return result of process
@@ -206,31 +220,186 @@ function( dir, prg, input, output, args )
 
 end );
 
+#############################################################################
+##
+#F  ShortFileNameWindows( <name> )
+##
+InstallGlobalFunction( ShortFileNameWindows, function( name )
+local new, a, s, suff, change, p, ns, i, j;
+  new:="";
+  # take care of heading drive letter
+  if Length(name)>2 and name[2]=':' and (name[1] in CHARS_UALPHA or name[1]
+    in CHARS_LALPHA) then
+    new:=name{[1..2]};
+    name:=name{[3..Length(name)]};
+  fi;
+  a:=0;
+  for i in [1..Length(name)+1] do
+    if i>Length(name) or name[i] in "\\/" then
+      s:=UppercaseString(name{[a+1..i-1]});
+      a:=i;
+      suff:="";
+      change:=false;
+      if i>Length(name) then
+	# last `.' in file name
+	p:=First([Length(s),Length(s)-1..1],x->s[x]='.');
+	if p<>fail then
+	  if p+3<Length(s) then
+	    change:=true;
+	  fi;
+	  suff:=Concatenation(".",s{[p+1..Minimum(p+3,Length(s))]});
+	  s:=s{[1..p-1]};
+	fi;
+      fi;
+      # strip s of illegal characters and convert
+      ns:="";
+      for j in s do
+	if j in " ." then
+	  change:=true;
+	elif j in "\"*:<>?|" then
+	  change:=true;
+	  Add(ns,'_');
+	else
+	  Add(ns,j);
+	fi;
+      od;
+      s:=ns;
+      if change or Length(s)>8 then
+	#T The ~1 is not completely correct, it could be another number. A
+	#T problem however is unlikely in practice
+	s:=Concatenation(s{[1..Minimum(6,Length(s))]},"~1");
+      fi;
+      Append(new,s);
+      Append(new,suff);
+
+      # keep \/
+      if i<=Length(name) then
+	Add(new,name[i]);
+      fi;
+    fi;
+  od;
+  return new;
+end);
 
 #############################################################################
 ##
 #F  Exec( <str_1>, <str_2>, ..., <str_n> )  . . . . . . . . execute a command
 ##
 InstallGlobalFunction( Exec, function( arg )
-    local   cmd,  i,  shell,  dir;
+    local   cmd,  i,  shell,  cs,  dir;
 
     # simply concatenate the arguments
     cmd := ShallowCopy( arg[1] );
+    if not IsString(cmd) then
+      Error("the command ",cmd," is not a name.\n",
+      "possibly a binary is missing or has not been compiled.");
+    fi;
     for i  in [ 2 .. Length(arg) ]  do
         Append( cmd, " " );
         Append( cmd, arg[i] );
     od;
 
-    # select the shell, bourne shell is the default
+    # select the shell, bourne shell is the default: sh -c cmd
     shell := Filename( DirectoriesSystemPrograms(), "sh" );
+    cs := "-c";
+
+    # on Windows, if bourne shell (possibly provided by Cygwin) is not
+    # found, then cmd.exe is used instead: cmd.exe /C cmd
+    if shell = fail and ARCH_IS_WINDOWS(  )  then
+	# cmd.exe is preferrable to old-style `command.com'
+        shell := Filename( DirectoriesSystemPrograms(), "cmd.exe" );
+        cs := "/C";
+    fi;
+
 
     # execute in the current directory
     dir := DirectoryCurrent();
 
     # execute the command
-    Process( dir, shell, InputTextUser(), OutputTextUser(), [ "-c", cmd ] );
+    Process( dir, shell, InputTextUser(), OutputTextUser(), [ cs, cmd ] );
 
 end );
+
+#############################################################################
+##
+#F  LoadWorkspace(<fnmam>)
+##
+InstallGlobalFunction(LoadWorkspace,function(fnam)
+local stream, line, p, q;
+  # test whether `fnam' is a loadable workspace
+  if IsString(fnam) then 
+    if fnam[1]='~' then
+      Error(
+"Tilde expansion to denote home directories is not supported for workspaces");
+    fi;
+    stream:=InputTextFile(fnam);
+    if stream<>fail then
+      line:=ReadLine(stream);
+      if line<>fail and Length(line)>=13 and line{[1..13]}="GAP workspace" then
+	# it seems to be a bona fide workspace
+	CloseStream(stream);
+	line:=ShallowCopy(GAPInfo.CommandLineArguments);
+	# remove previous `-L' argument
+	p:=PositionSublist(line,"-L ");
+	if p<>fail then
+	  q:=p+3;
+	  while q<=Length(line) and line[q]=' ' do
+	    q:=q+1;
+	  od;
+	  while q<=Length(line) and line[q]<>' ' do
+	    q:=q+1;
+	  od;
+	  if q<=Length(line) then
+	    line:=Concatenation(line{[1..p-1]},line{[q..Length(line)]});
+	  else
+	    line:=line{[1..p-1]};
+	  fi;
+	fi;
+        line:=Concatenation(line," -L ",fnam," ");
+	Print("... Loading workspace ...\n");
+	#Print("calling : RESTART_GAP(\"",line,"\")\n");
+        RESTART_GAP(line);
+      fi;
+      CloseStream(stream);
+    fi;
+  fi;
+  Error("<fnam> must be the name of an existing workspace file");
+end);
+
+#############################################################################
+##
+#F  Restart([<cmd>])
+##
+InstallGlobalFunction(Restart,function(arg)
+local cmd, line, p, q;
+  if Length(arg)>0 then 
+    cmd:=arg[1];
+  else
+    cmd:="";
+  fi;
+
+  line:=ShallowCopy(GAPInfo.CommandLineArguments);
+  # remove previous `-L' argument
+  p:=PositionSublist(line,"-L ");
+  if p<>fail then
+    q:=p+3;
+    while q<=Length(line) and line[q]=' ' do
+      q:=q+1;
+    od;
+    while q<=Length(line) and line[q]<>' ' do
+      q:=q+1;
+    od;
+    if q<=Length(line) then
+      line:=Concatenation(line{[1..p-1]},line{[q..Length(line)]});
+    else
+      line:=line{[1..p-1]};
+    fi;
+  fi;
+  line:=Concatenation(line," ",cmd);
+  Print("... Restarting GAP  ...\n");
+  Print(">gap4 ",line,"\n");
+  RESTART_GAP(line);
+end);
 
 
 #############################################################################

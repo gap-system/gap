@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  stats.h                     GAP source                   Martin Schoenert
+*W  stats.h                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the statements package.
 **
@@ -94,6 +95,8 @@ extern  Stat            CurrStat;
 extern  Obj             ReturnObjStat;
 
 
+extern UInt TakeInterrupt();
+
 /****************************************************************************
 **
 *F  InterruptExecStat() . . . . . . . . interrupt the execution of statements
@@ -103,7 +106,7 @@ extern  Obj             ReturnObjStat;
 **  received.  It is never called on systems that do not support signals.  On
 **  those systems the executors test 'SyIsIntr' at regular intervals.
 */
-extern  void            InterruptExecStat ( void );
+extern  void            InterruptExecStat ( );
 
 
 /****************************************************************************

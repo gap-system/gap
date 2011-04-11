@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Polycyclic Groups}
 
@@ -425,44 +426,45 @@ series. See also Section "Special Pcgs" for a more explicit possibility.
 
 \Declaration{IsPcgsElementaryAbelianSeries}
 \Declaration{PcgsElementaryAbelianSeries}
+\Declaration{IndicesEANormalSteps}
+\Declaration{EANormalSeriesByPcgs}
 
 \Declaration{IsPcgsCentralSeries}
 \Declaration{PcgsCentralSeries}
+\Declaration{IndicesCentralNormalSteps}
+\Declaration{CentralNormalSeriesByPcgs}
 
 \Declaration{IsPcgsPCentralSeriesPGroup}
 \Declaration{PcgsPCentralSeriesPGroup}
+\Declaration{IndicesPCentralNormalStepsPGroup}
+\Declaration{PCentralNormalSeriesByPcgsPGroup}
 
+\Declaration{IsPcgsChiefSeries}
 \Declaration{PcgsChiefSeries}
-
-Let $P = (g_1, \ldots, g_n)$ be a pcgs such that the pc series determined
-by <P> refines a normal series of one of the above types. To obtain the
-subgroups of this series, the following attributes can be used:
-
-\Declaration{NormalSeriesByPcgs}
-\Declaration{IndicesNormalSteps}
+\Declaration{IndicesChiefNormalSteps}
+\Declaration{ChiefNormalSeriesByPcgs}
 
 \beginexample
 gap> g:=Group((1,2,3,4),(1,2));;
 gap> p:=PcgsElementaryAbelianSeries(g);
 Pcgs([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
-gap> IndicesNormalSteps(p);
+gap> IndicesEANormalSteps(p);
 [ 1, 2, 3, 5 ]
 gap> g:=Group((1,2,3,4),(1,5)(2,6)(3,7)(4,8));;
 gap> p:=PcgsCentralSeries(g);
 Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
   (1,3)(2,4)(5,7)(6,8) ])
-gap> IndicesNormalSteps(p);
+gap> IndicesCentralNormalSteps(p);
 [ 1, 2, 4, 5, 6 ]
 gap> q:=PcgsPCentralSeriesPGroup(g);
 Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
   (1,3)(2,4)(5,7)(6,8) ])
-gap> IndicesNormalSteps(q);
+gap> IndicesPCentralNormalStepsPGroup(q);
 [ 1, 3, 5, 6 ]
 \endexample
 
-%
-% Wunsch von Herrn Neubueser: Pcgs durch gegebene Reihe!
-%
+\Declaration{IndicesNormalSteps}
+\Declaration{NormalSeriesByPcgs}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Sum and Intersection of Pcgs}
@@ -637,12 +639,11 @@ gap> modu := mpcgs mod npcgs;
 gap> mat:=LinearActionLayer( G, spec{[1,2,3]}, modu );
 [ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2>, 
   <an immutable 2x2 matrix over GF2> ]
+gap> Print( mat, "\n" );
+[ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
+  [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
+  [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ]
 \endexample
-\begintt
-gap> Print(mat);
-[ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2),
-    Z(2)^0 ] ], [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ]
-\endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Orbit Stabilizer Methods for Polycyclic Groups}

@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -46,11 +48,11 @@ GF(2^8)
 gap> f3:= GF( 2, Z(2) * [1,0,1,1,1,0,0,0,1] );
 GF(2^8)
 gap> DefiningPolynomial( f1 );
-Z(2)^0+x_1^2+x_1^3+x_1^4+x_1^8
+x_1^8+x_1^4+x_1^3+x_1^2+Z(2)^0
 gap> DefiningPolynomial( f2 );
-Z(2)^0+x_1+x_1^2+x_1^7+x_1^8
+x_1^8+x_1^7+x_1^2+x_1+Z(2)^0
 gap> DefiningPolynomial( f3 );
-Z(2)^0+x_1^2+x_1^3+x_1^4+x_1^8
+x_1^8+x_1^4+x_1^3+x_1^2+Z(2)^0
 gap> RootOfDefiningPolynomial( f1 );
 Z(2^8)
 gap> RootOfDefiningPolynomial( f2 );
@@ -110,8 +112,8 @@ gap> SquareRoots( GF(9), Z(3) );
 gap> List( AsSSortedList( GF(7) ), Int );
 [ 0, 1, 3, 2, 6, 4, 5 ]
 gap> Print(List( AsSSortedList( GF(8) ), String ),"\n");
-[ "0*Z(2)", "Z(2)", "Z(2^3)", "Z(2^3)^2", "Z(2^3)^3", "Z(2^3)^4", "Z(2^3)^5",
-  "Z(2^3)^6" ]
+[ "0*Z(2)", "Z(2)^0", "Z(2^3)", "Z(2^3)^2", "Z(2^3)^3", "Z(2^3)^4",
+  "Z(2^3)^5", "Z(2^3)^6" ]
 
 gap> FieldByGenerators( GF(2), [ Z(4), Z(8) ] );
 GF(2^6)
@@ -139,10 +141,10 @@ gap> Subfields( GF(2^6) );
 [ GF(2), GF(2^2), GF(2^3), GF(2^6) ]
 
 
-gap> STOP_TEST( "ffe.tst", 18600000 );
+gap> STOP_TEST( "ffe.tst", 18000000 );
 
 
 #############################################################################
 ##
 #E
-##
+

@@ -4,10 +4,11 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file declares the operations for tuples.
+##  This file declares the operations for direct product elements.
 ##
 Revision.tuples_gi :=
   "@(#)$Id$";
@@ -15,39 +16,25 @@ Revision.tuples_gi :=
 
 #############################################################################
 ##
-#V  InfoTuples . . . . . . . . . . . . . . . . . . . . . . . . . . Info Class
+#V  DIRECT_PRODUCT_ELEMENT_FAMILIES . . . list of all direct product elements
+#V                                                                   families
 ##
-DeclareInfoClass( "InfoTuples" );
+EmptyDirectProductElementsFamily!.defaultTupleType:= NewType(
+    EmptyDirectProductElementsFamily, IsDefaultDirectProductElementRep );
+
+SetComponentsOfDirectProductElementsFamily( EmptyDirectProductElementsFamily,
+    [] );
+
+InstallValue( DIRECT_PRODUCT_ELEMENT_FAMILIES,
+    [ [ EmptyDirectProductElementsFamily ] ] );
 
 
 #############################################################################
 ##
-#R  IsDefaultTupleRep( <obj> )  . . . . .  representation as component object
+#M  DirectProductElementsFamily( <famlist> )  . . .  family of direct product
+#M                                                                   elements
 ##
-DeclareRepresentation( "IsDefaultTupleRep",
-    IsPositionalObjectRep and IsTuple, [] );
-
-
-#############################################################################
-##
-#V  TUPLES_FAMILIES  . . . . . . . . . . . . . .  list of all tuples families
-##
-BindGlobal( "EmptyTuplesFamily",
-    NewFamily( "TuplesFamily([])", IsTuple, IsTuple ) );
-
-EmptyTuplesFamily!.defaultTupleType:= NewType( EmptyTuplesFamily,
-                                               IsDefaultTupleRep );
-
-SetComponentsOfTuplesFamily( EmptyTuplesFamily, [] );
-
-InstallValue( TUPLES_FAMILIES, [ [ EmptyTuplesFamily ] ] );
-
-
-#############################################################################
-##
-#M  TuplesFamily( <famlist> )  . . . . . . . . . family of tuples of elements
-##
-InstallMethod( TuplesFamily,
+InstallMethod( DirectProductElementsFamily,
     "for a collection (of families)",
     fam -> fam = CollectionsFamily(FamilyOfFamilies),
     [ IsCollection ],
@@ -56,12 +43,12 @@ InstallMethod( TuplesFamily,
           tuplesfam,filter,filter2;
 
     n := Length(famlist);
-    if not IsBound(TUPLES_FAMILIES[n+1]) then
+    if not IsBound(DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]) then
       tupfams:= WeakPointerObj( [] );
-      TUPLES_FAMILIES[n+1]:= tupfams;
+      DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]:= tupfams;
       freepos:= 1;
     else
-      tupfams:= TUPLES_FAMILIES[n+1];
+      tupfams:= DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1];
       len:= LengthWPObj( tupfams );
       for i in [ 1 .. len+1 ]  do
         fam:= ElmWPObj( tupfams, i );
@@ -69,7 +56,7 @@ InstallMethod( TuplesFamily,
           if not IsBound( freepos ) then
             freepos:= i;
           fi;
-        elif ComponentsOfTuplesFamily( fam ) = famlist then
+        elif ComponentsOfDirectProductElementsFamily( fam ) = famlist then
           tuplespos:= i;
           break;
         fi;
@@ -77,12 +64,14 @@ InstallMethod( TuplesFamily,
     fi;
 
     if IsBound( tuplespos ) then
-      Info( InfoTuples, 2, "Reused tuples family, length ", n );
+      Info( InfoDirectProductElements, 2,
+            "Reused direct product elements family, length ", n );
       tuplesfam:= tupfams[ tuplespos ];
     else
-      Info( InfoTuples, 1, "Created new tuples family, length ", n );
-      filter:=IsTuple;
-      filter2:=IsTupleFamily;
+      Info( InfoDirectProductElements, 1,
+            "Created new direct product elements family, length ", n );
+      filter:=IsDirectProductElement;
+      filter2:=IsDirectProductElementFamily;
       # inherit positive element comparison from the families but do not
       # trigger the computation.
       if ForAll(famlist,i->HasCanEasilyCompareElements(i) and
@@ -94,11 +83,13 @@ InstallMethod( TuplesFamily,
         filter:=filter and CanEasilyCompareElements;
         filter2:=filter2 and CanEasilyCompareElements;
       fi;
-      tuplesfam:= NewFamily( "TuplesFamily( <<famlist>> )",
-                             IsTuple , filter,filter2);
-      SetComponentsOfTuplesFamily( tuplesfam, Immutable( famlist ) );
+      tuplesfam:= NewFamily( "DirectProductElementsFamily( <<famlist>> )",
+                             IsDirectProductElement, filter, filter2 );
+      SetComponentsOfDirectProductElementsFamily( tuplesfam,
+          Immutable( famlist ) );
       SetElmWPObj( tupfams, freepos, tuplesfam );
-      tuplesfam!.defaultTupleType:=NewType(tuplesfam,  IsDefaultTupleRep );
+      tuplesfam!.defaultTupleType:= NewType( tuplesfam,
+                                        IsDefaultDirectProductElementRep );
     fi;
 
     return tuplesfam;
@@ -107,91 +98,95 @@ InstallMethod( TuplesFamily,
 
 #############################################################################
 ##
-#M  TuplesFamily( [] ) . . . . . . . . . . . . . . . .  family of empty tuple
+#M  DirectProductElementsFamily( [] ) . . . .  family of empty direct product
+#M                                                                 element(s)
 ##
-InstallOtherMethod( TuplesFamily,
+InstallOtherMethod( DirectProductElementsFamily,
     "for an empty list",
     [ IsList and IsEmpty ],
     function( empty )
-    Info(InfoTuples, 2, "Reused tuples family, length 0");
-    return TUPLES_FAMILIES[1][1];
+    Info( InfoDirectProductElements, 2,
+          "Reused direct product elements family, length 0 ");
+    return DIRECT_PRODUCT_ELEMENT_FAMILIES[1][1];
     end );
 
 
 #############################################################################
 ##
-#M  Tuple( <objlist> ) . . . . . . . . . . . . . . . . . . . . . make a tuple
+#M  DirectProductElement( <objlist> ) . . . . . make a direct product element
 ##
-InstallMethod( Tuple,
+InstallMethod( DirectProductElement,
     "for a list",
     [ IsList ],
     function( objlist )
     local fam;
-    fam := TuplesFamily( List(objlist, FamilyObj) );
-    return TupleNC ( fam, objlist );
+    fam := DirectProductElementsFamily( List(objlist, FamilyObj) );
+    return DirectProductElementNC( fam, objlist );
     end );
 
 
 #############################################################################
 ##
-#M  Tuple( <tuplesfam>, <objlist> )  . . . . . . . . . . . . . . make a tuple
+#M  DirectProductElement( <fam>, <objlist> )  . make a direct product element
 ##
-InstallOtherMethod( Tuple,
-    "for a tuples family, and a list",
-    [ IsTupleFamily, IsList ],
+InstallOtherMethod( DirectProductElement,
+    "for a direct product elements family, and a list",
+    [ IsDirectProductElementFamily, IsList ],
     function( fam, objlist )
-    while ComponentsOfTuplesFamily(fam) <>  List(objlist, FamilyObj) do
-      objlist :=
-          Error( "objects not of proper families for tuples family supplied, you may supply replacements");
+    while ComponentsOfDirectProductElementsFamily( fam )
+          <> List( objlist, FamilyObj ) do
+      objlist:=
+          Error( "objects not of proper families for direct product ",
+                 "elements family supplied, you may supply replacements" );
     od;
-    return TupleNC ( fam, objlist );
+    return DirectProductElementNC( fam, objlist );
     end );
 
 
 #############################################################################
 ##
-#M  PrintObj( <tuple> )  . . . . . . . . . . . . . . . . . . .  print a tuple
-#M  ViewObj( <tuple> ) . . . . . . . . . . . . . . . . . . . . . view a tuple
+#M  PrintObj( <dpelm> )  . . . . . . . . . . . print a direct product element
+#M  ViewObj( <dpelm> ) . . . . . . . . . . . .  view a direct product element
 ##
-##  We install a special `ViewObj' method because as soon as a tuple stores
-##  that it is finite (this happens for example in a call to `ShallowCopy'),
-##  the `ViewObj' method for finite lists would strike.
+##  We install a special `ViewObj' method because as soon as a direct product
+##  element stores that it is finite (this happens for example in a call to
+##  `ShallowCopy'), the `ViewObj' method for finite lists would strike.
 ##
 InstallMethod( PrintObj,
-    "for a tuple",
-    [ IsTuple ],
-    function( tuple )
+    "for a direct product element",
+    [ IsDirectProductElement ],
+    function( dpelm )
     local i;
-    Print("Tuple( [ ");
-    for i in [1.. Length(tuple)-1] do
-      Print(tuple[i],", ");
+    Print( "DirectProductElement( [ " );
+    for i in [ 1 .. Length( dpelm )-1 ] do
+      Print( dpelm[i], ", " );
     od;
-    if Length(tuple) <> 0 then
-      Print(tuple[Length(tuple)]);
+    if Length( dpelm ) <> 0 then
+      Print( dpelm[ Length( dpelm ) ] );
     fi;
     Print(" ] )");
     end );
 
 InstallMethod( ViewObj,
-    "for a tuple (call `PrintObj')",
-    [ IsTuple ],
+    "for a direct product element (call `PrintObj')",
+    [ IsDirectProductElement ],
     PrintObj );
 
 
 #############################################################################
 ##
-#M  <tuple1> <  <tuple2> . . . . . . . . . . . . . . . . . . . . . comparison
+#M  <dpelm1> <  <dpelm2> . . . . . . . . . . . . . . . . . . . . . comparison
 ##
 InstallMethod( \<,
-    "for two tuples",
+    "for two direct product elements",
     IsIdenticalObj,
-    [ IsTuple, IsTuple ],
-    function (tuple1, tuple2)
+    [ IsDirectProductElement, IsDirectProductElement ],
+    function( dpelm1, dpelm2 )
     local i;
-    for i in [1..Length(tuple1)] do
-      if tuple1[i] < tuple2[i] then
+    for i in [1..Length(dpelm1)] do
+      if dpelm1[i] < dpelm2[i] then
         return true;
-      elif tuple1[i] > tuple2[i] then
+      elif dpelm1[i] > dpelm2[i] then
         return false;
       fi;
     od;
@@ -201,16 +196,16 @@ InstallMethod( \<,
 
 #############################################################################
 ##
-#M  <tuple1> = <tuple2>  . . . . . . . . . . . . . . . . . . . . . comparison
+#M  <dpelm1> = <dpelm2>  . . . . . . . . . . . . . . . . . . . . . comparison
 ##
 InstallMethod( \=,
-    "for two tuples",
+    "for two direct product elements",
     IsIdenticalObj,
-    [ IsTuple, IsTuple ],
-    function (tuple1, tuple2)
+    [ IsDirectProductElement, IsDirectProductElement ],
+    function( dpelm1, dpelm2 )
     local i;
-    for i in [1..Length(tuple1)] do
-      if tuple1[i] <> tuple2[i] then
+    for i in [1..Length(dpelm1)] do
+      if dpelm1[i] <> dpelm2[i] then
         return false;
       fi;
     od;
@@ -220,15 +215,15 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  CanEasilyCompareElements( <tup> )
+#M  CanEasilyCompareElements( <dpelm> )
 ##
 InstallMethod( CanEasilyCompareElements,
-    "for tuple",
-    [ IsTuple ],
-    function(tup)
+    "for direct product element",
+    [ IsDirectProductElement ],
+    function( dpelm )
     local i;
-    for i in [1..Length(tup)] do
-      if not CanEasilyCompareElements(tup[i]) then
+    for i in dpelm do
+      if not CanEasilyCompareElements( i ) then
         return false;
       fi;
     od;
@@ -238,225 +233,253 @@ InstallMethod( CanEasilyCompareElements,
 
 #############################################################################
 ##
-#M  TupleNC( <tuplesfam>, <objlist> )  . . . . . . . . . . . . . make a tuple
+#M  DirectProductElementNC( <dpelmfam>, <objlist> )   . make a direct product
+#M                                                                    element
 ##
-##  Note that we really have to copy the list passed, even if it is Immutable
-##  as we are going to Objectify it.
+##  Note that we really have to copy the list passed, even if it is immutable
+##  as we are going to call `Objectify'.
 ##
-InstallMethod( TupleNC,
-    "for a tuples family, and a list",
-    [ IsTupleFamily, IsList ],
+InstallMethod( DirectProductElementNC,
+    "for a direct product elements family, and a list",
+    [ IsDirectProductElementFamily, IsList ],
     function( fam, objlist )
     local t;
-    Assert(2, ComponentsOfTuplesFamily( fam ) = List(objlist, FamilyObj));
-    t := Objectify( fam!.defaultTupleType,
-         PlainListCopy(List(objlist, Immutable)) );
-    Info(InfoTuples,3,"Created a new Tuple ",t);
+    Assert( 2, ComponentsOfDirectProductElementsFamily( fam )
+                   = List( objlist, FamilyObj ) );
+    t:= Objectify( fam!.defaultTupleType,
+            PlainListCopy( List( objlist, Immutable ) ) );
+    Info( InfoDirectProductElements, 3,
+          "Created a new DirectProductElement ", t );
     return t;
     end );
 
 
 #############################################################################
 ##
-#M  <tuple>[ <index> ] . . . . . . . . . . . . . . . . . . . component access
+#M  <dpelm>[ <index> ] . . . . . . . . . . . . . . . . . . . component access
 ##
 InstallMethod( \[\],
-    "for a tuple in default representation, and a positive integer",
-    [ IsDefaultTupleRep, IsPosInt ],
-    function( tuple, index )
-    while index > Length(tuple) do
-      index:= Error( "<index> too large for <tuple>, you may return another index" );
+    "for a direct product element in default repres., and a pos. integer",
+    [ IsDefaultDirectProductElementRep, IsPosInt ],
+    function( dpelm, index )
+    while index > Length( dpelm ) do
+      index:= Error( "<index> too large for <dpelm>, ",
+                     "you may return another index" );
     od;
-    return tuple![index];
+    return dpelm![index];
     end );
 
 
 #############################################################################
 ##
-#M  Length( <tuple> )  . . . . . . . . . . . . . . . . . number of components
+#M  Length( <dpelm> )  . . . . . . . . . . . . . . . . . number of components
 ##
 InstallMethod( Length,
-    "for a tuple in default representation",
-    [ IsDefaultTupleRep ],
-    function( tuple )
-    return Length(ComponentsOfTuplesFamily( FamilyObj (tuple)));
+    "for a direct product element in default representation",
+    [ IsDefaultDirectProductElementRep ],
+    function( dpelm )
+    return Length( ComponentsOfDirectProductElementsFamily(
+                       FamilyObj( dpelm ) ) );
     end );
 
 
 #############################################################################
 ##
-#M  InverseOp( <tuple> )
+#M  InverseOp( <dpelm> )
 ##
 InstallMethod( InverseOp,
-    "for a tuple",
-    [ IsTuple ],
-    function( elm )
-    return Tuple( List( elm, Inverse ) );
+    "for a direct product element",
+    [ IsDirectProductElement ],
+    function( dpelm )
+    return DirectProductElement( List( dpelm, Inverse ) );
     end );
 
 
 #############################################################################
 ##
-#M  OneOp( <tuple> )
+#M  OneOp( <dpelm> )
 ##
 InstallMethod( OneOp,
-    "for a tuple",
-    [ IsTuple ],
-    function( elm )
-    return Tuple( List( elm, One ) );
+    "for a direct product element",
+    [ IsDirectProductElement ],
+    function( dpelm )
+    return DirectProductElement( List( dpelm, One ) );
     end );
 
 
 #############################################################################
 ##
-#M  \*( <tuple>, <tuple> )
+#M  \*( <dpelm>, <dpelm> )
 ##
 InstallMethod( \*,
-    "for two tuples",
-    [ IsTuple, IsTuple ],
+    "for two direct product elements",
+    [ IsDirectProductElement, IsDirectProductElement ],
     function( elm1, elm2 )
     local n;
     n := Length( elm1 );
-    return Tuple( List( [1..n], x -> elm1[x]*elm2[x] ) );
+    return DirectProductElement( List( [1..n], x -> elm1[x]*elm2[x] ) );
     end );
 
 
 #############################################################################
 ##
-#M  \^( <tuple>, <integer> )
+#M  IsGeneratorsOfMagmaWithInverses( <list> )
+##
+InstallMethod( IsGeneratorsOfMagmaWithInverses,
+    "for list of direct product elements",
+    [ IsDirectProductElementCollection ],
+    function( l )
+        local n;
+        if IsEmpty (l) then
+            return true;
+        fi;
+        n := Length (l[1]);
+        if ForAny (l, x -> Length (x) <> n) then
+            return false;
+        fi;
+        return ForAll( [ 1 .. n ],
+            i -> IsGeneratorsOfMagmaWithInverses (l{[1..Length(l)]}[i]));
+    end );
+
+#############################################################################
+##
+#M  \^( <dpelm>, <integer> )
 ##
 InstallMethod( \^,
-    "for tuple, and integer",
-    [ IsTuple, IsInt ],
-    function( elm, x )
-    return Tuple( List( elm, y -> y^x ) );
+    "for direct product element, and integer",
+    [ IsDirectProductElement, IsInt ],
+    function( dpelm, x )
+    return DirectProductElement( List( dpelm, y -> y^x ) );
     end );
 
 
 #############################################################################
 ##
-#M  AdditiveInverseOp( <tuple> )
+#M  AdditiveInverseOp( <dpelm> )
 ##
 InstallMethod( AdditiveInverseOp,
-    "for a tuple",
-    [ IsTuple ],
-    function( elm )
-    return Tuple( List( elm, AdditiveInverse ) );
+    "for a direct product element",
+    [ IsDirectProductElement ],
+    function( dpelm )
+    return DirectProductElement( List( dpelm, AdditiveInverse ) );
     end );
 
 
 #############################################################################
 ##
-#M  ZeroOp( <tuple> )
+#M  ZeroOp( <dpelm> )
 ##
 InstallMethod( ZeroOp,
-    "for a tuple",
-    [ IsTuple ],
-    function( elm )
-    return Tuple( List( elm, Zero ) );
+    "for a direct product element",
+    [ IsDirectProductElement ],
+    function( dpelm )
+    return DirectProductElement( List( dpelm, Zero ) );
     end );
 
 
 #############################################################################
 ##
-#M  \+( <tuple>, <tuple> )
+#M  \+( <dpelm1>, <dpelm2> )
 ##
 InstallMethod( \+,
-    "for two tuples",
-    [ IsTuple, IsTuple ],
-    function( elm1, elm2 )
+    "for two direct product elements",
+    [ IsDirectProductElement, IsDirectProductElement ],
+    function( dpelm1, dpelm2 )
     local n;
-    n := Length( elm1 );
-    return Tuple( List( [1..n], x -> elm1[x]+elm2[x] ) );
+    n := Length( dpelm1 );
+    return DirectProductElement( List( [1..n], x -> dpelm1[x]+dpelm2[x] ) );
     end );
 
 
 #############################################################################
 ##
-#M  \+( <tuple>, <defaultlist> )
-#M  \+( <defaultlist>, <tuple> )
-#M  \*( <tuple>, <defaultlist> )
-#M  \*( <defaultlist>, <tuple> )
-#M  \+( <tuple>, <nonlist> )
-#M  \+( <nonlist>, <tuple> )
-#M  \*( <tuple>, <nonlist> )
-#M  \*( <nonlist>, <tuple> )
+#M  \+( <dpelm>, <defaultlist> )
+#M  \+( <defaultlist>, <dpelm> )
+#M  \*( <dpelm>, <defaultlist> )
+#M  \*( <defaultlist>, <dpelm> )
+#M  \+( <dpelm>, <nonlist> )
+#M  \+( <nonlist>, <dpelm> )
+#M  \*( <dpelm>, <nonlist> )
+#M  \*( <nonlist>, <dpelm> )
 ##
-##  Tuples do *not* lie in `IsGeneralizedRowVector', since they shall behave
-##  as scalars; for example we want the sum of a tuple and a list of tuples
-##  to be the list of sums.
+##  Direct product elements do *not* lie in `IsGeneralizedRowVector',
+##  since they shall behave as scalars;
+##  for example we want the sum of a direct product element and a list of
+##  diect product elements to be the list of sums.
 ##  (It would also be possible to make them generalized row vectors with
 ##  additive and multiplicative nesting depth zero, but then the nesting
 ##  depths would have to be calculated whenever they are needed.
 ##  In fact I think this approach would be equivalent.)
 ##
-##  Because tuples are lists, there are no default methods for adding or
-##  multiplying a tuple and a default list.
-##  So we install such methods where tuples act as scalars.
-##  Analogously, we define the sum and the product of a tuple with a non-list
-##  as the tuple of componentwise sums and products, respectively.
+##  Because direct product elements are lists, there are no default methods
+##  for adding or multiplying a direct product element and a default list.
+##  So we install such methods where direct product elements act as scalars.
+##  Analogously,
+##  we define the sum and the product of a direct product element
+##  with a non-list as the direct product element of componentwise sums and
+##  products, respectively.
 ##
 #T As soon as IsListDefault implies IsAdditiveElement and
 #T IsMultiplicativeElement, the InstallOtherMethod in the first four
 #T of the following methods can be replaced by InstallMethod!
 InstallOtherMethod( \+,
-    "for a tuple, and a default list",
-    [ IsTuple, IsListDefault ],
+    "for a direct product element, and a default list",
+    [ IsDirectProductElement, IsListDefault ],
     SUM_SCL_LIST_DEFAULT );
 
 InstallOtherMethod( \+,
-    "for a default list, and a tuple",
-    [ IsListDefault, IsTuple ],
+    "for a default list, and a direct product element",
+    [ IsListDefault, IsDirectProductElement ],
     SUM_LIST_SCL_DEFAULT );
 
 InstallOtherMethod( \*,
-    "for a tuple, and a default list",
-    [ IsTuple, IsListDefault ],
+    "for a direct product element, and a default list",
+    [ IsDirectProductElement, IsListDefault ],
     PROD_SCL_LIST_DEFAULT );
 
 InstallOtherMethod( \*,
-    "for a default list, and a tuple",
-    [ IsListDefault, IsTuple ],
+    "for a default list, and a direct product element",
+    [ IsListDefault, IsDirectProductElement ],
     PROD_LIST_SCL_DEFAULT );
 
 InstallOtherMethod( \+,
-    "for a tuple, and a non-list",
-    [ IsTuple, IsObject ],
-    function( tuple, nonlist )
+    "for a direct product element, and a non-list",
+    [ IsDirectProductElement, IsObject ],
+    function( dpelm, nonlist )
     if IsList( nonlist ) then
       TryNextMethod();
     fi;
-    return Tuple( List( tuple, entry -> entry + nonlist ) );
+    return DirectProductElement( List( dpelm, entry -> entry + nonlist ) );
     end );
 
 InstallOtherMethod( \+,
-    "for a non-list, and a tuple",
-    [ IsObject, IsTuple ],
-    function( nonlist, tuple )
+    "for a non-list, and a direct product element",
+    [ IsObject, IsDirectProductElement ],
+    function( nonlist, dpelm )
     if IsList( nonlist ) then
       TryNextMethod();
     fi;
-    return Tuple( List( tuple, entry -> nonlist + entry ) );
+    return DirectProductElement( List( dpelm, entry -> nonlist + entry ) );
     end );
 
 InstallOtherMethod( \*,
-    "for a tuple, and a non-list",
-    [ IsTuple, IsObject ],
-    function( tuple, nonlist )
+    "for a direct product element, and a non-list",
+    [ IsDirectProductElement, IsObject ],
+    function( dpelm, nonlist )
     if IsList( nonlist ) then
       TryNextMethod();
     fi;
-    return Tuple( List( tuple, entry -> entry * nonlist ) );
+    return DirectProductElement( List( dpelm, entry -> entry * nonlist ) );
     end );
 
 InstallOtherMethod( \*,
-    "for a non-list, and a tuple",
-    [ IsObject, IsTuple ],
-    function( nonlist, tuple )
+    "for a non-list, and a direct product element",
+    [ IsObject, IsDirectProductElement ],
+    function( nonlist, dpelm )
     if IsList( nonlist ) then
       TryNextMethod();
     fi;
-    return Tuple( List( tuple, entry -> nonlist * entry ) );
+    return DirectProductElement( List( dpelm, entry -> nonlist * entry ) );
     end );
 
 

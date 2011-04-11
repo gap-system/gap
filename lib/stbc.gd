@@ -1,12 +1,13 @@
 #############################################################################
 ##
-#W  stbc.gd                     GAP library                    Heiko Thei"sen
-#W                                                               'Akos Seress
+#W  stbc.gd                     GAP library                    Heiko Theißen
+#W                                                               Ákos Seress
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.stbc_gd :=
     "@(#)$Id$";
@@ -21,55 +22,87 @@ Revision.stbc_gd :=
 #A  StabChainMutable( <permhomom> )
 #A  StabChainImmutable( <G> )
 ##
-##  These commands compute a stabilizer chain for the permutation group <G>;
-##  additionally, `StabChainMutable' is also an attribute for the group
-##  homomorphism <permhomom> whose source is a permutation group.
-##  
-##  `StabChainOp' is an operation with two arguments <G> and <options>,
+##  <#GAPDoc Label="StabChain">
+##  <ManSection>
+##  <Func Name="StabChain" Arg='G[, options]'
+##   Label="for a group (and a record)"/>
+##  <Func Name="StabChain" Arg='G, base'
+##   Label="for a group and a base"/>
+##  <Oper Name="StabChainOp" Arg='G, options'/>
+##  <Attr Name="StabChainMutable" Arg='G'
+##   Label="for a group"/>
+##  <Attr Name="StabChainMutable" Arg='permhomom'
+##   Label="for a homomorphism"/>
+##  <Attr Name="StabChainImmutable" Arg='G'/>
+##
+##  <Description>
+##  These commands compute a stabilizer chain for the permutation group
+##  <A>G</A>;
+##  additionally, <Ref Attr="StabChainMutable" Label="for a homomorphism"/>
+##  is also an attribute for the group homomorphism <A>permhomom</A>
+##  whose source is a permutation group.
+##  <P/>
+##  (The mathematical background of stabilizer chains is sketched
+##  in&nbsp;<Ref Sect="Stabilizer Chains"/>,
+##  more information about the objects representing stabilizer chains
+##  in &GAP; can be found in&nbsp;<Ref Sect="Stabilizer Chain Records"/>.)
+##  <P/>
+##  <Ref Oper="StabChainOp"/> is an operation with two arguments <A>G</A> and
+##  <A>options</A>,
 ##  the latter being a record which controls some aspects of the computation
 ##  of a stabilizer chain (see below);
-##  `StabChainOp' returns a *mutable* stabilizer chain.
-##  `StabChainMutable' is a *mutable* attribute for groups or homomorphisms,
-##  its default method for groups is to call `StabChainOp' with empty
-##  options record.
-##  `StabChainImmutable' is an attribute with *immutable* values;
-##  its default method dispatches to `StabChainMutable'.
-##
-##  `StabChain' is a function with first argument a permutation group <G>,
-##  and optionally a record <options> as second argument.
-##  If the value of `StabChainImmutable' for <G> is already known and if this
-##  stabilizer chain matches the requirements of <options>,
-##  `StabChain' simply returns this stored stabilizer chain.
-##  Otherwise `StabChain' calls `StabChainOp' and returns an immutable copy
-##  of the result; additionally, this chain is stored as `StabChainImmutable'
-##  value for <G>.
-##  If no <options> argument is given,
-##  its components default to the global variable `DefaultStabChainOptions'
-##  (see~"DefaultStabChainOptions").
-##  If <base> is a list of positive integers,
-##  the version `StabChain( <G>, <base> )' defaults to
-##  `StabChain( <G>, rec( base:= <base> ) )'.
-##
-##  If given, <options> is a record whose components specify properties of
-##  the desired stabilizer chain or which may help the algorithm.
+##  <Ref Oper="StabChainOp"/> returns a <E>mutable</E> stabilizer chain.
+##  <Ref Attr="StabChainMutable" Label="for a group"/> is a <E>mutable</E>
+##  attribute for groups or homomorphisms,
+##  its default method for groups is to call <Ref Oper="StabChainOp"/> with
+##  empty options record.
+##  <Ref Attr="StabChainImmutable"/> is an attribute with <E>immutable</E>
+##  values;
+##  its default method dispatches to
+##  <Ref Attr="StabChainMutable" Label="for a group"/>.
+##  <P/>
+##  <Ref Func="StabChain" Label="for a group (and a record)"/> is a function
+##  with first argument a permutation group <A>G</A>,
+##  and optionally a record <A>options</A> as second argument.
+##  If the value of <Ref Attr="StabChainImmutable"/> for <A>G</A>
+##  is already known and if this stabilizer chain matches the requirements
+##  of <A>options</A>,
+##  <Ref Func="StabChain" Label="for a group (and a record)"/> simply returns
+##  this stored stabilizer chain.
+##  Otherwise <Ref Func="StabChain" Label="for a group (and a record)"/>
+##  calls <Ref Oper="StabChainOp"/> and returns an immutable copy of the
+##  result;
+##  additionally, this chain is stored as <Ref Attr="StabChainImmutable"/>
+##  value for <A>G</A>.
+##  If no <A>options</A> argument is given, its components default
+##  to the global variable <Ref Var="DefaultStabChainOptions"/>.
+##  If <A>base</A> is a list of positive integers,
+##  the version <C>StabChain( <A>G</A>, <A>base</A> )</C> defaults to
+##  <C>StabChain( <A>G</A>, rec( base:= <A>base</A> ) )</C>.
+##  <P/>
+##  If given, <A>options</A> is a record whose components specify properties
+##  of the desired stabilizer chain or which may help the algorithm.
 ##  Default values for all of them can be given in the global variable
-##  `DefaultStabChainOptions' (see~"DefaultStabChainOptions").
+##  <Ref Var="DefaultStabChainOptions"/>.
 ##  The following options are supported.
-##  \beginitems
-##  `base' (default an empty list) &
+##  <List>
+##  <Mark><C>base</C> (default an empty list)</Mark>
+##  <Item>
 ##      A list of points, through which the resulting stabilizer chain
 ##      shall run.
-##      For the base $B$ of the resulting stabilizer chain <S> this means
-##      the following.
-##      If the `reduced' component of <options> is `true' then those points
-##      of `base' with nontrivial basic orbits form the initial segment
-##      of $B$, if the `reduced' component is `false' then `base' itself
-##      is the initial segment of $B$.
-##      Repeated occurrences of points in `base' are ignored.
-##      If a stabilizer chain for <G> is already known then the stabilizer
-##      chain is computed via a base change.
-##
-##  `knownBase' (no default value) &
+##      For the base <M>B</M> of the resulting stabilizer chain <A>S</A>
+##      this means the following.
+##      If the <C>reduced</C> component of <A>options</A> is <K>true</K> then
+##      those points of <C>base</C> with nontrivial basic orbits form the
+##      initial segment of <M>B</M>, if the <C>reduced</C> component is
+##      <K>false</K> then <C>base</C> itself is the initial segment of
+##      <M>B</M>.
+##      Repeated occurrences of points in <C>base</C> are ignored.
+##      If a stabilizer chain for <A>G</A> is already known then the
+##      stabilizer chain is computed via a base change.
+##  </Item>
+##  <Mark><C>knownBase</C> (no default value)</Mark>
+##  <Item>
 ##      A list of points which is known to be a base for the group.
 ##      Such a known base makes it easier to test whether a permutation
 ##      given as a word in terms of a set of generators is the identity,
@@ -79,52 +112,65 @@ Revision.stbc_gd :=
 ##      This speeds up the Schreier-Sims algorithm which is used when a new
 ##      stabilizer chain is constructed;
 ##      it will not affect a base change, however.
-##      The component `knownBase' bears no relation to the `base'
-##      component, you may specify a known base `knownBase' and a desired
-##      base `base' independently.
-##
-##  `reduced' (default `true') &
-##      If this is `true' the resulting stabilizer chain <S> is reduced,
-##      i.e., the case  $G^{(i)} = G^{(i+1)}$ does not occur.
-##      Setting `reduced' to `false' makes sense only if the component
-##      `base' (see above) is also set;
-##      in this case all points of `base' will occur in the base $B$ of <S>,
-##      even if they have trivial basic orbits.
-##      Note that if `base' is just an initial segment of $B$,
-##      the basic orbits of the points in $B \setminus `base'$ are always
-##      nontrivial.
-##
-##  `tryPcgs' (default `true') &
-##      If this is `true' and either the degree is at most 100 or the group
-##      is known to be solvable, {\GAP} will first try to construct a pcgs
-##      (see Chapter~"Polycyclic Groups") for <G> which will succeed and
-##      implicitly construct a stabilizer chain if <G> is solvable.
-##      If <G> turns out non-solvable, one of the other methods will be used.
+##      The component <C>knownBase</C> bears no relation to the <C>base</C>
+##      component, you may specify a known base <C>knownBase</C> and a
+##      desired base <C>base</C> independently.
+##  </Item>
+##  <Mark><C>reduced</C> (default <K>true</K>)</Mark>
+##  <Item>
+##      If this is <K>true</K> the resulting stabilizer chain <A>S</A> is
+##      reduced, i.e., the case  <M>G^{(i)} = G^{(i+1)}</M> does not occur.
+##      Setting <C>reduced</C> to <K>false</K> makes sense only if
+##      the component <C>base</C> (see above) is also set;
+##      in this case all points of <C>base</C> will occur in the base
+##      <M>B</M> of <A>S</A>, even if they have trivial basic orbits.
+##      Note that if <C>base</C> is just an initial segment of <M>B</M>,
+##      the basic orbits of the points in <M>B \setminus </M><C>base</C>
+##      are always nontrivial.
+##  </Item>
+##  <Mark><C>tryPcgs</C> (default <K>true</K>)</Mark>
+##  <Item>
+##      If this is <K>true</K> and either the degree is at most <M>100</M>
+##      or the group is known to be solvable, &GAP; will first try to
+##      construct a pcgs (see Chapter&nbsp;<Ref Chap="Polycyclic Groups"/>)
+##      for <A>G</A> which will succeed and implicitly construct a
+##      stabilizer chain if <A>G</A> is solvable.
+##      If <A>G</A> turns out non-solvable, one of the other methods will be
+##      used.
 ##      This solvability check is comparatively fast, even if it fails,
-##      and it can save a lot of time if <G> is solvable.
-##
-##  `random' (default `1000') &
-##      If the value is less than~$1000$,
+##      and it can save a lot of time if <A>G</A> is solvable.
+##  </Item>
+##  <Mark><C>random</C> (default <C>1000</C>)</Mark>
+##  <Item>
+##      If the value is less than&nbsp;<M>1000</M>,
 ##      the resulting chain is correct with probability
-##      at least~$`random'/1000$.
-##      The `random' option is explained in more detail
-##      in~"Randomized Methods for Permutation Groups".
-##
-##  `size' (default `Size( <G> )' if this is known,
-##          i.e., if `HasSize( <G> )' is `true') &
+##      at least&nbsp;<C>random</C><M> / 1000</M>.
+##      The <C>random</C> option is explained in more detail
+##      in&nbsp;<Ref Sect="Randomized Methods for Permutation Groups"/>.
+##  </Item>
+##  <Mark><C>size</C> (default <C>Size( <A>G</A> )</C> if this is known,
+##          i.e., if <C>HasSize( <A>G</A> )</C> is <K>true</K>) </Mark>
+##  <Item>
 ##      If this component is present, its value is assumed to be the order
-##      of the group <G>.
+##      of the group <A>G</A>.
 ##      This information can be used to prove that a non-deterministically
 ##      constructed stabilizer chain is correct.
-##      In this case, {\GAP} does a non-deterministic construction until the
+##      In this case, &GAP; does a non-deterministic construction until the
 ##      size is correct.
-##
-##  `limit' (default `Size( Parent( <G> ) )' or
-##           `StabChainOptions( Parent( <G> ) ).limit' if this is present) &
+##  </Item>
+##  <Mark><C>limit</C> (default <C>Size(Parent(<A>G</A>))</C> or
+##           <C>StabChainOptions(Parent(<A>G</A>)).limit</C>
+##           if this is present) </Mark>
+##  <Item>
 ##      If this component is present, it must be greater than or equal to
-##      the order of <G>.
-##      The stabilizer chain construction stops if size `limit' is reached.
-##  \enditems
+##      the order of <A>G</A>.
+##      The stabilizer chain construction stops if size <C>limit</C> is
+##      reached.
+##  </Item>
+##  </List>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "StabChain" );
 DeclareOperation( "StabChainOp", [ IsGroup, IsRecord ] );
@@ -136,9 +182,18 @@ DeclareAttribute( "StabChainImmutable", IsObject );
 ##
 #A  StabChainOptions( <G> )
 ##
+##  <#GAPDoc Label="StabChainOptions">
+##  <ManSection>
+##  <Attr Name="StabChainOptions" Arg='G'/>
+##
+##  <Description>
 ##  is a record that stores the options with which the stabilizer chain
-##  stored in `StabChainImmutable' has been computed
-##  (see~"StabChain" for the options that are supported).
+##  stored in <Ref Attr="StabChainImmutable"/> has been computed
+##  (see&nbsp;<Ref Func="StabChain" Label="for a group (and a record)"/>
+##  for the options that are supported).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "StabChainOptions", IsPermGroup, "mutable" );
 
@@ -147,7 +202,17 @@ DeclareAttribute( "StabChainOptions", IsPermGroup, "mutable" );
 ##
 #V  DefaultStabChainOptions
 ##
-##  are the options for `StabChain' which are set as default.
+##  <#GAPDoc Label="DefaultStabChainOptions">
+##  <ManSection>
+##  <Var Name="DefaultStabChainOptions"/>
+##
+##  <Description>
+##  are the options for
+##  <Ref Func="StabChain" Label="for a group (and a record)"/> which are set
+##  as default.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalVariable( "DefaultStabChainOptions",
     "default options for stabilizer chain calculations" );
@@ -157,12 +222,21 @@ DeclareGlobalVariable( "DefaultStabChainOptions",
 ##
 #F  StabChainBaseStrongGenerators( <base>, <sgs>, <one> )
 ##
-##  If a base <base> for a permutation group $G$ and a strong generating set
-##  <sgs> for $G$ with respect to <base> are given. <one> must be the
-##  appropriate `One' (in most cases this will be `()').
-##  This function constructs a stabilizer chain  without the need to find
+##  <#GAPDoc Label="StabChainBaseStrongGenerators">
+##  <ManSection>
+##  <Func Name="StabChainBaseStrongGenerators" Arg='base, sgs, one'/>
+##
+##  <Description>
+##  Let <A>base</A> be a base for a permutation group <M>G</M>, and let
+##  <A>sgs</A> be a strong generating set for <M>G</M> with respect to
+##  <A>base</A>; <A>one</A> must be the appropriate identity element of
+##  <M>G</M> (see <Ref Oper="One"/>, in most cases this will be <C>()</C>).
+##  This function constructs a stabilizer chain without the need to find
 ##  Schreier generators;
 ##  so this is much faster than the other algorithms.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "StabChainBaseStrongGenerators" );
 
@@ -171,16 +245,24 @@ DeclareGlobalFunction( "StabChainBaseStrongGenerators" );
 ##
 #F  CopyStabChain( <S> )
 ##
-##  This function returns a copy of the stabilizer chain <S>
-##  that has no mutable object (list or record) in common with <S>.
-##  The `labels'  components of the result are possibly shared by several
-##  levels, but superfluous labels are removed.
-##  (An entry in `labels' is superfluous if it does not occur among the
-##  `genlabels' or `translabels' on any of the levels which share that
-##  `labels' component.)
+##  <#GAPDoc Label="CopyStabChain">
+##  <ManSection>
+##  <Func Name="CopyStabChain" Arg='S'/>
 ##
-##  This is useful for  stabiliser sub-chains that  have been obtained as
-##  the (iterated) `stabilizer' component of a bigger chain.
+##  <Description>
+##  This function returns a copy of the stabilizer chain <A>S</A>
+##  that has no mutable object (list or record) in common with <A>S</A>.
+##  The <C>labels</C> components of the result are possibly shared by several
+##  levels, but superfluous labels are removed.
+##  (An entry in <C>labels</C> is superfluous if it does not occur among the
+##  <C>genlabels</C> or <C>translabels</C> on any of the levels which share
+##  that <C>labels</C> component.)
+##  <P/>
+##  This is useful for stabiliser sub-chains that have been obtained as
+##  the (iterated) <C>stabilizer</C> component of a bigger chain.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CopyStabChain" );
 
@@ -189,9 +271,17 @@ DeclareGlobalFunction( "CopyStabChain" );
 ##
 #F  CopyOptionsDefaults( <G>, <options> ) . . . . . . . copy options defaults
 ##
-##  sets components in a stabilizer chain options record <options> according
-##  to what is known about the group <G>. This can be used to obtain a new
-##  stabilizer chain for <G> quickly.
+##  <#GAPDoc Label="CopyOptionsDefaults">
+##  <ManSection>
+##  <Func Name="CopyOptionsDefaults" Arg='G, options'/>
+##
+##  <Description>
+##  sets components in a stabilizer chain options record <A>options</A>
+##  according to what is known about the group <A>G</A>.
+##  This can be used to obtain a new stabilizer chain for <A>G</A> quickly.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CopyOptionsDefaults" );
 
@@ -200,7 +290,15 @@ DeclareGlobalFunction( "CopyOptionsDefaults" );
 ##
 #F  BaseStabChain( <S> )
 ##
-##  returns the base belonging to the stabilizer chain <S>.
+##  <#GAPDoc Label="BaseStabChain">
+##  <ManSection>
+##  <Func Name="BaseStabChain" Arg='S'/>
+##
+##  <Description>
+##  returns the base belonging to the stabilizer chain <A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "BaseStabChain" );
 
@@ -209,9 +307,17 @@ DeclareGlobalFunction( "BaseStabChain" );
 ##
 #A  BaseOfGroup( <G> )
 ##
-##  returns a base of the permutation group <G>.
-##  There is *no* guarantee that a stabilizer chain stored in <G>
+##  <#GAPDoc Label="BaseOfGroup">
+##  <ManSection>
+##  <Attr Name="BaseOfGroup" Arg='G'/>
+##
+##  <Description>
+##  returns a base of the permutation group <A>G</A>.
+##  There is <E>no</E> guarantee that a stabilizer chain stored in <A>G</A>
 ##  corresponds to this base!
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "BaseOfGroup", IsPermGroup );
 
@@ -220,8 +326,16 @@ DeclareAttribute( "BaseOfGroup", IsPermGroup );
 ##
 #F  SizeStabChain( <S> )
 ##
-##  returns the product of the orbit lengths in the stabilizer chain <S>,
-##  that is, the order of the group described by <S>.
+##  <#GAPDoc Label="SizeStabChain">
+##  <ManSection>
+##  <Func Name="SizeStabChain" Arg='S'/>
+##
+##  <Description>
+##  returns the product of the orbit lengths in the stabilizer chain
+##  <A>S</A>, that is, the order of the group described by <A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SizeStabChain" );
 
@@ -230,7 +344,16 @@ DeclareGlobalFunction( "SizeStabChain" );
 ##
 #F  StrongGeneratorsStabChain( <S> )
 ##
-##  returns a strong generating set corresponding to the stabilizer chain <S>.
+##  <#GAPDoc Label="StrongGeneratorsStabChain">
+##  <ManSection>
+##  <Func Name="StrongGeneratorsStabChain" Arg='S'/>
+##
+##  <Description>
+##  returns a strong generating set corresponding to the stabilizer chain
+##  <A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "StrongGeneratorsStabChain" );
 
@@ -239,10 +362,19 @@ DeclareGlobalFunction( "StrongGeneratorsStabChain" );
 ##
 #F  GroupStabChain([<G>,] <S> )
 ##
-##  constructs a permutation group with stabilizer chain <S>, i.e., a group
-##  with  generators `Generators( <S>  )'   to  which <S> is assigned as
-##  component  `stabChain'. If the  optional argument <G> is  given, the
-##  result  will have the parent <G>.
+##  <#GAPDoc Label="GroupStabChain">
+##  <ManSection>
+##  <Func Name="GroupStabChain" Arg='[G,] S'/>
+##
+##  <Description>
+##  constructs a permutation group with stabilizer chain <A>S</A>, i.e.,
+##  a group with generators <C>Generators( <A>S</A>  )</C> to which <A>S</A>
+##  is assigned as component <C>stabChain</C>.
+##  If the  optional argument <A>G</A> is given, the result will have the
+##  parent <A>G</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "GroupStabChain" );
 
@@ -251,8 +383,16 @@ DeclareGlobalFunction( "GroupStabChain" );
 ##
 #F  IndicesStabChain( <S> )
 ##
-##   returns a list of the indices of the stabilizers in the stabilizer
-##   chain <S>.
+##  <#GAPDoc Label="IndicesStabChain">
+##  <ManSection>
+##  <Func Name="IndicesStabChain" Arg='S'/>
+##
+##  <Description>
+##  returns a list of the indices of the stabilizers in the stabilizer
+##  chain <A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IndicesStabChain" );
 
@@ -261,8 +401,16 @@ DeclareGlobalFunction( "IndicesStabChain" );
 ##
 #F  ListStabChain( <S> )
 ##
-##  returns a list that contains at position $i$ the stabilizer of the first
-##  $i-1$ base points in the stabilizer chain <S>.
+##  <#GAPDoc Label="ListStabChain">
+##  <ManSection>
+##  <Func Name="ListStabChain" Arg='S'/>
+##
+##  <Description>
+##  returns a list that contains at position <M>i</M> the stabilizer of the
+##  first <M>i-1</M> base points in the stabilizer chain <A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ListStabChain" );
 
@@ -271,8 +419,16 @@ DeclareGlobalFunction( "ListStabChain" );
 ##
 #F  OrbitStabChain( <S>, <pnt> )
 ##
-##  returns the orbit of <pnt> under the group described by the stabilizer
-##  chain <S>.
+##  <#GAPDoc Label="OrbitStabChain">
+##  <ManSection>
+##  <Func Name="OrbitStabChain" Arg='S, pnt'/>
+##
+##  <Description>
+##  returns the orbit of <A>pnt</A> under the group described by the
+##  stabilizer chain <A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "OrbitStabChain" );
 
@@ -281,8 +437,16 @@ DeclareGlobalFunction( "OrbitStabChain" );
 ##
 #F  ElementsStabChain( <S> )
 ##
+##  <#GAPDoc Label="ElementsStabChain">
+##  <ManSection>
+##  <Func Name="ElementsStabChain" Arg='S'/>
+##
+##  <Description>
 ##  returns a list of all elements of the group described by the stabilizer
-##  chain <S>.
+##  chain <A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ElementsStabChain" );
 
@@ -291,8 +455,16 @@ DeclareGlobalFunction( "ElementsStabChain" );
 ##
 #A  MinimalStabChain(<G>)
 ##
+##  <#GAPDoc Label="MinimalStabChain">
+##  <ManSection>
+##  <Attr Name="MinimalStabChain" Arg='G'/>
+##
+##  <Description>
 ##  returns the reduced stabilizer chain corresponding to the base
-##  $[1,2,3,4,\ldots]$.
+##  <M>[ 1, 2, 3, 4, \ldots ]</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "MinimalStabChain", IsPermGroup );
 
@@ -301,16 +473,27 @@ DeclareAttribute( "MinimalStabChain", IsPermGroup );
 ##
 #F  ChangeStabChain( <S>, <base>[, <reduced>] )
 ##
-##  changes or reduces a stabilizer chain <S> to be adapted to the base
-##  <base>.
-##  The optional argument <reduced> is interpreted as follows.
-##  \beginitems
-##  `reduced = false' : &
-##      change the stabilizer chain, do not reduce it,
+##  <#GAPDoc Label="ChangeStabChain">
+##  <ManSection>
+##  <Func Name="ChangeStabChain" Arg='S, base[, reduced]'/>
 ##
-##  `reduced = true' : &
+##  <Description>
+##  changes or reduces a stabilizer chain <A>S</A> to be adapted to the base
+##  <A>base</A>.
+##  The optional argument <A>reduced</A> is interpreted as follows.
+##  <List>
+##  <Mark><C>reduced = </C><K>false</K> : </Mark>
+##  <Item>
+##      change the stabilizer chain, do not reduce it,
+##  </Item>
+##  <Mark><C>reduced = </C><K>true</K> : </Mark>
+##  <Item>
 ##      change the stabilizer chain, reduce it.
-##  \enditems
+##  </Item>
+##  </List>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ChangeStabChain" );
 
@@ -319,8 +502,17 @@ DeclareGlobalFunction( "ChangeStabChain" );
 ##
 #F  ExtendStabChain( <S>, <base> )
 ##
-##  extends the stabilizer chain <S> so that it corresponds to base <base>.
-##  The original base of <S> must be a subset of <base>.
+##  <#GAPDoc Label="ExtendStabChain">
+##  <ManSection>
+##  <Func Name="ExtendStabChain" Arg='S, base'/>
+##
+##  <Description>
+##  extends the stabilizer chain <A>S</A> so that it corresponds to base
+##  <A>base</A>.
+##  The original base of <A>S</A> must be a subset of <A>base</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ExtendStabChain" );
 
@@ -329,8 +521,16 @@ DeclareGlobalFunction( "ExtendStabChain" );
 ##
 #F  ReduceStabChain( <S> )
 ##
-##  changes the stabilizer chain <S> to a reduced stabilizer chain by
+##  <#GAPDoc Label="ReduceStabChain">
+##  <ManSection>
+##  <Func Name="ReduceStabChain" Arg='S'/>
+##
+##  <Description>
+##  changes the stabilizer chain <A>S</A> to a reduced stabilizer chain by
 ##  eliminating trivial steps.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ReduceStabChain" );
 
@@ -339,12 +539,23 @@ DeclareGlobalFunction( "ReduceStabChain" );
 ##
 #F  EmptyStabChain( <labels>, <id>[, <pnt>] )
 ##
-##  constructs  a   stabilizer  chain  for   the trivial   group with
-##  `identity=<id>' and `labels=$\{id\}\cup  labels$'  (but of course with
-##  `genlabels=[ ]' and `generators=[ ]'). If the optional third argument
-##  <pnt>  is present, the only stabilizer   of the chain is initialized
-##  with the  one-point basic orbit  `[ <pnt> ]' and with `translabels' and
-##  `transversal' components.
+##  <#GAPDoc Label="EmptyStabChain">
+##  <ManSection>
+##  <Func Name="EmptyStabChain" Arg='labels, id[, pnt]'/>
+##
+##  <Description>
+##  constructs a stabilizer chain for the trivial group with
+##  <C>identity</C> value equal to<A>id</A> and
+##  <C>labels = </C><M>\{ <A>id</A> \} \cup</M> <A>labels</A>
+##  (but of course with <C>genlabels</C> and <C>generators</C> values an
+##  empty list).
+##  If the optional third argument <A>pnt</A> is present, the only stabilizer
+##  of the chain is initialized with the one-point basic orbit
+##  <C>[ <A>pnt</A> ]</C> and with <C>translabels</C> and <C>transversal</C>
+##  components.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "EmptyStabChain" );
 
@@ -353,9 +564,15 @@ DeclareGlobalFunction( "EmptyStabChain" );
 ##
 #F  ConjugateStabChain( <S>, <T>, <hom>, <map>[, <cond>] )
 ##
-##  conjugates the stabilizer chain <S>.
-##  If given, <cond> is a function that determines for a stabilizer record
-##  whether the recursion should continue for this record.
+##  <ManSection>
+##  <Func Name="ConjugateStabChain" Arg='S, T, hom, map[, cond]'/>
+##
+##  <Description>
+##  conjugates the stabilizer chain <A>S</A>.
+##  If given, <A>cond</A> is a function that determines for a stabilizer
+##  record whether the recursion should continue for this record.
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "ConjugateStabChain" );
 
@@ -364,11 +581,34 @@ DeclareGlobalFunction( "ConjugateStabChain" );
 ##
 #F  RemoveStabChain( <S> )
 ##
-##  <S> must be a stabilizer record in a stabilizer chain. This chain then
-##  is cut off at <S> by changing the entries in <S>. This can be used to
-##  remove trailing trivial steps.
+##  <#GAPDoc Label="RemoveStabChain">
+##  <ManSection>
+##  <Func Name="RemoveStabChain" Arg='S'/>
+##
+##  <Description>
+##  <A>S</A> must be a stabilizer record in a stabilizer chain.
+##  This chain then is cut off at <A>S</A> by changing the entries in
+##  <A>S</A>.  This can be used to remove trailing trivial steps.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "RemoveStabChain" );
+
+#############################################################################
+##
+#F  TrimStabChain( <S>, <n> )
+##
+##  <ManSection>
+##  <Func Name="TrimStabChain" Arg='S, n'/>
+##
+##  <Description>
+##  This function trims all permutations in the stabilizer chain <A>S</A> to
+##  degree at most <A>n</A> (to save memory).
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "TrimStabChain" );
 
 DeclareOperation( "MembershipTestKnownBase", [ IsRecord, IsList, IsList ] );
 
@@ -377,17 +617,27 @@ DeclareOperation( "MembershipTestKnownBase", [ IsRecord, IsList, IsList ] );
 ##
 #F  SiftedPermutation( <S>, <g> )
 ##
-##  sifts the permutation <g> through the stabilizer chain <S> and returns
-##  the result after the last step.
+##  <#GAPDoc Label="SiftedPermutation">
+##  <ManSection>
+##  <Func Name="SiftedPermutation" Arg='S, g'/>
 ##
-##  The element <g> is sifted as follows: <g> is replaced by
-##  `<g> \* InverseRepresentative( <S>, <S>.orbit[1]^<g> )',
-##  then <S> is replaced by `<S>.stabilizer' and this process is repeated
-##  until <S> is trivial or `<S>.orbit[1]^<g>' is not in the basic orbit
-##  `<S>.orbit'.
-##  The remainder <g> is returned, it is the identity permutation if and
-##  only if the original <g> is in the group $G$ described by
-##  the original~<S>.
+##  <Description>
+##  sifts the permutation <A>g</A> through the stabilizer chain <A>S</A>
+##  and returns the result after the last step.
+##  <P/>
+##  The element <A>g</A> is sifted as follows: <A>g</A> is replaced by
+##  <C><A>g</A>
+##  * InverseRepresentative( <A>S</A>, <A>S</A>.orbit[1]^<A>g</A> )</C>,
+##  then <A>S</A> is replaced by <C><A>S</A>.stabilizer</C> and this process
+##  is repeated until <A>S</A> is trivial
+##  or <C><A>S</A>.orbit[1]^<A>g</A></C> is not in the basic orbit
+##  <C><A>S</A>.orbit</C>.
+##  The remainder <A>g</A> is returned, it is the identity permutation if and
+##  only if the original <A>g</A> is in the group <M>G</M> described by
+##  the original&nbsp;<A>S</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SiftedPermutation" );
 
@@ -396,11 +646,20 @@ DeclareGlobalFunction( "SiftedPermutation" );
 ##
 #F  MinimalElementCosetStabChain( <S>, <g> )
 ##
-##  Let $G$ be the group described by the stabilizer chain <S>.
-##  This function returns a permutation $h$ such that $G <g> = G h$
-##  (that is, $<g> / h \in G$) and with the additional property that
-##  the list of images under $h$ of the base belonging to <S> is minimal
-##  w.r.t.~lexicographical ordering.
+##  <#GAPDoc Label="MinimalElementCosetStabChain">
+##  <ManSection>
+##  <Func Name="MinimalElementCosetStabChain" Arg='S, g'/>
+##
+##  <Description>
+##  Let <M>G</M> be the group described by the stabilizer chain <A>S</A>.
+##  This function returns a permutation <M>h</M> such that
+##  <M>G <A>g</A> = G h</M>
+##  (that is, <M><A>g</A> / h \in G</M>) and with the additional property that
+##  the list of images under <M>h</M> of the base belonging to <A>S</A> is
+##  minimal w.r.t.&nbsp;lexicographical ordering.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "MinimalElementCosetStabChain" );
 
@@ -409,22 +668,30 @@ DeclareGlobalFunction( "MinimalElementCosetStabChain" );
 ##
 #F  SCMinSmaGens(<G>,<S>,<emptyset>,<identity element>,<flag>)
 ##
+##  <ManSection>
+##  <Func Name="SCMinSmaGens" Arg='G,S,emptyset,identity element,flag'/>
+##
+##  <Description>
 ##  This function computes a stabilizer chain for a minimal base image and 
-##  a smallest generating set wrt. this base for a permutation
+##  a smallest generating set w.r.t. this base for a permutation
 ##  group.
-##
-##  <G> must be a permutation group and <S> a mutable stabilizer chain for
-##  <G> that defines a base <bas>. Let <mbas> the smallest image (OnTuples)
-##  of <G>. Then this operation changes <S> to a stabilizer chain wrt.
-##  <mbas>.
-##  The arguments <emptyset> and <identity element> are needed
+##  <P/>
+##  <A>G</A> must be a permutation group and <A>S</A> a mutable stabilizer
+##  chain for <A>G</A> that defines a base <A>bas</A>.
+##  Let <A>mbas</A> the smallest image (OnTuples) of <A>G</A>.
+##  Then this operation changes <A>S</A> to a stabilizer chain w.r.t.
+##  <A>mbas</A>.
+##  The arguments <A>emptyset</A> and <A>identity element</A> are needed
 ##  only for the recursion.
-##
-##  The function returns a record whose component `gens' is a list whose
-##  first element is the smallest element wrt. <bas>. (i.e. an element which
-##  maps <bas> to <mbas>. If <flag> is `true', `gens' is  the smallest
-##  generating set wrt. <bas>. (If <flag> is `false' this will not be
-##  computed.)
+##  <P/>
+##  The function returns a record whose component <C>gens</C> is a list whose
+##  first element is the smallest element w.r.t. <A>bas</A>
+##  (i.e. an element which maps <A>bas</A> to <A>mbas</A>).
+##  If <A>flag</A> is <K>true</K>, <C>gens</C> is the smallest generating set
+##  w.r.t. <A>bas</A>.
+##  (If <A>flag</A> is <K>false</K> this will not be computed.)
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction("SCMinSmaGens");
 
@@ -433,12 +700,20 @@ DeclareGlobalFunction("SCMinSmaGens");
 ##
 #F  LargestElementStabChain( <S>, <id> )
 ##
-##  Let $G$ be the group described by the stabilizer chain <S>.
-##  This function returns the element $h \in G$ with the property that
-##  the list of images under $h$ of the base belonging to <S> is maximal
-##  w.r.t.~lexicographical ordering.
+##  <#GAPDoc Label="LargestElementStabChain">
+##  <ManSection>
+##  <Func Name="LargestElementStabChain" Arg='S, id'/>
+##
+##  <Description>
+##  Let <M>G</M> be the group described by the stabilizer chain <A>S</A>.
+##  This function returns the element <M>h \in G</M> with the property that
+##  the list of images under <M>h</M> of the base belonging to <A>S</A> is
+##  maximal w.r.t.&nbsp;lexicographical ordering.
 ##  The second argument must be an identity element (used to start the
-##  recursion)
+##  recursion).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LargestElementStabChain" );
 
@@ -455,10 +730,18 @@ DeclareGlobalFunction( "DepthSchreierTrees" );
 ##
 #F  AddGeneratorsExtendSchreierTree( <S>, <new> )
 ##
-##  adds the elements  in <new> to the list  of generators of <S> and at the
-##  same time extends the  orbit and transversal. This is the only legal way
-##  to extend  a  Schreier tree (because this involves careful handling of
-##  the tree components).
+##  <#GAPDoc Label="AddGeneratorsExtendSchreierTree">
+##  <ManSection>
+##  <Func Name="AddGeneratorsExtendSchreierTree" Arg='S, new'/>
+##
+##  <Description>
+##  adds the elements in <A>new</A> to the list of generators of <A>S</A>
+##  and at the same time extends the orbit and transversal.
+##  This is the only legal way to extend a Schreier tree
+##  (because this involves careful handling of the tree components).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "AddGeneratorsExtendSchreierTree" );
 
@@ -466,8 +749,6 @@ DeclareGlobalFunction( "ChooseNextBasePoint" );
 DeclareGlobalFunction( "StabChainStrong" );
 DeclareGlobalFunction( "StabChainForcePoint" );
 DeclareGlobalFunction( "StabChainSwap" );
-DeclareGlobalFunction( "InsertElmList" );
-DeclareGlobalFunction( "RemoveElmList" );
 DeclareGlobalFunction( "LabsLims" );
 
 
@@ -475,15 +756,24 @@ DeclareGlobalFunction( "LabsLims" );
 ##
 #F  InsertTrivialStabilizer( <S>, <pnt> )
 ##
-##  `InsertTrivialStabilizer' initializes the current stabilizer with <pnt>
-##  as `EmptyStabChain' did,  but  assigns the original <S> to the  new
-##  `<S>.stabilizer' component,  such that  a new level with trivial basic
-##  orbit (but identical  `labels' and `ShallowCopy'ed `genlabels' and
-##  `generators') is  inserted.
-##  This function should be used only if <pnt> really is fixed by the generators
-##  of <S>, because then new generators can be added and the orbit and
-##  transversal at the same time extended with
-##  `AddGeneratorsExtendSchreierTree'.
+##  <#GAPDoc Label="InsertTrivialStabilizer">
+##  <ManSection>
+##  <Func Name="InsertTrivialStabilizer" Arg='S, pnt'/>
+##
+##  <Description>
+##  <Ref Func="InsertTrivialStabilizer"/> initializes the current stabilizer
+##  with <A>pnt</A> as <Ref Func="EmptyStabChain"/> did,
+##  but assigns the original <A>S</A> to the new
+##  <C><A>S</A>.stabilizer</C> component, such that  a new level with trivial
+##  basic orbit (but identical <C>labels</C> and <C>ShallowCopy</C>ed
+##  <C>genlabels</C> and <C>generators</C>) is inserted.
+##  This function should be used only if <A>pnt</A> really is fixed by the
+##  generators of <A>S</A>, because then new generators can be added and the
+##  orbit and transversal at the same time extended with
+##  <Ref Func="AddGeneratorsExtendSchreierTree"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "InsertTrivialStabilizer" );
 
@@ -497,8 +787,16 @@ DeclareGlobalFunction( "IsInBasicOrbit" );
 ##
 #F  IsFixedStabilizer( <S>, <pnt> )
 ##
-## returns `true'  if <pnt> is fixed by   all generators of  <S> and `false'
-## otherwise.
+##  <#GAPDoc Label="IsFixedStabilizer">
+##  <ManSection>
+##  <Func Name="IsFixedStabilizer" Arg='S, pnt'/>
+##
+##  <Description>
+##  returns <K>true</K> if <A>pnt</A> is fixed by all generators of <A>S</A>
+##  and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IsFixedStabilizer" );
 
@@ -507,9 +805,17 @@ DeclareGlobalFunction( "IsFixedStabilizer" );
 ##
 #F  InverseRepresentative( <S>, <pnt> )
 ##
-##  calculates the transversal element which  maps <pnt> back to  the base
-##  point of  <S>. It just  runs back through the  Schreier tree from <pnt>
-##  to the root and multiplies the labels along the way.
+##  <#GAPDoc Label="InverseRepresentative">
+##  <ManSection>
+##  <Func Name="InverseRepresentative" Arg='S, pnt'/>
+##
+##  <Description>
+##  calculates the transversal element which maps <A>pnt</A> back to the base
+##  point of <A>S</A>.  It just runs back through the Schreier tree from
+##  <A>pnt</A> to the root and multiplies the labels along the way.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "InverseRepresentative" );
 

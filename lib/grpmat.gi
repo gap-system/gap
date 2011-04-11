@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for matrix groups.
 ##
@@ -149,31 +150,96 @@ local f,i,j,veclist,acts;
   return f^Length(veclist[1]);
 end);
 
+InstallGlobalFunction(BasisVectorsForMatrixAction,function(G)
+local F, gens, evals, espaces, is, ise, gen, i, j,module,list,ind,vecs,mins;
+
+  F := DefaultFieldOfMatrixGroup(G);
+  # `Cyclotomics', the default field for rational matrix groups causes
+  # problems with a subsequent factorization
+  if IsIdenticalObj(F,Cyclotomics) then
+    F:=FieldOfMatrixGroup(G);
+  fi;
+
+  list:=[];
+  if false and ValueOption("nosubmodules")=fail and IsFinite(F) then
+    module:=GModuleByMats(GeneratorsOfGroup(G),F);
+    if not MTX.IsIrreducible(module) then
+      mins:=Filtered(MTX.BasesCompositionSeries(module),x->Length(x)>0);
+      if Length(mins)<=5 then
+	mins:=MTX.BasesMinimalSubmodules(module);
+      else
+	if Length(mins)>7 then
+	  mins:=mins{Set(List([1..7],x->Random([1..Length(mins)])))};
+	fi;
+      fi;
+
+      # now get potential basis vectors from submodules
+      for i in mins do
+	ind:=MTX.InducedActionSubmodule(module,i);
+	vecs:=BasisVectorsForMatrixAction(Group(ind.generators):nosubmodules);
+	Append(list,vecs*i);
+      od;
+
+    fi;
+  fi;
+
+  # use Murray/OBrien method
+
+  gens := ShallowCopy( GeneratorsOfGroup( G ) ); # Need copy for mutability
+  while Length( gens ) < 10 do
+      Add( gens, PseudoRandom( G ) );
+  od;
+
+  evals := [];  espaces := [];
+  for gen in gens do
+      evals := Concatenation( evals, GeneralisedEigenvalues(F,gen) );
+      espaces := Concatenation( espaces, GeneralisedEigenspaces(F,gen) );
+  od;
+
+  is:=[];
+  # the `AddSet' wil automatically put small spaces first
+  for i in [1..Length(espaces)] do
+    for j in [i+1..Length(espaces)] do
+      ise:=Intersection(espaces[i],espaces[j]);
+      if Dimension(ise)>0 and not ise in is then
+	Add(is,ise);
+      fi;
+    od;
+  od;
+  Append(list,Concatenation(List(is,i->BasisVectors(Basis(i)))));
+  return list;
+end);
+
 #############################################################################
 ##
 #F  DoSparseLinearActionOnFaithfulSubset( <G>,<act>,<sort> )
 ##
 ##  computes a linear action of the matrix group <G> on the span of the
-##  standard basis. The action <act> must be `OnRight', `OnPoints' or
+##  standard basis. The action <act> must be `OnRight', or
 ##  `OnLines'. The calculation of further orbits stops, once a basis for the
-##  onderlying space has been reached, often giving a smaller degree
+##  underlying space has been reached, often giving a smaller degree
 ##  permutation representation.
 ##  The boolean <sort> indicates, whether the domain will be sorted.
 BindGlobal("DoSparseLinearActionOnFaithfulSubset",
 function(G,act,sort)
-local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
-      v,zero,zerov,en,lo,dim,field,start,acts,base,R,dict,xset;
+local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads, 
+      orb, delay, permimg, maxlim, starti, ll, ltwa, img, v, en, p, kill,
+      i, lo, imgs, xset, hom, R;
 
-  field:=FieldOfMatrixGroup(G);
+  field:=DefaultFieldOfMatrixGroup(G);
   dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
   acts:=GeneratorsOfGroup(G);
 
   if Length(acts)=0 then
     start:=One(G);
   elif act=OnRight then
-    start:=acts[1];
+    start:=Concatenation(BasisVectorsForMatrixAction(G),One(G));
   elif act=OnLines then
-    start:=One(G);
+    j:=One(G);
+    start:=Concatenation(List(BasisVectorsForMatrixAction(G),
+	    x->OnLines(x,j)),j);
+  else
+    Error("illegal action");
   fi;
 
   zerov:=Zero(start[1]);
@@ -184,72 +250,115 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
   partbas:=[]; # la basis of space spanned so far
   heads:=[];
   orb:=[];
+  delay:=[]; # Vectors we delay later, because they are potentially very
+             # expensive.
   permimg:=List(acts,i->[]);
-  p:=1;
+  maxlim:=2000;
 
   starti:=1;
-  while starti<=Length(start) and Length(partbas)<dim do
-
-    ll:=Length(orb);
-    img:=start[starti];
-    v:=ShallowCopy(img);
-    for j in [ 1 .. Length( heads ) ] do
-      en:=v[heads[j]];
-      if en <> zero then
-	AddRowVector( v, partbas[j], - en );
-      fi;
-    od;
-
-    if not IsZero(v) then
-      Add(orb,img);
-      AddDictionary(dict,img,Length(orb));
-
-      # orbit algorithm with image keeper
-      while p<=Length(orb) do
-	for i in [1..Length(acts)] do
-	  img := act(orb[p],acts[i]);
-	  v:=LookupDictionary(dict,img);
-	  if v=fail then
-	    Add(orb,img);
-	    AddDictionary(dict,img,Length(orb));
-	    permimg[i][p]:=Length(orb);
-	  else
-	    permimg[i][p]:=v;
-	  fi;
+  while Length(partbas)<dim or 
+    (act=OnLines and not OnLines(Sum(base),One(G)) in orb) do
+    Info(InfoGroup,2,"dim=",Length(partbas)," ",
+         "|orb|=",Length(orb));
+    if Length(partbas)=dim and act=OnLines then
+      Info(InfoGroup,2,"add sum for projective action");
+      img:=OnLines(Sum(base),One(G));
+    else
+      if starti>Length(start) then
+	Sort(delay);
+	for i in delay do
+	  Add(start,i[2]);
 	od;
-	p:=p+1;
-      od;
-    fi;
-    starti:=starti+1;
+	maxlim:=maxlim*100;
+	Info(InfoGroup,2,
+	    "original pool exhausted, use delayed.  maxlim=",maxlim);
+	delay:=[];
+      fi;
 
-    # break criterion: do we actually *want* more points?
-
-    i:=ll+1;
-    lo:=Length(orb);
-    while i<=lo do
-      v:=ShallowCopy(orb[i]);
+      ll:=Length(orb);
+      ltwa:=Maximum(maxlim,(ll+1)*20);
+      img:=start[starti];
+      v:=ShallowCopy(img);
       for j in [ 1 .. Length( heads ) ] do
 	en:=v[heads[j]];
 	if en <> zero then
 	  AddRowVector( v, partbas[j], - en );
 	fi;
       od;
-      if v<>zerov then
-	Add(base,orb[i]);
-        Add(partbas,ShallowCopy(orb[i]));
-	TriangulizeMat(partbas);
-	heads:=List(partbas,PositionNonZero);
-	if Length(partbas)>=dim then
-	  # full dimension reached
-	  i:=lo;
+    fi;
+
+    if not IsZero(v) then
+      dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
+      Add(orb,img);
+      p:=Length(orb);
+      AddDictionary(dict,img,Length(orb));
+      kill:=false;
+
+      # orbit algorithm with image keeper
+      while p<=Length(orb) do
+	i:=1;
+	while i<=Length(acts) do
+	  img := act(orb[p],acts[i]);
+	  v:=LookupDictionary(dict,img);
+	  if v=fail then
+	    if Length(orb)>ltwa then
+	      Info(InfoGroup,2,"Very long orbit, delay");
+	      Add(delay,[Length(orb)-ll,orb[ll+1]]);
+	      kill:=true;
+	      for p in [ll+1..Length(orb)] do
+	        Unbind(orb[p]);
+		for i in [1..Length(acts)] do
+		  Unbind(permimg[i][p]);
+		od;
+	      od;
+	      i:=Length(acts)+1;
+	      p:=Length(orb)+1;
+	    else
+	      Add(orb,img);
+	      AddDictionary(dict,img,Length(orb));
+	      permimg[i][p]:=Length(orb);
+	    fi;
+	  else
+	    permimg[i][p]:=v;
+	  fi;
+	  i:=i+1;
+	od;
+	p:=p+1;
+      od;
+    fi;
+    starti:=starti+1;
+
+    if not kill then
+      # break criterion: do we actually *want* more points?
+      i:=ll+1;
+      lo:=Length(orb);
+      while i<=lo do
+	v:=ShallowCopy(orb[i]);
+	for j in [ 1 .. Length( heads ) ] do
+	  en:=v[heads[j]];
+	  if en <> zero then
+	    AddRowVector( v, partbas[j], - en );
+	  fi;
+	od;
+	if v<>zerov then
+	  Add(base,orb[i]);
+	  Add(partbas,ShallowCopy(orb[i]));
+	  TriangulizeMat(partbas);
+	  heads:=List(partbas,PositionNonZero);
+	  if Length(partbas)>=dim then
+	    # full dimension reached
+	    i:=lo;
+	  fi;
 	fi;
-      fi;
-      i:=i+1;
-    od;
+	i:=i+1;
+      od;
+    fi;
+
   od;
 
   # Das Dictionary hat seine Schuldigkeit getan
   Unbind(dict);
+  Info(InfoGroup,1,"found degree=",Length(orb));
 
   # any asymptotic argument is pointless here: In practice sorting is much
   # quicker than image computation.
@@ -285,6 +394,15 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
   fi;
   xset:=ExternalSet( G, orb, acts, acts, act);
 
+  # when acting projectively the sum of the base vectors must be part of the
+  # base -- that will guarantee that we can distinguish diagonal from scalar
+  # matrices.
+  if act=OnLines then
+    if Length(base)<=dim then
+      Add(base,OnLines(Sum(base),One(G)));
+    fi;
+  fi;
+
   # We know that the points corresponding to `start' give a base of the
   # vector space. We can use
   # this to get images quickly, using a stabilizer chain in the permutation
@@ -293,8 +411,11 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
   xset!.basePermImage:=List(base,b->PositionCanonical(orb,b));
 
   hom := ActionHomomorphism( xset,"surjective" );
-  SetIsInjective(hom,true); # we know by construction that its injective.
-  R:=Group(permimg,());
+  if act <> OnLines then
+    SetIsInjective(hom, true); # we know by construction that it is injective.
+  fi;
+  
+  R:=Group(permimg,()); # `permimg' arose from `PermList'
   SetBaseOfGroup(R,xset!.basePermImage);
 
   if HasSize(G) and act=OnRight then
@@ -311,6 +432,7 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
 #
 #  SetFilterObj( hom, IsActionHomomorphismByBase );
 #  RUN_IN_GGMBI:=p;
+  base:=ImmutableMatrix(field,base);
   SetLinearActionBasis(hom,base);
 
   return hom;
@@ -321,7 +443,7 @@ end);
 #M  IsomorphismPermGroup( <mat-grp> )
 ##
 BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
-  local   nice;
+local   nice,img,module;
   # don't be too clever if it is a matrix over a non-field domain
   if not IsField(DefaultFieldOfMatrixGroup(grp)) then
     #nice:=ActionHomomorphism( grp,AsSSortedList(grp),OnRight,"surjective");
@@ -344,8 +466,23 @@ BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
     SetIsSurjective( nice, true );
     if not ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
              (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
-      # improve via blocks
-      nice:=nice*SmallerDegreePermutationRepresentation(Image(nice));
+      img:=Image(nice);
+      if not IsFinite(FieldOfMatrixGroup(grp)) or
+      Length(GeneratorsOfGroup(grp))=0 then
+        module:=fail;
+      else
+	module:=GModuleByMats(GeneratorsOfGroup(grp),FieldOfMatrixGroup(grp));
+      fi;
+      #improve,
+      # try hard, unless absirr and orbit lengths at least 1/q^2 of domain --
+      #then we expect improvements to be of little help
+      if module<>fail and not (NrMovedPoints(img)>=
+        Size(FieldOfMatrixGroup(grp))^(Length(One(grp))-2)
+	and MTX.IsAbsolutelyIrreducible(module)) then
+	  nice:=nice*SmallerDegreePermutationRepresentation(img);
+      else
+	nice:=nice*SmallerDegreePermutationRepresentation(img:cheap:=true);
+      fi;
     fi;
   fi;
 
@@ -355,8 +492,10 @@ end );
 InstallMethod( IsomorphismPermGroup,"matrix group", true,
   [ IsMatrixGroup ], 10,
 function(G)
+local map;
   if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
-    return RestrictedMapping(NiceMonomorphism(G),G);
+    map:=NiceMonomorphism(G);
+    return GeneralRestrictedMapping(map,G,Image(map,G));
   else
     if not HasIsFinite(G) then
       Info(InfoWarning,1,
@@ -370,7 +509,8 @@ end);
 ##
 #M  NiceMonomorphism( <mat-grp> )
 ##
-InstallMethod( NiceMonomorphism, [ IsMatrixGroup and IsFinite ],
+InstallMethod( NiceMonomorphism,"use NicomorphismOfGeneralMatrixGroup",
+  [ IsMatrixGroup and IsFinite ],
   G->NicomorphismOfGeneralMatrixGroup(G,false,true));
 
 #############################################################################
@@ -406,7 +546,7 @@ local gens,s,dom,mon,no;
   s:=StabChainOp(no,rec(base:=List(BaseOfGroup(dom),
 				      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
-  gens:=SCMinSmaGens(no,s,[],(),true).gens;
+  gens:= SCMinSmaGens( no, s, [], One( no ), true ).gens;
   SetMinimalStabChain(G,s);
   return List(gens,i->PreImagesRepresentative(mon,i));
 end);
@@ -426,7 +566,7 @@ local s,dom,mon,no;
   s:=StabChainOp(no,rec(base:=List(BaseOfGroup(dom),
 				      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
-  SCMinSmaGens(no,s,[],(),false);
+  SCMinSmaGens( no, s, [], One( no ), false );
   return s;
 end);
 
@@ -437,13 +577,14 @@ end);
 InstallOtherMethod(LargestElementGroup,"matrix group via niceo",
   [IsMatrixGroup and IsFinite],
 function(G)
-local s,dom,mon;
+local s,dom,mon, img;
   mon:=CanonicalNiceMonomorphism(G);
   dom:=UnderlyingExternalSet(mon);
-  s:=StabChainOp(Image(mon,G),rec(base:=List(BaseOfGroup(dom),
+  img:= Image( mon, G );
+  s:=StabChainOp( img, rec(base:=List(BaseOfGroup(dom),
 				      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
-  s:=LargestElementStabChain(s,());
+  s:= LargestElementStabChain( s, One( img ) );
   return PreImagesRepresentative(mon,s);
 end);
 
@@ -501,7 +642,8 @@ InstallMethod( ViewObj,
 function(G)
 local gens;
   gens:=GeneratorsOfGroup(G);
-  if Length(gens)>0 and Length(gens)*Length(gens[1])^2/VIEWLEN>8 then
+  if Length(gens)>0 and Length(gens)*
+                        Length(gens[1])^2 / GAPInfo.ViewLength > 8 then
     Print("<matrix group");
     if HasSize(G) then
       Print(" of size ",Size(G));
@@ -557,7 +699,7 @@ end);
 ##
 InstallMethod(IsGeneralLinearGroup,"try natural",[IsMatrixGroup],
 function(G)
-  if IsNaturalGL(G) then
+  if HasIsNaturalGL(G) and IsNaturalGL(G) then
     return true;
   else
     TryNextMethod();
@@ -577,10 +719,12 @@ InstallMethod(IsSubgroupSL,"determinant test for generators",
 #M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
 ##
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
-        [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
+    [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
+    NICE_FLAGS,  # this method is better than the one using a nice monom.
 function( mat, G )
     local inv;
-    if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then
+    if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
+       or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
     fi;
     inv:= InvariantBilinearForm(G).matrix;
@@ -588,15 +732,18 @@ function( mat, G )
 end );
 
 InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
-        [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+    [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+    NICE_FLAGS,  # this method is better than the one using a nice monom.
 function( mat, G )
-    local f, inv;
-    if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then
+    local pow, inv;
+    if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
+       or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
     fi;
-    f:= FrobeniusAutomorphism( FieldOfMatrixGroup( G ) );
+    pow:= RootInt( Size( FieldOfMatrixGroup( G ) ) );
     inv:= InvariantSesquilinearForm(G).matrix;
-    return mat * inv * List( TransposedMat( mat ), row -> OnTuples(row,f))
+    return mat * inv * List( TransposedMat( mat ),
+                             row -> List( row, x -> x^pow ) )
            = inv;
 end );
 
@@ -902,6 +1049,31 @@ InstallGlobalFunction( "BlowUpIsomorphism", function( matgrp, B )
         Basis, B );
 
     return iso;
+    end );
+
+
+#############################################################################
+##
+##  stuff concerning invariant forms of matrix groups
+#T add code for computing invariant forms,
+#T and transforming matrices for normalizing the forms
+#T (which is useful, e.g., for embedding the groups from AtlasRep into
+#T the unitary, symplectic, or orthogonal groups in question)
+##
+
+
+#############################################################################
+##
+#M  InvariantBilinearForm( <matgrp> )
+##  
+InstallMethod( InvariantBilinearForm,
+    "for a matrix group with known `InvariantQuadraticForm'",
+    [ IsMatrixGroup and HasInvariantQuadraticForm ],
+    function( matgrp )
+    local Q;
+
+    Q:= InvariantQuadraticForm( matgrp ).matrix;
+    return rec( matrix:= ( Q + TransposedMat( Q ) ) );
     end );
 
 

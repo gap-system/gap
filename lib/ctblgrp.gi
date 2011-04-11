@@ -2,10 +2,9 @@
 ##
 #W  ctblgrp.gi                   GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
-##
 #Y  Copyright (C) 1993, 1997
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation of the Dixon-Schneider algorithm
 ##
@@ -25,7 +24,7 @@ USECTPGROUP := false;
 #V  DXLARGEGROUPORDER
 ##
 ##  If a group is small,we may use enumerations of the elements to speed up
-##  the computations. The criterion is the size,compared to the global
+##  the computations. The criterion is the size, compared to the global
 ##  variable DXLARGEGROUPORDER.
 ##
 if not IsBound(DXLARGEGROUPORDER) then
@@ -381,10 +380,10 @@ end;
 ##  images of the irreducibles are known, they may be given in newmod.
 ##
 InstallGlobalFunction( DxIncludeIrreducibles, function(arg)
-
-local i,pcomp,m,r,D,neue,tm,news;
+local i,pcomp,m,r,D,neue,tm,news,opt;
 
   D:=arg[1];
+  opt:=ValueOption("noproject");
   # force computation of all images under $\cal T$. We will need this
   # (among others),to be sure,that we can keep the stabilizers
   neue:=arg[2];
@@ -412,26 +411,27 @@ local i,pcomp,m,r,D,neue,tm,news;
     DxRegisterModularChar(D,i);
   od;
 
-  pcomp:=NullspaceMat(D.projectionMat*TransposedMat(D.modulars));
-
-  for i in [1..Length(D.raeume)] do
-    r:=D.raeume[i];
-    if r.dim = Length(r.base[1]) then
-      # trivial case: Intersection with full space in the beginning
-      r:=rec(base:=pcomp);
-    else
-      r:=rec(base:=SumIntersectionMat(pcomp,r.base)[2]);
-    fi;
-    r.dim:=Length(r.base);
-    # note stabilizer
-    if IsBound(D.raeume[i].stabilizer) then
-      r.stabilizer:=D.raeume[i].stabilizer;
-    fi;
-    if r.dim>0 then
-      DxActiveCols(D,r);
-    fi;
-    D.raeume[i]:=r;
-  od;
+  if opt<>true then
+    pcomp:=NullspaceMat(D.projectionMat*TransposedMat(D.modulars));
+    for i in [1..Length(D.raeume)] do
+      r:=D.raeume[i];
+      if r.dim = Length(r.base[1]) then
+	# trivial case: Intersection with full space in the beginning
+	r:=rec(base:=pcomp);
+      else
+	r:=rec(base:=SumIntersectionMat(pcomp,r.base)[2]);
+      fi;
+      r.dim:=Length(r.base);
+      # note stabilizer
+      if IsBound(D.raeume[i].stabilizer) then
+	r.stabilizer:=D.raeume[i].stabilizer;
+      fi;
+      if r.dim>0 then
+	DxActiveCols(D,r);
+      fi;
+      D.raeume[i]:=r;
+    od;
+  fi;
   D.raeume:=Filtered(D.raeume,i->i.dim>0);
 end );
 
@@ -509,7 +509,6 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
 
     ch:=[];
     i:=m;
-    # run through all characters trying every combination of the generators
     p:=List([1..m],i->0);
     while i>0 do
       # construct tensor product systematically
@@ -819,7 +818,7 @@ end);
 #F  CharacterMorphismOrbits(<D>,<space>) . . stabilizer and invariantspace
 ##
 CharacterMorphismOrbits := function(D,space)
-  local a,b,s,o,gen;
+  local a,b,s,o,gen,b1;
   if not IsBound(space.stabilizer) then
     if IsBound(space.approxStab) then
       a:=space.approxStab;
@@ -836,9 +835,14 @@ CharacterMorphismOrbits := function(D,space)
     a:=DxActiveCols(D,space);
     # calculate invariant space as intersection of E.S to E.V. 1
     for gen in GeneratorsOfGroup(s) do
-        if Length(b)>0 then
-	b:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
-                -IdentityMat(Length(b),o))*b;
+      if Length(b)>0 then
+	b1:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
+                -IdentityMat(Length(b),o));
+	if Length(b1)=0 then
+	  b:=[];
+	else
+	  b:=b1*b;
+	fi;
       fi;
 #T cheaper!
       b:=rec(base:=b,dim:=Length(b));
@@ -1103,7 +1107,7 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
   od;
   D.raeume:=newRaeume;
   if Length(incirrs)>0 then
-    DxIncludeIrreducibles(D,incirrs,incmods);
+    DxIncludeIrreducibles(D,incirrs,incmods:noproject);
   fi;
 end;
 
@@ -1489,22 +1493,21 @@ AsCharacterMorphismFunction := function(pcgs,gals,tme)
       fi;
       c:=[];
       for i in [1..Length(p)] do
-        j:=i^g;
-        c[j]:=p[i]*x[j];
+        c[i]:=p[i/g]*x[i];
       od;
       return c;
     elif IsVectorSpace(p) then # Space
       gens:=BasisVectors(Basis(p));
       c:=List(gens,i ->[]);
       for i in [1..Length(gens[1])] do
-        j:=i^g;
+        j:=i/g;
         for k in [1..Length(gens)] do
-          c[k][j]:=gens[k][i] * x[j];
+          c[k][i]:=gens[k][j] * x[i];
         od;
       od;
       return VectorSpace(LeftActingDomain(p),gens);
     else
-      Error("darf nicht");
+      Error("action not defined");
     fi;
   end;
 end;
@@ -1526,6 +1529,9 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
 
   piso:=IsomorphismPcGroup(D.galMorphisms);
   k:=Image(piso,D.galMorphisms);
+  # Temporary workaround, 7/30/07, AH. It seems that permuting classes does
+  # not easily transfer to mod p.
+  k:=Image(piso,TrivialSubgroup(D.galMorphisms));
   gpcgs:=Pcgs(k);
   gals:=List(gpcgs,i->PreImagesRepresentative(piso,i));
   ord:=List(gpcgs,i->RelativeOrderOfPcElement(gpcgs,i));
@@ -1536,7 +1542,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
   tm.re:=[];
   for i in tm.a do
     f:=Factors(i);
-    ord:=Concatenation(ord,f);
+ 
     Add(tm.ro,f[1]);
     Add(tm.re,Length(f));
   od;
@@ -1600,10 +1606,15 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
     # add commutator relations between galois and tensor
     for j in [1..l] do
       # compute commutator Comm(tens[i],gal[j])
-      comm:=Permuted(gen,gals[j]);
+      #comm:=Permuted(gen,gals[j]);
+      #for k in [1..Length(comm)] do
+      #  comm[k]:=gen[k]^-1*comm[k];
+      #od;
+      comm:=[];
       for k in [1..Length(comm)] do
-        comm[k]:=gen[k]^-1*comm[k];
+	comm[k]:=gen[k]^-1*gen[k/gals[j]];
       od;
+
       # find decomposition
       k:=PositionProperty(tme,i->i[2]=comm);
       cof:=tme[k][1];
@@ -1714,14 +1725,14 @@ DoubleCentralizerOrbit := function(D,c1,c2)
   else
     Info(InfoCharacterTable,2,"using DoubleCosets;");
     cent:=Centralizer(D.classes[inv]);
-    l:=DoubleCosets(D.group,cent,Centralizer(D.classes[c2]));
+    l:=DoubleCosetRepsAndSizes(D.group,cent,Centralizer(D.classes[c2]));
     s1:=Size(cent);
     e:=[];
     s:=[];
     x:=D.classreps[inv];
     for i in l do
-      Add(e,x^Representative(i));
-      Add(s,Size(i)/s1);
+      Add(e,x^i[1]);
+      Add(s,i[2]/s1);
     od;
     return [e,s];
   fi;
@@ -1764,6 +1775,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
       w:=Length(orb.orbits[t])=1 and Length(orb.orbits[r])=1;
       for i in [1..Length(T[1])] do
 	e:=T[1][i]*z;
+	Unbind(T[1][i]);
         if w then
           c:=D.rationalidentification(D,e);
           if c in orb.uniqueIdentifications then
@@ -1795,6 +1807,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
     else # Small Group
       for i in [1..Length(T[1])] do
         s:=D.ClassElement(D,T[1][i] * z);
+	Unbind(T[1][i]);
         M[s][t]:=M[s][t]+T[2][i];
       od;
     fi;
@@ -1932,7 +1945,7 @@ end;
 InstallGlobalFunction( DixonInit, function(arg)
 local G,     # group
       D,     # Dixon record,result
-      k,z,exp,prime,M,m,f,r,ga,i;
+      k,z,exp,prime,M,m,f,r,ga,i,fk;
 
   G:=arg[1];
 
@@ -1947,13 +1960,18 @@ local G,     # group
 
   # estimate the irrationality of the table
   exp:=Exponent(G);
-  prime:=exp+1;
+  z:=RootInt(Size(G));
+  prime:=12*exp+1;
 
-  while prime<Maximum(100,5*k) do
+  fk:=ValueOption("prime");
+  if not IsPosInt(fk) or fk<5*k then
+    fk:=5*k;
+  fi;
+
+  while prime<Maximum(100,fk) do
     prime:=prime+exp;
   od;
 
-  z:=RootInt(Size(G));
   # try to calculate approximate degrees
   D.degreePool:=CharacterDegreePool(G);
   z:=2*Maximum(List(D.degreePool,i->i[1]));
@@ -1964,9 +1982,10 @@ local G,     # group
   while prime<z do
     prime:=prime+exp;
   od;
-  while not IsPrime(prime) do
+  while not IsPrimeInt(prime) do
     prime:=prime+exp;
   od;
+  
   f:=GF(prime);
   Info(InfoCharacterTable,1,"choosing prime ",prime);
 
@@ -1983,8 +2002,8 @@ local G,     # group
 
   # Galois group operating on the columns
   ga:= GroupByGenerators( Set( List( Flat( GeneratorsPrimeResidues(
-                        Exponent(G)).generators),
-      i->PermList(List([1..k],j->PowerMap(D.characterTable,i,j))))),());
+		      Exponent(G)).generators),
+    i->PermList(List([1..k],j->PowerMap(D.characterTable,i,j))))),());
 
   D.galMorphisms:=ga;
   D.galoisOrbits:=List([1..k],i->Set(Orbit(ga,i)));
@@ -2237,17 +2256,23 @@ end );
 # Amer. Math. Soc., Providence, RI, 1993. 
 
 BindGlobal("DixonRepGHchi",function(G,H,chi)
-local cg,ch,d,i,j,pos,theta,hl,alpha,A,x,ra,l,r,res,mats,alonin,hom,rt,rti,
-      rtl,wert,bw,bx,AF,cnt,sum,sp;
-  cg:=ConjugacyClasses(G);
+local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
+      sum, A, x, ra, l, rt, rti, rtl, r, alonin, wert, bx, mats, hom, i;
+
+  tblG:=UnderlyingCharacterTable(chi);
+  if UnderlyingGroup(tblG)<>G then
+    Error("inconsistent groups");
+  fi;
+  cg:=ConjugacyClasses(tblG);
   d:=chi[1];
 
-  Irr(H);
-  FusionConjugacyClasses(H,G);
-  res:=Restricted(chi,H);
+  tblH:=CharacterTable(H);
+  Irr(tblH);
+  FusionConjugacyClasses(tblH,tblG);
+  res:=Restricted(chi,tblH);
   pos:=1;
   theta:=fail;
-  hl:=Filtered(Irr(H),i->i[1]=1);
+  hl:=Filtered(Irr(tblH),i->i[1]=1);
   while theta=fail and pos<=Length(hl) do
     sp:=ScalarProduct(res,hl[pos]);
     if sp=1 then
@@ -2264,7 +2289,7 @@ local cg,ch,d,i,j,pos,theta,hl,alpha,A,x,ra,l,r,res,mats,alonin,hom,rt,rti,
 
   Info(InfoCharacterTable,2,"DixonRepGHchi ",Size(G),",",Size(H),":\n",chi);
 
-  ch:=ConjugacyClasses(H);
+  ch:=ConjugacyClasses(tblH);
 
   alpha:=function(t)
   local ti,s,hi,z,elm,pos;
@@ -2355,7 +2380,7 @@ local cg,ch,d,i,j,pos,theta,hl,alpha,A,x,ra,l,r,res,mats,alonin,hom,rt,rti,
   hom:=GroupHomomorphismByImagesNC(G,Group(mats),
     GeneratorsOfGroup(G),mats);
 
-  SetIsBijective(hom,true);
+  SetIsSurjective(hom,true);
   return hom;
 end);
 
@@ -2391,7 +2416,7 @@ InstallGlobalFunction(IrreducibleRepresentationsDixon,function(arg)
 local G,chi,reps,r,i,gensp;
   G:=arg[1];
   if Length(arg)=1 then
-    chi:=Irr(G);
+    chi:=Irr(G); 
   elif IsClassFunction(arg[2]) and IsCharacter(arg[2]) then
     chi:=[arg[2]];
   elif IsList(arg[2]) and ForAll(arg[2],IsCharacter) then
@@ -2420,7 +2445,8 @@ local G,chi,reps,r,i,gensp;
     fi;
     Add(reps,r);
   od;
-  if Length(reps)=1 and Length(arg)>1 and IsCharacter(arg[2]) then
+  if Length(reps)=1 and Length(arg)>1 and (not IsList(arg[2][1]))
+    and IsCharacter(arg[2]) then
     return r;
   fi;
   return reps;
@@ -2434,6 +2460,70 @@ end);
 InstallMethod( IrreducibleRepresentations, "Dixon's method",
     true, [ IsGroup and IsFinite], 0,IrreducibleRepresentationsDixon);
 
+InstallGlobalFunction(RepresentationsPermutationIrreducibleCharacters,
+function(G,chars,reps)
+local n, imgs, cl, d, cands, j, t, i;
+  if Length(chars)<>Length(reps) or
+    Length(chars)<>Length(ConjugacyClasses(G)) then
+    Error("inconsistency");
+  fi;
+  n:=Length(chars);
+  imgs:=[];
+  cl:=ConjugacyClasses(G);
+  for i in reps do
+    d:=Length(One(Range(i)));
+    cands:=Filtered([1..Length(chars)],i->chars[i][1]=d);
+    j:=2;
+    while Length(cands)>1 do
+      if Length(Set(chars{cands}[j]))>1 then
+	# characters differ on this class
+	t:=TraceMat(Image(i,Representative(cl[j])));
+	cands:=Filtered(cands,i->chars[i][j]=t);
+      fi;
+      j:=j+1;
+    od;
+    if Length(cands)=0 then
+      Error("No character for particular representation found");
+    fi;
+    Add(imgs,cands[1]);
+  od;
+  return PermList(imgs);
+end);
+
+
+# the following function is in this file only for dependency reasons.
+#############################################################################
+##
+#F  NthRootsInGroup( <G>, <e>, <n> )
+##
+##  Takes the <n>th root of element <e> in <G>. This function returns a
+##  list of elements <a> of <G> such that $a^n=e$.
+##
+InstallGlobalFunction(NthRootsInGroup,function(G,elm,n)
+local c,cl,k,p,cand,x,rep,conj,i,rc,roots,cen;
+  # based on an idea by Mathieu Dutour. AH
+  c:=CharacterTable(G);
+  cl:=ConjugacyClasses(c);
+  k:=Length(cl);
+  p:=PowerMap(c,n);
+
+  cand:=Filtered([1..k],i->Order(Representative(cl[i]))=Order(elm));
+  x:=First(cand,i->elm in cl[i]);
+  #root classes
+  rc:=Filtered([1..k],i->p[i]=x);
+  if Length(rc)=0 then return rc;fi;
+
+  roots:=[];
+  cen:=Centralizer(G,elm);
+  # now for each root class map rep^n to our element
+  for i in rc do
+    rep:=Representative(cl[i]);
+    conj:=RepresentativeAction(G,rep^n,elm);
+    # the roots in this class form one orbit under the centralizer of elm
+    Append(roots,Orbit(cen,rep^conj));
+  od;
+  return roots;
+end);
 
 #############################################################################
 ##

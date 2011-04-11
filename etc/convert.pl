@@ -76,6 +76,8 @@
 #        to produce better HTML code for formulae. (It would be possible to
 #        replace tth by another conversion, for example TeXexplorer, but
 #        (at least) the line calling `tth' would need to be modified.)
+
+#    -u  Like -t, but uses `tth -u1' to produce unicode.
 #
 #    <doc-dir>  The directory where all the needed .tex, .toc, .lab and .bbl
 #               files are located.
@@ -359,18 +361,18 @@ sub getchaps {
 }
 
 sub getlabs {
-    my ($bkdir) = @_;
-    open (LAB, "<${bkdir}manual.lab") || die "Can't open ${bkdir}manual.lab";
+  my ($bkdir) = @_;
+  open (LAB, "<${bkdir}manual.lab") || print "Can't open ${bkdir}manual.lab";
     while (<LAB>) {
-        if ( /\\setcitlab/ ) {
-            next; # We don't get the bibliography labels from here
-        } elsif (/\\makelabel\s*\{([^}]+)\}\s*\{(\w+)(\.(\d+))?(\.(\d+))?\}/) {
-            def_section_by_name($1, $2, (defined($3) ? $4 : 0),
-                                        (defined($5) ? $6 : 0));
-        } else {
-            chomp;
-            print STDERR "Ignored line: $_\n... in ${bkdir}manual.lab\n";
-        }
+      if ( /\\setcitlab/ ) {
+	  next; # We don't get the bibliography labels from here
+      } elsif (/\\makelabel\s*\{([^}]+)\}\s*\{(\w+)(\.(\d+))?(\.(\d+))?\}/) {
+	  def_section_by_name($1, $2, (defined($3) ? $4 : 0),
+				      (defined($5) ? $6 : 0));
+      } else {
+	  chomp;
+	  print STDERR "Ignored line: $_\n... in ${bkdir}manual.lab\n";
+      }
     }
     close LAB;
 }
@@ -746,7 +748,7 @@ sub tth_math_replace {
     # tth 2.78+ puts in, later.
     print TTHIN "TTHBEGIN${tth}TTHEND\n";
     close TTHIN;
-    `tth -r -i <tthin >tthout 2>/dev/null`; 
+    `$tthbin -r -i <tthin >tthout 2>/dev/null`; 
     open (TTHOUT, "<tthout") || die "Can't read tthout";
     $tth="";
     while ( $tthin = <TTHOUT> ) {
@@ -850,6 +852,7 @@ sub macro_replace {
         }
         if (defined $accents{$macro})     { return do_accent($rest, $macro); }
         elsif (defined $acc_0arg{$macro}) { return ($rest, $acc_0arg{$macro}); }
+        elsif ($macro eq "copyright")     { return ($rest, "&copy;"); }
         elsif ($macro eq "aa")            { return ($rest, "&aring;"); }
         elsif ($macro eq "AA")            { return ($rest, "&Aring;"); }
         elsif ($macro eq "lq")            { return ($rest, "`"); }
@@ -885,7 +888,8 @@ sub macro_replace {
         elsif ($macro =~ /^l?dots$/)     { return ($rest, "...");          }
         elsif ($macro =~ /^bs?f|stars$/) { return ($rest, "<hr>");         }
         elsif ($macro eq "cr")           { return ($rest, "<br>");         }
-        elsif ($macro eq "fmark")        { return ($rest, "<li>");         }
+	# <li> in the next line would be invalid HTML
+        elsif ($macro eq "fmark")        { return ($rest, "&nbsp;");         }
         elsif ($macro eq "item") 
           { ($rest, $itemarg, $first) = get_arg("$rest"); # $first = ""
             if ($listdepth == 2) {
@@ -978,7 +982,7 @@ sub begin_list {
 
 sub convert_text {
     my $fname = $_[0];
-    my $refchars = '[\\w\\s-`\',./:!()?$]'; # these make up cross references
+    my $refchars = '[\-\\w\\s`\',./:!()?$]'; # these make up cross references
     my $ref = "";
     my $endline = "";    # used for </code> at the end of line
     my $mode = "normal"; # $mode can be: 
@@ -1180,7 +1184,11 @@ sub convert_text {
           # ... this way if this feature is undesirable we can easily get
           #     rid of it
           my $comment = "";
-          if (/^\\>.*;/) {
+          # These cases [<something>] is not a comment:
+          # \><anything>;   # [<arg>] here is treated as an optional arg
+          # \>`<func-with-args>'{<func>![gdfile]} # possibility from
+          #                                       # buildman.pe \Declaration
+          if (/^\\>(.*;|`[^\']+\'{[^}!]*!\[[^\]]*\]})/) {
               ;
           } elsif (/^\\>.*\(/) {
               if (s/^(\\>[^(]*\([^)]*\)[^\[]*)(\[[^\]]*\])/$1/) {
@@ -1629,7 +1637,7 @@ sub startsec {
     $snum = "0" x (3 - length $snum) . $snum;
     my $name1 = metaquote $name;
     my $name2 = kanonize $name;
-    print "<a name=\"SECT$snum\"><h2>$num $name2</h2></a>\n<p>";
+    print "<h2><a name=\"SECT$snum\">$num $name2</a></h2>\n<p>";
     return "^\\\\Section\\{$name1\\}";
 }
 
@@ -1795,6 +1803,9 @@ sub chapters_page {
 <html><head><title>$booktitle - Chapters</title></head>
 <body text=\"\#000000\" bgcolor=\"\#ffffff\">
 <h1>$booktitle_body - Chapters</h1>
+<ul>
+<li><a href=\"theindex.htm\">Index</a>
+</ul>
 <ol>
 END
     ;
@@ -1808,7 +1819,8 @@ END
     }
 
     print  <<END
-</ol><ul>
+</ol>
+<ul>
 <li><a href=\"biblio.htm\">References</a>
 <li><a href=\"theindex.htm\">Index</a>
 </ul><p>
@@ -2016,7 +2028,7 @@ END
 # Process option and sort out input and output directories   
 #
 
-getopts('csitn:f:');
+getopts('csitun:f:');
 
 if (!$opt_c) {$opt_c = 0;} # just to ensure it is not empty
 
@@ -2040,6 +2052,18 @@ if ($opt_t) {
                  "... Maths formulae will vanish!",
                  " Install tth or avoid -t option.\n";
   }
+  $tthbin="tth";
+}
+
+if ($opt_u) {
+  my ($whichtth) = `which tth`;
+  chomp($whichtth);
+  if ($whichtth !~ m+/tth$+) {
+    print STDERR "!! tth: not in path.\n$whichtth\n",
+                 "... Maths formulae will vanish!",
+                 " Install tth or avoid -t option.\n";
+  }
+  $tthbin="tth -u2";
 }
 
 if ($opt_n) {
@@ -2096,7 +2120,7 @@ unless (-d $odir and -w $odir) {
 print  "Reading input from $dir\n" unless ($opt_s);
 print  "Creating output in $odir\n" unless ($opt_s);
 
-if ($opt_t) {
+if ($opt_t || $opt_u) {
   # create macro file for our expressions and macros not known to tth in TeX
   # mode.
   $opt_t = tth_version;
@@ -2163,7 +2187,7 @@ index_page;
 print  "and the references\n" unless ($opt_s);
 biblio_page;
 
-if ($opt_t) {
+if ($opt_t || $opt_u ) {
   # remove the tth stuff
   unlink 'tthin','tthout','tthmacros.tex';
 }

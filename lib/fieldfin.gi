@@ -1,12 +1,13 @@
 #############################################################################
 ##
 #W  fieldfin.gi                 GAP library                     Werner Nickel
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file    contains  methods for  finite  fields.    Note that  we must
 ##  distinguish finite fields and fields that  consist of `FFE's.  (The image
@@ -40,7 +41,7 @@ InstallMethod( GeneratorsOfLeftModule,
     [ IsField and IsFinite ],
     function( F )
     local z;
-    z:= PrimitiveRoot( F );
+    z:= RootOfDefiningPolynomial( F );
     return List( [ 0 .. Dimension( F ) - 1 ], i -> z^i );
 #T call of `UseBasis' ?
     end );
@@ -57,14 +58,14 @@ InstallMethod( GeneratorsOfLeftModule,
 InstallMethod( Random,
     "for a finite prime field",
     [ IsField and IsPrimeField and IsFinite ],
-    F -> Random( [ 1 .. Size( F ) ] ) * One( F ) );
+    F -> Random(1,Size(F)) * One( F ) );
 
 InstallMethod( Random,
     "for a finite field with known primitive root",
     [ IsField and IsFinite and HasPrimitiveRoot ],
     function ( F )
     local   rnd;
-    rnd := Random( [ 0 .. Size( F ) - 1 ] );
+    rnd := Random( 0, Size( F )-1 );
     if rnd = 0  then
       rnd := Zero( F );
     else
@@ -203,16 +204,17 @@ InstallTrueMethod( IsCyclic, IsGroup and IsFFECollection );
 #M  <elm> in <G>  . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
 ##
 InstallMethod( \in,
-    "for groups of FFE, Z/pZ, p<>2",
+    "for groups of FFE",
     IsElmsColls,
     [ IsFFE, IsGroup and IsFFECollection ],
     function( elm, G )
-    local   F;
+    local F;
 
-    F := Field( Concatenation( GeneratorsOfGroup( G ), [ One( G ) ] ) );
-    return LogFFE( elm, PrimitiveRoot( F ) ) mod
-           ( ( Size( F ) - 1 ) / Size( G ) ) = 0;
-end );
+    F:= Field( Concatenation( GeneratorsOfGroup( G ), [ One( G ) ] ) );
+    return     elm in F and not IsZero( elm )
+           and LogFFE( elm, PrimitiveRoot( F ) ) mod
+               ( ( Size( F ) - 1 ) / Size( G ) ) = 0;
+    end );
 
 
 #############################################################################
@@ -299,7 +301,7 @@ InstallMethod( Basis,
           q,     # size of the subfield
           d,     # dimension of the extension
           mat,
-          b,
+          b,b1,
           cnjs,
           k;
 
@@ -325,11 +327,14 @@ InstallMethod( Basis,
     # Build the matrix `M[i][k] = vectors[i]^(q^k)'.
     mat:= [];
     for b in gens do
-      cnjs := [];
-      for k in [ 0 .. d-1 ] do
-        Add( cnjs, b^(q^k) );
-      od;
-      Add( mat, cnjs );
+        cnjs := [];
+        b1 := b;
+        cnjs := [b];
+        for k in [ 1 .. d-1 ] do
+            b1 := b1^q;
+            Add( cnjs, b1 );
+        od;
+        Add( mat, cnjs );
     od;
 
     # We have a basis if and only if `mat' is invertible.
@@ -361,7 +366,7 @@ InstallMethod( BasisNC,
           q,     # size of the subfield
           d,     # dimension of the extension
           mat,
-          b,
+          b,b1,
           cnjs,
           k;
 
@@ -381,11 +386,13 @@ InstallMethod( BasisNC,
     # Build the matrix `M[i][k] = vectors[i]^(q^k)'.
     mat:= [];
     for b in gens do
-      cnjs := [];
-      for k in [ 0 .. d-1 ] do
-        Add( cnjs, b^(q^k) );
-      od;
-      Add( mat, cnjs );
+        cnjs := [b];
+        b1 := b;
+        for k in [ 1 .. d-1 ] do
+            b1 := b1^q;
+            Add( cnjs, b1 );
+        od;
+        Add( mat, cnjs );
     od;
 
     # Add the coefficients information.
@@ -466,17 +473,45 @@ InstallMethod( CanonicalBasis,
     "for a finite field",
     [ IsField and IsFinite ],
     function( F )
-
     local z,         # primitive root
           B;         # basis record, result
 
-    z:= PrimitiveRoot( F );
+    z:= RootOfDefiningPolynomial( F );
     B:= BasisNC( F, List( [ 0 .. Dimension( F ) - 1 ], i -> z ^ i ) );
     SetIsCanonicalBasis( B, true );
 
     # Return the basis object.
     return B;
     end );
+
+
+#############################################################################
+##  
+#M  NormalBase( <F>, <elm> )
+##  
+##  For finite fields just search.
+##  
+InstallMethod( NormalBase,
+"for a finite field and scalar",
+    [ IsField and IsFinite, IsScalar ],
+function(F, b)
+    local q, d, z, l, bas, i;
+    if b=0*b then
+        b := One(F);
+    fi;
+    q := Size(LeftActingDomain(F));
+    d := Dimension(F);
+    z := PrimitiveRoot(F);
+    repeat
+        l := [b];
+        for i in [1..d-1] do
+          Add(l, l[i]^q);
+        od;
+        bas := Basis(F, l);
+        b := b*z;
+    until bas <> fail;
+    return l;
+end);
 
 
 #############################################################################

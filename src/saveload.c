@@ -4,8 +4,9 @@
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions concerned with saving and loading
 **  the workspace. There are support functions in gasman.c and elsewhere
@@ -29,7 +30,8 @@ const char * Revision_saveload_c =
 #include        "scanner.h"             /* scanner                         */
 #include        "sysfiles.h"            /* file input/output               */
 #include        "plist.h"               /* plain lists                     */
-#include        "float.h"               /* floating points */
+#include        "macfloat.h"            /* floating points */
+#include        "compstat.h"            /* statically compiled modules     */
 
 #define INCLUDE_DECLARATION_PART
 #include        "saveload.h"            /* saving and loading              */
@@ -42,10 +44,10 @@ const char * Revision_saveload_c =
 */
 
 
-static Int SaveFile = -1;
+static Int SaveFile;
 static UInt1 LoadBuffer[100000];
-static UInt1* LBPointer = LoadBuffer;
-static UInt1* LBEnd = LoadBuffer;
+static UInt1* LBPointer;
+static UInt1* LBEnd;
 
 static Int OpenForSave( Obj fname ) 
 {
@@ -93,7 +95,9 @@ static void CloseAfterSave( void )
       SyExit(2);
     }
 
-  write(syBuf[SaveFile].fp, LoadBuffer, LBPointer-LoadBuffer);
+  if (write(syBuf[SaveFile].fp, LoadBuffer, LBPointer-LoadBuffer) < 0)
+    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
+               syBuf[SaveFile].fp, 0L);
   SyFclose(SaveFile);
   SaveFile = -1;
 }
@@ -144,7 +148,9 @@ void SAVE_BYTE_BUF( void )
 
 void SAVE_BYTE_BUF( void )
 {
-  write(syBuf[SaveFile].fp, LoadBuffer, LBEnd-LoadBuffer);
+  if (write(syBuf[SaveFile].fp, LoadBuffer, LBEnd-LoadBuffer) < 0)
+    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
+               syBuf[SaveFile].fp, 0L);
   LBPointer = LoadBuffer;
   return;
 }
@@ -410,15 +416,24 @@ Obj LoadSubObj()
   if ((word & 0x3) == 1 || (word & 0x3) == 2)
     return (Obj) word;
   else
-    return (Obj)(MptrBags + (word >> 2));
+    return (Obj)(MptrBags + (word >> 2)-1);
 }
 
 void SaveHandler( ObjFunc hdlr )
 {
+  const Char * cookie;
   if (hdlr == (ObjFunc)0)
     SaveCStr("");
   else
-    SaveCStr((const Char *)CookieOfHandler(hdlr));
+    {
+      cookie = CookieOfHandler(hdlr);
+      if (!cookie)
+	{
+	  Pr("No cookie for Handler -- workspace will be corrupt\n",0,0);
+	  SaveCStr("");
+	}
+      SaveCStr(cookie);
+    }
 }
 
 
@@ -460,9 +475,10 @@ Double LoadDouble( void)
 
 static void SaveBagData (Bag bag)
 {
+#ifndef USE_NEWSHAPE
   SaveUInt((UInt)PTR_BAG(bag)[-3]);
+#endif
   SaveUInt((UInt)PTR_BAG(bag)[-2]);
-
 
   /* dispatch */
   (*(SaveObjFuncs[ TNUM_BAG( bag )]))(bag);
@@ -474,16 +490,14 @@ static void SaveBagData (Bag bag)
 static void LoadBagData ( )
 {
   Bag bag;
-#ifndef NEWSHAPE
-  UInt sizetype;
-#else
   UInt size;
   UInt type;
-#endif
   
-  /* Recover the sizetype word */
-#ifndef NEWSHAPE
-  sizetype=LoadUInt();
+  /* Recover the size & type */
+#ifdef USE_NEWSHAPE
+  size = LoadUInt();
+  type = size & 0xFFL;
+  size >>= 16;
 #else
   type = LoadUInt();
   size = LoadUInt();
@@ -501,18 +515,10 @@ static void LoadBagData ( )
 #endif  
 
   /* Get GASMAN to set up the bag for me */
-#ifndef NEWSHAPE
-  bag = NextBagRestoring( sizetype );
-#else
   bag = NextBagRestoring( size, type );
-#endif
   
   /* despatch */
-#ifndef NEWSHAPE
-  (*(LoadObjFuncs[ sizetype & 0xFFL ]))(bag);
-#else
   (*(LoadObjFuncs[ type ]))(bag);
-#endif
   
   return;
 }
@@ -537,7 +543,7 @@ static void WriteEndiannessMarker( void )
   SAVE_BYTE(((UInt1 *)&x)[1]);
   SAVE_BYTE(((UInt1 *)&x)[2]);
   SAVE_BYTE(((UInt1 *)&x)[3]);
-#if SYS_IS_64_BIT
+#ifdef SYS_IS_64_BIT
   SAVE_BYTE(((UInt1 *)&x)[4]);
   SAVE_BYTE(((UInt1 *)&x)[5]);
   SAVE_BYTE(((UInt1 *)&x)[6]);
@@ -635,7 +641,7 @@ Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
 **  The return value is either True or Fail
 */
 
-static UInt NextSaveIndex;
+static UInt NextSaveIndex = 1;
 
 static void AddSaveIndex( Bag bag)
 {
@@ -659,11 +665,16 @@ static void WriteSaveHeader( void )
 {
   UInt i;
   UInt globalcount = 0;
-#ifdef SYS_IS_64_BIT
-  SaveCStr( "GAP 4.0 beta 64 bit");
+  
+  SaveCStr("GAP workspace");
+  SaveCStr(SyKernelVersion);
+
+#ifdef SYS_IS_64_BIT             
+  SaveCStr("64 bit");
 #else
-  SaveCStr("GAP 4.0 beta 32 bit");
+  SaveCStr("32 bit");
 #endif
+
   WriteEndiannessMarker();
   
   SaveCStr("Counts and Sizes");
@@ -672,13 +683,14 @@ static void WriteSaveHeader( void )
     if (GlobalBags.cookie[i] != NULL)
       globalcount++;
   SaveUInt(globalcount);
-  SaveUInt(NextSaveIndex);
+  SaveUInt(NextSaveIndex-1);
   SaveUInt(AllocBags - OldBags);
   
   SaveCStr("Loaded Modules");
 
   for ( i = NrBuiltinModules; i < NrModules; i++)
     {
+      SaveUInt(Modules[i]->type);
       SaveUInt(Modules[i]->isGapRootRelative);
       SaveCStr(Modules[i]->filename);
     }
@@ -717,7 +729,7 @@ Obj SaveWorkspace( Obj fname )
   CollectBags( 0, 1);
   
   /* Add indices in link words of all bags, for saving inter-bag references */
-  NextSaveIndex = 0;
+  NextSaveIndex = 1;
   CallbackForAllBags( AddSaveIndex );
 
   /* Now do the work */
@@ -742,6 +754,10 @@ Obj SaveWorkspace( Obj fname )
 }
 
 
+Obj FuncSaveWorkspace(Obj self, Obj filename )
+{
+  return SaveWorkspace( filename );
+}
 
 
 /***************************************************************************
@@ -770,18 +786,47 @@ void LoadWorkspace( Char * fname )
   OpenForLoad( fname );
 
   /* Check file header */
-  /* this and its opposite number in saving should use proper version
-     information */
+
   LoadCStr(buf,256);
+  if (SyStrncmp (buf, "GAP ", 4) != 0) {
+     Pr("File %s does not appear to be a GAP workspae.\n", (long) fname, 0L);
+     SyExit(1);
+  }
+
+  if (SyStrcmp (buf, "GAP workspace") == 0) {
+
+     LoadCStr(buf,256);
+     if (SyStrcmp (buf, SyKernelVersion) != 0) {
+        Pr("This workspace is not compatible with GAP kernel (%s, present: %s).\n", 
+           (long)buf, (long)SyKernelVersion);
+        SyExit(1);
+     }
+
+     LoadCStr(buf,256);
 #ifdef SYS_IS_64_BIT             
-  if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
+     if (SyStrcmp(buf,"64 bit") != 0)
 #else
-  if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
+     if (SyStrcmp(buf,"32 bit") != 0)
 #endif
-    {
-      Pr("Header is bad\n",0L,0L);
-      SyExit(1);
-    }
+        {
+           Pr("This workspace was created by a %s version of GAP.\n", (long)buf, 0L);
+           SyExit(1);
+        }
+  } else {
+     
+     /* try if it is an old workspace */
+
+#ifdef SYS_IS_64_BIT             
+     if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
+#else 
+     if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
+#endif
+        Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0L);
+     else 
+        Pr("This workspace was created by an old version of GAP.\n", 0L, 0L);
+     SyExit(1);
+  } 
+  
   CheckEndiannessMarker();
   
   LoadCStr(buf,256);
@@ -811,29 +856,58 @@ void LoadWorkspace( Char * fname )
 
   for (i = 0; i < nMods; i++)
     {
+      UInt type = LoadUInt();
       isGapRootRelative = LoadUInt();
       LoadCStr(buf,256);
       if (isGapRootRelative)
         READ_GAP_ROOT( buf);
       else
 	{
-	  InitInfoFunc init;
 	  StructInitInfo *info = NULL;
-	  
-	  init = SyLoadModule(buf);
-	  if ((Int)init == 1 || (Int) init == 3 || (Int) init == 5 || (Int) init == 7 ||
-	      0 == (info = (*init)()) )
-	    {
-	      Pr("Failed to load needed dynamic module %s, error code %d\n",
-		 (Int)buf, (Int) init);
+ 	  /* Search for user module static case first */
+	  if (type == MODULE_STATIC) { 
+	    UInt k;
+	    for ( k = 0;  CompInitFuncs[k];  k++ ) {
+	      info = (*(CompInitFuncs[k]))();
+	      if ( info == 0 ) {
+		continue;
+	      }
+	      if ( ! SyStrcmp( buf, info->name ) ) {
+		break;
+	      }
+	    }
+	    if ( CompInitFuncs[k] == 0 ) {
+	      Pr( "Static module %s not found in loading kernel\n",
+		  (Int)buf, 0L );
 	      SyExit(1);
 	    }
-	      /* link and init me                                                    */
-	  info->isGapRootRelative = 0;
-	  (info->initKernel)(info);
-	  RecordLoadedModule(info, buf);
-	}
-
+	
+	  } else {
+	    /* and dynamic case */
+	    InitInfoFunc init; 
+	
+	    init = SyLoadModule(buf);
+	    
+	    if ((Int)init == 1 || (Int) init == 3 || (Int) init == 5 || (Int) init == 7)
+	      {
+		Pr("Failed to load needed dynamic module %s, error code %d\n",
+		   (Int)buf, (Int) init);
+		SyExit(1);
+	      }
+	    info = (*init)();
+	     if (info == 0 )
+	       {
+		Pr("Failed to init needed dynamic module %s, error code %d\n",
+		   (Int)buf, (Int) info);
+		SyExit(1);
+	       }
+	  }
+	/* link and init me                                                    */
+	info->isGapRootRelative = 0;
+	(info->initKernel)(info);
+	RecordLoadedModule(info, buf);
+      }
+      
     }
 
   /* Now the kernel variables that point into the workspace */
@@ -841,7 +915,7 @@ void LoadWorkspace( Char * fname )
   if (SyStrcmp(buf,"Kernel to WS refs") != 0)
     {
       Pr("Bad divider\n",0L,0L);
-      SyExit(1);
+       SyExit(1);
     }
   SortGlobals(2);               /* globals by cookie for quick
                                  lookup */
@@ -911,12 +985,10 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
   OpenForLoad( CSTR_STRING(fname) );
   LoadCStr(buf,256);
   Pr("Header string: %s\n",(Int) buf, 0L);
-#ifdef SYS_IS_64_BIT
-  if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
-#else
-  if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
-#endif
-    ErrorQuit("Header is bad",0L,0L);
+  LoadCStr(buf,256);
+  Pr("GAP Version: %s\n",(Int)buf, 0L);
+  LoadCStr(buf,256);
+  Pr("Word length: %s\n",(Int)buf, 0L);
   CheckEndiannessMarker();
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
@@ -932,6 +1004,9 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
     ErrorQuit("Bad divider",0L,0L);
   for (i = 0; i < nMods; i++)
     {
+      UInt type;
+      type = LoadUInt();
+      Pr("Type: %d ",type,0);
       relative = LoadUInt();
       if (relative)
 	Pr("GAP root relative ", 0L, 0L);
@@ -973,6 +1048,9 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 */
 static StructGVarFunc GVarFuncs [] = {
 
+    { "SaveWorkspace", 1, "fname", 
+      FuncSaveWorkspace, "src/saveload.c:SaveWorkspace" },
+
     { "DumpWorkspace", 1, "fname", 
       FuncDumpWorkspace, "src/saveload.c:DumpWorkspace" },
 
@@ -995,6 +1073,10 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+  SaveFile = -1;
+  LBPointer = LoadBuffer;
+  LBEnd = LoadBuffer;
+  
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 

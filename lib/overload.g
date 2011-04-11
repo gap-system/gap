@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration and methods of ``overloaded''
 ##  operations, that is, operations for which the meaning of the result
@@ -29,7 +30,7 @@
 ##  
 ##  The key requirement is that no object ever exists which inherits from
 ##  two types with distinct meanings.
-##  Whenever this happens, there *must* be a method installed for the join
+##  Whenever this happens, there *must* be a method installed for the meet
 ##  of the relevant categories which decides which meaning applies,
 ##  otherwise the meaning of the operation is at the mercy of the ranking
 ##  system.
@@ -60,8 +61,8 @@ Revision.overload_g :=
 ##
 DeclareOperation( "CoKernel", [ IsObject ] );
 
-InstallMethod( CoKernel, true,
-    [ IsGeneralMapping ], 0,
+InstallMethod( CoKernel,
+    [ IsGeneralMapping ],
     function( map )
     if RespectsAddition( map ) and RespectsZero( map ) then
       return CoKernelOfAdditiveGeneralMapping( map );
@@ -81,8 +82,8 @@ InstallMethod( CoKernel, true,
 ##
 DeclareOperation( "Degree", [ IsObject ] );
 
-InstallMethod( Degree, true, [ IsClassFunction ], 0, DegreeOfCharacter );
-InstallMethod( Degree, true, [ IsRationalFunction ], 0,
+InstallMethod( Degree, [ IsClassFunction ], DegreeOfCharacter );
+InstallMethod( Degree, [ IsRationalFunction ],
     function( ratfun )
     if IsLaurentPolynomial( ratfun ) then
       return DegreeOfLaurentPolynomial( ratfun );
@@ -100,7 +101,7 @@ DeclareOperation( "DerivedSeries", [ IsObject ] );
 # DerivedSeriesOfAlgebra no longer exists! (There are the functions 
 # LieDerivedSeries and PowerSubalgebraSeries). 
 #
-InstallMethod( DerivedSeries, true, [ IsAlgebra ], 0,
+InstallMethod( DerivedSeries, [ IsAlgebra ],
   function( A )
     if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
       Error(
@@ -109,13 +110,9 @@ InstallMethod( DerivedSeries, true, [ IsAlgebra ], 0,
       Error(
 "you can't use DerivedSeries( <A> ) for an algebra <A>, you may want to try PowerSubalgebraSeries( <A> ) instead");
     fi;
-  end
-);
+  end );
 
-InstallMethod( DerivedSeries, true, [ IsGroup   ], 0,
-    DerivedSeriesOfGroup   );
-
-
+InstallMethod( DerivedSeries, [ IsGroup ], DerivedSeriesOfGroup );
 
 
 #############################################################################
@@ -126,9 +123,8 @@ InstallMethod( DerivedSeries, true, [ IsGroup   ], 0,
 ##
 DeclareOperation( "Determinant", [ IsObject ] );
 
-InstallMethod( Determinant, true, [ IsMatrix ], 0, DeterminantMat );
-InstallMethod( Determinant, true, [ IsClassFunction ], 0,
-    DeterminantOfCharacter );
+InstallMethod( Determinant, [ IsMatrix ], DeterminantMat );
+InstallMethod( Determinant, [ IsClassFunction ], DeterminantOfCharacter );
 
 
 #############################################################################
@@ -137,8 +133,7 @@ InstallMethod( Determinant, true, [ IsClassFunction ], 0,
 ##
 DeclareOperation( "Eigenvalues", [ IsObject ] );
 
-InstallOtherMethod( Eigenvalues, true,
-    [ IsClassFunction, IsPosInt ], 0,
+InstallOtherMethod( Eigenvalues, [ IsClassFunction, IsPosInt ],
     EigenvaluesChar );
 
 
@@ -155,17 +150,18 @@ InstallOtherMethod( Eigenvalues, true,
 ##
 DeclareOperation( "IsIrreducible", [ IsObject ] );
 
-#T InstallMethod( IsIrreducible, true, [ IsAModule ], 0,
-#T     IsIrreducibleModule );
-InstallMethod( IsIrreducible, true, [ IsClassFunction ], 0,
-    IsIrreducibleCharacter );
-InstallMethod( IsIrreducible, true, [ IsRingElement ], 0,
+#T InstallMethod( IsIrreducible, [ IsAModule ], IsIrreducibleModule );
+InstallMethod( IsIrreducible, [ IsClassFunction ], IsIrreducibleCharacter );
+InstallMethod( IsIrreducible, [ IsRingElement ],
     function( r )
     if IsClassFunction( r ) then
       TryNextMethod();
     fi;
     return IsIrreducibleRingElement( r );
     end );
+
+InstallOtherMethod(IsIrreducible,"polynomial",IsCollsElms,
+  [IsPolynomialRing,IsPolynomial],0,IsIrreducibleRingElement);
 
 
 #############################################################################
@@ -177,16 +173,11 @@ InstallMethod( IsIrreducible, true, [ IsRingElement ], 0,
 ##
 DeclareOperation( "IsMonomial", [ IsObject ] );
 
-InstallMethod( IsMonomial, true, [ IsClassFunction ], 0,
-    IsMonomialCharacter );
-InstallMethod( IsMonomial, true, [ IsGroup ], 0,
-    IsMonomialGroup );
-InstallMethod( IsMonomial, true, [ IsMatrix ], 0,
-    IsMonomialMatrix );
-InstallMethod( IsMonomial, true, [ IsPosInt ], 0,
-    IsMonomialNumber );
-InstallMethod( IsMonomial, true, [ IsOrdinaryTable ], 0,
-    IsMonomialCharacterTable );
+InstallMethod( IsMonomial, [ IsClassFunction ], IsMonomialCharacter );
+InstallMethod( IsMonomial, [ IsGroup ], IsMonomialGroup );
+InstallMethod( IsMonomial, [ IsMatrix ], IsMonomialMatrix );
+InstallMethod( IsMonomial, [ IsPosInt ], IsMonomialNumber );
+InstallMethod( IsMonomial, [ IsOrdinaryTable ], IsMonomialCharacterTable );
 
 
 #############################################################################
@@ -200,7 +191,7 @@ Add(SOLVABILITY_IMPLYING_FUNCTIONS,IsNilpotent);
 
 # IsNilpotentAlgebra is now called IsLieNilpotent.
 #
-InstallMethod( IsNilpotent, true, [ IsAlgebra ], 0,
+InstallMethod( IsNilpotent, [ IsAlgebra ],
   function(A)
     if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
       Error("you can't use IsNilpotent( <L> ) for a Lie algebra <L>, you may want to try IsLieNilpotent( <L> ) instead");
@@ -210,9 +201,8 @@ InstallMethod( IsNilpotent, true, [ IsAlgebra ], 0,
   end
 );
 
-InstallMethod( IsNilpotent, true, [ IsGroup ], 0, IsNilpotentGroup   );
-InstallMethod( IsNilpotent, true, [ IsOrdinaryTable ], 0,
-    IsNilpotentCharacterTable );
+InstallMethod( IsNilpotent, [ IsGroup ], IsNilpotentGroup   );
+InstallMethod( IsNilpotent, [ IsOrdinaryTable ], IsNilpotentCharacterTable );
 
 
 #############################################################################
@@ -223,12 +213,24 @@ InstallMethod( IsNilpotent, true, [ IsOrdinaryTable ], 0,
 ##
 DeclareOperation( "IsSimple", [ IsObject ] );
 
-InstallMethod( IsSimple, true, [ IsAlgebra ], 0, IsSimpleAlgebra );
-#T InstallMethod( IsSimple, true, [ IsAModule ], 0,
-#T     IsSimpleModule );
-InstallMethod( IsSimple, true, [ IsGroup   ], 0, IsSimpleGroup   );
-InstallMethod( IsSimple, true, [ IsOrdinaryTable ], 0,
-    IsSimpleCharacterTable );
+InstallMethod( IsSimple, [ IsAlgebra ], IsSimpleAlgebra );
+#T InstallMethod( IsSimple, [ IsAModule ], IsSimpleModule );
+InstallMethod( IsSimple, [ IsGroup   ], IsSimpleGroup   );
+InstallMethod( IsSimple, [ IsOrdinaryTable ], IsSimpleCharacterTable );
+
+
+#############################################################################
+##
+#O  IsAlmostSimple( <obj> )
+##
+##  is `true' if <obj> is an almost simple group
+##  or an almost simple character table or ...
+##
+DeclareOperation( "IsAlmostSimple", [ IsObject ] );
+
+InstallMethod( IsAlmostSimple, [ IsGroup   ], IsAlmostSimpleGroup   );
+InstallMethod( IsAlmostSimple, [ IsOrdinaryTable ],
+    IsAlmostSimpleCharacterTable );
 
 
 #############################################################################
@@ -242,7 +244,7 @@ Add(SOLVABILITY_IMPLYING_FUNCTIONS,IsSolvable);
 
 # IsSolvableAlgebra is now called IsLieSolvable.
 #
-InstallMethod( IsSolvable, true, [ IsAlgebra ], 0,
+InstallMethod( IsSolvable, [ IsAlgebra ],
   function(A)
     if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
       Error(
@@ -250,12 +252,23 @@ InstallMethod( IsSolvable, true, [ IsAlgebra ], 0,
     else
       Error("you can't use IsSolvable( <A> ) for an algebra <A>");
     fi;
-  end
-);
+  end );
 
-InstallMethod( IsSolvable, true, [ IsGroup   ], 0, IsSolvableGroup   );
-InstallMethod( IsSolvable, true, [ IsOrdinaryTable ], 0,
-    IsSolvableCharacterTable );
+InstallMethod( IsSolvable, [ IsGroup   ], IsSolvableGroup   );
+InstallMethod( IsSolvable, [ IsOrdinaryTable ], IsSolvableCharacterTable );
+
+
+#############################################################################
+##
+#O  IsSporadicSimple( <obj> )
+##
+##  is `true' if <obj> is a sporadic simple group or character table or ...
+##
+DeclareOperation( "IsSporadicSimple", [ IsObject ] );
+
+InstallMethod( IsSporadicSimple, [ IsGroup ], IsSporadicSimpleGroup );
+InstallMethod( IsSporadicSimple, [ IsOrdinaryTable ],
+    IsSporadicSimpleCharacterTable );
 
 
 #############################################################################
@@ -267,8 +280,8 @@ InstallMethod( IsSolvable, true, [ IsOrdinaryTable ], 0,
 ##
 DeclareOperation( "IsSupersolvable", [ IsObject ] );
 
-InstallMethod( IsSupersolvable, true, [ IsGroup ], 0, IsSupersolvableGroup );
-InstallMethod( IsSupersolvable, true, [ IsOrdinaryTable ], 0,
+InstallMethod( IsSupersolvable, [ IsGroup ], IsSupersolvableGroup );
+InstallMethod( IsSupersolvable, [ IsOrdinaryTable ],
     IsSupersolvableCharacterTable );
 
 
@@ -278,9 +291,8 @@ InstallMethod( IsSupersolvable, true, [ IsOrdinaryTable ], 0,
 ##
 DeclareOperation( "IsPerfect", [ IsObject ] );
 
-InstallMethod( IsPerfect, true, [ IsGroup ], 0, IsPerfectGroup );
-InstallMethod( IsPerfect, true, [ IsOrdinaryTable ], 0,
-    IsPerfectCharacterTable );
+InstallMethod( IsPerfect, [ IsGroup ], IsPerfectGroup );
+InstallMethod( IsPerfect, [ IsOrdinaryTable ], IsPerfectCharacterTable );
 
 
 #############################################################################
@@ -293,8 +305,8 @@ InstallMethod( IsPerfect, true, [ IsOrdinaryTable ], 0,
 ##
 DeclareOperation( "Kernel", [ IsObject ] );
 
-InstallMethod( Kernel, true,
-    [ IsGeneralMapping ], 0,
+InstallMethod( Kernel,
+    [ IsGeneralMapping ],
     function( map )
     if RespectsAddition( map ) and RespectsZero( map ) then
       return KernelOfAdditiveGeneralMapping( map );
@@ -305,7 +317,7 @@ InstallMethod( Kernel, true,
     fi;
     end );
 
-InstallMethod( Kernel, true, [ IsClassFunction ], 0, KernelOfCharacter );
+InstallMethod( Kernel, [ IsClassFunction ], KernelOfCharacter );
 
 
 #############################################################################
@@ -316,7 +328,7 @@ DeclareOperation( "LowerCentralSeries", [ IsObject ] );
 
 # LowerCentralSeries is now called LieLowerCentralSeries. 
 #
-InstallMethod( LowerCentralSeries, true, [ IsAlgebra ], 0,
+InstallMethod( LowerCentralSeries, [ IsAlgebra ],
   function(A)
     if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
       Error("you can't use LowerCentralSeries( <L> ) for a Lie algebra <L>, you may want to try LieLowerCentralSeries( <L> ) instead");
@@ -326,8 +338,7 @@ InstallMethod( LowerCentralSeries, true, [ IsAlgebra ], 0,
   end
 );
 
-InstallMethod( LowerCentralSeries, true, [ IsGroup   ], 0,
-    LowerCentralSeriesOfGroup   );
+InstallMethod( LowerCentralSeries, [ IsGroup ], LowerCentralSeriesOfGroup );
 
 
 #############################################################################
@@ -351,7 +362,7 @@ DeclareOperation( "UpperCentralSeries", [ IsObject ] );
 
 # UpperCentralSeriesOfAlgebra is now called LieUpperCentralSeries.
 #
-InstallMethod( UpperCentralSeries, true, [ IsAlgebra ], 0,
+InstallMethod( UpperCentralSeries, [ IsAlgebra ],
   function(A)
     if HasIsLieAlgebra(A) and IsLieAlgebra(A) then
       Error("you can't use UpperCentralSeries( <L> ) for a Lie algebra <L>, you may want to try LieUpperCentralSeries( <L> ) instead");
@@ -361,9 +372,16 @@ InstallMethod( UpperCentralSeries, true, [ IsAlgebra ], 0,
   end
 );
 
-InstallMethod( UpperCentralSeries, true, [ IsGroup   ], 0,
-    UpperCentralSeriesOfGroup   );
+InstallMethod( UpperCentralSeries, [ IsGroup ], UpperCentralSeriesOfGroup );
 
+
+DeclareGlobalFunction( "InsertElmList" );
+
+InstallGlobalFunction(InsertElmList, function (list, pos, elm)
+    Add(list,elm,pos);
+end);
+
+DeclareSynonym( "RemoveElmList", Remove);
 
 #############################################################################
 ##

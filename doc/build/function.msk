@@ -46,6 +46,17 @@ gap> NumberArgumentsFunction(Sum);
 -1
 \endexample
 
+\Declaration{NamesLocalVariablesFunction}
+\beginexample
+gap> NamesLocalVariablesFunction( function( a, b ) local c; return 1; end );
+[ "a", "b", "c" ]
+gap> NamesLocalVariablesFunction( function( arg ) local a; return 1; end );
+[ "arg", "a" ]
+gap> NamesLocalVariablesFunction( Size );
+fail
+\endexample
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Calling a function with a list argument that is interpreted as
 several arguments}

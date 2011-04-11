@@ -1,0 +1,178 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  integers.msk                GAP documentation            Martin Schönert -->
+<!-- %A                                                           Alexander Hulpke -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: integers.msk,v 1.26 2006/08/22 09:55:00 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+
+<Chapter Label="Integers">
+<Heading>Integers</Heading>
+
+One of the most fundamental datatypes in every programming language is
+the integer type.  &GAP; is no exception.
+<P/>
+&GAP; integers are entered as a sequence of decimal digits optionally 
+preceded by a <Q><C>+</C></Q> sign for positive integers or 
+a <Q><C>-</C></Q> sign for negative integers.
+The size of integers in &GAP; is only limited by the amount of available
+memory, so you can compute with integers having thousands of digits.
+<P/>
+<Example><![CDATA[
+gap> -1234;
+-1234
+gap> 123456789012345678901234567890123456789012345678901234567890;
+123456789012345678901234567890123456789012345678901234567890
+]]></Example>
+<P/>
+
+Many more functions that are mainly related to the prime residue group of
+integers modulo an integer are described in chapter&nbsp;<Ref Chap="Number Theory"/>,
+and functions dealing with combinatorics can be found
+in chapter&nbsp;<Ref Chap="Combinatorics"/>.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:Integers: Global Variables">
+<Heading>Integers: Global Variables</Heading>
+
+<#Include Label="IntegersGlobalVars">
+<#Include Label="IsIntegers">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Elementary Operations for Integers">
+<Heading>Elementary Operations for Integers</Heading>
+
+<#Include Label="IsInt">
+<#Include Label="IsPosInt">
+<#Include Label="Int">
+<#Include Label="IsEvenInt">
+<#Include Label="IsOddInt">
+<#Include Label="AbsInt">
+<#Include Label="SignInt">
+<#Include Label="LogInt">
+<#Include Label="RootInt">
+<#Include Label="SmallestRootInt">
+<#Include Label="ListOfDigits">
+
+<ManSection>
+<Func Name="Random" Arg='Integers' Label="for integers"/>
+
+<Description>
+<Ref Func="Random" Label="for integers"/> for integers returns
+pseudo random integers between <M>-10</M> and
+<M>10</M> distributed according to a binomial distribution.
+To generate uniformly distributed integers from a range,
+use the construction <C>Random( [ <A>low</A> .. <A>high</A> ] )</C>
+&nbsp;(see&nbsp;<Ref Func="Random" Label="for lower and upper bound"/>).
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Quotients and Remainders">
+<Heading>Quotients and Remainders</Heading>
+
+<#Include Label="QuoInt">
+<#Include Label="BestQuoInt">
+<#Include Label="RemInt">
+<#Include Label="GcdInt">
+<#Include Label="Gcdex">
+<#Include Label="LcmInt">
+<#Include Label="CoefficientsQadic">
+<#Include Label="CoefficientsMultiadic">
+<#Include Label="ChineseRem">
+<#Include Label="PowerModInt">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Prime Integers and Factorization">
+<Heading>Prime Integers and Factorization</Heading>
+
+<#Include Label="Primes">
+<#Include Label="IsPrimeInt">
+<#Include Label="PrimalityProof">
+<#Include Label="IsPrimePowerInt">
+<#Include Label="NextPrimeInt">
+<#Include Label="PrevPrimeInt">
+<#Include Label="FactorsInt">
+<#Include Label="PrimeDivisors">
+<#Include Label="PartialFactorization">
+<#Include Label="PrintFactorsInt">
+<#Include Label="PrimePowersInt">
+<#Include Label="DivisorsInt">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Residue Class Rings">
+<Heading>Residue Class Rings</Heading>
+
+<Index Key="mod" Subkey="residue class rings"><K>mod</K></Index>
+<Index Subkey="residue class rings">modulo</Index>
+<Ref Func="ZmodnZ"/> returns a residue class ring of <Ref Var="Integers"/>
+modulo an ideal.
+These residue class rings are rings, thus all operations for rings
+(see Chapter&nbsp;<Ref Chap="Rings"/>) apply.
+See also Chapters&nbsp;<Ref Chap="Finite Fields"/> and
+<Ref Chap="Number Theory"/>.
+
+<ManSection>
+<Oper Name="\mod" Arg="r/s, n" Label="for residue class rings"/>
+<Description>
+If <A>r</A>, <A>s</A> and <A>n</A> are integers, <C><A>r</A> / <A>s</A></C> as a  reduced  fraction  is
+<C>p/q</C>, where <C>q</C> and <A>n</A> are coprime, then <C><A>r</A> / <A>s</A> mod <A>n</A></C>  is
+defined to be the product of <C>p</C> and the inverse of <C>q</C> modulo  <A>n</A>. See
+Section&nbsp;<Ref Sect="Arithmetic Operators"/> for more details and definitions.
+<P/>
+With the above definition, <C>4 / 6 mod 32</C> equals <C>2 / 3 mod 32</C> and hence
+exists (and is equal to 22), despite the  fact  that  6  has  no  inverse
+modulo 32.
+</Description>
+</ManSection>
+
+<#Include Label="ZmodnZ">
+<#Include Label="ZmodnZObj">
+<#Include Label="IsZmodnZObj">
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Check Digits">
+<Heading>Check Digits</Heading>
+
+<#Include Label="CheckDigitISBN">
+<#Include Label="CheckDigitTestFunction">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Random Sources">
+<Heading>Random Sources</Heading>
+
+&GAP; provides <Ref Func="Random" Label="for a list or collection"/> methods
+for many collections of objects. 
+On a lower level these methods use <E>random sources</E> which provide 
+random integers and random choices from lists. 
+
+<#Include Label="IsRandomSource">
+<#Include Label="Random">
+<#Include Label="State">
+<#Include Label="IsGlobalRandomSource">
+<#Include Label="RandomSource">
+
+</Section>
+</Chapter>
+

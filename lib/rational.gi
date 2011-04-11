@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  rational.gi                 GAP library                  Martin Schoenert
+#W  rational.gi                 GAP library                  Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for rationals.
 ##
@@ -22,8 +23,6 @@ InstallValue( Rationals, Objectify( NewType(
     IsRationals and IsAttributeStoringRep ), rec() ) );
 SetName( Rationals, "Rationals" );
 SetLeftActingDomain( Rationals, Rationals );
-SetIsPrimeField( Rationals, true );
-SetIsCyclotomicField( Rationals, true );
 SetSize( Rationals, infinity );
 SetConductor( Rationals, 1 );
 SetDimension( Rationals, 1 );
@@ -57,9 +56,8 @@ SetIsWholeFamily( GaussianRationals, false );
 #M  \in( <x>, <Rationals> ) . . . . . . . . . . membership test for rationals
 ##
 InstallMethod( \in,
-    "for Rationals and an object",
-    true,
-    [ IsObject, IsRationals ], 0,
+    "for cyclotomic and Rationals",
+    [ IsCyclotomic, IsRationals ],
     function( x, Rationals ) return IsRat( x ); end );
 
 
@@ -69,8 +67,7 @@ InstallMethod( \in,
 ##
 InstallMethod( Random,
     "for Rationals",
-    true,
-    [ IsRationals ], 0,
+    [ IsRationals ],
     function( Rationals )
     local den;
     repeat den := Random( Integers ); until den <> 0;
@@ -85,7 +82,7 @@ InstallMethod( Random,
 InstallMethod( Conjugates,
     "for Rationals, Rationals, and a rational",
     IsCollsXElms,
-    [ IsRationals, IsRationals, IsRat ], 0,
+    [ IsRationals, IsRationals, IsRat ],
     function( L, K, x )
     return [ x ];
     end );
@@ -106,8 +103,8 @@ DeclareRepresentation( "IsCanonicalBasisRationals",
 #M  CanonicalBasis( Rationals )
 ##
 InstallMethod( CanonicalBasis,
-    "method for Rationals",
-    true, [ IsRationals ], 0,
+    "for Rationals",
+    [ IsRationals ],
     function( Rationals )
     local B;
     B:= Objectify( NewType( FamilyObj( Rationals ),
@@ -117,13 +114,13 @@ InstallMethod( CanonicalBasis,
                    rec() );
     SetUnderlyingLeftModule( B, Rationals );
     SetBasisVectors( B, [ 1 ] );
+    return B;
     end );
 
 InstallMethod( Coefficients,
     "method for canonical basis of Rationals",
     IsCollsElms,
-    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisRationals,
-      IsVector ], 0,
+    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisRationals, IsVector ],
     function( B, v )
     if IsRat( v ) then
       return [ v ];
@@ -144,14 +141,6 @@ InstallMethod( Coefficients,
 
 ############################################################################
 ##
-#R  IsRationalsIteratorRep
-##
-DeclareRepresentation( "IsRationalsIteratorRep", IsComponentObjectRep,
-    [ "structure", "actualn", "up", "sign", "pos", "coprime", "len" ] );
-
-
-############################################################################
-##
 #M  Iterator( Rationals )
 ##
 ##  Let $A_n = \{ \frac{p}{q} ; p,q \in\{ 1, \ldots, n \} \}$
@@ -167,51 +156,7 @@ DeclareRepresentation( "IsRationalsIteratorRep", IsComponentObjectRep,
 ##  elements in each $B_n$ for positive $n$, and the reverse of this
 ##  ordering for negative $n$.
 ##
-InstallMethod( Iterator,
-    "for `Rationals'",
-    true,
-    [ IsRationals ], 0,
-    function( Rationals )
-    return Objectify( NewType( IteratorsFamily,
-                                   IsIterator
-                               and IsMutable
-                               and IsRationalsIteratorRep ),
-                      rec(
-                           structure := Rationals,
-                           actualn   := 0,
-                           up        := false,
-                           sign      := -1,
-                           pos       := 1,
-                           coprime   := [ 1 ],
-                           len       := 1       ) );
-    end );
-
-InstallMethod( IsDoneIterator,
-    "for iterator of `Rationals'",
-    true,
-    [ IsIterator and IsRationalsIteratorRep ], 0,
-    ReturnFalse );
-
-InstallMethod( ShallowCopy,
-    "for iterator of `Rationals'",
-    true,
-    [ IsIterator and IsRationalsIteratorRep ], 0,
-    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
-                       rec(
-                            structure := Rationals,
-                            actualn   := iter!.actualn,
-                            up        := iter!.up,
-                            sign      := iter!.sign,
-                            pos       := iter!.pos,
-                            coprime   := ShallowCopy( iter!.coprime ),
-                            len       := Length( iter!.coprime ) ) ) );
-
-InstallMethod( NextIterator,
-    "for mutable iterator of `Rationals'",
-    true,
-    [ IsIterator and IsMutable and IsRationalsIteratorRep ], 0,
-    function( iter )
-
+BindGlobal( "NextIterator_Rationals", function( iter )
     local value;
 
     if iter!.actualn = 1 then
@@ -262,46 +207,45 @@ InstallMethod( NextIterator,
     return value;
     end );
 
+BindGlobal( "ShallowCopy_Rationals",
+    iter -> rec(
+                actualn   := iter!.actualn,
+                up        := iter!.up,
+                sign      := iter!.sign,
+                pos       := iter!.pos,
+                coprime   := ShallowCopy( iter!.coprime ),
+                len       := Length( iter!.coprime ) ) );
 
-#############################################################################
-##
-#R  IsRationalsEnumerator
-##
-DeclareRepresentation( "IsRationalsEnumerator",
-    IsDomainEnumerator and IsAttributeStoringRep, [] );
+InstallMethod( Iterator,
+    "for `Rationals'",
+    [ IsRationals ],
+    Rationals -> IteratorByFunctions( rec(
+        NextIterator := NextIterator_Rationals,
+        IsDoneIterator := ReturnFalse,
+        ShallowCopy := ShallowCopy_Rationals,
+                                    
+        actualn   := 0,
+        up        := false,
+        sign      := -1,
+        pos       := 1,
+        coprime   := [ 1 ],
+        len       := 1 ) ) );
 
 
 #############################################################################
 ##
 #M  Enumerator( Rationals )
 ##
-InstallMethod( Enumerator,
-    "for `Rationals'",
-    true,
-    [ IsRationals ], 0,
-    function( Rationals )
-    local enum;
-    enum:= Objectify( NewType( FamilyObj( Rationals ),
-                               IsRationalsEnumerator ),
-                      rec() );
-    SetUnderlyingCollection( enum, Rationals );
-    return enum;
-    end );
-
-InstallMethod( Position,
-    "for enumerator of `Rationals', cyclotomic, and 0",
-    true,
-    [ IsRationalsEnumerator, IsCyc, IsZeroCyc ], 0,
-    function( enum, elm, zero )
-
+BindGlobal( "NumberElement_Rationals",
+    function( enum, elm )
     local num,
           den,
           max,
           number,
           residues;
 
-    if not IsRat(elm)  then
-        return fail;
+    if not IsRat( elm ) then
+      return fail;
     fi;
     num:= NumeratorRat( elm);
     den:= DenominatorRat( elm );
@@ -341,16 +285,12 @@ InstallMethod( Position,
 
     fi;
 
-    # Return result.
+    # Return the result.
     return number;
     end );
 
-InstallMethod( \[\],
-    "for enumerator of `Rationals', and pos. integer",
-    true,
-    [ IsRationalsEnumerator, IsPosInt ], 0,
+BindGlobal( "ElementNumber_Rationals",
     function( enum, number )
-
     local elm,
           max,
           4phi,
@@ -397,6 +337,15 @@ InstallMethod( \[\],
     return elm;
     end );
 
+InstallMethod( Enumerator,
+    "for `Rationals'",
+    [ IsRationals ],
+    function( Rationals )
+    return EnumeratorByFunctions( Rationals, rec(
+               ElementNumber := ElementNumber_Rationals,
+               NumberElement := NumberElement_Rationals ) );
+    end );
+
 
 #############################################################################
 ##
@@ -438,28 +387,24 @@ end );
 ##
 InstallMethod( RoundCyc,
     "Rational",
-    true,
-    [ IsRat], 0,
-  function ( r )
-
+    [ IsRat],
+    function( r )
     if r < 0  then
         return Int( r - 1 / 2 );
     else
         return Int( r + 1 / 2 );
     fi;
-
 end );
 
-################
+
+#############################################################################
 ##
 #M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##
 InstallMethod( RoundCycDown,
     "Rational",
-    true,
-    [ IsRat], 0,
-  function ( r )
-   
+    [ IsRat],
+    function ( r )
     if DenominatorRat( r ) = 2  then
         return Int( r );
     fi;
@@ -469,28 +414,40 @@ InstallMethod( RoundCycDown,
     else
         return Int( r + 1 / 2 );
     fi;
-
 end );
+
 
 #############################################################################
 ##
-#M  LaTeXObj
+#M  PadicValuation( <rat>, <p> ) . . . . . . . . . . . . . . .  for rationals
 ##
-InstallMethod(LaTeXObj,"rational",true,
-  [IsRat],0,
-function(r)
-local n,d;
-  if IsInt(r) then
-    return String(r);
-  fi;
-  n:=NumeratorRat(r);
-  d:=DenominatorRat(r);
-  if AbsInt(n)<5 and AbsInt(d)<5 then
-    return Concatenation(String(n),"/",String(d));
-  else
-    return Concatenation("\\frac{",String(n),"}{",String(d),"}");
-  fi;
-end);
+InstallMethod( PadicValuation,
+               "for rationals", ReturnTrue, [ IsRat, IsPosInt ], 0,
+
+  function( rat, p )
+
+    local  a, i;
+
+    if not IsPrimeInt(p) then TryNextMethod(); fi;
+    if rat = 0 then return infinity; fi;
+    a := NumeratorRat(rat)/p;
+    i := 0;
+    while IsInt(a) do
+      i := i+1;
+      a := a/p;
+    od;
+    if i > 0 or IsInt(rat) then
+      return i;
+    fi;
+    a := DenominatorRat(rat)/p;
+    i := 0;
+    while IsInt(a) do
+      i := i+1;
+      a := a/p;
+    od;
+    return -i;
+  end );
+
 
 #############################################################################
 ##

@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for complements in pc groups
 ##
@@ -30,24 +31,25 @@ local r,img,i,gens,img2;
 end);
 
 # test function for relators
-OCTestRelators:=function(ocr)
+BindGlobal("OCTestRelators",function(ocr)
   if not IsBound(ocr.relators) then return true;fi;
   return ForAll(ocr.relators,i->ExponentsOfPcElement(ocr.generators,
      Product(List([1..Length(i.generators)],
              j->ocr.generators[i.generators[j]]^i.powers[j])))
      =List(ocr.generators,i->0));
-end;
+end);
 
 #############################################################################
 ##
-#F  COAffineBlocks( <S>, <mats> ) . . . . . . . . . . . . . . . . . . . local
+#F  COAffineBlocks( <S>,<Sgens>,<mats>,<orbs> )
 ##
 ##  Divide the vectorspace  into blocks using  the  affine operations of  <S>
 ##  described by <mats>.  Return representative  for  these blocks and  their
 ##  normalizers in <S>.
+##  if <orbs> is true orbits are kept.
 ##
-InstallGlobalFunction( COAffineBlocks, function( S, Spcgs,mats )
-local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root;
+InstallGlobalFunction( COAffineBlocks, function( S, Sgens,mats,orbs )
+local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root,r;
 
   # The affine operation of <S> is described via <mats> as
   #
@@ -88,7 +90,7 @@ local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root;
     ConvertToVectorRep(w,p);
     v:=Concatenation(v,[one]);
     ConvertToVectorRep(v,p);
-    O:=OrbitStabilizer( S,v, Spcgs,mats);
+    O:=OrbitStabilizer( S,v, Sgens,mats);
     for v  in O.orbit  do
         n:=1;
         for j  in [1..dim]  do
@@ -100,7 +102,9 @@ local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root;
         blt[n]:=true;
     od;
     Info(InfoComplement,2,"COAffineBlocks: |block| = ", Length(O.orbit));
-    Add( B, rec( vector:=w, stabilizer:=O.stabilizer ) );
+    r:=rec( vector:=w, stabilizer:=O.stabilizer );
+    if orbs=true then r.orbit:=O.orbit;fi;
+    Add( B, r);
     i:=Position( blt, false );
   od;
   Info(InfoComplement,2,"COAffineBlocks: ", Length( B ), " blocks found" );
@@ -133,6 +137,99 @@ local   gens,  pnt,  i;
 
 end );
 
+#ocr is oc record, acts are elements that act via ^ on group elements, B
+#is the result of BaseSteinitzVectors on the 1-cocycles in ocr.
+InstallGlobalFunction(COAffineCohomologyAction,function(ocr,relativeGens,acts,B)
+local tau, phi, mats;
+
+  # Get  the  matrices describing the affine operations. The linear  part
+  # of the  operation  is just conjugation of the entries of cocycle. The
+  # translation are  commuators  with the  generators.  So check if <ocr>
+  # has a small generating set. Use only these to form the commutators.
+
+  # Translation: (.. h ..) -> (.. [h,c] ..)
+  if IsBound( ocr.smallGeneratingSet )  then
+
+    Error("not yet implemented");
+    tau:=function( c )
+    local   l,  i,  j,  z,  v;
+      l:=[];
+      for i  in ocr.smallGeneratingSet  do
+	Add( l, Comm( ocr.generators[i], c ) );
+      od;
+      l:=ocr.listToCocycle( l );
+      v:=ShallowCopy( B.factorzero );
+      for i  in [1..Length(l)]  do
+	if l[i] <> ocr.zero  then
+	  z:=l[i];
+	  j:=B.heads[i];
+	  if j > 0  then
+	    l:=l - z * B.factorspace[j];
+	    v[j]:=z;
+	  else
+	    l:=l - z * B.subspace[-j];
+	  fi;
+	fi;
+      od;
+      IsRowVector( v );
+      return v;
+    end;
+
+  else
+
+    tau:=function( c )
+    local   l,  i,  j,  z,  v;
+      l:=[];
+      for i  in relativeGens  do
+	#Add( l, LeftQuotient(i,i^c));
+	Add( l, Comm(i,c));
+      od;
+      l:=ocr.listToCocycle( l );
+      v:=ListWithIdenticalEntries(Length(B.factorspace),ocr.zero);
+      for i  in [1..Length(l)]  do
+	if l[i] <> ocr.zero  then
+	  z:=l[i];
+	  j:=B.heads[i];
+	  if j > 0  then
+	    l:=l - z * B.factorspace[j];
+	    v[j]:=z;
+	  else
+	    l:=l - z * B.subspace[-j];
+	  fi;
+	fi;
+      od;
+      IsRowVector( v );
+      return v;
+    end;
+  fi;
+
+  # Linear Operation: (.. hm ..) -> (.. (hm)^c ..)
+  phi:=function( z, c )
+  local   l,  i,  j,  v;
+    l:=ocr.listToCocycle( List( ocr.cocycleToList(z), x -> x ^ c ) );
+    v:=ListWithIdenticalEntries(Length(B.factorspace),ocr.zero);
+    for i  in [1..Length( l )]  do
+      if l[i] <> ocr.zero  then
+        z:=l[i];
+        j:=B.heads[i];
+        if j > 0  then
+          l:=l - z * B.factorspace[j];
+          v[j]:=z;
+        else
+          l:=l - z * B.subspace[-j];
+        fi;
+      fi;
+    od;
+    IsRowVector( v );
+    return v;
+  end;
+
+  # Construct the affine operations and blocks under them.
+  mats:=AffineAction( acts,B.factorspace, phi, tau );
+  Assert(2,ForAll(mats,i->ForAll(i,j->Length(i)=Length(j))));
+  return mats;
+end);
+
 
 #############################################################################
 ##
@@ -146,7 +243,7 @@ end );
 ##  returned as list of records rec( complement, centralizer ).
 ##
 InstallGlobalFunction( CONextCocycles, function( cor, ocr, S )
-local   K, N, Z, SN, B, L, LL, tau, phi, mats, i,SNpcgs;
+local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
 
   # Try to split <K> over <M>, if it does not split return.
   Info(InfoComplement,2,"CONextCocycles: computing cocycles" );
@@ -248,95 +345,11 @@ local   K, N, Z, SN, B, L, LL, tau, phi, mats, i,SNpcgs;
   #     N   ?      affine,  this can be done using affine operation
   #      \ /       (given as matrices).
   #       1
-  # Get  the  matrices describing the affine operations. The linear  part
-  # of the  operation  is just conjugation of the entries of cocycle. The
-  # translation are  commuators  with the  generators.  So check if <ocr>
-  # has a small generating set. Use only these to form the commutators.
 
-  # Translation: (.. h ..) -> (.. [h,c] ..)
-  if IsBound( ocr.smallGeneratingSet )  then
-
-    Error("not yet implemented");
-    tau:=function( c )
-    local   l,  i,  j,  z,  v;
-      l:=[];
-      for i  in ocr.smallGeneratingSet  do
-	Add( l, Comm( ocr.generators[i], c ) );
-      od;
-      l:=ocr.listToCocycle( l );
-      v:=ShallowCopy( B.factorzero );
-      for i  in [1..Length(l)]  do
-	if l[i] <> ocr.zero  then
-	  z:=l[i];
-	  j:=B.heads[i];
-	  if j > 0  then
-	    l:=l - z * B.factorspace[j];
-	    v[j]:=z;
-	  else
-	    l:=l - z * B.subspace[-j];
-	  fi;
-	fi;
-      od;
-      IsRowVector( v );
-      return v;
-    end;
-
-  else
-
-    tau:=function( c )
-    local   l,  i,  j,  z,  v;
-      l:=[];
-      for i  in ocr.generators  do
-	Add( l, Comm( i, c ) );
-      od;
-      l:=ocr.listToCocycle( l );
-      #v:=ShallowCopy( B.factorzero );
-      v:=ListWithIdenticalEntries(Length(B.factorspace),ocr.zero);
-      for i  in [1..Length(l)]  do
-	if l[i] <> ocr.zero  then
-	  z:=l[i];
-	  j:=B.heads[i];
-	  if j > 0  then
-	    l:=l - z * B.factorspace[j];
-	    v[j]:=z;
-	  else
-	    l:=l - z * B.subspace[-j];
-	  fi;
-	fi;
-      od;
-      IsRowVector( v );
-      return v;
-    end;
-  fi;
-
-  # Linear Operation: (.. hm ..) -> (.. (hm)^c ..)
-  phi:=function( z, c )
-  local   l,  i,  j,  v;
-    l:=ocr.listToCocycle( List( ocr.cocycleToList( z ), x -> x ^ c ) );
-    #v:=ShallowCopy( B.factorzero );
-    v:=ListWithIdenticalEntries(Length(B.factorspace),ocr.zero);
-    for i  in [1..Length( l )]  do
-      if l[i] <> ocr.zero  then
-        z:=l[i];
-        j:=B.heads[i];
-        if j > 0  then
-          l:=l - z * B.factorspace[j];
-          v[j]:=z;
-        else
-          l:=l - z * B.subspace[-j];
-        fi;
-      fi;
-    od;
-    IsRowVector( v );
-    return v;
-  end;
-
-  # Construct the affine operations and blocks under them.
   SNpcgs:=InducedPcgs(cor.pcgs,SN);
-  mats:=AffineOperation( SNpcgs,B.factorspace, phi, tau );
+  mats:=COAffineCohomologyAction(ocr,ocr.generators,SNpcgs,B);
 
-  Assert(2,ForAll(mats,i->ForAll(i,j->Length(i)=Length(j))));
-  L :=COAffineBlocks( SN, SNpcgs,mats );
+  L :=COAffineBlocks( SN, SNpcgs,mats,false );
   Info(InfoComplement,2,"CONextCocycles:", Length( L ), " complements found" );
 
   # choose a representative from each block and correct the blockstab

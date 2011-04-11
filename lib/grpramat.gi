@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  grpramat.gi                 GAP Library                     Franz G"ahler
+#W  grpramat.gi                 GAP Library                     Franz Gähler
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains operations for matrix groups over the rationals
 ##
@@ -38,8 +39,9 @@ InstallMethod( IsIntegerMatrixGroup, [ IsCyclotomicMatrixGroup ],
 ##
 #M  GeneralLinearGroupCons(IsMatrixGroup,n,Integers)
 ##
-InstallOtherMethod(GeneralLinearGroupCons,"some generators for GL_n(Z)",
-  [IsMatrixGroup,IsPosInt,IsIntegers],
+InstallMethod( GeneralLinearGroupCons,
+    "some generators for GL_n(Z)",
+    [ IsMatrixGroup, IsPosInt, IsIntegers ],
 function(fil,n,ints)
 local gens,mat,G;
   # permutations
@@ -72,7 +74,7 @@ end);
 ##
 #M  SpecialLinearGroupCons(IsMatrixGroup,n,Integers)
 ##
-InstallOtherMethod(SpecialLinearGroupCons,"some generators for SL_n(Z)",
+InstallMethod(SpecialLinearGroupCons,"some generators for SL_n(Z)",
   [IsMatrixGroup,IsPosInt,IsIntegers],
 function(fil,n,ints)
 local gens,mat,G;
@@ -100,6 +102,32 @@ local gens,mat,G;
   fi;
   return G;
 end);
+
+#############################################################################
+##
+#M  \in( <g>, GL( <n>, Integers ) )
+##
+InstallMethod( \in,
+               "for matrix and GL(n,Z)", IsElmsColls,
+               [ IsMatrix, IsNaturalGLnZ ],
+
+  function ( g, GLnZ )
+    return DimensionsMat(g) = DimensionsMat(One(GLnZ))
+       and ForAll(Flat(g),IsInt) and DeterminantMat(g) in [-1,1];
+  end );
+
+#############################################################################
+##
+#M  \in( <g>, SL( <n>, Integers ) )
+##
+InstallMethod( \in,
+               "for matrix and SL(n,Z)", IsElmsColls,
+               [ IsMatrix, IsNaturalSLnZ ],
+
+  function ( g, SLnZ )
+    return DimensionsMat(g) = DimensionsMat(One(SLnZ))
+       and ForAll(Flat(g),IsInt) and DeterminantMat(g) = 1;
+  end );
 
 #############################################################################
 ##
@@ -193,11 +221,6 @@ function( G )
         fi;
 
         tab := List( gen, g -> trn * g * trn^-1 );
-        if ForAny( tab, x -> not IsInt( TraceMat( x ) ) ) then
-             return fail;
-#T This can never happen since `gen' is not changed, the traces have been
-#T checked already, and they are invariant under conjugation.
-        fi;
         tab := Concatenation( tab ); 
         tab := Filtered( tab, vec -> ForAny( vec, x -> not IsInt( x ) ) );
 
@@ -219,38 +242,61 @@ end );
 
 #############################################################################
 ##
-#M  IsFinite( G ) . . . . . . . . . . . . .IsFinite for rational matrix group
+#M  IsFinite( G ) . . . . . . . . . . .  IsFinite for cyclotomic matrix group
+##
+InstallMethod( IsFinite,
+    "cyclotomic matrix group",
+    [ IsCyclotomicMatrixGroup ],
+function( G )
+
+    local lat, ilat, grp, mat;
+
+    # if not rational, use the nice monomorphism into a rational matrix group
+    if not IsRationalMatrixGroup( G ) then
+        return IsFinite( Image( NiceMonomorphism( G ) ) );
+    fi;
+
+    # if not integer, choose basis in which it is integer
+    if not IsIntegerMatrixGroup( G ) then
+        lat := InvariantLattice( G );
+        if lat = fail then
+            return false;
+        fi;
+        ilat := lat^-1;
+        grp := G^(ilat);
+        IsFinite( grp );
+        # IsFinite may have set the size, so we save it
+        if HasSize( grp ) then
+            SetSize( G, Size( grp ) );
+        fi;
+        # IsFinite may have set an invariant quadratic form
+        if HasInvariantQuadraticForm( grp ) then
+            mat := InvariantQuadraticForm( grp ).matrix;
+            mat := ilat * mat * TransposedMat( ilat );
+            SetInvariantQuadraticForm( G, rec( matrix := mat ) );
+        fi;
+        return IsFinite( grp );
+    else
+        return IsFinite( G );  # now G knows it is integer
+    fi;
+
+end );
+
+#############################################################################
+##
+#M  IsFinite( G ) . . . . . . . . . . . . . IsFinite for integer matrix group
 ##
 #T  This method should evetually be replaced or complemented by the methods
 #T  used in GRIM!
 InstallMethod( IsFinite,
     "via Minkowski kernel (short but not too efficient)",
-    [ IsCyclotomicMatrixGroup ],
-    function( G )
-local size, lat, grp, dim, basis, gens, gensp, orb, rep, stb, img, sch, i,
-      pnt, gen, tmp;
+    [ IsIntegerMatrixGroup ],
+function( G )
 
+    local grp, size, dim, basis, gens, gensp, orb, rep, stb, img, sch, i, 
+          pnt, gen, tmp;
 
-    # if not rational, use the nice monomorphism into a rational matrix group
-    if not IsRationalMatrixGroup( G ) then
-
-      size:= Size( Image( NiceMonomorphism( G ) ) );
-      SetSize( G, size );
-      return IsInt( size );
-
-    fi;
-
-    # if not integral, choose basis in which it is integral
-    if not IsIntegerMatrixGroup( G ) then
-        lat := InvariantLattice( G );
-        if lat = fail then
-             return false;
-        fi;
-        grp := G^(lat^-1);
-    else
-        grp := G;
-    fi;
-
+    grp   := G;
     size  := 1;
     dim   := DimensionOfMatrixGroup( grp );
     basis := Immutable( IdentityMat( dim, GF( 2 ) ) );
@@ -309,16 +355,17 @@ end );
 
 #############################################################################
 ##
-#M  Size( <G> ) . . . . . . . . . . . . . . . . . . for rational matrix group
+#M  Size( <G> ) . . . . .  for cyclotomic matrix group not known to be finite
 ##
 InstallMethod( Size,
-    "via Minkowski kernel (short but not too efficient)",
+    "cyclotomic matrix group not known to be finite",
     [ IsCyclotomicMatrixGroup ],
     function( G )
-    IsFinite( G );
-#T dangerous because it assumes that the above method is used
-#T that explicitly sets the `Size' value
-    return Size( G );
+    if IsFinite( G ) then
+        return Size( G );  # now G knows it is finite
+    else
+        return infinity;
+    fi;
     end );
 
 

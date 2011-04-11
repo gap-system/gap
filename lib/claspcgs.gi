@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  claspcgs.gi                 GAP library                    Heiko Thei"sen
+#W  claspcgs.gi                 GAP library                    Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions that  deal with conjugacy topics in solvable
 ##  groups using affine  methods.   These  topics includes   calculating  the
@@ -170,7 +171,7 @@ local   classes,    # classes to be constructed, the result
 	cengen,
 	exp,  w,    # coefficient vectors for projection along $[h,N]$
 	kern,img,
-	c;          # loop variable
+	c,nc;          # loop variable
 
     field:=GF( RelativeOrders( N )[ 1 ] );
     h:=cl.representative;
@@ -213,16 +214,21 @@ local   classes,    # classes to be constructed, the result
                 MultRowVector( exp, One( field ) );
                 w:=exp * N!.subspace.projection;
                 exp{ N!.subspace.baseComplement }:=
-                  w - exp{ N!.subspace.baseComplement };
-                c:=rec( representative:=h * PcElementByExponentsNC
+                  exp{ N!.subspace.baseComplement }-w;
+                nc:=rec( representative:=h * PcElementByExponentsNC
                              ( N, N!.subspace.baseComplement, w ),
                           #centralizer:=C,
                           #centralizerpcgs:=cengen,
                           cengen:=cengen,
                           operator:=LinearCombinationPcgs( gens,
                                   exp * N!.subspace.inverse,
-				  One( cl.candidates[1] ))^-1);
-                Add( classes, c );
+				  One( cl.candidates[1] ))^(-1));
+
+		# check that action is really OK
+		Assert(1,c^nc.operator/nc.representative in
+		  Group(DenominatorOfModuloPcgs(N),One(U)));
+
+                Add( classes, nc );
             od;
         else
             c:=rec( representative:=cl.candidates,
@@ -474,6 +480,7 @@ local  classes,    # classes to be constructed, the result
 	    blist[PositionCanonical(aff,i)]:=true;
 	  od;
 	fi;
+	Unbind(S.dictionary);
 
 	Add(k,S);
 
@@ -597,19 +604,19 @@ local  G,  home,  # the group and the home pcgs
   if IsBound(opt.pcgs) then
     # we prescribed a series
     home:=opt.pcgs;
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
 
     cent:=false;
 
   elif IsPrimePowerInt(Size(G)) then
     p:=FactorsInt(Size(G))[1];
     home:=PcgsPCentralSeriesPGroup(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
     cent:=ReturnTrue;
   else
     home:=PcgsElementaryAbelianSeries(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
 
     cent:=function(cl, N, L)
       return ForAll(N, k -> ForAll
@@ -640,7 +647,7 @@ local  G,  home,  # the group and the home pcgs
 	    return true;
           end;
   fi;
-  indstep:=IndicesNormalSteps(home);
+  indstep:=IndicesEANormalSteps(home);
 
   # check to which factors we want to lift
 
@@ -837,8 +844,8 @@ Error("This case disabled -- code not yet corrected");
             i:=PositionSorted(cl.candidates, c);
             if  i > Length(cl.candidates)
                or cl.candidates[i]<>c then
-              AddSet(cl.candidates, c);
-              InsertElmList(team, i, [q]);
+              Add(cl.candidates, c,i);
+              Add(team, [q], i);
             else
               Add(team[i], q);
             fi;
@@ -854,9 +861,16 @@ Error("This case disabled -- code not yet corrected");
         # classes to which   the list `<cl>.candidates'   maps modulo
         # <K>,  together  with   `operator's and   `exponent's  as in
         # (c^o^e=r)).
-        if allcent or cent(fhome,cl.centralizerpcgs, N, Ldep) then
+        if allcent then
+	  # generic central
+	  Info(InfoClasses,5,"central case 1");
+          newcls:=CentralStepClEANS(fhome,QH, QG, N, cl,false);
+        elif cent(fhome,cl.centralizerpcgs, N, Ldep) then
+	  # central in this case
+	  Info(InfoClasses,5,"central case 2");
           newcls:=CentralStepClEANS(fhome,QH, QG, N, cl,false);
         else
+	  Info(InfoClasses,5,"general case");
           newcls:=GeneralStepClEANS(fhome, QH, QG, N, nexpo, cl,false);
         fi;
         
@@ -1090,7 +1104,7 @@ local  G,  home,  # the group and the home pcgs
   if IsBound(opt.pcgs) then
     # we prescribed a series
     home:=opt.pcgs;
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
     cent:=function(cl, N, L)
       return ForAll(N, k -> ForAll
         (InducedPcgs(home,cl.centralizer), c -> Comm(k, c) in L));
@@ -1098,14 +1112,14 @@ local  G,  home,  # the group and the home pcgs
   elif IsPrimePowerInt(Size(G)) then
     p:=FactorsInt(Size(G))[1];
     home:=PcgsPCentralSeriesPGroup(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
     cent:=ReturnTrue;
   elif mode mod 2=1 then  # rational classes
     Error("<G> must be a p-group");
   else
     home:=PcgsElementaryAbelianSeries(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
     cent:=function(cl, N, L)
       return ForAll(N, k -> ForAll
         (InducedPcgs(home,cl.centralizer),
@@ -1232,9 +1246,9 @@ local  G,  home,  # the group and the home pcgs
             fi;
             i:=PositionSorted(cl.candidates, c);
             if  i > Length(cl.candidates)
-               or cl.candidates[i]<>c then
-              AddSet(cl.candidates, c);
-              InsertElmList(team, i, [q]);
+                or cl.candidates[i]<>c then
+                Add( cl.candidates,c,i);
+                Add(team, [q], i);
             else
               Add(team[i], q);
             fi;
@@ -1602,7 +1616,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
             c.galoisGroup!.type:=3;
             c.galoisGroup!.operators:=[  ];
             Add( classes, c );
-            for v  in OneDimSubspacesTransversal( GF( p ) ^ Length( N ) )  do
+            for v in EnumeratorOfNormedRowVectors( GF( p ) ^ Length( N ) ) do
                 c:=rec( representative:=PcElementByExponentsNC( N, v ),
                              centralizer:=G,
                              galoisGroup:=gal );

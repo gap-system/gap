@@ -6,10 +6,12 @@ AH
 2001/9/24
 @Time
 4
+@Public
+Yes
 @Need
 4
 @NeedA
-5
+4
 @Math
 5
 @Prog
@@ -31,6 +33,10 @@ This is a time-critical task that requires a good implementation.
 It also would be useful to see, whether one can use if the algebra has in
 fact a normal form for elements (this is the case in the quotient
 algorithms).
+</P>
+
+<P>
+A groebner basis approach might also be useful.
 </P>
 @Ref
 <UL>

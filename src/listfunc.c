@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  listfunc.c                  GAP source                   Martin Schoenert
+*W  listfunc.c                  GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for generic lists.
 */
@@ -47,7 +48,7 @@ const char * Revision_listfunc_c =
 #include        "range.h"               /* ranges                          */
 
 #include		<string.h>
-
+#include                <stdlib.h> 
 
 /****************************************************************************
 **
@@ -194,7 +195,7 @@ Obj             FuncAPPEND_LIST_INTR (
     if ( TNUM_OBJ( list2 ) != T_PLIST ) {
         while ( ! IS_SMALL_LIST( list2 ) ) {
             list2 = ErrorReturnObj(
-                "AppendList: <list2> must be a list (not a %s)",
+                "AppendList: <list2> must be a small list (not a %s)",
                 (Int)TNAM_OBJ(list2), 0L,
                 "you can replace <list2> via 'return <list2>;'"  );
         }
@@ -439,6 +440,36 @@ Obj             FuncPOSITION_SORTED_COMP (
 }
 
 
+Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
+    Obj                 self,
+    Obj                 list,
+    Obj                 obj)
+{
+  UInt top, bottom,middle;
+  Obj x;
+  Obj l;
+  bottom = 1;
+  top = LEN_PLIST(list);
+  while (bottom <= top) {
+    middle = (top + bottom)/2;
+    l = ELM_PLIST(list,middle);
+    if (!IS_PLIST(l))
+      return TRY_NEXT_METHOD;
+    x = ELM_PLIST(l,1);
+    if (LT(x,obj)) {
+      bottom = middle+1;
+    } else if (LT(obj,x)) {
+      top = middle -1;
+    } else {
+      return INTOBJ_INT(middle);
+    }
+  }
+  return INTOBJ_INT(bottom);
+}
+      
+
+
+
 /****************************************************************************
 **
 *F  SORT_LIST( <list> )  . . . . . . . . . . . . . . . . . . . .  sort a list
@@ -471,6 +502,62 @@ Obj             FuncPOSITION_SORTED_COMP (
 **  Donald Shell, CACM 2, July 1959, 30-32
 **  Robert Sedgewick, Algorithms 2nd ed., AddWes 1988, 107-123
 */
+
+static void BubbleDown(Obj list, UInt pos, UInt len)
+{
+  UInt lcpos, rcpos;
+  Obj lco, rco,x;
+
+  lcpos = 2*pos;
+  rcpos = 2*pos+1;
+  if (lcpos > len)
+    return;
+  lco = ELM_PLIST(list, lcpos);
+  x = ELM_PLIST(list,pos);
+  if (rcpos > len)
+    {
+      if (LT(x,lco))
+	{
+	  SET_ELM_PLIST(list, pos, lco);
+	  SET_ELM_PLIST(list, lcpos, x);
+	}
+      return;
+    }
+  rco = ELM_PLIST(list, rcpos);
+  if (LT(lco, rco)){
+    if (LT(x,rco)) {
+      SET_ELM_PLIST(list, pos, rco);
+      SET_ELM_PLIST(list, rcpos, x);
+      BubbleDown(list, rcpos, len);
+    }
+  }  else {
+    if (LT(x,lco)) {
+      SET_ELM_PLIST(list, pos, lco);
+      SET_ELM_PLIST(list, lcpos, x);
+      BubbleDown(list, lcpos, len);
+    }
+  }
+  return;
+}
+
+Obj HEAP_SORT_PLIST ( Obj self, Obj list )
+{
+  UInt len = LEN_LIST(list);
+  UInt i;
+  for (i = (len/2); i > 0 ; i--)
+    BubbleDown(list, i, len);
+  for (i = len; i > 0; i--)
+    {
+      Obj x = ELM_PLIST(list, i);
+      Obj y = ELM_PLIST(list, 1);
+      SET_ELM_PLIST(list, i, y);
+      SET_ELM_PLIST(list, 1, x);
+      BubbleDown(list, 1, i-1);
+    }
+  return (Obj) 0;
+}
+  
+
 void SORT_LIST (
     Obj                 list )
 {
@@ -497,7 +584,9 @@ void SORT_LIST (
         }
         h = h / 3;
     }
-    RESET_FILT_LIST(list, FN_IS_NSORT);
+    if (FIRST_PLIST_TNUM <= TNUM_OBJ(list) &&
+	TNUM_OBJ(list) <= LAST_PLIST_TNUM)
+      RESET_FILT_LIST(list, FN_IS_NSORT);
 }
 
 void SortDensePlist (
@@ -569,6 +658,11 @@ void SORT_LISTComp (
     RESET_FILT_LIST(list, FN_IS_SSORT);
     RESET_FILT_LIST(list, FN_IS_NSORT);
 }
+
+
+
+
+
 
 void SortDensePlistComp (
     Obj                 list,
@@ -861,10 +955,8 @@ UInt            RemoveDupsDensePlist (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
-
 
 /****************************************************************************
 **
@@ -1301,6 +1393,431 @@ Obj             FuncOnLeftInverse (
     return PROD( elm, point );
 }
 
+/****************************************************************************
+**
+*F  FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH
+**
+**  `digraph' should be a list whose entries and the lists of out-neighbours
+** of the vertices. So [[2,3],[1],[2]] represents the graph whose edges are
+** 1->2, 1->3, 2->1 and 3->2.
+**
+**  returns a newly constructed list whose elements are lists representing the
+** strongly connected components of the directed graph. Neither the components,
+** nor their elements are in any particular order.
+**
+** The algorithm is that of Tarjan, based on the implementation in Sedgwick,
+** with a bug fixed, and made non-recursive to avoid problems with stack limits
+** under (for instance) Linux. This version is a bit slower than the recursive
+** version, but much faster than any of the GAP implementations.
+**
+** A possible change is to allocate the internal arrays rather smaller, and
+** grow them if needed. This might allow some computations to complete that would
+** otherwise run out of memory, but would slow things down a bit.
+*/
+
+
+static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
+{
+  UInt i,level,k,l,x,t,m;
+  UInt now = 0,n;
+  Obj val, stack, comps,comp;
+  Obj frames, adj;
+  UInt *fptr;
+
+  n = LEN_LIST(digraph);
+  if (n == 0)
+    {
+      return NEW_PLIST(T_PLIST_EMPTY,0);
+    }
+  val = NewBag(T_DATOBJ, (n+1)*sizeof(UInt));
+  stack = NEW_PLIST(T_PLIST_CYC, n);
+  SET_LEN_PLIST(stack, 0);
+  comps = NEW_PLIST(T_PLIST_TAB, n);
+  SET_LEN_PLIST(comps, 0);
+  frames = NewBag(T_DATOBJ, (4*n+1)*sizeof(UInt));  
+  for (k = 1; k <= n; k++)
+    {
+      if (((UInt *)ADDR_OBJ(val))[k] == 0)
+	{
+	  level = 1;
+	  adj = ELM_LIST(digraph, k);
+	  PLAIN_LIST(adj);
+	  fptr = (UInt *)ADDR_OBJ(frames);
+	  fptr[0] = k;
+	  now++;
+	  ((UInt *)ADDR_OBJ(val))[k] = now;
+	  fptr[1] = now;
+	  l = LEN_PLIST(stack);
+	  SET_ELM_PLIST(stack, l+1, INTOBJ_INT(k));
+	  SET_LEN_PLIST(stack, l+1);
+	  fptr[2] = 1;
+	  fptr[3] = (UInt)adj;
+	  while (level > 0 ) {
+	    if (fptr[2] > LEN_PLIST(fptr[3]))
+	      {
+		if (fptr[1] == ((UInt *)ADDR_OBJ(val))[fptr[0]])
+		  {
+		    l = LEN_PLIST(stack);
+		    i = l;
+		    do {
+		      x = INT_INTOBJ(ELM_PLIST(stack, i));
+		      SET_ELM_PLIST(val, x, INTOBJ_INT(n+1));
+		      i--;
+		    } while (x != fptr[0]);
+		    comp = NEW_PLIST(T_PLIST_CYC, l-i);
+		    SET_LEN_PLIST(comp, l-i);
+		    memcpy( (void *)((char *)(ADDR_OBJ(comp)) + sizeof(Obj)), 
+			    (void *)((char *)(ADDR_OBJ(stack)) + (i+1)*sizeof(Obj)), 
+			    (size_t)((l - i )*sizeof(Obj)));
+		    SET_LEN_PLIST(stack, i);
+		    l = LEN_PLIST(comps);
+		    SET_ELM_PLIST(comps, l+1, comp);
+		    SET_LEN_PLIST(comps, l+1);
+		    CHANGED_BAG(comps);
+		    fptr = (UInt *)ADDR_OBJ(frames)+(level-1)*4;
+		  }
+		level--;
+		fptr -= 4;
+		if (level > 0 && fptr[5]  < fptr[1])
+		  fptr[1] = fptr[5];
+	      }
+	    else
+	      {
+		adj = (Obj)fptr[3];
+		t = INT_INTOBJ(ELM_PLIST(adj, (fptr[2])++));
+		if (0 ==(m =  ((UInt *)ADDR_OBJ(val))[t]))
+		  {
+		    level++;
+		    adj = ELM_LIST(digraph, t);
+		    PLAIN_LIST(adj);
+		    fptr = (UInt *)ADDR_OBJ(frames)+(level-1)*4;
+		    fptr[0] = t;
+		    now++;
+		    ((UInt *)ADDR_OBJ(val))[t] = now;
+		    fptr[1] = now;
+		    l = LEN_PLIST(stack);
+		    SET_ELM_PLIST(stack, l+1, INTOBJ_INT(t));
+		    SET_LEN_PLIST(stack, l+1);
+		    fptr[2] = 1;
+		    fptr[3] = (UInt)adj;
+		  }
+		else
+		  {
+		    if (m < fptr[1])
+		      fptr[1] = m;
+		  }
+	      }
+	  }
+	}
+      
+    }
+  SHRINK_PLIST(comps, LEN_PLIST(comps));
+  return comps;
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOPY_LIST_ENTRIES( <self>, <args> ) . . mass move of list entries
+**
+*/
+
+static inline Int GetIntObj( Obj list, UInt pos)
+{
+  Obj entry;
+  entry = ELM_PLIST(list, pos);
+  if (!entry)
+    {
+      Pr("panic: internal inconsistency", 0L, 0L);
+      SyExit(1);
+    }
+  while (!IS_INTOBJ(entry))
+    {
+      entry = ErrorReturnObj("COPY_LIST_ENTRIES: argument %d  must be a small integer, not a %s",
+			     (Int)pos, (Int)InfoBags[TNUM_OBJ(entry)].name,
+			     "you can return a small integer to continue");
+    }
+  return INT_INTOBJ(entry);
+}
+
+Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
+{  
+  Obj srclist;
+  UInt srcstart;
+  Int srcinc;
+  Obj dstlist;
+  UInt dststart;
+  Int dstinc;
+  UInt number;
+  UInt srcmax;
+  UInt dstmax;
+  Obj *sptr, *dptr;
+  UInt ct;
+
+  if (!IS_PLIST(args))
+    {
+      Pr("panic: internal inconsistency",0L,0L);
+      SyExit(1);
+    }
+  if (LEN_PLIST(args) != 7)
+    {
+      ErrorMayQuit("COPY_LIST_ENTRIES: number of arguments must be 7, not %d",
+		   (Int)LEN_PLIST(args), 0L);
+    }
+  srclist = ELM_PLIST(args,1);
+  if (!srclist)
+    {
+      Pr("panic: internal inconsistency", 0L, 0L);
+      SyExit(1);
+    }
+  while (!IS_PLIST(srclist))
+    {
+      srclist = ErrorReturnObj("COPY_LIST_ENTRIES: source must be a plain list not a %s",
+			       (Int)InfoBags[TNUM_OBJ(srclist)].name, 0L,
+			       "you can return a plain list to continue");
+    }
+
+  srcstart = (UInt)GetIntObj(args,2);
+  srcinc = GetIntObj(args,3);
+  dstlist = ELM_PLIST(args,4);
+  if (!dstlist)
+    {
+      Pr("panic: internal inconsistency", 0L, 0L);
+      SyExit(1);
+    }
+  while (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
+    {
+      dstlist = ErrorReturnObj("COPY_LIST_ENTRIES: destination must be a mutable plain list not a %s",
+			       (Int)InfoBags[TNUM_OBJ(dstlist)].name, 0L,
+			       "you can return a plain list to continue");
+    }
+  dststart = (UInt)GetIntObj(args,5);
+  dstinc = GetIntObj(args,6);
+  number = GetIntObj(args,7);
+  
+  if (number == 0)
+    return (Obj) 0;
+  
+  srcmax = (srcinc > 0) ? srcstart + (number-1)*srcinc : srcstart;
+  dstmax = (dstinc > 0) ? dststart + (number-1)*dstinc : dststart;
+  
+  GROW_PLIST(dstlist, dstmax);
+  GROW_PLIST(srclist, srcmax);
+  if (srcinc == 1 && dstinc == 1)
+    {
+      memmove((void *) (ADDR_OBJ(dstlist) + dststart),
+	      (void *) (ADDR_OBJ(srclist) + srcstart),
+	      (size_t) number*sizeof(Obj));
+    }
+  else if (srclist != dstlist)
+    {
+      sptr = ADDR_OBJ(srclist) + srcstart;
+      dptr = ADDR_OBJ(dstlist) + dststart;
+      for (ct = 0; ct < number ; ct++)
+	{
+	  *dptr = *sptr;
+	  sptr += srcinc;
+	  dptr += dstinc;
+	}
+    }
+  else if (srcinc == dstinc)
+    {
+      if (srcstart == dststart)
+	return (Obj)0;
+      else
+	{
+	  if ((srcstart > dststart) == (srcinc > 0))
+	    {
+	      sptr = ADDR_OBJ(srclist) + srcstart;
+	      dptr = ADDR_OBJ(srclist) + dststart;
+	      for (ct = 0; ct < number ; ct++)
+		{
+		  *dptr = *sptr;
+		  sptr += srcinc;
+		  dptr += srcinc;
+		}
+	    }
+	  else
+	    {
+	      sptr = ADDR_OBJ(srclist) + srcstart + number*srcinc;
+	      dptr = ADDR_OBJ(srclist) + dststart + number*srcinc;
+	      for (ct = 0; ct < number; ct++)
+		{
+		  sptr -= srcinc;
+		  dptr -= srcinc;
+		  *dptr = *sptr;
+		}
+	      
+	    }
+	}
+	      
+    }
+  else
+    {
+      Obj tmplist = NEW_PLIST(T_PLIST,number);
+      Obj *tptr = ADDR_OBJ(tmplist)+1;
+      sptr = ADDR_OBJ(srclist)+srcstart;
+      for (ct = 0; ct < number; ct++)
+	{
+	  *tptr = *sptr;
+	  tptr++;
+	  sptr += srcinc;
+	}
+      tptr = ADDR_OBJ(tmplist)+1;
+      dptr = ADDR_OBJ(srclist)+dststart;
+      for (ct = 0; ct < number; ct++)
+	{
+	  *dptr = *tptr;
+	  tptr++;
+	  dptr += dstinc;
+	}
+    }
+
+  if (dstmax > LEN_PLIST(dstlist))
+    {
+      dptr = ADDR_OBJ(dstlist)+dstmax;
+      ct = dstmax;
+      while (!*dptr)
+	{
+	  ct--;
+	  dptr--;
+	}
+      SET_LEN_PLIST(dstlist, ct);
+    }
+  if (LEN_PLIST(dstlist) > 0)
+    RetypeBag(dstlist, T_PLIST);
+  else
+    RetypeBag(dstlist, T_PLIST_EMPTY);
+  return (Obj) 0;
+
+}
+
+/****************************************************************************
+**
+*F  FuncBIMULT_MONOMIALS_ALGEBRA_ELEMENT
+**
+*/
+
+Obj FuncBIMULT_MONOMIALS_ALGEBRA_ELEMENT(Obj self, 
+                                         Obj mona, Obj poly, Obj monb)
+{
+  UInt len,la,lb,lm,i,j;
+  Obj prd;
+  Obj mon;
+  Obj *po,*pn;
+
+  /* TODO: test arguments */
+
+  /* Make a new polynomial */
+  len = LEN_PLIST(poly);
+  prd = NEW_PLIST( T_PLIST , len );
+  SET_LEN_PLIST( prd, len );
+
+  if (mona == False) {
+    la=0;
+  }
+  else {
+    la=LEN_PLIST(mona);
+  }
+
+  if (monb == False) {
+    lb=0;
+  }
+  else {
+    lb=LEN_PLIST(monb);
+  }
+
+  /* fill its entries */
+  for (i=1;i<=len;i=i+2) {
+    lm = LEN_PLIST(ELM_PLIST(poly,i));
+  /*Pr("i= %d, lm= %d \n",i,lm); */
+    /* new monomial */
+    mon = NEW_PLIST(T_PLIST,lm+la+lb);
+    SET_LEN_PLIST(mon,lm+la+lb);
+    pn = ADDR_OBJ(mon)+1;
+    
+    /* put in a */
+    j=1;
+    po = ADDR_OBJ(mona)+1;
+    while (j<=la) {
+      *pn++=*po++;
+      j++;
+    }
+
+    /* append monomial */
+    j=1;
+    po = ADDR_OBJ(ELM_PLIST(poly,i))+1;
+    while (j<=lm) {
+      *pn++=*po++;
+      j++;
+    }
+
+    /* append b */
+    j=1;
+    po = ADDR_OBJ(monb)+1;
+    while (j<=lb) {
+      *pn++=*po++;
+      j++;
+    }
+
+    SET_ELM_PLIST(prd,i,mon);
+    /* copy coefficient */
+    SET_ELM_PLIST(prd,i+1,ELM_PLIST(poly,i+1));
+    CHANGED_BAG(prd);
+  }
+
+  return prd;
+}
+
+
+
+/****************************************************************************
+**
+*F  FuncHORSPOOL_LISTS
+**
+*/
+
+Obj FuncHORSPOOL_LISTS(Obj self,Obj wrep, Obj subrep, Obj pre)
+{
+  UInt i,wsize,subsize,di;
+  Int j;
+  Obj pos;
+  Obj *pw,*ps,*pp;
+
+  wsize = LEN_PLIST(wrep);
+  subsize = LEN_PLIST(subrep);
+  pw=ADDR_OBJ(wrep);
+  ps=ADDR_OBJ(subrep);
+  pp=ADDR_OBJ(pre);
+ 
+  pos = Fail;
+
+  if ( subsize <= wsize ) {
+    i = 0;
+    di = wsize-subsize;
+    while (i <= di) {
+      j=subsize;
+      while (j>0) {
+ /* Pr("i= %d j=%d \n",i,j);  */
+        if (ps[j] != pw[i+j]) {
+	  j=-1;
+	}
+	else {
+	  j--;
+	}
+      }
+      if (j==0) {
+        pos=INTOBJ_INT(i+1);
+        i=wsize;
+      }
+      else {
+ /* Pr("pw: %d \n",INT_INTOBJ(pw[i+subsize]),0L);  */
+	      i = i + INT_INTOBJ(pp[INT_INTOBJ(pw[i+subsize])]);
+      }
+    }
+  }
+  return pos;
+}
 
 /****************************************************************************
 **
@@ -1342,6 +1859,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "POSITION_SORTED_LIST_COMP", 3, "list, obj, func", 
       FuncPOSITION_SORTED_COMP, "src/listfunc.c:POSITION_SORTED_LIST_COMP" },
 
+    { "POSITION_FIRST_COMPONENT_SORTED", 2, "list, obj", 
+      FuncPOSITION_FIRST_COMPONENT_SORTED, "src/listfunc.c:POSITION_FIRST_COMPONENT_SORTED" },
+
     { "SORT_LIST", 1, "list",
       FuncSORT_LIST, "src/listfunc.c:SORT_LIST" },
 
@@ -1374,6 +1894,21 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "OnLeftInverse", 2, "pnt, elm",
       FuncOnLeftInverse, "src/listfunc.c:OnLeftInverse" },
+
+    { "COPY_LIST_ENTRIES", -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number",
+      FuncCOPY_LIST_ENTRIES, "src/listfunc.c:COPY_LIST_ENTRIES" },
+
+    { "STRONGLY_CONNECTED_COMPONENTS_DIGRAPH", 1, "digraph",
+      FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH, "src/listfunc.c:STRONGLY_CONNECTED_COMPONENTS_DIGRAPH" },
+
+    { "BIMULT_MONOMIALS_ALGEBRA_ELEMENT",3,"mon, poly, mon",
+      FuncBIMULT_MONOMIALS_ALGEBRA_ELEMENT,"src/listfunc.c:BIMULT_MONOMIALS_ALGEBRA_ELEMENT" },
+
+    { "HORSPOOL_LISTS",3,"list, sub, pre",
+      FuncHORSPOOL_LISTS,"src/listfunc.c:HORSPOOL_LISTS" },
+
+    { "HEAP_SORT_PLIST",1,"list",
+      HEAP_SORT_PLIST,"src/listfunc.c:HEAP_SORT_PLIST" },
 
     { 0 }
 

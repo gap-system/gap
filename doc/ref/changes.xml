@@ -1,0 +1,426 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  changes.xml               GAP documentation         Joachim Neubueser -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: preface.tex,v 4.44 2006/06/27 21:37:08 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright (C) 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+<!-- %% -->
+<!-- %%  This file contains the preface of the GAP reference manual. -->
+<!-- %% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Appendix Label="Changes from Earlier Versions">
+<Heading>Changes from Earlier Versions</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="ChangesGAP43toGAP44">
+<Heading>Changes between &GAP; 4.3 and &GAP; 4.4</Heading>
+
+The main changes between &GAP; 4.3 and &GAP; 4.4 are:
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="Potentially Incompatible Changes">
+<Heading>Potentially Incompatible Changes</Heading>
+
+<List>
+<Item>
+  The mechanism for the loading of Packages has changed to allow easier
+  updates independent of main &GAP; releases. Packages require a
+  file <F>PackageInfo.g</F> now. The new <F>PackageInfo.g</F> files are available for all
+  Packages with the new version of GAP.
+</Item>
+<Item>
+  <C>IsSimple</C> returns false now for the trivial group.
+</Item>
+<Item>
+  <C>PrimeBlocks</C>: The output format has changed.
+</Item>
+<Item>
+  <C>Division Rings</C>: These are implemented as <C>IsRingWithOne</C> now.
+</Item>
+<Item>
+  <C>DirectSumOfAlgebras</C>: <M>p</M>-th power maps are compatible with the input now.
+</Item>
+<Item>
+  The print order for polynomials has been changed.
+</Item>
+</List>
+These changes are, in some respects, departures from our policy of
+maintaining upward compatibility of documented functions between
+releases. In the first case, we felt that the old behavior was
+sufficiently inconsistent, illogical, and impossible to document that
+we had no alternative but to change it. In the case of the package
+interface, the change
+was necessary to introduce new functionality. The planned and phased
+removal of a few unnecessary functions or synonyms is needed to avoid
+becoming buried in <Q>legacy</Q> interfaces, but we remain committed to
+our policy of maintaining upward compatibility whenever sensibly possible.
+<P/>
+
+<List>
+<Item>
+  Groebner Bases:
+<P/>
+    Buchberger's algorithm to compute Groebner Bases has been implemented
+    in GAP. (A. Hulpke)
+</Item>
+<Item>
+    For large scale Groebner Basis computations there also is an interface
+    to the Singular system available in the <C>singular</C> Package.
+    (M. Costantini and W. de Graaf)
+</Item>
+<Item>
+    New methods for factorizing polynomials over algebraic extensions of
+    the rationals have been implemented in GAP. (A. Hulpke)
+</Item>
+<Item>
+    For more functionality to compute with algebraic number fields there
+    is an interface to the Kant system available in the <C>Alnuth</C> Package.
+    (B. Assmann and B. Eick)
+</Item>
+<Item>
+    A new functionality to compute the minimal normal subgroups
+    of a finite group, as well as its socle, has been installed. (B.
+    Höfling)
+</Item>
+<Item>
+    A fast method for recognizing whether a permutation group is symmetric
+    or alternating is available now (A. Seress)
+</Item>
+<Item>
+    A method for computing the Galois group of a rational polynomial is
+    available again.  (A. Hulpke)
+</Item>
+<Item>
+    The algorithm for <C>BrauerCharacterValue</C> has been extended to the case
+    where the splitting field is not supported in GAP. (T. Breuer)
+</Item>
+<Item>
+    Brauer tables of direct products can now be constructed from the
+    known Brauer tables of the direct factors. (T. Breuer)
+</Item>
+<Item>
+    Basic support for vector spaces of rational functions and of uea
+    elements is available now in GAP. (T. Breuer and W. de Graaf)
+</Item>
+<Item>
+    Various new functions for computations with integer matrices are
+    available, such as methods for computing normal forms of integer
+    matrices as well as nullspaces or solutions systems of equations.
+    (W. Nickel and F. Gähler)
+</Item>
+</List>
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="New Packages">
+<Heading>New Packages</Heading>
+
+  The following new Packages have been accepted.
+<P/>
+<List>
+<Item>
+   Alnuth: Algebraic Number Theory and an interface to the Kant system.
+    By B. Assmann and B. Eick
+</Item>
+<Item>
+   LAGUNA: Computing with Lie Algebras and Units of Group Algebras.
+    By V. Bovdi, A. Konovalov, R. Rossmanith, C. Schneider.
+</Item>
+<Item>
+   NQ: The ANU Nilpotent Quotient Algorithm.
+    By W. Nickel.
+</Item>
+<Item>
+   KBMAG: Knuth-Bendix for Monoids and Groups.
+    By D. Holt.
+</Item>
+<Item>
+   Polycyclic: Computation with polycyclic groups.
+    By B. Eick and W. Nickel
+</Item>
+<Item>
+   QuaGroup: Computing with Quantized Enveloping Algebras.
+    By W. de Graaf.
+</Item>
+</List>
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="Performance Enhancements">
+<Heading>Performance Enhancements</Heading>
+
+<List>
+<Item>
+    The computation of irreducible representations and irreducible
+    characters using the Baum-Clausen algorithm and the implementation of
+    the Dixon-Schneider algorithm have been speeded up.
+</Item>
+<Item>
+    The algorithm for
+    <C>PossibleClassFusions</C> has been changed: the efficiency is improved and
+    a new criterion is used. The algorithm for <C>PossibleFusionsCharTableTom</C>
+    has been speeded up. The method for <C>PrimeBlocks</C> has been improved
+    following a suggestion of H. Pahlings.
+</Item>
+<Item>
+    New improved methods for normalizer and subgroup conjugation in Sn have
+    been installed and new improved methods for IsNaturalSn/An have been
+    implemented. These improve the available methods when groups of large
+    degrees are given.
+</Item>
+<Item>
+    The partition split method used in the permutation backtrack is now
+    in the kernel. Transversal computations in large permutation groups
+    are improved. Homomorphisms from free groups into permutation groups
+    now give substantially shorter words for preimages.
+</Item>
+<Item>
+    The membership test in SP and SU has been improved using the invariant
+    forms underlying these groups.
+</Item>
+<Item>
+    An improvement for the cyclic extension method for the computation of
+    subgroup lattices has been implemented.
+</Item>
+<Item>
+    A better method for MinimalPolynomial for finite field matrices has been
+    implemented.
+</Item>
+<Item>
+    The display has changed and the arithmetic of multivariate polynomials
+    has been improved.
+</Item>
+<Item>
+    The <C>LogMod</C> function
+    now uses Pollard's rho method combined with the Pohlig/Hellmann approach.
+</Item>
+<Item>
+    Various functions for sets and lists have been improved following
+    suggestions of L. Teirlinck. These include: Sort, Sortex, SortParallel,
+    SortingPerm, NrArrangements.
+</Item>
+<Item>
+    The methods for <C>StructureConstantsTable</C> and <C>GapInputSCTable</C> have
+    been improved in the case of a known (anti-) symmetry following a
+    suggestion of M. Costantini.
+</Item>
+</List>
+<P/>
+The improvements listed in this Section have been implemented by T. Breuer
+and A. Hulpke.
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="New Programming and User Features">
+<Heading>New Programming and User Features</Heading>
+
+<List>
+<Item>
+The 2GB limit for workspace size has been removed and version numbers for
+saved workspaces have been introduced. (S. Linton and B. Höfling)
+</Item>
+<Item>
+  The limit on the total number of types created in a session
+           has been removed. (S. Linton)
+</Item>
+<Item>
+  There is a new mechanism for loading packages available.
+              Packages need a file <F>PackageInfo.g</F> now. (T. Breuer and
+              F. Lübeck)
+</Item>
+</List>
+<P/>
+Finally, as always, a number of bugs have been fixed. This release thus incorporates the contents
+of all the bug fixes which were released for &GAP; 4.3. It also fixes
+a number of bugs discovered since the last bug fix.
+
+</Subsection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Earlier Changes">
+<Heading>Earlier Changes</Heading>
+
+The most important changes between &GAP; 4.2 and &GAP; 4.3 were:
+<P/>
+<List>
+<Item>
+The performance of several routines has been substantially improved.
+</Item>
+<Item>
+The functionality in the areas of finitely presented groups, Schur covers
+and the calculation of Representations has been extended.
+</Item>
+<Item>
+The data libraries of transitive groups, finite integral matrix groups,
+character tables and tables of marks have been extended.
+</Item>
+<Item>
+The Windows installation has been simplified for the case where you
+are installing GAP in its standard location.
+</Item>
+<Item>
+Many bugs have been fixed.
+<P/>
+</Item>
+</List>
+<P/>
+
+The most important changes between &GAP; 4.1 and &GAP; 4.2 were:
+<P/>
+<List>
+<Item>
+A much extended and improved library of small groups as well as
+associated IdGroup routines.
+</Item>
+<Item>
+The primitive groups library has been made more independent of the
+rest of GAP, some errors were corrected.
+</Item>
+<Item>
+New (and often much faster) infrastructure for orbit computation, based on a
+general <Q>dictionary</Q> abstraction.
+</Item>
+<Item>
+New functionality for dealing with representations of algebras, and
+in particular for semisimple Lie algebras. 
+</Item>
+<Item>
+New functionality for binary relations on arbitrary sets, magmas and
+semigroups.
+</Item>
+<Item>
+Bidirectional streams, allowing an external process to be started and then
+controlled <Q>interactively</Q> by GAP 
+</Item>
+<Item>
+A prototype implementation of algorithms using general subgroup chains.
+</Item>
+<Item>
+Changes in the behavior of vectors over small finite fields.
+</Item>
+<Item>
+A fifth book <Q>New features for Developers</Q> has been added to the GAP manual.
+</Item>
+<Item>
+Numerous bug fixes and performance improvements 
+</Item>
+</List>
+
+<P/>
+The changes between the final release of &GAP; 3 (version 3.4.4) and
+&GAP; 4 are  wide-ranging.  The general philosophy of the
+changes is two-fold.  Firstly, many assumptions in the design of
+&GAP; 3 revealed its authors' primary interest in group theory, and
+indeed in finite group theory. Although much of the &GAP; 4 library
+is concerned with groups, the basic design now allows extension to
+other algebraic structures, as witnessed by the inclusion of
+substantial bodies of algorithms for computation with semigroups and
+Lie algebras.  Secondly, as the scale of the system, and the number of
+people using and contributing to it has grown, some aspects of the
+underlying system have proved to be restricting, and these have been
+improved as part of comprehensive re-engineering of the system. This
+has included the new method selection system, which underpins the
+library, and a new, much more flexible, &GAP; package interface.
+<P/>
+Details of these changes can be found in the document
+<Q>Migrating to GAP 4</Q> that can be found at
+<URL>http://www.gap-system.org/...</URL>.
+It is perhaps worth mentioning a few points here. 
+<P/>
+Firstly, much remains unchanged, from the perspective of the mathematical 
+user:
+<P/>
+<List>
+<Item>
+    The syntax of that part  of the &GAP; language  that most users need
+    for investigating mathematical problems.
+<P/>
+  
+</Item>
+<Item>
+    The great majority of function names.
+<P/>
+  
+</Item>
+<Item>
+    Data libraries and the access to them.
+</Item>
+</List>
+<P/>
+A number of visible aspects have changed:
+<P/>
+<List>
+<Item>
+    Some function names that need finer specifications now that there are
+    more structures available in &GAP;.
+</Item>
+<Item>
+    The    access to information   already  obtained about a mathematical
+    structure. In &GAP;&nbsp;3 such information about a group could be looked
+    up  by  directly inspecting  the  group record,  whereas in  &GAP;&nbsp;4
+    functions must be used to access such information.
+</Item>
+</List>
+<P/>
+Behind the scenes, much has changed: 
+<P/>
+<List>
+<Item>
+  A new kernel,  with improvements in  memory management  and in
+  the language interpreter, as well  as new  features  such as saving  of
+  workspaces and the possibility of compilation of &GAP; code into C.
+</Item>
+<Item>
+  A new structure   to the library, based  upon  a new  type and
+  method  selection system, which  is able to  support a broader range of
+  algebraic computation and to make the  structure of the library simpler
+  and more modular.
+</Item>
+<Item>
+    New and faster algorithms in many mathematical areas.
+</Item>
+<Item>
+    Data structures and algorithms for new mathematical objects, such as
+    algebras and semigroups.
+</Item>
+<Item>
+    A new and more flexible structure  for the &GAP; installation
+    and documentation, which  means, for example, that a &GAP; package and
+    its documentation can be installed and be fully usable without any changes
+    to the &GAP; system.
+</Item>
+</List>
+<P/>
+Very few features of &GAP;&nbsp;3 are not yet available in  &GAP;&nbsp;4.
+<P/>
+<List>
+<Item>
+     Not all of the &GAP;&nbsp;3 packages have yet been converted
+     for use with  &GAP;&nbsp;4 (although several new packages are available
+     only in  &GAP;&nbsp;4). 
+</Item>
+<Item>
+   The library of crystallographic groups which was present in
+   &GAP;&nbsp;3 is now part of a &GAP;&nbsp;4 package <C>crystcat</C>.
+</Item>
+</List>
+
+</Section>
+
+</Appendix>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

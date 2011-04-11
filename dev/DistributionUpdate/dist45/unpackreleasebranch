@@ -1,0 +1,37 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+##
+##  unpacking the archive derived from GAP.dev checkout
+##
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export RELEASEBRANCH=${DISTROOT}/releasebranch
+export GAPCORE=${DISTROOT}/gapcore
+
+# create and go to the GAP core directory
+if ! mkdir -p ${GAPCORE}; then
+  echo 'Cannot create temporary directory '${GAPCORE}
+  exit 1
+fi
+
+line='cd '${GAPCORE}
+echo $line
+$line
+rm -rf *
+
+unzip -q `ls ${RELEASEBRANCH}/metainfo*|tail -1`
+
+source ./core_checkout_time.txt
+
+unzip -q ${RELEASEBRANCH}/${ARCHNAME}_release_branch${CORETIME}.zip
+unzip -q ${RELEASEBRANCH}/tools${ARCHNAME}_release_branch${CORETIME}.zip
+
+exit 0
+
+
+

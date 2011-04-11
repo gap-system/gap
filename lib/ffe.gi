@@ -1,12 +1,13 @@
 #############################################################################
 ##
 #W  ffe.gi                      GAP library                     Werner Nickel
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for `FFE's.
 ##  Note that we must distinguish finite fields and fields that consist of
@@ -23,6 +24,16 @@
 ##
 Revision.ffe_gi :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+#V  GALOIS_FIELDS
+##
+##  global list of finite fields `GF( <p>^<d> )',
+##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]'.
+##
+InstallFlushableValue( GALOIS_FIELDS, [] );
 
 
 #############################################################################
@@ -53,45 +64,43 @@ Revision.ffe_gi :=
 ##
 InstallMethod( \+,
     "for a FFE and a rational",
-    true,
-    [ IsFFE, IsRat ], 0,
+    [ IsFFE, IsRat ],
     function( ffe, rat )
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    rat:= (rat mod Characteristic(ffe))*One(ffe);
     return ffe + rat;
     end );
 
 InstallMethod( \+,
     "for a rational and a FFE",
-    true,
-    [ IsRat, IsFFE ], 0,
+    [ IsRat, IsFFE ],
     function( rat, ffe )
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    rat:= (rat mod Characteristic(ffe))*One(ffe);
     return rat + ffe;
     end );
 
 InstallMethod( \*,
     "for a FFE and a rational",
-    true,
-    [ IsFFE, IsRat ], 0,
+    [ IsFFE, IsRat ],
     function( ffe, rat )
     if IsInt( rat ) then
       # Avoid the recursion trap.
       TryNextMethod();
     fi;
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    # Replace the rational by an equivalent integer.
+    rat:= rat mod Characteristic(ffe);
     return ffe * rat;
     end );
 
 InstallMethod( \*,
     "for a rational and a FFE",
-    true,
-    [ IsRat, IsFFE ], 0,
+    [ IsRat, IsFFE ],
     function( rat, ffe )
     if IsInt( rat ) then
       # Avoid the recursion trap.
       TryNextMethod();
     fi;
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    # Replace the rational by an equivalent integer.
+    rat:= rat mod Characteristic(ffe);
     return rat * ffe;
     end );
 
@@ -102,8 +111,7 @@ InstallMethod( \*,
 ##
 InstallOtherMethod( DegreeFFE,
     "for a row vector of FFEs",
-    true,
-    [ IsRowVector and IsFFECollection ], 0,
+    [ IsRowVector and IsFFECollection ],
     function( list )
     local deg, i;
     
@@ -130,8 +138,7 @@ InstallOtherMethod( DegreeFFE,
 ##
 InstallOtherMethod( DegreeFFE,
     "for a matrix of FFEs",
-    true,
-    [ IsMatrix and IsFFECollColl ], 0,
+    [ IsMatrix and IsFFECollColl ],
     function( mat )
     local deg, i;
     deg:= DegreeFFE( mat[1] );
@@ -165,8 +172,7 @@ end );
 ##
 InstallMethod( IntVecFFE,
     "for a row vector of FFEs",
-    true,
-    [ IsRowVector and IsFFECollection ], 0,
+    [ IsRowVector and IsFFECollection ],
     v -> List( v, IntFFE ) );
 
 
@@ -186,7 +192,9 @@ InstallGlobalFunction( FFEFamily, function( p )
 
       else
 
-        F:= NewFamily( "FFEFamily", IsFFE );
+        F:= NewFamily( "FFEFamily", IsFFE, 
+                       CanEasilySortElements,
+                       CanEasilySortElements  );
         SetCharacteristic( F, p );
 
         # Store the type for the representation of prime field elements
@@ -233,8 +241,7 @@ end );
 ##
 InstallOtherMethod( Zero,
     "for a family of FFEs",
-    true,
-    [ IsFFEFamily ], 0,
+    [ IsFFEFamily ],
     function( fam )
     local char;
     char:= Characteristic( fam );
@@ -252,8 +259,7 @@ InstallOtherMethod( Zero,
 ##
 InstallOtherMethod( One,
     "for a family of FFEs",
-    true,
-    [ IsFFEFamily ], 0,
+    [ IsFFEFamily ],
     function( fam )
     local char;
     char:= Characteristic( fam );
@@ -262,7 +268,7 @@ InstallOtherMethod( One,
     else
       TryNextMethod();
     fi;
-    end );
+end );
 
 
 #############################################################################
@@ -272,28 +278,30 @@ InstallOtherMethod( One,
 ##
 #T other construction possibilities?
 ##
-InstallGlobalFunction( LargeGaloisField, function( arg )
+    
+    
+InstallMethod( LargeGaloisField, 
+        [IsPosInt],
+        function(q)
+    local p,d;
+    p := SmallestRootInt(q);
+    d := LogInt(q,p);
+    Assert(1, q = p^d);
+    Assert(1, IsPrimeInt(p));
+    return LargeGaloisField(p,d);
+end);
+    
 
-    local p, d;
-
-    # if necessary split the arguments
-    if Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
-
-        # `LargeGaloisField( p^d )'
-        p := SmallestRootInt( arg[1] );
-        d := LogInt( arg[1], p );
-
-    elif Length( arg ) = 2 then
-        p := arg[1];
-        d := arg[2];
-    else
-        Error( "usage: LargeGaloisField( <subfield>, <extension> )" );
+InstallMethod( LargeGaloisField,
+        [IsPosInt, IsPosInt],
+        function(p,d)
+    if not IsPrimeInt(p) then
+        Error("LargeGalosField: Characteristic must be prime");
     fi;
-
-    if IsPrimeInt( p ) and d = 1 then
-      return ZmodpZNC( p );
+    if d = 1 then
+        return ZmodpZNC( p );
     else
-      Error( "sorry, large non-prime fields are not yet implemented" );
+        TryNextMethod();
     fi;
 end );
 
@@ -301,21 +309,36 @@ end );
 #############################################################################
 ##
 #F  GaloisField( <p>^<d> )  . . . . . . . . . .  create a finite field object
+#F  GF( <p>^<d> )
 #F  GaloisField( <p>, <d> )
+#F  GF( <p>, <d> )
 #F  GaloisField( <subfield>, <d> )
+#F  GF( <subfield>, <d> )
 #F  GaloisField( <p>, <pol> )
+#F  GF( <p>, <pol> )
 #F  GaloisField( <subfield>, <pol> )
+#F  GF( <subfield>, <pol> )
 ##
-InstallGlobalFunction( GaloisField, function ( arg )
 
+# in Finite field calculations we often ask again and again for the same GF.
+# Therefore cache the last entry.
+GFCACHE:=[0,0];
+
+InstallGlobalFunction( GaloisField, function ( arg )
     local F,         # the field, result
           p,         # characteristic
           d,         # degree over the prime field
+          d1,        # degree of subfield over prime field
+          q,         # size of field to be constructed
           subfield,  # left acting domain of the field under construction
           B;         # basis of the extension
 
     # if necessary split the arguments
     if Length( arg ) = 1 and IsPosInt( arg[1] ) then
+
+	if arg[1]=GFCACHE[1] then
+	  return GFCACHE[2];
+	fi;
 
         # `GF( p^d )'
         p := SmallestRootInt( arg[1] );
@@ -387,13 +410,18 @@ InstallGlobalFunction( GaloisField, function ( arg )
 
       subfield:= p;
       p:= Characteristic( subfield );
-
+      
+      d1 := DegreeOverPrimeField(subfield);
       # if the degree of the extension is given
       if   IsInt( d )  then
-
-        if MAXSIZE_GF_INTERNAL < p^d then
-          return LargeGaloisField( p, d );
-        fi;
+          q := p^(d*d1);
+          if MAXSIZE_GF_INTERNAL < q then
+              if d1 = 1 then
+                  return LargeGaloisField( p, d );
+              else
+                  return FieldByGenerators(subfield, [Z(p,d*d1)]);
+              fi;
+          fi;
 
         d:= d * DegreeOverPrimeField( subfield );
 
@@ -454,6 +482,9 @@ InstallGlobalFunction( GaloisField, function ( arg )
       if not IsBound( GALOIS_FIELDS[p] ) then
         GALOIS_FIELDS[p]:= [];
       elif IsBound( GALOIS_FIELDS[p][d] ) then
+	if Length(arg)=1 then
+	  GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
+	fi;
         return GALOIS_FIELDS[p][d];
       fi;
 
@@ -486,9 +517,8 @@ end );
 ##
 InstallOtherMethod( FieldExtension,
     "for a field of FFEs, and a univ. Laurent polynomial",
-    true,
 #T CollPoly
-    [ IsField and IsFFECollection, IsLaurentPolynomial ], 0,
+    [ IsField and IsFFECollection, IsLaurentPolynomial ],
     function( F, poly )
 
     local coeffs, p, d, z, r, one, zero, E;
@@ -533,29 +563,27 @@ InstallOtherMethod( FieldExtension,
 ##
 #M  DefiningPolynomial( <F> ) . . . . . . . . . .  for standard finite fields
 ##
-##  If <F> is a finite field without defining polynomial stored then the
-##  subfield is the prime field and the polynomial is the Conway polynomial.
-##
 InstallMethod( DefiningPolynomial,
-    "for a field of FFEs (return the Conway polynomial)",
-    true,
-    [ IsField and IsFFECollection ], 0,
+    "for a field of FFEs",
+    [ IsField and IsFFECollection ],
     function( F )
-    local size;
-    Assert( 1, IsPrimeField( LeftActingDomain( F ) ),
-            "here the subfield is expected to be a prime field" );
+    local root;
 
-    # Store also a root whenever this is reasonable.
-    size:= Size( F );
-    if IsPrimeField( F ) then
-      SetRootOfDefiningPolynomial( F, PrimitiveRootMod( size ) * One( F ) );
-    elif size <= MAXSIZE_GF_INTERNAL then
-      SetRootOfDefiningPolynomial( F, Z( size ) );
+    if HasRootOfDefiningPolynomial( F ) then
+      # We must choose a compatible polynomial.
+      return MinimalPolynomial( LeftActingDomain( F ),
+                                RootOfDefiningPolynomial( F ) );
     fi;
 
-    # Return the polynomial.
-    return ConwayPolynomial( Characteristic( F ),
-                             DegreeOverPrimeField( F ) );
+    # Choose a primitive polynomial, and store a root.
+    root:= Z( Size( F ) );
+    SetRootOfDefiningPolynomial( F, root );
+    if IsPrimeField( LeftActingDomain( F ) ) then
+      return ConwayPolynomial( Characteristic( F ),
+                               DegreeOverPrimeField( F ) );
+    else
+      return MinimalPolynomial( LeftActingDomain( F ), root );
+    fi;
     end );
 
 
@@ -563,14 +591,9 @@ InstallMethod( DefiningPolynomial,
 ##
 #M  RootOfDefiningPolynomial( <F> ) . . . . . . .  for standard finite fields
 ##
-##  If <F> is a finite field without root of the defining polynomial stored
-##  then the subfield is the prime field and the polynomial is the Conway
-##  polynomial.
-##
 InstallMethod( RootOfDefiningPolynomial,
     "for a small field of FFEs",
-    true,
-    [ IsField and IsFFECollection ], 0,
+    [ IsField and IsFFECollection ],
     function( F )
     local coeffs, p, d, z, r, one, zero;
 
@@ -614,7 +637,6 @@ InstallMethod( RootOfDefiningPolynomial,
 ##
 InstallMethod( ViewObj,
     "for a field of FFEs",
-    true,
     [ IsField and IsFFECollection ], 10,
     function( F )
     if IsPrimeField( F ) then
@@ -639,7 +661,6 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for a field of FFEs",
-    true,
     [ IsField and IsFFECollection ], 10,
     function( F )
     if IsPrimeField( F ) then
@@ -658,6 +679,28 @@ InstallMethod( PrintObj,
     end );
 #T or consider how the field was defined ?
 
+#############################################################################
+##
+#M  String( <F> ) . . . . . . . . . . a string representing a field of `FFE's
+##
+InstallMethod( String,
+               "for a field of FFEs",
+               [ IsField and IsFFECollection ], 10,
+  function( F )
+    if IsPrimeField( F ) then
+      return Concatenation( "GF(", String(Characteristic( F )), ")" );
+    elif IsPrimeField( LeftActingDomain( F ) ) then
+      return Concatenation( "GF(", String(Characteristic( F )),
+                    "^", String(DegreeOverPrimeField( F )), ")" );
+    elif F = LeftActingDomain( F ) then
+      return Concatenation( "FieldOverItselfByGenerators( ",
+             String(GeneratorsOfField( F )), " )" );
+    else
+      return Concatenation( "AsField( ", String(LeftActingDomain( F )),
+             ", GF(", String(Characteristic( F )),
+                      "^", String(DegreeOverPrimeField( F )), ") )" );
+    fi;
+  end );
 
 #############################################################################
 ##
@@ -666,7 +709,7 @@ InstallMethod( PrintObj,
 InstallMethod( \in,
     "for a FFE, and a field of FFEs",
     IsElmsColls,
-    [ IsFFE, IsField and IsFFECollection ], 0,
+    [ IsFFE, IsField and IsFFECollection ],
     function ( z, F )
     return DegreeOverPrimeField( F ) mod DegreeFFE( z ) = 0;
     end );
@@ -679,7 +722,7 @@ InstallMethod( \in,
 InstallMethod( Intersection2,
     "for two fields of FFEs",
     IsIdenticalObj,
-    [ IsField and IsFFECollection, IsField and IsFFECollection ], 0,
+    [ IsField and IsFFECollection, IsField and IsFFECollection ],
     function ( F, G )
     return GF( Characteristic( F ), GcdInt( DegreeOverPrimeField( F ),
                                             DegreeOverPrimeField( G ) ) );
@@ -694,7 +737,7 @@ InstallMethod( Conjugates,
     "for two fields of FFEs, and a FFE",
     IsCollsXElms,
     [ IsField and IsFinite and IsFFECollection,
-      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+      IsField and IsFinite and IsFFECollection, IsFFE ],
     function( L, K, z )
     local   cnjs,       # conjugates of <z> in <L>/<K>, result
             ord,        # order of the subfield <K>
@@ -729,7 +772,7 @@ InstallMethod( Norm,
     "for two fields of FFEs, and a FFE",
     IsCollsXElms,
     [ IsField and IsFinite and IsFFECollection,
-      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+      IsField and IsFinite and IsFFECollection, IsFFE ],
     function( L, K, z )
 
     if DegreeOverPrimeField( L ) mod DegreeFFE(z) <> 0  then
@@ -752,7 +795,7 @@ InstallMethod( Trace,
     "for two fields of FFEs, and a FFE",
     IsCollsXElms,
     [ IsField and IsFinite and IsFFECollection,
-      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+      IsField and IsFinite and IsFFECollection, IsFFE ],
     function( L, K, z )
     local   trc,        # trace of <z> in <L>/<K>, result
             ord,        # order of the subfield <K>
@@ -785,8 +828,7 @@ InstallMethod( Trace,
 ##
 InstallMethod( Order,
     "for an internal FFE",
-    true,
-    [ IsFFE and IsInternalRep ], 0,
+    [ IsFFE and IsInternalRep ],
     function ( z )
     local   ord,        # order of <z>, result
             chr,        # characteristic of <F> (and <z>)
@@ -803,8 +845,28 @@ InstallMethod( Order,
 
     # return the order
     return ord;
-    end );
+end );
 
+InstallMethod( Order,
+        "for a general FFE",
+        [IsFFE],
+        function(z)
+    local   p,  d,  ord,  facs,  f,  i,  o;
+    p := Characteristic(z);
+    d := DegreeFFE(z);
+    ord := p^d-1;
+    facs := Collected(FactorsInt(ord));
+    for f in facs do
+        for i in [1..f[2]] do
+            o := ord/f[1];
+            if not IsOne(z^o) then
+                break;
+            fi;
+            ord := o;
+        od;
+    od;
+    return ord;
+end);
 
 #############################################################################
 ##
@@ -813,7 +875,7 @@ InstallMethod( Order,
 InstallMethod( SquareRoots,
     "for a field of FFEs, and a FFE",
     IsCollsElms,
-    [ IsField, IsFFE ], 0,
+    [ IsField, IsFFE ],
     function( F, z )
     local r;
     if IsZero( z ) then
@@ -845,7 +907,7 @@ InstallMethod( SquareRoots,
 #M  NthRoot( <F>, <z>, <n> )
 ##
 InstallMethod( NthRoot, "for a field of FFEs, and a FFE", IsCollsElmsX,
-    [ IsField, IsFFE,IsPosInt ], 0,
+    [ IsField, IsFFE,IsPosInt ],
 function( F, a,n )
 local z,qm;
   if IsOne(a) or IsZero(a) or n=1 then
@@ -866,38 +928,61 @@ end);
 #M  Int( <z> ) . . . . . . . . . convert a finite field element to an integer
 ##
 InstallMethod( Int,
-    "for an internal FFE",
-    true,
-    [ IsFFE and IsInternalRep ], 0,
+    "for an FFE",
+    [ IsFFE ],
     IntFFE );
 
 
 #############################################################################
 ##
+#M  IntFFESymm( <z> ) 
+##
+InstallMethod(IntFFESymm,"FFE",true,[ IsFFE ],0,
+function(z)
+local i,p;
+  p:=Characteristic(z);
+  i:=IntFFE(z);
+  if 2*i>p then
+    return i-p;
+  else
+    return i;
+  fi;
+end);
+
+
+#############################################################################
+##
+#M  IntFFESymm( <vector> )
+##
+InstallOtherMethod(IntFFESymm,"vector",true,
+  [IsRowVector and IsFFECollection ],0,
+    v -> List( v, IntFFESymm ) );
+
+#############################################################################
+##
 #M  String( <ffe> ) . . . . . .  convert a finite field element into a string
 ##
-InstallMethod( String,
-    "for an internal FFE",
-    true,
-    [ IsFFE and IsInternalRep ], 0,
-    function ( ffe )
-    local   str, root;
-    if   IsZero( ffe )  then
-        str := Concatenation("0*Z(",String(Characteristic(ffe)),")");
-    else
-        str := Concatenation("Z(",String(Characteristic(ffe)));
-        if DegreeFFE(ffe) <> 1  then
-            str := Concatenation(str,"^",String(DegreeFFE(ffe)));
-        fi;
-        str := Concatenation(str,")");
-        root:= Z( Characteristic( ffe ) ^ DegreeFFE( ffe ) );
-        if ffe <> root then
-            str := Concatenation(str,"^",String(LogFFE(ffe,root)));
-        fi;
+InstallMethod(String,"for an internal FFE",true,[IsFFE and IsInternalRep],0,
+function ( ffe )
+local   str, log,deg,char;
+  char:=Characteristic(ffe);
+  if   IsZero( ffe )  then
+    str := Concatenation("0*Z(",String(char),")");
+  else
+    str := Concatenation("Z(",String(char));
+    deg:=DegreeFFE(ffe);
+    if deg <> 1  then
+      str := Concatenation(str,"^",String(deg));
     fi;
-    ConvertToStringRep( str );
-    return str;
-    end );
+    str := Concatenation(str,")");
+    log:= LogFFE(ffe,Z( char ^ deg ));
+    if log <> 1 then
+      str := Concatenation(str,"^",String(log));
+    fi;
+  fi;
+  ConvertToStringRep( str );
+  return str;
+end );
 
 
 #############################################################################
@@ -906,8 +991,7 @@ InstallMethod( String,
 ##
 InstallMethod( FieldOverItselfByGenerators,
     "for a collection of FFEs",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     function( elms )
 
     local F, d, q;
@@ -942,7 +1026,7 @@ InstallMethod( FieldOverItselfByGenerators,
 InstallMethod( FieldByGenerators,
     "for two coll. of FFEs, the first a field",
     IsIdenticalObj,
-    [ IsFFECollection and IsField, IsFFECollection ], 0,
+    [ IsFFECollection and IsField, IsFFECollection ],
     function( subfield, gens )
 
     local F, d, subd, q, z;
@@ -971,8 +1055,8 @@ InstallMethod( FieldByGenerators,
       z:= Z(q);
       SetPrimitiveRoot( F, z );
       gens:= [ z ];
-    elif d <> 1 then
-      Error( "sorry, large non-prime fields are not yet implemented" );
+#    elif d <> 1 then
+#      Error( "sorry, large non-prime fields are not yet implemented" );
     fi;
 
     SetGeneratorsOfDivisionRing( F, gens );
@@ -989,14 +1073,13 @@ InstallMethod( FieldByGenerators,
 ##
 InstallMethod( DefaultFieldByGenerators,
     "for a collection of FFEs that is a list",
-    true,
-    [ IsFFECollection and IsList ], 0,
+    [ IsFFECollection and IsList ],
     gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
 
 InstallOtherMethod( DefaultFieldByGenerators,
     "for a finite field, and a collection of FFEs that is a list",
     IsIdenticalObj,
-    [ IsField and IsFinite, IsFFECollection and IsList ], 0,
+    [ IsField and IsFinite, IsFFECollection and IsList ],
     function( F, gens )
     return GF( F, DegreeFFE( gens ) );
     end );
@@ -1025,20 +1108,17 @@ end;
 
 InstallMethod( RingByGenerators,
     "for a collection of FFE",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     RingFromFFE );
 
 InstallMethod( RingWithOneByGenerators,
     "for a collection of FFE",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     RingFromFFE );
 
 InstallMethod( DefaultRingByGenerators,
     "for a collection of FFE",
-    true,
-    [ IsFFECollection and IsList ], 0,
+    [ IsFFECollection and IsList ],
     RingFromFFE );
 
 
@@ -1070,8 +1150,7 @@ InstallMethod( FLMLORWithOneByGenerators,
 ##
 InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of FFEs",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     ffelist -> ForAll( ffelist, x -> not IsZero( x ) ) );
 
 

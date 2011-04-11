@@ -1,0 +1,182 @@
+@Name
+Save Object
+@Contact
+AH
+@Date
+2004/6/29
+@Time
+3
+@Public
+Yes
+@Need
+5
+@NeedA
+3
+@Math
+2
+@Prog
+3
+@Component
+Library
+@Descr
+Implement functionality to save single objects to a file and to load them in
+later.
+<P>
+On a basic level this is provided by the <tt>Print</tt> command.
+However this does
+not save associated attributes.
+<P>
+The task thus essentially is to
+<UL>
+<LI>
+Design some reasonable setup for variable names when saving.
+<LI>
+Provide a mechanism to save an object and at least some expensive attributes
+(this is likely a method depending on the kind of object)
+<LI>
+Preserve pointers among objects (if two saved objects share the same
+subobject, this should be preserved when loading).
+<LI>
+Special care has to be taken if objects link to <it>global</it> objects, e.g.
+<tt>Integers</tt>.
+</UL>
+
+<P>
+The following text is an outline from 1998 for such a scheme.
+It will yield a GAP file that when reading in
+creates <it>equivalent</it> objects to the ones saved (I'm not using <it>equal</it>
+because reading in again a saved file will for example for finitely
+presented
+groups create *new* objects that are not *equal* to the old ones. It also
+will not save all known attributes and properties. If this is desired the
+<it>save workspace</it> facility must be used).
+
+<P>
+When saving an object enough context must be saved to create the object.
+That is for a finitely presented group the corresponding free group and the
+relators have to be saved as well. When storing a subgroup the parent has to
+be printed before.
+We have to be careful, however, when saving say several subgroups of an fp
+group. In this situation the parent must be printed only once and all parent
+references must be to this object. Also it may be necessary or desirable to
+assign the parent generators to temporary variables to permit reasonable
+printing of words that generate the subgroups. 
+
+<P>
+To keep track of relations among the objects and about whether objects have
+been saved already, saving is a multiple stage process:
+<PRE>
+ctx:=StartSave(&lt;filename&gt;);
+</PRE>
+
+initiates saving of objects on the indicated file it returns a <it>save
+context</it> (an object used for tracking information about things already
+saved). If we agree that at most one save context may be open at any time,
+this may as well be a hidden global variable.
+
+<P>
+The operation
+<PRE>
+Save(&lt;ctx&gt;,&lt;obj&gt;,&lt;varname&gt;)
+</PRE>
+saves the object &lt;obj&gt; in the context &lt;ctx&gt;, using variable name &lt;varname&gt;
+(we cannot obtain a variable name from an object).
+
+<P>
+EndSave(&lt;ctx&gt;) closes a save context. (Depending on the objects involved, it
+may be necessary to delay the actual writing to the file to this point.
+Before ending a save context it can not be guaranteed that the file is
+usable.)
+
+<H5>
+Some more detail:
+</H5>
+
+<P>
+The save context stores all objects saved with the (temporary) variable name
+under which they were saved. Therefore <tt>Save</tt> first checks if the object
+is already saved in the given context and if yes just adds a corresponding
+variable assignment.
+Otherwise <tt>Save</tt> will call an operation <tt>SaveObj</tt> (same syntax) for which
+suitable methods for all object must be installed.
+<tt>SaveObj</tt> will first <tt>Save</tt> (i.e. save only if not yet done)
+all objects needed for the creation under
+temporary variables (the save context will keep track of the temporary
+variables used) and then print a command that will create the object under
+the indicated variable name, using the objects it depends on saved before.
+(It seems a function <tt>VariableSavedObject(&lt;ctx&gt;,&lt;obj&gt;)</tt> that saves the
+object &lt;obj&gt; if not yet done and returns the variable name under which it
+was saved should be used here.
+
+<P>
+  For example if U is a subgroup of an fp group,
+<PRE>
+  Save(&lt;ctx&gt;,U,"U")
+</PRE>
+  first calls
+
+<PRE>
+  parnam:=VariableSavedObject(&lt;ctx&gt;,Parent(U)) (which recursively saves free
+  group, presentation &c.) and
+  gen:=VariableSavedObject(GeneratorsOfGroup(Parent(U)));
+</PRE>
+
+  and then prints via
+
+<PRE>
+  AppendTo(ctx.file,varnam":=Subgroup(",parnam,","["    ...&c.
+</PRE>
+
+The save routine may want to store some <it>small</it> known attributes (for
+example a permutation groups size) but for debugging purposes it must be
+possible to switch this feature off.
+
+<P>
+There are several problems and caveats:
+
+<UL>
+<LI>
+The temporary variables. Even if we name them to avoid collisions
+  (e.g. "__tV123") the temporary variables that are not explicitly assigned
+  to <it>used</it> variables remain bound. One could add <it>Unbind</it>
+  commands at the end of the file. Or one starts a save file with a <tt>local</tt>
+  command.
+<BR>
+Note: Can be resolved with <tt>HideGlobalVariables</tt>
+<LI>
+Cyclic references must be broken temporarily when saving objects and then
+  be added later. (This essentially only affects records and lists.)
+  For example:
+<PRE>
+  A:=[];
+  B:=[A];
+  # added later:
+  A[1]:=B;
+</PRE>
+  The easiest way to cope with this seems to be to store in the context
+  which objects are currently being saved and to stop recursions when again
+  saving these objects, instead noting in the context the assignment
+necessary
+  at the end to close the loop again
+  and printing it only after the object itself had been printed.
+<LI>
+Mutable objects may change during the save process. This must be users
+  responsibility to avoid. (Again this affects only records and lists.)
+<LI>
+Attributes: An object saved may have been stored as attribute of another
+  saved object. To take care of this, we must check at the end whether any
+  saved object occurs as attribute of another saved object and if yes the
+  appropriate setter command must be added. (This can be done during
+  <tt>EndSave</tt>.) A nice side effect is that it will permit to save selected
+  attributes deliberately.
+  If an object does only occur in another attribute (for example a Sylow
+  subgroup) things get messy. I don't think we should try to deal with such
+  cases (otherwise the search process will take very long and we might end
+  up storing some large attributes that are not really needed). This feature
+  is beyond the simple <tt>Save</tt> mechanism and is covered by <tt>SaveWorkspace</tt>.
+<LI>
+Weak pointers must be ignored.
+</UL>
+
+@Ref
+@Rem

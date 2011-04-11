@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  oprtperm.gi                 GAP library                    Heiko Thei"sen
+#W  oprtperm.gi                 GAP library                    Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprtperm_gi :=
     "@(#)$Id$";
@@ -119,13 +120,14 @@ InstallOtherMethod( CycleLengthOp, "perm, int", true,
 ##
 #M  Blocks( <G>, <D>, <gens>, <acts>, <OnPoints> )  . . . . find block system
 ##
-InstallMethod( BlocksOp, "permgroup on integers", true,
+InstallMethod( BlocksOp, "permgroup on integers",
         [ IsGroup, IsList and IsCyclotomicCollection, IsList and IsEmpty,
           IsList,
           IsList and IsPermCollection,
-          IsFunction ], 0,
+          IsFunction ],
     function( G, D, noseed, gens, acts, act )
-    local   blocks,     # block system of <G>, result
+    local   one,        # identity of `G'
+            blocks,     # block system of <G>, result
             orbit,      # orbit of 1 under <G>
             trans,      # factored inverse transversal for <orbit>
             eql,        # '<i> = <eql>[<k>]' means $\beta(i)  = \beta(k)$,
@@ -160,9 +162,10 @@ InstallMethod( BlocksOp, "permgroup on integers", true,
     fi;
 
     # compute the orbit of $G$ and a factored transversal
+    one:= One( G );
     orbit := [ D[1] ];
     trans := [];
-    trans[ D[1] ] := ();
+    trans[ D[1] ] := one;
     for pnt  in orbit  do
         for gen  in acts  do
             if not IsBound( trans[ pnt / gen ] )  then
@@ -195,7 +198,7 @@ InstallMethod( BlocksOp, "permgroup on integers", true,
     # repeat until we have a block system
     changed := 0;
     cur := orbit[2];
-    rnd := ();
+    rnd := one;
     repeat
 
         # compute such an $H$ by taking random  Schreier generators  of $G_1$
@@ -537,7 +540,7 @@ end );
 ## By Graham Sharp (Oxford), August 1997
 ##
 InstallOtherMethod( RepresentativesMinimalBlocksOp,
-        "G, domain, gens, perms, act", true,
+        "permgrp on points", true,
         [ IsGroup, IsList and IsCyclotomicCollection,
           IsList,
           IsList and IsPermCollection,
@@ -576,13 +579,13 @@ local   blocks,   # block system of <G>, result
 
   # handle trivial group
   if Length( acts )=0  then
-    Error("<G> must operate transitively on <D>");
+    Error( "<G> must act transitively on <D>" );
   fi;
 
   # compute the orbit of $G$ and a factored transversal
   orbit := [ D[1] ];
   trans := [];
-  trans[ D[1] ] := ();
+  trans[ D[1] ] := One( acts[1] );  # note that `acts' is nonempty
   for pnt  in orbit  do
     for gen  in acts  do
       if not IsBound( trans[ pnt / gen ] )  then
@@ -594,7 +597,7 @@ local   blocks,   # block system of <G>, result
 
   # check that the group is transitive
   if Length( orbit ) <> Length( D )  then
-    Error("<G> must operate transitively on <D>");
+    Error( "<G> must act transitively on <D>" );
   fi;
   Info(InfoAction,1,"RepresentativesMinimalBlocks transversal computed");
   nrorbs := Length( orbit );
@@ -617,7 +620,7 @@ local   blocks,   # block system of <G>, result
   # repeat until we run out of points
   minblocks := [];
   changed := 0;
-  rnd := ();
+  rnd := One( acts[1] );
 
   for start in orbit{[2..Length(D)]} do
 
@@ -878,6 +881,23 @@ function(G,D,noseed,gens,acts,act)
   return RepresentativesMinimalBlocksOp(G,D,gens,acts,act);
 end);
 
+InstallOtherMethod( RepresentativesMinimalBlocksOp,
+        "general case: translate", true,
+        [ IsGroup, IsList,
+          IsList,
+          IsList,
+          IsFunction ], 
+	  # lower ranked than perm method
+	  -1,
+function( G, D, gens, acts, act )
+local hom,r;
+  hom:=ActionHomomorphism(G,D,gens,acts,act);
+  G:=Image(hom,G);
+  r:=RepresentativesMinimalBlocksOp(G,[1..Length(D)],
+        GeneratorsOfGroup(G),GeneratorsOfGroup(G),OnPoints);
+  return List(r,i->D{i});
+end);
+
 #############################################################################
 ##
 #M  Earns( <G>, <D> ) . . . . . . . . . . . . earns of affine primitive group
@@ -1026,6 +1046,78 @@ InstallMethod( Transitivity, "permgroup on numbers", true,
                        gens, gens, act ) + 1;
     fi;
 end );
+
+
+#############################################################################
+##
+#M  IsTransitive( <G> )
+#M  Transitivity( <G> )
+##
+##  For a group with known order, we use that the number of moved points
+##  of a transitive permutation group divides the group order.
+##  If this is not the case then this check avoids computing an orbit or of
+##  a point stabilizer.
+##  Note that the GAP library defines transitivity also on partial orbits.
+##  (If this would be changed then also the five argument method that is
+##  installed in the call of `OrbitsishOperation' could take advantage of
+##  the divisibility criterion.)
+##
+InstallOtherMethod( IsTransitive,
+    "for a permutation group (use shortcuts)",
+    [ IsPermGroup ], 1,
+    function( G )
+    local n, gens;
+
+    n:= NrMovedPoints( G );
+    if n = 0 then
+      return true;
+    elif HasSize( G ) and Size( G ) mod n <> 0 then
+      # Avoid computing an orbit if the (known) group order
+      # is not divisible by the (known) number of points.
+      return false;
+    else
+      # Avoid the `IsSubset' test that occurs in the generic method,
+      # checking the orbit length suffices.
+      # (And do not call `Orbit'!)
+      gens:= GeneratorsOfGroup( G );
+      return n = Length( OrbitOp( G, SmallestMovedPoint( G ), gens, gens,
+                                  OnPoints ) );
+    fi;
+    end );
+
+InstallOtherMethod( Transitivity,
+    "for a permutation group with known size",
+    [ IsPermGroup and HasSize ],
+    function( G )
+    local n, t, size;
+
+    n:= NrMovedPoints( G );
+    if n = 0 then
+      # The trivial group is transitive on the empty set,
+      # but has transitivity zero.
+      return 0;
+    fi;
+    t:= 0;
+    size:= Size( G );
+    while IsTransitive( G ) do
+      t:= t + 1;
+      size:= size / n;
+      n:= n-1;
+      if size mod n <> 0 then
+        break;
+      fi;
+      G:= Stabilizer( G, SmallestMovedPoint( G ) );
+      if NrMovedPoints( G ) <> n then
+        if n = 1 then
+          # The trivial group is transitive on a singleton set,
+          # with transitivity one.
+          t:= t + 1;
+        fi;
+        break;
+      fi;
+    od;
+    return t;
+    end );
 
 
 #############################################################################
@@ -1280,7 +1372,7 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
 
     # action on permgroups, use backtrack
     elif act = OnPoints and IsPermGroup( d ) and IsPermGroup( e )  then
-        rep := IsomorphismPermGroups( G, d, e );
+        rep := ConjugatorPermGroup( G, d, e );
 
     # action on pairs or tuples of other objects, iterate
     elif act = OnPairs  or act = OnTuples  then
@@ -1305,7 +1397,14 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
 
     # action on sets of points, use backtrack
     elif act = OnSets and IsPositionsList( d ) and IsPositionsList( e )  then
+      if Length(d)<>Length(e) then
+	return fail;
+      fi;
+      if Length(d)=1 then
+	rep:=RepresentativeActionOp(G,d[1],e[1],OnPoints);
+      else
         rep := RepOpSetsPermGroup( G, d, e );
+      fi;
 
     # other action, fall back on default representative
     else
@@ -1320,21 +1419,23 @@ end );
 ##
 #M  Stabilizer( <G>, <d>, <gens>, <gens>, <act> ) . . . . . . for perm groups
 ##
-InstallOtherMethod( StabilizerOp, "permutation group", true,
-        [ IsPermGroup, IsObject,
-          IsList,
-          IsList,
-          IsFunction ],
-  # the objects might be a group element: rank up	
-  RankFilter(IsMultiplicativeElementWithInverse)
-  # and we are better even if the group is solvable
-  +RankFilter(IsSolvableGroup)
-  ,
-    function( G, d, gens, acts, act )
+
+PermGroupStabilizerOp:=function(arg)
     local   K,          # stabilizer <K>, result
-            S,  base;
+            S,  base,
+	    G,d,gens,acts,act,dom;
+
+ # get arguments, ignoring a given domain
+ G:=arg[1];
+ K:=Length(arg);
+ act:=arg[K];
+ acts:=arg[K-1];
+ gens:=arg[K-2];
+ d:=arg[K-3];
 
     if gens <> acts  then
+	#TODO: Check whether  acts is permutations and one could work in the
+	#permutation image (even if G is not permgroups)
         TryNextMethod();
     fi;
 
@@ -1368,7 +1469,11 @@ InstallOtherMethod( StabilizerOp, "permutation group", true,
 
     # action on sets of points, use a backtrack
     elif act = OnSets  and ForAll( d, IsInt )  then
+      if Length(d)=1 then
+	K:=Stabilizer(G,d[1]);
+      else
         K := RepOpSetsPermGroup( G, d );
+      fi;
 
     # action on sets of pairwise disjoint sets
     elif     act = OnSetsDisjointSets
@@ -1406,7 +1511,31 @@ InstallOtherMethod( StabilizerOp, "permutation group", true,
 
     # return the stabilizer
     return K;
-end );
+end;
+
+InstallOtherMethod( StabilizerOp, "permutation group with generators list",
+       true,
+        [ IsPermGroup, IsObject,
+          IsList,
+          IsList,
+          IsFunction ],
+  # the objects might be a group element: rank up	
+  RankFilter(IsMultiplicativeElementWithInverse)
+  # and we are better even if the group is solvable
+  +RankFilter(IsSolvableGroup),
+  PermGroupStabilizerOp);
+
+InstallOtherMethod( StabilizerOp, "permutation group with domain",true,
+        [ IsPermGroup, IsObject,
+	  IsObject,
+          IsList,
+          IsList,
+          IsFunction ],
+  # the objects might be a group element: rank up	
+  RankFilter(IsMultiplicativeElementWithInverse)
+  # and we are better even if the group is solvable
+  +RankFilter(IsSolvableGroup),
+  PermGroupStabilizerOp);
 
 #############################################################################
 ##

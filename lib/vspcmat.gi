@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for matrix spaces.
 ##  A matrix space is a vector space whose elements are matrices.
@@ -151,7 +152,8 @@ InstallHandlingByNiceBasis( "IsNonGaussianMatrixSpace", rec(
 ##  relative basis.
 ##  (So there is no need for `IsBasisGaussianMatrixSpace').
 ##
-##  If basis vectors are known then the component `heads' is bound.
+##  If basis vectors are known and if the space is nontrivial
+##  then the component `heads' is bound.
 ##
 DeclareRepresentation( "IsSemiEchelonBasisOfGaussianMatrixSpaceRep",
     IsAttributeStoringRep,
@@ -391,39 +393,6 @@ InstallMethod( IsSemiEchelonized,
 ##
 ##  4. Methods for matrix spaces
 ##
-
-
-# #############################################################################
-# ##
-# #M  \in( <mat>, <V> ) . . . . . . . . .  for matrix and Gaussian matrix space
-# ##
-# InstallMethod( \in,
-#     "for matrix and Gaussian matrix space",
-#     IsElmsColls,
-#     [ IsMatrix, IsGaussianMatrixSpace ], 0,
-#     function( mat, V )
-#     local B, zero, ncols;
-#     if IsEmpty( mat ) then
-#       return DimensionOfVectors( V )[1] = 0;
-# #T ??
-#     elif DimensionOfVectors( V ) <> DimensionsMat( mat ) then
-#       return false;
-#     else
-#       zero:= Zero( mat[1][1] );
-#       ncols:= DimensionOfVectors( V )[2];
-#       B:= Basis( V );
-#       if not IsSemiEchelonized( B ) then
-# #T is this method reasonable at all?
-# #T note that `SiftedVector' is defined only for semi-ech. bases,
-# #T and an arbitrary basis is not nec. semi-ech.
-# #T (what is the next method?)
-#         TryNextMethod();
-#       fi;
-#       mat:= SiftedVector( Basis( V ), mat );
-#       return mat <> fail and ForAll( mat,
-#                      row -> ncols < PositionNot( row, zero ) );
-#     fi;
-#     end );
 
 
 #############################################################################

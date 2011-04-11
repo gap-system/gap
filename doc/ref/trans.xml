@@ -1,0 +1,47 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  trans.msk                GAP documentation                Isabel Araújo -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: trans.msk,v 1.14 2006/03/03 10:43:37 jamesm Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Transformations">
+<Heading>Transformations</Heading>
+
+This chapter describes functions for transformations. 
+<P/>
+
+<#Include Label="[1]{trans}">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsTransformation">
+<Heading>Functions for Transformations</Heading>
+
+<#Include Label="IsTransformation">
+<#Include Label="TransformationFamily">
+<#Include Label="Transformation">
+<#Include Label="IdentityTransformation">
+<#Include Label="RandomTransformation">
+<#Include Label="DegreeOfTransformation">
+<#Include Label="ImageListOfTransformation">
+<#Include Label="ImageSetOfTransformation">
+<#Include Label="RankOfTransformation">
+<#Include Label="KernelOfTransformation">
+<#Include Label="PreimagesOfTransformation">
+<#Include Label="RestrictedTransformation">
+<#Include Label="AsTransformation">
+<#Include Label="PermLeftQuoTransformation">
+<#Include Label="BinaryRelationTransformation">
+<#Include Label="TransformationRelation">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

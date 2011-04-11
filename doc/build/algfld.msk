@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Algebraic extensions of fields}
 
@@ -31,7 +32,7 @@ itself is not an extension field.
 gap> x:=Indeterminate(Rationals,"x");;
 gap> p:=x^4+3*x^2+1;;
 gap> e:=AlgebraicExtension(Rationals,p);
-<field in characteristic 0>
+<algebraic extension over the Rationals of degree 4>
 gap> IsField(e);
 true
 gap> a:=RootOfDefiningPolynomial(e);

@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -46,8 +48,8 @@ gap> z1 + z2; z1 + z3; z2 + z3; z1 + 1; 2 + z2; z1 + Z(7); Z(7)^2 + z2;
 ZmodpZObj( 5, 7 )
 ZmodpZObj( 0, 7 )
 ZmodpZObj( 4, 7 )
-Z(7)^5
-Z(7)
+ZmodpZObj( 5, 7 )
+ZmodpZObj( 3, 7 )
 0*Z(7)
 Z(7)
 gap> z1 - z2; z1 - z3; z2 - z3; z1 - 1; 2 - z2; z1 - Z(7); Z(7)^2 - z2;
@@ -276,7 +278,23 @@ gap> ForAll( [ 1 .. len ], i -> i = Position( enum, enum[i], 0 ) );
 true
 
 
-gap> STOP_TEST( "zmodnz.tst", 10520000 );
+# arithmetic operations with matrices over residue class rings
+# (From time to time, solved problems come up again because clever methods
+# for matrices assume too much about the domains of their entries ...)
+
+gap> R:= Integers mod 6;
+(Integers mod 6)
+gap> A:= MatrixAlgebra( R, 2 );;
+gap> one:= One( A );
+[ [ ZmodnZObj( 1, 6 ), ZmodnZObj( 0, 6 ) ], 
+  [ ZmodnZObj( 0, 6 ), ZmodnZObj( 1, 6 ) ] ]
+gap> G:= GroupWithGenerators( [ one ] );;
+gap> One( G );
+[ [ ZmodnZObj( 1, 6 ), ZmodnZObj( 0, 6 ) ], 
+  [ ZmodnZObj( 0, 6 ), ZmodnZObj( 1, 6 ) ] ]
+
+
+gap> STOP_TEST( "zmodnz.tst", 2100000 );
 
 
 #############################################################################

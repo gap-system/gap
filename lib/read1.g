@@ -20,21 +20,25 @@ ReadLib( "object.gd"   );
 
 ReadLib( "variable.g"  );
 
+ReadLib( "package.gd"   );
+
 ReadLib( "coll.gd"     );
 ReadLib( "list.gd"     );
 ReadLib( "wpobj.gd"    );
 ReadLib( "arith.gd"    );
 ReadLib( "ffe.gd"      );
+ReadLib( "domain.gd"   );
 
 ReadLib( "string.g"    );
 ReadLib( "cyclotom.g"  );
 ReadLib( "set.gd"      );
 
+ReadLib( "record.g"    );
+
 ReadLib( "coll.gi"     );
 
 ReadLib( "flag.g"      );
 ReadLib( "boolean.g"   );
-ReadLib( "record.g"    );
 ReadLib( "ffe.g"       );
 ReadLib( "arith.gi"    );
 ReadLib( "list.g"      );
@@ -48,6 +52,7 @@ ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
 
+ReadLib( "matobj1.gd"   );
 ReadLib( "vecmat.gd"   );
 ReadLib( "vec8bit.gd"   );
 ReadLib( "mat8bit.gd"   );
@@ -58,10 +63,19 @@ ReadLib( "info.gi"     );
 ReadLib( "assert.gi"   );
 ReadLib( "global.gi"   );
 
+ReadLib( "random.gd"   );
+
 ReadLib( "options.gd"  );
 ReadLib( "options.gi"  );
 
 ReadLib( "attr.gd"     );
 ReadLib( "attr.gi"     );
 
-ReadLib( "float.g"     );
+ReadLib( "macfloat.g"  );
+
+ReadLib( "string.gd"   );
+
+ReadLib( "cmdledit.g"  );
+
+ReadLib( "error.g"   );
+ReadLib( "session.g" );

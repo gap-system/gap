@@ -1,0 +1,184 @@
+<html><head><title>HOWTO Bugfixes</title></head>
+<body bgcolor="ffffff"><h1>HOWTO Bugfixes</h1>
+<A NAME="bug"><H2>How do I correct a bug in the released version</H2></A>
+
+See 
+<B><A HREF="checkin.htm#fix">How to check in a bugfix</A></B> for
+details on how to check in the fix.
+
+<A NAME="wrtap"><H2>How is a bugfix wrapped</H2></A>
+A bugfix is wrapped from the information in the file <tt>dev/BUGFIX</tt>
+(in the development branch!)
+which lists the files that must go in a fix and a description.
+
+<OL>
+<LI>Ensure that there are no open bug reports from <tt>gap-trouble</tt>.
+<LI>Check out a copy of the released branch (this contains all the fixes
+that will go in the bugfix).
+<LI>If the fix involves kernel changes, the variable <tt>KERNEL_VERSION</tt>
+in <tt>src/system.c</tt> (in the release branch) has to be incremented (and
+system.c added to the list of changed files).
+<BR>
+Furthermore
+<tt>lib/version.g</tt> has to be changed to test for the new kernel version
+number.
+<BR>(You will also have to make sure to get new binaries for Mac and Windows
+after the fix is wrapped and before releasing it.)
+<LI> Edit <tt>lib/version.g</tt> and increment the bugfix number.
+<LI>(Compile and) start GAP in this directory with the <tt>-N</tt> option
+and issue the command <tt>CreateCompletionFiles()</tt>.
+<LI>Read in the test file <tt>tst/bugfix.tst</tt> (from the development
+branch!) to verify that all listed bugs are gone.
+<LI>Create a directory (say <tt>FIX</tt>) that looks like the GAP root directory
+   (i.e., with subdirectories <tt>lib</tt> <tt>src</tt>...).
+<LI> In this directory also create a file <tt>description<i>fixnr</i></tt>
+in which you copy the description part of the <tt>BUGFIX</tt> file. If the
+fix (or a previous fix) involved kernel changes include the bit about
+recompilation.
+<LI>
+Copy all changed files (as listed in <tt>BUGFIX</tt> from the <B>
+release</B> branch (for example the GAP4R3 branch) into the <tt>FIX</tt>
+directory (so all changed files from `lib' go into <tt>FIX/lib</tt> etc. ).
+<LI>
+Path names should not start with <tt>./</tt> as this will cause problems on
+the Macintosh platform.
+<BR>
+Also copy <tt>lib/version.g</tt> and those completion files from
+<tt>lib</tt> that have changed. (Check the corresponding <tt>read</tt> files
+to see whether changed files are listed in there, if yes, the corresponding
+completion file changed as well.) There will be no problem if extra files
+are accidentally added to the bugfix.
+
+<LI> Make sure your <tt>umask</tt> and the permissions of the files to wrap
+are set (at least temporarily) to global read/execute -- otherwise the
+archived files will have restricted permissions.
+
+<LI>
+In <tt>FIX</tt> archive with <tt>zoo</tt> the directories that contain
+something (e.g., if the changed files are in `src', `lib', and `tom' (say),
+then 
+<DL>
+<DD>
+<TT>zoo ah fix4r3n2.zoo lib/* src/* tom/* description2</tt>
+</DL>
+will do it).
+<BR>
+All files also need a comment that they are text. For that the following will work in a c-shell:
+<DL>
+<DD><tt>
+% > foreach i (lib/*)<BR>
+foreach? zoo c fix4r3n2.zoo $i &lt;TEXTCOM<BR>
+foreach? end</BR>
+</tt>
+</DL>
+Here TEXTCOM is a text file containing the following lines
+<DL><DD><tt>
+!TEXT!
+/END
+</tt>
+</DL>
+It is possible to check whether the files in the fix have the comment by 
+<DL><DD><tt>
+zoo lc fix4r3n2.zoo
+</tt>
+</DL>
+This should produce a list of all files in the fix, and all should have
+a comment.
+
+
+<LI>
+Apply the fix to the copy of the distribution, and try the testfile
+`bugfix.tst'.  (For this it is a good idea to also have a copy of the
+released version somewhere.)
+
+<LI>
+Similarly run `testall' to check that nothing got broken.
+ 
+<LI> If the kernel has changed, ask Burkhard Höfling for new Macintosh
+    binaries (b.hoefling@tu-bs.de).
+
+<LI>
+If the kernel has changed, a new Windows binary needs to be prepared.
+    For that go to the Windows machine, and go to the directory containing
+    a copy of the release (e.g., <tt>C:\GAP4R3\</tt>). Put the .zoo file of the
+    fix in there, and unzoo. Then start cygwin, and go to the directory
+    where the fix was unzooed. Type <tt>make</tt>, which produces a binary in
+    <tt>bin\i586******\gap.exe</tt>. Then copy (e.g., via ftp) <tt>gap.exe</tt> to 
+    <tt>FIX/bin/gapw95.exe</tt>.
+    It is a good idea to have a copy of `cygwin1.dll' in that same directory
+    (there are Windows users who install `basic4r3.zoo' which does not contain
+    that file, and get the latest binary; putting it in there will avoid
+    answering about two questions every 5 months). Then issue
+    <DL>
+    <DD></tt>zoo ah wbin4r3n2.zoo bin/*</tt>
+    </DL>
+    which produces the zoo file containing the binary.
+
+<LI> Try installing the Windows binary (preferrably again in a separate
+copy of GAP), and try the testexamples.
+
+<LI>
+In order to put the files on the ftp server, become root on chrystal.
+    Put the fix, and the windows binary in
+ 
+	 <DL>
+         <DD><tt>/user5/ftp/pub/gap/gap4/bugfixes</tt>
+	 </DL>
+
+    (and issue <tt>chgrp ftp *</tt> and <tt>chmod 444 *</tt>).
+         
+    Put the .zoo file containing the Windows binary also in
+
+	 <DL>
+         <DD><tt>/user5/ftp/pub/gap/gap4/bin/win</tt>
+	 </DL>
+
+    Put the Mac binaries in
+
+	 <DL>
+         <DD><tt>/user5/ftp/pub/gap/gap4/bin/mac</tt>
+	 </DL>
+
+    NOTE: if there are no new binaries then changing the webpages 
+    (see below) will change the references to the binaries (e.g.,
+    if there is a second bugfix, but no second binary fix, then
+    `wbin4r3n2.zoo' will become `wbin4r3n3.zoo' on the webpages). 
+    In this case, a symbolic link will solve the problem.
+
+
+<LI>
+For editing the web pages one has to become gap (on chrystal, to get
+    the file sizes later on). Go to <tt>/gap/WWW/Info4</tt>, and edit
+    `bugfixes.input' (add a few lines on the latest bugfix, and links).
+    COMMIT `bugfixes.input' (in cvs), otherwise the mirrors will not 
+    get the fixes.
+    Also edit <tt>/gap/WWW/Util/DEFAULTS</tt> and cvs commit (change the version 
+    number).
+    Finally go to <tt>/gap/WWW</tt> and issue <tt>make stand</tt>; this will produce
+    the file sizes.
+
+<LI>
+Finally update the <tt>BUGFIX</tt> file to reflect the status after this bugfix:
+Increment the bugfix number,
+move the descriptions (without credits) in the list of older corrections,
+but keep the list of changed files as it is (we will make fixes comprehensive).
+
+<LI>
+Send the announcement to the GAP Forum.
+    Go to a pub without internet access.
+
+
+
+
+
+
+
+
+
+
+</OL>
+
+
+</BODY>
+</HTML>
+

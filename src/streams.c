@@ -1,12 +1,13 @@
 /****************************************************************************
 **
 *W  streams.c                   GAP source                       Frank Celler
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                  & Burkhard Höfling (MAC)
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
@@ -16,6 +17,7 @@
 #include        <unistd.h>              /* fstat, write, read              */
 #ifndef SYS_IS_MAC_MWC
 # include        <sys/types.h>
+#include         <dirent.h>             /* for reading a directory         */
 # include        <sys/stat.h>
 #endif
 #ifdef SYS_IS_MAC_MWC
@@ -40,6 +42,7 @@ const char * Revision_streams_c =
 
 #include        "gap.h"                 /* error handling, initialisation  */
 #include        "read.h"                /* reader                          */
+#include        "funcs.h"               /* functions                       */
 
 #include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
@@ -59,6 +62,8 @@ const char * Revision_streams_c =
 #include        "streams.h"             /* streams package                 */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "vars.h"                /* BottomLVars for execution contexts */
+
 
 /****************************************************************************
 **
@@ -71,7 +76,7 @@ Int READ_COMMAND ( void ) {
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand();
+    status = ReadEvalCommand(BottomLVars);
     if( status == STATUS_EOF )
         return 0;
 
@@ -85,6 +90,7 @@ Int READ_COMMAND ( void ) {
 
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
+        RecursionDepth = 0;
         UserHasQuit = 1;
     }
     else if (status == STATUS_QQUIT) {
@@ -138,7 +144,7 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
 
 static UInt LastReadValueGVar;
 
-Int READ ( void )
+static Int READ_INNER ( UInt UseUHQ )
 {
     ExecStatus                status;
 
@@ -160,7 +166,7 @@ Int READ ( void )
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        status = ReadEvalCommand();
+        status = ReadEvalCommand(BottomLVars);
 	if (UserHasQuit || UserHasQUIT)
 	  break;
         /* handle return-value or return-void command                      */
@@ -171,9 +177,10 @@ Int READ ( void )
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( status  == STATUS_EOF) 
+        else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
 	  break;
 	else if (status == STATUS_QUIT) {
+          RecursionDepth = 0;
 	  UserHasQuit = 1;
 	  break;
 	}
@@ -199,9 +206,22 @@ Int READ ( void )
     }
     ClearError();
 
+    if (!UseUHQ && UserHasQuit) {
+      UserHasQuit = 0; /* stop recovery here */
+      return 2;
+    }
+
     return 1;
 }
 
+
+Int READ( void ) {
+  return READ_INNER(1);
+}
+
+Int READ_NORECOVERY( void ) {
+  return READ_INNER(0);
+}
 
 /****************************************************************************
 **
@@ -258,7 +278,7 @@ Int READ_TEST ( void )
 
         /* read and evaluate the command                                   */
         ClearError();
-        type = ReadEvalCommand();
+        type = ReadEvalCommand(BottomLVars);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
@@ -373,8 +393,11 @@ Int READ_GAP_ROOT ( Char * filename )
     else if (SyRestoring)
       {
 	if (res == 3 || res == 4)
-	  Pr("Can't find compiled module '%s' needed by saved workspace\n",
-	     (Int) filename, 0L);
+	  {
+	    Pr("Can't find compiled module '%s' needed by saved workspace\n",
+	       (Int) filename, 0L);
+	    return 0;
+	  }
 	else
 	  Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
 	SyExit(1);
@@ -390,7 +413,7 @@ Int READ_GAP_ROOT ( Char * filename )
 	  SySetBuffering(Input->file);
             while ( 1 ) {
                 ClearError();
-                type = ReadEvalCommand();
+                type = ReadEvalCommand(BottomLVars);
 		if (UserHasQuit || UserHasQUIT)
 		  break;
                 if ( type == 1 || type == 2 ) {
@@ -646,7 +669,7 @@ Obj FuncPrint (
 {
     volatile Obj        arg;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+syJmp_buf           readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
@@ -661,17 +684,17 @@ Obj FuncPrint (
 	  PrintFunction( arg );
         }
         else {
-            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
                 PrintObj( arg );
             }
             else {
-                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -690,7 +713,7 @@ Obj FuncPRINT_TO (
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+syJmp_buf           readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
@@ -723,7 +746,7 @@ Obj FuncPRINT_TO (
             PrintObjFull = 0;
         }
         else {
-            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -731,10 +754,10 @@ Obj FuncPRINT_TO (
             }
             else {
                 CloseOutput();
-                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -759,7 +782,7 @@ Obj FuncPRINT_TO_STREAM (
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+    syJmp_buf             readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -775,7 +798,7 @@ Obj FuncPRINT_TO_STREAM (
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -794,10 +817,10 @@ Obj FuncPRINT_TO_STREAM (
         }
         else {
             CloseOutput();
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
         }
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -821,7 +844,7 @@ Obj FuncAPPEND_TO (
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+    syJmp_buf             readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
@@ -854,7 +877,7 @@ Obj FuncAPPEND_TO (
             PrintObjFull = 0;
         }
         else {
-            memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -862,10 +885,10 @@ Obj FuncAPPEND_TO (
             }
             else {
                 CloseOutput();
-                memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -890,7 +913,7 @@ Obj FuncAPPEND_TO_STREAM (
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+    syJmp_buf             readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -906,7 +929,7 @@ Obj FuncAPPEND_TO_STREAM (
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -925,10 +948,10 @@ Obj FuncAPPEND_TO_STREAM (
         }
         else {
             CloseOutput();
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
         }
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -966,6 +989,40 @@ Obj FuncREAD (
    
     /* read the test file                                                  */
     return READ() ? True : False;
+}
+
+/****************************************************************************
+**
+*F  FuncREAD_NORECOVERY( <self>, <filename> )  . . .  . . . . . . read a file
+**  disabling the automatic recovery to a live prompt after quit.
+*/
+Obj FuncREAD_NORECOVERY (
+    Obj                 self,
+    Obj                 filename )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "READ: <filename> must be a string (not a %s)",
+            (Int)TNAM_OBJ(filename), 0L,
+            "you can replace <filename> via 'return <filename>;'" );
+    }
+
+    /* try to open the file                                                */
+    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
+        return False;
+    }
+
+    SySetBuffering(Input->file);
+   
+    /* read the  file 
+     */
+    switch (READ_NORECOVERY()) {
+    case 0: return False;
+    case 1: return True;
+    case 2: return Fail;
+    default: return Fail;
+    }
 }
 
 
@@ -1321,6 +1378,138 @@ Obj FuncIsDirectoryPath (
 
 /****************************************************************************
 **
+*F  FuncSTRING_LIST_DIR( <self>, <dirname> ) . . . read names of files in dir
+**
+**  This function returns a GAP string which contains the names of all files
+**  contained in a directory <dirname>. The file names are separated by zero 
+**  characters (which are not allowed in file names). 
+**
+**  If <dirname> could not be opened as a directory 'fail' is returned. The
+**  reason for the error can be found with 'LastSystemError();' in GAP.
+**
+*/
+#ifndef SYS_IS_MAC_MWC
+Obj FuncSTRING_LIST_DIR (
+    Obj         self,
+    Obj         dirname  )
+{
+    DIR *dir;
+    struct dirent *entry;
+    Obj res;
+    Int len, sl;
+
+    /* check the argument                                                  */
+    while ( ! IsStringConv( dirname ) ) {
+        dirname = ErrorReturnObj(
+            "<dirname> must be a string (not a %s)",
+            (Int)TNAM_OBJ(dirname), 0L,
+            "you can replace <dirname> via 'return <dirname>;'" );
+    }
+    
+    SyClearErrorNo();
+    dir = opendir(CSTR_STRING(dirname));
+    if (dir == NULL) {
+      SySetErrorNo();
+      return Fail;
+    }
+    res = NEW_STRING(256);
+    len = 0;
+    entry = readdir(dir);
+    while (entry != NULL) {
+      sl = strlen(entry->d_name);
+      len = len;
+      GROW_STRING(res, len + sl + 1);
+      memcpy(CHARS_STRING(res) + len, entry->d_name, sl + 1);
+      len = len + sl + 1;
+      entry = readdir(dir);
+    }
+    closedir(dir);
+    /* tell the result string its length and terminate by 0 char */
+    SET_LEN_STRING(res, len);
+    *(CHARS_STRING(res) + len) = 0;
+    return res;
+}
+#endif
+
+#ifdef SYS_IS_MAC_MWC
+Obj FuncSTRING_LIST_DIR (
+    Obj         self,
+    Obj         dirname  )
+{
+	short k, index;
+	OSErr dirErr;
+	CInfoPBRec dirCPB;
+	FSSpec dirFSSpec;
+	Char pathname [262], *q, *p;
+	Str31 dirstr;
+    Obj res;
+	long len;
+	
+    /* check the argument                                                  */
+    while ( ! IsStringConv( dirname ) ) {
+        dirname = ErrorReturnObj(
+            "<dirname> must be a string (not a %s)",
+            (Int)TNAM_OBJ(dirname), 0L,
+            "you can replace <dirname> via 'return <dirname>;'" );
+    }
+
+    SyClearErrorNo();
+	q = CSTR_STRING(dirname);
+	
+    /* to create a valid FSSpec, we need a file name in the directory ---
+       the file need not exist, though. */
+
+	p = pathname;
+	while (*q)
+		*p++ = *q++;
+	if (p > pathname && p[-1] != '/')
+		*p++ = '/';
+	q = "dummy";
+	while (*q)
+		*p++ = *q++;
+	*p = '\0';
+	
+	SyLastMacErrorCode = PathToFSSpec (pathname, &dirFSSpec, true, false);
+	if (SyLastMacErrorCode == fnfErr)
+		SyLastMacErrorCode = noErr; /* we don't care whether file `dummy' exists or not */
+		
+	if (SyLastMacErrorCode != noErr) {
+	    SySetErrorNo();
+      	return Fail;
+    }
+    res = NEW_STRING(256);
+    len = 0;
+	index = 1;
+	while (1) {
+		dirCPB.dirInfo.ioVRefNum = dirFSSpec.vRefNum;
+		dirCPB.dirInfo.ioDrDirID = dirFSSpec.parID;
+		dirCPB.dirInfo.ioNamePtr = dirstr;
+		dirCPB.dirInfo.ioACUser = 0;
+		dirCPB.dirInfo.ioFDirIndex = index;
+		SyLastMacErrorCode = PBGetCatInfo(&dirCPB, false);  /* get n-th dir entry */
+		if (SyLastMacErrorCode != noErr) {
+	    	break;
+      	}
+		GROW_STRING(res, len + dirstr[0] + 1);
+		p = (char*)CHARS_STRING(res);
+		BlockMove (dirstr + 1, p + len, dirstr[0]);
+		*(p + len + dirstr[0]) = '\0';
+		len += dirstr[0] + 1;
+		index++;
+	}
+	if (SyLastMacErrorCode == fnfErr) {
+    	SET_LEN_STRING(res, len);
+    	*(CHARS_STRING(res) + len) = 0;
+    	return res;
+	} else {
+	    SySetErrorNo();
+      	return Fail;
+    }
+}
+#endif
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * text stream functions  * * * * * * * * * * * * * *
 */
@@ -1655,7 +1844,7 @@ Obj FuncREAD_ALL_FILE (
 	SET_LEN_STRING(str, len);
 	syBuffers[bufno].bufstart += lstr;
       }
-#ifdef CYGWIN
+#if SYS_IS_CYGWIN32
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1696,7 +1885,7 @@ Obj FuncREAD_ALL_FILE (
 
     /* fix the length of <str>                                             */
     len = GET_LEN_STRING(str);
-#ifdef CYGWIN
+#if SYS_IS_CYGWIN32
     /* line end hackery */
     {
       UInt i = 0,j = 0;
@@ -1940,7 +2129,7 @@ Obj FuncREAD_STRING_FILE (
             "you can replace <fid> via 'return <fid>;'" );
     }
 
-#ifndef CYGWIN
+#if ! SYS_IS_CYGWIN32
     /* fstat seems completely broken under CYGWIN */
 #if HAVE_STAT
     /* first try to get the whole file as one chunk, this avoids garbage
@@ -2263,6 +2452,8 @@ Obj FuncExecuteProcess (
     for ( i--;  0 < i;  i-- ) {
         ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
     }
+    if (SyWindow && out == INTOBJ_INT(1)) /* standard output */
+      syWinPut( INT_INTOBJ(out), "@z","");
 
     /* execute the process                                                 */
     res = SyExecuteProcess( CSTR_STRING(dir),
@@ -2271,6 +2462,8 @@ Obj FuncExecuteProcess (
                             INT_INTOBJ(out),
                             ExecCArgs );
 
+    if (SyWindow && out == INTOBJ_INT(1)) /* standard output */
+      syWinPut( INT_INTOBJ(out), "@mAgIc","");
     return res == 255 ? Fail : INTOBJ_INT(res);
 }
 
@@ -2291,6 +2484,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "READ", 1L, "filename",
       FuncREAD, "src/streams.c:READ" },
+
+    { "READ_NORECOVERY", 1L, "filename",
+      FuncREAD_NORECOVERY, "src/streams.c:READ_NORECOVERY" },
 
     { "READ_COMMAND", 2L, "stream, echo", 
       FuncREAD_COMMAND, "src/streams.c:READ_COMMAND" },
@@ -2381,6 +2577,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "IsDirectoryPath", 1L, "filename",
       FuncIsDirectoryPath, "src/streams.c:IsDirectoryPath" },
+
+    { "STRING_LIST_DIR", 1L, "dirname",
+      FuncSTRING_LIST_DIR, "src/streams.c:STRING_LIST_DIR"},
 
     { "CLOSE_FILE", 1L, "fid",
       FuncCLOSE_FILE, "src/streams.c:CLOSE_FILE" },

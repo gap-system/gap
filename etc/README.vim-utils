@@ -14,9 +14,7 @@ endif
 augroup gap
   " Remove all gap autocommands
   au!
-  autocmd BufRead,BufNewFile *.g,*.gi,*.gd source ~/.vim/gap.vim
   autocmd BufRead,BufNewFile *.g,*.gi,*.gd set filetype=gap comments=s:##\ \ ,m:##\ \ ,e:##\ \ b:#
-
 " I'm using the external program `par' for formating comment lines starting
 " with `##  '. Include these lines only when you have par installed.
   autocmd BufRead,BufNewFile *.g,*.gi,*.gd set formatprg="par w76p4s0j"
@@ -25,7 +23,7 @@ augroup END
 
 ---------------------------------------------------------------------------
 
-Then I copied the file GAPPATH/etc/gap.vim to: ~/.vim/gap.vim
+Then I copied the file GAPPATH/etc/gap.vim to: ~/.vim/syntax/gap.vim
 
 Since  I  have  now  installed  vim  6.0  I'm  also  using  the  new  indent
 functionality.  For this  I copied  the file  GAPPATH/etc/gap_indent.vim to:
@@ -36,5 +34,5 @@ details according to  your personal taste. Send comments  and suggestions to
 Frank.Luebeck@Math.RWTH-Aachen.De
 
 
-Frank Lübeck
+Frank LÃ¼beck
 

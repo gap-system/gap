@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for files and directories.
 ##
@@ -33,22 +34,6 @@ BindGlobal( "DirectoryType", NewType(
     IsDirectory and IsDirectoryRep ) );
 
 
-#############################################################################
-##
-#F  USER_HOME_EXPAND . . . . . . . . . . . .  expand leading ~ in file name
-##  
-##  If `USER_HOME' has positive length then a leading '~' character in 
-##  string `str' is substituted by the content of `USER_HOME'.
-##  Otherwise `str' itself is returned.
-##  
-InstallGlobalFunction(USER_HOME_EXPAND, function(str)
-  if Length(str) > 0 and str[1] = '~' and Length(USER_HOME) > 0 then
-    return Concatenation(USER_HOME, str{[2..Length(str)]});
-  else
-    return str;
-  fi;
-end);
-    
 
 #############################################################################
 ##
@@ -66,7 +51,7 @@ function( str )
     if '\\' in str or (':' in str and str[2] <> ':') then
         Error( "<str> must not contain '\\' or ':'" );
     fi;
-    if str[Length(str)] = '/'  then
+    if Length( str ) > 0 and str[Length(str)] = '/'  then
         str := Immutable(str);
     else
         str := Immutable( Concatenation( str, "/" ) );
@@ -146,6 +131,40 @@ function( dirs, name )
     return fail;
 end );
 
+#############################################################################
+##
+#F  DirectoryContents(<name>)
+## 
+InstallGlobalFunction(DirectoryContents, function(dirname)
+  local str;
+  # to make ~/mydir work
+  dirname := USER_HOME_EXPAND(dirname);
+  str := STRING_LIST_DIR(dirname);
+  if str = fail then
+    Error("Could not open ", dirname, " as directory,\nsee LastSystemError();");
+  fi;
+  # Why is this file read before string.gd ???
+  return SplitStringInternal(str, "", "\000");
+end);
+
+
+
+##  function(str)
+##  local a, l, i, j;
+##    a:=STRING_LIST_DIR(str);
+##    l:=[];
+##    i:=1;
+##    j:=1;
+##    while i<=Length(a) do
+##      if a[i]='\000' then
+##        Add(l,a{[j..i-1]});
+##        j:=i+1;
+##      fi;
+##      i:=i+1;
+##    od;
+##    return l;
+##  end);
+
 
 #############################################################################
 ##
@@ -182,7 +201,17 @@ end );
 InstallMethod( ReadTest,
     "string",
     [ IsString ],
-    name -> READ_TEST( USER_HOME_EXPAND( name ) ) );  
+    function( name )
+    local oldvalue, result, breakOnError;
+	breakOnError := BreakOnError;
+	BreakOnError := false;
+    oldvalue:= SizeScreen();
+    SizeScreen( [ 80 ] );
+    result:= READ_TEST( USER_HOME_EXPAND( name ) );  
+    SizeScreen( oldvalue );
+    BreakOnError := breakOnError;
+    return result;
+    end );
 
 
 #############################################################################
@@ -203,12 +232,18 @@ InstallGlobalFunction( Edit, function( name )
     local   editor,  ret;
 
     name := USER_HOME_EXPAND(name);
-    editor := Filename( DirectoriesSystemPrograms(), EDITOR );
+    editor := Filename( DirectoriesSystemPrograms(),
+                        GAPInfo.UserPreferences.Editor );
     if editor = fail  then
-        Error( "cannot locate editor `", EDITOR, "'" );
+        Error( "cannot locate editor `", GAPInfo.UserPreferences.Editor,
+               "' (check variable GAPInfo.UserPreferences.Editor)" );
+    fi;
+    if not IsBound(GAPInfo.UserPreferences.EditorOptions) then
+      GAPInfo.UserPreferences.EditorOptions := [];
     fi;
     ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
-                    OutputTextUser(), [ name ] );
+                    OutputTextUser(), Concatenation(
+                      GAPInfo.UserPreferences.EditorOptions, [ name ]) );
     if ret <> 0  then
         Error( "editor returned ", ret );
     fi;
@@ -218,139 +253,224 @@ end );
 
 #############################################################################
 ##
-#M  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
+#M  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
 ##
-InstallGlobalFunction( CreateCompletionFiles, function( arg )
-    local   path,  input,  i,  com,  read,  j,  crc;
+##InstallGlobalFunction( CreateCompletionFiles, function( arg )
+##    local path, input, i, com, read, j, crc;
+##
+##    # get the path to the output
+##    if 0 = Length(arg)  then
+##        path := DirectoriesLibrary("")[1];
+##    elif 1 = Length(arg)  then
+##        path := Directory(arg[1]);
+##    fi;
+##    input:= DirectoriesLibrary("");
+##
+##    # loop over the list of completable files
+##    for i in COMPLETABLE_FILES do
+##
+##        # convert "read" into "comp"
+##        com := Filename( path, ReplacedString( i[1], ".g", ".co" ) );
+##        if com = fail  then
+##            Error( "cannot create output file" );
+##        fi;
+##        Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
+##
+##        # now find the input file
+##        read := List( [1 .. Length(i[2]) ], x 
+##           -> [ i[2][x], Filename( input, i[2][x] ), i[3][x] ] );
+##        if ForAny( read, x -> x[2] = fail )  then
+##            Error( "cannot locate input files" );
+##        fi;
+##
+##        # create the completion files
+##        PRINT_TO( com, "#I  file=\"", i[1], "\"\n\n" );
+##        for j  in read  do
+##
+##            # create a crc value
+##            Print( "#I    parsing \"", j[1], "\"\n" );
+##            crc := GAP_CRC(j[2]);
+##
+##            # create ranking list
+##            APPEND_TO( com, "#F  file=\"", j[1], "\" crc=", crc, "\n" );
+##            APPEND_TO( com, "RANK_FILTER_LIST  := ", j[3], ";\n",
+##                            "RANK_FILTER_COUNT := 1;\n\n" );
+##
+##            # create `COM_FILE' header and `if' start
+##            APPEND_TO( com, "#C  load module, file, or complete\n" );
+##            APPEND_TO( com, 
+##              "COM_RESULT := COM_FILE( \"", j[1], "\", ", crc, " );\n",
+##              "if COM_RESULT = fail  then\n",
+##              "Error(\"cannot locate file \\\"", j[1], "\\\"\");\n",
+##              "elif COM_RESULT = 1  then\n",
+##              ";\n",
+##              "elif COM_RESULT = 2  then\n",
+##              ";\n",
+##              "elif COM_RESULT = 4  then\n",
+##              "READ_CHANGED_GAP_ROOT(\"",j[1],"\");\n",
+##              "elif COM_RESULT = 3  then\n"
+##            );
+##
+##            # create completion
+##            MAKE_INIT( com, j[2] );
+##
+##            APPEND_TO( com,
+##              "else\n",
+##              "Error(\"unknown result code \", COM_RESULT );\n",
+##              "fi;\n\n",
+##              "#U  unbind temporary variables\n",
+##              "Unbind(RANK_FILTER_LIST);\n",
+##              "Unbind(RANK_FILTER_COUNT);\n",
+##              "Unbind(COM_RESULT);\n",
+##              "#E  file=\"", j[1], "\"\n\n"
+##            );
+##        od;
+##    od;
+##end );
+##
+###############################################################################
+####
+###M  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
+####
+##InstallGlobalFunction( CheckCompletionFiles, function()
+##    local   dirs,  file,  com,  stream,  next,  pos,  fname,  crc,  
+##            lfile,  new,  nook;
+##
+##    dirs := DirectoriesLibrary("");
+##    nook := [];
+##    for file  in COMPLETED_FILES  do
+##        com := ReplacedString( file, ".g", ".co" );
+##        Print( "#I  checking \"", com, "\"\n" );
+##        stream := InputTextFile(com);
+##        while not IsEndOfStream(stream)  do
+##            next := ReadLine(stream);
+##            if next <> fail and next[1] = '#'  then
+##                if next[2] = 'F'  then
+##
+##                    # extract the filename
+##                    pos := 4;
+##                    while next[pos] <> '"'  do
+##                        pos := pos + 1;
+##                    od;
+##                    pos := pos+1;
+##                    fname := "";
+##                    while next[pos] <> '"'  do
+##                        Add( fname, next[pos] );
+##                        pos := pos + 1;
+##                    od;
+##
+##                    # extract the crc value
+##                    while next[pos] <> '='  do
+##                        pos := pos + 1;
+##                    od;
+##                    crc := Int(next{[pos+1..Length(next)-1]});
+##
+##                    # recompute crc
+##                    lfile := Filename( dirs, fname );
+##                    if lfile = fail  then
+##                        Print( "#W   file \"", fname, "\" not found\n" );
+##                        Add( nook, fname );
+##                    else
+##                        new := GAP_CRC( lfile );
+##                        if new <> crc  then
+##                            Print( "#W   file \"", fname, "\" not OK\n" );
+##                            Add( nook, fname );
+##                        else
+##                            Print( "#I   file \"", fname, "\" OK\n" );
+##                        fi;
+##                    fi;
+##                fi;
+##            fi;
+##        od;
+##        CloseStream(stream);
+##    od;
+##    return nook;
+##end );
+##
+# try to find the HOME directory in the environment.
+BindGlobal("StringHOMEPath",function()
+local env;
+  if IsBound(GAPInfo.UserHome) then
+    return GAPInfo.UserHome;
+  fi;
+  env:=GAPInfo.SystemEnvironment;
+  if IsRecord(env) then
+    env:=env.HOME;
+  else
+    env:=First(env,x->Length(x)>5 and x{[1..5]}="HOME=");
+    env:=env{[6..Length(env)]};
+  fi;
+  return env;
+end);
 
-    # get the path to the output
-    if 0 = Length(arg)  then
-        path := DirectoriesLibrary("")[1];
-    elif 1 = Length(arg)  then
-        path := Directory(arg[1]);
+InstallGlobalFunction(DirectoryHome,function()
+local a,h,d;
+  if ARCH_IS_WINDOWS() then
+    h:=StringHOMEPath();
+    d:=List(DirectoryContents(h),LowercaseString);
+    a:=First(["My Documents", #en
+	      "Eigene Dateien", #de
+	      "Documenti", #it
+	      "Mes documents", #fr
+	      "Mijn documenten", #nl
+	      "Meus documentos", #pt
+	      "Mis documentos", #es
+	      "Mina dokument", #sv
+	      "Mine dokumenter", #no
+	      "Dokumentumok", #hu
+	      "Dokumenty", #cz
+	      "Moje dokumenty", #po
+	      "Omat tiedostot", #fi
+	      "Î¤Î± Î­Î³Î³ÏÎ±Ï†Î¬ Î¼Î¿Ï…", #gr
+	      "ÐœÐ¾Ð¸ Ð”Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ñ‹", #ru
+	      ],x->LowercaseString(x) in d);
+    if a<>fail then
+      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      return Directory(Concatenation(h,a));
+    else
+      Info(InfoWarning,1,"Foreign Localization of Windows\n",
+	"Need name of 'My Documents' folder",d);
+      return Directory(StringHOMEPath());
     fi;
-    input := DirectoriesLibrary("");
+  else
+    return Directory(StringHOMEPath());
+  fi;
+end);
 
-    # loop over the list of completable files
-    for i  in COMPLETABLE_FILES  do
-
-        # convert "read" into "comp"
-        com := Filename( path, ReplacedString( i[1], ".g", ".co" ) );
-        if com = fail  then
-            Error( "cannot create output file" );
-        fi;
-        Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
-
-        # now find the input file
-        read := List( [1 .. Length(i[2]) ], x 
-           -> [ i[2][x], Filename( input, i[2][x] ), i[3][x] ] );
-        if ForAny( read, x -> x[2] = fail )  then
-            Error( "cannot locate input files" );
-        fi;
-
-        # create the completion files
-        PRINT_TO( com, "#I  file=\"", i[1], "\"\n\n" );
-        for j  in read  do
-
-            # create a crc value
-            Print( "#I    parsing \"", j[1], "\"\n" );
-            crc := GAP_CRC(j[2]);
-
-            # create ranking list
-            APPEND_TO( com, "#F  file=\"", j[1], "\" crc=", crc, "\n" );
-            APPEND_TO( com, "RANK_FILTER_LIST  := ", j[3], ";\n",
-                            "RANK_FILTER_COUNT := 1;\n\n" );
-
-            # create `COM_FILE' header and `if' start
-            APPEND_TO( com, "#C  load module, file, or complete\n" );
-            APPEND_TO( com, 
-              "COM_RESULT := COM_FILE( \"", j[1], "\", ", crc, " );\n",
-              "if COM_RESULT = fail  then\n",
-              "Error(\"cannot locate file \\\"", j[1], "\\\"\");\n",
-              "elif COM_RESULT = 1  then\n",
-              ";\n",
-              "elif COM_RESULT = 2  then\n",
-              ";\n",
-              "elif COM_RESULT = 4  then\n",
-              "READ_CHANGED_GAP_ROOT(\"",j[1],"\");\n",
-              "elif COM_RESULT = 3  then\n"
-            );
-
-            # create completion
-            MAKE_INIT( com, j[2] );
-
-            APPEND_TO( com,
-              "else\n",
-              "Error(\"unknown result code \", COM_RESULT );\n",
-              "fi;\n\n",
-              "#U  unbind temporary variables\n",
-              "Unbind(RANK_FILTER_LIST);\n",
-              "Unbind(RANK_FILTER_COUNT);\n",
-              "Unbind(COM_RESULT);\n",
-              "#E  file=\"", j[1], "\"\n\n"
-            );
-        od;
-    od;
-end );
-
-#############################################################################
-##
-#M  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
-##
-InstallGlobalFunction( CheckCompletionFiles, function()
-    local   dirs,  file,  com,  stream,  next,  pos,  fname,  crc,  
-            lfile,  new,  nook;
-
-    dirs := DirectoriesLibrary("");
-    nook := [];
-    for file  in COMPLETED_FILES  do
-        com := ReplacedString( file, ".g", ".co" );
-        Print( "#I  checking \"", com, "\"\n" );
-        stream := InputTextFile(com);
-        while not IsEndOfStream(stream)  do
-            next := ReadLine(stream);
-            if next <> fail and next[1] = '#'  then
-                if next[2] = 'F'  then
-
-                    # extract the filename
-                    pos := 4;
-                    while next[pos] <> '"'  do
-                        pos := pos + 1;
-                    od;
-                    pos := pos+1;
-                    fname := "";
-                    while next[pos] <> '"'  do
-                        Add( fname, next[pos] );
-                        pos := pos + 1;
-                    od;
-
-                    # extract the crc value
-                    while next[pos] <> '='  do
-                        pos := pos + 1;
-                    od;
-                    crc := Int(next{[pos+1..Length(next)-1]});
-
-                    # recompute crc
-                    lfile := Filename( dirs, fname );
-                    if lfile = fail  then
-                        Print( "#W   file \"", fname, "\" not found\n" );
-                        Add( nook, fname );
-                    else
-                        new := GAP_CRC( lfile );
-                        if new <> crc  then
-                            Print( "#W   file \"", fname, "\" not OK\n" );
-                            Add( nook, fname );
-                        else
-                            Print( "#I   file \"", fname, "\" OK\n" );
-                        fi;
-                    fi;
-                fi;
-            fi;
-        od;
-        CloseStream(stream);
-    od;
-    return nook;
-end );
+InstallGlobalFunction(DirectoryDesktop,function()
+local a,h,d;
+  h:=StringHOMEPath();
+  if ARCH_IS_WINDOWS() then
+    d:=List(DirectoryContents(h),LowercaseString);
+    a:=First(["Desktop",
+	      "Bureau", #fr
+	      "Bureaublad", #nl
+	      "Escritorio", #es
+	      "Î•Ï€Î¹Ï†Î¬Î½ÎµÎ¹Î± ÎµÏÎ³Î±ÏƒÎ¯Î±Ï‚", #gr
+	     ],x->LowercaseString(x) in d);
+    if a<>fail then
+      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      return Directory(Concatenation(h,a));
+    else
+      Info(InfoWarning,1,"Foreign Localization of Windows\n",
+	"Need name of 'Desktop' folder",d);
+      return Directory(StringHOMEPath());
+    fi;
+  else
+    d:=List(DirectoryContents(h),LowercaseString);
+    a:=First(["Desktop",
+	      "Bureau", #fr
+	      "Bureaublad", #nl
+	      "Escritorio", #es
+	     ],x->LowercaseString(x) in d);
+    if a<>fail then
+      if h[Length(h)]<>'/' then Add(h,'/');fi;
+      return Directory(Concatenation(h,a));
+    else
+      return Directory(h);
+    fi;
+  fi;
+end);
 
 
 #############################################################################

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the routines for the transitive groups library
 ##
@@ -86,8 +86,8 @@ TRANSGRP := [[[(),"1 = C(1)"]],
 ##      <sign>:         Sign
 ##      <shapes>:       List of all occurring shapes (except ()), sorted
 ##                      according to the ordering of the Partitions command
-##      <2Seq>:         Orbits on 2-Sequences
 ##      <2Set>:         Orbits on 2-Sets
+##      <2Seq>:         Orbits on 2-Sequences
 ##      <3Set>:         Orbits on 3-Sets
 ##      <special>:      following entries mark special properties, which
 ##       ...            are coded as [type,description1,description2,...] .
@@ -103,13 +103,13 @@ TRANSGRP := [[[(),"1 = C(1)"]],
 ##      8               Blocks
 ##      9               2Seq
 ##
-##           20+b       derived Subgroup on b
+##           20+b       alternating Subgroup on b
 ##
 ##        100*a+b       factor group by operation on the b cosets of a
 ##                      type a stabilizer; description field gives the
 ##                      number of this factor group as TransitiveGroup
 ##       1000*a+10*b+c  factor group by operation on the b cosets of
-##                      an type a stabilizer operates on c:
+##                      a type a stabilizer operates on c:
 ##                      description fields are a list for each of the
 ##                      possible stabilizers
 ##      10000*a+10*b+c  type a stabilizer of index b operation on c:
@@ -219,7 +219,7 @@ TRANSSIZES  :=[];
 TRANSPARTNUM:=[];
 InstallFlushableValue(TRANSSHAPEFREQS,[]);
 
-if not IsBound(TRANSDEGREES) then
+if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
   TRANSDEGREES :=7;
   HideGlobalVariables("dir","fnam");
   dir:= DirectoriesLibrary( "trans" );
@@ -460,7 +460,7 @@ local l,i;
   l:=TransCombinat(MovedPoints(g),n);
   for i in l do MakeImmutable(i);od;
   Sort(l);
-  return Orbits(g,l,OnSets);
+  return OrbitsDomain(g,l,OnSets);
 end); 
 
 BindGlobal("SeqsOrbits",function(g,n)
@@ -468,7 +468,7 @@ local l,i;
   l:=TransArrange(MovedPoints(g),n);
   for i in l do MakeImmutable(i);od;
   Sort(l);
-  return Orbits(g,l,OnTuples);
+  return OrbitsDomain(g,l,OnTuples);
 end); 
 
 # the (undocumented) `cheap' parameter has the following function:
@@ -483,7 +483,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
   grp:=ogrp;
   dom:=MovedPoints(grp);
   if not IsTransitive(grp,dom) then
-    Error("Group must operate transitive");
+    Error("Group must operate transitively");
   fi;
   deg:=Length(dom);
   if not IsBound(TRANSLENGTHS[deg]) then
@@ -497,14 +497,14 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     cand:=Filtered([1..TRANSLENGTHS[deg]],i->TRANSProperties(deg,i)[1]=s);
   fi;
   if Length(cand)>1 and deg>4 then
-    co:=CntOp(grp,Orbits(grp,TransCombinat(dom,2),OnSets),OnSets);
+    co:=CntOp(grp,OrbitsDomain(grp,TransCombinat(dom,2),OnSets),OnSets);
     cand:=Filtered(cand,i->TRANSProperties(deg,i)[6]=co);
     if Length(cand)>1 then
-      co:=CntOp(grp,Orbits(grp,TransArrange(dom,2),OnTuples),OnTuples);
+      co:=CntOp(grp,OrbitsDomain(grp,TransArrange(dom,2),OnTuples),OnTuples);
       cand:=Filtered(cand,i->TRANSProperties(deg,i)[7]=co);
     fi;
     if Length(cand)>1 then
-      co:=CntOp(grp,Orbits(grp,TransCombinat(dom,3),OnSets),OnSets);
+      co:=CntOp(grp,OrbitsDomain(grp,TransCombinat(dom,3),OnSets),OnSets);
       cand:=Filtered(cand,i->TRANSProperties(deg,i)[8]=co);
     fi;
   fi;
@@ -591,21 +591,21 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
   # maximal subgroups
   if cheap=fail and IsSolvableGroup(grp) and Length(cand)>1 then
     t:=Collected(List(MaximalSubgroupClassReps(grp),
-      i->[Size(i),Collected(List(Orbits(i,MovedPoints(grp)),Length))]));
+      i->[Size(i),Collected(List(OrbitsDomain(i,MovedPoints(grp)),Length))]));
     s:=Filtered([1..Length(cand)],k->
          Collected(List(MaximalSubgroupClassReps(p[k]),
-	   i->[Size(i),Collected(List(Orbits(i,MovedPoints(grp)),Length))]))=t);
+	   i->[Size(i),Collected(List(OrbitsDomain(i,MovedPoints(grp)),Length))]))=t);
     cand:=cand{s};
     p:=p{s};
     if Length(cand)>1 then
       a:=Filtered(t,i->i[2]<=5 and Length(i[1][2])=1 and i[1][2][1][2]=1);
       a:=List(a,i->i[1][1]);
       t:=Collected(List(Filtered(MaximalSubgroupClassReps(grp),
-		  i->Size(i) in a and Length(Orbits(i,MovedPoints(grp)))=1),
+		  i->Size(i) in a and Length(OrbitsDomain(i,MovedPoints(grp)))=1),
 		  x->TransitiveIdentification(x:cheap)));
       s:=Filtered([1..Length(cand)],
 	  k->Collected(List(Filtered(MaximalSubgroupClassReps(p[k]),
-		  i->Size(i) in a and Length(Orbits(i,MovedPoints(p[k])))=1),
+		  i->Size(i) in a and Length(OrbitsDomain(i,MovedPoints(p[k])))=1),
 		  x->TransitiveIdentification(x:cheap)))=t);
       cand:=cand{s};
       p:=p{s};
@@ -676,7 +676,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   if not IsInt(l) then
     Error("wrong arguments");
   fi;
-  deg:=[1..TRANSDEGREES];
+  deg:=[2..TRANSDEGREES];
   p:=Position(arglis,NrMovedPoints);
   if p<>fail then
     p:=arglis[p+1];
@@ -766,7 +766,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   od;
 
   if f then
-    Print("#W  AllTransitiveGroups: Degree restricted to [1..",
+    Print("#W  AllTransitiveGroups: Degree restricted to [2..",
           TRANSDEGREES,"]\n");
   fi;
 

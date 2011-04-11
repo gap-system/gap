@@ -5,15 +5,15 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file contains the perfect groups of sizes 1-7680
 ##  All data is based on Holt/Plesken: Perfect Groups, OUP 1989
 ##
 Revision.perf0_grp :=
     "@(#)$Id$";
 
-##  The  1096  perfect groups of the library  have been ordered by increasing
+##  The  1097  nontrivial
+##  perfect groups of the library  have been ordered by increasing
 ##  size,  and each library group  G  is charcterized by the pair  [size, n],
 ##  where size is the group size of G  and n is its number within the list of
 ##  library groups of that size.  We denote this pair as the 'size number' of
@@ -135,9 +135,9 @@ Revision.perf0_grp :=
 ##      that orbit.
 ##  
 
-PERFRec := rec(length:=330);
+PERFRec := rec(length:=331);
 
- PERFRec.covered := [38,59,70,71,80,113,151,158,201,249,295,330];
+ PERFRec.covered := [38,59,70,71,80,113,151,158,201,249,295,331];
 
  IsSSortedList( PERFRec.covered );
 
@@ -222,8 +222,8 @@ PERFRec := rec(length:=330);
  737280,748920,768000,774144,777600,786240,787320,806736,816480,820800,
  822528,823080,846720,864000,871200,874800,878460,881280,885720,887040,
  892800,900000,903168,907200,912576,921600,921984,929280,933120,936000,
- 937500,943488,950400,950520,960000,967680,976500,979200,979776,983040,
- 987840];
+ 937500,943488,950400,950520,960000,962280,967680,976500,979200,979776,
+ 983040,987840];
 
  IsSSortedList( PERFRec.sizes );
 
@@ -235,10 +235,10 @@ PERFRec := rec(length:=330);
  2,0,1,6,4,3,2,2,1,1,1,1,1,1,18,1,3,1,12,1,0,8,1,1,1,3,1,19,1,1,2,1,
  1,1,1,1,3,1,2,1,26,3,3,1,17,5,1,1,2,0,1,1,4,3,2,7,1,1,2,1,3,2,3,1,
  3,18,1,27,1,1,0,3,1,1,1,6,1,1,3,3,46,1,1,11,1,1,2,2,1,1,4,3,1,1,1,1,
- 3,1,2,1,1,2,8,1,1,25,4,3,18,1,4,17,6,1,0,1,1,1,1,1,9,1,1,1,1,19,1,1,
+ 3,1,2,1,1,3,8,1,1,25,4,3,18,1,4,17,6,1,0,1,1,1,1,1,9,1,1,1,1,19,1,1,
  7,1,1,2,3,1,4,1,12,1,2,41,1,1,1,3,2,1,0,23,3,2,1,1,1,1,2,3,2,1,1,3,
  54,1,13,2,5,3,16,2,2,1,3,2,3,3,2,1,2,1,1,3,1,7,6,4,1,23,8,2,21,3,8,1,
- 2,1,12,20,1,1,4,0,1];
+ 2,1,12,1,20,1,1,4,0,1];
 
 PERFGRP := [];
 PERFSELECT:=BlistList([1..PERFRec.length],[]); # what have we loaded

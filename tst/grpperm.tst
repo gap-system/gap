@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997
 ##
+##  Exclude from testinstall.g: why?
 ##
 
 gap> START_TEST("$Id$");
@@ -24,7 +25,7 @@ true
 gap> g:=Group( (1,2,3), (2,3)(4,5) );;
 gap> IsSolvable(g);
 true
-gap> RepresentativeOperation(g,(2,5,3), (2,3,4));
+gap> RepresentativeAction(g,(2,5,3), (2,3,4));
 (2,3)(4,5)
 gap> g:=Group( ( 9,11,10), ( 2, 3, 4),  (14,17,15), (13,16)(15,17), 
 >              ( 8,12)(10,11), ( 5, 7)(10,11), (15,16,17), (10,11,12) );;
@@ -69,12 +70,13 @@ gap> group:=
 >  ] );;
 gap> perf:=RepresentativesPerfectSubgroups(group);;
 gap> List(perf,Size);
-[ 60, 960, 30720, 1 ]
+[ 1, 60, 960, 30720 ]
 
 # that's all, folks
-gap> STOP_TEST( "grpperm.tst", 3218162500 );
+gap> STOP_TEST( "grpperm.tst",1894002856);
+
 
 #############################################################################
 ##
-#E  grpperm.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

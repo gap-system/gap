@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains the generic methods for  groups  defined by rewriting
 ##  systems.
@@ -376,6 +377,14 @@ function( rws )
       SetGroupOfPcgs(defpcgs,grp);
       if HasIsFiniteOrdersPcgs(defpcgs) and IsFiniteOrdersPcgs(defpcgs) then
         SetSize(grp,Product(RelativeOrders(defpcgs)));
+	if HasRelativeOrders(rws) 
+	   and not ForAll(RelativeOrders(rws),IsPrimeInt) then
+	   Info(InfoWarning,1,
+	    "You are creating a Pc group with non-prime relative orders.");
+	   Info(InfoWarning,1,
+       	    "Many algorithms require prime relative orders.");
+           Info(InfoWarning,1,"Use `RefinedPcGroup' to convert.");
+	fi;
       fi;
 
       for i in [1..Length(pows)] do
@@ -409,9 +418,6 @@ function( rws )
 
 end );
 
-
 #############################################################################
 ##
-
 #E
-

@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for polycylic generating systems.
 ##
@@ -397,7 +398,7 @@ end );
 ##
 InstallMethod( ExponentOfPcElement,
     "generic method, ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
+    IsCollsElmsX,
     [ IsPcgs,
       IsObject,
       IsPosInt ],
@@ -414,7 +415,7 @@ end );
 ##
 InstallOtherMethod( ExponentsOfPcElement,
     "with positions, falling back to ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
+    IsCollsElmsX,
     [ IsPcgs,
       IsObject,
       IsList ],
@@ -792,7 +793,7 @@ end );
 #M  RelativeOrderOfPcElement( <pcgs>, <elm> )
 ##
 InstallMethod( RelativeOrderOfPcElement,
-    "generic method using RelativeOrders",
+    "for IsPrimeOrdersPcgs using RelativeOrders",
     IsCollsElms,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsObject ],
@@ -808,6 +809,27 @@ function( pcgs, elm )
         return RelativeOrders(pcgs)[d];
     fi;
 end );
+
+InstallMethod( RelativeOrderOfPcElement,
+    "general method using RelativeOrders",
+    IsCollsElms,
+    [ IsPcgs, IsObject ],
+    0,
+
+function( pcgs, elm )
+    local   d,  e,  ro;
+
+    d := DepthOfPcElement(pcgs,elm);
+    if d > Length(pcgs)  then
+         return 1;
+    fi;
+
+    e  := ExponentOfPcElement( pcgs, elm, d );
+    ro := RelativeOrders(pcgs)[d];
+
+    return ro / Gcd( e, ro );
+end );
+
 
 #############################################################################
 ##
@@ -1349,18 +1371,18 @@ function( enum, elm, zero )
     local   pcgs,  exp,  pos,  i;
 
     pcgs := enum!.pcgs;
+    if not elm in GroupOfPcgs (pcgs) then
+       return fail;
+    fi;
     exp  := ExponentsOfPcElement( pcgs, elm );
     pos  := 0;
-    if exp=fail or ForAny( enum!.complementList, x -> 0 <> exp[x] )  then
+    if ForAny( enum!.complementList, x -> 0 <> exp[x] )  then
       return fail;
     fi;
     for i  in enum!.sublist  do
       pos := pos * enum!.relativeOrders[i] + exp[i];
     od;
-    # the element is not necessarily contained. So we must check
-    if elm<>enum[pos+1] then
-      return fail;
-    fi;
+    Assert (1, elm = enum[pos+1], "enum-by-pcgs: wrong element found");
     return pos + 1;
 end );
 
@@ -1378,48 +1400,139 @@ InstallMethod( PositionCanonical,"enum-by-pcgs",
 function( enum, elm )
     local   pcgs,  exp,  pos,  i;
 
+    
     pcgs := enum!.pcgs;
+    if not elm in GroupOfPcgs (pcgs) then
+       return fail;
+    fi;
     exp  := ExponentsOfPcElement( pcgs, elm );
     pos  := 0;
     for i  in enum!.sublist  do
       pos := pos * enum!.relativeOrders[i] + exp[i];
     od;
-    # the element is not necessarily contained. So we must check
-    if elm<>enum[pos+1] then
-      return fail;
-    fi;
     return pos + 1;
 end );
+
+
+
+
+
+#############################################################################
+##
+#M  IndicesNormalSteps( <pcgs> )
+##
+InstallMethod(IndicesNormalSteps,"generic",true, [IsPcgs],0,
+function(pcgs)
+local l,i;
+  l:=PcSeries(pcgs);
+  i:=Filtered([1..Length(l)],i->IsNormal(l[1],l[i]));
+  return i;
+end);
+
 
 
 #############################################################################
 ##
 #M  NormalSeriesByPcgs( <pcgs> )
 ##
-InstallMethod(NormalSeriesByPcgs,"via SubgroupByPcgs",true,
-  [IsPcgs],0,
-function(pcgs)
-local p,l,g,h,i,ipcgs,home;
-  home:=ParentPcgs(pcgs);
-  l:=IndicesNormalSteps(pcgs);
-  p := GroupOfPcgs(pcgs);
-  SetInducedPcgs(home,p,pcgs);
-  g:=[p];
-  for i in [2..Length(l)-1] do
-    ipcgs:=InducedPcgsByPcSequenceNC(home,pcgs{[l[i]..Length(pcgs)]});
-    h:=SubgroupByPcgs(p,ipcgs);
-    SetInducedPcgs(home,p,ipcgs);
-    Add(g,h);
-  od;
-  Add(g,TrivialSubgroup(p));
-  return g;
-end);
-
-InstallMethod(NormalSeriesByPcgs,"from PcSeries",true,
-  [IsPcgs and HasPcSeries],0,
+InstallMethod(NormalSeriesByPcgs,"generic",true, [IsPcgs],0,
 function(pcgs)
   return PcSeries(pcgs){IndicesNormalSteps(pcgs)};
 end);
+
+
+InstallPcgsSeriesFromIndices:=function(series,indices)
+  InstallMethod(series,"from indices",true,[Tester(indices) and IsPcgs],0,
+  function(pcgs)
+  local p,l,g,h,i,ipcgs,home;
+    home:=ParentPcgs(pcgs);
+    l:=indices(pcgs);
+    p := GroupOfPcgs(pcgs);
+    SetInducedPcgs(home,p,pcgs);
+    g:=[p];
+    for i in [2..Length(l)-1] do
+      ipcgs:=InducedPcgsByPcSequenceNC(home,pcgs{[l[i]..Length(pcgs)]});
+      h:=SubgroupByPcgs(p,ipcgs);
+      SetInducedPcgs(home,p,ipcgs);
+      Add(g,h);
+    od;
+    Add(g,TrivialSubgroup(p));
+    return g;
+  end);
+
+  # for perm grps, the tail method is problematic
+  InstallMethod(series,"from indices",true,
+    [Tester(indices) and IsPcgs and IsPcgsPermGroupRep],0,
+  function(pcgs)
+  local p,l,g,h,i,ipcgs,home;
+    home:=ParentPcgs(pcgs);
+    l:=indices(pcgs);
+    p := GroupOfPcgs(pcgs);
+    SetInducedPcgs(home,p,pcgs);
+    g:=[p];
+    for i in [2..Length(l)-1] do
+      ipcgs:=pcgs{[l[i]..Length(pcgs)]};
+      h:=SubgroupNC(p,ipcgs);
+      SetGroupOfPcgs (ipcgs, h);
+      Add(g,h);
+    od;
+    Add(g,TrivialSubgroup(p));
+    return g;
+  end);
+
+  InstallMethod(series,"from PcSeries",true,
+    [IsPcgs and HasPcSeries and Tester(indices)],0,
+  function(pcgs)
+    return PcSeries(pcgs){indices(pcgs)};
+  end);
+
+  # workaround for old code 
+  InstallMethod(series,"compatibility only",true,
+    [IsPcgs and HasIndicesNormalSteps],
+     -SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(HasIndicesNormalSteps))),
+  function(pcgs)
+  local p,l,g,h,i,ipcgs,home;
+    home:=ParentPcgs(pcgs);
+    l:=IndicesNormalSteps(pcgs);
+    Info(InfoWarning,1,
+      "using (obsolete) `IndicesNormalSteps'. Might lead to problems");
+    p := GroupOfPcgs(pcgs);
+    SetInducedPcgs(home,p,pcgs);
+    g:=[p];
+    for i in [2..Length(l)-1] do
+      ipcgs:=InducedPcgsByPcSequenceNC(home,pcgs{[l[i]..Length(pcgs)]});
+      h:=SubgroupByPcgs(p,ipcgs);
+      SetInducedPcgs(home,p,ipcgs);
+      Add(g,h);
+    od;
+    Add(g,TrivialSubgroup(p));
+    return g;
+  end);
+
+  InstallMethod(indices,"compatibility only",true,
+    [IsPcgs and HasIndicesNormalSteps],
+     -SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(HasIndicesNormalSteps))),
+  function(pcgs)
+  local p,l,g,h,i,ipcgs,home;
+    home:=ParentPcgs(pcgs);
+    l:=IndicesNormalSteps(pcgs);
+    Info(InfoWarning,1,
+      "using (obsolete) `IndicesNormalSteps'. Might lead to problems");
+    return l;
+  end);
+
+end;
+
+InstallPcgsSeriesFromIndices(EANormalSeriesByPcgs,IndicesEANormalSteps);
+InstallPcgsSeriesFromIndices(ChiefNormalSeriesByPcgs,IndicesChiefNormalSteps);
+InstallPcgsSeriesFromIndices(CentralNormalSeriesByPcgs,
+  IndicesCentralNormalSteps);
+InstallPcgsSeriesFromIndices(PCentralNormalSeriesByPcgsPGroup,
+  IndicesPCentralNormalStepsPGroup);
+
+
+
+
 
 #############################################################################
 ##
@@ -1428,10 +1541,10 @@ end);
 InstallMethod(IsPcgsElementaryAbelianSeries,"test if elm. abelian",true,
   [IsPcgs],0,
 function(p)
-local u,n,i,ro,ran,o,d,j;
+local u, n, o, j, i, d, ro, n2, ea, ran;
   u:=PcSeries(p);
-  if HasIndicesNormalSteps(p) then
-    n:=IndicesNormalSteps(p); # get the indices stored already
+  if HasIndicesEANormalSteps(p) then
+    n:=IndicesEANormalSteps(p); # get the indices stored already
   else
     n:=[Length(p)+1];
     o:=Length(p); # next attempted normal level
@@ -1456,22 +1569,42 @@ local u,n,i,ro,ran,o,d,j;
     n:=Reversed(n);
   fi;
   ro:=RelativeOrders(p);
-  for i in [1..Length(n)-1] do
-    ran:=[n[i]..n[i+1]-1]; #pcgs range
-    o:=Set(ro{ran});
-    if Length(o)>1 then
-      return false; # could this ever happen anyhow?
-    fi;
-    o:=o[1];
-    if ForAny(p{ran},j->DepthOfPcElement(p,j^o)<n[i+1]) then
-      return false; # not exponent p
-    fi;
-    if ForAny(p{ran},
-              k->ForAny(p{ran},j->DepthOfPcElement(p,Comm(j,k))<n[i+1])) then
-      return false; # not abelian
+  n2:=[1];
+  i:=1;
+  while i<=Length(n)-1 do
+    # test el ab and whether we can make it coarser
+    j:=i;
+    ea:=true;
+    repeat
+      j:=j+1;
+      ran:=[n[i]..n[j]-1]; #pcgs range
+      o:=Set(ro{ran});
+      if Length(o)>1 then
+	ea:=false; # could this ever happen anyhow?
+      fi;
+      o:=o[1];
+      if ForAny(p{ran},x->DepthOfPcElement(p,x^o)<n[j]) then
+	ea:=false; # not exponent p
+      fi;
+      if ForAny(p{ran},
+		k->ForAny(p{ran},x->DepthOfPcElement(p,Comm(x,k))<n[j])) then
+	ea:=false; # not abelian
+      fi;
+    until ea=false or j=Length(n);
+    if ea=false then
+      j:=j-1; # last ea step
+      if j=i then
+	return false; # not EA series, even first step failed.
+      fi;
+      Add(n2,n[j]);
+      i:=j;
+    else
+      Add(n2,n[j]);
+      i:=j+1;
     fi;
   od;
-  SetIndicesNormalSteps(p,n);
+
+  SetIndicesEANormalSteps(p,n);
   return true;
 end);
 
@@ -1519,7 +1652,7 @@ local G,e,ind,s,m,i,p;
     if HasPcgsElementaryAbelianSeries(G) then
       # can we use the known pcgs?
       p:=PcgsElementaryAbelianSeries(G);
-      e:=NormalSeriesByPcgs(p);
+      e:=EANormalSeriesByPcgs(p);
       if ForAll(param,i->i in e) then
         return p;
       fi;
@@ -1542,8 +1675,8 @@ local G,e,ind,s,m,i,p;
   p:=PcgsByPcSequence(FamilyObj(One(G)),s);
   SetIsPcgsElementaryAbelianSeries(p,true);
   SetIsPrimeOrdersPcgs(p,true);
-  SetIndicesNormalSteps(p,ind);
-  SetNormalSeriesByPcgs(p,e);
+  SetIndicesEANormalSteps(p,ind);
+  SetEANormalSeriesByPcgs(p,e);
   return p;
 end);
 

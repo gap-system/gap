@@ -20,7 +20,7 @@
 ##  You won't have to change this unless you move the installation.
 ##
 if [ "x$GAP_DIR" = "x" ];  then
-GAP_DIR=@gapdir@
+GAP_DIR="@gapdir@"
 fi
 
 
@@ -29,13 +29,13 @@ fi
 ##  GAP_MEM . . . . . . . . . . . . . . . . . . . amount of initial workspace
 ##
 ##  Set 'GAP_MEM' to the amount of memory GAP shall use as initial workspace.
-##  The default is 12 MByte, which is the minimal reasonable amount of memory.
+##  The default is 70 MB,  which is  a reasonable amount of memory  to start.
 ##  You have to change it if you want  GAP to use a larger initial workspace.
 ##  If you are not going to run  GAP  in parallel with other programs you may
 ##  want to set this value close to the  amount of memory your  computer has.
 ##
 if [ "x$GAP_MEM" = "x" ];  then
-GAP_MEM=24m
+GAP_MEM=70m
 fi
 
 
@@ -44,13 +44,13 @@ fi
 ##  GAP_PRG . . . . . . . . . . . . . . . . .  name of the executable program
 ##
 ##  Set 'GAP_PRG' to the  name of the executable  program of the  GAP kernel.
-##  The  default is  '`hostname'/gap'.    You  can   either change this    to
-##  '<target>/gap' where <target> is the  target you have selected during the
-##  compilation or create  a symbolic link  from <target> to  '`hostname`' in
-##  the 'bin' directory.
+##  The default is  '<target>/XX-bit/gap'  where  <target>  is the target you
+##  have selected during compilation and  XX  is 32 or 64 - set automatically
+##  according to your  system  architecture,  unless specified by  you at the 
+##  './configure' stage.
 ##
 if [ "x$GAP_PRG" = "x" ];  then
-GAP_PRG=@target@-@CC@/gap
+GAP_PRG=@target@-@BASECC@/@BUILD_MODE@-bit/gap@EXEEXT@
 fi
 
 
@@ -60,4 +60,4 @@ fi
 ##
 ##  You  probably should  not change  this line,  which  finally starts  GAP.
 ##
-exec $GAP_DIR/bin/$GAP_PRG -m $GAP_MEM -l $GAP_DIR $*
+exec "$GAP_DIR/bin/$GAP_PRG" -m $GAP_MEM -l "$GAP_DIR" "$@"

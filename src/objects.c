@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  objects.c                   GAP source                   Martin Schoenert
+*W  objects.c                   GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the objects package.
 */
@@ -500,10 +501,12 @@ Obj CopyObjComObj (
     if ( mut ) {
         copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
         ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+        SET_LEN_PREC(copy,LEN_PREC(obj));
     }
     else {
         copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
         ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+        SET_LEN_PREC(copy,LEN_PREC(obj));
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
@@ -519,11 +522,10 @@ Obj CopyObjComObj (
     RetypeBag( obj, TNUM_OBJ(obj) + COPYING );
 
     /* copy the subvalues                                                  */
-    for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
-        tmp = ADDR_OBJ(obj)[i];
-        ADDR_OBJ(copy)[i] = tmp;
-        tmp = COPY_OBJ( ADDR_OBJ(obj)[i+1], mut );
-        ADDR_OBJ(copy)[i+1] = tmp;
+    for ( i = 1; i <= LEN_PREC(obj); i++) {
+        SET_RNAM_PREC(copy,i,GET_RNAM_PREC(obj,i));
+        tmp = COPY_OBJ( GET_ELM_PREC(obj,i), mut );
+        SET_ELM_PREC(copy,i,tmp);
         CHANGED_BAG( copy );
     }
 
@@ -571,8 +573,8 @@ void CleanObjComObjCopy (
     RetypeBag( obj, TNUM_OBJ(obj) - COPYING );
 
     /* clean the subvalues                                                 */
-    for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
-        CLEAN_OBJ( ADDR_OBJ(obj)[i+1] );
+    for ( i = 1; i <= LEN_PREC(obj); i++ ) {
+        CLEAN_OBJ( GET_ELM_PREC(obj,i) );
     }
 
 }
@@ -710,6 +712,8 @@ Obj MutableCopyObjHandler (
 **
 */
 
+Obj PostMakeImmutableOp = 0;
+
 void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
 
@@ -739,7 +743,7 @@ void MakeImmutableComObj( Obj obj)
     }
   */
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
-  
+  CALL_1ARGS( PostMakeImmutableOp, obj);
 }
 
 void MakeImmutablePosObj( Obj obj)
@@ -752,6 +756,7 @@ void MakeImmutablePosObj( Obj obj)
     }
   */
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+  CALL_1ARGS( PostMakeImmutableOp, obj);
   
 }
 
@@ -763,7 +768,7 @@ void MakeImmutableDatObj( Obj obj)
 Obj FuncMakeImmutable( Obj self, Obj obj)
 {
   MakeImmutable(obj);
-  return (Obj) 0;
+  return obj;
 }
 
 
@@ -782,9 +787,10 @@ Int PrintObjFull;
 
 Int PrintObjDepth;
 
-Obj PrintObjThiss [1024];
+#define MAXPRINTDEPTH 1024L
+Obj PrintObjThiss [MAXPRINTDEPTH];
 
-Int PrintObjIndices [1024];
+Int PrintObjIndices [MAXPRINTDEPTH];
 
 /****************************************************************************
 **
@@ -828,7 +834,7 @@ static UInt LastPV = 0; /* This variable contains one of the values
 			   is no dynamically enc losing call to
 			   PrintObj or ViewObj still open (0), or the
 			   innermost such is Print (1) or View (2) */
-     
+
 void            PrintObj (
     Obj                 obj )
 {
@@ -840,7 +846,6 @@ void            PrintObj (
     /* check for interrupts                                                */
     if ( SyIsIntr() ) {
         i = PrintObjDepth;
-        PrintObjDepth = 0;
         Pr( "%c%c", (Int)'\03', (Int)'\04' );
         ErrorReturnVoid(
             "user interrupt while printing",
@@ -874,8 +879,14 @@ void            PrintObj (
       }
 
     /* dispatch to the appropriate printing function                       */
-    if ( ! IS_MARKED( PrintObjThis ) ) {
+    if ( (! IS_MARKED( PrintObjThis )) ) {
+      if (PrintObjDepth < MAXPRINTDEPTH) {
         (*PrintObjFuncs[ TNUM_OBJ(PrintObjThis) ])( PrintObjThis );
+      }
+      else {
+        /* don't recurse if depth too high */
+        Pr("\nprinting stopped, too many recursion levels!\n", 0L, 0L);
+      }
     }
 
     /* or print the path                                                   */
@@ -988,7 +999,13 @@ void            ViewObj (
     /* dispatch to the appropriate viewing function                       */
 
     if ( ! IS_MARKED( PrintObjThis ) ) {
-      DoOperation1Args( ViewObjOper, obj );
+      if (PrintObjDepth < MAXPRINTDEPTH) {
+        DoOperation1Args( ViewObjOper, obj );
+      }
+      else {
+        /* don't recurse any more */
+        Pr("\nviewing stopped, too many recursion levels!\n", 0L, 0L);
+      }
     }
 
     /* or view the path                                                   */
@@ -1247,7 +1264,7 @@ void LoadObjError (
                    )
 {
   ErrorQuit(
-            "Panic: tried to loade an object of unknown type '%d'",
+            "Panic: tried to load an object of unknown type '%d'",
             (Int)TNUM_OBJ(obj), 0L );
 }
 
@@ -1262,6 +1279,7 @@ void SaveComObj( Obj comobj)
   UInt len,i;
   SaveSubObj(TYPE_COMOBJ( comobj ));
   len = LEN_PREC(comobj);
+  SaveUInt(len);
   for (i = 1; i <= len; i++)
     {
       SaveUInt(GET_RNAM_PREC(comobj, i));
@@ -1320,7 +1338,8 @@ void LoadComObj( Obj comobj)
 {
   UInt len,i;
   TYPE_COMOBJ( comobj) = LoadSubObj( );
-  len = LEN_PREC(comobj);
+  len = LoadUInt();
+  SET_LEN_PREC(comobj,len);
   for (i = 1; i <= len; i++)
     {
       SET_RNAM_PREC(comobj, i, LoadUInt());
@@ -1584,6 +1603,7 @@ static Int InitKernel (
 
     /* functions for 'to-be-defined' objects                               */
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );
+    ImportFuncFromLibrary( "PostMakeImmutable", &PostMakeImmutableOp );
     ImportGVarFromLibrary( "REREADING", &REREADING );
 
     /* init filters and functions                                          */

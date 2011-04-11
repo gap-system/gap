@@ -1,12 +1,14 @@
 #############################################################################
 ##
-#W  combinat.tst                GAP tests                    Martin Schoenert
+#W  combinat.tst                GAP tests                    Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -431,6 +433,21 @@ gap> NrRestrictedPartitions( 60, [2,3,5,7,11,13,17] );
 gap> NrRestrictedPartitions( 100, [2,3,5,7,11,13,17], 10 );
 125
 
+#F  IteratorOfPartitions( <n> )
+gap> for n in [ 1 .. 15 ] do
+>      pn:= Partitions( n );
+>      iter:= IteratorOfPartitions( n );
+>      list:= [];
+>      for i in [ 1 .. Length( pn ) ] do
+>        Add( list, NextIterator( iter ) );
+>      od;
+>      if not IsDoneIterator( iter ) then
+>        Error( "wrong number of elements" );
+>      elif pn <> list then
+>        Error( "different elements" );
+>      fi;
+>    od;
+
 #F  Lucas(<P>,<Q>,<k>)  . . . . . . . . . . . . . . value of a lucas sequence
 gap> Print(List( [0..10], i->Lucas(1,-2,i)[1] ),"\n");
 [ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]
@@ -456,10 +473,10 @@ gap> Bernoulli( 80 );
 -4603784299479457646935574969019046849794257872751288919656867/230010
 
 # thats it for the combinatorical package  ##################################
-gap> STOP_TEST( "combinat.tst", 30050000 );
+gap> STOP_TEST( "combinat.tst", 270000000 );
 
 
 #############################################################################
 ##
-#E  combinat.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

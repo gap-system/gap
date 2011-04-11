@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for general modules over algebras.
 ##
@@ -142,6 +143,24 @@ BindGlobal( "BasisOfAlgebraModule",
 
 #############################################################################
 ##
+#M  CanonicalBasis( <V> ) . . . . . .  for a space of algebra module elements
+##
+InstallMethod( CanonicalBasis,
+    "for algebra module",
+    [ IsVectorSpace and IsAlgebraModuleElementCollection ],
+    function( V )
+    local B, fam, vecs;
+
+    B:= CanonicalBasis( VectorSpace( LeftActingDomain( V ),
+            List( GeneratorsOfLeftModule( V ), ExtRepOfObj ) ) );
+    fam:= ElementsFamily( FamilyObj( V ) );
+    vecs:= List( BasisVectors( B ), x -> ObjByExtRep( fam, x ) );
+    return BasisOfAlgebraModule( V, vecs );
+    end );
+
+
+#############################################################################
+##
 #M  LeftAlgebraModuleByGenerators( <A>, <op>, <gens> )
 #M  LeftAlgebraModuleByGenerators( <A>, <op>, <gens>, "basis" )
 ##
@@ -155,27 +174,11 @@ InstallMethod( LeftAlgebraModuleByGenerators,
     true, [ IsAlgebra, IS_FUNCTION, IsHomogeneousList], 0,
     function( A, op, gens )
 
-      local F,type,g,V;
+      local F,V;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
-                                    IsLeftAlgebraModuleElement ),
-                       IsPackedElementDefaultRep );
-      g:= List( gens, x -> Objectify( type, [ x ] ) );
-      V:= Objectify( NewType( FamilyObj( g ),
-                            IsLeftModule and IsAttributeStoringRep ),
-                   rec() );
-      SetLeftActingDomain( V, F );
-      SetGeneratorsOfAlgebraModule( V, g );
-      ElementsFamily( FamilyObj( V ) )!.left_operation:= op;
-      ElementsFamily( FamilyObj( V ) )!.packedType:= type;
-      ElementsFamily( FamilyObj( V ) )!.underlyingModuleEltsFam:=
-                                              FamilyObj( gens[1] );
-      SetZero( ElementsFamily( FamilyObj( V ) ), Zero( g[1] ) );
-      FamilyObj( V )!.leftAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
-      SetIsAlgebraModule( V, true );
-      SetLeftActingAlgebra( V, A );
-      return V;
+      V:= VectorSpace( F, gens );
+      return LeftAlgebraModule( A, op, V );
 
   end );
 
@@ -184,33 +187,15 @@ InstallOtherMethod( LeftAlgebraModuleByGenerators,
     true, [ IsAlgebra, IS_FUNCTION, IsHomogeneousList, IsString], 0,
     function( A, op, gens, str )
 
-      local F,type,g,V;
+      local F,V;
 
       if str<>"basis" then
          Error( "Usage: LeftAlgebraModuleByGenerators( <A>, <op>, <gens>, <str>) where the last argument is the string \"basis\"" );
       fi;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
-                                    IsLeftAlgebraModuleElement ),
-                       IsPackedElementDefaultRep );
-      g:= List( gens, x -> Objectify( type, [ x ] ) );
-      V:= Objectify( NewType( FamilyObj( g ),
-                  IsLeftModule and IsAttributeStoringRep ),
-                  rec() );
-      SetLeftActingDomain( V, F );
-      SetGeneratorsOfAlgebraModule( V, g );
-      SetZero( ElementsFamily( FamilyObj( V ) ), Zero( g[1] ) );
-      ElementsFamily( FamilyObj( V ) )!.left_operation:= op;
-      ElementsFamily( FamilyObj( V ) )!.packedType:= type;
-      ElementsFamily( FamilyObj( V ) )!.underlyingModuleEltsFam:=
-                                              FamilyObj( gens[1] );
-      FamilyObj( V )!.leftAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
-      SetIsAlgebraModule( V, true );
-      SetLeftActingAlgebra( V, A );
-      SetDimension( V, Length( g ) );
-      SetBasis( V, BasisOfAlgebraModule( V, g ) );
-      return V;
+      V:= VectorSpace( F, gens, str );
+      return LeftAlgebraModule( A, op, V );
 
 end );
 
@@ -230,27 +215,11 @@ InstallMethod( RightAlgebraModuleByGenerators,
     true, [ IsAlgebra, IS_FUNCTION, IsHomogeneousList], 0,
     function( A, op, gens )
 
-      local F,type,g,V;
+      local F,V;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
-                                    IsRightAlgebraModuleElement ),
-                       IsPackedElementDefaultRep );
-      g:= List( gens, x -> Objectify( type, [ x ] ) );
-      V:= Objectify( NewType( FamilyObj( g ),
-                  IsLeftModule and IsAttributeStoringRep ),
-                  rec() );
-      SetLeftActingDomain( V, F );
-      SetGeneratorsOfAlgebraModule( V, g );
-      SetZero( ElementsFamily( FamilyObj( V ) ), Zero( g[1] ) );
-      ElementsFamily( FamilyObj( V ) )!.right_operation:= op;
-      ElementsFamily( FamilyObj( V ) )!.packedType:= type;
-      ElementsFamily( FamilyObj( V ) )!.underlyingModuleEltsFam:=
-                                              FamilyObj( gens[1] );
-      FamilyObj( V )!.rightAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
-      SetIsAlgebraModule( V, true );
-      SetRightActingAlgebra( V, A );
-      return V;
+      V:= VectorSpace( F, gens );      
+      return RightAlgebraModule( A, op, V );
 
 end );
 
@@ -260,33 +229,15 @@ InstallOtherMethod( RightAlgebraModuleByGenerators,
     true, [ IsAlgebra, IS_FUNCTION, IsHomogeneousList, IsString], 0,
     function( A, op, gens, str )
 
-      local F,type,g,V;
+      local F,V;
 
       if str<>"basis" then
          Error( "Usage: RightAlgebraModuleByGenerators( <A>, <op>, <gens>, <str>) where the last argument is the string \"basis\"" );
       fi;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
-                                    IsRightAlgebraModuleElement ),
-                       IsPackedElementDefaultRep );
-      g:= List( gens, x -> Objectify( type, [ x ] ) );
-      V:= Objectify( NewType( FamilyObj( g ),
-                  IsLeftModule and IsAttributeStoringRep ),
-                  rec() );
-      SetLeftActingDomain( V, F );
-      SetGeneratorsOfAlgebraModule( V, g );
-      SetZero( ElementsFamily( FamilyObj( V ) ), Zero( g[1] ) );
-      ElementsFamily( FamilyObj( V ) )!.right_operation:= op;
-      ElementsFamily( FamilyObj( V ) )!.packedType:= type;
-      ElementsFamily( FamilyObj( V ) )!.underlyingModuleEltsFam:=
-                                              FamilyObj( gens[1] );
-      FamilyObj( V )!.rightAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
-      SetIsAlgebraModule( V, true );
-      SetRightActingAlgebra( V, A );
-      SetDimension( V, Length( g ) );
-      SetBasis( V, BasisOfAlgebraModule( V, g ) );
-      return V;
+      V:= VectorSpace( F, gens, str );
+      return RightAlgebraModule( A, op, V );
 
   end );
 
@@ -306,31 +257,11 @@ InstallMethod( BiAlgebraModuleByGenerators,
      [ IsAlgebra, IsAlgebra, IS_FUNCTION, IS_FUNCTION, IsHomogeneousList], 0,
     function( A, B, opl, opr, gens )
 
-      local F,type,g,V;
+      local F,V;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
-                          IsLeftAlgebraModuleElement and
-                          IsRightAlgebraModuleElement ),
-                       IsPackedElementDefaultRep );
-      g:= List( gens, x -> Objectify( type, [ x ] ) );
-      V:= Objectify( NewType( FamilyObj( g ),
-                  IsLeftModule and IsAttributeStoringRep ),
-                  rec() );
-      SetLeftActingDomain( V, F );
-      SetGeneratorsOfAlgebraModule( V, g );
-      SetZero( ElementsFamily( FamilyObj( V ) ), Zero( g[1] ) );
-      ElementsFamily( FamilyObj( V ) )!.left_operation:= opl;
-      ElementsFamily( FamilyObj( V ) )!.right_operation:= opr;
-      ElementsFamily( FamilyObj( V ) )!.packedType:= type;
-      ElementsFamily( FamilyObj( V ) )!.underlyingModuleEltsFam:=
-                                              FamilyObj( gens[1] );
-      FamilyObj( V )!.leftAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
-      FamilyObj( V )!.rightAlgebraElementsFam:= ElementsFamily( FamilyObj(B) );
-      SetIsAlgebraModule( V, true );
-      SetLeftActingAlgebra( V, A );
-      SetRightActingAlgebra( V, B );
-      return V;
+      V:= VectorSpace( F, gens );
+      return BiAlgebraModule( A, B, opl, opr, V );
 
   end );
 
@@ -342,37 +273,15 @@ true,
         0,
     function( A, B, opl, opr, gens, str )
 
-      local F,type,g,V;
+      local F,V;
 
       if str<>"basis" then
          Error( "Usage: RightAlgebraModule( <A>, <op>, <gens>, <str>) where the last argument is the string \"basis\"" );
       fi;
 
       F:= LeftActingDomain( A );
-      type:= NewType( NewFamily( "AlgModElementsFam",
-                                    IsLeftAlgebraModuleElement and
-                                    IsRightAlgebraModuleElement ),
-                       IsPackedElementDefaultRep );
-      g:= List( gens, x -> Objectify( type, [ x ] ) );
-      V:= Objectify( NewType( FamilyObj( g ),
-                  IsLeftModule and IsAttributeStoringRep ),
-                  rec() );
-      SetLeftActingDomain( V, F );
-      SetGeneratorsOfAlgebraModule( V, g );
-      SetZero( ElementsFamily( FamilyObj( V ) ), Zero( g[1] ) );
-      ElementsFamily( FamilyObj( V ) )!.left_operation:= opl;
-      ElementsFamily( FamilyObj( V ) )!.right_operation:= opr;
-      ElementsFamily( FamilyObj( V ) )!.packedType:= type;
-      ElementsFamily( FamilyObj( V ) )!.underlyingModuleEltsFam:=
-                                              FamilyObj( gens[1] );
-      FamilyObj( V )!.leftAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
-      FamilyObj( V )!.rightAlgebraElementsFam:= ElementsFamily( FamilyObj(B) );
-      SetIsAlgebraModule( V, true );
-      SetLeftActingAlgebra( V, A );
-      SetRightActingAlgebra( V, B );
-      SetDimension( V, Length( g ) );
-      SetBasis( V, BasisOfAlgebraModule( V, g ) );
-      return V;
+      V:= VectorSpace( F, str );
+      return BiAlgebraModule( A, B, opl, opr, V );
 
 end );
   
@@ -417,9 +326,10 @@ InstallMethod( LeftAlgebraModule,
       FamilyObj( W )!.leftAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
       SetIsAlgebraModule( W, true );
       SetLeftActingAlgebra( W, A );
+      SetUnderlyingLeftModule( W, V );
       
       if HasBasis( V ) then
-          B:= Objectify( NewType( FamilyObj( V ),
+          B:= Objectify( NewType( FamilyObj( W ),
                       IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
@@ -477,9 +387,10 @@ InstallMethod( RightAlgebraModule,
       FamilyObj( W )!.rightAlgebraElementsFam:= ElementsFamily( FamilyObj(A) );
       SetIsAlgebraModule( W, true );
       SetRightActingAlgebra( W, A );
-      
+      SetUnderlyingLeftModule( W, V );
+
       if HasBasis( V ) then
-          B:= Objectify( NewType( FamilyObj( V ),
+          B:= Objectify( NewType( FamilyObj( W ),
                       IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
@@ -542,9 +453,10 @@ InstallMethod( BiAlgebraModule,
       SetLeftActingAlgebra( W, A );
       SetRightActingAlgebra( W, B );
       SetZero( ElementsFamily( FamilyObj( W ) ), Zero( g[1] ) );
+      SetUnderlyingLeftModule( W, V );
       
       if HasBasis( V ) then
-          Ba:= Objectify( NewType( FamilyObj( V ),
+          Ba:= Objectify( NewType( FamilyObj( W ),
                       IsFiniteBasisDefault and
                       IsBasisOfAlgebraModuleElementSpace and
                       IsAttributeStoringRep ),
@@ -1215,17 +1127,29 @@ InstallMethod( ModuleByRestriction,
    true, [ IsAlgebraModule, IsAlgebra ], 0,
    function( V, sub )
 
-    local   op;
+    local   op, M;
 
     if IsLeftAlgebraModuleElementCollection( V ) then
         if IsRightAlgebraModuleElementCollection( V ) then
             return ModuleByRestriction( V, sub, sub );
         fi;
         op:= ElementsFamily( FamilyObj( V ) )!.left_operation;
-        return LeftAlgebraModule( sub, op, V );
+        M:= UnderlyingLeftModule( V );
+        if HasBasis( V ) and not HasBasis( M ) then
+           if IsBound( Basis(V)!.delegateBasis ) then
+              SetBasis( M, Basis(V)!.delegateBasis );
+           fi;
+        fi;
+        return LeftAlgebraModule( sub, op, UnderlyingLeftModule( V ) );
     else
         op:= ElementsFamily( FamilyObj( V ) )!.right_operation;
-        return RightAlgebraModule( sub, op, V );
+        M:= UnderlyingLeftModule( V );
+        if HasBasis( V ) and not HasBasis( M ) then
+           if IsBound( Basis(V)!.delegateBasis ) then
+              SetBasis( M, Basis(V)!.delegateBasis );
+           fi;
+        fi;
+        return RightAlgebraModule( sub, op, M );
     fi;
 
 end );
@@ -1236,14 +1160,20 @@ InstallOtherMethod( ModuleByRestriction,
     true, [ IsAlgebraModule, IsAlgebra, IsAlgebra ], 0,
     function( V, subl, subr )
 
-    local  basis, gens;
+    local  basis, gens, M;
 
     if IsLeftAlgebraModuleElementCollection( V ) then
         if IsRightAlgebraModuleElementCollection( V ) then
+           M:= UnderlyingLeftModule( V );
+           if HasBasis( V ) and not HasBasis( M ) then
+              if IsBound( Basis(V)!.delegateBasis ) then
+                 SetBasis( M, Basis(V)!.delegateBasis );
+              fi;
+           fi;
             return BiAlgebraModule( subl, subr,
                         ElementsFamily( FamilyObj( V ) )!.left_operation,
                         ElementsFamily( FamilyObj( V ) )!.right_operation,
-                               V );
+                               M );
         else
             Error( "<V> must be a bi-module");
         fi;
@@ -1278,32 +1208,24 @@ InstallMethod( NaturalHomomorphismBySubAlgebraModule,
     if IsLeftAlgebraModuleElementCollection( V ) then
         if IsRightAlgebraModuleElementCollection( V ) then
             left_op:= function( x, v )
-                return ImagesRepresentative( f,
-                    ElementsFamily( FamilyObj( V ) )!.left_operation(x,
-                               PreImagesRepresentative( f, v ) ) );
+                 return ImagesRepresentative( f, x^PreImagesRepresentative( f, v ) );
             end;
             right_op:= function( v, x )
-                return ImagesRepresentative( f,
-                    ElementsFamily( FamilyObj( V ) )!.right_operation(
-                               PreImagesRepresentative( f, v ), x ) );
+                 return ImagesRepresentative( f, PreImagesRepresentative( f, v )^x );
             end;
             qmod:= BiAlgebraModule( LeftActingAlgebra( V ),
                            RightActingAlgebra( V ),
                            left_op, right_op, quot );
         else
             left_op:= function( x, v )
-                return ImagesRepresentative( f,
-                     ElementsFamily( FamilyObj( V ) )!.left_operation(x,
-                           PreImagesRepresentative( f, v ) ) );
+                 return ImagesRepresentative( f, x^PreImagesRepresentative( f, v ) );
             end;
             qmod:= LeftAlgebraModule( LeftActingAlgebra( V ),
                            left_op, quot);
         fi;
     else
         right_op:= function( v, x )
-            return ImagesRepresentative( f,
-                        ElementsFamily( FamilyObj( V ) )!.right_operation(
-                               PreImagesRepresentative( f, v ), x ) );
+             return ImagesRepresentative( f, PreImagesRepresentative( f, v )^x );
         end;
         qmod:= RightAlgebraModule( RightActingAlgebra( V ),
                        right_op, quot );
@@ -1369,7 +1291,7 @@ InstallMethod( MatrixOfAction,
         return List( B, b -> Coefficients( B, b^x ) );
     else
         return TransposedMatDestructive(
-                       List( B, b -> Coefficients( B, x^b ) ) );
+                       List( B, b -> ShallowCopy( Coefficients( B, x^b ) ) ) );
     fi;
 
 end );
@@ -1384,7 +1306,7 @@ InstallOtherMethod( MatrixOfAction,
         return List( B, b -> Coefficients( B, b^x ) );
     else
         return TransposedMatDestructive(
-                       List( B, b -> Coefficients( B, x^b ) ) );
+                       List( B, b -> ShallowCopy( Coefficients( B, x^b ) ) ) );
     fi;
 
 end );
@@ -1462,6 +1384,13 @@ InstallMethod(\+,
     lv:= v![1];
     zero:= FamilyObj( u )!.zeroCoefficient;
     sum:=  ZippedSum( lu, lv, zero, [\<,\+] );
+    if Length( sum ) >= 2 then
+        if sum[1] = [] and sum[2] = zero then 
+            Unbind( sum[1] );
+            Unbind( sum[2] );
+            sum:= Filtered( sum , x -> IsBound(x) );
+        fi;
+    fi;          
     if sum = [ ] then sum:= [ [], zero ]; fi;
     res:= ObjByExtRep( FamilyObj( u ), sum );
     if u![2] and v![2] then res![2]:= true; fi;
@@ -1494,7 +1423,8 @@ InstallMethod(\*,
         [ IsMonomialElement and IsMonomialElementRep, IsRingElement ], 0,
         function( u, scal )
     local lu,k,res;
-
+    
+    if IsZero(scal) then return Zero(u); fi;
     lu:= ShallowCopy( u![1] );
     for k in [2,4..Length(lu)] do
         lu[k]:= scal*lu[k];
@@ -1511,7 +1441,8 @@ InstallMethod(\*,
         [ IsRingElement, IsMonomialElement and IsMonomialElementRep ], 0,
         function( scal, u  )
     local lu,k,res;
-
+    
+    if IsZero(scal) then return Zero(u); fi;
     lu:= ShallowCopy( u![1] );
     for k in [2,4..Length(lu)] do
         lu[k]:= scal*lu[k];
@@ -1634,12 +1565,10 @@ TriangulizeMonomialElementList:= function( tt, zero, LM, LC )
                         # subtract `cf' times the k-th entry of basechange.
                         for b in basechange[k] do
                             b1:= [ b[1], -cf*b[2] ];
-                            pos:= PositionSorted( basechange[i], b1,
-                                          function( x, y ) return x[1] < y[1];
-                                      end );
+                            pos := PositionFirstComponent( basechange[i], b[1]);
                             if pos > Length( basechange[i] ) or
-                                      basechange[i][pos][1] <> b1[1] then
-                               InsertElmList(basechange[i],pos,b1 );
+                               basechange[i][pos][1] <> b1[1] then
+                                Add(basechange[i],b1,pos);
                             else
                                basechange[i][pos][2]:= basechange[i][pos][2]+
                                                                   b1[2];
@@ -1980,12 +1909,12 @@ end );
 
 ##############################################################################
 ##
-#M  TensorProduct( <list> ) . . . . for a list of vectorspaces.
+#M  TensorProductOp( <list> ) . . . . for a list of vectorspaces.
 ##
-InstallMethod( TensorProduct,
-        "for a list of finite dimensional vector spaces",
-        true, [ IsDenseList ], 0,
-        function( list )
+InstallMethod( TensorProductOp,
+        "for a list of finite dimensional vector spaces, and a space (for method selection)",
+        true, [ IsDenseList, IsVectorSpace ], 0,
+        function( list, list1 )
 
     local   F,  fam,  type,  gens,  i,  gV,  gens1,  ten,  v,  ten1,  
             VT,  BT;
@@ -1996,7 +1925,7 @@ InstallMethod( TensorProduct,
     # forms will fail. Hence we can assume that every module has a basis,
     # and therefore we have a basis of the tensor space as well.
 
-    F:= LeftActingDomain( list[1] );
+    F:= LeftActingDomain( list1 );
     
     if not ForAll( list, x -> LeftActingDomain(x) = F ) then
         Error("all vector spaces must be defined over the same field.");
@@ -2008,7 +1937,11 @@ InstallMethod( TensorProduct,
     fam!.zeroCoefficient:= Zero( F );
     fam!.constituentBases:= List( list, Basis );
 
-    gens:= List( Basis( list[1] ), x -> [ x ] );
+    if Length(list)=0 then
+        gens := [One(F)];
+    else
+        gens:= List( Basis( list[1] ), x -> [ x ] );
+    fi;
     for i in [2..Length(list)] do
         gV:= Basis( list[i] );
         gens1:= [ ];
@@ -2048,14 +1981,26 @@ InstallMethod( TensorProduct,
 
 end );
 
-InstallOtherMethod( TensorProduct,
-        "for two vector spaces",
-        true, [ IsVectorSpace, IsVectorSpace ], 0,
-        function( V, W )
-    return TensorProduct( [V,W] );
-
-end );
-
+InstallGlobalFunction(TensorProduct, function(arg)
+    local d;
+    if Length(arg) = 0 then
+        Error("<arg> must be nonempty");
+    elif Length(arg) = 1 and IsList(arg[1])  then
+        if IsEmpty(arg[1])  then
+            Error("<arg>[1] must be nonempty");
+        fi;
+        arg := arg[1];
+    fi;
+    d := TensorProductOp(arg,arg[1]);
+    if ForAll(arg, HasSize) then
+        if ForAll(arg, IsFinite) then
+            SetSize(d, Product( List(arg, Size)));
+        else
+            SetSize(d, infinity);
+        fi;
+    fi;
+    return d;
+end);
 
 ##############################################################################
 ##
@@ -2957,7 +2902,8 @@ InstallMethod( \*,
         function( u, scal )
 
     local   eu,  k;
-
+    
+    if IsZero(scal) then return Zero(u); fi;
     eu:= ShallowCopy( u![1] );
     for k in [2,4..Length(eu)] do
         eu[k]:= scal*eu[k];
@@ -2975,7 +2921,8 @@ InstallMethod( \*,
         function( scal, u )
 
     local   eu,  k;
-
+    
+    if IsZero(scal) then return Zero(u); fi;
     eu:= ShallowCopy( u![1] );
     for k in [2,4..Length(eu)] do
         eu[k]:= scal*eu[k];
@@ -3096,12 +3043,10 @@ BindGlobal( "BasisOfSparseRowSpace",
                         # subtract `cf' times the k-th entry of basechange.
                         for b in basechange[k] do
                             b1:= [ b[1], -cf*b[2] ];
-                            pos:= PositionSorted( basechange[i], b1,
-                                          function( x, y ) return x[1] < y[1];
-                                      end );
+                            pos := PositionFirstComponent( basechange[i], b[1]);
                             if pos > Length( basechange[i] ) or
-                                      basechange[i][pos][1] <> b1[1] then
-                               InsertElmList(basechange[i],pos,b1 );
+                               basechange[i][pos][1] <> b1[1] then
+                                Add(basechange[i],b1,pos);
                             else
                                basechange[i][pos][2]:= basechange[i][pos][2]+
                                                                   b1[2];
@@ -3482,10 +3427,8 @@ InstallMethod( DirectSumOfAlgebraModules,
     fam!.zeroCoefficient:= Zero( F );
     fam!.constituentModules:= list;
 
-    niceVF:= NewFamily( "NiceVectorFam", IsSparseRowSpaceElement );
-    niceVF!.zeroCoefficient:= Zero( F );
-    niceVF!.sparseRowSpaceElementDefaultType:=
-                              NewType( niceVF, IsPackedElementDefaultRep );
+    niceMod:= FullSparseRowSpace( F, Sum( List( list, Dimension ) ) );
+    niceVF:= ElementsFamily( FamilyObj( niceMod ) );
     fam!.niceVectorFam:= niceVF;
 
     gens:= [ ];
@@ -3568,7 +3511,6 @@ InstallMethod( DirectSumOfAlgebraModules,
     # of `BW' to be the standard basis of the full row space.
 
     W:= VectorSpace( F, gens, "basis" );
-    niceMod:= FullSparseRowSpace( F, Length(gens) );
     SetNiceFreeLeftModule( W, niceMod );
     B:= Objectify( NewType( FamilyObj( V ), IsFiniteBasisDefault and
                  IsBasisOfAlgebraModuleElementSpace and
@@ -3597,6 +3539,89 @@ InstallOtherMethod( DirectSumOfAlgebraModules,
         function( V, W )
     return DirectSumOfAlgebraModules( [ V, W ] );
 end );
+
+############################################################################
+##
+#M  TranslatorSubalgebra( <M>, <U>, <W> )
+##
+InstallMethod( TranslatorSubalgebra,
+     "for an algebra, an algebra module and two subspaces", true,
+     [ IsAlgebraModule, IsFreeLeftModule, IsFreeLeftModule ], 0,
+     function( V, U, W )
+
+     local alg, isleft, x, u, n, s, r, t, a, i, j, k, l, c, eqs, eqno, b, bas; 
+
+    if Dimension( U ) = 0 then
+       return ActingAlgebra( V );
+    fi;
+
+    if IsLeftAlgebraModuleElementCollection( V ) then
+       alg:= LeftActingAlgebra( V );
+       isleft:= true;
+    else
+       alg:= RightActingAlgebra( V );
+       isleft:= false;
+    fi;
+
+    if not IsFiniteDimensional( alg ) then
+        Error("TranslatorSubalgebra works only when the acting algebra is finite-dimensional");
+    fi;
+
+    x:= BasisVectors( Basis( alg ) );
+    u:= BasisVectors( Basis( U ) );
+
+    n:= Dimension( alg );
+    s:= Dimension( U );
+    t:= Dimension( W );
+    r:= Dimension( V );
+
+    a:= List( [1..n], ii -> [] );
+
+    for k in [1..n] do
+        for i in [1..s] do
+            if isleft then
+               a[k][i]:= Coefficients( Basis(V), x[k]^u[i] );
+            else
+               a[k][i]:= Coefficients( Basis(V), u[i]^x[k] );
+            fi;
+        od;
+    od;
+
+    c:= List( [1..t], ii -> [] );
+    for l in [1..t] do
+        c[l]:= Coefficients( Basis(V), Basis(W)[l] );
+    od;
+
+    eqs:= NullMat( n+s*t, r*s, Zero( LeftActingDomain( alg ) ) );
+    for j in [1..r] do
+        for i in [1..s] do
+            eqno:= j+(i-1)*r;
+            for k in [1..n] do
+                eqs[k][eqno]:= a[k][i][j];
+            od;
+            for l in [1..t] do
+                eqs[n+i+(l-1)*s][eqno]:= -c[l][j];
+            od;
+        od;
+    od;
+
+
+    # Solve the equation system:
+    b := NullspaceMat( eqs );
+
+    # Extract the `algebra part' of the solution.
+    bas:= List( b, e -> LinearCombination( Basis( alg ), e{[1..n]} ) );
+
+    # If W is a sub-algebra-module, then the result is a subalgebra,
+    # otherwise it is just a subspace.
+    if HasIsAlgebraModule(W) and IsAlgebraModule( W ) then 
+       return SubalgebraNC( alg, bas, "basis" ); 
+    else
+       return Subspace( alg, bas, "basis" );
+    fi;
+
+end );
+
 
 
 #############################################################################

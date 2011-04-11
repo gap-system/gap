@@ -1,0 +1,38 @@
+      Setting up the (Linux) rsync distribution
+      =========================================
+
+## $Id$    Frank Lübeck
+
+(1) Choose a directory RSDIR, copy the files motd, rsyncd.conf and
+    startrsyncserver to RSDIR, and adjust the paths in 'rsyncd.conf' 
+    (search 'home2').
+
+(2) Fetch newest archives from ftp://ftp.gap-system.org/pub/{gappre or gap/gap}:
+    gap4r4*.tar.gz, tools4r4*.tar.gz, xtom*.tar.gz, packages*.tar.gz
+
+(3) Copy archives to native i686 machine and call in that directory on that
+    machine  'gapsync/InstForRsync32'.
+
+(4) Similarly, copy archives to x86_64 machine and call 
+    'gapsync/InstForRsync64'.
+
+(5) Create $RSDIR/gap4 and in there call 'gapsync/CollectDistribution'
+    (after checking/adjusting paths in CollectDistribution).
+
+(6) Adjust index.html, rsyncserv.css, CHANGES and motd (in CVS and $RSDIR). 
+
+(7) Copy index.html, rsyncserv.css, CHANGES to website. Start rsync server with 
+    'startrsyncserver' in $RSDIR. 
+    [An entry '@reboot $RSDIR/startrsyncserver' is sensible.]
+
+(8) That's it.
+
+(9) For updates/improvements: 
+        - adjust scripts in 'gapsync/' 
+        - repeat steps (2)-(4)
+        - adjust in (5) CollectDistribution to copy changes only
+          (e.g., use an exclude file to avoid syncing of new executables
+          which actually have not changed)
+        - do (6) (in particular CHANGES), commit, and copy changed files 
+          to website
+

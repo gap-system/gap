@@ -61,6 +61,7 @@ When   starting {\GAP} it is possible   to specify various directories as
 root directories.  In  {\GAP}'s view of  the world these  directories are
 merged  into one meta-directory.  This  directory is called *{\GAP}  root
 directory* in the following.
+%T as soon as `GAPInfo' is documented, add a cross-reference to it here
 
 For example, if `<root1>;<root2>;...' is passed as argument to `-l'  when
 {\GAP} is started and {\GAP} wants to locate a file `lib/group.gd' in the
@@ -116,10 +117,10 @@ Simply unpack the files into ``/home/myhome/gap''.
 \Declaration{DirectoryTemporary}
 \Declaration{DirectoryCurrent}
 
-\indextt{GAP_ROOT_PATHS}
 \Declaration{DirectoriesLibrary}
 \Declaration{DirectoriesSystemPrograms}
 
+\Declaration{DirectoryContents}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Filename}\nolabel
@@ -131,31 +132,34 @@ Simply unpack the files into ``/home/myhome/gap''.
 In    order    to    locate    the    system    program    `date'     use
 `DirectoriesSystemPrograms' together with the second form of `Filename'.
 
-\begintt
+%notest
+\beginexample
 gap> path := DirectoriesSystemPrograms();;
 gap> date := Filename( path, "date" );
 "/bin/date"
-\endtt
+\endexample
 
 In order to locate the library file `files.gd'  use  `DirectoriesLibrary'
 together with the second form of `Filename'.
 
-\begintt
+%notest
+\beginexample
 gap> path := DirectoriesLibrary();;
 gap> Filename( path, "files.gd" );
 "./lib/files.gd"
-\endtt
+\endexample
 
 In  order to construct filenames for  new  files in a temporary directory
 use `DirectoryTemporary' together with the first form of `Filename'.
 
-\begintt
+%notest
+\beginexample
 gap> tmpdir := DirectoryTemporary();;
 gap> Filename( [ tmpdir ], "file.new" );
 fail
 gap> Filename( tmpdir, "file.new" );    
 "/var/tmp/tmp.0.021738.0001/file.new"
-\endtt
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -274,14 +278,15 @@ return a*10;
 
 Reading the file as a function will not affect a global variable `a'.
 
-\begintt
+%notest
+\beginexample
 gap> a := 1;
 1
 gap> ReadAsFunction("/tmp/example.g")();
 100
 gap> a;
 1
-\endtt
+\endexample
 
 \>PrintTo( <name-file>[, <obj1>, ...] ) F
 

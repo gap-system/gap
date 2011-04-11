@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##
 ##  This file contains the second stage of the "public" interface to
@@ -50,16 +51,17 @@ DeclareInfoClass("InfoGlobal");
 ##
 
 IdentifierLetters := 
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_@";
 
 #############################################################################
 ##
 #F  IsValidIdentifier( <str> ) . . .  check if a string is a valid identifier
 ##
 
-InstallGlobalFunction("IsValidIdentifier", function(str)
+InstallGlobalFunction( IsValidIdentifier, function(str)
     return ForAll(str, c -> c in IdentifierLetters) and
-           ForAny(str, c -> not (c in "0123456789") );
+           ForAny(str, c -> not (c in "0123456789") and
+           not str in ALL_KEYWORDS() );
 end);
 
 #############################################################################
@@ -203,7 +205,7 @@ InstallGlobalFunction( MakeReadWriteGlobal,
     CheckGlobalName( name );
     if not IS_READ_ONLY_GLOBAL( name ) then
         Info( InfoWarning + InfoGlobal, 1, 
-              "MakeReadWriteGlobal: ", name, "already read-write");
+              "MakeReadWriteGlobal: ", name, " already read-write");
     fi;
     Info( InfoGlobal, 2, "MakeReadWriteGlobal: called for ", name);
     MAKE_READ_WRITE_GLOBAL( name );

@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  vars.h                      GAP source                   Martin Schoenert
+*W  vars.h                      GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of variables package.
 **
@@ -24,13 +25,12 @@ const char * Revision_vars_h =
 
 /****************************************************************************
 **
-
 *S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
 **
 **  'T_LVARS' is the type of bags used to store values of local variables.
-*/
-#define T_LVARS                 174
 
+#define T_LVARS                 174
+*/
 
 /****************************************************************************
 **

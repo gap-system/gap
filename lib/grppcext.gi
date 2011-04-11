@@ -1,9 +1,10 @@
-#############################################################################
+############################################################################
 ##
 #W  grppcext.gi                 GAP library                      Bettina Eick
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcext_gi :=
     "@(#)$Id$";
@@ -499,6 +500,106 @@ IsCocycle := function( coc, cohom )
     return true;
 end;
 
+InstallGlobalFunction(EXPermutationActionPairs,function(D)
+local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt;
+  if HasDirectProductInfo(D) then
+    ag:=DirectProductInfo(D).groups[1];
+    s:=Size(ag);
+    if not HasNiceMonomorphism(ag) then
+      # If this is the first time we use it,
+      # copy group to avoid carrying too much cruft later.
+      ag:=Group(GeneratorsOfGroup(ag),One(ag));
+      SetSize(ag,s);
+    fi;
+    IsGroupOfAutomorphismsFiniteGroup(ag);
+    p1iso:=IsomorphismPermGroup(ag);
+    agp:=Range(p1iso);
+    opt:=rec(limit:=s);
+    if HasBaseOfGroup(agp) then
+      opt.knownBase:=BaseOfGroup(agp);
+    fi;
+    #p1iso:=p1iso*SmallerDegreePermutationRepresentation(agp);
+    EraseNaturalHomomorphismsPool(agp);
+    if s>1 then
+      u:=Group(());
+      gens:=[];
+      for i in GeneratorsOfGroup(agp) do
+	if Size(u)<s and not i in u then
+	  Add(gens,i);
+	  u:=DoClosurePrmGp(u,[i],opt);
+	fi;
+      od;
+      if HasBaseOfGroup(agp) then
+	SetBaseOfGroup(u,BaseOfGroup(agp));
+      fi;
+      agp:=u;
+    else
+      gens:=GeneratorsOfGroup(agp);
+    fi;
+    Info( InfoMatOrb, 1, "found ",Length(gens)," generators");
+
+    p2iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[2]);
+    DP:=DirectProduct(agp,ImagesSource(p2iso));
+    p1:=Projection(DP,1);
+    p2:=Projection(DP,2);
+    if HasIsSolvableGroup(ag) and IsSolvableGroup(ag) and
+      IsSolvableGroup(Image(p2iso)) then
+      gens:=Pcgs(DP);
+    else
+      gens:=GeneratorsOfGroup(DP);
+    fi;
+    Unbind(ag);Unbind(agp);
+
+    genimgs:=List(gens,
+	i->ImagesRepresentative(Embedding(D,1),
+	      PreImagesRepresentative(p1iso,ImagesRepresentative(p1,i)))
+	  *ImagesRepresentative(Embedding(D,2),
+	      PreImagesRepresentative(p2iso,ImagesRepresentative(p2,i))) );
+
+    triso:=GroupHomomorphismByImagesNC(DP,D,gens,genimgs);
+    SetIsBijective(triso,true);
+    D:=DP;
+    return rec(pairgens:=genimgs,
+	       permgens:=gens,
+               isomorphism:=triso,
+	       permgroup:=DP);
+  else
+    return false;
+  fi;
+end);
+
+InstallGlobalFunction(EXReducePermutationActionPairs,function(r)
+local hom, sel, u, gens, i;
+  hom:=SmallerDegreePermutationRepresentation(r.permgroup);
+  if NrMovedPoints(Image(hom))<NrMovedPoints(r.permgroup) then
+    r.permgroup:=Image(hom,r.permgroup);
+    r.permgens:=List(r.permgens,i->Image(hom,i));
+    if IsBound(r.isomorphism) then
+      r.isomorphism:=InverseGeneralMapping(hom)*r.isomorphism;
+    fi;
+  fi;
+  # try to reduce nr. of generators
+  sel:=[];
+  u:=TrivialSubgroup(r.permgroup);
+  gens:=r.permgens;
+  for i in Reversed([1..Length(gens)]) do
+    if not gens[i] in u then
+      u:=ClosureSubgroupNC(u,gens[i]);
+      Add(sel,i);
+    fi;
+  od;
+  for i in Reversed(sel) do
+    if Size(r.permgroup)=Size(Difference(sel,[i])) then
+      RemoveSet(sel,i);
+    fi;
+  od;
+  if Length(sel)<Length(gens) then
+    #Print("Reduce nrgens from ",Length(gens)," to ",Length(sel),"\n");
+    r.permgens:=r.permgens{sel};
+    r.pairgens:=r.pairgens{sel};
+  fi;
+end);
+
 ############################################################################
 ##
 #F CompatiblePairs( G, M )
@@ -506,8 +607,7 @@ end;
 #F CompatiblePairs( G, M, D, flag ) ... D <= Aut(G) x GL normalises K
 ##
 InstallGlobalFunction( CompatiblePairs, function( arg )
-    local G, M, Mgrp, oper, A, B, D, K, f, tmp, tup,
-          translate,p1,p1iso,p2,p2iso,DP,triso,gens,genimgs;
+  local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1, K2, f, tmp, Ggens, pcgs, l, idx, u, tup,Dos;
 
     # catch arguments
     G := arg[1];
@@ -523,6 +623,7 @@ InstallGlobalFunction( CompatiblePairs, function( arg )
         D := DirectProduct( A, B );
     else
         D := arg[3];
+	A := DirectProductInfo(D).groups[1];
     fi;
 
     # the trivial case
@@ -530,86 +631,182 @@ InstallGlobalFunction( CompatiblePairs, function( arg )
         return D;
     fi;
 
-    translate:=false; # do we translate D in a permutation group?
-    if HasDirectProductInfo(D) then
-      IsGroupOfAutomorphisms(DirectProductInfo(D).groups[1]);
-      p1iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[1]);
-      p2iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[2]);
-      DP:=DirectProduct(ImagesSource(p1iso),ImagesSource(p2iso));
-      p1:=Projection(DP,1);
-      p2:=Projection(DP,2);
-      if IsSolvableGroup(DP) then
-        gens:=Pcgs(DP);
-      else
-        gens:=GeneratorsOfGroup(DP);
-      fi;
+    # do we translate D in a permutation group?
+    translate:=EXPermutationActionPairs(D);
+    if translate<>false then
 
-      genimgs:=List(gens,
-	  i->ImagesRepresentative(Embedding(D,1),
-		PreImagesRepresentative(p1iso,ImagesRepresentative(p1,i)))
-	    *ImagesRepresentative(Embedding(D,2),
-		PreImagesRepresentative(p2iso,ImagesRepresentative(p2,i))) );
-
-      triso:=GroupHomomorphismByImagesNC(DP,D,gens,genimgs);
-      SetIsBijective(triso,true);
-      D:=DP;
+      D:=translate.permgroup;
+      gens:=translate.permgens;
+      genimgs:=translate.pairgens;
+      triso:=translate.isomorphism;
       translate:=true;
-    fi;
-
-    if translate=false then
+    else
       gens:=GeneratorsOfGroup(D);
       genimgs:=gens;
     fi;
 
+    Dos:=Size(D);
+
     # compute stabilizer of K in A 
     if Length( arg ) <= 3 or not arg[4] then
 
-        # get kernel of oper
-        K := KernelOfMultiplicativeGeneralMapping( oper );
+      # get kernel of oper
+      K := KernelOfMultiplicativeGeneralMapping( oper );
+      if Size(K)>1 then
 
         # get its stabilizer
-	f := function( pt, a ) return Image( a[1], pt ); end;
-        tmp := OrbitStabilizer( D, K,gens,genimgs, f );
-        SetSize( tmp.stabilizer, Size(D)/Length(tmp.orbit) ); 
+	if IsPcGroup(K) then
+	  K1:=CanonicalPcgsWrtFamilyPcgs(Centre(K));
+	  K2:=CanonicalPcgsWrtFamilyPcgs(K);
+	  f := function( pt, a ) 
+		 return CanonicalPcgsWrtFamilyPcgs(Group(List(pt,i->Image( a[1], i )))); 
+	       end;
+	else
+	  K1:=Centre(K);
+	  K2:=K;
+	  f := function( pt, a ) return Image( a[1], pt ); end;
+	fi;
 
-	if Size(tmp.stabilizer)<Size(D) then
-	  D := tmp.stabilizer;
-	  if translate then
-	    if IsSolvableGroup(D) then
+	if Length(K1)>0 and K1<>K2 then
+	  tmp := Stabilizer( D, K1,gens,genimgs, f );
+
+	  if Size(tmp)<Size(D) then
+	    Info( InfoMatOrb, 1, "    CompP: found orbit of centre of length ",
+		  Size(D)/Size( tmp ));
+	    D := tmp;
+	    if translate<>false then
+	      if HasIsSolvableGroup(D) and IsSolvableGroup(D) then
+		gens:=Pcgs(D);
+	      else
+		gens:=GeneratorsOfGroup(D);
+	      fi;
+	      genimgs:=List(gens,i->ImageElm(triso,i));
+	      translate:=rec(pairgens:=genimgs,
+		             permgens:=gens,
+			     isomorphism:=triso,
+		             permgroup:=D);
+	      EXReducePermutationActionPairs(translate);
+	      gens:=translate.permgens;
+	      genimgs:=translate.pairgens;
+	      triso:=translate.isomorphism;
+	      D:=translate.permgroup;
+	    else
+	      gens:=GeneratorsOfGroup(D);
+	      genimgs:=gens;
+	    fi;
+	  fi;
+	  tmp:=false; # clear memory
+
+	fi;
+
+        tmp := Stabilizer( D, K2,gens,genimgs, f );
+
+	if Size(tmp)<Size(D) then
+	  Info( InfoMatOrb, 1, "    CompP: found orbit of length ",
+		Size(D)/Size(tmp));
+	  D := tmp;
+	  if translate<>false then
+	    if HasIsSolvableGroup(D) and IsSolvableGroup(D) then
 	      gens:=Pcgs(D);
 	    else
 	      gens:=GeneratorsOfGroup(D);
 	    fi;
 	    genimgs:=List(gens,i->ImageElm(triso,i));
+	    translate:=rec(pairgens:=genimgs,
+			    permgens:=gens,
+			    isomorphism:=triso,
+			    permgroup:=D);
+	    EXReducePermutationActionPairs(translate);
+	    gens:=translate.permgens;
+	    genimgs:=translate.pairgens;
+	    triso:=translate.isomorphism;
+	    D:=translate.permgroup;
 	  else
 	    gens:=GeneratorsOfGroup(D);
 	    genimgs:=gens;
 	  fi;
 	fi;
+	tmp:=false; # clear memory
 
-        Info( InfoCompPairs, 1, "    CompP: found orbit of length ",
-              Length( tmp.orbit ));
+      fi;
     fi;
 
     # compute stabilizer of M.generators in D
+    Ggens:=Pcgs(G);
     f := function( tup, elm )
     local gens;
-      gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
-      gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
+      #gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
+      #gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
+      gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
+      gens := List( gens, x -> MappedPcElement( x, Ggens, tup ) );
       gens := List( gens, x -> x ^ elm[2] );
-      return Tuple( [tup[1], gens] );
+      return gens;
+      #return Tuple( [tup[1], gens] );
     end;
 
-    tup := Tuple( [Pcgs(G), M.generators] );
+    # build tails of the pcgs that are closed under automorphisms
+    pcgs:=Pcgs(G);
+    l:=Length(Pcgs(G))+1;
+    repeat
+      Unbind(tmp);
+      repeat
+	l:=l-1;
+	idx:=[l..Length(pcgs)];
+	u:=SubgroupNC(G,pcgs{idx});
+      until ForAll(GeneratorsOfGroup(u),
+	i->ForAll(GeneratorsOfGroup(A),j->Image(j,i) in u));
+      Ggens:=InducedPcgsByPcSequence(pcgs,pcgs{idx});
+      tup:=M.generators{idx};
+      tmp := Stabilizer( D, tup,gens,genimgs, f );
+      Info( InfoMatOrb, 1, "    CompP: ",l,"-tail found orbit of length ",
+	    Size(D)/Size(tmp));
+      if Size(tmp)<Size(D) then
+	D:=tmp;
+	gens:=SmallGeneratingSet(tmp);
+	genimgs:=List(gens,i->ImageElm(triso,i));
+	if translate<>false then
+	  translate:=rec(pairgens:=genimgs,
+			  permgens:=gens,
+			  isomorphism:=triso,
+			  permgroup:=D);
+	  EXReducePermutationActionPairs(translate);
+	  gens:=translate.permgens;
+	  genimgs:=translate.pairgens;
+	  triso:=translate.isomorphism;
+	  D:=translate.permgroup;
+	fi;
+      fi;
+    until l=1;
 
-    tmp := OrbitStabilizer( D, tup,gens,genimgs, f );
-    if translate then
-      tmp:=rec(stabilizer:=Image(triso,tmp.stabilizer),orbit:=tmp.orbit);
+    #tmp := OrbitStabilizer( D, M.generators,gens,genimgs, f );
+
+    if translate<>false then
+      l:=Size(D);
+      if Length(gens)>3 then
+	# reduce generator number
+	
+	u:=SmallGeneratingSet(D);
+	if IsSubset(gens,u) then
+	  Info( InfoMatOrb, 3, "Reduce generators subset");
+	  idx:=List(u,x->Position(gens,x));
+	  gens:=gens{idx};
+	  genimgs:=genimgs{idx};
+	else
+	  Info( InfoMatOrb, 3, "Reduce generators new words");
+	  gens:=u;
+	  genimgs:=List(gens,i->ImageElm(triso,i));
+	fi;
+      fi;
+      tmp:=SubgroupNC(Range(triso),genimgs);
+      SetSize(tmp,l);
+      # cache the faithful permutation representation in case we need it
+      # later
+      tmp!.permrep:=rec(pairgens:=genimgs,
+                      permgens:=gens,
+		      permgroup:=D);
+      D:=tmp;
     fi;
-    SetSize( tmp.stabilizer, Size(D)/Length(tmp.orbit) ); 
-    D := tmp.stabilizer;
-    Info( InfoCompPairs, 1, "    CompP: found orbit of length ",
-          Length( tmp.orbit ));
+    Info( InfoMatOrb, 1, "Total index: ",Dos/Size(D));
     return D;
 end );
 
@@ -660,7 +857,7 @@ end;
 ##
 MatrixOperationOfCPGroup := function( cc, gens  )
     local mats, base, pcgs, ords, imgs, n, d, fpgens, fprels, H, pcgsH, 
-          l, g, imgl, k, i, j, rel, tail, m, tails, prei, h;
+    l, g, imgl, k, i, j, rel, tail, m, tails, prei, h,field;
  
 
     mats := List( gens, x -> [] );
@@ -673,6 +870,7 @@ MatrixOperationOfCPGroup := function( cc, gens  )
 
     n := Length( pcgs );
     d := cc.module.dimension;
+    field:=cc.module.field;
 
     fpgens := GeneratorsOfGroup( cc.presentation.group );
     fprels := cc.presentation.relators;
@@ -692,6 +890,7 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                 # compute tails of relators in H
                 k := 0;
                 tails := [];
+		ConvertToVectorRepNC(tails,field);
                 for i in [1..Length(pcgs)] do
                     for j in [1..i] do
 
@@ -712,19 +911,24 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                         fi;
                         tail := ExponentsOfPcElement(pcgsH,tail,[n+1..n+d]);
                         tail := tail * g[2];
-                        Add( tails, tail );
+			ConvertToVectorRepNC(tail,field);
+                        Append( tails, tail );
                     od;
                 od;
             else
-                tails := List( [1..Length(fprels)], 
-                                x -> base[h]{[(x-1)*d+1..x*d]}*g[2] );
+	      tails := List( [1..Length(fprels)], 
+			      x -> base[h]{[(x-1)*d+1..x*d]}*g[2] );
+              for i in tails do
+		ConvertToVectorRepNC(i,field);
+		Append(tails,i);
+	      od;
             fi;
-            tails := Flat( tails );
             tails := Image( cc.cohom, tails );
+	    ConvertToVectorRepNC(tails,field);
             Add( mats[l], tails );
         od;
     od;
-    return mats;
+    return List(mats,i->ImmutableMatrix(field,i));
 end;
 
 #############################################################################
@@ -737,7 +941,7 @@ InstallMethod( ExtensionRepresentatives,
     [ CanEasilyComputePcgs, IsRecord, IsGroup ],
     0,
 function( G, M, C )
-    local cc, ext, mats, Mgrp, orbs;
+    local cc, ext, mats, Mgrp, orbs, c;
 
     cc := TwoCohomology( G, M );
 
@@ -745,8 +949,10 @@ function( G, M, C )
     if Dimension(Image(cc.cohom)) = 0 then
         return [ExtensionSQ( cc.collector, G, M, 0 )];
     elif Dimension( Image(cc.cohom)) = 1 then
+        c := Basis(Image(cc.cohom))[1];
+        c := PreImagesRepresentative(cc.cohom, c);
         return [ExtensionSQ( cc.collector, G, M, 0 ),
-                ExtensionSQ( cc.collector, G, M, Basis(Source(cc.cohom))[1])]; 
+                ExtensionSQ( cc.collector, G, M, c )];
     fi;
 
     mats := MatrixOperationOfCPGroup( cc, GeneratorsOfGroup( C ) );
@@ -989,13 +1195,13 @@ function( G, aut, N )
           rel, new, g, e, t, l, i, j, k, H, m, relsN, relsG;
     
     pcgsG := Pcgs( G );
-    fpg   := Range( IsomorphismFpGroup( G ) );
+    fpg   := Range( IsomorphismFpGroupByPcgs( pcgsG, "g" ) );
     n     := Length( pcgsG );
     gensG := GeneratorsOfGroup( FreeGroupOfFpGroup( fpg ) );
     relsG := RelatorsOfFpGroup( fpg );
 
     pcgsN := Pcgs( N );
-    fpn   := Range( IsomorphismFpGroup( N ) );
+    fpn   := Range( IsomorphismFpGroupByPcgs( pcgsN, "n" ) );
     d     := Length( pcgsN );
     gensN := GeneratorsOfGroup( FreeGroupOfFpGroup( fpn ) );
     relsN := RelatorsOfFpGroup( fpn );
@@ -1080,7 +1286,7 @@ function( G, aut, p )
 
     pcgs := Pcgs( G );
     n    := Length( pcgs );
-    R    := Range( IsomorphismFpGroup( G ) );
+    R    := Range( IsomorphismFpGroupByPcgs( G, "g" ) );
     gensR := GeneratorsOfGroup( FreeGroupOfFpGroup( R ) );
     
     F := FreeGroup(IsSyllableWordsFamily, n + 1 );

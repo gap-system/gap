@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  code.h                      GAP source                   Martin Schoenert
+*W  code.h                      GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the coder package.
 **
@@ -55,8 +56,14 @@ extern  Stat *          PtrBody;
 **
 **  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
 */
-#define FIRST_STAT_CURR_FUNC    sizeof(Stat)
 
+
+#define FILENAME_BODY(body) (ADDR_OBJ(body)[0])
+#define STARTLINE_BODY(body) (ADDR_OBJ(body)[1])
+#define ENDLINE_BODY(body) (ADDR_OBJ(body)[2])
+#define NUMBER_HEADER_ITEMS_BODY 3
+
+#define FIRST_STAT_CURR_FUNC    (sizeof(Stat)+NUMBER_HEADER_ITEMS_BODY*sizeof(Bag))
 
 /****************************************************************************
 **
@@ -245,10 +252,10 @@ extern  Stat *          PtrBody;
                         (((Int)(expr) & 0x03) == 0x01)
 
 #define INTEXPR_INT(indx)       \
-                        ((Expr)(((indx) << 2) + 0x01))
+                        ((Expr)(((Int)(indx) << 2) + 0x01))
 
 #define INT_INTEXPR(expr)       \
-                        (((Int)(Int4)(expr)-0x01) / 4)
+                        (((Int)(expr)-0x01) >> 2)
 
 
 /****************************************************************************
@@ -527,7 +534,7 @@ extern  void            CodeFuncCallEnd (
 
 /****************************************************************************
 **
-*F  CodeFuncExprBegin(<narg>,<nloc>,<nams>) . code function expression, begin
+*F  CodeFuncExprBegin(<narg>,<nloc>,<nams>,<startline>) . code function expression, begin
 *F  CodeFuncExprEnd(<nr>) . . . . . . . . . . . code function expression, end
 **
 **  'CodeFuncExprBegin'  is an action to code  a  function expression.  It is
@@ -544,7 +551,8 @@ extern  void            CodeFuncCallEnd (
 extern void CodeFuncExprBegin (
             Int                 narg,
             Int                 nloc,
-            Obj                 nams );
+            Obj                 nams,
+	    Int startLine);
 
 extern void CodeFuncExprEnd (
             UInt                nr,

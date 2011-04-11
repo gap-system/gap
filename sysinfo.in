@@ -1,1 +1,3 @@
-GAParch=@target@-@CC@
+GAParch=@target@-@CC@/@BUILD_MODE@-bit
+GAParch_system=@target@-@CC@
+GAParch_abi=@BUILD_MODE@-bit

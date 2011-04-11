@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for attributes of polycylic groups.
 ##
@@ -122,7 +123,7 @@ end);
 InstallMethod( ElementaryAbelianSeries,
     "pcgs computable groups using `PcgsElementaryAbelianSeries'", true, 
     [ IsGroup and CanEasilyComputePcgs and IsFinite ], 0,
-  G->NormalSeriesByPcgs(PcgsElementaryAbelianSeries(G)));
+  G->EANormalSeriesByPcgs(PcgsElementaryAbelianSeries(G)));
 
 
 #############################################################################
@@ -305,6 +306,10 @@ function( G, p )
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
     S := SubgroupByPcgs( G, gens );
+    if Size(S) > 1 then
+        SetIsPGroup( S, true );
+        SetPrimePGroup( S, p );
+    fi;
     return S;
 end );
 
@@ -352,17 +357,7 @@ MaximalSubgroupClassesRepsLayer := function( pcgs, l )
 end;
 
 
-#############################################################################
-##
-#M  MaximalSubgroupClassReps( <G> )
-##
-InstallMethod( MaximalSubgroupClassReps,
-    "pcgs computable groups using special pcgs",
-    true, 
-    [ IsGroup and CanEasilyComputePcgs and IsFinite ],
-    0,
-
-function( G )
+MAXSUBS_BY_PCGS:=function( G )
     local spec, first, max, i, new;
 
     spec  := SpecialPcgs(G);
@@ -374,8 +369,26 @@ function( G )
     od;
     return max;
 
-end );
+end;
 
+#############################################################################
+##
+#M  MaximalSubgroupClassReps( <G> )
+##
+InstallMethod( MaximalSubgroupClassReps,
+    "pcgs computable groups using special pcgs",
+    true, 
+    [ IsGroup and CanEasilyComputePcgs and IsFinite ],
+    0,
+    MAXSUBS_BY_PCGS);
+
+#fallback
+InstallMethod( MaximalSubgroupClassReps,
+    "pcgs computable groups using special pcgs",
+    true, 
+    [ IsGroup and IsSolvableGroup and IsFinite ],
+    0,
+    MAXSUBS_BY_PCGS);
 
 #############################################################################
 ##
@@ -569,7 +582,6 @@ function( G )
     return Set(mingens);
 end );
 
-
 #############################################################################
 ##
 #M  SmallGeneratingSet(<G>) 
@@ -577,18 +589,10 @@ end );
 InstallMethod(SmallGeneratingSet,"using minimal generating set",true,
   [IsPcGroup and IsFinite],0,
 function (G)
-  return MinimalGeneratingSet(G);
-end);
-
-InstallOtherMethod( GeneratorOfCyclicGroup,"pc groups",true,
-    [ IsPcGroup and IsFinite ],0,
-function ( G )
-local g;
-  g:=MinimalGeneratingSet(G);
-  if Length(g)>1 then
-    Error("not cyclic");
+  if Length(Pcgs(G))>14 then
+    TryNextMethod();
   fi;
-  return g[1];
+  return MinimalGeneratingSet(G);
 end);
 
 #############################################################################
@@ -794,7 +798,7 @@ InstallGlobalFunction (CentrePcGroup, function( G )
                         Add( matlist, conj );  
                     fi;
                 od;       
-                cent[j] := Difference( cent[j], newgens );
+                cent[j] := Filtered( cent[j], g -> not g in newgens );
 
                 if Length( matlist ) > 0  then
 

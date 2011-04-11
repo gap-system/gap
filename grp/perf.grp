@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the access functions for the Holt/Plesken library
 ##
@@ -43,11 +43,11 @@ local p,sel,i,pos;
   ReadGrp(Concatenation("perf",String(p),".grp"));
   # store loaded info
   if p=1 then
-    p:=[1,PERFRec.covered[p]];
+    p:=[0,PERFRec.covered[p]];
   else
     p:=PERFRec.covered{[p-1,p]};
   fi;
-  for i in [p[1]..p[2]] do
+  for i in [p[1]+1..p[2]] do
     PERFSELECT[i]:=true;
   od;
   return pos;
@@ -111,7 +111,7 @@ local sizenum;
 
     # get the number and return it.
     sizenum := PerfGrpLoad( size );
-    if sizenum = fail or size in PERFRec.notAvailable then
+    if sizenum = fail or size in PERFRec.notAvailable or size = 1 then
         return 0;
     else
         return PERFRec.number[sizenum];
@@ -470,6 +470,8 @@ local func,sz,p;
     Error("Perfect groups of size ",sz[1]," not known");
   elif sz[1] in PERFRec.notAvailable then
     Error("Perfect groups of size ",sz[1]," not available");
+  elif sz[1]=1 then
+    Error("The trivial group is not considered to be part of this library");
   fi;
   p:=PerfGrpLoad(sz[1]);
   if p=fail or sz[2]>PERFRec.number[p] then

@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  read.h                      GAP source                   Martin Schoenert
+*W  read.h                      GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This module declares the functions to read  expressions  and  statements.
 */
@@ -24,11 +25,11 @@ const char * Revision_read_h =
 **  the interpretation of  an expression  or  statement lead to an  error (in
 **  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
 */
-extern jmp_buf ReadJmpError;
+extern syJmp_buf ReadJmpError;
 
 #ifndef DEBUG_READ_ERROR
 
-#define READ_ERROR()    (NrError || (NrError+=setjmp(ReadJmpError)))
+#define READ_ERROR()    (NrError || (NrError+=sySetjmp(ReadJmpError)))
 
 #else
 
@@ -66,7 +67,7 @@ extern Obj ReadEvalResult;
 **  read the  first symbol of the  next  input.
 **
 */
-extern UInt ReadEvalCommand ( void );
+extern UInt ReadEvalCommand ( Obj context );
 
 
 /****************************************************************************
@@ -88,7 +89,7 @@ extern UInt ReadEvalFile ( void );
 */
 extern void ReadEvalError ( void );
 
-extern ExecStatus ReadEvalDebug ( void );
+/* extern ExecStatus ReadEvalDebug ( void ); */
 
 /****************************************************************************
 **
@@ -101,13 +102,21 @@ extern ExecStatus ReadEvalDebug ( void );
 extern Obj StackNams;
 extern UInt CountNams;
 
+
+extern void PushGlobalForLoopVariable( UInt var);
+
+extern void PopGlobalForLoopVariable( void );
+
+extern UInt GlobalComesFromEnclosingForLoop (UInt var);
+
+
 /****************************************************************************
 **
 *F  Call0ArgsInNewReader(Obj f)  . . . . . . . . . . . . call a GAP function
 **
 **  The current reader context is saved and a new one is started.
 */
-void Call0ArgsInNewReader(Obj f);
+Obj Call0ArgsInNewReader(Obj f);
 
 /****************************************************************************
 **
@@ -115,7 +124,7 @@ void Call0ArgsInNewReader(Obj f);
 **
 **  The current reader context is saved and a new one is started.
 */
-void Call1ArgsInNewReader(Obj f,Obj a);
+Obj Call1ArgsInNewReader(Obj f,Obj a);
 
 
 /****************************************************************************

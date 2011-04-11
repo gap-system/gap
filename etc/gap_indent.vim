@@ -1,6 +1,6 @@
 " GAP indent file
 " Language:	GAP  (http://www.gap-system.org)
-" Maintainer:	Frank Lübeck (Frank.Luebeck@Math.RWTH-Aachen.De)
+" Maintainer:	Frank LÃ¼beck (Frank.Luebeck@Math.RWTH-Aachen.De)
 " CVS:	 $Id$
 " Comments: 
 " --  started from Matlab indent file in vim 6.0

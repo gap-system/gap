@@ -5,12 +5,15 @@
 **
 *H  @(#)$Id$
 **
-*Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright 1990-1992,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for computing with finite presentations.
 */
 #include        "system.h"              /* system dependent part           */
+#include        "code.h"
+#include        "stats.h"               /* for TakeInterrupt */
 
 const char * Revision_tietze_c = 
   "@(#)$Id$";
@@ -51,7 +54,7 @@ const char * Revision_tietze_c =
 #define TZ_LENGTHS               7
 #define TZ_FLAGS                 8
 #define TZ_FREEGENS              9
-#define TZ_LENGTHTIETZE         20
+#define TZ_LENGTHTIETZE         21
 
 
 /****************************************************************************
@@ -480,6 +483,9 @@ Obj FuncTzSubstituteGen (
     Int                 wleng;          /* length of the replacing word    */
     Int                 occ;            /* number of occurrences           */
     Int                 i, j;           /* loop variables                  */
+    Int                 alen,len;       /* number of changed relators */
+    Obj                 Idx;
+    Obj *               ptIdx;          /* List of changed relators */
 
     /* check the Tietze stack                                              */
     CheckTietzeStack( tietze, &ptTietze );
@@ -528,6 +534,13 @@ Obj FuncTzSubstituteGen (
     /* check list <lens> to contain the relator lengths                    */
     CheckTietzeRelLengths( ptTietze, ptRels, ptLens, numrels, &total );
 
+    /* list of changed relator indices */
+    len=0;
+    alen=20;
+    Idx=NEW_PLIST( T_PLIST, alen );
+    SET_LEN_PLIST(Idx,alen);
+    ptIdx=ADDR_OBJ(Idx);
+
     /* allocate a bag for the inverse of the replacing word                */
     iwrd   = NEW_PLIST( T_PLIST, wleng );
     ptRels = ADDR_OBJ( rels );
@@ -572,6 +585,19 @@ Obj FuncTzSubstituteGen (
         if ( occ == 0 )  {
             continue;
         }
+
+	/* mark that the relator changed */
+	if (len>=alen) {
+	  alen+=100; /* more relators changed */
+	  GROW_PLIST(Idx,alen);
+	  SET_LEN_PLIST(Idx,alen);
+	  ptIdx=ADDR_OBJ(Idx);
+	}
+	len+=1;
+	ptIdx[len]=INTOBJ_INT(i);
+	CHANGED_BAG(Idx);
+
+
 
         /* allocate a bag for the modified Tietze relator                  */
         new = NEW_PLIST( T_PLIST, leng + occ * (wleng - 1) );
@@ -628,10 +654,14 @@ Obj FuncTzSubstituteGen (
         CHANGED_BAG(rels);
     }
 
+    SHRINK_PLIST(Idx,len);
+    SET_LEN_PLIST(Idx,len);
+    CHANGED_BAG(Idx);
+
     ptTietze = ADDR_OBJ( tietze );
     ptTietze[TZ_TOTAL] = INTOBJ_INT( total );
 
-    return 0;
+    return Idx;
 }
 
 
@@ -719,7 +749,7 @@ Obj FuncTzOccurrences (
     /* allocate an auxiliary list                                          */
     ptAux = 0;
     if ( numgens > 1 ) {
-        aux   = NEW_STRING( (numgens+1)*sizeof(Int4) );
+        aux   = NEW_STRING( (numgens+1)*sizeof(Int) );
         ptAux = (Int*)ADDR_OBJ(aux);
         ptAux[0] = numgens;
         for ( k = 1;  k <= numgens;  k++ )
@@ -1528,6 +1558,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
  
  /* while i in [ 1 .. n ] od */
  while (i<=n) {
+   TakeInterrupt();
   
   /* k := 1; */
   k=1;

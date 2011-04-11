@@ -1,0 +1,33 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+MACBIN=${DISTROOT}'/GAP 4 PPC'
+
+if [ \! -f "${MACBIN}" ];  then
+  echo ${MACBIN}" not found"
+  exit 1
+else
+  echo "Found "${MACBIN}
+  echo "Adding it to main zoo archive."
+  cd ${DISTROOT}
+  cp "GAP 4 PPC" ${DISTNAME}
+  chmod 755 ${DISTNAME}/"GAP 4 PPC"
+  zooarchive=${ARCHNAME}.zoo
+  if [ \! -f  ${DISTROOT}/${zooarchive} ];  then
+     echo "PANIC: zoo archive to add to not yet created: "\
+           ${DISTROOT}"/"${zooarchive}
+     exit 1
+  fi
+  (echo "!MACBINARY!"; echo "/end") | zoo ahc ${zooarchive} "${DISTNAME}/GAP 4 PPC"
+  echo "added Mac binary to zoo archive."
+  exit 0
+fi
+
+

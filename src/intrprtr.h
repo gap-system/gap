@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  intrprtr.h                  GAP source                   Martin Schoenert
+*W  intrprtr.h                  GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the immediate interpreter package.
 **
@@ -131,7 +132,7 @@ extern void            IntrFuncCallOptionsEnd ( UInt nr );
 
 /****************************************************************************
 **
-*F  IntrFuncExprBegin(<narg>,<nloc>,<nams>) .  interpret function expr, begin
+*F  IntrFuncExprBegin(<narg>,<nloc>,<nams>,<startline>) .  interpret function expr, begin
 *F  IntrFuncExprEnd(<nr>) . . . . . . . . . . .  interpret function expr, end
 **
 **  'IntrFuncExprBegin' is an action to interpret  a function expression.  It
@@ -147,7 +148,8 @@ extern void            IntrFuncCallOptionsEnd ( UInt nr );
 extern  void            IntrFuncExprBegin (
             Int                 narg,
             Int                 nloc,
-            Obj                 nams );
+            Obj                 nams,
+	    Int                 startLine);
 
 extern  void            IntrFuncExprEnd (
             UInt                nr,
@@ -640,10 +642,12 @@ extern  void            IntrIsbHVar (
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
 extern  void            IntrAssDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 extern  void            IntrUnbDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 
 /****************************************************************************
@@ -651,10 +655,12 @@ extern  void            IntrUnbDVar (
 *F  IntrRefDVar(<dvar>) . . . . . . . . . . . .  interpret reference to debug
 */
 extern  void            IntrRefDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 extern  void            IntrIsbDVar (
-            UInt                dvar );
+            UInt                dvar,
+            UInt                depth );
 
 
 /****************************************************************************

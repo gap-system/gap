@@ -3,7 +3,7 @@
 ##
 ##  cifix                                                    Werner Nickel
 ##
-##  Commit a bug fix also to GAP 4 R 2 branch.
+##  Commit a bug fix also to GAP 4 R 3 branch.
 ##
 if [ X$1 = X-v ]; then
     verbose=1
@@ -47,9 +47,9 @@ fi
 oldminor=$(($minor-1))
 
 ##
-##  Checkout the branch 4R2  version
+##  Checkout the branch 4R4  version
 ##
-cvs update -r GAP4R2 $file
+cvs update -r GAP4R4 $file
 
 ##
 ##  add in the differences between the current verion and the previous

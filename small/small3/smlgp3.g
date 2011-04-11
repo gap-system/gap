@@ -355,19 +355,27 @@ end;
 
 #############################################################################
 ##                          
-#F SELECT_SMALL_GROUPS_FUNCS[ 11 ]( funcs, vals, inforec, all, id )
+#F SELECT_SMALL_GROUPS_FUNCS[ 11 ]( funcs, vals, inforec, all, id, idList )
 ##                  
-SELECT_SMALL_GROUPS_FUNCS[ 11 ] := function( size, funcs,vals,inforec,all,id)
-    local result, i, g, ok, j;
+SELECT_SMALL_GROUPS_FUNCS[ 11 ] := function( size, funcs, vals, inforec, all,
+                                             id, idList)
+    local result, i, g, ok, j, range;
 
     if not IsBound( inforec.number ) then
         inforec := NUMBER_SMALL_GROUPS_FUNCS[ inforec.func ]( size, inforec);
     fi;
-    Info( InfoWarning, 1, "`SelectSmallGroups' checks ", inforec.number,
-                          " grps of size ", size, " with trivial methods");
+
+    if idList = fail then
+        Info( InfoWarning, 2, "`SelectSmallGroups' checks ", inforec.number,
+                            " grps of size ", size, " with trivial methods");
+    fi;
 
     result := [ ];
-    for i in [ 1 .. inforec.number ] do                         
+    range := [ 1 .. inforec.number ];
+    if idList <> fail then
+        range := idList;
+    fi;
+    for i in range do                         
         g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );                     SetIdGroup( g, [ size, i ] );
         ok := true;
         for j in [ 1 .. Length( funcs ) ] do

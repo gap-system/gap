@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -13,11 +15,13 @@ gap> M:= GF(3);
 GF(3)
 gap> tuples:= List( Tuples( AsList( M ), 2 ), Tuple );;
 gap> Print(tuples,"\n");
-[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
-  Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
-  Tuple( [ Z(3)^0, Z(3)^0 ] ), Tuple( [ Z(3)^0, Z(3) ] ), 
-  Tuple( [ Z(3), 0*Z(3) ] ), Tuple( [ Z(3), Z(3)^0 ] ), 
-  Tuple( [ Z(3), Z(3) ] ) ]
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+    Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 
+  DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), DirectProductElement( [ Z(3)^0, 
+    Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, Z(3) ] ), 
+  DirectProductElement( [ Z(3), 0*Z(3) ] ), 
+  DirectProductElement( [ Z(3), Z(3)^0 ] ), 
+  DirectProductElement( [ Z(3), Z(3) ] ) ]
 
 gap> map:= GeneralMappingByElements( M, M, [] );
 <general mapping: GF(3) -> GF(3) >
@@ -44,8 +48,9 @@ true
 gap> inv:= InverseGeneralMapping( map );
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( inv ) ),"\n");
-[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
-  Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ) ]
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+    Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 
+  DirectProductElement( [ Z(3)^0, 0*Z(3) ] ) ]
 gap> IsInjective( inv );
 false
 gap> IsSingleValued( inv );
@@ -59,11 +64,13 @@ gap> comp:= CompositionMapping( inv, map );
 CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
 3) > ), <general mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( comp ) ),"\n");
-[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
-  Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
-  Tuple( [ Z(3)^0, Z(3)^0 ] ), Tuple( [ Z(3)^0, Z(3) ] ), 
-  Tuple( [ Z(3), 0*Z(3) ] ), Tuple( [ Z(3), Z(3)^0 ] ), 
-  Tuple( [ Z(3), Z(3) ] ) ]
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+    Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 
+  DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), DirectProductElement( [ Z(3)^0, 
+    Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, Z(3) ] ), 
+  DirectProductElement( [ Z(3), 0*Z(3) ] ), 
+  DirectProductElement( [ Z(3), Z(3)^0 ] ), 
+  DirectProductElement( [ Z(3), Z(3) ] ) ]
 gap> IsInjective( comp );
 false
 gap> IsSingleValued( comp );
@@ -77,8 +84,9 @@ gap> anticomp:= CompositionMapping( map, inv );
 CompositionMapping( <general mapping: GF(3) -> GF(
 3) >, InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
 gap> Print(AsList( UnderlyingRelation( anticomp ) ),"\n");
-[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
-  Tuple( [ Z(3)^0, 0*Z(3) ] ), Tuple( [ Z(3)^0, Z(3)^0 ] ) ]
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+    Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), 
+  DirectProductElement( [ Z(3)^0, Z(3)^0 ] ) ]
 gap> IsInjective( anticomp );
 false
 gap> IsSingleValued( anticomp );
@@ -88,7 +96,7 @@ false
 gap> IsTotal( anticomp );
 false
 
-gap> t1:= Tuple( [ (), () ] );;  t2:= Tuple( [ (1,2), (1,2) ] );;
+gap> t1:= DirectProductElement( [ (), () ] );;  t2:= DirectProductElement( [ (1,2), (1,2) ] );;
 gap> g:= Group( (1,2) );;
 gap> t:= TrivialSubgroup( g );;
 gap> map1:= GeneralMappingByElements( g, g, [ t1, t2 ] );;
@@ -125,7 +133,8 @@ false
 gap> inv:= InverseGeneralMapping( map );
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
 gap> AsList( UnderlyingRelation( inv ) );
-[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ) ]
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+    Z(3)^0 ] ) ]
 gap> IsInjective( inv );
 true
 gap> IsSingleValued( inv );
@@ -212,9 +221,8 @@ gap> (0*Z(3)) ^ map;
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
-[ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
-  Tuple( [ Z(3)^0, Z(3) ] ) ]
-
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3),
+    Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, Z(3) ] ) ]
 gap> IsInjective( map );
 true
 gap> IsSingleValued( map );
@@ -260,8 +268,8 @@ gap> ImagesRepresentative( map, Z(3) );
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
-[ Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
-  Tuple( [ Z(3), Z(3)^0 ] ) ]
+[ DirectProductElement( [ 0*Z(3), Z(3) ] ), DirectProductElement( [ Z(3)^0,
+    0*Z(3) ] ), DirectProductElement( [ Z(3), Z(3)^0 ] ) ]
 gap> IsInjective( map );
 true
 gap> IsSingleValued( map );
@@ -294,9 +302,22 @@ gap> j:=GroupGeneralMappingByImages(g,g,AsSSortedList(g),AsSSortedList(g));;
 gap> i2 = j;
 true
 
-gap> STOP_TEST( "mapping.tst", 23067500 );
+gap> A:=[[0,1,0],[0,0,1],[1,0,0]];;
+gap> B:=[[0,0,1],[0,1,0],[-1,0,0]];;
+gap> C:=[[E(4),0,0],[0,E(4)^(-1),0],[0,0,1]];;
+gap> g2:=GroupWithGenerators([A,B,C]);;
+gap> nice := NiceMonomorphism (g2);;
+gap> d  := DerivedSubgroup (g2);;
+gap> res := RestrictedMapping (nice, d);;
+gap> IsGroupHomomorphism(res);
+true
+gap> IsInjective(res);        
+true
+
+gap> STOP_TEST( "mapping.tst", 31000000 );
 
 
 #############################################################################
 ##
-#E  mapping.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

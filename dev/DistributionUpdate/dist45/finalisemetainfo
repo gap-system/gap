@@ -1,0 +1,31 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export GAPSOURCE=${DISTROOT}/gapsourcedistro
+
+line='cd '${GAPSOURCE}
+echo $line
+$line 
+
+source ./core_checkout_time.txt
+
+pre=${DISTNAME}
+metainfoarchive=metainfo${ARCHNAME}_${CORETIME}.zip
+rm -f $metainfoarchive
+
+echo 'Adding meta-information to '${GAPSOURCE}/$metainfoarchive
+
+find \
+   ./setvar \
+   ./core_checkout_*.txt \
+   ./list* \
+       -print | zip -q ${metainfoarchive} -@
+
+exit 0

@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  clas.gi                     GAP library                    Heiko Thei"sen
+#W  clas.gi                     GAP library                    Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.clas_gi :=
     "@(#)$Id$";
@@ -15,25 +16,59 @@ Revision.clas_gi :=
 ##
 #M  Enumerator( <xorb> )  . . . . . . . . . . . . . .  enumerator constructor
 ##
-InstallMethod( Enumerator, "xorb by stabilizer",true,
-  [ IsExternalOrbitByStabilizerRep ], 0,
-function( xorb )
-local   enum;
+##  This is installed only because of the `PositionCanonical' functionality.
+#T for which groups is this really used?
+##
+##  The idea is that for the orbit <xorb> given by the acting domain $G$,
+##  the representative $r$, and the stabilizer $S$,
+##  a right transversal $T$ of $S$ in $G$ is chosen;
+##  the $i$-th element in the enumerator <enum> of <orb> is then
+##  the image of $r$ under $T[i]$, w.r.t. the action of <xorb>.
+##
+##  So the position of an element <elm> in <enum> is determined by first
+##  finding an element $x$ in $G$ such that $r^x$ equals <elm>,
+##  and if $x$ exists then finding an element $y$ in $T$ such that
+##  $S x = S y$ holds; then the position of $y$ in $T$ is the result.
+##  By the construction of $T$, this can be computed as
+##  $`PositionCanonical'( T, x )$.
+##
+BindGlobal( "ElementNumber_ExternalOrbitByStabilizer", function( enum, pos )
+    local xorb;
 
-    enum := Objectify( NewType( FamilyObj( xorb ),
-                    IsExternalOrbitByStabilizerEnumerator ),
-        rec( rightTransversal := RightTransversal(ActingDomain(xorb),
-                    StabilizerOfExternalSet( xorb ) ) ) );
-    SetUnderlyingCollection( enum, xorb );
-    return enum;
+    xorb := UnderlyingCollection( enum );
+    return FunctionAction( xorb )
+           ( Representative( xorb ), enum!.rightTransversal[ pos ] );
 end );
+
+BindGlobal( "NumberElement_ExternalOrbitByStabilizer", function( enum, elm )
+    local xorb, rep;
+
+    xorb := UnderlyingCollection( enum );
+    rep := RepresentativeAction( xorb, Representative( xorb ), elm );
+    if rep = fail  then
+      return fail;
+    else
+      return PositionCanonical( enum!.rightTransversal, rep );
+    fi;
+end );
+
+InstallMethod( Enumerator,
+    "xorb by stabilizer",
+    [ IsExternalOrbitByStabilizerRep ],
+    xorb -> EnumeratorByFunctions( xorb, rec(
+               NumberElement     := NumberElement_ExternalOrbitByStabilizer,
+               ElementNumber     := ElementNumber_ExternalOrbitByStabilizer,
+
+               rightTransversal  := RightTransversal( ActingDomain( xorb ),
+                   StabilizerOfExternalSet( xorb ) ) ) ) );
+
 
 #############################################################################
 ##
 #M  AsList( <xorb> )  . . . . . . . . . . . . . .  enumerator constructor
 ##
-InstallMethod( AsList,"xorb by stabilizer", true,
-  [ IsExternalOrbitByStabilizerRep ], 0,
+InstallMethod( AsList,"xorb by stabilizer",
+  [ IsExternalOrbitByStabilizerRep ],
 function( xorb )
 local   rep,opr;
 
@@ -50,8 +85,7 @@ end );
 ##
 InstallMethod( IsFinite,
     "method for an ext. orbit by stabilizer",
-    true,
-    [ IsExternalOrbitByStabilizerRep ], 0,
+    [ IsExternalOrbitByStabilizerRep ],
     xorb -> IsInt( Index( ActingDomain( xorb ),
                           StabilizerOfExternalSet( xorb ) ) ) );
 
@@ -62,58 +96,16 @@ InstallMethod( IsFinite,
 ##
 InstallMethod( Size,
     "method for an ext. orbit by stabilizer",
-    true,
-    [ IsExternalOrbitByStabilizerRep ], 0,
+    [ IsExternalOrbitByStabilizerRep ],
     xorb -> Index( ActingDomain( xorb ), StabilizerOfExternalSet( xorb ) ) );
 
-#############################################################################
-##
-#M  <enum>[ <pos> ] . . . . . . . . . . . . . . . . . .  for such enumerators
-##
-InstallMethod( \[\],"ext ob by stab enum", true,
-  [ IsExternalOrbitByStabilizerEnumerator, IsPosInt ], 0,
-function( enum, pos )
-local   xorb;
-
-    xorb := UnderlyingCollection( enum );
-    return FunctionAction( xorb )
-           ( Representative( xorb ), enum!.rightTransversal[ pos ] );
-end );
-
-#############################################################################
-##
-#M  PositionCanonical( <enum>, <elm> )  . . . . . . . .  for such enumerators
-##
-InstallMethod( PositionCanonical,"ext ob by stab enum", true,
-        [ IsExternalOrbitByStabilizerEnumerator, IsObject ], 0,
-function( enum, elm )
-local   xorb,  rep;
-
-    xorb := UnderlyingCollection( enum );
-    rep := RepresentativeAction( xorb, Representative( xorb ), elm );
-    if rep = fail  then
-        return fail;
-    else
-        return PositionCanonical( enum!.rightTransversal, rep );
-    fi;
-end );
-
-#############################################################################
-##
-#M  \\in(<elm>, <enum> )  . . . . . . . .  for such enumerators
-##
-InstallMethod( \in,"ext ob by stab enum", true,
-        [ IsObject,IsExternalOrbitByStabilizerEnumerator ], 0,
-function( elm,enum )
-  return elm in UnderlyingCollection(enum);
-end);
 
 #############################################################################
 ##
 #M  ConjugacyClass( <G>, <g> )  . . . . . . . . . . . . . . . . . constructor
 ##
 InstallMethod( ConjugacyClass,"class of element",
-  IsCollsElms, [ IsGroup, IsObject ], 0,
+  IsCollsElms, [ IsGroup, IsObject ],
 function( G, g )
 local fam,  filter,  cl;
 
@@ -138,7 +130,7 @@ local fam,  filter,  cl;
 end );
 
 InstallOtherMethod( ConjugacyClass,"class of element and centralizer",
-  IsCollsElmsColls, [ IsGroup, IsObject,IsGroup ], 0,
+  IsCollsElmsColls, [ IsGroup, IsObject,IsGroup ],
 function( G, g, cent )
 local fam,  filter,  cl;
 
@@ -167,14 +159,14 @@ end );
 ##
 #M  HomeEnumerator( <cl> )  . . . . . . . . . . . . . . . . enumerator of <G>
 ##
-InstallMethod( HomeEnumerator, true, [ IsConjugacyClassGroupRep ], 0,
+InstallMethod( HomeEnumerator, [ IsConjugacyClassGroupRep ],
     cl -> Enumerator( ActingDomain( cl ) ) );
 
 #############################################################################
 ##
 #M  PrintObj( <cl> )  . . . . . . . . . . . . . . . . . . . .  print function
 ##
-InstallMethod( PrintObj, true, [ IsConjugacyClassGroupRep ], 0,
+InstallMethod( PrintObj, [ IsConjugacyClassGroupRep ],
     function( cl )
     Print( "ConjugacyClass( ", ActingDomain( cl ), ", ",
            Representative( cl ), " )" );
@@ -184,24 +176,11 @@ end );
 ##
 #M  ViewObj( <cl> )  . . . . . . . . . . . . . . . . . . . .  print function
 ##
-InstallMethod( ViewObj, true, [ IsConjugacyClassGroupRep ], 0,
+InstallMethod( ViewObj, [ IsConjugacyClassGroupRep ],
     function( cl )
     View(Representative( cl ));
     Print("^G");
 end );
-
-#############################################################################
-##
-#M  IsFinite( <cl> )  . . . . . . . . . . . . . . . . . . . for a conj. class
-##
-InstallMethod( IsFinite,
-    "for a conjugacy class",
-    true,
-    [ IsConjugacyClassGroupRep ], 0,
-    cl -> IsInt( Index( ActingDomain( cl ),
-                        StabilizerOfExternalSet( cl ) ) ) );
-#T why to install the same method once for `IsConjugacyClassGroupRep'
-#T and once for `IsExternalOrbitByStabilizerRep'?
 
 
 #############################################################################
@@ -210,15 +189,27 @@ InstallMethod( IsFinite,
 ##
 InstallMethod( Size,
     "for a conjugacy class",
-    true,
-    [ IsConjugacyClassGroupRep ], 0,
+    [ IsConjugacyClassGroupRep ],
     cl -> Index( ActingDomain( cl ), StabilizerOfExternalSet( cl ) ) );
+
+
+#############################################################################
+##
+#M  IsFinite( <cl> )  . . . . . . . . . . . . . . . . . . . for a conj. class
+##
+InstallMethod( IsFinite,
+    "for a conjugacy class",
+    [ IsConjugacyClassGroupRep ],
+    cl -> IsInt( Index( ActingDomain( cl ),
+                        StabilizerOfExternalSet( cl ) ) ) );
+#T is it necessary to install the same method for `IsConjugacyClassGroupRep'
+#T and for `IsExternalOrbitByStabilizerRep'?
 
 InstallOtherMethod( Centralizer,
     [ IsConjugacyClassGroupRep ],
     StabilizerOfExternalSet );
 
-InstallMethod( StabilizerOfExternalSet, true, [ IsConjugacyClassGroupRep ],
+InstallMethod( StabilizerOfExternalSet, [ IsConjugacyClassGroupRep ],
     # override eventual pc method
     10,
 function(xset)
@@ -227,10 +218,8 @@ end);
 
 InstallGlobalFunction( ConjugacyClassesTry,
 function ( G, classes, elm, length, fixes )
-local   C,          # new class
-	D,          # another new class
-	new,        # new classes
-	i;          # loop variable
+local i,D,o,divs,pows,norms,next,nnorms,oq,lelm,from,n,k,m,nu,zen,pr,orb,lo,
+      prg,C,u;
 
     # if the element is not in one of the known classes add a new class
     i:=1;
@@ -246,31 +235,68 @@ local   C,          # new class
       i:=i+1;
     od;
 
-    C := ConjugacyClass( G, elm );
-    Add( classes, C );
-    Info(InfoClasses,2,"found new class ",Length(classes),
-	 " of size ",Size(C));
-    new := [ C ];
+    # do not add the class here as we'll do it later with the powers
+    o:=Order(elm);
+    Info(InfoClasses,2,"process new class ",Length(classes)+1,
+         " element order ",o);
+    
+    # gho through the divisors lattice
+    divs:=Filtered(DivisorsInt(o),x->x>1);
+    pows:=[1];
+    norms:=[G];
 
-    # try powers that keep the order, compare only with new classes
-    for i  in [2..Order(elm)-1]  do
-	if GcdInt( i, Order(elm) * fixes ) = 1  then
-	    if not elm^i in C  then
-		if ForAll( new, D -> not elm^i in D )  then
-		    D := ConjugacyClass( G, elm^i );
-		    Add( classes, D );
-		    Add( new, D );
-		    Info(InfoClasses,2,"found new power");
-		fi;
-	    elif IsPrimeInt(i)  then
-		fixes := fixes * i;
+    while Length(divs)>0 do
+      # those one prime away
+      next:=Filtered(divs,x->ForAny(pows,y->IsInt(x/y) and IsPrimeInt(x/y)));
+      divs:=Difference(divs,next);
+      nnorms:=[];
+      for i in next do
+	oq:=o/i; # power needed to get order i
+	lelm:=elm^oq;
+	from:=First(Reversed(pows),y->IsInt(i/y) and IsPrimeInt(i/y));
+	# step of normalizer calculation via powers
+	n:=Normalizer(norms[from],Subgroup(G,[lelm]));
+	nnorms[i]:=n;
+
+	if i=o or not ForAny(classes,x->lelm in x) then
+	  # this power gives a new class
+	  zen:=Centralizer(n,lelm); # all powers have the same centralizer
+
+	  # what coprime powers are normalizer induced?
+	  pr:=Difference(PrimeResidues(i),[1]);
+	  u:=GroupByGenerators([ZmodnZObj(1,i)]);
+	  orb:=Orbit(n,lelm);
+	  lo:=Length(orb);
+	  orb:=Set(Filtered(orb,x->x<>lelm));
+	  while Size(u)<lo do
+	    m:=First(pr,x->lelm^x=orb[1]);
+	    nu:=ClosureGroup(u,ZmodnZObj(m,i));
+	    if Size(nu)<lo then
+	      for k in Difference(nu,u) do
+		RemoveSet(orb,lelm^Int(k));
+	      od;
 	    fi;
-	fi;
-    od;
+	    u:=nu;
+	  od;
+	  # now u is the group of normalizer induced powers
+	  prg:=GroupByGenerators(
+	    List(Flat(GeneratorsPrimeResidues(i).generators),
+	            x->ZmodnZObj(x,i)));
+	  orb:=List(RightTransversal(prg,u),Int);
+	  for k in orb do
+	    D:=ConjugacyClass(G,lelm^k);
+	    SetStabilizerOfExternalSet(D,zen);
+	    Add(classes,D);
+	    Info(InfoClasses,3,"found new power of order ",i,
+	         " class size ",Size(D));
+	    if k=1 and i=o then C:=D;fi; #remember for return value
+	  od;
 
-    # try also the powers of this element that reduce the order
-    for i  in Set( FactorsInt( Order( elm ) ) )  do
-	ConjugacyClassesTry(G,classes,elm^i,Size(C),fixes);
+	fi;
+      od;
+
+      pows:=next;
+      norms:=nnorms;
     od;
 
     return Centralizer(C);
@@ -350,7 +376,7 @@ end);
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
 ##
-InstallMethod( ConjugacyClasses, "test options", true, [ IsGroup ], 
+InstallMethod( ConjugacyClasses, "test options", [ IsGroup ], 
   GETTER_FLAGS-1, # this method tests options which would override the method
 	       # selection. Therefore we get the highest possible value
 	       # below the getter.
@@ -377,8 +403,8 @@ InstallGlobalFunction(ConjugacyClassesForSmallGroup,function(G)
 end);
 
 
-InstallMethod( ConjugacyClasses, "for groups: try random search", true,
-  [ IsGroup ], 0,
+InstallMethod( ConjugacyClasses, "for groups: try random search",
+  [ IsGroup ],
 function(G)
 local cl;
   cl:=ConjugacyClassesForSmallGroup(G);
@@ -389,8 +415,8 @@ local cl;
   fi;
 end);
 
-InstallMethod( ConjugacyClasses, "try solvable method", true,
-    [ IsGroup ], 0,
+InstallMethod( ConjugacyClasses, "try solvable method",
+    [ IsGroup ],
     function( G )
     local   cls,  cl,  c;
 
@@ -415,7 +441,7 @@ end );
 ##
 #M  RationalClass( <G>, <g> ) . . . . . . . . . . . . . . . . . . constructor
 ##
-InstallMethod( RationalClass, IsCollsElms, [ IsGroup, IsObject ], 0,
+InstallMethod( RationalClass, IsCollsElms, [ IsGroup, IsObject ],
     function( G, g )
     local   cl;
 
@@ -436,7 +462,7 @@ end );
 #M  <cl1> = <cl2> . . . . . . . . . . . . . . . . . . .  for rational classes
 ##
 InstallMethod( \=, IsIdenticalObj, [ IsRationalClassGroupRep,
-        IsRationalClassGroupRep ], 0,
+        IsRationalClassGroupRep ],
     function( cl1, cl2 )
     if ActingDomain( cl1 ) <> ActingDomain( cl2 )
       then
@@ -455,7 +481,7 @@ end );
 ##
 #M  <g> in <cl> . . . . . . . . . . . . . . . . . . . .  for rational classes
 ##
-InstallMethod( \in, IsElmsColls, [ IsObject, IsRationalClassGroupRep ], 0,
+InstallMethod( \in, IsElmsColls, [ IsObject, IsRationalClassGroupRep ],
     function( g, cl )
     # the Galois group of the identity is <0>, therefore we have to do this
     # extra test.
@@ -470,20 +496,14 @@ end );
 ##
 #M  HomeEnumerator( <cl> )  . . . . . . . . . . . . . . . . enumerator of <G>
 ##
-InstallMethod( HomeEnumerator, true, [ IsConjugacyClassGroupRep ], 0,
+InstallMethod( HomeEnumerator, [ IsConjugacyClassGroupRep ],
     cl -> Enumerator( ActingDomain( cl ) ) );
 
 #############################################################################
 ##
 #M  PrintObj( <cl> )  . . . . . . . . . . . . . . . . . . . .  print function
 ##
-InstallMethod( PrintObj, true, [ IsRationalClassGroupRep ], 0,
-    function( cl )
-    Print( "RationalClass( ", ActingDomain( cl ), ", ",
-           Representative( cl ), " )" );
-end );
-
-InstallMethod( ViewObj, true, [ IsRationalClassGroupRep ], 0,
+InstallMethod( PrintObj, [ IsRationalClassGroupRep ],
     function( cl )
     Print( "RationalClass( ", ActingDomain( cl ), ", ",
            Representative( cl ), " )" );
@@ -496,8 +516,7 @@ end );
 ##
 InstallMethod( Size,
     "method for a rational class",
-    true,
-    [ IsRationalClassGroupRep ], 0,
+    [ IsRationalClassGroupRep ],
     cl -> IndexInParent( GaloisGroup( cl ) ) *
           Index( ActingDomain( cl ), StabilizerOfExternalSet( cl ) ) );
 
@@ -505,50 +524,47 @@ InstallMethod( Size,
 ##
 #F  DecomposedRationalClass( <cl> ) . . . . . decompose into ordinary classes
 ##
-InstallGlobalFunction( DecomposedRationalClass, function( cl )
-    local   G,  C,  rep,  gal,  T,  cls,  e,  c;
+InstallOtherMethod(DecomposedRationalClass,
+  "generic",true,[IsRationalClassGroupRep],0,function( cl )
+local   G,  C,  rep,  gal,  T,  cls,  e,  c;
 
-    G := ActingDomain( cl );
-    C := StabilizerOfExternalSet( cl );
-    rep := Representative( cl );
-    gal := GaloisGroup( cl );
-    T := RightTransversalInParent( gal );
-    cls := [  ];
-    for e  in T  do
-	# if e=0 then the element is the identity anyhow, no need to worry.
-        c := ConjugacyClass( G, rep ^ Int( e ),C );
-        Add( cls, c );
-    od;
-    return cls;
+  G := ActingDomain( cl );
+  C := StabilizerOfExternalSet( cl );
+  rep := Representative( cl );
+  gal := GaloisGroup( cl );
+  T := RightTransversalInParent( gal );
+  cls := [  ];
+  for e  in T  do
+    # if e=0 then the element is the identity anyhow, no need to worry.
+    c := ConjugacyClass( G, rep ^ Int( e ),C );
+    Add( cls, c );
+  od;
+  return cls;
 end );
 
-#############################################################################
-##
-#R  IsRationalClassGroupEnumerator  . . . . . . enumerator for rational class
-##
-DeclareRepresentation( "IsRationalClassGroupEnumerator",
-      IsDomainEnumerator and IsAttributeStoringRep,
-      [ "rightTransversal" ] );
 
 #############################################################################
 ##
 #M  Enumerator( <rcl> ) . . . . . . . . . . . . . . . . . . of rational class
 ##
-InstallMethod( Enumerator, true, [ IsRationalClassGroupRep ], 0,
-    function( rcl )
-    local   enum;
-
-    enum := Objectify( NewType( FamilyObj( rcl ),
-                IsRationalClassGroupEnumerator ),
-                rec( rightTransversal := RightTransversal
-                ( ActingDomain( rcl ), StabilizerOfExternalSet( rcl ) ) ) );
-    SetUnderlyingCollection( enum, rcl );
-    return enum;
-end );
-
-InstallMethod( \[\], true, [ IsRationalClassGroupEnumerator,
-        IsPosInt ], 0,
-    function( enum, pos )
+##  The idea is that for the rational class <rcl> given by the acting domain
+##  $G$, the representative $r$, the centralizer $S$ of $r$, and the Galois
+##  group $\Sigma$ acting on the algebraic conjugates of the class $r^G$,
+##  a right transversal $T$ of $S$ in $G$ is chosen;
+##  for $i = |T| \cdot i_1 + i_2$, with $1 \leq i_2 \leq |T|$,
+##  the $i$-th element in the enumerator <enum> of <rcl> is then
+##  the image of $r$ under $T[i_2]$, w.r.t. the action of <xorb>, raised to
+##  the power given by the $i_1$-th element in $\Sigma$.
+##
+##  So the position of an element <elm> in <enum> is determined by first
+##  finding an element $x$ in $G$ and an integer $i$ coprime to the order of
+##  $r$ such that $(r^x)^i$ equals <elm>,
+##  and if $x$ and $i$ exist then finding an element $y$ in $T$ such that
+##  $S x = S y$ holds; then the position of $y$ in $T$ is the result.
+##  By the construction of $T$, this can be computed as
+##  $`PositionCanonical'( T, x )$.
+##
+BindGlobal( "ElementNumber_RationalClassGroup", function( enum, pos )
     local   rcl,  rep,  gal,  T,  pow;
 
     rcl := UnderlyingCollection( enum );
@@ -557,14 +573,15 @@ InstallMethod( \[\], true, [ IsRationalClassGroupEnumerator,
     T := enum!.rightTransversal;
     pos := pos - 1;
     pow := QuoInt( pos, Length( T ) ) + 1;
+    if Length( gal ) < pow then
+      Error( "<enum>[", pos + 1, "] must have an assigned value" );
+    fi; 
     pos := pos mod Length( T ) + 1;
     # if gal[pow]=0 then the element is the identity anyhow, no need to worry.
     return ( rep ^ T[ pos ] ) ^ Int( gal[ pow ] );
 end );
 
-InstallMethod( PositionCanonical, true,
-  [ IsRationalClassGroupEnumerator, IsMultiplicativeElementWithInverse ], 0,
-function( enum, elm )
+BindGlobal( "NumberElement_RationalClassGroup", function( enum, elm )
     local   rcl,  G,  rep,  gal,  T,  pow,  t;
 
     rcl := UnderlyingCollection( enum );
@@ -586,14 +603,24 @@ function( enum, elm )
     fi;
 end );
 
-InstallOtherMethod( CentralizerOp, true, [ IsRationalClassGroupRep ], 0,
+InstallMethod( Enumerator,
+    [ IsRationalClassGroupRep ],
+    rcl -> EnumeratorByFunctions( rcl, rec(
+               NumberElement     := NumberElement_RationalClassGroup,
+               ElementNumber     := ElementNumber_RationalClassGroup,
+
+               rightTransversal  := RightTransversal( ActingDomain( rcl ),
+                   StabilizerOfExternalSet( rcl ) ) ) ) );
+
+
+InstallOtherMethod( CentralizerOp, [ IsRationalClassGroupRep ],
     StabilizerOfExternalSet );
 
 #############################################################################
 ##
 #M  AsList( <rcl> ) . . . . . . . . . . . . . . . . . . .  by orbit algorithm
 ##
-InstallMethod( AsList, true, [ IsRationalClassGroupRep ], 0,
+InstallMethod( AsList, [ IsRationalClassGroupRep ],
     function( rcl )
     local   aslist,  orb,  e;
 
@@ -610,7 +637,7 @@ end );
 ##
 #M  GaloisGroup( <cl> ) . . . . . . . . . . . . . . . . . of a rational class
 ##
-InstallOtherMethod( GaloisGroup, true, [ IsRationalClassGroupRep ], 0,
+InstallOtherMethod( GaloisGroup, [ IsRationalClassGroupRep ],
 function( cl )
 local   rep,  ord,  gals,  i, pr;
 
@@ -646,7 +673,7 @@ end );
 ##
 #M  RationalClasses( <G> )  . . . . . . . . . . . . . . . . . . .  of a group
 ##
-InstallMethod( RationalClasses, "trial", true, [ IsGroup ], 0,
+InstallMethod( RationalClasses, "trial", [ IsGroup ],
     function( G )
     local   rcl;
 
@@ -675,37 +702,128 @@ InstallGlobalFunction( RationalClassesTry, function(  G, classes, elm  )
 
 end );
 
-InstallMethod( RationalClasses,"solvable",true,[ CanEasilyComputePcgs ], 20,
-    function( G )
-    local   rcls,  cls,  cl,  c,  sum, size;
-    
-    size := Size(G);
-    rcls := [  ];
-    if IsPrimePowerInt( size )  then
-        for cl  in RationalClassesSolvableGroup( G, 1 )  do
-            c := RationalClass( G, cl.representative );
-            SetStabilizerOfExternalSet( c, cl.centralizer );
-            SetGaloisGroup( c, cl.galoisGroup );
-            Add( rcls, c );
-        od;
-    else
-        sum := 0;
-        for cl in ConjugacyClasses(G)  do
-            c := RationalClass( G, Representative(cl) );
-            SetStabilizerOfExternalSet( c, Centralizer(cl) );
-            if sum < size and not c in rcls  then
-                Add( rcls, c );
-                sum := sum + Size( c );
-                if sum = size and not IsBound(cls)  then
-                    break;
-                fi;
-            fi;
-        od;
+InstallMethod( RationalClasses,"use classes",[ IsGroup ], 0,
+function( G )
+local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
+      dec,ggg;
 
+  closure:=function(sub,gens,m)
+  local test, t, i, Error;
+    # dimino algorithm for normal subgroup
+    test:=[1];
+    while Length(test)>0 do
+      t:=test[1];
+      for i in gens do
+	if i<>1 then
+	  AddSet(ggg,i);
+	fi;
+	if not (sub[t]*i mod m) in sub then
+	  AddSet(test,Length(sub)+1); # next element to test
+	  Append(sub,Filtered(List(sub,x->x*i mod m),x-> not x in sub));
+	fi;
+      od;
+      RemoveSet(test,t);
+    od;
+    #Print(m," ",gens," ",sub,"\n");
+  end;
+
+  rcls:=[];
+  cl:=ConjugacyClasses(G);
+  mark:=BlistList([1..Length(cl)],[]);
+  for i in [1..Length(cl)] do
+    if mark[i]=false then
+      sub:=fail;
+      mark[i]:=true;
+      rep:=Representative(cl[i]);
+      c := RationalClass( G, rep);
+      SetStabilizerOfExternalSet( c, Centralizer(cl[i]) );
+      Add(rcls,c);
+      o:=Order(rep);
+      dec:=[cl[i]];
+      if o>2 then
+        cop:=Set(Flat(GeneratorsPrimeResidues(o).generators));
+	# get orders that give the same class
+	same:=Filtered(cop,i->RepresentativeAction(G,rep,rep^i)<>fail);
+	if Length(same)<Length(cop) then
+	  # there are other classes:
+	  sub:=[1];
+	  ggg:=[];
+	  closure(sub,same,o);
+	  cop:=Difference(cop,same);
+	  for j in cop do
+	    # we know these are different
+	    pow:=rep^j;
+	    p:=First([i+1..Length(cl)],x->pow in cl[x]);
+	    if p=fail then
+	      Error("not found");
+	    else
+	      if mark[p]=false then
+		Add(dec,cl[p]);
+	      fi;
+	      mark[p]:=true;
+	    fi;
+	  od;
+
+	  cop:=Difference(PrimeResidues(o),cop); # we've tested these
+	  for j in cop do
+	    if not j in sub then
+	      pow:=rep^j;
+	      p:=First([i..Length(cl)],x->pow in cl[x]);
+	      if p=fail then
+		Error("not found");
+	      elif p=i then
+	        closure(sub,[j],o);
+	      else
+		if mark[p]=false then
+		  Add(dec,cl[p]);
+		fi;
+		mark[p]:=true;
+	      fi;
+	    fi;
+	  od;
+	fi;
+      fi;
+      SetDecomposedRationalClass(c,dec);
+      SetSize(c,Length(dec)*Size(dec[1]));
+      if sub<>fail then
+	SetGaloisGroup(c,GroupByPrimeResidues(ggg,o));
+      fi;
     fi;
+  od;
+  return rcls;
+end);
 
-    return rcls;
-end );
+#InstallMethod( RationalClasses,"solvable",[ CanEasilyComputePcgs ], 20,
+#    function( G )
+#    local   rcls,  cls,  cl,  c,  sum, size;
+#    
+#    size := Size(G);
+#    rcls := [  ];
+#    if IsPrimePowerInt( size )  then
+#        for cl  in RationalClassesSolvableGroup( G, 1 )  do
+#            c := RationalClass( G, cl.representative );
+#            SetStabilizerOfExternalSet( c, cl.centralizer );
+#            SetGaloisGroup( c, cl.galoisGroup );
+#            Add( rcls, c );
+#        od;
+#    else
+#        sum := 0;
+#        for cl in ConjugacyClasses(G)  do
+#            c := RationalClass( G, Representative(cl) );
+#            SetStabilizerOfExternalSet( c, Centralizer(cl) );
+#            if sum < size and not c in rcls  then
+#                Add( rcls, c );
+#                sum := sum + Size( c );
+#                if sum = size and not IsBound(cls)  then
+#                    break;
+#                fi;
+#            fi;
+#        od;
+#
+#    fi;
+#
+#    return rcls;
+#end );
 
 #############################################################################
 ##
@@ -723,7 +841,7 @@ InstallGlobalFunction( RationalClassesInEANS, function( G, E )
     pcgs := Pcgs( E );
     ff := GF( RelativeOrders( pcgs )[ 1 ] );
     one := One( ff );
-    pro := OneDimSubspacesTransversal( ff ^ Length( pcgs ) );
+    pro := EnumeratorOfNormedRowVectors( ff ^ Length( pcgs ) );
     opr := function( v, g )
         return one * ExponentsConjugateLayer( pcgs,
                        PcElementByExponentsNC( pcgs, v ) , g );

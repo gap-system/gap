@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some functions moved from type.g to a place
 ##  where they will be compiled by default
@@ -56,6 +57,33 @@ InstallAttributeFunction(
 #############################################################################
 ##
 #F  NewFamily( <name>, ... )
+##
+##  <#GAPDoc Label="NewFamily">
+##  <ManSection>
+##  <Func Name="NewFamily" Arg='name[, req[, imp[, famfilter]]]'/>
+##
+##  <Description>
+##  <Ref Func="NewFamily"/> returns a new family <A>fam</A> with name
+##  <A>name</A>.
+##  The argument <A>req</A>, if present, is a filter of which <A>fam</A>
+##  shall be a subset.
+##  If one tries to create an object in <A>fam</A> that does not lie in the
+##  filter <A>req</A>, an error message is printed.
+##  Also the argument <A>imp</A>, if present,
+##  is a filter of which <A>fam</A> shall be a subset.
+##  Any object that is created in the family <A>fam</A> will lie
+##  automatically in the filter <A>imp</A>.
+##  <P/>
+##  The filter <A>famfilter</A>, if given, specifies a filter that will hold
+##  for the family <A>fam</A> (not for objects in <A>fam</A>).
+##  <P/>
+##  Families are always represented as component objects
+##  (see&nbsp;<Ref Sect="Component Objects"/>).
+##  This means that components can be used to store and access
+##  useful information about the family.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 Subtype := "defined below";
 
@@ -154,6 +182,25 @@ end );
 ##
 #F  NewType( <family>, <filter> [,<data>] )
 ##
+##  <#GAPDoc Label="NewType">
+##  <ManSection>
+##  <Func Name="NewType" Arg='family, filter[, data]'/>
+##
+##  <Description>
+##  <Ref Func="NewType"/> returns the type given by the family <A>family</A>
+##  and the filter <A>filter</A>.
+##  The optional third argument <A>data</A> is any object that denotes
+##  defining data of the desired type.
+##  <P/>
+##  For examples where <Ref Func="NewType"/> is used,
+##  see&nbsp;<Ref Sect="Component Objects"/>,
+##  <Ref Sect="Positional Objects"/>,
+##  and the example in Chapter
+##  <Ref Chap="An Example -- Residue Class Rings"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
@@ -180,8 +227,11 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
 
     # get next type id
     NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID + 1;
-    if TNUM_OBJ_INT(NEW_TYPE_NEXT_ID) <> 0  then
-        Error( "too many types" );
+    if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT then
+        GASMAN("collect");
+        FLUSH_ALL_METHOD_CACHES();
+        NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS();
+        #Print("#I Compacting type IDs: ",NEW_TYPE_NEXT_ID+2^28," in use\n");
     fi;
 
     # make the new type
@@ -294,6 +344,13 @@ end );
 ##
 #F  Subtype( <type>, <filter> )
 ##
+##  <ManSection>
+##  <Func Name="Subtype" Arg='type, filter'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "Subtype2", function ( type, filter )
     local   new, i;
     new := NEW_TYPE( TypeOfTypes,
@@ -350,6 +407,13 @@ end );
 ##
 #F  SupType( <type>, <filter> )
 ##
+##  <ManSection>
+##  <Func Name="SupType" Arg='type, filter'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "SupType2", function ( type, filter )
     local   new, i;
     new := NEW_TYPE( TypeOfTypes,
@@ -405,12 +469,26 @@ end );
 ##
 #F  FamilyType( <K> ) . . . . . . . . . . . . family of objects with type <K>
 ##
+##  <ManSection>
+##  <Func Name="FamilyType" Arg='K'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "FamilyType", K -> K![1] );
 
 
 #############################################################################
 ##
 #F  FlagsType( <K> )  . . . . . . . . . . . .  flags of objects with type <K>
+##
+##  <ManSection>
+##  <Func Name="FlagsType" Arg='K'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "FlagsType", K -> K![2] );
 
@@ -419,6 +497,14 @@ BIND_GLOBAL( "FlagsType", K -> K![2] );
 ##
 #F  DataType( <K> ) . . . . . . . . . . . . . . defining data of the type <K>
 #F  SetDataType( <K>, <data> )  . . . . . . set defining data of the type <K>
+##
+##  <ManSection>
+##  <Func Name="DataType" Arg='K'/>
+##  <Func Name="SetDataType" Arg='K, data'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "DataType", K -> K![ POS_DATA_TYPE ] );
 
@@ -431,6 +517,13 @@ end );
 ##
 #F  SharedType( <K> ) . . . . . . . . . . . . . . shared data of the type <K>
 ##
+##  <ManSection>
+##  <Func Name="SharedType" Arg='K'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "SharedType", K -> K![ POS_DATA_TYPE ] );
 
 
@@ -438,7 +531,22 @@ BIND_GLOBAL( "SharedType", K -> K![ POS_DATA_TYPE ] );
 ##
 #F  TypeObj( <obj> )  . . . . . . . . . . . . . . . . . . . type of an object
 ##
-##  returns the type of the object <obj>. 
+##  <#GAPDoc Label="TypeObj">
+##  <ManSection>
+##  <Func Name="TypeObj" Arg='obj'/>
+##
+##  <Description>
+##  returns the type of the object <A>obj</A>. 
+##  <P/>
+##  The type of an object is itself an object.
+##  <P/>
+##  Two types are equal if and only if the two families are identical,
+##  the filters are equal, and, if present, also the defining data of the
+##  types are equal.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL( "TypeObj", TYPE_OBJ );
 
 
@@ -446,13 +554,74 @@ BIND_GLOBAL( "TypeObj", TYPE_OBJ );
 ##
 #F  FamilyObj( <obj> )  . . . . . . . . . . . . . . . . . family of an object
 ##
-##  returns the family of the object <obj>.
+##  <#GAPDoc Label="FamilyObj">
+##  <ManSection>
+##  <Func Name="FamilyObj" Arg='obj'/>
+##
+##  <Description>
+##  returns the family of the object <A>obj</A>.
+##  <P/>
+##  The family of the object <A>obj</A> is itself an object,
+##  its family is <C>FamilyOfFamilies</C>.
+##  <P/>
+##  It should be emphasized that families may be created when they are
+##  needed.  For example, the family of elements of a finitely presented
+##  group is created only after the presentation has been constructed.
+##  Thus families are the dynamic part of the type system, that is, the
+##  part that is not fixed after the initialisation of &GAP;.
+##  <P/>
+##  Families can be parametrized.  For example, the elements of each
+##  finitely presented group form a family of their own.  Here the family
+##  of elements and the finitely presented group coincide when viewed as
+##  sets.  Note that elements in different finitely presented groups lie
+##  in different families.  This distinction allows &GAP; to forbid
+##  multiplications of elements in different finitely presented groups.
+##  <P/>
+##  As a special case, families can be parametrized by other families.  An
+##  important example is the family of <E>collections</E> that can be formed
+##  for each family.  A collection consists of objects that lie in the
+##  same family, it is either a nonempty dense list of objects from the
+##  same family or a domain.
+##  <P/>
+##  Note that every domain is a collection, that is, it is not possible to
+##  construct domains whose elements lie in different families.  For
+##  example, a polynomial ring over the rationals cannot contain the
+##  integer <C>0</C> because the family that contains the integers does not
+##  contain polynomials.  So one has to distinguish the integer zero from
+##  each zero polynomial.
+##  <P/>
+##  Let us look at this example from a different viewpoint.  A polynomial
+##  ring and its coefficients ring lie in different families, hence the
+##  coefficients ring cannot be embedded <Q>naturally</Q> into the polynomial
+##  ring in the sense that it is a subset.  But it is possible to allow,
+##  e.g., the multiplication of an integer and a polynomial over the
+##  integers.  The relation between the arguments, namely that one is a
+##  coefficient and the other a polynomial, can be detected from the
+##  relation of their families.  Moreover, this analysis is easier than in
+##  a situation where the rationals would lie in one family together with
+##  all polynomials over the rationals, because then the relation of
+##  families would not distinguish the multiplication of two polynomials,
+##  the multiplication of two coefficients, and the multiplication of a
+##  coefficient with a polynomial.  So the wish to describe relations
+##  between elements can be taken as a motivation for the introduction of
+##  families.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL( "FamilyObj", FAMILY_OBJ );
 
 
 #############################################################################
 ##
 #F  FlagsObj( <obj> ) . . . . . . . . . . . . . . . . . .  flags of an object
+##
+##  <ManSection>
+##  <Func Name="FlagsObj" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "FlagsObj", obj -> FlagsType( TypeObj( obj ) ) );
 
@@ -461,6 +630,13 @@ BIND_GLOBAL( "FlagsObj", obj -> FlagsType( TypeObj( obj ) ) );
 ##
 #F  DataObj( <obj> )  . . . . . . . . . . . . . .  defining data of an object
 ##
+##  <ManSection>
+##  <Func Name="DataObj" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
 
 
@@ -468,12 +644,26 @@ BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
 ##
 #F  SharedObj( <obj> )  . . . . . . . . . . . . . .  shared data of an object
 ##
+##  <ManSection>
+##  <Func Name="SharedObj" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "SharedObj", obj -> SharedType( TypeObj( obj ) ) );
 
 
 #############################################################################
 ##
 #F  SetTypeObj( <type>, <obj> )
+##
+##  <ManSection>
+##  <Func Name="SetTypeObj" Arg='type, obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "SetTypeObj", function ( type, obj )
     if not IsType( type )  then
@@ -496,6 +686,13 @@ BIND_GLOBAL( "Objectify", SetTypeObj );
 #############################################################################
 ##
 #F  ChangeTypeObj( <type>, <obj> )
+##
+##  <ManSection>
+##  <Func Name="ChangeTypeObj" Arg='type, obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "ChangeTypeObj", function ( type, obj )
     if not IsType( type )  then
@@ -521,22 +718,47 @@ BIND_GLOBAL( "ReObjectify", ChangeTypeObj );
 ##
 #F  SetFilterObj( <obj>, <filter> )
 ##
+##  <#GAPDoc Label="SetFilterObj">
+##  <ManSection>
+##  <Func Name="SetFilterObj" Arg='obj, filter'/>
+##
+##  <Description>
+##  <Ref Func="SetFilterObj"/> sets the value of <A>filter</A>
+##  (and of all filters implied by <A>filter</A>) for <A>obj</A> to
+##  <K>true</K>,
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+#T document that immediate methods will be triggered?
+#T (then also in SetTypeObj and ChangeTypeObj ...)
+##
 Unbind( SetFilterObj );
 BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
+local type, newtype;
+
     if IS_POSOBJ( obj ) then
-      SET_TYPE_POSOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
-      if not IsNoImmediateMethodsObject(obj) then
-	RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
+      type:= TYPE_OBJ( obj );
+      newtype:= Subtype2( type, filter );
+      SET_TYPE_POSOBJ( obj, newtype );
+      if not ( IGNORE_IMMEDIATE_METHODS
+               or IsNoImmediateMethodsObject(obj) ) then
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
       fi;
     elif IS_COMOBJ( obj ) then
-      SET_TYPE_COMOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
-      if not IsNoImmediateMethodsObject(obj) then
-	RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
+      type:= TYPE_OBJ( obj );
+      newtype:= Subtype2( type, filter );
+      SET_TYPE_COMOBJ( obj, newtype );
+      if not ( IGNORE_IMMEDIATE_METHODS
+               or IsNoImmediateMethodsObject(obj) ) then
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
       fi;
     elif IS_DATOBJ( obj ) then
-      SET_TYPE_DATOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
-      if not IsNoImmediateMethodsObject(obj) then
-	RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
+      type:= TYPE_OBJ( obj );
+      newtype:= Subtype2( type, filter );
+      SET_TYPE_DATOBJ( obj, newtype );
+      if not ( IGNORE_IMMEDIATE_METHODS
+               or IsNoImmediateMethodsObject(obj) ) then
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
       fi;
     elif IS_PLIST_REP( obj )  then
         SET_FILTER_LIST( obj, filter );
@@ -554,13 +776,23 @@ end );
 BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj );
 
 
-
-
 #############################################################################
 ##
 #F  ResetFilterObj( <obj>, <filter> )
 ##
-
+##  <#GAPDoc Label="ResetFilterObj">
+##  <ManSection>
+##  <Func Name="ResetFilterObj" Arg='obj, filter'/>
+##
+##  <Description>
+##  <Ref Func="ResetFilterObj"/> sets the value of <A>filter</A> for
+##  <A>obj</A> to <K>false</K>.
+##  (Implied filters of <A>filt</A> are not touched.
+##  This might create inconsistent situations if applied carelessly).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
     
     if IS_AND_FILTER( filter ) then
@@ -592,6 +824,13 @@ BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj );
 ##
 #F  SetFeatureObj( <obj>, <filter>, <val> )
 ##
+##  <ManSection>
+##  <Func Name="SetFeatureObj" Arg='obj, filter, val'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
     if val then
         SetFilterObj( obj, filter );
@@ -605,13 +844,19 @@ end );
 ##
 #F  SetMultipleAttributes( <obj>, <attr1>, <val1>, <attr2>, <val2> ... )
 ##
+##  <ManSection>
+##  <Func Name="SetMultipleAttributes" Arg='obj, attr1, val1, attr2, val2 ...'/>
+##
+##  <Description>
 ##  This function should have the same net effect as 
-##
-##  Setter( <attr1> )( <obj>, <val1> )
-##  Setter( <attr2> )( <obj>, <val2> )
+##  <P/>
+##  Setter( <A>attr1</A> )( <A>obj</A>, <A>val1</A> )
+##  Setter( <A>attr2</A> )( <A>obj</A>, <A>val2</A> )
 ##   . . .
-##
-## but hopefully be faster, by amalgamating all the type changes
+##  <P/>
+##  but hopefully be faster, by amalgamating all the type changes
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "SetMultipleAttributes", function (arg)
     local obj, type, flags, attr, val, i, extra, nfilt, nflags;
@@ -671,19 +916,40 @@ end);
 ##
 #F  ObjectifyWithAttributes(<obj>,<type>,<attr1>,<val1>,<attr2>,<val2>... )
 ##
-##  This function should have almost the same net effect as 
+##  <#GAPDoc Label="ObjectifyWithAttributes">
+##  <ManSection>
+##  <Func Name="ObjectifyWithAttributes"
+##   Arg='obj, type, attr1, val1, attr2, val2, ...'/>
 ##
-##  Objectify(  <type>, <obj> )
-##  Setter( <attr1> )( <obj>, <val1> )
-##  Setter( <attr2> )( <obj>, <val2> )
-##   . . .
-##
-## but hopefully be faster, by amalgamating all the type changes
-##
-##  The difference, is that type may already include the testers for
-##  the attributes passesd (if any of them are properties then the type
-## may also include their values). In this case, no new type will
-## be created at all.
+##  <Description>
+##  Attribute assignments will change the type of an object.
+##  If you create many objects, code of the form
+##  <P/>
+##  <Log><![CDATA[
+##  o:=Objectify(type,rec());
+##  SetMyAttribute(o,value);
+##  ]]></Log>
+##  <P/>
+##  will take a lot of time for type changes.
+##  You can avoid this  by  setting the attributes immediately while the
+##  object is created, as follows.
+##  <Ref Func="ObjectifyWithAttributes"/>
+##  changes the type of object <A>obj</A> to type <A>type</A>
+##  and sets attribute <A>attr1</A> to <A>val1</A>,
+##  sets attribute <A>attr2</A> to <A>val2</A> and so forth.
+##  <P/>
+##  If the filter list of <A>type</A> includes that these attributes are set
+##  (and the properties also include values of the properties)
+##  and if no special setter methods are installed for any of the involved
+##  attributes then they are set simultaneously without type changes.
+##  This can produce a substantial speedup.
+##  <P/>
+##  If the conditions of the last sentence are not fulfilled, an ordinary
+##  <Ref Func="Objectify"/> with subsequent setter calls for the attributes
+##  is performed instead.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "IsAttributeStoringRepFlags",
     FLAGS_FILTER( IsAttributeStoringRep ) );
@@ -758,6 +1024,8 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
     od;
 end );
 
+
 #############################################################################
 ##
 #E
+

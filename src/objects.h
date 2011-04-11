@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  objects.h                   GAP source                   Martin Schoenert
+*W  objects.h                   GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file defines the functions of the objects package.
 **
@@ -234,9 +235,9 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_CHAR                  (FIRST_CONSTANT_TNUM+ 9)
 #define T_FUNCTION              (FIRST_CONSTANT_TNUM+10)
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
-#define T_FLOAT                 (FIRST_CONSTANT_TNUM+12)
-#define T_RESERVED_BY_GAP       (FIRST_CONSTANT_TNUM+13)   
-#define LAST_CONSTANT_TNUM      T_RESERVED_BY_GAP 
+#define T_MACFLOAT              (FIRST_CONSTANT_TNUM+12)
+#define T_LVARS                 (FIRST_CONSTANT_TNUM+13)   
+#define LAST_CONSTANT_TNUM      (T_LVARS)
 
 #define IMMUTABLE               1
 
@@ -425,9 +426,10 @@ static inline Obj prod_intobjs(Int l, Int r)
 *F  SHARED_TYPE( <kind> ) . . . . . . . . . . . . . . . shared data of a kind
 **
 **  'SHARED_TYPE' returns the shared data of the kind <kind>.
+XXX nowhere used, throw away??? (FL)
 */
-#define SHARED_TYPE(kind)       ELM_PLIST( kind, 3 )
-                        
+/* #define SHARED_TYPE(kind)       ELM_PLIST( kind, 3 )
+*/                        
                         
 /****************************************************************************
 **
@@ -658,6 +660,7 @@ extern void PrintObj (
 extern Obj  PrintObjThis;
 
 extern Int  PrintObjIndex;
+extern Int  PrintObjDepth;
 
 extern Int  PrintObjFull;
 

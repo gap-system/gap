@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions to construct semisimple Lie algebras of type
 ##  $A_n$, $B_n$, $C_n$, $D_n$, $E_6$, $E_7$, $E_8$, $F_4$, $G_2$,
@@ -319,7 +320,7 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         if type = "B" then 
             
             # In this case we construct D_{n+1}.
-            if n < 1 then
+            if n <= 1 then
                 Error( "<n> must be >= 2");
             fi;
             C:= 2*IdentityMat( n+1 );
@@ -650,6 +651,8 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         od;
 
         SetCartanMatrix( R, C );
+        
+        SetSemiSimpleType( L, Concatenation( type, String( n ) ) );
     fi;
     
     SetRootSystem( L, R );
@@ -1212,12 +1215,397 @@ SimpleLieAlgebraTypeK := function( n, F )
 end;
 
 
+
+##############################################################################
+##
+#F  SimpleLieAlgebraTypeM( <n>, <F> )
+##
+##  The Melikyan Lie algebra is constructed.
+##
+##  The code is due to Erik Postma.
+##
+##  The Melikyan Lie algebra is most conveniently constructed by
+##  viewing it as the direct sum of a Witt type Lie algebra and two
+##  of its modules. This is the presentation described by 
+##  M.I. Kuznetsov, The Melikyan algebras as Lie algebras of the 
+##  type G2, Comm. Algebra 19 (1991).
+##  
+##  The Melikyan Lie algebra is parametrized by two positive 
+##  integers, n1 and n2, and can only be defined over fields of 
+##  characteristic 5. It can be decomposed into a 2*5^(n1 + n2)-dimensional 
+##  subalgebra isomorphic to W(n1, n2), having a basis of monomials
+##  X1^i1 X2^i2 dXk where 0 <= i1 < 5^n1, 0 <= i2 < 5^n2, k in {1, 2}; a
+##  5^(n1 + n2)-dimensional module of this subalgebra which we call O,
+##  having a basis of elements we call X1^i1 X2^i2 (where i1 and i2 are
+##  within the same boundaries); and a 2*5^(n1 + n2)-dimensional
+##  module which we call Wtilde, having a basis of elements we
+##  call X1^i1 X2^i2 dXk^tilde (again with i1 and i2 within the same
+##  boundaries, and with k in {1, 2}).
+##
+##  The multiplication is described in the above paper and in the code
+##  below. We use lists of symbolic descriptions for the basis
+##  elements: [i1, i2] for X1^i1 X2^i2 and [[i1, i2], k] for either 
+##  X1^i1 X2^i2 dXk or X1^i1 X2^i2 dXk^tilde. All valid such
+##  symbolic descriptions can be found in two lists, OBasis and
+##  WBasis, respectively. In the basis of the full algebra, we first
+##  put the elements of W as ordered in WBasis, then the elements of O
+##  as ordered in OBasis, and finally the elements of Wtilde, again as
+##  ordered in WBasis. Throughout the function below, we describe
+##  basis elements using either these symbolic descriptions, or the
+##  positions in this basis.
+
+SimpleLieAlgebraTypeM := function (n, F)
+    local   n1,  n2,     # The parameters.
+            one, zero,   # Shortcuts to the field elements.
+            dimO,  dimW, # Dimensions of the O and W spaces.
+            OBasis,      # A representation of a basis for O.
+            posO,        # Function to find the position of a given
+                         #   OBasis element in the basis.
+            OProduct,    # The regular product of two elements of OBasis.
+            WBasis,      # A representation of a basis for W.
+            div,         # The divergence function for elements of WBasis.
+            posW,        # Function to find the position of a WBasis
+                         #   element in the basis.
+            WOProduct,   # The action of W on O.
+            WProduct,    # The regular product of two elements of WBasis.
+            WBracket,    # The commutator of two elements of WBasis
+                         #   w.r.t. WProduct.
+            degrees,     # The list of degrees of different components.
+	    GradingFunction, # The function giving the grading components.
+            tildify, clean, # Utility functions.
+            table,  i,  w1,  j,  w2, result,  term,  prod,  x2,  x1, d;
+                         # Temporary results and counters.
+    if not (IsList (n) and Length (n) = 2 and n [1] > 0 and n [2] > 0)
+       then
+        Error ("<n> must be a list of two positive integers");
+    fi;
+    
+    if Characteristic (F) <> 5 then
+        Error ("<F> must be a field of characteristic 5");
+    fi;
+    
+    n1 := n [1];
+    n2 := n [2];
+    dimO := 5^(n1 + n2);
+    dimW := 2*dimO;
+    
+    one := One (F);
+    zero := Zero (F);
+    
+    # The element [a, b] of OBasis represents the element 
+    #    X1^a X2^b / (a! b!)
+    # of the truncated polynomial ring.
+    OBasis := Cartesian ([0 .. 5^n1 - 1], [0 .. 5^n2 - 1]);
+    
+    # The position of an OBasis element in the basis.
+    posO := function (o)
+        return o [2] + 5^n2 * o [1] + 1;
+    end;    
+    
+    # Given two OBasis elements x1 and x2, returns a list with a
+    # coefficient coeff and the position pos of a basis element, such 
+    # that 
+    #    x1 * x2 = coeff * OBasis [pos]
+    OProduct := function (x1, x2)
+        local pow;
+        pow := ShallowCopy (x1 + x2);
+        if pow [1] < 5^n1 and pow [2] < 5^n2 then
+            return [Binomial (pow [1], x1 [1]) *
+                    (Binomial (pow [2], x1 [2]) * one), 
+                    posO (pow)];
+        else
+            return [zero, 1];
+        fi;
+    end;    
+    
+    # The element [[a, b], c] of WBasis represents the element
+    #    O dXc
+    # where O is the element of OBasis represented by [a, b].
+    WBasis := Cartesian (OBasis, [1, 2]);
+    
+    # The divergence: f dX1 + g dX2 -> dX1 (f) + dX2 (g), maps WBasis
+    # elements to OBasis elements. Note: if the result is 0, we return
+    # that instead of the OBasis element. 
+    div := function (abc)
+        local ab, pos;
+        if abc [1] [abc [2]] = 0 then
+            return 0;
+        fi;
+        pos := abc [2];
+        ab := ShallowCopy (abc [1]);
+        ab [pos] := ab [pos] - 1;
+        return ab;
+    end;    
+        
+    # The position of the WBasis element [OBasis (o), c] in the basis,
+    # where o is the number of an OBasis element.
+    posW := function (o, c)
+        return 2 * o + c - 2;
+    end;    
+        
+    # Given a WBasis element [[a1, b1], c1] and an OBasis element [a2,
+    # b2], representing the usual monomials, this function computes
+    #    p = X1^a1 X2^a2 (dXc1 X1^a2 X2^b2),
+    # and returns a list [pos, coeff] with the position in OBasis of
+    # the basis element this is a multiple of, and its coefficient; so
+    # that 
+    #    p = coeff * OBasis [pos].
+    WOProduct := function (w1, x2)
+        local pow, prod;
+        if x2 [w1 [2]] > 0 then
+            pow := ShallowCopy (x2);
+            pow [w1 [2]] := pow [w1 [2]] - 1;
+            return OProduct (w1 [1], pow);
+        else
+            return [zero, 1];
+        fi;        
+    end;    
+    
+    # Given two WBasis elements [[a1, b1], c1] and [[a2, b2], c2],
+    # representing the usual monomials, this
+    # function computes 
+    #    p = X1^a1 X2^a2 (dXc1 (X1^a2 X2^b2)) dXc2, 
+    # and returns a list [pos, coeff] with the position in WBasis of
+    # the basis element this is a multiple of, and its coefficient; so
+    # that 
+    #    p = coeff * WBasis [pos].
+    WProduct := function (x1, x2)
+        local prod;
+        prod := WOProduct (x1, x2 [1]);
+        if prod [1] <> zero then
+            return [prod [1], posW (prod [2], x2 [2])];
+        else
+            return [zero, 1];
+        fi;        
+    end;
+    
+    # The bracket on W is defined as mapping x1, x2 to their
+    # commutator, where the multiplication is as above. This function
+    # returns a list ls of, alternatingly, coefficients and positions,
+    # such that the bracket of x1 and x2 is equal to 
+    #   ls [1] * WBasis [ls [2]] + ls [3] * WBasis [ls [4]].
+    # However, if any coefficient is 0, the corresponding list
+    # elements are omitted. So the list returned has length 4, 2 or 0.
+    WBracket := function (x1, x2)
+        local result, prod;
+        prod := WProduct (x1, x2);
+        if prod [1] <> zero then
+            result := prod;
+        else
+            result := [];            
+        fi;
+        prod := WProduct (x2, x1);
+        if prod [1] <> zero then
+            Append (result, [- prod [1], prod [2]]);
+        fi;
+        return result;
+    end;    
+    
+    # The order of the basis elements is: first the basis elements of
+    # W, then of O, then of Wtilde. Definitions of W, Wtilde and O can
+    # be found in H. Strade, Simple Lie Algebras over Fields of
+    # Positive Characteristic, Walter de Gruyter - Berlin/New York 2004.
+    # This is the realization found in M.I. Kuznetsov, The Melikian
+    # algebras as Lie algebras of the type G2, Comm. Algebra 19
+    # (1991), 1281-1312.
+    
+    # tildify adds cst to each even position in ls. It is useful for
+    # mapping a result of WBracket from W to Wtilde, or an OBasis
+    # element to the correct position in the full basis.
+    tildify := function (ls, cst)
+        local i;
+        i := 2;
+        while IsBound (ls [i]) do
+            ls [i] := ls [i] + cst;
+            i := i + 2;
+        od;
+    end;    
+    
+    # clean is a function that 'cleans' a list before submission to
+    # SetEntrySCTable. That is, if any positions are the same, the
+    # coefficients are added.
+    clean := function (ls)
+        local ps, i;
+        ps := rec ();
+        i := 2;
+        while IsBound (ls [i]) do
+            if IsBound (ps.(ls [i])) then
+                ls [ps.(ls [i]) - 1] := ls [ps.(ls [i]) - 1] + ls [i - 1];
+                Unbind (ls [i - 1]);
+                Unbind (ls [i]);
+            else
+                ps.(ls [i]) := i;
+            fi;            
+            i := i + 2;
+        od;
+        return Compacted (ls);
+    end;    
+    
+    table := EmptySCTable (dimO + 2 * dimW, Zero (F), "antisymmetric");
+    
+    for i in [1 .. dimW] do
+        w1 := WBasis [i];
+        for j in [1 .. dimW] do
+            w2 := WBasis [j];
+            
+            if i < j then
+                # Compute the product for w1 and w2 in W.
+                # This is simply [w1, w2].
+                SetEntrySCTable (table, i, j, clean (WBracket (w1, w2)));
+                
+                
+                # Compute the product for w1 and w2 in WTilde.
+                # This is f1g2 - f2g1 if w1 = f1d1 + f2d2, w2 = g1d1 +
+                # g2d2. 
+                if w1 [2] <> w2 [2] then
+                    prod := OProduct (w1 [1], w2 [1]);
+                    if prod [1] <> zero then
+                        SetEntrySCTable (table, i + dimW + dimO, 
+                                j + dimW + dimO,
+                                [(3 - 2 * w1 [2]) * # This is the coefficient
+                                                    # plus or minus one.
+                                 prod [1], prod [2] + dimW]);
+                    fi;                    
+                fi;
+            fi;
+            
+            # Compute the product for w1 in W, w2 in WTilde.
+            # This is defined as [w1, w2]^tilde + 2 div(w1) w2^tilde
+            # [w1, w2]^tilde:
+            result := WBracket (w1, w2);
+            tildify (result, dimW + dimO);
+            # 2 div(w1) w2^tilde:
+            d := div (w1);
+            if d <> 0 then
+                term := OProduct (d, w2 [1]);
+                if term [1] <> zero then
+                    Append (result, [2 * term [1], 
+                            posW (term [2], w2 [2]) + dimW + dimO]);
+                fi;
+            fi;
+            SetEntrySCTable (table, i, j + dimW + dimO, clean (result));
+        od;
+        
+        for j in [1 .. dimO] do
+            x2 := OBasis [j];
+            
+            # Compute the product for w1 in W, x2 in O.
+            # This is w1 (x2) - 2 div (w1) x2.
+            # w1 (x2):
+            result := WOProduct (w1, x2);
+            # - 2 div (w1) x2:
+            d := div (w1);
+            if d <> 0 then
+                term := OProduct (d, x2);
+                if term [1] <> zero then
+                    Append (result, [-2 * term [1], term [2]]);
+                fi;
+            fi;            
+            tildify (result, dimW);
+            SetEntrySCTable (table, i, j + dimW, clean (result));
+            
+            # Compute the product for w1 in Wtilde, x2 in O.
+            # This is - x2 w1^un-tilde. 
+            # We put it in the table as the product of x2 and w1, so
+            # that we don't have to bother with the minus sign.
+            result := OProduct (x2, w1 [1]);
+            SetEntrySCTable (table, j + dimW, i + dimW + dimO, 
+                    [result [1], posW (result [2], w1 [2])]);
+        od;        
+    od;
+    
+    for i in [1 .. dimO] do
+        x1 := OBasis [i];
+        for j in [i + 1 .. dimO] do
+            x2 := OBasis [j];
+            # Compute the product for x1 and x2 in O.
+            # This is 2 (x2 dX2(x1) - x1 dX2(x2))dX1^tilde + 2 (x1
+            # dX1(x2) - x2 dX1(x1)) dX2^tilde.
+            # 2 x2 dX2(x1) dX1:
+            result := WProduct ([x2, 2], [x1, 1]);
+            result [1] := 2 * result [1];
+            # - 2 x1 dX2(x2) dX1:
+            term := WProduct ([x1, 2], [x2, 1]);
+            Append (result, [- 2 * term [1], term [2]]);
+            # 2 x1 dX1(x2) dX2:
+            term := WProduct ([x1, 1], [x2, 2]);
+            Append (result, [2 * term [1], term [2]]);
+            # - 2 x2 dX1(x1) dX2:
+            term := WProduct ([x2, 1], [x1, 2]);
+            Append (result, [- 2 * term [1], term [2]]);
+            
+            tildify (result, dimW + dimO);
+            
+            SetEntrySCTable (table, i + dimW, j + dimW, 
+                    clean (result));
+        od;
+    od;
+    
+    result := LieAlgebraByStructureConstants (F, table);
+
+    SetIsRestrictedLieAlgebra (result, n1 = 1 and n2 = 1);
+    
+    degrees := Concatenation (List (WBasis, lst -> 
+                       lst [1] * [[2, 1], [1, 2]] + 
+                       \[\]([[-2, -1], [-1, -2]], lst [2])),
+                       List (OBasis, lst ->
+                             lst * [[2, 1], [1, 2]] + [-1, -1]),
+                       List (WBasis, lst ->
+                             lst [1] * [[2, 1], [1, 2]] +
+                             \[\]([[-1, 0], [0, -1]], lst [2])));
+    GradingFunction := d -> Subspace (result, 
+                               Basis(result) {Positions (degrees, d)});
+    SetGrading (result, rec(
+            source :=  
+            FreeLeftModule(Integers, [[1, 0], [0, 1]], "basis"),
+            hom_components := GradingFunction,
+            non_zero_hom_components := Set (degrees)));        
+    
+#    GradingFunction := function (d)
+#        local degsum, r, oposns;
+#        r := d[1] + d[2] mod 3;
+#        if r = 0 then
+#            
+#        degsum := (d [1] + d [2] - r) / 3 + 1;
+#        oposns := List ([Maximum (0, degsum - 5^n2 + 1) ..
+#                         Minimum (degsum, 5^n1 - 1)], 
+#                        i -> posO ([i, degsum - i]));
+#        if r = 0 then	
+#            return SubspaceNC (result, 
+#                           Basis (result) {Concatenation (
+#                                   List (oposns, p -> posW (p, 1)),
+#                                   List (oposns, p -> posW (p, 2)))},
+#                           "basis");
+#        elif r = 1 then
+#            return SubspaceNC (result,
+#                           Basis (result) {oposns + dimW},
+#                           "basis");
+#        else # r = 2
+#            return SubspaceNC (result,
+#                           Basis (result) {3 * dimO + Concatenation (
+#                                   List (oposns, p -> posW (p, 1)),
+#                                   List (oposns, p -> posW (p, 2)))},
+#                           "basis");
+#        fi;
+#    end;
+#    SetGrading (result, 
+#            rec (min_degree := -3, 
+#        	 max_degree := 3 * (5^n1 + 5^n2) - 7, 
+#        	 source := Integers,
+#                 hom_components := GradingFunction));
+    
+    return result;
+end;
+
+
+
 ##############################################################################
 ##
 #F  SimpleLieAlgebra( <type>, <n>, <F> )
 ##
 
 InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
+    local A;
 
     # Check the arguments.
     if not ( IsString( type ) and ( IsInt( n ) or IsList( n ) ) and 
@@ -1226,19 +1614,27 @@ InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
     fi;
 
     if type in [ "A","B","C","D","E","F","G" ] then
-      return SimpleLieAlgebraTypeA_G( type, n, F );
+      A := SimpleLieAlgebraTypeA_G( type, n, F );
     elif type = "W" then
-      return SimpleLieAlgebraTypeW( n, F )[1];
+      A := SimpleLieAlgebraTypeW( n, F )[1];
     elif type = "S" then
-      return SimpleLieAlgebraTypeS( n, F );
+      A := SimpleLieAlgebraTypeS( n, F );
     elif type = "H" then
-      return SimpleLieAlgebraTypeH( n, F );
+      A := SimpleLieAlgebraTypeH( n, F );
     elif type = "K" then
-      return SimpleLieAlgebraTypeK( n, F );
+      A := SimpleLieAlgebraTypeK( n, F );
+    elif type = "M" then
+      A := SimpleLieAlgebraTypeM( n, F );
     else
-      Error( "<type> must be one of \"A\", \"B\", \"C\", \"D\", \"E\", ",
-             "\"F\", \"G\", \"H\", \"K\", \"S\", \"W\" " );
+       Error( "<type> must be one of \"A\", \"B\", \"C\", \"D\", \"E\", ",
+             "\"F\", \"G\", \"H\", \"K\", \"M\", \"S\", \"W\" " );
     fi;
+
+    # store the pth power images in the family (LB)
+    if IsRestrictedLieAlgebra(A) then
+        FamilyObj(Representative(A))!.pMapping := PthPowerImages(Basis(A));
+    fi;
+    return A;
 end );
 
 

@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for finitely presented algebras.
 ##  So far, there are not many.
@@ -384,14 +385,22 @@ InstallOtherMethod( IsFullFpAlgebra,
 ##
 #M  NaturalHomomorphismByIdeal( <F>, <I> )  . . . . . for free alg. and ideal
 ##
+##  The algebra <F> can be also a free magma ring.
+##  If it is finite dimensional then we prefer not to regard it as a
+##  f.p. algebra (modulo relations);
+##  there is a method for  but to work with bases of <A> and <I>.
+##
 InstallMethod( NaturalHomomorphismByIdeal,
     "for free algebra and ideal",
     IsIdenticalObj,
-    [ IsMagmaRingModuloRelations, IsFLMLOR ], 0,
+    [ IsMagmaRingModuloRelations, IsFLMLOR ],
     function( F, I )
 
     local image, hom;
 
+    if IsInt( Dimension( F ) ) then
+      TryNextMethod();
+    fi;
     image:= FactorFreeAlgebraByRelators( F, GeneratorsOfIdeal( I ) );
 
     if IsMagmaWithOne( F ) then

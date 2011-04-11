@@ -1,20 +1,26 @@
 /****************************************************************************
 **
 *W  gap.c                       GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
+*W                                                         & Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the various read-eval-print loops and  related  stuff.
 */
 #include        <stdio.h>
-#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+#include        <assert.h>
 #include        <string.h>              /* memcpy */
+#include        <stdlib.h>
 
 #include        "system.h"              /* system dependent part           */
+
+#ifdef HAVE_SYS_STAT_H
+#include        <sys/stat.h>
+#endif
 
 const char * Revision_gap_c =
 "@(#)$Id$";
@@ -43,7 +49,7 @@ extern char * In;
 #include        "finfield.h"            /* finite fields and ff elements   */
 
 #include        "bool.h"                /* booleans                        */
-#include        "float.h"               /* machine doubles                 */
+#include        "macfloat.h"            /* machine doubles                 */
 #include        "permutat.h"            /* permutations                    */
 
 #include        "records.h"             /* generic records                 */
@@ -144,21 +150,6 @@ UInt Time;
 
 /****************************************************************************
 **
-*V  BreakOnError  . . . . . . . . . . . . . . . . . . . . . . enter breakloop
-*/
-UInt BreakOnError = 1;
-
-/****************************************************************************
-**
-*V  ErrorCount  . . . . . . . .  . . . . .how many times have we had an error
-**                             note that this includes cases where the break
-**                             loop was skipped.
-*/
-UInt ErrorCount = 0;
-
-
-/****************************************************************************
-**
 *F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
 **
 **  This is the function actually called in Read-Eval-View loops.
@@ -166,32 +157,42 @@ UInt ErrorCount = 0;
 **  is not yet defined, or the fallback methods not yet installed. To avoid
 **  this problem, we check, and use PrintObj if there is a problem
 **
+**  We also install a hook to use the GAP level function 'CustomView' if
+**  it exists. This can for example be used to restrict the amount of output
+**  or to show long output in a pager or .....
+**  
 **  This function also supplies the \n after viewing.
 */
 UInt ViewObjGVar;
+UInt CustomViewGVar;
 
 void ViewObjHandler ( Obj obj )
 {
   volatile Obj        func;
-  jmp_buf             readJmpError;
+  volatile Obj        cfunc;
+  syJmp_buf             readJmpError;
 
-  /* get the function                                                    */
+  /* get the functions                                                   */
   func = ValAutoGVar(ViewObjGVar);
+  cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
-  memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+  memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
   if ( ! READ_ERROR() ) {
-    if ( func == 0 || TNUM_OBJ(func) != T_FUNCTION ) {
-      PrintObj(obj);
+    if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
+      CALL_1ARGS(cfunc, obj);
+    }
+    else if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
+      ViewObj(obj);
     }
     else {
-      ViewObj( obj );
+      PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
   }
   else {
-    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
   }
 }
 
@@ -202,116 +203,132 @@ void ViewObjHandler ( Obj obj )
 */
 Obj AtExitFunctions;
 
-Obj AlternativeMainLoop = 0;
+Obj AlternativeMainLoop;
 
 UInt SaveOnExitFileGVar;
 
 UInt QUITTINGGVar;
 
-Obj OnGapPromptHook = 0;
+Obj OnGapPromptHook;
 
-int main (
-	  int                 argc,
-	  char *              argv [] )
+Obj ErrorHandler;		/* not yet settable from GAP level */
+
+
+typedef struct {
+    const Char *                name;
+    Obj *                       address;
+} StructImportedGVars;
+
+#ifndef MAX_IMPORTED_GVARS
+#define MAX_IMPORTED_GVARS      1024
+#endif
+
+static StructImportedGVars ImportedGVars[MAX_IMPORTED_GVARS];
+static Int NrImportedGVars;
+
+static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
+static Int NrImportedFuncs;
+
+/* int restart_argc; 
+   char **restart_argv; */
+
+char *original_argv0;
+static char **sysargv;
+static char **sysenviron;
+
+/* 
+syJmp_buf SyRestartBuf;
+*/
+
+Obj ShellContext = 0;
+Obj BaseShellContext = 0;
+UInt ShellContextDepth;
+
+
+Obj Shell ( Obj context, 
+	    UInt canReturnVoid,
+	    UInt canReturnObj,
+	    UInt lastDepth,
+	    UInt setTime,
+	    Char *prompt,
+	    Obj preCommandHook,
+	    UInt catchQUIT,
+	   Char *inFile,
+	    Char *outFile)
 {
-  ExecStatus          status;                 /* result of ReadEvalCommand*/
-  UInt                type;                   /* result of compile       */
-  UInt                time;                   /* start time              */
-  Obj                 func;                   /* function (compiler)     */
-  Int4                crc;                    /* crc of file to compile  */
-  volatile UInt       i;                      /* loop variable           */
-  Obj                 SaveOnExitFile;         /* contents of the GVar    */
-
-  /* initialize everything                                               */
-  InitializeGap( &argc, argv );
-  if (UserHasQUIT)		/* maybe the user QUIT from the initial
-				   read of init.g */
-    goto finalize;
-
-  /* maybe compile                                                       */
-  if ( SyCompilePlease ) {
-    if ( ! OpenInput(SyCompileInput) ) {
-      SyExit(1);
-    }
-    func = READ_AS_FUNC();
-    crc  = SyGAPCRC(SyCompileInput);
-    if (SyStrlen(SyCompileOptions) != 0)
-      SetCompileOpts(SyCompileOptions);
-    type = CompileFunc(
-		       SyCompileOutput,
-		       func,
-		       SyCompileName,
-		       crc,
-		       SyCompileMagic1 );
-    if ( type == 0 )
-      SyExit( 1 );
-    SyExit( 0 );
-  }
-
-  if (AlternativeMainLoop != (Obj) 0)
-    {
-      if (!IS_FUNC(AlternativeMainLoop))
-	{
-	  Pr("#E AlternativeMainLoop set to non-function, ignoring\n",0L,0L);
-	}
-      else
-	{
-	  ClearError();
-	  if (READ_ERROR())
-	    {
-	      if (UserHasQUIT)
-		goto finalize;
-	      ClearError();
-	    }
-	  ExecBegin( BottomLVars );
-	  CALL_0ARGS(AlternativeMainLoop);
-	  /* If we ever get to here then the AlternativeMainLoop function actual
-	     exited. In this case, we are done */
-	  ExecEnd(0);
-	  goto finalize;
-	}
-    }
-
+  UInt time = 0;
+  UInt status;
+  UInt oldindent;
+  UInt oldPrintDepth;
+  Obj res;
+  Obj oldShellContext;
+  Obj oldBaseShellContext;
+  UInt oldShellContextDepth;
+  oldShellContext = ShellContext;
+  ShellContext = context;
+  oldBaseShellContext = BaseShellContext;
+  BaseShellContext = context;
+  oldShellContextDepth = ShellContextDepth;
+  ShellContextDepth = 0;
+  
   /* read-eval-print loop                                                */
+  if (!OpenOutput(outFile))
+    ErrorMayQuit("SHELL: can't open outfile %s",(Int)outFile,0);
+
+  if(!OpenInput(inFile))
+    {
+      CloseOutput();
+      ErrorMayQuit("SHELL: can't open infile %s",(Int)inFile,0);
+    }
+  
+  oldPrintDepth = PrintObjDepth;
+  PrintObjDepth = 0;
+  oldindent = Output->indent;
+  Output->indent = 0;
+
   while ( 1 ) {
 
     /* start the stopwatch                                             */
-    time = SyTime();
+    if (setTime)
+      time = SyTime();
 
     /* read and evaluate one command                                   */
-    Prompt = "gap> ";
+    Prompt = prompt;
     ClearError();
+    PrintObjDepth = 0;
+    Output->indent = 0;
 
     /* here is a hook: */
-    if (OnGapPromptHook) {
-      if (!IS_FUNC(OnGapPromptHook))
+    if (preCommandHook) {
+      if (!IS_FUNC(preCommandHook))
 	{
-	  Pr("#E OnGapPromptHook set to non-function, ignoring\n",0L,0L);
+	  	  Pr("#E CommandHook was non-function, ignoring\n",0L,0L);
 	}
       else
         {
-          Call0ArgsInNewReader(OnGapPromptHook);
+          Call0ArgsInNewReader(preCommandHook);
           /* Recover from a potential break loop: */
-          Prompt = "gap> ";
+          Prompt = prompt;
           ClearError();
         }
     }
 
-    /* now enter the read-eval-command loop: */
-    status = ReadEvalCommand();
+    /* now  read and evaluate and view one command  */
+    status = ReadEvalCommand(ShellContext);
     if (UserHasQUIT)
       break;
 
-    /* stop the stopwatch                                              */
-    AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
 
     /* handle ordinary command                                         */
     if ( status == STATUS_END && ReadEvalResult != 0 ) {
 
-      /* remember the value in 'last' and the time in 'time'         */
-      AssGVar( Last3, VAL_GVAR( Last2 ) );
-      AssGVar( Last2, VAL_GVAR( Last  ) );
-      AssGVar( Last,  ReadEvalResult   );
+      /* remember the value in 'last'    */
+      if (lastDepth >= 3)
+	AssGVar( Last3, VAL_GVAR( Last2 ) );
+      if (lastDepth >= 2)
+	AssGVar( Last2, VAL_GVAR( Last  ) );
+      if (lastDepth >= 1)
+	AssGVar( Last,  ReadEvalResult   );
 
       /* print the result                                            */
       if ( ! DualSemicolon ) {
@@ -321,13 +338,24 @@ int main (
     }
 
     /* handle return-value or return-void command                      */
-    else if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-      Pr( "'return' must not be used in main read-eval-print loop",
-	  0L, 0L );
-    }
+    else if (status & STATUS_RETURN_VAL) 
+      if(canReturnObj)
+	break;
+      else
+	Pr( "'return <object>' cannot be used in this read-eval-print loop\n",
+	    0L, 0L );
 
+    else if (status & STATUS_RETURN_VOID) 
+      if(canReturnVoid ) 
+	break;
+      else
+	Pr( "'return' cannot be used in this read-eval-print loop\n",
+	    0L, 0L );
+    
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
+      RecursionDepth = 0;
+      UserHasQuit = 1;
       break;
     }
 	
@@ -338,51 +366,505 @@ int main (
     }
 	
     /* stop the stopwatch                                          */
-    AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-	
-    UserHasQuit = 0;	/* quit has done its job if we are here */
+    if (setTime)
+      AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
+
+    if (UserHasQuit)
+      {
+	FlushRestOfInputLine();
+	UserHasQuit = 0;	/* quit has done its job if we are here */
+      }
 
   }
-
- finalize:
-  /* The QUITTING variable is made available to the AtExitFunction */
-  MakeReadWriteGVar(QUITTINGGVar);
-  AssGVar(QUITTINGGVar, UserHasQUIT ? True : False );
-  MakeReadOnlyGVar(QUITTINGGVar);
-
-  /* call the exit functions                                             */
-  BreakOnError = 0;
-
-  for ( i = 1;  i <= LEN_PLIST(AtExitFunctions);  i++ ) {
-    if ( setjmp(ReadJmpError) == 0 ) {
-      func = ELM_PLIST( AtExitFunctions, i );
-      CALL_0ARGS(func);
-    }
-  }
-
-  /* Possibly save the workspace */
-  if ( !UserHasQUIT
-       && (SaveOnExitFile = VAL_GVAR(SaveOnExitFileGVar))
-       && SaveOnExitFile != False)
+  
+  PrintObjDepth = oldPrintDepth;
+  Output->indent = oldindent;
+  CloseInput();
+  CloseOutput();
+  BaseShellContext = oldBaseShellContext;
+  ShellContext = oldShellContext;
+  if (UserHasQUIT)
     {
-      if (IsStringConv(SaveOnExitFile))
+      if (catchQUIT)
 	{
-	  if (SaveWorkspace(SaveOnExitFile) == True)
-	    Pr("Workspace saved in %s\n",
-	       (Int)CSTR_STRING(SaveOnExitFile), 0);
-	  else
-	    Pr("Attempt to save in %s failed\n",
-	       (Int)CSTR_STRING(SaveOnExitFile), 0);
+	  UserHasQUIT = 0;
+	  MakeReadWriteGVar(QUITTINGGVar);
+	  AssGVar(QUITTINGGVar, True);
+	  MakeReadOnlyGVar(QUITTINGGVar);
+	  return Fail;
 	}
       else
-	Pr("SaveOnExitFile is a %s not a filename\n",
-	   (Int)TNAM_OBJ(SaveOnExitFile), 0);
+	ReadEvalError();
     }
+
+  if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))
+    {
+      return Fail;
+    }
+  if (status & STATUS_RETURN_VOID)
+    {
+      res = NEW_PLIST(T_PLIST_EMPTY,0);
+      SET_LEN_PLIST(res,0);
+      return res;
+    }
+  if (status & STATUS_RETURN_VAL)
+    {
+      res = NEW_PLIST(T_PLIST_HOM,1);
+      SET_LEN_PLIST(res,1);
+      SET_ELM_PLIST(res,1,ReadEvalResult);
+      return res;
+    }
+  assert(0); 
+  return (Obj) 0;
+}
+
+
+	   
+
+Obj FuncSHELL (Obj self, Obj args)
+{
+  Obj context = 0;
+  UInt canReturnVoid = 0;
+  UInt canReturnObj = 0;
+  Int lastDepth = 0;
+  UInt setTime = 0;
+  Obj prompt = 0;
+  Obj preCommandHook = 0;
+  Obj infile;
+  Obj outfile;
+  Obj res;
+  Char promptBuffer[81];
+  UInt catchQUIT = 0;
+  
+  if (!IS_PLIST(args) || LEN_PLIST(args) != 10)
+    ErrorMayQuit("SHELL takes 10 arguments",0,0);
+  
+  context = ELM_PLIST(args,1);
+  if (TNUM_OBJ(context) != T_LVARS)
+    ErrorMayQuit("SHELL: 1st argument should be a local variables bag",0,0);
+  
+  if (ELM_PLIST(args,2) == True)
+    canReturnVoid = 1;
+  else if (ELM_PLIST(args,2) == False)
+    canReturnVoid = 0;
+  else
+    ErrorMayQuit("SHELL: 2nd argument (can return void) should be true or false",0,0);
+
+  if (ELM_PLIST(args,3) == True)
+    canReturnObj = 1;
+  else if (ELM_PLIST(args,3) == False)
+    canReturnObj = 0;
+  else
+    ErrorMayQuit("SHELL: 3rd argument (can return object) should be true or false",0,0);
+  
+  if (!IS_INTOBJ(ELM_PLIST(args,4)))
+    ErrorMayQuit("SHELL: 4th argument (last depth) should be a small integer",0,0);
+  lastDepth = INT_INTOBJ(ELM_PLIST(args,4));
+  if (lastDepth < 0 )
+    {
+      Pr("#W SHELL: negative last depth treated as zero",0,0);
+      lastDepth = 0;
+    }
+  else if (lastDepth > 3 )
+    {
+      Pr("#W SHELL: last depth greater than 3 treated as 3",0,0);
+      lastDepth = 3;
+    }
+
+  if (ELM_PLIST(args,5) == True)
+    setTime = 1;
+  else if (ELM_PLIST(args,5) == False)
+    setTime = 0;
+  else
+    ErrorMayQuit("SHELL: 5th argument (set time) should be true or false",0,0);
+  
+  prompt = ELM_PLIST(args,6);
+  if (!IsStringConv(prompt) || GET_LEN_STRING(prompt) > 80)
+    ErrorMayQuit("SHELL: 6th argument (prompt) must be a string of length at most 80 characters",0,0);
+  promptBuffer[0] = '\0';
+  SyStrncat(promptBuffer, CSTR_STRING(prompt), 80);
+
+  preCommandHook = ELM_PLIST(args,7);
+ 
+  if (preCommandHook == False)
+    preCommandHook = 0;
+  else if (!IS_FUNC(preCommandHook))
+    ErrorMayQuit("SHELL: 7th argument (preCommandHook) must be function or false",0,0);
+
+  
+  infile = ELM_PLIST(args,8);
+  if (!IsStringConv(infile))
+    ErrorMayQuit("SHELL: 8th argument (infile) must be a string",0,0);
+
+  outfile = ELM_PLIST(args,9);
+  if (!IsStringConv(infile))
+    ErrorMayQuit("SHELL: 9th argument (outfile) must be a string",0,0);
+
+  if (ELM_PLIST(args,10) == True)
+    catchQUIT = 1;
+  else if (ELM_PLIST(args,10) == False)
+    catchQUIT = 0;
+  else
+    ErrorMayQuit("SHELL: 10th argument (catch QUIT) should be true or false",0,0);
+
+
+
+  res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
+	       CSTR_STRING(infile), CSTR_STRING(outfile));
+
+  UserHasQuit = 0;
+  return res;
+}
+
+static void StrAppend(char **st,char *st2)
+{
+    Int len,len2;
+    if (*st == NULL)
+        len = 0;
+    else
+        len = SyStrlen(*st);
+    len2 = SyStrlen(st2);
+    *st = realloc(*st,len+len2+1);
+    if (*st == NULL) {
+        printf("Extremely unexpected out of memory error. Giving up.\n");
+        exit(1);
+    }
+    SyStrncat(*st,st2,len2);
+}
+
+#ifdef HAVE_REALPATH
+static void DoFindMyself(char *myself, char **mypath, char **gappath)
+{
+    char *tmppath;
+    char *p;
+
+    /* First we find our own position in the filesystem: */
+    *mypath = realpath(myself,NULL);
+    if (*mypath == NULL) {
+        printf("Could not determine my own path, giving up.\n");
+        exit(-1);
+    }
+    tmppath = NULL;
+    StrAppend(&tmppath,*mypath);
+    p = tmppath+SyStrlen(tmppath);
+    while (*p != '/') p--;
+    *p = 0;
+    StrAppend(&tmppath,"/../../..");
+    *gappath = realpath(tmppath,NULL);
+    if (*gappath == NULL) {
+        printf("Could not determine GAP path, giving up.\n");
+        exit(-2);
+    }
+    free(tmppath);
+}
+
+
+int DoCreateStartupScript(int argc, char *argv[], int withws)
+{
+    /* This is used to create a startup shell script, possibly using
+     * a saved workspace in a standard location. */
+    /* We can use malloc/realloc here arbitrarily since this GAP
+     * process will never start its memory manager before terminating! */
+    char *mypath;
+    char *gappath;
+    char *tmppath;
+    char *p;
+    FILE *f;
+    int i;
+
+    DoFindMyself(argv[0],&mypath,&gappath);
+
+    /* Now write out the startup script: */
+    f = fopen(argv[2],"w");
+    if (f == NULL) {
+        printf("Could not write startup script to\n  %s\ngiving up.\n",argv[2]);
+        return -3;
+    }
+    fprintf(f,"#!/bin/sh\n");
+    fprintf(f,"# Created by %s\n",mypath);
+    fprintf(f,"GAP_DIR=\"%s\"\n",gappath);
+    fprintf(f,"GAP_PRG=\"%s\"\n",mypath);
+    fprintf(f,"GAP_ARCH=\"%s\"\n",SYS_ARCH);
+    tmppath = NULL;
+    StrAppend(&tmppath,SYS_ARCH);
+    p = tmppath;
+    while (*p != '/') p++;
+    *p++ = 0;
+    fprintf(f,"GAP_ARCH_SYS=\"%s\"\n",tmppath);
+    fprintf(f,"GAP_ARCH_ABI=\"%s\"\n",p);
+    fprintf(f,"exec %s -l %s",mypath,gappath);
+    if (withws) {
+        tmppath[0] = 0;
+        StrAppend(&tmppath,mypath);
+        p = tmppath+SyStrlen(tmppath);
+        while (*p != '/') p--;
+        p[1] = 0;
+        StrAppend(&tmppath,"workspace.gap");
+        fprintf(f," -L %s",tmppath);
+    }
+    for (i = 3;i < argc;i++) fprintf(f," %s",argv[i]);
+    fprintf(f," \"$@\"\n");
+    fclose(f);
+#ifdef HAVE_CHMOD
+    chmod(argv[2],S_IRUSR | S_IWUSR | S_IXUSR |
+                  S_IRGRP | S_IWGRP | S_IXGRP |
+                  S_IROTH | S_IXOTH);
+#else
+    printf("Warning: Do not have chmod to make script executable!\n");
+#endif
+    free(tmppath);
+    free(mypath);
+    free(gappath);
+    return 0;
+}
+
+int DoCreateWorkspace(char *myself)
+{
+    /* This is used to create an architecture-dependent saved
+     * workspace in a standard location. */
+    char *mypath;
+    char *gappath;
+    char *command;
+    char *tmppath;
+    char *p;
+    FILE *f;
+
+    DoFindMyself(myself,&mypath,&gappath);
+
+    /* Now we create a saved workspace: */
+    printf("Creating workspace...\n");
+    command = NULL;
+    StrAppend(&command,mypath);
+    StrAppend(&command," -N -r");
+    StrAppend(&command," -l ");
+    StrAppend(&command,gappath);
+
+    tmppath = NULL;
+    StrAppend(&tmppath,mypath);
+    p = tmppath+SyStrlen(tmppath);
+    while (*p != '/') p--;
+    p[1] = 0;
+    StrAppend(&tmppath,"workspace.gap");
+
+    /* Now to the action: */
+    f = popen(command,"w");
+    if (f == NULL) {
+        printf("Could not start myself to save workspace, giving up.\n");
+        return -6;
+    }
+    fprintf(f,"??blabla\n");
+    fprintf(f,"SaveWorkspace(\"%s\");\n",tmppath);
+    fprintf(f,"quit;\n");
+    fflush(f);
+    pclose(f);
+    printf("\nDone creating workspace in\n  %s\n",tmppath);
+
+    free(tmppath);
+    free(command);
+    free(gappath);
+    free(mypath);
+
+    return 0;
+}
+
+int DoFixGac(char *myself)
+{
+    char *mypath;
+    char *gappath;
+    FILE *f;
+    char *gacpath;
+    char *gapbin;
+    char *newpath;
+    char *p,*q,*r;
+    char *buf,*buf2;
+    size_t len,written;
+
+    DoFindMyself(myself,&mypath,&gappath);
+    gacpath = NULL;
+    StrAppend(&gacpath,mypath);
+    p = gacpath + SyStrlen(gacpath);
+    while (*p != '/') p--;
+    *p = 0;
+    gapbin = NULL;
+    StrAppend(&gapbin,gacpath);
+    StrAppend(&gacpath,"/gac");
+    newpath = NULL;
+    StrAppend(&newpath,gacpath);
+    StrAppend(&newpath,".new");
+    f = fopen(gacpath,"r");
+    if (f == NULL) {
+        printf("Could not open gac. Giving up.\n");
+        return -7;
+    }
+    buf = malloc(65536);
+    buf2 = malloc(65536+SyStrlen(gapbin)+10);
+    if (buf == NULL || buf2 == NULL) {
+        printf("Could not allocate 128kB of memory. Giving up.\n");
+        return -8;
+    }
+    len = fread(buf,1,65534,f);
+    fclose(f);
+
+    /* Now manipulate it: */
+    p = buf;
+    p[len] = 0;
+    p[len+1] = 0;
+    q = buf2;
+    while (*p) {
+        if (!SyStrncmp(p,"gap_bin=",8)) {
+            while (*p != '\n' && *p != 0) p++;
+            *q++ = 'g'; *q++ = 'a'; *q++ = 'p'; *q++ = '_';
+            *q++ = 'b'; *q++ = 'i'; *q++ = 'n'; *q++ = '=';
+            r = gapbin;
+            while (*r) *q++ = *r++;
+            *q++ = '\n';
+        } else {
+            while (*p != '\n' && *p != 0) *q++ = *p++;
+            *q++ = *p++;
+        }
+    }
+    len = q - buf2;
+
+    f = fopen(newpath,"w");
+    if (f == NULL) {
+        printf("Could not open gac.new. Giving up.\n");
+        return -9;
+    }
+    written = fwrite(buf2,1,len,f);
+    if (written < len) {
+        printf("Could not write gac.new. Giving up.\n");
+        fclose(f);
+        return -10;
+    }
+    if (fclose(f) < 0) {
+        printf("Could not close gac.new. Giving up.\n");
+        fclose(f);
+        return -11;
+    }
+    if (rename(newpath,gacpath) < 0) {
+        printf("Could not replace gac with new version. Giving up.\n");
+        return -12;
+    }
+    return 0;
+}
+#endif
+
+#ifdef COMPILECYGWINDLL
+int realmain (
+#else
+int main (
+#endif
+	  int                 argc,
+	  char *              argv [],
+          char *              environ [] )
+{
+  UInt                type;                   /* result of compile       */
+  Obj                 func;                   /* function (compiler)     */
+  Int4                crc;                    /* crc of file to compile  */
+
+#ifdef HAVE_REALPATH
+  if (argc >= 3 && !SyStrcmp(argv[1],"--createstartupscript")) {
+      return DoCreateStartupScript(argc,argv,0);
+  }
+  if (argc >= 3 && !SyStrcmp(argv[1],"--createstartupscriptwithws")) {
+      return DoCreateStartupScript(argc,argv,1);
+  }
+  if (argc >= 2 && !SyStrcmp(argv[1],"--createworkspace")) {
+      return DoCreateWorkspace(argv[0]);
+  }
+  if (argc >= 2 && !SyStrcmp(argv[1],"--fixgac")) {
+      return DoFixGac(argv[0]);
+  }
+#endif
+  
+  original_argv0 = argv[0];
+  sysargv = argv;
+  sysenviron = environ;
+  
+  /* prepare for a possible restart 
+  if (setjmp(SyRestartBuf))
+    {
+      argc = restart_argc;
+      argv = restart_argv;
+    }
+    `*/
+
+  /* Initialize assorted variables in this file */
+  /*   BreakOnError = 1;
+       ErrorCount = 0; */
+  NrImportedGVars = 0;
+  NrImportedFuncs = 0;
+  ErrorHandler = (Obj) 0;
+  UserHasQUIT = 0;
+  UserHasQuit = 0;
     
-  /* exit to the operating system, the return is there to please lint    */
+  /* initialize everything and read init.g which runs the GAP session */
+  InitializeGap( &argc, argv );
+  if (!UserHasQUIT) {		/* maybe the user QUIT from the initial
+				   read of init.g  somehow*/
+    /* maybe compile in which case init.g got skipped */
+    if ( SyCompilePlease ) {
+      if ( ! OpenInput(SyCompileInput) ) {
+	SyExit(1);
+      }
+      func = READ_AS_FUNC();
+      crc  = SyGAPCRC(SyCompileInput);
+      if (SyStrlen(SyCompileOptions) != 0)
+	SetCompileOpts(SyCompileOptions);
+      type = CompileFunc(
+			 SyCompileOutput,
+			 func,
+			 SyCompileName,
+			 crc,
+			 SyCompileMagic1 );
+      if ( type == 0 )
+	SyExit( 1 );
+      SyExit( 0 );
+    }
+  }
   SyExit(0);
   return 0;
 }
+
+/****************************************************************************
+**
+*F  FuncRESTART_GAP( <self>, <cmdline> ) . . . . . . . .  restart gap
+**
+*/
+
+Char *restart_argv_buffer[1000];
+
+#include <unistd.h> /* move this and wrap execvp later */
+
+Obj FuncRESTART_GAP( Obj self, Obj cmdline )
+{
+  Char *s, *f,  **v;
+  while (!IsStringConv(cmdline))
+    {
+      cmdline = ErrorReturnObj("RESTART_GAP: <cmdline> must be a string, not a %s",
+			       (Int) TNAM_OBJ(cmdline), (Int) 0,
+			       "You can resturn a string to continue");
+    }
+  s = CSTR_STRING(cmdline);
+  /* Pr("%s\n",(Int)s, 0); */
+  f = s;
+  v = restart_argv_buffer;
+  while (*s) {
+    *v++ = s;
+    while (*s && !isspace(*s))
+      s++;
+    while (isspace(*s))
+      *s++ = '\0';
+  }
+  *v = (Char *)0;
+  /*  restart_argc = ct;
+      restart_argv = restart_argv_buffer; */
+  /* FinishBags(); */
+  execvp(f,restart_argv_buffer);
+  /*  longjmp(SyRestartBuf,1); */
+  return Fail; /* shouldn't normally get here */
+}
+
 
 
 /****************************************************************************
@@ -414,6 +896,26 @@ Obj FuncRuntime (
 {
   return INTOBJ_INT( SyTime() );
 }
+
+
+
+Obj FuncRUNTIMES( Obj     self)
+{
+  Obj    res;
+#if HAVE_GETRUSAGE
+  res = NEW_PLIST(T_PLIST, 4);
+  SET_LEN_PLIST(res, 4);
+  SET_ELM_PLIST(res, 1, INTOBJ_INT( SyTime() ));
+  SET_ELM_PLIST(res, 2, INTOBJ_INT( SyTimeSys() ));
+  SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
+  SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
+#else
+  res = INTOBJ_INT( SyTime() );
+#endif
+  return res;
+   
+}
+
 
 
 /****************************************************************************
@@ -472,7 +974,7 @@ Obj FuncSizeScreen (
 
   /* extract the length                                                  */
   if ( LEN_LIST(size) < 1 || ELM0_LIST(size,1) == 0 ) {
-    len = SyNrCols;
+    len = 0;
   }
   else {
     elm = ELMW_LIST(size,1);
@@ -484,12 +986,12 @@ Obj FuncSizeScreen (
     }
     len = INT_INTOBJ( elm );
     if ( len < 20  )  len = 20;
-    if ( 256 < len )  len = 256;
+    if ( MAXLENOUTPUTLINE < len )  len = MAXLENOUTPUTLINE;
   }
 
   /* extract the number                                                  */
   if ( LEN_LIST(size) < 2 || ELM0_LIST(size,2) == 0 ) {
-    nr = SyNrRows;
+    nr = 0;
   }
   else {
     elm = ELMW_LIST(size,2);
@@ -504,14 +1006,22 @@ Obj FuncSizeScreen (
   }
 
   /* set length and number                                               */
-  SyNrCols = len;
-  SyNrRows = nr;
+  if (len != 0)
+    {
+      SyNrCols = len;
+      SyNrColsLocked = 1;
+    }
+  if (nr != 0)
+    {
+      SyNrRows = nr;
+      SyNrRowsLocked = 1;
+    }
 
   /* make and return the size of the screen                              */
   size = NEW_PLIST( T_PLIST, 2 );
   SET_LEN_PLIST( size, 2 );
-  SET_ELM_PLIST( size, 1, INTOBJ_INT(len) );
-  SET_ELM_PLIST( size, 2, INTOBJ_INT(nr)  );
+  SET_ELM_PLIST( size, 1, INTOBJ_INT(SyNrCols) );
+  SET_ELM_PLIST( size, 2, INTOBJ_INT(SyNrRows)  );
   return size;
 
 }
@@ -659,7 +1169,8 @@ Obj FuncWindowCmd (
     C_NEW_STRING(tmp, 15, "window system: ");  
     SET_ELM_PLIST( list, 1, tmp );
     SET_LEN_PLIST( list, i-1 );
-    return FuncError( 0, list );
+    return CALL_XARGS(Error,list);
+    /*     return FuncError( 0, list );*/
   }
   else {
     for ( m = 1;  m <= i-2;  m++ )
@@ -699,11 +1210,15 @@ void DownEnvInner( Int depth )
     depth = 0;
     ErrorLVars = ErrorLVars0;
     ErrorLLevel = 0;
+    ShellContextDepth = 0;
+    ShellContext = BaseShellContext;
   }
   else if ( depth < 0 ) {
     depth = -ErrorLLevel + depth;
     ErrorLVars = ErrorLVars0;
     ErrorLLevel = 0;
+    ShellContextDepth = 0;
+    ShellContext = BaseShellContext;
   }
   
   /* now go down                                                         */
@@ -712,6 +1227,8 @@ void DownEnvInner( Int depth )
 	  && PTR_BAG(ErrorLVars)[2] != BottomLVars ) {
     ErrorLVars = PTR_BAG(ErrorLVars)[2];
     ErrorLLevel--;
+    ShellContext = PTR_BAG(ShellContext)[2];
+    ShellContextDepth--;
     depth--;
   }
 }
@@ -767,84 +1284,33 @@ Obj FuncUpEnv (
   return 0;
 }
 
-/****************************************************************************
-**
-*F  FuncWhere( <self>, <depth> )  . . . . . . . . . . . .  print stack frames
-*/
-Obj FuncWhere (
-	       Obj                 self,
-	       Obj                 args )
+
+Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
-  Obj                 currLVars;
-  Int                 depth;
-  Expr                call;
-
-#ifndef NO_BRK_CALLS
-
-  /* evaluate the argument                                               */
-  if ( LEN_LIST(args) == 0 ) {
-    depth = 5;
+  Obj currLVars = CurrLVars;
+  Expr call;
+  if (context == BottomLVars)
+    return (Obj) 0;
+  SWITCH_TO_OLD_LVARS(context);
+  call = BRK_CALL_TO();
+  if ( call == 0 ) {
+    Pr( "<compiled or corrupted statement> ", 0L, 0L );
   }
-  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
-    depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
-    if ( depth == 0 ) {
-      /* We do this to avoid the enclosing " called from" and "..."
-         when the depth is zero                                         */
-      depth = -1;
-    }
-  }
-  else {
-    ErrorQuit( "usage: Where( [ <depth> ] )", 0L, 0L );
-    return 0;
-  }
-
-  currLVars = CurrLVars;
-
-  if ( ErrorLVars != 0  && ErrorLVars != BottomLVars ) {
-    SWITCH_TO_OLD_LVARS( ErrorLVars );
-    SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
-    if ( 0 < depth ) {
-      Pr( " called from\n", 0L, 0L );
-    }
-    while ( CurrLVars != BottomLVars && 0 < depth ) {
-      call = BRK_CALL_TO();
-      if ( call == 0 ) {
-	Pr( "<compiled or corrupted call value> ", 0L, 0L );
-      }
 #if T_PROCCALL_0ARGS
-      else if ( T_PROCCALL_0ARGS <= TNUM_STAT(call)
-		&& TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
+    else if ( FIRST_STAT_TNUM <= TNUM_STAT(call)
+	      && TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
 #else
-      else if ( TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
+     else if ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
 #endif
-	PrintStat( call );
-      }
-      else if ( T_FUNCCALL_0ARGS <= TNUM_EXPR(call)
-                && TNUM_EXPR(call)  <= T_FUNCCALL_XARGS ) {
-        PrintExpr( call );
-      }
-      Pr( " called from\n", 0L, 0L );
-      SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
-      depth--;
+      PrintStat( call );
     }
-    if ( 0 < depth ) {
-      Pr( "<function>( <arguments> ) called from read-eval-loop\n",
-          0L, 0L );
+    else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
+	      && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
+      PrintExpr( call );
     }
-    else if ( depth == 0 ) {
-      Pr( "...\n", 0L, 0L );
-    }
-  }
-  else {
-    Pr( "not in any function\n", 0L, 0L );
-  }
-
-  SWITCH_TO_OLD_LVARS( currLVars );
-    
-#endif
-    
-  return 0;
-}
+    SWITCH_TO_OLD_LVARS( currLVars );
+    return (Obj) 0;
+}    
 
 /****************************************************************************
 **
@@ -852,354 +1318,152 @@ Obj FuncWhere (
 **
 */
   
+/* syJmp_buf CatchBuffer; */
+Obj ThrownObject = 0;
 
-Obj FuncCallFuncTrapError( Obj self, Obj func)
+Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
   {
-    jmp_buf readJmpError;
-    ClearError();
-
-    /* Save the old error long-jump */
-    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
-    if (READ_ERROR())
+    Obj plain_args;
+    syJmp_buf readJmpError;
+    Obj res;
+    Obj currLVars;
+    Obj result;
+    Stat currStat;
+    if (!IS_FUNC(func))
+      ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
+    if (!IS_LIST(args))
+      ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <args> must be a list",0,0);
+    if (!IS_PLIST(args))
       {
-	/* Get out any old how */
-	if (UserHasQUIT)
-	  longjmp( readJmpError, 1);
-	ExecEnd(1);
-	ClearError();
-	return True;
+	plain_args = SHALLOW_COPY_OBJ(args);
+	PLAIN_LIST(plain_args);
       }
-    
-    ExecBegin( BottomLVars );
-    CALL_0ARGS( func );
-    ExecEnd(0);
-    return False;
-
-  }
-  
-/****************************************************************************
-**
-*F  ErrorMode( <msg>, <arg1>, <arg2>, <args>, <msg2>, <mode> )
-*/
-
-    Obj OnBreak;			/* a Fopy of the global OnBreak,
-				         which by default is set to Where. */
-    Obj OnBreakMessage;			/* a Fopy of the global
-                                         OnBreakMessage.                   */
-    Obj OnQuit;		                /* a Copy of the global OnQuit     */
-
-Obj ErrorHandler = (Obj) 0;		/* not yet settable from GAP level */
-
- Obj FuncSetErrorHandler( Obj self, Obj Handler)
-   {
-     Obj handler;
-     if (ErrorHandler != (Obj) 0)
-       handler = ErrorHandler;
-     else
-       handler = Fail;
-     ErrorHandler = Handler;
-     return handler;
-   }
- 
-UInt UserHasQuit = 0;
-UInt UserHasQUIT = 0; 
- 
-Obj ErrorMode (
-    const Char *        msg,
-    Int                 arg1,
-    Int                 arg2,
-    Obj                 args,
-    const Char *        msg2,
-    Char                mode )
-{
-    Obj                 errorLVars0;
-    Obj                 errorLVars;
-    UInt                errorLLevel;
-    ExecStatus          status;
-    char                prompt [16];
-    Obj                 errorHandler;
-
-    ErrorCount++;
-    if (ErrorCount >= ((UInt)1)<<NR_SMALL_INT_BITS)
-      ErrorCount = 0;
-    
-    /* ignore all errors when testing or quitting                          */
-    if ( ( TestInput != 0 && TestOutput == Output ) || ! BreakOnError ) {
-        if ( msg != (Char*)0 ) {
-            Pr( msg, arg1, arg2 );
-        }
-        else if ( args != (Obj)0 ) {
-            Pr( "Error, ", 0L, 0L );
-            FuncPrint( (Obj)0, args );
-        }
-        Pr( "\n", 0L, 0L );
-        ReadEvalError();
-    }
-
-    /* See if we have an Error Handler */
-    if (ErrorHandler != 0 && IS_FUNC(ErrorHandler))
-      {
-	Obj mess;
-	Obj mess2;
-	Obj ret;
-	Int len;
-	errorHandler = ErrorHandler;
-	ErrorHandler = (Obj)0;
-
-	/* Transform the messages into GAP strings */
-	if (msg)
-	  {
-	    len = SyStrlen(msg);
-	    C_NEW_STRING(mess, len, msg);
-	  }
-	else
-	  {
-	    mess = NEW_STRING(0);
-	  }
-	if (msg2)
-	  {
-	    len = SyStrlen(msg2);
-	    C_NEW_STRING(mess2, len, msg2);
-	  }
-	else
-	  {
-	    mess2 = NEW_STRING(0);
-	  }
-
-	/* Now call the handler */
-	if (args != 0)
-	  ret=CALL_4ARGS(errorHandler,mess, args, mess2, ObjsChar[(Int)mode]);
-	else
-	  ret=CALL_4ARGS(errorHandler,mess, Fail, mess2, ObjsChar[(Int)mode]);
-
-	/* Now handle the return, allowing for the mode */
-	if (ret == True)
-	  {
-	    ReadEvalError();
-	  }
-	else if (IS_PLIST(ret))
-	  {
-	    if (LEN_PLIST(ret) == 0)
-	      {
-		if (mode == 'x')
-		  return 0;
-		else
-		  {
-		    Pr("%%E Error handler tried to return null in mode %c\n",mode,0);
-		    if (mode == 'v')
-		      return Fail;
-		    if (mode == 'q' || mode == 'm')
-		      {
-			ReadEvalError();
-		      }
-		    Pr("Panic: impossible error mode %c\n",mode,0);
-		  }
-	      }
-	    else if (LEN_PLIST(ret) > 1)
-	      {
-		Pr("%%E Error handler returned %d objects, all but the first are ignored\n",
-		   LEN_PLIST(ret),0);
-	      }
-	    
-	    if (mode == 'v')
-	      return ELM_PLIST(ret,1);
-	    
-	    Pr("%%E Error handler tried to return an object in mode %c\n",mode,0);
-	    if (mode == 'x')
-	      {
-		return 0;
-	      }
-	    if (mode == 'q' || mode == 'm')
-	      {
-		ReadEvalError();
-	      }
-	    Pr("Panic: impossible error mode %c\n",mode,0);
-	  }
-	else 
-	  {
-	    Pr("%%E Error handler returned bad value or nothing, treating as true\n", 0L, 0L);
-	  }
-	ReadEvalError();
+    else 
+      plain_args = args;
+    memcpy((void *)&readJmpError, (void *)&ReadJmpError, sizeof(syJmp_buf));
+    currLVars = CurrLVars;
+    currStat = CurrStat;
+    res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
+    if (sySetjmp(ReadJmpError)) {
+      SET_LEN_PLIST(res,2);
+      SET_ELM_PLIST(res,1,False);
+      SET_ELM_PLIST(res,2,ThrownObject);
+      CHANGED_BAG(res);
+      ThrownObject = 0;
+      CurrLVars = currLVars;
+      PtrLVars = PTR_BAG(CurrLVars);
+      PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      CurrStat = currStat;
+    } else {
+      switch (LEN_PLIST(plain_args)) {
+      case 0: result = CALL_0ARGS(func);
+	break;
+      case 1: result = CALL_1ARGS(func, ELM_PLIST(plain_args,1));
+	break;
+      case 2: result = CALL_2ARGS(func, ELM_PLIST(plain_args,1),
+				  ELM_PLIST(plain_args,2));
+	break;
+      case 3: result = CALL_3ARGS(func, ELM_PLIST(plain_args,1),
+				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
+	break;
+      case 4: result = CALL_4ARGS(func, ELM_PLIST(plain_args,1),
+				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+				  ELM_PLIST(plain_args,4));
+	break;
+      case 5: result = CALL_5ARGS(func, ELM_PLIST(plain_args,1),
+				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+				  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
+	break;
+      case 6: result = CALL_6ARGS(func, ELM_PLIST(plain_args,1),
+				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+				  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
+				  ELM_PLIST(plain_args,6));
+	break;
+      default: result = CALL_XARGS(func, plain_args);
       }
-
-    /* open the standard error output file                                 */
-    OpenOutput( "*errout*" );
-    ErrorLevel += 1;
-    errorLVars0 = ErrorLVars0;
-    ErrorLVars0 = CurrLVars;
-    errorLVars  = ErrorLVars;
-    ErrorLVars  = CurrLVars;
-    errorLLevel = ErrorLLevel;
-    ErrorLLevel = 0;
-
-    /* print the error message                                             */
-    if ( msg != (Char*)0 ) {
-        Pr( msg, arg1, arg2 );
-    }
-    else if ( args != (Obj)0 ) {
-        Pr( "Error, ", 0L, 0L );
-        FuncPrint( (Obj)0, args );
-    }
-
-    /* print the location                                                  */
-    if ( CurrStat != 0 && msg != (Char*)0) {
-	/* only print the current command if the `msg' variable is not 0.
-	 * This will avoid printing the `Error("blabla")' line again */
-        Pr( " at\n", 0L, 0L );
-	PrintStat( CurrStat );
-        Pr( "\n", 0L, 0L );
-    }
-    else if ( mode != 'f' ) {
-        Pr( "\n", 0L, 0L );
-    }
-
-    /* try to open input for a break loop                                  */
-    if ( mode == 'q' || ! OpenInput( "*errin*") ) {
-        ErrorLevel -= 1;
-        ErrorLVars0 = errorLVars0;
-        ErrorLVars = errorLVars;
-        ErrorLLevel = errorLLevel;
-        CloseOutput();
-        ReadEvalError();
-    }
-    ClearError();
-
-    /* Call the OnBreak function. This can't be done earlier, because
-       there seems to be no safe way to handle errors in it, unless we
-       are about to enter a break r-e-v loop*/
-    CALL_0ARGS(OnBreak);
-
-    /* print the second message                                            */
-    Pr( "Entering break read-eval-print loop ...\n", 0L, 0L );
-
-    if ( mode == 'f' ) { 
-        /* If called via (Func)Error call the OnBreakMessage which the 
-           user may have customised                                        */
-        CALL_0ARGS(OnBreakMessage);
-    }
-    else {
-        Pr( "you can 'quit;' to quit to outer loop", 0L, 0L );
-	if (mode != 'm')
-	  Pr( ", or\n%s to continue", (Int)msg2, 0L );
-	Pr( "\n",0L,0L);
-    }
-
-    /* read-eval-print loop                                                */
-    while ( 1 ) {
-
-        /* read and evaluate one command                                   */
-        if ( ErrorLevel == 1 ) {
-            Prompt = "brk> ";
-        }
-        else {
-            prompt[0] = 'b';
-            prompt[1] = 'r';
-            prompt[2] = 'k';
-            prompt[3] = '_';
-            prompt[4] = ErrorLevel / 10 + '0';
-            prompt[5] = ErrorLevel % 10 + '0';
-            prompt[6] = '>';
-            prompt[7] = ' ';
-            prompt[8] = '\0';
-            Prompt = prompt;
-        }
-
-        /* read and evaluate one command                                   */
-        ClearError();
-        DualSemicolon = 0;
-        status = ReadEvalDebug();
-	UserHasQuit = 0;	/* it is enough for quit
-				 to have got us here */
-
-        /* handle ordinary command                                         */
-        if ( status == STATUS_END && ReadEvalResult != 0 ) {
-	  
-            /* remember the value in 'last'                                */
-            AssGVar( Last,  ReadEvalResult   );
-
-            /* print the result                                            */
-            if ( ! DualSemicolon ) {
-                ViewObjHandler( ReadEvalResult );
-            }
-
-        }
-
-        /* handle return-value                                             */
-        else if ( status == STATUS_RETURN_VAL ) {
-            if ( mode == 'v' ) {
-                ErrorLevel -= 1;
-                ErrorLVars0 = errorLVars0;
-                ErrorLVars = errorLVars;
-                ErrorLLevel = errorLLevel;
-                CloseInput();
-                ClearError();
-                CloseOutput();
-                return ReadEvalResult;
-            }
-            else {
-                Pr( "'return <value>;' cannot be used in this break-loop\n",
-                    0L, 0L );
-            }
-        }
-
-        /* handle return-void                                             */
-        else if ( status == STATUS_RETURN_VOID ) {
-            if ( mode == 'x' || mode == 'f' ) {
-                ErrorLevel -= 1;
-                ErrorLVars0 = errorLVars0;
-                ErrorLVars = errorLVars;
-                ErrorLLevel = errorLLevel;
-                CloseInput();
-                ClearError();
-                CloseOutput();
-                return (Obj)0;
-            }
-            else {
-                Pr( "'return;' cannot be used in this break-loop\n",
-                    0L, 0L );
-            }
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( status == STATUS_EOF || status == STATUS_QUIT ) {
-          CALL_0ARGS(OnQuit);
-	  UserHasQuit = 1;
-	  break;
-        }
-	else if ( status == STATUS_QQUIT ) {
-	  UserHasQUIT = 1;
-	  break;
+      SET_ELM_PLIST(res,1,True);
+      if (result)
+	{
+	  SET_LEN_PLIST(res,2);
+	  SET_ELM_PLIST(res,2,result);
+	  CHANGED_BAG(res);
 	}
-	if (UserHasQUIT)
-	  break;
-
+      else
+	SET_LEN_PLIST(res,1);
     }
+    memcpy((void *)&ReadJmpError, (void *)&readJmpError, sizeof(syJmp_buf));
+    return res;      
+  }
 
-    /* return to the outer read-eval-print loop                            */
-    ErrorLevel -= 1;
-    ErrorLVars0 = errorLVars0;
-    ErrorLVars = errorLVars;
-    ErrorLLevel = errorLLevel;
-    CloseInput();
-    ClearError();
-    CloseOutput();
-    ReadEvalError();
+ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload) {
+   ThrownObject = payload;
+   syLongjmp(ReadJmpError, 1);
+   return 0;
+ }
+  
 
-    /* this is just to please GNU cc, 'ReadEvalError' never returns        */
-    return 0;
-}
+UInt UserHasQuit;
+UInt UserHasQUIT; 
 
+ Obj FuncSetUserHasQuit( Obj Self, Obj value)
+   {
+     UserHasQuit = INT_INTOBJ(value);
+     if (UserHasQuit)
+       RecursionDepth = 0;
+     return 0;
+   }
 
 /****************************************************************************
 **
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
+
+static Obj ErrorMessageToGAPString( 
+    const Char *        msg,
+    Int                 arg1,
+    Int                 arg2 )
+{
+  Char message[120];
+  Obj Message;
+  SPrTo(message, 120, msg, arg1, arg2);
+  message[119] = '\0';
+  C_NEW_STRING(Message, SyStrlen(message), message); 
+  return Message;
+}
+
+Obj CallErrorInner (
+    const Char *        msg,
+    Int                 arg1,
+    Int                 arg2,
+    UInt                justQuit,
+    UInt                mayReturnVoid,
+    UInt                mayReturnObj,
+    Obj                 lateMessage,
+    UInt                printThisStatement)
+{
+  Obj EarlyMsg;
+  Obj r = NEW_PREC(0);
+  Obj l;
+  EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
+  AssPRec(r, RNamName("context"), CurrLVars);
+  AssPRec(r, RNamName("justQuit"), justQuit? True : False);
+  AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
+  AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid? True : False);
+  AssPRec(r, RNamName("printThisStatement"), printThisStatement? True : False);
+  AssPRec(r, RNamName("lateMessage"), lateMessage);
+  l = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, 1);
+  SET_ELM_PLIST(l,1,EarlyMsg);
+  SET_LEN_PLIST(l,1);
+  SET_BRK_CALL_TO(CurrStat);
+  return CALL_2ARGS(ErrorInner,r,l);  
+}
+
 void ErrorQuit (
     const Char *        msg,
     Int                 arg1,
     Int                 arg2 )
 {
-    ErrorMode( msg, arg1, arg2, (Obj)0, (Char*)0, 'q' );
+  CallErrorInner(msg, arg1, arg2, 1, 0, 0, False, 1);
 }
 
 
@@ -1330,7 +1594,9 @@ Obj ErrorReturnObj (
     Int                 arg2,
     const Char *        msg2 )
 {
-    return ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'v' );
+  Obj LateMsg;
+  C_NEW_STRING(LateMsg, SyStrlen(msg2), msg2);
+  return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
 }
 
 
@@ -1344,7 +1610,10 @@ void ErrorReturnVoid (
     Int                 arg2,
     const Char *        msg2 )
 {
-    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
+  Obj LateMsg;
+  C_NEW_STRING(LateMsg, SyStrlen(msg2), msg2);
+  CallErrorInner( msg, arg1, arg2, 0,1,0,LateMsg, 1);
+  /*    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' ); */
 }
 
 /****************************************************************************
@@ -1356,33 +1625,14 @@ void ErrorMayQuit (
     Int                 arg1,
     Int                 arg2)
 {
-    ErrorMode( msg, arg1, arg2, (Obj)0, (Char *)0, 'm' );
-}
-
-
-/****************************************************************************
-**
-*F  FuncError( <self>, <args> ) . . . . . . . . . . . . . . . signal an error
-**
-*/
-Obj FuncError (
-    Obj                 self,
-    Obj                 args )
-{
-    return ErrorMode( (Char*)0, 0L, 0L, args, (Char*)0, 'f' );
-}
-
-/****************************************************************************
-**
-*F  FuncErrorCount( <self> ) . . . . . . . . . . . . .return the error count
-**
-*/
-
-Obj FuncErrorCount( Obj self )
-{
-  return INTOBJ_INT(ErrorCount);
-}
+  CallErrorInner(msg, arg1, arg2, 0, 0,0, False, 1);
  
+}
+
+Obj Error;
+Obj ErrorInner;
+
+
 /****************************************************************************
 **
 
@@ -1446,7 +1696,7 @@ void Complete (
 
     /* now do the reading                                                  */
     while ( 1 ) {
-        type = ReadEvalCommand();
+        type = ReadEvalCommand(BottomLVars);
         if ( type == STATUS_RETURN_VAL || type == STATUS_RETURN_VOID ) {
             Pr( "'return' must not be used in file read-eval loop",
                 0L, 0L );
@@ -1782,7 +2032,7 @@ Obj FuncMAKE_INIT (
     volatile UInt       symbol;
     Char                value [1024];
     volatile UInt       funcNum;
-    jmp_buf             readJmpError;
+    syJmp_buf             readJmpError;
 
     /* check the argument                                                  */
     if ( ! IsStringConv( filename ) ) {
@@ -1812,14 +2062,14 @@ Obj FuncMAKE_INIT (
     MAKE_INIT_GET_SYMBOL;
     while ( symbol != S_EOF ) {
 
-        memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, ReadJmpError, sizeof(syJmp_buf) );
         if ( READ_ERROR() ) {
-            memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
             CloseInput();
             CloseOutput();
             ReadEvalError();
         }
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
 
         /* handle function beginning and ending                            */
         if ( symbol == S_FUNCTION ) {
@@ -2237,7 +2487,6 @@ Obj FuncLoadedModules (
         }
         else if ( m->type == MODULE_STATIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
-            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
 	    CHANGED_BAG(list);
             C_NEW_STRING( str, SyStrlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
@@ -2314,7 +2563,7 @@ again:
         }
 
         /* if request give a short display of the statistics                */
-        if ( SyStrcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+        else if ( SyStrcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
@@ -2388,6 +2637,54 @@ again:
     return 0;
 }
 
+Obj FuncGASMAN_STATS(Obj self)
+{
+  Obj res;
+  Obj row;
+  Obj entry;
+  UInt i,j;
+  Int x;
+  res = NEW_PLIST(T_PLIST_TAB_RECT + IMMUTABLE, 2);
+  SET_LEN_PLIST(res, 2);
+  for (i = 1; i <= 2; i++)
+    {
+      row = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, 9);
+      SET_ELM_PLIST(res, i, row);
+      CHANGED_BAG(res);
+      SET_LEN_PLIST(row, 9);
+      for (j = 1; j <= 8; j++)
+	{
+	  x = SyGasmanNumbers[i-1][j];
+
+	  /* convert x to GAP integer. x may be too big to be a small int */
+	  if (x < (1L << NR_SMALL_INT_BITS))
+	    entry = INTOBJ_INT(x);
+	  else
+	    entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)),
+			      INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))),
+			 INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
+	  SET_ELM_PLIST(row, j, entry);
+	}
+      SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));	
+    }
+  return res;      
+}
+
+Obj FuncGASMAN_MESSAGE_STATUS( Obj self )
+{
+  return INTOBJ_INT(SyMsgsFlagBags);
+}
+
+Obj FuncGASMAN_LIMITS( Obj self )
+{
+  Obj list;
+  list = NEW_PLIST(T_PLIST_CYC+IMMUTABLE, 3);
+  SET_LEN_PLIST(list,3);
+  SET_ELM_PLIST(list, 1, INTOBJ_INT(SyStorMin));
+  SET_ELM_PLIST(list, 2, INTOBJ_INT(SyStorMax));
+  SET_ELM_PLIST(list, 3, INTOBJ_INT(SyStorKill));
+  return list;
+}
 
 /****************************************************************************
 **
@@ -2400,7 +2697,7 @@ Obj FuncSHALLOW_SIZE (
   if (IS_INTOBJ(obj) || IS_FFE(obj))
     return INTOBJ_INT(0);
   else
-    return INTOBJ_INT( SIZE_BAG( obj ) );
+    return ObjInt_UInt( SIZE_BAG( obj ) );
 }
 
 
@@ -2522,6 +2819,23 @@ Obj FuncHANDLE_OBJ (
     return hnum;
 }
 
+Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
+{
+    if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
+        return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
+    } else {
+        return INTOBJ_INT( 0 );
+    }
+}
+
+Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
+{
+    Obj body;
+    if (TNUM_OBJ(f) != T_FUNCTION) return Fail;
+    body = BODY_FUNC(f);
+    if (body == 0) return INTOBJ_INT(0);
+    else return INTOBJ_INT( SIZE_BAG( body ) );
+}
 
 /****************************************************************************
 **
@@ -2899,17 +3213,7 @@ void InitHdlrFuncsFromTable (
 **
 *F  ImportGVarFromLibrary( <name>, <address> )  . . .  import global variable
 */
-typedef struct {
-    const Char *                name;
-    Obj *                       address;
-} StructImportedGVars;
 
-#ifndef MAX_IMPORTED_GVARS
-#define MAX_IMPORTED_GVARS      1024
-#endif
-
-static StructImportedGVars ImportedGVars[MAX_IMPORTED_GVARS];
-static Int NrImportedGVars = 0;
 
 void ImportGVarFromLibrary(
     const Char *        name,
@@ -2933,8 +3237,6 @@ void ImportGVarFromLibrary(
 **
 *F  ImportFuncFromLibrary( <name>, <address> )  . . .  import global function
 */
-static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
-static Int NrImportedFuncs = 0;
 
 
 void ImportFuncFromLibrary(
@@ -2966,6 +3268,7 @@ Obj FuncExportToKernelFinished (
     Int             errs = 0;
     Obj             val;
 
+    SyInitializing = 0;
     for ( i = 0;  i < NrImportedGVars;  i++ ) {
         if ( ImportedGVars[i].address == 0 ) {
             val = ValAutoGVar(GVarName(ImportedGVars[i].name));
@@ -3038,8 +3341,11 @@ Obj FuncSleep( Obj self, Obj secs )
   
   /* either we used up the time, or we were interrupted. */
   if (SyIsIntr())
-    ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
+    {
+      ClearError(); /* The interrupt may still be pending */
+      ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
 		    "you can 'return;' as if the sleep was finished");
+    }
   
   return (Obj) 0;
 }
@@ -3057,11 +3363,109 @@ Obj FuncQUIT_GAP( Obj self )
   return (Obj)0; 
 }
 
+
 /****************************************************************************
 **
 *V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
 */
 Obj Revisions;
+
+
+/****************************************************************************
+**
+*F  KERNEL_INFO() ......................record of information from the kernel
+** 
+** The general idea is to put all kernel-specific info in here, and clean up
+** the assortment of global variables previously used
+*/
+
+Obj FuncKERNEL_INFO(Obj self) {
+  Obj res = NEW_PREC(0);
+  UInt r,len,lenvec,lenstr;
+  Char *p;
+  Obj tmp,list,str;
+  UInt i,j;
+
+  /* GAP_ARCHITECTURE                                                    */
+  tmp = NEW_STRING(SyStrlen(SyArchitecture));
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  SyStrncat( CSTR_STRING(tmp), SyArchitecture, SyStrlen(SyArchitecture) );
+  r = RNamName("GAP_ARCHITECTURE");
+  AssPRec(res,r,tmp);
+  /* KERNEL_VERSION */
+  tmp = NEW_STRING(SyStrlen(SyKernelVersion));
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  SyStrncat( CSTR_STRING(tmp), SyKernelVersion, SyStrlen(SyKernelVersion) );
+  r = RNamName("KERNEL_VERSION");
+  AssPRec(res,r,tmp);
+  /* GAP_ROOT_PATH                                                       */
+  /* do we need this. Could we rebuild it from the command line in GAP
+     if so, should we                                                    */
+  list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
+  for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
+    if ( SyGapRootPaths[i][0] ) {
+      len = SyStrlen(SyGapRootPaths[i]);
+      tmp = NEW_STRING(len);
+      RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+      SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
+      SET_ELM_PLIST( list, j, tmp );
+      j++;
+    }
+  }
+  SET_LEN_PLIST( list, j-1 );
+  r = RNamName("GAP_ROOT_PATHS");
+  AssPRec(res,r,list);
+      
+    /* create a revision record                                            */
+
+    r = RNamName("Revision");
+    AssPRec(res, r, Revisions);
+
+    
+    /* make command line and environment available to GAP level       */
+    for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
+    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
+    SET_LEN_PLIST( tmp, lenvec );
+    for (i = 0; i<lenvec; i++) {
+      lenstr = SyStrlen(SyOriginalArgv[i]);
+      str = NEW_STRING(lenstr);
+      SyStrncat(CSTR_STRING(str), SyOriginalArgv[i], lenstr);
+      SET_LEN_STRING(str, lenstr);
+      SET_ELM_PLIST(tmp, i+1, str);
+      CHANGED_BAG(tmp);
+    }
+    r = RNamName("COMMAND_LINE");
+    AssPRec(res,r, tmp);
+
+    tmp = NEW_PREC(0);
+    for (i = 0; sysenviron[i]; i++) {
+      for (p = sysenviron[i]; *p != '='; p++)
+	;
+      *p++ = '\0';
+      lenstr = SyStrlen(p);
+      str = NEW_STRING(lenstr);
+      SyStrncat(CSTR_STRING(str),p, lenstr);
+      SET_LEN_STRING(str, lenstr);
+      AssPRec(tmp,RNamName(sysenviron[i]), str);
+      *--p = '='; /* change back to allow a convenient rerun */
+    }
+    r = RNamName("ENVIRONMENT");
+    AssPRec(res,r, tmp);
+   
+    return res;
+  
+}
+
+
+/****************************************************************************
+**
+*F FuncGETPID  ... export UNIX getpid to GAP level
+**
+*/
+
+Obj FuncGETPID(Obj self) {
+  return INTOBJ_INT(getpid());
+}
 
 
 /****************************************************************************
@@ -3073,11 +3477,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "Runtime", 0, "",
       FuncRuntime, "src/gap.c:Runtime" },
 
+    { "RUNTIMES", 0, "",
+      FuncRUNTIMES, "src/gap.c:RUNTIMES" },
+
     { "SizeScreen", -1, "args",
       FuncSizeScreen, "src/gap.c:SizeScreen" },
 
     { "ID_FUNC", 1, "object",
       FuncID_FUNC, "src/gap.c:ID_FUNC" },
+
+    { "RESTART_GAP", 1, "cmdline",
+      FuncRESTART_GAP, "src/gap.c:RESTART_GAP" },
 
     { "ExportToKernelFinished", 0, "",
       FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },
@@ -3088,11 +3498,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "UpEnv", -1, "args",
       FuncUpEnv, "src/gap.c:UpEnv" },
 
-    { "Where", -1, "args",
-      FuncWhere, "src/gap.c:Where" },
-
-    { "Error", -1, "args",
-      FuncError, "src/gap.c:Error" },
 
     { "COM_FILE", 2, "filename, crc",
       FuncCOM_FILE, "src/gap.c:COM_FILE" },
@@ -3117,6 +3522,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "GASMAN", -1, "args",
       FuncGASMAN, "src/gap.c:GASMAN" },
+
+    { "GASMAN_STATS", 0, "",
+      FuncGASMAN_STATS, "src/gap.c:GASMAN_STATS" },
+
+    { "GASMAN_MESSAGE_STATUS", 0, "",
+      FuncGASMAN_MESSAGE_STATUS, "src/gap.c:GASMAN_MESSAGE_STATUS" },
+
+    { "GASMAN_LIMITS", 0, "",
+      FuncGASMAN_LIMITS, "src/gap.c:GASMAN_LIMITS" },
 
     { "SHALLOW_SIZE", 1, "object",
       FuncSHALLOW_SIZE, "src/gap.c:SHALLOW_SIZE" },
@@ -3145,8 +3559,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "WindowCmd", 1, "arg-list",
       FuncWindowCmd, "src/gap.c:WindowCmd" },
 
-    { "ErrorCount", 0, "",
-      FuncErrorCount, "src/gap.c:ErrorCount" },
 
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
@@ -3154,12 +3566,36 @@ static StructGVarFunc GVarFuncs [] = {
     { "QUIT_GAP", 0, "",
       FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
 
-    { "SetErrorHandler", 1, "handler",
-      FuncSetErrorHandler, "src/gap.c:SetErrorHandler" },
 
-    { "CallFuncTrapError", 1, "func",
-      FuncCallFuncTrapError, "src/gap.c:FuncCallFuncTrapError" },
+    { "SHELL", -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile",
+      FuncSHELL, "src/gap.c:FuncSHELL" },
 
+    { "CALL_WITH_CATCH", 2, "func, args",
+      FuncCALL_WITH_CATCH, "src/gap.c:CALL_WITH_CATCH" },
+
+    { "JUMP_TO_CATCH", 1, "payload",
+      FuncJUMP_TO_CATCH, "src/gap.c:JUMP_TO_CATCH" },
+
+
+    { "KERNEL_INFO", 0, "",
+      FuncKERNEL_INFO, "src/gap.c:KERNEL_INFO" },
+
+    { "SetUserHasQuit", 1, "value",
+      FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
+
+    { "GETPID", 0, "",
+      FuncGETPID, "src/gap.c:GETPID" },
+
+    { "MASTER_POINTER_NUMBER", 1, "ob",
+      FuncMASTER_POINTER_NUMBER, "src/gap.c:MASTER_POINTER_NUMBER" },
+
+    { "FUNC_BODY_SIZE", 1, "f",
+      FuncFUNC_BODY_SIZE, "src/gap.c:FUNC_BODY_SIZE" },
+
+    { "PRINT_CURRENT_STATEMENT", 1, "context",
+      FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
+
+  
     { 0 }
 
 };
@@ -3181,6 +3617,7 @@ static Int InitKernel (
     InitGlobalBag( &EmptyList,         "src/gap.c:EmptyList"         );
 
     InitGlobalBag( &Revisions,         "src/gap.c:Revisions"         );
+    InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
 
     /* list of exit functions                                              */
     InitGlobalBag( &AtExitFunctions, "src/gap.c:AtExitFunctions" );
@@ -3202,15 +3639,10 @@ static Int InitKernel (
 
     /* establish Fopy of ViewObj                                           */
     ImportFuncFromLibrary(  "ViewObj", 0L );
+    ImportFuncFromLibrary(  "Error", &Error );
+    ImportFuncFromLibrary(  "ErrorInner", &ErrorInner );
 
-    /* Also of OnBreak and OnBreakMessage, but we don't want them made 
-       ReadOnly                                                            */
-    InitFopyGVar(  "OnBreak", &OnBreak );
-    InitFopyGVar(  "OnBreakMessage", &OnBreakMessage );
 
-    /* Initialize some hooks: */
-    InitCopyGVar("OnGapPromptHook",&OnGapPromptHook);
-    InitCopyGVar("OnQuit",&OnQuit);
 #if !SYS_MAC_MWC
 #if HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
@@ -3241,36 +3673,12 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    UInt var;
-  
+      UInt var;
+
     /* create a revision record                                            */
     Revisions = NEW_PREC(0);
-    var = GVarName( "Revision" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, Revisions );
-    MakeReadOnlyGVar(var);
-
-    /* version info                                                        */
-/* either throw this away or maintain it properly !?  FL   
-   obsolete now -- other variable used AH
-    len = SyStrlen(version);
-    C_NEW_STRING(string, len, version);
-    var = GVarName( "VERSRC" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, string );
-    MakeReadOnlyGVar(var);    */
 
     /* library name and other stuff                                        */
-    var = GVarName( "QUIET" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, (SyQuiet  ? True : False) );
-    MakeReadOnlyGVar(var);
-
-    var = GVarName( "BANNER" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, (SyBanner ? True : False) );
-    MakeReadOnlyGVar(var);
-
     var = GVarName( "DEBUG_LOADING" );
     MakeReadWriteGVar(var);
     AssGVar( var, (SyDebugLoading ? True : False) );
@@ -3278,6 +3686,7 @@ static Int PostRestore (
 
     /* construct the `ViewObj' variable                                    */
     ViewObjGVar = GVarName( "ViewObj" ); 
+    CustomViewGVar = GVarName( "CustomView" ); 
 
     /* construct the last and time variables                               */
     Last              = GVarName( "last"  );
@@ -3299,33 +3708,11 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    UInt                var;
-
     /* init the completion function                                        */
     CompLists = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CompLists, 0 );
 
 
-    var = GVarName( "CHECK_FOR_COMP_FILES" );
-    AssGVar( var, (SyCheckForCompletion ? True : False) );
-    MakeReadOnlyGVar(var);
-
-    var = GVarName( "DO_AUTOLOAD_PACKAGES" );
-    AssGVar( var, (SyAutoloadSharePackages ? True : False) );
-    MakeReadOnlyGVar(var);
-
-    /* list of exit functions                                              */
-    AtExitFunctions = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( AtExitFunctions, 0 );
-    var = GVarName( "AT_EXIT_FUNCS" );
-    AssGVar( var, AtExitFunctions );
-    MakeReadOnlyGVar(var);
-
-    /* we are not (yet) bailing out after QUIT */
-    QUITTINGGVar      = GVarName( "QUITTING" );
-    AssGVar(QUITTINGGVar, False);
-    MakeReadOnlyGVar( QUITTINGGVar );
-    
     /* share between uncompleted functions                                 */
     C_NEW_STRING( StringUncompleted, 11, "uncompleted" );
     RESET_FILT_LIST( StringUncompleted, FN_IS_MUTABLE );
@@ -3407,7 +3794,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoFinfield,
     InitInfoPermutat,
     InitInfoBool,
-    InitInfoFloat,
+    InitInfoMacfloat,
 
     /* record packages                                                     */
     InitInfoRecords,
@@ -3480,8 +3867,8 @@ Char *NextLoadedModuleFilename = LoadedModuleFilenames;
 
 
 StructInitInfo * Modules [ MAX_MODULES ];
-UInt NrModules = 0;
-UInt NrBuiltinModules = 0;
+UInt NrModules;
+UInt NrBuiltinModules;
 
 
 /****************************************************************************
@@ -3551,13 +3938,40 @@ void RecordLoadedModule (
 */
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
-static Obj POST_RESTORE_FUNCS;
+static Obj POST_RESTORE;
+
+/* needed in two places below */
+void CreateRevisionRecord()
+{
+    int i;
+
+    /* create a revision record / overwrite a restored one           */
+    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
+        Char buf[30];
+        buf[0] = 0;
+        SyStrncat( buf, Modules[i]->name, 27 );
+        SyStrncat( buf, "_c", 2 );
+        SET_REVISION( buf, Modules[i]->revision_c );
+        buf[0] = 0;
+        SyStrncat( buf, Modules[i]->name, 27 );
+        SyStrncat( buf, "_h", 2 );
+        SET_REVISION( buf, Modules[i]->revision_h );
+    }
+
+    /* add revisions for files which are not modules                       */
+    {
+        SET_REVISION( "system_c", Revision_system_c );
+        SET_REVISION( "system_h", Revision_system_h );
+        SET_REVISION( "gasman_c", Revision_gasman_c );
+        SET_REVISION( "gasman_h", Revision_gasman_h );
+    }
+}
 
 void InitializeGap (
     int *               pargc,
     char *              argv [] )
 {
-    UInt                type;
+  /*    UInt                type; */
     UInt                i;
     Int                 ret;
 
@@ -3565,18 +3979,20 @@ void InitializeGap (
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
     /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
-    InitGapmpi( pargc, &argv, &BreakOnError );
+    InitGapmpi( pargc, &argv );
 #endif
 
     InitSystem( *pargc, argv );
 
+    /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
     InitBags( SyAllocBags, SyStorMin,
               0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
               SyCacheSize, 0, SyAbortBags );
-    InitMsgsFuncBags( SyMsgsBags );
+	      InitMsgsFuncBags( SyMsgsBags ); 
 
 
     /* get info structures for the build in modules                        */
+    NrModules = 0;
     for ( i = 0;  InitFuncsBuiltinModules[i];  i++ ) {
         if ( NrModules == MAX_MODULES ) {
             FPUTS_TO_STDERR( "panic: too many builtin modules\n" );
@@ -3608,8 +4024,8 @@ void InitializeGap (
         }
     }
 
-    InitGlobalBag(&POST_RESTORE_FUNCS, "gap.c: POST_RESTORE_FUNCS");
-    InitCopyGVar( "POST_RESTORE_FUNCS", &POST_RESTORE_FUNCS);
+    InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
+    InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
 
     /* you should set 'COUNT_BAGS' as well                                 */
 #   ifdef DEBUG_LOADING
@@ -3645,7 +4061,7 @@ void InitializeGap (
 
     /* if we are restoring, load the workspace and call the post restore   */
     if ( SyRestoring ) {
-        LoadWorkspace(SyRestoring);
+       LoadWorkspace(SyRestoring);
         for ( i = 0;  i < NrModules;  i++ ) {
             if ( Modules[i]->postRestore ) {
 #               ifdef DEBUG_LOADING
@@ -3663,30 +4079,18 @@ void InitializeGap (
         }
 	SyRestoring = NULL;
 
-	/* call the post restore functions */
-	if (POST_RESTORE_FUNCS != (Obj) 0
-	    && IS_SMALL_LIST(POST_RESTORE_FUNCS))
-        {
-	    UInt l;
-	    UInt j;
-	    Obj func;
-	    Obj res; 
-	    l = LEN_LIST(POST_RESTORE_FUNCS);
-	    for (j = 1; j <= l; j++)
-	      {
-		func = ELM0_LIST(POST_RESTORE_FUNCS, j);
-		if (func != (Obj) 0 && IS_FUNC(func))
-		  {
-		    res = CALL_0ARGS(func);
-		    if (res == Fail)
-		      {
-			FPUTS_TO_STDERR("panic -- post restore function returned fail");
-			SyExit(j);
-		      }
-		  }
-	      }
-        }
+
+        /* overwrite revision record of kernel modules */
+        CreateRevisionRecord();
+
+        /* Call POST_RESTORE which is a GAP function that now takes control, 
+	   calls the post restore functions and then runs a GAP session */
+	if (POST_RESTORE != (Obj) 0 &&
+	    IS_FUNC(POST_RESTORE))
+	  if (!READ_ERROR())
+	    CALL_0ARGS(POST_RESTORE);
     }
+
 
     /* otherwise call library initialisation                               */
     else {
@@ -3731,83 +4135,30 @@ void InitializeGap (
         }
     }
 
-    /* create a revision record (overwrite a restored one)                 */
-    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
-        Char buf[30];
+    /* create revision record of kernel modules */
+    CreateRevisionRecord();
 
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_c", 2 );
-        SET_REVISION( buf, Modules[i]->revision_c );
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_h", 2 );
-        SET_REVISION( buf, Modules[i]->revision_h );
-    }
-
-    /* add revisions for files which are not modules                       */
-    {
-        SET_REVISION( "system_c", Revision_system_c );
-        SET_REVISION( "system_h", Revision_system_h );
-        SET_REVISION( "gasman_c", Revision_gasman_c );
-        SET_REVISION( "gasman_h", Revision_gasman_h );
-    }
-
-    /* read the init files                                                 */
+    /* read the init files      
+       this now actually runs the GAP session, we only get 
+       past here when we're about to exit. 
+                                           */
     if ( SySystemInitFile[0] ) {
+      if (!READ_ERROR()) {
         if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
-            if ( ! SyQuiet ) {
+	  /*             if ( ! SyQuiet ) { */
                 Pr( "gap: hmm, I cannot find '%s' maybe",
                     (Int)SySystemInitFile, 0L );
-                Pr( " use option '-l <gaproot>'?\n", 0L, 0L );
+                Pr( " use option '-l <gaproot>'?\n If you ran the GAP\
+ binary directly, try running the 'gap.sh' or 'gap.bat' script instead.", 0L, 0L );
             }
-        }
+      }
+      else
+	{
+	  Pr("Caught error at top-most level, probably quit from library loading",0L,0L);
+	  SyExit(1);
+	}
+	/*         } */
     }
-    SyInitializing = 0;
-    for ( i = 0; i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]); i++ ) {
-        if ( SyInitfiles[i][0] != '\0' ) {
-            if ( OpenInput( SyInitfiles[i] ) ) {
-                ClearError();
-                while ( 1 ) {
-                    type = ReadEvalCommand();
-                    if ( type == STATUS_RETURN_VAL || type == STATUS_RETURN_VOID ) {
-                        Pr("'return' must not be used in file",0L,0L);
-                    }
-                    else if ( type == STATUS_QUIT || type == STATUS_EOF ) {
-                        break;
-                    }
-		    else if (type == STATUS_QQUIT)
-		      {
-			UserHasQUIT = 1;
-			break;
-		      }
-		    else if (type == STATUS_ERROR)
-		      {
-			Pr("Error reading initial file \"%s\" abandoning remaining files\n",
-			   (Int)SyInitfiles[i], 0);
-			UserHasQuit = 0; /* enough to have got to here */
-			break;
-		      }
-		    else if (type != STATUS_END)
-		      {
-			Pr("Unexpected status %d from reading initial file \"%s\"\n",type, (Int)SyInitfiles[i]);
-			break;
-		      }
-                }
-                CloseInput();
-                ClearError();
-		if (UserHasQUIT)
-		  break;
-            }
-            else {
-                Pr( "Error, file \"%s\" must exist and be readable\n",
-                    (Int)SyInitfiles[i], 0L );
-            }
-        }
-    }
-
-    if (SyBreakSuppress)
-      BreakOnError = 0;
 
 }
 

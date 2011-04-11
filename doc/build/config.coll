@@ -1,6 +1,6 @@
 @msfiles = ("coll","lists","string","record","combinat","boolean","blist",
             "domain");
-@gdfiles = ("coll","list","list.g","set","domain","arith","string.g",
+@gdfiles = ("coll","list","list.g","random","set","domain","arith","string.g",
             "string","kernel.g","record.g","combinat","boolean.g","object",
             "liefam","mgmadj");
 $DIR = "../ref";

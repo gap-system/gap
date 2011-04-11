@@ -6,8 +6,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains  methods for   associative words in syllable
 ##  representation.
@@ -751,21 +752,15 @@ InstallMethod( ExponentSums,
 
 InfBits_ExponentSums3 := function( obj, from, to )
     local expvec, i;
-    if from < 2 then from:= 1; else from:= 2 * from - 1; fi;
-    if TypeObj( obj )![ AWP_NR_GENS ] < to then
-      to:= 2 * TypeObj( obj )![ AWP_NR_GENS ] - 1;
-    else
-      to:= 2 * to - 1;
-    fi;
-    # expvec:= [];
-    # this for loop looks wrong AH
-    #for i in [ from .. to ] do
-    #  expvec[i]:= 0;
-    #od;
+
     expvec:=ListWithIdenticalEntries(TypeObj( obj )![ AWP_NR_GENS ],0);
+
+    # the syllable representation is a sparse representation
     obj:= obj![1];
-    for i in [ from, from + 2 .. to ] do
-      expvec[ obj[i] ]:= expvec[ obj[i] ] + obj[ i+1 ];
+    for i in [ 1, 3.. Length(obj)-1 ] do
+        if obj[i] in [from..to] then
+            expvec[ obj[i] ]:= expvec[ obj[i] ] + obj[ i+1 ];
+        fi;
     od;
     return expvec;
 end;

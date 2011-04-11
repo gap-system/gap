@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 %%  The documentation in this chapter corresponds to the declarations in the
 %%  library files `ctbl.gd', `ctblauto.gd', `ctblgrp.gd', `ctblothe.gd',
@@ -20,11 +21,18 @@ This chapter describes operations for *character tables of finite groups*.
 Operations for *characters* (or, more general, *class functions*) are
 described in Chapter~"Class Functions".
 
-For a description of the {\GAP} library of character tables,
-see the separate manual for this library.
+For a description of the {\GAP} Library of Character Tables,
+see the separate manual for the {\GAP} package `ctbllib'.
 
-%%  The Character Theory in {\GAP} was designed and implemented by Thomas
-%%  Breuer.
+Several examples in this chapter require the {\GAP} Character Table Library
+to be available.
+If it is not yet loaded then we load it now.
+
+\beginexample
+gap> LoadPackage( "ctbllib" );
+true
+\endexample
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Some Remarks about Character Theory in GAP}
@@ -35,8 +43,92 @@ see the separate manual for this library.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{History of Character Theory Stuff in GAP}
 
-This section still has to be written
-(by Thomas Breuer who promised to do this for GAP 4.3).
+{\GAP} provides functions for dealing with group characters since the version
+{\GAP}~3.1, which was released in March 1992.
+The reason for adding this branch of mathematics to the topics of {\GAP} was
+(apart from the usefulness of character theoretic computations in general)
+the insight that {\GAP} provides an ideal environment for developing the
+algorithms needed.
+In particular, it had been decided at Lehrstuhl D f{\accent127 u}r Mathematik
+that the {\sf CAS} system (a standalone Fortran program together with a
+database of character tables, see~\cite{NPP84})
+should not be developed further and the functionality of {\sf CAS} should be
+made available in {\GAP}.
+The background was that extending {\sf CAS} (by new Fortran code) had turned
+out to be much less flexible than writing analogous {\GAP} library code.
+
+For integrating the existing character theory algorithms,
+{\GAP}'s memory management and long integer arithmetic were useful as well as
+the list handling --it is an important feature of character theoretic methods
+that questions about groups are translated into manipulations of lists;
+on the other hand, the datatype of cyclotomics (see Chapter~"Cyclotomics")
+was added to the {\GAP} kernel because of the character theory algorithms.
+For developing further code, also other areas of {\GAP}'s library became
+interesting, such as permutation groups, finite fields, and polynomials.
+
+The development of character theory code for {\GAP} has been supported
+by several DFG grants,
+in particular the project ``Representation Theory of Finite Groups and Finite
+Dimensional Algebras'' (until 1991),
+and the Schwerpunkt ``Algorithmische Zahlentheorie und Algebra''
+(from 1991 until 1997).
+Besides that, several Diploma theses at Lehrstuhl D were concerned with
+the development and/or implementation of algorithms dealing with characters
+in {\GAP}.
+
+The major contributions can be listed as follows.
+\beginlist%unordered
+\item{$\bullet$}
+    The arithmetic for the cyclotomics data type, following~\cite{Zum89},
+    was first implemented by Marco van Meegen; an alternative approach was
+    studied in the diploma thesis of Michael Scherner (see~\cite{Scherner92})
+    but was not efficient enough;
+    later Martin Sch{\accent127 o}nert replaced the implementation
+    by a better one.
+% and since then, there have been more than 30 local improvements ...
+
+\item{$\bullet$}
+    The basic routines for characters and character tables were written
+    by Thomas Breuer and G{\accent127 o}tz Pfeiffer.
+
+\item{$\bullet$}
+    The lattice related functions, such as `LLL', `OrthogonalEmbeddings',
+    and `DnLattice', were implemented by Ansgar Kaup (see~\cite{Kaup92}).
+
+\item{$\bullet$}
+    Functions for computing possible class fusions, possible power maps,
+    and table automorphisms were written by Thomas Breuer (see~\cite{Bre91}).
+
+\item{$\bullet$}
+    Functions for computing possible permutation characters were written by
+    Thomas Breuer (see~\cite{Bre91})
+    and G{\accent127 o}tz Pfeiffer (see~\cite{Pfe91}).
+
+\item{$\bullet$}
+    Functions for computing character tables from groups were written by
+    Alexander Hulpke (Dixon-Schneider algorithm, see~\cite{Hulpke93})
+    and Hans Ulrich Besche (Baum algorithm and Conlon algorithm,
+    see~\cite{Besche92}).
+
+\item{$\bullet$}
+    Functions for dealing with Clifford matrices were written by
+    Ute Schiffer (see~\cite{Schiffer94}).
+
+\item{$\bullet$}
+    Functions for monomiality questions were written by Thomas Breuer and
+    Erzs\'ebet Horv\'ath.
+\endlist
+
+Since then, the code has been maintained and extended further by
+Alexander Hulpke (code related to his implementation of the Dixon-Schneider
+algorithm) and Thomas Breuer.
+
+% D. Bauten?
+
+Currently {\GAP} does not provide special functionality for computing
+Brauer character tables, but there is an interface to the {\sf MOC} system
+(see~\cite{HJLP92}), and the {\GAP} Character Table Library contains many
+known Brauer character tables.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -394,7 +486,7 @@ gap> tbla5:= CharacterTable( "A5" );;
 gap> tbls4:= CharacterTable( "Symmetric", 4 );;
 gap> tbld8:= CharacterTable( "Dihedral", 8 );;
 gap> ClassPositionsOfNormalSubgroups( tbls4 );
-[ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1, 2, 3, 4, 5 ] ]
+[ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1 .. 5 ] ]
 gap> ClassPositionsOfAgemo( tbls4, 2 );
 [ 1, 3, 4 ]
 gap> ClassPositionsOfCentre( tbld8 );
@@ -431,16 +523,15 @@ gap> tbl:= CharacterTable( "L3(2)" );;
 gap> pbl:= PrimeBlocks( tbl, 2 );
 rec( block := [ 1, 1, 1, 1, 1, 2 ], defect := [ 3, 0 ], 
   height := [ 0, 0, 0, 1, 0, 0 ], relevant := [ 3, 5 ], 
-  exponents := [ ,, 2,, 6 ], 
   centralcharacter := [ [ ,, 56,, 24 ], [ ,, -7,, 3 ] ] )
 \endexample
 
 \Declaration{SameBlock}
 \beginexample
 gap> omega:= List( Irr( tbl ), CentralCharacter );;
-gap> SameBlock( tbl, 2, omega[1], omega[2], pbl.relevant, pbl.exponents );
+gap> SameBlock( 2, omega[1], omega[2], pbl.relevant );
 true
-gap> SameBlock( tbl, 2, omega[1], omega[6], pbl.relevant, pbl.exponents );
+gap> SameBlock( 2, omega[1], omega[6], pbl.relevant );
 false
 \endexample
 
@@ -468,7 +559,7 @@ gap> DecompositionMatrix( modtbl, 2 );
 \endexample
 
 \Declaration{LaTeXStringDecompositionMatrix}
-\begintt
+\beginexample
 gap> modtbl:= CharacterTable( "L3(2)" ) mod 2;;
 gap> Print( LaTeXStringDecompositionMatrix( modtbl, 1 ) );
 \[
@@ -501,7 +592,7 @@ gap> Print( LaTeXStringDecompositionMatrix( modtbl, 1, options ) );
 \hline
 \end{array}
 \]
-\endtt
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -586,10 +677,20 @@ X.5     5  1 -1  .  .
 
 A = -E(5)-E(5)^4
   = (1-ER(5))/2 = -b5
+gap> CharacterTableDisplayDefaults.User:= rec(
+>        powermap:= "ATLAS", centralizers:= "ATLAS", chars:= false );;
+gap> Display( CharacterTable( "A5" ) );
+A5
+
+    60  4  3  5  5
+
+ p      A  A  A  A
+ p'     A  A  A  A
+    1A 2A 3A 5A B*
+
 gap> options:= rec( chars:= 4, classes:= [ tbl.3a .. tbl.5a ],
 >                   centralizers:= false, indicator:= true,
 >                   powermap:= [ 2 ] );;
-gap> Indicator( tbl, 2 );;
 gap> Display( tbl, options );
 A5
 
@@ -604,6 +705,7 @@ A5
        2P 3a 5b
        2
 X.4    +   1 -1
+gap> Unbind( CharacterTableDisplayDefaults.User );
 \endexample
 
 \Declaration{PrintCharacterTable}
@@ -668,22 +770,22 @@ gap> g:= SL(2,3);;
 gap> SizeScreen([ 87, ]);;
 gap> irr1:= IrrDixonSchneider( g );
 [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 2, -2, 1, 1, -1, -1, 0 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3), E(3)^2, -E(3)^2, -E(3), 0 ] ),
-  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3)^2, E(3), -E(3), -E(3)^2, 0 ] ),
-  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 2, E(3)^2, E(3), -2, -E(3), -E(3)^2, 0 ] ),
+  Character( CharacterTable( SL(2,3) ), [ 2, E(3), E(3)^2, -2, -E(3)^2, -E(3), 0 ] ),
+  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 gap> irr2:= IrrConlon( g );
 [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 gap> irr3:= IrrBaumClausen( g );
 [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 gap> SizeScreen([ 80, ]);;
 gap> chi:= irr2[4];;  HasTestMonomial( chi );
 true
@@ -729,6 +831,16 @@ gap> reps:= List( ConjugacyClasses( a5 ), Representative );;
 gap> List( reps, g -> TraceMat( Image( hom, g ) ) );
 [ 4, 0, 1, -1, -1 ]
 \endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Representations given by modules}
+
+\Declaration{IrreducibleModules}
+\Declaration{AbsoluteIrreducibleModules}
+\Declaration{RegularModule}
+
+(Extensions by modules can be formed by the command `Extensions', see
+"Extensions".)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Dixon-Schneider Algorithm}
@@ -822,12 +934,12 @@ After the initialisation, one structure matrix is evaluated,
 yielding smaller spaces and several irreducible characters.
 \beginexample
 gap> DixonSplit( d );
-#I  Matrix 18,Representative of Order 3,Centralizer: 5832
+#I  Matrix 20,Representative of Order 3,Centralizer: 5832
 #I  Dimensions: [ 1, 12, 2, 2, 4, 2, 1, 1, 1, 1, 1 ]
 #I  Two-dim space split
 #I  Two-dim space split
 #I  Two-dim space split
-18
+20
 \endexample
 In this case spaces of the listed dimensions are a result of the
 splitting process.
@@ -838,7 +950,7 @@ We obtain several irreducible characters by tensor products and notify them
 to the Dixon record.
 \beginexample
 gap> asp:= AntiSymmetricParts( c, d.irreducibles, 2 );;
-gap> ro:= ReducedOrdinary( c, d.irreducibles, asp );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, asp );;
 gap> Length( ro.irreducibles );
 3
 gap> DxIncludeIrreducibles( d, ro.irreducibles );
@@ -850,7 +962,7 @@ of smaller norms, but no new irreducibles.
 \beginexample
 gap> nlc:= Filtered( d.irreducibles, i -> i[1] > 1 );;
 gap> t:= Tensored( nlc, nlc );;
-gap> ro:= ReducedOrdinary( c, d.irreducibles, t );;  ro.irreducibles;
+gap> ro:= ReducedCharacters( c, d.irreducibles, t );;  ro.irreducibles;
 [  ]
 gap> List( ro.remainders, i -> ScalarProduct( c, i, i) );
 [ 2, 2, 4, 4, 4, 4, 13, 13, 18, 18, 19, 21, 21, 36, 36, 29, 34, 34, 42, 34, 
@@ -876,7 +988,7 @@ Finally we calculate the characters induced from all cyclic subgroups and
 obtain the missing irreducibles by applying the LLL-algorithm to them.
 \beginexample
 gap> ic:= InducedCyclic( c, "all" );;
-gap> ro:= ReducedOrdinary( c, d.irreducibles, ic );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, ic );;
 gap> Length( ro.irreducibles );
 0
 gap> l:= LLL( c, ro.remainders );;
@@ -889,9 +1001,10 @@ So we convert them to a list of values
 before feeding them in the machinery of the Dixon-algorithm.
 \beginexample
 gap> l.irreducibles[1];
-Character( CharacterTable( PSL(4,3) ), [ 640, 0, 0, 0, 0, 0, 0, 0, 0, -8, 0, 
-  0, E(13)^7+E(13)^8+E(13)^11, E(13)+E(13)^3+E(13)^9, E(13)^2+E(13)^5+E(13)^6,
-  E(13)^4+E(13)^10+E(13)^12, 1, -8, 0, 0, -8, 0, 0, 0, 0, 0, 0, 1, 1 ] )
+Character( CharacterTable( PSL(4,3) ), [ 640, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  -8, 0, 0, -8, 0, 0, 0, 1, -8, 0, 1, 0, 0, E(13)^7+E(13)^8+E(13)^11, 
+  E(13)+E(13)^3+E(13)^9, E(13)^2+E(13)^5+E(13)^6, E(13)^4+E(13)^10+E(13)^12, 
+  1 ] )
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
 gap> DxIncludeIrreducibles( d, l );
 gap> Length( d.irreducibles );
@@ -905,7 +1018,7 @@ group.
 This makes them available also to the character table.
 \beginexample
 gap> irrs:= DixontinI( d );;
-#I  Total:1 matrices,[ 18 ]
+#I  Total:1 matrices,[ 20 ]
 gap> SetIrr(g,irrs);
 gap> Length(Irr(c));
 29
@@ -940,11 +1053,13 @@ X.5     2  . -1 -2  .  1
 X.6     1  1  1 -1 -1 -1
 \endexample
 
+\Declaration{FactorsOfDirectProduct}
+
 \Declaration{CharacterTableFactorGroup}
 \beginexample
 gap> s4:= CharacterTable( "Symmetric", 4 );;
 gap> ClassPositionsOfNormalSubgroups( s4 );
-[ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1, 2, 3, 4, 5 ] ]
+[ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1 .. 5 ] ]
 gap> f:= CharacterTableFactorGroup( s4, [ 3 ] );
 CharacterTable( "Sym(4)/[ 1, 3 ]" )
 gap> Display( f );
@@ -966,9 +1081,9 @@ X.3     1  1  1
 \beginexample
 gap> d8:= CharacterTable( "Dihedral", 8 );;
 gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
-[ [ 1 ], [ 1, 3 ], [ 1, 2, 3 ], [ 1, 3, 4 ], [ 1, 3, 5 ], [ 1, 2, 3, 4, 5 ] ]
+[ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] ]
 gap> Display( CharacterTableIsoclinic( d8, nsg[3] ) );
-Isoclinic(D8)
+Isoclinic(Dihedral(8))
 
      2  3  2  3  2  2
 
@@ -1058,11 +1173,11 @@ gap> SizesCentralizers( tbl );
 gap> SizesCentralizers( srt2 );
 [ 24, 8, 4, 3, 4 ]
 gap> nsg:= ClassPositionsOfNormalSubgroups( tbl );
-[ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1, 2, 3, 4, 5 ] ]
+[ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1 .. 5 ] ]
 gap> srt3:= SortedCharacterTable( tbl, nsg );
 CharacterTable( "Sym(4)" )
 gap> nsg:= ClassPositionsOfNormalSubgroups( srt3 );
-[ [ 1 ], [ 1, 2 ], [ 1, 2, 3 ], [ 1, 2, 3, 4, 5 ] ]
+[ [ 1 ], [ 1, 2 ], [ 1 .. 3 ], [ 1 .. 5 ] ]
 gap> Display( srt3 );
 Sym(4)
 
@@ -1094,11 +1209,11 @@ gap> ClassPermutation( srt3 );
 \beginexample
 gap> tbld8:= CharacterTable( "Dihedral", 8 );;
 gap> irrd8:= Irr( tbld8 );
-[ Character( CharacterTable( "D8" ), [ 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( "D8" ), [ 1, 1, 1, -1, -1 ] ), 
-  Character( CharacterTable( "D8" ), [ 1, -1, 1, 1, -1 ] ), 
-  Character( CharacterTable( "D8" ), [ 1, -1, 1, -1, 1 ] ), 
-  Character( CharacterTable( "D8" ), [ 2, 0, -2, 0, 0 ] ) ]
+[ Character( CharacterTable( "Dihedral(8)" ), [ 1, 1, 1, 1, 1 ] ), 
+  Character( CharacterTable( "Dihedral(8)" ), [ 1, 1, 1, -1, -1 ] ), 
+  Character( CharacterTable( "Dihedral(8)" ), [ 1, -1, 1, 1, -1 ] ), 
+  Character( CharacterTable( "Dihedral(8)" ), [ 1, -1, 1, -1, 1 ] ), 
+  Character( CharacterTable( "Dihedral(8)" ), [ 2, 0, -2, 0, 0 ] ) ]
 gap> orders:= OrdersClassRepresentatives( tbld8 );
 [ 1, 4, 2, 2, 2 ]
 gap> MatrixAutomorphisms( irrd8 );
@@ -1132,115 +1247,6 @@ rec( columns := (2,3), rows := (1,3,2), group := Group(()) )
 \endexample
 
 \Declaration{FamiliesOfRows}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Interface to the CAS System}
-
-\Declaration{CASString}
-
-\atindex{CAS tables}{@CAS tables}\atindex{CAS format}{@CAS format}
-\atindex{CAS}{@CAS}
-\beginexample
-gap> Print( CASString( CharacterTable( "Cyclic", 2 ) ), "\n" );
-'C2'
-00/00/00. 00.00.00.
-(2,2,0,2,-1,0)
-text:
-(#computed using generic character table for cyclic groups#),
-order=2,
-centralizers:(
-2,2
-),
-reps:(
-1,2
-),
-powermap:2(
-1,1
-),
-characters:
-(1,1
-,0:0)
-(1,-1
-,0:0);
-/// converted from GAP
-\endexample
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Interface to the MOC System}
-
-\FileHeader[1]{ctblothe}
-
-\Declaration{MAKElb11}
-\beginexample
-gap> MAKElb11( [ 3, 4 ] );
-   3   2   0   1   0
-   4   2   0   1   0
-\endexample
-
-\Declaration{MOCTable}
-\Declaration{MOCString}
-\beginexample
-gap> moca5:= MOCTable( CharacterTable( "A5" ) );
-rec( identifier := "MOCTable(A5)", prime := 0, fields := [  ], 
-  GAPtbl := CharacterTable( "A5" ), cycsubgps := [ 1, 2, 3, 4, 4 ], 
-  repcycsub := [ 1, 2, 3, 4 ], galconjinfo := [ 1, 1, 2, 1, 3, 1, 4, 1, 4, 2 ]
-    , centralizers := [ 60, 4, 3, 5 ], orders := [ 1, 2, 3, 5 ], 
-  fieldbases := [ CanonicalBasis( Rationals ), CanonicalBasis( Rationals ), 
-      CanonicalBasis( Rationals ), 
-      Basis( NF(5,[ 1, 4 ]), [ 1, E(5)+E(5)^4 ] ) ], 
-  30170 := [ [  ], [ 2, 2, 1, 1 ], [ 3, 3, 1, 1 ], [ 4, 5, 1, 1 ] ], 
-  tensinfo := 
-    [ [ 1 ], [ 1 ], [ 1 ], [ 2, 1, 1, 1, 1, 2, 2, 0, 1, 1, 2, 1, 2, 1, -1, 2, 
-          2, 0 ] ], 
-  invmap := [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 3, 0 ], [ 1, 4, 0, 1, 5, 0 ] ], 
-  powerinfo := 
-    [ , [ [ 1, 1, 0 ], [ 1, 1, 0 ], [ 1, 3, 0 ], [ 1, 4, -1, 5, 0, -1, 5, 0 ] 
-         ], 
-      [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 1, 0 ], [ 1, 4, -1, 5, 0, -1, 5, 0 ] ],
-      , [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 3, 0 ], [ 1, 1, 0, 0 ] ],, 
-      [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 3, 0 ], [ 1, 4, -1, 5, 0, -1, 5, 0 ] ],
-      ,,, [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 3, 0 ], [ 1, 4, 0, 1, 5, 0 ] ],, 
-      [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 3, 0 ], [ 1, 4, -1, 5, 0, -1, 5, 0 ] ],
-      ,,, 
-      [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 3, 0 ], [ 1, 4, -1, 5, 0, -1, 5, 0 ] ],
-      , [ [ 1, 1, 0 ], [ 1, 2, 0 ], [ 1, 3, 0 ], [ 1, 4, 0, 1, 5, 0 ] ] ], 
-  30900 := [ [ 1, 1, 1, 1, 0 ], [ 3, -1, 0, 0, -1 ], [ 3, -1, 0, 1, 1 ], 
-      [ 4, 0, 1, -1, 0 ], [ 5, 1, -1, 0, 0 ] ] )
-gap> str:= MOCString( moca5 );;
-gap> str{[1..70]};
-"y100y105ay110fey130t60edfy140bcdfy150bbbfcabbey160bbcbdbebecy170ccbbdd"
-gap> moca5mod3:= MOCTable( CharacterTable( "A5" ) mod 3, [ 1 .. 4 ] );;
-gap> MOCString( moca5mod3 ){ [ 1 .. 70 ] };
-"y100y105dy110edy130t60efy140bcfy150bbfcabbey160bbcbdbdcy170ccbbdfbby21"
-\endexample
-
-\Declaration{ScanMOC}
-\Declaration{GAPChars}
-\Declaration{MOCChars}
-\beginexample
-gap> scan:= ScanMOC( str );
-rec( y105 := [ 0 ], y110 := [ 5, 4 ], y130 := [ 60, 4, 3, 5 ], 
-  y140 := [ 1, 2, 3, 5 ], y150 := [ 1, 1, 1, 5, 2, 0, 1, 1, 4 ], 
-  y160 := [ 1, 1, 2, 1, 3, 1, 4, 1, 4, 2 ], 
-  y170 := [ 2, 2, 1, 1, 3, 3, 1, 1, 4, 5, 1, 1 ], 
-  y210 := [ 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 0, 1, 1, 2, 1, 2, 1, -1, 2, 2, 0 ], 
-  y220 := [ 1, 1, 0, 1, 2, 0, 1, 3, 0, 1, 4, 0, 1, 5, 0 ], 
-  y230 := [ 2, 1, 1, 0, 1, 1, 0, 1, 3, 0, 1, 4, -1, 5, 0, -1, 5, 0 ], 
-  y050 := [ 19, 1, 1, 0, 1, 2, 0, 1, 3, 0, 1, 4, 0, 1, 5, 0 ], 
-  y900 := [ 1, 1, 1, 1, 0, 3, -1, 0, 0, -1, 3, -1, 0, 1, 1, 4, 0, 1, -1, 0, 
-      5, 1, -1, 0, 0 ] )
-gap> gapchars:= GAPChars( moca5, scan.y900 );
-[ [ 1, 1, 1, 1, 1 ], [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ], 
-  [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, 1, -1, -1 ], 
-  [ 5, 1, -1, 0, 0 ] ]
-gap> mocchars:= MOCChars( moca5, gapchars );
-[ [ 1, 1, 1, 1, 0 ], [ 3, -1, 0, 0, -1 ], [ 3, -1, 0, 1, 1 ], 
-  [ 4, 0, 1, -1, 0 ], [ 5, 1, -1, 0, 0 ] ]
-gap> Concatenation( mocchars ) = scan.y900;
-true
-\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

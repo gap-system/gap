@@ -5,9 +5,11 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  School of Mathematical and Computational Sciences,
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 *Y                        University of St Andrews, Scotland
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions that deal with weak pointer objects
 **  A weak pointer object looks like a plain list, except that its entries
@@ -517,7 +519,7 @@ void SaveWPObj( Obj wpobj )
   UInt len, i;
   Obj *ptr;
   Obj x;
-  ptr = ADDR_OBJ(wpobj);
+  ptr = ADDR_OBJ(wpobj)+1;
   len = STORED_LEN_WPOBJ(wpobj);
   SaveUInt(len);
   for (i = 1; i <= len; i++)
@@ -543,7 +545,7 @@ void LoadWPObj( Obj wpobj )
 {
   UInt len, i;
   Obj *ptr;
-  ptr = ADDR_OBJ(wpobj);
+  ptr = ADDR_OBJ(wpobj)+1;
   len =   LoadUInt();
   STORE_LEN_WPOBJ(wpobj, len);
   for (i = 1; i <= len; i++)

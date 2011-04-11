@@ -1,0 +1,45 @@
+@Name
+Definition sequence for Modified Todd-Coxeter
+@Contact
+JN
+@Date
+2002/8/6
+@Time
+3
+@Public
+Yes
+@Need
+3
+@NeedA
+2
+@Math
+3
+@Prog
+4
+@Descr
+<P>
+With  the  ITC there is a 'shortcut' function that  from  a
+definition sequence  that has led to  closure tries to  find a shorter
+definition sequence that also does the trick. Its working is explained
+in the ITC manual.
+
+<P>
+This functionality should have better uses: When one does MTC  to find a
+subgroup presentation, the  presentation obtained obviously depends on the
+definition sequence, and it sounds at least plausible that a short
+definition  sequence might  be advantageous.   So it would be useful to
+provide an extended interface to the MTC that allows to  feed  in a
+definition  sequence  obtained  elsewhere.  ITC  after 'shortcut' could be
+one possibility.
+
+<P>
+But also so far ACE lacks an output of the definition sequence that it
+has used. 
+In principle it should be possible to take this from the
+the code of ACE, all one had to do is
+to  keep  an  additional  list  in  which  one  keeps  record  of  the
+definitions  made. If  one got  that out  of ACE  one could  then even
+filter it through a 'shortcut' function.
+@Manual
+@Ref
+@Rem

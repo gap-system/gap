@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file initializes Deep Thought.
 ##
@@ -58,11 +59,11 @@ Revision.dt_g :=
 
 #############################################################################
 ##
-#F  mkavec(<pr>) . . . . . . . . . . . . . . . . . . compute the avec for <pr>
+#F  Mkavec(<pr>) . . . . . . . . . . . . . . . . . . compute the avec for <pr>
 ##
-##  'mkavec' returns the avec for the pc-presentation <pr>.
+##  'Mkavec' returns the avec for the pc-presentation <pr>.
 ##
-BindGlobal( "mkavec", function(pr)
+BindGlobal( "Mkavec", function(pr)
     local  i,j,vec;
 
     vec := [];
@@ -98,12 +99,12 @@ end );
 
 #############################################################################
 ##
-#F  equal(<vec1>, <vec2>) . . .  . . . . . . . . . test if <vec1> and <vec2> 
-##                                                 represent the same monomial
+#F  IsEqualMonomial(<vec1>, <vec2>) . . . . . . . . test if <vec1> and <vec2> 
+##                                                represent the same monomial
 ##
-##  'equal' returns "true" if <vec1> and <vec2> represent the same monomial,
-##   and "false" otherwise.
-BindGlobal( "equal", function(vec1,vec2)
+##  'IsEqualMonomial' returns "true" if <vec1> and <vec2> represent the same 
+##  monomial, and "false" otherwise.
+BindGlobal( "IsEqualMonomial", function(vec1,vec2)
     local  i,j;
   
     if  Length(vec1) <> Length(vec2)  then
@@ -125,14 +126,14 @@ end );
 
 #############################################################################
 ##
-#F  ordne2(<vector>) . . . . . . . . . . . . . . . . . sort a formula vector
+#F  Ordne2(<vector>) . . . . . . . . . . . . . . . . . sort a formula vector
 ##
-##  'ordne2' sorts the pairs of integers in the formula vector <vector>
+##  'Ordne2' sorts the pairs of integers in the formula vector <vector>
 ##  representing the binomial coefficients such that 
 ##  <vector>[5] < <vector>[7] < .. < vector[m-1],  where m is the length
 ##  of <vector>.  This is done for a easier comparison of formula vectors.
 ##
-BindGlobal( "ordne2", function(vector)
+BindGlobal( "Ordne2", function(vector)
     local  i,list1,list2;
     
     list1 := vector{[5,7..Length(vector)-1]};
@@ -147,14 +148,14 @@ end );
 
 #############################################################################
 ##
-#F  fueghinzu(<evlist>,<evlistvec>,<formvec>,<pr>) . . . add a formula vector 
+#F  Fueghinzu(<evlist>,<evlistvec>,<formvec>,<pr>) . . . add a formula vector 
 ##                                                       to a list
 ##
-##  'fueghinzu' adds the formula vector <formvec> to the list <evlist>,
+##  'Fueghinzu' adds the formula vector <formvec> to the list <evlist>,
 ##  computes the corresponding coefficient vector and adds the latter to
 ##  the list <evlistvec>.
 ##
-BindGlobal( "fueghinzu", function(evlist, evlistvec, formvec, pr)
+BindGlobal( "Fueghinzu", function(evlist, evlistvec, formvec, pr)
     local    i,j,k;
 
     Add(evlist, formvec);
@@ -177,31 +178,31 @@ end );
 
 #############################################################################
 ##
-#F  dt_add( <pol>, <pols>, <pr> )
+#F  Dt_add( <pol>, <pols>, <pr> )
 ##
-##  dt_add adds the deep thought monomial <pol> to the list of polynomials
+##  Dt_add adds the deep thought monomial <pol> to the list of polynomials
 ##  <pols>,  such that afterwards <pols> represents a simplified polynomial.
 ##
-BindGlobal( "dt_add", function(pol, pols, pr)
+BindGlobal( "Dt_add", function(pol, pols, pr)
     local  i,j,k,rel, pos, flag;
     
     # first sort the deep thought monomial <pol> to compare it with the
     # monomials contained in <pols>.
-    ordne2(pol);
+    Ordne2(pol);
     # then look which component of <pols> contains <pol> in case that
     # <pol> is contained in <pols>.
     pos := DT_evaluation(pol);
     if  not IsBound( pols[pos] )  then
         # create the component <pols>[<pos>] and add <pol> to it
         pols[pos] := rec( evlist := [], evlistvec := [] );
-        fueghinzu( pols[pos].evlist, pols[pos].evlistvec, pol, pr );
+        Fueghinzu( pols[pos].evlist, pols[pos].evlistvec, pol, pr );
         return;
     fi;
     flag := 0;
     for  k in [1..Length( pols[pos].evlist ) ]  do
         # look for <pol> in <pols>[<pos>] and if <pol> is contained in
         # <pols>[<pos>] then adjust the corresponding coefficient vector.
-        if  equal( pol, pols[pos].evlist[k] )  then
+        if  IsEqualMonomial( pol, pols[pos].evlist[k] )  then
             rel := pr[ pol[3] ][ pol[4] ];
             for  j in [3,5..Length(rel)-1]  do
                 pols[pos].evlistvec[k][ rel[j] ] := 
@@ -213,24 +214,24 @@ BindGlobal( "dt_add", function(pol, pols, pr)
     od;
     if  flag = 0  then
         # <pol> is not contained in <pols>[<pos>] so add it to <pols>[<pos>]
-        fueghinzu(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
+        Fueghinzu(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
     fi;
 end );
 
 
 #############################################################################
 ##
-#F  konvertiere(<sortedpols>)
+#F  Konvertiere(<sortedpols>)
 ##
-##  'konvertiere' converts the list of formula vectors <sortedpols>. Before
-##  applying <konvertiere> <sortedpols> is a list of records with the
+##  'Konvertiere' converts the list of formula vectors <sortedpols>. Before
+##  applying <Konvertiere> <sortedpols> is a list of records with the
 ##  components <evlist> and <evlistvec> where <evlist> contains deep thought
 ##  monomials and <evlistvec> contains the corresponding coefficient vectors.
-##  <konvertiere> merges the <evlist>-compondents of the records contained
+##  <Konvertiere> merges the <evlist>-compondents of the records contained
 ##  in <sortedpols> into one component <evlist> and the <evlistvec>-coponents
 ##  into one component <evlistvec>.
 ##
-BindGlobal( "konvertiere", function(sortedpols)
+BindGlobal( "Konvertiere", function(sortedpols)
     local  k,res;
     
     if  Length(sortedpols) = 0  then
@@ -248,15 +249,15 @@ end );
 
 #############################################################################
 ##
-#F  konvert2(<evlistvec>) . . . . . . . . . . . . convert coefficient vectors
+#F  Konvert2(<evlistvec>) . . . . . . . . . . . . convert coefficient vectors
 ##
-##  'konvert2' converts the coefficient vectors in the list <evlistvec>.
-##  Before applying <konvert2> an entry <evlistvec>[i][j] = k means that
+##  'Konvert2' converts the coefficient vectors in the list <evlistvec>.
+##  Before applying <Konvert2> an entry <evlistvec>[i][j] = k means that
 ##  the deep thought monomial <evlist>[i] occurs in the polynomial f_j with
-##  coefficient k. After applying <konvert2> a pair [j, k] occuring in
+##  coefficient k. After applying <Konvert2> a pair [j, k] occuring in
 ##  <eclistvec>[i] means that <evlist>[i] occurs in f_j with coefficient k.
 ##
-BindGlobal( "konvert2", function(evlistvec, pr)
+BindGlobal( "Konvert2", function(evlistvec, pr)
     local i,j,res;
 
     for  i in [1..Length(evlistvec)]  do
@@ -326,11 +327,11 @@ end );
 
 #############################################################################
 ##
-#F  redkomprimiere( <list> )
+#F  Redkomprimiere( <list> )
 ##
-##  redkomprimiere removes all empty entries from <list>
+##  Redkomprimiere removes all empty entries from <list>
 ##
-BindGlobal( "redkomprimiere", function( list )
+BindGlobal( "Redkomprimiere", function( list )
     local  skip, i;
     
     skip := 0;
@@ -381,8 +382,8 @@ BindGlobal( "ReduceCoefficientsOfRws", function(dtrws)
                 Unbind( pseudoreps[i].evlist[j] );
             fi;
         od;
-        redkomprimiere( pseudoreps[i].evlistvec );
-        redkomprimiere( pseudoreps[i].evlist );
+        Redkomprimiere( pseudoreps[i].evlistvec );
+        Redkomprimiere( pseudoreps[i].evlist );
         i := i+1;
     od;
 end );
@@ -448,9 +449,9 @@ end );
 
 ###########################################################################
 ##
-#F  calcrepsn(<n>, <avec>, <pr>, <max>
+#F  Calcrepsn(<n>, <avec>, <pr>, <max>
 ##
-##  'calcrepsn' returns the polynomials f_{n1}1,..,f_{nm} which have to be
+##  'Calcrepsn' returns the polynomials f_{n1}1,..,f_{nm} which have to be
 ##  evaluated when computing word*g_n^(y_n).  Here m denotes the composition 
 ##  length of the nilpotent group G given by the presentation <pr>.  This is 
 ##  done  by first calculating a complete sytem of <n>-pseudorepresentatives
@@ -461,7 +462,7 @@ end );
 ##  then there don't exist any representatives exept for the atoms and 
 ##  finally 0 will be returned.
 ##
-BindGlobal( "calcrepsn", function(n, avec, pr, max)
+BindGlobal( "Calcrepsn", function(n, avec, pr, max)
     
     local i,j,k,l,       #  loop variables
           x,y,z,a,b,c,   #  trees
@@ -646,19 +647,19 @@ BindGlobal( "calcrepsn", function(n, avec, pr, max)
                 if  reps[i][j][2] = i  then
                     UnmarkTree(reps[i][j]);
                     hilf := MakeFormulaVector(reps[i][j], pr);
-                    dt_add(hilf, pols, pr);
+                    Dt_add(hilf, pols, pr);
                 fi;
             # the third case: reps[i][j] is a deep thought monomial    
             else
-                dt_add(reps[i][j], pols, pr);
+                Dt_add(reps[i][j], pols, pr);
             fi;
        od;
        Unbind(reps[i]);
    od;
    # finally convert the polynomials to the final state
-   pols := konvertiere(pols);
+   pols := Konvertiere(pols);
    if  pols <> 0  then
-      konvert2(pols.evlistvec, pr);
+      Konvert2(pols.evlistvec, pr);
    fi;
    return(pols);
 end );
@@ -666,17 +667,17 @@ end );
 
 #############################################################################
 ##
-#F  calcreps2( <pr> ) . . . . . . . . . . compute the Deep-Thought-polynomials
+#F  Calcreps2( <pr> ) . . . . . . . . . . compute the Deep-Thought-polynomials
 ##
-##  'calcreps2' returns the polynomials which have to be evaluated when
+##  'Calcreps2' returns the polynomials which have to be evaluated when
 ##  computing word*g_n^(y_n) for all <dtbound> <= n <= m where m is the 
 ##  number of generators in the given presentation <pr>.
 ##
-BindGlobal( "calcreps2", function(pr, max, dtbound)
+BindGlobal( "Calcreps2", function(pr, max, dtbound)
     local  i,reps,avec,max2, max1;
     
     reps := [];
-    avec := mkavec(pr);
+    avec := Mkavec(pr);
     if  max >= Length(pr)  then
         max1 := Length(pr);
     else
@@ -686,7 +687,7 @@ BindGlobal( "calcreps2", function(pr, max, dtbound)
         if  i >= max1  then
             max1 := Length(pr);
         fi;
-        reps[i] := calcrepsn(i, avec, pr, max1);
+        reps[i] := Calcrepsn(i, avec, pr, max1);
     od;
     max2 := 1;
     for  i in [1..Length(reps)]  do

@@ -1,0 +1,29 @@
+@Name
+Greased matrix multiplication
+@Contact
+AH
+@Date
+2004/1/17
+@Time
+3
+@Public
+Yes
+@Need
+4
+@NeedA
+4
+@Math
+1
+@Prog
+4
+@Component
+Kernel
+@Descr
+There is a variety of tricks for matrix multiplication over finite fields
+that usually goes under the name of ``greasing''. This involves
+precomputations, as well as efficient use of a cache memory architecture.
+<P>
+Speedup would affect all uses of finite field matrices.
+@Manual
+@Ref
+@Rem

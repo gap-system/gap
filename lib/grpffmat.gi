@@ -1,13 +1,14 @@
 #############################################################################
 ##
 #W  grpffmat.gi                 GAP Library                      Frank Celler
-#W                                                               Frank L�beck
+#W                                                               Frank Lübeck
 #W                                                                Stefan Kohl
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for matrix groups over finite field.
 ##
@@ -68,6 +69,21 @@ InstallMethod( IsNaturalGL,
 function( grp )
     return Size( grp ) = Size( GL( DimensionOfMatrixGroup( grp ),
                    Size( FieldOfMatrixGroup( grp ) ) ) );
+end );
+
+InstallMethod( IsNaturalSL,
+    "size comparison",
+    true,
+    [ IsFFEMatrixGroup and IsFinite ],
+    0,
+
+function( grp )
+    local gen, d, f;
+    f := FieldOfMatrixGroup( grp );
+    d := DimensionOfMatrixGroup( grp );
+    gen := GeneratorsOfGroup( grp );
+    return ForAll(gen, x-> DeterminantMat(x) = One(f)) 
+             and Size(grp) = Size(SL(d, Size(f)));
 end );
 
 
@@ -406,6 +422,13 @@ function( G, flag )
       Add(cl, new );
     fi;
   od;
+  # obey general rule in GAP to put class of identity first
+  i := First([1..Length(cl)], c-> Representative(cl[c]) = One(G));
+  if i <> 1 then
+    a := cl[i];
+    cl[i] := cl[1];
+    cl[1] := a;
+  fi;
   return cl;
 end );
 
@@ -605,7 +628,7 @@ end);
 InstallMethod( NrConjugacyClasses,
                "for natural GL",
                true,
-               [ IsGroup and IsFinite and IsNaturalGL ],
+               [ IsFFEMatrixGroup and IsFinite and IsNaturalGL ],
                0,
 function ( G )
 
@@ -624,7 +647,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for natural SL",
                true,
-               [ IsGroup and IsFinite and IsNaturalSL ],
+               [ IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
                0,
 function ( G )
 
@@ -643,7 +666,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for GU(n,q)",
                true,
-               [ IsGroup and IsFinite 
+               [ IsFFEMatrixGroup and IsFinite 
                  and IsFullSubgroupGLorSLRespectingSesquilinearForm ],
                0,
 function ( G )
@@ -665,7 +688,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for natural SU",
                true,
-               [ IsGroup and IsFinite 
+               [ IsFFEMatrixGroup and IsFinite 
                  and IsFullSubgroupGLorSLRespectingSesquilinearForm
                  and IsSubgroupSL ],
                0,

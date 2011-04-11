@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  Exclude from testinstall.g: why?
 ##
 
 gap> START_TEST("$Id$");
@@ -51,12 +53,9 @@ gap> c:=Difference(l,a);;
 gap> c=l;
 true
 
-gap> STOP_TEST( "set.tst", 20930000 );
+gap> STOP_TEST( "set.tst", 21000000 );
 
 #############################################################################
 ##
-#E  set.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
-
+#E
 

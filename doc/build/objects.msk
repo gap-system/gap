@@ -183,17 +183,18 @@ The library also provides:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Mutability and Copyability}
 
-An object in {\GAP} is said to be *immutable* if its 
-mathematical value (as defined by $=$) does not change under any
-operation. More explicitly, suppose $a$ is immutable and
-$O$ is some operation on $a$, then if $a = b$  
-evaluates to true before executing $O(a)$, $a = b$  
-also evaluates to true afterwards. 
+An object in {\GAP} is said to be *immutable* if its mathematical value
+(as defined by $=$) does not change under any operation.
+More explicitly, suppose $a$ is immutable and $O$ is some operation on $a$,
+then if $a = b$ evaluates to `true' before executing $O(a)$,
+$a = b$ also evaluates to `true' afterwards. 
+(Examples for operations $O$ that change mutable objects are `Add' and
+`Unbind' which are used to change list objects, see Chapter~"Lists".)
 An immutable object *may* change, for example to store
 new information, or to adopt a more efficient representation,
 but this does not affect its behaviour under $=$.
 
-There are two points here to note. Firstly, `operation' above 
+There are two points here to note. Firstly, ``operation'' above 
 refers to the functions and methods which can legitimately be
 applied to the object, and not the `!.' operation whereby 
 virtually any aspect of any {\GAP} level object may be changed.
@@ -214,6 +215,14 @@ their life. For example, mutable lists can be changed by assigning values to
 positions or by unbinding values at certain positions.  Similarly, one
 can assign values to components of a mutable record, or unbind them.
 
+\Declaration{IsCopyable}
+
+Objects for which only an immutable form exists in {\GAP} are called
+*constants*.
+Examples of constants are integers, permutations, and domains.
+Called with a constant as argument,
+`Immutable' and `ShallowCopy' return this argument.
+
 \Declaration{IsMutable}
 
 In many situations, however, one wants to ensure that objects are
@@ -224,7 +233,6 @@ rows. We can obtain an immutable copy of an object with:
 
 \Declaration{Immutable}
 
-
 \>MakeImmutable( <obj> ) F
 
 One can turn the (mutable or immutable) object <obj> into an immutable
@@ -234,9 +242,8 @@ its mutable subobjects are newly created.  If one is not sure about
 this, `Immutable' should be used.
 
 Note that it is *not* possible to turn an immutable object into a
-mutable one; only mutable copies can be made (see~"Duplication of
-Objects").
-
+mutable one;
+only mutable copies can be made (see~"Duplication of Objects").
 
 Using `Immutable', it is possible to store an immutable identity
 matrix or an immutable list of generators, and to pass around
@@ -248,48 +255,41 @@ that lists of immutable objects may remember whether they are sorted
 (see~"Sorted Lists and Sets"), which is not possible for lists of
 mutable objects.
 
-Objects for which only an immutable form exists in {\GAP} are called
-*constants*.  Examples of constants are integers, permutations, and
-domains.  Called with a constant as argument, `Immutable' and
-`ShallowCopy' return this argument.
-
-\Declaration{IsCopyable}
-
-
-Note that, since a matrix is a list of lists, the behaviour of
-`ShallowCopy' for a matrix must respect that for a list, so that given
-an immutable matrix <mat>, `ShallowCopy' returns a mutable matrix
-whose rows are identical to the rows of <mat>.  In particular the
-rows are still immutable.  To get a matrix whose rows are mutable, one
-can use `List( <mat>, ShallowCopy )'.
-
 Since the operation `Immutable' must work for any object in {\GAP}, it 
 follows that an immutable form of every object must be possible, even
 if it is not sensible, and user-defined objects must allow for the
 possibility of becoming immutable without notice. 
 
 Another interesting example of mutable (and thus copyable) objects is
-provided by *iterators*, see~"Iterators".  (Of course an immutable
-form of an iterator is not very useful, but clearly `Immutable' will
-yield such an object.)  Every call of `NextIterator' changes a mutable
-iterator until it is exhausted, and this is the only way to change an
-iterator.  `ShallowCopy' for an iterator <iter> is defined so as to return a
-mutable iterator that has no mutable data in common with <iter>, and
-that behaves equally to <iter> w.r.t.~`IsDoneIterator' and (if <iter>
-is mutable) `NextIterator'.  Note that the meaning of the ``shallow
-copy'' of an iterator that is returned by `ShallowCopy' is not as
-obvious as for lists and records, and must be explicitly defined.
+provided by *iterators*, see~"Iterators".
+(Of course an immutable form of an iterator is not very useful,
+but clearly `Immutable' will yield such an object.)
+Every call of `NextIterator' changes a mutable iterator until it is
+exhausted, and this is the only way to change an iterator.
+`ShallowCopy' for an iterator <iter> is defined so as to return a
+mutable iterator that has no mutable data in common with <iter>,
+and that behaves equally to <iter> w.r.t.~`IsDoneIterator' and (if <iter>
+is mutable) `NextIterator'.
+Note that this meaning of the ``shallow copy'' of an iterator
+that is returned by `ShallowCopy' is not as obvious as for lists and records,
+and must be explicitly defined.
 
-Many operations return immutable results, among those mainly
-attributes (see~"Attributes"); examples of attributes are `Size',
-`Zero', `AdditiveInverse', `One', and `Inverse'.
-Arithmetic operations, such as the binary infix operations `+', `-', `*',
-`/', `^', `mod', the unary `-', and operations such as `Comm' and
-`LeftQuotient', return *mutable* results, *except* if all arguments are
-immutable.
-So the product of two matrices or of a vector and a matrix is immutable
-if and only if the two matrices or both the vector and the matrix are
-immutable (see also~"Arithmetic for Lists").
+Many operations return immutable results, among those in particular
+attributes (see~"Attributes").  Examples of attributes are `Size',
+`Zero', `AdditiveInverse', `One', and `Inverse'.  Arithmetic
+operations, such as the binary infix operations `+', `-', `*', `/',
+`^', `mod', the unary `-', and operations such as `Comm' and
+`LeftQuotient', return *mutable* results, *except* if all arguments
+are immutable.  So the product of two matrices or of a vector and a
+matrix is immutable if and only if the two matrices or both the vector
+and the matrix are immutable (see also~"Arithmetic for Lists"). There
+is one exception to this rule, which arises where the result is less
+deeply nested that at least one of the argument, where mutable
+arguments may sometimes lead to an immutable result. For instance, a
+mutable matrix with immutable rows, multiplied by an immutable vector
+gives an immutable vector result. The exact rules are given 
+in~"Arithmetic for Lists".
+
 
 It should be noted that
 `0 \* <obj>' is equivalent to `ZeroSM( <obj> )',
@@ -297,7 +297,7 @@ It should be noted that
 `<obj>^0' is equivalent to `OneSM( <obj>)',
 and `<obj>^-1' is equivalent to `InverseSM( <obj> )'.
 The ``SM'' stands for ``same mutability'', and indicates that the result is
-mutable if nd only if the argument is mutable.
+mutable if and only if the argument is mutable.
 
 The operations `ZeroOp', `AdditiveInverseOp', `OneOp', and `InverseOp'
 return *mutable* results whenever a mutable version of the result exists,
@@ -312,7 +312,8 @@ All methods installed for the arithmetic operations must obey the rule
 about the mutability of the result.  This means that one may try to
 avoid the perhaps expensive creation of a new object if both operands
 are immutable, and of course no problems of this kind arise at all in
-the usual case that the objects in question are not copyable.
+the (usual) case that the objects in question do not admit a mutable form,
+i.e., that these objects are not copyable.
 
 In a few, relatively low-level algorithms, one wishes to treat a
 matrix partly as a data structure, and manipulate and change its
@@ -376,18 +377,30 @@ string).
 \Declaration{Name}
 
 \beginexample
-gap> g := Group((1,2,3),(1,2));
-Group([ (1,2,3), (1,2) ])
-gap> SetName(g, "S3");
-gap> g;
-S3
-gap> Name(g);
-"S3"
+gap> R := PolynomialRing(Integers,2);
+Integers[x_1,x_2]
+gap> SetName(R,"Z[x,y]");
+gap> R;
+Z[x,y]
+gap> Name(R);
+"Z[x,y]"
 \endexample
 
 \Declaration{IsInternallyConsistent}
 
+\>MemoryUsage( <obj> ) O
 
+returns the amount of memory in bytes used by the object <obj> and its
+subobjects. Note that in general, objects can reference each other
+in very difficult ways such that determining the memory usage is
+a recursive procedure. In particular, computing the memory usage
+of a complicated structure itself uses some additional memory,
+which is however no longer used after completion of this operation.
+This procedure descents into lists and records, positional and
+component objects, however it does not take into account the type
+and family objects! For functions, it only takes the memory usage
+of the function body, not of the local context the function was
+created in, although the function keeps a reference to that as well!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

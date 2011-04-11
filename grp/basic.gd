@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the operations for the construction of the basic group
 ##  types.
@@ -15,29 +15,38 @@ Revision.basic_gd :=
 
 #############################################################################
 ##
-#1
+##  <#GAPDoc Label="[1]{basic}">
 ##  There are several infinite families of groups which are parametrized by
 ##  numbers.
-##  {\GAP} provides various functions to construct these groups.
+##  &GAP; provides various functions to construct these groups.
 ##  The functions always permit (but do not require) one to indicate
-##  a filter (see~"Filters"), for example `IsPermGroup', `IsMatrixGroup' or
-##  `IsPcGroup', in which the group shall be constructed.
-##  There always is a default filter corresponding to a ``natural'' way
+##  a filter (see&nbsp;<Ref Sect="Filters"/>),
+##  for example <Ref Prop="IsPermGroup"/>, <Ref Prop="IsMatrixGroup"/> or
+##  <Ref Prop="IsPcGroup"/>, in which the group shall be constructed.
+##  There always is a default filter corresponding to a <Q>natural</Q> way
 ##  to describe the group in question.
 ##  Note that not every group can be constructed in every filter,
-##  there may be theoretical restrictions (`IsPcGroup' only works for
-##  solvable groups) or methods may be available only for a few filters.
-##
+##  there may be theoretical restrictions (<Ref Prop="IsPcGroup"/> only works
+##  for solvable groups) or methods may be available only for a few filters.
+##  <P/>
 ##  Certain filters may admit additional hints.
-##  For example, groups constructed in `IsMatrixGroup' may be constructed
-##  over a specified field, which can be given as second argument of the
-##  function that constructs the group;
-##  The default field is `Rationals'.
+##  For example, groups constructed in <Ref Prop="IsMatrixGroup"/> may be
+##  constructed over a specified field, which can be given as second argument
+##  of the function that constructs the group;
+##  The default field is <Ref Var="Rationals"/>.
+##  <#/GAPDoc>
 
 
 #############################################################################
 ##
 #O  TrivialGroupCons( <filter> )
+##
+##  <ManSection>
+##  <Oper Name="TrivialGroupCons" Arg='filter'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareConstructor( "TrivialGroupCons", [ IsGroup ] );
 
@@ -46,8 +55,24 @@ DeclareConstructor( "TrivialGroupCons", [ IsGroup ] );
 ##
 #F  TrivialGroup( [<filter>] )  . . . . . . . . . . . . . . . . trivial group
 ##
-##  constructs a trivial group in the category given by the filter <filter>.
-##  If <filter> is not given it defaults to `IsPcGroup'.
+##  <#GAPDoc Label="TrivialGroup">
+##  <ManSection>
+##  <Func Name="TrivialGroup" Arg='[filter]'/>
+##
+##  <Description>
+##  constructs a trivial group in the category given by the filter
+##  <A>filter</A>.
+##  If <A>filter</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> TrivialGroup();
+##  <pc group of size 1 with 0 generators>
+##  gap> TrivialGroup( IsPermGroup );
+##  Group(())
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "TrivialGroup", function( arg )
 
@@ -65,6 +90,13 @@ end );
 ##
 #O  AbelianGroupCons( <filter>, <ints> )
 ##
+##  <ManSection>
+##  <Oper Name="AbelianGroupCons" Arg='filter, ints'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 
 
@@ -72,15 +104,34 @@ DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 ##
 #F  AbelianGroup( [<filt>, ]<ints> )  . . . . . . . . . . . . . abelian group
 ##
-##  constructs an abelian group in the category given by the filter <filt>
-##  which is of isomorphism type $C_{ints[1]} \*  C_{ints[2]} \* \ldots \*
-##  C_{ints[n]}$.  <ints> must be a list of positive integers.  If <filt> is
-##  not given it defaults to `IsPcGroup'.  The generators of the group
-##  returned are the elements corresponding to the integers in <ints>.
+##  <#GAPDoc Label="AbelianGroup">
+##  <ManSection>
+##  <Func Name="AbelianGroup" Arg='[filt, ]ints'/>
+##
+##  <Description>
+##  constructs an abelian group in the category given by the filter
+##  <A>filt</A> which is of isomorphism type
+##  <M>C_{{<A>ints</A>[1]}} \times C_{{<A>ints</A>[2]}} \times \ldots
+##  \times C_{{<A>ints</A>[n]}}</M>,
+##  where <A>ints</A> must be a list of positive integers.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  The generators of the group returned are the elements corresponding to
+##  the integers in <A>ints</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> AbelianGroup([1,2,3]);
+##  <pc group of size 6 with 3 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "AbelianGroup", function ( arg )
 
   if Length(arg) = 1  then
+    if ForAny(arg[1],x->x=0) then
+      return AbelianGroupCons( IsFpGroup, arg[1] );
+    fi;
     return AbelianGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
 
@@ -100,6 +151,13 @@ end );
 ##
 #O  AlternatingGroupCons( <filter>, <deg> )
 ##
+##  <ManSection>
+##  <Oper Name="AlternatingGroupCons" Arg='filter, deg'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "AlternatingGroupCons", [ IsGroup, IsInt ] );
 
 
@@ -108,12 +166,26 @@ DeclareConstructor( "AlternatingGroupCons", [ IsGroup, IsInt ] );
 #F  AlternatingGroup( [<filt>, ]<deg> ) . . . . . . . . . . alternating group
 #F  AlternatingGroup( [<filt>, ]<dom> ) . . . . . . . . . . alternating group
 ##
-##  constructs the alternating group of degree <deg> in the category given
-##  by the filter <filt>.
-##  If <filt> is not given it defaults to `IsPermGroup'.
+##  <#GAPDoc Label="AlternatingGroup">
+##  <ManSection>
+##  <Heading>AlternatingGroup</Heading>
+##  <Func Name="AlternatingGroup" Arg='[filt, ]deg' Label="for a degree"/>
+##  <Func Name="AlternatingGroup" Arg='[filt, ]dom' Label="for a domain"/>
+##
+##  <Description>
+##  constructs the alternating group of degree <A>deg</A> in the category given
+##  by the filter <A>filt</A>.
+##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
 ##  In the second version, the function constructs the alternating group on
-##  the points given in the set <dom> which must be a set of positive
+##  the points given in the set <A>dom</A> which must be a set of positive
 ##  integers.
+##  <Example><![CDATA[
+##  gap> AlternatingGroup(5);
+##  Alt( [ 1 .. 5 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "AlternatingGroup", function ( arg )
 
@@ -134,6 +206,13 @@ end );
 ##
 #O  CyclicGroupCons( <filter>, <n> )
 ##
+##  <ManSection>
+##  <Oper Name="CyclicGroupCons" Arg='filter, n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "CyclicGroupCons", [ IsGroup, IsInt ] );
 
 
@@ -141,12 +220,39 @@ DeclareConstructor( "CyclicGroupCons", [ IsGroup, IsInt ] );
 ##
 #F  CyclicGroup( [<filt>, ]<n> )  . . . . . . . . . . . . . . .  cyclic group
 ##
-##  constructs the cyclic group of size <n> in the category given by the
-##  filter <filt>.  If <filt> is not given it defaults to `IsPcGroup'.
+##  <#GAPDoc Label="CyclicGroup">
+##  <ManSection>
+##  <Func Name="CyclicGroup" Arg='[filt, ]n'/>
+##
+##  <Description>
+##  constructs the cyclic group of size <A>n</A> in the category given by the
+##  filter <A>filt</A>.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> CyclicGroup(12);
+##  <pc group of size 12 with 3 generators>
+##  gap> CyclicGroup(IsPermGroup,12);
+##  Group([ (1,2,3,4,5,6,7,8,9,10,11,12) ])
+##  gap> matgrp1:= CyclicGroup( IsMatrixGroup, 12 );
+##  <matrix group of size 12 with 1 generators>
+##  gap> FieldOfMatrixGroup( matgrp1 );
+##  Rationals
+##  gap> matgrp2:= CyclicGroup( IsMatrixGroup, GF(2), 12 );
+##  <matrix group of size 12 with 1 generators>
+##  gap> FieldOfMatrixGroup( matgrp2 );
+##  GF(2)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "CyclicGroup", function ( arg )
 
   if Length(arg) = 1  then
+    if arg[1]=infinity then
+      return CyclicGroupCons(IsFpGroup,arg[1]);
+    fi;
     return CyclicGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
 
@@ -166,6 +272,13 @@ end );
 ##
 #O  DihedralGroupCons( <filter>, <n> )
 ##
+##  <ManSection>
+##  <Oper Name="DihedralGroupCons" Arg='filter, n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "DihedralGroupCons", [ IsGroup, IsInt ] );
 
 
@@ -173,8 +286,22 @@ DeclareConstructor( "DihedralGroupCons", [ IsGroup, IsInt ] );
 ##
 #F  DihedralGroup( [<filt>, ]<n> )  . . . . . . . dihedral group of order <n>
 ##
-##  constructs the dihedral group of size <n> in the category given by the
-##  filter <filt>.  If <filt> is not given it defaults to `IsPcGroup'.
+##  <#GAPDoc Label="DihedralGroup">
+##  <ManSection>
+##  <Func Name="DihedralGroup" Arg='[filt, ]n'/>
+##
+##  <Description>
+##  constructs the dihedral group of size <A>n</A> in the category given by the
+##  filter <A>filt</A>.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> DihedralGroup(10);
+##  <pc group of size 10 with 2 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "DihedralGroup", function ( arg )
 
@@ -193,10 +320,77 @@ BindGlobal( "DihedralGroup", function ( arg )
 
 end );
 
+#############################################################################
+##
+#O  QuaternionGroupCons( <filter>, <n> )
+##
+##  <ManSection>
+##  <Oper Name="QuaternionGroupCons" Arg='filter, n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareConstructor( "QuaternionGroupCons", [ IsGroup, IsInt ] );
+
+
+#############################################################################
+##
+#F  QuaternionGroup( [<filt>, ]<n> )  . . . . . . . quaternion group of order <n>
+##
+##  <#GAPDoc Label="QuaternionGroup">
+##  <ManSection>
+##  <Func Name="QuaternionGroup" Arg='[filt, ]n'/>
+##  <Func Name="DicyclicGroup" Arg='[filt, ]n'/>
+##
+##  <Description>
+##  constructs the generalized quaternion group (or dicyclic group) of size
+##  <A>n</A> in the category given by the filter <A>filt</A>.  Here, <A>n</A>
+##  is a multiple of 4.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  Methods are also available for permutation and matrix groups (of minimal
+##  degree and minimal dimension in coprime characteristic).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> QuaternionGroup(32);
+##  <pc group of size 32 with 5 generators>
+##  gap> g:=QuaternionGroup(IsMatrixGroup,CF(16),32);
+##  Group([ [ [ 0, 1 ], [ -1, 0 ] ], [ [ E(16), 0 ], [ 0, -E(16)^7 ] ] ])
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BindGlobal( "QuaternionGroup", function ( arg )
+
+  if Length(arg) = 1  then
+    return QuaternionGroupCons( IsPcGroup, arg[1] );
+  elif IsOperation(arg[1]) then
+
+    if Length(arg) = 2  then
+      return QuaternionGroupCons( arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+      return QuaternionGroupCons( arg[1], arg[2], arg[3] );
+    fi;
+  fi;
+  Error( "usage: QuaternionGroup( [<filter>, ]<size> )" );
+
+end );
+
+DeclareSynonym( "DicyclicGroup", QuaternionGroup );
+
 
 #############################################################################
 ##
 #O  ElementaryAbelianGroupCons( <filter>, <n> )
+##
+##  <ManSection>
+##  <Oper Name="ElementaryAbelianGroupCons" Arg='filter, n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareConstructor( "ElementaryAbelianGroupCons", [ IsGroup, IsInt ] );
 
@@ -205,9 +399,22 @@ DeclareConstructor( "ElementaryAbelianGroupCons", [ IsGroup, IsInt ] );
 ##
 #F  ElementaryAbelianGroup( [<filt>, ]<n> ) . . . .  elementary abelian group
 ##
-##  constructs the elementary abelian group of size <n> in the category
-##  given by the filter <filt>.
-##  If <filt> is not given it defaults to `IsPcGroup'.
+##  <#GAPDoc Label="ElementaryAbelianGroup">
+##  <ManSection>
+##  <Func Name="ElementaryAbelianGroup" Arg='[filt, ]n'/>
+##
+##  <Description>
+##  constructs the elementary abelian group of size <A>n</A> in the category
+##  given by the filter <A>filt</A>.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ElementaryAbelianGroup(8192);
+##  <pc group of size 8192 with 13 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "ElementaryAbelianGroup", function ( arg )
 
@@ -231,6 +438,13 @@ end );
 ##
 #O  ExtraspecialGroupCons( <filter>, <order>, <exponent> )
 ##
+##  <ManSection>
+##  <Oper Name="ExtraspecialGroupCons" Arg='filter, order, exponent'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "ExtraspecialGroupCons", [ IsGroup, IsInt, IsObject ] );
 
 
@@ -238,17 +452,35 @@ DeclareConstructor( "ExtraspecialGroupCons", [ IsGroup, IsInt, IsObject ] );
 ##
 #F  ExtraspecialGroup( [<filt>, ]<order>, <exp> ) . . . .  extraspecial group
 ##
-##  Let <order> be of the form $p^{2n+1}$, for a prime integer $p$ and a
-##  positive integer $n$.
-##  `ExtraspecialGroup' returns the extraspecial group of order <order>
-##  that is determined by <exp>, in the category given by the filter <filt>.
+##  <#GAPDoc Label="ExtraspecialGroup">
+##  <ManSection>
+##  <Func Name="ExtraspecialGroup" Arg='[filt, ]order, exp'/>
 ##
-##  If $p$ is odd then admissible values of <exp> are the exponent of the
-##  group (either $p$ or $p^2$) or one of `{'}+{'}', `\"+\"', `{'}-{'}',
-##  `\"-\"'.
-##  For $p = 2$, only the above plus or minus signs are admissible.
-##
-##  If <filt> is not given it defaults to `IsPcGroup'.
+##  <Description>
+##  Let <A>order</A> be of the form <M>p^{{2n+1}}</M>, for a prime integer
+##  <M>p</M> and a positive integer <M>n</M>.
+##  <Ref Func="ExtraspecialGroup"/> returns the extraspecial group of order
+##  <A>order</A> that is determined by <A>exp</A>,
+##  in the category given by the filter <A>filt</A>.
+##  <P/>
+##  If <M>p</M> is odd then admissible values of <A>exp</A> are the exponent
+##  of the group (either <M>p</M> or <M>p^2</M>) or one of <C>'+'</C>,
+##  <C>"+"</C>, <C>'-'</C>, <C>"-"</C>.
+##  For <M>p = 2</M>, only the above plus or minus signs are admissible.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ExtraspecialGroup( 27, 3 );
+##  <pc group of size 27 with 3 generators>
+##  gap> ExtraspecialGroup( 27, '+' );
+##  <pc group of size 27 with 3 generators>
+##  gap> ExtraspecialGroup( 8, "-" );
+##  <pc group of size 8 with 3 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "ExtraspecialGroup", function ( arg )
 
@@ -272,6 +504,13 @@ end );
 ##
 #O  MathieuGroupCons( <filter>, <degree> )
 ##
+##  <ManSection>
+##  <Oper Name="MathieuGroupCons" Arg='filter, degree'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "MathieuGroupCons", [ IsGroup, IsInt ] );
 
 
@@ -279,10 +518,23 @@ DeclareConstructor( "MathieuGroupCons", [ IsGroup, IsInt ] );
 ##
 #F  MathieuGroup( [<filt>, ]<degree> )  . . . . . . . . . . . . Mathieu group
 ##
-##  constructs the Mathieu group of degree <degree> in the category given by
-##  the filter <filt>,
-##  where <degree> must be in $\{ 9, 10, 11, 12, 21, 22, 23, 24 \}$.
-##  If <filt> is not given it defaults to `IsPermGroup'.
+##  <#GAPDoc Label="MathieuGroup">
+##  <ManSection>
+##  <Func Name="MathieuGroup" Arg='[filt, ]degree'/>
+##
+##  <Description>
+##  constructs the Mathieu group of degree <A>degree</A> in the category
+##  given by the filter <A>filt</A>, where <A>degree</A> must be in the set
+##  <M>\{ 9, 10, 11, 12, 21, 22, 23, 24 \}</M>.
+##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> MathieuGroup( 11 );
+##  Group([ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6) ])
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "MathieuGroup", function( arg )
 
@@ -306,6 +558,13 @@ end );
 ##
 #O  SymmetricGroupCons( <filter>, <deg> )
 ##
+##  <ManSection>
+##  <Oper Name="SymmetricGroupCons" Arg='filter, deg'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "SymmetricGroupCons", [ IsGroup, IsInt ] );
 
 
@@ -314,12 +573,31 @@ DeclareConstructor( "SymmetricGroupCons", [ IsGroup, IsInt ] );
 #F  SymmetricGroup( [<filt>, ]<deg> )
 #F  SymmetricGroup( [<filt>, ]<dom> )
 ##
-##  constructs the symmetric group of degree <deg> in the category given by
-##  the filter <filt>.
-##  If <filt> is not given it defaults to `IsPermGroup'.
+##  <#GAPDoc Label="SymmetricGroup">
+##  <ManSection>
+##  <Heading>SymmetricGroup</Heading>
+##  <Func Name="SymmetricGroup" Arg='[filt, ]deg' Label="for a degree"/>
+##  <Func Name="SymmetricGroup" Arg='[filt, ]dom' Label="for a domain"/>
+##
+##  <Description>
+##  constructs the symmetric group of degree <A>deg</A> in the category
+##  given by the filter <A>filt</A>.
+##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
 ##  In the second version, the function constructs the symmetric group on
-##  the points given in the set <dom> which must be a set of positive
+##  the points given in the set <A>dom</A> which must be a set of positive
 ##  integers.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SymmetricGroup(10);
+##  Sym( [ 1 .. 10 ] )
+##  ]]></Example>
+##  <P/>
+##  Note that permutation groups provide special treatment of symmetric and
+##  alternating groups,
+##  see&nbsp;<Ref Sect="Symmetric and Alternating Groups"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "SymmetricGroup", function ( arg )
 
@@ -334,6 +612,37 @@ BindGlobal( "SymmetricGroup", function ( arg )
   Error( "usage:  SymmetricGroup( [<filter>, ]<deg> )" );
 
 end );
+
+BIND_GLOBAL("PermConstructor",function(oper,filter,use)
+local val, i;
+  val:=0;
+  # force value 0 (unless offset).
+  for i in filter do
+    # when completing, `RankFilter' is redefined. Thus we must use
+    # SIZE_FLAGS.
+    val:=val-SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(i)));
+  od;
+
+  InstallOtherMethod( oper,
+    "convert to permgroup",
+    filter,
+    val,
+  function(arg)
+  local argc,g,h;
+    argc:=ShallowCopy(arg);
+    argc[1]:=use;
+    g:=CallFuncList(oper,argc);
+    h:=Image(IsomorphismPermGroup(g),g);
+    if HasName(g) then
+      SetName(h,Concatenation("Perm_",Name(g)));
+    fi;
+    if HasSize(g) then
+      SetSize(h,Size(g));
+    fi;
+    return h;
+  end);
+
+end);
 
 
 #############################################################################

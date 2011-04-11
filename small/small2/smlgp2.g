@@ -120,9 +120,10 @@ SMALL_GROUP_FUNCS[ 10 ] := SMALL_GROUP_FUNCS[ 8 ];
 
 #############################################################################
 ##                            
-#F SELECT_SMALL_GROUPS_FUNCS[ 8 .. 10 ]( funcs, vals, inforec, all, id )
+#F SELECT_SMALL_GROUPS_FUNCS[8..10]( funcs, vals, inforec, all, id, idList )
 ##     
-SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs,vals,inforec,all,id )
+SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
+                                            id, idList )
     local cand, i, j, evalfuncs, evalvals, func, val, prop, g, ok, result,
           expand, intersection, difference, union, p, tmp, os;
 
@@ -318,18 +319,18 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs,vals,inforec,all,id )
         func := funcs[ i ];
         val := vals[ i ];
         
-        if func in [ IsAbelian, IsNilpotentGroup, IsSupersolvableGroup,
-                 IsSolvableGroup ] then
+        if func in [ IsAbelian, IsNilpotent,IsNilpotentGroup,IsSupersolvable,
+                     IsSupersolvableGroup, IsSolvable, IsSolvableGroup ] then
             if not val in [ [ true ], [ false ] ] then
                Error("SelectSmallGroups: Use Test-Funcs with true or false");
             fi;
             if ( func = IsAbelian and not
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isAbelian ) ) or
-               ( func = IsNilpotentGroup and not
+               ( func in [ IsNilpotent, IsNilpotentGroup ] and not
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isNilpotent)) or
-               ( func = IsSupersolvableGroup and not
+               ( func in [ IsSupersolvable, IsSupersolvableGroup ] and not
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isSupersolvable )) or
-               ( func = IsSolvableGroup and not
+               ( func in [ IsSolvable, IsSolvableGroup ] and not
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isSolvable )) then
                 if val = [ false ] then
                     if all then
@@ -342,9 +343,9 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs,vals,inforec,all,id )
             else
                 if func = IsAbelian then
                     prop := PROPERTIES_SMALL_GROUPS[ size ].isAbelian;
-                elif func = IsNilpotentGroup then
+                elif func in [ IsNilpotent, IsNilpotentGroup ] then
                     prop := PROPERTIES_SMALL_GROUPS[ size ].isNilpotent;
-                elif func = IsSupersolvableGroup then
+                elif func in [ IsSupersolvable, IsSupersolvableGroup ] then
                     prop := PROPERTIES_SMALL_GROUPS[ size ].isSupersolvable;
                 else
                     prop := PROPERTIES_SMALL_GROUPS[ size ].isSolvable;
@@ -451,18 +452,20 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs,vals,inforec,all,id )
 
     result := [];
     for i in expand( cand ) do
-        g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );
-        SetIdGroup( g, [ size, i ] );
-        ok := true;
-        for j in [ 1 .. Length( evalfuncs ) ] do
-            ok := ok and ( evalfuncs[ j ]( g ) in evalvals[ j ] );
-        od;
-        if all and id and ok then
-            Add( result, [ size, i ] );
-        elif all and ok then
-            Add( result, g );
-        elif ok then
-            return g;
+        if idList = fail or i in idList then
+            g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );
+            SetIdGroup( g, [ size, i ] );
+            ok := true;
+            for j in [ 1 .. Length( evalfuncs ) ] do
+                ok := ok and ( evalfuncs[ j ]( g ) in evalvals[ j ] );
+            od;
+            if all and id and ok then
+                Add( result, [ size, i ] );
+            elif all and ok then
+                Add( result, g );
+            elif ok then
+                return g;
+            fi;
         fi;
     od;
 

@@ -4,8 +4,9 @@
 #W                                                             & Frank Celler
 #W                                                         & Alexander Hulpke
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 #H  @(#)$Id$
 ##
@@ -18,9 +19,8 @@ Revision.wordass_gi :=
 ##
 #F  AssignGeneratorVariables(<G>)
 ##
-InstallGlobalFunction("AssignGeneratorVariables", function(G)
-local gens, g, s;
-  gens := GeneratorsOfGroup(G);
+BindGlobal("DoAssignGenVars",function(gens)
+local g,s;
   # test whether the variable name would be a proper identifier
   for g in gens do
      s := String(g);
@@ -41,6 +41,42 @@ local gens, g, s;
     ASS_GVAR(s, g);
   od;
   Info(InfoWarning + InfoGlobal, 1, "Assigned the global variables ", gens);
+end);
+
+InstallMethod(AssignGeneratorVariables, "default method for a group",
+        [IsGroup],
+        function(G)
+local gens;
+  gens := GeneratorsOfGroup(G);
+  DoAssignGenVars(gens);
+end);
+
+#############################################################################
+##
+#F  AssignGeneratorVariables(<R>)
+##
+InstallMethod(AssignGeneratorVariables, "default method for a ring",
+        [IsRing and HasGeneratorsOfRing],
+        function(G)
+local gens;
+  gens := GeneratorsOfRing(G);
+  DoAssignGenVars(gens);
+end);
+
+#############################################################################
+##
+#F  AssignGeneratorVariables(<A>)
+##
+InstallMethod(AssignGeneratorVariables, "default method for a LOR",
+        [IsLeftOperatorRing],
+        function(G)
+local gens;
+  if IsLeftOperatorRingWithOne(G) then
+    gens := GeneratorsOfLeftOperatorRingWithOne(G);
+  else
+    gens := GeneratorsOfLeftOperatorRing(G);
+  fi;
+  DoAssignGenVars(gens);
 end);
 
 # functions for syllable representation
@@ -834,7 +870,7 @@ end );
 ## position k, by z
 ##
 InstallOtherMethod(SubstitutedWord,
- "for three associate words",true,
+ "for three associative words",true,
 	[IsAssocWord, IsAssocWord, IsPosInt, IsAssocWord], 0, 
 function(u,v,k,z)
 local i;
@@ -1059,6 +1095,306 @@ function(a,b)
 
 end);
 
+# functions to read a presentation as written in print
+# actual evaluation function
+BindGlobal("PPVWCD",Union(CHARS_DIGITS,"+-"));
+BindGlobal("PPValWord",function(gens,nams,s)
+local ValNum, DoValWord, w;
+
+  Info(InfoFpGroup,2,"Parse ",s);
+  ValNum:=function(p)
+  local w;
+    w:="";
+    while p<=Length(s) and s[p] in PPVWCD do
+      Add(w,s[p]);
+      p:=p+1;
+    od;
+    return [p,Int(w)];
+  end;
+
+  DoValWord:=function(start)
+  local w, eps, p, c, g, h;
+    #Print("DVV ",start," ",s,"\n");
+    w:=One(gens[1]);
+    eps:=1;
+    p:=start;
+    while p<=Length(s) do
+      #Print("Loop ",p,"\n");
+      c:=s[p];
+      if c in ",)]^*/" then
+	# separator -- stop local parsing
+	return [p,w];
+      elif c='(' then
+        # open parenthesis
+	g:=DoValWord(p+1);
+        p:=g[1];
+	if s[p]<>')' then
+	  Error("missing )");
+	fi;
+	p:=p+1;
+	g:=g[2];
+      elif c='[' then
+        # commutator
+	g:=DoValWord(p+1);
+        p:=g[1];
+	if s[p]<>',' then
+	  Error("missing ,");
+	fi;
+	h:=DoValWord(p+1);
+        p:=h[1];
+	if s[p]<>']' then
+	  Error("missing ]");
+	fi;
+	p:=p+1;
+	g:=Comm(g[2],h[2]);
+      else
+	g:=PositionProperty(nams,i->i[1]=c);
+	if g=fail then
+	  Error("missing generator ",[c]);
+	fi;
+	g:=gens[g];
+	p:=p+1;
+      fi;
+
+      if p<=Length(s) and s[p]='^' then
+        # exponentiation
+	p:=p+1;
+	if s[p] in "(" then
+	  h:=DoValWord(p+1);
+	  p:=h[1];
+	  if s[p]<>')' then
+	    Error("missing )");
+	  fi;
+	  p:=p+1;
+	  g:=g^h[2];
+	elif s[p] in CHARS_LALPHA or s[p] in CHARS_UALPHA then
+	  h:=PositionProperty(nams,i->i[1]=s[p]);
+	  if h=fail then
+	    if IsBoundGlobal(s{[p]}) and IsInt(ValueGlobal(s{[p]})) then;
+	      h:=ValueGlobal(s{[p]});
+	      Info(InfoWarning,1,"parsing non-generator`",s{[p]},
+	           "' as global variable value ",h);
+	      p:=p+1;
+	      g:=g^h;
+	    else
+	      Error("missing generator `",s{[p]},"'");
+	    fi;
+	  else
+	    h:=gens[h];
+	    p:=p+1;
+	    g:=g^h;
+	  fi;
+	else
+	  # should be number
+	  h:=ValNum(p);
+	  p:=h[1];
+	  g:=g^h[2];
+	fi;
+      elif p<=Length(s) and s[p] in PPVWCD then
+	# should be number
+	h:=ValNum(p);
+	p:=h[1];
+	g:=g^h[2];
+      fi;
+      w:=w*g^eps;
+      eps:=1;
+
+      # product/quotient?
+      while p<=Length(s) and s[p]='*' do
+        p:=p+1;
+      od;
+      while p<=Length(s) and s[p]='.' do
+        p:=p+1;
+      od;
+      while p<=Length(s) and s[p]='/' do
+        p:=p+1;
+	eps:=-eps;
+      od;
+    od;
+    return [p,w];
+  end;
+
+  if s="1" then
+    return One(gens[1]);
+  fi;
+
+  w:=DoValWord(1);
+  return w[2];
+end);
+
+InstallGlobalFunction(ParseRelators,function(gens,r)
+local invname, nams, rels, p, a, b, z, i,br;
+  invname:=function(s)
+  local w, i;
+    w:="";
+    for i in s do
+      if i in CHARS_UALPHA then
+        Add(w,CHARS_LALPHA[Position(CHARS_UALPHA,i)]);
+      elif i in CHARS_LALPHA then
+        Add(w,CHARS_UALPHA[Position(CHARS_LALPHA,i)]);
+      else
+	Add(w,i);
+      fi;
+    od;
+    return w;
+  end;
+
+  if IsGroup(gens) then
+    gens:=GeneratorsOfGroup(gens);
+  fi;
+  gens:=ShallowCopy(gens);
+  nams:=List(gens,String);
+  if ForAny(nams,x->Length(x)>1) then
+    Error("generator names must have length 1");
+  fi;
+  Append(gens,List(gens,i->i^-1));
+  Append(nams,List(nams,invname));
+  SortParallel(nams,gens);
+
+  rels:=[];
+  while Length(r)>0 do
+    p:=1;
+    br:=0;
+    a:=false;
+    while p<=Length(r) do
+      if r[p]='[' then
+	br:=br+1;
+      elif r[p]=']' then
+	br:=br-1;
+      elif r[p]=',' and br=0 then
+	a:=r{[1..p-1]};
+	r:=r{[p+1..Length(r)]};
+	p:=Length(r)+1;
+      fi;
+      p:=p+1;
+    od;
+    if a=false then
+      a:=r;
+      r:="";
+    fi;
+
+    # remove fill
+    a:=Filtered(a,x->not x in "\n ");
+
+    # now check a -- does it contain equal signs?
+    b:=SplitString(a,"=");
+
+
+    if Length(b)=1 then
+      Add(rels,PPValWord(gens,nams,b[1]));
+    else
+      Sort(b,function(x,y) return Length(x)<Length(y);end);
+      z:=PPValWord(gens,nams,b[1]);
+      for i in [2..Length(b)] do
+        Add(rels,PPValWord(gens,nams,b[i])/z);
+      od;
+    fi;
+    
+  od;
+  return rels;
+end);
+
+InstallGlobalFunction(StringFactorizationWord,function(word)
+local wu, l, symbols, offset, occurrences, n, no, translate, findpatterns, nams, invnams, r, wordout, j;
+  wu:=UnderlyingElement(word);
+  l:=LetterRepAssocWord(wu);
+  if Length(l)=0 then
+    return "<identity>";
+  fi;
+  symbols:=Set(l);
+  offset:=-Minimum(l)+1;
+  occurrences:=List([1..Maximum(l)+offset],i->[]);
+  n:=Maximum(1,Maximum(l)+1);
+  no:=n;
+  translate:=[];
+
+  findpatterns:=function(l)
+  local p, c, notfound, jm, j, r, lr, z, a;
+    p:=1;
+    while p<Length(l) do
+      c:=l[p];
+      # does a repetitive phrase start?
+      notfound:=true;
+      jm:=p+QuoInt((Length(l)-p+1),2);
+      j:=p+1;
+      while j<=jm and notfound do
+	if l[j]=c and l{[p..j-1]}=l{[j..2*j-p-1]} then
+	  notfound:=false;
+	else
+	  j:=j+1;
+	fi;
+      od;
+      if not notfound then
+	# repetition found, define it as macro
+	r:=l{[p..j-1]};
+	lr:=j-p;
+	z:=1; # number of extras
+	while p+(z+1)*lr-1<=Length(l) and r=l{[p+z*lr..p+(z+1)*lr-1]} do
+	  z:=z+1;
+	od;
+	z:=z-1;
+
+	# does `r' have any internal repetition?
+	r:=findpatterns(r);
+
+	a:=Position(translate,[r,z]);
+	if a=fail then
+	  a:=n;
+	  translate[n]:=[r,z];
+	  n:=n+1;
+	fi;
+	# replace the word
+	l:=Concatenation(l{[1..p-1]},[a],l{[j+(z)*lr..Length(l)]});
+      fi;
+      p:=p+1;
+    od;
+    return l;
+  end;
+
+  l:=findpatterns(l);
+
+  # write out the word
+  nams:=FamilyObj(wu)!.names;
+  invnams:=[];
+  for j in nams do
+    r:=ShallowCopy(j);
+    if j[1] in CHARS_LALPHA then
+      r[1]:=CHARS_UALPHA[Position(CHARS_LALPHA,j[1])];
+    elif j[1] in CHARS_UALPHA then
+      r[1]:=CHARS_LALPHA[Position(CHARS_UALPHA,j[1])];
+    else
+      Error("name does not start with letter");
+    fi;
+    Add(invnams,r);
+  od;
+  r:="";
+  wordout:=function(k)
+  local i;
+    if k>=no then
+      if Length(translate[k][1])=1 and
+	translate[k][1][1]<no then
+	  # original generator
+	  wordout(translate[k][1][1]);
+      else
+	# translated
+	Add(r,'(');
+	for i in translate[k][1] do
+	  wordout(i);
+	od;
+	Add(r,')');
+      fi;
+      Append(r,String(translate[k][2]+1));
+    elif k<1 then 
+      Append(r,invnams[-k]);
+    else
+      Append(r,nams[k]);
+    fi;
+  end;
+  for j in l do
+    wordout(j);
+  od;
+  return r;
+end);
 
 #############################################################################
 ##

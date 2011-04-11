@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for the elements of the rings $Z / n Z$
 ##  in their representation via the residue modulo $n$.
@@ -28,6 +29,10 @@
 Revision.zmodnz_gi :=
     "@(#)$Id$";
 
+#T for small residue class rings, avoid constructing new objects by
+#T keeping an elements list, and change the constructor such that the
+#T object in question is just fetched
+#T (check performance for matrices over Z/4Z, say)
 
 #############################################################################
 ##
@@ -136,6 +141,23 @@ InstallMethod( PrintObj,
     [ IsZmodpZObj and IsModulusRep ],
     function( x )
     Print( "ZmodpZObj( ", x![1], ", ", Characteristic( x ), " )" );
+    end );
+
+InstallMethod( String,
+    "for element in Z/nZ (ModulusRep)",
+    IsZmodnZObjNonprimeFamily,
+    [ IsZmodnZObj and IsModulusRep ],
+    function( x )
+      return Concatenation( "ZmodnZObj(", String(x![1]), ",", 
+      String(DataType(TypeObj(x))), ")" );
+    end );
+
+InstallMethod( String,
+    "for element in Z/pZ (ModulusRep)",
+    [ IsZmodpZObj and IsModulusRep ],
+    function( x )
+      return Concatenation( "ZmodpZObj(", String(x![1]), ",", 
+      String(Characteristic( x )), ")" );
     end );
 
 
@@ -547,12 +569,12 @@ InstallMethod( InverseOp,
     "for element in Z/nZ (ModulusRep)",
     [ IsZmodnZObj and IsModulusRep ],
     function( elm )
-    local modulus;
-    modulus:= QuotientMod( Integers, 1, elm![1], FamilyObj( elm )!.modulus );
-    if modulus <> fail then
-      modulus:= ZmodnZObj( FamilyObj( elm ), modulus );
+    local inv;
+    inv:= QuotientMod( Integers, 1, elm![1], ModulusOfZmodnZObj( elm ) );
+    if inv <> fail then
+      inv:= ZmodnZObj( FamilyObj( elm ), inv );
     fi;
-    return modulus;
+    return inv;
     end );
 
 
@@ -587,6 +609,57 @@ InstallMethod( Int,
     "for element in Z/nZ (ModulusRep)",
     [ IsZmodnZObj and IsModulusRep ],
     z -> z![1] );
+
+#############################################################################
+##
+#M IntFFE( <obj> )  . .  . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+##
+
+InstallMethod(IntFFE,
+        [IsZmodpZObj and IsModulusRep],
+        x->x![1]);
+        
+
+
+#############################################################################
+##
+#M  IntFFESymm( <obj> )  . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+##
+InstallOtherMethod(IntFFESymm,"Z/nZ (ModulusRep)",
+  [IsZmodnZObj and IsModulusRep],
+function(z)
+local p;
+  p:=DataType(TypeObj(z));
+  if 2*z![1]>p then
+    return z![1]-p;
+  else
+    return z![1];
+  fi;
+end);
+
+#############################################################################
+##
+#M  Z(p) ... return a primitive root
+##
+
+InstallMethod(ZOp,
+        [IsPosInt],
+        function(p)
+    local   f;
+    if p <= MAXSIZE_GF_INTERNAL then
+        TryNextMethod(); # should never happen
+    fi;
+    if not IsProbablyPrimeInt(p) then
+        TryNextMethod();
+    fi;
+    f := FFEFamily(p);
+    if not IsBound(f!.primitiveRootModP) then
+        f!.primitiveRootModP := PrimitiveRootMod(p);
+    fi;
+    return ZmodnZObj(f!.primitiveRootModP,p);
+end);
+
+        
 
 
 #############################################################################
@@ -688,6 +761,7 @@ InstallMethod( PrintObj,
 InstallMethod( AsList,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -700,6 +774,7 @@ InstallMethod( AsList,
 InstallMethod( AsSSortedList,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -716,6 +791,7 @@ InstallMethod( AsSSortedList,
 InstallMethod( Random,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
                     Random( [ 0 .. Size( R ) - 1 ] ) ) );
 
@@ -727,6 +803,7 @@ InstallMethod( Random,
 InstallMethod( Size,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+    RankFilter( IsRing ),
     R -> ElementsFamily( FamilyObj( R ) )!.modulus );
 
 
@@ -754,6 +831,8 @@ end );
 
 #InstallTrueMethod( IsHandledByNiceMonomorphism,
 #        IsGroup and IsZmodnZObjNonprimeCollection );
+#T what is going on here?
+
 
 #############################################################################
 ##
@@ -781,55 +860,42 @@ end );
 
 #############################################################################
 ##
-#R  IsZmodnZEnumeratorRep( <R> )
-##
-DeclareRepresentation( "IsZmodnZEnumeratorRep",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "size", "type" ] );
-
-
-#############################################################################
-##
+#F  EnumeratorOfZmodnZ( <R> ). . . . . . . . . . . . . enumerator for Z / n Z
 #M  Enumerator( <R> )  . . . . . . . . . . . . . . . . enumerator for Z / n Z
 ##
-InstallMethod( \[\],
-    "for enumerator of full ring Z/nZ, and pos. integer",
-    [ IsList and IsZmodnZEnumeratorRep, IsPosInt ],
-    function( enum, nr )
+BindGlobal( "ElementNumber_ZmodnZ", function( enum, nr )
     if nr <= enum!.size then
       return Objectify( enum!.type, [ nr - 1 ] );
     else
-      Error( "<nr> is too large" );
+      Error( "<enum>[", nr, "] must have an assigned value" );
     fi;
     end );
 
-InstallMethod( Position,
-    "for enumerator of full ring Z/nZ, and element",
-    [ IsZmodnZEnumeratorRep, IsZmodnZObj and IsModulusRep, IsZeroCyc ],
-    function( enum, elm, zero )
+BindGlobal( "NumberElement_ZmodnZ", function( enum, elm )
     if IsCollsElms( FamilyObj( enum ), FamilyObj( elm ) ) then
       return elm![1] + 1;
-    else;
-      return fail;
     fi;
+    return fail;
+    end );
+
+InstallGlobalFunction( EnumeratorOfZmodnZ, function( R )
+    local enum;
+
+    enum:= EnumeratorByFunctions( R, rec(
+             ElementNumber := ElementNumber_ZmodnZ,
+             NumberElement := NumberElement_ZmodnZ,
+
+             size:= Size( R ),
+             type:= ElementsFamily( FamilyObj( R ) )!.typeOfZmodnZObj ) );
+
+    SetIsSSortedList( enum, true );
+    return enum;
     end );
 
 InstallMethod( Enumerator,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
-    function( R )
-    local enum;
-    enum:= Objectify( NewType( FamilyObj( R ),
-                                   IsList
-                               and IsSSortedList
-                               and IsZmodnZEnumeratorRep ),
-                rec(
-                     size:= Size( R ),
-                     type:= ElementsFamily( FamilyObj( R ) )!.typeOfZmodnZObj
-                    ) );
-    SetUnderlyingCollection( enum, R );
-    return enum;
-    end );
+    EnumeratorOfZmodnZ );
 
 
 #############################################################################
@@ -862,7 +928,6 @@ InstallGlobalFunction( ZmodpZ, function( p )
 end );
 
 InstallGlobalFunction( ZmodpZNC, function( p )
-
     local pos, F;
 
     # Check whether this has been stored already.
@@ -896,7 +961,6 @@ end );
 #F  ZmodnZ( <n> ) . . . . . . . . . . . . . . .  construct `Integers mod <n>'
 ##
 InstallGlobalFunction( ZmodnZ, function( n )
-
     local pos,
           F,
           R;
@@ -1004,18 +1068,19 @@ InstallMethod( DefaultRingByGenerators,
 
 #############################################################################
 ##
-#M  FieldOfMatrixGroup( <zmodnz-mat-grp> )
+#M  DefaultFieldOfMatrixGroup( <zmodnz-mat-grp> )
 ##
 ##  Is it possible to avoid this very special method?
 ##  In fact the whole stuff in the library is not very clean,
 ##  as the ``generic'' method for matrix groups claims to be allowed to
 ##  call `Field'.
-##  The bad name of the function (`FieldOfMatrixGroup') may be the reason
-##  for this bad behaviour.
+##  The bad name of the function (`DefaultFieldOfMatrixGroup') may be the
+##  reason for this bad behaviour.
 ##  Do we need to distinguish matrix groups over fields and rings that aren't
-##  fields, and change the generic `FieldOfMatrixGroup' method accordingly?
+##  fields, and change the generic `DefaultFieldOfMatrixGroup' method
+##  accordingly?
 ##
-InstallMethod( FieldOfMatrixGroup,
+InstallMethod( DefaultFieldOfMatrixGroup,
     "for a matrix group over a ring Z/nZ",
     [ IsMatrixGroup and IsZmodnZObjNonprimeCollCollColl ],
     G -> ZmodnZ( ModulusOfZmodnZObj( Representative( G )[1][1] ) ) );

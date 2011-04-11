@@ -1,0 +1,85 @@
+<html><head><title>HOWTO Check-in</title></head>
+<body bgcolor="ffffff"><h1>HOWTO Check-inCVS</h1>
+<A NAME="add"><H2>How to add files or changes to the CVS version</H2></A>
+In general, you check out a version, do on it (locally) the modifications
+you want and then use
+<pre>
+cvs commit
+</pre>
+(which will work for the whole current directory) or
+<pre>
+cvs commit filename(s)
+</pre>
+to transmit the changes to the repository such that everyone updating gets
+the change.
+<P>
+The only caveat is that if you have checked out a particular version or tag
+number (and not the current version) this change will be done to this older
+branch.
+<P>
+In rare cases someone else might have worked on the same file and committed
+a change there before. In this case update first.
+<P>
+If you add new files and/or directories you have to use
+<pre>
+cvs add name(s)
+</pre>
+on these first to make CVS recognize them. (Directories will be noted
+immediately, files only after a <tt>commit</tt>.)
+
+<A NAME="fix"><H2>How to check in a bugfix </H2></A>
+If the error is only in the development version, simply correct it and
+commit the change as described above. (If the error is very dangerous it
+might be worth alerting <tt>gap-dev</tt>.)
+
+If the error is also in a released version, the process is more
+complicated. You also <B>must</B> check in the fix in the release branch and
+edit the <tt>BUGFIX</tt> list!
+<BR>
+Lets assume first the error is also still in the development
+version. We work in the development version and correct the error there.
+When committing the change, CVS tells about the old and new version numbers:
+<pre>
+blubber.gx  4.79  <- 4.78
+</pre>
+
+<P>
+Now we have to change the released branch. First (recommended if enough
+diskspace available) we either check out the old version ( 
+<A HREF="howtos/cvs.htm#old">description here</A>) or change the file to the
+release branch with 
+<pre>
+cvs update -r GAP4R3 blubber.gx
+</pre>
+<P>
+Next we correct the error in the file (which is in the release version). If
+the correction is the same (or very similar) to the one done just before in
+the development version, one can incorporate this change via CVS, using the
+version numbers
+<pre>
+cvs update -j 4.78 -j 4.79 blubber.gx
+</pre>
+CVS might warn about collisions. In most cases this are just lines with
+version numbers (search for <tt>&lt;&lt;&lt;&lt;&lt;&lt;</tt> in the editor
+to find all collision places), but this has to be corrected by hand.
+Depending on the circumstances of the error further edit might be necessary.
+<P>
+If possible at all also do a test run in the release branch to verify the
+error is gone. After that commit the change (the commit automatically goes
+in the release branch). If you changed single file(s) to the release branch
+undo the change with
+<pre>
+cvs update -A blubber.gx
+</pre>
+<P>
+Finally we have to make sure that the fix will be part of the next bugfix.
+For this edit <tt>dev/BUGFIX</tt> and add the file in the top section.
+If the bug is severe enough to merit a user warning also list it in the
+description section. (If externally reported also add a credit line.)
+<P>
+If possible, edit <tt>tst/bugfix.tst</tt> and add a few lines that will
+reproduce the error in an unfixed system.<BR>
+Commit the changes to these two files (in the standard development branch).
+</BODY>
+</HTML>
+

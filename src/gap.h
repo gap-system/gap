@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  gap.h                       GAP source                   Martin Schoenert
+*W  gap.h                       GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the various read-eval-print loops and  related  stuff.
 */
@@ -51,12 +52,14 @@ extern UInt Last3;
 extern UInt Time;
 
 
+
 /****************************************************************************
 **
 
 *F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
 */
 extern UInt ViewObjGVar;
+extern UInt CustomViewGVar;
 
 extern void ViewObjHandler ( Obj obj );
 
@@ -221,10 +224,11 @@ typedef UInt ExecStatus;
 #define STATUS_QQUIT      64
 
 
+
 extern UInt UserHasQuit;
 extern UInt UserHasQUIT;
 
-
+#if 0
 /****************************************************************************
 **
 *F  FuncError( <self>, <args> ) . . . . . . . . . . . . . . . signal an error
@@ -234,6 +238,7 @@ extern Obj FuncError (
     Obj                 self,
     Obj                 args );
 
+#endif
 
 /****************************************************************************
 **
@@ -582,6 +587,9 @@ extern void ImportFuncFromLibrary(
 extern Obj Revisions;
 
 
+extern Obj Error;
+extern Obj ErrorInner;
+
 /****************************************************************************
 **
 
@@ -590,6 +598,8 @@ extern Obj Revisions;
 extern StructInitInfo * Modules [];
 extern UInt NrModules;
 extern UInt NrBuiltinModules;
+
+
 
 
 /****************************************************************************

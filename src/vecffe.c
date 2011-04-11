@@ -5,7 +5,8 @@
 **
 *H  @(#)$Id$
 **
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 */
 #include        "system.h"              /* system dependent part           */
@@ -688,6 +689,9 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
   UInt xtype;
   UInt i;
 
+  if (TNUM_OBJ(mult) != T_FFE)
+    return TRY_NEXT_METHOD;
+
    if (VAL_FFE(mult) == 0)
      return (Obj) 0;
 
@@ -792,6 +796,9 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
   UInt len;
   UInt xtype;
   UInt i;
+
+  if (TNUM_OBJ(mult) != T_FFE)
+    return TRY_NEXT_METHOD;
 
    if (VAL_FFE(mult) == 1)
      return (Obj) 0;
@@ -1068,7 +1075,62 @@ Obj ZeroVecFFE( Obj vec )
   return res;
 }
 
+UInt IsVecFFE(Obj vec)
+{
+  UInt tn;
+  tn = TNUM_OBJ(vec);
+  if (tn >= T_PLIST_FFE && tn <= T_PLIST_FFE+IMMUTABLE)
+    return 1;
+  if (!IS_PLIST(vec))  
+    return 0;
+  TYPE_OBJ(vec); /* force a full inspection of the list */
+  tn = TNUM_OBJ(vec);
+  return tn >= T_PLIST_FFE && tn <= T_PLIST_FFE+IMMUTABLE;
+}
 
+
+Obj FuncIS_VECFFE( Obj self, Obj vec)
+{
+  return IsVecFFE(vec) ? True : False;
+}
+
+Obj FuncCOMMON_FIELD_VECFFE( Obj self, Obj vec)
+{
+  Obj elm;
+  if (!IsVecFFE(vec))
+    return Fail;
+  elm = ELM_PLIST(vec,1);
+  return INTOBJ_INT(SIZE_FF(FLD_FFE(elm)));
+}
+
+Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
+{
+  Obj elm;
+  UInt deg,deg1,deg2,i,len,p,q;
+  UInt isVecFFE =IsVecFFE(vec);
+  len  = LEN_PLIST(vec);
+  if (len == 0)
+    return Fail;
+  elm = ELM_PLIST(vec,1);
+  if (!isVecFFE && !IS_FFE(elm))
+    return Fail;
+  deg = DegreeFFE(elm);
+  p = CharFFE(elm);
+  for (i = 2; i <= len; i++)
+    {
+      elm =ELM_PLIST(vec,i);
+      if (!isVecFFE && (!IS_FFE(elm)|| CharFFE(elm) != p))
+	return Fail;
+      deg2 =  DegreeFFE(elm);
+      deg1 = deg;
+      while (deg % deg2 != 0)
+	deg += deg1;
+    }
+  q = p;
+  for (i = 2; i <= deg; i++)
+    q *= p;
+  return INTOBJ_INT(q);
+}
 
 /****************************************************************************
 **
@@ -1089,6 +1151,15 @@ static StructGVarFunc GVarFuncs [] = {
 
   { "MULT_ROWVECTOR_VECFFES", 2, "vec, mult",
     FuncMultRowVectorVecFFEs, "src/vecffe.c: MULT_ROWVECTOR_VECFFES" },
+  
+  { "IS_VECFFE", 1, "vec",
+    FuncIS_VECFFE, "src/vecffe.c: IS_VECFFE" },
+
+  { "COMMON_FIELD_VECFFE", 1, "vec",
+    FuncCOMMON_FIELD_VECFFE, "src/vecffe.c: COMMON_FIELD_VECFFE" },
+
+  { "SMALLEST_FIELD_VECFFE", 1, "vec",
+    FuncSMALLEST_FIELD_VECFFE, "src/vecffe.c: SMALLEST_FIELD_VECFFE" },
   
     { 0 }
 

@@ -1,0 +1,89 @@
+# This file should record, at least, all implemented and documented
+# changes (new features, performance improvements, ...) that will
+# probably be released in GAP 4.5. Of course some changes will not
+# need documentation. Developers should add, at least a one-line
+# description and their initials. Adding a longer description means
+# that you are less likely to be pestered for one at release time.
+
+# You may also record here planned or proposed developments, or
+# implemented but not yet documented developments. Please indicate the
+# status of each development you add.  This list of new features (not
+# all might be worth mentioning) will help in preparing the next
+# release announcement)
+
+The behaviour of 'Info' can now be configured InfoClass-wise, see
+'SetInfoHandler'. (FL)
+
+New function 'CrcString' (FL)
+
+Corrected documentation of 'Jacobi' (FL)
+
+New method for `Factorization' that can deal with larger groups
+(Nicholas Rohrbacher, AH)
+
+New method for subgroup lattice based on lifting also in the case of
+nonsolvable groups. (AH)
+
+New function to compute presentation for group based on chief series (which
+produces nicer presentations than composition series). (AH)
+
+Small speed improvements in the 1-Cohomology (AH)
+
+Functions for computing continued fraction expansions and continued
+fraction approximations of algebraic numbers. (SK)
+
+A method for computing symbolic names for finite groups,
+available via Name( <G> ).
+(SK, based on GAP3 code by Markus Püschel and Sebastian Egner)
+
+The new function AClosestVectorCombinationsMatFFEVecFFECoords (see
+documentation) which had been requested by David Joyner. (SL)
+
+`Enumerator' method for free magmas, `Iterator' method for partitions (TB)
+
+`Iterator' methods for tuples and cartesian products (AK)
+
+The scheme for variable names for polynomials has been changed to avoid
+accidentally creating different variables with the same name. (AH)
+
+A simple method for multivariate polynomial factorization has been added (DJ, AH)
+
+Module isomorphisms and automorphisms can now be computed by the MeatAxe
+(port of Michael Smith's code in the `autag' package of GAP3.) (AH, based on
+code by Michael Smith)
+
+Speed improvement to `CompatiblePairs' (and thus to automorphism group and
+extension calculations for solvable groups. (AH)
+
+Better code for automorphism groups of fitting free groups. (AH)
+
+Basic methods for accessing the functionality for floats implemented
+in the kernel (not yet documented). (SK)
+
+Primitive groups added to degree 2499. Groups of affine type are now
+stored as matrix groups; group names will have changed. (CMRD)
+
+Provide internal functions ObjInt_Int and ObjInt_UInt and use them
+for FuncLENGTH to correctly report the length of long strings. (MN)
+
+Added functions `SmallSimpleGroup' and `AllSmallNonabelianSimpleGroups'
+returning small-degree permutation representations of simple groups
+of given orders less than 10^6. (SK)
+
+In Windows version `SetHelpViewer' accepts argument "browser" 
+to open HTML help books using the Windows default application 
+(typically, a web-browser). (AK)
+
+Better support for workspaces:
+- replaced `.gaprc' by `gap.ini' and `gaprc' in GAP root directories
+  (different kinds of initializations),
+  support a root directory `~/.gap',
+- changed handling of command line options for workspaces,
+- changed banner showing more information and shown also with workspaces
+
+Changed order of reading files when packages are loaded:
+- If possible then read needed and suggested packages completely before the
+  implementation part of the current package is read.
+- Now the implementation part of the GAP library can be read after the
+  declaration part of packages.
+

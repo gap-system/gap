@@ -80,7 +80,7 @@ property tester first.) Therefore the method would not be applicable
 for the group `g' in the following definition but only for the --
 mathematically identical but endowed with more knowledge by {\GAP} -- group
 `h'. (Section~"Enforcing Property Tests" shows a way around this.)
-\begintt
+\beginexample
 gap> g:=Group((1,2),(1,3)(2,4));;
 gap> h:=Group((1,2),(1,3)(2,4));;
 gap> IsNilpotentGroup(h); # enforce test
@@ -89,7 +89,7 @@ gap> HasIsNilpotentGroup(g);
 false
 gap> HasIsNilpotentGroup(h);
 true
-\endtt
+\endexample
 \bigskip
 
 Lets now look at a slightly more complicated example:
@@ -420,8 +420,11 @@ attribute would not give any advantage.
 
 Resource-wise, attributes need more memory (the attribute setter and
 tester are implicitly declared, and two filter bits are required), the
+%T why two??
 attribute access is one further function call in the kernel, thus components
 might be an immeasurable bit faster.
+
+%T and what about the aspect that attributes are used by the method selection?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Adding new Concepts}
@@ -437,6 +440,7 @@ as a property or as a category. Both are eventually filter and in this way
 indistinguishable for the method selection. The distinction is rather
 conceptual and mainly reflects whether we want existing objects to be part
 of our new concept or not.
+%T The above statement is not correct!
 
 \beginitems
 Property:&

@@ -1,12 +1,13 @@
 #############################################################################
 ##
 #W  mapphomo.gd                 GAP library                     Thomas Breuer
-#W                                                         and Heiko Thei"sen
+#W                                                         and Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definitions of properties of mappings preserving
 ##  algebraic structure.
@@ -34,18 +35,30 @@ Revision.mapphomo_gd :=
 ##
 #P  RespectsMultiplication( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `RespectsMultiplication' returns `true' if
-##  $S$ and $R$ are magmas such that
-##  $(s_1,r_1), (s_2,r_2) \in F$ implies $(s_1 \* s_2,r_1 \* r_2) \in F$,
-##  and `false' otherwise.
+##  <#GAPDoc Label="RespectsMultiplication">
+##  <ManSection>
+##  <Prop Name="RespectsMultiplication" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `RespectsMultiplication' returns `true'
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsMultiplication"/> returns <K>true</K> if
+##  <M>S</M> and <M>R</M> are magmas such that
+##  <M>(s_1,r_1), (s_2,r_2) \in F</M> implies
+##  <M>(s_1 * s_2,r_1 * r_2) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="RespectsMultiplication"/> returns <K>true</K>
 ##  if and only if the equation
-##  `<s1>^<mapp> * <s2>^<mapp> = (<s1>*<s2>)^<mapp>'
-##  holds for all <s1>, <s2> in $S$.
+##  <C><A>s1</A>^<A>mapp</A> * <A>s2</A>^<A>mapp</A> =
+##  (<A>s1</A> * <A>s2</A>)^<A>mapp</A></C>
+##  holds for all <A>s1</A>, <A>s2</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "RespectsMultiplication", IsGeneralMapping );
 
@@ -54,18 +67,27 @@ DeclareProperty( "RespectsMultiplication", IsGeneralMapping );
 ##
 #P  RespectsOne( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq <S> \times <R>$,
-##  where <S> and <R> are the source and the range of <mapp>, respectively.
-##  Then `RespectsOne' returns `true' if
-##  <S> and <R> are magmas-with-one such that
-##  $( `One(<S>)', `One(<R>)' ) \in F$,
-##  and `false' otherwise.
+##  <#GAPDoc Label="RespectsOne">
+##  <ManSection>
+##  <Prop Name="RespectsOne" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `RespectsOne' returns `true'
-##  if and only if the equation
-##  `One( <S> )^<mapp> = One( <R> )'
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq <A>S</A> \times <A>R</A></M>,
+##  where <A>S</A> and <A>R</A> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsOne"/> returns <K>true</K> if
+##  <A>S</A> and <A>R</A> are magmas-with-one such that
+##  <M>( </M><C>One(<A>S</A>)</C><M>, </M><C>One(<A>R</A>)</C><M> ) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then <Ref Func="RespectsOne"/> returns
+##  <K>true</K> if and only if the equation
+##  <C>One( <A>S</A> )^<A>mapp</A> = One( <A>R</A> )</C>
 ##  holds.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "RespectsOne", IsGeneralMapping );
 
@@ -74,19 +96,28 @@ DeclareProperty( "RespectsOne", IsGeneralMapping );
 ##
 #P  RespectsInverses( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq <S> \times <R>$,
-##  where <S> and <R> are the source and the range of <mapp>, respectively.
-##  Then `RespectsInverses' returns `true' if
-##  <S> and <R> are magmas-with-inverses such that,
-##  for $s \in <S>$ and $r \in <R>$, 
-##  $(s,r) \in F$ implies $(s^{-1},r^{-1}) \in F$,
-##  and `false' otherwise.
+##  <#GAPDoc Label="RespectsInverses">
+##  <ManSection>
+##  <Prop Name="RespectsInverses" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `RespectsInverses' returns `true'
-##  if and only if the equation
-##  `Inverse( <s> )^<mapp> = Inverse( <s>^<mapp> )'
-##  holds for all <s> in $S$.
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq <A>S</A> \times <A>R</A></M>,
+##  where <A>S</A> and <A>R</A> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsInverses"/> returns <K>true</K> if
+##  <A>S</A> and <A>R</A> are magmas-with-inverses such that,
+##  for <M>s \in <A>S</A></M> and <M>r \in <A>R</A></M>, 
+##  <M>(s,r) \in F</M> implies <M>(s^{{-1}},r^{{-1}}) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then <Ref Func="RespectsInverses"/>
+##  returns <K>true</K> if and only if the equation
+##  <C>Inverse( <A>s</A> )^<A>mapp</A> = Inverse( <A>s</A>^<A>mapp</A> )</C>
+##  holds for all <A>s</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "RespectsInverses", IsGeneralMapping );
 
@@ -104,9 +135,22 @@ InstallTrueMethod( RespectsOne,
 #P  IsGroupGeneralMapping( <mapp> )
 #P  IsGroupHomomorphism( <mapp> )
 ##
-##  A `GroupGeneralMapping' is a mapping which respects multiplication and
-##  inverses. If it is total and single valued it is called a group
-##  homomorphism.
+##  <#GAPDoc Label="IsGroupGeneralMapping">
+##  <ManSection>
+##  <Prop Name="IsGroupGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsGroupHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  A <E>group general mapping</E> is a mapping which respects multiplication
+##  and inverses.
+##  If it is total and single valued it is called a
+##  <E>group homomorphism</E>.
+##  <P/>
+##  Chapter&nbsp;<Ref Chap="Group Homomorphisms"/> explains
+##  group homomorphisms in more detail.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsGroupGeneralMapping",
     IsGeneralMapping and RespectsMultiplication and RespectsInverses );
@@ -119,13 +163,21 @@ DeclareSynonymAttr( "IsGroupHomomorphism",
 ##
 #A  KernelOfMultiplicativeGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping.
-##  Then `KernelOfMultiplicativeGeneralMapping' returns the set of all
-##  elements in the source of <mapp> that have the identity of the range in
-##  their set of images.
+##  <#GAPDoc Label="KernelOfMultiplicativeGeneralMapping">
+##  <ManSection>
+##  <Attr Name="KernelOfMultiplicativeGeneralMapping" Arg='mapp'/>
 ##
-##  (This is a monoid if <mapp> respects multiplication and one,
-##  and if the source of <mapp> is associative.)
+##  <Description>
+##  Let <A>mapp</A> be a general mapping.
+##  Then <Ref Func="KernelOfMultiplicativeGeneralMapping"/> returns
+##  the set of all elements in the source of <A>mapp</A> that have
+##  the identity of the range in their set of images.
+##  <P/>
+##  (This is a monoid if <A>mapp</A> respects multiplication and one,
+##  and if the source of <A>mapp</A> is associative.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "KernelOfMultiplicativeGeneralMapping",
     IsGeneralMapping );
@@ -135,13 +187,21 @@ DeclareAttribute( "KernelOfMultiplicativeGeneralMapping",
 ##
 #A  CoKernelOfMultiplicativeGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping.
-##  Then `CoKernelOfMultiplicativeGeneralMapping' returns the set of all
-##  elements in the range of <mapp> that have the identity of the source in
-##  their set of preimages.
+##  <#GAPDoc Label="CoKernelOfMultiplicativeGeneralMapping">
+##  <ManSection>
+##  <Attr Name="CoKernelOfMultiplicativeGeneralMapping" Arg='mapp'/>
 ##
-##  (This is a monoid if <mapp> respects multiplication and one,
-##  and if the range of <mapp> is associative.)
+##  <Description>
+##  Let <A>mapp</A> be a general mapping.
+##  Then <Ref Func="CoKernelOfMultiplicativeGeneralMapping"/> returns
+##  the set of all elements in the range of <A>mapp</A> that have
+##  the identity of the source in their set of preimages.
+##  <P/>
+##  (This is a monoid if <A>mapp</A> respects multiplication and one,
+##  and if the range of <A>mapp</A> is associative.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "CoKernelOfMultiplicativeGeneralMapping",
     IsGeneralMapping );
@@ -156,18 +216,29 @@ DeclareAttribute( "CoKernelOfMultiplicativeGeneralMapping",
 ##
 #P  RespectsAddition( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `RespectsAddition' returns `true' if
-##  $S$ and $R$ are additive magmas such that
-##  $(s_1,r_1), (s_2,r_2) \in F$ implies $(s_1 + s_2,r_1 + r_2) \in F$,
-##  and `false' otherwise.
+##  <#GAPDoc Label="RespectsAddition">
+##  <ManSection>
+##  <Prop Name="RespectsAddition" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `RespectsAddition' returns `true'
-##  if and only if the equation
-##  `<s1>^<mapp> + <s2>^<mapp> = (<s1>+<s2>)^<mapp>'
-##  holds for all <s1>, <s2> in $S$.
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsAddition"/> returns <K>true</K> if
+##  <M>S</M> and <M>R</M> are additive magmas such that
+##  <M>(s_1,r_1), (s_2,r_2) \in F</M> implies
+##  <M>(s_1 + s_2,r_1 + r_2) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then <Ref Func="RespectsAddition"/>
+##  returns <K>true</K> if and only if the equation
+##  <C><A>s1</A>^<A>mapp</A> + <A>s2</A>^<A>mapp</A> =
+##  (<A>s1</A>+<A>s2</A>)^<A>mapp</A></C>
+##  holds for all <A>s1</A>, <A>s2</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "RespectsAddition", IsGeneralMapping );
 
@@ -176,18 +247,28 @@ DeclareProperty( "RespectsAddition", IsGeneralMapping );
 ##
 #P  RespectsZero( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq <S> \times <R>$,
-##  where <S> and <R> are the source and the range of <mapp>, respectively.
-##  Then `RespectsZero' returns `true' if
-##  <S> and <R> are additive-magmas-with-zero such that
-##  $( `Zero(<S>)', `Zero(<R>)' ) \in F$,
-##  and `false' otherwise.
+##  <#GAPDoc Label="RespectsZero">
+##  <ManSection>
+##  <Prop Name="RespectsZero" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `RespectsZero' returns `true'
-##  if and only if the equation
-##  `Zero( <S> )^<mapp> = Zero( <R> )'
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq <A>S</A> \times <A>R</A></M>,
+##  where <A>S</A> and <A>R</A> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsZero"/> returns <K>true</K> if
+##  <A>S</A> and <A>R</A> are additive-magmas-with-zero such that
+##  <M>( </M><C>Zero(<A>S</A>)</C><M>,
+##  </M><C>Zero(<A>R</A>)</C><M> ) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then <Ref Func="RespectsZero"/> returns
+##  <K>true</K> if and only if the equation
+##  <C>Zero( <A>S</A> )^<A>mapp</A> = Zero( <A>R</A> )</C>
 ##  holds.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "RespectsZero", IsGeneralMapping );
 
@@ -196,18 +277,29 @@ DeclareProperty( "RespectsZero", IsGeneralMapping );
 ##
 #P  RespectsAdditiveInverses( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `RespectsAdditiveInverses' returns `true' if
-##  $S$ and $R$ are additive-magmas-with-inverses such that
-##  $(s,r) \in F$ implies $(-s,-r) \in F$,
-##  and `false' otherwise.
+##  <#GAPDoc Label="RespectsAdditiveInverses">
+##  <ManSection>
+##  <Prop Name="RespectsAdditiveInverses" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `RespectsAdditiveInverses' returns `true'
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsAdditiveInverses"/> returns <K>true</K> if
+##  <M>S</M> and <M>R</M> are additive-magmas-with-inverses such that
+##  <M>(s,r) \in F</M> implies <M>(-s,-r) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="RespectsAdditiveInverses"/> returns <K>true</K>
 ##  if and only if the equation
-##  `AdditiveInverse( <s> )^<mapp> = AdditiveInverse( <s>^<mapp> )'
-##  holds for all <s> in $S$.
+##  <C>AdditiveInverse( <A>s</A> )^<A>mapp</A> =
+##  AdditiveInverse( <A>s</A>^<A>mapp</A> )</C>
+##  holds for all <A>s</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "RespectsAdditiveInverses", IsGeneralMapping );
 
@@ -225,6 +317,16 @@ InstallTrueMethod( RespectsZero,
 #P  IsAdditiveGroupGeneralMapping( <mapp> )
 #P  IsAdditiveGroupHomomorphism( <mapp> )
 ##
+##  <#GAPDoc Label="IsAdditiveGroupGeneralMapping">
+##  <ManSection>
+##  <Prop Name="IsAdditiveGroupGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsAdditiveGroupHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareSynonymAttr( "IsAdditiveGroupGeneralMapping",
     IsGeneralMapping and RespectsAddition and RespectsAdditiveInverses );
 
@@ -236,10 +338,18 @@ DeclareSynonymAttr( "IsAdditiveGroupHomomorphism",
 ##
 #A  KernelOfAdditiveGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping.
-##  Then `KernelOfAdditiveGeneralMapping' returns the set of all
-##  elements in the source of <mapp> that have the zero of the range in
-##  their set of images.
+##  <#GAPDoc Label="KernelOfAdditiveGeneralMapping">
+##  <ManSection>
+##  <Attr Name="KernelOfAdditiveGeneralMapping" Arg='mapp'/>
+##
+##  <Description>
+##  Let <A>mapp</A> be a general mapping.
+##  Then <Ref Func="KernelOfAdditiveGeneralMapping"/> returns
+##  the set of all elements in the source of <A>mapp</A> that have
+##  the zero of the range in their set of images.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "KernelOfAdditiveGeneralMapping", IsGeneralMapping );
 
@@ -248,10 +358,18 @@ DeclareAttribute( "KernelOfAdditiveGeneralMapping", IsGeneralMapping );
 ##
 #A  CoKernelOfAdditiveGeneralMapping( <mapp> )
 ##
-##  Let <mapp> be a general mapping.
-##  Then `CoKernelOfAdditiveGeneralMapping' returns the set of all
-##  elements in the range of <mapp> that have the zero of the source in
-##  their set of preimages.
+##  <#GAPDoc Label="CoKernelOfAdditiveGeneralMapping">
+##  <ManSection>
+##  <Attr Name="CoKernelOfAdditiveGeneralMapping" Arg='mapp'/>
+##
+##  <Description>
+##  Let <A>mapp</A> be a general mapping.
+##  Then <Ref Func="CoKernelOfAdditiveGeneralMapping"/> returns
+##  the set of all elements in the range of <A>mapp</A> that have
+##  the zero of the source in their set of preimages.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "CoKernelOfAdditiveGeneralMapping", IsGeneralMapping );
 
@@ -265,19 +383,31 @@ DeclareAttribute( "CoKernelOfAdditiveGeneralMapping", IsGeneralMapping );
 ##
 #P  RespectsScalarMultiplication( <mapp> )
 ##
-##  Let <mapp> be a general mapping, with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `RespectsScalarMultiplication' returns `true' if
-##  $S$ and $R$ are left modules with the left acting domain $D$ of $S$
-##  contained in the left acting domain of $R$ and such that
-##  $(s,r) \in F$ implies $(c \* s,c \* r) \in F$ for all $c \in D$,
-##  and `false' otherwise.
+##  <#GAPDoc Label="RespectsScalarMultiplication">
+##  <ManSection>
+##  <Prop Name="RespectsScalarMultiplication" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `RespectsScalarMultiplication' returns
-##  `true' if and only if the equation
-##  `<c> \* <s>^<mapp> = (<c> \* <s>)^<mapp>'
-##  holds for all <c> in $D$ and <s> in $S$.
+##  <Description>
+##  Let <A>mapp</A> be a general mapping, with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsScalarMultiplication"/> returns <K>true</K> if
+##  <M>S</M> and <M>R</M> are left modules with the left acting domain
+##  <M>D</M> of <M>S</M> contained in the left acting domain of <M>R</M>
+##  and such that
+##  <M>(s,r) \in F</M> implies <M>(c * s,c * r) \in F</M> for all
+##  <M>c \in D</M>, and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="RespectsScalarMultiplication"/> returns
+##  <K>true</K> if and only if the equation
+##  <C><A>c</A> * <A>s</A>^<A>mapp</A> =
+##  (<A>c</A> * <A>s</A>)^<A>mapp</A></C>
+##  holds for all <A>c</A> in <M>D</M> and <A>s</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "RespectsScalarMultiplication", IsGeneralMapping );
 
@@ -288,6 +418,16 @@ InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 ##
 #P  IsLeftModuleGeneralMapping( <mapp> )
 #P  IsLeftModuleHomomorphism( <mapp> )
+##
+##  <#GAPDoc Label="IsLeftModuleGeneralMapping">
+##  <ManSection>
+##  <Prop Name="IsLeftModuleGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsLeftModuleHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsLeftModuleGeneralMapping",
     IsAdditiveGroupGeneralMapping and RespectsScalarMultiplication );
@@ -300,13 +440,24 @@ DeclareSynonymAttr( "IsLeftModuleHomomorphism",
 ##
 #O  IsLinearMapping( <F>, <mapp> )
 ##
-##  For a field <F> and a general mapping <mapp>, `IsLinearMapping' returns
-##  `true' if <mapp> is an <F>-linear mapping, and `false' otherwise.
-##  
-##  A mapping $f$ is a linear mapping (or vector space homomorphism) if
-##  the source and range are vector spaces over the same division ring $D$,
-##  and if $f( a + b ) = f(a) + f(b)$ and $f( s \* a ) = s \* f(a)$ hold
-##  for all elements $a$, $b$ in the source of $f$ and $s \in D$.
+##  <#GAPDoc Label="IsLinearMapping">
+##  <ManSection>
+##  <Oper Name="IsLinearMapping" Arg='F, mapp'/>
+##
+##  <Description>
+##  For a field <A>F</A> and a general mapping <A>mapp</A>,
+##  <Ref Func="IsLinearMapping"/> returns <K>true</K> if <A>mapp</A> is an
+##  <A>F</A>-linear mapping, and <K>false</K> otherwise.
+##  <P/>
+##  A mapping <M>f</M> is a linear mapping (or vector space homomorphism)
+##  if the source and range are vector spaces over the same division ring
+##  <M>D</M>, and if
+##  <M>f( a + b ) = f(a) + f(b)</M> and <M>f( s * a ) = s * f(a)</M> hold
+##  for all elements <M>a</M>, <M>b</M> in the source of <M>f</M>
+##  and <M>s \in D</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "IsLinearMapping", [ IsDomain, IsGeneralMapping ] );
 
@@ -322,6 +473,16 @@ DeclareOperation( "IsLinearMapping", [ IsDomain, IsGeneralMapping ] );
 #P  IsRingGeneralMapping( <mapp> )
 #P  IsRingHomomorphism( <mapp> )
 ##
+##  <#GAPDoc Label="IsRingGeneralMapping">
+##  <ManSection>
+##  <Prop Name="IsRingGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsRingHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareSynonymAttr( "IsRingGeneralMapping",
     IsGeneralMapping and RespectsMultiplication
     and IsAdditiveGroupGeneralMapping );
@@ -335,6 +496,16 @@ DeclareSynonymAttr( "IsRingHomomorphism",
 #P  IsRingWithOneGeneralMapping( <mapp> )
 #P  IsRingWithOneHomomorphism( <mapp> )
 ##
+##  <#GAPDoc Label="IsRingWithOneGeneralMapping">
+##  <ManSection>
+##  <Prop Name="IsRingWithOneGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsRingWithOneHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareSynonymAttr( "IsRingWithOneGeneralMapping",
     IsRingGeneralMapping and RespectsOne );
 
@@ -346,6 +517,16 @@ DeclareSynonymAttr( "IsRingWithOneHomomorphism",
 ##
 #P  IsAlgebraGeneralMapping( <mapp> )
 #P  IsAlgebraHomomorphism( <mapp> )
+##
+##  <#GAPDoc Label="IsAlgebraGeneralMapping">
+##  <ManSection>
+##  <Prop Name="IsAlgebraGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsAlgebraHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsAlgebraGeneralMapping",
     IsRingGeneralMapping and IsLeftModuleGeneralMapping );
@@ -359,6 +540,16 @@ DeclareSynonymAttr( "IsAlgebraHomomorphism",
 #P  IsAlgebraWithOneGeneralMapping( <mapp> )
 #P  IsAlgebraWithOneHomomorphism( <mapp> )
 ##
+##  <#GAPDoc Label="IsAlgebraWithOneGeneralMapping">
+##  <ManSection>
+##  <Prop Name="IsAlgebraWithOneGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsAlgebraWithOneHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareSynonymAttr( "IsAlgebraWithOneGeneralMapping",
     IsAlgebraGeneralMapping and RespectsOne );
 
@@ -370,8 +561,16 @@ DeclareSynonymAttr( "IsAlgebraWithOneHomomorphism",
 ##
 #P  IsFieldHomomorphism( <mapp> )
 ##
+##  <#GAPDoc Label="IsFieldHomomorphism">
+##  <ManSection>
+##  <Prop Name="IsFieldHomomorphism" Arg='mapp'/>
+##
+##  <Description>
 ##  A general mapping is a field homomorphism if and only if it is
 ##  a ring homomorphism with source a field.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsFieldHomomorphism", IsGeneralMapping );
 
@@ -382,6 +581,14 @@ InstallTrueMethod( IsAlgebraHomomorphism, IsFieldHomomorphism );
 ##
 #F  InstallEqMethodForMappingsFromGenerators( <IsStruct>,
 #F                           <GeneratorsOfStruct>, <respects>, <infostring> )
+##
+##  <ManSection>
+##  <Func Name="InstallEqMethodForMappingsFromGenerators"
+##   Arg='IsStruct, GeneratorsOfStruct, respects, infostring'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 InstallEqMethodForMappingsFromGenerators := function( IsStruct,
     GeneratorsOfStruct, respects, infostring )
@@ -422,6 +629,35 @@ InstallEqMethodForMappingsFromGenerators := function( IsStruct,
         od;
         return true;
         end );
+
+
+    InstallMethod(IsOne,
+        Concatenation( "method for s.v. gen. mapping", infostring ),
+        true,
+        [ IsGeneralMapping and IsSingleValued and respects ],
+        0,
+        function( map )
+        local preim, gen;
+        if   not IsStruct( Source( map ) ) then
+          TryNextMethod();
+        elif     HasIsInjective( map ) and not IsInjective( map ) then
+          return false;
+        elif     HasIsSurjective( map ) and not IsSurjective( map ) then
+          return false;
+        elif     HasIsTotal( map ) and not IsTotal( map ) then
+          return false;
+        elif    Source( map ) <> Range( map ) then
+          return false;
+        fi;
+
+        for gen in GeneratorsOfStruct( Source(map) ) do
+          if    gen<>ImagesRepresentative( map, gen )  then
+            return false;
+          fi;
+        od;
+        return true;
+        end );
+
 end;
 
 
@@ -435,17 +671,28 @@ end;
 ##
 #P  TransformsMultiplicationIntoAddition( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `TransformsMultiplicationIntoAddition' returns `true' if
-##  $S$ is a magma and $R$ an additive magma such that
-##  $(s_1,r_1), (s_2,r_2) \in F$ implies $(s_1 \* s_2,r_1 + r_2) \in F$,
-##  and `false' otherwise.
+##  <ManSection>
+##  <Prop Name="TransformsMultiplicationIntoAddition" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `TransformsMultiplicationIntoAddition'
-##  returns `true' if and only if the equation `<s1>^<mapp> + <s2>^<mapp> =
-##  (<s1>*<s2>)^<mapp>' holds for all <s1>, <s2> in $S$.
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="TransformsMultiplicationIntoAddition"/> returns
+##  <K>true</K> if <M>S</M> is a magma and <M>R</M> an additive magma
+##  such that <M>(s_1,r_1), (s_2,r_2) \in F</M> implies
+##  <M>(s_1 * s_2,r_1 + r_2) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="TransformsMultiplicationIntoAddition"/>
+##  returns <K>true</K> if and only if the equation
+##  <C><A>s1</A>^<A>mapp</A> + <A>s2</A>^<A>mapp</A> =
+##  (<A>s1</A> * <A>s2</A>)^<A>mapp</A></C> holds for all
+##  <A>s1</A>, <A>s2</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "TransformsMultiplicationIntoAddition", IsGeneralMapping );
 
@@ -454,18 +701,27 @@ DeclareProperty( "TransformsMultiplicationIntoAddition", IsGeneralMapping );
 ##
 #P  TranformsOneIntoZero( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `TranformsOneIntoZero' returns `true' if
-##  $S$ is a magma-with-one and $R$ an additive-magma-with-zero such that
-##  $( `One('S'), Zero('R')' ) \in F$,
-##  and `false' otherwise.
+##  <ManSection>
+##  <Prop Name="TranformsOneIntoZero" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `TranformsOneIntoZero' returns `true'
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="TranformsOneIntoZero"/> returns <K>true</K> if
+##  <M>S</M> is a magma-with-one and <M>R</M> an additive-magma-with-zero
+##  such that
+##  <M>( </M><C>One(</C><M>S</M><C>), Zero(</C><M>R</M><C>) )</C><M> \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="TranformsOneIntoZero"/> returns <K>true</K>
 ##  if and only if the equation
-##  `One( S )^<mapp> = Zero( R )'
+##  <C>One( S )^<A>mapp</A> = Zero( R )</C>
 ##  holds.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "TranformsOneIntoZero", IsGeneralMapping );
 
@@ -474,18 +730,29 @@ DeclareProperty( "TranformsOneIntoZero", IsGeneralMapping );
 ##
 #P  TransformsInversesIntoAdditiveInverses( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `RespectsInverses' returns `true' if
-##  $S$ and $R$ are magmas-with-inverses such that
-##  $S$ is a magma-with-inverses and $R$ an additive-magma-with-inverses
-##  such that $(s,r) \in F$ implies $(s^{-1},-r) \in F$, and `false'
-##  otherwise.
+##  <ManSection>
+##  <Prop Name="TransformsInversesIntoAdditiveInverses" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `TransformsInversesIntoAdditiveInverses'
-##  returns `true' if and only if the equation `Inverse( <s> )^<mapp> =
-##  AdditiveInverse( <s>^<mapp> )' holds for all <s> in $S$.
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="RespectsInverses"/> returns <K>true</K> if
+##  <M>S</M> and <M>R</M> are magmas-with-inverses such that
+##  <M>S</M> is a magma-with-inverses
+##  and <M>R</M> an additive-magma-with-inverses
+##  such that <M>(s,r) \in F</M> implies <M>(s^{-1},-r) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="TransformsInversesIntoAdditiveInverses"/>
+##  returns <K>true</K> if and only if the equation
+##  <C>Inverse( <A>s</A> )^<A>mapp</A> =
+##  AdditiveInverse( <A>s</A>^<A>mapp</A> )</C>
+##  holds for all <A>s</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "TransformsInversesIntoAdditiveInverses", IsGeneralMapping );
 
@@ -504,11 +771,18 @@ InstallTrueMethod( TranformsOneIntoZero,
 #P  IsGroupToAdditiveGroupGeneralMapping( <mapp> )
 #P  IsGroupToAdditiveGroupHomomorphism( <mapp> )
 ##
-##  A `GroupToAdditiveGroupGeneralMapping' is a mapping which transforms
+##  <ManSection>
+##  <Prop Name="IsGroupToAdditiveGroupGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsGroupToAdditiveGroupHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  A <C>GroupToAdditiveGroupGeneralMapping</C> is a mapping which transforms
 ##  multiplication into addition and transforms
 ##  inverses into additive inverses. If it is total and single valued it is
 ##  called a group-to-additive-group
 ##  homomorphism.
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonymAttr( "IsGroupToAdditiveGroupGeneralMapping",
     IsGeneralMapping and TransformsMultiplicationIntoAddition and
@@ -528,17 +802,28 @@ DeclareSynonymAttr( "IsGroupToAdditiveGroupHomomorphism",
 ##
 #P  TransformsAdditionIntoMultiplication( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `TransformsAdditionIntoMultiplication' returns `true' if
-##  $S$ is an additive magma and $R$ a magma such that
-##  $(s_1,r_1), (s_2,r_2) \in F$ implies $(s_1 + s_2,r_1 \* r_2) \in F$,
-##  and `false' otherwise.
+##  <ManSection>
+##  <Prop Name="TransformsAdditionIntoMultiplication" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `TransformsAdditionIntoMultiplication'
-##  returns `true' if and only if the equation `<s1>^<mapp> \* <s2>^<mapp> =
-##  (<s1>+<s2>)^<mapp>' holds for all <s1>, <s2> in $S$.
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="TransformsAdditionIntoMultiplication"/> returns
+##  <K>true</K> if
+##  <M>S</M> is an additive magma and <M>R</M> a magma such that
+##  <M>(s_1,r_1), (s_2,r_2) \in F</M> implies <M>(s_1 + s_2,r_1 * r_2) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="TransformsAdditionIntoMultiplication"/>
+##  returns <K>true</K> if and only if the equation
+##  <C><A>s1</A>^<A>mapp</A> * <A>s2</A>^<A>mapp</A> =
+##  (<A>s1</A>+<A>s2</A>)^<A>mapp</A></C>
+##  holds for all <A>s1</A>, <A>s2</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "TransformsAdditionIntoMultiplication", IsGeneralMapping );
 
@@ -547,18 +832,27 @@ DeclareProperty( "TransformsAdditionIntoMultiplication", IsGeneralMapping );
 ##
 #P  TransformsZeroIntoOne( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `TransformsZeroIntoOne' returns `true' if
-##  $S$ is an additive-magma-with-zero and $R$ a magma-with-one such that
-##  $( `Zero('S'), One('R')' ) \in F$,
-##  and `false' otherwise.
+##  <ManSection>
+##  <Prop Name="TransformsZeroIntoOne" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `TransformsZeroIntoOne' returns `true'
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="TransformsZeroIntoOne"/> returns <K>true</K> if
+##  <M>S</M> is an additive-magma-with-zero and <M>R</M> a magma-with-one
+##  such that
+##  <M>( </M><C>Zero(</C><M>S</M><C>), One(</C><M>R</M><C>) )</C><M> \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="TransformsZeroIntoOne"/> returns <K>true</K>
 ##  if and only if the equation
-##  `Zero( S )^<mapp> = One( R )'
+##  <C>Zero( S )^<A>mapp</A> = One( R )</C>
 ##  holds.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "TransformsZeroIntoOne", IsGeneralMapping );
 
@@ -567,18 +861,27 @@ DeclareProperty( "TransformsZeroIntoOne", IsGeneralMapping );
 ##
 #P  TransformsAdditiveInversesIntoInverses( <mapp> )
 ##
-##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
-##  Then `TransformsAdditiveInversesIntoInverses' returns `true' if
-##  $S$ is an additive-magma-with-inverses and
-##  $R$ a magma-with-inverses such that
-##  $(s,r) \in F$ implies $(-s,r\^{-1}) \in F$,
-##  and `false' otherwise.
+##  <ManSection>
+##  <Prop Name="TransformsAdditiveInversesIntoInverses" Arg='mapp'/>
 ##
-##  If <mapp> is single-valued then `TransformsAdditiveInversesIntoInverses'
-##  returns `true' if and only if the equation `AdditiveInverse( <s>
-##  )^<mapp> = Inverse( <s>^<mapp> )' holds for all <s> in $S$.
+##  <Description>
+##  Let <A>mapp</A> be a general mapping with underlying relation
+##  <M>F \subseteq S \times R</M>,
+##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
+##  respectively.
+##  Then <Ref Func="TransformsAdditiveInversesIntoInverses"/> returns
+##  <K>true</K> if <M>S</M> is an additive-magma-with-inverses and
+##  <M>R</M> a magma-with-inverses such that
+##  <M>(s,r) \in F</M> implies <M>(-s,r^{-1}) \in F</M>,
+##  and <K>false</K> otherwise.
+##  <P/>
+##  If <A>mapp</A> is single-valued then
+##  <Ref Func="TransformsAdditiveInversesIntoInverses"/>
+##  returns <K>true</K> if and only if the equation
+##  <C>AdditiveInverse( <A>s</A> )^<A>mapp</A> =
+##  Inverse( <A>s</A>^<A>mapp</A> )</C> holds for all <A>s</A> in <M>S</M>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareProperty( "TransformsAdditiveInversesIntoInverses", IsGeneralMapping );
 
@@ -596,6 +899,14 @@ InstallTrueMethod( TransformsAdditiveInversesIntoInverses,
 ##
 #P  IsAdditiveGroupToGroupGeneralMapping( <mapp> )
 #P  IsAdditiveGroupToGroupHomomorphism( <mapp> )
+##
+##  <ManSection>
+##  <Prop Name="IsAdditiveGroupToGroupGeneralMapping" Arg='mapp'/>
+##  <Prop Name="IsAdditiveGroupToGroupHomomorphism" Arg='mapp'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonymAttr( "IsAdditiveGroupToGroupGeneralMapping",
     IsGeneralMapping and TransformsAdditionIntoMultiplication and

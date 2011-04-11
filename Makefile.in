@@ -17,7 +17,7 @@
 ##
 ##  to compile and link GAP.
 ##
-##  The "default" traget:
+##  The "default" target:
 ##    - creates a subdirectory CPU-VENDOR-OS in the directory `bin',
 ##    - copies the configuration script into this directory,
 ##    - it switches into this directory and executes the configure script,
@@ -27,33 +27,290 @@
 ##    - removes the subdirectory CPU-VENDOR-OS in the directory `bin'
 ##    - removes any files created by `configure'
 ##
+##  The "testinstall" target:
+##    - starts GAP and reads `tst/testinstall.g'
+##
+##  The "teststandard" target:
+##    - starts GAP and reads all files `tst/*.tst'
+##
+##  The "teststandardrenormalize" target:
+##    - starts GAP, reads all files `tst/*.tst', and replaces the scaling
+##      factors  in the `STOP_TEST' statements
+##
+##  The "testinstall.g" target:
+##    - creates `tst/testinstall.g' based on the existing version and the
+##      preselected `tst/*.tst' files
+## 
+##  The "testpackages" target:
+##    - runs the tests provided by the available packages
+##
+##  The "testpackagesload" target:
+##    - tests loading of each available package
+##
+##  The "testmanuals" target:
+##    - runs the examples in the main GAP documentation
+##
+
 SHELL=/bin/sh
 CC=@CC@
 BASECC=@BASECC@
+TARGET=@target@
 @SET_MAKE@
+GMP_CFLAGS=@GMP_CFLAGS@
+GMP_LIBS=@GMP_LIBS@
+MAKE_GMP=@MAKE_GMP@
+ifndef GMP_VER
+ GMP_VER=@GMP_VER@
+endif
+ifndef BUILD_MODE
+ BUILD_MODE=@BUILD_MODE@
+endif
+ABI_CFLAGS=@ABI_CFLAGS@
+export CFLAGS+=@ABI_CFLAGS@ @CFLAGS@
+export JENKINS_CFLAGS=@JENKINS_CFLAGS@
+export NOREADLINE=@NOREADLINE@
+export READLINEPREFIX=@READLINEPREFIX@
+
+TESTGAP = ./bin/gap.sh -b -m 100m -o 512m -A -N -q -x 80 -r
+TESTGAPauto = ./bin/gap.sh -b -m 100m -o 512m -N -q -x 80 -r
 
 default: compile
 
-config: bin/@target@-@BASECC@/configure bin/@target@-@BASECC@/Makefile 
+config: bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure  bin/@target@-@BASECC@/$(BUILD_MODE)-bit/Makefile bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern/Makefile 
 
-bin/@target@-@BASECC@/configure: cnf/configure.out
-	if test ! -d bin;  then mkdir bin;  fi
-	if test ! -d bin/@target@-@BASECC@;  then mkdir bin/@target@-@BASECC@;  fi
-	@rm -f bin/@target@-@BASECC@/configure
-	cp cnf/configure.out bin/@target@-@BASECC@/configure
+bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure: cnf/configure.out 
+	mkdir -p bin/@target@-@BASECC@/$(BUILD_MODE)-bit
+	@rm -f bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure
+	cp cnf/configure.out bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure
 
-bin/@target@-@BASECC@/Makefile: bin/@target@-@BASECC@/configure cnf/config.hin cnf/gac.in
-	( cd bin/@target@-@BASECC@ ; CC=$(CC) ./configure --target=@target@ @gp_configure_options@ )
+bin/@target@-@BASECC@/$(BUILD_MODE)-bit/Makefile bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern/Makefile : bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
+	mkdir -p bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern
+	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; CC='$(CC)' BUILD_MODE='$(BUILD_MODE)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' NOREADLINE='$(NOREADLINE)' READLINEPREFIX='$(READLINEPREFIX)' ./configure --target=@target@ @gp_configure_options@ )
 
-compile: config
-	( cd bin/@target@-@BASECC@ ; $(MAKE) CC=$(CC) )
+extern: config
+	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' BUILD_MODE='$(BUILD_MODE)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' )
+
+compile: extern
+	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; $(MAKE) BUILD_MODE='$(BUILD_MODE)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)'  )
+	chmod +x bin/gap$(BUILD_MODE).sh
+
+static: extern
+	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; $(MAKE) static CC='$(CC)' BUILD_MODE='$(BUILD_MODE)' )
 	chmod +x bin/gap.sh
+	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; strip gap@EXEEXT@)
 
 strip: compile
-	( cd bin/@target@-@BASECC@ ; strip gap)
-       
+	if ! grep darwin sysinfo.gap ; then ( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; strip gap@EXEEXT@) ; fi
 
-clean:
-	rm -rf bin/@target@-@BASECC@
-	rm -f config.cache config.log config.status Makefile
-	rm -f bin/gap.sh
+removewin: strip
+	( rm -f bin/*.exe bin/*.dll bin/*.bat bin/*.pif "bin/GAP 4 PPC")
+
+rebuild:
+	rm -f config.cache config.log config.status
+	touch src/*
+
+allclean: clean32 clean64
+
+clean: clean$(BUILD_MODE)
+
+clean32: clean_gap32 clean_gmp32 clean_jenkins32
+
+clean64: clean_gap64 clean_gmp64 clean_jenkins64
+
+clean_gap: clean_gap$(BUILD_MODE)
+
+clean_gap32: rebuild
+	rm -f bin/@target@-@BASECC@/32-bit/*.o
+	rm -f bin/@target@-@BASECC@/32-bit/Makefile
+	rm -f bin/@target@-@BASECC@/32-bit/config*
+	rm -f bin/@target@-@BASECC@/32-bit/gac
+	rm -f bin/@target@-@BASECC@/32-bit/gap
+	rm -f bin/gap32.sh
+	rm -f Makefile
+
+clean_gap64: rebuild
+	rm -f bin/@target@-@BASECC@/64-bit/*.o
+	rm -f bin/@target@-@BASECC@/64-bit/Makefile
+	rm -f bin/@target@-@BASECC@/64-bit/config*
+	rm -f bin/@target@-@BASECC@/64-bit/gac
+	rm -f bin/@target@-@BASECC@/64-bit/gap
+	rm -f bin/gap64.sh
+	rm -f Makefile
+
+clean_gmp: clean_gmp$(BUILD_MODE)
+
+clean_gmp32:
+	if test -d bin/@target@-@BASECC@/32-bit/extern/gmp-$(GMP_VER); then \
+	 rm -rf bin/@target@-@BASECC@/32-bit/extern/gmp-$(GMP_VER); fi
+	if test -h bin/@target@-@BASECC@/32-bit/extern/gmp; then \
+	 rm -f bin/@target@-@BASECC@/32-bit/extern/gmp; fi
+	if test -d extern/gmp-$(GMP_VER); then \
+	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
+	  if test -r Makefile; then make distclean; fi ); fi
+
+clean_gmp64:
+	if test -d bin/@target@-@BASECC@/64-bit/extern/gmp-$(GMP_VER); then \
+	 rm -rf bin/@target@-@BASECC@/64-bit/extern/gmp-$(GMP_VER); fi
+	if test -h bin/@target@-@BASECC@/64-bit/extern/gmp; then \
+	 rm -f bin/@target@-@BASECC@/64-bit/extern/gmp; fi
+	if test -d extern/gmp-$(GMP_VER); then \
+	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
+	  if test -r Makefile; then make distclean; fi ); fi
+
+clean_jenkins: clean_jenkins$(BUILD_MODE)
+
+clean_jenkins32:
+	if test -d bin/@target@-@BASECC@/32-bit/extern/jenkins; \
+	 then rm -rf bin/@target@-@BASECC@/32-bit/extern/jenkins; fi
+
+clean_jenkins64:
+	if test -d bin/@target@-@BASECC@/64-bit/extern/jenkins; \
+	 then rm -rf bin/@target@-@BASECC@/64-bit/extern/jenkins; fi
+
+manuals:
+	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
+	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( rm doc/wsp.g )
+
+
+testinstall:
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) > \
+            `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) > \
+            `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
+
+teststandard:
+	mkdir -p dev/log
+	( echo 'ShowSystemInformation(); RunStandardTests( [' > test.tmp; \
+          grep -h "STOP_TEST" tst/*.tst | sed -e 's/^gap> STOP_TEST(/[/;s/);/],/' >> test.tmp; \
+          echo '] ); ' >> test.tmp )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); Read( "test.tmp" );' | $(TESTGAP) > \
+            `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); Read( "test.tmp" );' | $(TESTGAP) > \
+            `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
+	( rm test.tmp )
+
+teststandardrenormalize:
+	mkdir -p dev/log
+	( echo 'RunStandardTests( [' > test.tmp; \
+          grep -h "STOP_TEST" tst/*.tst | \
+            sed -e 's/^gap> STOP_TEST(/[/;s/);/],/' >> test.tmp; \
+          echo '], true ); ShowSystemInformation();' \
+          >> test.tmp; \
+          echo 'ReadGapRoot( "tst/testutil.g" ); Read( "test.tmp" ); \
+            CreateTestinstallFile(); Runtime();' | $(TESTGAP) > \
+            `date -u +dev/log/teststandardrenormalize_%Y-%m-%d-%H-%M` )
+	( rm test.tmp )
+
+testinstall.g:
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            CreateTestinstallFile();' | $(TESTGAP) )            
+
+testpackages:
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            [ "dev/log/testpackages1", "dev/log/testpackages2" ], \
+            "$(TESTGAP) -L wsp.g" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+
+testpackagesload:
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesload1", \
+            "$(TESTGAP) -L wsp.g", false );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesload1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )	
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadA", \
+            "$(TESTGAPauto) -L wsp.g", true );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+
+testmanuals:
+	mkdir -p dev/log
+	mkdir -p doc/test/tut
+	mkdir -p doc/test/ref
+	( echo 'LoadPackage( "gapdoc" ); Read( "tst/testutil.g" ); \
+	  ExtractManualExamples( "tut" ); ExtractManualExamples( "ref" );' | $(TESTGAP) )
+	( echo 'SetAssertionLevel( 2 ); LoadPackage( "gapdoc" ); \
+	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
+	( cd doc/test/tut; ../mktestx.sh )
+	( cd doc/test/ref; ../mktestx.sh )
+	(  cd doc/test; \
+	  cat tut/diffs ref/diffs \
+	  > `date -u +../../dev/log/testmanuals1_%Y-%m-%d-%H-%M` )
+	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
+	( echo 'SetAssertionLevel( 2 );  \
+	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAPauto) )
+	( cd doc/test/tut; ../mktestx.sh )
+	( cd doc/test/ref; ../mktestx.sh )
+	(  cd doc/test; \
+	  cat tut/diffs ref/diffs \
+	  > `date -u +../../dev/log/testmanualsA_%Y-%m-%d-%H-%M` )
+	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
+	( echo 'SetAssertionLevel( 2 ); LoadAllPackages(); \
+	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
+	( cd doc/test/tut; ../mktestx.sh )
+	( cd doc/test/ref; ../mktestx.sh )
+	(  cd doc/test; \
+	  cat tut/diffs ref/diffs \
+	  > `date -u +../../dev/log/testmanuals2_%Y-%m-%d-%H-%M` )
+	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
+	( rm doc/test/tut/*.tst; rm doc/test/ref/*.tst )  
+	( rm doc/test/wsp.g )
+
+cygwin:	extern
+	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; $(MAKE) gapdll BUILD_MODE='$(BUILD_MODE)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)'  )
+	cp bin/@target@-@BASECC@/$(BUILD_MODE)-bit/gapw95.exe bin
+	cp bin/@target@-@BASECC@/$(BUILD_MODE)-bit/gap.dll bin
+	cp /bin/cygncurses-10.dll /bin/cygncursesw-10.dll \
+	   /bin/cygpanel-10.dll /bin/cygwin1.dll \
+	   /bin/libW11.dll /usr/bin/rxvt.exe /usr/bin/regtool.exe \
+	   /bin/cygreadline7.dll /bin/cyggcc_s-1.dll /bin/cygpopt-0.dll \
+	   /bin/cygstart.exe /bin/mintty.exe bin
+	rm -rf terminfo
+	mkdir terminfo 
+	mkdir terminfo/c 
+	mkdir terminfo/r
+	mkdir terminfo/x
+	mkdir terminfo/63
+	mkdir terminfo/72
+	mkdir terminfo/78
+	cp /usr/share/terminfo/c/cygwin terminfo/c
+	cp /usr/share/terminfo/r/rxvt terminfo/r
+	cp /usr/share/terminfo/x/xterm terminfo/x
+	cp /usr/share/terminfo/63/cygwin terminfo/63
+	cp /usr/share/terminfo/72/rxvt terminfo/72
+	cp /usr/share/terminfo/78/xterm terminfo/78
+
+winbinp:
+	( tar cfz ../winbin.tgz bin/*.dll bin/*.exe \
+          bin/@target@-@BASECC@/$(BUILD_MODE)-bit/gac \
+          bin/@target@-@BASECC@/$(BUILD_MODE)-bit/config.h \
+          terminfo )
+
+packages:
+	./makepkgs
+

@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for Lie algebras.
 ##
@@ -94,7 +95,7 @@ InstallMethod( LieDerivedSubalgebra,
 ##
 #M  LieDerivedSeries( <L> )
 ##
-InstallOtherMethod( LieDerivedSeries,
+InstallMethod( LieDerivedSeries,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -132,6 +133,8 @@ InstallMethod( IsLieSolvable,
     return Dimension( D[ Length( D ) ] ) = 0;
     end );
 
+InstallTrueMethod( IsLieSolvable, IsLieNilpotent );
+
 
 #############################################################################
 ##
@@ -148,6 +151,9 @@ InstallMethod( IsLieNilpotent,
     D:= LieLowerCentralSeries( L );
     return Dimension( D[ Length( D ) ] ) = 0;
     end );
+
+    
+InstallTrueMethod( IsLieNilpotent, IsLieAbelian );
 
 
 #############################################################################
@@ -217,6 +223,8 @@ InstallMethod( IsLieAbelian,
     # Return the result.
     return true;
     end );
+
+InstallTrueMethod( IsLieAbelian, IsAlgebra and IsZeroMultiplicationRing );
 
 
 ##############################################################################
@@ -340,6 +348,11 @@ InstallMethod( LieCentralizer,
           vjl,
           pos;
 
+    # catch trivial case
+    if Dimension(S) = 0 then
+       return A;
+    fi;
+
     R:= LeftActingDomain( A );
     B:= Basis( A );
     T:= StructureConstantsTable( B );
@@ -418,6 +431,11 @@ InstallMethod( LieNormalizer,
           bas,
           b,
           pos;
+
+    # catch trivial case
+    if Dimension(U) = 0 then
+       return L;
+    fi;
 
     # We need not work if `U' knows to be an ideal in its parent `L'.
     if HasParent( U ) and IsIdenticalObj( L, Parent( U ) )
@@ -686,7 +704,7 @@ InstallMethod( RightDerivations,
     if n = 1 and offset = 1 then
       A:= [ [ One( R ) ] ];
     else
-      A:= NullspaceMat( A );
+      A:= NullspaceMatDestructive( A );
     fi;
 
     # Construct the generating matrices from the vectors.
@@ -784,7 +802,7 @@ InstallMethod( LeftDerivations,
     if n = 1 and offset = 1 then
       A:= [ [ One( R ) ] ];
     else
-      A:= NullspaceMat( A );
+      A:= NullspaceMatDestructive( A );
     fi;
 
     # Construct the generating matrices from the vectors.
@@ -1051,6 +1069,37 @@ InstallMethod( PowerS,
 ##
 #F  PthPowerImage( <B>, <x> )
 ##
+BindGlobal("PTHPOWERIMAGE_PPI_VEC", function(L,zero,p,bv,pmap,cf,x)
+    local
+          n,     # the dimension of L
+          s,     # the list of s_i functions
+          im,    # the image of x under the p-th power map
+          i,j;   # loop variables
+
+      n:= Dimension( L );
+      s:= PowerS( L );
+      im:= Zero( L );
+
+      # First the sum of all $\alpha_i^p x_i^{[p]}$ is calculated.
+      for i in [1..n] do
+        im:= im + cf[i]^p * pmap[i];
+      od;
+
+      # To this the double sum of all
+      # $s_i(\alpha_j x_j, \sum_{k=j+1}^n \alpha_k x_k)$
+      # is added.
+      for j in [1..n-1] do
+        if cf[j] <> zero then
+          x:= x - cf[j] * bv[j];
+          for i in [1..p-1] do
+            im:= im + s[i]( [cf[j]*bv[j],x] );
+          od;
+        fi;
+      od;
+
+      return im;
+end);
+
 InstallMethod( PthPowerImage,
     "for a basis of an algebra, and a ring element",
     IsCollsElms,
@@ -1089,36 +1138,46 @@ InstallMethod( PthPowerImage,
       return LinearCombination( B, cf );
 
     else
-
-      n:= Dimension( L );
-      s:= PowerS( L );
-      pmap:= PthPowerImages( B );
-      cf:= Coefficients( B, x );
-      im:= Zero( L );
-
-      # First the sum of all $\alpha_i^p x_i^{[p]}$ is calculated.
-      for i in [1..n] do
-        im:= im + cf[i]^p * pmap[i];
-      od;
-
-      # To this the double sum of all
-      # $s_i(\alpha_j x_j, \sum_{k=j+1}^n \alpha_k x_k)$
-      # is added.
-      zero:= Zero( F );
-      bv:= BasisVectors( B );
-      for j in [1..n-1] do
-        if cf[j] <> zero then
-          x:= x - cf[j] * bv[j];
-          for i in [1..p-1] do
-            im:= im + s[i]( [cf[j]*bv[j],x] );
-          od;
-        fi;
-      od;
-
-      return im;
+      return PTHPOWERIMAGE_PPI_VEC(L,Zero(F),p,BasisVectors(B),PthPowerImages(B),Coefficients(B,x),x);
     fi;
     end );
 
+InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra",
+    [ IsJacobianElement ], # weaker filter, we maybe only discovered later
+      			   # that the algebra is restricted
+    function(x)
+    local fam;
+    fam := FamilyObj(x);
+    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    return PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
+end);
+
+InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra and an integer",
+    [ IsJacobianElement, IsInt ],
+    function(x,n)
+    local fam;
+    fam := FamilyObj(x);
+    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    while n>0 do
+        x := PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
+	n := n-1;
+    od;
+    return x;
+end);
+
+InstallMethod( PClosureSubalgebra, "for a subalgebra of restricted jacobian elements",
+    [ IsLieAlgebra and IsJacobianElementCollection ],
+    function(A)
+    local i, p, oldA;
+
+    repeat
+	oldA := A;
+        for i in Basis(oldA) do
+      	    A := ClosureLeftModule(A,PthPowerImage(i));
+    	od;
+    until A=oldA;
+    return A;
+end);
 
 #############################################################################
 ##
@@ -1723,6 +1782,9 @@ InstallMethod( DirectSumDecomposition,
 
     F:= LeftActingDomain( L );
     n:= Dimension( L );
+    if n=0 then 
+        return [ L ];
+    fi;
 
     if RankMat( KillingMatrix( Basis( L ) ) ) = n then
 
@@ -1757,7 +1819,7 @@ InstallMethod( DirectSumDecomposition,
           cf:= List([ 1 .. Dimension( H ) ], x -> Random( set ) );
           x:= LinearCombination( BH, cf );
           M:= AdjointMatrix( BL, x );
-          f:= CharacteristicPolynomial( F, M );
+          f:= CharacteristicPolynomial( F, F, M );
           f:= f/Gcd( f, Derivative( f ) );
         until DegreeOfLaurentPolynomial( f )
                   = Dimension( L ) - Dimension( H ) + 1;
@@ -1928,9 +1990,12 @@ InstallMethod( DirectSumDecomposition,
           i:=1;
           while i<= Length( B ) do
 
-            comlist:= List( bb, x -> List( B[i], y -> x*y ) );
-            comlist:= Filtered( Flat( comlist ), x -> x <> Zero( L ) );
-            if comlist <> [] then
+            comlist:= [ ];
+            for j in [1..Length(bb)] do
+                Append( comlist, List( B[i], y -> bb[j]*y ) );
+            od;
+
+            if not ForAll( comlist, x -> x = Zero(L) ) then
               Append( bb, B[i] );
               B:= Filtered( B, x -> x <> B[i] );
               i:= 1;
@@ -2377,7 +2442,7 @@ InstallMethod( SemiSimpleType,
 # Cartan subalgebra.
 
       mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
+                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
       mp:= List( mp, x -> x/Gcd( Derivative( x ), x ) );
       d:= d * Product( List( mp, p ->
                    CoefficientsOfLaurentPolynomial(p)[1][1] ) );
@@ -2409,7 +2474,7 @@ InstallMethod( SemiSimpleType,
         K:= LieAlgebraByStructureConstants( F, S1 );
         BK:= Basis( K );
         mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
+                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
         s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
                            DegreeOfLaurentPolynomial ) )));
 
@@ -2434,7 +2499,7 @@ InstallMethod( SemiSimpleType,
       K:= LieAlgebraByStructureConstants( F, T );
       BK:= Basis( K );
       mp:= List( BasisVectors( BK ){[1..rk]},
-               x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
+               x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
       s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
                          DegreeOfLaurentPolynomial ) )));
       s:= s*Dimension( LeftActingDomain( L ) );
@@ -3463,6 +3528,125 @@ end );
 
 #############################################################################
 ##
+#F  IsSpaceOfUEAElements( <V> )
+##
+##  If <V> is a space of elements of a universal enveloping algebra,
+##  then the `NiceFreeLeftModuleInfo' value of <V> is a record with the
+##  following components.
+##  \beginitems
+##  `family' &
+##     the elements family of <V>,
+##
+##  `monomials' &
+##     a list of monomials occurring in the generators of <V>,
+##
+##
+##  `zerocoeff' &
+##     the zero coefficient of elements in <V>,
+##
+##  `zerovector' &
+##     the zero row vector in the nice free left module,
+##
+##  `characteristic' &
+##     the characteristic of the ground field.
+##  \enditems
+##  The `NiceVector' value of $v \in <V>$ is defined as the row vector of
+##  coefficients of $v$ w.r.t. the list `monomials'.
+##
+##
+DeclareHandlingByNiceBasis( "IsSpaceOfUEAElements",
+    "for free left modules of elements of a universal enveloping algebra" );
+
+
+#############################################################################
+##
+#M  NiceFreeLeftModuleInfo( <V> )
+#M  NiceVector( <V>, <v> )
+#M  UglyVector( <V>, <r> )
+##
+InstallHandlingByNiceBasis( "IsSpaceOfUEAElements", rec(
+    detect := function( F, gens, V, zero )
+      return IsElementOfFpAlgebraCollection( V );
+      end,
+
+    NiceFreeLeftModuleInfo := function( V )
+      local gens,
+            monomials,
+            gen,
+            list,
+            zero,
+            info;
+
+      gens:= GeneratorsOfLeftModule( V );
+
+      monomials:= [];
+
+      for gen in gens do
+        list:= ExtRepOfObj( gen )[2];
+        UniteSet( monomials, list{ [ 1, 3 .. Length( list ) - 1 ] } );
+      od;
+
+      zero:= Zero( LeftActingDomain( V ) );
+      info:= rec( monomials := monomials,
+                  zerocoeff := zero,
+                  characteristic:= Characteristic( LeftActingDomain( V ) ), 
+                  family    := ElementsFamily( FamilyObj( V ) ) );
+
+      # For the zero row vector, catch the case of empty `monomials' list.
+      if IsEmpty( monomials ) then
+        info.zerovector := [ zero ];
+      else
+        info.zerovector := ListWithIdenticalEntries( Length( monomials ),
+                                                     zero );
+      fi;
+
+      return info;
+      end,
+
+    NiceVector := function( V, v )
+      local info, c, monomials, i, pos;
+      info:= NiceFreeLeftModuleInfo( V );
+      c:= ShallowCopy( info.zerovector );
+      v:= ExtRepOfObj( v )[2];
+      monomials:= info.monomials;
+      for i in [ 2, 4 .. Length( v ) ] do
+        pos:= Position( monomials, v[ i-1 ] );
+        if pos = fail then
+          return fail;
+        fi;
+        c[ pos ]:= v[i];
+      od;
+      return c;
+      end,
+
+    UglyVector := function( V, r )
+      local info, list, i;
+      info:= NiceFreeLeftModuleInfo( V );
+      if Length( r ) <> Length( info.zerovector ) then
+        return fail;
+      elif IsEmpty( info.monomials ) then
+        if IsZero( r ) then
+          return Zero( V );
+        else
+          return fail;
+        fi;
+      fi;
+      list:= [];
+      for i in [ 1 .. Length( r ) ] do
+        if r[i] <> info.zerocoeff then
+          Add( list, info.monomials[i] );
+          Add( list, r[i] );
+        fi;
+      od;
+      return ObjByExtRep( info.family, [ info.characteristic, list ] );
+      end ) );
+
+
+
+
+
+#############################################################################
+##
 #F  FreeLieAlgebra( <R>, <rank> )
 #F  FreeLieAlgebra( <R>, <rank>, <name> )
 #F  FreeLieAlgebra( <R>, <name1>, <name2>, ... )
@@ -3551,7 +3735,29 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
     SetGeneratorsOfLeftOperatorRing( L,
         List( GeneratorsOfMagma( M ),
               x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
-
+    
+    # Install grading
+    SetGrading( L, rec( min_degree := 1,
+                                      max_degree := infinity,
+                                      source := Integers,
+                                      hom_components := function(degree)
+        local B, d, i, x, y, z;
+        B := GeneratorsOfMagma(M);
+        B := [List([1..Length(B)],i->[[i],fail,B[i]])];
+        for d in [2..degree] do
+            Add(B,[]);
+            for i in [1..d-1] do
+                for x in B[i] do for y in B[d-i] do
+                    z := Concatenation(x[1],y[1]);
+                    if z<y[1] and x[1]<y[1] and (x[2]=fail or x[2]>=y[1]) then
+                        Add(B[d],[z,y[1],x[3]*y[3]]);
+                    fi;
+                od; od;
+            od;
+        od;
+        return VectorSpace( R, List( B[degree],
+                       p->ElementOfMagmaRing( F, zero, [ one ], [ p[3] ] )));
+    end) );
     # Return the ring.
     return L;
 end );
@@ -4656,9 +4862,12 @@ local ReductionModuloTable,   #
          if w = 1 then
            if comp_grad then
              pos:= Position( e[1], r1[1][1][1] );
-             RemoveElmList( wts[1], pos );
-           fi;
-           RemoveSet( e[1], r1[1][1][1] );
+             Remove( wts[1], pos );
+             Remove( e[1], pos);
+         else
+             RemoveSet( e[1], r1[1][1][1] );
+         fi;
+
            Add( defs, r1 );
            if e[1] = [ ] then 
              K:= LieAlgebraByStructureConstants( LeftActingDomain( FL ),
@@ -4688,9 +4897,12 @@ local ReductionModuloTable,   #
          else
            if comp_grad then
              pos:= Position( e[w], r1[1][1][1] );
-             RemoveElmList( wts[w], pos );
-           fi;
-           RemoveSet( e[w], r1[1][1][1]);
+             Remove( wts[w], pos );
+             Remove( e[w], pos);
+         else
+             RemoveSet( e[w], r1[1][1][1]);
+         fi;
+
            u:= SubsVarInRels( v[w-1], r1 );
            SubstituteVariable( R[w], r1 );
          fi;
@@ -4814,7 +5026,7 @@ local ReductionModuloTable,   #
                      Add( Rw1, k[i][1] );
                      k[i][1]:= [ d ];
                    else
-                     RemoveElmList( k, i );
+                     Remove( k, i );
                    fi;  
                  fi;
                  i:= i+1;
@@ -4841,7 +5053,7 @@ local ReductionModuloTable,   #
 
                    if comp_grad then
                      pos:= Position( e[w+1], k11[1] );
-                     RemoveElmList( wts[w+1], pos );
+                     Remove( wts[w+1], pos );
                    fi;
                    RemoveSet( e[w+1], k11[1] );
                    RemoveEntry( k11[1] );
@@ -4881,14 +5093,15 @@ local ReductionModuloTable,   #
                    if ww = w+1 then
                      if comp_grad then 
                        pos:= Position( e[w+1],rr[i][1][1][1] );
-                       RemoveElmList( wts[w+1], pos );
+                       Remove( wts[w+1], pos );
                      fi;
                      RemoveSet(e[w+1],rr[i][1][1][1]);
                      RemoveEntry(rr[i][1][1][1]);
                      SubstituteVariable( Rw1, rr[i] );
                      temp:= rr[i];
-                     RemoveElmList( rr, i );
+                     Remove( rr, i );
                      rr:= SubsVarInRels( rr, temp );
+                     i:= i-1;  # (last call removed holes...).
                    elif ww > 0 then 
                      _T:=S;
                      relation_found:= true;
@@ -4936,7 +5149,7 @@ local ReductionModuloTable,   #
                            Add(Rw1,rr[i][s][1]);
                            rr[i][s][1]:= [ d ];
                          else
-                           RemoveElmList( rr[i], s );
+                           Remove( rr[i], s );
                          fi; 
                        fi;
                        s:= s+1;
@@ -4976,7 +5189,7 @@ local ReductionModuloTable,   #
      
            if comp_grad then
              pos:= Position( e[1], r1[2][1][1][1] );
-             RemoveElmList( wts[1], pos );
+             Remove( wts[1], pos );
            fi;
            RemoveSet( e[1], r1[2][1][1][1] );
            Add( defs, r1[2] );
@@ -5020,7 +5233,7 @@ local ReductionModuloTable,   #
 
            if comp_grad then
              pos:= Position( e[w], r1[2][1][1][1] );
-             RemoveElmList( wts[w], pos );
+             Remove( wts[w], pos );
            fi;
            RemoveSet(e[w], r1[2][1][1][1]);
            u:= SubsVarInRels( v[w-1], r1[2]);
@@ -5198,7 +5411,7 @@ local ReductionModuloTable,   #
 
      for i in [1..Length(gens)] do
        if i in e[1] then 
-         Add( imgs, Basis( K )[i] );
+         Add( imgs, Basis( K )[Position( inds, i )] );
        else
          for j in [1..Length(defs)] do
            if defs[j][1][1][1] = i then break; fi;
@@ -5246,7 +5459,7 @@ InstallGlobalFunction( NilpotentQuotientOfFpLieAlgebra,
 
     function( arg )
 
-      local FpL,L,weights,is_homogeneous,rels,weight,w,r,k,j,er,fol,maxw;
+      local FpL,L,weights,is_homogeneous,rels,weight,w,r,k,j,er,fol,maxw,N;
      
 
     # unwrapping the arguments...
@@ -5288,8 +5501,9 @@ InstallGlobalFunction( NilpotentQuotientOfFpLieAlgebra,
         if not is_homogeneous then break; fi;
       od;
 
-      return FpLieAlgebraEnumeration( FpL, maxw, weights, is_homogeneous );
-
+      N:= FpLieAlgebraEnumeration( FpL, maxw, weights, is_homogeneous );
+      SetIsLieNilpotent( Range(N), true );
+      return N;
 
 end ); 
 
@@ -5378,7 +5592,7 @@ InstallMethod( JenningsLieAlgebra,
           gens,      # List of the generators of the quotients J[i]/J[i+1],
                      # i.e., a basis of the Lie algebra.
           pos,       # list of positions: if pos[j] = p, then the element
-                     # gens[i] belongs to grades[p]
+                     # gens[j] belongs to grades[p]
           i,j,k,     # loop variables
           tempgens,
           t,         # integer
@@ -5398,8 +5612,8 @@ InstallMethod( JenningsLieAlgebra,
           pcgps,     # list of pc groups, isom to the elts of `grades'.
           hom_pcg,   # list of isomomorphisms of `grades[i]' to `pcgps[i]'. 
           enum_gens, # List of numbers of elts of `gens' in extrep.
-          pp;        # Position in a list.
-
+          pp,        # Position in a list.
+          hm;
 
     # We do not know the characteristic if `G' is trivial.
     if IsTrivial( G ) then
@@ -5410,7 +5624,7 @@ InstallMethod( JenningsLieAlgebra,
 
     J:=JenningsSeries ( G );
     Homs:= List ( [1..Length(J)-1] , x -> 
-                  NaturalHomomorphismByNormalSubgroup ( J[x], J[x+1] ));
+                  NaturalHomomorphismByNormalSubgroupNC( J[x], J[x+1] ));
     grades := List ( Homs , Range );
     hom_pcg:= List( grades, IsomorphismSpecialPcGroup );
     pcgps:= List( hom_pcg, Range );
@@ -5523,10 +5737,36 @@ InstallMethod( JenningsLieAlgebra,
     od;
     SetPthPowerImages( B, pimgs );
     SetIsRestrictedLieAlgebra( L, true );
+    FamilyObj(Representative(L))!.pMapping := pimgs;
+    SetIsLieNilpotent( L, true );
+
+       hm:= function( g, i )
+
+             local h, e, x, k, pp, f, t;
+
+             if not g in J[i] then
+                Error("<g> is not an element of the i-th term of the series used to define <L>");
+             fi;
+
+             h:= Image( hom_pcg[i], Image(Homs[i], g ));
+             e:= ExtRepOfObj(h);
+             x:= Zero(L);
+             for k in [1,3..Length(e)-1] do
+                 pp:= Position( enum_gens[i], e[k] );
+                 f:= GeneratorsOfGroup( pcgps[i] )[pp];
+                 t:= Position( gens, f );
+                 x:= x + e[k+1]*Basis(L)[t];
+             od;
+             return x;
+        end ;
+
+    SetNaturalHomomorphismOfLieAlgebraFromNilpotentGroup( L, hm );
+
 
     return L;
             
 end );
+
 
 
 #############################################################################
@@ -5549,7 +5789,7 @@ InstallMethod( PCentralLieAlgebra,
           gens,      # List of the generators of the quotients J[i]/J[i+1],
                      # i.e., a basis of the Lie algebra.
           pos,       # list of positions: if pos[j] = p, then the element
-                     # gens[i] belongs to grades[p]
+                     # gens[j] belongs to grades[p]
           i,j,k,     # loop variables
           tempgens,
           t,         # integer
@@ -5568,7 +5808,9 @@ InstallMethod( PCentralLieAlgebra,
           pcgps,     # list of pc groups, isom to the elts of `grades'.
           hom_pcg,   # list of isomomorphisms of `grades[i]' to `pcgps[i]'. 
           enum_gens, # List of numbers of elts of `gens' in extrep.
-          pp;        # Position in a list.
+          pp,        # Position in a list.
+          pimgs,     # pth power images
+          hm;
 
 
     # We do not know the characteristic if `G' is trivial.
@@ -5581,7 +5823,7 @@ InstallMethod( PCentralLieAlgebra,
     p:= PrimePGroup( G );
     J:= PCentralSeries( G, p );
     Homs:= List ( [1..Length(J)-1] , x -> 
-                  NaturalHomomorphismByNormalSubgroup ( J[x], J[x+1] ));
+                  NaturalHomomorphismByNormalSubgroupNC( J[x], J[x+1] ));
     grades := List ( Homs , Range );
     hom_pcg:= List( grades, IsomorphismSpecialPcGroup );
     pcgps:= List( hom_pcg, Range );
@@ -5602,11 +5844,20 @@ InstallMethod( PCentralLieAlgebra,
     dim:= Length(gens);
     F:= GF( p );
     T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
-
+    pimgs := [];
     for i in [1..dim] do
         a:= PreImagesRepresentative( Homs[pos[i]] , 
                     PreImagesRepresentative( hom_pcg[pos[i]], gens[i] ) );
 
+
+        # calculate the p-th power image of `a':
+
+        if pos[i]+1 <= Length(Homs) then
+            Add( pimgs, Image( hom_pcg[pos[i]+1], 
+                    Image( Homs[pos[i]+1], a^p) ) );
+        else
+            Add( pimgs, "zero" );
+        fi;
 
         for j in [i+1.. dim] do
             if pos[i]+pos[j] <= Length( Homs ) then
@@ -5666,10 +5917,54 @@ InstallMethod( PCentralLieAlgebra,
                       )
               );
 
+    vv:= BasisVectors( B );
+    
+    # Set the pth-power images of the basis elements of `B':
+
+    for i in [1..Length(pimgs)] do
+        if pimgs[i] = "zero" then
+            pimgs[i]:= Zero( L );
+        else
+            e:= ExtRepOfObj( pimgs[i] );
+            x:= Zero( L );
+            for k in [1,3..Length(e)-1] do
+                pp:= Position( enum_gens[pos[i]+1], e[k] );
+                f:= GeneratorsOfGroup( pcgps[pos[i]+1] )[pp];
+                t:= Position( gens, f );
+                x:= x+ One( F )*e[k+1]*vv[t];
+            od;
+            pimgs[i]:= x;
+        fi;
+    od;
+    SetPthPowerImages( B, pimgs );
+    SetIsRestrictedLieAlgebra( L, true );
+    SetIsLieNilpotent( L, true );
+
+        hm:= function( g, i )
+
+             local h, e, x, k, pp, f, t;
+
+             if not g in J[i] then
+                Error("<g> is not an element of the i-th term of the series used to define <L>");
+             fi;
+
+             h:= Image( hom_pcg[i], Image(Homs[i], g ));
+             e:= ExtRepOfObj(h);
+             x:= Zero(L);
+             for k in [1,3..Length(e)-1] do
+                 pp:= Position( enum_gens[i], e[k] );
+                 f:= GeneratorsOfGroup( pcgps[i] )[pp];
+                 t:= Position( gens, f );
+                 x:= x + e[k+1]*Basis(L)[t];
+             od;
+             return x;
+        end ;
+
+    SetNaturalHomomorphismOfLieAlgebraFromNilpotentGroup( L, hm );
+
     return L;
             
 end );
-
 
 
 #############################################################################

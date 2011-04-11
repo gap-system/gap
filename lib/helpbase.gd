@@ -1,18 +1,20 @@
 #############################################################################
 ##  
-#W  helpbase.gd                 GAP Library                      Frank L�beck
+#W  helpbase.gd                 GAP Library                      Frank Lübeck
 ##  
 #H  @(#)$Id$
 ##  
-#Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##  
 ## The files helpbase.g{d,i} contain the interface between GAP's online help
 ## and the actual help books.
 ##  
 Revision.helpbase_gd := 
   "@(#)$Id$";
-
+  
+DeclareGlobalFunction("StringStreamInputTextFile");
 DeclareGlobalFunction("MATCH_BEGIN");
 DeclareGlobalFunction("MATCH_BEGIN_COUNT");
 DeclareGlobalFunction("FILLED_LINE");

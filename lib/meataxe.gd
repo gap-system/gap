@@ -6,7 +6,7 @@
 ##
 #H  @(#)$Id$ 
 ##
-#Y  (C) 1998-2001 School Math. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998-2001 School Math. Sci., University of St Andrews, Scotland
 ##
 ##  This file contains the declarations for the 'Smash'-MeatAxe modified for
 ##  GAP4 and using the standard MeatAxe interface.  It defines the MeatAxe
@@ -65,7 +65,27 @@ DeclareGlobalFunction("TensorProductGModule");
 ## 
 DeclareGlobalFunction("WedgeGModule");
 
+###############################################################################
+##
+#F  DualGModule ( module ) . . . . . dual of a G-module
+##
+## DualGModule calculates the dual of a G-module.
+## The matrices of the module are inverted and transposed.
+## 
+DeclareGlobalFunction("DualGModule");
+
+###############################################################################
+##
+#F TestModulesFitTogether(m1,m2) 
+##
+##  Given two modules <m1> and <m2> this routine tests whether both have the
+##  same number of generators and are defined over the same field.
+## 
+DeclareGlobalFunction("TestModulesFitTogether");
+
 DeclareInfoClass("InfoMeatAxe");
+DeclareInfoClass("InfoMtxHom");
+
 
 SMTX:=rec(name:="The Smash MeatAxe");
 MTX:=SMTX;
@@ -80,3 +100,4 @@ SMTX.Getter := function(string)
     fi;
   end;
 end;
+

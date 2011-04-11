@@ -4,10 +4,12 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  (The test file `vspcmat.tst' should contain the same tests,
 ##  applied to matrix spaces.)
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -49,7 +51,7 @@ true
 gap> Dimension( w );
 1
 gap> n:= NiceVector( w, [ Z(27), Z(3), Z(3) ] );
-[ 0*Z(3), Z(3)^0, 0*Z(3), Z(3), 0*Z(3), 0*Z(3), Z(3), 0*Z(3), 0*Z(3) ]
+[ Z(3), Z(3), Z(3^2)^3, Z(3), 0*Z(3), 0*Z(3), Z(3), 0*Z(3), 0*Z(3) ]
 gap> UglyVector( w, n ) = [ Z(27), Z(3), Z(3) ];
 true
 
@@ -369,11 +371,11 @@ gap> A := [ [ Z(2^2)^2, 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2), 0*Z(2) ],
 >   [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2^2), 0*Z(2), Z(2^2)^2 ] ];;
 gap> F := GF(4);;
 gap> MinimalPolynomial(F, A);
-Z(2)^0+Z(2^2)*x_1+x_1^2+Z(2^2)^2*x_1^3+x_1^4+Z(2^2)*x_1^5+x_1^6
+x_1^6+Z(2^2)*x_1^5+x_1^4+Z(2^2)^2*x_1^3+x_1^2+Z(2^2)*x_1+Z(2)^0
 gap> MinimalPolynomial(F, A);
-Z(2)^0+Z(2^2)*x_1+x_1^2+Z(2^2)^2*x_1^3+x_1^4+Z(2^2)*x_1^5+x_1^6
+x_1^6+Z(2^2)*x_1^5+x_1^4+Z(2^2)^2*x_1^3+x_1^2+Z(2^2)*x_1+Z(2)^0
 
-gap> STOP_TEST( "vspcrow.tst", 155797500 );
+gap> STOP_TEST( "vspcrow.tst",195001138);
 
 
 #############################################################################

@@ -1,18 +1,19 @@
 
 /****************************************************************************
 **
-*W  system.h                    GAP source                   Martin Schoenert
+*W  system.h                    GAP source                   Martin Schönert
 *W                                                         & Dave Bayer (MAC)
 *W                                                  & Harald Boegeholz (OS/2)
 *W                                                      & Frank Celler (MACH)
 *W                                                         & Paul Doyle (VMS)
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  The  file 'system.c'  declares  all operating system  dependent functions
 **  except file/stream handling which is done in "sysfiles.h".
@@ -52,8 +53,17 @@
 #endif
 
 /* some compiles define symbols beginning with an underscore               */
+/* but Mac OSX's dlopen adds one in for free!                              */
 #if C_UNDERSCORE_SYMBOLS
+#if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+# define SYS_INIT_DYNAMIC       "Init__Dynamic"
+#else
+#if defined(SYS_IS_CYGWIN32) && SYS_IS_CYGWIN32
+# define SYS_INIT_DYNAMIC       "Init__Dynamic"
+#else
 # define SYS_INIT_DYNAMIC       "_Init__Dynamic"
+#endif
+#endif
 #else
 # define SYS_INIT_DYNAMIC       "Init__Dynamic"
 #endif
@@ -139,7 +149,7 @@
 #define HAVE_MKDIR              0
 #define HAVE_GETRUSAGE		0
 #define HAVE_DOTGAPRC		0
-#define HAVE_GHAPRC             0
+#define HAVE_GAPRC              0
 
 #ifdef SYS_IS_BSD
 # undef  HAVE_ACCESS
@@ -204,12 +214,17 @@
 
 #endif
 
-
 /****************************************************************************
 **
 *V  Includes  . . . . . . . . . . . . . . . . . . . . .  include system files
 */
 #ifdef CONFIG_H
+#endif
+
+/* Cygwin claims to have GETRUSAGE but child times are not given properly */
+#if SYS_IS_CYGWIN32
+#undef  HAVE_GETRUSAGE
+#define HAVE_GETRUSAGE		0
 #endif
 
 
@@ -393,6 +408,44 @@ typedef unsigned long int       UInt;
 
 /****************************************************************************
 **
+*F  Macros to allow detection of dangerous assignments
+**
+**  NL makes its argument not a valid lvalue, but has no effect at runtime
+*/
+
+#ifdef __GNUC__ 
+static inline Char IDENT_Char(Char x)
+{
+     return x;
+}
+#define NL_Char(x) (IDENT_Char((x)))
+#else
+#define NL_Char(x) (x)
+#endif
+
+#ifdef __GNUC__ 
+static inline Int IDENT_Int(Int x)
+{
+     return x;
+}
+#define NL_Int(x) (IDENT_Int((x)))
+#else
+#define NL_Int(x) (x)
+#endif
+
+#ifdef __GNUC__ 
+static inline UInt IDENT_UInt(UInt x)
+{
+     return x;
+}
+#define NL_UInt(x) (IDENT_UInt((x)))
+#else
+#define NL_UInt(x) (x)
+#endif
+
+
+/****************************************************************************
+**
 *T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 */
 typedef UInt * *        Bag;
@@ -444,12 +497,12 @@ extern const Char * SyKernelVersion;
 
 /****************************************************************************
 **
-*V  SyAutoloadSharePackages  . . . . . . . .automatically load share packages
+*V  SyAutoloadPackages  . . . . . . . . . .  automatically load packages
 **
 **  0: no 
 **  1: yes
 */
-extern UInt SyAutoloadSharePackages;
+extern UInt SyAutoloadPackages;
 
 /****************************************************************************
 **
@@ -469,8 +522,6 @@ extern UInt SyBreakSuppress;
 **
 **  Per default it  is true,  i.e.,  GAP prints the  nice  banner.  It can be
 **  changed by the '-b' option to have GAP surpress the banner.
-**
-**  It is copied into the GAP variable 'BANNER', which  is used  in 'init.g'.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -608,6 +659,16 @@ extern Char SyInitfiles [32] [512];
 
 /****************************************************************************
 **
+*V  SyPkgnames[] . . . . . . . . . . .  list of package names
+**
+**  'SyPkgnames' is a list of names of entries of the `pkg' directory. It is
+**  used for autoloading.
+*/
+#define SY_MAX_PKGNR 100
+extern Char SyPkgnames [SY_MAX_PKGNR][16];
+
+/****************************************************************************
+**
 *V  SyGapRCFilename . . . . . . . . . . . . . . . filename of the gaprc file
 */
 extern Char SyGapRCFilename [512];
@@ -648,6 +709,8 @@ extern UInt SyLineEdit;
 */
 extern UInt SyMsgsFlagBags;
 
+
+extern Int SyGasmanNumbers[2][9];
 
 /****************************************************************************
 **
@@ -691,7 +754,6 @@ extern UInt SyNrRowsLocked;
 **  It can be changed by the '-q' option to have GAP operate in silent  mode.
 **
 **  It is used by the functions in 'gap.c' to surpress printing the  prompts.
-**  Is also copied into the GAP variable 'QUIET' which is used  in  'init.g'.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -719,6 +781,9 @@ extern Char * SyRestoring;
 */
 
 extern UInt SyInitializing;
+
+extern Char **SyOriginalArgv;
+extern UInt SyOriginalArgc;
 
 /****************************************************************************
 **
@@ -800,17 +865,6 @@ extern UInt SyWindow;
 
 /****************************************************************************
 **
-*V  SyFalseEqFail . . . . .. .compatibility option, identifies false and fail
-**
-** In GAP 3 there was no fail, and false was often used. This flag causes
-** false and fail to be the same value
-*/
-
-extern UInt SyFalseEqFail;
-
-
-/****************************************************************************
-**
 
 *F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
 */
@@ -840,7 +894,11 @@ extern UInt SyStopTime;
 */
 extern UInt SyTime ( void );
 
-
+#if HAVE_GETRUSAGE
+extern UInt SyTimeSys ( void );
+extern UInt SyTimeChildren ( void );
+extern UInt SyTimeChildrenSys ( void );
+#endif
 /****************************************************************************
 **
 
@@ -857,7 +915,7 @@ extern UInt SyTime ( void );
 **  the range 'a..zA..Z' and 0 otherwise.
 */
 #include <ctype.h>
-#define IsAlpha(ch)     (isalpha(ch))
+#define IsAlpha(ch)     (isalpha((int)ch))
 
 
 /****************************************************************************
@@ -867,7 +925,16 @@ extern UInt SyTime ( void );
 **  'IsDigit' returns 1 if its character argument is a digit from  the  range
 **  '0..9' and 0 otherwise.
 */
-#define IsDigit(ch)     (isdigit(ch))
+#define IsDigit(ch)     (isdigit((int)ch))
+
+/****************************************************************************
+**
+*F  IsSpace( <ch> ) . . . . . . . . . . . . . . . .is a character whitespace
+**
+**  'IsDigit' returns 1 if its character argument is whitespace: ' ', tab,
+**  carriage return, linefeed or vertical tab
+*/
+#define IsSpace(ch)     (isspace((int)ch))
 
 
 /****************************************************************************
@@ -906,6 +973,15 @@ extern Int SyStrncmp (
             const Char *    str1,
             const Char *    str2,
             UInt                len );
+
+/****************************************************************************
+**
+*F  SyIntString( <string> ) . . . . . . . . extract a C integer from a string
+**
+*/
+
+extern Int SyIntString( const Char *string );
+
 
 
 /****************************************************************************
@@ -1015,9 +1091,9 @@ extern void SyAbortBags (
 #define MODULE_DYNAMIC          3
 
 
+
 /****************************************************************************
 **
-
 *T  StructInitInfo  . . . . . . . . . . . . . . . . . module init information
 */
 typedef struct init_info {
@@ -1171,6 +1247,42 @@ extern void SyExit (
 */
 
 extern void SySleep( UInt secs );
+
+/****************************************************************************
+**
+*F  getOptionCount ( <key> ) . number of times a command line option was used
+*F  getOptionArg ( <key>, <which> ) get arguments used on <which>'th occurence
+*F                             of <key> as a command line option NULL if none
+**
+*/
+
+extern Int getOptionCount (Char key);
+extern Char *getOptionArg(Char key, UInt which);
+
+/****************************************************************************
+ **
+ *F    sySetjmp( <jump buffer> )
+ *F    syLongjmp( <jump buffer>, <value>)
+ ** 
+ **   macros, defining our selected longjump mechanism
+ */
+
+#if HAVE_SIGSETJMP
+#define sySetjmp( buff ) (sigsetjmp( (buff), 0))
+#define syLongjmp siglongjmp
+#define syJmp_buf sigjmp_buf
+#else
+#if HAVE__SETJMP
+#define sySetjmp _setjmp
+#define syLongjmp _longjmp
+#define syJmp_buf jmp_buf
+#else
+#define sySetjmp setjmp
+#define syLongjmp longjmp
+#define syJmp_buf jmp_buf
+#endif
+#endif
+
 
 
 /****************************************************************************

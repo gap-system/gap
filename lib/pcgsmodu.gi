@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the   methods for polycylic generating  systems modulo
 ##  another such system.
@@ -926,6 +927,7 @@ InstallMethod(ModuloPcgs,"for groups",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,H)
 local home;
   home:=HomePcgs(G);
+  RelativeOrders(home);
   G:=InducedPcgs(home,G);
   return G mod InducedPcgs(home,H);
 end);

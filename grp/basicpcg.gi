@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for the construction of the basic pc group
 ##  types.
@@ -44,12 +44,13 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     fi;
     if ForAll(ints,i->i=1) then
       # the stupid trivial group case
-      return CyclicGroup(1);
+      return CyclicGroup( IsPcGroup, 1 );
     fi;
 
     pis := List( ints, Factors );
-    f   := FreeGroup( Sum( List(pis{Filtered([1..Length(pis)],i->ints[i]>1)},
-                                Length ) ) );
+    f   := FreeGroup( IsSyllableWordsFamily,
+             Sum( List(pis{Filtered([1..Length(pis)],i->ints[i]>1)},
+                  Length ) ) );
     g   := GeneratorsOfGroup(f);
     r   := [];
     k   := 1;
@@ -58,7 +59,7 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
       if pi[1]=1 then
         Add(geni,0);
       else
-	Add(geni,k);
+        Add(geni,k);
         for i  in [ 1 .. Length(pi)-1 ]  do
             Add( r, g[k]^pi[i] / g[k+1] );
             k := k + 1;
@@ -83,6 +84,15 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     k:=GroupWithGenerators(k,One(f));
     SetSize(k,Size(f));
     SetIsAbelian( k, true );
+
+    if ForAll(ints,IsPrimePowerInt) then
+      SetIndependentGeneratorsOfAbelianGroup(k,GeneratorsOfGroup(k));
+    fi;
+
+    if Size(Set(Filtered(Flat(pis),p->p<>1))) = 1 then
+        SetIsPGroup( k, true );
+        SetPrimePGroup( k, First(Flat(pis),p -> p<>1) );
+    fi;
 
     pis := [ ];
     ps := [ ];
@@ -158,10 +168,11 @@ function( filter, n )
     # Catch the case n = 1.
     if n = 1 then
         f := GroupByRws( SingleCollector( FreeGroup( 0 ), [] ) );
+        SetMinimalGeneratingSet (f, []);
         
     else
         pi := Factors( n );
-        f  := FreeGroup( Length(pi) );
+        f  := FreeGroup( IsSyllableWordsFamily, Length(pi) );
         g  := GeneratorsOfGroup(f);
         r  := [];
         for i  in [ 1 .. Length(g)-1 ]  do
@@ -169,6 +180,11 @@ function( filter, n )
         od;
         Add( r, g[Length(g)] ^ pi[Length(g)] );
         f := PolycyclicFactorGroup( f, r );
+        if Size(Set(pi)) = 1 then
+            SetIsPGroup( f, true );
+            SetPrimePGroup( f, pi[1] );
+        fi;
+        SetMinimalGeneratingSet (f, [f.1]);
     fi;
 
     SetSize( f, n );
@@ -198,7 +214,7 @@ function( filter, n )
         CyclicGroup( IsPcGroup, 2 );
     fi;
     pi := Factors(n/2);
-    f  := FreeGroup( Length(pi)+1 );
+    f  := FreeGroup( IsSyllableWordsFamily, Length(pi)+1 );
     g  := GeneratorsOfGroup(f);
     r  := [];
     for i  in [ 2 .. Length(g)-1 ]  do
@@ -211,7 +227,54 @@ function( filter, n )
     od;
     f := PolycyclicFactorGroup( f, r );
     SetSize( f, n );
+    if n = 2^LogInt(n,2) then
+        SetIsPGroup( f, true );
+        SetPrimePGroup( f, 2 );
+    fi;
     return f;
+end );
+
+
+#############################################################################
+##
+#M  QuaternionGroupCons( <IsPcGroup and IsFinite>, <n> )
+##
+InstallMethod( QuaternionGroupCons,
+    "pc group",
+    true,
+    [ IsPcGroup and IsFinite,
+      IsInt and IsPosRat ],
+    0,
+
+function( filter, n )
+  local k, d, relords, powers, gens, f, rels, pow;
+  if 0 <> n mod 4 then TryNextMethod(); fi;
+  # Hard to get a confluent RWS for a cyclic group on 2 independent generators
+  if n = 4 then return CyclicGroup( filter, n ); fi;
+  k := n/4;
+  d := Factors( k );
+  relords := [2]; 
+  Append(relords, d);
+  Add( relords, 2 );
+  powers := [0];
+  Append( powers, List( [0..Size(d)], i -> Product( d{[1..i]} ) ) );
+  gens := Concatenation( [ "x", "y" ], List( powers{[3..Size(powers)]}, d -> Concatenation( "y", String(d) ) ) );
+  f := FreeGroup( IsSyllableWordsFamily, gens );
+  pow := function( i )
+    local e, j;
+    i := i mod (n/2);
+    e := [0];
+    for j in [2..Size(relords)] do
+      e[j] := i mod relords[j];
+      i := Int( i / relords[j] );
+    od;
+    return Product([1..Size(e)],i->f.(i)^e[i]);
+  end;
+  rels := [ [ f.1^2, f.(Size(gens)) ], [ f.(Size(gens))^2, One(f) ] ];
+  Append( rels, List( [2..Size(gens)-1], i -> [ f.(i)^relords[i], f.(i+1) ] ) );
+  Append( rels, List( [2..Size(gens)-1], i -> [ f.(i)^f.1, pow(-powers[i]) ] ) );
+  Append( rels, List( Combinations( [2..Size(gens)], 2 ), ij -> [ f.(ij[2])^f.(ij[1]), f.(ij[2]) ] ) );
+  return PcGroupFpGroupNC( f / List( rels, rel -> rel[1]/rel[2] ) );
 end );
 
 
@@ -307,7 +370,7 @@ function( filters, order, exp )
         eps2 := 0;
     fi;
 
-    f := FreeGroup(2*n+1);
+    f := FreeGroup( IsSyllableWordsFamily, 2*n+1);
     e := GeneratorsOfGroup(f);
     z := e[ 2*n+1 ];
     r := [];
@@ -329,7 +392,10 @@ function( filters, order, exp )
     od;
 
     # return the pc group
-    return PolycyclicFactorGroup( f, r );
+    f := PolycyclicFactorGroup( f, r );
+    SetIsPGroup( f, true );
+    SetPrimePGroup( f, p );
+    return f;
 
 end );
 

@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  numtheor.gi                 GAP library                  Martin Schoenert
+#W  numtheor.gi                 GAP library                  Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods mainly for integer primes.
 ##
@@ -44,9 +45,14 @@ end );
 
 #############################################################################
 ##
-#F  Phi( <m> )  . . . . . . . . . . . . . . . . . . . Eulers totient function
+#M  Phi( <m> )  . . . . . . . . . . . . . . . . . . . Eulers totient function
 ##
-InstallGlobalFunction( Phi, function ( m )
+InstallMethod( Phi,
+               "value of Eulers totient function of an integer",
+               true, [ IsInt ], 0,
+
+  function ( m )
+
     local  phi, p;
 
     # make <m> it nonnegative, handle trivial cases
@@ -63,14 +69,19 @@ InstallGlobalFunction( Phi, function ( m )
 
     # return the result
     return phi;
-end );
+  end );
 
 
 #############################################################################
 ##
-#F  Lambda( <m> ) . . . . . . . . . . . . . . . . . . .  Carmichaels function
+#M  Lambda( <m> ) . . . . . . . . . . . . . . . . . . .  Carmichaels function
 ##
-InstallGlobalFunction( Lambda, function ( m )
+InstallMethod( Lambda,
+               "exponent of the group of prime residues modulo an integer",
+               true, [ IsInt ], 0,
+
+  function ( m )
+
     local  lambda, p, q, k;
 
     # make <m> it nonnegative, handle trivial cases
@@ -95,7 +106,7 @@ InstallGlobalFunction( Lambda, function ( m )
     od;
 
     return lambda;
-end );
+  end );
 
 
 #############################################################################
@@ -324,7 +335,6 @@ end );
 ##
 #F  Jacobi( <n>, <m> ) . . . . . . . . . . . . . . . . . . . .  Jacobi symbol
 ##
-#N  29-Apr-91 martin remember to change the description of 'Jacobi'
 ##
 InstallGlobalFunction( Jacobi, function ( n, m )
     local  jac, t;
@@ -415,6 +425,7 @@ end );
 #F  RootMod( <n>, <m> ) . . . . . . . . . . . . . . .  root modulo an integer
 #F  RootMod( <n>, <k>, <m> )  . . . . . . . . . . . .  root modulo an integer
 ##
+##  Carried over from GAP3: This code requires that k is a prime.
 BindGlobal( "RootModPrime", function ( n, k, p )
     local   r,                  # <k>th root of <n> mod <p>, result
             kk,                 # largest power of <k> dividing <p>-1
@@ -491,6 +502,7 @@ BindGlobal( "RootModPrime", function ( n, k, p )
     return r;
 end );
 
+
 RootModPrimePower := function ( n, k, p, l )
     local   r,                  # <k>th root of <n> mod <p>^<l>, result
             s,                  # <k>th root of <n> mod smaller power
@@ -522,6 +534,8 @@ RootModPrimePower := function ( n, k, p, l )
     # handle the case that the root may not lift
     elif k = p  then
 
+	Info( InfoNumtheor, 3, "k=p case" );
+
         # compute the root mod $p^{l/2}$, or $p^{l/2+1}$ if 32 divides $p^l$
         if 2 < p  or l < 5  then
             s := RootModPrimePower( n, k, p, QuoInt(l+1,2) );
@@ -529,13 +543,17 @@ RootModPrimePower := function ( n, k, p, l )
             s := RootModPrimePower( n, k, p, QuoInt(l+3,2) );
         fi;
 
-        # lift the root to $p^l$, use higher precision
-        Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
-        t := PowerModInt( s, k-1, p^(l+1) );
-        r := (s + (n - t * s) / (k * t)) mod p^l;
-        if PowerModInt(r,k,p^l) <> n mod p^l  then
-            r := fail;
-        fi;
+	if s=fail then
+	  r:=fail;
+	else
+	  # lift the root to $p^l$, use higher precision
+	  Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
+	  t := PowerModInt( s, k-1, p^(l+1) );
+	  r := (s + (n - t * s) / (k * t)) mod p^l;
+	  if PowerModInt(r,k,p^l) <> n mod p^l  then
+	      r := fail;
+	  fi;
+	fi;
 
     # otherwise lift the root with Newton / Hensel
     else
@@ -546,11 +564,16 @@ RootModPrimePower := function ( n, k, p, l )
         else
             s := RootModPrimePower( n, k, p, QuoInt(l+3,2) );
         fi;
+	Info( InfoNumtheor, 3, "lift case s=",s );
 
-        # lift the root to $p^l$
-        Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
-        t := PowerModInt( s, k-1, p^l );
-        r := (s + (n - t * s) / (k * t)) mod p^l;
+	if s=fail then
+	  r:=fail;
+	else
+	  # lift the root to $p^l$
+	  Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
+	  t := PowerModInt( s, k-1, p^l );
+	  r := (s + (n - t * s) / (k * t)) mod p^l;
+	fi;
 
     fi;
 
@@ -571,6 +594,8 @@ InstallGlobalFunction( RootMod, function ( arg )
             ii,                 # inverse of <qq> mod <q>
             r,                  # <k>th root of <n> mod <qq>
             s,                  # <k>th root of <n> mod <q>
+	    f, # factors
+	    i, # loop
             t;                  # temporary variable
 
     # get the arguments
@@ -583,6 +608,29 @@ InstallGlobalFunction( RootMod, function ( arg )
     # check the arguments and reduce $n$ into the range $0..m-1$
     if m <= 0  then Error("<m> must be positive");  fi;
     n := n mod m;
+
+    if not IsPrime(k) then
+      # try over factors of k
+      f:=Factors(k);
+      l:=n;
+      for i in f do
+	l:=RootMod(l,i,m);
+	if l=fail then 
+	  Info( InfoNumtheor, 2, "must try multiple roots");
+	  # it failed. This might have been because of taking the wrong root 
+	  # do again with all roots
+	  l:=RootsMod(n,k,m);
+	  if Length(l)=0 then 
+	    return fail;
+	  else
+	    return l[1];
+	  fi;
+
+	fi;
+
+      od;
+      return l;
+    fi;
 
     # combine the root modulo every prime power $p^l$
     r := 0;  qq := 1;
@@ -778,7 +826,7 @@ RootsModPrimePower := function ( n, k, p, l )
     fi;
 
     # return the roots $rr$
-    Info( InfoNumtheor, 1, "RootsModPrimePower returns ", r );
+    Info( InfoNumtheor, 1, "RootsModPrimePower returns ", rr );
     return rr;
 end;
 MakeReadOnlyGlobal( "RootsModPrimePower" );
@@ -790,6 +838,7 @@ InstallGlobalFunction( RootsMod, function ( arg )
             p,                  # prime divisor of <m>
             q,                  # power of <p>
             l,                  # <q> = <p>^<l>
+	    f, # factors
             qq,                 # product of prime powers dividing <m>
             ii,                 # inverse of <qq> mod <q>
             rr,                 # <k>th roots of <n> mod <qq>
@@ -808,6 +857,16 @@ InstallGlobalFunction( RootsMod, function ( arg )
     # check the arguments and reduce $n$ into the range $0..m-1$
     if m <= 0  then Error("<m> must be positive");  fi;
     n := n mod m;
+
+    if not IsPrime(k) then
+      # try over factors of k
+      f:=Factors(k);
+      l:=[n];
+      for ii in f do
+	l:=Concatenation(List(l,x->RootsMod(x,ii,m)));
+      od;
+      return l;
+    fi;
 
     # combine the roots modulo every prime power $p^l$
     rr := [0];  qq := 1;
@@ -932,7 +991,7 @@ RootsUnityModPrimePower := function ( k, p, l )
     fi;
 
     # return the roots $rr$
-    Info( InfoNumtheor, 1, "RootsUnityModPrimePower returns ", r );
+    Info( InfoNumtheor, 1, "RootsUnityModPrimePower returns ", rr );
     return rr;
 end;
 MakeReadOnlyGlobal( "RootsUnityModPrimePower" );
@@ -992,8 +1051,8 @@ end );
 ##
 #F  LogMod( <n>, <r>, <m> ) . . . . . .  discrete logarithm modulo an integer
 ##
-InstallGlobalFunction( LogMod,function(b,a,n)
-local m,m2,am,ai,l,g,c,i,p;
+InstallGlobalFunction( LogModShanks,function(b,a,n)
+local ai, m, m2, am, l, g, c, p, i;
   b:=b mod n;
   a:=a mod n;
   ai:=Gcdex(a,n);
@@ -1026,6 +1085,151 @@ local m,m2,am,ai,l,g,c,i,p;
     od;
     return fail;
   else
+    Error("not coprime");
+  fi;
+end);
+
+# Pollard Rho method for Index.
+# Implemented by Sean Gage and AH
+
+BindGlobal("LogModRhoIterate",function(n,g,p)
+local p3, zp3, q, i, x, xd, a, ad, b, bd, ans, m, r;
+  p3:=QuoInt(p,3);
+  zp3:=QuoInt(2*p,3);
+  q := p-1;
+  i := 1;
+  x := 1;
+  xd := 1;
+  a := 0;
+  ad := 0;
+  b := 0;
+  bd := 0;
+  ans := [];
+  repeat
+    if x < p3 then
+      x := (x * n) mod p;
+      a := (a + 1) mod q;
+    elif x < zp3 then
+      x := (x * x) mod p;
+      a := (a*2) mod q;
+      b := (b*2) mod q;
+    else
+      x := (x * g) mod p;
+      b := (b + 1) mod q;
+    fi;
+    if xd <p3 then
+      xd := (xd * n) mod p;
+      ad := (ad + 1) mod q;
+    elif xd < zp3 then
+      xd := (xd * xd) mod p;
+      ad := (ad*2) mod q;
+      bd := (bd*2) mod q;
+    else
+      xd := (xd * g) mod p;
+      bd := (bd + 1) mod q;
+    fi;
+    if xd < p3 then
+      xd := (xd * n) mod p;
+      ad := (ad + 1) mod q;
+    elif xd < zp3 then
+      xd := (xd * xd) mod p;
+      ad := (ad*2) mod q;
+      bd := (bd*2) mod q;
+    else
+      xd := (xd * g) mod p;
+      bd := (bd + 1) mod q;
+    fi;
+  until x=xd;
+
+  m := (a-ad) mod q;
+  r := (bd-b) mod q;
+  return [m,r];
+end);
+
+InstallGlobalFunction(DoLogModRho,function(q,r,ord,f,p)
+local fact, s, t, Q, R, MN, M, N, rep, d, k, theta, Qp,o,i;
+  Info(InfoNumtheor,1,"DoLogModRho(",q,",",r,",",ord,",",p,")");
+  fact:=[];
+  s:=ord;
+  for i in f do
+    t:=s/i;
+    if IsInt(t) then
+      s:=t;
+      Add(fact,i);
+    fi;
+  od;
+
+  if Length(fact)>1 then
+    d:=ord;
+    while (d=ord) and Length(fact)>0 do
+      s:=fact[Length(fact)];
+      Unbind(fact[Length(fact)]);
+      t:=ord/s;
+      Q:=PowerMod(q,s,p);
+      R:=PowerMod(r,s,p);
+      # iterate
+      MN:=LogModRhoIterate(Q,R,p);
+      M:=MN[1];
+      N:=MN[2];
+      rep:=GcdRepresentation(ord,s*M);
+      d:=rep[1]*ord+rep[2]*s*M;
+    od;
+    if d<ord then
+      k:=(rep[2]*s*N/d);
+      if Gcd(DenominatorRat(k),ord)<>1 then
+	return fail; # can't invert (can't happen if not primitive root)
+      fi;
+      k:=k mod ord;
+      theta:=PowerMod(r,ord/d,p);
+      Qp:=q/PowerMod(r,k,p) mod p;
+      i:=DoLogModRho(Qp,theta,d,f,p);
+      if i=fail then return i;fi; # bail out
+      o:=(k+i*(ord/d)) mod ord;
+      Assert(1,PowerMod(r,o,p)=q);
+      return o;
+    fi;
+  fi;
+  # naive case, iterate
+  MN:=LogModRhoIterate(q,r,p);
+  M:=MN[1];
+  N:=MN[2];
+  rep:=GcdRepresentation(ord,M);
+  d:=rep[1]*ord+rep[2]*M;
+  k:=(rep[2]*N/d);
+  if Gcd(DenominatorRat(k),ord)<>1 then
+    return fail; # can't invert (can't happen if not primitive root)
+  fi;
+  k:=k mod ord;
+  theta:=PowerMod(r,ord/d,p);
+  Qp:=q/PowerMod(r,k,p) mod p;
+  for i in [1..d] do
+    if Qp=1 then
+      Assert(1,PowerMod(r,k,p)=q);
+      return k;
+    fi;
+    k:=(k+ord/d) mod ord;
+    Qp:=Qp/theta mod p;
+  od;
+  # process failed (because r was not a primitive root)
+  return fail;
+end);
+
+InstallGlobalFunction( LogMod,function(b,a,n)
+local c, p,f,l;
+
+  b:=b mod n;
+  a:=a mod n;
+  if IsPrime(n) and Gcd(a,n)=1 then
+    # use rho method
+    f:=FactorsInt(n-1:quiet); # Quick factorization, don't stop if its too hard
+    l:=DoLogModRho(b,a,n-1,f,n);
+    if l<>fail then
+      return l;
+    fi;
+  fi;
+  if Gcd(a,n)=1 then
+    return LogModShanks(b,a,n);
+  else
     # not coprime -- use old method
     c := 1;
     p := 0;
@@ -1043,9 +1247,14 @@ end);
 
 #############################################################################
 ##                                         
-#F  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
+#M  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
 ##            
-InstallGlobalFunction( Sigma, function( n )
+InstallMethod( Sigma,
+               "sum of divisors of an integer",
+               true, [ IsInt ], 0,
+
+  function( n )
+
     local  sigma, p, q, k;
 
     # make <n> it nonnegative, handle trivial cases
@@ -1068,14 +1277,19 @@ InstallGlobalFunction( Sigma, function( n )
     od;
 
     return sigma;
-end );
+  end );
 
 
 #############################################################################
 ##                                         
-#F  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
-##            
-InstallGlobalFunction( Tau,function( n )
+#M  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
+##
+InstallMethod( Tau,
+               "number of divisors of an integer",
+               true, [ IsInt ], 0,
+
+  function( n )
+
     local  tau, p, q, k;
 
     # make <n> it nonnegative, handle trivial cases
@@ -1098,7 +1312,7 @@ InstallGlobalFunction( Tau,function( n )
     od;
 
     return tau;
-end );
+  end );
 
 
 #############################################################################

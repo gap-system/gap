@@ -1,13 +1,14 @@
 #############################################################################
 ##
 #W  mapprep.gi                  GAP library                     Thomas Breuer
-#W                                                         & Martin Schoenert
+#W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains (representation dependent)
 ##
@@ -116,36 +117,38 @@ end);
 ##
 #M  CompositionMapping2( <map2>, <map1> ) . . . . .  for two general mappings
 ##
+InstallGlobalFunction(CompositionMapping2General,
+function( map2, map1 )
+local com;        # composition of <map1> and <map2>, result
+
+  # Make the general mapping.
+  if IsSPGeneralMapping( map1 ) and IsSPGeneralMapping( map2 ) then
+    com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
+						  Range( map2 ),
+		      IsCompositionMappingRep and IsSPGeneralMapping ),
+		    rec() );
+  else
+    com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
+						  Range( map2 ),
+		      IsCompositionMappingRep and IsNonSPGeneralMapping ),
+		    rec() );
+  fi;
+
+  # Enter the identifying information.
+  # (Maintenance of useful information is dealt with by the
+  # wrapper function `CompositionMapping'.)
+  com!.map1:= map1;
+  com!.map2:= map2;
+
+  # Return the composition.
+  return com;
+end );
+
 InstallMethod( CompositionMapping2,
     "for two general mappings",
     FamSource1EqFamRange2,
     [ IsGeneralMapping, IsGeneralMapping ], 0,
-    function( map2, map1 )
-    local com;        # composition of <map1> and <map2>, result
-
-    # Make the general mapping.
-    if IsSPGeneralMapping( map1 ) and IsSPGeneralMapping( map2 ) then
-      com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
-                                                    Range( map2 ),
-                        IsCompositionMappingRep and IsSPGeneralMapping ),
-                     rec() );
-    else
-      com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
-                                                    Range( map2 ),
-                        IsCompositionMappingRep and IsNonSPGeneralMapping ),
-                     rec() );
-    fi;
-
-    # Enter the identifying information.
-    # (Maintenance of useful information is dealt with by the
-    # wrapper function `CompositionMapping'.)
-    com!.map1:= map1;
-    com!.map2:= map2;
-
-    # Return the composition.
-    return com;
-    end );
-
+    CompositionMapping2General);
 
 #############################################################################
 ##
@@ -616,6 +619,17 @@ InstallMethod( ImagesRepresentative,
     function ( map, elm )
     return map!.fun( elm );
     end );
+
+#############################################################################
+##
+#M  KernelOfMultiplicativeGeneralMapping( <map> )   . for mapping by function
+##
+InstallMethod(KernelOfMultiplicativeGeneralMapping,"hom by function",true,
+    [ IsMappingByFunctionRep and IsGroupHomomorphism ],0,
+function ( map )
+  return
+  KernelOfMultiplicativeGeneralMapping(AsGroupGeneralMappingByImages(map));
+end );
 
 #############################################################################
 ##
@@ -1357,7 +1371,9 @@ InstallMethod( CompositionMapping2,
   [ IsGeneralMapping and IsOne, IsGeneralMapping ],
   SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
 function( id, map )
-  if not IsSubset(Source(id),ImagesSource(map)) then
+  if    not IsSubset(Source(id),Range(map))
+    and not IsSubset(Source(id),ImagesSource(map))
+  then
     # if the identity is defined on something smaller, we need to take a
     # true `CompositionMapping'.
     TryNextMethod();
@@ -1657,6 +1673,280 @@ InstallMethod( IsSurjective,
     true,
     [ IsGeneralMapping and IsZero ], 0,
     zero -> Size( Range( zero ) ) = 1 );
+
+#############################################################################
+##
+##  7. methods for general restricted mappings,
+##
+
+#############################################################################
+##
+#M  GeneralRestrictedMapping( <map>, <source>,<range> ) 
+##
+InstallGlobalFunction(GeneralRestrictedMapping,
+function( map, s,r )
+local res, prop;      
+
+  # Make the general mapping.
+  if IsSPGeneralMapping( map )  then
+    res:= Objectify( TypeOfDefaultGeneralMapping( s,r,
+		      IsGeneralRestrictedMappingRep and IsSPGeneralMapping ),
+		    rec() );
+  else
+    res:= Objectify( TypeOfDefaultGeneralMapping( s,r,
+		      IsGeneralRestrictedMappingRep and IsNonSPGeneralMapping ),
+		    rec() );
+  fi;
+
+  # Enter the identifying information.
+  res!.map:= map;
+  SetSource(res,s);
+  SetRange(res,r);
+
+  for prop in [IsSingleValued, IsTotal, IsInjective, RespectsMultiplication, , RespectsInverses,
+	  RespectsAddition, RespectsAdditiveInverses, RespectsScalarMultiplication] do
+	if Tester(prop)(map) and prop(map) then
+		Setter(prop)(res, true);
+	fi;
+  od;
+
+  # Return the restriction.
+  return res;
+end );
+
+
+#############################################################################
+##
+#M  ImagesElm( <map>, <elm> ) . . . . . . . . . . . . for restricted mapping
+##
+InstallMethod( ImagesElm,
+    "for a restricted mapping, and an element",
+    FamSourceEqFamElm,
+    [ IsGeneralRestrictedMappingRep, IsObject ], 0,
+    function( res, elm )
+    local im;
+    im:= ImagesElm( res!.map, elm );
+    if not ( (HasIsSingleValued(res) and IsSingleValued(res)) or
+	(HasIsSingleValued(res!.map) and IsSingleValued(res!.map)) ) then
+      im:=Intersection(Range(res),im);
+    fi;
+    return im;
+  end );
+
+
+#############################################################################
+##
+#M  ImagesSet( <map>, <elms> )  . . . . . . . . . . . for restricted mapping
+##
+InstallMethod( ImagesSet,
+    "for a restricted mapping, and an collection",
+    CollFamSourceEqFamElms,
+    [ IsGeneralRestrictedMappingRep, IsCollection ], 0,
+    function ( res, elms )
+    local im;
+    im:= ImagesSet( res!.map, elms );
+    if not ( (HasIsSingleValued(res) and IsSingleValued(res)) or
+	(HasIsSingleValued(res!.map) and IsSingleValued(res!.map)) ) then
+      im:=Intersection(Range(res),im);
+    fi;
+    return im;
+  end );
+
+
+#############################################################################
+##
+#M  ImagesRepresentative( <map>, <elm> )  . . . . . . for restricted mapping
+##
+InstallMethod( ImagesRepresentative,
+    "for a restricted mapping, and an element",
+    FamSourceEqFamElm,
+    [ IsGeneralRestrictedMappingRep, IsObject ], 0,
+    function( res, elm )
+    local im;
+    im:= ImagesRepresentative( res!.map, elm );
+    if im = fail then
+      # 'elm' has no images under 'res!.map', so it has none under 'res'.
+      return fail;
+    elif im in Range(res) then
+      return im;
+    elif HasIsSingleValued(res!.map) and IsSingleValued(res!.map) then
+      return fail; # no other choice
+    else
+      # It may happen that only the chosen representative is not in im
+      im:= ImagesElm( res!.map, elm );
+      return First(im,i->i in Range(res));
+    fi;
+end );
+
+
+#############################################################################
+##
+#M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . for restricted mapping
+##
+InstallMethod( PreImagesElm,
+    "for a restricted mapping, and an element",
+    FamRangeEqFamElm,
+    [ IsGeneralRestrictedMappingRep, IsObject ], 0,
+    function( res, elm )
+    local preim;
+    preim:= PreImagesElm( res!.map, elm );
+    if not ( (HasIsInjective(res) and IsInjective(res)) or
+	(HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
+      preim:=Intersection(Source(res),preim);
+    fi;
+    return preim;
+end );
+
+
+#############################################################################
+##
+#M  PreImagesSet( <map>, <elm> )  . . . . . . . . . . for restricted mapping
+##
+InstallMethod( PreImagesSet,
+    "for a restricted mapping, and an collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralRestrictedMappingRep, IsCollection ], 0,
+    function( res, elms )
+    local preim;
+    preim:= PreImagesSet( res!.map, elms );
+    if not ( (HasIsInjective(res) and IsInjective(res)) or
+	(HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
+      preim:=Intersection(Source(res),preim);
+    fi;
+    return preim;
+    end );
+
+
+#############################################################################
+##
+#M  PreImagesRepresentative( <map>, <elm> ) . . . . . for restricted mapping
+##
+InstallMethod( PreImagesRepresentative,
+    "for a restricted mapping, and an element",
+    FamRangeEqFamElm,
+    [ IsGeneralRestrictedMappingRep, IsObject ], 0,
+    function( res, elm )
+    local preim, rep;
+    preim:= PreImagesRepresentative( res!.map, elm );
+    if preim = fail then
+      # 'elm' has no preimages under 'res!.map', so it has none under 'res'.
+      return fail;
+    elif preim in Source(res) then
+      return preim;
+    elif HasIsInjective(res!.map) and IsInjective(res!.map) then
+      return fail; # no other choice
+    else
+      preim:= PreImages( res!.map, elm );
+      return First(preim,x->x in Source(res));
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  KernelOfAdditiveGeneralMapping( <map> ) . . . . . for restricted mapping
+##
+InstallMethod( KernelOfAdditiveGeneralMapping,
+    "for a restricted mapping that resp. add. and add.inv.", true,
+    [ IsGeneralMapping and IsGeneralRestrictedMappingRep
+      and RespectsAddition and RespectsAdditiveInverses ], 0,
+function( res )
+  return Intersection(Source(res),KernelOfAdditiveGeneralMapping( res!.map ));
+end );
+
+
+#############################################################################
+##
+#M  CoKernelOfAdditiveGeneralMapping( <map> ) . . . . for restricted mapping
+##
+InstallMethod( CoKernelOfAdditiveGeneralMapping,
+    "for a restricted mapping that resp. add. and add.inv.",
+    true,
+    [ IsGeneralMapping and IsGeneralRestrictedMappingRep
+      and RespectsAddition and RespectsAdditiveInverses ], 0,
+function( res )
+  return Intersection(Range(res),CoKernelOfAdditiveGeneralMapping( res!.map ));
+end );
+
+#############################################################################
+##
+#M  KernelOfMultiplicativeGeneralMapping( <map> ) . . for restricted mapping
+##
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
+    "for a restricted mapping that resp. mult. and inv.",
+    true,
+    [ IsGeneralMapping and IsGeneralRestrictedMappingRep
+      and RespectsMultiplication and RespectsInverses ], 0,
+function( res )
+  return Intersection(Source(res),
+                      KernelOfMultiplicativeGeneralMapping(res!.map));
+end );
+
+#############################################################################
+##
+#M  CoKernelOfMultiplicativeGeneralMapping( <map> ) . for restricted mapping
+##
+InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
+    "for a restricted mapping that resp. mult. and inv.",
+    true,
+    [ IsGeneralMapping and IsGeneralRestrictedMappingRep
+      and RespectsMultiplication and RespectsInverses ], 0,
+function( res )
+  return Intersection(Range(res),
+                      CoKernelOfMultiplicativeGeneralMapping(res!.map));
+end );
+
+#############################################################################
+##
+#M  ViewObj( <map> )  . . . . . . . . . . . . . . . . for restricted mapping
+#M  PrintObj( <map> ) . . . . . . . . . . . . . . . . for restricted mapping
+##
+InstallMethod( ViewObj,
+    "for a restricted mapping",
+    true,
+    [ IsGeneralRestrictedMappingRep ], 100,
+    function( res )
+    Print( "GeneralRestrictedMapping( " );
+    View( res!.map );
+    Print( ", " );
+    View( Source(res) );
+    Print( ", " );
+    View( Range(res) );
+    Print( " )" );
+    end );
+
+InstallMethod( PrintObj,
+    "for a restricted mapping",
+    true,
+    [ IsGeneralRestrictedMappingRep ], 100,
+    function( res )
+    Print( "GeneralRestrictedMapping( ", res!.map, ", ", Source(res),
+           ",", Range(res)," )" );
+    end );
+
+
+#############################################################################
+##
+#M  RestrictedMapping(<hom>,<U>)
+##
+InstallMethod(RestrictedMapping,"for mapping that is already restricted",
+  CollFamSourceEqFamElms,
+  [IsGeneralMapping and IsGeneralRestrictedMappingRep, IsDomain],
+  SUM_FLAGS,
+function(hom, U)
+  return GeneralRestrictedMapping (hom!.map, U, Range(hom!.map));
+end);
+
+
+#############################################################################
+##
+#M  RestrictedMapping(<hom>,<U>)
+##
+InstallMethod(RestrictedMapping,"use GeneralRestrictedMapping",
+  CollFamSourceEqFamElms,[IsGeneralMapping,IsDomain],0,
+function(hom, U)
+  return GeneralRestrictedMapping (hom, U, Range(hom));
+end);
 
 
 #############################################################################

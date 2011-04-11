@@ -1,11 +1,12 @@
 ############################################################################
 ##
-#W  grpperm.gi                  GAP library                   Heiko Thei"sen
+#W  grpperm.gi                  GAP library                   Heiko Theißen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpperm_gi :=
     "@(#)$Id$";
@@ -68,6 +69,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
             orbs,       # orbits
             trns,       # transversal
             gens,       # remaining generators
+            one,        # identity of `P'
             gens2,      # remaining generators for next round
             exp,        # exponent of <P>
             g,          # one generator from <gens>
@@ -86,6 +88,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
 
     # gens are the generators for the remaining group
     gens := GeneratorsOfGroup( P );
+    one:= One( P );
 
     # loop over the exponents
     exp := Maximum( List( gens, g -> LogInt( Order( g ), p ) ) );
@@ -114,7 +117,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
                 b := SmallestMovedPoint(h);
                 if not IsBound( orbs[b] )  then
                     orbs[b] := [ b ];
-                    trns[b] := [ () ];
+                    trns[b] := [ one ];
                 fi;
                 for c  in ShallowCopy(orbs[b])  do
                     for k  in [1..p-1]  do
@@ -145,10 +148,11 @@ end );
 ##
 #M  IndependentGeneratorsOfAbelianGroup( <G> )  . . . . . . . nice generators
 ##
-InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group", true,
-        [ IsPermGroup and IsAbelian ], 0,
+InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group",
+        [ IsPermGroup and IsAbelian ],
     function ( G )
     local   inds,       # independent generators, result
+            one,        # identity of `G'
             p,          # prime factor of group size
             gens,       # generators of <p>-Sylowsubgroup
             g,          # one generator
@@ -156,11 +160,12 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group", true,
 
     # loop over all primes
     inds := [];
+    one:= One( G );
     for p  in Union( List( GeneratorsOfGroup( G ),
             g -> Factors(Order(g)) ) )  do
       if p <> 1  then
 
-        # compute the generators for the <p>-Sylowsubgroup
+        # compute the generators for the Sylow <p> subgroup
         gens := [];
         for g  in GeneratorsOfGroup( G )  do
             o := Order(g);
@@ -168,10 +173,10 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group", true,
             if g^o <> g^0  then Add( gens, g^o );  fi;
         od;
 
-        # append the independent generators for the <p>-Sylowsubgroup
+        # append the independent generators for the Sylow <p> subgroup
         Append( inds,
                 IndependentGeneratorsAbelianPPermGroup(
-                    GroupByGenerators( gens, () ), p ) );
+                    GroupByGenerators( gens, one ), p ) );
 
       fi;
     od;
@@ -344,7 +349,7 @@ InstallMethod( LargestMovedPoint,
 ##
 #F  MovedPoints( <C> )  . . . . . . . . . .  for a collection of permutations 
 ##
-MovedPointsPerms:= function( C )
+InstallGlobalFunction(MovedPointsPerms,function( C )
     local   mov,  gen,  pnt;
     
     mov := [  ];
@@ -359,19 +364,20 @@ MovedPointsPerms:= function( C )
         fi;
     od;
     return Set( mov );
-end;
+end);
 
-InstallMethod( MovedPoints,
-    "for a collection of permutations",
-    true,
+InstallMethod( MovedPoints, "for a collection of permutations", true,
     [ IsPermCollection ], 0,
     MovedPointsPerms );
 
-InstallMethod( MovedPoints,
-    "for an empty list",
-    true,
+InstallMethod( MovedPoints, "for an empty list", true,
     [ IsList and IsEmpty ], 0,
     MovedPointsPerms );
+
+InstallMethod( MovedPoints, "for a permutation", true, [ IsPerm ], 0,
+function(p)
+  return MovedPointsPerms([p]);
+end);
 
 
 #############################################################################
@@ -379,7 +385,7 @@ InstallMethod( MovedPoints,
 #M  NrMovedPoints( <C> )  . . . . . . . . .  for a collection of permutations 
 ##
 NrMovedPointsPerms := function( C )
-    local   mov,  sma,  pnt;
+    local mov, sma, pnt, gen;
     
     mov := 0;
     sma := SmallestMovedPoint( C );
@@ -387,23 +393,24 @@ NrMovedPointsPerms := function( C )
         return 0;
     fi;
     for pnt  in [ sma .. LargestMovedPoint( C ) ]  do
-        if ForAny( C, gen -> pnt ^ gen <> pnt )  then
-            mov := mov + 1;
+      for gen in C do
+        if pnt ^ gen <> pnt then
+          mov:= mov + 1;
+          break;
         fi;
+      od;
     od;
     return mov;
 end;
 
 InstallMethod( NrMovedPoints,
     "for a collection of permutations",
-    true,
-    [ IsPermCollection ], 0,
+    [ IsPermCollection ],
     NrMovedPointsPerms );
 
 InstallMethod( NrMovedPoints,
     "for an empty list",
-    true,
-    [ IsList and IsEmpty ], 0,
+    [ IsList and IsEmpty ],
     NrMovedPointsPerms );
 
 
@@ -475,39 +482,15 @@ InstallMethod( Size,
 
 #############################################################################
 ##
-#R  IsPermGroupEnumeratorRep  . . . . . . . . . . . enumerator for perm group
-##
-DeclareRepresentation( "IsPermGroupEnumeratorRep",
-    IsAttributeStoringRep, [ "stabChain" ] );
-
-
-#############################################################################
-##
 #M  Enumerator( <G> ) . . . . . . . . . . . . enumerator of permutation group
 ##
-InstallMethod( Enumerator,
-    "for a permutation group",
-    true,
-    [ IsPermGroup ], 0,
-    G -> Objectify( NewType( FamilyObj( G ),
-                             IsList and IsPermGroupEnumeratorRep ),
-                    rec( stabChain := StabChainMutable( G ) ) ) );
+BindGlobal( "ElementNumber_PermGroup",
+    function( enum, pos )
+    local   elm,  S,  len, n;
 
-InstallMethod( Length,
-    "for enumerator of a permutation group",
-    true,
-    [ IsList and IsPermGroupEnumeratorRep ], 0,
-    G -> SizeStabChain( G!.stabChain ) );
-
-InstallMethod( \[\],
-    "for enumerator of a permutation group, and pos. integer",
-    true,
-    [ IsList and IsPermGroupEnumeratorRep, IsPosInt ], 0,
-    function( G, pos )
-    local   elm,  S,  len;
-    
-    S := G!.stabChain;
+    S := enum!.stabChain;
     elm := S.identity;
+    n:= pos;
     pos := pos - 1;
     while Length( S.genlabels ) <> 0  do
         len := Length( S.orbit );
@@ -516,23 +499,30 @@ InstallMethod( \[\],
         pos := QuoInt( pos, len );
         S := S.stabilizer;
     od;
+
+    if pos <> 0 then
+      Error( "<enum>[", n, "] must have an assigned value" );
+    fi;
     return elm;
 end );
 
-InstallMethod( Position,
-    "for enumerator of a permutation group, permutation, and zero",
-    true,
-    [ IsList and IsPermGroupEnumeratorRep, IsPerm, IsZeroCyc ], 0,
-    function( G, elm, zero )
+BindGlobal( "NumberElement_PermGroup",
+    function( enum, elm )
     local   pos,  val,  S,  img;
-    
+
+    if not IsPerm( elm ) then
+      return fail;
+    fi;
+
     pos := 1;
     val := 1;
-    S := G!.stabChain;
+    S := enum!.stabChain;
     while Length( S.genlabels ) <> 0  do
         img := S.orbit[ 1 ] ^ elm;
-        pos := pos + val * ( Position( S.orbit, img ) - 1 );
-        val := val * Length( S.orbit );
+        #pos := pos + val * ( Position( S.orbit, img ) - 1 );
+        pos := pos + val * S.orbitpos[img];
+        #val := val * Length( S.orbit );
+        val := val * S.ol;
         elm := elm * InverseRepresentative( S, img );
         S := S.stabilizer;
     od;
@@ -542,39 +532,46 @@ InstallMethod( Position,
     return pos;
 end );
 
-#############################################################################
-##
-#M  PositionCanonical
-##
-InstallMethod(PositionCanonical,"perm grp enumerator",true,
-  [IsList and IsPermGroupEnumeratorRep,IsObject],0, Position);
+InstallMethod( Enumerator,
+    "for a permutation group",
+    [ IsPermGroup ],
+function(G)
+local e,S,i,p;
+    # get a good base
+    S:=G;
+    p:=[];
+    while Size(S)>1 do
+      e:=Orbits(S,MovedPoints(S));
+      i:=List(e,Length);
+      i:=Position(i,Maximum(i));
+      Add(p,e[i][1]);
+      S:=Stabilizer(S,e[i][1]);
+    od;
+    Info(InfoGroup,1,"choose base ",p);
 
+    S:=StabChainOp(G,rec(base:=p));
+    e:=EnumeratorByFunctions( G, rec(
+             ElementNumber := ElementNumber_PermGroup,
+             NumberElement := NumberElement_PermGroup,
+             Length        := enum -> SizeStabChain( enum!.stabChain ),
+             PrintObj      := function( G )
+                                  Print( "<enumerator of perm group>" );
+                              end,
 
-#############################################################################
-##
-#M  ViewObj( <enum> ) . . . . . . . . . . . . . . . . .  enum. of perm. group
-##
-InstallMethod( ViewObj,
-    "for enumerator of a permutation group",
-    true,
-    [ IsList and IsPermGroupEnumeratorRep ], 0,
-    function( G )
-    Print( "<enumerator of perm group>" );
-end );
-
-
-#############################################################################
-##
-#M  PrintObj( <enum> )  . . . . . . . . . . . . . . . .  enum. of perm. group
-##
-InstallMethod( PrintObj,
-    "for enumerator of a permutation group",
-    true,
-    [ IsList and IsPermGroupEnumeratorRep ], 0,
-    function( G )
-    Print( "<enumerator of perm group>" );
-end );
-#T this is not nice!
+             stabChain     := S ) );
+  while Length(S.genlabels)<>0 do
+    S.ol:=Length(S.orbit);
+    S.orbitpos:=[];
+    for i in [1..Maximum(S.orbit)] do
+      p:=Position(S.orbit,i);
+      if p<>fail then
+	S.orbitpos[i]:=p-1;
+      fi;
+    od;
+    S:=S.stabilizer;
+  od;
+  return e;
+end);
 
 
 #############################################################################
@@ -583,7 +580,6 @@ end );
 ##
 InstallMethod( Random,
     "for a permutation group",
-    true,
     [ IsPermGroup ], 10,
     function( G )
     local   S,  rnd;
@@ -609,7 +605,7 @@ end );
 InstallMethod( \in,
     "for a permutation, and a permutation group",
     true,
-    [ IsPerm, IsPermGroup ], 0,
+    [ IsPerm, IsPermGroup and HasGeneratorsOfGroup], 0,
     function( g, G )
     if g = One( G )  or  g in GeneratorsOfGroup( G )  then
         return true;
@@ -630,6 +626,8 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     local   C,          # closure of < <G>, <obj> >, result
             P, inpar,   # parent of the closure
             g,          # an element of gens
+	    o,		# order
+	    newgens,    # new generator list
             chain;      # the stabilizer chain created
 
     options:=ShallowCopy(options); # options will be overwritten
@@ -638,7 +636,22 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     if IsEmpty( gens )  then
         return G;
     fi;
-        
+
+    # is the closure normalizing?
+    if Length(gens)=1 and 
+       ForAll(gens,i->ForAll(GeneratorsOfGroup(G),j->j^i in G)) then
+      g:=gens[1];
+      if Size(G)>1 then
+	o:=First(Difference(DivisorsInt(Order(g)),[1]),j->g^j in G);
+	options.limit:=Size(G)*o;
+      else
+	o:=First(Difference(DivisorsInt(Order(g)),[1]),j->IsOne(g^j));
+	options.limit:=o;
+      fi;
+      options.size:=options.limit;
+      #Print(options.limit,"<<\n");
+    fi;
+
     # otherwise decide between random and deterministic methods
     P := Parent( G );
     inpar := IsSubset( P, gens );
@@ -651,7 +664,7 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     elif not IsBound( options.random )  then
         options.random := DefaultStabChainOptions.random;
     fi;
-    
+
     # perhaps <G> is normal in <C> with solvable factor group
 
 #AH 5-feb-96: Disabled (see gap-dev discussion).
@@ -676,14 +689,14 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
 #	  return C;
 #        fi;
 #    fi;
-    
+
     # make the base of G compatible with options.base
     chain := StructuralCopy( StabChainMutable( G ) );
     if IsBound( options.base )  then
         ChangeStabChain( chain, options.base,
                 IsBound( options.reduced ) and options.reduced );
     fi;
-    
+
     if LargestMovedPoint( Concatenation( GeneratorsOfGroup( G ),
                gens ) ) <= 100  then
         options := ShallowCopy( options );
@@ -696,8 +709,16 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     else
         chain := ClosureRandomPermGroup( chain, gens, options );
     fi;
-    if inpar  then  C := GroupStabChain( P, chain, true );
-              else  C := GroupStabChain( chain );           fi;
+
+    newgens:=Concatenation(GeneratorsOfGroup(G),gens);
+    if Length(chain.generators)<=Length(newgens) then
+      if inpar  then  C := GroupStabChain( P, chain, true );
+		else  C := GroupStabChain( chain );           fi;
+    else
+      if inpar  then  C := SubgroupNC(P,newgens);
+		else  C := Group( newgens,One(G) );           fi;
+      SetStabChainMutable(C,chain);
+    fi;
     SetStabChainOptions( C, rec( random := options.random ) );
 
     UseSubsetRelation( C, G );
@@ -762,10 +783,11 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
             genN,       # one generator of the group <N>
             cnj,        # conjugated of a generator of <U>
             random,  k, # values measuring randomness of <chain>
-            param,  missing,  correct,  result,  i;
+            param,  missing,  correct,  result,  i, one;
 
     # get a set of monoid generators of <G>
     gensG := GeneratorsOfGroup( G );
+    one:= One( G );
 
     # make a copy of the group to be closed
     N := SubgroupNC( G, GeneratorsOfGroup(U) );
@@ -775,16 +797,15 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
     options := ShallowCopy( StabChainOptions( U ) );
     if IsBound( options.random )  then  random := options.random;
                                   else  random := 1000;            fi;
-    options.random := 0;
     options.temp   := true;
 
     # make list of conjugates to be added to N
-    repeat 
+    repeat
         gensN := [  ];
         for i  in [ 1 .. 10 ]  do 
-            genG := SCRRandomSubproduct( gensG );
-            cnj  := SCRRandomSubproduct( Concatenation
-                            ( GeneratorsOfGroup( N ), gensN ) ) ^ genG;
+            genG := SCRRandomSubproduct( gensG, One( G ) );
+            cnj  := SCRRandomSubproduct( Concatenation(
+                        GeneratorsOfGroup( N ), gensN ), One( G ) ) ^ genG;
             if not cnj in N  then 
                 Add( gensN, cnj );
             fi;
@@ -828,7 +849,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
         if not IsPerm(result) then 
             repeat 
                 result := SCRStrongGenTest2(chain,[0,0,1,10/chain.diam,0,0]);
-            until result <> ();
+            until result <> one;
         fi;
         chain := rchain;
     else
@@ -919,21 +940,23 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
         repeat
            list := [];
            for i in [1..10] do
-               u := SCRRandomSubproduct( GeneratorsOfGroup( U ) );
-               v := SCRRandomSubproduct( GeneratorsOfGroup( V ) );
+               u := SCRRandomSubproduct( GeneratorsOfGroup( U ), One( U ) );
+               v := SCRRandomSubproduct( GeneratorsOfGroup( V ), One( V ) );
                comm := Comm( u, v );
                if not comm in C then
                    Add( list, comm ) ;
                fi;
            od;
            if Length(list) > 0 then
-               C := ClosureGroup( C, list, rec( random := 0,
+              C := ClosureGroup( C, list, rec( random := 0,
                                                   temp := true ) );
-               if not doneCUV then
-                   CUV := ClosureGroup( U, V );
-                   doneCUV := true;
-               fi;
-               C := DoNormalClosurePermGroup( CUV, C );
+              if not doneCUV then
+                  CUV := ClosureGroup( U, V );
+                  doneCUV := true;
+              fi;
+              # force closure test
+	      StabChainOptions(C).random:=DefaultStabChainOptions.random;
+              C := DoNormalClosurePermGroup( CUV, C );
            fi;
         until IsEmpty( list );
     fi;
@@ -955,6 +978,8 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
            CUV := ClosureGroup( U, V );
            doneCUV := true;
         fi;
+	# force closure test
+	StabChainOptions(C).random:=DefaultStabChainOptions.random;
         C := DoNormalClosurePermGroup( CUV, C );
     fi;
 
@@ -981,16 +1006,22 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
         repeat 
             list := [];
             for i in [1..10] do
-                g := SCRRandomSubproduct( GeneratorsOfGroup( G ) );
-                h := SCRRandomSubproduct( GeneratorsOfGroup( G ) );
+                g := SCRRandomSubproduct( GeneratorsOfGroup( G ), One( G ) );
+                h := SCRRandomSubproduct( GeneratorsOfGroup( G ), One( G ) );
                 comm := Comm( g, h );
                 if not comm in D then  
                    Add( list, comm );
                 fi;
             od;
             if Length(list) > 0 then 
-               D := ClosureGroup(D,list,rec( random := 0,
+              D := ClosureGroup(D,list,rec( random := 0,
                                                temp := true ) );
+              # force closure test
+	      if IsBound(StabChainOptions(G).random) then
+		StabChainOptions(D).random:=StabChainOptions(G).random;
+	      else
+		StabChainOptions(D).random:=DefaultStabChainOptions.random;
+	      fi;
                D := DoNormalClosurePermGroup( G, D );
             fi;
         until list = [];
@@ -1046,9 +1077,9 @@ InstallMethod( IsSimpleGroup,"for permgrp", true, [ IsPermGroup ], 0,
             transperf,  # list of orders of transitive perfect groups
             s, t;       # loop variables
 
-    # if <G> is the trivial group, it is simple
+    # if <G> is the trivial group, it is not simple
     if IsTrivial( G )  then
-        return true;
+        return false;
     fi;
 
     # first find a transitive representation for <G>
@@ -1086,11 +1117,11 @@ InstallMethod( IsSimpleGroup,"for permgrp", true, [ IsPermGroup ], 0,
         return true;
 
     # if $G = A_d$, it is simple (unless $d < 5$)
-    elif  Size( G ) = Factorial( d ) / 2  then
+    elif  IsNaturalAlternatingGroup(G)  then
         return 5 <= d;
 
     # if $G = S_d$, it is not simple (except $S_2$)
-    elif  Size( G ) = Factorial( d )  then
+    elif  IsNaturalSymmetricGroup(G) then
         return 2 = d;
 
     # if $G$ is not perfect, it is not simple (unless $G = C_p$, see above)
@@ -1178,6 +1209,8 @@ function(G)
 local pcgs;
   pcgs:=TryPcgsPermGroup( G, false, false, true );
   if IsPcgs(pcgs) then
+    SetIndicesEANormalSteps(pcgs,pcgs!.permpcgsNormalSteps);
+    SetIsPcgsElementaryAbelianSeries(pcgs,true);
     if not HasPcgs(G) then
       SetPcgs(G,pcgs);
     fi;
@@ -1201,41 +1234,67 @@ InstallMethod( IsNilpotentGroup,"for permgrp", true, [ IsPermGroup ], 0,
 ##
 #M  PcgsCentralSeries( <G> )
 ##
-InstallMethod( PcgsCentralSeries,"for permgrp", true, [ IsPermGroup ], 0,
+InstallOtherMethod( PcgsCentralSeries,"for permgrp", true, [ IsPermGroup ], 0,
 function(G)
 local pcgs;
   pcgs:=TryPcgsPermGroup( G, true, false, false );
-  if IsPcgs(pcgs) and not HasPcgs(G) then
-    SetPcgs(G,pcgs);
+  if IsPcgs(pcgs) then
+    SetIndicesCentralNormalSteps(pcgs,pcgs!.permpcgsNormalSteps);
+    SetIsPcgsCentralSeries(pcgs,true);
+    if not HasPcgs(G) then
+      SetPcgs(G,pcgs);
+    fi;
   fi;
   return pcgs;
 end);
 
 #############################################################################
 ##
-#M  DerivedSeriesOfGroup( <G> ) . . . . . . . . . . . . . . .  derived series
+#M  PcgsPCentralSeriesPGroup( <G> )
 ##
-InstallMethod( DerivedSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0,
-    function( G )
-    local  pcgs,  series;
+InstallOtherMethod( PcgsPCentralSeriesPGroup,"for permgrp", true, [ IsPermGroup ], 0,
+function(G)
+local pcgs;
+  pcgs:=TryPcgsPermGroup( G, true, true, Factors(Size(G))[1] );
+  if IsPcgs(pcgs) then
+    SetIndicesPCentralNormalStepsPGroup(pcgs,pcgs!.permpcgsNormalSteps);
+    SetIsPcgsPCentralSeriesPGroup(pcgs,true);
+  fi;
+  if IsPcgs(pcgs) and not HasPcgs(G) then
+    SetPcgs(G,pcgs);
+  fi;
+  return pcgs;
+end);
 
-    if   (not DefaultStabChainOptions.tryPcgs
-       or ( HasIsSolvableGroup( G )  and  not IsSolvableGroup( G ) ))
-       and not (HasIsSolvableGroup(G) and IsSolvableGroup(G)) then
-        TryNextMethod();
-    fi;
-    
-    pcgs := TryPcgsPermGroup( G, false, true, false );
-    if not IsPcgs( pcgs )  then
-        TryNextMethod();
-    fi;
-    series := NormalSeriesByPcgs( pcgs );
-    if not HasDerivedSubgroup( G )  then
-        if Length( series ) > 1  then  SetDerivedSubgroup( G, series[ 2 ] );
-                                 else  SetDerivedSubgroup( G, G );  fi;
-    fi;
-    return series;
-end );
+#T AH, 3/26/07: This method triggers a bug with indices. It is not clear
+#T form the description why TryPcgs... should also give a drived series. Thus
+#T disabled.
+# #############################################################################
+# ##
+# #M  DerivedSeriesOfGroup( <G> ) . . . . . . . . . . . . . . .  derived series
+# ##
+# InstallMethod( DerivedSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0,
+#     function( G )
+#     local  pcgs,  series;
+# 
+#     if   (not DefaultStabChainOptions.tryPcgs
+#        or ( HasIsSolvableGroup( G )  and  not IsSolvableGroup( G ) ))
+#        and not (HasIsSolvableGroup(G) and IsSolvableGroup(G)) then
+#         TryNextMethod();
+#     fi;
+#     
+#     pcgs := TryPcgsPermGroup( G, false, true, false );
+#     if not IsPcgs( pcgs )  then
+#         TryNextMethod();
+#     fi;
+#     SetIndicesEANormalSteps(pcgs,pcgs!.permpcgsNormalSteps);
+#     series := EANormalSeriesByPcgs( pcgs );
+#     if not HasDerivedSubgroup( G )  then
+#         if Length( series ) > 1  then  SetDerivedSubgroup( G, series[ 2 ] );
+#                                  else  SetDerivedSubgroup( G, G );  fi;
+#     fi;
+#     return series;
+# end );
 
 #############################################################################
 ##
@@ -1255,7 +1314,8 @@ InstallMethod( LowerCentralSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0
     if not IsPcgs( pcgs )  then
         TryNextMethod();
     fi;
-    series := NormalSeriesByPcgs( pcgs );
+    SetIndicesCentralNormalSteps(pcgs,pcgs!.permpcgsNormalSteps);
+    series := CentralNormalSeriesByPcgs( pcgs );
     if not HasDerivedSubgroup( G )  then
         if Length( series ) > 1  then  SetDerivedSubgroup( G, series[ 2 ] );
                                  else  SetDerivedSubgroup( G, G );  fi;
@@ -1274,7 +1334,7 @@ local pcgs;
   if not IsPcgs(pcgs) then
     TryNextMethod();
   fi;
-  return NormalSeriesByPcgs(pcgs);
+  return EANormalSeriesByPcgs(pcgs);
 end);
 
 #InstallOtherMethod( ElementaryAbelianSeries, fam -> IsIdenticalObj
@@ -1297,23 +1357,6 @@ end);
 
 #############################################################################
 ##
-#M  PcgsPCentralSeriesPGroup( <G> )
-##
-InstallMethod( PcgsPCentralSeriesPGroup,"for permgrp", true, [ IsPermGroup ], 0,
-function(G)
-local pcgs;
-  pcgs:=TryPcgsPermGroup( G, true, true, Factors(Size(G))[1] );
-  if IsPcgs(pcgs) then
-    Setter(IsPcgsPCentralSeriesPGroup)(pcgs,true);
-  fi;
-  if IsPcgs(pcgs) and not HasPcgs(G) then
-    SetPcgs(G,pcgs);
-  fi;
-  return pcgs;
-end);
-
-#############################################################################
-##
 #M  PCentralSeries( <G>, <p> )  . . . . . . . . . . . . . .  p-central series
 ##
 InstallMethod( PCentralSeriesOp,"for permgrp", true, [ IsPermGroup, IsPosInt ], 0,
@@ -1327,7 +1370,7 @@ function( G, p )
   if not IsPcgs(pcgs) then
     TryNextMethod();
   fi;
-  return NormalSeriesByPcgs(pcgs);
+  return PCentralNormalSeriesByPcgsPGroup(pcgs);
 end);
 
 #############################################################################
@@ -1346,6 +1389,10 @@ local   S;
   S := SylowSubgroupPermGroup( G, p );
   S := GroupStabChain( G, StabChainMutable( S ) );
   SetIsNilpotentGroup( S, true );
+  if Size(S) > 1 then
+    SetIsPGroup( S, true );
+    SetPrimePGroup( S, p );
+  fi;
   return S;
 end );
 
@@ -1367,7 +1414,6 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     if   q = 1  then
         return TrivialSubgroup( G );
     fi;
-
     # go down in stabilizers as long as possible
     S := StabChainMutable( G );
     while Length( S.orbit ) mod p <> 0  do
@@ -1390,12 +1436,13 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     # if the group is not transitive work with the transitive constituents
     D := MovedPoints( G );
     if not IsTransitive( G, D )  then
+	Info(InfoGroup,1,"PermSylow: transitive");
         S := G;
         D := ShallowCopy( D );
         while q < Size( S )  do
             O := Orbit( S, D[1] );
             f := ActionHomomorphism( S, O,"surjective" );
-            T := SylowSubgroupPermGroup( ImagesSource( f ), p );
+            T := SylowSubgroupPermGroup( Range( f ), p );
             S := PreImagesSet( f, T );
             SubtractSet( D, O );
         od;
@@ -1405,15 +1452,18 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     # if the group is not primitive work in the image first
     B := Blocks( G, D );
     if Length( B ) <> 1  then
+	Info(InfoGroup,1,"PermSylow: blocks");
         f := ActionHomomorphism( G, B, OnSets,"surjective" );
-        T := SylowSubgroupPermGroup( ImagesSource( f ), p );
-        if Size( T ) < Size( ImagesSource( f ) )  then
-            S := SylowSubgroupPermGroup( PreImagesSet( f, T ), p );
+        T := SylowSubgroupPermGroup( Range( f ), p );
+        if Size( T ) < Size( Range( f ) )  then
+            T := PreImagesSet( f, T );
+            S := SylowSubgroupPermGroup( T , p) ;
             return S;
         fi;
     fi;
 
     # find a <p> element whose centralizer contains a full <p>-Sylow subgroup
+    Info(InfoGroup,1,"PermSylow: element");
     repeat g := Random( G );  until Order( g ) mod p = 0;
     g := g ^ (Order( g ) / p);
     C := Centralizer( G, g );
@@ -1428,8 +1478,9 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
 
     # the centralizer acts on the cycles of the <p> element
     B := List( Cycles( g, D ), Set );
+    Info(InfoGroup,1,"PermSylow: cycleaction");
     f := ActionHomomorphism( C, B, OnSets,"surjective" );
-    T := SylowSubgroupPermGroup( ImagesSource( f ), p );
+    T := SylowSubgroupPermGroup( Range( f ), p );
     S := PreImagesSet( f, T );
     return S;
 
@@ -1519,6 +1570,8 @@ InstallMethod( FrattiniSubgroup,"for permgrp", true, [ IsPermGroup ], 0,
     fac := Set( FactorsInt( Size( G ) ) );
     if Length( fac ) > 1  then
         TryNextMethod();
+    elif fac[1]=1 then
+      return G;
     fi;
     p := fac[ 1 ];
     l := GeneratorsOfGroup( G );
@@ -1531,454 +1584,6 @@ InstallMethod( FrattiniSubgroup,"for permgrp", true, [ IsPermGroup ], 0,
     od;
     return SolvableNormalClosurePermGroup( G, k );
 end );
-        
-#############################################################################
-##
-#M  OmegaOp( <G>, <p>, <n> )  . . . . . . . . . . . . for abelian perm groups
-##
-InstallMethod( OmegaOp, "in abelian perm groups", true,
-        [ IsPermGroup, IsPosInt, IsPosInt ], 0,
-    function( G, p, n )
-    local   gens,  q,  gen,  ord,  o;
-    
-    if not IsAbelian( G )  then
-        TryNextMethod();
-    fi;
-    q := p ^ n;
-    gens := [  ];
-    for gen  in IndependentGeneratorsOfAbelianGroup( G )  do
-        ord := Order( gen );
-        o := GcdInt( ord, q );
-        if o <> 1  then
-            Add( gens, gen ^ ( ord / o ) );
-        fi;
-    od;
-    return SubgroupNC( G, gens );
-end );
-
-#############################################################################
-##
-#F  MinimizeExplicitTransversal( <U>, <maxmoved> )  . . . . . . . . . . local
-##
-InstallGlobalFunction( MinimizeExplicitTransversal, function( U, maxmoved )
-    local   explicit,  lenflock,  flock,  lenblock,  index,  s;
-    
-    if     IsBound( U.explicit )
-       and IsBound( U.stabilizer )  then
-        explicit := U.explicit;
-        lenflock := U.stabilizer.index * U.lenblock / Length( U.orbit );
-        flock    := U.flock;
-        lenblock := U.lenblock;
-        index    := U.index;
-        ChangeStabChain( U, [ 1 .. maxmoved ] );
-        for s  in [ 1 .. Length( explicit ) ]  do
-            explicit[ s ] := MinimalElementCosetStabChain( U, explicit[ s ] );
-        od;
-        Sort( explicit );
-        U.explicit := explicit;
-        U.lenflock := lenflock;
-        U.flock    := flock;
-        U.lenblock := lenblock;
-        U.index    := index;
-    fi;
-end );
-
-#############################################################################
-##
-#F  RightTransversalPermGroupConstructor( <filter>, <G>, <U> )  . constructor
-##
-BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
-    local   enum,  orbs,  domain,  bpt;
-    
-    enum := Objectify( NewType( FamilyObj( G ),
-                           filter and IsList and IsDuplicateFreeList
-                           and IsAttributeStoringRep ),
-          rec( group := G,
-            subgroup := U,
-      stabChainGroup := CopyStabChain( StabChainMutable( G ) ),
-   stabChainSubgroup := CopyStabChain( StabChainMutable( U ) ) ) );
-    if not IsTrivial( G )  then
-        orbs := ShallowCopy( OrbitsDomain( U, MovedPoints( G ) ) );
-        Sort( orbs, function( o1, o2 )
-            return Length( o1 ) < Length( o2 ); end );
-        domain := Concatenation( orbs );
-        G := enum!.stabChainGroup;
-        U := enum!.stabChainSubgroup;
-        while    Length( G.genlabels ) <> 0
-              or Length( U.genlabels ) <> 0  do
-            bpt := First( domain, p -> not IsFixedStabilizer( G, p ) );
-            ChangeStabChain( G, [ bpt ], true  );  G := G.stabilizer;
-            ChangeStabChain( U, [ bpt ], false );  U := U.stabilizer;
-        od;
-    fi;
-    AddCosetInfoStabChain( enum!.stabChainGroup, enum!.stabChainSubgroup,
-            LargestMovedPoint( enum!.group ) );
-    MinimizeExplicitTransversal( enum!.stabChainSubgroup,
-            LargestMovedPoint( enum!.group ) );
-    return enum;
-end );
-
-
-#############################################################################
-##
-#R  IsRightTransversalPermGroupRep( <obj> ) . right transversal of perm group
-##
-DeclareRepresentation( "IsRightTransversalPermGroupRep",
-    IsRightTransversalRep,
-    [ "stabChainGroup", "stabChainSubgroup" ] );
-
-InstallMethod( \[\],
-    "for right transversal of perm. group, and pos. integer",
-    true,
-    [ IsList and IsRightTransversalPermGroupRep, IsPosInt ], 0,
-    function( cs, num )
-    return CosetNumber( cs!.stabChainGroup, cs!.stabChainSubgroup, num );
-end );
-
-InstallMethod( PositionCanonical,
-    "for right transversal of perm. group, and permutation",
-    IsCollsElms,
-    [ IsList and IsRightTransversalPermGroupRep, IsPerm ], 0,
-    function( cs, elm )
-    return NumberCoset( cs!.stabChainGroup,
-                        cs!.stabChainSubgroup,
-                        elm );
-end );
-
-
-#############################################################################
-##
-#M  RightTransversalOp( <G>, <U> )  . . . . . . . . . . . . . for perm groups
-##
-InstallMethod( RightTransversalOp,
-    "for two perm. groups",
-    IsIdenticalObj,
-    [ IsPermGroup, IsPermGroup ], 0,
-    function( G, U )
-    return RightTransversalPermGroupConstructor(
-               IsRightTransversalPermGroupRep, G, U );
-end );
-
-
-#############################################################################
-##
-#R  IsRightTransversalByBaseImagesRep( <obj> )
-##
-DeclareRepresentation( "IsRightTransversalByBaseImagesRep",
-    IsRightTransversalPermGroupRep, [] );
-
-InstallMethod( \[\],
-    "for right transversal by base images, and pos. integer",
-    true,
-    [ IsList and IsRightTransversalByBaseImagesRep, IsPosInt ], 0,
-    function( cs, num )
-    return CosetNumber( cs!.stabChainGroup, cs!.stabChainSubgroup, num,
-                   BaseStabChain( cs!.stabChainGroup ) );
-end );
-
-InstallMethod( PositionCanonical,
-    "for right transversal by base images, and object",
-    IsCollsElms,
-    [ IsList and IsRightTransversalByBaseImagesRep, IsPerm ], 0,
-    function( cs, elm )
-    local   S,  rep,  i;
-    
-    S := cs!.stabChainGroup;
-    rep := S.identity;
-    for i  in [ 1 .. Length( elm ) ]  do
-      rep:= LeftQuotient( InverseRepresentative( S, elm[ i ] / rep ), rep );
-      S:= S.stabilizer;
-    od;
-    return NumberCoset( cs!.stabChainGroup, cs!.stabChainSubgroup, rep );
-end );
-
-
-#############################################################################
-##
-#F  RightTransversalByBaseImages( <G>, <U> )  . . . . . . . .  by base images
-##
-BindGlobal( "RightTransversalByBaseImages", function( G, U )
-    return RightTransversalPermGroupConstructor
-           ( IsRightTransversalByBaseImagesRep, G, U );
-end );
-
-
-#############################################################################
-##
-#F  AddCosetInfoStabChain( <G>, <U>, <maxmoved> ) . . . . . .  add coset info
-##
-MAX_SIZE_TRANSVERSAL := 100000;
-
-InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
-    local   orb,  pimg,  img,  vert,  s,  t,  index,
-            block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
-            ss,  tt;
-    
-    if IsEmpty( G.genlabels )  then
-        U.index    := 1;
-        U.explicit := [ U.identity ];
-        U.lenflock := 1;
-        U.flock    := U.explicit;
-    else
-        AddCosetInfoStabChain( G.stabilizer, U.stabilizer, maxmoved );
-        
-        # U.index := [G_1:U_1];
-        U.index := U.stabilizer.index * Length( G.orbit ) / Length( U.orbit );
-        
-        # block := 1 ^ <U,G_1>; is a block for G.
-        block := OrbitPerms( Concatenation( U.generators,
-                 G.stabilizer.generators ), G.orbit[ 1 ] );
-        U.lenblock := Length( block );
-        lenflock := Length( G.orbit ) / U.lenblock;
-
-        # For small indices,  permutations   are multiplied,  so  we  need  a
-        # multiplied transversal.
-        if     IsBound( U.stabilizer.explicit )
-           and U.lenblock * maxmoved <= MAX_SIZE_TRANSVERSAL
-           and U.index    * maxmoved <= MAX_SIZE_TRANSVERSAL * lenflock  then
-            U.explicit := [  ];
-            U.flock    := [ G.identity ];
-            tt := [  ];  tt[ G.orbit[ 1 ] ] := G.identity;
-            for t  in G.orbit  do
-                tt[ t ] := tt[ t ^ G.transversal[ t ] ] /
-                           G.transversal[ t ];
-            od;
-        fi;
-        
-        # flock := { G.transversal[ B[1] ] | B in block system };
-        blist := BlistList( G.orbit, block );
-        pos := Position( blist, false );
-        while pos <> fail  do
-            img := G.orbit[ pos ];
-            B := block{ [ 1 .. U.lenblock ] };
-            sliced := [  ];
-            while img <> G.orbit[ 1 ]  do
-                Add( sliced, G.transversal[ img ] );
-                img := img ^ G.transversal[ img ];
-            od;
-            for i  in Reversed( [ 1 .. Length( sliced ) ] )  do
-                for j  in [ 1 .. Length( B ) ]  do
-                    B[ j ] := B[ j ] / sliced[ i ];
-                od;
-            od;
-            Append( block, B );
-            if IsBound( U.explicit )  then
-                Add( U.flock, tt[ B[ 1 ] ] );
-            fi;
-            #UniteBlist( blist, BlistList( G.orbit, B ) );
-            UniteBlistList(G.orbit, blist, B );
-            pos := Position( blist, false, pos );
-        od;
-        G.orbit := block;
-        
-        # Let <s> loop over the transversal elements in the stabilizer.
-        U.repsStab := List( [ 1 .. U.lenblock ], x ->
-                           BlistList( [ 1 .. U.stabilizer.index ], [  ] ) );
-        U.repsStab[ 1 ] := BlistList( [ 1 .. U.stabilizer.index ],
-                                      [ 1 .. U.stabilizer.index ] );
-        index := U.stabilizer.index * lenflock;
-        s := 1;
-        
-        # For  large  indices, store only   the  numbers of  the  transversal
-        # elements needed.
-        if not IsBound( U.explicit )  then
-
-            # If  the   stabilizer   is the   topmost  level   with  explicit
-            # transversal, this must contain minimal coset representatives.
-            MinimizeExplicitTransversal( U.stabilizer, maxmoved );
-            
-            orb := G.orbit{ [ 1 .. U.lenblock ] };
-            pimg := [  ];
-            while index < U.index  do
-                pimg{ orb } := CosetNumber( G.stabilizer, U.stabilizer, s,
-                                       orb );
-                t := 2;
-                while t <= U.lenblock  and  index < U.index  do
-                    
-                    # For this point  in the  block,  find the images  of the
-                    # earlier points under the representative.
-                    vert := G.orbit{ [ 1 .. t - 1 ] };
-                    img := G.orbit[ t ];
-                    while img <> G.orbit[ 1 ]  do
-                        vert := OnTuples( vert, G.transversal[ img ] );
-                        img  := img           ^ G.transversal[ img ];
-                    od;
-            
-                    # If $Ust = Us't'$ then $1t'/t/s in 1U$. Also if $1t'/t/s
-                    # in 1U$ then $st/t' =  u.g_1$ with $u  in U, g_1 in G_1$
-                    # and $g_1  =  u_1.s'$ with $u_1  in U_1,  s' in S_1$, so
-                    # $Ust = Us't'$.
-                    if ForAll( [ 1 .. t - 1 ], i -> not IsBound
-                       ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
-                        U.repsStab[ t ][ s ] := true;
-                        index := index + lenflock;
-                    fi;
-                    
-                    t := t + 1;
-                od;
-                s := s + 1;
-            od;
-            
-        # For small indices, store a transversal explicitly.
-        else
-            for ss  in U.stabilizer.flock  do
-                Append( U.explicit, U.stabilizer.explicit * ss );
-            od;
-            while index < U.index  do
-                t := 2;
-                while t <= U.lenblock  and  index < U.index  do
-                    ss := U.explicit[ s ] * tt[ G.orbit[ t ] ];
-                    if ForAll( [ 1 .. t - 1 ], i -> not IsBound
-                           ( U.translabels[ G.orbit[ i ] / ss ] ) )  then
-                        U.repsStab[ t ][ s ] := true;
-                        Add( U.explicit, ss );
-                        index := index + lenflock;
-                    fi;
-                    t := t + 1;
-                od;
-                s := s + 1;
-            od;
-            Unbind( U.stabilizer.explicit );
-            Unbind( U.stabilizer.flock    );
-        fi;
-                    
-    fi;
-end );
-
-#############################################################################
-##
-#F  NumberCoset( <G>, <U>, <r> )  . . . . . . . . . . . . . . coset to number
-##
-InstallGlobalFunction( NumberCoset, function( G, U, r )
-    local   num,  b,  t,  u,  g1,  pnt,  bpt;
-    
-    if IsEmpty( G.genlabels )  or  U.index = 1  then
-        return 1;
-    fi;
-    
-    # Find the block number of $r$.
-    bpt := G.orbit[ 1 ];
-    b := QuoInt( Position( G.orbit, bpt ^ r ) - 1, U.lenblock );
-        
-    # For small indices, look at the explicit transversal.
-    if IsBound( U.explicit )  then
-        return b * U.lenflock + Position( U.explicit,
-               MinimalElementCosetStabChain( U, r / U.flock[ b + 1 ] ) );
-    fi;
-        
-    pnt := G.orbit[ b * U.lenblock + 1 ];
-    while pnt <> bpt  do
-        r   := r   * G.transversal[ pnt ];
-        pnt := pnt ^ G.transversal[ pnt ];
-    od;
-    
-    # Now $r$ stabilises the block. Find the first $t in G/G_1$ such that $Ur
-    # = Ust$ for $s in G_1$. In this code, G.orbit[ <t> ] = bpt ^ $t$.
-    num := b * U.stabilizer.index * U.lenblock / Length( U.orbit );
-             # \_________This is [<U,G_1>:U] = U.lenflock_________/
-    t := 1;
-    pnt := G.orbit[ t ] / r;
-    while not IsBound( U.translabels[ pnt ] )  do
-        num := num + SizeBlist( U.repsStab[ t ] );
-        t := t + 1;
-        pnt := G.orbit[ t ] / r;
-    od;
-        
-    # $r/t = u.g_1$ with $u in U, g_1 in G_1$, hence $t/r.u = g_1^-1$.
-    u := U.identity;
-    while pnt ^ u <> bpt  do
-        u := u * U.transversal[ pnt ^ u ];
-    od;
-    g1 := LeftQuotient( u, r );  # Now <g1> = $g_1.t = u mod r$.
-    while bpt ^ g1 <> bpt  do
-        g1 := g1 * G.transversal[ bpt ^ g1 ];
-    od;
-                
-    # The number of $r$  is the number of $g_1$  plus an offset <num> for
-    # the earlier values of $t$.
-    return num + SizeBlist( U.repsStab[ t ]{ [ 1 ..
-                   NumberCoset( G.stabilizer, U.stabilizer, g1 ) ] } );
-
-end );
-
-#############################################################################
-##
-#F  CosetNumber( <arg> )  . . . . . . . . . . . . . . . . . . number to coset
-##
-InstallGlobalFunction( CosetNumber, function( arg )
-    local   G,  U,  num,  tup,  b,  t,  rep,  pnt,  bpt,  index,  len;
-
-    # Get the arguments.
-    G := arg[ 1 ];  U := arg[ 2 ];  num := arg[ 3 ];
-    if Length( arg ) > 3  then  tup := arg[ 4 ];
-                          else  tup := false;     fi;
-
-    if num = 1  then
-        if tup = false  then  return G.identity;
-                        else  return tup;         fi;
-    fi;
-    
-    # Find the block $b$ addressed by <num>.
-    if IsBound( U.explicit )  then
-        index := U.lenflock;
-    else
-        index := U.stabilizer.index * U.lenblock / Length( U.orbit );
-               # \_________This is [<U,G_1>:U] = U.lenflock_________/
-    fi;
-    b := QuoInt( num - 1, index );
-    num := ( num - 1 ) mod index + 1;
-        
-    # For small indices, look at the explicit transversal.
-    if IsBound( U.explicit )  then
-        if tup = false  then
-            return U.explicit[ num ] * U.flock[ b + 1 ];
-        else
-            return List( tup, t -> t / U.flock[ b + 1 ] / U.explicit[ num ] );
-        fi;
-    fi;
-        
-    # Otherwise, find the point $t$ addressed by <num>.
-    t := 1;
-    len := SizeBlist( U.repsStab[ t ] );
-    while num > len  do
-        num := num - len;
-        t := t + 1;
-        len := SizeBlist( U.repsStab[ t ] );
-    od;
-    if len < U.stabilizer.index  then
-        num := PositionNthTrueBlist( U.repsStab[ t ], num );
-    fi;
-        
-    # Find the representative $s$ in   the stabilizer addressed by <num>  and
-    # return $st$.
-    rep := G.identity;
-    bpt := G.orbit[ 1 ];
-    if tup = false  then
-        pnt := G.orbit[ b * U.lenblock + 1 ];
-        while pnt <> bpt  do
-            rep := rep * G.transversal[ pnt ];
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        pnt := G.orbit[ t ];
-        while pnt <> bpt  do
-            rep := rep * G.transversal[ pnt ];
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        return CosetNumber( G.stabilizer, U.stabilizer, num ) / rep;
-    else
-        pnt := G.orbit[ b * U.lenblock + 1 ];
-        while pnt <> bpt  do
-            tup := OnTuples( tup, G.transversal[ pnt ] );
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        pnt := G.orbit[ t ];
-        while pnt <> bpt  do
-            tup := OnTuples( tup, G.transversal[ pnt ] );
-            pnt := pnt ^ G.transversal[ pnt ];
-        od;
-        return CosetNumber( G.stabilizer, U.stabilizer, num, tup );
-    fi;
-end );
 
 #############################################################################
 ##
@@ -1989,8 +1594,10 @@ end );
 ##
 InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
     function(G,punkt)
-local orbit,trans,stab,gen,pnt,img,norb,no,i,j,changed,processStabGen,
-      StabGenAvailable,stgp,orblen,gens;
+    local one, orbit, trans, stab, gen, pnt, img, norb, no, i, j, changed,
+          processStabGen, StabGenAvailable, stgp, orblen, gens;
+
+    one:= One( G );
   if HasStabChainMutable( G ) and punkt in StabChainMutable(G).orbit then
 # if we already have a stab chain and bother computing the proper
 # stabilizer, a trivial orbit algorithm seems best.
@@ -2001,7 +1608,7 @@ local orbit,trans,stab,gen,pnt,img,norb,no,i,j,changed,processStabGen,
 #    stab:=Stabilizer(G,punkt));
 #    # catch trivial case
 #    if Length(stab)=0 then
-#      stab:=[()];
+#      stab:=[ one ];
 #    fi;
 #    stgp:=1;
 #
@@ -2017,7 +1624,7 @@ local orbit,trans,stab,gen,pnt,img,norb,no,i,j,changed,processStabGen,
     # compute orbit and transversal
     orbit := [ punkt ];
     trans := [];
-    trans[ punkt ] := ();
+    trans[ punkt ] := one;
     stab:=[];
     for pnt  in orbit  do
       for gen  in GeneratorsOfGroup(G)  do
@@ -2033,7 +1640,7 @@ local orbit,trans,stab,gen,pnt,img,norb,no,i,j,changed,processStabGen,
 
     processStabGen:=function()
       i:=orblen; 
-      gen:=();
+      gen:= one;
       while 1<=i do
 	gen:=gen*Random(GeneratorsOfGroup(G));
 	i:=QuoInt(i,2);
@@ -2053,7 +1660,7 @@ local orbit,trans,stab,gen,pnt,img,norb,no,i,j,changed,processStabGen,
   gens:=[];
   while changed<=3 and StabGenAvailable do
     gen:=processStabGen();
-    if gen=() then
+    if gen = one then
       if Random([1..10])>1 then
         changed:=changed+1;
       fi;
@@ -2081,7 +1688,7 @@ local orbit,trans,stab,gen,pnt,img,norb,no,i,j,changed,processStabGen,
 
     gen:=processStabGen();
 
-    if gen=() then
+    if gen = one then
       if Random([1..10])>1 then
         changed:=changed+1;
       fi;
@@ -2121,9 +1728,9 @@ end );
 ##
 #M  AllBlocks . . . Representatives of all block systems
 ##
-InstallMethod(AllBlocks,"generic",true,[IsPermGroup],0,
+InstallMethod( AllBlocks, "generic", [ IsPermGroup ],
 function(g)
-local gens,dom,DoBlocks,pool,subo;
+local gens, one, dom,DoBlocks,pool,subo;
 
   DoBlocks:=function(b)
   local bl,bld,i,t,n;
@@ -2145,7 +1752,8 @@ local gens,dom,DoBlocks,pool,subo;
     return bl;
   end;
 
-  gens:=Filtered(GeneratorsOfGroup(g),i->i<>());
+    one:= One( g );
+  gens:= Filtered( GeneratorsOfGroup(g), i -> i <> one );
   if Length(gens)=0 then return []; fi;
   subo:=ApproximateSuborbitsStabilizerPermGroup(g,
           Minimum(List(gens,SmallestMovedPoint)));
@@ -2190,11 +1798,12 @@ end;
 #F  CycleStructuresGroup(G)  list of all cyclestructures occ. in a perm group
 ##
 InstallGlobalFunction( CycleStructuresGroup, function(g)
-local l,m,i;
+local l,m,i, one;
   l:=CreateAllCycleStructures(Length(MovedPoints(g)));
   m:=List([1..Length(l)-1],i->0);
+    one:= One( g );
   for i in ConjugacyClasses(g) do
-    if Representative(i)<>() then
+    if Representative(i) <> one then
       m[Position(l,CycleStructurePerm(Representative(i)))-1]:=1;
     fi;
   od;
@@ -2208,15 +1817,40 @@ end );
 InstallMethod(SmallGeneratingSet,"random and generators subset, randsims",true,
   [IsPermGroup],0,
 function (G)
-local  i, j, U, gens;
+local  i, j, U, gens,o,v,a,sel;
+
+  # remove obvious redundancies
+  gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
+  o:=List(gens,Order);
+  SortParallel(o,gens,function(a,b) return a>b;end);
+  sel:=Filtered([1..Length(gens)],x->o[x]>1);
+  for i in [1..Length(gens)] do
+    if i in sel then
+      U:=Filtered(sel,x->x>i and IsInt(o[i]/o[x])); # potential powers
+      v:=[];
+      for j in U do
+	a:=SmallestMovedPoint(gens[j]);
+	if IsSubset(OrbitPerms([gens[i]],a),OrbitPerms([gens[j]],a)) then
+	  Add(v,j);
+	fi;
+      od;
+      # v are the possible powers
+      for j in v do
+	a:=gens[i]^(o[i]/o[j]);
+	if ForAny(Filtered([1..o[j]],z->Gcd(z,o[j])=1),x->a^x=gens[j]) then
+	  RemoveSet(sel,j);
+	fi;
+      od;
+    fi;
+  od;
+  gens:=gens{sel};
 
   # try pc methods first
   if Length(MovedPoints(G))<1000 and HasIsSolvableGroup(G) 
-     and IsSolvableGroup(G) and Length(GeneratorsOfGroup(G))>2 then
+     and IsSolvableGroup(G) and Length(gens)>3 then
     return MinimalGeneratingSet(G);
   fi;
 
-  gens := Set(GeneratorsOfGroup(G));
   if Length(gens)>2 then
     i:=2;
     while i<=3 and i<Length(gens) do
@@ -2251,26 +1885,11 @@ end);
 
 #############################################################################
 ##
-#M  MinimalGeneratingSet(<G>) . . . . . . . . . . . . . for permutation groups
-##
-InstallMethod(MinimalGeneratingSet,"solvable perm group via pc",true,
-  [IsPermGroup],0,
-function(G)
-local i;
-  if not IsSolvableGroup(G) then
-    TryNextMethod();
-  fi;
-  i:=IsomorphismPcGroup(G);
-  G:=Image(i,G);
-  G:=MinimalGeneratingSet(G);
-  return List(G,j->PreImagesRepresentative(i,j));
-end);
-
-#############################################################################
-##
 #M  GeneratorsSmallest(<G>) . . . . . . . . . . . . . for permutation groups
 ##
-GeneratorsSmallestStab := function ( S )
+DeclareGlobalFunction( "GeneratorsSmallestStab" );
+
+InstallGlobalFunction( GeneratorsSmallestStab, function ( S )
     local   gens,       # smallest generating system of <S>, result
             gen,        # one generator in <gens>
             orb,        # basic orbit of <S>
@@ -2314,7 +1933,7 @@ GeneratorsSmallestStab := function ( S )
         Add( gens, gen );
 
         #SubtractSet( orb,
-        #             Orbit( GroupByGenerators( gens, () ), S.orbit[1] ) );
+        #    Orbit( GroupByGenerators( gens, S.identity ), S.orbit[1] ) );
 
 	# here we want to be really fast, so use a private orbit algorithm
 	o2:=[S.orbit[1]];
@@ -2333,21 +1952,19 @@ GeneratorsSmallestStab := function ( S )
 
     # return the smallest generating system
     return gens;
-end;
+end );
 
-InstallMethod(GeneratorsSmallest,"perm group via minimal stab chain",true,
-  [IsPermGroup],0,
+InstallMethod(GeneratorsSmallest,"perm group via minimal stab chain",
+  [IsPermGroup],
 function(G)
   # call the recursive function to do the work
   return GeneratorsSmallestStab(MinimalStabChain(G));
 end);
 
-InstallMethod(LargestElementGroup,"perm group via minimal stab chain",true,
-  [IsPermGroup],0,
-function(G)
+InstallMethod(LargestElementGroup,"perm group via minimal stab chain",
+  [IsPermGroup],
   # call the recursive function to do the work
-  return LargestElementStabChain(MinimalStabChain(G),());
-end);
+  G -> LargestElementStabChain( MinimalStabChain( G ), One( G ) ) );
 
 
 #############################################################################
@@ -2357,7 +1974,7 @@ end);
 InstallMethod(KnowsHowToDecompose,
     "perm group and generators: always true",
     IsIdenticalObj,
-    [ IsPermGroup, IsList ], 0,
+    [ IsPermGroup, IsList ],
     ReturnTrue);
 
 
@@ -2372,7 +1989,7 @@ InstallMethod( ViewObj,
 function(G)
   local gens;
   gens:= GeneratorsOfGroup( G );
-  if 30 < Length( gens ) * LargestMovedPoint( G ) / VIEWLEN then
+  if 30 < Length( gens ) * LargestMovedPoint( G ) / GAPInfo.ViewLength then
     Print("<permutation group");
     if HasSize(G) then
       Print(" of size ",Size(G));
@@ -2490,6 +2107,9 @@ BindGlobal("STGSelFunc",function(a,b)
   if IsFunction(b) then
     return b(a);
   elif IsList(b) and not IsString(b) then
+   if IsList(a) and a=b then 
+     return true;
+   fi;
    return a in b;
  else
    return a=b;
@@ -2505,6 +2125,36 @@ local ran,d,emb,u,act;
   u:=SubgroupNC(d,u);
   act:=ActionHomomorphism(d,RightTransversal(d,u),OnRight,"surjective");
   return Image(act,d);
+end);
+
+InstallGlobalFunction(ReducedPermdegree,function(g)
+  local dom, deg, orb, gdeg, p, ndom, s,hom;
+  dom:=MovedPoints(g);
+  deg:=Length(dom);
+  orb:=ShallowCopy(Orbits(g,dom));
+  if Length(orb)=1 then return fail;fi;
+  gdeg:=20*LogInt(Size(g),2); # good degree
+  Sort(orb,function(a,b) return Length(a)<Length(b);end);
+  p:=PositionProperty(orb,i->Length(i)>=gdeg);
+  if p=fail then p:=Length(orb);fi;
+  ndom:=orb[p];
+  if Length(ndom)*2>Length(dom) then return fail;fi;
+  s:=Stabilizer(g,orb[p],OnTuples);
+  p:=p+1;
+  if p>Length(orb) then p:=1;fi;
+  while Size(s)>1 do
+    while not ForAny(orb[p],j->ForAny(GeneratorsOfGroup(s),k->j^k<>j)) do
+      p:=p+1;
+      if p>Length(orb) then p:=1;fi;
+    od;
+    ndom:=Union(ndom,orb[p]);
+    s:=Stabilizer(s,orb[p],OnTuples);
+  od;
+  if Length(ndom)*2>Length(dom) then return fail;fi;
+  hom:=ActionHomomorphism(g,ndom,"surjective");
+  SetIsInjective(hom,true);
+  SetSize(Image(hom),Size(g));
+  return hom;
 end);
 
 #############################################################################

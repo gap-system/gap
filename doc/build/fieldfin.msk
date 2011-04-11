@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Finite Fields}
 
@@ -33,7 +34,8 @@ and~"Matrices over Finite Fields").
 
 \Declaration{IsFFE}
 
-\>Z( <p>^<d> ) F
+\> Z(p^d) F
+\> Z(p,d) F
 
 \FileHeader[1]{ffe}
 
@@ -44,21 +46,36 @@ gap> a+a;
 0*Z(2)
 gap> a*a;
 Z(2^5)^2
+gap> b := Z(3,12);
+z
+gap> b*b;
+z2
+gap> b+b;
+2z
+gap> Print(b^100,"\n");
+Z(3)^0+Z(3,12)^5+Z(3,12)^6+2*Z(3,12)^8+Z(3,12)^10+Z(3,12)^11
 \endexample
+\begintt
+gap> Z(11,40);
+Error, Conway Polynomial 11^40 will need to computed and might be slow
+return to continue called from
+FFECONWAY.ZNC( p, d ) called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> 
+\endtt
 
 Elements of finite fields can be compared using the operators `=' and
 `\<'. The call `<a> = <b>' returns `true' if and only if the finite
 field elements <a> and <b> are equal. Furthermore `<a> \< <b>' tests
-whether <a> is smaller than <b>. Finite field elements are ordered in
-the following way. If the two elements lie in fields of different
-characteristics the one that lies in the field with the smaller
-characteristic is smaller.  If the two elements lie in different
-fields of the same characteristic the one that lies in the smaller
-field is smaller.  If the two elements lie in the same field and one
-is the zero and the other is not, the zero element is smaller.  If the
-two elements lie in the same field and both are nonzero, and are
-represented as $Z(p^d)^{i_1}$ and $Z(p^d)^{i_2}$ respectively, then
-the one with the smaller $i$ is smaller.
+whether <a> is smaller than <b>. The exact behaviour of this
+comparison depends on which of two Categories the field elements
+belong to:
+
+\Declaration{IsLexOrderedFFE}
+
 
 For the comparison of finite field elements with other {\GAP} objects,
 see~"Comparisons".
@@ -69,6 +86,8 @@ true
 gap> 0 < 0*Z(101);
 true
 gap> Z(256) > Z(101);
+false
+gap> Z(2,20) < Z(2,20)^2; # this illustrates the lexicographic ordering 
 false
 \endexample
 
@@ -120,6 +139,16 @@ gap> IntFFE( Z(409) );
 gap> IntFFE( Z(409)^116 );  21^116 mod 409;
 311
 311
+\endexample
+
+\Declaration{IntFFESymm}
+\beginexample
+gap> IntFFE(Z(13)^2);IntFFE(Z(13)^3);
+4
+8
+gap> IntFFESymm(Z(13)^2);IntFFESymm(Z(13)^3);
+4
+-5
 \endexample
 
 \Declaration{IntVecFFE}
@@ -179,8 +208,93 @@ Z(3^5)
 \Declaration{ConwayPolynomial}
 \beginexample
 gap> ConwayPolynomial( 2, 5 );  ConwayPolynomial( 3, 7 );
-Z(2)^0+x_1^2+x_1^5
-Z(3)^0-x_1^2+x_1^7
+x_1^5+x_1^2+Z(2)^0
+x_1^7-x_1^2+Z(3)^0
+\endexample
+
+\Declaration{IsCheapConwayPolynomial}
+
+\Declaration{RandomPrimitivePolynomial}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Printing, Viewing and Displaying Finite Field Elements}
+
+Internal finite field elements are Viewed, Printed and Displayed (see
+section "View and Print" for the distinctions between these
+operations) as powers of the primitive root (except for the zero
+element, which is displayed as 0 times the primitive root). Thus:
+
+\beginexample
+gap> Z(2);
+Z(2)^0
+gap> Z(5)+Z(5);
+Z(5)^2
+gap> Z(256);
+Z(2^8)
+gap> Zero(Z(125));
+0*Z(5)
+\endexample
+
+Note also that each element is displayed as an element of the field it
+generates. Note also that the size of the field is printed as a power
+of the characteristic.
+
+Elements of larger fields are printed as {\GAP} expressions with
+represent them as a sum of low powers of the primitive root:
+
+\beginexample
+gap> Print(Z(3,20)^100,"\n");
+2*Z(3,20)^2+Z(3,20)^4+Z(3,20)^6+Z(3,20)^7+2*Z(3,20)^9+2*Z(3,20)^10+2*Z(3,20)^1\
+2+2*Z(3,20)^15+2*Z(3,20)^17+Z(3,20)^18+Z(3,20)^19
+gap> Print(Z(3,20)^((3^20-1)/(3^10-1)),"\n");
+Z(3,20)^3+2*Z(3,20)^4+2*Z(3,20)^7+Z(3,20)^8+2*Z(3,20)^10+Z(3,20)^11+2*Z(3,20)^\
+12+Z(3,20)^13+Z(3,20)^14+Z(3,20)^15+Z(3,20)^17+Z(3,20)^18+2*Z(3,20)^19
+gap> Z(3,20)^((3^20-1)/(3^10-1)) = Z(3,10);
+true
+\endexample
+
+Note from the second example above, that these elements are not always
+written over the smallest possible field before being output.
+
+The View and Display methods for these large finite field elements use
+a slightly more compact, but mathematically equivalent
+representation. The primitive root is represented by `z'; its <i>th power by
+`z<i>' and <k> times this power by `<k>z<i>'. 
+
+\beginexample
+gap> Z(5,20)^100;
+z2+z4+4z5+2z6+z8+3z9+4z10+3z12+z13+2z14+4z16+3z17+2z18+2z19
+\endexample
+
+This output format is always used for `Display'. For `View' it is used
+only if its length would not exceed `ViewLength' lines. Longer output is replaced by 
+`\<\<an element of GF(<p>, <d>)>>'.
+
+\beginexample
+gap> Z(2,409)^100000;
+<<an element of GF(2, 409)>>
+gap> Display(Z(2,409)^100000);
+z2+z3+z4+z5+z6+z7+z8+z10+z11+z13+z17+z19+z20+z29+z32+z34+z35+z37+z40+z45+z46+z\
+48+z50+z52+z54+z55+z58+z59+z60+z66+z67+z68+z70+z74+z79+z80+z81+z82+z83+z86+z91\
++z93+z94+z95+z96+z98+z99+z100+z101+z102+z104+z106+z109+z110+z112+z114+z115+z11\
+8+z119+z123+z126+z127+z135+z138+z140+z142+z143+z146+z147+z154+z159+z161+z162+z\
+168+z170+z171+z173+z174+z181+z182+z183+z186+z188+z189+z192+z193+z194+z195+z196\
++z199+z202+z204+z205+z207+z208+z209+z211+z212+z213+z214+z215+z216+z218+z219+z2\
+20+z222+z223+z229+z232+z235+z236+z237+z238+z240+z243+z244+z248+z250+z251+z256+\
+z258+z262+z263+z268+z270+z271+z272+z274+z276+z282+z286+z288+z289+z294+z295+z29\
+9+z300+z301+z302+z303+z304+z305+z306+z307+z308+z309+z310+z312+z314+z315+z316+z\
+320+z321+z322+z324+z325+z326+z327+z330+z332+z335+z337+z338+z341+z344+z348+z350\
++z352+z353+z356+z357+z358+z360+z362+z364+z366+z368+z372+z373+z374+z375+z378+z3\
+79+z380+z381+z383+z384+z386+z387+z390+z395+z401+z402+z406+z408
+\endexample
+
+
+Finally note that elements of large prime fields are stored and
+displayed as residue class objects. So
+
+\beginexample
+gap> Z(65537);
+ZmodpZObj( 3, 65537 )
 \endexample
 
 

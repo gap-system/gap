@@ -36,7 +36,7 @@ end;
 ##
 SMALL_GROUP_FUNCS[ 14 ] := function( size, i, inforec )
     local j, k, n1, t, pos, ind, g, file, c, DATA, p, nrs, sid, rank,
-          aut, op1, op2, S, exp, F, gens, rel, rels, id, rrf, rrs,
+          aut, op, op1, op2, S, exp, F, gens, rel, rels, id, rrf, rrs,
           zs, z2s, zf, z2f, ff, lf, llf, sf, ucs, ucf, cf, cs, ss, indf;
 
     if i > 408641062 then 
@@ -316,10 +316,6 @@ end;
 
 #############################################################################
 ##                          
-#F SELECT_SMALL_GROUPS_FUNCS[ 14 ]( funcs, vals, inforec, all, id )
+#F SELECT_SMALL_GROUPS_FUNCS[ 14 ]( funcs, vals, inforec, all, id, idList )
 ##                  
-SELECT_SMALL_GROUPS_FUNCS[ 14 ] := function( size, funcs,vals,inforec,all,id)
-    local result, i, g, ok, j;
-
-    Error( "no selection function available for groups of size 1536" );
-end;      
+SELECT_SMALL_GROUPS_FUNCS[ 14 ] := SELECT_SMALL_GROUPS_FUNCS[ 11 ];

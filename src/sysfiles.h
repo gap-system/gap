@@ -1,13 +1,14 @@
 /****************************************************************************
 **
 *W  sysfiles.h                  GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
-*W                                                  & Burkhard Hoefling (MAC)
+*W                                                         & Martin Schönert
+*W                                                  & Burkhard Höfling (MAC)
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  The  file 'system.c'  declares  all operating system  dependent functions
 **  except file/stream handling which is done in "sysfiles.h".
@@ -676,6 +677,23 @@ extern Char *SyFgetsSemiBlock (
     Char *              line,
     UInt                length,
     Int                 fid);
+
+/***************************************************************************
+**
+*F SyWinPut( <fid>, <cmd>, <str> ) . . . . send a line to the window handler
+**
+**  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
+**  handler associated with the  file identifier <fid>.   In the string <str>
+**  '@'  characters are duplicated, and   control characters are converted to
+**  '@<chr>', e.g., <newline> is converted to '@J'.
+*/
+
+extern void syWinPut (
+    Int                 fid,
+    const Char *        cmd,
+    const Char *        str );
+
+
      
 /****************************************************************************
 **

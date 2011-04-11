@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Combinatorics}
 
@@ -35,12 +36,12 @@ permutations of a list.
 \index{coefficient!binomial}\atindex{number!binomial}{@number!binomial}
 
 \beginexample
-gap> List( [0..4], k->Binomial( 4, k ) );
-[ 1, 4, 6, 4, 1 ]    # Knuth calls this the trademark of Binomial
+gap> List( [0..4], k->Binomial( 4, k ) );  # Knuth calls this the trademark of Binomial
+[ 1, 4, 6, 4, 1 ]
 gap> List( [0..6], n->List( [0..6], k->Binomial( n, k ) ) );;
-gap> PrintArray( last );
-[ [   1,   0,   0,   0,   0,   0,   0 ],    # the lower triangle is
-  [   1,   1,   0,   0,   0,   0,   0 ],    # called Pascal's triangle
+gap> PrintArray( last );  # the lower triangle is called Pascal's triangle
+[ [   1,   0,   0,   0,   0,   0,   0 ],
+  [   1,   1,   0,   0,   0,   0,   0 ],
   [   1,   2,   1,   0,   0,   0,   0 ],
   [   1,   3,   3,   1,   0,   0,   0 ],
   [   1,   4,   6,   4,   1,   0,   0 ],
@@ -74,10 +75,10 @@ gap> Bernoulli( 4 );
 -1/30
 gap> Bernoulli( 10 );
 5/66
-gap> Bernoulli( 12 );
--691/2730  # there is no simple pattern in Bernoulli numbers
-gap> Bernoulli( 50 );
-495057205241079648212477525/66  # and they grow fairly fast 
+gap> Bernoulli( 12 );  # there is no simple pattern in Bernoulli numbers
+-691/2730
+gap> Bernoulli( 50 );  # and they grow fairly fast
+495057205241079648212477525/66
 \endexample
 
 \Declaration{Stirling1}
@@ -87,14 +88,15 @@ gap> Bernoulli( 50 );
 {@number!Stirling, of the first kind}
 
 \beginexample
-gap> List( [0..4], k -> Stirling1( 4, k ) );
-[ 0, 6, 11, 6, 1 ]    # Knuth calls this the trademark of S_1
+gap> List( [0..4], k -> Stirling1( 4, k ) );  # Knuth calls this the trademark of S_1
+[ 0, 6, 11, 6, 1 ]
 gap> List( [0..6], n->List( [0..6], k->Stirling1( n, k ) ) );;
+gap> # note the similarity with Pascal's triangle for the Binomial numbers
 gap> PrintArray( last );
-[ [    1,    0,    0,    0,    0,    0,    0 ],    # Note the similarity
-  [    0,    1,    0,    0,    0,    0,    0 ],    # with Pascal's
-  [    0,    1,    1,    0,    0,    0,    0 ],    # triangle for the
-  [    0,    2,    3,    1,    0,    0,    0 ],    # Binomial numbers
+[ [    1,    0,    0,    0,    0,    0,    0 ],
+  [    0,    1,    0,    0,    0,    0,    0 ],
+  [    0,    1,    1,    0,    0,    0,    0 ],
+  [    0,    2,    3,    1,    0,    0,    0 ],
   [    0,    6,   11,    6,    1,    0,    0 ],
   [    0,   24,   50,   35,   10,    1,    0 ],
   [    0,  120,  274,  225,   85,   15,    1 ] ]
@@ -110,13 +112,14 @@ gap> Stirling1(50,10);
 {@number!Stirling, of the second kind}
 
 \beginexample
-gap> List( [0..4], k->Stirling2( 4, k ) );
-[ 0, 1, 7, 6, 1 ]    # Knuth calls this the trademark of S_2
+gap> List( [0..4], k->Stirling2( 4, k ) );  # Knuth calls this the trademark of S_2
+[ 0, 1, 7, 6, 1 ]
 gap> List( [0..6], n->List( [0..6], k->Stirling2( n, k ) ) );;
+gap> # note the similarity with Pascal's triangle for the Binomial numbers
 gap> PrintArray( last );
-[ [   1,   0,   0,   0,   0,   0,   0 ],    # Note the similarity with
-  [   0,   1,   0,   0,   0,   0,   0 ],    # Pascal's triangle for
-  [   0,   1,   1,   0,   0,   0,   0 ],    # the Binomial numbers
+[ [   1,   0,   0,   0,   0,   0,   0 ],
+  [   0,   1,   0,   0,   0,   0,   0 ],
+  [   0,   1,   1,   0,   0,   0,   0 ],
   [   0,   1,   3,   1,   0,   0,   0 ],
   [   0,   1,   7,   6,   1,   0,   0 ],
   [   0,   1,  15,  25,  10,   1,   0 ],
@@ -137,14 +140,16 @@ gap> Stirling2( 50, 10 );
 gap> Combinations( [1,2,2,3] );
 [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ], [ 1, 3 ], 
   [ 2 ], [ 2, 2 ], [ 2, 2, 3 ], [ 2, 3 ], [ 3 ] ]
-gap> NrCombinations( [1..52], 5 );
-2598960    # number of different hands in a game of poker 
+gap> NrCombinations( [1..52], 5 );  # number of different hands in a game of poker 
+2598960
 \endexample
 
 The   function `Arrangements'   (see  "Arrangements")   computes  ordered
 selections without repetitions, `UnorderedTuples' (see "UnorderedTuples")
 computes  unordered  selections  with   repetitions  and `Tuples'    (see
 "Tuples") computes ordered selections with repetitions.
+
+\Declaration{CombinationsIterator}
 
 \Declaration{Arrangements}
 \Declaration{NrArrangements}
@@ -153,13 +158,14 @@ As an example of arrangements of a multiset, think  of the game Scrabble.
 Suppose you have the six characters of the word `settle'  and you have to
 make a four letter word.  Then the possibilities are given by
 
-\begintt
+%notest
+\beginexample
 gap> Arrangements( ["s","e","t","t","l","e"], 4 );
-[ [ "e", "e", "l", "s" ], [ "e", "e", "l", "t" ],
-  [ "e", "e", "s", "l" ], [ "e", "e", "s", "t" ],
-  # 96 more possibilities
-  [ "t", "t", "s", "e" ], [ "t", "t", "s", "l" ] ] 
-\endtt
+[ [ "e", "e", "l", "s" ], [ "e", "e", "l", "t" ], [ "e", "e", "s", "l" ], 
+  [ "e", "e", "s", "t" ], [ "e", "e", "t", "l" ], [ "e", "e", "t", "s" ], 
+  ... 93 more possibilities ...
+  [ "t", "t", "l", "s" ], [ "t", "t", "s", "e" ], [ "t", "t", "s", "l" ] ]
+\endexample
 
 Can you find the five proper English words, where `lets' does  not count?
 Note that the fact that the  list  returned by `Arrangements' is a proper
@@ -183,19 +189,20 @@ As an example for unordered tuples think of a poker-like game played with
 5  dice.  Then each possible hand corresponds to an  unordered five-tuple
 from the set [1..6]
 
-\begintt
+%notest
+\beginexample
 gap> NrUnorderedTuples( [1..6], 5 );
 252
 gap> UnorderedTuples( [1..6], 5 );
-[ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 1, 2 ], [ 1, 1, 1, 1, 3 ],
-  [ 1, 1, 1, 1, 4 ], [ 1, 1, 1, 1, 5 ], [ 1, 1, 1, 1, 6 ],
-  # 99 more tuples
-  [ 1, 3, 4, 5, 6 ], [ 1, 3, 4, 6, 6 ], [ 1, 3, 5, 5, 5 ],
-  # 99 more tuples
-  [ 3, 3, 4, 4, 5 ], [ 3, 3, 4, 4, 6 ], [ 3, 3, 4, 5, 5 ],
-  # 39 more tuples
-  [ 5, 5, 6, 6, 6 ], [ 5, 6, 6, 6, 6 ], [ 6, 6, 6, 6, 6 ] ] 
-\endtt
+[ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 1, 2 ], [ 1, 1, 1, 1, 3 ], [ 1, 1, 1, 1, 4 ], 
+  [ 1, 1, 1, 1, 5 ], [ 1, 1, 1, 1, 6 ], [ 1, 1, 1, 2, 2 ], [ 1, 1, 1, 2, 3 ], 
+  ... 100 more tuples ...
+  [ 1, 3, 5, 5, 6 ], [ 1, 3, 5, 6, 6 ], [ 1, 3, 6, 6, 6 ], [ 1, 4, 4, 4, 4 ], 
+  ... 100 more tuples ...
+  [ 3, 3, 5, 5, 5 ], [ 3, 3, 5, 5, 6 ], [ 3, 3, 5, 6, 6 ], [ 3, 3, 6, 6, 6 ], 
+  ... 32 more tuples ...
+  [ 5, 5, 5, 6, 6 ], [ 5, 5, 6, 6, 6 ], [ 5, 6, 6, 6, 6 ], [ 6, 6, 6, 6, 6 ] ]
+\endexample
 
 The function  `Combinations'  (see  "Combinations")   computes  unordered
 selections  without  repetitions,    `Arrangements' (see  "Arrangements")
@@ -310,6 +317,8 @@ gap> NrPartitions( 100 );
 The function `OrderedPartitions' (see "OrderedPartitions") is the ordered
 counterpart of `Partitions'.
 
+\Declaration{PartitionsIterator}
+
 \Declaration{OrderedPartitions}
 \Declaration{NrOrderedPartitions}
 
@@ -406,14 +415,14 @@ gap> Fibonacci( -10 );
 \atindex{sequence!Lucas}{@sequence!Lucas}
 
 \beginexample
-gap> List( [0..10], i->Lucas(1,-2,i)[1] );
-[ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]      # 2^k - (-1)^k)/3
-gap> List( [0..10], i->Lucas(1,-2,i)[2] );
-[ 2, 1, 5, 7, 17, 31, 65, 127, 257, 511, 1025 ]  # 2^k + (-1)^k
-gap> List( [0..10], i->Lucas(1,-1,i)[1] );
-[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]          # Fibonacci sequence
-gap> List( [0..10], i->Lucas(2,1,i)[1] );
-[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]             # the roots are equal 
+gap> List( [0..10], i -> Lucas(1,-2,i)[1] );     # 2^k - (-1)^k)/3
+[ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]
+gap> List( [0..10], i -> Lucas(1,-2,i)[2] );     # 2^k + (-1)^k
+[ 2, 1, 5, 7, 17, 31, 65, 127, 257, 511, 1025 ]
+gap> List( [0..10], i -> Lucas(1,-1,i)[1] );     # Fibonacci sequence
+[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]
+gap> List( [0..10], i -> Lucas(2,1,i)[1] );      # the roots are equal 
+[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -425,16 +434,16 @@ gap> List( [0..10], i->Lucas(2,1,i)[1] );
 gap> Permanent( [[0,1,1,1],
 >      [1,0,1,1],
 >      [1,1,0,1],
->      [1,1,1,0]] );
-9  # inefficient way to compute `NrDerangements([1..4])'
+>      [1,1,1,0]] );  # inefficient way to compute `NrDerangements([1..4])'
+9
 gap> Permanent( [[1,1,0,1,0,0,0],
 >      [0,1,1,0,1,0,0],
 >      [0,0,1,1,0,1,0],
 >      [0,0,0,1,1,0,1],
 >      [1,0,0,0,1,1,0],
 >      [0,1,0,0,0,1,1],
->      [1,0,1,0,0,0,1]] );
-24  # 24 permutations fit the projective plane of order 2 
+>      [1,0,1,0,0,0,1]] );  # 24 permutations fit the projective plane of order 2
+24
 \endexample
 
 

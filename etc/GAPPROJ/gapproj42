@@ -1,0 +1,34 @@
+@Name
+Primality test
+@Contact
+GAP
+@Date
+2005/2/21
+@Time
+3
+@Public
+Yes
+@Need
+4
+@NeedA
+3
+@Math
+3
+@Prog
+4
+@Component
+Number Theory
+@Descr
+The current primality test in GAP is proven correct only up to a certain
+bound which is a bit small nowadays.
+<BR>
+Extend the test to work for larger numbers.
+@Ref
+<UL>
+<LI>
+<A
+HREF="http://www.math.u-psud.fr/~belabas/pari/doc/faq.html#primetest">
+http://www.math.u-psud.fr/~belabas/pari/doc/faq.html#primetest
+</A>
+</UL>
+@Rem

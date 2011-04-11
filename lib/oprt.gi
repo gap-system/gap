@@ -1,65 +1,14 @@
 #############################################################################
 ##
-#W  oprt.gi                     GAP library                    Heiko Thei"sen
+#W  oprt.gi                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id$
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprt_gi :=
     "@(#)$Id$";
 
-#############################################################################
-##
-#R  IsSubsetEnumerator  . . . . . . . . . . . . . . .  enumerator for subsets
-##
-DeclareRepresentation( "IsSubsetEnumerator",
-    IsList and IsAttributeStoringRep,
-    [ "homeEnumerator", "sublist" ] );
-
-#############################################################################
-##
-#M  Length( <senum> ) . . . . . . . . . . . . . . . . .  for such enumerators
-##
-InstallMethod( Length,"subset enumerator", true, [ IsSubsetEnumerator ], 0,
-    senum -> SizeBlist( senum!.sublist ) );
-
-#############################################################################
-##
-#M  <senum>[ <num> ]  . . . . . . . . . . . . . . . . .  for such enumerators
-##
-InstallMethod( \[\],"subset enumerator", true, [ IsSubsetEnumerator, IsPosInt ], 0,
-    function( senum, num )
-    num := PositionNthTrueBlist( senum!.sublist, num );
-    if num = fail  then  return fail;
-                   else  return senum!.homeEnumerator[ num ];  fi;
-end );
-
-#############################################################################
-##
-#M  PositionCanonical( <senum>, <elm> ) . . . . . . . .  for such enumerators
-##
-InstallMethod( PositionCanonical,"subset enumerator", true,
-  [ IsSubsetEnumerator, IsObject ], 0,
-    function( senum, elm )
-    local   pos;
-    
-    pos := PositionCanonical( senum!.homeEnumerator, elm );
-    if pos = fail  or  not senum!.sublist[ pos ]  then
-        return fail;
-    else
-        return SizeBlist( senum!.sublist{ [ 1 .. pos ] } );
-    fi;
-end );
-
-#############################################################################
-##
-#M  AsList( <senum> ) . . . . . . . . . . . . . . . . .  for such enumerators
-##
-InstallMethod( AsList,"subset enumerator", true, [ IsSubsetEnumerator ], 0,
-    senum -> senum!.homeEnumerator{ ListBlist
-            ( [ 1 .. Length( senum!.homeEnumerator ) ], senum!.sublist ) } );
 
 #############################################################################
 ##
@@ -169,10 +118,23 @@ InstallMethod( Enumerator,"external set -> HomeEnumerator", true,
 InstallMethod( FunctionAction,"ExternalSetByActorsRep", true,
   [ IsExternalSetByActorsRep ], 0,
     xset -> function( p, g )
-    local   D;
-        D := Enumerator( xset );
-        return D[ PositionCanonical( D, p ) ^
-                  ( g ^ ActionHomomorphismAttr( xset ) ) ];
+      local pos,actor;
+      pos:=Position(xset!.generators,g);
+      if pos<>fail then
+        actor:=xset!.operators[pos];
+      else
+	pos:=Position(xset!.generators,g^-1);
+	if pos<>fail then
+	  actor:=xset!.operators[pos]^-1;
+	else
+	  Error("need to factor -- not yet implemented");
+	fi;
+      fi;
+      return xset!.funcOperation(p,actor);
+#    local   D;
+#        D := Enumerator( xset );
+#        return D[ PositionCanonical( D, p ) ^
+#                  ( g ^ ActionHomomorphismAttr( xset ) ) ];
     end );
 
 #############################################################################
@@ -301,8 +263,8 @@ end );
 ##
 #M  Enumerator( <xset> )  . . . . . . . . . . . . . . .  for external subsets
 ##
-InstallMethod( Enumerator,"for external subset with home enumerator", true,
-  [ IsExternalSubset and HasHomeEnumerator], 0,
+InstallMethod( Enumerator, "for external subset with home enumerator",
+    [ IsExternalSubset and HasHomeEnumerator],
     function( xset )
     local   G,  henum,  gens,  acts,  act,  sublist,  pnt,  pos;
     
@@ -328,9 +290,7 @@ InstallMethod( Enumerator,"for external subset with home enumerator", true,
             OrbitByPosOp( G, henum, sublist, pos, pnt, gens, acts, act );
         fi;
     od;
-    return Objectify( NewType( FamilyObj( henum ), IsSubsetEnumerator ),
-        rec( homeEnumerator := henum,
-                    sublist := sublist ) );
+    return EnumeratorOfSubset( henum, sublist );
 end );
 
 InstallMethod( Enumerator,"for external orbit: compute orbit", true,
@@ -485,7 +445,7 @@ function( xorb, yorb )
   if Size(xorb)<>Size(yorb) then
     return false;
   fi;
-  if Size(xorb)>10 
+  if (Size(xorb)>10  and not HasAsList(yorb))
   or not IsIdenticalObj(ActingDomain     (xorb),ActingDomain     (yorb))
   or not IsIdenticalObj(FunctionAction(xorb),FunctionAction(yorb))
       then
@@ -496,17 +456,17 @@ end );
 
 InstallMethod( \=, "xorbs with canonicalRepresentativeDeterminator",
   IsIdenticalObj,
-    [ IsExternalOrbit and HasCanonicalRepresentativeDeterminatorOfExternalSet,
-      IsExternalOrbit and HasCanonicalRepresentativeDeterminatorOfExternalSet ],
-        0,
-    function( xorb, yorb )
-    if not IsIdenticalObj(ActingDomain     (xorb),ActingDomain     (yorb))
-    or not IsIdenticalObj(FunctionAction(xorb),FunctionAction(yorb))
-       then
-        TryNextMethod();
-    fi;
-    return CanonicalRepresentativeOfExternalSet( xorb ) =
-           CanonicalRepresentativeOfExternalSet( yorb );
+  [IsExternalOrbit and CanEasilyDetermineCanonicalRepresentativeExternalSet,
+   IsExternalOrbit and CanEasilyDetermineCanonicalRepresentativeExternalSet],
+  0,
+function( xorb, yorb )
+  if not IsIdenticalObj(ActingDomain     (xorb),ActingDomain     (yorb))
+  or not IsIdenticalObj(FunctionAction(xorb),FunctionAction(yorb))
+      then
+      TryNextMethod();
+  fi;
+  return CanonicalRepresentativeOfExternalSet( xorb ) =
+	  CanonicalRepresentativeOfExternalSet( yorb );
 end );
 
 # as this is not necessarily compatible with the global ordering, this
@@ -611,7 +571,8 @@ end );
 InstallGlobalFunction( ActionHomomorphism, function( arg )
     local   attr,  xset,  p;
     
-    if arg[ Length( arg ) ] = "surjective"  then
+    if arg[ Length( arg ) ] = "surjective"  or
+       arg[ Length( arg ) ] = "onto"  then
         attr := SurjectiveActionHomomorphismAttr;
         Unbind( arg[ Length( arg ) ] );
     else
@@ -659,6 +620,9 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
     else
         filter := IsActionHomomorphism;
     fi;
+    if IsPermGroup( G )  then
+	filter := filter and IsPermGroupGeneralMapping;
+    fi;
 
     hom := rec(  );
     if Length(arg)>2 then
@@ -666,7 +630,6 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
     elif IsExternalSetByActorsRep( xset )  then
         filter := filter and IsActionHomomorphismByActors;
     elif     IsMatrixGroup( G )
-         and not IsOneDimSubspacesTransversalRep( D )
          and IsScalarList( D[ 1 ] )
          and act in [ OnPoints, OnRight ]  then
       # we act linearly. This might be used to compute preimages by linear
@@ -704,10 +667,10 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
 
         # if MappingPermListList took a family/group as an
         # argument then we could patch it instead
-        if IsHomCosetToPerm(One(G)) then
-            hom.conperm := HomCosetWithImage( Homomorphism(G.1), 
-                           One(Source(G)), hom.conperm );
-        fi;
+        #if IsHomCosetToPerm(One(G)) then
+        #    hom.conperm := HomCosetWithImage( Homomorphism(G.1), 
+        #                   One(Source(G)), hom.conperm );
+        #fi;
 
 
     # test for action on disjoint sets of numbers-> blocks homomorphism
@@ -764,14 +727,7 @@ InstallMethod( SurjectiveActionHomomorphismAttr,
   "call Ac.Hom.Constructor", true, [ IsExternalSet ], 0,
    xset -> ActionHomomorphismConstructor( xset, true ) );
 
-
-#############################################################################
-##
-#M  ViewObj( <hom> )  . . . . . . . . . . . .  view an action homomorphism
-##
-InstallMethod( ViewObj, "for action homomorphism", true,
-    [ IsActionHomomorphism ], 0,
-function( hom )
+VPActionHom:=function( hom )
 local name;
   name:="homo";
   if HasIsInjective(hom) and IsInjective(hom) then
@@ -783,18 +739,22 @@ local name;
     name:="epi";
   fi;
   Print( "<action ",name,"morphism>" );
-end );
+end;
 
+
+#############################################################################
+##
+#M  ViewObj( <hom> )  . . . . . . . . . . . .  view an action homomorphism
+##
+InstallMethod( ViewObj, "for action homomorphism", true,
+    [ IsActionHomomorphism ], 0, VPActionHom);
 
 #############################################################################
 ##
 #M  PrintObj( <hom> ) . . . . . . . . . . . . print an action homomorphism
 ##
 InstallMethod( PrintObj, "for action homomorphism", true,
-    [ IsActionHomomorphism ], 0,
-    function( hom )
-    Print( "<action homomorphism>" );
-end );
+    [ IsActionHomomorphism ], 0, VPActionHom);
 #T It seems to be difficult to find out what I can use
 #T for a correct treatment of `PrintObj'.
 
@@ -815,13 +775,34 @@ InstallMethod( Range,"ophom: S(domain)", true,
   [ IsActionHomomorphism ], 0, hom ->
     SymmetricGroup( Length( HomeEnumerator(UnderlyingExternalSet(hom)) ) ) );
 
-InstallMethod( Range, "surjective action homomorphism",true,
-  [ IsActionHomomorphism and IsSurjective ], 0,
+InstallMethod( Range, "surjective action homomorphism",
+  [ IsActionHomomorphism and IsSurjective ],
 function(hom)
-local gens,imgs,ran,xset;
+local gens, imgs, ran, i, a, xset,opt;
   gens:=GeneratorsOfGroup( Source( hom ) );
-  imgs:=List(gens,gen->ImageElmActionHomomorphism( hom, gen ) );
-  ran:=GroupByGenerators(imgs,());
+  if false and HasSize(Source(hom)) and Length(gens)>0 then
+    imgs:=[ImageElmActionHomomorphism(hom,gens[1])];
+    opt:=rec(limit:=Size(Source(hom)));
+    if IsBound(hom!.basepos) then
+      opt!.knownBase:=hom!.basepos;
+    fi;
+    ran:=Group(imgs[1]);
+    i:=2;
+    while i<=Length(gens) and Size(ran)<Size(Source(hom)) do
+      a:=ImageElmActionHomomorphism( hom, gens[i]);
+      Add(imgs,a);
+      ran:=DoClosurePrmGp(ran,[a],opt);
+      i:=i+1;
+    od;
+  else
+    imgs:=List(gens,gen->ImageElmActionHomomorphism( hom, gen ) );
+    if Length(imgs)=0 then
+      ran:= GroupByGenerators( imgs,
+		ImageElmActionHomomorphism( hom, One( Source( hom ) ) ) );
+    else
+      ran:= GroupByGenerators(imgs,One(imgs[1]));
+    fi;
+  fi;
   # remember a known base
   if HasBaseOfGroup(UnderlyingExternalSet(hom)) then
     xset:=UnderlyingExternalSet(hom);
@@ -831,7 +812,13 @@ local gens,imgs,ran,xset;
     fi;
     SetBaseOfGroup(ran,xset!.basePermImage);
   fi;
-  SetMappingGeneratorsImages(hom,[gens,imgs]);
+  SetMappingGeneratorsImages(hom,[gens{[1..Length(imgs)]},imgs]);
+  if HasSize(Source(hom)) then
+    StabChainOptions(ran).limit:=Size(Source(hom));
+  fi;
+  if HasIsInjective(hom) and HasSource(hom) and IsInjective(hom) then
+    UseIsomorphismRelation( Source(hom), ran );
+  fi;
   return ran;
 end);
 
@@ -845,7 +832,8 @@ function(hom,U)
 local xset,rest;
 
   xset:=RestrictedExternalSet(UnderlyingExternalSet(hom),U);
-  if HasIsSurjective(hom) and IsSurjective(hom) then
+  if ValueOption("surjective")=true or (HasIsSurjective(hom) and
+    IsSurjective(hom)) then
     rest:=SurjectiveActionHomomorphismAttr( xset );
   else
     rest:=ActionHomomorphismAttr( xset );
@@ -1022,6 +1010,11 @@ InstallMethod( OrbitStabilizerAlgorithm,"use stabilizer size",true,
    IsList,IsList,IsRecord],0,
 function( G,D,blist,gens,acts, dopr )
 local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
+        onlystab, # do we only care about stabilizer?
+        getrep, # function to get representative
+	actsinv,# inverses of acts
+	stopat, # index at which increasal stopped
+	notinc, # nr of steps in whiuch we did not increase
 	stabsub,# stabilizer seed
 	doml,	# maximal orbit length
 	dict,	# dictionary
@@ -1030,6 +1023,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	crossind,	# index D (via blist) -> orbit position
 	ind,	# stabilizer index
 	indh,	# 1/2 stabilizer index
+	increp,	# do we still want to increase the rep list?
 	incstb;	# do we still want to increase the stabilizer?
 
   d:=Immutable(dopr.pnt);
@@ -1038,6 +1032,8 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
   else
     act:=dopr.opr;
   fi;
+
+  onlystab:=IsBound(dopr.onlystab) and dopr.onlystab=true;
 
   # try to find a domain
   if IsBool(D) then
@@ -1102,82 +1098,152 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
   ind:=Size(G);
   indh:=QuoInt(Size(G),2);
   if not IsEmpty( acts )  then
-      rep := [ One( gens[ 1 ] ) ];
-      p := 1;
-      while p <= Length( orb )  do
-	  for i  in [ 1 .. Length( gens ) ]  do
 
-	    img := act( orb[ p ], acts[ i ] );
-	    MakeImmutable(img);
-	    q:=LookupDictionary(dict,img);
+    # using only a factorized transversal can be expensive, in particular if
+    # the action is more complicated. We therefore store a certain number of
+    # representatives fixed.
+    actsinv:=false;
 
-	    if q = fail  then
-	      Add( orb, img );
-	      AddDictionary(dict,img,Length(orb));
+    getrep:=function(pos)
+    local a,r;
+      a:=rep[pos];
+      if not IsInt(a) then
+	return a;
+      else
+	r:=fail;
+	while pos>1 and IsInt(a) do
+	  if r=fail then
+	    r:=gens[a];
+	  else
+	    r:=gens[a]*r;
+	  fi;
+	  pos:=LookupDictionary(dict,act(orb[pos],actsinv[a]));
+	  a:=rep[pos];
+	od;
+	if pos>1 then 
+	  r:=a*r;
+	fi;
+	return r;
+      fi;
+    end;
+    notinc:=0;
+    increp:=true;
 
-	      if incstb then
-		Add( rep, rep[ p ] * gens[ i ] );
-		if indh<Length(orb) then
-		  # the stabilizer cannot grow any more
-		  incstb:=false;
-		fi;
-	      fi;
+    rep := [ One( gens[ 1 ] ) ];
+    p := 1;
+    while p <= Length( orb )  do
+      for i  in [ 1 .. Length( gens ) ]  do
 
-	    elif incstb then
-	      sch := rep[ p ] * gens[ i ] / rep[ q ];
-	      if not sch in stb  then
-		ind:=stb;
+	img := act( orb[ p ], acts[ i ] );
+	MakeImmutable(img);
+	q:=LookupDictionary(dict,img);
 
-		# NC is safe
-		stb:=ClosureSubgroupNC(stb,sch);
-		ind:=Index(G,stb);
-		indh:=QuoInt(ind,2);
-		if indh<Length(orb) then
-		  # the stabilizer cannot grow any more
-		  incstb:=false;
-		fi;
+	if q = fail  then
+	  Add( orb, img );
+	  AddDictionary(dict,img,Length(orb));
+
+	  if increp then
+	    if actsinv=false then
+	      Add( rep, rep[ p ] * gens[ i ] );
+	    else
+	      Add( rep, i );
+	    fi;
+	    if indh<Length(orb) then
+	      # the stabilizer cannot grow any more
+	      increp:=false;
+	      incstb:=false;
+	    fi;
+	  fi;
+
+	elif incstb then
+	  #sch := rep[ p ] * gens[ i ] / rep[ q ];
+	  sch := getrep( p ) * gens[ i ] / getrep( q );
+	  if not sch in stb  then
+	    notinc:=0;
+
+	    # NC is safe
+	    stb:=ClosureSubgroupNC(stb,sch);
+	    ind:=Index(G,stb);
+	    indh:=QuoInt(ind,2);
+	    if indh<Length(orb) then
+	      # the stabilizer cannot grow any more
+	      increp:=false;
+	      incstb:=false;
+	    fi;
+	  else
+	    notinc:=notinc+1;
+	    if notinc*50>indh and notinc>1000 then
+	      # we have failed often enough -- assume for the moment we have
+	      # the right stabilizer
+	      #Error("stop stabilizer increase");
+	      stopat:=p;
+	      incstb:=false; # do not increase the stabilizer, but keep
+	                     # representatives
+	      actsinv:=List(acts,Inverse);
+	    fi;
+	  fi;
+	fi;
+
+	if increp=false then #we know the stabilizer
+	  if onlystab then
+	    return rec(stabilizer:=stb);
+	  # must the orbit contain the whole domain => extend?
+	elif ind=doml and (not IsBool(D)) and Length(orb)<doml then
+	    if blist=false then
+	      orb:=D;
+	    else
+	      orb:=D{Filtered([1..Length(blico)],i->blico[i]=false)};
+	      # we need to tick off the rest
+	      UniteBlist(blist,
+		BlistList([1..Length(blist)],[1..Length(blist)]));
+	    fi;
+	    return rec( orbit := orb, stabilizer := stb );
+	  elif  ind=Length(orb) then
+	    # we have reached the full orbit. No further tests
+	    # neccessary
+
+	    # do we still need to tick off the orbit in `blist' to
+	    # please the caller?
+	    if blist<>false then
+	      # we decided not to use blists for the orbit calculation
+	      # but a blist was given in which we have to tick off the
+	      # orbit
+	      if IsPositionDictionary(dict) then
+		UniteBlist(blist,dict!.blist);
+	      else
+		for img in orb do
+		  blist[PositionCanonical(D,img)]:=true;
+		od;
 	      fi;
 	    fi;
 
-	    if incstb=false then
-
-	      # must the orbit contain the whole domain => extend?
-	      if ind=doml and D<>false and Length(orb)<doml then
-		if blist=false then
-		  orb:=D;
-		else
-		  orb:=D{Filtered([1..Length(blico)],i->blico[i]=false)};
-		  # we need to tick off the rest
-		  UniteBlist(blist,
-		    BlistList([1..Length(blist)],[1..Length(blist)]));
-		fi;
-		return rec( orbit := orb, stabilizer := stb );
-	      elif  ind=Length(orb) then
-		# we have reached the full orbit. No further tests
-		# neccessary
-
-		# do we still need to tick off the orbit in `blist' to
-		# please the caller?
-		if blist<>false then
-		  # we decided not to use blists for the orbit calculation
-		  # but a blist was given in which we have to tick off the
-		  # orbit
-		  if IsPositionDictionary(dict) then
-		    UniteBlist(blist,dict!.blist);
-		  else
-		    for img in orb do
-		      blist[PositionCanonical(D,img)]:=true;
-		    od;
-		  fi;
-		fi;
-
-		return rec( orbit := orb, stabilizer := stb );
-	      fi;
-	    fi;
-
-	  od;
-	  p := p + 1;
+	    return rec( orbit := orb, stabilizer := stb );
+	  fi;
+	fi;
       od;
+      p := p + 1;
+    od;
+
+    if Size(G)/Size(stb)>Length(orb) then
+      #Error("did not really get stabilizer!");
+      p:=stopat;
+      while p<=Length(orb) do
+	img := act( orb[ p ], acts[ i ] );
+	MakeImmutable(img);
+	q:=LookupDictionary(dict,img);
+	if q<=p then
+	  sch := getrep( p ) * gens[ i ] / getrep( q );
+	  if not sch in stb then
+	    stb:=ClosureSubgroupNC(stb,sch);
+	    if Size(G)/Size(stb)=Length(orb) then
+	      p:=Length(orb); #done
+	    fi;
+	  fi;
+	fi;
+	p:=p+1;
+      od;
+      #Error("after");
+    fi;
   fi;
 
   if blist<>false then
@@ -1258,7 +1324,11 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 
   # can we compute the index from the orbit length?
   if HasSize(G) then
-    SetSize(stb,Size(G)/Length(orb));
+    if IsFinite(G) then
+      SetSize(stb,Size(G)/Length(orb));
+    else
+      SetSize(stb,infinity);
+    fi;
   fi;
 
   # do we care about a blist?
@@ -1304,23 +1374,39 @@ InstallMethod( OrbitsDomain, "for quick position domains", true,
 InstallMethod( OrbitsDomain, "for arbitrary domains", true,
     OrbitsishReq, 0,
 function( G, D, gens, acts, act )
-local   orbs, orb,sort;
+local   orbs, orb,sort,plist,pos,use,o;
   
   if Length(D)>0 and not IsMutable(D) and IsSSortedList(D) 
     and CanEasilySortElements(D[1]) then
     return OrbitsByPosOp( G, D, gens, acts, act );
   fi;
   sort:=Length(D)>0 and CanEasilySortElements(D[1]);
+  plist:=IsPlistRep(D);
+  if not plist then
+    use:=BlistList([1..Length(D)],[]);
+  fi;
   orbs := [  ];
-  while Length(D)>0  do
-      orb := OrbitOp( G,D, D[1], gens, acts, act );
-      Add( orbs, orb );
+  pos:=1;
+  while Length(D)>0  and pos<=Length(D) do
+    orb := OrbitOp( G,D, D[pos], gens, acts, act );
+    Add( orbs, orb );
+    if plist then
       if sort then
 	D:=Difference(D,orb);
 	MakeImmutable(D); # to remember sortedness
       else
 	D:=Filtered(D,i-> not i in orb);
       fi;
+    else
+      for o in orb do
+        use[PositionCanonical(D,o)]:=true;
+      od;
+      # not plist -- do not take difference as there may be special
+      # `PositionCanonical' method.
+      while pos<=Length(D) and use[pos] do 
+	pos:=pos+1;
+      od;
+    fi;
   od;
   return Immutable( orbs );
 end );
@@ -1338,20 +1424,47 @@ end );
 
 InstallMethod( Orbits, "for arbitrary domains", true, OrbitsishReq, 0,
 function( G, D, gens, acts, act )
-local   orbs, orb,sort;
+local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1;
     
   sort:=Length(D)>0 and CanEasilySortElements(D[1]);
+  plist:=IsPlistRep(D);
+  if not plist then
+    use:=BlistList([1..Length(D)],[]);
+  fi;
+  nc:=false;
+  ld1:=Length(D);
   orbs := [  ];
-  while Length(D)>0  do
-      orb := OrbitOp( G,D[1], gens, acts, act );
-      Add( orbs, orb );
+  pos:=1;
+  while Length(D)>0  and pos<=Length(D) do
+    orb := OrbitOp( G,D[pos], gens, acts, act );
+    Add( orbs, orb );
+    if plist then
+      ld:=Length(D);
       if sort then
 	D:=Difference(D,orb);
 	MakeImmutable(D); # to remember sortedness
       else
 	D:=Filtered(D,i-> not i in orb);
       fi;
+      if Length(D)+Length(orb)>ld then
+	nc:=true; # there are elements in `orb' not in D
+      fi;
+    else
+      for o in orb do
+        use[PositionCanonical(D,o)]:=true;
+      od;
+      # not plist -- do not take difference as there may be special
+      # `PositionCanonical' method.
+      while pos<=Length(D) and use[pos] do 
+	pos:=pos+1;
+      od;
+    fi;
   od;
+  if nc and ld1>10000 then
+    Info(InfoPerformance,1,
+    "You are calculating `Orbits' with a large set of seeds.\n",
+      "#I  If you gave a domain and not seeds consider `OrbitsDomain' instead.");
+  fi;
   return Immutable( orbs );
 end );
 
@@ -1399,7 +1512,7 @@ local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom,orb,ran,xset;
   p:=RUN_IN_GGMBI; # no niceomorphism translation here
   RUN_IN_GGMBI:=true;
   hom := ActionHomomorphism(xset,"surjective" );
-  ran:=Group(imgs,());
+    ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
   SetRange(hom,ran);
   SetImagesSource(hom,ran);
   SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
@@ -1486,7 +1599,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
   RUN_IN_GGMBI:=true;
   hom := ActionHomomorphism( xset,"surjective" );
   imgs:=permimg;
-  ran:=Group(imgs,());
+    ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
   SetRange(hom,ran);
   SetImagesSource(hom,ran);
   SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
@@ -1769,7 +1882,7 @@ InstallMethod( PermutationCycleOp,"of object in list", true,
     function( g, D, pnt, act )
     local   list,  old,  new,  fst;
     
-    list := [  ];
+    list := [1..Size(D)];
     fst := PositionCanonical( D, pnt );
     if fst = fail  then
         return ();
@@ -1961,7 +2074,7 @@ InstallOtherMethod( BlocksOp,
 end );
 
 InstallMethod( BlocksOp,
-        "G, D, seed, gens, acts, act", true,
+        "via action homomorphism", true,
         [ IsGroup, IsList, IsList,
           IsList,
           IsList,
@@ -1969,6 +2082,7 @@ InstallMethod( BlocksOp,
     function( G, D, seed, gens, acts, act )
     local   hom,  B;
     
+    if Length(D)=1 then return Immutable([D]);fi;
     hom := ActionHomomorphism( G, D, gens, acts, act );
     B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ] );
     B:=List( B, b -> D{ b } );
@@ -2014,15 +2128,20 @@ InstallMethod( MaximalBlocksOp,
     function ( G, D, seed, gens, acts, act )
     local   blks,       # blocks, result
             H,          # image of <G>
-            blksH;      # blocks of <H>
+            blksH,      # blocks of <H>
+	    onsetact;   # induces set action
 
     blks := BlocksOp( G, D, seed, gens, acts, act );
 
     # iterate until the action becomes primitive
     H := G;
     blksH := blks;
+    onsetact:=function(l,g)
+      return Set(List(l,i->act(i,g)));
+    end;
+
     while Length( blksH ) <> 1  do
-        H     := Action( H, blksH, OnSets );
+        H     := Action( H, blksH, onsetact );
         blksH := Blocks( H, [1..Length(blksH)] );
         if Length( blksH ) <> 1  then
             blks := List( blksH, bl -> Union( blks{ bl } ) );
@@ -2198,6 +2317,57 @@ InstallMethod( CycleLengthsOp, true, [ IsObject, IsList, IsFunction ], 0,
     return Immutable( List( CyclesOp( g, D, act ), Length ) );
 end );
 
+#############################################################################
+##
+#F  CycleIndex( <arg> ) . . . . . . . . . . . . . . . . . . . cycle lengths
+##
+InstallGlobalFunction( CycleIndex, function( arg )
+local cs, g, dom, op;
+  
+  # get/test arguments
+  cs:=Length(arg)>0 
+	and (IsMultiplicativeElementWithInverse(arg[1]) or IsGroup(arg[1]));
+  if cs then
+    g:=arg[1];
+    if Length(arg)<2 then
+      cs:= IsPerm(g) or IsPermGroup(g);
+      if cs then
+	dom:=MovedPoints(g);
+      fi;
+    else
+      dom:=arg[2];
+    fi;
+
+    if Length(arg)<3 then
+      op:=OnPoints;
+    else
+      op:=arg[3];
+      cs:=cs and IsFunction(op);
+    fi;
+  fi;
+  if not cs then
+    Error("usage: CycleIndex(<g>,<Omega>[,<act>])");
+  fi;
+  return CycleIndexOp( g, dom, op );
+end );
+
+InstallOtherMethod(CycleIndexOp,"element",true,
+  [IsMultiplicativeElementWithInverse,IsListOrCollection,IsFunction ],0,
+function( g, dom, act )
+local c, i;
+  c:=Indeterminate(Rationals,1)^0;
+  for i in CycleLengthsOp(g,dom,act) do
+    c:=c*Indeterminate(Rationals,i);
+  od;
+  return c;
+end);
+
+InstallMethod(CycleIndexOp,"finite group",true,
+  [IsGroup and IsFinite,IsListOrCollection,IsFunction ],0,
+function( g, dom, act )
+  return 1/Size(g)*
+  Sum(ConjugacyClasses(g),i->Size(i)*CycleIndexOp(Representative(i),dom,act));
+end);
 
 #############################################################################
 ##
@@ -2248,7 +2418,7 @@ InstallMethod( IsPrimitive,"transitive and no blocks",
     OrbitsishReq, 0,
     function( G, D, gens, acts, act )
     return     IsTransitive( G, D, gens, acts, act )
-           and Length( Blocks( G, D, gens, acts, act ) ) = 1;
+           and Length( Blocks( G, D, gens, acts, act ) ) <= 1;
 end );
 
 
@@ -2387,9 +2557,15 @@ local   G,  D,  d,  e,  gens,  acts,  act,  xset,  hom,  p,  rep;
 	  acts := arg[ p + 3 ];
 	  if not IsPcgs( gens )  and  not IsIdenticalObj( gens, acts )  then
 	    if not IsBound( D )  then
-		D := OrbitOp( G, d, gens, acts, act );
+	      D := OrbitOp( G, d, gens, acts, act );
+	      # don't make it a subset!
+	      xset:=ExternalSet(G,D,gens,acts,act);
+	    else
+	      D := OrbitOp( G, D,d, gens, acts, act );
+	      # don't make it a subset!
+	      xset:=ExternalSet(G,D,gens,acts,act);
+	      #xset:=ExternalOrbitOp( G, D, d, gens, acts, act );
 	    fi;
-	    xset:=ExternalOrbitOp( G, D, d, gens, acts, act );
 	  fi;
         fi;
     fi;
@@ -2570,7 +2746,8 @@ InstallMethod( StabilizerOp,
 function( G, D, d, gens, acts, act )
 local   orbstab;
   
-  orbstab:=OrbitStabilizerAlgorithm(G,D,false,gens,acts,rec(pnt:=d,act:=act));
+  orbstab:=OrbitStabilizerAlgorithm(G,D,false,gens,acts,
+	      rec(pnt:=d,act:=act,onlystab:=true));
   return orbstab.stabilizer;
 
 end );
@@ -2591,7 +2768,7 @@ local   stb,  p,  orbstab;
     od;
   else
     orbstab:=OrbitStabilizerAlgorithm(G,false,false,gens,acts,
-                                      rec(pnt:=d,act:=act));
+                                      rec(pnt:=d,act:=act,onlystab:=true));
     stb := orbstab.stabilizer;
   fi;
   return stb;
@@ -2693,9 +2870,17 @@ InstallMethod( StabilizerOfExternalSet,"stabilizer of the represenattive",
 #M  ImageElmActionHomomorphism( <hom>, <elm> )
 ##
 InstallGlobalFunction(ImageElmActionHomomorphism,function( hom, elm )
-    local   xset;
-    xset := UnderlyingExternalSet( hom );
-    return Permutation(elm,HomeEnumerator(xset),FunctionAction(xset));
+local   xset,p;
+  xset := UnderlyingExternalSet( hom );
+  p:=Permutation(elm,HomeEnumerator(xset),FunctionAction(xset));
+  if p=fail then
+    if ValueOption("actioncanfail")=true then
+      return fail;
+    fi;
+    Error("Action not well-defined. See the manual section\n",
+	  "``Action on canonical representatives''.");
+  fi;
+  return p;
 end );
 
 #############################################################################
@@ -2804,7 +2989,7 @@ InstallMethod( ImagesRepresentative,"restricted perm", FamSourceEqFamElm,
     local   xset;
     
     xset := UnderlyingExternalSet( hom );
-    return RestrictedPerm( Permutation( elm, HomeEnumerator( xset ),
+    return RestrictedPermNC( Permutation( elm, HomeEnumerator( xset ),
         FunctionAction( xset ) ),
         MovedPoints( ImagesSource( AsGroupGeneralMappingByImages( hom ) ) ) );
 end );
@@ -2816,7 +3001,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
   FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V,  base,  mat,  b,xset,lab;
+  local   V,  base,  mat,  b,xset,lab,f;
   
   # is this method applicable? Test whether the domain contains a vector
   # space basis (respectively just get this basis).
@@ -2835,8 +3020,10 @@ function( hom, elm )
   fi;
   elm:=OnTuples(hom!.linActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
-  elm:=ImmutableMatrix(DefaultFieldOfMatrixGroup(Source(hom)),elm);
+  f:=DefaultFieldOfMatrixGroup(Source(hom));
+  elm:=ImmutableMatrix(f,elm);
   if not IsBound(hom!.linActInverse) then
+    lab:=ImmutableMatrix(f,lab);
     hom!.linActInverse:=Inverse(lab);
   fi;
 
@@ -2933,4 +3120,30 @@ local p,n,f,o,v,ran,exp,H,phi,alpha;
   end);
   return [phi,alpha,p];
 end);
+
+
+#############################################################################
+##
+#M  IsInjective( <acthom> )
+##
+##  This is triggered by a fallback method of PreImageElm if it is not
+##  yet known whether the action homomorphism is injective or not.
+##  If there exists a LinearActionBasis, then the hom is injective
+##  and the better method for PreImageElm is taken.
+##
+InstallMethod( IsInjective, "for a linear action homomorphism",
+  [IsLinearActionHomomorphism],
+  function( a )
+    local b;   
+    b := LinearActionBasis(a);
+    if b = fail then          
+        TryNextMethod();
+    fi;                 
+    return true;
+  end );
+
+
+#############################################################################
+##
+#E
 

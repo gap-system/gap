@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for class functions.
 ##
@@ -452,21 +453,23 @@ InstallOtherMethod( \*,
 
 #############################################################################
 ##
-#M  Order( <chi> )  . . . . . . . . . . . . . . . . . . . determinantal order
+#M  Order( <chi> )  . . . . . . . . . . . . . . . . order of a class function
 ##
-##  Note that we are not allowed to regard the determinantal order of any
-##  (virtual) character as order, since nonlinear characters do not have an
-##  order as mult. elements.
+##  Note that we are not allowed to regard the determinantal order of an
+##  arbitrary (virtual) character as its order,
+##  since nonlinear characters do not have an order as mult. elements.
 ##
 InstallMethod( Order,
+    "for a class function",
     [ IsClassFunction ],
     function( chi )
     local order, values;
+
     values:= ValuesOfClassFunction( chi );
-    if 0 in values then
+    if   0 in values then
       Error( "<chi> is not invertible" );
-    fi;
-    if ForAny( values, i -> i * GaloisCyc( i, -1 ) <> 1 ) then
+    elif ForAny( values, cyc -> not IsIntegralCyclotomic( cyc )
+                                or cyc * GaloisCyc( cyc, -1 ) <> 1 ) then
       return infinity;
     fi;
     order:= Conductor( values );
@@ -486,24 +489,14 @@ InstallMethod( InverseOp,
     [ IsClassFunction ],
     function( chi )
     local values;
+
     values:= List( ValuesOfClassFunction( chi ), Inverse );
     if fail in values then
       return fail;
+    elif HasIsCharacter( chi ) and IsCharacter( chi ) and values[1] = 1 then
+      return Character( UnderlyingCharacterTable( chi ), values );
     else
-      return ClassFunction( UnderlyingCharacterTable(chi), values );
-    fi;
-    end );
-
-InstallMethod( InverseOp,
-    "for a linear character",
-    [ IsCharacter ],
-    function( chi )
-    local values;
-    values:= List( ValuesOfClassFunction( chi ), Inverse );
-    if chi[1] = 1 then
-      return Character( UnderlyingCharacterTable(chi), values );
-    else
-      return ClassFunction( UnderlyingCharacterTable(chi), values );
+      return ClassFunction( UnderlyingCharacterTable( chi ), values );
     fi;
     end );
 
@@ -550,7 +543,7 @@ InstallMethod( \^,
 ##
 InstallOtherMethod( \^,
     "for class function and Galois automorphism",
-    [ IsClassFunction, IsGeneralMapping and IsANFAutomorphismRep ],
+    [ IsClassFunction, IsGeneralMapping ],
     function( chi, galaut )
     if IsANFAutomorphismRep( galaut ) then
       galaut:= galaut!.galois;
@@ -1034,7 +1027,10 @@ InstallOtherMethod( CorrespondingPermutations,
 ##
 #M  ComplexConjugate( <chi> )
 ##
-InstallMethod( ComplexConjugate,
+##  We use `InstallOtherMethod' because class functions are both scalars and
+##  lists, so the method matches two declarations of the operation.
+##
+InstallOtherMethod( ComplexConjugate,
     "for a class function",
     [ IsClassFunction and IsCyclotomicCollection ],
     chi -> GaloisCyc( chi, -1 ) );
@@ -1623,23 +1619,22 @@ InstallMethod( ScalarProduct,
 #M  ScalarProduct( <tbl>, <chi>, <psi> ) .  scalar product of class functions
 ##
 InstallMethod( ScalarProduct,
-    "for ordinary table and two homogeneous lists",
-    [ IsOrdinaryTable, IsRowVector, IsRowVector ],
+    "for character table and two homogeneous lists",
+    [ IsCharacterTable, IsRowVector, IsRowVector ],
     function( tbl, x1, x2 )
+    local i,       # loop variable
+          scpr,    # scalar product, result
+          weight;  # lengths of conjugacy classes
 
-     local i,       # loop variable
-           scpr,    # scalar product, result
-           weight;  # lengths of conjugacy classes
-
-     weight:= SizesConjugacyClasses( tbl );
-     x1:= ValuesOfClassFunction( x1 );
-     x2:= ValuesOfClassFunction( x2 );
-     scpr:= 0;
-     for i in [ 1 .. Length( x1 ) ] do
-       scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
-     od;
-     return scpr / Size( tbl );
-     end );
+    weight:= SizesConjugacyClasses( tbl );
+    x1:= ValuesOfClassFunction( x1 );
+    x2:= ValuesOfClassFunction( x2 );
+    scpr:= 0;
+    for i in [ 1 .. Length( x1 ) ] do
+      scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+    od;
+    return scpr / Size( tbl );
+    end );
 
 
 #############################################################################
@@ -2402,6 +2397,7 @@ InstallMethod( RestrictedClassFunction,
     [ IsClassFunction, IsGroup ],
     function( chi, H )
     local subtbl, tbl, fus;
+
     subtbl:= OrdinaryCharacterTable( H );
     tbl:= UnderlyingCharacterTable( chi );
     if UnderlyingCharacteristic( tbl ) <> 0 then
@@ -2419,6 +2415,7 @@ InstallMethod( RestrictedClassFunction,
     [ IsNearlyCharacterTable, IsHomogeneousList, IsGroup ],
     function( tbl, chi, H )
     local subtbl, fus;
+
     subtbl:= OrdinaryCharacterTable( H );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       subtbl:= subtbl mod UnderlyingCharacteristic( tbl );
@@ -2435,12 +2432,16 @@ InstallMethod( RestrictedClassFunction,
     [ IsClassFunction, IsGeneralMapping ],
     function( chi, hom )
     local tbl, subtbl, fus;
+
     subtbl:= CharacterTable( PreImage( hom ) );
     tbl:= UnderlyingCharacterTable( chi );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       subtbl:= subtbl mod UnderlyingCharacteristic( tbl );
     fi;
     fus:= FusionConjugacyClasses( hom, subtbl, tbl );
+    if fus = fail then
+      Error( "no fusion from <subtbl> to <tbl>" );
+    fi;
     return ClassFunctionSameType( subtbl, chi,
                ValuesOfClassFunction( chi ){ fus } );
     end );
@@ -2450,11 +2451,15 @@ InstallMethod( RestrictedClassFunction,
     [ IsNearlyCharacterTable, IsHomogeneousList, IsGeneralMapping ],
     function( tbl, chi, hom )
     local subtbl, fus;
+
     subtbl:= CharacterTable( PreImage( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       subtbl:= subtbl mod UnderlyingCharacteristic( tbl );
     fi;
     fus:= FusionConjugacyClasses( hom, subtbl, tbl );
+    if fus = fail then
+      Error( "no fusion from <subtbl> to <tbl>" );
+    fi;
     return ClassFunction( subtbl, chi{ fus } );
     end );
 
@@ -2463,6 +2468,7 @@ InstallMethod( RestrictedClassFunction,
     [ IsClassFunction, IsNearlyCharacterTable ],
     function( chi, subtbl )
     local fus;
+
     fus:= FusionConjugacyClasses( subtbl, UnderlyingCharacterTable( chi ) );
     if fus = fail then
       Error( "class fusion not available" );
@@ -2476,6 +2482,7 @@ InstallMethod( RestrictedClassFunction,
     [ IsNearlyCharacterTable, IsHomogeneousList, IsNearlyCharacterTable ],
     function( tbl, chi, subtbl )
     local fus;
+
     fus:= FusionConjugacyClasses( subtbl, tbl );
     if fus = fail then
       Error( "class fusion not available" );
@@ -2516,6 +2523,7 @@ InstallMethod( RestrictedClassFunctions,
     [ IsCharacterTable, IsList, IsGroup ],
     function( tbl, chars, H )
     local subtbl, fus;
+
     subtbl:= OrdinaryCharacterTable( H );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       subtbl:= subtbl mod UnderlyingCharacteristic( tbl );
@@ -2524,7 +2532,8 @@ InstallMethod( RestrictedClassFunctions,
     if fus = fail then
       Error( "no fusion from <subtbl> to <tbl>" );
     fi;
-    return List( chars, chi -> ClassFunction( subtbl, chi{ fus } ) );
+    return List( chars, chi -> ClassFunctionSameType( subtbl, chi,
+                                   ValuesOfClassFunction( chi ){ fus } ) );
     end );
 
 InstallMethod( RestrictedClassFunctions,
@@ -2532,24 +2541,31 @@ InstallMethod( RestrictedClassFunctions,
     [ IsCharacterTable, IsList, IsGeneralMapping ],
     function( tbl, chars, hom )
     local subtbl, fus;
+
     subtbl:= CharacterTable( PreImage( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       subtbl:= subtbl mod UnderlyingCharacteristic( tbl );
     fi;
     fus:= FusionConjugacyClasses( hom, subtbl, tbl );
-    return List( chars, chi -> ClassFunction( subtbl, chi{ fus } ) );
+    if fus = fail then
+      Error( "class fusion not available" );
+    fi;
+    return List( chars, chi -> ClassFunctionSameType( subtbl, chi,
+                                   ValuesOfClassFunction( chi ){ fus } ) );
     end );
 
 InstallMethod( RestrictedClassFunctions,
-    "for a character table, a list,  and a character table",
+    "for a character table, a list, and a character table",
     [ IsCharacterTable, IsList, IsCharacterTable ],
     function( tbl, chars, subtbl )
     local fus;
+
     fus:= FusionConjugacyClasses( subtbl, tbl );
     if fus = fail then
       Error( "class fusion not available" );
     fi;
-    return List( chars, chi -> ClassFunction( subtbl, chi{ fus } ) );
+    return List( chars, chi -> ClassFunctionSameType( subtbl, chi,
+                                   ValuesOfClassFunction( chi ){ fus } ) );
     end );
 
 
@@ -2565,7 +2581,11 @@ InstallMethod( Restricted,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsHomogeneousList ],
     function( tbl, subtbl, chars )
     local fus;
+
     fus:= FusionConjugacyClasses( subtbl, tbl );
+    if fus = fail then
+      Error( "class fusion not available" );
+    fi;
     return List( chars, row -> ClassFunction( subtbl, row{ fus } ) );
     end );
 
@@ -2573,14 +2593,21 @@ InstallMethod( Restricted,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsMatrix, IsObject ],
     function( tbl, subtbl, chars, specification )
     local fus;
+
     fus:= GetFusionMap( subtbl, tbl, specification );
+    if fus = fail then
+      Error( "class fusion not available" );
+    fi;
     return List( chars, row -> ClassFunction( subtbl, row{ fus } ) );
     end );
 
 InstallMethod( Restricted,
-    [ IsMatrix, IsList and IsCyclotomicCollection ],
+    [ IsList, IsList and IsCyclotomicCollection ],
     function( mat, fus )
-    return List( mat, row -> row{ fus } );
+    if ForAll( mat, IsList ) then
+      return List( mat, row -> row{ fus } );
+    fi;
+    Error( "<mat> must be a matrix" );
     end );
 
 
@@ -2670,9 +2697,7 @@ InstallMethod( Restricted,
 ##
 #F  InducedClassFunctionsByFusionMap( <subtbl>, <tbl>, <chars>, <fusionmap> )
 ##
-##  is the list of class function values lists
-##
-BindGlobal( "InducedClassFunctionsByFusionMap",
+InstallGlobalFunction( InducedClassFunctionsByFusionMap,
     function( subtbl, tbl, chars, fusion )
     local j, im,          # loop variables
           centralizers,   # centralizer orders in hte supergroup
@@ -3496,6 +3521,7 @@ end );
 ##
 #F  Symmetrizations( [<tbl>, ]<characters>, <n> )
 #F  Symmetrizations( [<tbl>, ]<characters>, <Sn> )
+#F  Symmetrizations( <tbl>, <characters>, <arec> )
 ##
 InstallMethod( Symmetrizations,
     "for homogeneous list (of class functions) and positive integer",
@@ -3528,18 +3554,45 @@ InstallMethod( Symmetrizations,
     "for char. table, homog. list (of class functions), and pos. integer",
     [ IsCharacterTable, IsHomogeneousList, IsPosInt ],
     function( tbl, characters, n )
+    local gensymm, classparam, siz, classes;
+
+    gensymm:= CharTableSymmetric;
+    classparam:= gensymm.classparam[1]( n );
+    siz:= gensymm.size( n );
+    classes:= List( classparam, p -> siz / gensymm.centralizers[1]( n, p ) );
+
     return Symmetrizations( tbl, characters,
-                            CharacterTable( "Symmetric", n ) );
+               rec( classparam  := List( classparam, x -> [ 1, x ] ),
+                    symmirreds  := gensymm.matrix( n ),
+                    symmclasses := classes,
+                    symmorder   := siz ) );
     end );
 
 InstallMethod( Symmetrizations,
-    "for char. table, homog. list (of class functions), and pos. integer",
+    "for char. table, homog. list (of class functions), and table of Sn",
     [ IsCharacterTable, IsHomogeneousList, IsOrdinaryTable ],
     function( tbl, characters, Sn )
+
+    if not HasClassParameters( Sn ) then
+      Error( "partitions corresponding to classes must be stored",
+             " as `ClassParameters( <Sn> )'" );
+    fi;
+
+    return Symmetrizations( tbl, characters,
+               rec( classparam  := ClassParameters( Sn ),
+                    symmirreds  := List( Irr( Sn ), ValuesOfClassFunction ),
+                    symmclasses := SizesConjugacyClasses( Sn ),
+                    symmorder   := Size( Sn ) ) );
+    end );
+
+InstallOtherMethod( Symmetrizations,
+    "for char. table, homog. list (of class functions), and record",
+    [ IsCharacterTable, IsHomogeneousList, IsRecord ],
+    function( tbl, characters, arec )
     local i, j, l, n,
           tbl_powermap,     # computed power maps of 'tbl'
           cyclestruct,
-          Sn_classparam,
+          classparam,
           symmirreds,
           symmclasses,
           symmorder,
@@ -3553,32 +3606,27 @@ InstallMethod( Symmetrizations,
           value,
           val;
 
-    if not HasClassParameters( Sn ) then
-      Error( "partitions corresponding to classes must be stored",
-             " as `ClassParameters( <Sn> )'" );
-    fi;
-
-    tbl_powermap:= ShallowCopy( ComputedPowerMaps( tbl ) );
-#T better do the computation of necessary power maps only once!
+    classparam  := arec.classparam;
+    symmirreds  := arec.symmirreds;
+    symmclasses := arec.symmclasses;
+    symmorder   := arec.symmorder;
 
     cyclestruct:= [];
-    Sn_classparam:= ClassParameters( Sn );
-
-    for i in [ 1 .. Length( Sn_classparam ) ] do
-      if Length( Sn_classparam[i][2] ) = 1 then
-        n:= Sn_classparam[i][2][1];
+    for i in [ 1 .. Length( classparam ) ] do
+      if Length( classparam[i][2] ) = 1 then
+        n:= classparam[i][2][1];
       fi;
       cyclestruct[i]:= [];
-      for j in [ 1 .. Maximum( Sn_classparam[i][2] ) ] do
+      for j in [ 1 .. Maximum( classparam[i][2] ) ] do
          cyclestruct[i][j]:= 0;
       od;
-      for j in Sn_classparam[i][2] do
+      for j in classparam[i][2] do
         cyclestruct[i][j]:= cyclestruct[i][j] + 1;
       od;
     od;
-    symmirreds  := List( Irr( Sn ), ValuesOfClassFunction );
-    symmclasses := SizesConjugacyClasses( Sn );
-    symmorder   := Size( Sn );
+
+    tbl_powermap:= ShallowCopy( ComputedPowerMaps( tbl ) );
+#T better do the computation of necessary power maps only once!
 
     # Compute necessary power maps.
     for i in [ 1 .. n ] do
@@ -3591,7 +3639,7 @@ InstallMethod( Symmetrizations,
     symmetrizations:= [];
     for chi in characters do
 
-      # Symmetrize the k-th character of table ...
+      # Symmetrize the character `chi' of `tbl' ...
       prodmatrix:= [];
       for i in [ 1 .. Length( characters[1] ) ] do
         prodmatrix[i]:= [];
@@ -3616,12 +3664,12 @@ InstallMethod( Symmetrizations,
         od;
       od;
 
-      # ... with character psi ...
+      # ... with the character `psi' ...
       for psi in symmirreds do
         single:= [];
-        for i in [ 1 .. Length( characters[1] ) ] do
+        for i in [ 1 .. Length( chi ) ] do
 
-          # ... at class i
+          # ... at class `i'
           single[i]:= psi * prodmatrix[i] / symmorder;
           if not ( IsCycInt( single[i] ) or IsUnknown( single[i] ) ) then
             single[i]:= Unknown();
@@ -3669,7 +3717,7 @@ InstallGlobalFunction( SymmetricParts, function( tbl, characters, n )
 
     nccl:= NrConjugacyClasses( tbl );
     exponents:= Partitions( n );
-    symcentralizers:= CharacterTable( "Symmetric" )!.centralizers[1];
+    symcentralizers:= CharTableSymmetric.centralizers[1];
     symcentralizers:= List( exponents, x -> symcentralizers( n, x ) );
 
     for i in [ 1 .. Length( exponents ) ] do
@@ -3750,7 +3798,7 @@ InstallGlobalFunction( AntiSymmetricParts, function( tbl, characters, n )
 
     nccl:= NrConjugacyClasses( tbl );
     exponents:= Partitions( n );
-    symcentralizers:= CharacterTable( "Symmetric" )!.centralizers[1];
+    symcentralizers:= CharTableSymmetric.centralizers[1];
     symcentralizers:= List( exponents, x -> symcentralizers( n, x ) );
 
     for i in [ 1 .. Length( exponents ) ] do
@@ -4090,27 +4138,17 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
         image:= GaloisCyc( image, p );
       od;
 
-      if p^m > MAXSIZE_GF_INTERNAL then
-        Info( InfoWarning, 1,
-              value,
-              " cannot be expressed using GAP's internal finite fields" );
-        return fail;
-      fi;
-
       # Compute the representation of the Frobenius character value
       # in the field $GF( p^k )$.
       primefield:= GF(p);
       zero:= Zero( primefield );
 
       # Give up if the required Conway polynomial is hard to compute.
-      if    not IsBound( CONWAYPOLYNOMIALS[p] )
-         or not IsBound( CONWAYPOLYNOMIALS[p][k] ) then
-        if not TryConwayPolynomialForFrobeniusCharacterValue( p, k ) then
-          Info( InfoWarning, 1,
-                "the Conway polynomial of degree ", k, " for p = ", p,
-                " is not known" );
-          return fail;
-        fi;
+      if not IsCheapConwayPolynomial( p, k ) then
+        Info( InfoWarning, 1,
+              "the Conway polynomial of degree ", k, " for p = ", p,
+              " is not known" );
+        return fail;
       fi;
       conwaypol:= ConwayPolynomial( p, k );
 
@@ -4145,21 +4183,6 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
     # Return the Frobenius character value.
     return value;
 end );
-
-
-#############################################################################
-##
-#F  TryConwayPolynomialForFrobeniusCharacterValue( <p>, <n> )
-##
-##  We hope to have a fair chance to find an unknown Conway polynomial if
-##  the degree is a prime or $4$;
-##  note that in this range, we may get an additional problem because of the
-##  probabilistic primality test of {\GAP}.
-##
-InstallGlobalFunction( TryConwayPolynomialForFrobeniusCharacterValue,
-    function( p, n )
-    return IsPrimeInt( n ) or n < 6;
-    end );
 
 
 #############################################################################
@@ -4216,20 +4239,16 @@ InstallMethod( BrauerCharacterValue,
     info:= ZevData( p^DegreeFFE( mat ), n );
 
     # Compute the coefficients of the complex summands,
-    # as quotiens of nullities and degrees.
+    # as quotients of nullities and degrees.
     value:= 0;
     for pair in info do
-
       f:= pair[1];
       nullity:= Length( NullspaceMat( ValuePol( f, mat ) ) );
       if nullity <> 0 then
         nullity:= nullity / ( Length( f ) - 1 );
-        if not IsInt( nullity ) then
-          Error( "degree of <f> must divide <nullity>" );
-        fi;
+        Assert( 1, IsInt( nullity ), "degree of <f> must divide <nullity>" );
         value:= value + nullity * pair[2];
       fi;
-
     od;
 
     return value;
@@ -4248,23 +4267,26 @@ InstallFlushableValue( ZEV_DATA, [ [], [] ] );
 #F  ZevDataValue( <q>, <n> )
 ##
 InstallGlobalFunction( ZevDataValue, function( q, n )
-    local F, dimext, extfieldsize, K, z, Ee, value, R, f, y, fac;
+    local F, dimext, extfieldsize, Ee, value, K, z, quot, R, f, y, fac,
+          p, one, conw, conwlen, x, zpol, zpollen, zeta, zetalen, coeffs, l,
+          power, powerlen, i, exp, res, reslen, j;
 
     # Compute the field $F$ of matrix entries and the smallest field $K
     # over which a matrix of order `n' is diagonalizable.
     F:= GF( q );
     dimext:= DegreeOverPrimeField( F ) * OrderMod( q, n );
     extfieldsize:= Characteristic( F ) ^ dimext;
+    Ee:= E( n );
+    value:= [];
 
     if extfieldsize <= MAXSIZE_GF_INTERNAL then
 
-      # The field is supported in {\GAP},
+      # The splitting field is supported in {\GAP},
       # and the stored primitive root is given by the Conway polynomial.
       K:= GF( extfieldsize );
       z:= PrimitiveRoot( K );
-      Ee:= E( extfieldsize - 1 );
+      quot:= ( extfieldsize - 1 ) / n;
 
-      value:= [];
       R:= PolynomialRing( K );
       for f in Factors( PolynomialRing( F ), X(F)^n - 1 ) do
 
@@ -4273,8 +4295,8 @@ InstallGlobalFunction( ZevDataValue, function( q, n )
 
           # The factors are all linear, i.e., of the form $X - \alpha$.
           # Sum up the lifts of the numbers $\alpha$.
-          y:= y + Ee^LogFFE(
-                       -CoefficientsOfLaurentPolynomial( fac )[1][1], z );
+          y:= y + Ee^ ( LogFFE(
+                 -CoefficientsOfLaurentPolynomial( fac )[1][1], z ) / quot );
 
         od;
         Add( value, [ CoefficientsOfLaurentPolynomial( f )[1], y ] );
@@ -4283,14 +4305,80 @@ InstallGlobalFunction( ZevDataValue, function( q, n )
 
     else
 
-      # The splitting field is not yet available in {\GAP}.
-      Error( "splitting field is too large for GAP" );
-#T see `mamatrix.g' in pkg/meataxe/gap of GAP 3
+      # The splitting field is not available in {\GAP},
+      # use computations with polynomials.
+      p:= Characteristic( F );
+      z:= PrimitiveRoot( F );
+
+      one:= One( F );
+      conw:= ConwayPol( p, dimext ) * one;
+      conwlen:= dimext + 1;
+      x:= [ Zero( F ), one ];
+
+      # polynomial corresponding to the primitive root of `F'
+      zpol:= PowerModCoeffs( x, 2, ( extfieldsize-1 ) / ( Size(F)-1 ),
+                             conw, conwlen );
+      zpollen:= Length( zpol );
+
+      # polynomial corresponding to a primitive `n'-th root $\zeta$
+      zeta:= PowerModCoeffs( x, 2, ( extfieldsize-1 ) / n,
+                                conw, conwlen );
+      zetalen:= Length( zeta );
+
+      for f in Factors( PolynomialRing( F ), X(F)^n - 1 ) do
+
+        y:= 0;
+        coeffs:= CoefficientsOfUnivariatePolynomial( f );
+        l:= Length( coeffs );
+        power:= [ one ];
+        powerlen:= 1;
+
+        for i in [ 0 .. n-1 ] do
+
+          # Compute $\sum_{j=0}^{l-1} c_j \zeta^{i j}$,
+          # where `f' has the form $\sum_{j=0}^{l-1} c_j X^j$.
+          exp:= LogFFE( coeffs[l], z );
+          if exp = 0 then
+            res:= [ one ];
+          else
+            res:= PowerModCoeffs( zpol, zpollen, exp, conw, conwlen );
+          fi;
+          reslen:= Length( res );
+          for j in [ 1 .. l-1 ] do
+            reslen:= MultCoeffs( res, res, reslen, power, powerlen );
+            if not IsZero( coeffs[l-j] ) then
+              exp:= LogFFE( coeffs[l-j], z );
+              if exp = 0 then
+                res:= res + [ one ];
+              else
+                res:= res + PowerModCoeffs( zpol, zpollen, exp,
+                                            conw, conwlen );
+              fi;
+            fi;
+            reslen:= ReduceCoeffs( res, Length( res ), conw, conwlen );
+            ShrinkRowVector( res );  # needed?
+            reslen:= Length( res );  # needed?
+          od;
+
+          # If $\zeta^i$ is a root of `f' then take the corresponding
+          # complex root of unity.
+          if reslen = 0 then
+            y:= y + Ee^i;
+          fi;
+
+          powerlen:= MultCoeffs( power, power, powerlen, zeta, zetalen );
+          powerlen:= ReduceCoeffs( power, powerlen, conw, conwlen );
+
+        od;
+
+        Add( value, [ coeffs, y ] );
+
+      od;
 
     fi;
 
     return value;
-end );
+    end );
 
 
 #############################################################################
@@ -4375,8 +4463,11 @@ InstallGlobalFunction( SizeOfFieldOfDefinition, function( val, p )
       return p;
     fi;
 
-    val:= DegreeFFE( List( val, x -> FrobeniusCharacterValue( x, p ) ) );
-    return p ^ val;
+    val:= List( val, x -> FrobeniusCharacterValue( x, p ) );
+    if fail in val then
+      return fail;
+    fi;
+    return p ^ DegreeFFE( val );
 end );
 
 
@@ -4394,7 +4485,11 @@ InstallGlobalFunction( RealizableBrauerCharacters, function( matrix, q )
 
     for row in matrix do
 
-      d:= Length( Factors( SizeOfFieldOfDefinition( row, p ) ) );
+      d:= SizeOfFieldOfDefinition( row, p );
+      if d = fail then
+        return fail;
+      fi;
+      d:= Length( Factors( d ) );
       g:= Gcd( d, m );
       qq:= p^g;
       image:= row;
@@ -4432,7 +4527,7 @@ InstallOtherMethod( GroupWithGenerators,
     local filter, G;
 
     # Check that the list consists of invertible class functions.
-    if not ForAll( gens, IsClassFunction ) then
+    if IsEmpty( gens ) or not ForAll( gens, IsClassFunction ) then
       TryNextMethod();
     elif ForAny( gens, psi -> Inverse( psi ) = fail ) then
       Error( "class functions in <gens> must be invertible" );

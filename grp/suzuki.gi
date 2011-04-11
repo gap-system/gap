@@ -4,7 +4,16 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
+##
+##  This file contains constructors for the Suzuki groups.
+##
+##  The generators are taken from
+##
+##    Michio Suzuki. On a Class of Doubly Transitive Groups,
+##    Ann. Math. 75 (1962), 105-145.
+##
+##  See the middle of page 140, in the proof of Theorem 12.
 ##
 Revision.suzuki_gi :=
     "@(#)$Id$";
@@ -24,9 +33,9 @@ function ( filter, q )
 
   local G,f;
 
-  if not IsPrimePowerInt(q) or q < 8 
+  if not IsPrimePowerInt(q)
     or SmallestRootInt(q) <> 2 or LogInt(q,2) mod 2 = 0
-  then Error("<q> must be a non - square power of 2 and >= 8"); fi;
+  then Error("<q> must be a non-square power of 2\n"); fi;
 
   f := GF(q);
   G := GroupByGenerators(
@@ -34,19 +43,19 @@ function ( filter, q )
         [[1,                         0,   0,0],
          [1,                         1,   0,0],
          [1+Z(q),                    1,   1,0],
-         [1+Z(q)+Z(q)^RootInt(2 * q),Z(q),1,1]] * One(f)),
+         [1+Z(q)+Z(q)^RootInt(2 * q),Z(q),1,1]] * One(f),true),
         ImmutableMatrix(f,
         [[0,0,0,1],
          [0,0,1,0],
          [0,1,0,0],
-         [1,0,0,0]] * One(f))]);
+         [1,0,0,0]] * One(f),true)]);
 
   SetName(G,Concatenation("Sz(",String(q),")"));
   SetDimensionOfMatrixGroup(G,4);
   SetFieldOfMatrixGroup(G,f);
   SetIsFinite(G,true);
   SetSize(G,q^2*(q-1)*(q^2+1));
-  SetIsSimpleGroup(G,true);
+  if q > 2 then SetIsSimpleGroup(G,true); fi;
   return G;
 end );
 
@@ -66,9 +75,9 @@ function ( filter, q )
 
   local G,Ovoid,f,r,a,b,v;
 
-  if not IsPrimePowerInt(q) or q < 8 
+  if not IsPrimePowerInt(q)
     or SmallestRootInt(q) <> 2 or LogInt(q,2) mod 2 = 0
-  then Error("<q> must be a non - square power of 2 and >= 8"); fi;
+  then Error("<q> must be a non-square power of 2\n"); fi;
 
   f := GF(q);
   r := RootInt(2 * q);
@@ -89,7 +98,7 @@ function ( filter, q )
   G := Action(SuzukiGroupCons(IsMatrixGroup,q),Ovoid,OnLines);
   SetName(G,Concatenation("Sz(",String(q),")"));
   SetSize(G,q^2*(q-1)*(q^2+1));
-  SetIsSimpleGroup(G,true);
+  if q > 2 then SetIsSimpleGroup(G,true); fi;
   return G;
 end );
 

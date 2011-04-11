@@ -1,0 +1,74 @@
+
+    Installation of the mixed style GAP web site from 4.4 release
+    =============================================================
+
+  $Id$
+
+- checkout 'old style' part
+    cvs -d :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS co WWW
+  This creates directory 'WWW'.
+  * grep in WWW/Util for 'local/bin' and adjust those paths if necessary
+  * create a link from WWW/Search/swish to your swish executable      
+
+- cd WWW; make aachen   (or 'make stand')
+  [This needs perl and gawk]
+
+- setup the package update mechanism, see below for details
+  [This will be done in Aachen for the moment, but wouldn't be difficult to
+  setup in St Andrews or elsewhere. ] 
+
+- install the mixer utility:
+    http://www.math.rwth-aachen.de/~Max.Neunhoeffer/mixer
+
+- checkout the skeleton 'WWW/tmpsite' directory from 4.0 CVS repository, in WWW
+     cvs -d :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS co 4.0/dev/DistributionUpdate/web 
+     mv 4.0/dev/DistributionUpdate/web  tmpsite
+     cd tmpsite/lib
+     ln -s config.AC config     # resp: config.ST
+
+- later: write script to get package related files from where the update
+  mechanism is installed (see above)
+  for the moment: After changes these files are copied by hand to the
+  WWW/FTP site and mirror
+
+- change the update script to
+  * cvs update the old style pages in WWW
+  * cvs update the new style pages in WWW/tmpsite
+  * call make in WWW
+  * call mixer.py in WWW/tmpsite
+
+- for changes of the Web site:
+  * old style pages: edit and commit (mostly *.input) files in a CVS 
+    checkout of 'WWW' in
+      :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS
+  * new style pages: edit and commit (mostly *.mixer.templ or *.mixer) files
+    in a CVS checkout of '4.0/dev/DistributionUpdate/web' in
+      :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS
+
+
+
+
+-------------------------
+[This step will be done for the moment in Aachen, by the 'gap' user on
+daniel.math.rwth-aachen.de ]
+- goto some other place/machine outside the web server directory to set up the 
+  'new style' pages.
+  - install the mixer utility [needs python] from
+      http://www.math.rwth-aachen.de/~Max.Neunhoeffer/mixer
+  - checkout
+      cvs -d :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS co 4.0/dev/DistributionUpdate
+    This creates a directory '4.0/dev/DistributionUpdate'.
+    cd 4.0/dev/DistributionUpdate
+    Then follow the 'README' or do something equivalent otherwise. 
+    [ The aim is to:
+        * substitute the comments containing the string 'link' in 
+          the files web/*/*.mixer.templ to get corresponding .mixer files
+        * copy all archives of current package versions from the internet and
+          produce merged archives and translate archives to missing formats
+        * copy of move these archives into the subdirectory web/ftpdir
+        * produce a .mixer file for each package in the web/Packages directory
+        * unpack the documentation (pdf and HTML) for each package into a 
+          subdirectory of web/Packages                                     ]
+  - export the DistributionUpdate/web directory via rsync / or copy it
+    by hand to the GAP site and mirror to the subdirectory 'tmpsite'
+------------------------

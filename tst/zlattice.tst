@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -12,13 +14,12 @@ gap> START_TEST("$Id$");
 
 # trivial cases of `LLLReducedBasis'
 gap> LLLReducedBasis( [ ] );
-rec( basis := [  ], mue := [  ], B := [  ] )
+rec( B := [  ], basis := [  ], mue := [  ] )
 gap> LLLReducedBasis( [ [ 0, 0 ], [ 0, 0 ] ], "linearcomb" );
-rec( basis := [  ], relations := [ [ 1, 0 ], [ 0, 1 ] ], 
-  transformation := [  ], mue := [  ], B := [  ] )
+rec( B := [  ], basis := [  ], mue := [  ], 
+  relations := [ [ 1, 0 ], [ 0, 1 ] ], transformation := [  ] )
 
-
-gap> STOP_TEST( "zlattice.tst", 10000000 );
+gap> STOP_TEST( "zlattice.tst", 136000 );
 
 
 #############################################################################

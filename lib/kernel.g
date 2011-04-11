@@ -1,15 +1,16 @@
 #############################################################################
 ##
-#W  kernel.g                    GAP library                  Martin Schoenert
+#W  kernel.g                    GAP library                  Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains function that should be in the kernel of GAP.
 ##  Actually it now just contains some utilities needed very early in
-##  the bootstrap
+##  the bootstrap.
 ##
 Revision.kernel_g :=
     "@(#)$Id$";
@@ -18,6 +19,13 @@ Revision.kernel_g :=
 #############################################################################
 ##
 #F  ADD_LIST_DEFAULT( <list>, <obj> ) . . . . . .  add an element to the list
+##
+##  <ManSection>
+##  <Func Name="ADD_LIST_DEFAULT" Arg='list, obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 ADD_LIST_DEFAULT := function ( list, obj )
     list[ LEN_LIST(list)+1 ] := obj;
@@ -29,6 +37,13 @@ end;
 ##
 #F  AS_LIST_SORTED_LIST( <list> ) . . . . . . . . . . . . . . setify the list
 ##
+##  <ManSection>
+##  <Func Name="AS_LIST_SORTED_LIST" Arg='list'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 AS_LIST_SORTED_LIST := function ( list )
     local   new;
     if not IS_MUTABLE_OBJ( list ) and IS_SSORT_LIST( list ) then
@@ -39,45 +54,27 @@ AS_LIST_SORTED_LIST := function ( list )
     return new;
 end;
 
-
-#############################################################################
-##
-#F  STRING_INT( <int> ) . . . . . . . . . . . . . . . .  string of an integer
-##
-##  This function is used as a fall-back by the kernel for integers so 
-##  large that the kernel buffer normally used is not big enough. Most
-##  integers are printed by the faster kernel code.
-##
-# XXX This function should be obsolete because of the method installed in
-# XXX cyclotom.g (FL)
-STRING_INT_DEFAULT := function ( n )
-    local  str,  num,  digits;
-
-    # construct the string without sign
-    num:= n;
-    if num < 0 then num := - n; fi;
-    digits := [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
-    str := "";
-    repeat
-        ADD_LIST( str, digits[num mod 10 + 1] );
-        num := QUO_INT( num, 10 );
-    until num = 0;
-
-    # add the sign and return
-    if n < 0  then
-        ADD_LIST( str, '-' );
-    fi;
-    str:= IMMUTABLE_COPY_OBJ( str{[LEN_LIST(str),LEN_LIST(str)-1 .. 1]} );
-    CONV_STRING( str );
-    return str;
-end;
-
-
 #############################################################################
 ##
 #F  Ordinal( <n> )  . . . . . . . . . . . . . ordinal of an integer as string
 ##
-##  returns the ordinal of the integer <n> as a string.
+##  <#GAPDoc Label="Ordinal">
+##  <ManSection>
+##  <Func Name="Ordinal" Arg='n'/>
+##
+##  <Description>
+##  returns the ordinal of the integer <A>n</A> as a string.
+##  <Example><![CDATA[
+##  gap> Ordinal(2);  Ordinal(21);  Ordinal(33);  Ordinal(-33);
+##  "2nd"
+##  "21st"
+##  "33rd"
+##  "-33rd"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 Ordinal := function ( n )
     local   str;
 
@@ -96,35 +93,23 @@ Ordinal := function ( n )
 end;
 
 
-############################################################################
-##
-# XXX F  REPLACE_SUBSTRING( <string>, <old>, <new> ) . . .  replace <old> by <new>
-# XXX    (should be thrown away) FL
-##  REPLACE_SUBSTRING := function( string, old, new )
-##      local   i;
-##      
-##      for i  in [ 0 .. LEN_LIST( string ) - LEN_LIST( old ) ]  do
-##          if string{ i + [ 1 .. LEN_LIST( old ) ] } = old  then
-##              string{ i + [ 1 .. LEN_LIST( old ) ] } := new;
-##          fi;
-##      od;
-##  end;
-
 #############################################################################
 ##
 #F  IS_SUBSTRING( <str>, <sub> )  . . . . . . . . .  check if <sub> is prefix
 ##
+##  <ManSection>
+##  <Func Name="IS_SUBSTRING" Arg='str, sub'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 IS_SUBSTRING := function( str, sub )
-    local   l,  i;
-
-    l := LEN_LIST(sub);
-    if l = 0  then return true;  fi;
-    for i  in [ 1 .. LEN_LIST(str)-l+1 ]  do
-        if str{[i..i+l-1]} = sub  then
-            return true;
-        fi;
-    od;
+  if LEN_LIST(sub) > 0 and POSITION_SUBSTRING(str, sub, 0) = fail then
     return false;
+  else
+    return true;
+  fi;
 end;
 
 
@@ -132,37 +117,42 @@ end;
 ##
 #F  STRING_LOWER( <str> ) . . . . . . . . . convert to lower, remove specials
 ##
-STRING_LOWER1 := "";
-STRING_LOWER2 := "";
-SortParallel := "2b defined";
-PositionSorted := "2b defined";
+##  <ManSection>
+##  <Func Name="STRING_LOWER" Arg='str'/>
+##
+##  <Description>
+##  <!-- seems obsolete now? (FL) -->
+##  </Description>
+##  </ManSection>
+##
+STRING_LOWER_TRANS := 0;
 
 STRING_LOWER := function( str )
-    local   new,  s,  p;
-
-    if 0 = LEN_LIST(STRING_LOWER1)  then
-        APPEND_LIST_INTR( STRING_LOWER1, "abcdefghijklmnopqrstuvwxyz  " );
-        APPEND_LIST_INTR( STRING_LOWER2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ!~" );
-        SortParallel( STRING_LOWER2, STRING_LOWER1 );
-    fi;
-
-    new := "";
-    for s  in str  do
-        if s in STRING_LOWER2  then
-            p := PositionSorted( STRING_LOWER2, s );
-            ADD_LIST( new, STRING_LOWER1[p] );
-        else
-            ADD_LIST( new, s );
-        fi;
+  local i, res;
+  if STRING_LOWER_TRANS = 0 then
+    STRING_LOWER_TRANS := "";
+    for i in [0..255] do 
+      STRING_LOWER_TRANS[i+1] := CHAR_INT(i);
     od;
-    CONV_STRING(new);
-    return new;
+    STRING_LOWER_TRANS{1+[65..90]} := STRING_LOWER_TRANS{1+[97..122]};
+    STRING_LOWER_TRANS{1+[33,126]} := "  ";
+  fi;
+  res := SHALLOW_COPY_OBJ(str);
+  TranslateString(res, STRING_LOWER_TRANS);
+  return res;
 end;
 
 
 #############################################################################
 ##
 #F  POSITION_NOT( <list>, <val> [,<from-minus-one>] ) . . . .  find not <val>
+##
+##  <ManSection>
+##  <Func Name="POSITION_NOT" Arg='list, val [,from-minus-one]'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 POSITION_NOT := function( arg )
     local i;
@@ -189,12 +179,35 @@ POSITION_NOT := function( arg )
 
 end;
 
-
 #############################################################################
 ##
-#V  POST_RESTORE_FUNCS
+#F  Runtimes() . . . . . . . . self-explaining version of result of RUNTIMES()
 ##
-POST_RESTORE_FUNCS := [];
+##  <ManSection>
+##  <Func Name="Runtimes" Arg=''/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+Runtimes := function()
+  local res, rt, cmp, a, i;
+  res := rec();
+  rt := RUNTIMES();
+  cmp := ["user_time", "system_time", 
+          "user_time_children", "system_time_children"]; 
+  if IS_INT(rt) then
+    for a in cmp do 
+      res.(a) := fail;
+    od;
+    res.(cmp[1]) := rt;
+  else
+    for i in [1..4] do
+      res.(cmp[i]) := rt[i];
+    od;
+  fi;
+  return res;
+end;
 
 
 #############################################################################

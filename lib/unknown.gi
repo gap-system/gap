@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  unknown.gi                 GAP Library                   Martin Schoenert
+#W  unknown.gi                 GAP Library                   Martin Schönert
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  implements the  arithmetic  for unknown values,  unknowns for
 ##  short.  Unknowns  are written as `Unknown(<n>)'  where  <n> is an integer

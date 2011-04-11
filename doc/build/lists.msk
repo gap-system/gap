@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Lists}
 
@@ -44,10 +45,10 @@ square brackets `[', `]', and separating them with commas `,'. An *empty
 list*, i.e., a list with no elements, is written as `[]'.
 
 \beginexample
-gap> [ 1, 2, 3 ];
-[ 1, 2, 3 ]  # a list with three elements
-gap> [ [], [ 1 ], [ 1, 2 ] ];
-[ [  ], [ 1 ], [ 1, 2 ] ]  # a list may contain other lists
+gap> [ 1, 2, 3 ];              # a list with three elements
+[ 1, 2, 3 ]
+gap> [ [], [ 1 ], [ 1, 2 ] ];  # a list may contain other lists
+[ [  ], [ 1 ], [ 1, 2 ] ]
 \endexample
 
 Each list constructed this way is mutable (see~"Mutability and Copyability").
@@ -60,7 +61,8 @@ false
 \endexample
 
 \Declaration{IsDenseList}
-\begintt
+%notest
+\beginexample
 gap> IsDenseList( [ 1, 2, 3 ] );
 true
 gap> l := [ , 4, 9,, 25,, 49,,,, 121 ];;  IsDenseList( l );
@@ -73,11 +75,11 @@ not in any function
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' after assigning a value to continue
-brk> l[4] := 16;; # assigning a value
-brk> return;      # to escape the break-loop
+brk> l[4] := 16;;  # assigning a value
+brk> return;       # to escape the break-loop
 16
 gap> 
-\endtt
+\endexample
 
 Observe that requesting the value of `l[4]', which was not
 assigned, caused the entry of a `break'-loop (see Section~"Break Loops").
@@ -222,7 +224,7 @@ a *level* that is defined as the number of selectors of the form
 
 \begintt
     l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
-level   0      0      1     1      1     2
+level   0      0      1     2      2     3
 \endtt
 
 Then  a selector `<list>[<pos>]' of level <level> is computed as
@@ -291,9 +293,9 @@ If the index <pos> is larger than the length of the list <list> (see
 element. Note that it is possible to generate lists with holes that way.
 
 \beginexample
-gap> l[4] := "another entry";; l; # <list> is enlarged
+gap> l[4] := "another entry";; l;  # <list> is enlarged
 [ 3, [ 4, 5, 6 ], 10, "another entry" ]
-gap> l[ 10 ] := 1;; l;            # now <list> has a hole
+gap> l[ 10 ] := 1;; l;             # now <list> has a hole
 [ 3, [ 4, 5, 6 ], 10, "another entry",,,,,, 1 ]
 \endexample
 
@@ -390,10 +392,34 @@ For any list, the default method is to loop over the entries in the list
 
 
 \Declaration{Add}
+\Declaration{Remove}
 \beginexample
 gap> l := [ 2, 3, 5 ];; Add( l, 7 ); l;
 [ 2, 3, 5, 7 ]
+gap> Add(l,4,2); l;
+[ 2, 4, 3, 5, 7]
+gap> Remove(l,2); l;
+4
+[ 2, 3, 5, 7]
+gap> Remove(l); l;
+7
+[ 2, 3, 5]
+gap> Remove(l,5); l;
+[ 2, 3, 5]
 \endexample
+
+These two operations are implemented with the aid of a 
+more general kernel function
+
+\>COPY_LIST_ENTRIES( <from-list>, <from-index>, <from-step>, <to-list>, <to-index>, <to-step>, <number> ) F
+
+This function copies <number> elements from <from-list>,
+starting at position <from-index> and incrementing the position by
+<from-step> each time, into <to-list> starting at position <to-index>
+and incrementing the position by <to-step> each time. <from-list> and
+<to-list> must be plain lists.  <from-step> and/or <to-step> can be
+negative. Unbound positions of <from-list> are simply copied to
+<to-list>.
 
 \Declaration{Append}
 \beginexample
@@ -468,7 +494,7 @@ which happens to be `4', to `i'. The same thing happens in the following
 example
 
 \begintt
-l := [ 1, 2 ]
+l := [ 1, 2 ];
 l := [ 1, 2, 3 ];
 \endtt
 
@@ -668,8 +694,8 @@ gap> 1 in [ 2, 2, 1, 3 ];  1 in [ 4, -1, 0, 3 ];
 true
 false
 gap> s := SSortedList( [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32] );;
-gap> 17 in s;
-false        # uses binary search and only 4 comparisons
+gap> 17 in s;  # uses binary search and only 4 comparisons
+false
 \endexample
 
 For finding the position of an element in a list,
@@ -749,28 +775,32 @@ false
 \endexample
 
 This definition will cause problems with lists which are their own entries.
-Comparing such lists for equality may lead to an infinite recursion in the
-kernel if the list comparison has to compare the list entries which are in
-fact the lists themselves.
+Comparing two such lists for equality may lead to an infinite recursion in
+the kernel if the list comparison has to compare the list entries which are
+in fact the lists themselves,
+and then {\GAP} crashes.
 
 \>`<list1> \<\ <list2>'{list smaller!comparison}
 \){\fmark <list1> \<= <list2>}
 
 Lists are ordered *lexicographically*.
 Unbound entries are smaller than any bound entry.
-That means the following. Let <i> be the smallest positive integer <i>,
-such that neither entries `<list1>[<i>]' and `<list2>[<i>]' are
-unbound, nor are either bound or equal. Then <list1> is less than <list2>
-if either `<list1>[<i>]' is unbound (and `<list2>[<i>]' is not) or both
-are bound and `<list1>[<i>] \< <list2>[<i>]' is `true'.
+That implies the following behaviour.
+Let <i> be the smallest positive integer <i> such that <list1> and <list2>
+at position <i> differ,
+i.e., either exactly one of `<list1>[i]', `<list2>[i]' is bound or both
+entries are bound and differ.
+Then <list1> is less than <list2> if either `<list1>[<i>]' is unbound
+(and `<list2>[<i>]' is not)
+or both are bound and `<list1>[<i>] \< <list2>[<i>]' is `true'.
 
 \beginexample
-gap> [ 1, 2, 3, 4 ] < [ 1, 2, 4, 8 ];
-true  # <list1>[3] < <list2>[3]
-gap> [ 1, 2, 3 ] < [ 1, 2, 3, 4 ];
-true  # <list1>[4] is unbound and therefore very small
-gap> [ 1, , 3, 4 ] < [ 1, 2, 3 ];
-true  # <list1>[2] is unbound and therefore very small
+gap> [ 1, 2, 3, 4 ] < [ 1, 2, 4, 8 ]; # <list1>[3] < <list2>[3]
+true
+gap> [ 1, 2, 3 ] < [ 1, 2, 3, 4 ];    # <list1>[4] is unbound and therefore very small
+true
+gap> [ 1, , 3, 4 ] < [ 1, 2, 3 ];     # <list1>[2] is unbound and therefore very small
+true
 \endexample
 
 Note that for comparing two lists with `\<' or `\<=',
@@ -787,12 +817,19 @@ see~"Families".
 \index{operators!for lists}
 
 It is convenient to have arithmetic operations for lists,
-in particular because in {\GAP},
+in particular because in {\GAP}
 row vectors and matrices are special kinds of lists.
-However, it is the wide variance of list objects because of which we
+However, it is the wide variety of list objects because of which we
 prescribe arithmetic operations *not for all* of them.
 (Keep in mind that ``list'' means just an object in the category `IsList',
 see~"IsList".)
+
+(Due to the intended generality and flexibility,
+the definitions given in the following sections are quite technical.
+But for not too complicated cases
+such as matrices (see~"Operators for Matrices")
+and row vectors (see~"Operators for Row Vectors") whose entries aren't lists,
+the resulting behaviour should be intuitive.)
 
 For example, we want to deal with matrices which can be added and
 multiplied in the usual way, via the infix operators `+' and `*';
@@ -800,12 +837,6 @@ and we want also Lie matrices, with the same additive behaviour but with
 the multiplication defined by the Lie bracket.
 Both kinds of matrices shall be lists, with the usual access to their rows,
 with `Length' (see~"Length") returning the number of rows etc.
-
-Due to the intended generality and flexibility,
-the definitions given in the following sections are quite technical.
-But for not too complicated cases such as matrices and row vectors
-whose entries aren't lists,
-the resulting behaviour should be intuitive.
 
 For the categories and attributes that control the arithmetic behaviour
 of lists, see~"Filters Controlling the Arithmetic Behaviour of Lists".
@@ -848,11 +879,7 @@ gap> IsGeneralizedRowVector( liemat );
 true
 gap> IsMultiplicativeGeneralizedRowVector( liemat );
 false
-gap> bl:= BlockMatrix( [], 2, 3, 2, 3, 0 );
-<block matrix of dimensions (2*2)x(3*3)>
-gap> IsMultiplicativeGeneralizedRowVector( bl );
-true
-gap> bas:= CanonicalBasis( Rationals^3 );
+gap> bas:= CanonicalBasis( FullRowSpace( Rationals, 3 ) );
 CanonicalBasis( ( Rationals^3 ) )
 gap> IsMultiplicativeGeneralizedRowVector( bas );
 true
@@ -866,7 +893,7 @@ gap> v:= [ 1, 2 ];;  m:= [ v, 2*v ];;
 gap> IsListDefault( v );  IsListDefault( m );
 true
 true
-gap> IsListDefault( bas );  IsListDefault( bl );
+gap> IsListDefault( bas );  IsListDefault( liemat );
 true
 false
 \endexample
@@ -904,9 +931,10 @@ For unary operations (zero and additive inverse),
 the unique argument must be in `IsGeneralizedRowVector';
 for binary operations (addition and subtraction),
 at least one argument must be in `IsGeneralizedRowVector',
-and the other either not a list or also in `IsGeneralizedRowVector'.
+and the other either is not a list or also in `IsGeneralizedRowVector'.
 
-(For non-list {\GAP} objects, defining the result is not an issue here,
+(For non-list {\GAP} objects, defining the results of unary operations is not
+an issue here,
 and if at least one argument is a list not in `IsGeneralizedRowVector',
 it shall be left to this argument whether the result in question is defined
 and what it is.)
@@ -953,8 +981,9 @@ is a shallow copy (see~"ShallowCopy") of $x[i]$ or $y[i]$ if the other
 argument is not bound at position $i$,
 and is unbound if both $x$ and $y$ are unbound at position $i$.
 
-If $x$ is in `IsGeneralizedRowVector' and $y$ is either not a list or is
+If $x$ is in `IsGeneralizedRowVector' and $y$ is
 in `IsGeneralizedRowVector' and has lower additive nesting depth,
+or is neither a list nor a domain,
 the sum $x + y$ is defined as a list whose entry at position $i$ is
 $x[i] + y$ if $x$ is bound at position $i$, and is unbound if not.
 The equivalent holds in the reversed case,
@@ -992,9 +1021,8 @@ gap> l1 + [];
 \index{list and non-list!difference}
 
 For two {\GAP} objects $x$ and $y$ of which one is in
-`IsGeneralizedRowVector' and the other is either not a list or is
-also in `IsGeneralizedRowVector',
-$x - y$ is defined as $x + (-y)$.
+`IsGeneralizedRowVector' and the other is also in `IsGeneralizedRowVector'
+or is neither a list nor a domain, $x - y$ is defined as $x + (-y)$.
 
 \beginexample
 gap> l1 - l2;
@@ -1022,8 +1050,8 @@ at least one argument must be in `IsMultiplicativeGeneralizedRowVector',
 and the other either not a list or also in
 `Is\-Multiplicative\-Generalized\-Row\-Vector'.
 
-(For non-list {\GAP} objects, defining the result is not an issue here,
-and if at least one argument is a list not in
+(For non-list {\GAP} objects, defining the results of unary operations is not
+an issue here, and if at least one argument is a list not in
 `IsMultiplicativeGeneralizedRowVector',
 it shall be left to this argument whether the result in question is defined
 and what it is.)
@@ -1099,8 +1127,8 @@ Note that this is asymmetric.
 Now we can state the general multiplication rules.
 
 If exactly one argument is in `IsMultiplicativeGeneralizedRowVector'
-then we regard the other argument (which is then not a list) as a scalar,
-and specify result (L) or (R), depending on ordering.
+then we regard the other argument (which is then neither a list nor a domain)
+as a scalar, and specify result (L) or (R), depending on ordering.
 
 In the remaining cases, both $x$ and $y$ are in
 `IsMultiplicativeGeneralizedRowVector', and we distinguish the possibilities
@@ -1149,8 +1177,8 @@ true
 \index{list and non-list!quotient}
 
 For two {\GAP} objects $x$ and $y$ of which one is in
-`IsMultiplicativeGeneralizedRowVector' and the other is either not a list or is
-also in `IsMultiplicativeGeneralizedRowVector',
+`IsMultiplicativeGeneralizedRowVector' and the other is also in
+`IsMultiplicativeGeneralizedRowVector' or is neither a list nor a domain,
 $x / y$ is defined as $x * y^{-1}$.
 
 \beginexample
@@ -1175,9 +1203,9 @@ is a shallow copy (see~"ShallowCopy") of $x[i]$ or $y[i]$ if the other
 argument is not bound at position $i$,
 and is unbound if both $x$ and $y$ are unbound at position $i$.
 
-If $x$ is in `IsMultiplicativeGeneralizedRowVector' and $y$ is either not a
-list or is in `Is\-Multiplicative\-Generalized\-Row\-Vector' and has lower
-multiplicative nesting depth,
+If $x$ is in `IsMultiplicativeGeneralizedRowVector' and $y$ is in
+`Is\-Multiplicative\-Generalized\-Row\-Vector' and has lower multiplicative
+nesting depth or is neither a list nor a domain,
 $x `mod' y$ is defined as a list whose entry at position $i$ is
 $x[i] `mod' y$ if $x$ is bound at position $i$, and is unbound if not.
 The equivalent holds in the reversed case,
@@ -1198,8 +1226,8 @@ gap> [ 10, 12, 14, 16 ] mod [ 3, 5, 7 ];
 \index{list and non-list!left quotient}
 
 For two {\GAP} objects $x$ and $y$ of which one is in
-`IsMultiplicativeGeneralizedRowVector' and the other is either not a list or
-is also in `IsMultiplicativeGeneralizedRowVector',
+`IsMultiplicativeGeneralizedRowVector' and the other is also in
+`IsMultiplicativeGeneralizedRowVector' or is neither a list nor a domain,
 $`LeftQuotient'( x, y )$ is defined as $x^{-1} * y$.
 
 \beginexample
@@ -1312,6 +1340,14 @@ gap> Position( [ 2, 1, 1, 3 ], 1, 2 );
 3
 gap> Position( [ 2, 1, 1, 3 ], 1, 3 );
 fail
+\endexample
+
+\Declaration{Positions}
+\beginexample
+gap> Positions([1,2,1,2,3,2,2],2);
+[ 2, 4, 6, 7 ]
+gap> Positions([1,2,1,2,3,2,2],4);
+[  ]
 \endexample
 
 \Declaration{PositionCanonical}
@@ -1445,13 +1481,13 @@ copy using `Immutable' (see~"Mutability and Copyability").
 gap> list := [ 5, 4, 6, 1, 7, 5 ];; Sort( list ); list;
 [ 1, 4, 5, 5, 6, 7 ]
 gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
-gap> Sort( list, function(v,w) return v*v < w*w; end ); list;
+gap> Sort( list, function(v,w) return v*v < w*w; end );
+gap> list;  # sorted according to the Euclidian distance from [0,0]
 [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
-  # sorted according to the Euclidian distance from [0,0]
 gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
-gap> Sort( list, function(v,w) return v[1] < w[1]; end ); list;
+gap> Sort( list, function(v,w) return v[1] < w[1]; end );
+gap> list;  # note the random order of the elements with equal first component
 [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
-  # note the random order of the elements with equal first component
 \endexample
 
 \Declaration{SortParallel}
@@ -1461,8 +1497,8 @@ gap> list2 := [ 2, 3, 5, 7, 8, 9 ];;
 gap> SortParallel( list1, list2 );
 gap> list1;
 [ 1, 4, 5, 5, 6, 7 ]
-gap> list2;
-[ 7, 3, 2, 9, 5, 8 ]  # [ 7, 3, 9, 2, 5, 8 ] is also possible
+gap> list2;  # note: [ 7, 3, 2, 9, 5, 8 ] or [ 7, 3, 9, 2, 5, 8 ] are possible results
+[ 7, 3, 2, 9, 5, 8 ]
 \endexample
 
 \Declaration{Sortex}
@@ -1762,6 +1798,14 @@ gap> l:= [ 1, 2, 3 ];;  Apply( l, i -> i^2 );  l;
 [ 1, 4, 9 ]
 \endexample
 
+\Declaration{Perform}
+\beginexample
+gap> l := [1, 2, 3];; Perform(l, 
+> function(x) if IsPrimeInt(x) then Print(x,"\n"); fi; end);
+2
+3
+\endexample
+
 \Declaration{PermListList}
 \beginexample
 gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
@@ -1778,8 +1822,8 @@ gap> Maximum( -123, 700, 123, 0, -1000 );
 700
 gap> Maximum( [ -123, 700, 123, 0, -1000 ] );
 700
-gap> Maximum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
-[ 2, -11 ]        # lists are compared elementwise
+gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  # lists are compared elementwise
+[ 2, -11 ]
 \endexample
 
 \Declaration{Minimum}
@@ -1957,6 +2001,10 @@ singleton list, which is a range, too. Note that `<last> - <first>'  must
 be divisible by the increment `<second> - <first>', otherwise an error is
 signalled.
 
+Currently, the integers <first>, <second> and <last> and the length of a
+range must be small integers, that is at least $-2^d$ and at most $2^d-1$ 
+with $d=28$ on 32-bit architectures and $d=60$ on 64-bit architectures.
+
 Note also that a range is just a special case of a list.
 Thus you can access elements in a range (see "List Elements"), test for
 membership etc.
@@ -1973,8 +2021,8 @@ gap> r[3];
 12
 gap> 17 in r;
 true
-gap> r[12] := 25;; r;
-[ 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25 ]  # is no longer a range
+gap> r[12] := 25;; r;  # r is no longer a range
+[ 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25 ]
 gap> r := [1,3..17];
 [ 1, 3 .. 17 ]
 gap> Length( r );
@@ -2065,7 +2113,17 @@ namely the particular order of elements and the possibility to find the
 position of elements.
 For such cases, {\GAP} provides iterators (see~"Iterators").
 
-For constructing enumerators, see~"Enumerator" and "EnumeratorSorted".
+The functions `Enumerator' and `EnumeratorSorted' (see~"Enumerator" and
+"EnumeratorSorted") return enumerators of domains.
+Most of the special implementations of enumerators in the {\GAP} library
+are based on the general interface that is provided by
+`EnumeratorByFunctions' (see~"EnumeratorByFunctions");
+one generic example is `EnumeratorByBasis' (see~"EnumeratorByBasis"),
+which can be used to get an enumerator of a finite dimensional free module.
+
+Also enumerators for non-domains can be implemented via
+`EnumeratorByFunctions'; for a discussion,
+see~"prg:Example -- Constructing Enumerators" in ``Programming in {\GAP}''.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

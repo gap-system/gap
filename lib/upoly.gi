@@ -3,10 +3,9 @@
 ##
 #W  upoly.gi                     GAP Library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for univariate polynomials
 ##
@@ -52,8 +51,8 @@ local d;
     f:=CoefficientsOfLaurentPolynomial(f)[1][1];
     return IsIrreducibleRingElement(LeftActingDomain(R),f);
   else
-    return Length(Factors(R,f,
-		    rec(stopdegs:=[1..DegreeOfLaurentPolynomial(f)-1])))<=1;
+    return Length(Factors(R,f:  factoroptions:=
+		    rec(stopdegs:=[1..DegreeOfLaurentPolynomial(f)-1]) ))<=1;
   fi;
 end);
 
@@ -62,18 +61,19 @@ end);
 #F  RootsOfUPol(<upol>) . . . . . . . . . . . . . . . . roots of a polynomial
 ##
 InstallGlobalFunction( RootsOfUPol, function(arg)
-  local roots,factor,f,fact,fie,m;
+local roots,factor,f,fact,fie,m,inum;
   roots:=[];
   f:=arg[Length(arg)];
+  inum:=IndeterminateNumberOfUnivariateLaurentPolynomial(f);
   if Length(arg)=1 then
     fact:=Factors(f);
   elif IsString(arg[1]) and arg[1]="split" then
     fie:=SplittingField(f);
     m:=List(IrrFacsPol(f),i->Maximum(List(i[2],DegreeOfLaurentPolynomial)));
     m:=IrrFacsPol(f)[Position(m,Minimum(m))][2];
-    fact:=Concatenation(List(m,i->Factors(PolynomialRing(fie),i)));
+    fact:=Concatenation(List(m,i->Factors(PolynomialRing(fie,[inum]),i)));
   else
-    fact:=Factors(PolynomialRing(arg[1]),f);
+    fact:=Factors(PolynomialRing(arg[1],[inum]),f);
   fi;
   for factor in fact do
     if DegreeOfLaurentPolynomial(factor)=1 then
@@ -92,8 +92,6 @@ end );
 RedispatchOnCondition(Factors,true,[IsPolynomial],[IsUnivariatePolynomial],0);
 RedispatchOnCondition(Factors,true,[IsRing,IsPolynomial],
   [,IsUnivariatePolynomial],0);
-RedispatchOnCondition(Factors,true,[IsRing,IsPolynomial,IsRecord],
-  [,IsUnivariatePolynomial,],0);
 RedispatchOnCondition(IsIrreducibleRingElement,true,[IsRing,IsPolynomial],
   [,IsUnivariatePolynomial],0);
 
@@ -215,11 +213,13 @@ InstallMethod( IsPrimitivePolynomial,
     fi;
 
     size:= Size( F ) ^ ( Length( coeffs ) - 1 ) - 1;
-    x:= [ Zero( F ), one ];
+    # make sure that compressed coeffs are used if input is compressed
+    x:=  ShallowCopy(Zero( F ) * coeffs{[1,1]});
+    x[2] :=  one;
 
     # Primitive polynomials divide the polynomial $x^{q^d-1} - 1$ \ldots
     pmc:= PowerModCoeffs( x, size, coeffs );
-    ShrinkCoeffs( pmc );
+    ShrinkRowVector( pmc );
     if pmc <> [ one ] then
       return false;
     fi;
@@ -229,7 +229,7 @@ InstallMethod( IsPrimitivePolynomial,
     if size <> 1 then
       for p in Set( Factors( size ) ) do
         pmc:= PowerModCoeffs( x, size / p, coeffs );
-        ShrinkCoeffs( pmc );
+        ShrinkRowVector( pmc );
         if pmc = [ one ] then
           return false;
         fi;

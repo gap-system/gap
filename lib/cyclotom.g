@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with cyclotomics.
 ##
@@ -19,14 +20,36 @@ Revision.cyclotom_g :=
 #C  IsCyclotomic( <obj> ) . . . . . . . . . . . . category of all cyclotomics
 #C  IsCyc( <obj> )
 ##
-##  Every object in the family `CyclotomicsFamily' lies in the category
-##  `IsCyclotomic'.
+##  <#GAPDoc Label="IsCyclotomic">
+##  <ManSection>
+##  <Filt Name="IsCyclotomic" Arg='obj' Type='Category'/>
+##  <Filt Name="IsCyc" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Every object in the family <C>CyclotomicsFamily</C> lies in the category
+##  <Ref Func="IsCyclotomic"/>.
 ##  This covers integers, rationals, proper cyclotomics, the object
-##  `infinity' (see~"Infinity"), and unknowns (see Chapter~"Unknowns").
-##  All these objects except `infinity' and unknowns lie also in the category
-##  `IsCyc',
-##  `infinity' lies in (and can be detected from) the category `IsInfinity',
-##  and unknowns lie in `IsUnknown'.
+##  <Ref Var="infinity"/>,
+##  and unknowns (see Chapter&nbsp;<Ref Chap="Unknowns"/>).
+##  All these objects except <Ref Var="infinity"/> and unknowns
+##  lie also in the category <Ref Func="IsCyc"/>,
+##  <Ref Var="infinity"/> lies in (and can be detected from) the category
+##  <Ref Func="IsInfinity"/>,
+##  and unknowns lie in <Ref Func="IsUnknown"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsCyclotomic(0); IsCyclotomic(1/2*E(3)); IsCyclotomic( infinity );
+##  true
+##  true
+##  true
+##  gap> IsCyc(0); IsCyc(1/2*E(3)); IsCyc( infinity );
+##  true
+##  true
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsCyclotomic",
     IsScalar and IsAssociativeElement and IsCommutativeElement
@@ -41,6 +64,15 @@ DeclareCategoryKernel( "IsCyc", IsCyclotomic, IS_CYC );
 #C  IsCyclotomicCollColl  . . . . . . .  category of collection of collection
 #C  IsCyclotomicCollCollColl  . . . .  category of collection of coll of coll
 ##
+##  <ManSection>
+##  <Filt Name="IsCyclotomicCollection" Arg='obj' Type='Category'/>
+##  <Filt Name="IsCyclotomicCollColl" Arg='obj' Type='Category'/>
+##  <Filt Name="IsCyclotomicCollCollColl" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareCategoryCollections( "IsCyclotomic" );
 DeclareCategoryCollections( "IsCyclotomicCollection" );
 DeclareCategoryCollections( "IsCyclotomicCollColl" );
@@ -50,8 +82,28 @@ DeclareCategoryCollections( "IsCyclotomicCollColl" );
 ##
 #C  IsRat( <obj> )
 ##
-##  Every rational number lies in the category `IsRat',
-##  which is a subcategory of `IsCyc' (see~"Cyclotomic Numbers").
+##  <#GAPDoc Label="IsRat">
+##  <ManSection>
+##  <Filt Name="IsRat" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  <Index Subkey="for a rational">test</Index>
+##  Every rational number lies in the category <Ref Func="IsRat"/>,
+##  which is a subcategory of <Ref Func="IsCyc"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsRat( 2/3 );
+##  true
+##  gap> IsRat( 17/-13 );
+##  true
+##  gap> IsRat( 11 );
+##  true
+##  gap> IsRat( IsRat );  # `IsRat' is a function, not a rational
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategoryKernel( "IsRat", IsCyc, IS_RAT );
 
@@ -60,8 +112,16 @@ DeclareCategoryKernel( "IsRat", IsCyc, IS_RAT );
 ##
 #C  IsInt( <obj> )
 ##
-##  Every rational integer lies in the category `IsInt',
-##  which is a subcategory of `IsRat' (see~"Rational Numbers").
+##  <#GAPDoc Label="IsInt">
+##  <ManSection>
+##  <Filt Name="IsInt" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Every rational integer lies in the category <Ref Func="IsInt"/>,
+##  which is a subcategory of <Ref Func="IsRat"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategoryKernel( "IsInt", IsRat, IS_INT );
 
@@ -70,7 +130,16 @@ DeclareCategoryKernel( "IsInt", IsRat, IS_INT );
 ##
 #C  IsPosRat( <obj> )
 ##
-##  Every positive rational number lies in the category `IsPosRat'.
+##  <#GAPDoc Label="IsPosRat">
+##  <ManSection>
+##  <Filt Name="IsPosRat" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Every positive rational number lies in the category
+##  <Ref Func="IsPosRat"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsPosRat", IsRat );
 
@@ -79,7 +148,15 @@ DeclareCategory( "IsPosRat", IsRat );
 ##
 #C  IsPosInt( <obj> )
 ##
-##  Every positive integer lies in the category `IsPosInt'.
+##  <#GAPDoc Label="IsPosInt">
+##  <ManSection>
+##  <Filt Name="IsPosInt" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Every positive integer lies in the category <Ref Func="IsPosInt"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsPosInt", IsInt and IsPosRat );
 
@@ -88,7 +165,16 @@ DeclareSynonym( "IsPosInt", IsInt and IsPosRat );
 ##
 #C  IsNegRat( <obj> )
 ##
-##  Every negative rational number lies in the category `IsNegRat'.
+##  <#GAPDoc Label="IsNegRat">
+##  <ManSection>
+##  <Filt Name="IsNegRat" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Every negative rational number lies in the category
+##  <Ref Func="IsNegRat"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsNegRat", IsRat );
 
@@ -97,7 +183,13 @@ DeclareCategory( "IsNegRat", IsRat );
 ##
 #C  IsNegInt( <obj> )
 ##
-##  Every negative integer lies in the category `IsNegInt'.
+##  <ManSection>
+##  <Filt Name="IsNegInt" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Every negative integer lies in the category <Ref Func="IsNegInt"/>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareSynonym( "IsNegInt", IsInt and IsNegRat );
 
@@ -106,7 +198,14 @@ DeclareSynonym( "IsNegInt", IsInt and IsNegRat );
 ##
 #C  IsZeroCyc( <obj> )
 ##
-##  Only the zero `0' of the cyclotomics lies in the category `IsZeroCyc'.
+##  <ManSection>
+##  <Filt Name="IsZeroCyc" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  Only the zero <C>0</C> of the cyclotomics lies in the category
+##  <Ref Func="IsZeroCyc"/>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategory( "IsZeroCyc", IsInt and IsZero );
 
@@ -114,6 +213,13 @@ DeclareCategory( "IsZeroCyc", IsInt and IsZero );
 #############################################################################
 ##
 #V  CyclotomicsFamily . . . . . . . . . . . . . . . . . family of cyclotomics
+##
+##  <ManSection>
+##  <Var Name="CyclotomicsFamily"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "CyclotomicsFamily",
     NewFamily( "CyclotomicsFamily",
@@ -124,12 +230,26 @@ BIND_GLOBAL( "CyclotomicsFamily",
 ##
 #R  IsSmallIntRep . . . . . . . . . . . . . . . . . .  small internal integer
 ##
+##  <ManSection>
+##  <Filt Name="IsSmallIntRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareRepresentation( "IsSmallIntRep", IsInternalRep, [] );
 
 
 #############################################################################
 ##
 #V  TYPE_INT_SMALL_ZERO . . . . . . . . . . . . . . type of the internal zero
+##
+##  <ManSection>
+##  <Var Name="TYPE_INT_SMALL_ZERO"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_INT_SMALL_ZERO", NewType( CyclotomicsFamily,
                             IsInt and IsZeroCyc and IsSmallIntRep ) );
@@ -139,6 +259,13 @@ BIND_GLOBAL( "TYPE_INT_SMALL_ZERO", NewType( CyclotomicsFamily,
 ##
 #V  TYPE_INT_SMALL_NEG  . . . . . . type of a small negative internal integer
 ##
+##  <ManSection>
+##  <Var Name="TYPE_INT_SMALL_NEG"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "TYPE_INT_SMALL_NEG", NewType( CyclotomicsFamily,
                             IsInt and IsNegRat and IsSmallIntRep ) );
 
@@ -146,6 +273,13 @@ BIND_GLOBAL( "TYPE_INT_SMALL_NEG", NewType( CyclotomicsFamily,
 #############################################################################
 ##
 #V  TYPE_INT_SMALL_POS  . . . . . . type of a small positive internal integer
+##
+##  <ManSection>
+##  <Var Name="TYPE_INT_SMALL_POS"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_INT_SMALL_POS", NewType( CyclotomicsFamily,
                             IsPosInt and IsSmallIntRep ) );
@@ -155,6 +289,13 @@ BIND_GLOBAL( "TYPE_INT_SMALL_POS", NewType( CyclotomicsFamily,
 ##
 #V  TYPE_INT_LARGE_NEG  . . . . . . type of a large negative internal integer
 ##
+##  <ManSection>
+##  <Var Name="TYPE_INT_LARGE_NEG"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "TYPE_INT_LARGE_NEG", NewType( CyclotomicsFamily,
                             IsInt and IsNegRat and IsInternalRep ) );
 
@@ -162,6 +303,13 @@ BIND_GLOBAL( "TYPE_INT_LARGE_NEG", NewType( CyclotomicsFamily,
 #############################################################################
 ##
 #V  TYPE_INT_LARGE_POS  . . . . . . type of a large positive internal integer
+##
+##  <ManSection>
+##  <Var Name="TYPE_INT_LARGE_POS"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_INT_LARGE_POS", NewType( CyclotomicsFamily,
                             IsPosInt and IsInternalRep ) );
@@ -171,6 +319,13 @@ BIND_GLOBAL( "TYPE_INT_LARGE_POS", NewType( CyclotomicsFamily,
 ##
 #V  TYPE_RAT_NEG  . . . . . . . . . . .  type of a negative internal rational
 ##
+##  <ManSection>
+##  <Var Name="TYPE_RAT_NEG"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "TYPE_RAT_NEG", NewType( CyclotomicsFamily,
                             IsRat and IsNegRat and IsInternalRep ) );
 
@@ -179,12 +334,26 @@ BIND_GLOBAL( "TYPE_RAT_NEG", NewType( CyclotomicsFamily,
 ##
 #V  TYPE_RAT_POS  . . . . . . . . . . .  type of a positive internal rational
 ##
+##  <ManSection>
+##  <Var Name="TYPE_RAT_POS"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 BIND_GLOBAL( "TYPE_RAT_POS", NewType( CyclotomicsFamily,
                             IsRat and IsPosRat and IsInternalRep ) );
 
 #############################################################################
 ##
 #V  TYPE_CYC  . . . . . . . . . . . . . . . . type of an internal cyclotomics
+##
+##  <ManSection>
+##  <Var Name="TYPE_CYC"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 BIND_GLOBAL( "TYPE_CYC",
     NewType( CyclotomicsFamily, IsCyc and IsInternalRep ) );
@@ -212,14 +381,35 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 ##
 #F  E( <n> )
 ##
-##  `E' returns the primitive <n>-th root of unity $e_n = e^{2\pi i/n}$.
+##  <#GAPDoc Label="E">
+##  <ManSection>
+##  <Func Name="E" Arg='n'/>
+##
+##  <Description>
+##  <Index>roots of unity</Index>
+##  <Ref Func="E"/> returns the primitive <A>n</A>-th root of unity
+##  <M>e_n = \exp(2\pi i/n)</M>.
 ##  Cyclotomics are usually entered as sums of roots of unity,
 ##  with rational coefficients,
-##  and irrational cyclotomics are displayed in the same way.
-##  (For special cyclotomics, see~"ATLAS irrationalities".)
+##  and irrational cyclotomics are displayed in such a way.
+##  (For special cyclotomics, see&nbsp;<Ref Sect="ATLAS Irrationalities"/>.)
+##  <P/>
+##  <Example><![CDATA[
+##  gap> E(9); E(9)^3; E(6); E(12) / 3;
+##  -E(9)^4-E(9)^7
+##  E(3)
+##  -E(3)^2
+##  -1/3*E(12)^7
+##  ]]></Example>
+##  <P/>
+##  A particular basis is used to express cyclotomics,
+##  see&nbsp;<Ref Sect="Integral Bases of Abelian Number Fields"/>;
+##  note that <C>E(9)</C> is <E>not</E> a basis element,
+##  as the above example shows.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-
-# DeclareGlobalFunction( "E" );
 
 
 #############################################################################
@@ -227,20 +417,49 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 #C  IsInfinity( <obj> ) . . . . . . . . . . . . . . . .  category of infinity
 #V  infinity  . . . . . . . . . . . . . . . . . . . . . .  the value infinity
 ##
-##  `infinity' is a special {\GAP} object that lies in `CyclotomicsFamily'.
+##  <#GAPDoc Label="IsInfinity">
+##  <ManSection>
+##  <Filt Name="IsInfinity" Arg='obj' Type='Category'/>
+##  <Var Name="infinity"/>
+##
+##  <Description>
+##  <Ref Var="infinity"/> is a special &GAP; object that lies in
+##  <C>CyclotomicsFamily</C>.
 ##  It is larger than all other objects in this family.
-##  `infinity' is mainly used as return value of operations such as `Size'
-##  and `Dimension' for infinite resp.~infinite dimensional domains.
-##
-##  Note that *no* arithmetic operations are provided for `infinity',
-##  in particular there is no problem to define what `0 * infinity' or
-##  `infinity - infinity' means.
-##
-##  Often it is useful to distinguish `infinity' from ``proper''
-##  cyclotomics.
-##  For that, `infinity' lies in the category `IsInfinity' but not in
-##  `IsCyc', and the other cyclotomics lie in the category `IsCyc' but not
-##  in `IsInfinity'.
+##  <Ref Var="infinity"/> is mainly used as return value of operations such
+##  as <Ref Func="Size"/>
+##  and <Ref Func="Dimension"/> for infinite and infinite dimensional domains,
+##  respectively.
+##  <P/>
+##  Note that <E>no</E> arithmetic operations are provided for
+##  <Ref Var="infinity"/>,
+##  in particular there is no problem to define what <C>0 * infinity</C> or
+##  <C>infinity - infinity</C> means.
+##  <P/>
+##  Often it is useful to distinguish <Ref Var="infinity"/>
+##  from <Q>proper</Q> cyclotomics.
+##  For that, <Ref Var="infinity"/> lies in the category
+##  <Ref Func="IsInfinity"/> but not in <Ref Func="IsCyc"/>,
+##  and the other cyclotomics lie in the category <Ref Func="IsCyc"/> but not
+##  in <Ref Func="IsInfinity"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> s:= Size( Rationals );
+##  infinity
+##  gap> s = infinity; IsCyclotomic( s ); IsCyc( s ); IsInfinity( s );
+##  true
+##  true
+##  false
+##  true
+##  gap> s in Rationals; s > 17;
+##  false
+##  true
+##  gap> Set( [ s, 2, s, E(17), s, 19 ] );
+##  [ 2, 19, E(17), infinity ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsInfinity", IsCyclotomic );
 
@@ -282,17 +501,43 @@ InstallMethod( \<,
 ##
 #P  IsIntegralCyclotomic( <obj> ) . . . . . . . . . . .  integral cyclotomics
 ##
-##  A cyclotomic is called *integral* or a *cyclotomic integer* if all
-##  coefficients of its minimal polynomial over the rationals are integers.
+##  <#GAPDoc Label="IsIntegralCyclotomic">
+##  <ManSection>
+##  <Prop Name="IsIntegralCyclotomic" Arg='obj'/>
+##
+##  <Description>
+##  A cyclotomic is called <E>integral</E> or a <E>cyclotomic integer</E>
+##  if all coefficients of its minimal polynomial over the rationals are
+##  integers.
 ##  Since the underlying basis of the external representation of cyclotomics
-##  is an integral basis (see~"Integral Bases for Abelian Number Fields"),
+##  is an integral basis
+##  (see&nbsp;<Ref Sect="Integral Bases of Abelian Number Fields"/>),
 ##  the subring of cyclotomic integers in a cyclotomic field is formed
 ##  by those cyclotomics for which the external representation is a list of
 ##  integers.
 ##  For example, square roots of integers are cyclotomic integers
-##  (see~"ATLAS irrationalities"), any root of unity is a cyclotomic integer,
+##  (see&nbsp;<Ref Sect="ATLAS Irrationalities"/>),
+##  any root of unity is a cyclotomic integer,
 ##  character values are always cyclotomic integers,
 ##  but all rationals which are not integers are not cyclotomic integers.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> r:= ER( 5 );               # The square root of 5 ...
+##  E(5)-E(5)^2-E(5)^3+E(5)^4
+##  gap> IsIntegralCyclotomic( r ); # ... is a cyclotomic integer.
+##  true
+##  gap> r2:= 1/2 * r;              # This is not a cyclotomic integer, ...
+##  1/2*E(5)-1/2*E(5)^2-1/2*E(5)^3+1/2*E(5)^4
+##  gap> IsIntegralCyclotomic( r2 );
+##  false
+##  gap> r3:= 1/2 * r - 1/2;        # ... but this is one.
+##  E(5)+E(5)^4
+##  gap> IsIntegralCyclotomic( r3 );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsIntegralCyclotomic", IsObject );
 
@@ -309,13 +554,31 @@ InstallMethod( IsIntegralCyclotomic,
 #A  Conductor( <cyc> )  . . . . . . . . . . . . . . . . . .  for a cyclotomic
 #A  Conductor( <C> )  . . . . . . . . . . . . for a collection of cyclotomics
 ##
-##  For an element <cyc> of a cyclotomic field, `Conductor' returns the
-##  smallest integer $n$ such that <cyc> is contained in the $n$-th
-##  cyclotomic field.
-##  For a collection <C> of cyclotomics (for example a dense list of
-##  cyclotomics or a field of cyclotomics), `Conductor' returns the
-##  smallest integer $n$ such that all elements of <C> are contained in the
-##  $n$-th cyclotomic field.
+##  <#GAPDoc Label="Conductor">
+##  <ManSection>
+##  <Attr Name="Conductor" Arg='cyc' Label="for a cyclotomic"/>
+##  <Attr Name="Conductor" Arg='C' Label="for a collection of cyclotomics"/>
+##
+##  <Description>
+##  For an element <A>cyc</A> of a cyclotomic field,
+##  <Ref Attr="Conductor" Label="for a cyclotomic"/>
+##  returns the smallest integer <M>n</M> such that <A>cyc</A> is contained
+##  in the <M>n</M>-th cyclotomic field.
+##  For a collection <A>C</A> of cyclotomics (for example a dense list of
+##  cyclotomics or a field of cyclotomics),
+##  <Ref Attr="Conductor" Label="for a collection of cyclotomics"/> returns
+##  the smallest integer <M>n</M> such that all elements of <A>C</A>
+##  are contained in the <M>n</M>-th cyclotomic field.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Conductor( 0 ); Conductor( E(10) ); Conductor( E(12) );
+##  1
+##  5
+##  12
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttributeKernel( "Conductor", IsCyc, CONDUCTOR );
 DeclareAttribute( "Conductor", IsCyclotomicCollection );
@@ -328,21 +591,35 @@ DeclareAttribute( "Conductor", IsCyclotomicCollection );
 #O  GaloisCyc( <cyc>, <k> ) . . . . . . . . . . . . . . . .  Galois conjugate
 #O  GaloisCyc( <list>, <k> )  . . . . . . . . . . . list of Galois conjugates
 ##
-##  For a cyclotomic <cyc> and an integer <k>,
-##  `GaloisCyc' returns the cyclotomic obtained by raising the roots of unity
-##  in the Zumbroich basis representation of <cyc> to the <k>-th power.
-##  If <k> is coprime to the integer $n$,
-##  `GaloisCyc( ., <k> )' acts as a Galois automorphism of the $n$-th
-##  cyclotomic field (see~"Galois Groups of Abelian Number Fields");
+##  <#GAPDoc Label="GaloisCyc">
+##  <ManSection>
+##  <Oper Name="GaloisCyc" Arg='cyc, k' Label="for a cyclotomic"/>
+##  <Oper Name="GaloisCyc" Arg='list, k' Label="for a list of cyclotomics"/>
+##
+##  <Description>
+##  For a cyclotomic <A>cyc</A> and an integer <A>k</A>,
+##  <Ref Oper="GaloisCyc" Label="for a cyclotomic"/> returns the cyclotomic
+##  obtained by raising the roots of unity in the Zumbroich basis
+##  representation of <A>cyc</A> to the <A>k</A>-th power.
+##  If <A>k</A> is coprime to the integer <M>n</M>,
+##  <C>GaloisCyc( ., <A>k</A> )</C> acts as a Galois automorphism
+##  of the <M>n</M>-th cyclotomic field
+##  (see&nbsp;<Ref Sect="Galois Groups of Abelian Number Fields"/>);
 ##  to get the Galois automorphisms themselves,
-##  use `GaloisGroup' (see~"GaloisGroup!of field").
-##
-##  The *complex conjugate* of <cyc> is `GaloisCyc( <cyc>, -1 )',
-##  which can also be computed using `ComplexConjugate'
-##  (see~"ComplexConjugate").
-##
-##  For a list or matrix <list> of cyclotomics, `GaloisCyc' returns the list
-##  obtained by applying `GaloisCyc' to the entries of <list>.
+##  use <Ref Oper="GaloisGroup" Label="of field"/>.
+##  <P/>
+##  The <E>complex conjugate</E> of <A>cyc</A> is
+##  <C>GaloisCyc( <A>cyc</A>, -1 )</C>,
+##  which can also be computed using <Ref Func="ComplexConjugate"/>.
+##  <P/>
+##  For a list or matrix <A>list</A> of cyclotomics,
+##  <Ref Oper="GaloisCyc" Label="for a list of cyclotomics"/> returns
+##  the list obtained by applying
+##  <Ref Oper="GaloisCyc" Label="for a cyclotomic"/> to the entries of
+##  <A>list</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperationKernel( "GaloisCyc", [ IsCyc, IsInt ], GALOIS_CYC );
 DeclareOperation( "GaloisCyc", [ IsCyclotomicCollection, IsInt ] );
@@ -367,11 +644,32 @@ InstallMethod( GaloisCyc,
 ##
 #F  NumeratorRat( <rat> ) . . . . . . . . . .  numerator of internal rational
 ##
-##  `NumeratorRat' returns the numerator of the rational <rat>.
+##  <#GAPDoc Label="NumeratorRat">
+##  <ManSection>
+##  <Func Name="NumeratorRat" Arg='rat'/>
+##
+##  <Description>
+##  <Index Subkey="of a rational">numerator</Index>
+##  <Ref Func="NumeratorRat"/> returns the numerator of the rational
+##  <A>rat</A>.
 ##  Because the numerator holds the sign of the rational it may be any
 ##  integer.
-##  Integers are rationals with denominator $1$, thus `NumeratorRat' is the
-##  identity function for integers.
+##  Integers are rationals with denominator <M>1</M>,
+##  thus <Ref Func="NumeratorRat"/> is the identity function for integers.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NumeratorRat( 2/3 );
+##  2
+##  gap> NumeratorRat( 66/123 );  # numerator and denominator are made relatively prime
+##  22
+##  gap> NumeratorRat( 17/-13 );  # the numerator holds the sign of the rational
+##  -17
+##  gap> NumeratorRat( 11 );      # integers are rationals with denominator 1
+##  11
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NumeratorRat", NUMERATOR_RAT );
 
@@ -380,11 +678,32 @@ BIND_GLOBAL( "NumeratorRat", NUMERATOR_RAT );
 ##
 #F  DenominatorRat( <rat> ) . . . . . . . .  denominator of internal rational
 ##
-##  `DenominatorRat' returns the denominator of the rational <rat>.
+##  <#GAPDoc Label="DenominatorRat">
+##  <ManSection>
+##  <Func Name="DenominatorRat" Arg='rat'/>
+##
+##  <Description>
+##  <Index Subkey="of a rational">denominator</Index>
+##  <Ref Func="DenominatorRat"/> returns the denominator of the rational
+##  <A>rat</A>.
 ##  Because the numerator holds the  sign of the rational the denominator is
 ##  always a positive integer.
-##  Integers are rationals with the denominator 1, thus `DenominatorRat'
-##  returns 1 for integers.
+##  Integers are rationals with the denominator 1,
+##  thus <Ref Func="DenominatorRat"/> returns 1 for integers.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> DenominatorRat( 2/3 );
+##  3
+##  gap> DenominatorRat( 66/123 );  # numerator and denominator are made relatively prime
+##  41
+##  gap> DenominatorRat( 17/-13 );  # the denominator holds the sign of the rational
+##  13
+##  gap> DenominatorRat( 11 );      # integers are rationals with denominator 1
+##  1
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DenominatorRat", DENOMINATOR_RAT );
 
@@ -393,20 +712,36 @@ BIND_GLOBAL( "DenominatorRat", DENOMINATOR_RAT );
 ##
 #F  QuoInt( <n>, <m> )  . . . . . . . . . . . . quotient of internal integers
 ##
-##  `QuoInt' returns the integer part of the quotient of its integer
-##  operands.
+##  <#GAPDoc Label="QuoInt">
+##  <ManSection>
+##  <Func Name="QuoInt" Arg='n, m'/>
 ##
-##  If <n> and <m> are positive `QuoInt( <n>, <m> )' is the largest
-##  positive integer <q> such that $<q> \* <m> \le <n>$.
-##  If <n> or <m> or both are negative the absolute value of the integer part
-##  of the quotient is the quotient of the absolute values of <n> and <m>,
-##  and the sign of it is the product of the signs of <n> and <m>.
+##  <Description>
+##  <Index>integer part of a quotient</Index>
+##  <Ref Func="QuoInt"/> returns the integer part of the quotient of its
+##  integer operands.
+##  <P/>
+##  If <A>n</A> and <A>m</A> are positive, <Ref Func="QuoInt"/> returns
+##  the largest positive integer <M>q</M> such that
+##  <M>q * <A>m</A> \leq <A>n</A></M>.
+##  If <A>n</A> or <A>m</A> or both are negative the absolute value of the
+##  integer part of the quotient is the quotient of the absolute values of
+##  <A>n</A> and <A>m</A>,
+##  and the sign of it is the product of the signs of <A>n</A> and <A>m</A>.
+##  <P/>
+##  <Ref Func="QuoInt"/> is used in a method for the general operation
+##  <Ref Func="EuclideanQuotient"/>.
+##  <Example><![CDATA[
+##  gap> QuoInt(5,3);  QuoInt(-5,3);  QuoInt(5,-3);  QuoInt(-5,-3);
+##  1
+##  -1
+##  -1
+##  1
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  `QuoInt' is used in a method for the general operation
-##  `EuclideanQuotient' (see~"EuclideanQuotient").
-##
-
-#DeclareGlobalFunction( "QuoInt" );
 BIND_GLOBAL( "QuoInt", QUO_INT );
 
 
@@ -414,22 +749,37 @@ BIND_GLOBAL( "QuoInt", QUO_INT );
 ##
 #F  RemInt( <n>, <m> )  . . . . . . . . . . .  remainder of internal integers
 ##
-##  `RemInt' returns the remainder of its two integer operands.
+##  <#GAPDoc Label="RemInt">
+##  <ManSection>
+##  <Func Name="RemInt" Arg='n, m'/>
 ##
-##  If <m> is not equal to zero
-##  `RemInt( <n>, <m> ) = <n> - <m> * QuoInt( <n>, <m> )'.
-##  Note that the rules given for `QuoInt' imply that `RemInt( <n>, <m> )'
-##  has the same sign as <n> and its absolute value is strictly less than the
-##  absolute value of <m>.
-##  Note also that `RemInt( <n>, <m> ) = <n> mod <m>' when both <n> and <m>
-##  are nonnegative.
-##  Dividing by 0 signals an error.
+##  <Description>
+##  <Index>remainder of a quotient</Index>
+##  <Ref Func="RemInt"/> returns the remainder of its two integer operands.
+##  <P/>
+##  If <A>m</A> is not equal to zero, <Ref Func="RemInt"/> returns
+##  <C><A>n</A> - <A>m</A> * QuoInt( <A>n</A>, <A>m</A> )</C>.
+##  Note that the rules given for <Ref Func="QuoInt"/> imply that the return
+##  value of <Ref Func="RemInt"/> has the same sign as <A>n</A>
+##  and its absolute value is strictly less than the absolute value
+##  of <A>m</A>.
+##  Note also that the return value equals <C><A>n</A> mod <A>m</A></C>
+##  when both <A>n</A> and <A>m</A> are nonnegative.
+##  Dividing by <C>0</C> signals an error.
+##  <P/>
+##  <Ref Func="RemInt"/> is used in a method for the general operation
+##  <Ref Func="EuclideanRemainder"/>.
+##  <Example><![CDATA[
+##  gap> RemInt(5,3);  RemInt(-5,3);  RemInt(5,-3);  RemInt(-5,-3);
+##  2
+##  -2
+##  2
+##  -2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  `RemInt' is used in a method for the general operation
-##  `EuclideanRemainder' (see~"EuclideanRemainder").
-##
-
-#DeclareGlobalFunction( "RemInt" );
 BIND_GLOBAL( "RemInt", REM_INT );
 
 
@@ -437,16 +787,30 @@ BIND_GLOBAL( "RemInt", REM_INT );
 ##
 #F  GcdInt( <m>, <n> )  . . . . . . . . . . . . . .  gcd of internal integers
 ##
-##  `GcdInt' returns the greatest common divisor of its two integer operands
-##  <m> and <n>, i.e., the greatest integer that divides both <m> and <n>.
+##  <#GAPDoc Label="GcdInt">
+##  <ManSection>
+##  <Func Name="GcdInt" Arg='m, n'/>
+##
+##  <Description>
+##  <Ref Func="GcdInt"/> returns the greatest common divisor
+##  of its two integer operands <A>m</A> and <A>n</A>, i.e.,
+##  the greatest integer that divides both <A>m</A> and <A>n</A>.
 ##  The greatest common divisor is never negative, even if the arguments are.
-##  We define `GcdInt( <m>, 0 ) = GcdInt( 0, <m> ) = AbsInt( <m> )' and
-##  `GcdInt( 0, 0 ) = 0'.
+##  We define
+##  <C>GcdInt( <A>m</A>, 0 ) = GcdInt( 0, <A>m</A> ) = AbsInt( <A>m</A> )</C>
+##  and <C>GcdInt( 0, 0 ) = 0</C>.
+##  <P/>
+##  <Ref Func="GcdInt"/> is a method used by the general function
+##  <Ref Func="Gcd" Label="for (a ring and) several elements"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> GcdInt( 123, 66 );
+##  3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  `GcdInt' is a method used by the general function `Gcd' (see~"Gcd").
-##
-
-#DeclareGlobalFunction( "GcdInt" );
 BIND_GLOBAL( "GcdInt", GCD_INT );
 
 
@@ -500,6 +864,25 @@ InstallMethod( Order,
 #M  Int( <rat> ) . . . . . . . . . . . .   convert a rational into an integer
 #M  Int( <cyc> )  . . . . . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
+##  <#GAPDoc Label="Int:cyclotomics">
+##  <ManSection>
+##  <Func Name="Int" Arg='cyc' Label="for a cyclotomic"/>
+##  
+##  <Description>
+##  The operation <Ref Func="Int" Label="for a cyclotomic"/>
+##  can be used to find a cyclotomic integer near to an arbitrary cyclotomic.
+##  For rationals, <Ref Func="Int" Label="for a cyclotomic"/> returns
+##  the largest integer smaller or equal to the argument.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Int( E(5)+1/2*E(5)^2 ); Int( 2/3*E(7)+3/2*E(4) );
+##  E(5)
+##  E(4)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 InstallMethod( Int,
     "for an integer",
     [ IsInt ],
@@ -513,16 +896,7 @@ InstallMethod( Int,
 InstallMethod( Int,
     "for a cyclotomic",
     [ IsCyc ],
-    function ( x )
-    local i, int, n, cfs;
-    n:= Conductor( x );
-    cfs:= COEFFS_CYC( x );
-    int:= 0;
-    for i in [ 1 .. n ] do
-      int:= int + Int( cfs[i] ) * E(n)^(i-1);
-    od;
-    return int;
-    end );
+    cyc -> CycList( List( COEFFS_CYC( cyc ), Int ) ) );
 
 
 #############################################################################
@@ -531,7 +905,26 @@ InstallMethod( Int,
 #M  String( <rat> ) . . . . . . . . . . . .  convert a rational into a string
 #M  String( <cyc> ) . . . . . . . . . . . .  convert cyclotomic into a string
 #M  String( <infinity> )  . . . . . . . . . . . . . . . . . .  for `infinity'
+##
+##  <#GAPDoc Label="String:cyclotomics">
+##  <ManSection>
+##  <Meth Name="String" Arg='cyc' Label="for a cyclotomic"/>
 ##  
+##  <Description>
+##  The operation <Ref Func="String" Label="for a cyclotomic"/>
+##  returns for a cyclotomic <A>cyc</A> a string corresponding to the way
+##  the cyclotomic is printed by <Ref Func="ViewObj"/> and
+##  <Ref Func="PrintObj"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> String( E(5)+1/2*E(5)^2 ); String( 17/3 );
+##  "E(5)+1/2*E(5)^2"
+##  "17/3"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 InstallMethod( String,
     "for an integer",
     [ IsInt ],
@@ -543,15 +936,15 @@ function(a)
     # kernel method
     return STRING_INT(a);
   fi;
-  
+
   # sign
-  if a < 0 then 
+  if a < 0 then
     sign := "-";
     a := -a;
   else
     sign := "";
   fi;
-  
+
   # recursion
   halflen := QuoInt(Log2Int(a)*100, 664);
   b := 10^halflen;
@@ -564,7 +957,7 @@ function(a)
   fi;
   s2 := String(qr[2]);
   pad := ListWithIdenticalEntries(halflen-Length(s2), '0');
-  
+
   return Concatenation(sign,s1,pad,s2);
 end);
 

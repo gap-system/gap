@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  string.h                    GAP source                   Martin Schoenert
+*W  string.h                    GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions which mainly deal with strings.
 **
@@ -116,13 +117,24 @@ extern Obj NEW_STRING(Int len);
 **  Note that 'GROW_STRING' is a macro, so do not call it with arguments that
 **  have sideeffects.
 */
-#define GROW_STRING(list,len)   ((len) < (SIZE_OBJ(list) - sizeof(UInt) - 1) ? \
+#define GROW_STRING(list,len)   ( ((len) + sizeof(UInt) < SIZE_OBJ(list)) ? \
                                  0L : GrowString(list,len) )
 
 extern  Int             GrowString (
             Obj                 list,
             UInt                need );
 
+/****************************************************************************
+**
+*F  SHRINK_STRING(<list>) . . . . . . . . .  shrink a string to minimal size
+**
+**  'SHRINK_STRING' gives back not needed memory allocated by string.
+**
+**  Note that 'SHRINK_STRING' is a macro, so do not call it with arguments that
+**  have sideeffects.
+*/
+#define SHRINK_STRING(list)   ResizeBag((list),\
+                            (SIZEBAG_STRINGLEN(GET_LEN_STRING((list)))));
 
 /****************************************************************************
 **

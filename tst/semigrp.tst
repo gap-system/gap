@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -94,9 +96,9 @@ gap> IsTransformationSemigroup(M);
 true
 gap> IsTransformationMonoid(M);
 true
-gap> I := MagmaIdealByGenerators(M, [b]);;
-gap> J := SemigroupIdealByGenerators(M,[b]);;
-gap> I = J;
+gap> K := MagmaIdealByGenerators(M, [b]);;
+gap> L := SemigroupIdealByGenerators(M,[b]);;
+gap> K = L;
 true
 gap> ########################
 gap> #
@@ -112,12 +114,12 @@ gap> e := Transformation([1,2,3,3]);;
 gap> f := Transformation([1,2,4,4]);;
 gap> O4 := Monoid([a,b,c,d,e,f]);;
 gap> 
-gap> I := MagmaIdealByGenerators(O4, [a*f]);;
+gap> J := MagmaIdealByGenerators(O4, [a*f]);;
 gap> C := SemigroupCongruenceByGeneratingPairs(O4, [[a*f, a*e]]);;
-gap> P := EquivalenceRelationPartition(C);;
-gap> AsSSortedList(I) = AsSSortedList(P[1]);     # true
+gap> erp := EquivalenceRelationPartition(C);;
+gap> AsSSortedList(J) = AsSSortedList(erp[1]);     # true
 true
-gap> Length(P);
+gap> Length(erp);
 1
 gap> IsReesCongruence(C);              # true
 true
@@ -133,8 +135,9 @@ MappingByFunction( <fp group of size 4 on the generators [ a ]>, <monoid with
 4 generators>, function( g ) ... end )
 gap> m := Range(phi);
 <monoid with 4 generators>
-gap> el := Elements(m);
-[ 0, <identity ...>, a, a^-1, a^2 ]
+gap> el := Elements(m);;
+gap> Size(m)=5;
+true
 gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);
 <semigroup congruence with 1 generating pairs>
 gap> EquivalenceRelationPartition(c);
@@ -283,9 +286,10 @@ gap> CategoryCollections(IsMultiplicativeElementWithZero)(m);
 true
 gap> 
 gap> 
-gap> STOP_TEST( "semigrp.tst", 74105000 );
+gap> STOP_TEST( "semigrp.tst",135000574);
 
 
 #############################################################################
 ##
-#E  semigrp.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

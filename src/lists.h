@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  lists.h                     GAP source                   Martin Schoenert
+*W  lists.h                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the generic list package.
 **
@@ -18,6 +19,7 @@
 const char * Revision_lists_h =
    "@(#)$Id$";
 #endif
+
 
 
 extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
@@ -246,9 +248,10 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  'ELMB_LIST' and install it  in 'ElmbListFuncs[<type>]'.  This function must
 **  signal an error if <pos> is larger than the length of <list> or if <list>
 **  has no assigned object at <pos>.
-*/
+
 extern Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
 
+*/
 
 /****************************************************************************
 **
@@ -268,7 +271,10 @@ extern Obj (*ElmbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
 **  It is intended as an interface for access to elements of large external
 **  lists, on the rare occasions when the kernel needs to do this.
 */
-#define ELMB_LIST(list,pos)      ((*ElmbListFuncs[TNUM_OBJ(list)])(list,pos))
+extern Obj ELMB_LIST( Obj list, Obj pos);
+
+
+
 
 
 /****************************************************************************
@@ -663,7 +669,7 @@ extern  Int             IsPossListDefault (
 **
 **  'POS_LIST' returns  the  position of the  first  occurence of  the object
 **  <obj>,  which may be an object of any type, in the  list <list> after the
-**  position  <start> as a C  integer.  0 is returned if  <obj> is not in the
+**  position  <start> as GAP Integer.  Fail is returned if  <obj> is not in the
 **  list after <start>.  An error is signalled if <list> is not a list.
 **
 **  Note that 'POS_LIST'  is a macro,  so do  not call it with arguments that
@@ -675,12 +681,12 @@ extern  Int             IsPossListDefault (
 #define POS_LIST(list,obj,start) \
                         ((*PosListFuncs[TNUM_OBJ(list)])(list,obj,start))
 
-extern  Int             (*PosListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj obj, Int start);
+extern  Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj obj, Obj start);
 
-extern  Int             PosListDefault (
+extern  Obj             PosListDefault (
             Obj                 list,
             Obj                 obj,
-            Int                 start );
+            Obj                 start );
 
 
 /****************************************************************************
@@ -847,9 +853,9 @@ extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
   do { \
     UInt     new; \
     new = SetFiltListTNums[TNUM_OBJ(list)][fn]; \
-    if ( new > 0 ) \
+    if ( new != (UInt)-1 ) \
       RetypeBag( list, new ); \
-     else if ( new == -1 ) { \
+     else { \
       Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
       Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
       }  \
@@ -884,12 +890,12 @@ extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
   do { \
     UInt     new; \
     new = ResetFiltListTNums[TNUM_OBJ(list)][fn]; \
-    if ( new > 0 ) \
+    if ( new != (UInt) -1 ) \
       RetypeBag( list, new ); \
-/*    else if ( new < 0 ) { \
+    else  { \
       Pr( "#E  RESET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
       Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
-      } */ \
+      }  \
   } while (0)
 
 

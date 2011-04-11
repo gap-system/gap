@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  grpprmcs.gi                 GAP library                       Akos Seress
+#W  grpprmcs.gi                 GAP library                       Ákos Seress
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpprmcs_gi :=
     "@(#)$Id$";
@@ -46,8 +47,11 @@ InstallGlobalFunction( DisplayCompositionSeries, function( S )
     if IsGroup( S )  then
         S := CompositionSeries( S );
     fi;
-
-    # display the composition series
+    
+    # if we know the composition series, we know orders of groups, so we may
+    # enforce their computation before calling GroupString to display them.
+    Perform( S, Size );
+    
     Print( GroupString( S[1], "G" ), "\n" );
     for i  in [2..Length(S)]  do
       f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
@@ -130,9 +134,7 @@ InstallMethod( CompositionSeries,
 		 pcgs{ [ i - 1 .. Length( pcgs ) ] },
 		 Concatenation( GeneratorsOfGroup( fac ),
 		 List( [ i .. Length( pcgs ) ], k -> One( fac ) ) ) );
-	    if IsIdenticalObj(s,Parent(t)) then
-	      Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
-	    fi;
+            Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
 	    AddNaturalHomomorphismsPool(s,t,fahom);
             list[ i ] := t;
             s := t;
@@ -153,6 +155,7 @@ InstallMethod( CompositionSeries,
     # composition series for Gr/workgroup is already computed.
     # Try to get a factor group of workgroup
     while (Size(workgroup) > 1) or (Length(homlist) > 0) do
+#Print(List(normals,Length)," ",Size(workgroup),"\n");
         if Size(workgroup) > 1  then
             lastpt := LargestMovedPoint(workgroup);
 
@@ -160,7 +163,7 @@ InstallMethod( CompositionSeries,
             workgrouporbit:= StabChainMutable( workgroup ).orbit;
             if Length(workgrouporbit) < lastpt   then
                 tchom :=
-		ActionHomomorphism(workgroup,workgrouporbit,"surjective");
+		  ActionHomomorphism(workgroup,workgrouporbit,"surjective");
                 Add(homlist,tchom);
                 workgroup := Image(tchom,workgroup);
             else
@@ -198,6 +201,10 @@ InstallMethod( CompositionSeries,
         # if the workgroup was trivial
         else
             lenhomlist := Length(homlist);
+
+	    # pull back natural homs
+	    PullBackNaturalHomomorphismsPool(homlist[lenhomlist]);
+
             workgroup := KernelOfMultiplicativeGeneralMapping(
                              homlist[lenhomlist] );
 
@@ -216,8 +223,9 @@ InstallMethod( CompositionSeries,
     od;
 
     # loop over the subgroups
-    s := SubgroupNC( Gr, normals[1] );
-    SetSize( s, Size( Gr ) );
+    #s := SubgroupNC( Gr, normals[1] );
+    #SetSize( s, Size( Gr ) );
+    s:=Gr;
     list := [ s ];
     for i  in [2..Length(normals)]  do
         t := SubgroupNC( s, normals[i] );
@@ -227,23 +235,21 @@ InstallMethod( CompositionSeries,
         SetIsSimpleGroup( fac, true );
 	fahom:=GroupHomomorphismByImagesNC( s, fac,
                         normals[i-1], factors[i-1] );
-	if IsIdenticalObj(s,Parent(t)) then
-	  Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
-	fi;
+	#if IsIdenticalObj(Parent(t),s) then
+	#  Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
+	#fi;
         AddNaturalHomomorphismsPool(s, t,fahom);
         Add( list, t );
         s := t;
     od;
     t := TrivialSubgroup( s );
-    if Size( s ) / factorsize[Length(normals)] <> 1  then
-        Error("this shouldn't happen");
-    fi;
+    Assert(1,Size( s )=factorsize[Length(normals)]);
     fac := GroupByGenerators( factors[Length(normals)] );
     SetSize( fac, factorsize[Length(normals)] );
     SetIsSimpleGroup( fac, true );
     fahom:=GroupHomomorphismByImagesNC( s, fac,
                     normals[Length(normals)], factors[Length(normals)] );
-    if IsIdenticalObj(s,Parent(t)) then
+    if IsIdenticalObj(Parent(t),s) then
       Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
     fi;
     AddNaturalHomomorphismsPool(s, t,fahom);
@@ -287,10 +293,8 @@ InstallGlobalFunction( NonPerfectCSPG,
     for g in StabChainMutable( workgroup ).generators do
         if not (g in oldworkup)  then
             # check for error in random computation of derived subgroup
-            if ForAny ( StabChainMutable( oldworkup ).generators,
-                        x->not(x^g in oldworkup) ) then
-               Error("this shouldn't happen");
-            fi;
+	    Assert(1, ForAll ( StabChainMutable( oldworkup ).generators, 
+	                      x->(x^g in oldworkup) )); 
             workup := ClosureGroup(oldworkup, g);
             order := Size(workup)/Size(oldworkup);
             orderlist := FactorsInt(order);
@@ -359,6 +363,7 @@ InstallGlobalFunction( PerfectCSPG,
             stab1,      # stabilizer of first base point in K
             stab2,      # stabilizer of first two base points in K
             kerelement, # element of normal subgroup
+            ker2,       # conjugate of kerelement
             word,       # random element of stab1 as word
             x,y,        # first two base points of K
             i,j,        # loop variables
@@ -402,14 +407,20 @@ InstallGlobalFunction( PerfectCSPG,
                                     chainK.stabilizer.orbit[1]],
                              OnTuples);
             if IsTrivial(stab2) then
-               # a perfect Frobenius group must have SL(2,5) as
-               # one-point stabilizer; 1/120 chance to hit socle
-               prime := FactorsInt(whichcase[2])[1];
-	       repeat
-	         kerelement:=Random(K);
-	       until (not IsOne(kerelement)) and IsOne(kerelement^prime);
 
-               N := NormalClosure(K, SubgroupNC(K,[kerelement]));
+               prime := FactorsInt(whichcase[2])[1];
+               N:=Group(One(K));	       
+               repeat
+	         kerelement:=Random(K);
+                 if NrMovedPoints(kerelement)=LargestMovedPoint(K) and
+		     IsOne(kerelement^prime) then 
+                     ker2:=kerelement^Random(K);
+                     if Comm(kerelement,ker2)=One(K) then 
+                        N := NormalClosure(K, SubgroupNC(K,[kerelement]));
+                     fi;
+                 fi;
+               until Size(N)=whichcase[2];
+
             else
                list := NormalizerStabCSPG(K);
                H := list[1];
@@ -423,7 +434,7 @@ InstallGlobalFunction( PerfectCSPG,
                   L := Orbit( H, StabChainMutable( H ).orbit[1] );
                   tchom := ActionHomomorphism(H,L,"surjective");
                   op := Image( tchom );
-                  H := PreImages(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
+                  H := PreImage(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
                   H := Centre(H);
                   SetIsAbelian( H, true );
               fi;
@@ -1133,6 +1144,8 @@ InstallGlobalFunction( PullbackKernelCSPG,
             i, j,       # loop variables
             gens,       # list of generators in kernels
                         # of homomorphisms in homlist
+            k,		# kernel
+	    kg,		# kernel generators
             g;          # a member of gens
 
     # for each kernel, compute preimages of the kernel generators in the
@@ -1140,13 +1153,26 @@ InstallGlobalFunction( PullbackKernelCSPG,
     # in the composition series
     lenhomlist := Length(homlist);
     for i in [1..lenhomlist] do
+       k:=KernelOfMultiplicativeGeneralMapping(homlist[i]);
+       kg:=GeneratorsOfGroup(k);
        if IsBound(auxiliary[i])  then
-           gens := Union( GeneratorsOfGroup(
-                       KernelOfMultiplicativeGeneralMapping(homlist[i]) ),
+           gens := Union( GeneratorsOfGroup( k ),
                          StabChainMutable( auxiliary[i] ).generators);
+           if Length(gens)>6 then
+	     g:=Group(gens,());
+	     if IsSubset(auxiliary[i],k) then
+	       SetSize(g,Size(auxiliary[i]));
+	     else
+	       StabChainOptions(g).limit:=Size(k)*Size(auxiliary[i]);
+	     fi;
+	     gens:=SmallGeneratingSet(g);
+	   fi;
        else
-           gens := GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
-                                          homlist[i] ) );
+         if Length(kg)>5 then
+	   gens:=SmallGeneratingSet(k);
+	 else
+           gens := kg;
+	 fi;
        fi;
        for g in gens do
            for j in [1..i-1] do
@@ -1325,7 +1351,6 @@ end );
 
 #############################################################################
 ##
-
 #M  PCore() . . . . . . . . . . . . . . . . . . p core of a permutation group
 ##
 ##  O_p(G), the p-core of G, is the maximal normal p-subgroup
@@ -1389,7 +1414,12 @@ InstallMethod( PCoreOp,
            for g in StabChainMutable( workgroup ).generators do
                Add( pgenlist, g^( Size(workgroup)/( ppart ) ) );
            od;
-           return SubgroupNC( workgroup, pgenlist );
+           D := SubgroupNC( workgroup, pgenlist );
+           if ppart > 1 then
+               SetIsPGroup( D, true );
+               SetPrimePGroup( D, p );
+           fi;
+           return D;
     fi;
 
     n := LargestMovedPoint(workgroup);
@@ -1431,7 +1461,7 @@ InstallMethod( PCoreOp,
                 D := [];
                 C:= GeneratorsOfGroup( C );
                 for i in [1..Length( C )] do
-                    order := OrderPerm(C[i]);
+                    order := Order(C[i]);
                     if order mod p = 0  then
                         D[i] := C[i]^(order/p);
                     else
@@ -1499,7 +1529,12 @@ InstallMethod( PCoreOp,
             od;
         od;
     fi;
-    return SubgroupNC(workgroup,pgenlist);
+    D := SubgroupNC(workgroup,pgenlist);
+    if not ForAll(pgenlist,IsOne) then
+        SetIsPGroup( D, true );
+        SetPrimePGroup( D, p );
+    fi;
+    return D;
 end );
 
 
@@ -1542,7 +1577,10 @@ InstallMethod( RadicalGroup,
             GG,         # the image of G at this action
             hom,        # the homomorphism from G to GG
 	    map,	# natural homomorphism for radical.
-            solvable;   # list of generators for the radical
+            solvable,   # list of generators for the radical
+	    o,		# orbits of G
+	    b,		# blocks
+	    TryReduction;# function to test whether a hom. can reduce
 
     if IsTrivial(workgroup)  then
         return TrivialSubgroup(workgroup);
@@ -1554,11 +1592,73 @@ InstallMethod( RadicalGroup,
 
     n := LargestMovedPoint(workgroup);
     G := workgroup;
+
+    # if the degree is big, try to reduce it in a first step
+    if n>1000 then
+
+      TryReduction:=function(hom)
+      local s,f,k,map;
+	s:=Size(G)/Size(Image(hom)); # kernel size
+	# is the kernel solvable? If yes we can go to the image
+	f:=Collected(Factors(s));
+	# at most 2 primes or all primes to power 1 -> Solvable
+	if Length(f)<3 or ForAll(f,i->i[2]=1) then
+	  Info(InfoGroup,1,"solvable kernel size ",f);
+	  # OK, transfer result back
+	  k:=RadicalGroup(Image(hom));
+	  solvable:=PreImage(hom,k);
+	  map:=hom*NaturalHomomorphismByNormalSubgroup(Image(hom),k);
+	  SetKernelOfMultiplicativeGeneralMapping(map,solvable);
+	  AddNaturalHomomorphismsPool(G,solvable,map);
+	  return solvable;
+	fi;
+	return fail;
+      end;
+
+      # try orbits
+      o:=ShallowCopy(Orbits(G,MovedPoints(G)));
+      if Length(o)>1 then
+        Sort(o,function(a,b)return Length(a)<Length(b);end);
+        for i in o do
+	  Info(InfoGroup,1,"trying orbit length ",Length(o));
+	  hom:=ActionHomomorphism(G,i,"surjective");
+	  K:=TryReduction(hom);
+	  if K<>fail then
+	    return K;
+	  fi;
+	od;
+      fi;
+      # try blocks on orbits
+      for i in o do
+	b:=Blocks(G,i);
+	if Length(b)>1 then
+	  Info(InfoGroup,1,"trying blocks length ",Length(b));
+	  hom:=ActionHomomorphism(G,b,OnSets,"surjective");
+	  K:=TryReduction(hom);
+	  if K<>fail then
+	    return K;
+	  fi;
+        fi;
+      od;
+    fi;
+
     list := CompositionSeries(G);
     # normals := Copy(list[1]);
     # factorsize := list[3];
-    normals := List( [1..Length(list)-1],
-                     i->ShallowCopy(StabChainMutable(list[i]).generators));
+
+    #was:
+    #normals := List( [1..Length(list)-1],
+    #                 i->ShallowCopy(StabChainMutable(list[i]).generators));
+    # but not all subgroups in the comp.ser have their own stabchain.
+    normals:=[];
+    for i in [1..Length(list)-1] do
+      if HasStabChainMutable(list[i]) then
+        normals[i]:=ShallowCopy(StabChainMutable(list[i]).generators);
+      else
+        normals[i]:=ShallowCopy(GeneratorsOfGroup(list[i]));
+      fi;
+    od;
+
     factorsize := List([1..Length(list)-1],i->Size(list[i])/Size(list[i+1]));
     Add(normals, [()]);
     homlist := [];
@@ -1603,6 +1703,9 @@ InstallMethod( RadicalGroup,
                     actionlist := ActionAbelianCSPG(H,n);
 
                     Ggens:= StabChainMutable( G ).generators;
+		    if Length(Ggens)>5*Length(GeneratorsOfGroup(G)) then
+		      Ggens:=GeneratorsOfGroup(G);
+		    fi;
                     image:= List( Ggens,
                                 g -> ImageOnAbelianCSPG( g, actionlist ) );
 
@@ -1621,6 +1724,7 @@ InstallMethod( RadicalGroup,
                             Image(hom,normals[i][j]);
                         od;
                     od;
+		    Unbind(actionlist); # big object that is not needed later
                     G := GG;
                     index := index-1;
 
@@ -2471,7 +2575,7 @@ end );
 ##
 InstallGlobalFunction( ChiefSeriesOfGroup, function(arg)
 local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
-      through;
+      through,ocs;
   G:=arg[1];
   H:=G;
   through:=[];
@@ -2491,10 +2595,24 @@ local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
   U:=G;
   while Size(U)>1 do
     # get maximal normal subgroup
-    cs:=CompositionSeries(U);
+    if Size(U)<Size(G) and Size(ocs[1])/Size(U)<1000 then
+      n:=List(ocs,i->Intersection(U,i));
+      cs:=[U];
+      for i in [2..Length(n)] do
+        if Size(cs[Length(cs)])>Size(n[i]) then
+	  Add(cs,n[i]);
+	fi;
+      od;
+    else
+      cs:=CompositionSeries(U);
+    fi;
+    ocs:=cs;
     # add composition factors which are normal
     n:=2;
-    while n<=Length(cs) and Length(through)=0 and IsNormal(H,cs[n]) do
+    while n<=Length(cs) and Length(through)=0 and 
+      # IsNormal(H,cs[n]) do
+      ForAll(GeneratorsOfGroup(H),x->ForAll(GeneratorsOfGroup(cs[n]),
+                                       y->y^x in cs[n])) do
       U:=cs[n];
       Add(nser,U);
       n:=n+1;
@@ -2517,7 +2635,23 @@ local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
 	fi;
       fi;
 
-      n:=Core(H,cs);
+      #n:=Core(H,cs);
+      n:=cs;
+      i:=1;
+      gens:=GeneratorsOfGroup(H);
+      while i<=Length(gens) do
+        if not ForAll(GeneratorsOfGroup(n), x->x^gens[i] in n) then
+	  if IsIdenticalObj(FamilyObj(One(n)),FamilyObj(gens[i])) then
+	    n:=Intersection(n,n^gens[i]);
+	  else
+	    n:=Intersection(n,Image(gens[i],n));
+	  fi;
+	  i:=1;
+	else
+	  i:=i+1;
+	fi;
+      od;
+
       #o:=GroupOnSubgroupsOrbit(H,cs);
       #Info(InfoGroup,1,"orblen=",Length(o));
       #n:=Intersection(o);

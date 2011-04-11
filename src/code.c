@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  code.c                      GAP source                   Martin Schoenert
+*W  code.c                      GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the coder package.
 **
@@ -49,6 +50,7 @@ const char * Revision_code_c =
 #include        "vars.h"                /* variables                       */
 
 #include        "saveload.h"            /* saving and loading              */
+#include        "read.h"                /* to access stack of for loop globals */
 
 
 /****************************************************************************
@@ -92,10 +94,10 @@ Stat NewStat (
 
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), OffsBody );
+      ResizeBag( BODY_FUNC(CURR_FUNC), OffsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
         PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < OffsBody ) {
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < OffsBody + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj)  ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
@@ -594,13 +596,15 @@ void CodeFuncCallEnd (
 void CodeFuncExprBegin (
     Int                 narg,
     Int                 nloc,
-    Obj                 nams )
+    Obj                 nams,
+    Int                 startLine)
 {
     Obj                 fexp;           /* function expression bag         */
     Obj                 fexs;           /* function expressions list       */
     Bag                 body;           /* function body                   */
     Bag                 old;            /* old frame                       */
     Stat                stat1;          /* first statement in body         */
+    UInt                len;
 
     /* remember the current offset                                         */
     SET_BRK_CALL_TO( OffsBody );
@@ -622,6 +626,17 @@ void CodeFuncExprBegin (
     body = NewBag( T_BODY, 1024*sizeof(Stat) );
     BODY_FUNC( fexp ) = body;
     CHANGED_BAG( fexp );
+
+    /* record where we are reading from */
+    if (!Input->gapname) {
+      len = SyStrlen(Input->name);
+      Input->gapname = NEW_STRING(len);
+      SyStrncat(CSTR_STRING(Input->gapname),Input->name, len);
+    }
+    FILENAME_BODY(body) = Input->gapname;
+    STARTLINE_BODY(body) = INTOBJ_INT(startLine);
+    /*    Pr("Coding begin at %s:%d ",(Int)(Input->name),Input->number);
+	  Pr(" Body id %d\n",(Int)(body),0L); */
     OffsBody = 0;
 
     /* give it an environment                                              */
@@ -684,7 +699,9 @@ void CodeFuncExprEnd (
     }
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), OffsBody );
+    ResizeBag( BODY_FUNC(fexp), OffsBody+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(Input->number);
+    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), Input->number); */
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
@@ -865,6 +882,12 @@ void CodeForBegin ( void )
 
 void CodeForIn ( void )
 {
+  Expr var = PopExpr();
+  if (TNUM_EXPR(var) == T_REF_GVAR)
+    {
+      PushGlobalForLoopVariable((UInt)ADDR_EXPR(var)[0]);
+    }
+  PushExpr(var);
 }
 
 void CodeForBeginBody ( void )
@@ -899,6 +922,9 @@ void CodeForEndBody (
     /* get the variable reference                                          */
     var = PopExpr();
 
+    if (TNUM_EXPR(var) == T_REF_GVAR)
+      PopGlobalForLoopVariable();
+    
     /* select the type of the for-statement                                */
     if ( TNUM_EXPR(list) == T_RANGE_EXPR && SIZE_EXPR(list) == 2*sizeof(Expr)
       && TNUM_EXPR(var)  == T_REFLVAR ) {
@@ -1367,12 +1393,14 @@ void CodeIntExpr (
     }
 
     /* otherwise stuff the value into the values list                      */
+    /* Need to fix this up for GMP integers */
     else {
-        expr = NewExpr( T_INT_EXPR, sizeof(UInt2) + SIZE_OBJ(val) );
-        ((UInt2*)ADDR_EXPR(expr))[0] = (Expr)sign;
-        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
+        expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
+        ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
+	memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+	/*        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
             ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
-        }
+	    } */
     }
 
     /* push the expression                                                 */
@@ -1443,6 +1471,7 @@ void CodeLongIntExpr (
     }
 
     /* otherwise stuff the value into the values list                      */
+    /* Need to fix this up for GMP integers */
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt2) + SIZE_OBJ(val) );
         ((UInt2*)ADDR_EXPR(expr))[0] = (Expr)sign;
@@ -2934,7 +2963,11 @@ void SaveBody ( Obj body )
   UInt i;
   UInt *ptr;
   ptr = (UInt *) ADDR_OBJ(body);
-  for (i = 0; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
+  /* Save the new inforation in the body */
+  for (i =0; i < NUMBER_HEADER_ITEMS_BODY; i++)
+    SaveSubObj((Obj)(*ptr++));
+  /* and the rest */
+  for (; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
     SaveUInt(*ptr++);
 }
 
@@ -2952,7 +2985,9 @@ void LoadBody ( Obj body )
   UInt i;
   UInt *ptr;
   ptr = (UInt *) ADDR_OBJ(body);
-  for (i = 0; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
+  for (i =0; i < NUMBER_HEADER_ITEMS_BODY; i++)
+    *(Obj *)(ptr++) = LoadSubObj();
+  for (; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
     *ptr++ = LoadUInt();
 }
 
@@ -2975,7 +3010,7 @@ static Int InitKernel (
 {
     /* install the marking functions for function body bags                */
     InfoBags[ T_BODY ].name = "function body bag";
-    InitMarkFuncBags( T_BODY, MarkNoSubBags );
+    InitMarkFuncBags( T_BODY, MarkThreeSubBags );
 
     SaveObjFuncs[ T_BODY ] = SaveBody;
     LoadObjFuncs[ T_BODY ] = LoadBody;
@@ -3007,6 +3042,29 @@ static Int InitLibrary (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  PreSave( <module> ) . . . . . . .  clean up before saving
+*/
+static Int PreSave (
+    StructInitInfo *    module )
+{
+  UInt i;
+
+  /* Can't save in mid-parsing */
+  if (CountExpr || CountStat)
+    return 1;
+
+  /* clean any old data out of the statement and expression stacks */
+  for (i = 0; i < SIZE_BAG(StackStat)/sizeof(UInt); i++)
+    ADDR_OBJ(StackStat)[i] = (Obj)0;
+  for (i = 0; i < SIZE_BAG(StackExpr)/sizeof(UInt); i++)
+    ADDR_OBJ(StackExpr)[i] = (Obj)0;
+  /* return success                                                      */
+  return 0;
+}
+
+
 
 /****************************************************************************
 **
@@ -3022,7 +3080,7 @@ static StructInitInfo module = {
     InitKernel,                         /* initKernel                     */
     InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
-    0,                                  /* preSave                        */
+    PreSave,                            /* preSave                        */
     0,                                  /* postSave                       */
     0                                   /* postRestore                    */
 };

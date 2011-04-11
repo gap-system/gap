@@ -6,8 +6,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for dictionaries and for improved
 ##  hash tables.
@@ -43,30 +44,40 @@ Revision.dict_gd :=
 ##
 DeclareInfoClass( "InfoHash" );
 
-#############################################################################
-##
-#O  PositionFirstComponent(<list>,<obj>)
-##
-##  returns the index <i> in <list> such that $<list>[<i>][1]=<obj>$ and
-##  `fail' if no such entry exists.
-DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
 
 #############################################################################
 ##
 #C  IsDictionary(<obj>)
 ##
+##  <#GAPDoc Label="IsDictionary">
+##  <ManSection>
+##  <Filt Name="IsDictionary" Arg='obj' Type='Category'/>
+##
+##  <Description>
 ##  A dictionary is a growable collection of objects that permits to add
 ##  objects (with associated values) and to check whether an object is
 ##  already known.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareCategory("IsDictionary",IsCollection);
 
 #############################################################################
 ##
 #C  IsLookupDictionary(<obj>)
 ##
-##  A *lookup dictionary* is a dictionary, which permits not only to check
+##  <#GAPDoc Label="IsLookupDictionary">
+##  <ManSection>
+##  <Filt Name="IsLookupDictionary" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  A <E>lookup dictionary</E> is a dictionary, which permits not only to check
 ##  whether an object is contained, but also to retrieve associated values,
-##  using the operation `LookupDictionary'.
+##  using the operation <Ref Oper="LookupDictionary"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory("IsLookupDictionary",IsDictionary);
 
@@ -74,88 +85,142 @@ DeclareCategory("IsLookupDictionary",IsDictionary);
 ##
 #C  IsHash(<obj>)
 ##
-##  The category of hash tables for arbitrary objects (provided an `IntKey'
+##  <ManSection>
+##  <Filt Name="IsHash" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  The category of hash tables for arbitrary objects (provided an <C>IntKey</C>
 ##  function 
 ##  is defined).
+##  </Description>
+##  </ManSection>
 ##
 DeclareCategory( "IsHash", IsLookupDictionary );  
 
-#1
+#############################################################################
+##
+##  <#GAPDoc Label="[1]{dict}">
 ##  There are several ways how dictionaries are implemented: As lists, as
 ##  sorted lists, as hash tables or via binary lists. A user however will
-##  just have to call `NewDictionary' and obtain a ``suitable'' dictionary
+##  just have to call <Ref Func="NewDictionary"/> and obtain a <Q>suitable</Q> dictionary
 ##  for the kind of objects she wants to create. It is possible however to
-##  create hash tables (see~"General hash table definitions and operations")
-##  and dictionaries using binary lists (see~"DictionaryByPosition").
+##  create hash tables (see&nbsp;<Ref Sect="General Hash Tables"/>)
+##  and dictionaries using binary lists (see&nbsp;<Ref Func="DictionaryByPosition"/>).
+##  <P/>
+##  <#/GAPDoc>
+##
 
 #############################################################################
 ##
 #F  NewDictionary(<obj>,<look>[,<objcoll>])
 ##
-##  creates a new dictionary for objects such as <obj>. If <objcoll> is
-##  given the dictionary will be for objects only from this collection,
-##  knowing this can improve the performance. If <objcoll> is given, <obj>
-##  may be replaced by `false', i.e. no sample object is needed.
+##  <#GAPDoc Label="NewDictionary">
+##  <ManSection>
+##  <Func Name="NewDictionary" Arg='obj,look[,objcoll]'/>
 ##
+##  <Description>
+##  creates a new dictionary for objects such as <A>obj</A>. If <A>objcoll</A> is
+##  given the dictionary will be for objects only from this collection,
+##  knowing this can improve the performance. If <A>objcoll</A> is given, <A>obj</A>
+##  may be replaced by <K>false</K>, i.e. no sample object is needed.
+##  <P/>
 ##  The function tries to find the right kind of dictionary for the basic
 ##  dictionary functions to be quick.
-##  If <look> is `true', the dictionary will be a lookup dictionary,
+##  If <A>look</A> is <K>true</K>, the dictionary will be a lookup dictionary,
 ##  otherwise it is an ordinary dictionary.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("NewDictionary");
 
-#2
-##  The use of two objects, <obj> and <objcoll> to parametrize the objects a
+#############################################################################
+##
+##  <#GAPDoc Label="[2]{dict}">
+##  The use of two objects, <A>obj</A> and <A>objcoll</A> to parametrize the objects a
 ##  dictionary is able to store might look confusing. However there are
 ##  situations where either of them might be needed:
-##
-##  The first situation is that of objects, for which no formal ``collection
-##  object'' has been defined. A typical example here might be subspaces of
-##  a vector space. {\GAP} does not formally define a ``Grassmannian'' or
+##  <P/>
+##  The first situation is that of objects, for which no formal <Q>collection
+##  object</Q> has been defined. A typical example here might be subspaces of
+##  a vector space. &GAP; does not formally define a <Q>Grassmannian</Q> or
 ##  anything else to represent the multitude of all subspaces. So it is only
-##  possible to give the dictionary a ``sample object''.
-##
+##  possible to give the dictionary a <Q>sample object</Q>.
+##  <P/>
 ##  The other situation is that of an object which might represent quite
-##  varied domains. The permutation $(1,10^6)$ might be the nontrivial
+##  varied domains. The permutation <M>(1,10^6)</M> might be the nontrivial
 ##  element of a cyclic group of order 2, it might be a representative of
-##  $S_{10^6}$. In the first situation the best approach might be just to
+##  <M>S_{{10^6}}</M>.
+##  In the first situation the best approach might be just to
 ##  have two entries for the two possible objects, in the second situation a
 ##  much more elaborate approach might be needed.
-##
+##  <P/>
 ##  An algorithm that creates a dictionary will usually know a priori, from what
 ##  domain all the objects will be, giving this domain permits to use a more
 ##  efficient dictionary.
-##
+##  <P/>
 ##  This is particularly true for vectors. From a single vector one cannot
 ##  decide whether a calculation will take place over the smallest field
 ##  containing all its entries or over a larger field.
+##  <#/GAPDoc>
+##
 
 
 #############################################################################
 ##
 #F  DictionaryByPosition(<list>,<lookup>)
 ##
-##  creates a new (lookup) dictionary which uses `PositionCanonical' in
-##  <list> for indexing. The dictionary will have an entry `<dict>!.blist'
-##  which is a bit list corresponding to <list> indicating the known
-##  If <look> is `true', the dictionary will be a lookup dictionary,
+##  <#GAPDoc Label="DictionaryByPosition">
+##  <ManSection>
+##  <Func Name="DictionaryByPosition" Arg='list,lookup'/>
+##
+##  <Description>
+##  creates a new (lookup) dictionary which uses
+##  <Ref Oper="PositionCanonical"/> in <A>list</A> for indexing.
+##  The dictionary will have an entry <A>dict</A><C>!.blist</C>
+##  which is a bit list corresponding to <A>list</A> indicating the known
+##  values.
+##  If <A>look</A> is <K>true</K>,
+##  the dictionary will be a lookup dictionary,
 ##  otherwise it is an ordinary dictionary.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction("DictionaryByPosition");
 
 #############################################################################
 ##
 #V  DictionariesFamily
 ##
+##  <ManSection>
+##  <Var Name="DictionariesFamily"/>
+##
+##  <Description>
 ##  Is the family of all dictionaries.
+##  </Description>
+##  </ManSection>
+##
 BindGlobal("DictionariesFamily",NewFamily( "DictionariesFamily",IsDictionary));
 
 #############################################################################
 ##
 #O  KnowsDictionary(<dict>,<key>)
 ##
-##  checks, whether <key> is known to the dictionary <dict>, and returns
-##  `true' or `false' accordingly. <key> *must* be an object of the kind for
+##  <#GAPDoc Label="KnowsDictionary">
+##  <ManSection>
+##  <Oper Name="KnowsDictionary" Arg='dict,key'/>
+##
+##  <Description>
+##  checks, whether <A>key</A> is known to the dictionary <A>dict</A>,
+##  and returns <K>true</K> or <K>false</K> accordingly.
+##  <A>key</A> <E>must</E> be an object of the kind for
 ##  which the dictionary was specified, otherwise the results are
 ##  unpredictable.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation("KnowsDictionary",[IsDictionary,IsObject]);
 
 #############################################################################
@@ -163,21 +228,44 @@ DeclareOperation("KnowsDictionary",[IsDictionary,IsObject]);
 #O  AddDictionary(<dict>,<key>)
 #O  AddDictionary(<dict>,<key>,<val>)
 ##
-##  adds <key> to the dictionary <dict>, storing the associated value <val>
-##  in case <dict> is a lookup dictionary. (If another value had been stored
-##  already, it is overwritten.) <key> *must* be an object of the kind for
-##  which the dictionary was specified, otherwise the results are
-##  unpredictable.
-DeclareOperation("AddDictionary",[IsDictionary,IsObject]);
+##  <#GAPDoc Label="AddDictionary">
+##  <ManSection>
+##  <Oper Name="AddDictionary" Arg='dict,key[,val]'/>
+##
+##  <Description>
+##  adds <A>key</A> to the dictionary <A>dict</A>, storing the associated
+##  value <A>val</A> in case <A>dict</A> is a lookup dictionary. 
+##  If <A>key</A> is not an object of the kind for
+##  which the dictionary was specified, or if <A>key</A> is known already to
+##  <A>dict</A>, the results are unpredictable.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("AddDictionary",[IsDictionary and IsMutable, IsObject]);
+DeclareOperation("AddDictionary",[IsDictionary and IsMutable, IsObject,IsObject]);
+DeclareSynonym("AddHashEntry",AddDictionary);
 
 #############################################################################
 ##
 #O  LookupDictionary(<dict>,<key>)
 ##
-##  looks up <key> in the lookup dictionary <dict> and returns the
-##  associated value. If <key> is not known to the dictionary, `fail' is
-##  returned.
+##  <#GAPDoc Label="LookupDictionary">
+##  <ManSection>
+##  <Oper Name="LookupDictionary" Arg='dict,key'/>
+##
+##  <Description>
+##  looks up <A>key</A> in the lookup dictionary <A>dict</A> and returns the
+##  associated value.
+##  If <A>key</A> is not known to the dictionary, <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation("LookupDictionary",[IsDictionary,IsObject]);
+
+DeclareSynonym("GetHashEntry",LookupDictionary);
+
 
 IsDictionaryDefaultRep:=NewRepresentation("IsDictionaryDefaultRep",
   IsDictionary and IsComponentObjectRep,[]);
@@ -187,7 +275,15 @@ IsDictionaryDefaultRep:=NewRepresentation("IsDictionaryDefaultRep",
 #R  IsListDictionary(<obj>)
 #R  IsListLookupDictionary(<obj>)
 ##
+##  <ManSection>
+##  <Filt Name="IsListDictionary" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsListLookupDictionary" Arg='obj' Type='Representation'/>
+##
+##  <Description>
 ##  A list dictionary uses a simple (unsorted) list and searching internally.
+##  </Description>
+##  </ManSection>
+##
 IsListDictionary:=NewRepresentation("IsListDictionary",IsDictionaryDefaultRep,
   ["entries"] );
 IsListLookupDictionary:=NewRepresentation("IsListLookupDictionary",
@@ -199,7 +295,15 @@ IsListLookupDictionary:=NewRepresentation("IsListLookupDictionary",
 #R  IsSortDictionary(<obj>)
 #R  IsSortLookupDictionary(<obj>)
 ##
+##  <ManSection>
+##  <Filt Name="IsSortDictionary" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsSortLookupDictionary" Arg='obj' Type='Representation'/>
+##
+##  <Description>
 ##  A sort dictionary uses a sorted list internally.
+##  </Description>
+##  </ManSection>
+##
 IsSortDictionary:=NewRepresentation("IsSortDictionary",IsListDictionary,
   ["entries"] );
 IsSortLookupDictionary:=NewRepresentation("IsSortLookupDictionary",
@@ -211,7 +315,16 @@ IsSortLookupDictionary:=NewRepresentation("IsSortLookupDictionary",
 #R  IsPositionDictionary(<obj>)
 #R  IsPositionLookupDictionary(<obj>)
 ##
-##  A hash dictionary uses `PositionCanonical' in a list internally.
+##  <ManSection>
+##  <Filt Name="IsPositionDictionary" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsPositionLookupDictionary" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  A hash dictionary uses <Ref Oper="PositionCanonical"/> in a list
+##  internally.
+##  </Description>
+##  </ManSection>
+##
 IsPositionDictionary:=NewRepresentation("IsPositionDictionary",
   IsDictionaryDefaultRep,["domain","blist"] );
 IsPositionLookupDictionary:=NewRepresentation("IsPositionDictionary",
@@ -230,32 +343,27 @@ IsPositionLookupDictionary:=NewRepresentation("IsPositionDictionary",
 ##
 #O  PrintHashWithNames( <hash>, <keyName>, <valueName> )
 ##
+##  <ManSection>
+##  <Oper Name="PrintHashWithNames" Arg='hash, keyName, valueName'/>
+##
+##  <Description>
 ##  Print a hash table with the given names for the keys and values.
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "PrintHashWithNames", [ IsHash, IsString, IsString ] );
 
 #############################################################################
 ##
-#O  GetHashEntry( <hash>, <key> )
-##
-##  If the key is in hash, return the corresponding value.  Otherwise
-##  return fail.  Note that it is not a good idea to use fail as a value.
-##
-DeclareOperation( "GetHashEntry", [ IsHash, IsObject ] );
-
-#############################################################################
-##
-#O  AddHashEntry( <hash>, <key>, <value> )
-##
-##  Add the key and value to the hash table.
-##
-DeclareOperation( "AddHashEntry", [ IsHash, IsObject, IsObject ] );
-
-#############################################################################
-##
 #O  RandomHashKey( <hash> )
 ##
+##  <ManSection>
+##  <Oper Name="RandomHashKey" Arg='hash'/>
+##
+##  <Description>
 ##  Return a random Key from the hash table (Random returns a random value).
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "RandomHashKey", [ IsHash ] );
 
@@ -263,7 +371,13 @@ DeclareOperation( "RandomHashKey", [ IsHash ] );
 ##
 #O  HashKeyEnumerator( <hash> )
 ##
+##  <ManSection>
+##  <Oper Name="HashKeyEnumerator" Arg='hash'/>
+##
+##  <Description>
 ##  Enumerates the keys of the hash table (Enumerator enumerates values).
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "HashKeyEnumerator", [ IsHash ] );
 
@@ -271,8 +385,14 @@ DeclareOperation( "HashKeyEnumerator", [ IsHash ] );
 ##
 #P  TableHasIntKeyFun(<hash>)
 ##
-##  If this filter is set, the hash table has an `IntKey' function in its
-##  component `<hash>!.intKeyFun'.
+##  <ManSection>
+##  <Prop Name="TableHasIntKeyFun" Arg='hash'/>
+##
+##  <Description>
+##  If this filter is set, the hash table has an <C>IntKey</C> function in its
+##  component <A>hash</A><C>!.intKeyFun</C>.
+##  </Description>
+##  </ManSection>
 ##
 DeclareFilter( "TableHasIntKeyFun" );
 
@@ -294,7 +414,13 @@ DeclareFilter( "TableHasIntKeyFun" );
 ##
 #R  IsDenseHashRep
 ##
+##  <ManSection>
+##  <Filt Name="IsDenseHashRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
 ##  The dense representation for hash tables.
+##  </Description>
+##  </ManSection>
 ##
 DeclareRepresentation( "IsDenseHashRep",
     # as we will call `Enumerator' to get the *current* value list, a hash
@@ -306,8 +432,16 @@ DeclareRepresentation( "IsDenseHashRep",
 ##
 #F  DenseHashTable( )
 ##
+##  <#GAPDoc Label="DenseHashTable">
+##  <ManSection>
+##  <Func Name="DenseHashTable" Arg=''/>
+##
+##  <Description>
 ##  Construct an empty dense hash table.  This is the only correct way to
 ##  construct such a table.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "DenseHashTable", [] );
 
@@ -330,7 +464,13 @@ DeclareGlobalFunction( "DenseHashTable", [] );
 ##
 #R  IsSparseHashRep
 ##
+##  <ManSection>
+##  <Filt Name="IsSparseHashRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
 ##  The sparse representation for hash tables.  
+##  </Description>
+##  </ManSection>
 ##
 DeclareRepresentation( "IsSparseHashRep",
     # as we will call `Enumerator' to get the *current* value list, a hash
@@ -341,41 +481,50 @@ DeclareRepresentation( "IsSparseHashRep",
      "NumberKeys"] );
 
 BindGlobal("DefaultSparseHashRepType",
-  NewType( DictionariesFamily, IsSparseHashRep ));
+  NewType( DictionariesFamily, IsSparseHashRep and IsMutable and IsCopyable ));
 
 BindGlobal("DefaultSparseHashWithIKRepType",
-  NewType( DictionariesFamily, IsSparseHashRep and TableHasIntKeyFun));
+        NewType( DictionariesFamily, IsSparseHashRep and TableHasIntKeyFun 
+                and IsMutable and IsCopyable));
 
 #############################################################################
 ##
 #F  SparseHashTable([<intkeyfun>])
 ##
+##  <#GAPDoc Label="SparseHashTable">
+##  <ManSection>
+##  <Func Name="SparseHashTable" Arg='[intkeyfun]'/>
+##
+##  <Description>
 ##  Construct an empty sparse hash table.  This is the only correct way to
 ##  construct such a table.
-##  If the argument <intkeyfun> is given, this function will be used to
+##  If the argument <A>intkeyfun</A> is given, this function will be used to
 ##  obtain numbers for the keys passed to it.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "SparseHashTable", [] );
 
 #############################################################################
 ##
-#F  GetHashEntryIndex( <hash>, <key> )
-##
-##  If the key is in hash, return its index in the hash array.
-##
-DeclareGlobalFunction( "GetHashEntryIndex", [ IsSparseHashRep, IsObject ] );
-
-#############################################################################
-##
 #F  DoubleHashArraySize( <hash> )
 ##
+##  <#GAPDoc Label="DoubleHashArraySize">
+##  <ManSection>
+##  <Func Name="DoubleHashArraySize" Arg='hash'/>
+##
+##  <Description>
 ##  Double the size of the hash array and rehash all the entries.
 ##  This will also happen automatically when the hash array is half full.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "DoubleHashArraySize", [ IsSparseHashRep ] );
+DeclareGlobalFunction( "DoubleHashDictSize", [ IsSparseHashRep ] );
+DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 
 # almost duplicate without any extras - thus faster
-DeclareGlobalFunction( "DoubleHashDictSize");
 
 #############################################################################
 #############################################################################
@@ -389,9 +538,17 @@ DeclareGlobalFunction( "DoubleHashDictSize");
 ##
 #F  HashFunct( <key>, <i>, <size> )
 ##
+##  <#GAPDoc Label="HashFunct">
+##  <ManSection>
+##  <Func Name="HashFunct" Arg='key, i, size'/>
+##
+##  <Description>
 ##  This will be a good double hashing function for any reasonable KeyInt 
 ##  (see Cormen, Leiserson and Rivest, Introduction to Algorithms, 
 ##  1e, p. 235).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "HashFunct", [ IsInt, IsInt, IsInt ] );
 
@@ -399,27 +556,48 @@ DeclareGlobalFunction( "HashFunct", [ IsInt, IsInt, IsInt ] );
 ##
 #O  DenseIntKey(<objcoll>,<obj>)
 ##
-##  returns a function that can be used as hash key function for objects
-##  such as <obj> in the collection <objcoll>. <objcoll> typically will be a
-##  large domain.  If the domain is not available, it can be given as
-##  `false' in which case the hash key function will be determined only
-##  based on <obj>. (For a further discussion of these two arguments
-##  see~`NewDictionary', section~"NewDictionary").
+##  <#GAPDoc Label="DenseIntKey">
+##  <ManSection>
+##  <Oper Name="DenseIntKey" Arg='objcoll,obj'/>
 ##
-##  The function returned by `DenseIntKey' is guaranteed to give different
+##  <Description>
+##  returns a function that can be used as hash key function for objects
+##  such as <A>obj</A> in the collection <A>objcoll</A>.
+##  Typically, <A>objcoll</A> will be a large domain.
+##  If the domain is not available, it can be given as
+##  <K>false</K> in which case the hash key function will be determined only
+##  based on <A>obj</A>. (For a further discussion of these two arguments
+##  see&nbsp;<Ref Func="NewDictionary"/>).
+##  <P/>
+##  The function returned by <Ref Oper="DenseIntKey"/> is guaranteed to give different
 ##  values for different objects.
-##  If no suitable hash key function has been predefined, `fail' is returned.
+##  If no suitable hash key function has been predefined, <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation("DenseIntKey",[IsObject,IsObject]);
 
 #############################################################################
 ##
 #O  SparseIntKey(<objcoll>,<obj>)
 ##
+##  <#GAPDoc Label="SparseIntKey">
+##  <ManSection>
+##  <Oper Name="SparseIntKey" Arg='objcoll,obj'/>
+##
+##  <Description>
 ##  returns a function that can be used as hash key function for objects
-##  such as <obj> in the collection <objcoll>. In contrast to `DenseIntKey',
+##  such as <A>obj</A> in the collection <A>objcoll</A>.
+##  In contrast to <Ref Oper="DenseIntKey"/>,
 ##  the function returned may return the same key value for different
 ##  objects.
-##  If no suitable hash key function has been predefined, `fail' is returned.
+##  If no suitable hash key function has been predefined,
+##  <K>fail</K> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation("SparseIntKey",[IsObject,IsObject]);
 
 
@@ -442,7 +620,13 @@ DeclareOperation("SparseIntKey",[IsObject,IsObject]);
 ##
 #O  GetHashEntryAtLastIndex( <hash> )
 ##
+##  <ManSection>
+##  <Oper Name="GetHashEntryAtLastIndex" Arg='hash'/>
+##
+##  <Description>
 ##  Returns the value of the last hash entry accessed.
+##  </Description>
+##  </ManSection>
 ##
 DeclareOperation( "GetHashEntryAtLastIndex", [ IsHash ] );
 
@@ -450,17 +634,29 @@ DeclareOperation( "GetHashEntryAtLastIndex", [ IsHash ] );
 ##
 #O  SetHashEntryAtLastIndex( <hash>, <newValue> )
 ##
-##  Resets the value of the last hash entry accessed.
+##  <ManSection>
+##  <Oper Name="SetHashEntryAtLastIndex" Arg='hash, newValue'/>
 ##
-DeclareOperation( "SetHashEntryAtLastIndex", [ IsHash, IsObject ] );
+##  <Description>
+##  Resets the value of the last hash entry accessed.
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "SetHashEntryAtLastIndex", [ IsHash and IsMutable, IsObject ] );
 
 #############################################################################
 ##
 #O  SetHashEntry( <hash>, <key>, <value> )
 ##
-##  Resets the value corresponding to <key>.
+##  <ManSection>
+##  <Oper Name="SetHashEntry" Arg='hash, key, value'/>
 ##
-DeclareOperation( "SetHashEntry", [ IsHash, IsObject, IsObject ] );
+##  <Description>
+##  Resets the value corresponding to <A>key</A>.
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "SetHashEntry", [ IsHash and IsMutable, IsObject, IsObject ] );
 
 #############################################################################
 ##
@@ -469,7 +665,7 @@ DeclareOperation( "SetHashEntry", [ IsHash, IsObject, IsObject ] );
 ##  Check first if the last index has been set, and don't reset it if it has.
 ##  This operation has not yet been implemented
 ##
-##DeclareOperation( "AddHashEntryAtLastIndex", [ IsHash, IsObject ] );
+##DeclareOperation( "AddHashEntryAtLastIndex", [ IsHash and IsMutable, IsObject ] );
 
 #E
 

@@ -1,0 +1,137 @@
+Preparing GAP Windows Istaller HOWTO
+====================================
+
+To prepare Windows installer, you need to have one of the 
+Windows versions (e.g. 98, 2000 or XP), and the NSIS program.
+
+Following the NSIS manual, NSIS (Nullsoft Scriptable Install 
+System) is a tool that allows to create installers for Windows.
+It is released  under an open source license and is completely 
+free for any use. It is small, fast and efficient. While other 
+installers may add hundreds of kilobytes or several megabytes 
+to installer data, an overhead of the full featured NSIS 
+installer is only 34 KB. You can create a single installer that
+is compatible with Windows 95, Windows 98, Windows ME, Windows 
+NT, Windows 2000, Windows XP and Windows Server 2003.
+
+The latest version of NSIS can be downloaded from the following
+address: http://nsis.sourceforge.net
+
+To create a NSIS installer, first you need to have an NSIS 
+script. An NSIS script is a text file with special syntax. 
+NSIS scripts has an extension "nsi". You can edit scripts with 
+every text editor. 
+
+The second stage is to compile the script. NSIS has two ways of
+doing this. The most convenient is to use MakeNSISW - a graphical 
+user interface to NSIS. To compile the script, you shoud do one
+of the following:
+ - Select "Load Script" in the "File" menu
+ - Drag the .nsi file into MakeNSISW window
+ - Right click on the .nsi file and choose "Compile NSIS Script"
+
+The second way is to use MakeNSIS on the command line. The syntax 
+of the makensis command is:
+
+makensis script.nsi
+
+(the directory containing makensis should be in the search path).
+
+
+To make the GAP installer for Windows:
+--------------------------------------
+
+1) create the subdirectories 'gap', 'htmie', 'tools', 'xtom' in 
+the directory with gap.nsi script
+
+2) unpack each of the GAP archives (gap, htmie, tools, xtom)
+to the corresponding folder (i.e., to obtain gap/gap4r4/bin, 
+htmie/gapr4r/doc/htmie etc.). Note that you should use zoo 
+or winzip archives.
+
+3) remove the executable file for MacOS
+
+4) put gapicon.ico, gaprxvt.ico and GPL.txt files in the folder
+with gap.nsi script
+
+5) compile the script
+
+6) perform test installation with various components and compare it 
+with the content of source directories
+
+
+To make the GAP packages installer for Windows:
+-----------------------------------------------
+
+1) create the subdirectory 'pkg' in the directory with packages.nsi 
+
+2) unpack packages archive there (to have pkg/ace, pkg/aclib etc.).
+Note that you should use zoo or winzip archive.
+
+3) compile the script
+
+4) perform test installation and compare it with the content of 'pkg'
+
+
+To make the GAP update for Windows:
+-----------------------------------
+
+1) create the subdirectory 'fix' in the directory with fix.nsi
+
+2) unpack the update archive there (to have fix/lib, fix/tst etc.).
+Note that you should use zoo or winzip archive.
+
+3) remove the directory with Mac binary
+
+4) compile the script. 
+
+5) perform test installation of update in a separate folder to check 
+   that it is identical to the original zoo or win.zip archive
+
+6) perform test installation of update above the GAP installation. 
+   Check that all relevant files were updated and that the GAP version 
+   number was increased in:
+- GAP folder in Start Menu
+- Installed programs
+
+
+If things go wrong:
+-------------------
+
+Since scripts use *.* masks for files, there will be no problem 
+if new files were added to the system or packages, but scripts 
+will require correction if new directories were added or removed.
+In this case you need to find the appropriate place in the script
+and add or remove an appropriate pair of commands for the 
+directory you need to add or remove. For example, for the 10th
+layer of Small Groups Library, the script has the following lines:
+
+  SetOutPath $INSTDIR\small\small10
+  File gap\gap4r4\small\small10\*.*
+
+Note also that at the end of each section there should be a 
+command to restore the initial output path:
+
+  SetOutPath $INSTDIR 
+
+
+Making exe-files in Linux
+-------------------------
+
+I managed to build exe-files in Linux with Windows version of NSIS
+installed in WINE. To do this, you need to install WINE, then to
+install Windows version of NSIS under Wine. After this you should be
+able to login to the Linux machine in the terminal window and build
+exe-archive using the GAP.NSI scrtipt, using the command of the form:
+
+wine ~/.wine/drive_c/Program\ Files/NSIS/makensis.exe GAP.NSI
+
+From my experience, it was working, but not very stable. Shorter files
+we normally created, with longer archives sometimes compression was
+terminated with an incomplete file. Maybe it was a problem of NSIS,
+or of WINE, or interaction with other processes running on the server
+(I didn't tried in the dedicated machine). In my opinion, it is better 
+to use native Windows machine, if available.
+
+Alexander Konovalov,
+October 2007

@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for Tietze transformations of presentation
 ##  records (i.e., of presentations of finitely presented groups (fp groups).
@@ -68,6 +69,7 @@ InstallGlobalFunction( AddGenerator, function ( T )
     fi;
 
     tietze[TZ_MODIFIED] := true;
+    tietze[TZ_OCCUR]:=false;
 end );
 
 
@@ -105,6 +107,7 @@ InstallGlobalFunction( AddRelator, function ( T, word )
         tietze[TZ_NUMRELS] := numrels;
         tietze[TZ_TOTAL] := tietze[TZ_TOTAL] + leng;
         tietze[TZ_MODIFIED] := true;
+	tietze[TZ_OCCUR]:=false;
     fi;
 end );
 
@@ -306,6 +309,7 @@ InstallGlobalFunction( PresentationFpGroup, function ( arg )
                              and IsMutable ),
                     rec() ); 
     tietze := ListWithIdenticalEntries( TZ_LENGTHTIETZE, 0 );
+    tietze[TZ_OCCUR]:=false;
     T!.tietze := tietze;
 
     # initialize the Tietze stack.
@@ -648,7 +652,7 @@ end );
 ##    Discrete Math. 5 (1973), 105-129, and in
 ##
 ##    Joachim Neubueser: An elementary introduction to coset table methods in
-##    computational  group theory.  Groups-St. Andrews 1981,  edited by C. M.
+##    computational  group theory.  Groups-St Andrews 1981,  edited by C. M.
 ##    Campbell and E. F. Robertson, pp. 1-45.  London Math. Soc. Lecture Note
 ##    Series no. 71, Cambridge Univ. Press, Cambridge, 1982.
 ##
@@ -1442,6 +1446,7 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
         tietze[TZ_NUMRELS] := numrels;
         tietze[TZ_TOTAL] := tietze[TZ_TOTAL] + leng;
         tietze[TZ_MODIFIED] := true;
+	tietze[TZ_OCCUR]:=false;
 
         # if the new relator has length at most 2, handle it by calling the
         # appropriate subroutine, and then return.
@@ -1496,6 +1501,7 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
         invs[numgens+1-num] := 0;
         tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
         tietze[TZ_MODIFIED] := true;
+	tietze[TZ_OCCUR]:=false;
         trlast := trlast - 1;
         while trlast > primary and pointers[trlast] <= treelength do
             trlast := trlast - 1;
@@ -1595,6 +1601,7 @@ InstallGlobalFunction( TzEliminateGen, function ( T, num )
             invs[numgens+1-num] := 0;
             tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
             tietze[TZ_MODIFIED] := true;
+	    tietze[TZ_OCCUR]:=false;
         elif TzOptions(T).printLevel >= 1 then
             Print( "#I  replacement of generators stopped by length limit\n" );
         fi;
@@ -1616,10 +1623,10 @@ end );
 ##
 InstallGlobalFunction( TzEliminateGen1, function ( T )
 
-    local gen, gens, i, invs, ispace, length, lengths, modified, num,
+    local gen, gens, i,j, invs, ispace, length, lengths, modified, num,
           numgens, numrels, occur, occMultiplicities, occRelNum, occRelNums,
           occTotals, pos, protected, rel, rels, space, spacelimit, tietze,
-          total, word;
+          total, word,k,max,oldlen,bestlen,stoplen,oldrels,changed,olen;
 
     # check the given argument to be a Presentation.
     if not IsPresentation( T ) then
@@ -1634,13 +1641,30 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
     numgens := tietze[TZ_NUMGENS];
     invs := tietze[TZ_INVERSES];
     rels := tietze[TZ_RELATORS];
+    oldrels:=ShallowCopy(rels);
+    #oldrels1:=List(rels,ShallowCopy);
     numrels := tietze[TZ_NUMRELS];
     lengths := tietze[TZ_LENGTHS];
 
-    occur := TzOccurrences( tietze );
+    if not IsList(tietze[TZ_OCCUR]) then
+      occur := TzOccurrences( tietze );
+    else
+      occur :=tietze[TZ_OCCUR];
+      #Print("used\n");
+    fi;
+#OLD_OCCUR:=List(occur,ShallowCopy);
     occTotals := occur[1];
     occRelNums := occur[2];
     occMultiplicities := occur[3];
+    oldlen:=ShallowCopy(tietze[TZ_LENGTHS]);
+
+#NEW_OCCUR:=TzOccurrences(tietze);
+#if occTotals<>false and occTotals <> NEW_OCCUR[1] then
+#Error("cla1");
+#elif occTotals<>false and occRelNums <> NEW_OCCUR[2] then
+#Error("cla2"); 
+#elif occTotals<>false and occMultiplicities <> NEW_OCCUR[3] then
+#  Error("cla3"); fi;
 
     modified := false;
     num := 0;
@@ -1688,7 +1712,9 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
                 Print( AbstractWordTietzeWord( word, gens ), "\n" );
             fi;
         fi;
-        TzSubstituteGen( tietze, -gen, word );
+        changed:=TzSubstituteGen( tietze, -gen, word );
+	#if Length(changed)>100 then Error("longchanged!!"); fi;
+	#if oldrels1<>oldrels then Error("differ!"); fi;
 
         # update the generator images, if available.
         if IsBound( T!.imagesOldGens ) then
@@ -1699,13 +1725,133 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
         # mark gen to be redundant.
         invs[numgens+1-num] := 0;
         tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
+
+	#update occurrence numbers
+	gen:=AbsInt(gen);
+	Unbind(occRelNums[num]);
+	Unbind(occMultiplicities[num]);
+	occTotals[gen]:=0;
+
+	# now check whether the data for the other generators is still OK
+	# and correct if necessary
+	rels:=tietze[TZ_RELATORS];
+	for i in [1..numgens] do
+
+	  if IsBound(occRelNums[i]) then
+	    # verify that the relator we store for the shortest
+	    #length is still OK.
+	    num:=occMultiplicities[i];
+	    olen:=oldlen[occRelNums[i]];
+
+	    #What can happen is two things:
+	    #a) A changed relator now is shorter and better. If so we take it
+	    #b) The best relator got changed and now is not best any more.
+
+	    # first check the changed relators, whether they give any
+	    # improvement
+	    for j in changed do
+	      total:=0;
+	      for k in rels[j] do
+		if AbsInt(k)=i then total:=total+1;fi;
+	      od;
+    #if total>0 then Print(j,":",i,":",total,"\n");fi;
+	      if total>0 and 
+		(total<num or 
+		(total=num and Length(rels[j])<olen) or
+		(total=num and Length(rels[j])=olen and j<occRelNums[i])
+		) then
+		# found a better one
+		pos:=j;
+		num:=total;
+		olen:=Length(rels[j]);
+		occMultiplicities[i]:=false; # force change
+	      fi;
+
+	      #update occurrence numbers
+	      # because of cancellation, we need to check with the changed
+	      # relators vs. their old selves
+	      for k in oldrels[j] do
+		if AbsInt(k)=i then total:=total-1;fi;
+	      od;
+	      occTotals[i]:=occTotals[i]+total;
+
+	    od;
+
+	    if num<>occMultiplicities[i] or
+	       olen<>oldlen[occRelNums[i]] then
+	      occMultiplicities[i]:=num;
+	      occRelNums[i]:=pos;
+	    else
+	      # the changed relators did not give any improvement. We thus
+	      # need to check whether the best stored got worse
+	      if occRelNums[i] in changed then
+		total:=0;
+		for k in rels[occRelNums[i]] do
+		  if AbsInt(k)=i then total:=total+1;fi;
+		od;
+		if total=0 or total>num or
+		  Length(rels[occRelNums[i]])>oldlen[occRelNums[i]] then
+	    #Print("fixin' ",i,"\n");
+		  # the relator changed and might not be good anymore. We
+		  # need to find another one.
+
+		  #TODO: Be more clever in checking the later relators first
+		  num:=infinity;
+		  olen:=infinity;
+		  pos:=fail;
+		  for j in [1..Length(rels)] do
+		    total:=0;
+		    for k in rels[j] do
+		      if AbsInt(k)=i then total:=total+1;fi;
+		    od;
+		    if total>0 and
+		      (total<num or (total=num and Length(rels[j])<olen)) then
+		      # found a better one
+		      pos:=j;
+		      num:=total;
+		      olen:=Length(rels[j]);
+		    fi;
+		  od;
+  #Print("fixing ",i," from ",num,"\n");
+		  if pos=fail then
+		    Unbind(occRelNums[i]);
+		    Unbind(occMultiplicities[i]);
+		  else
+		    occRelNums[i]:=pos;
+		    occMultiplicities[i]:=num;
+		  fi;
+
+		fi;
+	      fi;
+	    fi;
+
+	  fi;
+	od;
+
         modified := true;
       elif TzOptions(T).printLevel >= 1 then
         Print( "#I  replacement of generators stopped by length limit\n" );
       fi;
+
+  #NEW_OCCUR:=TzOccurrences(tietze);
+  #if occTotals<>false and occTotals <> NEW_OCCUR[1] then
+  #Error("bla1");
+  #  elif occTotals<>false and occRelNums <> NEW_OCCUR[2] then
+  #Error("bla2"); 
+  #  elif occTotals<>false and occMultiplicities <> NEW_OCCUR[3] then
+  #    Error("bla3"); fi;
     fi;
 
     tietze[TZ_MODIFIED] := modified;
+    if 0 in occTotals then
+      # code might not work if generators vanish.
+      tietze[TZ_OCCUR]:=false;
+    else
+      tietze[TZ_OCCUR]:=[occTotals,occRelNums,occMultiplicities];
+    fi;
+
+    #if tietze[TZ_OCCUR]<>TzOccurrences(tietze) then Error("occur!"); fi;
+
 end );
 
 
@@ -1976,6 +2122,7 @@ InstallGlobalFunction( TzFindCyclicJoins, function ( T )
     od;
 
     if tietze[TZ_MODIFIED] then
+	tietze[TZ_OCCUR]:=false;
         # handle relators of length 1 or 2.
         TzHandleLength1Or2Relators( T );
         # sort the relators and print the status line.
@@ -2038,6 +2185,7 @@ InstallGlobalFunction( TzGeneratorExponents, function ( T )
                     tietze[TZ_TOTAL] := tietze[TZ_TOTAL] - length + exp;
                     flags[i] := 1;
                     tietze[TZ_MODIFIED] := true;
+		    tietze[TZ_OCCUR]:=false;
                 elif num1 < 0 then
                     rels[i] := List( rel, num -> -num );
                 fi;
@@ -3224,6 +3372,7 @@ InstallGlobalFunction( TzRemoveGenerators, function ( T )
 
     tietze[TZ_NUMGENS] := numgens;
     tietze[TZ_NUMREDUNDS] := 0;
+    tietze[TZ_OCCUR]:=false;
 end );
 
 
@@ -3386,6 +3535,7 @@ InstallGlobalFunction( TzSearchEqual, function ( T )
     od;
 
     if modified then
+	tietze[TZ_OCCUR]:=false;
         if tietze[TZ_TOTAL] < oldtotal then
             tietze[TZ_MODIFIED] := true;
             # handle relators of length 1 or 2.

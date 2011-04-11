@@ -1,0 +1,167 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  semigrp.msk                GAP documentation                Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: semigrp.msk,v 1.23 2003/10/24 16:52:42 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Semigroups">
+<Heading>Semigroups</Heading>
+
+This chapter describes functions for creating semigroups
+and determining information about them.
+
+<!-- %%  Support for algebraic semigroup theory in &GAP; was designed by Andrew -->
+<!-- %%  Solomon, based on code by Götz Pfeiffer, and was implemented by Isabel -->
+<!-- %%  Araújo, Robert Arthur, and Andrew Solomon. -->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsSemigroup">
+<Heading>IsSemigroup (Filter)</Heading>
+
+<#Include Label="IsSemigroup">
+<#Include Label="Semigroup">
+<#Include Label="Subsemigroup">
+<#Include Label="SemigroupByGenerators">
+<#Include Label="AsSemigroup">
+<#Include Label="AsSubsemigroup">
+<#Include Label="GeneratorsOfSemigroup">
+<#Include Label="FreeSemigroup">
+<#Include Label="SemigroupByMultiplicationTable">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties of Semigroups">
+<Heading>Properties of Semigroups</Heading>
+
+The following functions determine information
+about semigroups.
+
+<#Include Label="IsRegularSemigroup">
+<#Include Label="IsRegularSemigroupElement">
+<#Include Label="IsSimpleSemigroup">
+<#Include Label="IsZeroSimpleSemigroup">
+<#Include Label="IsZeroGroup">
+<#Include Label="IsReesCongruenceSemigroup">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Making transformation semigroups">
+<Heading>Making transformation semigroups</Heading>
+
+Cayley's Theorem gives special status to semigroups of
+transformations, and accordingly there are special functions
+to deal with them, and to create them from other finite
+semigroups.
+
+<#Include Label="IsTransformationSemigroup">
+<#Include Label="DegreeOfTransformationSemigroup">
+<#Include Label="IsomorphismTransformationSemigroup">
+<#Include Label="IsFullTransformationSemigroup">
+<#Include Label="FullTransformationSemigroup">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Ideals of semigroups">
+<Heading>Ideals of semigroups</Heading>
+
+Ideals of semigroups are the same as ideals of the semigroup when 
+considered as a magma.
+For documentation on ideals for magmas, see <Ref Func="Magma"/>.
+
+<#Include Label="SemigroupIdealByGenerators">
+<#Include Label="ReesCongruenceOfSemigroupIdeal">
+<#Include Label="IsLeftSemigroupIdeal">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Congruences for semigroups">
+<Heading>Congruences for semigroups</Heading>
+
+An equivalence or a congruence on a semigroup is the
+equivalence or congruence on the semigroup considered as a magma.
+So, to deal with equivalences and congruences on semigroups,
+magma functions are used.
+For documentation on equivalences and congruences for magmas,
+see <Ref Func="Magma"/>.
+
+<#Include Label="IsSemigroupCongruence">
+<#Include Label="IsReesCongruence">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Quotients">
+<Heading>Quotients</Heading>
+
+Given a semigroup and a congruence on the semigroup, one
+can construct a new semigroup: the quotient semigroup.
+The following functions deal with quotient semigroups in &GAP;.
+
+<#Include Label="[1]{semiquo}">
+<#Include Label="IsQuotientSemigroup">
+<#Include Label="HomomorphismQuotientSemigroup">
+<#Include Label="QuotientSemigroupPreimage">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Green's Relations">
+<Heading>Green's Relations</Heading>
+
+<#Include Label="[1]{semirel}">
+<#Include Label="GreensRRelation">
+<#Include Label="IsGreensRelation">
+<#Include Label="IsGreensClass">
+<#Include Label="IsGreensLessThanOrEqual">
+<#Include Label="RClassOfHClass">
+<!-- %Declaration{IsGreensRClassEnumerator} -->
+<#Include Label="EggBoxOfDClass">
+<#Include Label="DisplayEggBoxOfDClass">
+<#Include Label="GreensRClassOfElement">
+<#Include Label="GreensRClasses">
+<#Include Label="GroupHClassOfGreensDClass">
+<#Include Label="IsGroupHClass">
+<#Include Label="IsRegularDClass">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Rees Matrix Semigroups">
+<Heading>Rees Matrix Semigroups</Heading>
+
+<#Include Label="[1]{reesmat}">
+<#Include Label="ReesMatrixSemigroup">
+<#Include Label="ReesZeroMatrixSemigroup">
+<#Include Label="IsReesMatrixSemigroup">
+<#Include Label="IsReesZeroMatrixSemigroup">
+<#Include Label="ReesMatrixSemigroupElement">
+<#Include Label="IsReesMatrixSemigroupElement">
+<#Include Label="SandwichMatrixOfReesMatrixSemigroup">
+<#Include Label="RowIndexOfReesMatrixSemigroupElement">
+<#Include Label="ReesZeroMatrixSemigroupElementIsZero">
+<#Include Label="AssociatedReesMatrixSemigroupOfDClass">
+<#Include Label="IsomorphismReesMatrixSemigroup">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

@@ -1,8 +1,8 @@
 " Vim syntax file
 " Language:	GAP
-" Author:  Frank Lübeck,  highlighting based on file by Alexander Hulpke
-" Maintainer:	Frank Lübeck
-" Last change:	June 2001 
+" Author:  Frank LÃ¼beck,  highlighting based on file by Alexander Hulpke
+" Maintainer:	Frank LÃ¼beck
+" Last change:	June 2010 
 " CVS version:  $Id$
 " 
 " Comments: If you want to use this file, you may want to adjust colors to
@@ -78,25 +78,25 @@ syn match  gapSublist	"[}{]"
 "hilite
 " this is very much dependent on personal taste, must add gui case if you
 " use gvim
-hi gapString ctermfg=2
-hi gapFunction  ctermfg=1
-hi gapDeclare  cterm=bold ctermfg=4
-hi gapMethsel  ctermfg=6
-hi gapOtherKey  ctermfg=3
-hi gapOperator cterm=bold ctermfg=8
-hi gapConditional cterm=bold ctermfg=9
-hi gapRepeat cterm=bold ctermfg=12
-hi gapComment  ctermfg=4
-hi gapTodo  ctermbg=2 ctermfg=0
-hi link gapTTodoComment  gapTodo
+hi gapString ctermfg=2 guifg=Green
+hi gapFunction  ctermfg=1 guifg=Red
+hi gapDeclare  cterm=bold ctermfg=4 guifg=DarkBlue
+hi gapMethsel  ctermfg=6 guifg=Cyan
+hi gapOtherKey  ctermfg=3 guifg=Yellow
+hi gapOperator cterm=bold ctermfg=8 guifg=DarkGray
+hi gapConditional cterm=bold ctermfg=9 guifg=DarkRed
+hi gapRepeat cterm=bold ctermfg=12 guifg=DarkGray
+hi gapComment  ctermfg=4 guifg=Blue
+hi gapTodo  ctermbg=2 ctermfg=0 guibg=Green guifg=Black
+hi link gapTTodoComment  gapTodo 
 hi link gapTodoComment	gapComment
-hi gapNumber ctermfg=5
-hi gapBool ctermfg=5
-hi gapChar ctermfg=3
-hi gapListDelimiter ctermfg=8
-hi gapParentheses ctermfg=12
-hi gapSublist ctermfg=14
-hi gapFunLine ctermbg=3 ctermfg=0
+hi gapNumber ctermfg=5 guifg=Magenta
+hi gapBool ctermfg=5 guifg=Magenta
+hi gapChar ctermfg=3 guifg=Yellow
+hi gapListDelimiter ctermfg=8 guifg=Gray
+hi gapParentheses ctermfg=12 guifg=Blue
+hi gapSublist ctermfg=14 guifg=LightBlue
+hi gapFunLine ctermbg=3 ctermfg=0 guibg=LightBlue guifg=Black
 
 syn sync maxlines=500
 

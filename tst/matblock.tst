@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  Exclude from testinstall.g: why?
 ##
 
 gap> START_TEST("$Id$");
@@ -112,11 +114,10 @@ gap> o2:= One( z );
 gap> o1 = o2;
 true
 
+gap> STOP_TEST( "matblock.tst", 1200000 );
 
-gap> STOP_TEST( "matblock.tst", 1410500 );
 
 #############################################################################
 ##
-#E  matblock.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
+#E
 

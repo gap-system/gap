@@ -5,8 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for the intersection of polycylic groups.
 ##
@@ -316,12 +317,14 @@ function( U, V )
     pcgsU := InducedPcgs(pcgs, U );
     pcgsV := InducedPcgs(pcgs, V );
 
-    # test if one the groups is known to be normal
-    if IsNormal( G, U ) then
-        return ZassenhausIntersection( pcgs, pcgsU, pcgsV );
-    elif IsNormal( G, V ) then
-        return ZassenhausIntersection( pcgs, pcgsV, pcgsU );
-    fi;
+  # disabled calls to `ZassenhausIntersection' that seems to be not
+  # applicable. AH, 4/12/05
+  #  # test if one the groups is known to be normal
+  #  if IsNormal( G, U ) then
+  #      return ZassenhausIntersection( pcgs, pcgsU, pcgsV );
+  #  elif IsNormal( G, V ) then
+  #      return ZassenhausIntersection( pcgs, pcgsV, pcgsU );
+  #  fi;
 
     return GlasbyIntersection( pcgs, pcgsU, pcgsV );
 

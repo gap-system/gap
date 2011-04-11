@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  precord.h                   GAP source                   Martin Schoenert
+*W  precord.h                   GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions for plain records.
 */
@@ -28,8 +29,10 @@ const char * Revision_precord_h =
 *F  NEW_PREC( <len> ) . . . . . . . . . . . . . . . . make a new plain record
 **
 **  'NEW_PREC' returns a new plain record with room for <len> components.
+**  Note that you still have to set the actual length once you have populated
+**  the record!
 */
-#define NEW_PREC(len)   NewBag( T_PREC, (len) * 2*sizeof(Obj) + sizeof(Obj) )
+Obj NEW_PREC(UInt len);
 
 
 /****************************************************************************
@@ -38,8 +41,15 @@ const char * Revision_precord_h =
 **
 **  'LEN_PREC' returns the number of components of the plain record <rec>.
 */
-#define LEN_PREC(rec)   ((SIZE_OBJ(rec) - sizeof(Obj)) / (2*sizeof(Obj)))
+#define LEN_PREC(rec)   (((UInt *)(ADDR_OBJ(rec)))[1])
 
+/****************************************************************************
+**
+*F  SET_LEN_PREC( <rec> ) . . . . . .set number of components of plain record
+**
+**  'SET_LEN_PREC' sets the number of components of the plain record <rec>.
+*/
+#define SET_LEN_PREC(rec,nr)   (((UInt *)(ADDR_OBJ(rec)))[1] = (nr))
 
 /****************************************************************************
 **
@@ -49,7 +59,8 @@ const char * Revision_precord_h =
 **  record <rec> to the record name <rnam>.
 */
 #define SET_RNAM_PREC(rec,i,rnam) \
-                        (*(UInt*)(ADDR_OBJ(rec)+2*(i)-1) = (rnam))
+           do { Int rrrr = (rnam); \
+ *(UInt*)(ADDR_OBJ(rec)+2*(i)) = rrrr; } while (0)
 
 
 /****************************************************************************
@@ -60,7 +71,7 @@ const char * Revision_precord_h =
 **  the record <rec>.
 */
 #define GET_RNAM_PREC(rec,i) \
-                        (*(UInt*)(ADDR_OBJ(rec)+2*(i)-1))
+                        (*(UInt*)(ADDR_OBJ(rec)+2*(i)))
 
 
 /****************************************************************************
@@ -71,7 +82,8 @@ const char * Revision_precord_h =
 **  record <rec> to the value <val>.
 */
 #define SET_ELM_PREC(rec,i,val) \
-                        (*(ADDR_OBJ(rec)+2*(i)-0) = (val))
+                 do { Obj oooo = (val); \
+                        *(ADDR_OBJ(rec)+2*(i)+1) = oooo; } while (0)
 
 
 /****************************************************************************
@@ -82,7 +94,7 @@ const char * Revision_precord_h =
 **  record <rec>.
 */
 #define GET_ELM_PREC(rec,i) \
-                        (*(ADDR_OBJ(rec)+2*(i)-0))
+                        (*(ADDR_OBJ(rec)+2*(i)+1))
 
 
 /****************************************************************************
@@ -149,6 +161,24 @@ extern  void            AssPRec (
 extern  void            UnbPRec (
             Obj                 rec,
             UInt                rnam );
+
+
+/****************************************************************************
+**
+*F  SortPRecRNam(<rec>, <inplace>) . . . . . . . sort the Rnams of the record
+**
+**  This is needed after the components of a record have been assigned
+**  in not necessarily sorted order in the kernel. It is automatically
+**  called on the first read access if necessary. See the top of "precord.c"
+**  for a comment on lazy sorting.
+**  If inplace is 1 then a slightly slower algorithm is used of
+**  which we know that it does not produce garbage collections.
+**  If inplace is 0 a garbage collection may be triggered.
+**
+*/
+extern  void            SortPRecRNam (
+            Obj                 rec,
+            int                 inplace );
 
 
 /****************************************************************************

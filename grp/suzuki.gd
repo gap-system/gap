@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 Revision.suzuki_gd :=
     "@(#)$Id$";
@@ -14,6 +14,13 @@ Revision.suzuki_gd :=
 ##
 #O  SuzukiGroupCons( <filter>, <q> )
 ##
+##  <ManSection>
+##  <Oper Name="SuzukiGroupCons" Arg='filter, q'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
 DeclareConstructor( "SuzukiGroupCons", [ IsGroup, IsInt ] );
 
 #############################################################################
@@ -21,12 +28,25 @@ DeclareConstructor( "SuzukiGroupCons", [ IsGroup, IsInt ] );
 #F  SuzukiGroup( [<filt>, ] <q> )  . . . . . . . . . . . . . . . Suzuki group
 #F  Sz( [<filt>, ] <q> )
 ##
-##  Constructs a group isomorphic to the Suzuki group Sz( <q> )
-##  over the field with <q> elements, where $q \ge 8$ is a non - square
-##  power of 2.
+##  <#GAPDoc Label="SuzukiGroup">
+##  <ManSection>
+##  <Func Name="SuzukiGroup" Arg='[filt, ] q'/>
+##  <Func Name="Sz" Arg='[filt, ] q'/>
 ##
-##  If <filt> is not given it defaults to `IsMatrixGroup',
+##  <Description>
+##  Constructs a group isomorphic to the Suzuki group Sz( <A>q</A> )
+##  over the field with <A>q</A> elements, where <A>q</A> is a non-square
+##  power of <M>2</M>.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
 ##  and the returned group is the Suzuki group itself.
+##  <Example><![CDATA[
+##  gap> SuzukiGroup( 32 );
+##  Sz(32)
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BindGlobal( "SuzukiGroup", function ( arg )
 
@@ -43,6 +63,8 @@ end );
 
 DeclareSynonym( "Sz", SuzukiGroup );
 
+
 #############################################################################
 ##
-#E  suzuki.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

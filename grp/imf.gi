@@ -4,8 +4,8 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 ##  This  file  contains  the  library  functions  for  the  GAP  library  of
 ##  irreducible maximal finite integral matrix groups.

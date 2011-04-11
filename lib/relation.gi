@@ -4,8 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for binary relations, equivalence
 ##  relations and equivalence classes on and over sets. 
@@ -427,7 +428,7 @@ InstallMethod(ReflexiveClosureBinaryRelation,
 
         ur := ShallowCopy(AsSSortedList(UnderlyingRelation(r)));
         for i in Source(r) do
-           AddSet(ur,Tuple([i,i]));
+           AddSet(ur,DirectProductElement([i,i]));
         od;
 
         d := Source(r);
@@ -473,7 +474,7 @@ InstallMethod(SymmetricClosureBinaryRelation,
         ur := UnderlyingRelation(r);
         t  := ShallowCopy(AsSSortedList(ur));
         for i in ur do
-           AddSet(t,Tuple([i[2],i[1]]));
+           AddSet(t,DirectProductElement([i[2],i[1]]));
         od;
 
         d := Source(r);
@@ -546,7 +547,7 @@ InstallMethod(TransitiveClosureBinaryRelation,
         # transitive closure from the adjacency list
         p := [];
         for i in [1..Length(el)] do
-            Append(p,List(t[i],x->Tuple([el[i],x])));
+            Append(p,List(t[i],x->DirectProductElement([el[i],x])));
         od;
 
         d := Source(r); ##Assumes source is a domain
@@ -576,7 +577,7 @@ InstallMethod(TransitiveClosureBinaryRelation,
 ##
 InstallMethod(HasseDiagramBinaryRelation,
         "for binary relation", true,
-        [IsBinaryRelation and IsPartialOrderBinaryRelation], 0,
+        [IsBinaryRelation], 0,
     function(rel)
 
         local i, j,           # iterators
@@ -590,6 +591,9 @@ InstallMethod(HasseDiagramBinaryRelation,
               HDBREltCovers,  #    to find the cover of an element
               HDBRListCovers; #    to find the set of covers
 
+        while not IsPartialOrderBinaryRelation(rel) do
+	    Error("Relation ",rel," is not a partial order");
+	od;
 
         ## return the minimal elements of a list under rel
         HDBRMinElts := function(list, rel)
@@ -620,7 +624,7 @@ InstallMethod(HasseDiagramBinaryRelation,
         tups := [];
         for i in lc do
             for j in i[2] do
-                Append(tups, [Tuple([i[1], j])]);
+                Append(tups, [DirectProductElement([i[1], j])]);
             od;
         od;
         h := GeneralMappingByElements(d,d, tups);         
@@ -654,7 +658,7 @@ InstallGlobalFunction(PartialOrderByOrderingFunction,
         for i in d do
             for j in d do
                 if of(i,j) then
-                    Add(tup,Tuple([i,j]));
+                    Add(tup,DirectProductElement([i,j]));
                 fi;
             od;
         od;    
@@ -717,14 +721,15 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
         ## Non recursive implementation of a depth first visit
         ##   from a vertex using a stack explicitly to remember 
         ##   its depth recursion.
-  
+        ##
         DFSVisitNR := function(s)
         
-            local v,u,pushed,  ## vertices and boolean variable
+            local v,u,         ## vertices
                   stack, top;  ## stack variables
 
             top:=1;
             stack := [s];
+            pi[s] :=s;
             
             ## Loop until we can discover no more vertices from s
             ##    
@@ -732,36 +737,38 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
 
                 ## Initialization for the top of the stack
                 ##
-                pushed := false;
-                
                 u := stack[top];
                 color[u] := 1;
                 dtime[u] := time+1;
                 time     := time +1;
 
-                ## Push each undicovered vertex in the adjacency list
-                ##   on the stack
+                ## Find the first undiscovered vertex adjacent to u
                 ##
-                for v in adj[u] do
-                   if color[v]=0 then
-                       pi[v] := u;
-                       top := top +1;
-                       stack[top] := v;
-                       pushed := true;
-                   fi;
-                od;
-
-                ## If no vertices have been pushed on the stack
-                ##    then pop the vertex, set it's color to fully 
-                ##    discovered, and finish time
+                v := First(adj[u],x->color[x]=0);
+             
+                ## If no undiscovered vertices exist pop the vertex u
+                ##   from the stack and record it's finish time and color
+                ##   it fully discovered
                 ##
-                if not pushed then
+                if v=fail then
                     u := stack[top];
                     top := top-1;
                     color[u] := 2;
                     ftime[u] := time+1;
                     time := time +1;
-                fi;    
+
+                ## Otherwise color the vertex, record it's discover
+                ##   time and predesessor edge, and push on the stack.
+                ##
+                else
+                    color[v]:=1;
+                    dtime[v] := time+1;
+                    time     := time +1;
+                    pi[v] := u;
+                    top := top +1;
+                    stack[top] := v;
+                fi;
+
             od;
         end;
 
@@ -790,24 +797,32 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
         ##
         r := AsBinaryRelationOnPoints(rel);
 
+        ## Call the kernel function to find the strongly connected
+        ## components
+        ##
+        e := STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Successors(r));
+
+        ## Eliminate singlatons
+        e := Filtered(e, i->Length(i)>1);
+
         ## Do a depth first search of rel
         ##
-        DFS(r,[1..DegreeOfBinaryRelation(r)]);
+        #DFS(r,[1..DegreeOfBinaryRelation(r)]);
 
         ## Transpose the relation (i.e. take its inverse) and
         ##    complete a DFS searching the vertices in decreasing
         ##    order of the finish time in the first DFS 
         ##
-        DFS(r^-1, List(Reversed(AsSortedList(ftime)),i->
-            Position(ftime,i)));
+        #DFS(r^-1, List(Reversed(AsSortedList(ftime)),i->
+        #    Position(ftime,i)));
 
         ## Find the strongly connected components which are the
         ##     partitions of pi
         ##        
-        e := EquivalenceRelationPartition(
-                 EquivalenceRelationByRelation(
-                     BinaryRelationTransformation(
-                         Transformation(pi))));
+        #e := EquivalenceRelationPartition(
+        #         EquivalenceRelationByRelation(
+        #             BinaryRelationTransformation(
+        #                 Transformation(pi))));
 
         ## Translate the partition of the equivalence relation on points 
         ##    representing the strongly connected components into the 
@@ -1468,7 +1483,7 @@ InstallGlobalFunction(EquivalenceRelationByRelation,
             tups :=[];
             for i in [1..DegreeOfBinaryRelation(r)] do
                 for j in Successors(r)[i] do
-                   Add(tups, Tuple([i,j]));
+                   Add(tups, DirectProductElement([i,j]));
                 od;
             od;
             return EquivalenceRelationByPairs(

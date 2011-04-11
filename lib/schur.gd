@@ -3,88 +3,271 @@
 #W  schur.gd                 GAP library                        Werner Nickel 
 #W                                                           Alexander Hulpke
 ##
-#Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.schur_gd :=
     "@(#)$Id$";
 
-##############################################################################
+#############################################################################
 ##
-#V  InfoSchur()
+#V  InfoSchur
+##
+##  <ManSection>
+##  <InfoClass Name="InfoSchur"/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
 ##
 DeclareInfoClass( "InfoSchur" );
 
-##############################################################################
+#############################################################################
 ##
 #O  SchurCover(<G>)
 ##
-##  returns one (of possibly several) Schur covers of <G>.
+##  <#GAPDoc Label="SchurCover">
+##  <ManSection>
+##  <Oper Name="SchurCover" Arg='G'/>
 ##
+##  <Description>
+##  returns one (of possibly several) Schur covers of the group <A>G</A>.
+##  <P/>
 ##  At the moment this cover is represented as a finitely presented group
-##  and `IsomorphismPermGroup' would be needed to convert it to a
+##  and <Ref Func="IsomorphismPermGroup"/> would be needed to convert it to a
 ##  permutation group.
+##  <P/>
+##  If also the relation to <A>G</A> is needed,
+##  <Ref Func="EpimorphismSchurCover"/> should be used.
+##  <Example><![CDATA[
+##  gap> g:=Group((1,2,3,4),(1,2));;
+##  gap> epi:=EpimorphismSchurCover(g);
+##  [ f1, f2, f3 ] -> [ (3,4), (2,4,3), (1,4)(2,3) ]
+##  gap> Size(Source(epi));
+##  48
+##  ]]></Example>
+##  <P/>
+##  If the group becomes bigger, Schur Cover calculations might become
+##  unfeasible.
+##  <P/>
+##  There is another operation, <Ref Func="AbelianInvariantsMultiplier"/>,
+##  which only returns the structure of the Schur Multiplier,
+##  and which should work for larger groups as well.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  If also the relation to <G> is needed, `EpimorphismSchurCover' should be
-##  used.
-##
-DeclareOperation( "SchurCover", [IsGroup] );
+DeclareAttribute( "SchurCover", IsGroup );
 
 ##############################################################################
 ##
 #O  EpimorphismSchurCover(<G>[,<pl>])
 ##
-##  returns an epimorphism <epi> from a group <D> onto <G>. The group <D> is
-##  one (of possibly several) Schur covers of <G>.
-##  The group <D> can be obtained as the `Source' of <epi>. the kernel of
-##  <epi> is the schur multiplier of <G>.
-##  If <pl> is given as a list of primes, only the multiplier part for these
-##  primes is realized.
-##  At the moment, <D> is represented as a finitely presented group.
-DeclareOperation( "EpimorphismSchurCover", [IsGroup] );
+##  <#GAPDoc Label="EpimorphismSchurCover">
+##  <ManSection>
+##  <Oper Name="EpimorphismSchurCover" Arg='G[, pl]'/>
+##
+##  <Description>
+##  returns an epimorphism <M>epi</M> from a group <M>D</M> onto <A>G</A>.
+##  The group <M>D</M> is one (of possibly several) Schur covers of <A>G</A>.
+##  The group <M>D</M> can be obtained as the <Ref Func="Source"/> value of
+##  <A>epi</A>.
+##  The kernel of <M>epi</M> is the Schur multiplier of <A>G</A>.
+##  If <A>pl</A> is given as a list of primes,
+##  only the multiplier part for these primes is realized.
+##  At the moment, <M>D</M> is represented as a finitely presented group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 
 ##############################################################################
 ##
-#O  AbelianInvariantsMultiplier(<G>)
+#A  AbelianInvariantsMultiplier(<G>)
 ##
-##  \index{Multiplier}\atindex{Schur multiplier}{@Schur multiplier}
-##  returns a list of the abelian invariants of the Schur multiplier of <G>.
-DeclareOperation( "AbelianInvariantsMultiplier", [IsGroup] );
+##  <#GAPDoc Label="AbelianInvariantsMultiplier">
+##  <ManSection>
+##  <Attr Name="AbelianInvariantsMultiplier" Arg='G'/>
+##
+##  <Description>
+##  <Index>Multiplier</Index>
+##  <Index>Schur multiplier</Index>
+##  returns a list of the abelian invariants of the Schur multiplier of
+##  <A>G</A>.
+##  <Log><![CDATA[
+##  gap> AbelianInvariantsMultiplier(g);
+##  [ 2 ]
+##  gap> AbelianInvariantsMultiplier(MathieuGroup(22));
+##  [ 4, 3 ]
+##  ]]></Log>
+##  <P/>
+##  Note that the following example will take some time.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> AbelianInvariantsMultiplier(PSU(6,2));
+##  [ 2, 2, 3 ]
+##  ]]></Log>
+##  <P/>
+##  At the moment, this operation will not give any information about how to
+##  extend the multiplier to a Schur Cover.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
+
+##############################################################################
+####  Derived functions.                                       Robert F. Morse
+####  
+##############################################################################
+##
+#A  Epicentre(<G>)
+#A  ExteriorCentre(<G>)
+##
+##  <#GAPDoc Label="Epicentre">
+##  <ManSection>
+##  <Attr Name="Epicentre" Arg='G'/>
+##  <Attr Name="ExteriorCentre" Arg='G'/>
+##
+##  <Description>
+##  There are various ways of describing the epicentre of a group <A>G</A>.
+##  It is the smallest normal subgroup <M>N</M> of <A>G</A> such that
+##  <M><A>G</A>/N</M> is a central quotient of a group.
+##  It is also equal to the Exterior Center of <A>G</A>,
+##  see <Cite Key="Ellis98"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute("Epicentre", IsGroup );
+DeclareSynonym("Epicenter", Epicentre);
+DeclareSynonym("ExteriorCentre", Epicentre);
+DeclareSynonym("ExteriorCenter", Epicentre);
+
+##############################################################################
+##
+#O  NonabelianExteriorSquare(<G>)
+##
+##  <#GAPDoc Label="NonabelianExteriorSquare">
+##  <ManSection>
+##  <Oper Name="NonabelianExteriorSquare" Arg='G'/>
+##
+##  <Description>
+##  Computes the nonabelian exterior square <M><A>G</A> \wedge <A>G</A></M>
+##  of the group <A>G</A>, which for a finitely presented group is the
+##  derived subgroup of any Schur cover of <A>G</A>
+##  (see <Cite Key="BJR87"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("NonabelianExteriorSquare", [IsGroup]);
+
+##############################################################################
+##
+#O  EpimorphismNonabelianExteriorSquare(<G>)
+##
+##  <#GAPDoc Label="EpimorphismNonabelianExteriorSquare">
+##  <ManSection>
+##  <Oper Name="EpimorphismNonabelianExteriorSquare" Arg='G'/>
+##
+##  <Description>
+##  Computes the mapping
+##  <M><A>G</A> \wedge <A>G</A> \rightarrow <A>G</A></M>.
+##  The kernel of this mapping is equal to the Schur multiplier of <A>G</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
+
+##############################################################################
+##
+#P  IsCentralFactor(<G>) 
+##
+##  <#GAPDoc Label="IsCentralFactor">
+##  <ManSection>
+##  <Prop Name="IsCentralFactor" Arg='G'/>
+##
+##  <Description>
+##  This function determines if there exists a group <M>H</M> such that
+##  <A>G</A> is isomormorphic to the quotient <M>H/Z(H)</M>.
+##  A group with this property is called in literature <E>capable</E>.
+##  A group being capable is 
+##  equivalent to the epicentre of <A>G</A> being trivial,
+##  see <Cite Key="BFS79"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty("IsCentralFactor", IsGroup);
+
+##############################################################################
+###########################END RFM############################################
+
 
 ##############################################################################
 ##
 #F  SchuMu(<G>,<p>)
 ##
-## returns epimorphism from p-part of multiplier.p-Sylow (note: This
-## extension is *not* necessarily isomorphic to a sylow subgroup of a
-## Darstellungsgruppe!) onto p-Sylow, the
-## kernel is the p-part of the multiplier.
-## The implemented algorithm is based on section 7 in Derek Holt's paper.
-## However we use some of the general homomorphism setup to avoid having to
-## remember certain relations.
+##  <ManSection>
+##  <Func Name="SchuMu" Arg='G,p'/>
+##
+##  <Description>
+##  returns epimorphism from p-part of multiplier.p-Sylow (note: This
+##  extension is <E>not</E> necessarily isomorphic to a Sylow subgroup of a
+##  Darstellungsgruppe!) onto p-Sylow, the
+##  kernel is the p-part of the multiplier.
+##  The implemented algorithm is based on section 7 in Derek Holt's paper.
+##  However we use some of the general homomorphism setup to avoid having to
+##  remember certain relations.
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction("SchuMu");
 
 ##############################################################################
 ##
 #F  CorestEval(<FG>,<s>)
 ##
-## evaluate corestriction mapping.
-## <FH> is an homomorphism from a finitely presented group onto a finite
-## group <G>. <s> an epimorphism onto a p-Sylow subgroup of <G> as obtained
-## from `SchuMu'.
-## This function evaluates the relators of the source of <FH> in the
-## extension M_p.<G>. It returns a list whose entries are of the form
-## [<rel>,<val>], where <rel> is a relator of <G> and <val> its evaluation as
-## an element of M_p.
+##  <ManSection>
+##  <Func Name="CorestEval" Arg='FG,s'/>
+##
+##  <Description>
+##  evaluate corestriction mapping.
+##  <A>FH</A> is an homomorphism from a finitely presented group onto a finite
+##  group <A>G</A>. <A>s</A> an epimorphism onto a p-Sylow subgroup of <A>G</A> as obtained
+##  from <C>SchuMu</C>.
+##  This function evaluates the relators of the source of <A>FH</A> in the
+##  extension M_p.<A>G</A>. It returns a list whose entries are of the form
+##  [<A>rel</A>,<A>val</A>], where <A>rel</A> is a relator of <A>G</A> and <A>val</A> its evaluation as
+##  an element of M_p.
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction("CorestEval");
 
 ##############################################################################
 ##
 #F  RelatorFixedMultiplier(<hom>,<p>)
 ##
-##  Let <hom> an epimorphism from an fp group onto a finite group <G>. This
-##  function returns an epimorphism onto the <p>-Sylow subgroup of <G>,
+##  <ManSection>
+##  <Func Name="RelatorFixedMultiplier" Arg='hom,p'/>
+##
+##  <Description>
+##  Let <A>hom</A> an epimorphism from an fp group onto a finite group <A>G</A>. This
+##  function returns an epimorphism onto the <A>p</A>-Sylow subgroup of <A>G</A>,
 ##  whose kernel is the largest quotient of the multiplier, that can lift
-##  <hom> to a larger quotient. (The source of this map thus is $M_R(B)$
-##  of~\cite{HulpkeQuot}.)
+##  <A>hom</A> to a larger quotient. (The source of this map thus is <M>M_R(B)</M>
+##  of&nbsp;<Cite Key="HulpkeQuot"/>.)
+##  </Description>
+##  </ManSection>
+##
 DeclareGlobalFunction("RelatorFixedMultiplier");
+
+
+#############################################################################
+##
+#E
 

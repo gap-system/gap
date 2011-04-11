@@ -1,11 +1,12 @@
 /****************************************************************************
 **
-*W  stats.c                     GAP source                   Martin Schoenert
+*W  stats.c                     GAP source                   Martin Schönert
 **
 *H  @(#)$Id$
 **
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the statements package.
 **
@@ -49,6 +50,8 @@ const char * Revision_stats_c =
 #define INCLUDE_DECLARATION_PART
 #include        "stats.h"               /* statements                      */
 #undef  INCLUDE_DECLARATION_PART
+
+#include        <assert.h>
 
 #ifdef SYS_IS_MAC_MWC
 #include        "macintr.h"              /* Mac interrupt handlers	      */
@@ -1437,6 +1440,7 @@ UInt ExecAssert2Args (
           "you may 'return true;' or 'return false;'");
         }
         if ( decision == False ) {
+            SET_BRK_CURR_STAT( stat );
             ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
         }
 
@@ -1552,6 +1556,38 @@ UInt            ExecReturnVoid (
     return 2;
 }
 
+UInt (* RealExecStatFuncs[256]) ( Stat stat );
+UInt RealExecStatCopied;
+
+
+/****************************************************************************
+**
+*F  UInt TakeInterrupt() . . . . . . . . allow user interrupts
+**
+**  When you call this you promise that the heap is in a normal state, 
+**  allowing GAP execution in the usual way
+**
+**  This will do nothing (pretty quickly) if Ctrl-C has not been pressed and 
+**  return 0. Otherwise it
+**   will respond appropriately.  This may result in a longjmp
+**  or in returning to the caller after arbitrary execution of GAP code
+** including possible garbage collection. In this case 1 is returned.
+*/
+
+UInt TakeInterrupt() {
+  UInt i;
+  if (SyIsIntr()) {
+    assert(RealExecStatCopied);
+        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+            ExecStatFuncs[i] = RealExecStatFuncs[i];
+        }
+        RealExecStatCopied = 0;
+	ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+	return 1;
+  }
+  return 0;
+}
+
 
 /****************************************************************************
 **
@@ -1562,8 +1598,6 @@ UInt            ExecReturnVoid (
 **  'ExecStatFuncs' back   to   their original   value,   calls 'Error',  and
 **  redispatches after a return from the break-loop.
 */
-UInt (* RealExecStatFuncs[256]) ( Stat stat );
-UInt RealExecStatCopied = 0;
 
 UInt ExecIntrStat (
     Stat                stat )
@@ -1575,6 +1609,7 @@ UInt ExecIntrStat (
         for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
             ExecStatFuncs[i] = RealExecStatFuncs[i];
         }
+        RealExecStatCopied = 0;
     }
     SyIsIntr();
 
@@ -1614,6 +1649,7 @@ UInt ExecIntrStat (
 void InterruptExecStat ( void )
 {
     UInt                i;              /* loop variable                   */
+    /*    assert(reason > 0) */
 
     /* remember the original entries from the table 'ExecStatFuncs'        */
     if ( ! RealExecStatCopied ) {
@@ -1641,6 +1677,11 @@ void InterruptExecStat ( void )
 **
 *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
 */
+
+Int BreakLoopPending( void ) {
+     return RealExecStatCopied;
+}
+
 void ClearError ( void )
 {
     UInt        i;
@@ -1649,6 +1690,18 @@ void ClearError ( void )
     if ( RealExecStatCopied ) {
         for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
             ExecStatFuncs[i] = RealExecStatFuncs[i];
+        }
+        RealExecStatCopied = 0;
+        /* check for user interrupt */
+        if ( SyIsIntr() ) {
+          Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
+              0L, 0L);
+        }
+        /* and check if maximal memory was overrun */
+        if ( SyStorOverrun != 0 ) {
+          SyStorOverrun = 0; /* reset */
+          Pr("GAP has exceeded the permitted memory (-o option),\n", 0L, 0L);
+          Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0L);
         }
     }
 
@@ -1659,7 +1712,6 @@ void ClearError ( void )
     /* reset <NrError>                                                     */
     NrError = 0;
 }
-
 
 
 /****************************************************************************
@@ -2018,6 +2070,8 @@ static Int InitKernel (
 {
     UInt                i;              /* loop variable                   */
 
+    RealExecStatCopied = 0;
+    
     /* make the global bags known to Gasman                                */
     /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */

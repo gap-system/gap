@@ -1,0 +1,90 @@
+%%
+%% This is file `cd-cover.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% cd-cover.dtx  (with options: `package')
+%% 
+%% Copyright (C) 1997 Christian Holm.
+%% 
+%% This file is NOT the source for cd-cover, because almost all comments
+%% have been stripped from it.  It is NOT the preferred form of cd-cover
+%% for making modifications to it.
+%% 
+%% Therefore you can NOT redistribute and/or modify THIS file.  You can
+%% however redistribute the complete source (cd-cover.dtx and
+%% cd-cover.ins) and/or modify it under the terms of the GNU General
+%% Public License as published by the Free Software Foundation; either
+%% version 2, or (at your option) any later version.
+%% 
+%% The cd-cover package is distributed in the hope that it will be
+%% useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+%% of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%% 
+%% You should have received a copy of the GNU General Public License
+%% along with this program; if not, write to the Free Software
+%% Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%% 
+%% See the file cd-cover for more information.
+\NeedsTeXFormat{LaTeX2e}
+\def\fileversion{v1.0}
+\def\filedate{97/12/24}
+\ProvidesPackage{cd-cover}[\filedate\space\fileversion\space cd-cover
+                          package.]
+\RequirePackage{rotating}
+\pagestyle{empty}
+\oddsidemargin  0.55in
+\evensidemargin 0.55in
+\setlength{\unitlength}{1mm}
+\newcommand{\bookletsheet}[2]{%
+  \noindent
+  \begin{center}
+  \begin{picture}(240,120)
+      \put(0,0){\line(1,0){240}}
+      \put(0,0){\line(0,1){120}}
+      \put(0,120){\line(1,0){240}}
+      \put(240,0){\line(0,1){120}}
+      \put(120,0){\line(0,-1){5}}
+      \put(120,120){\line(0,1){5}}
+      \put(5,60){\begin{minipage}{11cm}#1\end{minipage}}
+      \put(125,60){\begin{minipage}{11cm}#2\end{minipage}}
+  \end{picture}
+  \end{center}
+}
+\newcommand{\backsheet}[2]{%
+  \begin{picture}(151,118)
+    \put(0,0){\line(1,0){151}}
+    \put(0,0){\line(0,1){118}}
+    \put(151,0){\line(0,1){118}}
+    \put(0,118){\line(1,0){151}}
+    \put(7,0){\line(0,-1){5}}
+    \put(7,118){\line(0,1){5}}
+    \put(144,0){\line(0,-1){5}}
+    \put(144,118){\line(0,1){5}}
+    \put(4,5){
+      \begin{rotate}{90}
+        #1
+      \end{rotate}
+    }
+    \put(144,113){
+      \begin{rotate}{-90}
+        #1
+      \end{rotate}
+    }
+    \put(12,59){
+      \begin{minipage}{12,7cm}
+        #2
+      \end{minipage}
+    }
+  \end{picture}
+}
+\AtEndDocument{
+  \typeout{
+     The dvi file should be processed by dvips with the '-t landscape' option
+  }
+}
+\endinput
+%%
+%% End of file `cd-cover.sty'.

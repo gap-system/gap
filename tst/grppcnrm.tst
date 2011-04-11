@@ -4,7 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  To be listed in testinstall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -628,10 +630,10 @@ gap> Size(Normalizer(G,Subgroup(G,[G.1,G.2])));
 
 #############################################################################
 
-gap> STOP_TEST( "grppcnrm.tst", 1948650000 );
+gap> STOP_TEST( "grppcnrm.tst",1532002851);
 
 
 #############################################################################
 ##
-#E  grppcnrm.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

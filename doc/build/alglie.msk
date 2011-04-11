@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Lie Algebras}
 
@@ -68,7 +69,7 @@ gap> L:= LieAlgebraByStructureConstants( Rationals, T );
 gap> A:= FullMatrixAlgebra( GF( 7 ), 4 );;
 gap> L:= LieAlgebra( A );
 <Lie algebra of dimension 16 over GF(7)>
-gap> mats:= [  [[ 1, 0 ], [ 0, -1 ]], [[ 0, 1 ], [ 0, 0 ]], [[ 0, 0 ], [ 1, 0]] ];;
+gap> mats:= [ [[ 1, 0 ], [ 0, -1 ]], [[ 0, 1 ], [ 0, 0 ]], [[ 0, 0 ], [ 1, 0]] ];;
 gap> L:= LieAlgebra( Rationals, mats );
 <Lie algebra over Rationals, with 3 generators>
 \endexample
@@ -216,7 +217,7 @@ gap> LieDerivedSeries( L );
 \Declaration{LieLowerCentralSeries}
 
 \beginexample
-gap> mats:= [  [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
+gap> mats:= [ [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 gap> L:=LieAlgebra( Rationals, mats );;
 gap> LieLowerCentralSeries( L );
 [ <Lie algebra of dimension 3 over Rationals>, 
@@ -227,7 +228,7 @@ gap> LieLowerCentralSeries( L );
 \Declaration{LieUpperCentralSeries}
 
 \beginexample
-gap> mats:= [  [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
+gap> mats:= [ [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 gap> L:=LieAlgebra( Rationals, mats );;
 gap> LieUpperCentralSeries( L );
 [ <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, 
@@ -376,7 +377,8 @@ gap> g:=CanonicalGenerators( R );
 gap> g[3][1]*x[1];
 (2)*v.1
 gap> g[3][2]*x[1];
-(-1)*v.1   # i.e., x[1] is the root vector belonging to the root [ 2, -1 ]
+(-1)*v.1
+gap> # i.e., x[1] is the root vector belonging to the root [ 2, -1 ]
 gap> BilinearFormMat( R );
 [ [ 1/12, -1/8 ], [ -1/8, 1/4 ] ]
 \endexample
@@ -478,8 +480,8 @@ gap> k:= 0;
 gap> while not IsDoneIterator( orb ) do
 > w:= NextIterator( orb ); k:= k+1;
 > od;
-gap> k;
-51840    # i.e., the size of the Weyl group of E6.
+gap> k;  # this is the size of the Weyl group of E6
+51840
 \endexample
 
 
@@ -553,6 +555,8 @@ gap> List( [1,2,3], g.hom_components );
   <vector space over GF(3), with 2 generators>, 
   <vector space over GF(3), with 1 generators> ]
 \endexample
+
+\Declaration{NaturalHomomorphismOfLieAlgebraFromNilpotentGroup}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Adjoint Representation}
@@ -730,7 +734,7 @@ gap> SetEntrySCTable( T, 1, 2, [ 1, 3 ]);
 gap> L:= LieAlgebraByStructureConstants( Rationals, T );
 <Lie algebra of dimension 3 over Rationals>
 gap> V:= FaithfulModule( L );
-<3-dimensional left-module over <Lie algebra of dimension 3 over Rationals>>
+<left-module over <Lie algebra of dimension 3 over Rationals>>
 gap> vv:= BasisVectors( Basis( V ) );
 [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
 gap> x:= Basis( L )[3];
@@ -809,7 +813,7 @@ gap> T:= EmptySCTable( 3, 0, "antisymmetric" );;
 gap> SetEntrySCTable( T, 1, 2, [ 1, 3 ] );
 gap> L:= LieAlgebraByStructureConstants( Rationals, T );;
 gap> V:= FaithfulModule( L );
-<3-dimensional left-module over <Lie algebra of dimension 3 over Rationals>>
+<left-module over <Lie algebra of dimension 3 over Rationals>>
 gap> Cocycles( V, 2 );
 <vector space of dimension 7 over Rationals>
 gap> Coboundaries( V, 2 );
@@ -978,3 +982,7 @@ gap> U:= DirectSumOfAlgebraModules( V, W );
 <148-dimensional left-module over <Lie algebra of dimension 21 over Rationals>>
 gap> SizeScreen([ 80, ]);;
 \endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
