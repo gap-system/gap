@@ -501,7 +501,6 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  <Func Name="DirectoriesPackageLibrary" Arg='name[, path]'/>
 ##
 ##  <Description>
-##  <Index Key="GAPInfo.RootPaths"><C>GAPInfo.RootPaths</C></Index>
 ##  takes the string <A>name</A>, a name of a &GAP; package,
 ##  and returns a list of directory objects for those sub-directory/ies
 ##  containing the library functions of this &GAP; package,
@@ -938,8 +937,13 @@ DeclareGlobalFunction( "DeclareAutoreadableVariables" );
 ##  in the latter case information about the incorrect components is printed.
 ##  <P/>
 ##  Note that the components used for package loading are checked as well as
-##  the components that are needed for composing the package overview Web
+##  the components that are needed for composing the package overview web
 ##  page or for updating the package archives.
+##  <P/>
+##  If <A>info</A> is a string then <Ref Func="ValidatePackageInfo"/> checks
+##  additionally whether those package files exist that are mentioned in the
+##  file <F>info</F>, for example the <F>manual.six</F> file of the package
+##  documentation.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

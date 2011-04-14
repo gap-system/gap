@@ -10,7 +10,7 @@
 <Chapter Label="Mappings">
 <Heading>Mappings</Heading>
 
-<Index>functions</Index>
+<Index Subkey="as in mathematics">functions</Index>
 <Index>relations</Index>
 A <E>mapping</E> in &GAP; is what is called a <Q>function</Q> in mathematics.
 &GAP; also implements <E>generalized mappings</E> in which one element might

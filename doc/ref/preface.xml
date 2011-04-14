@@ -80,7 +80,7 @@ A summary of these changes with links to the full documentation appears below.
 <Heading>Archive Structure</Heading>
 
 The archive you will find to download at the above URL is not quite the same as the GAP 4.4 archives. For the general release of GAP 4.5 (and subsequent updates) 
-we plan the main form of distribution of GAP to be a single dated archive file including current version of all packages 
+we plan the main form of distribution of GAP to be a single dated archive file including current versions of all packages 
 at that date and binaries for the most common 
 environments (Windows, MacOS, and Linux on 32 and 64 bit intel processors). For this beta release, we do not quite have the setup for this fully in place. 
 The beta archives will include packages, but not binaries.
@@ -96,7 +96,7 @@ other packages depend, so that you have a reasonably stable platform for your te
 <P/>
 Some of the packages that are loaded at the beginning of the GAP session 
 currently produce errors; these may be ignored at the moment unless you 
-need that particular packages, and should be eventually eliminated after 
+need those particular packages, and should be eventually eliminated after 
 relevant package updates.
 </Subsection>
 
@@ -132,9 +132,9 @@ sort them out in time to include it in the first released archive of &GAP;&nbsp;
 
 Please also respond to this announcement of the beta release before May 1st, 2011
 to Alexander Konovalov (<C>alexk@mcs.st-andrews.ac.uk</C>) 
-telling whether or not you should be able to update your package before the 
+telling us whether or not you should be able to update your package before the 
 first public release of &GAP;&nbsp;4.5 -- we use email addresses of package authors 
-given in the packages and would like to make it sure that this announcement
+given in the packages and would like to make sure that this announcement
 was delivered to you.
 <P/>
 

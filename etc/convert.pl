@@ -434,7 +434,7 @@ sub htm_fname {
 
     my $seclabel = sec_label($c_s_gapdoc,$cnum,$snum,$ssnum);
     $seclabel = "#$seclabel" if ($seclabel ne "");
-
+ 
     if ($c_s_gapdoc == $gapdoc) {
       return "chap${cnum}.html$seclabel";
     }
@@ -453,12 +453,14 @@ sub hreftype {
       my @ls = `ls ${odir}$bdir`;
       $convertbooks{$book} 
           = (grep { m/^CHAP...[.]htm$/ } @ls) ?
-                1 :         # .htm files have shape CHAP<MMM>.htm
+                1 :             # .htm files have shape CHAP<MMM>.htm
                 (grep { m/^CHAP...[.]htm$/ } @ls) ?
-                    0 :     # .htm files have shape C<MMM>S<NNN>.htm
-                    $opt_c; # can't determine the shape ... don't exist
-                            # yet ... we assume the shape of the current
-                            # manual being compiled.
+                    0 :         # .htm files have shape C<MMM>S<NNN>.htm
+                    (grep { m/^chap...[.]html$/ } @ls) ?
+                        2 :     # .html files have shape chapM.html
+                        $opt_c; # can't determine the shape ... don't exist
+                                # yet ... we assume the shape of the current
+                                # manual being compiled.
     }
     return $convertbooks{$book};
 }
@@ -477,7 +479,7 @@ sub name2fn {
       if ($mainman==1) {
 	$bdir = "../$1/";
       } else {
-        $bdir = "../../../doc/htm/$1/";
+        $bdir = "../../../doc/$1/";
       }
       $c_s_gapdoc = hreftype($1, $bdir);
     } elsif ($canon_name =~ /^([a-zA-Z_0-9]*):/ ) {

@@ -430,8 +430,7 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##
 ##  <Description>
 ##  returns <K>true</K> if <A>obj</A> is a list and it is sorted,
-##  <Index>sorted list</Index>
-##  and <K>false</K> otherwise.
+##  <Index Subkey="sorted">list</Index> and <K>false</K> otherwise.
 ##  <P/>
 ##  A list <A>list</A> is <E>sorted</E> if it is dense
 ##  (see&nbsp;<Ref Func="IsDenseList"/>)

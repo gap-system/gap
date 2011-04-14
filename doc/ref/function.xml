@@ -11,7 +11,7 @@
 <Chapter Label="Functions">
 <Heading>Functions</Heading>
 
-<Index>functions</Index>
+<Index Subkey="as in programming language">functions</Index>
 The section&nbsp;<Ref Sect="Function"/> describes how to define a function.
 In this chapter we describe functions that give information about functions,
 and various utility functions used either when defining functions or calling

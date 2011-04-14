@@ -19,13 +19,13 @@ export GAPCVSVERSION="-D now"
 
 # version to wrap
 export VERSION="5"
-export FULLVERSION="$VERSION.0"
+export FULLVERSION="$VERSION.1"
 
 # directory name
 export DISTNAME="gap4r$VERSION"
 
 # archive name
-export RBVERSION="4r5p0"
+export RBVERSION="4r5p1"
 export ARCHNAME="gap$RBVERSION"
 
 # package archive URL

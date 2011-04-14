@@ -893,7 +893,8 @@ end );
 ##  <P/>
 ##  By default the homomorphism returned by
 ##  <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
-##  is not necessarily surjective (its <Ref Func="Range"/> value is the full
+##  is not necessarily surjective (its 
+##  <Ref Func="Range" Label="of a general mapping"/> value is the full
 ##  symmetric group) to avoid unnecessary computation of the image.
 ##  If the optional string argument <C>"surjective"</C> is given,
 ##  a surjective homomorphism is created.

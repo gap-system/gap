@@ -2,7 +2,7 @@
 ##
 #W  straight.gd              GAP library                        Thomas Breuer
 #W                                                           Alexander Hulpke
-#W                                                            Max Neunhöffer
+#W                                                             Max Neunhöffer
 ##
 #H  @(#)$Id$
 ##
@@ -155,8 +155,8 @@ DeclareCategory( "IsStraightLineProgram", IsObject );
 ##  arithmetic expression in terms of the strings in the list <A>gens</A>,
 ##  where multiplication is denoted by concatenation, powering is denoted by
 ##  <C>^</C>, and round brackets <C>(</C>, <C>)</C> may be used.
-##  Each entry in <A>gens</A> must consist only of (uppercase or lowercase)
-##  letters (i.e., letters in <Ref Func="IsAlphaChar"/>
+##  Each entry in <A>gens</A> must consist only of uppercase or lowercase
+##  letters (i.e., letters in <Ref Func="IsAlphaChar"/>)
 ##  such that no entry is an initial part of another one.
 ##  Called with this input,
 ##  <Ref Func="StraightLineProgram" Label="for a string and a list of generators names"/>

@@ -12,7 +12,6 @@
 <Heading>Group Actions</Heading>
 
 <Index>group actions</Index>
-<Index Key="G-sets"><M>G</M>-sets</Index>
 A <E>group action</E> is a triple <M>(G, \Omega, \mu)</M>,
 where <M>G</M> is a group, <M>\Omega</M> a set and
 <M>\mu \colon \Omega \times G \rightarrow \Omega</M> a function

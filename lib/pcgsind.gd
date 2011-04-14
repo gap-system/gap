@@ -295,7 +295,8 @@ DeclareProperty( "IsCanonicalPcgs", IsInducedPcgs );
 ##  Therefore, if the family pcgs chosen for arithmetic is not of importance
 ##  it might be worth to <E>change</E> to another, nicer, pcgs to speed up
 ##  calculations.
-##  This can be achieved, for example, by using the <Ref Func="Range"/> value
+##  This can be achieved, for example, by using the 
+##  <Ref Func="Range" Label="of a general mapping"/> value
 ##  of the isomorphism obtained by <Ref Func="IsomorphismSpecialPcGroup"/>.
 ##  </Description>
 ##  </ManSection>

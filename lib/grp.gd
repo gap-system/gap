@@ -2630,12 +2630,12 @@ DeclareAttribute( "NaturalHomomorphism", IsGroup );
 ##  <#GAPDoc Label="Index">
 ##  <ManSection>
 ##  <Heading>Index (&GAP; operation)</Heading>
-##  <Oper Name="Index" Arg='G, U'/>
-##  <Oper Name="IndexNC" Arg='G, U'/>
+##  <Oper Name="Index" Arg='G, U' Label="for a group and its subgroup"/>
+##  <Oper Name="IndexNC" Arg='G, U' Label="for a group and its subgroup"/>
 ##
 ##  <Description>
 ##  For a subgroup <A>U</A> of the group <A>G</A>,
-##  <Ref Func="Index"/> returns the index
+##  <Ref Func="Index" Label="for a group and its subgroup"/> returns the index
 ##  <M>[<A>G</A>:<A>U</A>] = |<A>G</A>| / |<A>U</A>|</M>
 ##  of <A>U</A> in <A>G</A>.
 ##  The <C>NC</C> version does not test whether <A>U</A> is contained in

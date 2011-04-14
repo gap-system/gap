@@ -18,8 +18,8 @@ so in particular all operations for mappings, such as
 <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>,
 <Ref Func="PreImagesRepresentative"/>,
 <Ref Func="KernelOfMultiplicativeGeneralMapping"/>,
-<Ref Func="Source"/>, <Ref Func="Range"/>, <Ref Func="IsInjective"/> and
-<Ref Func="IsSurjective"/>
+<Ref Func="Source"/>, <Ref Func="Range" Label="of a general mapping"/>, 
+<Ref Func="IsInjective"/> and <Ref Func="IsSurjective"/>
 (see chapter&nbsp;<Ref Chap="Mappings"/>, in particular
 section&nbsp;<Ref Sect="Mappings that Respect Multiplication"/>)
 are applicable to them.
@@ -301,7 +301,7 @@ cases where the standard approach does not work.)
   Create action homomorphisms as <Q>surjective</Q> (see
   <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>),
   otherwise the range is set to be the full symmetric group.
-  However do not compute <Ref Func="Range"/> or
+  However do not compute <Ref Func="Range" Label="of a general mapping"/> or
   <Ref Func="Image" Label="set of images of the source of a general mapping"/>
   values,
   but only the images of a generator set.

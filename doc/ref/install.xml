@@ -20,7 +20,8 @@
 <Chapter Label="Installing GAP">
 <Heading>Installing GAP</Heading>
 
-<Index>installation</Index><Index>options</Index>
+<Index>installation</Index>
+<Index Subkey="for installation">options</Index>
 <P/>
 &GAP; runs on a large number of different operating systems. It behaves
 slightly different on each of those. This chapter describes the

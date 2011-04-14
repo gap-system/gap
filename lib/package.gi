@@ -1667,35 +1667,47 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 
 #############################################################################
 ##
-#F  ValidatePackageInfo( <record> )
-#F  ValidatePackageInfo( <filename> )
+#F  ValidatePackageInfo( <info> )
 ##
-InstallGlobalFunction( ValidatePackageInfo, function( record )
-    local IsStringList, IsRecordList, IsProperBool,
-          result,
-          TestOption, TestMandat,
-          subrec, list;
+InstallGlobalFunction( ValidatePackageInfo, function( info )
+    local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool,
+          IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
+          list;
 
-    if IsString( record ) then
-      if IsReadableFile( record ) then
+    if IsString( info ) then
+      if IsReadableFile( info ) then
         Unbind( GAPInfo.PackageInfoCurrent );
-        Read( record );
+        Read( info );
         if IsBound( GAPInfo.PackageInfoCurrent ) then
           record:= GAPInfo.PackageInfoCurrent;
           Unbind( GAPInfo.PackageInfoCurrent );
         else
-          Error( "the file <record> is not a `PackageInfo.g' file" );
+          Error( "the file <info> is not a `PackageInfo.g' file" );
         fi;
+        pkgdir:= "./";
+        for i in Reversed( [ 1 .. Length( info ) ] ) do
+          if info[i] = '/' then
+            pkgdir:= info{ [ 1 .. i ] };
+            break;
+          fi;
+        od;
       else
-        Error( "<record> is not the name of a readable file" );
+        Error( "<info> is not the name of a readable file" );
       fi;
-    elif not IsRecord( record ) then
-      Error( "<record> must be either a record or a filename" );
+    elif IsRecord( info ) then
+      pkgdir:= fail;
+      record:= info;
+    else
+      Error( "<info> must be either a record or a filename" );
     fi;
 
     IsStringList:= x -> IsList( x ) and ForAll( x, IsString );
     IsRecordList:= x -> IsList( x ) and ForAll( x, IsRecord );
     IsProperBool:= x -> x = true or x = false;
+    IsFilename:= x -> IsString( x ) and Length( x ) > 0 and
+        ( pkgdir = fail or
+          ( x[1] <> '/' and IsReadableFile( Concatenation( pkgdir, x ) ) ) );
+    IsFilenameList:= x -> IsList( x ) and ForAll( x, IsFilename );
 
     result:= true;
 
@@ -1797,16 +1809,20 @@ InstallGlobalFunction( ValidatePackageInfo, function( record )
           result := false;
         fi;
         TestOption( subrec, "Archive", IsString, "a string" );
-        TestOption( subrec, "ArchiveURLSubset", IsStringList,
-                    "a list of strings" );
-        TestMandat( subrec, "HTMLStart", IsString, "a string" );
-        TestMandat( subrec, "PDFFile", IsString, "a string" );
-        TestMandat( subrec, "SixFile", IsString, "a string" );
+        TestOption( subrec, "ArchiveURLSubset", IsFilenameList,
+            "a list of strings denoting relative paths to readable files" );
+        TestMandat( subrec, "HTMLStart", IsFilename,
+                    "a string denoting a relative path to a readable file" );
+        TestMandat( subrec, "PDFFile", IsFilename,
+                    "a string denoting a relative path to a readable file" );
+        TestMandat( subrec, "SixFile", IsFilename,
+                    "a string denoting a relative path to a readable file" );
         TestMandat( subrec, "LongTitle", IsString, "a string" );
       od;
     fi;
     if     TestOption( record, "Dependencies", IsRecord, "a record" )
        and IsBound( record.Dependencies ) then
+      TestOption( record.Dependencies, "GAP", IsString, "a string" );
       TestOption( record.Dependencies, "NeededOtherPackages",
           comp -> IsList( comp ) and ForAll( comp,
                       l -> IsList( l ) and Length( l ) = 2
@@ -1846,10 +1862,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( record )
     fi;
     TestMandat( record, "AvailabilityTest", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );
-    TestOption( record, "TestFile",
-        x -> IsString( x ) and IsBound( x[1] ) and x[1] <> '/',
-        "a string denoting a relative path" );
-    TestOption( record, "PreloadFile", IsString, "a string" );
+    TestOption( record, "TestFile", IsFilename,
+                "a string denoting a relative path to a readable file" );
+    TestOption( record, "PreloadFile", IsFilename,
+                "a string denoting a relative path to a readable file" );
     TestOption( record, "Keywords", IsStringList, "a list of strings" );
 
     return result;

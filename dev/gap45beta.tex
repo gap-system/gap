@@ -10,6 +10,7 @@
 \def\replydate{May 1st, 2011}
 \def\pkgdeadline{July 1st, 2011}
 \def\releasemonth{August 2011}
+\def\betaversion{4.5.1}
 
 % use comments to switch between draft/final mode
 %\newcommand{\todo}[1]{\marginpar{\footnotesize #1}} % for the draft mode
@@ -27,7 +28,7 @@ than two years since the release of GAP 4.4.12. Some
 major developments that were started earlier are now ready for release and it's
 now high time for the GAP 4.5 release, which we plan to have in \releasemonth.
 
-To allow you to test your packages with the new features and prepare them for the release, we have prepared a first beta version of GAP 4.5, named GAP 4.5.0, which
+To allow you to test your packages with the new features and prepare them for the release, we have prepared a first beta version of GAP 4.5, named GAP \betaversion, which
 is available to package authors in the following directory:
 
 \begin{center}
@@ -45,7 +46,7 @@ to reflect package binaries if statically compiled into the kernel.}
 \subsection*{Archive Structure}
 
 The archive you will find to download at the above URL is not quite the same as the GAP 4.4 archives. For the general release of GAP 4.5 (and subsequent updates) 
-we plan the main form of distribution of GAP to be a single dated archive file including current version of all packages 
+we plan the main form of distribution of GAP to be a single dated archive file including current versions of all packages 
 at that date and binaries for the most common 
 environments (Windows, MacOS, and Linux on 32 and 64 bit intel processors). For this beta release, we do not quite have the setup for this fully in place. 
 The beta archives will include packages, but not binaries. 
@@ -55,13 +56,13 @@ whenever a new version of a package is released, which we expect to be quite fre
 and we will make no special distinction between 
 updates to packages and to the core system.
 
-The beta release however, and will only be updated 
+The beta release however will only be updated 
 if we deem there to be significant changes to the core system or to packages on which 
 other packages depend, so that you have a reasonably stable platform for your testing. 
 
 Some of the packages that are loaded at the beginning of the GAP session 
 currently produce errors; these may be ignored at the moment unless you 
-need that particular packages, and should be eventually eliminated after 
+need those particular packages, and should be eventually eliminated after 
 relevant package updates.
 
 
@@ -70,10 +71,10 @@ relevant package updates.
 
 
 
-Please download and install GAP 4.5.0 and test it with your package(s). 
+Please download and install GAP \betaversion \, and test it with your package(s). 
 Since we have not yet included binaries, you will need to compile the GAP kernel as usual. To run GAP under
 Windows, you may either compile it yourself with Cygwin or write to Alexander 
-Konovalov (\verb|alexk at st-andrews.ac.uk|) and ask him to send you the  GAP 
+Konovalov (\verb|alexk at mcs.st-andrews.ac.uk|) and ask him to send you the  GAP 
 executable file for Windows.
 
 % Roadmap and policy to discuss. 
@@ -83,21 +84,21 @@ public release of GAP 4.5, please prepare the new version of your package
 before \pkgdeadline. When you've done that, please make the new version available to us for testing.
 
 If the new version is intended only to work with GAP 4.5, please 
-contact Alexander Konovalov writing to \verb|alexk at st-andrews.ac.uk|
+contact Alexander Konovalov writing to \verb|alexk at mcs.st-andrews.ac.uk|
 to arrange for the GAP Group to obtain your package for further tests and to include it later versions of the beta. If the
 new version is compatible both with with GAP 4.4 and GAP 4.5, you
 may follow the standard procedure to publish it, but please
 inform Alexander Konovalov about this as well.
 
-If a package is released to us later than \pkgdeadline and our testing shows any problems 
+If a package is released to us later than \pkgdeadline \, and our testing shows any problems 
 (most likely in interactions with other packages) we may not be able to 
 sort them out in time to include it in the first released archive of GAP 4.5. 
 
 Please also respond to this announcement of the beta release before \replydate \,
-to Alexander Konovalov (\verb|alexk at st-andrews.ac.uk|) 
-telling whether or not you should be able to update your package before the 
+to Alexander Konovalov (\verb|alexk at mcs.st-andrews.ac.uk|) 
+telling us whether or not you should be able to update your package before the 
 first public release of GAP 4.5 -- we use email addresses of package authors 
-given in the packages and would like to make it sure that this announcement
+given in the packages and would like to make sure that this announcement
 was delivered to you.
 
 % Now a reassuring note to explain the amount of work required
@@ -163,7 +164,7 @@ Optional \verb|~/.gap| directory for user's customisations which may contain e.g
 locally installed packages (see section 10.2 of the reference manual). If package installation instructions explain how
 to install the package in a non-standard location, they may need an update. 
 This is intended to replace \verb|.gaprc| files, but those are still supported 
-for backwards compatibility (see section 78.5 of the reference manual).
+for backwards compatibility (see section 79.5 of the reference manual).
 
 \item
 Various improvements in the packages loading mechanism to make it more
@@ -172,7 +173,7 @@ messages for packages they didn't
 know they were loading. For example, many messages are stored but not 
 displayed \, and there is \, a function {\tt DisplayPackageLoadingLog} to show 
 log messages that 
-occur during package loading (see subsection 77.2-4 of the reference manual for further details).  
+occur during package loading (see subsection 78.2-4 of the reference manual for further details).  
 Packages are encouraged 
 to use these mechanisms to report problems in loading (e.g. binaries not compiled), rather than printing messages directly.
 \end{itemize}
@@ -289,7 +290,7 @@ fact needed.
 If no explicit {\tt LoadPackage} call occurs in A at loading time then one
 might try the new possibility to load a package without loading its
 suggested packages using the global option {\tt OnlyNeeded} 
-(see subsection 77.2-1 of the reference manual for further details); 
+(see subsection 78.2-1 of the reference manual for further details); 
 this way, one can check whether errors or warnings appear when B is not 
 available. The consequence can then be either to turn B into a needed package 
 or (since apparently B was not intended to become a needed package)

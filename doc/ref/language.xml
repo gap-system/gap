@@ -1041,7 +1041,7 @@ its operand; over the integers it is equivalent to multiplication by <C>-1</C>.
 an integer, and is also used to denote the action of a group element on a
 point of a set if the right operand is a group element.
 <P/>
-<Index Subkey="precedence">operators</Index>
+<Index Subkey="precedence">arithmetic operators</Index>
 The <E>precedence</E> of those operators is as follows.
 The powering operator <C>^</C> has the highest precedence,
 followed by the unary operators <C>+</C> and <C>-</C>,

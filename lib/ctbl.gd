@@ -2533,7 +2533,9 @@ DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 ##  of <A>tbl</A> and <A>subtbl</A>.
 ##  The containment of the underlying groups of <A>subtbl</A> and <A>tbl</A>
 ##  is <E>not</E> checked;
-##  so the disctinction between <Ref Func="Index"/> and <Ref Func="IndexNC"/>
+##  so the disctinction between 
+##  <Ref Func="Index" Label="for a group and its subgroup"/> 
+##  and <Ref Func="IndexNC" Label="for a group and its subgroup"/>
 ##  is not made for character tables.
 ##  </Description>
 ##  </ManSection>

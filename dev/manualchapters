@@ -604,7 +604,16 @@ functionality.)
        Here, there should the statement that the conductor is a
        IsSmallIntRep and a reference but no example.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 20: Booleans
+% Chapter 20: Floats
+% File: ./floats.xml (line 12)
+% Who: 
+% Started:
+% Finished: 
+% Comments:
+-4 This chapter is merely a placeholder for the beta version of GAP 4.5.
+   It should be filled with a real content.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 21: Booleans
 % File: ./boolean.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -620,7 +629,7 @@ functionality.)
   to be analogs of `ManSection', though their display style is different 
   from a proper `ManSection'.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 21: Lists
+% Chapter 22: Lists
 % File: ./lists.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -716,7 +725,7 @@ functionality.)
 -4 ``cross-reference'' to undocumented variable `IsZeroCyc' in the docum. of
   `Position'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 22: Boolean Lists
+% Chapter 23: Boolean Lists
 % File: ./blist.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -737,7 +746,7 @@ functionality.)
   Note however: l := [true,false,true];  does automatically create
     a compact IsBlistRep!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 23: Row Vectors
+% Chapter 24: Row Vectors
 % File: ./vector.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -759,7 +768,7 @@ functionality.)
   several descriptions of infix operators that cannot be handled with
   <ManSection>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 24: Matrices
+% Chapter 25: Matrices
 % File: ./matrix.xml (line 12)
 % Who: AK
 % Started: February 01, 2008
@@ -792,7 +801,7 @@ functionality.)
 
   Still reasonable statement I think. SL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 25: Integral matrices and lattices
+% Chapter 26: Integral matrices and lattices
 % File: ./matint.xml (line 13)
 % Who: Thomas Breuer
 % Started: November 09, 2008
@@ -805,7 +814,7 @@ functionality.)
   I think so. There may be obscure cases where they are faster, but I don't 
   know what. SL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 26: Vector and matrix objects
+% Chapter 27: Vector and matrix objects
 % File: ./matobj.xml
 % Who: Max Neunhoeffer
 % Started: February 16, 2011
@@ -814,7 +823,7 @@ functionality.)
   This is a completely new chapter.
 -4MN needs to be completed from stuff in lib/matobj1.gd and lib/matobj2.gd
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 27: Strings and Characters
+% Chapter 28: Strings and Characters
 % File: ./string.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -849,7 +858,7 @@ functionality.)
   - inserted index entries to the documentation of all LaTeX string producing 
     functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 28: Dictionaries and General Hash Tables
+% Chapter 29: Dictionaries and General Hash Tables
 % File: ./hash2.xml (line 13)
 % Who: Max Neunhöffer
 % Started: January 29, 2008
@@ -868,7 +877,7 @@ the last release.)
   reference to the bibliography.
 -6 This chapter has no examples at all, would be useful to add them eventually.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 29: Records
+% Chapter 30: Records
 % File: ./record.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -881,7 +890,7 @@ the last release.)
   which cannot be handled with <ManSection>;
 +3c* Again: `rec' should not be used as the name of an argument!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 30: Collections
+% Chapter 31: Collections
 % File: ./coll.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -896,7 +905,7 @@ the last release.)
   Shouldn't they be moved to the obsolescent stuff?
   --> Done
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 31: Domains and their Elements
+% Chapter 32: Domains and their Elements
 % File: ./domain.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -925,7 +934,7 @@ the last release.)
   but it is just the other way round, they are the *meet*!
   (I suspect this pops up also in other parts of the manual.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 32: Mappings
+% Chapter 33: Mappings
 % File: ./mapping.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -947,7 +956,7 @@ the last release.)
   and the next section is called ``Mappings that Respect Multiplication''.
   Does that make sense?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 33: Relations
+% Chapter 34: Relations
 % File: ./relation.xml (line 11)
 % Who: Thomas Breuer
 % Started: November 16, 2008
@@ -965,7 +974,7 @@ the last release.)
   As<Something> functions.
   AK: should we have BinaryRelationByObject operation??? 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 34: Orderings
+% Chapter 35: Orderings
 % File: ./orders.xml (line 11)
 % Who: Thomas Breuer
 % Started: November 16, 2008
@@ -975,7 +984,7 @@ the last release.)
 -4 IsBasicWreathProductOrdering: no definition, just an example
 -4 IsWreathProductOrdering: neither definition nor example
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 35: Magmas
+% Chapter 36: Magmas
 % File: ./magma.xml (line 11)
 % Who: Thomas Breuer
 % Started: November 16, 2008
@@ -987,14 +996,14 @@ the last release.)
   then the addition is always assumed to be associative and commutative.''
   Really?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 36: Words
+% Chapter 37: Words
 % File: ./word.xml (line 11)
 % Who: Thomas Breuer
 % Started: November 09, 2008
 % Finished: November 09, 2008
 % Comments:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 37: Associative Words
+% Chapter 38: Associative Words
 % File: ./wordass.xml (line 11)
 % Who: Thomas Breuer
 % Started: November 09, 2008
@@ -1002,7 +1011,7 @@ the last release.)
 % Comments:
 -6 The chapter structure is still not logical.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 38: Rewriting Systems
+% Chapter 39: Rewriting Systems
 % File: ./rws.xml (line 11)
 % Who: Thomas Breuer
 % Started: November 16, 2008
@@ -1012,7 +1021,7 @@ the last release.)
   `IsAttributeStoringRep', `UnderlyingElement',
   `CreateKnuthBendixRewritingSystem'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 39: Groups
+% Chapter 40: Groups
 % File: ./groups.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1052,7 +1061,7 @@ the last release.)
 -4 Cross-references to undocumented functions `LeftActingGroup',
   `RightActingGroup'.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 40: Group Homomorphisms
+% Chapter 41: Group Homomorphisms
 % File: ./grphomom.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1089,7 +1098,7 @@ the last release.)
   (in former `ext' manual, mentioned as ``not yet available in GAP''
   --is this a good idea?)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 41: Group Actions
+% Chapter 42: Group Actions
 % File: ./grpoper.xml (line 12)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1146,7 +1155,7 @@ the last release.)
   regarded as transitive.
   Is this a meaningful definition?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 42: Permutations
+% Chapter 43: Permutations
 % File: ./permutat.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1169,7 +1178,7 @@ the last release.)
   If the images can be 16 bit or 32 bit integers, the total space must
   depend on whether the degree m is small or not, or am I missing something?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 43: Permutation Groups
+% Chapter 44: Permutation Groups
 % File: ./grpperm.xml (line 13)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1212,7 +1221,7 @@ the last release.)
   web pages, and to refer to this from the Reference Manual?
   (This would be possible also in other cases.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 44: Matrix Groups
+% Chapter 45: Matrix Groups
 % File: ./grpmat.xml (line 11)
 % Who: Thomas Breuer
 % Started: February 06, 2009
@@ -1234,7 +1243,7 @@ the last release.)
   available.''
   So why are the functions in question documented at all in the main manual?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 45: Polycyclic Groups
+% Chapter 46: Polycyclic Groups
 % File: ./pcgs.xml (line 12)
 % Who: Thomas Breuer
 % Started: May 25, 2009
@@ -1277,7 +1286,7 @@ the last release.)
   AH: Looking through this, I think that at this point a syntax change is 
   not in the forseeable future. Thus I removed the remark.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 46: Pc Groups
+% Chapter 47: Pc Groups
 % File: ./grppc.xml (line 12)
 % Who: Thomas Breuer
 % Started: May 25, 2009
@@ -1312,7 +1321,7 @@ the last release.)
   (And unify the text before the subsection and the text inside it.)
   (AK: done)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 47: Finitely Presented Groups
+% Chapter 48: Finitely Presented Groups
 % File: ./grpfp.xml (line 12)
 % Who: Thomas Breuer
 % Started: June 14, 2009
@@ -1341,7 +1350,7 @@ the last release.)
   examples? (only for free groups, or for arbitrary groups, or for free
   structures?)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 48: Presentations and Tietze Transformations
+% Chapter 49: Presentations and Tietze Transformations
 % File: ./pres.xml (line 12)
 % Who: Thomas Breuer
 % Started: July 03, 2009
@@ -1368,14 +1377,14 @@ the last release.)
   (The text is ``The reason is that the Tietze option parameters described in
   Section <Ref Sect="Tietze Transformations"/> apply to ...''.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 49: Group Products
+% Chapter 50: Group Products
 % File: ./grpprod.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 50: Group Libraries
+% Chapter 51: Group Libraries
 % File: ./grplib.xml (line 15)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1391,7 +1400,7 @@ the last release.)
 +2* The LaTeX macro `\sl' is used in several places (inside math mode).
   AK: checked that all \sl occurences were removed
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 51: Semigroups
+% Chapter 52: Semigroups
 % File: ./semigrp.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1410,7 +1419,7 @@ the last release.)
 -3bJM `Rees Matrix Semigroups': (s, i, \lambda) or (i, s, \lambda)?
 -4 almost no examples in the whole chapter!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 52: Monoids
+% Chapter 53: Monoids
 % File: ./monoid.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1418,7 +1427,7 @@ the last release.)
 % Comments:
 -4 no examples in the whole chapter!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 53: Finitely Presented Semigroups and Monoids
+% Chapter 54: Finitely Presented Semigroups and Monoids
 % File: ./fpsemi.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1428,7 +1437,7 @@ the last release.)
   infix `/'?
 -3bJM Is there no `FactorFreeMonoidByRelations'?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 54: Transformations
+% Chapter 55: Transformations
 % File: ./trans.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1439,7 +1448,7 @@ the last release.)
   without cross-references to the definitions
 -4 `RestrictedTransformation': should be defined; give an example
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 55: Additive Magmas (preliminary)
+% Chapter 56: Additive Magmas (preliminary)
 % File: ./addmagma.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1455,7 +1464,7 @@ look worse than others)
 -4 `AsAdditiveMagma', `AsSubadditiveMagma':
   commented out, so not yet supported officially
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 56: Rings
+% Chapter 57: Rings
 % File: ./rings.xml (line 11)
 % Who: Thomas Breuer
 % Started: December 01, 2008
@@ -1479,7 +1488,7 @@ look worse than others)
 -3c Should fields lie in the filters `IsUniqueFactorizationRing',
   `IsEuclideanRing'?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 57: Modules (preliminary)
+% Chapter 58: Modules (preliminary)
 % File: ./module.xml (line 11)
 % Who: Thomas Breuer
 % Started: February 06, 2009
@@ -1504,7 +1513,7 @@ look worse than others)
   is not described.
   All this should be sorted out.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 58: Fields and Division Rings
+% Chapter 59: Fields and Division Rings
 % File: ./fields.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1514,7 +1523,7 @@ look worse than others)
   ``Example'' boxes.
 -5 Explicit <Heading> elements would be good in some <ManSection> elements.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 59: Finite Fields
+% Chapter 60: Finite Fields
 % File: ./fieldfin.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1539,7 +1548,7 @@ look worse than others)
   analogous to `DegreeFEE', and get rid of `IntVecFFE'!
 -4 crossref to `ViewLength' (undocumented)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 60: Abelian Number Fields
+% Chapter 61: Abelian Number Fields
 % File: ./fldabnum.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1548,7 +1557,7 @@ look worse than others)
 -5 missing: rings of integers in abelian number fields
   (something for GAP 4.6)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 61: Vector Spaces
+% Chapter 62: Vector Spaces
 % File: ./vspc.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1557,7 +1566,7 @@ look worse than others)
 -3c section `StructureConstantsTable' refers to the Tutorial;
   should this be avoided in general?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 62: Algebras
+% Chapter 63: Algebras
 % File: ./algebra.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1566,7 +1575,7 @@ look worse than others)
 -3c* <#GAPDoc Label="[2]{algebra}"> refers to the Tutorial;
   should this be avoided in general?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 63: Finitely Presented Algebras
+% Chapter 64: Finitely Presented Algebras
 % File: ./algfp.xml (line 11)
 % Who: Thomas Breuer
 % Started: September 20, 2008
@@ -1581,7 +1590,7 @@ look worse than others)
 -4 TODO: extend algfp.xml documenting data structures, categories, properties
   etc. at a basic level.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 64: Lie Algebras
+% Chapter 65: Lie Algebras
 % File: ./alglie.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1600,7 +1609,7 @@ look worse than others)
   however, also undocumented).
   (AK: documented NiceAlgebraMonomorphism in algfp.gd and liealg.xml)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 65: Magma Rings
+% Chapter 66: Magma Rings
 % File: ./mgmring.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1618,7 +1627,7 @@ look worse than others)
   free magma rings.
 -4 cross-ref. to undocumented variable `IsMagmaRingObjDefaultRep'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 66: Polynomials and Rational Functions
+% Chapter 67: Polynomials and Rational Functions
 % File: ./ratfun.xml (line 12)
 % Who: Thomas Breuer
 % Started: February 06, 2009
@@ -1656,7 +1665,7 @@ look worse than others)
   (And isn't the empty list an obvious result,
   why is it useful to state this prominently?)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 67: Algebraic extensions of fields
+% Chapter 68: Algebraic extensions of fields
 % File: ./algfld.xml (line 11)
 % Who: Thomas Breuer
 % Started: April 19, 2009
@@ -1664,7 +1673,7 @@ look worse than others)
 % Comments:
 -3c Why is no iterated Kronecker construction allowed?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 68: p-adic Numbers (preliminary)
+% Chapter 69: p-adic Numbers (preliminary)
 % File: ./padics.xml (line 11)
 % Who: Thomas Breuer
 % Started: April 19, 2009
@@ -1689,7 +1698,7 @@ look worse than others)
   material (see above), this can be unified.
   Can we ask AH?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 69: The MeatAxe
+% Chapter 70: The MeatAxe
 % File: ./meataxe.xml (line 12)
 % Who: Thomas Breuer
 % Started: April 19, 2009
@@ -1707,7 +1716,7 @@ look worse than others)
   Should this read as ``assumes that `MTX.Distinguish' has been called''
   or ``assumes that `SMTX.Distinguish' has been called''?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 70: Tables of Marks
+% Chapter 71: Tables of Marks
 % File: ./tom.xml (line 16)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1726,7 +1735,7 @@ look worse than others)
   so this function should be documented in this package,
   and then a proper link can be installed
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 71: Character Tables
+% Chapter 72: Character Tables
 % File: ./ctbl.xml (line 16)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1739,7 +1748,7 @@ look worse than others)
   (also crossref to GAP's MeatAxe functions?)
 -4TB There are disclaimers about features that are not yet available.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 72: Class Functions
+% Chapter 73: Class Functions
 % File: ./ctblfuns.xml (line 14)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1752,14 +1761,14 @@ look worse than others)
   in LaTeX but ugly otherwise.  Shall we use <Alt>?
   (see `Symmetrizations')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 73: Maps Concerning Character Tables
+% Chapter 74: Maps Concerning Character Tables
 % File: ./ctblmaps.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
 % Finished: August 20, 2008
 % Comments:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 74: Unknowns
+% Chapter 75: Unknowns
 % File: ./unknown.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1767,7 +1776,7 @@ look worse than others)
 % Comments:
 -4 cross-reference to undocumented variable `CyclotomicsFamily'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 75: Monomiality Questions
+% Chapter 76: Monomiality Questions
 % File: ./ctblmono.xml (line 12)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1776,7 +1785,7 @@ look worse than others)
 -3cTB better document `IsMonomial', already because of the implicit reference
   from ``IsMonomial for character tables'' to ``IsMonomial for groups''
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 76: Installing GAP
+% Chapter 77: Installing GAP
 % File: ./install.xml (line 21)
 % Who: Thomas Breuer
 % Started: September 20, 2008
@@ -1812,7 +1821,7 @@ look worse than others)
    process (gmp and readline options) - this should be cleaned up.
 -3c Related issue: update number of GAPStones in testinstall.g and testall.g
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 77: GAP Packages
+% Chapter 78: GAP Packages
 % File: ./gappkg.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1826,7 +1835,7 @@ look worse than others)
    It has no practical use except for the testing purposes, but it is good
    to advise to package authors to try their packages with it.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 78: Replaced and Removed Command Names
+% Chapter 79: Replaced and Removed Command Names
 % File: ./obsolete.xml (line 10)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1837,7 +1846,7 @@ look worse than others)
 +3cTB really document GAPInfo --but where? (in Chapter ``Running GAP'',
   Section ``Global Values that Control the GAP Session'')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 79: Method Selection
+% Chapter 80: Method Selection
 % File: ./methsel.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1845,7 +1854,7 @@ look worse than others)
 % Comments:
 -4 cross-references to undocumented functions Degree, Rank, RankOperation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 80: Creating New Objects
+% Chapter 81: Creating New Objects
 % File: ./create.xml (line 11)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1882,7 +1891,7 @@ look worse than others)
                        changes to the documented behaviour essentially
                        impossible
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 81: Examples of Extending the System
+% Chapter 82: Examples of Extending the System
 % File: ./intrfc.xml (line 13)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1920,7 +1929,7 @@ look worse than others)
 -6 Finally, the two sections ``Adding new Concepts'' and
   ``Creating Own Arithmetic Objects'' both start with ``finally''.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 82: An Example -- Residue Class Rings
+% Chapter 83: An Example -- Residue Class Rings
 % File: ./xtndxmpl.xml (line 10)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1929,7 +1938,7 @@ look worse than others)
 -4 cross-references to undocumented functions IsGeneratorsOfMagmaWithInverses
   and IsInternalRep
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 83: An Example -- Designing Arithmetic Operations
+% Chapter 84: An Example -- Designing Arithmetic Operations
 % File: ./arith.xml (line 10)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1942,7 +1951,7 @@ look worse than others)
 +4AK cross-reference to the undocumented function (IsLieObject)
  (AK: it's already documented, made a proper cross-reference).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 84: Library Files
+% Chapter 85: Library Files
 % File: ./libform.xml (line 10)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -1972,7 +1981,7 @@ look worse than others)
   ``The gapmacro.tex Manual Format'' (see above) in the web, as soon as 
   its URL is fixed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 85: Writing a GAP Package -
+% Chapter 86: Writing a GAP Package -
 % now moved to the Appendix for the "Example" package.
 % Chapters listed below renumbered (1--);
 % File: ./gappkg.xml (line 11)
@@ -2009,7 +2018,7 @@ look worse than others)
   (in the Reference Manual), then a proper cross-reference to this variable
   can be added in section `Version Numbers'.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 85: Interface to the GAP Help System
+% Chapter 86: Interface to the GAP Help System
 % File: ./helpintf.xml (line 15)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -2021,7 +2030,7 @@ look worse than others)
 -4 add a cross-reference to the document ``The gapmacro.tex Manual Format''
   (see above) in the web, as soon as its URL is fixed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 86: Function-Operation-Attribute Triples
+% Chapter 87: Function-Operation-Attribute Triples
 % File: ./foa.xml (line 10)
 % Who: Thomas Breuer
 % Started: January 24, 2008
@@ -2043,7 +2052,7 @@ look worse than others)
   such as `SylowSubgroupOp', `ComputedSylowSubgroups' and `BlocksAttr'.
   Should these variables be documented?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 87: Weak Pointers
+% Chapter 88: Weak Pointers
 % File: ./weakptr.xml (line 14)
 % Who: Thomas Breuer
 % Started: August 10, 2008
@@ -2055,7 +2064,7 @@ look worse than others)
 -4 cross-references to the undocumented functions MarkBagWeakly, MARK_BAG,
   IS_WEAK_DEAD_BAG, ListsFamily.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter 88: Stabilizer Chains (preliminary)
+% Chapter 89: Stabilizer Chains (preliminary)
 % File: ./stbchain.xml (line 10)
 % Who: Thomas Breuer
 % Started: August 10, 2008

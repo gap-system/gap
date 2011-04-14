@@ -212,7 +212,7 @@ DeclareGlobalFunction( "LieCoboundaryOperator", "Lie coboundary operator" );
 ##
 ##  <#GAPDoc Label="Cocycles">
 ##  <ManSection>
-##  <Oper Name="Cocycles" Arg='V, s'/>
+##  <Oper Name="Cocycles" Arg='V, s' Label="for Lie algebra module"/>
 ##
 ##  <Description>
 ##  is the space of all <A>s</A>-cocycles with respect to the Lie algebra 

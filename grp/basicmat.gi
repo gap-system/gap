@@ -424,6 +424,7 @@ TorusOfNaturalGL := function( gl, pi )
   gens := List( orbs, function( orb )
     local mat;
     mat := MutableCopyMat( one );
+    # XXX: Asks GAP to compute ConwayPolynomial, but could make do with much less
     mat{orb}{orb} := CompanionMat( MinimalPolynomial( gfq, Z(q^Size(orb)) ) );
     return ImmutableMatrix( gfq, mat, true );
   end );
@@ -465,7 +466,7 @@ end;
 # as-split-possible maximal torus, and if the dimension is large enough, the
 # Sylow p-subgroup of the part of the Weyl group normalizing it.
 SylowSubgroupOfNaturalGL := function( gl, p )
-  local n, q, syl, k, pi, prm, prm2, syl2;
+  local n, q, syl, s, syl2, k, sylp, pi, prm, syl1;
   n := DimensionOfMatrixGroup( gl );
   q := Size( DefaultFieldOfMatrixGroup( gl ) );
   if SizeGL( n, q ) <> Size( gl ) then
@@ -473,6 +474,57 @@ SylowSubgroupOfNaturalGL := function( gl, p )
   fi;
   if p = SmallestRootInt( q ) then # unipotent sylow
     syl := MaximalUnipotentSubgroupOfNaturalGL( gl );
+  elif p = 2 then # use Carter-Fong description
+    s := PadicValuation( q-1, 2 );
+    syl1 := Subgroup( GL( 1, q ), [ [ [ Z(q)^((q-1)/2^s) ] ] ] );
+    if 1 = q mod 4 then
+      s := PadicValuation( q-1, 2 );
+      syl2 := Subgroup( GL( 2, q ), [
+          [[ 0, 1 ], [ 1, 0 ]],
+          [[ Z(q)^((q-1)/2^s), 0 ], [ 0, 1 ]],
+          [[ 1, 0 ], [ 0, Z(q)^((q-1)/2^s) ]],
+        ]*One(GF(q)) );
+    else
+      s := PadicValuation( q+1, 2 );
+      syl2 := Subgroup( GL( 2, q ), [
+          [[ 0, 1 ], [ -1, 0 ]],
+          [[ 0, 1 ], [ 1, Z(q^2)^((q^2-1)/2^(s+1)) + Z(q^2)^(q*(q^2-1)/2^(s+1)) ]],
+        ]*One(GF(q)) );
+    fi;
+    s := 0;
+    pi := [];
+    repeat
+      k := PadicValuation( n - s, 2 );
+      Add( pi, [s+1..s+2^k] );
+      s := s+2^k;
+    until n = s;
+    syl := Subgroup( gl, Concatenation( List( pi, function( part )
+      local one, prm;
+      one := One(gl);
+      if Size( part ) = 1 
+      then return List( GeneratorsOfGroup( syl1 ), 
+        function( x )
+          local mat;
+          mat := MutableCopyMat( one );
+          mat{part}{part} := x ;
+          return mat;
+        end );
+      fi;
+      prm := SylowSubgroup( SymmetricGroup( Size( part ) / 2 ), 2 );
+      return Concatenation( 
+        List( GeneratorsOfGroup( prm ), function( x )
+          local mat;
+          mat := MutableCopyMat( one );
+          mat{part}{part} := KroneckerProduct( PermutationMat( x, Size( part )/2, GF( q ) ), One( syl2 ) );
+          return mat;
+        end ),
+        List( GeneratorsOfGroup( syl2 ), function( x )
+          local mat;
+          mat := MutableCopyMat( one );
+          mat{part{[1..2]}}{part{[1..2]}} := x;
+          return mat;
+        end ) );
+      end ) ) );
   else
     k := OrderMod( q, p^(2/GcdInt(p-1,2)) );
     pi := PermList( List( [1..n], function(i) if i > Int(n/k)*k then return i; else return (i mod k) + 1 + k*Int((i-1)/k); fi; end ) );
@@ -485,8 +537,9 @@ SylowSubgroupOfNaturalGL := function( gl, p )
       syl := syl2;
     fi;
   fi;
-  k := PadicValuation( SizeGL( n, q ) / Size( syl ),p );
-  Assert( 0, k = 0 and IsSubgroup( gl, syl ) );
+  SetSize( syl, p^PadicValuation( Size(gl), p ) );
+  SetIsPGroup( syl, true );
+  Assert( 2, Size( Group( GeneratorsOfGroup( syl ) ) ) = Size( syl ) );
   return syl;
 end;
 

@@ -29,11 +29,12 @@ echo 'Unpacking packages archive'
 tar zxf pkgnow.tgz
 rm pkgnow.tgz
 
-echo 'Deleting packages to be used from GAP.dev'
+echo 'Deleting packages to be used from GAP.dev or replaced by newer versions'
 
 # if needed, add here commands to remove packages that are taken from GAP.dev
 # this section should be adjusted simultaneosly with 'checkoutcvs' script
-# currently there are no such packages so this section is empty
+# if there are no such packages leave this section empty
+rm -rf GAPDoc-1.2
 
 echo 'Getting selected packages directly from autors homepages'
 # Step needed for packages which have separate versions for the beta release
@@ -43,42 +44,42 @@ rm -rf Browse
 wget -nv http://www.math.rwth-aachen.de/~Browse/Browse-1.3.tar.gz
 gzip -dc Browse-1.3.tar.gz | tar xp
 rm Browse-1.3.tar.gz
-echo 'cvec Browse added'
 
 echo 'Adding cvec package'
 rm -rf cvec
 wget -nv http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/cvecfor4.5/cvec-1.8_for4.5.tar.gz
 gzip -dc cvec-1.8_for4.5.tar.gz | tar xp
 rm cvec-1.8_for4.5.tar.gz
-echo 'cvec package added'
 
 echo 'Adding example package'
 rm -rf example
 wget -nv http://www.cs.st-andrews.ac.uk/~alexk/example/example-3.0.tar.gz
 gzip -dc example-3.0.tar.gz | tar xp
 rm example-3.0.tar.gz
-echo 'Example package added'
+
+echo 'Adding FR package'
+rm -rf fr
+wget -nv http://www.uni-math.gwdg.de/laurent/FR/fr-1.1.3.tar.gz
+gzip -dc fr-1.1.3.tar.gz | tar xp
+rm fr-1.1.3.tar.gz
 
 echo 'Adding genss package'
 rm -rf genss
 wget -nv http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genssfor4.5/genss-1.3_for4.5.tar.gz
 gzip -dc genss-1.3_for4.5.tar.gz | tar xp
 rm genss-1.3_for4.5.tar.gz
-echo 'genss package added'
 
 echo 'Adding IO package'
 rm -rf io
 wget -nv http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/iofor4.5/io-3.3_for4.5.tar.gz
 gzip -dc io-3.3_for4.5.tar.gz | tar xp
 rm io-3.3_for4.5.tar.gz
-echo 'IO package added'
 
 echo 'Adding orb package'
 rm -rf orb
 wget -nv http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/orbfor4.5/orb-3.7_for4.5.tar.gz
 gzip -dc orb-3.7_for4.5.tar.gz | tar xp
 rm orb-3.7_for4.5.tar.gz
-echo 'orb package added'
 
 echo 'Adding tomlib package'
 rm -rf tomlib
@@ -88,7 +89,6 @@ rm tomlib1r2p1.tar.gz
 wget -nv http://schmidt.nuigalway.ie/tomlib/tomlibxt1r2p1.tar.gz
 gzip -dc tomlibxt1r2p1.tar.gz | tar xp
 rm tomlibxt1r2p1.tar.gz
-echo 'tomlib package added'
 
 echo 'Classifying packages files into {text,binary}x{main_archive,tools} or not shipped'
 

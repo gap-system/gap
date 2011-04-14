@@ -492,7 +492,7 @@ There are two ways to leave a break loop,
 see <Ref Subsect="quit"/> and <Ref Subsect="subsect:return"/>.
 
 <Subsection Label="quit">
-<Heading>quit</Heading>
+<Heading>quit from a break loop</Heading>
 
 The first way to leave a break loop is to <E>quit</E> the break loop.
 To do this you enter <C>quit;</C> or type the <E>eof</E>
@@ -528,7 +528,7 @@ purpose of this function.
 
 
 <Subsection Label="subsect:return">
-<Heading>return</Heading>
+<Heading>return from a break loop</Heading>
 
 <Index Key="return"><K>return</K></Index>
 <Index>return from break loop</Index>
