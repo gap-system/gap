@@ -103,17 +103,17 @@ BIND_GLOBAL( "NEW_FAMILY",
     od;
 
     # cannot use 'Objectify', because 'IsList' may not be defined yet
-    family := rec();
+    family := NewAtomicRecord();
     SET_TYPE_COMOBJ( family, type );
-    family!.NAME            := name;
+    family!.NAME            := MakeImmutable(name);
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
-    family!.TYPES           := [];
+    family!.TYPES           := MakeProtectedObj([]);
     family!.nTYPES          := 0;
     family!.HASH_SIZE       := 32;
     # for chaching types of homogeneous lists (see TYPE_LIST_HOM in list.g), 
     # assigned in kernel when needed 
-    family!.TYPES_LIST_FAM  := [];
+    family!.TYPES_LIST_FAM  := MakeProtectedObj([]);
     # for efficiency
     family!.TYPES_LIST_FAM[27] := 0;
     return family;
@@ -258,7 +258,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     family!.nTYPES := family!.nTYPES + 1;
 
     # return the type
-    return type;
+    return MakeProtected(type);
 end );
 
 
