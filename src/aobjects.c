@@ -93,6 +93,12 @@ Obj TypeARecord(Obj obj)
   return result != NULL ? result : TYPE_AREC;
 }
 
+int IsTypedARecord(Obj obj)
+{
+  AO_nop_read();
+  return TNUM_OBJ(obj) == T_AREC && ADDR_OBJ(obj)[0] != NULL;
+}
+
 Obj TypeTLRecord(Obj obj)
 {
   return TYPE_TLREC;
@@ -107,6 +113,7 @@ void SetTypeAList(Obj obj, Obj kind)
 void SetTypeARecord(Obj obj, Obj kind)
 {
   ADDR_OBJ(obj)[0] = kind;
+  RetypeBag(obj, T_ACOMOBJ);
   AO_nop_write();
 }
 
@@ -429,7 +436,7 @@ static void PrintTLRecord(Obj obj)
 }
 
 
-static Obj GetARecordField(Obj record, UInt field)
+Obj GetARecordField(Obj record, UInt field)
 {
   AtomicObj *table = ARecordTable(record);
   AtomicObj *data = table + AR_DATA;
@@ -481,7 +488,7 @@ static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
   }
 }
 
-static Obj SetARecordField(Obj record, UInt field, Obj obj)
+Obj SetARecordField(Obj record, UInt field, Obj obj)
 {
   AtomicObj *table, *data, *newtable, *newdata;
   Obj newarec, result;
@@ -701,6 +708,52 @@ void AssARecord(Obj record, UInt rnam, Obj value)
 Int IsbARecord(Obj record, UInt rnam)
 {
   return GetARecordField(record, rnam) != (Obj) 0;
+}
+
+Obj ShallowCopyARecord(Obj obj)
+{
+  Obj copy, inner, innerCopy;
+  Lock(obj);
+  copy = NewBag(TNUM_BAG(obj), SIZE_BAG(obj));
+  memcpy(ADDR_OBJ(copy), ADDR_OBJ(obj), SIZE_BAG(obj));
+  inner = ADDR_OBJ(obj)[1];
+  innerCopy = NewBag(TNUM_BAG(inner), SIZE_BAG(inner));
+  memcpy(ADDR_OBJ(innerCopy), ADDR_OBJ(inner), SIZE_BAG(inner));
+  ADDR_OBJ(copy)[1] = innerCopy;
+  Unlock(obj);
+  return copy;
+}
+
+Obj CopyARecord(Obj obj, Int mutable)
+{
+#if 0
+  UInt i, len;
+  Obj result;
+  Obj copied = TLS->copiedObjs;
+  if (copied)
+  {
+    len = LEN_PLIST(copied);
+    for (i=1; i<=len; i+=2) {
+      if (ELM_PLIST(copied, i) == obj)
+        return ELM_PLIST(copied, i+1);
+    }
+  }
+  else
+  {
+    len = 0;
+    TLS->copiedObjs = copied = NEW_PLIST(T_PLIST, 2);
+    SET_LEN_PLIST(copied, 2);
+  }
+  result = ShallowCopyARecord(obj);
+  SET_ELM_PLIST(copied, len+1, obj);
+  SET_ELM_PLIST(copied, len+2, result);
+  return result;
+#endif
+  return obj;
+}
+
+void CleanARecord(Obj obj)
+{
 }
 
 static void UpdateThreadRecord(Obj record, Obj tlrecord)
@@ -1077,14 +1130,17 @@ static Int InitKernel (
   /* install info string */
   InfoBags[T_ALIST].name = "atomic list";
   InfoBags[T_AREC].name = "atomic record";
+  InfoBags[T_ACOMOBJ].name = "atomic component object";
   InfoBags[T_TLREC].name = "thread-local record";
   
   /* install the kind methods */
   TypeObjFuncs[ T_ALIST ] = TypeAList;
   TypeObjFuncs[ T_AREC ] = TypeARecord;
+  TypeObjFuncs[ T_ACOMOBJ ] = TypeARecord;
   TypeObjFuncs[ T_TLREC ] = TypeTLRecord;
   SetTypeObjFuncs[ T_ALIST ] = SetTypeAList;
   SetTypeObjFuncs[ T_AREC ] = SetTypeARecord;
+  SetTypeObjFuncs[ T_ACOMOBJ ] = SetTypeARecord;
   /* install global variables */
   InitCopyGVar("TYPE_ALIST", &TYPE_ALIST);
   InitCopyGVar("TYPE_AREC", &TYPE_AREC);
@@ -1092,7 +1148,8 @@ static Int InitKernel (
   /* install mark functions */
   InitMarkFuncBags(T_ALIST, MarkAtomicList);
   InitMarkFuncBags(T_AREC, MarkAtomicRecord);
-  InitMarkFuncBags(T_AREC, MarkAtomicRecord2);
+  InitMarkFuncBags(T_ACOMOBJ, MarkAtomicRecord);
+  InitMarkFuncBags(T_AREC_INNER, MarkAtomicRecord2);
   InitMarkFuncBags(T_TLREC, MarkTLRecord);
   /* install print functions */
   PrintObjFuncs[ T_ALIST ] = PrintAtomicList;
@@ -1101,8 +1158,10 @@ static Int InitKernel (
   /* install mutability functions */
   IsMutableObjFuncs [ T_ALIST ] = AlwaysMutable;
   IsMutableObjFuncs [ T_AREC ] = AlwaysMutable;
+  IsMutableObjFuncs [ T_ACOMOBJ ] = AlwaysMutable;
   MakeBagTypePublic(T_ALIST);
   MakeBagTypePublic(T_AREC);
+  MakeBagTypePublic(T_ACOMOBJ);
   MakeBagTypePublic(T_AREC_INNER);
   MakeBagTypePublic(T_TLREC);
   MakeBagTypePublic(T_TLREC_INNER);
@@ -1122,6 +1181,13 @@ static Int InitKernel (
   ElmRecFuncs[ T_AREC ] = ElmARecord;
   IsbRecFuncs[ T_AREC ] = IsbARecord;
   AssRecFuncs[ T_AREC ] = AssARecord;
+  CopyObjFuncs[ T_AREC ] = CopyARecord;
+  CleanObjFuncs[ T_AREC ] = CleanARecord;
+  ElmRecFuncs[ T_ACOMOBJ ] = ElmARecord;
+  IsbRecFuncs[ T_ACOMOBJ ] = IsbARecord;
+  AssRecFuncs[ T_ACOMOBJ ] = AssARecord;
+  CopyObjFuncs[ T_ACOMOBJ ] = CopyARecord;
+  CleanObjFuncs[ T_ACOMOBJ ] = CleanARecord;
   ElmRecFuncs[ T_TLREC ] = ElmTLRecord;
   IsbRecFuncs[ T_TLREC ] = IsbTLRecord;
   AssRecFuncs[ T_TLREC ] = AssTLRecord;

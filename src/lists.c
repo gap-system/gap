@@ -52,6 +52,8 @@ const char * Revision_lists_c =
 #include        "string.h"              /* strings                         */
 #include        "integer.h"             /* integers                        */
 
+#include	"aobjects.h"		/* atomic objects                  */
+
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
@@ -2223,7 +2225,15 @@ UInt            TYPES_LIST_FAM_RNam;
 Obj             TYPES_LIST_FAM (
     Obj                 fam )
 {
-    return ElmPRec( fam, TYPES_LIST_FAM_RNam );
+    switch (TNUM_OBJ(fam))
+    {
+      case T_COMOBJ:
+        return ElmPRec( fam, TYPES_LIST_FAM_RNam );
+      case T_ACOMOBJ:
+        return GetARecordField( fam, TYPES_LIST_FAM_RNam );
+      default:
+        return 0;
+    }
 }
 
 

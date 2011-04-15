@@ -43,6 +43,7 @@ const char * Revision_objects_c =
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "aobjects.h"            /* atomic objects                  */
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
@@ -327,11 +328,13 @@ Obj CopyObj (
 {
     Obj                 new;            /* copy of <obj>                   */
 
+    TLS->copiedObjs = NULL;
     /* make a copy                                                         */
     new = COPY_OBJ( obj, mut );
 
     /* clean up the marks                                                  */
     CLEAN_OBJ( obj );
+    TLS->copiedObjs = NULL;
 
     /* return the copy                                                     */
     return new;
@@ -1145,7 +1148,13 @@ Obj             IS_COMOBJ_Handler (
     Obj                 self,
     Obj                 obj )
 {
-    return (TNUM_OBJ(obj) == T_COMOBJ ? True : False);
+    switch (TNUM_OBJ(obj)) {
+      case T_COMOBJ:
+      case T_ACOMOBJ:
+        return True;
+      default:
+        return False;
+    }
 }
 
 
@@ -1158,9 +1167,20 @@ Obj SET_TYPE_COMOBJ_Handler (
     Obj                 obj,
     Obj                 kind )
 {
-    TYPE_COMOBJ( obj ) = kind;
-    RetypeBag( obj, T_COMOBJ );
-    CHANGED_BAG( obj );
+    switch (TNUM_OBJ(obj)) {
+      case T_PREC:
+      case T_COMOBJ:
+	TYPE_COMOBJ( obj ) = kind;
+	RetypeBag( obj, T_COMOBJ );
+	CHANGED_BAG( obj );
+	break;
+      case T_AREC:
+      case T_ACOMOBJ:
+        SET_TYPE_OBJ( obj, kind );
+	RetypeBag( obj, T_ACOMOBJ );
+	CHANGED_BAG( obj );
+	break;
+    }
     return obj;
 }
 

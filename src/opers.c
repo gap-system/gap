@@ -4669,14 +4669,12 @@ Obj DoAttribute (
     /* set the value (but not for internal objects)                        */
     if (ENABLED_ATTR( self ) == 1)
       {
-	if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
-	  DoSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
-	  DoSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
-	  DoSetAttribute( SETTR_FILT(self), obj, val );
+	switch (TNUM_OBJ(obj)) {
+	  case T_COMOBJ:
+	  case T_ACOMOBJ:
+	  case T_POSOBJ:
+	  case T_DATOBJ:
+	    DoSetAttribute( SETTR_FILT(self), obj, val );
 	}
       }
     
@@ -4718,14 +4716,12 @@ Obj DoVerboseAttribute (
     /* set the value (but not for internal objects)                        */
     if (ENABLED_ATTR(self) == 1)
       {
-	if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
-	  DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
-	  DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
-	  DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
+        switch (TNUM_OBJ(obj)) {
+	  case T_COMOBJ:
+	  case T_ACOMOBJ:
+	  case T_POSOBJ:
+	  case T_DATOBJ:
+	    DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
 	}
       }
     
@@ -4765,14 +4761,12 @@ Obj DoMutableAttribute (
     /* set the value (but not for internal objects)                        */
     if (ENABLED_ATTR(self) == 1)
       {
-	if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
-	  DoSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
-	  DoSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
-	  DoSetAttribute( SETTR_FILT(self), obj, val );
+	switch (TNUM_OBJ(obj)) {
+	  case T_COMOBJ:
+	  case T_ACOMOBJ:
+	  case T_POSOBJ:
+	  case T_DATOBJ:
+	    DoSetAttribute( SETTR_FILT(self), obj, val );
 	}
       }
     
@@ -4812,14 +4806,12 @@ Obj DoVerboseMutableAttribute (
     /* set the value (but not for internal objects)                        */
     if (ENABLED_ATTR(self) == 1)
       {
-	if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
-	  DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
-	  DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
-	}
-	else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
-	  DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
+	switch (TNUM_OBJ(obj)) {
+	  case T_COMOBJ:
+	  case T_ACOMOBJ:
+	  case T_POSOBJ:
+	  case T_DATOBJ:
+	    DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
 	}
       }
     
@@ -5038,29 +5030,27 @@ Obj DoSetProperty (
     /* set the value                                                       */
     /*N 1996/06/28 mschoene <self> is the <setter> here, not the <getter>! */
     /*N 1996/06/28 mschoene see hack below                                 */
-    if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
-        flags = (val == True ? self : TESTR_FILT(self));
-        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-    }
-    else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
-        flags = (val == True ? self : TESTR_FILT(self));
-        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-    }
-    else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
-        flags = (val == True ? self : TESTR_FILT(self));
-        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-    }
-    else if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
-           || IS_BLIST_REP(obj) )  {
-	if ( val == True ) {
-	    FuncSET_FILTER_LIST( 0, obj, self );
-	}
-    }
-    else {
-        ErrorReturnVoid(
-            "Value cannot be set for internal objects",
-            0L, 0L,
-            "you can 'return;' without setting it" );
+    switch (TNUM_OBJ(obj)) {
+	case T_COMOBJ:
+	case T_ACOMOBJ:
+	case T_POSOBJ:
+	case T_DATOBJ:
+	    flags = (val == True ? self : TESTR_FILT(self));
+	    CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+	    break;
+	default:
+	    if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
+		   || IS_BLIST_REP(obj) )  {
+		if ( val == True ) {
+		    FuncSET_FILTER_LIST( 0, obj, self );
+		}
+	    }
+	    else {
+		ErrorReturnVoid(
+		    "Value cannot be set for internal objects",
+		    0L, 0L,
+		    "you can 'return;' without setting it" );
+	    }
     }
 
     /* return the value                                                    */
@@ -5107,18 +5097,14 @@ Obj DoProperty (
     
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
-        if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
+	switch (TNUM_OBJ(obj)) {
+	  case T_COMOBJ:
+	  case T_ACOMOBJ:
+	  case T_POSOBJ:
+	  case T_DATOBJ:
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-        }
-        else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
-            flags = (val == True ? self : TESTR_FILT(self));
-            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-        }
-        else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
-            flags = (val == True ? self : TESTR_FILT(self));
-            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-        }
+	}
     }
 
     /* return the value                                                    */
@@ -5158,17 +5144,13 @@ Obj DoVerboseProperty (
     
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
-      if      ( TNUM_OBJ( obj ) == T_COMOBJ ) {
-        flags = (val == True ? self : TESTR_FILT(self));
-        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-      }
-      else if ( TNUM_OBJ( obj ) == T_POSOBJ ) {
-        flags = (val == True ? self : TESTR_FILT(self));
-        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-      }
-      else if ( TNUM_OBJ( obj ) == T_DATOBJ ) {
-        flags = (val == True ? self : TESTR_FILT(self));
-        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+      switch (TNUM_OBJ(obj)) {
+	case T_COMOBJ:
+	case T_ACOMOBJ:
+	case T_POSOBJ:
+	case T_DATOBJ:
+	  flags = (val == True ? self : TESTR_FILT(self));
+	  CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
       }
     }
 
@@ -5794,8 +5776,14 @@ Obj DoSetterFunction (
     Obj                 flags;
     UInt                flag2;
     Obj                 kind;
+    int			atomic = 0;
 
-    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
+    switch (TNUM_OBJ(obj)) {
+      case T_ACOMOBJ:
+        atomic = 1;
+      case T_COMOBJ:
+        break;
+      default:
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
@@ -5811,7 +5799,11 @@ Obj DoSetterFunction (
     }
 
     /* set the value                                                       */
-    AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
+    if (atomic)
+      SetARecordField( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)),
+        CopyObj(value,0) );
+    else
+      AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
     CALL_2ARGS( SET_FILTER_OBJ, obj, tester );
     return 0;
 }
@@ -5852,11 +5844,15 @@ Obj DoGetterFunction (
     Obj                 self,
     Obj                 obj )
 {
-    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
+    switch (TNUM_OBJ(obj)) {
+      case T_COMOBJ:
+        return ElmPRec( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+      case T_ACOMOBJ:
+        return GetARecordField( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+      default:
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
-    return ElmPRec( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
 }
 
 
