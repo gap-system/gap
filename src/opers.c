@@ -5688,6 +5688,7 @@ Obj MethsOper (
     methods = METHS_OPER( oper, i );
     if ( methods == 0 ) {
         methods = NEW_PLIST( T_PLIST, 0 );
+	DS_BAG(methods) = ProtectedDataSpace;
         METHS_OPER( oper, i ) = methods;
         CHANGED_BAG( oper );
     }
@@ -6426,6 +6427,9 @@ static Int InitKernel (
     /* and the saving function */
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
+
+    /* flags are protected objects by default */
+    MakeBagTypeProtected(T_FLAGS);
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );

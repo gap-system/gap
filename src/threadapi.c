@@ -587,16 +587,6 @@ Obj FuncSynchronizedShared(Obj self, Obj target, Obj function) {
   return (Obj) 0;
 }
 
-Obj FilterIS_CHANNEL( Obj self, Obj obj )
-{
-  return TNUM_OBJ(obj) == T_CHANNEL ? True : False;
-}
-
-Obj FilterIS_BARRIER( Obj self, Obj obj )
-{
-  return TNUM_OBJ(obj) == T_BARRIER ? True : False;
-}
-
 Obj FuncCreateChannel(Obj self, Obj args);
 Obj FuncDestroyChannel(Obj self, Obj channel);
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj);
@@ -626,11 +616,11 @@ Obj FuncLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncCURRENT_LOCKS(Obj self);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
-Obj FuncPUBLISH_NORECURSE(Obj self, Obj obj);
+Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
 Obj FuncSHARE(Obj self, Obj obj);
-Obj FuncPUBLISH(Obj self, Obj obj);
+Obj FuncMAKE_PUBLIC(Obj self, Obj obj);
 Obj FuncADOPT(Obj self, Obj obj);
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
 Obj FuncREACHABLE(Obj self, Obj obj);
@@ -638,7 +628,12 @@ Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_DELIMITED(Obj self, Obj obj);
 Obj FuncMakeReadOnly(Obj self, Obj obj);
 Obj FuncMakeReadOnlyObj(Obj self, Obj obj);
+Obj FuncMakeProtected(Obj self, Obj obj);
+Obj FuncMakeProtectedObj(Obj self, Obj obj);
 Obj FuncIsReadOnly(Obj self, Obj obj);
+Obj FuncIsProtected(Obj self, Obj obj);
+Obj FuncBEGIN_SINGLE_THREADED(Obj self);
+Obj FuncEND_SINGLE_THREADED(Obj self);
 
 /****************************************************************************
 **
@@ -784,12 +779,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "MIGRATE", 2, "obj, target",
       FuncMIGRATE, "src/threadapi.c:MIGRATE" },
 
-    /*
-    { "PUBLISH_NORECURSE", 1, "obj",
-      FuncPUBLISH_NORECURSE, "src/threadapi.c:PUBLISH_NORECURSE" },
-    { "PUBLISH", 1, "obj",
-      FuncPUBLISH, "src/threadapi.c:PUBLISH" },
-    */
+    { "MAKE_PUBLIC_NORECURSE", 1, "obj",
+      FuncMAKE_PUBLIC_NORECURSE, "src/threadapi.c:MAKE_PUBLIC_NORECURSE" },
+    { "MAKE_PUBLIC", 1, "obj",
+      FuncMAKE_PUBLIC, "src/threadapi.c:MAKE_PUBLIC" },
 
     { "REACHABLE", 1, "obj",
       FuncREACHABLE, "src/threadapi.c:REACHABLE" },
@@ -806,14 +799,23 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeReadOnlyObj", 1, "obj",
       FuncMakeReadOnlyObj, "src/threadapi.c:MakeReadOnlyObj" },
 
+    { "MakeProtected", 1, "obj",
+      FuncMakeProtected, "src/threadapi.c:MakeProtected" },
+
+    { "MakeProtectedObj", 1, "obj",
+      FuncMakeProtectedObj, "src/threadapi.c:MakeProtectedObj" },
+
     { "IsReadOnly", 1, "obj",
       FuncIsReadOnly, "src/threadapi.c:IsReadOnly" },
 
-    { "IS_CHANNEL", 1, "obj",
-      FilterIS_CHANNEL, "src/threadapi.c:IS_CHANNEL" },
+    { "IsProtected", 1, "obj",
+      FuncIsProtected, "src/threadapi.c:IsProtected" },
 
-    { "IS_BARRIER", 1, "obj",
-      FilterIS_BARRIER, "src/threadapi.c:IS_BARRIER" },
+    { "BEGIN_SINGLE_THREADED", 0, "",
+      FuncBEGIN_SINGLE_THREADED, "src/threadapi.c:BEGIN_SINGLE_THREADED" },
+
+    { "END_SINGLE_THREADED", 0, "",
+      FuncEND_SINGLE_THREADED, "src/threadapi.c:END_SINGLE_THREADED" },
 
     { 0 }
 
@@ -1781,6 +1783,9 @@ static void PrintDataSpace(Obj obj)
     } else if (ds == ReadOnlyDataSpace) {
       Pr("<read-only data space>", 0L, 0L);
       return;
+    } else if (ds == ProtectedDataSpace) {
+      Pr("<protected data space>", 0L, 0L);
+      return;
     }
     sprintf(buffer, "<data space %p>", GetDataSpaceOf(obj));
     Pr(buffer, 0L, 0L);
@@ -1853,18 +1858,22 @@ Obj FuncCURRENT_LOCKS(Obj self)
 static int MigrateObjects(int count, Obj *objects, DataSpace *target)
 {
   int i;
-  for (i=0; i<count; i++)
-    if (IS_BAG_REF(objects[i]) &&
-        ((DataSpace *)(DS_BAG(objects[i])))->owner != TLS)
-      return 0;
+  for (i=0; i<count; i++) {
+    DataSpace *ds;
+    if (IS_BAG_REF(objects[i])) {
+      ds = (DataSpace *)(DS_BAG(objects[i]));
+      if (!ds || ds->owner != TLS || ds == ProtectedDataSpace)
+        return 0;
+    }
+  }
   for (i=0; i<count; i++)
     DS_BAG(objects[i]) = target;
 }
 
-Obj FuncPUBLISH_NORECURSE(Obj self, Obj obj)
+Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
 {
   if (!MigrateObjects(1, &obj, NULL))
-    ArgumentError("PUBLISH_NORECURSE: Thread does not have exclusive access to objects");
+    ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -1932,12 +1941,12 @@ Obj FuncADOPT(Obj self, Obj obj)
   return obj;
 }
 
-Obj FuncPUBLISH(Obj self, Obj obj)
+Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
 {
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, 0))
-    ArgumentError("PUBLISH: Thread does not have exclusive access to objects");
+    ArgumentError("MAKE_PUBLIC: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -1978,8 +1987,53 @@ Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
   return obj;
 }
 
+Obj FuncMakeProtected(Obj self, Obj obj)
+{
+  DataSpace *ds = GetDataSpaceOf(obj);
+  Obj reachable;
+  if (ds == ProtectedDataSpace)
+    return obj;
+  reachable = ReachableObjectsFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, ProtectedDataSpace))
+    ArgumentError("MakeProtected: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncMakeProtectedObj(Obj self, Obj obj)
+{
+  DataSpace *ds = GetDataSpaceOf(obj);
+  if (ds == ProtectedDataSpace)
+    return obj;
+  if (!MigrateObjects(1, &obj, ProtectedDataSpace))
+    ArgumentError("MakeProtectedObj: Thread does not have exclusive access to object");
+  return obj;
+}
+
 Obj FuncIsReadOnly(Obj self, Obj obj)
 {
   DataSpace *ds = GetDataSpaceOf(obj);
   return (ds == ReadOnlyDataSpace) ? True : False;
+}
+
+Obj FuncIsProtected(Obj self, Obj obj)
+{
+  DataSpace *ds = GetDataSpaceOf(obj);
+  return (ds == ProtectedDataSpace) ? True : False;
+}
+
+Obj FuncBEGIN_SINGLE_THREADED(Obj self)
+{
+  if (!IsSingleThreaded())
+    ErrorQuit("BEGIN_SINGLE_THREADED: Multiple threads are running", 0L, 0L);
+  BeginSingleThreaded();
+  return (Obj) 0;
+}
+
+Obj FuncEND_SINGLE_THREADED(Obj self)
+{
+  if (!IsSingleThreaded())
+    ErrorQuit("BEGIN_SINGLE_THREADED: Multiple threads are running", 0L, 0L);
+  EndSingleThreaded();
+  return (Obj) 0;
 }

@@ -9,6 +9,7 @@
 #ifndef DISABLE_GC
 #include <gc/gc.h>
 #endif
+#include <atomic_ops.h>
 
 #include        "system.h"
 #include        "gasman.h"
@@ -49,11 +50,34 @@ typedef struct TraversalState {
   int delimitedCopy;
 } TraversalState;
 
-DataSpace *LimboDataSpace, *ReadOnlyDataSpace;
+DataSpace *LimboDataSpace, *ReadOnlyDataSpace, *ProtectedDataSpace;
 Obj PublicDataSpace;
+
+static AO_t ThreadCounter = 1;
 
 static inline TraversalState *currentTraversal() {
   return TLS->traversalState;
+}
+
+static inline IncThreadCounter() {
+  AO_fetch_and_add1(&ThreadCounter);
+}
+
+static inline DecThreadCounter() {
+  AO_fetch_and_sub1(&ThreadCounter);
+}
+
+int IsSingleThreaded() {
+  return ThreadCounter == 1;
+}
+
+void BeginSingleThreaded() {
+  if (ThreadCounter == 1)
+    ProtectedDataSpace->owner = TLS;
+}
+
+void EndSingleThreaded() {
+  ProtectedDataSpace->owner = NULL;
 }
 
 static ThreadData thread_data[MAX_THREADS];
@@ -210,9 +234,14 @@ void CreateMainDataSpace()
   LimboDataSpace = NewDataSpace();
   LimboDataSpace->fixed_owner = 1;
   ReadOnlyDataSpace = NewDataSpace();
+  ProtectedDataSpace = NewDataSpace();
   ReadOnlyDataSpace->fixed_owner = 1;
-  for (i=0; i<=MAX_THREADS; i++)
+  ProtectedDataSpace->fixed_owner = 1;
+  for (i=0; i<=MAX_THREADS; i++) {
     ReadOnlyDataSpace->readers[i] = 1;
+    ProtectedDataSpace->readers[i] = 1;
+  }
+  BeginSingleThreaded();
 }
 
 void *DispatchThread(void *arg)
@@ -241,6 +270,7 @@ void *DispatchThread(void *arg)
 #ifndef DISABLE_GC
   RemoveGCRoots();
 #endif
+  DecThreadCounter();
   return 0;
 }
 
@@ -279,8 +309,12 @@ int RunThread(void (*start)(void *), void *arg)
 #endif
   pthread_mutex_unlock(&master_lock);
   /* fork the thread */
+  EndSingleThreaded();
+  IncThreadCounter();
   if (pthread_create(&thread_data[result].pthread_id, &thread_attr,
                      DispatchThread, thread_data+result) < 0) {
+    /* No more threads available */
+    DecThreadCounter();
     pthread_mutex_lock(&master_lock);
     thread_data[result].next = thread_free_list;
     thread_free_list = result;

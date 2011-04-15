@@ -450,13 +450,23 @@ TNumInfoBags            InfoBags [ NTYPES ];
 
 /****************************************************************************
 **
-*V  PublicBags[<type>]  . . . .  . . . . . . . . . .  data space info for bags
+*V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  data space info for bags
 */
-static char 	PublicBags[NTYPES];
+
+static char DSInfoBags[NTYPES];
+
+#define DSI_TL 0
+#define DSI_PUBLIC 1
+#define DSI_PROTECTED 2
 
 void MakeBagTypePublic(int type)
 {
-    PublicBags[type] = 1;
+    DSInfoBags[type] = DSI_PUBLIC;
+}
+
+void MakeBagTypeProtected(int type)
+{
+    DSInfoBags[type] = DSI_PROTECTED;
 }
 
 
@@ -1279,7 +1289,17 @@ Bag NewBag (
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = dst;
-    DS_BAG(bag) = PublicBags[type] ? NULL : CurrentDataSpace();
+    switch (DSInfoBags[type]) {
+    case DSI_TL:
+      DS_BAG(bag) = CurrentDataSpace();
+      break;
+    case DSI_PUBLIC:
+      DS_BAG(bag) = NULL;
+      break;
+    case DSI_PROTECTED:
+      DS_BAG(bag) = ProtectedDataSpace;
+      break;
+    }
 #if 0
     {
       extern void * stderr;
@@ -1337,8 +1357,14 @@ void            RetypeBag (
     *(*bag-HEADER_SIZE) |= new_type;
 #else
     *(*bag-HEADER_SIZE) = new_type;
-    if (PublicBags[new_type])
-      DS_BAG(bag) = NULL;
+    switch (DSInfoBags[new_type]) {
+      case DSI_PUBLIC:
+        DS_BAG(bag) = NULL;
+	break;
+      case DSI_PROTECTED:
+        DS_BAG(bag) = ProtectedDataSpace;
+	break;
+    }
 #endif
 }
 

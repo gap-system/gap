@@ -32,8 +32,12 @@ void DataSpaceReadUnlock(DataSpace *dataspace);
 void DataSpaceUnlock(DataSpace *dataspace);
 DataSpace *CurrentDataSpace();
 DataSpace *GetDataSpaceOf(Obj obj);
-extern DataSpace *LimboDataSpace, *ReadOnlyDataSpace;
+extern DataSpace *LimboDataSpace, *ReadOnlyDataSpace, *ProtectedDataSpace;
 extern Obj PublicDataSpace;
+
+int IsSingleThreaded();
+void BeginSingleThreaded();
+void EndSingleThreaded();
 
 int IsLocked(DataSpace *dataspace);
 void GetLockStatus(int count, Obj *objects, int *status);

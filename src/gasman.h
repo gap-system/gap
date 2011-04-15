@@ -535,6 +535,7 @@ typedef struct  {
 extern  TNumInfoBags            InfoBags [ 256 ];
 
 void MakeBagTypePublic(int type);
+void MakeBagTypeProtected(int type);
 static inline Bag MakeBagPublic(Bag bag) {
   bag[1] = 0; /* DS_BAG(bag) */
   return bag;
