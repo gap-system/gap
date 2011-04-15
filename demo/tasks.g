@@ -1,5 +1,6 @@
 Tasks := AtomicRecord( rec(
   Initial := 0,
+  ReportErrors := true,
   Pool := CreateChannel(),
   Running := AtomicList(1, 0) ));
 
@@ -27,6 +28,9 @@ Tasks.Worker := function(channels)
     else
       result := CALL_WITH_CATCH(taskdata.func, taskdata.args);
       if Length(result) = 1 or not result[1] then
+	if Length(result) > 1 and Tasks.ReportErrors then
+	  Print("Task Error: ", result[2], "\n");
+	fi;
         result := fail;
       else
         result := result[2];
@@ -127,6 +131,9 @@ ImmediateTask := function(arg)
   local result;
   result := CALL_WITH_CATCH(arg[1], arg{[2..Length(arg)]});
   if Length(result) = 1 or not result[1] then
+    if Length(result) > 1 and Tasks.ReportErrors then
+      Print("Task Error: ", result[2], "\n");
+    fi;
     result := fail;
   else
     result := result[2];
