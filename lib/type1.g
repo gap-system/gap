@@ -86,6 +86,7 @@ InstallAttributeFunction(
 ##  <#/GAPDoc>
 ##
 Subtype := "defined below";
+DS_TYPE_CACHE := SHARE([]);
 
 
 BIND_GLOBAL( "NEW_FAMILY",
@@ -108,7 +109,9 @@ BIND_GLOBAL( "NEW_FAMILY",
     family!.NAME            := MakeImmutable(name);
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
-    family!.TYPES           := MakeProtectedObj([]);
+    LOCK(DS_TYPE_CACHE);
+    family!.TYPES           := MIGRATE([], DS_TYPE_CACHE);
+    UNLOCK(LOCK()-1);
     family!.nTYPES          := 0;
     family!.HASH_SIZE       := 32;
     # for chaching types of homogeneous lists (see TYPE_LIST_HOM in list.g), 
@@ -206,6 +209,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     local   hash,  cache,  cached,  type, ncache, ncl, t;
 
     # maybe it is in the type cache
+    LOCK(DS_TYPE_CACHE);
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
     if IsBound( cache[hash] )  then
@@ -242,7 +246,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     
     # check the size of the cache before storing this type
     if 3*family!.nTYPES > family!.HASH_SIZE then
-        ncache := [];
+        ncache := MIGRATE([], DS_TYPE_CACHE);
         ncl := 3*family!.HASH_SIZE+1;
         for t in cache do
             ncache[ HASH_FLAGS(t![2]) mod ncl + 1] := t;
@@ -254,9 +258,11 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
         cache[hash] := type;
     fi;
     family!.nTYPES := family!.nTYPES + 1;
+    UNLOCK(LOCK()-1);
 
     # return the type
-    return MakeProtected(type);
+    # TODO: This should not be public but readonly.
+    return MAKE_PUBLIC(type);
 end );
 
 
