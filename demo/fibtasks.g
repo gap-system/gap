@@ -1,6 +1,13 @@
 ReadGapRoot("demo/tasks.g");
+ReadGapRoot("demo/unittest.g");
 
-FibCache := AtomicList(1024, -1);
+ResetCache := function()
+  UNBIND_GLOBAL("FibCache");
+  BIND_GLOBAL("FibCache", AtomicList(1024, -1));
+  MakeReadWriteGVar("FibCache");
+end;
+
+ResetCache();
 
 DoTask := function(func, arg)
   if RunningTasks() > 4 then
@@ -25,4 +32,7 @@ fib := function(n)
   fi;
 end;
 
-Print("fibtasks test : ", List([1..100],Fibonacci)=List([1..100],fib), "\n");
+TestEqual(fib(100), Fibonacci(100), "Concurrent Fibonacci(100) Calculation");
+ResetCache();
+TestEqual(List([1..100],Fibonacci), List([1..100],fib), "Concurrent Fibonacci Batch Calculation");
+TestReportAndExit();
