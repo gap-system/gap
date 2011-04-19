@@ -522,6 +522,14 @@ Obj FuncSHELL (Obj self, Obj args)
   return res;
 }
 
+/****************************************************************************
+**
+*V  SystemErrorCode . . . . . . . . . integer error code with which GAP exits
+**
+*/
+
+static int SystemErrorCode = 0;
+
 int realmain (
 	  int                 argc,
 	  char *              argv [],
@@ -591,7 +599,7 @@ int realmain (
       SyExit( 0 );
     }
   }
-  SyExit(0);
+  SyExit(SystemErrorCode);
   return 0;
 }
 
@@ -3145,6 +3153,25 @@ Obj FuncSleep( Obj self, Obj secs )
 
 /****************************************************************************
 **
+*F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
+**
+*/
+
+Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
+{
+  if (code == False || code == Fail)
+    SystemErrorCode = 1;
+  else if (code == True)
+    SystemErrorCode = 0;
+  else if (IS_INTOBJ(code))
+    SystemErrorCode = INT_INTOBJ(code);
+  else
+    ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
+  return (Obj) 0;
+}
+
+/****************************************************************************
+**
 *F  FuncQUIT_GAP()
 **
 */
@@ -3403,6 +3430,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
+
+    { "GAP_EXIT_CODE", 1, "exit code",
+      FuncGAP_EXIT_CODE, "src/gap.c:GAP_EXIT_CODE" },
 
     { "QUIT_GAP", 0, "",
       FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
