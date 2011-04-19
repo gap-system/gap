@@ -144,17 +144,29 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
   switch (LEN_PLIST(args)) {
     case 1:
       init = ELM_PLIST(args, 1);
-      if (!IS_DENSE_LIST(init))
-        ArgumentError("NewAtomicList: Argument must be dense list");
-      len = LEN_LIST(init);
-      result = NewAtomicList(len);
-      data = ADDR_ATOM(result);
-      data++->atom = len;
-      data++->obj = NULL;
-      for (i=1; i<= len; i++)
-        data++->obj = ELM_LIST(init, i);
-      AO_nop_write(); /* Should not be necessary, but better be safe. */
-      return result;
+      if (!IS_LIST(init) && (!IS_INTOBJ(init) || INT_INTOBJ(init) <=0) )
+        ArgumentError("NewAtomicList: Argument must be list or positive integer");
+      if (IS_LIST(init)) {
+	len = LEN_LIST(init);
+	result = NewAtomicList(len);
+	data = ADDR_ATOM(result);
+	data++->atom = len;
+	data++->obj = NULL;
+	for (i=1; i<= len; i++)
+	  data++->obj = ELM0_LIST(init, i);
+	AO_nop_write(); /* Should not be necessary, but better be safe. */
+	return result;
+      } else {
+        len = INT_INTOBJ(init);
+	result = NewAtomicList(len);
+	data = ADDR_ATOM(result);
+	data++->atom = len;
+	data++->obj = NULL;
+	for (i=1; i<= len; i++)
+	  data++->obj = (Obj) 0;
+	AO_nop_write(); /* Should not be necessary, but better be safe. */
+	return result;
+      }
     case 2:
       if (!IS_INTOBJ(ELM_PLIST(args, 1)))
         ArgumentError("NewAtomicList: First argument must be a non-negative integer");
@@ -1014,6 +1026,7 @@ static Obj Elm0AList(Obj list, Int pos)
 static Obj ElmAList(Obj list, Int pos)
 {
   UInt len = (UInt)ADDR_ATOM(list)[0].atom;
+  Obj result;
   while (pos < 1 || pos > len) {
     Obj posobj;
     do {
@@ -1024,8 +1037,17 @@ static Obj ElmAList(Obj list, Int pos)
     } while (!IS_INTOBJ(posobj));
     pos = INT_INTOBJ(posobj);
   }
-  AO_nop_read();
-  return ADDR_ATOM(list)[1+pos].obj;
+  for (;;) {
+    result = ADDR_ATOM(list)[1+pos].obj;
+    if (result) {
+      AO_nop_read();
+      return result;
+    }
+    ErrorReturnVoid(
+	"Atomic List Element: <list>[%d] must have an assigned value",
+	(Int)pos, 0L,
+	"you can 'return;' after assigning a value" );
+  }
 }
 
 static void AssAList(Obj list, Int pos, Obj obj)
