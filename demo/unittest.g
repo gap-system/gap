@@ -8,13 +8,12 @@ end;
 TestReportAndExit := function()
   if NumTestErrors = 1 then
     Print("*** 1 error occurred.\n");
-    QUIT_GAP(1);
+    GAP_EXIT_CODE(1);
   elif NumTestErrors > 1 then
     Print("*** ", NumTestErrors, " errors occurred.\n");
-    QUIT_GAP(1);
+    GAP_EXIT_CODE(1);
   else
     Print("*** No errors occurred.\n");
-    QUIT_GAP(0);
   fi;
 end;
 
