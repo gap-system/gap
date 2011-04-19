@@ -6425,7 +6425,7 @@ static Int InitKernel (
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
 
     /* flags are protected objects by default */
-    MakeBagTypeProtected(T_FLAGS);
+    MakeBagTypePublic(T_FLAGS);
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
