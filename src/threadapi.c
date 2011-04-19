@@ -14,6 +14,7 @@
 #include        <string.h>              /* memcpy */
 #include        <stdlib.h>
 #include	<pthread.h>
+#include	<atomic_ops.h>
 
 #include        "system.h"              /* system dependent part           */
 
@@ -634,6 +635,8 @@ Obj FuncIsReadOnly(Obj self, Obj obj);
 Obj FuncIsProtected(Obj self, Obj obj);
 Obj FuncBEGIN_SINGLE_THREADED(Obj self);
 Obj FuncEND_SINGLE_THREADED(Obj self);
+Obj FuncORDERED_WRITE(Obj self, Obj obj);
+Obj FuncORDERED_READ(Obj self, Obj obj);
 
 /****************************************************************************
 **
@@ -816,6 +819,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "END_SINGLE_THREADED", 0, "",
       FuncEND_SINGLE_THREADED, "src/threadapi.c:END_SINGLE_THREADED" },
+
+    { "ORDERED_READ", 1, "obj",
+      FuncORDERED_READ, "src/threadapi.c:ORDERED_READ" },
+
+    { "ORDERED_WRITE", 1, "obj",
+      FuncORDERED_WRITE, "src/threadapi.c:ORDERED_WRITE" },
 
     { 0 }
 
@@ -2036,4 +2045,16 @@ Obj FuncEND_SINGLE_THREADED(Obj self)
     ErrorQuit("BEGIN_SINGLE_THREADED: Multiple threads are running", 0L, 0L);
   EndSingleThreaded();
   return (Obj) 0;
+}
+
+Obj FuncORDERED_READ(Obj self, Obj obj)
+{
+  AO_nop_read();
+  return obj;
+}
+
+Obj FuncORDERED_WRITE(Obj self, Obj obj)
+{
+  AO_nop_write();
+  return obj;
 }
