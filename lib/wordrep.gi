@@ -893,6 +893,8 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 			infinity          ];
 
     # Store the internal types.
+    NEW_TYPE_READONLY.onCreation := false;
+
     K:= NewType( F, Is8BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
     K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
@@ -901,6 +903,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
     K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
     F!.types[1]:= K;
+    MakeReadOnlyObj(K);
 
     K:= NewType( F, Is16BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
@@ -910,6 +913,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
     K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
     F!.types[2]:= K;
+    MakeReadOnlyObj(K);
 
     K:= NewType( F, Is32BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
@@ -919,6 +923,9 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
     K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
     F!.types[3]:= K;
+    MakeReadOnlyObj(K);
+
+    NEW_TYPE_READONLY.onCreation := false;
 
   fi;
 

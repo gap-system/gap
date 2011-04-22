@@ -204,6 +204,7 @@ end );
 ##
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
+NEW_TYPE_READONLY := ThreadLocal( rec( onCreation := true ) );
 
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     local   hash,  cache,  cached,  type, ncache, ncl, t;
@@ -239,7 +240,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     # make the new type
     # cannot use 'Objectify', because 'IsList' may not be defined yet
     type := [ family, flags ];
-    type[POS_DATA_TYPE] := data;
+    type[POS_DATA_TYPE] := MakeReadOnly(data);
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
 
     SET_TYPE_POSOBJ( type, typeOfTypes );
@@ -261,10 +262,12 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     UNLOCK(LOCK()-1);
 
     # return the type
-    # TODO: This should not be public but readonly.
-    return MAKE_PUBLIC(type);
+    if NEW_TYPE_READONLY.onCreation then
+        return MakeReadOnlyObj(type);
+    else
+        return type;
+    fi;
 end );
-
 
 
 BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
