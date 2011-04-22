@@ -383,14 +383,16 @@ else
   
   chin1:=CreateChannel();
   chout1:=CreateChannel();
-  thread1 := CallFuncListThread( KaratsubaPolynomialMultiplicationExtRep, [f1,g1], chin1, chout1 );
+  thread1 := CallFuncListThread( KaratsubaPolynomialMultiplicationExtRep, 
+                                 CLONE_REACHABLE( [ f1, g1] ), chin1, chout1 );
 
   chin2:=CreateChannel();
   chout2:=CreateChannel();   
-  tmp := [ PlusLaurentPolynomialsExtRep(f1,f0), PlusLaurentPolynomialsExtRep(g1,g0) ];
+  tmp := [ PlusLaurentPolynomialsExtRep(f1,CLONE_REACHABLE(f0)), 
+           PlusLaurentPolynomialsExtRep(g1,CLONE_REACHABLE(g0)) ];
   thread2 := CallFuncListThread( KaratsubaPolynomialMultiplicationExtRep, tmp, chin2, chout2 );
 
-  v := KaratsubaPolynomialMultiplicationExtRep(f0,g0); 
+  v := KaratsubaPolynomialMultiplicationExtRep( f0, g0 ); 
   u := FinaliseThread( thread1, chin1, chout1 );
   w := FinaliseThread( thread2, chin2, chout2 );
     
