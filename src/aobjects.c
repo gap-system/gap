@@ -948,6 +948,9 @@ static Obj CreateTLDefaults(Obj defrec) {
       CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1));
   }
   TLS->currentDataSpace = savedDS;
+  AO_nop_write();
+  DS_BAG(result) = NULL;
+  AO_nop_write();
   return result;
 }
 
@@ -956,6 +959,9 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   Obj inner = NewBag(T_TLREC_INNER, sizeof(Obj) * TLR_DATA);
   ADDR_OBJ(inner)[TLR_SIZE] = 0;
   ADDR_OBJ(inner)[TLR_DEFAULTS] = CreateTLDefaults(defaults);
+  WriteGuard(constructors);
+  DS_BAG(constructors) = LimboDataSpace;
+  AO_nop_write();
   ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = constructors;
   ((AtomicObj *)(ADDR_OBJ(result)))->obj = inner;
   return result;
