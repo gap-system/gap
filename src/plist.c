@@ -250,6 +250,9 @@ Int KTNumPlist (
 					   known not to be dense */
     UInt                ktnumFirst;
 
+    if (!CheckWrite(list)) {
+      return TNUM_OBJ(list);
+    }
     /* if list has `TESTING' keep that                                     */
     testing = IS_TESTING_PLIST(list) ? TESTING : 0;
 
@@ -426,6 +429,9 @@ Int KTNumHomPlist (
     Int                 isSSort;        /* list is (known to be) SSorted   */
     Int                 isNSort;        /* list is (known to be) non-sorted*/
 
+    if (!CheckWrite(list)) {
+      return TNUM_OBJ(list);
+    }
     /* if list has `TESTING' keep that                                     */
     testing = IS_TESTING_PLIST(list) ? TESTING : 0;
 
@@ -553,10 +559,14 @@ Obj TypePlistWithKTnum (
     Obj                 family;         /* family of elements              */
     Obj                 kinds;          /* kinds list of <family>          */
 
-    /* recursion is possible for this type of list                         */
-    MARK_LIST( list, TESTING );
-    ktype = KTNumPlist( list, &family);
-    UNMARK_LIST( list, TESTING );
+    if (CheckWrite(list)) {
+      /* recursion is possible for this type of list                         */
+      MARK_LIST( list, TESTING );
+      ktype = KTNumPlist( list, &family);
+      UNMARK_LIST( list, TESTING );
+    } else {
+      ktype = TNUM_OBJ(list);
+    }
     if (ktnum != (UInt *) 0)
       *ktnum = ktype;
 
@@ -1891,10 +1901,11 @@ void AssPlistEmpty (
         AssListObject( list, pos, val );
       else
 	AssPlistXXX( list, pos, val );
-    }
-
+    } else if (!CheckRead(val)) {
+        RetypeBag( list, T_PLIST );
+        AssPlistXXX( list, pos, val );
+    } else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
     /* catch constants                                                     */
-    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         AssPlistXXX( list, pos, val );
 	/* fix up type */
 	SET_FILT_LIST(list, FN_IS_DENSE);
