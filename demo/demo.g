@@ -171,7 +171,7 @@ ReadGapRoot("demo/migrate.g");
 ReadGapRoot("demo/fibtasks.g");
 
 Print("*** END OF THE TEST ***\n");
-QUIT;
+#QUIT;
 
 # Example 9. Compare standard, Fibonacci and threaded Fibonacci multiplication
 ReadGapRoot("demo/karatsuba.g");
@@ -223,8 +223,8 @@ for i in [1..3] do WaitThread(t[i]); od;
 
 # And this not:
 Print("Barrier test 2 \n");
-m:=List([1..10],i->List([1..10],j->10*(i-1)+j));
-s:=[];
+m:=MakeImmutable(List([1..10],i->List([1..10],j->10*(i-1)+j)));
+s:=AtomicList(10);
 bar:=CreateBarrier();
 StartBarrier( bar, Length(m)+1 );
 t:=[];
@@ -232,7 +232,7 @@ for i in [1..Length(m)] do
     t[i]:=CreateThread( function(i) s[i]:=Sum( List(m[i], Factorial ) ); WaitBarrier(bar); end, i );
 od;
 WaitBarrier(bar);
-x1:=Sum(s);
+x1:=Sum(FromAtomicList(s));
 x2:=Sum(List([1..100],Factorial));
 for i in [1..Length(t)] do WaitThread(t[i]); od;
 Print(x1,"\n");
