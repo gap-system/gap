@@ -497,6 +497,8 @@ static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
     if (key == field)
       return hash;
     hash++;
+    if (hash == cap)
+      hash = 0;
   }
 }
 
