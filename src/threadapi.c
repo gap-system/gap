@@ -1877,6 +1877,7 @@ static int MigrateObjects(int count, Obj *objects, DataSpace *target)
   }
   for (i=0; i<count; i++)
     DS_BAG(objects[i]) = target;
+  return 1;
 }
 
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
