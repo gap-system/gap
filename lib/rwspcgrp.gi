@@ -398,9 +398,12 @@ function( sc )
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
+
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
     # create the special 8 bits type
+    NEW_TYPE_READONLY.onCreation := false;
+
     fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
 
     # copy the assoc word type
@@ -418,6 +421,10 @@ function( sc )
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
     fam!.8BitsType![PCWP_COLLECTOR] := sc;
+
+    MakeReadOnlyObj(fam!.8BitsType);
+
+    NEW_TYPE_READONLY.onCreation := true;
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );

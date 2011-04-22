@@ -925,9 +925,11 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     F!.types[3]:= K;
     MakeReadOnlyObj(K);
 
-    NEW_TYPE_READONLY.onCreation := false;
+    NEW_TYPE_READONLY.onCreation := true;
 
   fi;
+
+  NEW_TYPE_READONLY.onCreation := false;
 
   K:= NewType( F, IsInfBitsAssocWord and req );
   K![ AWP_PURE_TYPE    ]      := K;
@@ -937,6 +939,9 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
   K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
   K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
   F!.types[4]:= K;
+  MakeReadOnlyObj(K);
+
+  NEW_TYPE_READONLY.onCreation := true;
 
   if IsBLetterWordsFamily(F) then
     K:= NewType( F, IsBLetterAssocWordRep and req );
