@@ -819,7 +819,7 @@ Obj ReachableObjectsFrom(Obj obj)
 {
   TraversalState traversal;
   if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
-    return NULL;
+    return NewList(0);
   BeginTraversal(&traversal);
   TraverseDataSpaceFrom(&traversal, obj);
   EndTraversal();
