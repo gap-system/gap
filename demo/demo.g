@@ -170,8 +170,6 @@ ReadGapRoot("demo/atomic.g");
 ReadGapRoot("demo/migrate.g");
 ReadGapRoot("demo/fibtasks.g");
 
-Print("*** END OF THE TEST ***\n");
-#QUIT;
 
 # Example 9. Compare standard, Fibonacci and threaded Fibonacci multiplication
 ReadGapRoot("demo/karatsuba.g");
@@ -241,4 +239,5 @@ Print( "Barrier test 2 ", x1=x2, "\n");
 
 Print("Passed example 10\n");
 
+Print("*** END OF THE TEST ***\n");
 
