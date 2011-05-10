@@ -111,6 +111,20 @@ Obj NEW_PREC(UInt len);
 *F * * * * * * * * * standard functions for plain records * * * * * * * * * *
 */
 
+/****************************************************************************
+**
+
+*F FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
+**   . . . . . . . . . . . . . . . . . find a component name by binary search
+**
+** Searches rnam in rec, sets pos to the position where it is found (return
+** value 1) or where it should be inserted if it is not found (return val 0).
+** If cleanup is nonzero, a dirty record is automatically cleaned up.
+** If cleanup is 0, this does not happen.
+**/
+
+extern UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup );
+
 
 /****************************************************************************
 **

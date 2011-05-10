@@ -184,6 +184,7 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
       return result;
     default:
       ArgumentError("NewAtomicList: Too many arguments");
+      return (Obj) 0; /* flow control hint */
   }
 }
 
@@ -645,10 +646,11 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     }
   }
   else
-    newdata[2*n+1].obj = obj;
+    newdata[2*n+1].obj = result = obj;
   AO_nop_write(); /* memory barrier */
   ADDR_OBJ(record)[1] = newarec;
   Unlock(record);
+  return result;
 }
 
 static Obj FuncFromAtomicRecord(Obj self, Obj record)
@@ -999,6 +1001,7 @@ static Obj FuncThreadLocal(Obj self, Obj args)
       return NewTLRecord(ELM_PLIST(args, 1), ELM_PLIST(args, 2));
     default:
       ArgumentError("ThreadLocal: Too many arguments");
+      return (Obj) 0; /* flow control hint */
   }
 }
 

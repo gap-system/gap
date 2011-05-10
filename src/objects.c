@@ -102,11 +102,11 @@ Obj TypeObjError (
 
 void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
 
-Obj SetTypeObjError ( Obj obj, Obj kind )
+void SetTypeObjError ( Obj obj, Obj kind )
 {
     ErrorQuit( "Panic: cannot change kind of object of type '%s'",
                (Int)TNAM_OBJ(obj), 0L );
-    return 0;
+    return;
 }
 
 

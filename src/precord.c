@@ -26,6 +26,7 @@
 **  sorted areas. After that, all rnams are negative indicating sortedness.
 */
 #include        <stdlib.h>              /* for qsort */
+#include        <sys/time.h>            /* for gettimeofday() */
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_precord_c =

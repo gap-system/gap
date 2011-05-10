@@ -59,11 +59,11 @@ static inline TraversalState *currentTraversal() {
   return TLS->traversalState;
 }
 
-static inline IncThreadCounter() {
+static inline void IncThreadCounter() {
   AO_fetch_and_add1(&ThreadCounter);
 }
 
-static inline DecThreadCounter() {
+static inline void DecThreadCounter() {
   AO_fetch_and_sub1(&ThreadCounter);
 }
 
@@ -367,8 +367,8 @@ int JoinThread(int id)
   return 1;
 }
 
-unsigned LockID(void *object) {
-  unsigned p = (unsigned) object;
+UInt LockID(void *object) {
+  UInt p = (UInt) object;
   if (sizeof(void *) == 4)
     return ((p >> 2)
       ^ (p >> (2 + LOG2_NUM_LOCKS))
@@ -454,7 +454,7 @@ void GetLockStatus(int count, Obj *objects, int *status)
     status[i] = IsLocked(DS_BAG(objects[i]));
 }
 
-static Obj NewList(int size)
+static Obj NewList(UInt size)
 {
   Obj list;
   list = NEW_PLIST(size == 0 ? T_PLIST_EMPTY : T_PLIST, size);

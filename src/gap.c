@@ -2590,7 +2590,7 @@ Obj FuncOBJ_HANDLE (
     }
     else {
         ErrorQuit( "<handle> must be a positive integer", 0L, 0L );
-        return 0;
+        return (Obj) 0;
     }
 }
 
