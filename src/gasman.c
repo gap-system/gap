@@ -1357,6 +1357,7 @@ void            RetypeBag (
     *(*bag-HEADER_SIZE) |= new_type;
 #else
     *(*bag-HEADER_SIZE) = new_type;
+#endif
     switch (DSInfoBags[new_type]) {
       case DSI_PUBLIC:
         DS_BAG(bag) = NULL;
@@ -1365,7 +1366,6 @@ void            RetypeBag (
         DS_BAG(bag) = ProtectedDataSpace;
 	break;
     }
-#endif
 }
 
 
