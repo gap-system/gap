@@ -56,6 +56,7 @@ const char * Revision_opers_c =
 
 #include        "tls.h"                 /* thread-local storage            */
 #include        "thread.h"              /* threads                         */
+#include        "aobjects.h"            /* atomic objects                  */
 
 /****************************************************************************
 **

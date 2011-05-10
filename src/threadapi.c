@@ -397,7 +397,7 @@ void StopKeepAlive(Obj node)
 */
 
 Obj FuncCreateThread(Obj self, Obj funcargs) {
-  int id, i, n;
+  Int id, i, n;
   void ThreadedInterpreter(void *);
   Obj templist;
   n = LEN_PLIST(funcargs);
