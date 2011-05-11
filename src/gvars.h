@@ -31,6 +31,12 @@ const char * Revision_gvars_h =
    "@(#)$Id: gvars.h,v 4.22 2010/02/23 15:13:43 gap Exp $";
 #endif
 
+#define GVAR_BUCKETS 1024
+#define GVAR_BUCKET_SIZE 1024
+
+#define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
+#define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE)
+
 
 /****************************************************************************
 **
@@ -43,9 +49,9 @@ const char * Revision_gvars_h =
 **  'PtrGVars' is a pointer  to the 'ValGVars'  bag.  This makes it faster to
 **  access global variables.
 */
-extern  Obj             ValGVars;
+extern  Obj             ValGVars[GVAR_BUCKETS];
 
-extern  Obj *           PtrGVars;
+extern  Obj *           PtrGVars[GVAR_BUCKETS];
 
 
 /****************************************************************************
@@ -58,14 +64,15 @@ extern  Obj *           PtrGVars;
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 */
-#define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
+#define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
+				[GVAR_INDEX(gvar)])
 
 
 /****************************************************************************
 **
 *V  WriteGVars  . . . . . . . . . . . . .  writable flags of global variables
 */
-extern Obj WriteGVars;
+extern Obj WriteGVars[GVAR_BUCKETS];
 
 
 /****************************************************************************

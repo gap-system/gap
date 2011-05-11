@@ -249,7 +249,7 @@ void ReadFuncCallOptions( TypSymbolSet follow )
 
 static Obj GAPInfo;
 
-/* TL: static UInt WarnOnUnboundGlobalsRNam; */
+static UInt WarnOnUnboundGlobalsRNam;
 
 void ReadCallVarAss (
     TypSymbolSet        follow,
@@ -368,11 +368,8 @@ void ReadCallVarAss (
 
     /* check whether this is an unbound global variable                    */
 
-    /* This can't need to be thread-local. It's effectively single assignment
-       and any thread which assigns it will assign the same value */
-
-    if (TLS->warnOnUnboundGlobalsRNam == 0)
-      TLS->warnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
+    if (WarnOnUnboundGlobalsRNam == 0)
+      WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
     if ( type == 'g'
       && TLS->countNams != 0
@@ -383,8 +380,8 @@ void ReadCallVarAss (
       && CompNowFuncs == 0
       && ! TLS->intrIgnoring
       && ! GlobalComesFromEnclosingForLoop(var)      
-      && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,TLS->warnOnUnboundGlobalsRNam) ||
-             ELM_REC(GAPInfo,TLS->warnOnUnboundGlobalsRNam) != False )
+      && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
+             ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
     {
         SyntaxError("warning: unbound global variable");

@@ -27,6 +27,8 @@ typedef struct ThreadLocalStorage
   Obj intrState;
   Obj stackObj;
   Int countObj;
+  /* From gvar.c */
+  Obj currNamespace;
   /* From vars.c */
   Bag bottomLVars;
   Bag currLVars;
@@ -42,7 +44,6 @@ typedef struct ThreadLocalStorage
   UInt currentGlobalForLoopDepth;
   Obj exprGVars;
   Obj errorLVars;
-  UInt warnOnUnboundGlobalsRNam;
   Obj readEvalResult;
   /* From scanner.c */
   Char value[MAX_VALUE_LEN];

@@ -2755,13 +2755,17 @@ void VarsBeforeCollectBags ( void )
 
 void VarsAfterCollectBags ( void )
 {
+  int i;
   if (TLS->currLVars)
     {
       TLS->ptrLVars = PTR_BAG( TLS->currLVars );
       TLS->ptrBody  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
-  if (ValGVars)
-    PtrGVars = PTR_BAG( ValGVars );
+  for (i=0; i<GVAR_BUCKETS; i++)
+    if (ValGVars[i])
+      PtrGVars[i] = PTR_BAG( ValGVars[i] );
+    else
+      break;
 }
 
 /****************************************************************************
