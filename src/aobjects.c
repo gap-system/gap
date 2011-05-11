@@ -420,6 +420,8 @@ static void PrintTLRecord(Obj obj)
   Obj *table = ADDR_OBJ(contents);
   Obj record = 0;
   Obj defrec = table[TLR_DEFAULTS];
+  int comma = 0;
+  AtomicObj *deftable;
   int i;
   if (TLS->threadID+1 < (UInt)table[TLR_SIZE]) {
     record = table[TLR_DATA+TLS->threadID+1];
@@ -432,19 +434,26 @@ static void PrintTLRecord(Obj obj)
       PrintObj(GET_ELM_PREC(record, i));
       if (i < LEN_PREC(record))
         Pr("%2<, %2>", 0L, 0L);
+      else
+        comma = 1;
     }
   }
-  for (i = 1; i <= LEN_PREC(defrec); i++) {
-    Int key = (Int)NAME_RNAM(labs((Int)GET_RNAM_PREC(defrec, i)));
+  LockShared(defrec);
+  deftable = ARecordTable(defrec);
+  for (i = 0; i < deftable[AR_CAP].atom; i++) {
+    UInt key = deftable[AR_DATA+2*i].atom;
+    Obj value = deftable[AR_DATA+2*i+1].obj;
     UInt dummy;
-    if (!record || !FindPRec(record, key, &dummy, 0)) {
-      Pr("%I", key, 0L);
-      Pr ("%< := %>", 0L, 0L);
-      PrintObj(CopyTraversed(GET_ELM_PREC(defrec, i)));
-      if (i < LEN_PREC(defrec))
+    if (key && (!record || !FindPRec(record, key, &dummy, 0))) {
+      if (comma)
 	Pr("%2<, %2>", 0L, 0L);
+      Pr("%I", (Int)(NAME_RNAM(key)), 0L);
+      Pr ("%< := %>", 0L, 0L);
+      PrintObj(CopyTraversed(value));
+      comma = 1;
     }
   }
+  UnlockShared(defrec);
   Pr(" %4<)", 0L, 0L);
 }
 
@@ -697,6 +706,21 @@ static Obj NewAtomicRecord(UInt capacity)
   return result;
 }
 
+static Obj NewAtomicRecordFrom(Obj precord)
+{
+  Obj result;
+  AtomicObj *table;
+  UInt i, pos, len = LEN_PREC(precord);
+  result = NewAtomicRecord(len);
+  table = ARecordTable(result);
+  for (i=1; i<=len; i++) {
+    pos = ARecordFastInsert(table, GET_RNAM_PREC(precord, i));
+    table[AR_DATA+2*pos+1].obj = GET_ELM_PREC(precord, i);
+  }
+  AO_nop_write();
+  return result;
+}
+
 static void SetARecordUpdateStrategy(Obj record, UInt strat)
 {
   AtomicObj *table = ARecordTable(record);
@@ -795,16 +819,17 @@ static Obj GetTLRecordField(Obj record, UInt rnam)
 {
   Obj contents, *table;
   Obj tlrecord;
-  Int pos;
+  UInt pos;
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
   tlrecord = table[TLR_DATA+TLS->threadID+1];
   if (!tlrecord || !FindPRec(tlrecord, rnam, &pos, 1)) {
+    Obj result;
     Obj defrec = table[TLR_DEFAULTS];
-    Int pos;
-    if (FindPRec(defrec, rnam, &pos, 0)) {
-      Obj result = CopyTraversed(GET_ELM_PREC(defrec, pos));
+    result = GetARecordField(defrec, rnam);
+    if (result) {
+      result = CopyTraversed(result);
       if (!tlrecord) {
 	tlrecord = NEW_PREC(0);
 	UpdateThreadRecord(record, tlrecord);
@@ -812,11 +837,10 @@ static Obj GetTLRecordField(Obj record, UInt rnam)
       AssPRec(tlrecord, rnam, result);
       return result;
     } else {
+      Obj func;
       Obj constructors = table[TLR_CONSTRUCTORS];
-      Int pos;
-      if (FindPRec(constructors, rnam, &pos, 0)) {
-        Obj func, result;
-        func = GET_ELM_PREC(constructors, pos);
+      func = GetARecordField(constructors, rnam);
+      if (func) {
 	result = CALL_0ARGS(func);
 	if (!result)
 	  return 0;
@@ -829,7 +853,6 @@ static Obj GetTLRecordField(Obj record, UInt rnam)
       }
       return 0;
     }
-    /* TODO: handle constructors */
   }
   return GET_ELM_PREC(tlrecord, pos);
 }
@@ -881,13 +904,7 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
       if (TNUM_OBJ(arg) == T_PREC) {
-        Obj result;
-	UInt i, len;
-	len = LEN_PREC(arg);
-        result = NewAtomicRecord(len+1);
-	for (i=1; i<=len; i++)
-	  SetARecordField(result, GET_RNAM_PREC(arg, i), GET_ELM_PREC(arg, i));
-	return result;
+        return NewAtomicRecordFrom(arg);
       }
       ArgumentError("NewAtomicRecord: argument must be an integer or record");
     default:
@@ -952,10 +969,7 @@ static Obj CreateTLDefaults(Obj defrec) {
       CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1));
   }
   TLS->currentDataSpace = savedDS;
-  AO_nop_write();
-  DS_BAG(result) = NULL;
-  AO_nop_write();
-  return result;
+  return NewAtomicRecordFrom(result);
 }
 
 static Obj NewTLRecord(Obj defaults, Obj constructors) {
@@ -966,10 +980,23 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   WriteGuard(constructors);
   DS_BAG(constructors) = LimboDataSpace;
   AO_nop_write();
-  ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = constructors;
+  ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = NewAtomicRecordFrom(constructors);
   ((AtomicObj *)(ADDR_OBJ(result)))->obj = inner;
   return result;
 }
+
+static void SetTLDefault(Obj record, UInt rnam, Obj value) {
+  Obj inner = GetTLInner(record);
+  SetARecordField(ADDR_OBJ(inner)[TLR_DEFAULTS],
+    rnam, CopyReachableObjectsFrom(value, 0, 1));
+}
+
+static void SetTLConstructor(Obj record, UInt rnam, Obj func) {
+  Obj inner = GetTLInner(record);
+  SetARecordField(ADDR_OBJ(inner)[TLR_CONSTRUCTORS],
+    rnam, func);
+}
+
 
 static int OnlyConstructors(Obj precord) {
   UInt i, len;
@@ -1003,6 +1030,28 @@ static Obj FuncThreadLocal(Obj self, Obj args)
       ArgumentError("ThreadLocal: Too many arguments");
       return (Obj) 0; /* flow control hint */
   }
+}
+
+static Obj FuncSetTLDefault(Obj self, Obj record, Obj name, Obj value)
+{
+  if (TNUM_OBJ(record) != T_TLREC)
+    ArgumentError("SetTLDefault: First argument must be a thread-local record");
+  if (!IS_STRING(name) && !IS_INTOBJ(name))
+    ArgumentError("SetTLDefault: Second argument must be a string or integer");
+  SetTLDefault(record, RNamObj(name), value);
+  return (Obj) 0;
+}
+
+static Obj FuncSetTLConstructor(Obj self, Obj record, Obj name, Obj function)
+{
+  if (TNUM_OBJ(record) != T_TLREC)
+    ArgumentError("SetTLConstructor: First argument must be a thread-local record");
+  if (!IS_STRING(name) && !IS_INTOBJ(name))
+    ArgumentError("SetTLConstructor: Second argument must be a string or integer");
+  if (TNUM_OBJ(function) != T_FUNCTION)
+    ArgumentError("SetTLConstructor: Third argument must be a function");
+  SetTLConstructor(record, RNamObj(name), function);
+  return (Obj) 0;
 }
 
 static Int IsListAList(Obj list)
@@ -1136,6 +1185,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ThreadLocal", -1, "record [, record]",
       FuncThreadLocal, "src/aobjects.c:ThreadLocal" },
+
+    { "SetTLDefault", 3, "thread-local record, name, value",
+      FuncSetTLDefault, "src/aobjects.c:SetTLDefault" },
+
+    { "SetTLConstructor", 3, "thread-local record, name, function",
+      FuncSetTLConstructor, "src/aobjects.c:SetTLConstructor" },
 
     { 0 }
 
