@@ -186,7 +186,7 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
-extern Obj ExprGVars;
+extern Obj ExprGVars[GVAR_BUCKETS];
 /* TL: extern Obj ErrorLVars; */
 /* TL: extern Obj BottomLVars; */
 
@@ -376,7 +376,7 @@ void ReadCallVarAss (
       && var != TLS->currLHSGVar 
       && var != Tilde
       && VAL_GVAR(var) == 0 
-      && ELM_PLIST(ExprGVars,var) == 0
+      && ELM_PLIST(ExprGVars[GVAR_BUCKET(var)], GVAR_INDEX(var)) == 0
       && CompNowFuncs == 0
       && ! TLS->intrIgnoring
       && ! GlobalComesFromEnclosingForLoop(var)      

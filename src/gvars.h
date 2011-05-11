@@ -35,7 +35,7 @@ const char * Revision_gvars_h =
 #define GVAR_BUCKET_SIZE 1024
 
 #define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
-#define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE)
+#define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE + 1)
 
 
 /****************************************************************************
@@ -65,7 +65,7 @@ extern  Obj *           PtrGVars[GVAR_BUCKETS];
 **  0 if <gvar> was not an automatic variable.
 */
 #define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
-				[GVAR_INDEX(gvar)])
+				[GVAR_INDEX(gvar)-1])
 
 
 /****************************************************************************

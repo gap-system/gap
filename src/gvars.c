@@ -71,7 +71,7 @@ const char * Revision_gvars_c =
 **  'ValGVars' references the bags containing the values of the global
 **  variables.
 **
-**  'PtrGVars' is a pointer  to the 'ValGVars'  bag.  This makes it faster to
+**  'PtrGVars' is a pointer  to the 'ValGVars' bag+1. This makes it faster to
 **  access global variables.
 **
 **  Since a   garbage  collection may move   this  bag around,    the pointer
@@ -450,7 +450,7 @@ UInt GVarName (
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
 	if (!ValGVars[gvar_bucket]) {
 	   ValGVars[gvar_bucket] = NewGVarBucket();
-	   PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket]);
+	   PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket])+1;
 	   NameGVars[gvar_bucket] = NewGVarBucket();
 	   WriteGVars[gvar_bucket] = NewGVarBucket();
 	   ExprGVars[gvar_bucket] = NewGVarBucket();
@@ -658,6 +658,7 @@ Obj             AUTOHandler (
     Obj                 name;           /* one name (as a GAP string)      */
     UInt                gvar;           /* one global variable             */
     UInt                i;              /* loop variable                   */
+    UInt		gvar_bucket, gvar_index;
 
     /* check that there are enough arguments                               */
     if ( LEN_LIST(args) < 2 ) {
@@ -695,9 +696,11 @@ Obj             AUTOHandler (
                 "you can return a string for <name>" );
         }
         gvar = GVarName( CSTR_STRING(name) );
-        SET_ELM_PLIST( ValGVars,   gvar, 0    );
-        SET_ELM_PLIST( ExprGVars, gvar, list );
-        CHANGED_BAG(   ExprGVars );
+	gvar_bucket = GVAR_BUCKET(gvar);
+	gvar_index = GVAR_INDEX(gvar);
+        SET_ELM_PLIST( ValGVars[gvar_bucket],   gvar_index, 0    );
+        SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, list );
+        CHANGED_BAG(   ExprGVars[gvar_bucket] );
     }
 
     /* return void                                                         */

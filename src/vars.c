@@ -2763,7 +2763,7 @@ void VarsAfterCollectBags ( void )
     }
   for (i=0; i<GVAR_BUCKETS; i++)
     if (ValGVars[i])
-      PtrGVars[i] = PTR_BAG( ValGVars[i] );
+      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
     else
       break;
 }
