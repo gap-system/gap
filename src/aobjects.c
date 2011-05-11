@@ -135,7 +135,7 @@ static Obj NewAtomicList(UInt length)
   return result;
 }
 
-static Obj FuncNewAtomicList(Obj self, Obj args)
+static Obj FuncAtomicList(Obj self, Obj args)
 {
   Obj init;
   Obj result;
@@ -145,7 +145,7 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
     case 1:
       init = ELM_PLIST(args, 1);
       if (!IS_LIST(init) && (!IS_INTOBJ(init) || INT_INTOBJ(init) <=0) )
-        ArgumentError("NewAtomicList: Argument must be list or positive integer");
+        ArgumentError("AtomicList: Argument must be list or positive integer");
       if (IS_LIST(init)) {
 	len = LEN_LIST(init);
 	result = NewAtomicList(len);
@@ -169,7 +169,7 @@ static Obj FuncNewAtomicList(Obj self, Obj args)
       }
     case 2:
       if (!IS_INTOBJ(ELM_PLIST(args, 1)))
-        ArgumentError("NewAtomicList: First argument must be a non-negative integer");
+        ArgumentError("AtomicList: First argument must be a non-negative integer");
       len = INT_INTOBJ(ELM_PLIST(args, 1));
       if (len < 0)
         ArgumentError("NewAtomicList: First argument must be a non-negative integer");
@@ -678,7 +678,7 @@ static Obj FuncFromAtomicRecord(Obj self, Obj record)
   return result;
 }
 
-static Obj CreateAtomicRecord(UInt capacity)
+static Obj NewAtomicRecord(UInt capacity)
 {
   Obj arec, result;
   AtomicObj *table;
@@ -867,24 +867,24 @@ Int IsbTLRecord(Obj record, UInt rnam)
   return GetTLRecordField(record, rnam) != (Obj) 0;
 }
 
-static Obj FuncNewAtomicRecord(Obj self, Obj args)
+static Obj FuncAtomicRecord(Obj self, Obj args)
 {
   Obj arg;
   switch (LEN_PLIST(args)) {
     case 0:
-      return CreateAtomicRecord(8);
+      return NewAtomicRecord(8);
     case 1:
       arg = ELM_PLIST(args, 1);
       if (IS_INTOBJ(arg)) {
 	if (INT_INTOBJ(arg) <= 0)
           ArgumentError("NewAtomicRecord: capacity must be a positive integer");
-        return CreateAtomicRecord(INT_INTOBJ(arg));
+        return NewAtomicRecord(INT_INTOBJ(arg));
       }
       if (TNUM_OBJ(arg) == T_PREC) {
         Obj result;
 	UInt i, len;
 	len = LEN_PREC(arg);
-        result = CreateAtomicRecord(len+1);
+        result = NewAtomicRecord(len+1);
 	for (i=1; i<=len; i++)
 	  SetARecordField(result, GET_RNAM_PREC(arg, i), GET_ELM_PREC(arg, i));
 	return result;
@@ -1102,8 +1102,8 @@ void DestroyAObjectsTLS() {
 
 static StructGVarFunc GVarFuncs [] = {
 
-    { "NewAtomicList", -1, "list|count, obj",
-      FuncNewAtomicList, "src/aobjects.c:NewAtomicList" },
+    { "AtomicList", -1, "list|count, obj",
+      FuncAtomicList, "src/aobjects.c:AtomicList" },
 
     { "FromAtomicList", 1, "list",
       FuncFromAtomicList, "src/aobjects.c:FromAtomicList" },
@@ -1120,8 +1120,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "ATOMIC_ADD", 3, "list, index, inc",
       FuncATOMIC_ADD, "src/aobjects.c:ATOMIC_ADD" },
 
-    { "NewAtomicRecord", -1, "[capacity]",
-      FuncNewAtomicRecord, "src/aobjects.c:NewAtomicRecord" },
+    { "AtomicRecord", -1, "[capacity]",
+      FuncAtomicRecord, "src/aobjects.c:AtomicRecord" },
 
     { "GET_ATOMIC_RECORD", 3, "record, field, default",
       FuncGET_ATOMIC_RECORD, "src/aobjects.c:GET_ATOMIC_RECORD" },

@@ -38,8 +38,6 @@ TYPE_TLREC := NewType(AtomicFamily, IsThreadLocalRecord);
 
 # Convenience aliases
 
-AtomicRecord := NewAtomicRecord;
-AtomicList := NewAtomicList;
 IsLockable := IsShared;
 
 # Legacy functionality
