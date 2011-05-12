@@ -21,6 +21,34 @@ end;
 threads:=List( [1..10], i -> CreateThread( hello, i ) );
 Perform( threads, WaitThread );
 
+# Global variables example
+counter:=0;
+nrthreads:=10;
+l:=[];
+SHARE(l);;
+w:=AtomicList(nrthreads);
+hello:=function(n)
+local t;
+Sleep(n mod 3);
+t:=counter;
+counter:=counter+1;
+Print("Thread ", n, " : ", t , " + 1 = ", counter, " \n");
+w[n]:=counter;
+atomic readwrite l do
+    l[n]:=counter;
+od;
+end;
+threads:=List( [1..nrthreads], i -> CreateThread( hello, i ) );
+Perform( threads, WaitThread );
+counter;
+w;
+r:=FromAtomicList(w);
+atomic readwrite l do
+    ADOPT(l); 
+od;    
+Print(r,"\n",l,"\n");
+Print("Global variables test : ", r=l, "\n");
+
 # Example 1. Simple operations channels with no threads
 ch1:=CreateChannel();   
 ch2:=CreateChannel();
