@@ -78,6 +78,7 @@ ReadLib( "string.gd"   );
 ReadLib( "cmdledit.g"  );
 
 ReadLib( "thread.g" );
+ReadLib( "tasks.g"  );
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
