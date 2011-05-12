@@ -13,6 +13,7 @@ Tasks.Worker := function(channels)
   while true do
     taskdata := ReceiveChannel(channels.toworker);
     if IsIdenticalObj(taskdata, fail) then
+      SendChannel(channels.fromworker, CurrentThread());
       return;
     fi;
     for i in [1..Length(taskdata.adopt)] do
@@ -92,6 +93,15 @@ Tasks.CreateTask := function(arglist)
     detached := false,
     result := fail);
   return task;
+end;
+
+CullIdleTasks := function()
+  local ch, channels;
+  channels := MultiReceiveChannel(Tasks.Pool, 1024);
+  for ch in channels do
+    SendChannel(ch.toworker, fail);
+    WaitThread(ReceiveChannel(ch.fromworker));
+  od;
 end;
 
 ExecuteTask := function(task)
