@@ -1,5 +1,4 @@
 ReadGapRoot("demo/unittest.g");
-ReadGapRoot("demo/tasks.g");
 
 TestPrefix("Concurrent Method Dispatch");
 

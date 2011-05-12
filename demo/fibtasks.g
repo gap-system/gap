@@ -1,4 +1,3 @@
-ReadGapRoot("demo/tasks.g");
 ReadGapRoot("demo/unittest.g");
 
 ResetCache := function()
