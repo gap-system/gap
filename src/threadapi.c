@@ -1440,7 +1440,7 @@ Obj FuncDestroyChannel(Obj self, Obj channel)
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 {
   if (!IsChannel(channel))
-    ArgumentError("SendChannel: Channel identifier must be a number");
+    ArgumentError("SendChannel: First argument must be a channel");
   SendChannel(ObjPtr(channel), obj);
   return (Obj) 0;
 }
@@ -1448,7 +1448,7 @@ Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
 {
   if (!IsChannel(channel))
-    ArgumentError("TransmitChannel: Channel identifier must be a number");
+    ArgumentError("TransmitChannel: First argument must be a channel");
   TransmitChannel(ObjPtr(channel), obj);
   return (Obj) 0;
 }
@@ -1547,10 +1547,10 @@ Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
   if (!IsChannel(channel))
     ArgumentError("MultiReceiveChannel: Argument is not a channel");
   if (!IS_INTOBJ(countobj))
-    ArgumentError("MultiReceiveChannel: Channel identifier must be a number");
+    ArgumentError("MultiReceiveChannel: Size must be a number");
   count = INT_INTOBJ(countobj);
   if (count < 0)
-    ArgumentError("MultiReceiveChannel: Channel size must be non-negative");
+    ArgumentError("MultiReceiveChannel: Size must be non-negative");
   return MultiReceiveChannel(ObjPtr(channel), count);
 }
 
