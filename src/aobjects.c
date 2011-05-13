@@ -1214,7 +1214,7 @@ static Int InitKernel (
   UsageCap[6] = 48;
   UsageCap[7] = 96;
   for (i=8; i<sizeof(UInt)*8; i++)
-    UsageCap[i] = (i<<1)/3 * 2;
+    UsageCap[i] = (1<<i)/3 * 2;
   /* install info string */
   InfoBags[T_ALIST].name = "atomic list";
   InfoBags[T_AREC].name = "atomic record";
