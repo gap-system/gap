@@ -2,13 +2,41 @@
 ##
 #W  bugfix.tst
 ##
-#H  $Id: bugfix.tst,v 1.102 2011/01/20 15:52:01 alexk Exp $
+#H  $Id: bugfix.tst,v 1.108 2011/05/05 06:57:39 gap Exp $
 ##
 ##  Exclude from testinstall.g: why?
 ##
 
 
 gap> START_TEST("bugfixes test");
+
+##  Check if ConvertToMatrixRepNC works properly. BH
+##
+gap> mat := [[1,0,1,1],[0,1,1,1]]*One(GF(2));
+[ [ Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0 ] ]
+gap> ConvertToMatrixRepNC( mat, GF(2) );
+gap> DimensionsMat(mat);
+[ 2, 4 ]
+gap> mat := [[1,0,1,1],[0,1,1,1]]*One(GF(3));
+[ [ Z(3)^0, 0*Z(3), Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0 ] ]
+gap> ConvertToMatrixRepNC( mat, GF(3) );
+gap> DimensionsMat(mat);
+[ 2, 4 ]
+
+##  Check that a new SpecialPcgs is created for which 
+##    LGWeights can be set properly
+##    see my mail of 2011/02/22 to gap-dev for details. BH
+##
+gap> G := PcGroupCode(640919430184532635765016241891519311\
+> 98104010779278323886032740084599, 192200);;
+gap> ind := InducedPcgsByPcSequence(FamilyPcgs (G), 
+> [ G.1*G.2*G.3*G.4^2*G.5^2, G.4^2*G.5^3, G.6, G.7 ]);;
+gap> H := GroupOfPcgs (ind);;
+gap> pcgs := SpecialPcgs (H);;
+gap> syl31 := SylowSystem( H )[3];;
+gap> w := LGWeights( SpecialPcgs( syl31 ) );
+[ [ 1, 1, 31 ], [ 1, 1, 31 ] ]
+
 
 ##  Check to see if the strongly connected component (Error 3) fix has been
 ##     installed
@@ -913,7 +941,6 @@ gap> STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(gamma);
 
 
 # 2005/07/20 (SK), 2009/09/28 (AK)
-gap> if VERSION = "4.dev" then Float := MACFLOAT_STRING; fi;
 gap> Float("355")/Float("113");
 3.14159
 gap> Rat(last);
@@ -1915,6 +1942,19 @@ true
 # Log2Int(2^60) bug (a 64bit/GMP issue)
 gap> Log2Int( 2^60 );
 60
+
+# Reported by WDeMeo on 2011/02/19, added by JS on 2011/03/09
+# IntermediateSubgroups(G,normal) included non-maximal inclusions
+gap> g:=CyclicGroup(2^6);; IntermediateSubgroups( g, TrivialSubgroup(g) ).inclusions;
+[ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ] ]
+
+# Problem with printing when GAP is compiled with GMP 5.0.1 under Mac OS X 
+# in 32-bit mode. Does not occur with GMP 4.3.2 or in 64-bit mode.
+# Reported by BH on 2011/02/06, added by AK on 2011/03/24
+gap> 2*10^201*10;
+200000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+00000000000000000000000000000000000000000000000
 
 #############################################################################
 #

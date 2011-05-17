@@ -2,14 +2,14 @@
 ##
 #W  grppc.tst                 GAP tests                     Alexander Hulpke
 ##
-#H  @(#)$Id: grppc.tst,v 1.17 2011/02/09 15:13:27 alexk Exp $
+#H  @(#)$Id: grppc.tst,v 1.18 2011/03/16 02:06:49 gap Exp $
 ##
 #Y  Copyright (C)  1997
 ##
 ##  To be listed in testinstall.g
 ##
 
-gap> START_TEST("$Id: grppc.tst,v 1.17 2011/02/09 15:13:27 alexk Exp $");
+gap> START_TEST("$Id: grppc.tst,v 1.18 2011/03/16 02:06:49 gap Exp $");
 gap> h:=Group((1,2,3,4),(1,2));;
 gap> m:=IsomorphismPcGroup(h);;
 gap> hh:=Image(m,h);;
@@ -70,6 +70,22 @@ gap> c:=111738634087016687677581080419779823937672962105281999064930026947977838
 945886493976382779091529311779061982182942409366242406420035526825355893426176
 gap> PcGroupCode (c, 43008);
 <pc group of size 43008 with 13 generators>
+gap> G:=
+> 62914798297585954914426131977340386523695645250865424229791550956377401783;;
+gap> G:=PcGroupCode(G,24570);;
+gap> x := G.1*G.3*G.5;;y := x^4;;
+gap> RepresentativeAction(G,x,y)=fail;
+false
+gap> G:=2353881588135032924850825470669869647984062942442421472263823;;
+gap> G:=PcGroupCode(G,7938);;                                          
+gap> x:=G.3*G.5^2*G.6^3*G.7^3;;
+gap> RepresentativeAction(G,x,x^2)<>fail;
+true
+gap> RepresentativeAction(G,x,x^2);
+f1*f2
+
+
+
 
 # that's all, folks
 gap> STOP_TEST( "grppc.tst",116000670);
