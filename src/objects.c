@@ -892,7 +892,7 @@ void            PrintObj (
     }
 
 #ifndef WARD_ENABLED
-   if (IS_BAG_REF(obj) && !CheckWrite(obj)) {
+   if (IS_BAG_REF(obj) && !CheckRead(obj)) {
      char buffer[64];
      sprintf(buffer, "<obj %p inaccessible in data space %p>", obj, DS_BAG(obj));
      Pr(buffer, 0L, 0L);
@@ -1028,7 +1028,7 @@ void            ViewObj (
        it is necessary */
 
 #ifndef WARD_ENABLED
-   if (IS_BAG_REF(obj) && !CheckWrite(obj)) {
+   if (IS_BAG_REF(obj) && !CheckRead(obj)) {
      char buffer[64];
      sprintf(buffer, "<obj %p inaccessible in data space %p>", obj, DS_BAG(obj));
      Pr(buffer, 0L, 0L);
