@@ -40,6 +40,16 @@ TYPE_TLREC := NewType(AtomicFamily, IsThreadLocalRecord);
 
 IsLockable := IsShared;
 
+ShareObj := SHARE;
+ShareSingleObj := SHARE_NORECURSE;
+MigrateObj := MIGRATE;
+MigrateSingleObj := MIGRATE_NORECURSE;
+AdoptObj := ADOPT;
+AdoptSingleObj := ADOPT_NORECURSE;
+CopyRegion := CLONE_REACHABLE;
+RegionSubObjects := REACHABLE;
+RegionOf := DataSpace;
+
 # Legacy functionality
 
 SHARED_LIST := function()
