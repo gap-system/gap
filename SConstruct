@@ -171,7 +171,7 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
     os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   else:
     os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"] + " -D_XOPEN_SOURCE"
-  build_external("gc-7.2alpha2")
+  build_external("gc-7.2alpha5")
   del os.environ["CC"]
 
 
