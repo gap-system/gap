@@ -62,6 +62,7 @@ const char * Revision_gvars_c =
 
 #include        "tls.h"                 /* thread-local storage            */
 #include        "thread.h"              /* threads                         */
+#include        "aobjects.h"            /* atomic objects                  */
 
 /****************************************************************************
 **
@@ -82,6 +83,13 @@ const char * Revision_gvars_c =
 Obj   ValGVars[GVAR_BUCKETS];
 
 Obj * PtrGVars[GVAR_BUCKETS];
+
+/****************************************************************************
+**
+*V  TLVars  . . . . . . . . . . . . . . . . . . . . . thread-local variables
+*/
+
+static Obj TLVars;
 
 /****************************************************************************
 **
@@ -232,6 +240,13 @@ void            AssGVar (
     }
 
     /* assign the value to the global variable                             */
+    if (!VAL_GVAR(gvar)) {
+        Obj expr = ELM_PLIST(ExprGVars[gvar_bucket], gvar_index);
+	if (IS_INTOBJ(expr)) {
+	  AssTLRecord(TLVars, INT_INTOBJ(expr), val);
+	  return;
+	}
+    }
     VAL_GVAR(gvar) = val;
     CHANGED_BAG( ValGVars[gvar_bucket] );
 
@@ -301,6 +316,7 @@ void            AssGVar (
 Obj             ValAutoGVar (
     UInt                gvar )
 {
+    Obj			expr;
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
     UInt		gvar_bucket = GVAR_BUCKET(gvar);
@@ -308,11 +324,15 @@ Obj             ValAutoGVar (
 
     /* if this is an automatic variable, make the function call            */
     if ( VAL_GVAR(gvar) == 0 &&
-         ELM_PLIST( ExprGVars[gvar_bucket], gvar_index ) != 0 ) {
+         (expr = ELM_PLIST( ExprGVars[gvar_bucket], gvar_index )) != 0 ) {
 
+	if (IS_INTOBJ(expr)) {
+	  /* thread-local variable */
+	  return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+	}
         /* make the function call                                          */
-        func = ELM_PLIST( ELM_PLIST( ExprGVars[gvar_bucket], gvar_index ), 1 );
-        arg  = ELM_PLIST( ELM_PLIST( ExprGVars[gvar_bucket], gvar_index ), 2 );
+        func = ELM_PLIST( expr, 1 );
+        arg  = ELM_PLIST( expr, 2 );
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
@@ -518,6 +538,23 @@ void MakeReadOnlyGVar (
     SET_ELM_PLIST( WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(0) );
     CHANGED_BAG(WriteGVars[gvar_bucket])
 }
+
+/****************************************************************************
+**
+*F  MakeThreadLocalVar( <gvar> )  . . . . . .  make a variable thread-local
+*/
+void MakeThreadLocalVar (
+    UInt                gvar,
+    UInt                rnam )
+{       
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    VAL_GVAR(gvar) = (Obj) 0;
+    UInt gvar_index = GVAR_INDEX(gvar);
+    SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, INTOBJ_INT(rnam) );
+    CHANGED_BAG(ExprGVars[gvar_bucket])
+}
+
+
 
 
 /****************************************************************************
@@ -1219,6 +1256,9 @@ static Int InitKernel (
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* For thread-local variables */
+    InitCopyGVar("ThreadVar", &TLVars);
 
     /* Get a copy of REREADING                                             */
     ImportGVarFromLibrary("REREADING", &REREADING);

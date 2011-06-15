@@ -469,7 +469,7 @@ BIND_GLOBAL("ThreadVar", ThreadLocal());
 BIND_GLOBAL("BindThreadLocal", function(name, default)
   SetTLDefault(ThreadVar, name, default);
 end);
-BIND_GLOBAL("BindThreadLocalFrom", function(name, default)
+BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
   SetTLConstructor(ThreadVar, name, default);
 end);
 

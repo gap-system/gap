@@ -41,6 +41,7 @@
 #include        "listoper.h"            /* operations for generic lists    */
 #include        "listfunc.h"            /* functions for generic lists     */
 #include        "plist.h"               /* plain lists                     */
+#include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
 
@@ -627,6 +628,7 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
 Obj FuncREACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_DELIMITED(Obj self, Obj obj);
+Obj FuncMakeThreadLocal(Obj self, Obj var);
 Obj FuncMakeReadOnly(Obj self, Obj obj);
 Obj FuncMakeReadOnlyObj(Obj self, Obj obj);
 Obj FuncMakeProtected(Obj self, Obj obj);
@@ -795,6 +797,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CLONE_DELIMITED", 1, "obj",
       FuncCLONE_DELIMITED, "src/threadapi.c:CLONE_DELIMITED" },
+
+    { "MakeThreadLocal", 1, "variable name",
+      FuncMakeThreadLocal, "src/threadapi.c:MakeThreadLocal" },
 
     { "MakeReadOnly", 1, "obj",
       FuncMakeReadOnly, "src/threadapi.c:MakeReadOnly" },
@@ -1971,6 +1976,16 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
        ADDR_OBJ(reachable)+1, targetDS))
     ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
   return obj;
+}
+
+Obj FuncMakeThreadLocal(Obj self, Obj var)
+{
+  char *name;
+  if (!IS_STRING(var))
+    ArgumentError("MakeThreadLocal: Argument must be a variable name");
+  name = CSTR_STRING(var);
+  MakeThreadLocalVar(GVarName(name), RNamName(name));
+  return (Obj) 0;
 }
 
 Obj FuncMakeReadOnly(Obj self, Obj obj)

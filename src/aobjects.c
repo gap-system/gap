@@ -815,7 +815,7 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
   }
 }
 
-static Obj GetTLRecordField(Obj record, UInt rnam)
+Obj GetTLRecordField(Obj record, UInt rnam)
 {
   Obj contents, *table;
   Obj tlrecord;
