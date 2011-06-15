@@ -466,6 +466,12 @@ end);
 #V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
 
 BIND_GLOBAL("ThreadVar", ThreadLocal());
+BIND_GLOBAL("BindThreadLocal", function(name, default)
+  SetTLDefault(ThreadVar, name, default);
+end);
+BIND_GLOBAL("BindThreadLocalFrom", function(name, default)
+  SetTLConstructor(ThreadVar, name, default);
+end);
 
 
 #############################################################################
