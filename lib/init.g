@@ -463,6 +463,13 @@ end);
 
 #############################################################################
 ##
+#V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
+
+BIND_GLOBAL("ThreadVar", ThreadLocal());
+
+
+#############################################################################
+##
 #F  ReadLib( <name> ) . . . . . . . . . . . . . . . . . . . . . library files
 #F  ReadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
 #F  ReadSmall( <name> ) . . . . . . . . . . . . .  small groups library files

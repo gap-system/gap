@@ -893,7 +893,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 			infinity          ];
 
     # Store the internal types.
-    NEW_TYPE_READONLY.onCreation := false;
+    ThreadVar.NEW_TYPE_READONLY := false;
 
     K:= NewType( F, Is8BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
@@ -925,11 +925,11 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     F!.types[3]:= K;
     MakeReadOnlyObj(K);
 
-    NEW_TYPE_READONLY.onCreation := true;
+    ThreadVar.NEW_TYPE_READONLY := true;
 
   fi;
 
-  NEW_TYPE_READONLY.onCreation := false;
+  ThreadVar.NEW_TYPE_READONLY := false;
 
   K:= NewType( F, IsInfBitsAssocWord and req );
   K![ AWP_PURE_TYPE    ]      := K;
@@ -941,7 +941,7 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
   F!.types[4]:= K;
   MakeReadOnlyObj(K);
 
-  NEW_TYPE_READONLY.onCreation := true;
+  ThreadVar.NEW_TYPE_READONLY := true;
 
   if IsBLetterWordsFamily(F) then
     K:= NewType( F, IsBLetterAssocWordRep and req );

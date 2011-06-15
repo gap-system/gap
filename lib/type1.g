@@ -204,7 +204,7 @@ end );
 ##
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
-NEW_TYPE_READONLY := ThreadLocal( rec( onCreation := true ) );
+SetTLDefault(ThreadVar, "NEW_TYPE_READONLY", true);
 
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     local   hash,  cache,  cached,  type, ncache, ncl, t;
@@ -262,7 +262,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     UNLOCK(LOCK()-1);
 
     # return the type
-    if NEW_TYPE_READONLY.onCreation then
+    if ThreadVar.NEW_TYPE_READONLY then
         return MakeReadOnlyObj(type);
     else
         return type;

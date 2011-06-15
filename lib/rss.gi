@@ -52,7 +52,8 @@ Revision.rss_gi :=
 ##
 InstallGlobalFunction( SetValueOption,
 function( fieldname, value )
-    OptionsStack[ Length(OptionsStack) ].(fieldname) := value;
+    ThreadVar.OptionsStack[ Length(ThreadVar.OptionsStack) ].(fieldname) :=
+      value;
 end );
 
 #############################################################################
@@ -62,7 +63,7 @@ end );
 InstallGlobalFunction( ReturnPopOptions,
 function()
     local opt;
-    opt := OptionsStack[ Length(OptionsStack) ];
+    opt := ThreadVar.OptionsStack[ Length(ThreadVar.OptionsStack) ];
     PopOptions();
     return opt;
 end );

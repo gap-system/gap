@@ -402,7 +402,7 @@ function( sc )
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
     # create the special 8 bits type
-    NEW_TYPE_READONLY.onCreation := false;
+    ThreadVar.NEW_TYPE_READONLY := false;
 
     fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
 
@@ -424,7 +424,7 @@ function( sc )
 
     MakeReadOnlyObj(fam!.8BitsType);
 
-    NEW_TYPE_READONLY.onCreation := true;
+    ThreadVar.NEW_TYPE_READONLY := true;
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
