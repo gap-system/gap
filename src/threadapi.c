@@ -413,6 +413,8 @@ Obj FuncCreateThread(Obj self, Obj funcargs) {
   for (i=1; i<=n; i++)
     SET_ELM_PLIST(templist, i, ELM_PLIST(funcargs, i));
   id = RunThread(ThreadedInterpreter, KeepAlive(templist));
+  if (id < 0)
+    return Fail;
   return INTOBJ_INT(id);
 }
 

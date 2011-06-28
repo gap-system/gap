@@ -374,7 +374,7 @@ static void ExpandTLRecord(Obj obj)
   do {
     contents = *ADDR_ATOM(obj);
     table = ADDR_OBJ(contents.obj);
-    UInt thread = TLS->threadID+1;
+    UInt thread = TLS->threadID;
     if (thread < (UInt)*table)
       return;
     newcontents.obj = NewBag(T_TLREC_INNER, sizeof(Obj) * (thread+TLR_DATA+1));
@@ -423,8 +423,8 @@ static void PrintTLRecord(Obj obj)
   int comma = 0;
   AtomicObj *deftable;
   int i;
-  if (TLS->threadID+1 < (UInt)table[TLR_SIZE]) {
-    record = table[TLR_DATA+TLS->threadID+1];
+  if (TLS->threadID < (UInt)table[TLR_SIZE]) {
+    record = table[TLR_DATA+TLS->threadID];
   }
   Pr("%2>rec( %2>", 0L, 0L);
   if (record) {
@@ -801,7 +801,7 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
   Obj inner;
   do {
     inner = GetTLInner(record);
-    ADDR_OBJ(inner)[TLR_DATA+TLS->threadID+1] = tlrecord;
+    ADDR_OBJ(inner)[TLR_DATA+TLS->threadID] = tlrecord;
     AO_nop_full(); /* memory barrier */
   } while (inner != GetTLInner(record));
   if (tlrecord) {
@@ -823,7 +823,7 @@ Obj GetTLRecordField(Obj record, UInt rnam)
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
-  tlrecord = table[TLR_DATA+TLS->threadID+1];
+  tlrecord = table[TLR_DATA+TLS->threadID];
   if (!tlrecord || !FindPRec(tlrecord, rnam, &pos, 1)) {
     Obj result;
     Obj defrec = table[TLR_DEFAULTS];
@@ -877,7 +877,7 @@ void AssTLRecord(Obj record, UInt rnam, Obj value)
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
-  tlrecord = table[TLR_DATA+TLS->threadID+1];
+  tlrecord = table[TLR_DATA+TLS->threadID];
   if (!tlrecord) {
     tlrecord = NEW_PREC(0);
     UpdateThreadRecord(record, tlrecord);

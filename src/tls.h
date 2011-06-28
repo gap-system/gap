@@ -208,7 +208,7 @@ static inline Bag ReadGuard(Bag bag)
     return bag;
   dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS &&
-      !dataspace->readers[TLS->threadID+1])
+      !dataspace->readers[TLS->threadID])
     ReadGuardError();
   return bag;
 }
@@ -222,7 +222,7 @@ static inline Bag *ReadGuardByRef(Bag *bagref)
     return bagref;
   dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS &&
-      !dataspace->readers[TLS->threadID+1])
+      !dataspace->readers[TLS->threadID])
     ReadGuardError();
   return bagref;
 }
@@ -242,12 +242,12 @@ static inline int CheckRead(Bag bag)
     return 1;
   dataspace = DS_BAG(bag);
   return !(dataspace && dataspace->owner != TLS &&
-    !dataspace->readers[TLS->threadID+1]);
+    !dataspace->readers[TLS->threadID]);
 }
 
 static inline int IsMainThread()
 {
-  return TLS->threadID < 0;
+  return TLS->threadID == 0;
 };
 
 void InitializeTLS();

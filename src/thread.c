@@ -166,7 +166,7 @@ static void SetupTLS()
 #endif
   InitializeTLS();
   MainThreadTLS = TLS;
-  TLS->threadID = -1;
+  TLS->threadID = 0;
 }
 
 static void InitTraversal();
@@ -250,7 +250,7 @@ void *DispatchThread(void *arg)
   pthread_cond_t thread_cond;
   ThreadData *this_thread = arg;
   InitializeTLS();
-  TLS->threadID = this_thread - thread_data;
+  TLS->threadID = this_thread - thread_data + 1;
 #ifndef DISABLE_GC
   AddGCRoots();
 #endif
@@ -326,7 +326,7 @@ int RunThread(void (*start)(void *), void *arg)
     return -1;
   }
   pthread_attr_destroy(&thread_attr);
-  return result;
+  return result+1;
 }
 
 int JoinThread(int id)
@@ -336,6 +336,7 @@ int JoinThread(int id)
 #ifndef HAVE_NATIVE_TLS
   void *tls;
 #endif
+  id--;
   if (id < 0 || id >= MAX_THREADS)
     return 0;
   pthread_mutex_lock(&master_lock);
@@ -410,12 +411,12 @@ void DataSpaceWriteUnlock(DataSpace *dataspace)
 void DataSpaceReadLock(DataSpace *dataspace)
 {
   pthread_rwlock_rdlock(dataspace->lock);
-  dataspace->readers[TLS->threadID+1] = 1;
+  dataspace->readers[TLS->threadID] = 1;
 }
 
 void DataSpaceReadUnlock(DataSpace *dataspace)
 {
-  dataspace->readers[TLS->threadID+1] = 0;
+  dataspace->readers[TLS->threadID] = 0;
   pthread_rwlock_unlock(dataspace->lock);
 }
 
@@ -423,7 +424,7 @@ void DataSpaceUnlock(DataSpace *dataspace)
 {
   if (dataspace->owner == TLS)
     dataspace->owner = NULL;
-  dataspace->readers[TLS->threadID+1] = 0;
+  dataspace->readers[TLS->threadID] = 0;
   pthread_rwlock_unlock(dataspace->lock);
 }
 
@@ -433,7 +434,7 @@ int IsLocked(DataSpace *dataspace)
     return 2; /* public dataspace */
   if (dataspace->owner == TLS)
     return 1;
-  if (dataspace->readers[TLS->threadID+1])
+  if (dataspace->readers[TLS->threadID])
     return 2;
   return 0;
 }
