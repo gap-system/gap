@@ -380,19 +380,19 @@ UInt LockID(void *object) {
       ^ (p << (LOG2_NUM_LOCKS - 3))) % NUM_LOCKS;
 }
 
-void Lock(void *object) {
+void HashLock(void *object) {
   pthread_rwlock_wrlock(&ObjLock[LockID(object)]);
 }
 
-void LockShared(void *object) {
+void HashLockShared(void *object) {
   pthread_rwlock_rdlock(&ObjLock[LockID(object)]);
 }
 
-void Unlock(void *object) {
+void HashUnlock(void *object) {
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 
-void UnlockShared(void *object) {
+void HashUnlockShared(void *object) {
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 

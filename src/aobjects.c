@@ -406,11 +406,11 @@ static inline AtomicObj* ARecordTable(Obj record)
 static void PrintAtomicRecord(Obj record)
 {
   UInt cap, size;
-  Lock(record);
+  HashLock(record);
   AtomicObj *table = ARecordTable(record);
   cap = table[AR_CAP].atom;
   size = table[AR_SIZE].atom;
-  Unlock(record);
+  HashUnlock(record);
   Pr("<atomic record %d/%d full>", size, cap);
 }
 
@@ -438,7 +438,7 @@ static void PrintTLRecord(Obj obj)
         comma = 1;
     }
   }
-  LockShared(defrec);
+  HashLockShared(defrec);
   deftable = ARecordTable(defrec);
   for (i = 0; i < deftable[AR_CAP].atom; i++) {
     UInt key = deftable[AR_DATA+2*i].atom;
@@ -453,7 +453,7 @@ static void PrintTLRecord(Obj obj)
       comma = 1;
     }
   }
-  UnlockShared(defrec);
+  HashUnlockShared(defrec);
   Pr(" %4<)", 0L, 0L);
 }
 
@@ -519,7 +519,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   UInt cap, bits, hash, i, n, size;
   Int strat;
   int have_room;
-  LockShared(record);
+  HashLockShared(record);
   table = ARecordTable(record);
   data = table + AR_DATA;
   cap = table[AR_CAP].atom;
@@ -537,7 +537,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     {
       AO_nop_full(); /* memory barrier */
       if (strat < 0) {
-        UnlockShared(record);
+        HashUnlockShared(record);
 	return 0;
       }
       if (strat) {
@@ -550,14 +550,14 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	  } while (!old.obj);
 	} while (!AO_compare_and_swap_full(&data[hash*2+1].atom,
 	          old.atom, new.atom));
-	UnlockShared(record);
+	HashUnlockShared(record);
 	return obj;
       } else {
         Obj result;
 	do {
 	  result = data[hash*2+1].obj;
 	} while (!result);
-	UnlockShared(record);
+	HashUnlockShared(record);
 	return result;
       }
     }
@@ -622,12 +622,12 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	}
       }
     } /* end CAS loop */
-    UnlockShared(record);
+    HashUnlockShared(record);
     return result;
   } /* end hash iteration loop */
   /* have_room is false at this point */
-  UnlockShared(record);
-  Lock(record);
+  HashUnlockShared(record);
+  HashLock(record);
   newarec = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
   newtable = ADDR_ATOM(newarec);
   newdata = newtable + AR_DATA;
@@ -658,7 +658,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     newdata[2*n+1].obj = result = obj;
   AO_nop_write(); /* memory barrier */
   ADDR_OBJ(record)[1] = newarec;
-  Unlock(record);
+  HashUnlock(record);
   return result;
 }
 
@@ -753,14 +753,14 @@ Int IsbARecord(Obj record, UInt rnam)
 Obj ShallowCopyARecord(Obj obj)
 {
   Obj copy, inner, innerCopy;
-  Lock(obj);
+  HashLock(obj);
   copy = NewBag(TNUM_BAG(obj), SIZE_BAG(obj));
   memcpy(ADDR_OBJ(copy), ADDR_OBJ(obj), SIZE_BAG(obj));
   inner = ADDR_OBJ(obj)[1];
   innerCopy = NewBag(TNUM_BAG(inner), SIZE_BAG(inner));
   memcpy(ADDR_OBJ(innerCopy), ADDR_OBJ(inner), SIZE_BAG(inner));
   ADDR_OBJ(copy)[1] = innerCopy;
-  Unlock(obj);
+  HashUnlock(obj);
   return copy;
 }
 

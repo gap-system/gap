@@ -26,7 +26,7 @@ ParListViaParkitDivideAndConquer := function(l, f, chunk)
     end;
     
     collector := function(taskID, m, ins)
-        WriteSyncVar(v,ins[1]);
+        SyncWrite(v,ins[1]);
         m.finished(taskID);
     end;
     
@@ -71,7 +71,7 @@ ParListViaParkitDivideAndConquer := function(l, f, chunk)
     od;
     v := CreateSyncVar();
     m.submit("overall",[],[],0,fail);
-    res := ReadSyncVar(v);
+    res := SyncRead(v);
     StopParkitManager(m);
     return res;
 end;    
@@ -90,7 +90,7 @@ StrassenMult := function(m1,m2, threshold)
     end;
     
     collector := v-> function(taskID, m, ins)
-        WriteSyncVar(v,ins[1]);
+        SyncWrite(v,ins[1]);
         m.finished(taskID);
     end; 
     
@@ -220,7 +220,7 @@ StrassenMult := function(m1,m2, threshold)
         m.register(x[1],x[2],0);
     od;
     m.submit("overall",[],[],0);
-    res := ReadSyncVar(v);
+    res := SyncRead(v);
     StopParkitManager(m);
     return res{[1..n]}{[1..n]};     
 end;

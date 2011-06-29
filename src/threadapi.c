@@ -523,70 +523,70 @@ Obj FuncHaveReadAccess(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*F FuncLock ........... acquire write lock on an object.
-*F FuncUnlock ......... release write lock on an object.
-*F FuncLockShared ..... acquire read lock on an object.
-*F FuncUnlockShared ... release read lock on an object.
+*F FuncHASH_LOCK ........... acquire write lock on an object.
+*F FuncHASH_UNLOCK ......... release write lock on an object.
+*F FuncHASH_LOCK_SHARED ..... acquire read lock on an object.
+*F FuncHASH_UNLOCK_SHARED ... release read lock on an object.
 **
 */
 
 
-Obj FuncLock(Obj self, Obj target) {
-  Lock(target);
+Obj FuncHASH_LOCK(Obj self, Obj target) {
+  HashLock(target);
   return (Obj) 0;
 }
 
-Obj FuncUnlock(Obj self, Obj target) {
-  Unlock(target);
+Obj FuncHASH_UNLOCK(Obj self, Obj target) {
+  HashUnlock(target);
   return (Obj) 0;
 }
 
-Obj FuncLockShared(Obj self, Obj target) {
-  LockShared(target);
+Obj FuncHASH_LOCK_SHARED(Obj self, Obj target) {
+  HashLockShared(target);
   return (Obj) 0;
 } 
-Obj FuncUnlockShared(Obj self, Obj target) {
-  UnlockShared(target);
+Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target) {
+  HashUnlockShared(target);
   return (Obj) 0;
 }
 
 /****************************************************************************
 **
-*F FuncSynchronized ......... execute a function while holding a write lock.
-*F FuncSynchronizedShared ... execute a function while holding a read lock.
+*F FuncHASH_SYNCHRONIZED ......... execute a function while holding a write lock.
+*F FuncHASH_SYNCHRONIZED_SHARED ... execute a function while holding a read lock.
 **
 */
 
-Obj FuncSynchronized(Obj self, Obj target, Obj function) {
+Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
   memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
   if (!READ_ERROR()) {
-    Lock(target);
+    HashLock(target);
     locked = 1;
     CALL_0ARGS(function);
     locked = 0;
-    Unlock(target);
+    HashUnlock(target);
   }
   if (locked)
-    Unlock(target);
+    HashUnlock(target);
   memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
   return (Obj) 0;
 }
 
-Obj FuncSynchronizedShared(Obj self, Obj target, Obj function) {
+Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
   memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
   if (!READ_ERROR()) {
-    LockShared(target);
+    HashLockShared(target);
     locked = 1;
     CALL_0ARGS(function);
     locked = 0;
-    UnlockShared(target);
+    HashUnlockShared(target);
   }
   if (locked)
-    UnlockShared(target);
+    HashUnlockShared(target);
   memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
   return (Obj) 0;
 }
@@ -597,6 +597,7 @@ Obj FuncSendChannel(Obj self, Obj channel, Obj obj);
 Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj);
 Obj FuncReceiveChannel(Obj self, Obj channel);
 Obj FuncReceiveAnyChannel(Obj self, Obj args);
+Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args);
 Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj count);
 Obj FuncInspectChannel(Obj self, Obj channel);
 Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list);
@@ -613,8 +614,8 @@ Obj FuncCreateBarrier(Obj self);
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
 Obj FuncWaitBarrier(Obj self, Obj barrier);
 Obj FuncCreateSyncVar(Obj self);
-Obj FuncWriteSyncVar(Obj self, Obj var, Obj value);
-Obj FuncReadSyncVar(Obj self, Obj var);
+Obj FuncSyncWrite(Obj self, Obj var, Obj value);
+Obj FuncSyncRead(Obj self, Obj var);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
@@ -657,23 +658,23 @@ static StructGVarFunc GVarFuncs [] = {
     { "WaitThread", 1, "threadID",
       FuncWaitThread, "src/threadapi.c:WaitThread" },
 
-    { "Lock", 1, "object",
-      FuncLock, "src/threadapi.c:Lock" },
+    { "HASH_LOCK", 1, "object",
+      FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },
     
-    { "LockShared", 1, "object",
-      FuncLockShared, "src/threadapi.c:LockShared" },
+    { "HASH_LOCK_SHARED", 1, "object",
+      FuncHASH_LOCK_SHARED, "src/threadapi.c:HASH_LOCK_SHARED" },
     
-    { "Unlock", 1, "object",
-      FuncUnlock, "src/threadapi.c:Unlock" },
+    { "HASH_UNLOCK", 1, "object",
+      FuncHASH_UNLOCK, "src/threadapi.c:HASH_UNLOCK" },
     
-    { "UnlockShared", 1, "object",
-      FuncUnlockShared, "src/threadapi.c:UnlockShared" },
+    { "HASH_UNLOCK_SHARED", 1, "object",
+      FuncHASH_UNLOCK_SHARED, "src/threadapi.c:HASH_UNLOCK_SHARED" },
 
-    { "Synchronized", 2, "object, function",
-      FuncSynchronized, "src/threadapi.c:Synchronized" },
+    { "HASH_SYNCHRONIZED", 2, "object, function",
+      FuncHASH_SYNCHRONIZED, "src/threadapi.c:HASH_SYNCHRONIZED" },
 
     { "SynchronizedShared", 2, "object, function",
-      FuncSynchronizedShared, "src/threadapi.c:SynchronizedShared" },
+      FuncHASH_SYNCHRONIZED_SHARED, "src/threadapi.c:SynchronizedShared" },
 
     { "DataSpace", 1, "object",
       FuncDataSpace, "src/threadapi.c:DataSpace" },
@@ -710,6 +711,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ReceiveAnyChannel", -1, "channel list",
       FuncReceiveAnyChannel, "src/threadapi:ReceiveAnyChannel" },
+
+    { "ReceiveAnyChannelWithIndex", -1, "channel list",
+      FuncReceiveAnyChannelWithIndex, "src/threadapi:ReceiveAnyChannelWithIndex" },
 
     { "MultiReceiveChannel", 2, "channel, count",
       FuncMultiReceiveChannel, "src/threadapi:MultiReceiveChannel" },
@@ -750,11 +754,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "CreateSyncVar", 0, "",
       FuncCreateSyncVar, "src/threadapi.c:CreateSyncVar" },
 
-    { "WriteSyncVar", 2, "syncvar, obj",
-      FuncWriteSyncVar, "src/threadapi.c:WriteSyncVar" },
+    { "SyncWrite", 2, "syncvar, obj",
+      FuncSyncWrite, "src/threadapi.c:SyncWrite" },
 
-    { "ReadSyncVar", 1, "syncvar",
-      FuncReadSyncVar, "src/threadapi.c:ReadSyncVar" },
+    { "SyncRead", 1, "syncvar",
+      FuncSyncRead, "src/threadapi.c:SyncRead" },
 
     { "IS_LOCKED", 1, "obj",
       FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
@@ -1273,7 +1277,7 @@ static Obj ReceiveChannel(Channel *channel)
   return result;
 }
 
-static Obj ReceiveAnyChannel(Obj channelList)
+static Obj ReceiveAnyChannel(Obj channelList, int with_index)
 {
   unsigned count = LEN_PLIST(channelList);
   unsigned i, p;
@@ -1324,7 +1328,20 @@ static Obj ReceiveAnyChannel(Obj channelList)
   result = RetrieveFromChannel(channel);
   SignalChannel(channel);
   UnlockMonitor(monitors[p]);
-  return result;
+  if (with_index)
+  {
+    Obj list = NEW_PLIST(T_PLIST, 2);
+    SET_LEN_PLIST(list, 2);
+    SET_ELM_PLIST(list, 1, result);
+    for (i=1; i<=count; i++)
+      if (ObjPtr(ELM_PLIST(channelList, i)) == channel) {
+        SET_ELM_PLIST(list, 2, INTOBJ_INT(i));
+	break;
+      }
+    return list;
+  }
+  else
+    return result;
 }
 
 static Obj MultiReceiveChannel(Channel *channel, unsigned max)
@@ -1534,12 +1551,29 @@ int IsChannelList(Obj list)
 Obj FuncReceiveAnyChannel(Obj self, Obj args)
 {
   if (IsChannelList(args))
-    return ReceiveAnyChannel(args);
+    return ReceiveAnyChannel(args, 0);
   else
   {
     if (LEN_PLIST(args) == 1 && IS_PLIST(ELM_PLIST(args, 1))
         && IsChannelList(ELM_PLIST(args, 1)))
-      return ReceiveAnyChannel(ELM_PLIST(args, 1));
+      return ReceiveAnyChannel(ELM_PLIST(args, 1), 0);
+    else
+    {
+      ArgumentError("ReceiveAnyChannel: Argument list must be channels");
+      return (Obj) 0;
+    }
+  }
+}
+
+Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
+{
+  if (IsChannelList(args))
+    return ReceiveAnyChannel(args, 1);
+  else
+  {
+    if (LEN_PLIST(args) == 1 && IS_PLIST(ELM_PLIST(args, 1))
+        && IsChannelList(ELM_PLIST(args, 1)))
+      return ReceiveAnyChannel(ELM_PLIST(args, 1), 1);
     else
     {
       ArgumentError("ReceiveAnyChannel: Argument list must be channels");
@@ -1665,14 +1699,14 @@ Obj FuncWaitBarrier(Obj self, Obj barrier)
   return (Obj) 0;
 }
 
-void WriteSyncVar(SyncVar *var, Obj value)
+void SyncWrite(SyncVar *var, Obj value)
 {
   Monitor *monitor = ObjPtr(var->monitor);
   LockMonitor(monitor);
   if (var->written)
   {
     UnlockMonitor(monitor);
-    ArgumentError("WriteSyncVar: Variable already has a value");
+    ArgumentError("SyncWrite: Variable already has a value");
     return;
   }
   var->written = 1;
@@ -1694,7 +1728,7 @@ Obj CreateSyncVar()
 }
 
 
-Obj ReadSyncVar(SyncVar *var)
+Obj SyncRead(SyncVar *var)
 {
   Monitor *monitor = ObjPtr(var->monitor);
   LockMonitor(monitor);
@@ -1716,19 +1750,19 @@ Obj FuncCreateSyncVar(Obj self)
   return CreateSyncVar();
 }
 
-Obj FuncWriteSyncVar(Obj self, Obj var, Obj value)
+Obj FuncSyncWrite(Obj self, Obj var, Obj value)
 {
   if (!IsSyncVar(var))
-    ArgumentError("WriteSyncVar: First argument must be a synchronization variable");
-  WriteSyncVar(ObjPtr(var), value);
+    ArgumentError("SyncWrite: First argument must be a synchronization variable");
+  SyncWrite(ObjPtr(var), value);
   return (Obj) 0;
 }
 
-Obj FuncReadSyncVar(Obj self, Obj var)
+Obj FuncSyncRead(Obj self, Obj var)
 {
   if (!IsSyncVar(var))
-    ArgumentError("ReadSyncVar: Argument must be a synchronization variable");
-  return ReadSyncVar(ObjPtr(var));
+    ArgumentError("SyncRead: Argument must be a synchronization variable");
+  return SyncRead(ObjPtr(var));
 }
 
 static void PrintChannel(Obj obj)

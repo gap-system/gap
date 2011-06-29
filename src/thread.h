@@ -54,9 +54,9 @@ Obj ReachableObjectsFrom(Obj obj);
 Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList);
 Obj CopyTraversed(Obj traversed);
 
-void Lock(void *obj);
-void LockShared(void *obj);
-void Unlock(void *obj);
-void UnlockShared(void *obj);
+void HashLock(void *obj);
+void HashLockShared(void *obj);
+void HashUnlock(void *obj);
+void HashUnlockShared(void *obj);
 
 #endif /* _THREAD_H */
