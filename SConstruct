@@ -55,15 +55,16 @@ if changed_abi:
   default_abi = GAP["abi"]
 
 if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
-  if GAP["abi"] != "auto":
-    os.environ["CC"] = compiler 
-    os.environ["CFLAGS"] = " -m" + GAP["abi"]
-  os.system("./configure")
-  os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
-  os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
-  if GAP["abi"] != "auto":
-    del os.environ["CC"]
-    del os.environ["CFLAGS"]
+  if not GetOption("clean"):
+    if GAP["abi"] != "auto":
+      os.environ["CC"] = compiler 
+      os.environ["CFLAGS"] = " -m" + GAP["abi"]
+    os.system("./configure")
+    os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
+    os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
+    if GAP["abi"] != "auto":
+      del os.environ["CC"]
+      del os.environ["CFLAGS"]
 
 default_abi, has_config = abi_from_config(config_header_file)
 if not has_config:
