@@ -1027,7 +1027,7 @@ UInt ExecAtomic(
   int lockstatus[MAX_ATOMIC_OBJS];
   DataSpace *locked[MAX_ATOMIC_OBJS];
   int lockSP;
-  UInt mode, nrexprs,i,j;
+  UInt mode, nrexprs,i,j,status;
   Obj o;
   
   nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
@@ -1069,11 +1069,13 @@ UInt ExecAtomic(
       }
     lockSP = LockObjects(j, tolock, locktypes);
     if (lockSP >= 0) {
-      EXEC_STAT(ADDR_STAT(stat)[0]);
+      status = EXEC_STAT(ADDR_STAT(stat)[0]);
       PopDataSpaceLocks(lockSP);
-    } else
-      ErrorMayQuit("Cannot lock required data spaces", 0L, 0L);
-    return 0;
+    } else {
+      status = 0;
+      ErrorMayQuit("Cannot lock required data spaces", 0L, 0L);      
+    }
+    return status;
 }
 
 /****************************************************************************
