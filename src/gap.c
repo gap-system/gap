@@ -181,10 +181,6 @@ void ViewObjHandler ( Obj obj )
   /* if non-zero use this function, otherwise use `PrintObj'             */
   memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
   if ( ! READ_ERROR() ) {
-    ReadGuard(obj);
-    ImpliedWriteGuard(obj);
-    ImpliedReadGuard(func);
-    ImpliedReadGuard(cfunc);
     if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
       CALL_1ARGS(cfunc, obj);
     }
