@@ -402,6 +402,14 @@ void DataSpaceWriteLock(DataSpace *dataspace)
   dataspace->owner = TLS;
 }
 
+int DataSpaceTryWriteLock(DataSpace *dataspace)
+{
+  int result = !pthread_rwlock_trywrlock(dataspace->lock);
+  if (result)
+    dataspace->owner = TLS;
+  return result;
+}
+
 void DataSpaceWriteUnlock(DataSpace *dataspace)
 {
   dataspace->owner = NULL;
@@ -412,6 +420,14 @@ void DataSpaceReadLock(DataSpace *dataspace)
 {
   pthread_rwlock_rdlock(dataspace->lock);
   dataspace->readers[TLS->threadID] = 1;
+}
+
+int DataSpaceTryReadLock(DataSpace *dataspace)
+{
+  int result = !pthread_rwlock_rdlock(dataspace->lock);
+  if (result)
+    dataspace->readers[TLS->threadID] = 1;
+  return result;
 }
 
 void DataSpaceReadUnlock(DataSpace *dataspace)
@@ -546,6 +562,63 @@ int LockObjects(int count, Obj *objects, int *mode)
       DataSpaceWriteLock(ds);
     else
       DataSpaceReadLock(ds);
+    PushDataSpaceLock(ds);
+    if (GetDataSpaceOf(order[i].obj) != ds)
+    {
+      /* Race condition, revert locks and fail */
+      PopDataSpaceLocks(result);
+      return -1;
+    }
+  }
+  return result;
+}
+
+int TryLockObjects(int count, Obj *objects, int *mode)
+{
+  int result;
+  int i;
+  LockRequest *order;
+  if (count > MAX_LOCKS)
+    return -1;
+  order = alloca(sizeof(LockRequest)*count);
+  for (i=0; i<count; i++)
+  {
+    order[i].obj = objects[i];
+    order[i].dataspace = GetDataSpaceOf(objects[i]);
+    order[i].mode = mode[i];
+  }
+  MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
+  result = TLS->lockStackPointer;
+  for (i=0; i<count; i++)
+  {
+    DataSpace *ds = order[i].dataspace;
+    /* If there are multiple lock requests with different modes,
+     * they have been sorted for writes to occur first, so deadlock
+     * cannot occur from doing readlocks before writelocks.
+     */
+    if (i > 0 && ds == order[i-1].dataspace)
+      continue; /* skip duplicates */
+    else if (IsLocked(ds) || ds->fixed_owner)
+    {
+      /* DataSpaces may not be locked twice. If that is attempted,
+       * the entire lock operation is reverted. Similarly if one
+       * attempts to lock another thread's data space.
+       */
+      while (--i >= 0)
+        DataSpaceUnlock(order[i].dataspace);
+      return -1;
+    }
+    if (order[i].mode) {
+      if (!DataSpaceTryWriteLock(ds)) {
+	PopDataSpaceLocks(result);
+	return -1;
+      }
+    } else {
+      if (!DataSpaceTryReadLock(ds)) {
+	PopDataSpaceLocks(result);
+	return -1;
+      }
+    }
     PushDataSpaceLock(ds);
     if (GetDataSpaceOf(order[i].obj) != ds)
     {

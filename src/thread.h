@@ -26,8 +26,10 @@ int RunThread(void (*start)(void *), void *arg);
 int JoinThread(int id);
 
 void DataSpaceWriteLock(DataSpace *dataspace);
+int DataSpaceTryWriteLock(DataSpace *dataspace);
 void DataSpaceWriteUnlock(DataSpace *dataspace);
 void DataSpaceReadLock(DataSpace *dataspace);
+int DataSpaceTryReadLock(DataSpace *dataspace);
 void DataSpaceReadUnlock(DataSpace *dataspace);
 void DataSpaceUnlock(DataSpace *dataspace);
 DataSpace *CurrentDataSpace();

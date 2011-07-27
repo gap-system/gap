@@ -618,6 +618,7 @@ Obj FuncSyncWrite(Obj self, Obj var, Obj value);
 Obj FuncSyncRead(Obj self, Obj var);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
+Obj FuncTRYLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncCURRENT_LOCKS(Obj self);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
@@ -765,6 +766,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "LOCK", -1, "obj, ...",
       FuncLOCK, "src/threadapi.c:LOCK" },
+
+    { "TRYLOCK", -1, "obj, ...",
+      FuncTRYLOCK, "src/threadapi.c:TRYLOCK" },
 
     { "UNLOCK", 1, "obj, newsp",
       FuncUNLOCK, "src/threadapi.c:LOCK" },
@@ -1882,6 +1886,42 @@ Obj FuncLOCK(Obj self, Obj args)
     }
   }
   result = LockObjects(count, objects, modes);
+  if (result >= 0)
+    return INTOBJ_INT(result);
+  return Fail;
+}
+
+Obj FuncTRYLOCK(Obj self, Obj args)
+{
+  int numargs = LEN_PLIST(args);
+  int count = 0;
+  Obj *objects;
+  int *modes;
+  int mode = 1;
+  int i;
+  int result;
+
+  if (numargs > 1024)
+    ArgumentError("TRYLOCK: Too many arguments");
+  objects = alloca(sizeof(Obj) * numargs);
+  modes = alloca(sizeof(int) * numargs);
+  for (i=1; i<=numargs; i++)
+  {
+    Obj obj;
+    obj = ELM_PLIST(args, i);
+    if (obj == True)
+      mode = 1;
+    else if (obj == False)
+      mode = 0;
+    else if (IS_INTOBJ(obj))
+      mode = (INT_INTOBJ(obj) && 1);
+    else {
+      objects[count] = obj;
+      modes[count] = mode;
+      count++;
+    }
+  }
+  result = TryLockObjects(count, objects, modes);
   if (result >= 0)
     return INTOBJ_INT(result);
   return Fail;
