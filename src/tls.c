@@ -84,10 +84,10 @@ void DestroyTLS()
 
 void WriteGuardError()
 {
-  ErrorMayQuit("WriteGuard() failed", 0L, 0L);
+  ErrorMayQuit("Attempt to modify an object without having write access", 0L, 0L);
 }
 
 void ReadGuardError()
 {
-  ErrorMayQuit("ReadGuard() failed", 0L, 0L);
+  ErrorMayQuit("Attempt to read an object without having read access", 0L, 0L);
 }
